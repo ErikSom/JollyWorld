@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <style>  
+   html, body, div, canvas {
+       margin: 0;
+       padding: 0;
+       display: block;
+   }
+   #my-gui-container {
+      position: absolute;
+      z-index: 10;
+      height:10;
+   }
+   .dg.main {
+      top:0;
+      display: inline-block;
+   }
+   .dg.main .close-button.close-bottom {
+    position: static !important;
+   }
+   }
+   </style>
+   <body">
+      <div id="my-gui-container"></div>
+      <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
+   </body>
+      <script type="text/javascript" src="pixi.js"></script>
+      <script type="text/javascript" src="debugdraw.js"></script>
+      <script type="text/javascript" src="Box2D.js"></script>
+      <script type="text/javascript" src="Game.js"></script>
+      <script type="text/javascript" src="Game-gui.js"></script>
+      <script type="text/javascript" src="box2deditor.js"></script>
+      <script type="text/javascript" src="dat.gui.min.js"></script>
+
+      <script type="text/javascript">  
+            window.onload = function() {
+               console.log("Trigger Init");
+                init();
+                //resetScene();
+               // animate();
+            };        
+      </script>
+</html>
