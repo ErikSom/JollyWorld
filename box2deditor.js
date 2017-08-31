@@ -17,7 +17,7 @@ function B2deEditor(){
 
 	this.assetLists = {};
 
-	this.worldJSON = '{"objects":[{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true},{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4},{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5}]}';
+	this.worldJSON = '{"objects":[{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true, "enableLimit":false,"upperAngle":0,"lowerAngle":0},{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4},{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5}]}';
 
 
 
@@ -136,24 +136,40 @@ function B2deEditor(){
 				this.editorGUI.editData.y = _selectedPinJoints[0].data.y;
 				this.editorGUI.editData.enableMotor = _selectedPinJoints[0].data.enableMotor;
 				this.editorGUI.editData.maxMotorTorque = _selectedPinJoints[0].data.maxMotorTorque;
-				this.editorGUI.editData.motorSpeed = _selectedPinJoints[0].data.motorSpeed
+				this.editorGUI.editData.motorSpeed = _selectedPinJoints[0].data.motorSpeed;
+				this.editorGUI.editData.enableLimit = _selectedPinJoints[0].data.enableLimit;
+				this.editorGUI.editData.upperAngle = _selectedPinJoints[0].data.upperAngle;
+				this.editorGUI.editData.lowerAngle = _selectedPinJoints[0].data.lowerAngle;
+
+				console.log(_selectedPinJoints[0].data.enableLimit);
 
 				var self = this.editorGUI;
 				this.editorGUI.add(self.editData, "collideConnected").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
 				this.editorGUI.add(self.editData, "x").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
 				this.editorGUI.add(self.editData, "y").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
 
-				var folder
+				var folder;
+				var controller;
 
 				folder = this.editorGUI.addFolder('enable motor');
-				folder.add(self.editData, "enableMotor");
-				folder.add(self.editData, "maxMotorTorque", 0, 1000);
-				folder.add(self.editData, "motorSpeed", -20, 20);
+				folder.add(self.editData, "enableMotor").onChange(function(value) {this.humanUpdate=true; this.targetValue=value;});
+				
+				controller = folder.add(self.editData, "maxMotorTorque", 0, 1000);
+				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+
+				controller = folder.add(self.editData, "motorSpeed", -20, 20);
+				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
 
 				folder = this.editorGUI.addFolder('enable limits');
-				folder.add(self.editData, "enableLimit");
-				folder.add(self.editData, "upperAngle", -90, 90);
-				folder.add(self.editData, "lowerAngle", -90, 90);
+				folder.add(self.editData, "enableLimit").onChange(function(value) {this.humanUpdate=true; this.targetValue=value;});
+
+				controller = folder.add(self.editData, "upperAngle", 0, 180);
+				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value; console.log("hotdamn");}.bind(controller));
+
+				controller = folder.add(self.editData, "lowerAngle", -180, 0);
+				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+
+				console.log(this.editorGUI);
 
 			}else if(_selectedTextureJoints.length>0){
 				// editing just texture joints
@@ -186,6 +202,8 @@ function B2deEditor(){
 
 
 			if(b.myJoint != undefined){
+
+				console.log("I HAVE A JOINT");
 				var j;
 				var alreadySelected = false;
 				for(j = 0; j<this.selectedTextures.length; j++){
@@ -203,9 +221,11 @@ function B2deEditor(){
 	    //Destroy all selected graphics
 
 	    for(i = 0; i<this.selectedTextures.length; i++){
+	    	console.log(i+"  I");
 			var sprite = this.selectedTextures[i];
-
-			if(sprite.data && sprite.data instanceof this.jointObject){
+			console.log(sprite.data);
+			if(sprite.data && sprite.data.type == this.object_JOINT){
+				console.log("IM A JOINT");
 				if(sprite.bodies[0] != undefined) sprite.bodies[0].myJoint = null;
 				if(sprite.bodies.length>1 && sprite.bodies[1] != undefined) sprite.bodies[1].myJoint = null;
 			}
@@ -537,41 +557,52 @@ function B2deEditor(){
 
 		if(this.editorGUI && this.editorGUI.editData){
 			if(this.editorGUI.editData instanceof this.jointObject){
+				var controller;
+				var controllers = [];
+				controllers = controllers.concat(this.editorGUI.__controllers);
 
-			var controller;
-			  for (var i in this.editorGUI.__controllers) {
-			    controller = this.editorGUI.__controllers[i]
-
-			    if(controller.humanUpdate){
-			    	controller.humanUpdate = false;
-			    	if(controller.property == "x"){
-			    		this.selectedTextures[0].x = controller.targetValue; 
-			    	}else if(controller.property == "y"){
-			    		this.selectedTextures[0].y = controller.targetValue; 
-			    	}else if(controller.property == "collideConnected"){
-			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
-			    	}else if(controller.property == "enableMotor"){
-			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
-			    	}else if(controller.property == "maxMotorTorque"){
-			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
-			    	}else if(controller.property == "enableLimit"){
-			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
-			    	}else if(controller.property == "upperAngle"){
-			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
-			    	}else if(controller.property == "lowerAngle"){
-			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
-			    	}
-			    }
-			    if(controller.__input !== document.activeElement){
-			   		controller.updateDisplay();
+				for(var propt in this.editorGUI.__folders){
+					controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
 				}
-			  }
 
+
+				for (var i in controllers) {
+				    controller = controllers[i]
+
+				    if(controller.humanUpdate){
+				    	controller.humanUpdate = false;
+				    	if(controller.property == "x"){
+				    		this.selectedTextures[0].x = controller.targetValue; 
+				    	}else if(controller.property == "y"){
+				    		console.log(controller);
+				    		this.selectedTextures[0].y = controller.targetValue; 
+				    	}else if(controller.property == "collideConnected"){
+				    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
+				    	}else if(controller.property == "enableMotor"){
+				    		console.log("fixing it on data");
+				    		this.selectedTextures[0].data.enableMotor = controller.targetValue; 
+				    	}else if(controller.property == "maxMotorTorque"){
+				    		this.selectedTextures[0].data.maxMotorTorque = controller.targetValue; 
+				    	}else if(controller.property == "motorSpeed"){
+				    		this.selectedTextures[0].data.motorSpeed = controller.targetValue; 
+				    	}else if(controller.property == "enableLimit"){
+				    		console.log("fixing it on data");
+				    		this.selectedTextures[0].data.enableLimit = controller.targetValue; 
+				    	}else if(controller.property == "upperAngle"){
+				    		console.log(controller);
+				    		this.selectedTextures[0].data.upperAngle = controller.targetValue; 
+				    	}else if(controller.property == "lowerAngle"){
+				    		this.selectedTextures[0].data.lowerAngle = controller.targetValue; 
+				    	}
+				    }
+				    if(controller.__input !== document.activeElement &&
+				    	(controller.domElement.children[0].children && controller.domElement.children[0].children[0] !== document.activeElement)){
+				   		controller.updateDisplay();
+					}
+				}
 
 				this.editorGUI.editData.x = this.selectedTextures[0].x;
 				this.editorGUI.editData.y = this.selectedTextures[0].y;
-
-
 			}
 		}
 
@@ -783,9 +814,12 @@ function B2deEditor(){
 		if(obj){
 			tarObj = obj;
 			bodies.push(newTextureGraphics.getChildAt(tarObj.bodyA_ID).myBody);
-			if(tarObj.bodyB_ID){
+
+			if(tarObj.bodyB_ID != undefined){
 				bodies.push(newTextureGraphics.getChildAt(tarObj.bodyB_ID).myBody);
+				console.log("WHAAZAAAAA");
 			}
+			console.log(bodies.length +"  LENGTH"+"  "+tarObj.bodyA_ID+"  "+tarObj.bodyB_ID+"  "+tarObj.enableLimit);
 
 
 
@@ -813,8 +847,10 @@ function B2deEditor(){
 
 		jointGraphics.bodies = bodies;
 
+		console.log(bodies.length);
+
 		bodies[0].myJoint = jointGraphics;
-		if(bodies.length>1) bodies[0].myJoint = jointGraphics;
+		if(bodies.length>1) bodies[1].myJoint = jointGraphics;
 
 		jointGraphics.data = tarObj;
 
@@ -856,11 +892,11 @@ function B2deEditor(){
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x/PTM, jointPlaceHolder.y/PTM));
 			revoluteJointDef.collideConnected = jointPlaceHolder.collideConnected;
 			revoluteJointDef.referenceAngle = 0.0;
-			revoluteJointDef.lowerAngle = 0.0;
-			revoluteJointDef.upperAngle = 0.0;
+			revoluteJointDef.lowerAngle = jointPlaceHolder.lowerAngle*this.DEG2RAD;
+			revoluteJointDef.upperAngle = jointPlaceHolder.upperAngle*this.DEG2RAD;
 			revoluteJointDef.maxMotorTorque = jointPlaceHolder.maxMotorTorque;
 			revoluteJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
-			revoluteJointDef.enableLimit = false;
+			revoluteJointDef.enableLimit = jointPlaceHolder.enableLimit;
 			revoluteJointDef.enableMotor = jointPlaceHolder.enableMotor;
 
 
