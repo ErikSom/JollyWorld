@@ -100,7 +100,7 @@ function setup(){
 
    //Editor Draw
    newEditorGraphics = new PIXI.Graphics();
-   myEditor.init(newEditorGraphics);
+   myEditor.init(newEditorGraphics, newTextureGraphics);
    myEditor.assetLists.characters = ["1head.png", "2head.png", "3head.png"];
 
    stage.addChild(newEditorGraphics)
@@ -226,6 +226,10 @@ function onKeyDown(e) {
    }else if (e.keyCode == 82){
       myEditor.resetWorld();
       run = false;
+   }else if(e.ctrlKey && e.keyCode == 67){
+      myEditor.copySelection();
+   }else if(e.ctrlKey && e.keyCode == 86){
+      myEditor.pasteSelection();
    }
    else if (e.keyCode == 46){
       myEditor.deleteSelection();

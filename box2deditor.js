@@ -1,6 +1,6 @@
 function B2deEditor(){
 
-	this.graphics = null;
+	this.debugGraphics = null;
 	this.textures = null;
 	this.editorMode_DRAWVERTICES = "drawVertices";
 	this.editorMode_SELECTION = "selection";
@@ -18,7 +18,8 @@ function B2deEditor(){
 	this.assetLists = {};
 
 	this.worldJSON = '{"objects":[{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true, "enableLimit":false,"upperAngle":0,"lowerAngle":0},{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4},{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5}]}';
-
+	this.copiedJSON = '';
+	this.copyCenterPoint = {x:0, y:0};
 
 
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
@@ -35,9 +36,10 @@ function B2deEditor(){
 		loader.add("assets/images/iconSet.json");
 	}
 
-	this.init = function(graphics){
+	this.init = function(debugGraphics, textures){
 
-		this.graphics = graphics;
+		this.debugGraphics = debugGraphics;
+		this.textures = textures;
 		this.initGui();
 
 	}
@@ -51,11 +53,8 @@ function B2deEditor(){
 	this.mouseDownOnInfo = false;
 
 	this.initGui = function(){
-
         canvas.focus();
-        this.parseAndBuildWorldJSON();
-
-
+        this.parseAndBuildJSON(this.worldJSON);
 	}
 	this.clickInsideGUI = function(){
 		/*var i;
@@ -237,6 +236,123 @@ function B2deEditor(){
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.updateSelection();
+
+	}
+
+	this.copySelection = function(){
+
+		var i;
+		var body;
+		var copyArray = [];
+		var cloneObject;
+
+		if(this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) return;
+
+		// sort all objects based on childIndex
+		for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+			body = this.selectedPhysicsBodies[i];
+			this.updateObject(body.myGraphic, body.myGraphic.data);
+			cloneObject = JSON.parse(JSON.stringify(body.myGraphic.data))
+			console.log(cloneObject.type+"  "+body.myGraphic.data.type+"  check Clone");
+			copyArray.push({ID:cloneObject.ID, data:cloneObject})
+		}
+		var sprite;
+		for(i = 0; i<this.selectedTextures.length; i++){
+			sprite = this.selectedTextures[i];
+			this.updateObject(sprite, sprite.data);
+			cloneObject = JSON.parse(JSON.stringify(sprite.data))
+			copyArray.push({ID:cloneObject.ID, data:cloneObject})
+		}
+
+		copyArray.sort(function(a, b){ return a.ID-b.ID; });
+
+
+		// Fix copied joints (make sure no anchor body is null)
+		var data;
+		var j;
+		for(i = 0; i<copyArray.length; i++){
+			data = copyArray[i].data;
+			console.log(data);
+			if(data.type == this.object_JOINT){
+				//searching object A
+				var foundBodyA = false;
+				for(j = 0; j<copyArray.length; j++){
+
+					if(copyArray[j].ID == data.bodyA_ID){
+						foundBodyA = true;
+						data.bodyA_ID = j;
+					}
+				}
+				var foundBodyB = false;
+				if(data.bodyB_ID != undefined){
+					for(j = 0; j<copyArray.length; j++){
+
+					if(copyArray[j].ID == data.bodyB_ID){
+						foundBodyB = true;
+						data.bodyB_ID = j;
+					}
+				}
+
+				}else{
+					foundBodyB = true;
+				}
+
+				if(!foundBodyA || !foundBodyB){
+					copyArray.splice(i, 1);
+					i--;
+				}
+			}
+		}
+		var copyJSON = '{"objects":[';
+		this.copyCenterPoint = {x:0, y:0};
+
+		for(i = 0; i<copyArray.length; i++){
+			if(i != 0) copyJSON += ',';
+			data = copyArray[i].data;
+			data.ID = i;
+			copyJSON += JSON.stringify(data);
+			this.copyCenterPoint.x += data.x;
+			this.copyCenterPoint.y += data.y;
+		}
+		this.copyCenterPoint.x = this.copyCenterPoint.x / copyArray.length;
+		this.copyCenterPoint.y = this.copyCenterPoint.y / copyArray.length
+		copyJSON += ']}';
+
+		this.copiedJSON = copyJSON;
+	}
+
+	this.pasteSelection = function(){
+		var startChildIndex = this.textures.children.length;
+
+		this.parseAndBuildJSON(this.copiedJSON);
+
+		this.selectedPhysicsBodies = [];
+		this.selectedTextures = [];
+
+		var i;
+		var sprite;
+		var movX = 100;
+		var movY = 100;
+		for(i = startChildIndex; i<this.textures.children.length; i++){
+			sprite = this.textures.getChildAt(i);
+			if(sprite.myBody != undefined){
+				var pos = sprite.myBody.GetPosition();
+				pos.x += movX/PTM;
+				pos.y += movY/PTM;
+				sprite.myBody.SetPosition(pos);
+				this.selectedPhysicsBodies.push(sprite.myBody);
+			}
+			else{
+				sprite.x += movX;
+				sprite.y += movY;
+
+				if(sprite.type == this.object_JOINT){
+
+				}
+
+				this.selectedTextures.push(sprite);
+			} 
+		}
 
 	}
 
@@ -474,8 +590,8 @@ function B2deEditor(){
 
 		var queryGraphics = [];
 		var i;
-		for(i = 0; i<newTextureGraphics.children.length; i++){
-			var sprite = newTextureGraphics.getChildAt(i);
+		for(i = 0; i<this.textures.children.length; i++){
+			var sprite = this.textures.getChildAt(i);
 
 			if(!onlyTextures || !sprite.myBody){
 
@@ -615,7 +731,7 @@ function B2deEditor(){
 		var lowerBoundPixi = getPIXIPointFromWorldPoint(aabb.lowerBound);
 		var upperBoundPixi = getPIXIPointFromWorldPoint(aabb.upperBound);
 
-		this.drawBox(this.graphics, lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x-lowerBoundPixi.x, upperBoundPixi.y-lowerBoundPixi.y, this.selectionBoxColor);
+		this.drawBox(this.debugGraphics, lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x-lowerBoundPixi.x, upperBoundPixi.y-lowerBoundPixi.y, this.selectionBoxColor);
 
 	}
 
@@ -629,8 +745,8 @@ function B2deEditor(){
 	this.verticesBulletRadius = 5;
 
 	this.doVerticesDrawing = function(){
-		this.graphics.lineStyle(1, this.verticesLineColor, 1);
-		this.graphics.beginFill(this.verticesFillColor, 0.5);
+		this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
+		this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
 		var i = 0;
 		var newVertice;
@@ -677,7 +793,7 @@ function B2deEditor(){
 		        if(angleDirection>=0){
 
 		        	//angle going in wrong direction
-		        	this.graphics.lineStyle(1, 0xFF0000, 1);
+		        	this.debugGraphics.lineStyle(1, 0xFF0000, 1);
 
 		        	var hypLength = Math.sqrt(difference3.x*difference3.x+difference3.y*difference3.y);
 		        	var tarAdjucentLengthExtension = Math.cos((angle3-angle2)*this.DEG2RAD)*hypLength;
@@ -694,7 +810,7 @@ function B2deEditor(){
 		        if(this.activeVertices.length>2){
 
 			        if(angleDirection < 0 && angleToBaseDirection <=0){
-			        	this.graphics.lineStyle(1, 0xFFFF00, 1);
+			        	this.debugGraphics.lineStyle(1, 0xFFFF00, 1);
 			        	this.closeDrawing = true;
 			        }
 
@@ -707,24 +823,24 @@ function B2deEditor(){
 					var imaginaryDistance = 10000;
 					var imaginaryVerticeOnBaseSegment = {x:checkBaseSegmentVertice.x-imaginaryDistance*Math.cos(checkBaseAngle), y:checkBaseSegmentVertice.y-imaginaryDistance*Math.sin(checkBaseAngle)};
 			 			
-					//this.graphics.moveTo(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y);
-					//this.graphics.lineTo(getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).x, getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).y);
+					//this.debugGraphics.moveTo(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y);
+					//this.debugGraphics.lineTo(getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).x, getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).y);
 
 
 		 			if(intersect(checkBaseSegmentNextVertice, imaginaryVerticeOnBaseSegment, newVertice, activeVertice)){
-		 				this.graphics.lineStyle(1, 0xFF00FF, 1);
+		 				this.debugGraphics.lineStyle(1, 0xFF00FF, 1);
 		 				this.closeDrawing = true;
 		 			}
 				}
 
 			}
-			this.graphics.moveTo(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y);
+			this.debugGraphics.moveTo(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y);
 
-			this.graphics.arc(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			this.debugGraphics.arc(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
 
-			this.graphics.moveTo(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y);
+			this.debugGraphics.moveTo(getPIXIPointFromWorldPoint(newVertice).x, getPIXIPointFromWorldPoint(newVertice).y);
 
-			this.graphics.lineTo(getPIXIPointFromWorldPoint(activeVertice).x, getPIXIPointFromWorldPoint(activeVertice).y);
+			this.debugGraphics.lineTo(getPIXIPointFromWorldPoint(activeVertice).x, getPIXIPointFromWorldPoint(activeVertice).y);
 		}
 		previousVertice = null;
 
@@ -733,18 +849,18 @@ function B2deEditor(){
 
 			activeVertice = this.activeVertices[i];
 
-			this.graphics.moveTo(getPIXIPointFromWorldPoint(activeVertice).x+this.verticesBulletRadius, getPIXIPointFromWorldPoint(activeVertice).y);
-			this.graphics.arc(getPIXIPointFromWorldPoint(activeVertice).x, getPIXIPointFromWorldPoint(activeVertice).y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			this.debugGraphics.moveTo(getPIXIPointFromWorldPoint(activeVertice).x+this.verticesBulletRadius, getPIXIPointFromWorldPoint(activeVertice).y);
+			this.debugGraphics.arc(getPIXIPointFromWorldPoint(activeVertice).x, getPIXIPointFromWorldPoint(activeVertice).y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
 			
 			if(i>0) previousVertice = this.activeVertices[i-1];
 
 			if(previousVertice){
-				this.graphics.moveTo(getPIXIPointFromWorldPoint(activeVertice).x, getPIXIPointFromWorldPoint(activeVertice).y);
-				this.graphics.lineTo(getPIXIPointFromWorldPoint(previousVertice).x, getPIXIPointFromWorldPoint(previousVertice).y);
+				this.debugGraphics.moveTo(getPIXIPointFromWorldPoint(activeVertice).x, getPIXIPointFromWorldPoint(activeVertice).y);
+				this.debugGraphics.lineTo(getPIXIPointFromWorldPoint(previousVertice).x, getPIXIPointFromWorldPoint(previousVertice).y);
 			}
 		}
 
-		this.graphics.endFill();
+		this.debugGraphics.endFill();
 
 	}
 	this.createBodyObjectFromVerts = function(verts){
@@ -813,10 +929,10 @@ function B2deEditor(){
 
 		if(obj){
 			tarObj = obj;
-			bodies.push(newTextureGraphics.getChildAt(tarObj.bodyA_ID).myBody);
+			bodies.push(this.textures.getChildAt(tarObj.bodyA_ID).myBody);
 
 			if(tarObj.bodyB_ID != undefined){
-				bodies.push(newTextureGraphics.getChildAt(tarObj.bodyB_ID).myBody);
+				bodies.push(this.textures.getChildAt(tarObj.bodyB_ID).myBody);
 				console.log("WHAAZAAAAA");
 			}
 			console.log(bodies.length +"  LENGTH"+"  "+tarObj.bodyA_ID+"  "+tarObj.bodyB_ID+"  "+tarObj.enableLimit);
@@ -841,7 +957,7 @@ function B2deEditor(){
 		}
 
 		var jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('pinJoint'));
-		newTextureGraphics.addChild(jointGraphics);
+		this.textures.addChild(jointGraphics);
 
 		jointGraphics.pivot.set(jointGraphics.width/2, jointGraphics.height/2);
 
@@ -860,11 +976,11 @@ function B2deEditor(){
 	}
 
 	this.attachJoint = function(jointPlaceHolder){
-		var bodyA = newTextureGraphics.getChildAt(jointPlaceHolder.bodyA_ID).myBody;
+		var bodyA = this.textures.getChildAt(jointPlaceHolder.bodyA_ID).myBody;
 		var bodyB;
 		if(jointPlaceHolder.bodyB_ID != null){
 
-			bodyB = newTextureGraphics.getChildAt(jointPlaceHolder.bodyB_ID).myBody;
+			bodyB = this.textures.getChildAt(jointPlaceHolder.bodyB_ID).myBody;
 		}else{
 			//pin to background
 
@@ -977,7 +1093,7 @@ function B2deEditor(){
 		graphic.endFill();
 		graphic.originalGraphic = true;
 
-		return newTextureGraphics.addChild(graphic);
+		return this.textures.addChild(graphic);
 	}
 
 	this.stringifyWorldJSON = function(){
@@ -985,47 +1101,65 @@ function B2deEditor(){
 		worldJSON = '{"objects":[';
 		var sprite;
 		var spriteData;
-		for(i = 0; i<newTextureGraphics.children.length; i++){
+		for(i = 0; i<this.textures.children.length; i++){
 			if(i != 0) worldJSON += ',';
-			sprite = newTextureGraphics.getChildAt(i);
-			if(sprite.data.type == this.object_BODY){
-				sprite.data.x = sprite.myBody.GetPosition().x;
-				sprite.data.y = sprite.myBody.GetPosition().y;
-				sprite.data.rotation = sprite.myBody.GetAngle();			
-			}else if(sprite.data.type == this.object_TEXTURE){
-				sprite.data.x = sprite.x;
-				sprite.data.y = sprite.y;
-				sprite.data.rotation = sprite.rotation;
-				
-			}else if(sprite.data.type == this.object_JOINT){
-
-				sprite.data.bodyA_ID = sprite.bodies[0].myGraphic.parent.getChildIndex(sprite.bodies[0].myGraphic);
-				if(sprite.bodies.length>1) sprite.data.bodyB_ID = sprite.bodies[1].myGraphic.parent.getChildIndex(sprite.bodies[1].myGraphic);
-				sprite.data.x = sprite.x;
-				sprite.data.y = sprite.y;
-			}
-			sprite.data.ID = i;
+			sprite = this.textures.getChildAt(i);
+			
+			this.updateObject(sprite, sprite.data);
 			worldJSON += JSON.stringify(sprite.data);
 		}
 		worldJSON += ']}';
 
 		console.log(worldJSON);
 	}
-	this.parseAndBuildWorldJSON = function(){
 
-		if(this.worldJSON != null && this.worldJSON != ""){
-			var worldObjects = JSON.parse(this.worldJSON);
+	this.updateObject = function(sprite, data){
+
+		if(data.type == this.object_BODY){
+			data.x = sprite.myBody.GetPosition().x;
+			data.y = sprite.myBody.GetPosition().y;
+			data.rotation = sprite.myBody.GetAngle();			
+		}else if(data.type == this.object_TEXTURE){
+			data.x = sprite.x;
+			data.y = sprite.y;
+			data.rotation = sprite.rotation;
+			
+		}else if(data.type == this.object_JOINT){
+
+			data.bodyA_ID = sprite.bodies[0].myGraphic.parent.getChildIndex(sprite.bodies[0].myGraphic);
+			if(sprite.bodies.length>1) data.bodyB_ID = sprite.bodies[1].myGraphic.parent.getChildIndex(sprite.bodies[1].myGraphic);
+			data.x = sprite.x;
+			data.y = sprite.y;
+		}
+		data.ID = sprite.parent.getChildIndex(sprite);
+	}
+
+	this.parseAndBuildJSON = function(json){
+
+		var startChildIndex = this.textures.children.length;
+		console.log(startChildIndex +" startChildIndex");
+
+		if(json != null && json != ""){
+			var worldObjects = JSON.parse(json);
 
 			var i;
 			var obj;
 			for(i = 0; i<worldObjects.objects.length; i++){
 				obj = worldObjects.objects[i];
+				obj.ID += startChildIndex;
 
 				if(obj.type == this.object_BODY){
 					this.buildBodyFromObj(obj);	
 				}else if(obj.type == this.object_TEXTURE){
 					//create sprite
 				}else if(obj.type == this.object_JOINT){
+					console.log("obj A old "+obj.bodyA_ID);
+					obj.bodyA_ID += startChildIndex;
+					console.log("obj A new "+obj.bodyA_ID);
+					console.log("obj B old "+obj.bodyB_ID);
+					if(obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
+					console.log("obj B new "+obj.bodyA_ID);
+
 					this.attachJointPlaceHolder(obj);
 				}
 
@@ -1072,22 +1206,22 @@ function B2deEditor(){
 
 	    //Destroy all graphics
 
-	    for(i = 0; i<newTextureGraphics.children.length; i++){
-			var sprite = newTextureGraphics.getChildAt(i);
+	    for(i = 0; i<this.textures.children.length; i++){
+			var sprite = this.textures.getChildAt(i);
 			sprite.parent.removeChild(sprite);
 			sprite.destroy({children:true, texture:false, baseTexture:false});
 			i--;
 		}
 
-		this.parseAndBuildWorldJSON();
+		this.parseAndBuildJSON(this.worldJSON);
 
 	}
 	this.prepareWorld = function(){
 		var spritesToDestroy = [];
 		var sprite;
 
-		for(i = 0; i<newTextureGraphics.children.length; i++){
-			sprite = newTextureGraphics.getChildAt(i);
+		for(i = 0; i<this.textures.children.length; i++){
+			sprite = this.textures.getChildAt(i);
 			if(sprite.data.type == this.object_JOINT){
 
 				sprite.data.bodyA_ID = sprite.bodies[0].myGraphic.parent.getChildIndex(sprite.bodies[0].myGraphic);
