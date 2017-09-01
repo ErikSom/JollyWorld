@@ -2,11 +2,9 @@ function B2deEditor(){
 
 	this.debugGraphics = null;
 	this.textures = null;
-	this.editorMode_DRAWVERTICES = "drawVertices";
-	this.editorMode_SELECTION = "selection";
-	this.editorMode_DEFAULT = this.editorMode_SELECTION;
-	this.editorMode = this.editorMode_DEFAULT;
+	this.editorMode = ""
 	this.editorGUI;
+	this.customGUIContainer = document.getElementById('my-gui-container');
 
 	this.selectedPhysicsBodies = [];
 	this.selectedTextures = [];
@@ -16,20 +14,17 @@ function B2deEditor(){
 	this.oldMousePosWorld;
 
 	this.assetLists = {};
-
+	this.assetGUI;
+	this.assetSelectedTexture ="";
+	this.assetSelectedObject ="";
 	this.worldJSON = '{"objects":[{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true, "enableLimit":false,"upperAngle":0,"lowerAngle":0},{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4},{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5}]}';
 	this.copiedJSON = '';
 	this.copyCenterPoint = {x:0, y:0};
 
+	this.selectionBoxColor = "0x5294AE";
+	this.mouseDown = false;
+	this.mouseDownOnInfo = false;
 
-	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
-
-	this.object_BODY = 0;
-	this.object_TEXTURE = 1;
-	this.object_JOINT = 2;
-
-	this.jointObject_TYPE_PIN = 0;
-	this.jointObject_TYPE_SLIDE = 1;
 
 
 	this.load = function(loader){
@@ -40,19 +35,39 @@ function B2deEditor(){
 
 		this.debugGraphics = debugGraphics;
 		this.textures = textures;
+		this.editorMode = this.editorMode_SELECTION;
 		this.initGui();
 
 	}
 
-	this.DEG2RAD =  0.017453292519943296;
-	this.RAD2DEG = 57.29577951308232;
-
-
-	this.selectionBoxColor = "0x5294AE";
-	this.mouseDown = false;
-	this.mouseDownOnInfo = false;
-
 	this.initGui = function(){
+
+		this.assetGUI = new dat.GUI({autoPlace:false, width:200});
+		this.customGUIContainer.appendChild(this.assetGUI.domElement);
+		this.assetGUI.addFolder('Asset Selection');
+
+		folder = this.assetGUI.addFolder('Textures');
+		var self = this;
+		console.log(self);
+
+		this.spawnTexture = function(){
+		}
+
+		folder.add(self, "assetSelectedTexture", this.assetLists.characters).onChange(function(value){}).name("Select");
+		var but = folder.add(self, "spawnTexture").name("Spawn -->");
+		this.spawnTexture = function (){ 
+			if(self.assetSelectedTexture!= undefined && this.assetSelectedTexture != ""){
+				var data = new self.textureObject;
+				var rect = this.domElement.getBoundingClientRect();
+				data.x = rect.right+50;
+				data.y = rect.top+20; 
+				data.textureName = self.assetSelectedTexture;
+
+				self.buildTextureFromObj(data);
+
+			}
+		}.bind(but);
+		
         canvas.focus();
         this.parseAndBuildJSON(this.worldJSON);
 	}
@@ -82,12 +97,10 @@ function B2deEditor(){
 	this.updateSelection = function(){
 		//Joints
 		var i;
-		var customContainer = document.getElementById('my-gui-container');
-
 
 		//reset
 		if(this.editorGUI != undefined){
-			customContainer.removeChild(this.editorGUI.domElement);
+			this.customGUIContainer.removeChild(this.editorGUI.domElement);
 			this.editorGUI = null;
 		}
 
@@ -125,7 +138,7 @@ function B2deEditor(){
 			}else if(_selectedPinJoints.length>0){
 				// editing just pin joints
 				this.editorGUI = new dat.GUI({autoPlace:false, width:200});
-				customContainer.appendChild(this.editorGUI.domElement);
+				this.customGUIContainer.appendChild(this.editorGUI.domElement);
 				this.editorGUI.addFolder('joint editor');
 
 				this.editorGUI.editData = new this.jointObject;
@@ -311,14 +324,24 @@ function B2deEditor(){
 			data = copyArray[i].data;
 			data.ID = i;
 			copyJSON += JSON.stringify(data);
-			this.copyCenterPoint.x += data.x;
-			this.copyCenterPoint.y += data.y;
+			if(data.type == this.object_BODY){
+				this.copyCenterPoint.x += data.x*PTM;
+				this.copyCenterPoint.y += data.y*PTM;
+			}else{
+				this.copyCenterPoint.x += data.x;
+				this.copyCenterPoint.y += data.y;
+			}
+
 		}
 		this.copyCenterPoint.x = this.copyCenterPoint.x / copyArray.length;
 		this.copyCenterPoint.y = this.copyCenterPoint.y / copyArray.length
 		copyJSON += ']}';
 
 		this.copiedJSON = copyJSON;
+	}
+	this.cutSelection = function(){
+		this.copySelection();
+		this.deleteSelection();
 	}
 
 	this.pasteSelection = function(){
@@ -331,24 +354,21 @@ function B2deEditor(){
 
 		var i;
 		var sprite;
-		var movX = 100;
-		var movY = 100;
+		var movX = this.copyCenterPoint.x-(mousePosWorld.x*PTM);
+		var movY = this.copyCenterPoint.y-(mousePosWorld.y*PTM);
+
 		for(i = startChildIndex; i<this.textures.children.length; i++){
 			sprite = this.textures.getChildAt(i);
 			if(sprite.myBody != undefined){
 				var pos = sprite.myBody.GetPosition();
-				pos.x += movX/PTM;
-				pos.y += movY/PTM;
+				pos.x -= movX/PTM;
+				pos.y -= movY/PTM;
 				sprite.myBody.SetPosition(pos);
 				this.selectedPhysicsBodies.push(sprite.myBody);
 			}
 			else{
-				sprite.x += movX;
-				sprite.y += movY;
-
-				if(sprite.type == this.object_JOINT){
-
-				}
+				sprite.x -= movX;
+				sprite.y -= movY;
 
 				this.selectedTextures.push(sprite);
 			} 
@@ -404,10 +424,6 @@ function B2deEditor(){
 		this.rotation = 0;
 		this.ID = 0;
 		this.type = myEditor.object_BODY;
-		this.textureID = null;
-		this.texturePositionOffsetLength = null;
-		this.texturePositionOffsetAngle = null;
-		this.textureAngleOffset = null;
 		this.colorFill = null;
 		this.colorLine = null;
 		this.fixed = null;
@@ -420,7 +436,10 @@ function B2deEditor(){
 		this.ID = 0;
 		this.type = myEditor.object_TEXTURE;
 		this.textureName = null;
-		this.resourceName = null;
+		this.bodyID = null;
+		this.texturePositionOffsetLength = null;
+		this.texturePositionOffsetAngle = null;
+		this.textureAngleOffset = null;
 	}
 	this.jointObject = function(){
 		this.bodyA_ID;
@@ -530,23 +549,34 @@ function B2deEditor(){
 
 		if(this.editorMode == this.editorMode_SELECTION){
 			if(this.mouseDown && !this.mouseDownOnInfo){
-				var move = new b2Vec2(mousePosWorld.x-this.oldMousePosWorld.x, mousePosWorld.y-this.oldMousePosWorld.y);
-				console.log("dafuq "+move.x+"  "+move.y);
-				var i;
-				var body;
-				for(i = 0; i<this.selectedPhysicsBodies.length; i++){
-					body = this.selectedPhysicsBodies[i];
-					var oldPosition = body.GetPosition();
-					body.SetPosition(new b2Vec2(oldPosition.x+move.x, oldPosition.y+move.y));
-				}
-				var sprite;
-				for(i = 0; i<this.selectedTextures.length; i++){
-					sprite = this.selectedTextures[i];
-					sprite.x = sprite.x+move.x*PTM;
-					sprite.y = sprite.y+move.y*PTM;
+				if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
+					var move = new b2Vec2(mousePosWorld.x-this.oldMousePosWorld.x, mousePosWorld.y-this.oldMousePosWorld.y);
+					console.log("dafuq "+move.x+"  "+move.y);
+					var i;
+					var body;
+					for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+						body = this.selectedPhysicsBodies[i];
+
+						if(this.mouseTransformType == this.mouseTransformType_Movement){
+							var oldPosition = body.GetPosition();
+							body.SetPosition(new b2Vec2(oldPosition.x+move.x, oldPosition.y+move.y));
+						}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
+							var oldAngle = body.GetAngle();
+							body.SetAngle(oldAngle+move.x/10);
+						}
+					}
+					var sprite;
+					for(i = 0; i<this.selectedTextures.length; i++){
+						sprite = this.selectedTextures[i];
+						if(this.mouseTransformType == this.mouseTransformType_Movement){
+							sprite.x = sprite.x+move.x*PTM;
+							sprite.y = sprite.y+move.y*PTM;
+						}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
+							sprite.rotation += move.x/10;
+						}
+					}
 				}
 			}
-
 		}
 
 
@@ -563,6 +593,41 @@ function B2deEditor(){
 		}
 		this.mouseDown = false;
 		this.mouseDownOnInfo = false;
+	}
+	this.onKeyDown = function(e){
+		if (e.keyCode == 80 ) {//p
+	      if(!run){
+	         this.stringifyWorldJSON();
+	         this.prepareWorld();
+	      }
+	      run = !run;
+	   }else if (e.keyCode == 68 ) {//d
+	      this.startVerticesDrawing();
+	   }else if (e.keyCode == 81 ) {//q
+	      this.anchorTextureToBody();
+	   }else if (e.keyCode == 74 ) {//j
+	      this.attachJointPlaceHolder();
+	   }else if (e.keyCode == 83 ) {//s
+	      this.stringifyWorldJSON();
+	   }else if (e.keyCode == 82){
+	      this.resetWorld();
+	      run = false;
+	   }else if(e.ctrlKey && e.keyCode == 67){ //c
+	      this.copySelection();
+	   }else if(e.ctrlKey && e.keyCode == 86){// v
+	      this.pasteSelection();
+	   }else if(e.ctrlKey && e.keyCode == 88){// x
+	      this.cutSelection();
+	   }else if (e.keyCode == 46){
+	      this.deleteSelection();
+	   }else if(e.keyCode == 16){//shift
+	   		this.mouseTransformType = this.mouseTransformType_Rotation;
+	   }
+	}
+	this.onKeyUp = function(e){
+		if(e.keyCode == 16){
+	   		this.mouseTransformType = this.mouseTransformType_Movement;
+	   }
 	}
 
 
@@ -605,7 +670,7 @@ function B2deEditor(){
 					&& lowerBoundPixi.y < sprite.y-sprite.height/2
 					&& upperBoundPixi.y > sprite.y+sprite.height/2))
 
-				{
+				{this.textureObject
 					queryGraphics.push(sprite);
 					if(queryGraphics.length == limitResult) break;
 				}
@@ -629,8 +694,9 @@ function B2deEditor(){
 		var aabb = new b2AABB;
 		aabb.lowerBound = new b2Vec2(Number.MAX_VALUE,Number.MAX_VALUE);
 		aabb.upperBound = new b2Vec2(-Number.MAX_VALUE,-Number.MAX_VALUE); 
+		
+		if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
 
-		if(this.selectedPhysicsBodies.length>0){
 
 			var i;
 			var j;
@@ -644,10 +710,7 @@ function B2deEditor(){
 					fixture = fixture.GetNext();
 				}
 			}
-		}
 
-		if(this.selectedTextures.length>0){
-			var i;
 			for(i = 0; i<this.selectedTextures.length; i++){
 				var sprite = this.selectedTextures[i];
 
@@ -663,12 +726,21 @@ function B2deEditor(){
 					spriteAABB.lowerBound = new b2Vec2(sprite.x/PTM, sprite.y/PTM);
 					spriteAABB.upperBound = new b2Vec2((sprite.x+sprite.width)/PTM, (sprite.y+sprite.height)/PTM);
 					aabb.Combine(aabb, spriteAABB);
-
-
 				}
 			}
-		}
 
+
+			var lowerBoundPixi = getPIXIPointFromWorldPoint(aabb.lowerBound);
+			var upperBoundPixi = getPIXIPointFromWorldPoint(aabb.upperBound);
+
+			//Showing selection
+			this.drawBox(this.debugGraphics, lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x-lowerBoundPixi.x, upperBoundPixi.y-lowerBoundPixi.y, this.selectionBoxColor);
+		}else{
+
+			//Making selection
+			if(this.mouseDown) this.drawBox(this.debugGraphics, this.startSelectionPoint.x*PTM, this.startSelectionPoint.y*PTM, mousePosWorld.x*PTM-this.startSelectionPoint.x*PTM, mousePosWorld.y*PTM-this.startSelectionPoint.y*PTM, "0x000000");
+		}
+		this.selectedBoundingBox = aabb;
 
 
 		if(this.editorGUI && this.editorGUI.editData){
@@ -721,17 +793,6 @@ function B2deEditor(){
 				this.editorGUI.editData.y = this.selectedTextures[0].y;
 			}
 		}
-
-
-
-
-
-		this.selectedBoundingBox = aabb;
-
-		var lowerBoundPixi = getPIXIPointFromWorldPoint(aabb.lowerBound);
-		var upperBoundPixi = getPIXIPointFromWorldPoint(aabb.upperBound);
-
-		this.drawBox(this.debugGraphics, lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x-lowerBoundPixi.x, upperBoundPixi.y-lowerBoundPixi.y, this.selectionBoxColor);
 
 	}
 
@@ -888,6 +949,15 @@ function B2deEditor(){
        	return bodyObject;
 
 	}
+	this.buildTextureFromObj = function(obj){
+		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(obj.textureName));
+		sprite.pivot.set(sprite.width/2, sprite.height/2);
+		this.textures.addChild(sprite);
+		sprite.x = obj.x;
+		sprite.y = obj.y;
+		sprite.rotation = obj.rotation;
+		sprite.data = obj;
+	}
 	this.buildBodyFromObj = function(obj){
 		var i = 0;
 		var vert;
@@ -914,6 +984,8 @@ function B2deEditor(){
 
         var fixture = body.CreateFixture(fixDef);
         body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
+
+        body.SetAngle(obj.rotation);
 
 		body.myGraphic = this.createPolyShape(fixDef.shape, fixture.GetAABB(), 0xFFF000, 0x0FFF00);
 		body.myGraphic.myBody = body;
@@ -1050,19 +1122,19 @@ function B2deEditor(){
 	}
 	this.setTextureToBody = function(body, texture, positionOffsetLength, positionOffsetAngle, offsetRotation){
 		body.myTexture = texture;
-		body.myGraphic.data.textureID = texture.myID;
-		body.myGraphic.data.texturePositionOffsetLength = positionOffsetLength;
-		body.myGraphic.data.texturePositionOffsetAngle = positionOffsetAngle;
-		body.myGraphic.data.textureAngleOffset = offsetRotation;
+		texture.data.bodyID = body.data.ID;
+		texture.data.texturePositionOffsetLength = positionOffsetLength;
+		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
+		texture.data.textureAngleOffset = offsetRotation;
 		body.myGraphic.visible = false;
 		texture.myBody = body;
 	}
 	this.removeTextureFromBody = function(body){
 		body.myTexture = null;
-		body.myGraphic.data.textureID = null;
-		body.myGraphic.data.texturePositionOffsetLength = null;
-		body.myGraphic.data.texturePositionOffsetAngle = null;
-		body.myGraphic.data.textureAngleOffset = null;
+		texture.data.bodyID = null;
+		texture.data.texturePositionOffsetLength = null;
+		texture.data.texturePositionOffsetAngle = null;
+		texture.data.textureAngleOffset = null;
 		body.myGraphic.visible = true;
 		texture.myBody = null;
 	}
@@ -1098,19 +1170,19 @@ function B2deEditor(){
 
 	this.stringifyWorldJSON = function(){
 
-		worldJSON = '{"objects":[';
+		this.worldJSON = '{"objects":[';
 		var sprite;
 		var spriteData;
 		for(i = 0; i<this.textures.children.length; i++){
-			if(i != 0) worldJSON += ',';
+			if(i != 0) this.worldJSON += ',';
 			sprite = this.textures.getChildAt(i);
 			
 			this.updateObject(sprite, sprite.data);
-			worldJSON += JSON.stringify(sprite.data);
+			this.worldJSON += JSON.stringify(sprite.data);
 		}
-		worldJSON += ']}';
+		this.worldJSON += ']}';
 
-		console.log(worldJSON);
+		console.log(this.worldJSON);
 	}
 
 	this.updateObject = function(sprite, data){
@@ -1151,7 +1223,10 @@ function B2deEditor(){
 				if(obj.type == this.object_BODY){
 					this.buildBodyFromObj(obj);	
 				}else if(obj.type == this.object_TEXTURE){
-					//create sprite
+					if(obj.bodyID != undefined){
+						obj.bodyID += startChildIndex;
+					}
+					this.buildTextureFromObj(obj);
 				}else if(obj.type == this.object_JOINT){
 					console.log("obj A old "+obj.bodyA_ID);
 					obj.bodyA_ID += startChildIndex;
@@ -1186,13 +1261,14 @@ function B2deEditor(){
 	}
 
 	this.resetWorld = function(){
-		this.editorMode = this.editorMode_DEFAULT;
+		this.editorMode = this.editorMode_SELECTION;
 
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.selectedBoundingBox = null;
 		this.startSelectionPoint = null;
 		this.oldMousePosWorld = null;
+		this.mouseDown = false;
 
 
 		//Destroy all bodies
@@ -1213,6 +1289,12 @@ function B2deEditor(){
 			i--;
 		}
 
+		//reset gui
+		if(this.editorGUI != undefined){
+			this.customGUIContainer.removeChild(this.editorGUI.domElement);
+			this.editorGUI = null;
+		}
+
 		this.parseAndBuildJSON(this.worldJSON);
 
 	}
@@ -1226,6 +1308,7 @@ function B2deEditor(){
 
 				sprite.data.bodyA_ID = sprite.bodies[0].myGraphic.parent.getChildIndex(sprite.bodies[0].myGraphic);
 				if(sprite.bodies.length>1) sprite.data.bodyB_ID = sprite.bodies[1].myGraphic.parent.getChildIndex(sprite.bodies[1].myGraphic);
+				this.updateObject(sprite, sprite.data);
 
 				this.attachJoint(sprite.data);
 				spritesToDestroy.push(sprite);
@@ -1236,7 +1319,27 @@ function B2deEditor(){
 			sprite.parent.removeChild(sprite);
 			sprite.destroy({children:true, texture:false, baseTexture:false});
 		}
-
 	}
 
+	//CONSTS
+	this.editorMode_DRAWVERTICES = "drawVertices";
+	this.editorMode_SELECTION = "selection";
+
+	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
+
+	this.object_BODY = 0;
+	this.object_TEXTURE = 1;
+	this.object_JOINT = 2;
+
+	this.jointObject_TYPE_PIN = 0;
+	this.jointObject_TYPE_SLIDE = 1;
+
+	this.mouseTransformType = 0;
+	this.mouseTransformType_Movement = 0;
+	this.mouseTransformType_Rotation = 1;
+
+
+	this.DEG2RAD =  0.017453292519943296;
+	this.RAD2DEG = 57.29577951308232;
 }
+

@@ -100,14 +100,15 @@ function setup(){
 
    //Editor Draw
    newEditorGraphics = new PIXI.Graphics();
-   myEditor.init(newEditorGraphics, newTextureGraphics);
    myEditor.assetLists.characters = ["1head.png", "2head.png", "3head.png"];
+   myEditor.init(newEditorGraphics, newTextureGraphics);
 
    stage.addChild(newEditorGraphics)
 
 
 
    canvas.addEventListener("keydown", onKeyDown, true);
+   canvas.addEventListener("keyup", onKeyUp, true);
    canvas.addEventListener("mousedown", onMouseDown, true);
    canvas.addEventListener("touchstart", onMouseDown, true);
    canvas.addEventListener("mouseup", onMouseUp, true);
@@ -210,30 +211,10 @@ function getBodyCB(fixture) {
 };
 
 function onKeyDown(e) {
-   console.log(e);
-   // a = 65
-   if (e.keyCode == 80 ) {//p
-      if(!run) myEditor.prepareWorld();
-      run = !run;
-   }else if (e.keyCode == 88 ) {//x
-      myEditor.startVerticesDrawing();
-   }else if (e.keyCode == 81 ) {//q
-      myEditor.anchorTextureToBody();
-   }else if (e.keyCode == 74 ) {//j
-      myEditor.attachJointPlaceHolder();
-   }else if (e.keyCode == 83 ) {//s
-      myEditor.stringifyWorldJSON();
-   }else if (e.keyCode == 82){
-      myEditor.resetWorld();
-      run = false;
-   }else if(e.ctrlKey && e.keyCode == 67){
-      myEditor.copySelection();
-   }else if(e.ctrlKey && e.keyCode == 86){
-      myEditor.pasteSelection();
-   }
-   else if (e.keyCode == 46){
-      myEditor.deleteSelection();
-   }
+   myEditor.onKeyDown(e);
+}
+function onKeyUp(e){
+   myEditor.onKeyUp(e);
 }
 //update
 
