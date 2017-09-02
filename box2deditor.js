@@ -17,7 +17,7 @@ function B2deEditor(){
 	this.assetGUI;
 	this.assetSelectedTexture ="";
 	this.assetSelectedObject ="";
-	this.worldJSON = '{"objects":[{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true, "enableLimit":false,"upperAngle":0,"lowerAngle":0},{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4},{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5}]}';
+	this.worldJSON = '{"objects":[{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true,"enableLimit":false,"upperAngle":0,"lowerAngle":0},{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4},{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5},{"x":7.459999999999999,"y":5.253333333333333,"rotation":0,"ID":6,"type":0,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":0.14000000000000057,"y":-0.45333333333333314},{"x":0.4733333333333345,"y":-0.3866666666666667},{"x":0.5400000000000009,"y":0.013333333333333641},{"x":0.4733333333333345,"y":0.3466666666666667},{"x":0.07333333333333414,"y":0.5466666666666669},{"x":-0.2599999999999989,"y":0.4800000000000004},{"x":-0.4599999999999991,"y":0.21333333333333382},{"x":-0.4599999999999991,"y":-0.05333333333333279},{"x":-0.39333333333333265,"y":-0.25333333333333297},{"x":-0.12666666666666604,"y":-0.45333333333333314}]},{"x":223.98959350585932,"y":160.00000000000006,"rotation":0,"ID":7,"type":1,"textureName":"1head.png","bodyID":6,"texturePositionOffsetLength":2.4074770398623397,"texturePositionOffsetAngle":-1.4919627495569028,"textureAngleOffset":0}]}';
 	this.copiedJSON = '';
 	this.copyCenterPoint = {x:0, y:0};
 
@@ -268,6 +268,15 @@ function B2deEditor(){
 			cloneObject = JSON.parse(JSON.stringify(body.myGraphic.data))
 			console.log(cloneObject.type+"  "+body.myGraphic.data.type+"  check Clone");
 			copyArray.push({ID:cloneObject.ID, data:cloneObject})
+
+			if(body.myTexture){
+				console.log("FOUND ANCHORED TEXTURE"+body.myTexture.data.bodyID);
+				this.updateObject(body.myTexture, body.myTexture.data);
+				console.log("UPDATE ANCHORED TEXTURE"+body.myTexture.data.bodyID);
+				cloneObject = JSON.parse(JSON.stringify(body.myTexture.data))
+				copyArray.push({ID:cloneObject.ID, data:cloneObject});
+			}
+
 		}
 		var sprite;
 		for(i = 0; i<this.selectedTextures.length; i++){
@@ -285,6 +294,7 @@ function B2deEditor(){
 		var j;
 		for(i = 0; i<copyArray.length; i++){
 			data = copyArray[i].data;
+			console.log("THIS IS i:"+i);
 			console.log(data);
 			if(data.type == this.object_JOINT){
 				//searching object A
@@ -294,6 +304,7 @@ function B2deEditor(){
 					if(copyArray[j].ID == data.bodyA_ID){
 						foundBodyA = true;
 						data.bodyA_ID = j;
+						break;
 					}
 				}
 				var foundBodyB = false;
@@ -303,6 +314,7 @@ function B2deEditor(){
 					if(copyArray[j].ID == data.bodyB_ID){
 						foundBodyB = true;
 						data.bodyB_ID = j;
+						break;
 					}
 				}
 
@@ -313,6 +325,16 @@ function B2deEditor(){
 				if(!foundBodyA || !foundBodyB){
 					copyArray.splice(i, 1);
 					i--;
+				}
+			}else if(data.type == this.object_TEXTURE){
+				console.log("WTF!?");
+				for(j = 0; j<copyArray.length; j++){
+					console.log("LOOKING FOR:"+data.bodyID+" but now at:"+copyArray[j].ID);
+					if(copyArray[j].ID == data.bodyID){
+						console.log("FOUND AND FIXED BODYID");
+						data.bodyID = j;
+						break;
+					}
 				}
 			}
 		}
@@ -327,14 +349,17 @@ function B2deEditor(){
 			if(data.type == this.object_BODY){
 				this.copyCenterPoint.x += data.x*PTM;
 				this.copyCenterPoint.y += data.y*PTM;
+
+				console.log("YES! OBJECT DATA");
 			}else{
 				this.copyCenterPoint.x += data.x;
 				this.copyCenterPoint.y += data.y;
+					console.log("YES! SPRITE DATA");
 			}
 
 		}
 		this.copyCenterPoint.x = this.copyCenterPoint.x / copyArray.length;
-		this.copyCenterPoint.y = this.copyCenterPoint.y / copyArray.length
+		this.copyCenterPoint.y = this.copyCenterPoint.y / copyArray.length;
 		copyJSON += ']}';
 
 		this.copiedJSON = copyJSON;
@@ -359,7 +384,7 @@ function B2deEditor(){
 
 		for(i = startChildIndex; i<this.textures.children.length; i++){
 			sprite = this.textures.getChildAt(i);
-			if(sprite.myBody != undefined){
+			if(sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE){
 				var pos = sprite.myBody.GetPosition();
 				pos.x -= movX/PTM;
 				pos.y -= movY/PTM;
@@ -396,11 +421,11 @@ function B2deEditor(){
 
 	      if(body.myTexture){
 
-	         var angle = body.GetAngle()-body.myGraphic.data.texturePositionOffsetAngle;
-	         body.myTexture.x = body.GetPosition().x*PTM +body.myGraphic.data.texturePositionOffsetLength * Math.cos(angle);
-	         body.myTexture.y = body.GetPosition().y*PTM +body.myGraphic.data.texturePositionOffsetLength * Math.sin(angle);
+	         var angle = body.GetAngle()-body.myTexture.data.texturePositionOffsetAngle;
+	         body.myTexture.x = body.GetPosition().x*PTM +body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
+	         body.myTexture.y = body.GetPosition().y*PTM +body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
 
-	         body.myTexture.rotation = body.GetAngle()-body.myGraphic.data.textureAngleOffset;
+	         body.myTexture.rotation = body.GetAngle()-body.myTexture.data.textureAngleOffset;
 
 	      }else if(body.myGraphic){
 	         body.myGraphic.x = body.GetPosition().x*PTM;
@@ -523,9 +548,6 @@ function B2deEditor(){
 				this.updateSelection();
 			}
 
-
-
-
 		}else if(this.editorMode == this.editorMode_DRAWVERTICES){
 			if(!this.closeDrawing){
 				if(this.correctDrawVertice && this.activeVertices.length>1){
@@ -538,7 +560,7 @@ function B2deEditor(){
 				var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 				this.buildBodyFromObj(bodyObject);
 				this.activeVertices = [];
-				this.editorMode = this.editorMode_DEFAULT;
+				this.editorMode = this.editorMode_SELECTION;
 			}
 		}
 		this.mouseDown = true;
@@ -957,6 +979,11 @@ function B2deEditor(){
 		sprite.y = obj.y;
 		sprite.rotation = obj.rotation;
 		sprite.data = obj;
+
+		if(sprite.data.bodyID != undefined){
+			var body = this.textures.getChildAt(sprite.data.bodyID).myBody;
+			this.setTextureToBody(body, sprite, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		}
 	}
 	this.buildBodyFromObj = function(obj){
 		var i = 0;
@@ -1005,11 +1032,7 @@ function B2deEditor(){
 
 			if(tarObj.bodyB_ID != undefined){
 				bodies.push(this.textures.getChildAt(tarObj.bodyB_ID).myBody);
-				console.log("WHAAZAAAAA");
 			}
-			console.log(bodies.length +"  LENGTH"+"  "+tarObj.bodyA_ID+"  "+tarObj.bodyB_ID+"  "+tarObj.enableLimit);
-
-
 
 		}else{
 			tarObj = new this.jointObject;
@@ -1034,8 +1057,6 @@ function B2deEditor(){
 		jointGraphics.pivot.set(jointGraphics.width/2, jointGraphics.height/2);
 
 		jointGraphics.bodies = bodies;
-
-		console.log(bodies.length);
 
 		bodies[0].myJoint = jointGraphics;
 		if(bodies.length>1) bodies[1].myJoint = jointGraphics;
@@ -1122,7 +1143,7 @@ function B2deEditor(){
 	}
 	this.setTextureToBody = function(body, texture, positionOffsetLength, positionOffsetAngle, offsetRotation){
 		body.myTexture = texture;
-		texture.data.bodyID = body.data.ID;
+		texture.data.bodyID = body.myGraphic.data.ID;
 		texture.data.texturePositionOffsetLength = positionOffsetLength;
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
@@ -1195,6 +1216,7 @@ function B2deEditor(){
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation;
+			if(data.bodyID != undefined) data.bodyID = sprite.myBody.myGraphic.parent.getChildIndex(sprite.myBody.myGraphic);
 			
 		}else if(data.type == this.object_JOINT){
 
@@ -1228,12 +1250,8 @@ function B2deEditor(){
 					}
 					this.buildTextureFromObj(obj);
 				}else if(obj.type == this.object_JOINT){
-					console.log("obj A old "+obj.bodyA_ID);
 					obj.bodyA_ID += startChildIndex;
-					console.log("obj A new "+obj.bodyA_ID);
-					console.log("obj B old "+obj.bodyB_ID);
 					if(obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
-					console.log("obj B new "+obj.bodyA_ID);
 
 					this.attachJointPlaceHolder(obj);
 				}
