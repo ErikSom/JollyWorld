@@ -17,12 +17,21 @@ function B2deEditor(){
 	this.assetGUI;
 	this.assetSelectedTexture ="";
 	this.assetSelectedObject ="";
-	this.worldJSON = '{"objects":[{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true,"enableLimit":false,"upperAngle":0,"lowerAngle":0},{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4},{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5},{"x":7.459999999999999,"y":5.253333333333333,"rotation":0,"ID":6,"type":0,"colorFill":null,"colorLine":null,"fixed":null,"vertices":[{"x":0.14000000000000057,"y":-0.45333333333333314},{"x":0.4733333333333345,"y":-0.3866666666666667},{"x":0.5400000000000009,"y":0.013333333333333641},{"x":0.4733333333333345,"y":0.3466666666666667},{"x":0.07333333333333414,"y":0.5466666666666669},{"x":-0.2599999999999989,"y":0.4800000000000004},{"x":-0.4599999999999991,"y":0.21333333333333382},{"x":-0.4599999999999991,"y":-0.05333333333333279},{"x":-0.39333333333333265,"y":-0.25333333333333297},{"x":-0.12666666666666604,"y":-0.45333333333333314}]},{"x":223.98959350585932,"y":160.00000000000006,"rotation":0,"ID":7,"type":1,"textureName":"1head.png","bodyID":6,"texturePositionOffsetLength":2.4074770398623397,"texturePositionOffsetAngle":-1.4919627495569028,"textureAngleOffset":0}]}';
+	this.worldJSON = '{"objects":[\
+	{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"", "vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},\
+	{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"","vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},\
+	{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true,"enableLimit":false,"upperAngle":0,"lowerAngle":0, "frequencyHz":0.0, "dampingRatio":0.0},\
+	{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"","vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},\
+	{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4,"frequencyHz":0.0, "dampingRatio":0.0},\
+	{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5, "frequencyHz":0.0, "dampingRatio":0.0},\
+	{"x":7.459999999999999,"y":5.253333333333333,"rotation":0,"ID":6,"type":0,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"","vertices":[{"x":0.14000000000000057,"y":-0.45333333333333314},{"x":0.4733333333333345,"y":-0.3866666666666667},{"x":0.5400000000000009,"y":0.013333333333333641},{"x":0.4733333333333345,"y":0.3466666666666667},{"x":0.07333333333333414,"y":0.5466666666666669},{"x":-0.2599999999999989,"y":0.4800000000000004},\
+	{"x":-0.4599999999999991,"y":0.21333333333333382},{"x":-0.4599999999999991,"y":-0.05333333333333279},{"x":-0.39333333333333265,"y":-0.25333333333333297},{"x":-0.12666666666666604,"y":-0.45333333333333314}]},{"x":223.98959350585932,"y":160.00000000000006,"rotation":0,"ID":7,"type":1,"textureName":"1head.png","bodyID":6,"texturePositionOffsetLength":2.4074770398623397,"texturePositionOffsetAngle":-1.4919627495569028,"textureAngleOffset":0}]}';
 	this.copiedJSON = '';
 	this.copyCenterPoint = {x:0, y:0};
 
-	this.selectionBoxColor = "0x5294AE";
+	this.selectionBoxColor = "#5294AE";
 	this.mouseDown = false;
+	this.shiftDown = false;
 	this.mouseDownOnInfo = false;
 
 
@@ -48,7 +57,6 @@ function B2deEditor(){
 
 		folder = this.assetGUI.addFolder('Textures');
 		var self = this;
-		console.log(self);
 
 		this.spawnTexture = function(){
 		}
@@ -71,28 +79,6 @@ function B2deEditor(){
         canvas.focus();
         this.parseAndBuildJSON(this.worldJSON);
 	}
-	this.clickInsideGUI = function(){
-		/*var i;
-		var sprite;
-		var bounds;
-
-		for(i = 0; i<this.guiContainer.children.length; i++){
-			sprite = this.guiContainer.getChildAt(i);
-			bounds = sprite.getBounds();
-
-			if(!sprite.visible) break;
-
-			if(mousePosWorld.x > bounds.x / PTM &&
-				mousePosWorld.x < (bounds.x+bounds.width) /PTM &&
-				mousePosWorld.y > bounds.y /PTM &&
-				mousePosWorld.y < (bounds.y+bounds.height) / PTM){
-				return true;
-			}
-
-		}*/
-
-		return false;
-	}
 
 	this.updateSelection = function(){
 		//Joints
@@ -108,24 +94,70 @@ function B2deEditor(){
 		if(this.selectedPhysicsBodies.length>0 && this.selectedTextures.length == 0){
 			// only holding physics bodies
 
+			this.editorGUI = new dat.GUI({autoPlace:false, width:200});
+			this.customGUIContainer.appendChild(this.editorGUI.domElement);
+			if(this.selectedPhysicsBodies.length>1) this.editorGUI.addFolder('multiple bodies');
+			else this.editorGUI.addFolder('body');
+
+			this.editorGUI.editData = new this.bodyObject;
+
+			var dataJoint;
+			dataJoint = this.selectedPhysicsBodies[0].myGraphic.data;
+
+			this.editorGUI.editData.x = dataJoint.x*PTM;
+			this.editorGUI.editData.y = dataJoint.y*PTM;
+			this.editorGUI.editData.rotation = dataJoint.rotation;
+			this.editorGUI.editData.colorFill = dataJoint.colorFill;
+			this.editorGUI.editData.colorLine = dataJoint.colorLine;
+			this.editorGUI.editData.fixed = dataJoint.fixed;
+			this.editorGUI.editData.awake = dataJoint.awake;
+			this.editorGUI.editData.density = dataJoint.density;
+
+			var self = this;
+			var controller;
+			controller = this.editorGUI.add(self.editorGUI.editData, "x").onChange(function(value) {this.humanUpdate=true; this.targetValue=value-this.initialValue; this.initialValue = value;});
+			//controller.domElement.style.pointerEvents = "none";
+			console.log(controller);
+
+			this.editorGUI.add(self.editorGUI.editData, "y").onChange(function(value) {this.humanUpdate=true; this.targetValue=value-this.initialValue; this.initialValue = value;});
+			this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
+
+			controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+			controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value;}.bind(controller));
+			controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+			controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value;}.bind(controller));
+
+			this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
+			this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
+			controller = this.editorGUI.add(self.editorGUI.editData, "density", 1, 1000);
+			controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+
+
+
 		}else if(this.selectedTextures.length>0 && this.selectedPhysicsBodies.length == 0){
 			var _selectedTextures = [];
 			var _selectedPinJoints = [];
+			var _selectedSlideJoints = [];
+			var _selectedDistanceJoints = [];
 			var _selectedTextureJoints = [];
 			var _texture;
 			for(i = 0; i<this.selectedTextures.length; i++){
 				_texture = this.selectedTextures[i];
 
-				if(_texture.myBody){
-					_selectedTextures.push(_texture);
-				}else if(_texture.data && _texture.data.jointType == this.jointObject_TYPE_PIN){
-					_selectedPinJoints.push(_texture);
+				if(_texture.data && _texture.data.type == this.object_JOINT){
+					if(_texture.data.jointType == this.jointObject_TYPE_PIN){
+						_selectedPinJoints.push(_texture);
+					}else if(_texture.data.jointType == this.jointObject_TYPE_SLIDE){
+						_selectedSlideJoints.push(_texture);
+					}else if(_texture.data.jointType == this.jointObject_TYPE_DISTANCE){
+						_selectedDistanceJoints.push(_texture);
+					}
 				}else {
 					_selectedTextures.push(_texture);
 				}
 			}
 
-			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedTextureJoints.length > 0 ? 1 : 0);
+			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0)+ (_selectedDistanceJoints.length > 0 ? 1 : 0)  +(_selectedTextureJoints.length > 0 ? 1 : 0);
 
 			if(editingMultipleObjects>1){
 				// editing multipleCrap
@@ -135,53 +167,75 @@ function B2deEditor(){
 				// editing just textures
 
 
-			}else if(_selectedPinJoints.length>0){
+			}else if(_selectedPinJoints.length>0 || _selectedSlideJoints.length>0 || _selectedDistanceJoints.length>0){
 				// editing just pin joints
+
 				this.editorGUI = new dat.GUI({autoPlace:false, width:200});
 				this.customGUIContainer.appendChild(this.editorGUI.domElement);
-				this.editorGUI.addFolder('joint editor');
+				if(this.selectedTextures.length>1) this.editorGUI.addFolder('multiple joints');
+				else this.editorGUI.addFolder('joint');
 
 				this.editorGUI.editData = new this.jointObject;
+				var jointTypes = ["Pin", "Slide", "Distance"];
 
-				this.editorGUI.editData.collideConnected = _selectedPinJoints[0].data.collideConnected;
-				this.editorGUI.editData.x = _selectedPinJoints[0].data.x;
-				this.editorGUI.editData.y = _selectedPinJoints[0].data.y;
-				this.editorGUI.editData.enableMotor = _selectedPinJoints[0].data.enableMotor;
-				this.editorGUI.editData.maxMotorTorque = _selectedPinJoints[0].data.maxMotorTorque;
-				this.editorGUI.editData.motorSpeed = _selectedPinJoints[0].data.motorSpeed;
-				this.editorGUI.editData.enableLimit = _selectedPinJoints[0].data.enableLimit;
-				this.editorGUI.editData.upperAngle = _selectedPinJoints[0].data.upperAngle;
-				this.editorGUI.editData.lowerAngle = _selectedPinJoints[0].data.lowerAngle;
+				var dataJoint;
+				if(_selectedPinJoints.length>0) dataJoint = _selectedPinJoints[0].data;
+				else if(_selectedSlideJoints.length>0) dataJoint = _selectedSlideJoints[0].data;
+				else if(_selectedDistanceJoints.length>0) dataJoint = _selectedDistanceJoints[0].data;
 
-				console.log(_selectedPinJoints[0].data.enableLimit);
+				this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
 
-				var self = this.editorGUI;
-				this.editorGUI.add(self.editData, "collideConnected").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
-				this.editorGUI.add(self.editData, "x").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
-				this.editorGUI.add(self.editData, "y").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
+				this.editorGUI.editData.collideConnected = dataJoint.collideConnected;
+				this.editorGUI.editData.x = dataJoint.x;
+				this.editorGUI.editData.y = dataJoint.y;
+				this.editorGUI.editData.enableMotor = dataJoint.enableMotor;
+				this.editorGUI.editData.maxMotorTorque = dataJoint.maxMotorTorque;
+				this.editorGUI.editData.motorSpeed = dataJoint.motorSpeed;
+				this.editorGUI.editData.enableLimit = dataJoint.enableLimit;
+				this.editorGUI.editData.upperAngle = dataJoint.upperAngle;
+				this.editorGUI.editData.lowerAngle = dataJoint.lowerAngle;
+				this.editorGUI.editData.frequencyHz = dataJoint.frequencyHz;
+				this.editorGUI.editData.dampingRatio = dataJoint.dampingRatio;
+
+				var self = this;
+				this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
+				this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
+				this.editorGUI.add(self.editorGUI.editData, "x").onChange(function(value) {this.humanUpdate=true; this.targetValue=value-this.initialValue; this.initialValue = value;});
+				this.editorGUI.add(self.editorGUI.editData, "y").onChange(function(value) {this.humanUpdate=true; this.targetValue=value-this.initialValue; this.initialValue = value;});
 
 				var folder;
 				var controller;
 
-				folder = this.editorGUI.addFolder('enable motor');
-				folder.add(self.editData, "enableMotor").onChange(function(value) {this.humanUpdate=true; this.targetValue=value;});
-				
-				controller = folder.add(self.editData, "maxMotorTorque", 0, 1000);
-				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+				if(dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE){
 
-				controller = folder.add(self.editData, "motorSpeed", -20, 20);
-				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+					folder = this.editorGUI.addFolder('enable motor');
+					folder.add(self.editorGUI.editData, "enableMotor").onChange(function(value) {this.humanUpdate=true; this.targetValue=value;});
+					
+					controller = folder.add(self.editorGUI.editData, "maxMotorTorque", 0, 1000);
+					controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
 
-				folder = this.editorGUI.addFolder('enable limits');
-				folder.add(self.editData, "enableLimit").onChange(function(value) {this.humanUpdate=true; this.targetValue=value;});
+					controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
+					controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
 
-				controller = folder.add(self.editData, "upperAngle", 0, 180);
-				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value; console.log("hotdamn");}.bind(controller));
+					folder = this.editorGUI.addFolder('enable limits');
+					folder.add(self.editorGUI.editData, "enableLimit").onChange(function(value) {this.humanUpdate=true; this.targetValue=value;});
 
-				controller = folder.add(self.editData, "lowerAngle", -180, 0);
-				controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+					controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
+					controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value;}.bind(controller));
 
-				console.log(this.editorGUI);
+					controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
+					controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+
+				}else if(dataJoint.jointType == this.jointObject_TYPE_DISTANCE){
+					folder = this.editorGUI.addFolder('spring');
+
+					controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
+					controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value;}.bind(controller));
+
+					controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
+					controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+				}
+
 
 			}else if(_selectedTextureJoints.length>0){
 				// editing just texture joints
@@ -215,7 +269,6 @@ function B2deEditor(){
 
 			if(b.myJoint != undefined){
 
-				console.log("I HAVE A JOINT");
 				var j;
 				var alreadySelected = false;
 				for(j = 0; j<this.selectedTextures.length; j++){
@@ -226,6 +279,12 @@ function B2deEditor(){
 				if(!alreadySelected) this.selectedTextures.push(b.myJoint);
 			}
 
+			if(b.myTexture){
+				var sprite = b.myTexture;
+				sprite.parent.removeChild(sprite);
+				sprite.destroy({children:true, texture:false, baseTexture:false});
+			}
+
 
 	        world.DestroyBody(b);
 	    }
@@ -233,11 +292,8 @@ function B2deEditor(){
 	    //Destroy all selected graphics
 
 	    for(i = 0; i<this.selectedTextures.length; i++){
-	    	console.log(i+"  I");
 			var sprite = this.selectedTextures[i];
-			console.log(sprite.data);
 			if(sprite.data && sprite.data.type == this.object_JOINT){
-				console.log("IM A JOINT");
 				if(sprite.bodies[0] != undefined) sprite.bodies[0].myJoint = null;
 				if(sprite.bodies.length>1 && sprite.bodies[1] != undefined) sprite.bodies[1].myJoint = null;
 			}
@@ -266,13 +322,10 @@ function B2deEditor(){
 			body = this.selectedPhysicsBodies[i];
 			this.updateObject(body.myGraphic, body.myGraphic.data);
 			cloneObject = JSON.parse(JSON.stringify(body.myGraphic.data))
-			console.log(cloneObject.type+"  "+body.myGraphic.data.type+"  check Clone");
 			copyArray.push({ID:cloneObject.ID, data:cloneObject})
 
 			if(body.myTexture){
-				console.log("FOUND ANCHORED TEXTURE"+body.myTexture.data.bodyID);
 				this.updateObject(body.myTexture, body.myTexture.data);
-				console.log("UPDATE ANCHORED TEXTURE"+body.myTexture.data.bodyID);
 				cloneObject = JSON.parse(JSON.stringify(body.myTexture.data))
 				copyArray.push({ID:cloneObject.ID, data:cloneObject});
 			}
@@ -294,8 +347,6 @@ function B2deEditor(){
 		var j;
 		for(i = 0; i<copyArray.length; i++){
 			data = copyArray[i].data;
-			console.log("THIS IS i:"+i);
-			console.log(data);
 			if(data.type == this.object_JOINT){
 				//searching object A
 				var foundBodyA = false;
@@ -327,11 +378,8 @@ function B2deEditor(){
 					i--;
 				}
 			}else if(data.type == this.object_TEXTURE){
-				console.log("WTF!?");
 				for(j = 0; j<copyArray.length; j++){
-					console.log("LOOKING FOR:"+data.bodyID+" but now at:"+copyArray[j].ID);
 					if(copyArray[j].ID == data.bodyID){
-						console.log("FOUND AND FIXED BODYID");
 						data.bodyID = j;
 						break;
 					}
@@ -350,11 +398,9 @@ function B2deEditor(){
 				this.copyCenterPoint.x += data.x*PTM;
 				this.copyCenterPoint.y += data.y*PTM;
 
-				console.log("YES! OBJECT DATA");
 			}else{
 				this.copyCenterPoint.x += data.x;
 				this.copyCenterPoint.y += data.y;
-					console.log("YES! SPRITE DATA");
 			}
 
 		}
@@ -395,7 +441,10 @@ function B2deEditor(){
 				sprite.x -= movX;
 				sprite.y -= movY;
 
-				this.selectedTextures.push(sprite);
+				if(!sprite.originalGraphic && sprite.myBody == null){
+
+					this.selectedTextures.push(sprite);
+				}
 			} 
 		}
 
@@ -449,10 +498,13 @@ function B2deEditor(){
 		this.rotation = 0;
 		this.ID = 0;
 		this.type = myEditor.object_BODY;
-		this.colorFill = null;
-		this.colorLine = null;
-		this.fixed = null;
+		this.colorFill = "#999999";
+		this.colorLine = "#000";
+		this.fixed = false;
+		this.awake = true;
 		this.vertices = [{x:0, y:0}, {x:0, y:0}];
+		this.density = 1;
+		this.group = "";
 	}
 	this.textureObject = function(){
 		this.x = null;
@@ -465,6 +517,7 @@ function B2deEditor(){
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
+		this.group = "";
 	}
 	this.jointObject = function(){
 		this.bodyA_ID;
@@ -477,9 +530,12 @@ function B2deEditor(){
 		this.maxMotorTorque = 1.0;
 		this.motorSpeed = 10.0;
 		this.enableLimit = false;
-		this.upperAngle = 0;
-		this.lowerAngle = 0;
+		this.upperAngle = 0.0;
+		this.lowerAngle = 0.0;
+		this.dampingRatio = 0.0;
+		this.frequencyHz = 0.0;
 		this.type = myEditor.object_JOINT;
+		this.group = "";
 	}
 
 	this.startVerticesDrawing = function(){
@@ -499,12 +555,17 @@ function B2deEditor(){
 			aabb.upperBound.Set(mousePosWorld.x, mousePosWorld.y);
 
 
-			var insideGui = this.clickInsideGUI();
+			if(!this.selectedBoundingBox.Contains(aabb) || this.shiftDown){
+				//reset selectionie
+				var oldSelectedPhysicsBodies = [];
+				var oldSelectedTextures = [];
 
-			if(insideGui) this.mouseDownOnInfo = true;
+				if(this.shiftDown){
+					oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
+					oldSelectedTextures = this.selectedTextures;
+				}
 
-			if(!insideGui && !this.selectedBoundingBox.Contains(aabb)){
-				//reset selection
+
 				this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, mousePosWorld);
 				if(this.selectedPhysicsBodies.length>0){
 					var i;
@@ -544,6 +605,21 @@ function B2deEditor(){
 					}
 				}
 
+				if(this.shiftDown){
+					//push old selection
+					var i;
+					for(i = 0; i<oldSelectedPhysicsBodies.length; i++){
+						if(oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]){
+							this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
+						}
+					}
+					for(i = 0; i<oldSelectedTextures.length; i++){
+						if(oldSelectedTextures[i] != this.selectedTextures[0]){
+							this.selectedTextures.push(oldSelectedTextures[i]);
+						}
+					}
+				}
+
 
 				this.updateSelection();
 			}
@@ -573,7 +649,6 @@ function B2deEditor(){
 			if(this.mouseDown && !this.mouseDownOnInfo){
 				if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
 					var move = new b2Vec2(mousePosWorld.x-this.oldMousePosWorld.x, mousePosWorld.y-this.oldMousePosWorld.y);
-					console.log("dafuq "+move.x+"  "+move.y);
 					var i;
 					var body;
 					for(i = 0; i<this.selectedPhysicsBodies.length; i++){
@@ -607,7 +682,7 @@ function B2deEditor(){
 	}
 	this.onMouseUp = function(canvas, evt){
 		if(this.editorMode == this.editorMode_SELECTION){
-			if(!this.clickInsideGUI() && this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0){
+			if(this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0){
 				this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, mousePosWorld);
 				this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, mousePosWorld, true, 0);
 				this.updateSelection();
@@ -643,11 +718,13 @@ function B2deEditor(){
 	   }else if (e.keyCode == 46){
 	      this.deleteSelection();
 	   }else if(e.keyCode == 16){//shift
+	   		this.shiftDown = true;
 	   		this.mouseTransformType = this.mouseTransformType_Rotation;
 	   }
 	}
 	this.onKeyUp = function(e){
 		if(e.keyCode == 16){
+			this.shiftDown = false;
 	   		this.mouseTransformType = this.mouseTransformType_Movement;
 	   }
 	}
@@ -710,47 +787,52 @@ function B2deEditor(){
 	};
 
 
-	this.doSelection = function(){
-		
-		// DRAW outer selection lines
+
+	this.computeSelectionAABB = function(){
 		var aabb = new b2AABB;
 		aabb.lowerBound = new b2Vec2(Number.MAX_VALUE,Number.MAX_VALUE);
 		aabb.upperBound = new b2Vec2(-Number.MAX_VALUE,-Number.MAX_VALUE); 
-		
-		if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
+		var i;
+		var j;
+		var body;
+		var fixture;
+		for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+			body = this.selectedPhysicsBodies[i];
+			fixture = body.GetFixtureList();
+			while(fixture != null){
+				aabb.Combine(aabb, fixture.GetAABB());
+				fixture = fixture.GetNext();
+			}
+		}
 
+		for(i = 0; i<this.selectedTextures.length; i++){
+			var sprite = this.selectedTextures[i];
 
-			var i;
-			var j;
-			var body;
-			var fixture;
-			for(i = 0; i<this.selectedPhysicsBodies.length; i++){
-				body = this.selectedPhysicsBodies[i];
-				fixture = body.GetFixtureList();
+			if(sprite.myBody){
+				fixture = sprite.myBody.GetFixtureList();
 				while(fixture != null){
 					aabb.Combine(aabb, fixture.GetAABB());
 					fixture = fixture.GetNext();
 				}
+			}else{
+				sprite = sprite.getBounds();
+				var spriteAABB = new b2AABB;
+				spriteAABB.lowerBound = new b2Vec2(sprite.x/PTM, sprite.y/PTM);
+				spriteAABB.upperBound = new b2Vec2((sprite.x+sprite.width)/PTM, (sprite.y+sprite.height)/PTM);
+				aabb.Combine(aabb, spriteAABB);
 			}
+		}
+		return aabb;
+	}
 
-			for(i = 0; i<this.selectedTextures.length; i++){
-				var sprite = this.selectedTextures[i];
+	this.doSelection = function(){
+		
+		// DRAW outer selection lines
 
-				if(sprite.myBody){
-					fixture = sprite.myBody.GetFixtureList();
-					while(fixture != null){
-						aabb.Combine(aabb, fixture.GetAABB());
-						fixture = fixture.GetNext();
-					}
-				}else{
-					sprite = sprite.getBounds();
-					var spriteAABB = new b2AABB;
-					spriteAABB.lowerBound = new b2Vec2(sprite.x/PTM, sprite.y/PTM);
-					spriteAABB.upperBound = new b2Vec2((sprite.x+sprite.width)/PTM, (sprite.y+sprite.height)/PTM);
-					aabb.Combine(aabb, spriteAABB);
-				}
-			}
+		var aabb;
+		if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
 
+			aabb = this.computeSelectionAABB();
 
 			var lowerBoundPixi = getPIXIPointFromWorldPoint(aabb.lowerBound);
 			var upperBoundPixi = getPIXIPointFromWorldPoint(aabb.upperBound);
@@ -758,62 +840,171 @@ function B2deEditor(){
 			//Showing selection
 			this.drawBox(this.debugGraphics, lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x-lowerBoundPixi.x, upperBoundPixi.y-lowerBoundPixi.y, this.selectionBoxColor);
 		}else{
+			aabb = new b2AABB;
 
 			//Making selection
-			if(this.mouseDown) this.drawBox(this.debugGraphics, this.startSelectionPoint.x*PTM, this.startSelectionPoint.y*PTM, mousePosWorld.x*PTM-this.startSelectionPoint.x*PTM, mousePosWorld.y*PTM-this.startSelectionPoint.y*PTM, "0x000000");
+			if(this.mouseDown) this.drawBox(this.debugGraphics, this.startSelectionPoint.x*PTM, this.startSelectionPoint.y*PTM, mousePosWorld.x*PTM-this.startSelectionPoint.x*PTM, mousePosWorld.y*PTM-this.startSelectionPoint.y*PTM, "#000000");
 		}
 		this.selectedBoundingBox = aabb;
 
 
 		if(this.editorGUI && this.editorGUI.editData){
-			if(this.editorGUI.editData instanceof this.jointObject){
-				var controller;
-				var controllers = [];
-				controllers = controllers.concat(this.editorGUI.__controllers);
+			//if(this.editorGUI.editData instanceof this.jointObject || this.editorGUI.editData instanceof this.bodyObject){
+			var controller;
+			var controllers = [];
+			var body;
+			var sprite;
+			var j;
+			controllers = controllers.concat(this.editorGUI.__controllers);
 
-				for(var propt in this.editorGUI.__folders){
-					controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
-				}
+			for(var propt in this.editorGUI.__folders){
+				controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
+			}
 
 
-				for (var i in controllers) {
-				    controller = controllers[i]
+			for (var i in controllers) {
+			    controller = controllers[i]
 
-				    if(controller.humanUpdate){
-				    	controller.humanUpdate = false;
-				    	if(controller.property == "x"){
-				    		this.selectedTextures[0].x = controller.targetValue; 
-				    	}else if(controller.property == "y"){
-				    		console.log(controller);
-				    		this.selectedTextures[0].y = controller.targetValue; 
-				    	}else if(controller.property == "collideConnected"){
-				    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
-				    	}else if(controller.property == "enableMotor"){
-				    		console.log("fixing it on data");
-				    		this.selectedTextures[0].data.enableMotor = controller.targetValue; 
-				    	}else if(controller.property == "maxMotorTorque"){
-				    		this.selectedTextures[0].data.maxMotorTorque = controller.targetValue; 
-				    	}else if(controller.property == "motorSpeed"){
-				    		this.selectedTextures[0].data.motorSpeed = controller.targetValue; 
-				    	}else if(controller.property == "enableLimit"){
-				    		console.log("fixing it on data");
-				    		this.selectedTextures[0].data.enableLimit = controller.targetValue; 
-				    	}else if(controller.property == "upperAngle"){
-				    		console.log(controller);
-				    		this.selectedTextures[0].data.upperAngle = controller.targetValue; 
-				    	}else if(controller.property == "lowerAngle"){
-				    		this.selectedTextures[0].data.lowerAngle = controller.targetValue; 
+			    if(controller.humanUpdate){
+			    	controller.humanUpdate = false;
+			    	if(controller.property == "typeName"){
+			    		//joint
+			    		if(controller.targetValue == "Pin"){
+			    			this.selectedTextures[0].data.jointType = this.jointObject_TYPE_PIN;
+			    		}else if(controller.targetValue == "Slide"){
+			    			this.selectedTextures[0].data.jointType = this.jointObject_TYPE_SLIDE;
+			    		}else if(controller.targetValue == "Distance"){
+			    			this.selectedTextures[0].data.jointType = this.jointObject_TYPE_DISTANCE;
+			    		}
+			    		this.updateSelection();
+			    	}else if(controller.property == "x"){
+			    		//bodies & sprites
+			    		console.log(controller.targetValue);
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+			    			body = this.selectedPhysicsBodies[j];
+							var pos = body.GetPosition();
+			    			pos.x +=  controller.targetValue/PTM;
+			    			body.SetPosition(pos); 
+			    		}
+			    			
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			sprite = this.selectedTextures[j];
+			    			sprite.x += controller.targetValue;
+			    		}
+			    	}else if(controller.property == "y"){
+			    		//bodies & sprites
+					    for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+			    			body = this.selectedPhysicsBodies[j];
+							var pos = body.GetPosition();
+			    			pos.y +=  controller.targetValue/PTM;
+			    			body.SetPosition(pos); 
+			    		}
+			    			
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			sprite = this.selectedTextures[j];
+			    			sprite.y += controller.targetValue;
+			    		}
+			    	}else if(controller.property == "collideConnected"){
+			    		//joint
+			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
+			    	}else if(controller.property == "enableMotor"){
+			    		//joint
+			    		this.selectedTextures[0].data.enableMotor = controller.targetValue; 
+			    	}else if(controller.property == "maxMotorTorque"){
+			    		//joint
+			    		this.selectedTextures[0].data.maxMotorTorque = controller.targetValue; 
+			    	}else if(controller.property == "motorSpeed"){
+			    		//joint
+			    		this.selectedTextures[0].data.motorSpeed = controller.targetValue; 
+			    	}else if(controller.property == "enableLimit"){
+			    		//joint
+			    		this.selectedTextures[0].data.enableLimit = controller.targetValue; 
+			    	}else if(controller.property == "upperAngle"){
+			    		//joint
+			    		this.selectedTextures[0].data.upperAngle = controller.targetValue; 
+			    	}else if(controller.property == "lowerAngle"){
+			    		//joint
+			    		this.selectedTextures[0].data.lowerAngle = controller.targetValue; 
+			    	}else if(controller.property == "frequencyHz"){
+			    		//joint
+			    		this.selectedTextures[0].data.frequencyHz = controller.targetValue;
+			    	}else if(controller.property == "dampingRatio"){
+			    		//joint
+			    		this.selectedTextures[0].data.dampingRatio = controller.targetValue;
+			    	}else if(controller.property == "rotation"){
+			    		//body & sprite
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+			    			body = this.selectedPhysicsBodies[j];
+			    			body.SetAngle(controller.targetValue*this.DEG2RAD); 
+			    		}
+			    			
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			sprite = this.selectedTextures[j];
+			    			sprite.rotation = controller.targetValue;
+			    		}
+			    	}else if(controller.property == "colorFill"){
+			    		//body
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+				    		body = this.selectedPhysicsBodies[j];
+				    		body.myGraphic.data.colorFill = controller.targetValue.toString();
+				    		var fixture = body.GetFixtureList();
+				    		this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.myGraphic.data.colorFill, body.myGraphic.data.colorLine);
 				    	}
-				    }
-				    if(controller.__input !== document.activeElement &&
-				    	(controller.domElement.children[0].children && controller.domElement.children[0].children[0] !== document.activeElement)){
-				   		controller.updateDisplay();
-					}
-				}
 
+			    	}else if(controller.property == "colorLine"){
+			    		//body
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+					    	body = this.selectedPhysicsBodies[j];
+				    		body.myGraphic.data.colorLine = controller.targetValue.toString();
+				    		var fixture = body.GetFixtureList();
+				    		this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.myGraphic.data.colorFill, body.myGraphic.data.colorLine);
+			    		}
+			    	}else if(controller.property == "fixed"){
+			    		//body
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+			    			body = this.selectedPhysicsBodies[j];
+				    		body.myGraphic.data.fixed = controller.targetValue;
+				    		if(body.myGraphic.data.fixed) body.SetType(b2Body.b2_staticBody);
+				    		else body.SetType(b2Body.b2_dynamicBody);
+				    		//awake fix
+				    		body.SetAwake(body.myGraphic.data.awake);
+			    		}
+
+			    	}else if(controller.property == "awake"){
+			    		//body
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+				    		body = this.selectedPhysicsBodies[j];
+				    		body.myGraphic.data.awake = controller.targetValue;
+				    		body.SetAwake(false);
+				    	}
+			    	}else if(controller.property == "density"){
+			    		//body
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+					    	body = this.selectedPhysicsBodies[j];
+				    		body.myGraphic.data.density = controller.targetValue;
+				    		var fixture = body.GetFixtureList();
+				    		fixture.SetDensity(controller.targetValue);
+				    		body.ResetMassData();
+				    	}
+			    	}
+
+			    }
+			    if(controller.__input !== document.activeElement &&
+			    	(controller.domElement.children[0].children && controller.domElement.children[0].children[0] !== document.activeElement)){
+			   		controller.updateDisplay();
+				}
+			}
+			if(this.editorGUI.editData.type == this.object_BODY){
+				var pos = this.selectedPhysicsBodies[0].GetPosition();
+				this.editorGUI.editData.x = pos.x*PTM;
+				this.editorGUI.editData.y = pos.y*PTM;
+				this.editorGUI.editData.rotation = this.selectedPhysicsBodies[0].GetAngle()*this.RAD2DEG;
+			}else{
 				this.editorGUI.editData.x = this.selectedTextures[0].x;
 				this.editorGUI.editData.y = this.selectedTextures[0].y;
+				this.editorGUI.editData.rotation = this.selectedTextures[0].rotation;
 			}
+			//}
 		}
 
 	}
@@ -823,8 +1014,8 @@ function B2deEditor(){
 	this.closeDrawing = false;
 	this.activeVertices = [];
 
-	this.verticesLineColor = 0x00FF00;
-	this.verticesFillColor = 0x0000FF;
+	this.verticesLineColor = "#00FF00";
+	this.verticesFillColor = "#0000FF";
 	this.verticesBulletRadius = 5;
 
 	this.doVerticesDrawing = function(){
@@ -997,7 +1188,7 @@ function B2deEditor(){
 
 
 		var fixDef = new b2FixtureDef;
-	    fixDef.density = 1.0;
+	    fixDef.density = obj.density;
 	    fixDef.friction = 0.5;
 	    fixDef.restitution = 0.2;
 
@@ -1005,6 +1196,8 @@ function B2deEditor(){
 		var bd = new b2BodyDef();
 		bd.type = b2Body.b2_dynamicBody;
     	var body = world.CreateBody(bd);
+
+    	body.SetAwake(obj.awake);
 
         fixDef.shape = new b2PolygonShape;
         fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
@@ -1014,7 +1207,11 @@ function B2deEditor(){
 
         body.SetAngle(obj.rotation);
 
-		body.myGraphic = this.createPolyShape(fixDef.shape, fixture.GetAABB(), 0xFFF000, 0x0FFF00);
+        var graphic = new PIXI.Graphics();
+        this.textures.addChild(graphic);
+		body.myGraphic = graphic
+		this.updatePolyShape(body.myGraphic, fixDef.shape, obj.colorFill, obj.colorLine);
+
 		body.myGraphic.myBody = body;
 		body.myGraphic.data = obj;
 	}
@@ -1095,7 +1292,7 @@ function B2deEditor(){
 		}
 
 
-		if(jointPlaceHolder.jointType == this.jointObject_TYPE_PIN){
+		if(jointPlaceHolder.jointType == this.jointObject_TYPE_PIN || jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE){
 			var revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
 			
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x/PTM, jointPlaceHolder.y/PTM));
@@ -1109,9 +1306,14 @@ function B2deEditor(){
 			revoluteJointDef.enableMotor = jointPlaceHolder.enableMotor;
 
 
-			console.log("COLLIDE CONNECTED?"+jointPlaceHolder.collideConnected)
-
 			var joint = world.CreateJoint(revoluteJointDef);
+		}else if(jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE){
+			var distanceJointDef = new Box2D.Dynamics.Joints.b2DistanceJointDef;
+			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x/PTM, jointPlaceHolder.y/PTM), new b2Vec2(jointPlaceHolder.x/PTM, jointPlaceHolder.y/PTM));
+			distanceJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
+      		distanceJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
+
+      		var joint = world.CreateJoint(distanceJointDef);
 		}
 	}
 
@@ -1160,13 +1362,22 @@ function B2deEditor(){
 		texture.myBody = null;
 	}
 
-	this.createPolyShape = function (poly, colorLine, colorFill){
+	this.updatePolyShape = function (graphic, poly, colorFill, colorLine){
 
-		var graphic = new PIXI.Graphics();
+		console.log(colorFill);
+
+		var color;
+		color = colorFill.slice(1);
+		var colorFillHex = parseInt(color, 16); 
+		color = colorLine.slice(1);
+		var colorLineHex = parseInt(color, 16);
+
+
+		graphic.clear();
 		graphic.boundsPadding = 0;
 
-		graphic.lineStyle(1, colorLine, 1);
-		graphic.beginFill(colorFill, 1);
+		graphic.lineStyle(1, colorLineHex, 1);
+		graphic.beginFill(colorFillHex, 1);
 
 		var count = poly.GetVertexCount();
 
@@ -1186,7 +1397,8 @@ function B2deEditor(){
 		graphic.endFill();
 		graphic.originalGraphic = true;
 
-		return this.textures.addChild(graphic);
+		return graphic;
+
 	}
 
 	this.stringifyWorldJSON = function(){
@@ -1231,7 +1443,6 @@ function B2deEditor(){
 	this.parseAndBuildJSON = function(json){
 
 		var startChildIndex = this.textures.children.length;
-		console.log(startChildIndex +" startChildIndex");
 
 		if(json != null && json != ""){
 			var worldObjects = JSON.parse(json);
@@ -1351,6 +1562,7 @@ function B2deEditor(){
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
+	this.jointObject_TYPE_DISTANCE = 2;
 
 	this.mouseTransformType = 0;
 	this.mouseTransformType_Movement = 0;

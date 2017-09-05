@@ -3926,6 +3926,51 @@ Box2D.postDefs = [];
       out.z = det * (a11 * (a22 * bZ - a32 * bY) + a21 * (a32 * bX - a12 * bZ) + a31 * (a12 * bY - a22 * bX));
       return out;
    }
+   b2Mat33.prototype.getInverse22 = function(_M) {
+    var a = this.col1.x, b = this.col2.x, c = this.col1.y, d = this.col2.y;
+    var det = a * d - b * c;
+    if (det != 0) {
+      det = 1 / det;
+    }
+
+    _M.col1.x = det * d;
+    _M.col2.x = -det * b;
+    _M.col1.z = 0;
+    _M.col1.y = -det * c;
+    _M.col2.y = det * a;
+    _M.col2.z = 0;
+    _M.col3.x = 0;
+    _M.col3.y = 0;
+    _M.col3.z = 0;
+  }
+    // / Returns the zero matrix if singular.
+  b2Mat33.prototype.getSymInverse33 = function(_M) {
+    var bx = this.col2.y * this.col3.z - this.col2.z * this.col3.y;
+    var by = this.col2.z * this.col3.x - this.col2.x * this.col3.z;
+    var bz = this.col2.x * this.col3.y - this.col2.y * this.col3.x;
+    var det = this.col1.x * bx + this.col1.y * by + this.col1.z * bz;
+    if (det != 0) {
+      det = 1 / det;
+    }
+
+    var a11 = this.col1.x, a12 = this.col2.x, a13 = this.col3.x;
+    var a22 = this.col2.y, a23 = this.col3.y;
+    var a33 = this.col3.z;
+
+    _M.col1.x = det * (a22 * a33 - a23 * a23);
+    _M.col1.y = det * (a13 * a23 - a12 * a33);
+    _M.col1.z = det * (a12 * a23 - a13 * a22);
+
+    _M.col2.x = _M.col1.y;
+    _M.col2.y = det * (a11 * a33 - a13 * a13);
+    _M.col2.z = det * (a13 * a12 - a11 * a23);
+
+    _M.col3.x = _M.col1.z;
+    _M.col3.y = _M.col2.z;
+    _M.col3.z = det * (a11 * a22 - a12 * a12);
+  }
+
+
    b2Math.b2Math = function () {};
    b2Math.IsValid = function (x) {
       if (x === undefined) x = 0;
@@ -10508,6 +10553,8 @@ Box2D.postDefs = [];
       this.localAnchorA = this.bodyA.GetLocalPoint(anchor);
       this.localAnchorB = this.bodyB.GetLocalPoint(anchor);
       this.referenceAngle = this.bodyB.GetAngle() - this.bodyA.GetAngle();
+      this.frequencyHz = 0.0;
+      this.dampingRatio = 0.0;
    }
    Box2D.inherit(b2WeldJoint, Box2D.Dynamics.Joints.b2Joint);
    b2WeldJoint.prototype.__super = Box2D.Dynamics.Joints.b2Joint.prototype;
@@ -10517,6 +10564,14 @@ Box2D.postDefs = [];
       this.m_localAnchorB = new b2Vec2();
       this.m_impulse = new b2Vec3();
       this.m_mass = new b2Mat33();
+
+      /// The mass-spring-damper frequency in Hertz. Rotation only.
+      /// Disable softness with a value of 0.
+      this.m_frequencyHz = 0.0;
+      /// The damping ratio. 0 = no damping, 1 = critical damping.
+      this.m_dampingRatio = 0.0;
+      this.m_gamma = 0.0;
+      this.m_bias = 0.0;
    };
    b2WeldJoint.prototype.GetAnchorA = function () {
       return this.m_bodyA.GetWorldPoint(this.m_localAnchorA);
@@ -10539,8 +10594,16 @@ Box2D.postDefs = [];
       this.m_referenceAngle = def.referenceAngle;
       this.m_impulse.SetZero();
       this.m_mass = new b2Mat33();
+      this.m_frequencyHz = def.frequencyHz;
+      this.m_dampingRatio = def.dampingRatio;
+
+
+
    }
    b2WeldJoint.prototype.InitVelocityConstraints = function (step) {
+
+      console.log('INITIALIZE:'+this.m_frequencyHz+"  "+this.m_dampingRatio);
+
       var tMat;
       var tX = 0;
       var bA = this.m_bodyA;
@@ -10548,6 +10611,8 @@ Box2D.postDefs = [];
       tMat = bA.m_xf.R;
       var rAX = this.m_localAnchorA.x - bA.m_sweep.localCenter.x;
       var rAY = this.m_localAnchorA.y - bA.m_sweep.localCenter.y;
+
+
       tX = (tMat.col1.x * rAX + tMat.col2.x * rAY);
       rAY = (tMat.col1.y * rAX + tMat.col2.y * rAY);
       rAX = tX;
@@ -10561,15 +10626,62 @@ Box2D.postDefs = [];
       var mB = bB.m_invMass;
       var iA = bA.m_invI;
       var iB = bB.m_invI;
-      this.m_mass.col1.x = mA + mB + rAY * rAY * iA + rBY * rBY * iB;
-      this.m_mass.col2.x = (-rAY * rAX * iA) - rBY * rBX * iB;
-      this.m_mass.col3.x = (-rAY * iA) - rBY * iB;
-      this.m_mass.col1.y = this.m_mass.col2.x;
-      this.m_mass.col2.y = mA + mB + rAX * rAX * iA + rBX * rBX * iB;
-      this.m_mass.col3.y = rAX * iA + rBX * iB;
-      this.m_mass.col1.z = this.m_mass.col3.x;
-      this.m_mass.col2.z = this.m_mass.col3.y;
-      this.m_mass.col3.z = iA + iB;
+
+
+
+      var K = new b2Mat33();
+      K.col1.x = mA + mB + rAY * rAY * iA + rBY * rBY * iB;
+      K.col2.x = (-rAY * rAX * iA) - rBY * rBX * iB;
+      K.col3.x = (-rAY * iA) - rBY * iB;
+      K.col1.y = K.col2.x;
+      K.col2.y = mA + mB + rAX * rAX * iA + rBX * rBX * iB;
+      K.col3.y = rAX * iA + rBX * iB;
+      K.col1.z = K.col3.x;
+      K.col2.z = K.col3.y;
+      K.col3.z = iA + iB;
+
+      if (this.m_frequencyHz > 0.0)
+      {
+         K.getInverse22(this.m_mass);
+
+         var invM = iA + iB;
+         var m = invM > 0.0 ? 1.0 / invM : 0.0;
+
+         var C = bB.m_sweep.a - bA.m_sweep.a - this.m_referenceAngle;
+
+         // Frequency
+         var omega = 2.0 * Math.PI * this.m_frequencyHz;
+
+         // Damping coefficient
+         var d = 2.0 * m * this.m_dampingRatio * omega;
+
+         // Spring stiffness
+         var k = m * omega * omega;
+
+         // magic formulas
+         var h = step.dtRatio;
+         this.m_gamma = h * (d + h * k);
+         this.m_gamma = this.m_gamma != 0.0 ? 1.0 / this.m_gamma : 0.0;
+         this.m_bias = C * h * k * this.m_gamma;
+
+         invM += this.m_gamma;
+         this.m_mass.col3.z = invM != 0.0 ? 1.0 / invM : 0.0;
+
+      }
+      else if (K.col3.z == 0)
+      {
+         K.getInverse22(this.m_mass);
+         this.m_gamma = 0.0;
+         this.m_bias = 0.0;
+      }
+      else
+      {
+         K.getSymInverse33(this.m_mass);
+         this.m_gamma = 0.0;
+         this.m_bias = 0.0;
+
+      }
+
       if (step.warmStarting) {
          this.m_impulse.x *= step.dtRatio;
          this.m_impulse.y *= step.dtRatio;
@@ -10584,8 +10696,11 @@ Box2D.postDefs = [];
       else {
          this.m_impulse.SetZero();
       }
+
+
    }
    b2WeldJoint.prototype.SolveVelocityConstraints = function (step) {
+
       var tMat;
       var tX = 0;
       var bA = this.m_bodyA;
@@ -10598,6 +10713,7 @@ Box2D.postDefs = [];
       var mB = bB.m_invMass;
       var iA = bA.m_invI;
       var iB = bB.m_invI;
+
       tMat = bA.m_xf.R;
       var rAX = this.m_localAnchorA.x - bA.m_sweep.localCenter.x;
       var rAY = this.m_localAnchorA.y - bA.m_sweep.localCenter.y;
@@ -10614,16 +10730,49 @@ Box2D.postDefs = [];
       var Cdot1Y = vB.y + wB * rBX - vA.y - wA * rAX;
       var Cdot2 = wB - wA;
       var impulse = new b2Vec3();
-      this.m_mass.Solve33(impulse, (-Cdot1X), (-Cdot1Y), (-Cdot2));
-      this.m_impulse.Add(impulse);
-      vA.x -= mA * impulse.x;
-      vA.y -= mA * impulse.y;
-      wA -= iA * (rAX * impulse.y - rAY * impulse.x + impulse.z);
-      vB.x += mB * impulse.x;
-      vB.y += mB * impulse.y;
-      wB += iB * (rBX * impulse.y - rBY * impulse.x + impulse.z);
+
+      if (this.m_frequencyHz > 0.0)
+      {
+
+      var impulse2 = -this.m_mass.col3.z * (Cdot2 + this.m_bias + this.m_gamma * this.m_impulse.z);
+      this.m_impulse.z += impulse2;
+
+      wA -= iA * impulse2;
+      wB += iB * impulse2;
+
+      var impulse1 = new b2Vec2(-(this.m_mass.col1.x * Cdot1X + this.m_mass.col2.x * Cdot1Y), -(this.m_mass.col1.y * Cdot1X + this.m_mass.col2.y * Cdot1Y));
+     
+
+      // b2Vec2 b2Mul22( A,  v)
+      // return b2Vec2(A.ex.x * v.x + A.ey.x * v.y, A.ex.y * v.x + A.ey.y * v.y);
+
+      this.m_impulse.x += impulse1.x;
+      this.m_impulse.y += impulse1.y;
+
+      var P = impulse1;
+
+      vA.x -= mA * P.x;
+      vA.y -= mA * P.y;
+      wA -= iA * (rAX * P.y - rAY * P.x);
+
+      vB.x += mB * P.x;
+      vB.y += mB * P.y;
+      wB += iB * (rBX * P.y - rBY * P.x);
+
+
+      }else{
+         this.m_mass.Solve33(impulse, (-Cdot1X), (-Cdot1Y), (-Cdot2));
+         this.m_impulse.Add(impulse);
+         vA.x -= mA * impulse.x;
+         vA.y -= mA * impulse.y;
+         wA -= iA * (rAX * impulse.y - rAY * impulse.x + impulse.z);
+         vB.x += mB * impulse.x;
+         vB.y += mB * impulse.y;
+         wB += iB * (rBX * impulse.y - rBY * impulse.x + impulse.z);
+      }
       bA.m_angularVelocity = wA;
       bB.m_angularVelocity = wB;
+
    }
    b2WeldJoint.prototype.SolvePositionConstraints = function (baumgarte) {
       if (baumgarte === undefined) baumgarte = 0;
@@ -10631,6 +10780,10 @@ Box2D.postDefs = [];
       var tX = 0;
       var bA = this.m_bodyA;
       var bB = this.m_bodyB;
+
+      console.log("#33");
+      console.log(JSON.stringify(bA.m_sweep));
+
       tMat = bA.m_xf.R;
       var rAX = this.m_localAnchorA.x - bA.m_sweep.localCenter.x;
       var rAY = this.m_localAnchorA.y - bA.m_sweep.localCenter.y;
@@ -10649,6 +10802,8 @@ Box2D.postDefs = [];
       var iB = bB.m_invI;
       var C1X = bB.m_sweep.c.x + rBX - bA.m_sweep.c.x - rAX;
       var C1Y = bB.m_sweep.c.y + rBY - bA.m_sweep.c.y - rAY;
+
+
       var C2 = bB.m_sweep.a - bA.m_sweep.a - this.m_referenceAngle;
       var k_allowedStretch = 10.0 * b2Settings.b2_linearSlop;
       var positionError = Math.sqrt(C1X * C1X + C1Y * C1Y);
@@ -10657,25 +10812,50 @@ Box2D.postDefs = [];
          iA *= 1.0;
          iB *= 1.0;
       }
-      this.m_mass.col1.x = mA + mB + rAY * rAY * iA + rBY * rBY * iB;
-      this.m_mass.col2.x = (-rAY * rAX * iA) - rBY * rBX * iB;
-      this.m_mass.col3.x = (-rAY * iA) - rBY * iB;
-      this.m_mass.col1.y = this.m_mass.col2.x;
-      this.m_mass.col2.y = mA + mB + rAX * rAX * iA + rBX * rBX * iB;
-      this.m_mass.col3.y = rAX * iA + rBX * iB;
-      this.m_mass.col1.z = this.m_mass.col3.x;
-      this.m_mass.col2.z = this.m_mass.col3.y;
-      this.m_mass.col3.z = iA + iB;
-      var impulse = new b2Vec3();
-      this.m_mass.Solve33(impulse, (-C1X), (-C1Y), (-C2));
-      bA.m_sweep.c.x -= mA * impulse.x;
-      bA.m_sweep.c.y -= mA * impulse.y;
-      bA.m_sweep.a -= iA * (rAX * impulse.y - rAY * impulse.x + impulse.z);
-      bB.m_sweep.c.x += mB * impulse.x;
-      bB.m_sweep.c.y += mB * impulse.y;
-      bB.m_sweep.a += iB * (rBX * impulse.y - rBY * impulse.x + impulse.z);
+
+      var K = new b2Mat33();
+
+      K.col1.x = mA + mB + rAY * rAY * iA + rBY * rBY * iB;
+      K.col2.x = (-rAY * rAX * iA) - rBY * rBX * iB;
+      K.col3.x = (-rAY * iA) - rBY * iB;
+      K.col1.y = K.col2.x;
+      K.col2.y = mA + mB + rAX * rAX * iA + rBX * rBX * iB;
+      K.col3.y = rAX * iA + rBX * iB;
+      K.col1.z = K.col3.x;
+      K.col2.z = K.col3.y;
+
+
+      if (this.m_frequencyHz > 0.0) {
+
+         angularError = 0.0;
+
+         var P = K.Solve22(new b2Vec2(), -C1X, -C1Y);
+
+
+         bA.m_sweep.c.x -= mA * P.x;
+         bA.m_sweep.c.y -= mA * P.y;
+         bA.m_sweep.a -= iA * (rAX * P.y - rAY * P.x);
+         bB.m_sweep.c.x += mB * P.x;
+         bB.m_sweep.c.y += mB * P.y;
+         bB.m_sweep.a += iB * (rBX * P.y - rBY * P.x);
+
+
+      } else {
+
+         var impulse = new b2Vec3();
+         this.m_mass.Solve33(impulse, (-C1X), (-C1Y), (-C2));
+         bA.m_sweep.c.x -= mA * impulse.x;
+         bA.m_sweep.c.y -= mA * impulse.y;
+         bA.m_sweep.a -= iA * (rAX * impulse.y - rAY * impulse.x + impulse.z);
+         bB.m_sweep.c.x += mB * impulse.x;
+         bB.m_sweep.c.y += mB * impulse.y;
+         bB.m_sweep.a += iB * (rBX * impulse.y - rBY * impulse.x + impulse.z);
+      }
       bA.SynchronizeTransform();
       bB.SynchronizeTransform();
+
+      console.log(JSON.stringify(bA.m_sweep));
+
       return positionError <= b2Settings.b2_linearSlop && angularError <= b2Settings.b2_angularSlop;
    }
    Box2D.inherit(b2WeldJointDef, Box2D.Dynamics.Joints.b2JointDef);

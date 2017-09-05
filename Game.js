@@ -131,7 +131,7 @@ function getPIXIPointFromWorldPoint(worldPoint){
 function onMouseDown(e) {
    isMouseDown = true;
 
-   if(!mouseJoint) {
+   if(!mouseJoint && run) {
       var body = getBodyAtMouse();
       if(body) {
          var md = new b2MouseJointDef();
