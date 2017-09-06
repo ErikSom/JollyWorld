@@ -16,15 +16,17 @@ function B2deEditor(){
 	this.assetLists = {};
 	this.assetGUI;
 	this.assetSelectedTexture ="";
+	this.assetSelectedGroup ="";
 	this.assetSelectedObject ="";
+
 	this.worldJSON = '{"objects":[\
-	{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"","refName":"", "vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},\
-	{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},\
+	{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false,"collision":0, "awake":true, "density":1, "group":"","refName":"", "vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},\
+	{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false,"collision":0, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},\
 	{"type":2,"jointType":0,"bodyA_ID":1,"bodyB_ID":0,"x":405,"y":134,"ID":2,"collideConnected":false,"motorSpeed":2,"maxMotorTorque":10,"enableMotor":true,"enableLimit":false,"upperAngle":0,"lowerAngle":0, "frequencyHz":0.0, "dampingRatio":0.0, "group":"","refName":""},\
-	{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},\
+	{"x":12.541666666666666,"y":11.691666666666666,"rotation":0,"ID":3,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false,"collision":0, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":6.3583333333333325,"y":-1.1583333333333332},{"x":6.691666666666668,"y":0.9416666666666664},{"x":-6.675,"y":1.0083333333333329},{"x":-6.374999999999999,"y":-0.7916666666666661}]},\
 	{"jointType":0,"x":222,"y":358,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":4,"frequencyHz":0.0, "dampingRatio":0.0, "group":"","refName":""},\
 	{"jointType":0,"x":537,"y":354,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"type":2,"bodyA_ID":3,"ID":5, "frequencyHz":0.0, "dampingRatio":0.0, "group":"","refName":""},\
-	{"x":7.459999999999999,"y":5.253333333333333,"rotation":0,"ID":6,"type":0,"colorFill":"#000000","colorLine":"#000000","fixed":false, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":0.14000000000000057,"y":-0.45333333333333314},{"x":0.4733333333333345,"y":-0.3866666666666667},{"x":0.5400000000000009,"y":0.013333333333333641},{"x":0.4733333333333345,"y":0.3466666666666667},{"x":0.07333333333333414,"y":0.5466666666666669},{"x":-0.2599999999999989,"y":0.4800000000000004},\
+	{"x":7.459999999999999,"y":5.253333333333333,"rotation":0,"ID":6,"type":0,"colorFill":"#000000","colorLine":"#000000","fixed":false,"collision":0, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":0.14000000000000057,"y":-0.45333333333333314},{"x":0.4733333333333345,"y":-0.3866666666666667},{"x":0.5400000000000009,"y":0.013333333333333641},{"x":0.4733333333333345,"y":0.3466666666666667},{"x":0.07333333333333414,"y":0.5466666666666669},{"x":-0.2599999999999989,"y":0.4800000000000004},\
 	{"x":-0.4599999999999991,"y":0.21333333333333382},{"x":-0.4599999999999991,"y":-0.05333333333333279},{"x":-0.39333333333333265,"y":-0.25333333333333297},{"x":-0.12666666666666604,"y":-0.45333333333333314}]},{"x":223.98959350585932,"y":160.00000000000006,"rotation":0,"ID":7,"type":1,"textureName":"1head.png","bodyID":6,"texturePositionOffsetLength":2.4074770398623397,"texturePositionOffsetAngle":-1.4919627495569028,"textureAngleOffset":0, "group":"","refName":""}]}';
 	this.copiedJSON = '';
 	this.copyCenterPoint = {x:0, y:0};
@@ -32,6 +34,7 @@ function B2deEditor(){
 	this.selectionBoxColor = "#5294AE";
 	this.mouseDown = false;
 	this.shiftDown = false;
+	this.spaceDown = false;
 	this.editing = true;
 
 	this.editorObjectLookup = {}
@@ -53,33 +56,50 @@ function B2deEditor(){
 
 	this.initGui = function(){
 
-		this.assetGUI = new dat.GUI({autoPlace:false, width:200});
-		this.customGUIContainer.appendChild(this.assetGUI.domElement);
-		this.assetGUI.addFolder('Asset Selection');
-
-		folder = this.assetGUI.addFolder('Textures');
-		var self = this;
-
-		this.spawnTexture = function(){
-		}
-
-		folder.add(self, "assetSelectedTexture", this.assetLists.characters).onChange(function(value){}).name("Select");
-		var but = folder.add(self, "spawnTexture").name("Spawn -->");
-		this.spawnTexture = function (){ 
-			if(self.assetSelectedTexture!= undefined && this.assetSelectedTexture != ""){
-				var data = new self.textureObject;
-				var rect = this.domElement.getBoundingClientRect();
-				data.x = rect.right+50;
-				data.y = rect.top+20; 
-				data.textureName = self.assetSelectedTexture;
-
-				self.buildTextureFromObj(data);
-
-			}
-		}.bind(but);
+		this.initGuiAssetSelection();
 		
         canvas.focus();
         this.parseAndBuildJSON(this.worldJSON);
+	}
+	this.initGuiAssetSelection = function(){
+
+		if(this.assetGUI != undefined){
+			this.customGUIContainer.removeChild(this.assetGUI.domElement);
+			this.assetGUI = null;
+		}
+		if(this.assetLists.__keys == undefined) this.assetLists.__keys = Object.keys(this.assetLists);
+
+		if(this.assetLists.__keys.length>0){
+
+			this.assetGUI = new dat.GUI({autoPlace:false, width:300});
+			this.customGUIContainer.appendChild(this.assetGUI.domElement);
+			this.assetGUI.addFolder('Asset Selection');
+
+			if(this.assetSelectedGroup =="") this.assetSelectedGroup = this.assetLists.__keys[0];
+			this.assetSelectedTexture = this.assetLists[this.assetSelectedGroup][0];
+
+
+			folder = this.assetGUI.addFolder('Textures');
+			var self = this;
+			folder.add(self, "assetSelectedGroup", this.assetLists.__keys).onChange(function(value){self.initGuiAssetSelection();});
+			folder.add(self, "assetSelectedTexture", this.assetLists[this.assetSelectedGroup]).onChange(function(value){}).name("Select");
+			this.spawnTexture = function(){};
+			var but = folder.add(self, "spawnTexture").name("Spawn -->");
+			this.spawnTexture = function (){ 
+				if(self.assetSelectedTexture!= undefined && this.assetSelectedTexture != ""){
+					var data = new self.textureObject;
+					var rect = this.domElement.getBoundingClientRect();
+					data.x = rect.right+50;
+					data.y = rect.top+20; 
+					data.textureName = self.assetSelectedTexture;
+
+					self.buildTextureFromObj(data);
+
+				}
+			}.bind(but);
+			folder.open();
+		}
+
 	}
 
 	this.updateSelection = function(){
@@ -119,6 +139,7 @@ function B2deEditor(){
 				this.editorGUI.editData.group = "-";
 			}
 			this.editorGUI.editData.refName = dataJoint.refName;
+			this.editorGUI.editData.collision = dataJoint.collision;
 
 			var self = this;
 			var controller;
@@ -141,6 +162,8 @@ function B2deEditor(){
 			this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
 			this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function(value) {this.humanUpdate=true; this.targetValue=value});
 			controller = this.editorGUI.add(self.editorGUI.editData, "density", 1, 1000);
+			controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
+			controller = this.editorGUI.add(self.editorGUI.editData, "collision", 0, 5).step(1);
 			controller.onChange(function(value) {this.humanUpdate=true; this.targetValue=value}.bind(controller));
 
 
@@ -293,7 +316,10 @@ function B2deEditor(){
 
 			return;
 		}
-
+		if(this.assetGUI != undefined){
+			this.customGUIContainer.removeChild(this.assetGUI.domElement);
+			this.assetGUI = undefined;
+		}
 	}
 
 	this.isSelectionPropertyTheSame = function(property){
@@ -574,6 +600,35 @@ function B2deEditor(){
 		this.density = 1;
 		this.group = "";
 		this.refName = "";
+		this.collision = 0;
+		/*0) collides with everything
+		- nothing
+
+		1) collides with mostly everything but characters
+		- mask bit set to CHARACTER_MASKBIT
+
+		2) collides with nothing
+		- setAsTrigger
+
+		3) collides with everything except other sahepes with collision set to this value.
+		- catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
+
+		4) collides only with fixed shapes
+		 - set mask to CHARACTER_MASKBIT, CUSTOM_MASKBIT, NORMAL_MASKBIT;
+
+		5) collides only with characters
+		- set mask to CUSTOM_MASKBIT, FIXED_MASKBIT, NORMAL_MASKBIT
+
+		all bits:
+		CHARACTER_MASKBIT;
+		CUSTOM_MASKBIT;
+		FIXED_MASKBIT;
+		NORMAL_MASKBIT;
+
+		if either fixture has a groupIndex of zero, use the category/mask rules as above
+		if both groupIndex values are non-zero but different, use the category/mask rules as above
+		if both groupIndex values are the same and positive, collide
+		if both groupIndex values are the same and negative, don't collide*/
 	}
 	this.textureObject = function(){
 		this.x = null;
@@ -631,79 +686,81 @@ function B2deEditor(){
 		if(this.editorMode == this.editorMode_SELECTION){
 
 			this.startSelectionPoint = new b2Vec2(mousePosWorld.x, mousePosWorld.y);
+			if(!this.spaceDown){
 
-			var aabb = new b2AABB;
-			aabb.lowerBound.Set(mousePosWorld.x, mousePosWorld.y);
-			aabb.upperBound.Set(mousePosWorld.x, mousePosWorld.y);
-
-
-			if(!this.selectedBoundingBox.Contains(aabb) || this.shiftDown){
-				//reset selectionie
-				var oldSelectedPhysicsBodies = [];
-				var oldSelectedTextures = [];
-
-				if(this.shiftDown){
-					oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
-					oldSelectedTextures = this.selectedTextures;
-				}
+				var aabb = new b2AABB;
+				aabb.lowerBound.Set(mousePosWorld.x, mousePosWorld.y);
+				aabb.upperBound.Set(mousePosWorld.x, mousePosWorld.y);
 
 
-				this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, mousePosWorld);
-				if(this.selectedPhysicsBodies.length>0){
-					var i;
-					var body;
-					var fixture;
-					var pointInsideBody = false;
-					for(i = 0; i<this.selectedPhysicsBodies.length; i++){
-						body = this.selectedPhysicsBodies[i];
-						fixture = body.GetFixtureList();
-						
-						while(fixture != null){
-							if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePosWorld)) {
-				        		pointInsideBody = true;
-			  				}
+				if(!this.selectedBoundingBox.Contains(aabb) || this.shiftDown){
+					//reset selectionie
+					var oldSelectedPhysicsBodies = [];
+					var oldSelectedTextures = [];
 
-							fixture = fixture.GetNext();
+					if(this.shiftDown){
+						oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
+						oldSelectedTextures = this.selectedTextures;
+					}
+
+
+					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, mousePosWorld);
+					if(this.selectedPhysicsBodies.length>0){
+						var i;
+						var body;
+						var fixture;
+						var pointInsideBody = false;
+						for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+							body = this.selectedPhysicsBodies[i];
+							fixture = body.GetFixtureList();
+							
+							while(fixture != null){
+								if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePosWorld)) {
+					        		pointInsideBody = true;
+				  				}
+
+								fixture = fixture.GetNext();
+							}
+
+							if(pointInsideBody){
+								this.selectedPhysicsBodies = [body];
+								break;
+							}
+
 						}
-
-						if(pointInsideBody){
-							this.selectedPhysicsBodies = [body];
-							break;
-						}
+						if(!pointInsideBody) this.selectedPhysicsBodies = [];
 
 					}
-					if(!pointInsideBody) this.selectedPhysicsBodies = [];
-
-				}
-				this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, mousePosWorld, true, 1);
+					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, mousePosWorld, true, 1);
 
 
-				if(this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length > 0){
-					//limit selection to highest indexed child
-					if(this.selectedPhysicsBodies[0].myGraphic.parent.getChildIndex(this.selectedPhysicsBodies[0].myGraphic) > this.selectedTextures[0].parent.getChildIndex(this.selectedTextures[0])){
-						this.selectedTextures = [];
-					}else{
-						this.selectedPhysicsBodies = [];
-					}
-				}
-
-				if(this.shiftDown){
-					//push old selection
-					var i;
-					for(i = 0; i<oldSelectedPhysicsBodies.length; i++){
-						if(oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]){
-							this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
+					if(this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length > 0){
+						//limit selection to highest indexed child
+						if(this.selectedPhysicsBodies[0].myGraphic.parent.getChildIndex(this.selectedPhysicsBodies[0].myGraphic) > this.selectedTextures[0].parent.getChildIndex(this.selectedTextures[0])){
+							this.selectedTextures = [];
+						}else{
+							this.selectedPhysicsBodies = [];
 						}
 					}
-					for(i = 0; i<oldSelectedTextures.length; i++){
-						if(oldSelectedTextures[i] != this.selectedTextures[0]){
-							this.selectedTextures.push(oldSelectedTextures[i]);
+
+					if(this.shiftDown){
+						//push old selection
+						var i;
+						for(i = 0; i<oldSelectedPhysicsBodies.length; i++){
+							if(oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]){
+								this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
+							}
+						}
+						for(i = 0; i<oldSelectedTextures.length; i++){
+							if(oldSelectedTextures[i] != this.selectedTextures[0]){
+								this.selectedTextures.push(oldSelectedTextures[i]);
+							}
 						}
 					}
+
+
+					this.updateSelection();
 				}
-
-
-				this.updateSelection();
 			}
 
 		}else if(this.editorMode == this.editorMode_DRAWVERTICES){
@@ -729,29 +786,36 @@ function B2deEditor(){
 
 		if(this.editorMode == this.editorMode_SELECTION){
 			if(this.mouseDown){
-				if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
-					var move = new b2Vec2(mousePosWorld.x-this.oldMousePosWorld.x, mousePosWorld.y-this.oldMousePosWorld.y);
-					var i;
-					var body;
-					for(i = 0; i<this.selectedPhysicsBodies.length; i++){
-						body = this.selectedPhysicsBodies[i];
+				var move = new b2Vec2(mousePosWorld.x-this.oldMousePosWorld.x, mousePosWorld.y-this.oldMousePosWorld.y);
+				if(this.spaceDown){
+					stage.x += move.x*PTM;
+					stage.y += move.y*PTM;
+					mousePosWorld.x -= move.x;
+					mousePosWorld.y -= move.y;
+				}else{
+					if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
+						var i;
+						var body;
+						for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+							body = this.selectedPhysicsBodies[i];
 
-						if(this.mouseTransformType == this.mouseTransformType_Movement){
-							var oldPosition = body.GetPosition();
-							body.SetPosition(new b2Vec2(oldPosition.x+move.x, oldPosition.y+move.y));
-						}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
-							var oldAngle = body.GetAngle();
-							body.SetAngle(oldAngle+move.x/10);
+							if(this.mouseTransformType == this.mouseTransformType_Movement){
+								var oldPosition = body.GetPosition();
+								body.SetPosition(new b2Vec2(oldPosition.x+move.x, oldPosition.y+move.y));
+							}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
+								var oldAngle = body.GetAngle();
+								body.SetAngle(oldAngle+move.x/10);
+							}
 						}
-					}
-					var sprite;
-					for(i = 0; i<this.selectedTextures.length; i++){
-						sprite = this.selectedTextures[i];
-						if(this.mouseTransformType == this.mouseTransformType_Movement){
-							sprite.x = sprite.x+move.x*PTM;
-							sprite.y = sprite.y+move.y*PTM;
-						}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
-							sprite.rotation += move.x/10;
+						var sprite;
+						for(i = 0; i<this.selectedTextures.length; i++){
+							sprite = this.selectedTextures[i];
+							if(this.mouseTransformType == this.mouseTransformType_Movement){
+								sprite.x = sprite.x+move.x*PTM;
+								sprite.y = sprite.y+move.y*PTM;
+							}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
+								sprite.rotation += move.x/10;
+							}
 						}
 					}
 				}
@@ -801,12 +865,16 @@ function B2deEditor(){
 	   }else if(e.keyCode == 16){//shift
 	   		this.shiftDown = true;
 	   		this.mouseTransformType = this.mouseTransformType_Rotation;
+	   }else if(e.keyCode == 32){//space
+	   		this.spaceDown = true;
 	   }
 	}
 	this.onKeyUp = function(e){
-		if(e.keyCode == 16){
+		if(e.keyCode == 16){//shift
 			this.shiftDown = false;
 	   		this.mouseTransformType = this.mouseTransformType_Movement;
+	   }else if(e.keyCode == 32){//space
+	   		this.spaceDown = false;
 	   }
 	}
 
@@ -898,8 +966,8 @@ function B2deEditor(){
 			}else{
 				sprite = sprite.getBounds();
 				var spriteAABB = new b2AABB;
-				spriteAABB.lowerBound = new b2Vec2(sprite.x/PTM, sprite.y/PTM);
-				spriteAABB.upperBound = new b2Vec2((sprite.x+sprite.width)/PTM, (sprite.y+sprite.height)/PTM);
+				spriteAABB.lowerBound = new b2Vec2((sprite.x-stage.x)/PTM, (sprite.y-stage.y)/PTM);
+				spriteAABB.upperBound = new b2Vec2((sprite.x+sprite.width-stage.x)/PTM, (sprite.y+sprite.height-stage.y)/PTM);
 				aabb.Combine(aabb, spriteAABB);
 			}
 		}
@@ -924,7 +992,7 @@ function B2deEditor(){
 			aabb = new b2AABB;
 
 			//Making selection
-			if(this.mouseDown) this.drawBox(this.debugGraphics, this.startSelectionPoint.x*PTM, this.startSelectionPoint.y*PTM, mousePosWorld.x*PTM-this.startSelectionPoint.x*PTM, mousePosWorld.y*PTM-this.startSelectionPoint.y*PTM, "#000000");
+			if(this.mouseDown && !this.spaceDown) this.drawBox(this.debugGraphics, this.startSelectionPoint.x*PTM, this.startSelectionPoint.y*PTM, mousePosWorld.x*PTM-this.startSelectionPoint.x*PTM, mousePosWorld.y*PTM-this.startSelectionPoint.y*PTM, "#000000");
 		}
 		this.selectedBoundingBox = aabb;
 
@@ -1087,6 +1155,14 @@ function B2deEditor(){
 				    		var fixture = body.GetFixtureList();
 				    		fixture.SetDensity(controller.targetValue);
 				    		body.ResetMassData();
+				    	}
+			    	}else if(controller.property == "collision"){
+			    		//body
+			    		console.log("ohyeay");
+			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
+					    	body = this.selectedPhysicsBodies[j];
+				    		body.myGraphic.data.collision = controller.targetValue;
+				    		this.setBodyCollision(body, controller.targetValue);
 				    	}
 			    	}
 
@@ -1304,7 +1380,10 @@ function B2deEditor(){
 
 
 		var bd = new b2BodyDef();
-		bd.type = b2Body.b2_dynamicBody;
+
+		if(obj.fixed) bd.type = b2Body.b2_staticBody;
+		else bd.type = b2Body.b2_dynamicBody;
+
     	var body = world.CreateBody(bd);
 
     	body.SetAwake(obj.awake);
@@ -1326,6 +1405,9 @@ function B2deEditor(){
 		body.myGraphic.data = obj;
 
 
+		this.setBodyCollision(body, obj.collision);
+
+
 		if(obj.group != ""){
 			if(this.editorObjectLookup[obj.group] == undefined){
 				this.editorObjectLookup[obj.group] = new this.lookupObject;
@@ -1334,6 +1416,63 @@ function B2deEditor(){
 		}
 
 
+	}
+	this.setBodyCollision = function(body, collision){
+		// DO COLLISION
+		/*0) collides with everything
+		- nothing
+
+		1) collides with mostly everything but characters
+		- mask bit set to CHARACTER_MASKBIT
+
+		2) collides with nothing
+		- setAsTrigger
+
+		3) collides with everything except other sahepes with collision set to this value.
+		- catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
+
+		4) collides only with other sahepes with collision set to this value.
+		- catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
+
+		5) collides only with fixed shapes
+		 - set mask to CHARACTER_MASKBIT, CUSTOM_MASKBIT, NORMAL_MASKBIT;
+
+		6) collides only with characters
+		- set mask to CUSTOM_MASKBIT, FIXED_MASKBIT, NORMAL_MASKBIT
+
+		all bits:
+		CHARACTER_MASKBIT;
+		CUSTOM_MASKBIT;
+		FIXED_MASKBIT;
+		NORMAL_MASKBIT;
+
+		if either fixture has a groupIndex of zero, use the category/mask rules as above
+		if both groupIndex values are non-zero but different, use the category/mask rules as above
+		if both groupIndex values are the same and positive, collide
+		if both groupIndex values are the same and negative, don't collide*/
+
+
+		var fixture = body.GetFixtureList();
+		var filterData = fixture.GetFilterData();
+
+		if(fixture.GetType() == b2Body.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+		else filterData.categoryBits = this.MASKBIT_NORMAL;
+		
+		if(collision == 1){
+			filterData.maskBits = this.MASKBIT_CHARACTER;
+		}else if(collision == 2){
+			fixture.SetSensor(true);
+		}else if(collision == 3){
+			filterData.categoryBits = this.MASKBIT_CUSTOM;
+			filterData.maskBits = this.MASKBIT_CUSTOM;
+		}else if(collision == 4){
+			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_CUSTOM;
+		}else if(collision == 5){
+			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CUSTOM;
+		}
+
+		fixture.SetFilterData(filterData);
+		//
 	}
 
  
@@ -1755,5 +1894,11 @@ function B2deEditor(){
 
 	this.DEG2RAD =  0.017453292519943296;
 	this.RAD2DEG = 57.29577951308232;
+
+	this.MASKBIT_NORMAL = 0x0001;
+	this.MASKBIT_FIXED = 0x0002;
+	this.MASKBIT_CHARACTER = 0x0003;
+	this.MASKBIT_CUSTOM = 0x0004;
+	
 }
 

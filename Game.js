@@ -62,7 +62,8 @@ function init() {
 
 
    loader
-   .add("assets/images/bodyparts.json");
+   .add("assets/images/bodyparts.json")
+   .add("assets/images/vehicles.json");
    
    myEditor = new B2deEditor();
    myEditor.load(loader);
@@ -79,7 +80,7 @@ function setup(){
          
    //BG
    var BG = new PIXI.Graphics();
-   myEditor.drawBox(BG, -5, -5, canvas.width*2, canvas.height*2, "0x000000", 1, 1, "0xFFFFFF");
+   myEditor.drawBox(BG, -15000, -15000, 30000, 30000, "0x000000", 1, 1, "0xFFFFFF");
    stage.addChild(BG);
 
 
@@ -101,6 +102,7 @@ function setup(){
    //Editor Draw
    newEditorGraphics = new PIXI.Graphics();
    myEditor.assetLists.characters = ["1head.png", "2head.png", "3head.png"];
+   myEditor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
    myEditor.init(newEditorGraphics, newTextureGraphics);
 
    stage.addChild(newEditorGraphics)
@@ -125,7 +127,7 @@ function getWorldPointFromPixelPoint(pixelPoint) {
     return new b2Vec2((pixelPoint.x)/PTM,(pixelPoint.y)/PTM);
 }
 function getPIXIPointFromWorldPoint(worldPoint){
-    return new b2Vec2(worldPoint.x *PTM - stage.position.x, worldPoint.y*PTM);
+    return new b2Vec2(worldPoint.x *PTM, worldPoint.y*PTM);
 }
 //mouse   
 function onMouseDown(e) {
@@ -179,8 +181,8 @@ function onMouseMove(e) {
 
    var rect = canvas.getBoundingClientRect();
 
-   mousePosPixel.x = e.clientX - rect.left;
-   mousePosPixel.y = e.clientY - rect.top;
+   mousePosPixel.x = e.clientX - rect.left - stage.x;
+   mousePosPixel.y = e.clientY - rect.top - stage.y;
 
    mousePosWorld = getWorldPointFromPixelPoint(mousePosPixel);
   
