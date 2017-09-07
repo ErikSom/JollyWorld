@@ -97,7 +97,6 @@ function setup(){
 //mouse   
 function onMouseDown(e) {
    isMouseDown = true;
-   console.log("yes"+run);
    if(!mouseJoint && run) {
       var body = getBodyAtMouse();
       if(body) {
@@ -115,8 +114,6 @@ function onMouseDown(e) {
 
    onMouseMove(e);
    editor.onMouseDown(e);
-   e.preventDefault();
-
 };
 
 
@@ -124,19 +121,15 @@ function onMouseDown(e) {
 function onMouseUp(e) {
    isMouseDown = false;
    editor.onMouseUp(e);
-   e.preventDefault();
 
 };
 
 function onMouseMove(e) {
   
    editor.onMouseMove(e);
-   e.preventDefault();
-
 };
 
 function getBodyAtMouse() {
-   console.log(editor.mousePosWorld);
    var aabb = new b2AABB();
    aabb.lowerBound.Set(editor.mousePosWorld.x - 0.001, editor.mousePosWorld.y - 0.001);
    aabb.upperBound.Set(editor.mousePosWorld.x + 0.001, editor.mousePosWorld.y + 0.001);
@@ -159,6 +152,20 @@ function getBodyCB(fixture) {
 };
 
 function onKeyDown(e) {
+   if (e.keyCode == 82){//r
+      run = false;
+      editor.resetEditor();
+
+   }else if (e.keyCode == 80 ) {//p
+      if(editor.editing){
+         editor.stringifyWorldJSON();
+         editor.runWorld();
+      }
+
+      run = !run;
+     
+   }
+
    editor.onKeyDown(e);
 }
 function onKeyUp(e){

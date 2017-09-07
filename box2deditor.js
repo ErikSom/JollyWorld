@@ -116,8 +116,8 @@ function B2deEditor(){
 				if(self.assetSelectedTexture!= undefined && this.assetSelectedTexture != ""){
 					var data = new self.textureObject;
 					var rect = this.domElement.getBoundingClientRect();
-					data.x = rect.right+50 - this.container.x;
-					data.y = rect.top+20 - this.container.y; 
+					data.x = (rect.right+50) / self.container.scale.x -  self.container.x/self.container.scale.x;
+					data.y = (rect.top+20) /self.container.scale.y - self.container.y/self.container.scale.x; 
 					data.textureName = self.assetSelectedTexture;
 
 					self.buildTextureFromObj(data);
@@ -573,7 +573,6 @@ function B2deEditor(){
 
 
 	this.doEditor = function(){
-
 		this.debugGraphics.clear();
 
 		if(this.editorMode == this.editorMode_SELECTION){
@@ -616,9 +615,6 @@ function B2deEditor(){
 
 
 
-	this.resetEditor = function(){
-		this.editorMode = this.editorMode_IDLE;
-	}
 	var self = this;
 	this.bodyObject = function(){
 		this.x = null;
@@ -799,10 +795,13 @@ function B2deEditor(){
 				if(this.mouseDown){
 					var move = new b2Vec2(this.mousePosWorld.x-this.oldMousePosWorld.x, this.mousePosWorld.y-this.oldMousePosWorld.y);
 					if(this.spaceDown){
+						console.log(this.container.scale.x);
+						move.Multiply(this.container.scale.x);
 						this.container.x += move.x*this.PTM;
 						this.container.y += move.y*this.PTM;
-						this.mousePosWorld.x -= move.x;
-						this.mousePosWorld.y -= move.y;
+						this.mousePosWorld.x -= move.x/this.container.scale.x;
+						this.mousePosWorld.y -= move.y/this.container.scale.y;
+
 					}else{
 						if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
 							var i;
@@ -881,14 +880,7 @@ function B2deEditor(){
 		this.mouseDown = false;
 	}
 	this.onKeyDown = function(e){
-		if (e.keyCode == 80 ) {//p
-	      if(this.editing){
-	         this.stringifyWorldJSON();
-	         this.prepareWorld();
-	         this.editing = false;
-	      }
-	      run = !run;
-	   }else if (e.keyCode == 68 ) {//d
+		if (e.keyCode == 68 ) {//d
 	      this.startVerticesDrawing();
 	   }else if (e.keyCode == 81 ) {//q
 	      this.anchorTextureToBody();
@@ -896,11 +888,6 @@ function B2deEditor(){
 	      this.attachJointPlaceHolder();
 	   }else if (e.keyCode == 83 ) {//s
 	      this.stringifyWorldJSON();
-	   }else if (e.keyCode == 82){
-	   	  run = false;
-	      this.editing = true;
-	      this.resetWorld();
-
 	   }else if(e.ctrlKey && e.keyCode == 67){ //c
 	      this.copySelection();
 	   }else if(e.ctrlKey && e.keyCode == 86){// v
@@ -1815,7 +1802,8 @@ function B2deEditor(){
 		if(fillColor != undefined) target.endFill();
 	}
 
-	this.resetWorld = function(){
+	this.resetEditor = function(){
+		this.editing = true;
 		this.editorMode = this.editorMode_SELECTION;
 
 		this.selectedPhysicsBodies = [];
@@ -1853,8 +1841,9 @@ function B2deEditor(){
 		this.parseAndBuildJSON(this.worldJSON);
 
 	}
-	this.prepareWorld = function(){
+	this.runWorld = function(){
 		this.debugGraphics.clear();
+		this.editing = false;
 
 		var spritesToDestroy = [];
 		var sprite;
