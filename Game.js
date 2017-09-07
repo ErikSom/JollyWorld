@@ -1,20 +1,11 @@
 var PTM = 30;
 var timeStep = 1000/60;
 var physicsTimeStep = 1/60;
-var myEditor;
-var Container,
-autoDetectRenderer,
-loader,
-resources,
-TextureCache,
-Texture,
-Sprite,
-stage,
-renderer,
-newDebugGraphic,
-newTextureGraphics,
-newEditorGraphics,
-canvas;
+var editor;
+var stage;
+var newDebugGraphic;
+var canvas;
+var renderer;
 
 var   b2Vec2 = Box2D.Common.Math.b2Vec2
    ,  b2AABB = Box2D.Collision.b2AABB
@@ -31,21 +22,13 @@ var   b2Vec2 = Box2D.Common.Math.b2Vec2
    ;
 var world; 
 
-var mousePosPixel, mousePosWorld;
 var isMouseDown, selectedBody, mouseJoint;
 var run = false;
 
 
 function init() {
 
-   Container = PIXI.Container;
-   autoDetectRenderer = PIXI.autoDetectRenderer;
-   loader = PIXI.loader;
-   resources = PIXI.loader.resources;
-   TextureCache = PIXI.utils.TextureCache;
-   Texture = PIXI.Texture;
-   Sprite = PIXI.Sprite;
-   stage = new Container();
+   stage = new PIXI.Container();
 
    canvas = document.getElementById("canvas");
 
@@ -55,20 +38,18 @@ function init() {
    canvas.width = w; //document.width is obsolete
    canvas.height = h; //document.height is obsolete
 
-
-
    console.log(canvas.width +"  "+canvas.height);
-   renderer = autoDetectRenderer(canvas.width, canvas.height, {view:document.getElementById("canvas")});
+   renderer = PIXI.autoDetectRenderer(canvas.width, canvas.height, {view:document.getElementById("canvas")});
 
 
-   loader
+   PIXI.loader
    .add("assets/images/bodyparts.json")
    .add("assets/images/vehicles.json");
    
-   myEditor = new B2deEditor();
-   myEditor.load(loader);
+   editor = new B2deEditor();
+   editor.load(PIXI.loader);
 
-   loader.load(setup);
+   PIXI.loader.load(setup);
 };
 
 function setup(){
@@ -80,32 +61,26 @@ function setup(){
          
    //BG
    var BG = new PIXI.Graphics();
-   myEditor.drawBox(BG, -15000, -15000, 30000, 30000, "0x000000", 1, 1, "0xFFFFFF");
+   editor.drawBox(BG, -15000, -15000, 30000, 30000, "0x000000", 1, 1, "0xFFFFFF");
    stage.addChild(BG);
 
+   //container
+   var myContainer = new PIXI.Graphics();
+   stage.addChild(myContainer);
 
    //Debug Draw
    newDebugGraphics = new PIXI.Graphics();
    myDebugDraw = getPIXIDebugDraw(newDebugGraphics, PTM);            
    myDebugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-   stage.addChild(newDebugGraphics);
-
+   myContainer.addChild(newDebugGraphics);
    world.SetDebugDraw(myDebugDraw);
 
    window.setInterval(update, timeStep);
 
-   //Texture Draw
-   newTextureGraphics = new PIXI.Graphics();
-   stage.addChild(newTextureGraphics);
 
-
-   //Editor Draw
-   newEditorGraphics = new PIXI.Graphics();
-   myEditor.assetLists.characters = ["1head.png", "2head.png", "3head.png"];
-   myEditor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
-   myEditor.init(newEditorGraphics, newTextureGraphics);
-
-   stage.addChild(newEditorGraphics)
+   editor.assetLists.characters = ["1head.png", "2head.png", "3head.png"];
+   editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
+   editor.init(myContainer, world, PTM);
 
 
 
@@ -118,17 +93,9 @@ function setup(){
    canvas.addEventListener("mousemove", onMouseMove, true);
    canvas.addEventListener("touchmove", onMouseMove, true);
 
-   mousePosPixel = new b2Vec2(0, 0);
-   mousePosWorld = new b2Vec2(0, 0);
-
 }
 
-function getWorldPointFromPixelPoint(pixelPoint) {
-    return new b2Vec2((pixelPoint.x)/PTM,(pixelPoint.y)/PTM);
-}
-function getPIXIPointFromWorldPoint(worldPoint){
-    return new b2Vec2(worldPoint.x *PTM, worldPoint.y*PTM);
-}
+
 //mouse   
 function onMouseDown(e) {
    isMouseDown = true;
@@ -139,7 +106,7 @@ function onMouseDown(e) {
          var md = new b2MouseJointDef();
          md.bodyA = world.GetGroundBody();
          md.bodyB = body;
-         md.target.Set(mousePosWorld.x, mousePosWorld.y);
+         md.target.Set(editor.mousePosWorld.x, editor.mousePosWorld.y);
          md.collideConnected = true;
          md.maxForce = 300.0 * body.GetMass();
          mouseJoint = world.CreateJoint(md);
@@ -149,7 +116,7 @@ function onMouseDown(e) {
    }
 
    onMouseMove(e);
-   if(!run)myEditor.onMouseDown(canvas, e);
+   if(!run)editor.onMouseDown(e);
 
 };
 
@@ -157,43 +124,20 @@ function onMouseDown(e) {
 
 function onMouseUp(e) {
    isMouseDown = false;
-   if(!run)myEditor.onMouseUp(canvas, e);
+   if(!run)editor.onMouseUp(e);
 
 };
 
 function onMouseMove(e) {
-   var clientX, clientY;
-   if(e.clientX)
-   {
-      clientX = e.clientX;
-      clientY = e.clientY;
-   }
-   else if(e.changedTouches && e.changedTouches.length > 0)
-   {
-      var touch = e.changedTouches[e.changedTouches.length - 1];
-      clientX = touch.clientX;
-      clientY = touch.clientY;
-   }
-   else
-   {
-      return;
-   }
-
-   var rect = canvas.getBoundingClientRect();
-
-   mousePosPixel.x = e.clientX - rect.left - stage.x;
-   mousePosPixel.y = e.clientY - rect.top - stage.y;
-
-   mousePosWorld = getWorldPointFromPixelPoint(mousePosPixel);
   
-   if(!run)myEditor.onMouseMove(canvas, e);
+   if(!run)editor.onMouseMove(e);
 
 };
 
 function getBodyAtMouse() {
    var aabb = new b2AABB();
-   aabb.lowerBound.Set(mousePosWorld.x - 0.001, mousePosWorld.y - 0.001);
-   aabb.upperBound.Set(mousePosWorld.x + 0.001, mousePosWorld.y + 0.001);
+   aabb.lowerBound.Set(editor.mousePosWorld.x - 0.001, editor.mousePosWorld.y - 0.001);
+   aabb.upperBound.Set(editor.mousePosWorld.x + 0.001, editor.mousePosWorld.y + 0.001);
    
    // Query the world for overlapping shapes.
 
@@ -204,7 +148,7 @@ function getBodyAtMouse() {
 
 function getBodyCB(fixture) {
    if(fixture.GetBody().GetType() != b2Body.b2_staticBody) {
-      if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePosWorld)) {
+      if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), editor.mousePosWorld)) {
          selectedBody = fixture.GetBody();
          return false;
       }
@@ -213,10 +157,10 @@ function getBodyCB(fixture) {
 };
 
 function onKeyDown(e) {
-   myEditor.onKeyDown(e);
+   editor.onKeyDown(e);
 }
 function onKeyUp(e){
-   myEditor.onKeyUp(e);
+   editor.onKeyUp(e);
 }
 //update
 
@@ -224,23 +168,21 @@ function update() {
    
    if(mouseJoint) {
       if(isMouseDown) {
-         mouseJoint.SetTarget(new b2Vec2(mousePosWorld.x, mousePosWorld.y));
+         mouseJoint.SetTarget(new b2Vec2(editor.mousePosWorld.x, editor.mousePosWorld.y));
       } else {
          world.DestroyJoint(mouseJoint);
          mouseJoint = null;
       }
    }
-   
-   newEditorGraphics.clear();
-   
+      
    if(run){
       world.Step(physicsTimeStep, 3, 2);
    }else{
-      myEditor.doEditor();
+      editor.doEditor();
    }
 
 
-   myEditor.run();
+   editor.run();
 
    newDebugGraphics.clear();
    world.DrawDebugData();
