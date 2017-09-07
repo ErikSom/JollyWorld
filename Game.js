@@ -2,6 +2,7 @@ var PTM = 30;
 var timeStep = 1000/60;
 var physicsTimeStep = 1/60;
 var editor;
+var app;
 var stage;
 var newDebugGraphic;
 var canvas;
@@ -28,8 +29,6 @@ var run = false;
 
 function init() {
 
-   stage = new PIXI.Container();
-
    canvas = document.getElementById("canvas");
 
    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -38,9 +37,8 @@ function init() {
    canvas.width = w; //document.width is obsolete
    canvas.height = h; //document.height is obsolete
 
-   console.log(canvas.width +"  "+canvas.height);
-   renderer = PIXI.autoDetectRenderer(canvas.width, canvas.height, {view:document.getElementById("canvas")});
-
+   app = new PIXI.Application({view:canvas, backgroundColor:0xFF0000, width:w, height:h});
+   stage = app.stage;
 
    PIXI.loader
    .add("assets/images/bodyparts.json")
@@ -62,7 +60,7 @@ function setup(){
    //BG
    var BG = new PIXI.Graphics();
    editor.drawBox(BG, -15000, -15000, 30000, 30000, "0x000000", 1, 1, "0xFFFFFF");
-   stage.addChild(BG);
+   //stage.addChild(BG);
 
    //container
    var myContainer = new PIXI.Graphics();
@@ -117,6 +115,7 @@ function onMouseDown(e) {
 
    onMouseMove(e);
    if(!run)editor.onMouseDown(e);
+   e.preventDefault();
 
 };
 
@@ -125,12 +124,14 @@ function onMouseDown(e) {
 function onMouseUp(e) {
    isMouseDown = false;
    if(!run)editor.onMouseUp(e);
+   e.preventDefault();
 
 };
 
 function onMouseMove(e) {
   
    if(!run)editor.onMouseMove(e);
+   e.preventDefault();
 
 };
 
@@ -187,5 +188,5 @@ function update() {
    newDebugGraphics.clear();
    world.DrawDebugData();
    world.ClearForces();
-   renderer.render(stage);
+   app.render();
 };

@@ -862,7 +862,7 @@ function B2deEditor(){
 
 	this.onMouseUp = function(evt){
 		if(this.editorMode == this.editorMode_SELECTION){
-			if(this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0){
+			if(this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && this.startSelectionPoint){
 				this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 				this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
 				this.updateSelection();
@@ -901,6 +901,12 @@ function B2deEditor(){
 	   		this.mouseTransformType = this.mouseTransformType_Rotation;
 	   }else if(e.keyCode == 32){//space
 	   		this.spaceDown = true;
+	   }else if(e.keyCode == 187){//space
+	   		//zoomin
+	   		this.zoom({x:this.mousePosWorld.x*this.PTM, y:this.mousePosWorld.y*this.PTM}, true);
+	   }else if(e.keyCode == 189){//space
+	   		//zoomout
+	   		this.zoom({x:this.mousePosWorld.x*this.PTM, y:this.mousePosWorld.y*this.PTM}, false);
 	   }
 	}
 	this.onKeyUp = function(e){
@@ -1561,11 +1567,11 @@ function B2deEditor(){
 		jointGraphics.y = tarObj.y;
 
 
-		if(obj.group != ""){
-			if(this.editorObjectLookup[obj.group] == undefined){
-				this.editorObjectLookup[obj.group] = new this.lookupObject;
+		if(tarObj.group != ""){
+			if(this.editorObjectLookup[tarObj.group] == undefined){
+				this.editorObjectLookup[tarObj.group] = new this.lookupObject;
 			}
-			this.editorObjectLookup[obj.group]._textures.push(jointGraphics);
+			this.editorObjectLookup[tarObj.group]._textures.push(jointGraphics);
 		}
 
 	}
@@ -1911,8 +1917,29 @@ function B2deEditor(){
 		console.log(this.objectLookup);
 	}
 
+	this.zoom = function(pos, isZoomIn) {
+
+	    var direction = isZoomIn ? 1 : -1;
+
+	    var factor = (1 + direction * 0.1);
+	    console.log(pos);
+
+		  var worldPos = {x: (pos.x), y: (pos.y)};
+		  var newScale = {x: this.container.scale.x * factor, y: this.container.scale.y * factor};
+		  
+		  var newScreenPos = {x: (worldPos.x ) * newScale.x + this.container.x, y: (worldPos.y) * newScale.y + this.container.y};
+
+		  console.log(worldPos);
+		  console.log(newScreenPos);
+
+		  this.container.x -= (newScreenPos.x-(pos.x*this.container.scale.x+this.container.x)) ;
+		  this.container.y -= (newScreenPos.y-(pos.y*this.container.scale.y+this.container.y)) ;
+		  this.container.scale.x = newScale.x;
+		  this.container.scale.y = newScale.y;
+	}
+
 	this.getWorldPointFromPixelPoint = function(pixelPoint) {
-    	return new b2Vec2((pixelPoint.x-this.container.x)/this.PTM,(pixelPoint.y-this.container.y)/this.PTM);
+    	return new b2Vec2(((pixelPoint.x-this.container.x)/this.container.scale.x)/this.PTM,((pixelPoint.y-this.container.y)/this.container.scale.y)/this.PTM);
 	}
 	this.getPIXIPointFromWorldPoint = function(worldPoint){
 	    return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y*this.PTM);
