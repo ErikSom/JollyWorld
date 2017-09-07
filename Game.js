@@ -97,7 +97,7 @@ function setup(){
 //mouse   
 function onMouseDown(e) {
    isMouseDown = true;
-
+   console.log("yes"+run);
    if(!mouseJoint && run) {
       var body = getBodyAtMouse();
       if(body) {
@@ -114,7 +114,7 @@ function onMouseDown(e) {
    }
 
    onMouseMove(e);
-   if(!run)editor.onMouseDown(e);
+   editor.onMouseDown(e);
    e.preventDefault();
 
 };
@@ -123,19 +123,20 @@ function onMouseDown(e) {
 
 function onMouseUp(e) {
    isMouseDown = false;
-   if(!run)editor.onMouseUp(e);
+   editor.onMouseUp(e);
    e.preventDefault();
 
 };
 
 function onMouseMove(e) {
   
-   if(!run)editor.onMouseMove(e);
+   editor.onMouseMove(e);
    e.preventDefault();
 
 };
 
 function getBodyAtMouse() {
+   console.log(editor.mousePosWorld);
    var aabb = new b2AABB();
    aabb.lowerBound.Set(editor.mousePosWorld.x - 0.001, editor.mousePosWorld.y - 0.001);
    aabb.upperBound.Set(editor.mousePosWorld.x + 0.001, editor.mousePosWorld.y + 0.001);
@@ -178,15 +179,13 @@ function update() {
       
    if(run){
       world.Step(physicsTimeStep, 3, 2);
-   }else{
-      editor.doEditor();
+      world.ClearForces();
    }
-
 
    editor.run();
 
    newDebugGraphics.clear();
    world.DrawDebugData();
-   world.ClearForces();
+  
    app.render();
 };

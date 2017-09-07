@@ -67,7 +67,7 @@ function B2deEditor(){
 
 	    //Editor Draw
 	    this.debugGraphics = new PIXI.Graphics();
-	    this.container.addChild(this.debugGraphics);
+	    this.container.parent.addChild(this.debugGraphics);
 
 		this.editorMode = this.editorMode_SELECTION;
 
@@ -587,6 +587,11 @@ function B2deEditor(){
 
 	this.run = function(){
 		//update textures
+		if(this.editing){
+			this.doEditor();
+		}
+
+
 	   var body = this.world.GetBodyList();
 	   var i = 0
 	   while(body){
@@ -684,99 +689,101 @@ function B2deEditor(){
 
 	this.onMouseDown = function(evt) {
 
-		if(this.editorMode == this.editorMode_SELECTION){
+		if(this.editing){
+			if(this.editorMode == this.editorMode_SELECTION){
 
-			this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-			if(!this.spaceDown){
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+				if(!this.spaceDown){
 
-				var aabb = new b2AABB;
-				aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
-				aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
-
-
-				if(!this.selectedBoundingBox.Contains(aabb) || this.shiftDown){
-					//reset selectionie
-					var oldSelectedPhysicsBodies = [];
-					var oldSelectedTextures = [];
-
-					if(this.shiftDown){
-						oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
-						oldSelectedTextures = this.selectedTextures;
-					}
+					var aabb = new b2AABB;
+					aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
+					aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
 
 
-					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-					if(this.selectedPhysicsBodies.length>0){
-						var i;
-						var body;
-						var fixture;
-						var pointInsideBody = false;
-						for(i = 0; i<this.selectedPhysicsBodies.length; i++){
-							body = this.selectedPhysicsBodies[i];
-							fixture = body.GetFixtureList();
-							
-							while(fixture != null){
-								if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), this.mousePosWorld)) {
-					        		pointInsideBody = true;
-				  				}
+					if(!this.selectedBoundingBox.Contains(aabb) || this.shiftDown){
+						//reset selectionie
+						var oldSelectedPhysicsBodies = [];
+						var oldSelectedTextures = [];
 
-								fixture = fixture.GetNext();
+						if(this.shiftDown){
+							oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
+							oldSelectedTextures = this.selectedTextures;
+						}
+
+
+						this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
+						if(this.selectedPhysicsBodies.length>0){
+							var i;
+							var body;
+							var fixture;
+							var pointInsideBody = false;
+							for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+								body = this.selectedPhysicsBodies[i];
+								fixture = body.GetFixtureList();
+								
+								while(fixture != null){
+									if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), this.mousePosWorld)) {
+						        		pointInsideBody = true;
+					  				}
+
+									fixture = fixture.GetNext();
+								}
+
+								if(pointInsideBody){
+									this.selectedPhysicsBodies = [body];
+									break;
+								}
+
 							}
-
-							if(pointInsideBody){
-								this.selectedPhysicsBodies = [body];
-								break;
-							}
+							if(!pointInsideBody) this.selectedPhysicsBodies = [];
 
 						}
-						if(!pointInsideBody) this.selectedPhysicsBodies = [];
-
-					}
-					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 1);
+						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 1);
 
 
-					if(this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length > 0){
-						//limit selection to highest indexed child
-						if(this.selectedPhysicsBodies[0].myGraphic.parent.getChildIndex(this.selectedPhysicsBodies[0].myGraphic) > this.selectedTextures[0].parent.getChildIndex(this.selectedTextures[0])){
-							this.selectedTextures = [];
-						}else{
-							this.selectedPhysicsBodies = [];
-						}
-					}
-
-					if(this.shiftDown){
-						//push old selection
-						var i;
-						for(i = 0; i<oldSelectedPhysicsBodies.length; i++){
-							if(oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]){
-								this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
+						if(this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length > 0){
+							//limit selection to highest indexed child
+							if(this.selectedPhysicsBodies[0].myGraphic.parent.getChildIndex(this.selectedPhysicsBodies[0].myGraphic) > this.selectedTextures[0].parent.getChildIndex(this.selectedTextures[0])){
+								this.selectedTextures = [];
+							}else{
+								this.selectedPhysicsBodies = [];
 							}
 						}
-						for(i = 0; i<oldSelectedTextures.length; i++){
-							if(oldSelectedTextures[i] != this.selectedTextures[0]){
-								this.selectedTextures.push(oldSelectedTextures[i]);
+
+						if(this.shiftDown){
+							//push old selection
+							var i;
+							for(i = 0; i<oldSelectedPhysicsBodies.length; i++){
+								if(oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]){
+									this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
+								}
+							}
+							for(i = 0; i<oldSelectedTextures.length; i++){
+								if(oldSelectedTextures[i] != this.selectedTextures[0]){
+									this.selectedTextures.push(oldSelectedTextures[i]);
+								}
 							}
 						}
+
+
+						this.updateSelection();
 					}
-
-
-					this.updateSelection();
 				}
-			}
 
-		}else if(this.editorMode == this.editorMode_DRAWVERTICES){
-			if(!this.closeDrawing){
-				if(this.correctDrawVertice && this.activeVertices.length>1){
-					this.activeVertices[this.activeVertices.length-1] = {x:this.correctedDrawVerticePosition.x, y:this.correctedDrawVerticePosition.y};
+			}else if(this.editorMode == this.editorMode_DRAWVERTICES){
+				if(!this.closeDrawing){
+					if(this.correctDrawVertice && this.activeVertices.length>1){
+						this.activeVertices[this.activeVertices.length-1] = {x:this.correctedDrawVerticePosition.x, y:this.correctedDrawVerticePosition.y};
+					}else{
+						this.activeVertices.push({x:this.mousePosWorld.x, y:this.mousePosWorld.y});
+					}
 				}else{
-					this.activeVertices.push({x:this.mousePosWorld.x, y:this.mousePosWorld.y});
-				}
-			}else{
 
-				var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
-				this.buildBodyFromObj(bodyObject);
-				this.activeVertices = [];
-				this.editorMode = this.editorMode_SELECTION;
+					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
+					this.buildBodyFromObj(bodyObject);
+					this.activeVertices = [];
+					this.editorMode = this.editorMode_SELECTION;
+				}
 			}
 		}
 		this.updateMousePosition(evt);
@@ -787,38 +794,39 @@ function B2deEditor(){
 
 		if(this.oldMousePosWorld == null) this.oldMousePosWorld = this.mousePosWorld;
 
+		if(this.editing){
+			if(this.editorMode == this.editorMode_SELECTION){
+				if(this.mouseDown){
+					var move = new b2Vec2(this.mousePosWorld.x-this.oldMousePosWorld.x, this.mousePosWorld.y-this.oldMousePosWorld.y);
+					if(this.spaceDown){
+						this.container.x += move.x*this.PTM;
+						this.container.y += move.y*this.PTM;
+						this.mousePosWorld.x -= move.x;
+						this.mousePosWorld.y -= move.y;
+					}else{
+						if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
+							var i;
+							var body;
+							for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+								body = this.selectedPhysicsBodies[i];
 
-		if(this.editorMode == this.editorMode_SELECTION){
-			if(this.mouseDown){
-				var move = new b2Vec2(this.mousePosWorld.x-this.oldMousePosWorld.x, this.mousePosWorld.y-this.oldMousePosWorld.y);
-				if(this.spaceDown){
-					this.container.x += move.x*this.PTM;
-					this.container.y += move.y*this.PTM;
-					this.mousePosWorld.x -= move.x;
-					this.mousePosWorld.y -= move.y;
-				}else{
-					if(this.selectedPhysicsBodies.length>0 || this.selectedTextures.length>0){
-						var i;
-						var body;
-						for(i = 0; i<this.selectedPhysicsBodies.length; i++){
-							body = this.selectedPhysicsBodies[i];
-
-							if(this.mouseTransformType == this.mouseTransformType_Movement){
-								var oldPosition = body.GetPosition();
-								body.SetPosition(new b2Vec2(oldPosition.x+move.x, oldPosition.y+move.y));
-							}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
-								var oldAngle = body.GetAngle();
-								body.SetAngle(oldAngle+move.x/10);
+								if(this.mouseTransformType == this.mouseTransformType_Movement){
+									var oldPosition = body.GetPosition();
+									body.SetPosition(new b2Vec2(oldPosition.x+move.x, oldPosition.y+move.y));
+								}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
+									var oldAngle = body.GetAngle();
+									body.SetAngle(oldAngle+move.x/10);
+								}
 							}
-						}
-						var sprite;
-						for(i = 0; i<this.selectedTextures.length; i++){
-							sprite = this.selectedTextures[i];
-							if(this.mouseTransformType == this.mouseTransformType_Movement){
-								sprite.x = sprite.x+move.x*this.PTM;
-								sprite.y = sprite.y+move.y*this.PTM;
-							}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
-								sprite.rotation += move.x/10;
+							var sprite;
+							for(i = 0; i<this.selectedTextures.length; i++){
+								sprite = this.selectedTextures[i];
+								if(this.mouseTransformType == this.mouseTransformType_Movement){
+									sprite.x = sprite.x+move.x*this.PTM;
+									sprite.y = sprite.y+move.y*this.PTM;
+								}else if(this.mouseTransformType == this.mouseTransformType_Rotation){
+									sprite.rotation += move.x/10;
+								}
 							}
 						}
 					}
@@ -861,20 +869,23 @@ function B2deEditor(){
 
 
 	this.onMouseUp = function(evt){
-		if(this.editorMode == this.editorMode_SELECTION){
-			if(this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && this.startSelectionPoint){
-				this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-				this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
-				this.updateSelection();
+		if(this.editing){
+			if(this.editorMode == this.editorMode_SELECTION){
+				if(this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && this.startSelectionPoint){
+					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
+					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
+					this.updateSelection();
+				}
 			}
 		}
 		this.mouseDown = false;
 	}
 	this.onKeyDown = function(e){
 		if (e.keyCode == 80 ) {//p
-	      if(!run){
+	      if(this.editing){
 	         this.stringifyWorldJSON();
 	         this.prepareWorld();
+	         this.editing = false;
 	      }
 	      run = !run;
 	   }else if (e.keyCode == 68 ) {//d
@@ -886,8 +897,10 @@ function B2deEditor(){
 	   }else if (e.keyCode == 83 ) {//s
 	      this.stringifyWorldJSON();
 	   }else if (e.keyCode == 82){
+	   	  run = false;
+	      this.editing = true;
 	      this.resetWorld();
-	      run = false;
+
 	   }else if(e.ctrlKey && e.keyCode == 67){ //c
 	      this.copySelection();
 	   }else if(e.ctrlKey && e.keyCode == 86){// v
@@ -1004,10 +1017,13 @@ function B2deEditor(){
 					fixture = fixture.GetNext();
 				}
 			}else{
-				sprite = sprite.getBounds();
+				//sprite.calculateBounds()
+
+				//sprite = sprite.getLocalBounds();
+				var bounds = sprite.getLocalBounds();
 				var spriteAABB = new b2AABB;
-				spriteAABB.lowerBound = new b2Vec2((sprite.x-this.container.x)/this.PTM, (sprite.y-this.container.y)/this.PTM);
-				spriteAABB.upperBound = new b2Vec2((sprite.x+sprite.width-this.container.x)/this.PTM, (sprite.y+sprite.height-this.container.y)/this.PTM);
+				spriteAABB.lowerBound = new b2Vec2((sprite.position.x-bounds.width/2)/this.PTM, (sprite.position.y-bounds.height/2)/this.PTM);
+				spriteAABB.upperBound = new b2Vec2((sprite.position.x+bounds.width/2)/this.PTM, (sprite.position.y+bounds.height/2)/this.PTM);
 				aabb.Combine(aabb, spriteAABB);
 			}
 		}
@@ -1027,12 +1043,12 @@ function B2deEditor(){
 			var upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.upperBound);
 
 			//Showing selection
-			this.drawBox(this.debugGraphics, lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x-lowerBoundPixi.x, upperBoundPixi.y-lowerBoundPixi.y, this.selectionBoxColor);
+			this.drawBox(this.debugGraphics, this.container.x+lowerBoundPixi.x*this.container.scale.x, this.container.y+lowerBoundPixi.y*this.container.scale.y, (upperBoundPixi.x-lowerBoundPixi.x)*this.container.scale.y, (upperBoundPixi.y-lowerBoundPixi.y)*this.container.scale.x, this.selectionBoxColor);
 		}else{
 			aabb = new b2AABB;
 
 			//Making selection
-			if(this.mouseDown && !this.spaceDown) this.drawBox(this.debugGraphics, this.startSelectionPoint.x*this.PTM, this.startSelectionPoint.y*this.PTM, this.mousePosWorld.x*this.PTM-this.startSelectionPoint.x*this.PTM, this.mousePosWorld.y*this.PTM-this.startSelectionPoint.y*this.PTM, "#000000");
+			if(this.mouseDown && !this.spaceDown) this.drawBox(this.debugGraphics, this.container.x+this.startSelectionPoint.x*this.PTM*this.container.scale.x, this.container.y+this.startSelectionPoint.y*this.PTM*this.container.scale.y, (this.mousePosWorld.x*this.PTM-this.startSelectionPoint.x*this.PTM)*this.container.scale.x, (this.mousePosWorld.y*this.PTM-this.startSelectionPoint.y*this.PTM)*this.container.scale.y, "#000000");
 		}
 		this.selectedBoundingBox = aabb;
 
@@ -1198,7 +1214,6 @@ function B2deEditor(){
 				    	}
 			    	}else if(controller.property == "collision"){
 			    		//body
-			    		console.log("ohyeay");
 			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
 					    	body = this.selectedPhysicsBodies[j];
 				    		body.myGraphic.data.collision = controller.targetValue;
@@ -1780,7 +1795,6 @@ function B2deEditor(){
 			}
 		}
 
-		console.log(this.editorObjectLookup);
 	}
 	this.drawBox = function(target, x, y, width, height, lineColor, lineSize, lineAlpha, fillColor, fillAlpha){
 
@@ -1840,6 +1854,8 @@ function B2deEditor(){
 
 	}
 	this.prepareWorld = function(){
+		this.debugGraphics.clear();
+
 		var spritesToDestroy = [];
 		var sprite;
 
@@ -1876,7 +1892,6 @@ function B2deEditor(){
 				//
 				//add to live group
 				if(sprite.data.group != ""){
-					console.log(this.objectLookup[sprite.data.group]);
 					if(this.objectLookup[sprite.data.group] == undefined){
 						this.objectLookup[sprite.data.group] = new this.lookupObject;
 					}
@@ -1914,7 +1929,6 @@ function B2deEditor(){
 			sprite.destroy({children:true, texture:false, baseTexture:false});
 		}
 		this.editing = false;
-		console.log(this.objectLookup);
 	}
 
 	this.zoom = function(pos, isZoomIn) {
@@ -1922,15 +1936,11 @@ function B2deEditor(){
 	    var direction = isZoomIn ? 1 : -1;
 
 	    var factor = (1 + direction * 0.1);
-	    console.log(pos);
 
 		  var worldPos = {x: (pos.x), y: (pos.y)};
 		  var newScale = {x: this.container.scale.x * factor, y: this.container.scale.y * factor};
 		  
 		  var newScreenPos = {x: (worldPos.x ) * newScale.x + this.container.x, y: (worldPos.y) * newScale.y + this.container.y};
-
-		  console.log(worldPos);
-		  console.log(newScreenPos);
 
 		  this.container.x -= (newScreenPos.x-(pos.x*this.container.scale.x+this.container.x)) ;
 		  this.container.y -= (newScreenPos.y-(pos.y*this.container.scale.y+this.container.y)) ;
