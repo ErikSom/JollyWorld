@@ -37,7 +37,7 @@ function init() {
    canvas.width = w; //document.width is obsolete
    canvas.height = h; //document.height is obsolete
 
-   app = new PIXI.Application({view:canvas, backgroundColor:0xFF0000, width:w, height:h});
+   app = new PIXI.Application({view:canvas, backgroundColor:0xD4D4D4, width:w, height:h});
    stage = app.stage;
 
    PIXI.loader
@@ -57,11 +57,6 @@ function setup(){
       ,true               //allow sleep
    );
          
-   //BG
-   var BG = new PIXI.Graphics();
-   editor.drawBox(BG, -15000, -15000, 30000, 30000, "0x000000", 1, 1, "0xFFFFFF");
-   //stage.addChild(BG);
-
    //container
    var myContainer = new PIXI.Graphics();
    stage.addChild(myContainer);
