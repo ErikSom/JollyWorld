@@ -35,6 +35,7 @@ function Game(){
    this.run = false;
 
 
+   this.vehicle;
    this.desiredVehicleSpeed = 0;
    this.desiredVehicleTorque = 0;
 
@@ -109,12 +110,12 @@ function Game(){
          var body = this.getBodyAtMouse();
          if(body) {
             var md = new b2MouseJointDef();
-            md.bodyA = world.GetGroundBody();
+            md.bodyA = this.world.GetGroundBody();
             md.bodyB = body;
             md.target.Set(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y);
             md.collideConnected = true;
             md.maxForce = 300.0 * body.GetMass();
-            mouseJoint = world.CreateJoint(md);
+            this.mouseJoint = this.world.CreateJoint(md);
             body.SetAwake(true);
          }
 
@@ -144,8 +145,8 @@ function Game(){
       // Query the world for overlapping shapes.
 
       this.selectedBody = null;
-      this.world.QueryAABB(this.getBodyCB, aabb);
-      return selectedBody;
+      this.world.QueryAABB(this.getBodyCB.bind(this), aabb);
+      return this.selectedBody;
    };
 
    this.getBodyCB = function(fixture) {
@@ -173,15 +174,46 @@ function Game(){
 
          this.run = !this.run;
       }
+
+      //GAME
+      if(this.vehicle){
+         if(e.keyCode == 87){
+            console.log("YES!!");
+            this.vehicle.engine.SetMaxMotorTorque(this.desiredVehicleTorque);
+            this.vehicle.engine.SetMotorSpeed(-this.desiredVehicleSpeed);
+         }else if(e.keyCode == 83){
+            this.vehicle.engine.SetMaxMotorTorque(this.desiredVehicleTorque);
+            this.vehicle.engine.SetMotorSpeed(this.desiredVehicleSpeed*0.6);
+         }
+      }
+
+
       this.editor.onKeyDown(e);
+
+
+
    }
    this.onKeyUp = function(e){
       this.editor.onKeyUp(e);
+
+      if(e.keyCode == 87 || e.keyCode == 83){
+         this.vehicle.engine.SetMaxMotorTorque(0);
+         this.vehicle.engine.SetMotorSpeed(0);
+      }
    }
 
 
    this.initVehicle = function(){
-      console.log(this.editor.objectLookup.__vehicle.engine.GetMotorTorque());
+      this.vehicle = this.editor.objectLookup.__vehicle;
+      if(this.vehicle){
+
+         console.log("yes vehicle");
+         this.desiredVehicleTorque = this.vehicle.engine.GetMotorTorque();
+         this.desiredVehicleSpeed = this.vehicle.engine.GetMotorSpeed();
+
+         this.vehicle.engine.SetMaxMotorTorque(0);
+         this.vehicle.engine.SetMotorSpeed(0);
+      }
    }
 
    this.update = function() {

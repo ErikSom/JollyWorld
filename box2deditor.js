@@ -28,6 +28,8 @@ function B2deEditor(){
 	this.assetSelectedGroup ="";
 	this.assetSelectedObject ="";
 
+	this.editorIcons = [];
+
 	/*this.worldJSON = '{"objects":[\
 	{"x":13.5,"y":4.508333333333333,"rotation":0,"ID":0,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false,"collision":0, "awake":true, "density":1, "group":"","refName":"", "vertices":[{"x":1.6999999999999993,"y":0.49166666666666714},{"x":-0.3333333333333339,"y":1.4250000000000007},{"x":-1.1333333333333329,"y":-0.24166666666666625},{"x":-0.2333333333333325,"y":-1.6749999999999994}]},\
 	{"x":14.908333333333335,"y":4.0166666666666675,"rotation":0,"ID":1,"type":0,"textureID":null,"texturePositionOffsetLength":null,"texturePositionOffsetAngle":null,"textureAngleOffset":null,"colorFill":"#000000","colorLine":"#000000","fixed":false,"collision":0, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":2.658333333333335,"y":-2.3166666666666664},{"x":3.125,"y":-0.2833333333333323},{"x":-2.9749999999999996,"y":1.9166666666666679},{"x":-2.8083333333333336,"y":0.6833333333333336}]},\
@@ -38,8 +40,8 @@ function B2deEditor(){
 	{"x":7.459999999999999,"y":5.253333333333333,"rotation":0,"ID":6,"type":0,"colorFill":"#000000","colorLine":"#000000","fixed":false,"collision":0, "awake":true, "density":1, "group":"","refName":"","vertices":[{"x":0.14000000000000057,"y":-0.45333333333333314},{"x":0.4733333333333345,"y":-0.3866666666666667},{"x":0.5400000000000009,"y":0.013333333333333641},{"x":0.4733333333333345,"y":0.3466666666666667},{"x":0.07333333333333414,"y":0.5466666666666669},{"x":-0.2599999999999989,"y":0.4800000000000004},\
 	{"x":-0.4599999999999991,"y":0.21333333333333382},{"x":-0.4599999999999991,"y":-0.05333333333333279},{"x":-0.39333333333333265,"y":-0.25333333333333297},{"x":-0.12666666666666604,"y":-0.45333333333333314}]},{"x":223.98959350585932,"y":160.00000000000006,"rotation":0,"ID":7,"type":1,"textureName":"1head.png","bodyID":6,"texturePositionOffsetLength":2.4074770398623397,"texturePositionOffsetAngle":-1.4919627495569028,"textureAngleOffset":0, "group":"","refName":""}]}';
 	*/
-	this.worldJSON = ''
-	this.vehicleJSON = '{"objects":[{"x":17.690397408586843,"y":2.4833397002282225,"rotation":0,"ID":0,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0,"y":0},{"x":0,"y":0}],"density":1,"group":"__vehicle","refName":"","collision":0,"radius":52.98392360831555},{"x":530.711922257605,"y":74.50019100684659,"rotation":0,"ID":1,"type":1,"textureName":"Bike1_Tire.png","bodyID":0,"texturePositionOffsetLength":2.9673135796061134e-13,"texturePositionOffsetAngle":2.8501358591119264,"textureAngleOffset":0,"group":"__vehicle","refName":""},{"x":15.00652456025768,"y":1.471283736548767,"rotation":0,"ID":2,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":-0.42292693052404395,"y":1.7621955438501815},{"x":-3.3431366889043446,"y":1.158014214530119},{"x":-1.3795473686141424,"y":-2.0139377644002074},{"x":1.8427530544261899,"y":-2.0642862085102127},{"x":3.3028579336163375,"y":1.158014214530119}],"density":1,"group":"__vehicle","refName":"","collision":0},{"x":448.0811021551102,"y":33.565338833361935,"rotation":0,"ID":3,"type":1,"textureName":"Bike1_Frame.png","bodyID":2,"texturePositionOffsetLength":10.782563357829968,"texturePositionOffsetAngle":1.7681918866447732,"textureAngleOffset":0,"group":"__vehicle","refName":""},{"jointType":0,"x":530.1735128009689,"y":74.34860957153256,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0,"frequencyHz":0,"type":2,"group":"__vehicle","refName":"","bodyA_ID":0,"bodyB_ID":2,"ID":4},{"x":12.388359392573102,"y":2.5170266560559202,"rotation":0,"ID":5,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0,"y":0},{"x":0,"y":0}],"density":1,"group":"__vehicle","refName":"","collision":0,"radius":52.98392360831555},{"x":371.6507817771928,"y":75.51079968167753,"rotation":0,"ID":6,"type":1,"textureName":"Bike1_Tire.png","bodyID":5,"texturePositionOffsetLength":2.9673135796061134e-13,"texturePositionOffsetAngle":2.8501358591119264,"textureAngleOffset":0,"group":"__vehicle","refName":""},{"jointType":0,"x":371.41834375516385,"y":75.51079968167755,"collideConnected":false,"enableMotor":true,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0,"frequencyHz":0,"type":2,"group":"__vehicle","refName":"engine","bodyA_ID":5,"bodyB_ID":2,"ID":7}]}'
+	this.worldJSON = '{"objects":[{"x":19.579913454194227,"y":14.999869961614188,"rotation":0,"ID":8,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":true,"awake":true,"vertices":[{"x":53.29272751269292,"y":-3.096296540382024},{"x":53.58414365767007,"y":2.2949021416949087},{"x":-53.65699769391434,"y":2.7320263591606064},{"x":-53.21987347644865,"y":-1.9306319604735016}],"density":1,"group":"","refName":"","collision":0}]}'
+	this.vehicleJSON = '{"objects":[{"x":17.690397408586843,"y":2.4833397002282225,"rotation":0,"ID":0,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0,"y":0},{"x":0,"y":0}],"density":1,"group":"__vehicle","refName":"","collision":0,"radius":52.98392360831555},{"x":530.711922257605,"y":74.50019100684659,"rotation":0,"ID":1,"type":1,"textureName":"Bike1_Tire.png","bodyID":0,"texturePositionOffsetLength":2.9673135796061134e-13,"texturePositionOffsetAngle":2.8501358591119264,"textureAngleOffset":0,"group":"__vehicle","refName":""},{"x":15.00652456025768,"y":1.471283736548767,"rotation":0,"ID":2,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":-0.42292693052404395,"y":1.7621955438501815},{"x":-3.3431366889043446,"y":1.158014214530119},{"x":-1.3795473686141424,"y":-2.0139377644002074},{"x":1.8427530544261899,"y":-2.0642862085102127},{"x":3.3028579336163375,"y":1.158014214530119}],"density":1,"group":"__vehicle","refName":"","collision":0},{"x":448.0811021551102,"y":33.565338833361935,"rotation":0,"ID":3,"type":1,"textureName":"Bike1_Frame.png","bodyID":2,"texturePositionOffsetLength":10.782563357829968,"texturePositionOffsetAngle":1.7681918866447732,"textureAngleOffset":0,"group":"__vehicle","refName":""},{"jointType":0,"x":530.1735128009689,"y":74.34860957153256,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0,"frequencyHz":0,"type":2,"group":"__vehicle","refName":"","bodyA_ID":0,"bodyB_ID":2,"ID":4},{"x":12.388359392573102,"y":2.5170266560559202,"rotation":0,"ID":5,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0,"y":0},{"x":0,"y":0}],"density":1,"group":"__vehicle","refName":"","collision":0,"radius":52.98392360831555},{"x":371.6507817771928,"y":75.51079968167753,"rotation":0,"ID":6,"type":1,"textureName":"Bike1_Tire.png","bodyID":5,"texturePositionOffsetLength":2.9673135796061134e-13,"texturePositionOffsetAngle":2.8501358591119264,"textureAngleOffset":0,"group":"__vehicle","refName":""},{"jointType":0,"x":371.41834375516385,"y":75.51079968167755,"collideConnected":false,"enableMotor":true,"maxMotorTorque":300,"motorSpeed":20,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0,"frequencyHz":0,"type":2,"group":"__vehicle","refName":"engine","bodyA_ID":5,"bodyB_ID":2,"ID":7}]}'
 
 	//P*N
 	//{"objects":[{"x":14.251087384618318,"y":7.660068790898384,"rotation":0,"ID":0,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.8039477185614405,"y":-0.6328950124845383},{"x":0.7355266361306807,"y":0.6328950124845374},{"x":-0.7697371773460588,"y":0.5986844712691575},{"x":-0.7697371773460588,"y":-0.5986844712691575}],"density":1,"group":"","refName":"","collision":0},{"x":14.268192655226011,"y":6.667963095652352,"rotation":0,"ID":1,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.8039477185614405,"y":-0.6328950124845383},{"x":0.7355266361306807,"y":0.6328950124845374},{"x":-0.7697371773460588,"y":0.5986844712691575},{"x":-0.7697371773460588,"y":-0.5986844712691575}],"density":1,"group":"","refName":"","collision":0},{"jointType":2,"x":413.2824528890815,"y":209.47987597205378,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":1,"bodyB_ID":0,"ID":2},{"jointType":2,"x":447.3550256666383,"y":209.8022716073756,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":1,"bodyB_ID":0,"ID":3},{"x":14.298126878789466,"y":5.658752129798629,"rotation":0,"ID":4,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.8039477185614405,"y":-0.6328950124845383},{"x":0.7355266361306807,"y":0.6328950124845374},{"x":-0.7697371773460588,"y":0.5986844712691575},{"x":-0.7697371773460588,"y":-0.5986844712691575}],"density":1,"group":"","refName":"","collision":0},{"x":14.31523214939716,"y":4.6666464345525975,"rotation":0,"ID":5,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.8039477185614405,"y":-0.6328950124845383},{"x":0.7355266361306807,"y":0.6328950124845374},{"x":-0.7697371773460588,"y":0.5986844712691575},{"x":-0.7697371773460588,"y":-0.5986844712691575}],"density":1,"group":"","refName":"","collision":0},{"jointType":2,"x":410.47011410737883,"y":154.36782034703788,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":5,"bodyB_ID":4,"ID":6},{"jointType":2,"x":449.4701310929125,"y":155.3941365834993,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":5,"bodyB_ID":4,"ID":7},{"jointType":2,"x":409.0589292822442,"y":183.61783308618797,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":4,"bodyB_ID":1,"ID":8},{"jointType":2,"x":448.05894626777786,"y":185.1573074408801,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":4,"bodyB_ID":1,"ID":9},{"x":14.34516637296061,"y":3.669409158124259,"rotation":0,"ID":10,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.8039477185614405,"y":-0.6328950124845383},{"x":0.7355266361306807,"y":0.6328950124845374},{"x":-0.7697371773460588,"y":0.5986844712691575},{"x":-0.7697371773460588,"y":-0.5986844712691575}],"density":1,"group":"","refName":"","collision":0},{"x":14.362271643568304,"y":2.6773034628782253,"rotation":0,"ID":11,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.8039477185614405,"y":-0.6328950124845383},{"x":0.7355266361306807,"y":0.6328950124845374},{"x":-0.7697371773460588,"y":0.5986844712691575},{"x":-0.7697371773460588,"y":-0.5986844712691575}],"density":1,"group":"","refName":"","collision":0},{"jointType":2,"x":411.8812989325131,"y":94.68753119680662,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":11,"bodyB_ID":10,"ID":12},{"jointType":2,"x":450.88131591804677,"y":95.71384743326806,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":11,"bodyB_ID":10,"ID":13},{"jointType":2,"x":411.11156175516703,"y":124.60464948965675,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":5,"bodyB_ID":10,"ID":14},{"jointType":2,"x":448.57210438600856,"y":124.60464948965675,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":5,"bodyB_ID":10,"ID":15},{"x":14.279139924130396,"y":1.310339972752702,"rotation":0,"ID":16,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":-1.0923804884350243,"y":0.9515963682071219},{"x":-1.0454524483590575,"y":0.34153184721954244},{"x":-0.8812043080931709,"y":-0.12774855354013415},{"x":-0.623100087675347,"y":-0.5970289542998108},{"x":-0.24767576706760686,"y":-0.7378130745277138},{"x":0.4562448340719065,"y":-0.6908850344517461},{"x":0.9255252348315839,"y":-0.4093167939959402},{"x":1.2540215153633572,"y":0.3180678271815587},{"x":1.2540215153633572,"y":0.9515963682071219}],"density":1,"group":"","refName":"","collision":0},{"jointType":2,"x":413.200798099349,"y":62.930646020818116,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":16,"bodyB_ID":11,"ID":17},{"jointType":2,"x":446.98898695404574,"y":63.63456662195763,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":16,"bodyB_ID":11,"ID":18},{"x":12.633888463550377,"y":8.968246568066073,"rotation":0,"ID":19,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.2947667517271704,"y":-1.4503697385978755},{"x":0.9517593127907169,"y":-1.2391935582560212},{"x":1.4210397135503925,"y":-0.6291290372684424},{"x":1.491431773664349,"y":-0.11292059643279817},{"x":1.2802555933224937,"y":0.4971439245547824},{"x":1.0925434330186228,"y":0.8725682451625225},{"x":0.764047152486846,"y":1.2010645256942967},{"x":0.15398263149926805,"y":1.2949206058462313},{"x":-0.3622258093363797,"y":1.2010645256942967},{"x":-0.7845781700200867,"y":1.0602804054663935},{"x":-1.1834665106658129,"y":0.7083201048966368},{"x":-1.3477146509316995,"y":0.21557568409897598},{"x":-1.418106711045649,"y":-0.20677667658473275},{"x":-1.2538585707797623,"y":-0.722985117420377},{"x":-0.8549702301340361,"y":-1.2391935582560212},{"x":-0.24490570914645815,"y":-1.4503697385978755}],"density":1,"group":"","refName":"","collision":0},{"jointType":0,"x":380.1165298457919,"y":266.3636997501379,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0,"frequencyHz":0,"type":2,"group":"","refName":"","bodyA_ID":0,"bodyB_ID":19,"ID":20},{"jointType":2,"x":409.6811950936514,"y":238.2068757045571,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":0,"bodyB_ID":19,"ID":21},{"jointType":2,"x":442.06154274606916,"y":233.98335209772014,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":0,"bodyB_ID":19,"ID":22},{"x":15.767801639873586,"y":9.01957411189915,"rotation":0,"ID":23,"type":0,"colorFill":"#999999","colorLine":"#000","fixed":false,"awake":true,"vertices":[{"x":0.2947667517271704,"y":-1.4503697385978755},{"x":0.9517593127907169,"y":-1.2391935582560212},{"x":1.4210397135503925,"y":-0.6291290372684424},{"x":1.491431773664349,"y":-0.11292059643279817},{"x":1.2802555933224937,"y":0.4971439245547824},{"x":1.0925434330186228,"y":0.8725682451625225},{"x":0.764047152486846,"y":1.2010645256942967},{"x":0.15398263149926805,"y":1.2949206058462313},{"x":-0.3622258093363797,"y":1.2010645256942967},{"x":-0.7845781700200867,"y":1.0602804054663935},{"x":-1.1834665106658129,"y":0.7083201048966368},{"x":-1.3477146509316995,"y":0.21557568409897598},{"x":-1.418106711045649,"y":-0.20677667658473275},{"x":-1.2538585707797623,"y":-0.722985117420377},{"x":-0.8549702301340361,"y":-1.2391935582560212},{"x":-0.24490570914645815,"y":-1.4503697385978755}],"density":1,"group":"","refName":"","collision":0},{"jointType":0,"x":474.4418903984865,"y":267.0676203512772,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0,"frequencyHz":0,"type":2,"group":"","refName":"","bodyA_ID":0,"bodyB_ID":23,"ID":24},{"jointType":2,"x":409.6811950936511,"y":236.0951139011388,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":0,"bodyB_ID":23,"ID":25},{"jointType":2,"x":441.3576221449296,"y":234.68727269885972,"collideConnected":false,"enableMotor":false,"maxMotorTorque":1,"motorSpeed":10,"enableLimit":false,"upperAngle":0,"lowerAngle":0,"dampingRatio":0.5,"frequencyHz":10,"type":2,"group":"","refName":"","bodyA_ID":0,"bodyB_ID":23,"ID":26}]}
@@ -438,6 +440,9 @@ function B2deEditor(){
 	    for(i = 0; i<this.selectedTextures.length; i++){
 			var sprite = this.selectedTextures[i];
 			if(sprite.data && sprite.data.type == this.object_JOINT){
+
+
+
 				var j;
 				var myJoint;
 				if(sprite.bodies[0] != undefined){
@@ -462,6 +467,13 @@ function B2deEditor(){
 						}
 					}
 					if(sprite.bodies[1].myJoints.length == 0) sprite.bodies[1].myJoints = undefined;
+				}
+
+
+				for(j = 0; j<this.editorIcons.length; j++){
+					if(this.editorIcons[j] == sprite){
+						this.editorIcons.splice(j, 1);
+					}
 				}
 			}
 
@@ -1091,8 +1103,8 @@ function B2deEditor(){
 				//sprite = sprite.getLocalBounds();
 				var bounds = sprite.getLocalBounds();
 				var spriteAABB = new b2AABB;
-				spriteAABB.lowerBound = new b2Vec2((sprite.position.x-bounds.width/2)/this.PTM, (sprite.position.y-bounds.height/2)/this.PTM);
-				spriteAABB.upperBound = new b2Vec2((sprite.position.x+bounds.width/2)/this.PTM, (sprite.position.y+bounds.height/2)/this.PTM);
+				spriteAABB.lowerBound = new b2Vec2((sprite.position.x-(bounds.width/2)*sprite.scale.x)/this.PTM, (sprite.position.y-(bounds.height/2)*sprite.scale.x)/this.PTM);
+				spriteAABB.upperBound = new b2Vec2((sprite.position.x+(bounds.width/2)*sprite.scale.y)/this.PTM, (sprite.position.y+(bounds.height/2)*sprite.scale.y)/this.PTM);
 				aabb.Combine(aabb, spriteAABB);
 			}
 		}
@@ -1122,6 +1134,38 @@ function B2deEditor(){
 		this.selectedBoundingBox = aabb;
 
 
+		//JOINTS draw upper and lower limits
+		var i;
+		var sprite;
+		for(i = 0; i<this.selectedTextures.length; i++){
+			sprite = this.selectedTextures[i];
+			if(sprite.data.type = this.object_JOINT){
+				if(sprite.data.enableLimit){
+					var lineLength = 50/sprite.scale.x;
+					this.debugGraphics.lineStyle(1, "0xFF9900", 1);
+					this.debugGraphics.moveTo(sprite.x*this.container.scale.x+this.container.x, sprite.y*this.container.scale.y+this.container.y);
+					this.debugGraphics.lineTo(sprite.x*this.container.scale.x+this.container.x+lineLength*Math.cos(sprite.data.upperAngle*this.DEG2RAD), sprite.y*this.container.scale.y+this.container.y+lineLength*Math.sin(sprite.data.upperAngle*this.DEG2RAD));
+
+					this.debugGraphics.lineStyle(1, "0xFF3300", 1);
+					this.debugGraphics.moveTo(sprite.x*this.container.scale.x+this.container.x, sprite.y*this.container.scale.y+this.container.y);
+					this.debugGraphics.lineTo(sprite.x*this.container.scale.x+this.container.x+lineLength*Math.cos(sprite.data.lowerAngle*this.DEG2RAD), sprite.y*this.container.scale.y+this.container.y+lineLength*Math.sin(sprite.data.lowerAngle*this.DEG2RAD));
+				
+					this.debugGraphics.lineStyle(1, "0x000000", 0);
+					this.debugGraphics.beginFill("0xFF9900", 0.3);
+					this.debugGraphics.moveTo(sprite.x*this.container.scale.x+this.container.x, sprite.y*this.container.scale.y+this.container.y);
+					this.debugGraphics.arc(sprite.x*this.container.scale.x+this.container.x, sprite.y*this.container.scale.y+this.container.y, lineLength, sprite.data.lowerAngle*this.DEG2RAD, sprite.data.upperAngle*this.DEG2RAD, false);
+					this.debugGraphics.endFill();
+
+
+				}
+			}
+		}
+		//
+
+
+
+
+
 		if(this.editorGUI && this.editorGUI.editData){
 			//if(this.editorGUI.editData instanceof this.jointObject || this.editorGUI.editData instanceof this.bodyObject){
 			var controller;
@@ -1135,8 +1179,8 @@ function B2deEditor(){
 				controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
 			}
 
-
-			for (var i in controllers) {
+			var i;
+			for (i in controllers) {
 			    controller = controllers[i]
 
 			    if(controller.humanUpdate){
@@ -1179,31 +1223,49 @@ function B2deEditor(){
 			    		}
 			    	}else if(controller.property == "collideConnected"){
 			    		//joint
-			    		this.selectedTextures[0].data.collideConnected = controller.targetValue; 
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.collideConnected = controller.targetValue;
+			    		}
 			    	}else if(controller.property == "enableMotor"){
 			    		//joint
-			    		this.selectedTextures[0].data.enableMotor = controller.targetValue; 
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.enableMotor = controller.targetValue; 
+			    		}
 			    	}else if(controller.property == "maxMotorTorque"){
 			    		//joint
-			    		this.selectedTextures[0].data.maxMotorTorque = controller.targetValue; 
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.maxMotorTorque = controller.targetValue;
+			    		} 
 			    	}else if(controller.property == "motorSpeed"){
 			    		//joint
-			    		this.selectedTextures[0].data.motorSpeed = controller.targetValue; 
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.motorSpeed = controller.targetValue; 
+			    		}
 			    	}else if(controller.property == "enableLimit"){
 			    		//joint
-			    		this.selectedTextures[0].data.enableLimit = controller.targetValue; 
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.enableLimit = controller.targetValue; 
+			    		}
 			    	}else if(controller.property == "upperAngle"){
 			    		//joint
-			    		this.selectedTextures[0].data.upperAngle = controller.targetValue; 
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.upperAngle = controller.targetValue; 
+			    		}
 			    	}else if(controller.property == "lowerAngle"){
 			    		//joint
-			    		this.selectedTextures[0].data.lowerAngle = controller.targetValue; 
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.lowerAngle = controller.targetValue; 
+			    		}
 			    	}else if(controller.property == "frequencyHz"){
 			    		//joint
-			    		this.selectedTextures[0].data.frequencyHz = controller.targetValue;
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.frequencyHz = controller.targetValue;
+			    		}
 			    	}else if(controller.property == "dampingRatio"){
 			    		//joint
-			    		this.selectedTextures[0].data.dampingRatio = controller.targetValue;
+			    		for(j = 0; j<this.selectedTextures.length; j++){
+			    			this.selectedTextures[j].data.dampingRatio = controller.targetValue;
+			    		}
 			    	}else if(controller.property == "rotation"){
 			    		//body & sprite
 			    		for(j = 0; j<this.selectedPhysicsBodies.length; j++){
@@ -1517,7 +1579,7 @@ function B2deEditor(){
 
 		var fixDef = new b2FixtureDef;
 	    fixDef.density = obj.density;
-	    fixDef.friction = 0.5;
+	    fixDef.friction = 1;
 	    fixDef.restitution = 0.2;
 
 
@@ -1703,6 +1765,8 @@ function B2deEditor(){
 			}
 			this.editorObjectLookup[tarObj.group]._textures.push(jointGraphics);
 		}
+
+		this.editorIcons.push(jointGraphics);
 
 	}
 
@@ -1964,6 +2028,7 @@ function B2deEditor(){
 		this.oldMousePosWorld = null;
 		this.mouseDown = false;
 
+		this.editorIcons = [];
 
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
@@ -1993,6 +2058,7 @@ function B2deEditor(){
 
 	}
 	this.runWorld = function(){
+		this.editorIcons = [];
 		this.debugGraphics.clear();
 		this.editing = false;
 
@@ -2090,6 +2156,13 @@ function B2deEditor(){
 		  this.container.y -= (newScreenPos.y-(pos.y*this.container.scale.y+this.container.y)) ;
 		  this.container.scale.x = newScale.x;
 		  this.container.scale.y = newScale.y;
+
+		  var i;
+		  for(i = 0; i<this.editorIcons.length; i++){
+		  	console.log("yes"+(1/newScale.x));
+		  	this.editorIcons[i].scale.x = 1.0/newScale.x;
+		  	this.editorIcons[i].scale.y= 1.0/newScale.y;
+		  }
 	}
 
 	this.getWorldPointFromPixelPoint = function(pixelPoint) {
