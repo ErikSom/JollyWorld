@@ -86,7 +86,9 @@ function Game(){
       window.setInterval(this.update.bind(this), this.timeStep);
 
 
-      this.editor.assetLists.characters = ["1head.png", "2head.png", "3head.png"];
+      this.editor.assetLists.characters = ["1head.png", "1body.png", "1uparm.png", "1lowarm.png", "1upleg.png", "1lowleg.png",
+                                          "2head.png", "2body.png", "2uparm.png", "2lowarm.png", "2upleg.png", "2lowleg.png",
+                                          "3head.png", "3body.png", "3uparm.png", "3lowarm.png", "3upleg.png", "3lowleg.png"];
       this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
       this.editor.init(myContainer, this.world, this.PTM);
 
