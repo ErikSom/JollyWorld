@@ -110,6 +110,25 @@ function B2deEditor(){
         this.parseAndBuildJSON(this.worldJSON);
         this.parseAndBuildJSON(this.vehicleJSON);
      	this.parseAndBuildJSON(this.characterJSON);
+
+
+
+		var $container = $("#symanticui");
+
+		$container.append('<div id="button" class="ui animated button" tabindex="0"> <div class="visible content">Next</div><div class="hidden content"><i class="right arrow icon"></i></div></div>');
+
+
+		var $button = $("#button");
+		console.log($button);
+
+		$button.click(function() {
+
+		    console.log("erik is een koning en eric ook");
+		});
+
+		
+
+
            
 	}
 	this.initGuiAssetSelection = function(){
@@ -626,6 +645,12 @@ function B2deEditor(){
 			var movX = this.copyCenterPoint.x-(this.mousePosWorld.x*this.PTM);
 			var movY = this.copyCenterPoint.y-(this.mousePosWorld.y*this.PTM);
 
+			if(this.shiftDown){
+				movX = 0;
+				movY = 0;
+			}
+
+
 			for(i = startChildIndex; i<this.textures.children.length; i++){
 				sprite = this.textures.getChildAt(i);
 				if(sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE){
@@ -961,9 +986,9 @@ function B2deEditor(){
 				if(transformType == this.TRANSFORM_MOVE){
 					var oldPosition = body.GetPosition();
 					body.SetPosition(new b2Vec2(oldPosition.x+obj.x/this.PTM, oldPosition.y+obj.y/this.PTM));
-				}else if(move == this.TRANSFORM_ROTATE){
-					var transformType = body.GetAngle();
-					body.SetAngle(oldAngle+obj);
+				}else if(transformType == this.TRANSFORM_ROTATE){
+					var oldAngle = body.GetAngle();
+					body.SetAngle(oldAngle+obj*this.DEG2RAD);
 				}
 			}else{
 				sprite = objects[i];
@@ -1127,15 +1152,27 @@ function B2deEditor(){
 	      this.stringifyWorldJSON();
 	   }else if(e.ctrlKey && e.keyCode == 86){// v
 	      this.pasteSelection();
-	   }else if(e.ctrlKey && e.keyCode == 88){// x
-	      this.cutSelection();
-	   }else if(e.ctrlKey && e.keyCode == 90){// z
-	      this.undoMove(true);
-	   }else if (e.keyCode == 46){
+	   }else if(e.keyCode == 88){// x
+		   	if(e.ctrlKey){
+		      this.cutSelection();
+		   	}else{
+				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? 10 : 1);
+				this.storeUndoMovement();
+			}
+
+	   }else if(e.keyCode == 90){// z
+			if(e.ctrlKey){
+				this.undoMove(true);
+			}else{
+				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
+				this.storeUndoMovement();
+			}
+	      
+	   }else if (e.keyCode == 46){ //delete
 	      this.deleteSelection();
 	   }else if(e.keyCode == 16){//shift
 	   		this.shiftDown = true;
-	   		this.mouseTransformType = this.mouseTransformType_Rotation;
+	   		//this.mouseTransformType = this.mouseTransformType_Rotation;
 	   }else if(e.keyCode == 32){//space
 	   		this.spaceDown = true;
 	   }else if(e.keyCode == 187){// +
