@@ -1,4 +1,4 @@
-function B2deEditor(){
+function B2dEditor(){
 
 
 
@@ -70,6 +70,7 @@ function B2deEditor(){
 	this.undoing = false;
 	this.undoTransformXY = {};
 	this.undoTransformRot = 0;
+	this.undoTransformDepthHigh = false;
 
 
 	this.load = function(loader){
@@ -113,7 +114,7 @@ function B2deEditor(){
 
 
 
-		var $container = $("#symanticui");
+		/*var $container = $("#symanticui");
 
 		$container.append('<div id="button" class="ui animated button" tabindex="0"> <div class="visible content">Next</div><div class="hidden content"><i class="right arrow icon"></i></div></div>');
 
@@ -124,7 +125,7 @@ function B2deEditor(){
 		$button.click(function() {
 
 		    console.log("erik is een koning en eric ook");
-		});
+		});*/
 
 		
 
@@ -961,13 +962,19 @@ function B2deEditor(){
 	}
 
 	this.applyToSelectedObjects = function(transformType, obj){
-		this.applyToObjects(transformType, obj, this.selectedPhysicsBodies);
-		this.applyToObjects(transformType, obj, this.selectedTextures);
+		if(transformType == this.TRANSFORM_DEPTH){
+			this.applyToObjects(transformType, obj, this.selectedPhysicsBodies.concat(this.selectedTextures))
+		}else{
+			this.applyToObjects(transformType, obj, this.selectedPhysicsBodies);
+			this.applyToObjects(transformType, obj, this.selectedTextures);
+		}
 
 		if(transformType == this.TRANSFORM_MOVE){
 			this.undoTransformXY = {x:this.undoTransformXY.x+obj.x, y:this.undoTransformXY.y+obj.y};
 		}else if(transformType == this.TRANSFORM_ROTATE){
 			this.undoTransformRot += obj;
+		}else if(transformType == this.TRANSFORM_DEPTH){
+			this.undoTransformDepthHigh = obj;
 		}
 	}
 
@@ -978,34 +985,74 @@ function B2deEditor(){
 
 		//TODO: fix body
 
-		for(i = 0; i<objects.length; i++){
+		if(transformType == this.TRANSFORM_MOVE || transformType == this.TRANSFORM_ROTATE){
+			for(i = 0; i<objects.length; i++){
 
-			if(objects[i].myGraphic != undefined){
+				if(objects[i].myGraphic != undefined){
 
-				body = objects[i];
-				if(transformType == this.TRANSFORM_MOVE){
-					var oldPosition = body.GetPosition();
-					body.SetPosition(new b2Vec2(oldPosition.x+obj.x/this.PTM, oldPosition.y+obj.y/this.PTM));
-				}else if(transformType == this.TRANSFORM_ROTATE){
-					var oldAngle = body.GetAngle();
-					body.SetAngle(oldAngle+obj*this.DEG2RAD);
-				}
-			}else{
-				sprite = objects[i];
-				if(transformType == this.TRANSFORM_MOVE){
-					sprite.x = sprite.x+obj.x;
-					sprite.y = sprite.y+obj.y;
-				}else if(transformType == this.TRANSFORM_ROTATE){
-					sprite.rotation += obj;
+					body = objects[i];
+					if(transformType == this.TRANSFORM_MOVE){
+						var oldPosition = body.GetPosition();
+						body.SetPosition(new b2Vec2(oldPosition.x+obj.x/this.PTM, oldPosition.y+obj.y/this.PTM));
+					}else if(transformType == this.TRANSFORM_ROTATE){
+						var oldAngle = body.GetAngle();
+						body.SetAngle(oldAngle+obj*this.DEG2RAD);
+					}
+				}else{
+					sprite = objects[i];
+					if(transformType == this.TRANSFORM_MOVE){
+						sprite.x = sprite.x+obj.x;
+						sprite.y = sprite.y+obj.y;
+					}else if(transformType == this.TRANSFORM_ROTATE){
+						sprite.rotation += obj;
+					}
+
 				}
 
 			}
+		}else if(transformType == this.TRANSFORM_DEPTH){
+
+
+			console.log("changing depth" + obj);
+
+			var tarDepthIndexes = [];
+			var depthArray = [];
+
+			for(i = 0; i<objects.length; i++){
+
+				if(objects[i].myGraphic != undefined){
+
+					depthArray.push(objects[i].myGraphic);
+					tarDepthIndexes.push(objects[i].myGraphic.parent.getChildIndex(objects[i].myGraphic));
+				}else{
+					depthArray.push(objects[i]);
+					tarDepthIndexes.push(objects[i].parent.getChildIndex(objects[i]));
+				}
+			}
+
+			depthArray.sort(function(a, b){ return a.parent.getChildIndex(a)-b.parent.getChildIndex(b); });
+
+			//if(obj) depthArray = depthArray.reverse();
+
+			var neighbour;
+			var child;
+
+
+			var startIndex = depthArray.length
+			for(i = 1; i<depthArray.length; i++){
+				child = depthArray[i];
+				if(obj)	neighbour =  child.parent.getChildAt(tarDepthIndexes[i]+1);
+					else neighbour = child.parent.getChildAt(tarDepthIndexes[i]-1);
+				depthArray[i].parent.swapChildren(child, neighbour);
+			}
+
 
 		}
 
 	}
 	this.TRANSFORM_MOVE ="move";
 	this.TRANSFORM_ROTATE = "rotate";
+	this.TRANSFORM_DEPTH = "depth";
 
 	this.storeUndoMovement = function(){
 		if(this.undoTransformRot != 0 || this.undoTransformXY.x != 0 || this.undoTransformXY.y != 0){
@@ -1129,11 +1176,13 @@ function B2deEditor(){
 		this.mouseDown = false;
 	}
 	this.onKeyDown = function(e){
+
+
 		if (e.keyCode == 68 ) {//d
 			console.log("draw! :)");
 	      this.startVerticesDrawing();
 	   }else if (e.keyCode == 67 ) {//c
-	   	if(e.ctrlKey){
+	   	if(e.ctrlKey || e.metaKey){
 	   		this.copySelection();
 	   	}else{
 	   		console.log("circle! :)");
@@ -1150,10 +1199,12 @@ function B2deEditor(){
 	      this.attachJointPlaceHolder();
 	   }else if (e.keyCode == 83 ) {//s
 	      this.stringifyWorldJSON();
-	   }else if(e.ctrlKey && e.keyCode == 86){// v
-	      this.pasteSelection();
+	   }else if(e.keyCode == 86){// v
+	   		if(e.ctrlKey  || e.metaKey){
+	   			this.pasteSelection();
+	   		}
 	   }else if(e.keyCode == 88){// x
-		   	if(e.ctrlKey){
+		   	if(e.ctrlKey || e.metaKey){
 		      this.cutSelection();
 		   	}else{
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? 10 : 1);
@@ -1161,7 +1212,7 @@ function B2deEditor(){
 			}
 
 	   }else if(e.keyCode == 90){// z
-			if(e.ctrlKey){
+			if(e.ctrlKey || e.metaKey){
 				this.undoMove(true);
 			}else{
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
@@ -1189,11 +1240,23 @@ function B2deEditor(){
 	   		}
 	   		e.preventDefault();
 	   }else if (e.keyCode == 38){ // up arrow
-	   		this.applyToSelectedObjects(this.TRANSFORM_MOVE, {x:0, y:this.shiftDown ? -10 : -1});
-	   		this.storeUndoMovement();
+	   		if(e.ctrlKey || e.metaKey){
+				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, true);
+				this.storeUndoMovement();
+
+	   		}else{
+	   			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {x:0, y:this.shiftDown ? -10 : -1});
+	   			this.storeUndoMovement();
+	   		}
 	   }else if (e.keyCode == 40){ // down arrow
-	   		this.applyToSelectedObjects(this.TRANSFORM_MOVE, {x:0, y:this.shiftDown ? -10 : 1});
-	   		this.storeUndoMovement();
+	   		if(e.ctrlKey || e.metaKey){
+				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, false);
+				this.storeUndoMovement();
+
+	   		}else{
+	   			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {x:0, y:this.shiftDown ? 10 : 1});
+	   			this.storeUndoMovement();
+	   		}
 	   }else if (e.keyCode == 37){ // left arrow
 	   		this.applyToSelectedObjects(this.TRANSFORM_MOVE, {x:this.shiftDown ? -10 : -1, y:0});
 	   		this.storeUndoMovement();

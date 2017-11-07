@@ -59,7 +59,7 @@ function Game(){
       .add("assets/images/bodyparts.json")
       .add("assets/images/vehicles.json");
       
-      this.editor = new B2deEditor();
+      this.editor = new B2dEditor();
       this.editor.load(PIXI.loader);
 
       PIXI.loader.load(this.setup.bind(this));
