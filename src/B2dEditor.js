@@ -845,14 +845,11 @@ function B2dEditor() {
 									fixture = fixture.GetNext();
 								}
 
-								if (pointInsideBody) {
-									this.selectedPhysicsBodies = [body];
-									break;
+								if (!pointInsideBody) {
+									this.selectedPhysicsBodies.splice(i, 1);
+									i--;
 								}
-
 							}
-							if (!pointInsideBody) this.selectedPhysicsBodies = [];
-
 						}
 						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 1);
 
@@ -861,14 +858,18 @@ function B2dEditor() {
 
 						var highestObject;
 						for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
+							console.log("body"+i);
 							body = this.selectedPhysicsBodies[i];
-							if (highestObject == undefined) highestObject = body.myGraphic;
-							if (body.myGraphic.parent.getChildIndex(body.myGraphic) > highestObject.parent.getChildIndex(highestObject)) {
-								highestObject = body.myGraphic;
+							var texture = body.myGraphic;
+							if(body.myTexture) texture = body.myTexture;
+							if (highestObject == undefined) highestObject = texture;
+							if (texture.parent.getChildIndex(texture) > highestObject.parent.getChildIndex(highestObject)) {
+								highestObject = texture;
 							}
 						}
 						var sprite;
 						for (i = 0; i < this.selectedTextures.length; i++) {
+							console.log("texture"+i);
 							sprite = this.selectedTextures[i];
 							if (highestObject == undefined) highestObject = sprite;
 							if (sprite.parent.getChildIndex(sprite) > highestObject.parent.getChildIndex(highestObject)) {
@@ -876,10 +877,16 @@ function B2dEditor() {
 							}
 						}
 						if (highestObject) {
-							if (highestObject.data.type == this.object_BODY) {
+							if (highestObject.data.type == this.object_BODY || highestObject.myBody) {
 								this.selectedTextures = [];
+								if(highestObject.myBody) this.selectedPhysicsBodies = [highestObject.myBody];
+								else this.selectedPhysicsBodies = [highestObject];
+
+								console.log("seelecting body");
 							} else {
 								this.selectedPhysicsBodies = [];
+								this.selectedTextures = [highestObject];
+								console.log("seleting texture");
 							}
 						}
 
