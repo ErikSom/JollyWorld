@@ -56,7 +56,6 @@ function B2dEditor() {
 	this.copiedJSON = '';
 	this.copyCenterPoint = { x: 0, y: 0 };
 
-	this.selectionBoxColor = "#5294AE";
 	this.mouseDown = false;
 	this.shiftDown = false;
 	this.spaceDown = false;
@@ -71,6 +70,11 @@ function B2dEditor() {
 	this.undoTransformXY = {};
 	this.undoTransformRot = 0;
 	this.undoTransformDepthHigh = false;
+
+
+	//COLORS
+	this.selectionBoxColor = "0x5294AE";
+	this.jointLineColor = "0x888888";
 
 
 	this.load = function (loader) {
@@ -1404,6 +1408,10 @@ function B2dEditor() {
 		for (i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
 			if (sprite.data.type == this.object_JOINT) {
+
+				var tarSprite;
+
+
 				if (sprite.data.enableLimit) {
 					var lineLength = 50 / sprite.scale.x;
 
@@ -1412,7 +1420,7 @@ function B2dEditor() {
 					var lowAngle = -sprite.data.lowerAngle * this.DEG2RAD + sprite.rotation;
 					var upAngle = -sprite.data.upperAngle * this.DEG2RAD + sprite.rotation;
 
-					var tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
+					tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
 
 					this.debugGraphics.lineStyle(1, "0x707070", 1);
 					this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
@@ -1460,6 +1468,18 @@ function B2dEditor() {
 						this.debugGraphics.endFill();
 					}
 				}
+				// draw joint lines
+				this.debugGraphics.lineStyle(1, this.jointLineColor, 1);
+				tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
+				this.debugGraphics.moveTo(sprite.x * this.container.scale.x + this.container.x, sprite.y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+
+				if (sprite.data.bodyB_ID != undefined) {
+					tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
+					this.debugGraphics.moveTo(sprite.x * this.container.scale.x + this.container.x, sprite.y * this.container.scale.y + this.container.y);
+					this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+				}
+
 			}
 		}
 		//
@@ -2017,12 +2037,15 @@ function B2dEditor() {
 
 		} else {
 			tarObj = new this.jointObject;
-			bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);
+
+			if(this.selectedPhysicsBodies.length < 2){
+				bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);
+			}else{
+				bodies = [this.selectedPhysicsBodies[0], this.selectedPhysicsBodies[1]];
+			}
 
 			if (bodies.length == 0) return;
-
 			tarObj.bodyA_ID = bodies[0].myGraphic.parent.getChildIndex(bodies[0].myGraphic);
-
 			if (bodies.length > 1) {
 				tarObj.bodyB_ID = bodies[1].myGraphic.parent.getChildIndex(bodies[1].myGraphic);
 			}

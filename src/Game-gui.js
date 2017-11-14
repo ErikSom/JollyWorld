@@ -1,4 +1,4 @@
- var assetSelectionJSON = 
+var assetSelectionJSON = 
  {
     id: 'mainAssetSelection',
     component: 'Window',
