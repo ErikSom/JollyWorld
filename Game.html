@@ -1,53 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-   <style>  
-   html, body, div, canvas {
-       margin: 0;
-       padding: 0;
-       display: block;
-   }
-   #uicontainer {
-    position: absolute;
-   }
-   #my-gui-container, #symanticui {
-      z-index: 10;
-      height:10;
-      float: left;
-      margin: 10px;
-   }
-   .dg.main {
-      top:0;
-      display: inline-block;
-   }
-   .dg.main .close-button.close-bottom {
-    position: static !important;
-   }
-   </style>
-   <link rel="stylesheet" type="text/css" href="libs/dat-gui-light-theme.css"></head>
-   <link rel="stylesheet" type="text/css" href="libs/semantic/dist/semantic.min.css">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/B2dEditor.css">
+    <link rel="stylesheet" type="text/css" href="libs/dat-gui-light-theme.css">
+    <link rel="stylesheet" type="text/css" href="libs/semantic/dist/semantic.min.css">
+</head>
 
-   <body>
-      <div id="uicontainer">
-          <div id="symanticui"></div>
-          <div id="my-gui-container"></div>
-      </div>
-      <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
-   </body>
+<body>
+    <div id="uicontainer">
+        <div id="symanticui"></div>
+        <div id="my-gui-container"></div>
+    </div>
+    <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
+</body>
 
-      <script type="text/javascript" src="libs/pixi.js"></script>
-      <script type="text/javascript" src="libs/debugdraw.js"></script>
-      <script type="text/javascript" src="libs/Box2D.js"></script>
-      <script type="text/javascript" src="libs/dat.gui.min.js"></script>
-      <script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
-      <script type="text/javascript" src="libs/semantic/dist/semantic.min.js"></script>
-      <script type="text/javascript" src="src/Game.js"></script>
-      <script type="text/javascript" src="src/Game-gui.js"></script>
-      <script type="text/javascript" src="src/B2dEditor.js"></script>
-      <script type="text/javascript">  
-            window.onload = function() {
-                game.init();
-            };        
-      </script>
+<script type="text/javascript" src="libs/pixi.js"></script>
+<script type="text/javascript" src="libs/debugdraw.js"></script>
+<script type="text/javascript" src="libs/Box2D.js"></script>
+<script type="text/javascript" src="libs/dat.gui.min.js"></script>
+<script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="libs/semantic/dist/semantic.min.js"></script>
+<script type="text/javascript" src="src/Game.js"></script>
+<script type="text/javascript" src="src/Game-gui.js"></script>
+<script type="text/javascript" src="src/B2dEditor.js"></script>
+<script type="text/javascript">
+    window.onload = function () {
+        game.init();
+    };
+</script>
+
 </html>

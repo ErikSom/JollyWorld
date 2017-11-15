@@ -1,0 +1,28 @@
+html, body, div, canvas {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+#uicontainer {
+ position: absolute;
+}
+#my-gui-container, #symanticui {
+   z-index: 10;
+   height:10;
+   float: left;
+   margin: 10px;
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+.dg.main {
+   top:0;
+   display: inline-block;
+}
+.dg.main .close-button.close-bottom {
+ position: static !important;
+}
+/**/

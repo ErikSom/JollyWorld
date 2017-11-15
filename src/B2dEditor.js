@@ -2078,6 +2078,9 @@ function B2dEditor() {
 		jointGraphics.y = tarObj.y;
 		jointGraphics.rotation = tarObj.rotation;
 
+		jointGraphics.scale.x = 1.0 / this.container.scale.x;
+		jointGraphics.scale.y = 1.0 / this.container.scale.y;
+
 
 		if (tarObj.group != "") {
 			if (this.editorObjectLookup[tarObj.group] == undefined) {
