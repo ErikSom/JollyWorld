@@ -1,0 +1,177 @@
+{
+    "objects": [
+        {
+            "x": 8.20833333333333,
+            "y": 10.341666666666669,
+            "rotation": 0,
+            "ID": 0,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 3.791666666666666,
+                    "y": -0.6416666666666675
+                },
+                {
+                    "x": 3.658333333333333,
+                    "y": 0.5583333333333336
+                },
+                {
+                    "x": -3.7416666666666663,
+                    "y": 0.49166666666666536
+                },
+                {
+                    "x": -3.708333333333333,
+                    "y": -0.4083333333333332
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "x": 18.55833333333333,
+            "y": 10.475000000000001,
+            "rotation": 0,
+            "ID": 1,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 3.8416666666666686,
+                    "y": -0.375
+                },
+                {
+                    "x": 3.908333333333335,
+                    "y": 0.5916666666666668
+                },
+                {
+                    "x": -3.891666666666664,
+                    "y": 0.3583333333333325
+                },
+                {
+                    "x": -3.8583333333333307,
+                    "y": -0.5749999999999993
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 0,
+            "x": 142.99999999999994,
+            "y": 311.99999999999983,
+            "rotation": 0,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0,
+            "frequencyHz": 0,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 0,
+            "ID": 2
+        },
+        {
+            "x": 15.341666666666661,
+            "y": 10.458333333333336,
+            "rotation": 0,
+            "ID": 3,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.7250000000000014,
+                    "y": -0.625
+                },
+                {
+                    "x": 0.5249999999999986,
+                    "y": 0.5416666666666661
+                },
+                {
+                    "x": -0.7083333333333339,
+                    "y": 0.44166666666666643
+                },
+                {
+                    "x": -0.5416666666666661,
+                    "y": -0.3583333333333334
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 0,
+            "x": 457.9999999999998,
+            "y": 309.99999999999983,
+            "rotation": 0,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0,
+            "frequencyHz": 0,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 3,
+            "bodyB_ID": 1,
+            "ID": 4
+        },
+        {
+            "x": 19.579913454194227,
+            "y": 14.999869961614188,
+            "rotation": 0,
+            "ID": 8,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": true,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 53.29272751269292,
+                    "y": -3.096296540382024
+                },
+                {
+                    "x": 53.58414365767007,
+                    "y": 2.2949021416949087
+                },
+                {
+                    "x": -53.65699769391434,
+                    "y": 2.7320263591606064
+                },
+                {
+                    "x": -53.21987347644865,
+                    "y": -1.9306319604735016
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        }
+    ]
+}

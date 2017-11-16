@@ -57,8 +57,9 @@ function Game(){
 
       PIXI.loader
       .add("assets/images/bodyparts.json")
-      .add("assets/images/vehicles.json");
-      
+      .add("assets/images/vehicles.json")
+      .add("worldData", "data/worldData.json");
+
       this.editor = new B2dEditor();
       this.editor.load(PIXI.loader);
 
@@ -71,14 +72,14 @@ function Game(){
       new b2Vec2(0, 10)    //gravity
          ,true               //allow sleep
       );
-            
+
       //container
       var myContainer = new PIXI.Graphics();
       this.stage.addChild(myContainer);
 
       //Debug Draw
       this.newDebugGraphics = new PIXI.Graphics();
-      this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, this.PTM);            
+      this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, this.PTM);
       this.myDebugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
       myContainer.addChild(this.newDebugGraphics);
       this.world.SetDebugDraw(this.myDebugDraw);
@@ -93,6 +94,10 @@ function Game(){
       this.editor.init(myContainer, this.world, this.PTM);
 
 
+    console.log(PIXI.loader.resources);
+      this.editor.buildJSON(PIXI.loader.resources.worldData.data);
+
+
       this.canvas.addEventListener("keydown", this.onKeyDown.bind(this), true);
       this.canvas.addEventListener("keyup", this.onKeyUp.bind(this), true);
       this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this), true);
@@ -105,7 +110,7 @@ function Game(){
    }
 
 
-   //mouse   
+   //mouse
    this.onMouseDown = function(e) {
       this.isMouseDown = true;
       if(!this.mouseJoint && this.run) {
