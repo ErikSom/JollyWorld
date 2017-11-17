@@ -58,7 +58,9 @@ function Game(){
       PIXI.loader
       .add("assets/images/bodyparts.json")
       .add("assets/images/vehicles.json")
-      .add("worldData", "data/worldData.json");
+      .add("worldData", "data/worldData.json")
+      .add("vehicleData", "data/vehicle.json")
+      .add("characterData", "data/character.json");
 
       this.editor = new B2dEditor();
       this.editor.load(PIXI.loader);
@@ -94,9 +96,7 @@ function Game(){
       this.editor.init(myContainer, this.world, this.PTM);
 
 
-    console.log(PIXI.loader.resources);
-      this.editor.buildJSON(PIXI.loader.resources.worldData.data);
-
+      this.initWorld();
 
       this.canvas.addEventListener("keydown", this.onKeyDown.bind(this), true);
       this.canvas.addEventListener("keyup", this.onKeyUp.bind(this), true);
@@ -107,6 +107,12 @@ function Game(){
       this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), true);
       this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
+   }
+
+   this.initWorld = function(){
+    this.editor.buildJSON(PIXI.loader.resources.worldData.data);
+    this.editor.buildJSON(PIXI.loader.resources.vehicleData.data);
+    //this.editor.buildJSON(PIXI.loader.resources.characterData.data);
    }
 
 
@@ -148,7 +154,6 @@ function Game(){
       var aabb = new b2AABB();
       aabb.lowerBound.Set(this.editor.mousePosWorld.x - 0.001, this.editor.mousePosWorld.y - 0.001);
       aabb.upperBound.Set(this.editor.mousePosWorld.x + 0.001, this.editor.mousePosWorld.y + 0.001);
-      
       // Query the world for overlapping shapes.
 
       this.selectedBody = null;
@@ -170,6 +175,7 @@ function Game(){
       if (e.keyCode == 82){//r
          this.run = false;
          this.editor.resetEditor();
+         this.initWorld();
 
       }else if (e.keyCode == 80 ) {//p
          if(this.editor.editing){

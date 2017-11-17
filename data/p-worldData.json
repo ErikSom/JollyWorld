@@ -1,0 +1,796 @@
+{
+    "objects": [
+        {
+            "x": 14.251087384618318,
+            "y": 7.660068790898384,
+            "rotation": 0,
+            "ID": 0,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.8039477185614405,
+                    "y": -0.6328950124845383
+                },
+                {
+                    "x": 0.7355266361306807,
+                    "y": 0.6328950124845374
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": 0.5986844712691575
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": -0.5986844712691575
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "x": 14.268192655226011,
+            "y": 6.667963095652352,
+            "rotation": 0,
+            "ID": 1,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.8039477185614405,
+                    "y": -0.6328950124845383
+                },
+                {
+                    "x": 0.7355266361306807,
+                    "y": 0.6328950124845374
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": 0.5986844712691575
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": -0.5986844712691575
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 2,
+            "x": 447.3550256666383,
+            "y": 209.8022716073756,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 1,
+            "bodyB_ID": 0,
+            "ID": 2
+        },
+        {
+            "x": 14.298126878789466,
+            "y": 5.658752129798629,
+            "rotation": 0,
+            "ID": 3,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.8039477185614405,
+                    "y": -0.6328950124845383
+                },
+                {
+                    "x": 0.7355266361306807,
+                    "y": 0.6328950124845374
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": 0.5986844712691575
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": -0.5986844712691575
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "x": 14.31523214939716,
+            "y": 4.6666464345525975,
+            "rotation": 0,
+            "ID": 4,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.8039477185614405,
+                    "y": -0.6328950124845383
+                },
+                {
+                    "x": 0.7355266361306807,
+                    "y": 0.6328950124845374
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": 0.5986844712691575
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": -0.5986844712691575
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 2,
+            "x": 410.47011410737883,
+            "y": 154.36782034703788,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 4,
+            "bodyB_ID": 3,
+            "ID": 5
+        },
+        {
+            "jointType": 2,
+            "x": 449.4701310929125,
+            "y": 155.3941365834993,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 4,
+            "bodyB_ID": 3,
+            "ID": 6
+        },
+        {
+            "jointType": 2,
+            "x": 409.0589292822442,
+            "y": 183.61783308618797,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 3,
+            "bodyB_ID": 1,
+            "ID": 7
+        },
+        {
+            "jointType": 2,
+            "x": 448.05894626777786,
+            "y": 185.1573074408801,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 3,
+            "bodyB_ID": 1,
+            "ID": 8
+        },
+        {
+            "x": 14.34516637296061,
+            "y": 3.669409158124259,
+            "rotation": 0,
+            "ID": 9,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.8039477185614405,
+                    "y": -0.6328950124845383
+                },
+                {
+                    "x": 0.7355266361306807,
+                    "y": 0.6328950124845374
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": 0.5986844712691575
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": -0.5986844712691575
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "x": 14.362271643568304,
+            "y": 2.6773034628782253,
+            "rotation": 0,
+            "ID": 10,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.8039477185614405,
+                    "y": -0.6328950124845383
+                },
+                {
+                    "x": 0.7355266361306807,
+                    "y": 0.6328950124845374
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": 0.5986844712691575
+                },
+                {
+                    "x": -0.7697371773460588,
+                    "y": -0.5986844712691575
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 2,
+            "x": 411.8812989325131,
+            "y": 94.68753119680662,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 10,
+            "bodyB_ID": 9,
+            "ID": 11
+        },
+        {
+            "jointType": 2,
+            "x": 450.88131591804677,
+            "y": 95.71384743326806,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 10,
+            "bodyB_ID": 9,
+            "ID": 12
+        },
+        {
+            "jointType": 2,
+            "x": 411.11156175516703,
+            "y": 124.60464948965675,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 4,
+            "bodyB_ID": 9,
+            "ID": 13
+        },
+        {
+            "jointType": 2,
+            "x": 448.57210438600856,
+            "y": 124.60464948965675,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 4,
+            "bodyB_ID": 9,
+            "ID": 14
+        },
+        {
+            "x": 14.279139924130396,
+            "y": 1.310339972752702,
+            "rotation": 0,
+            "ID": 15,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": -1.0923804884350243,
+                    "y": 0.9515963682071219
+                },
+                {
+                    "x": -1.0454524483590575,
+                    "y": 0.34153184721954244
+                },
+                {
+                    "x": -0.8812043080931709,
+                    "y": -0.12774855354013415
+                },
+                {
+                    "x": -0.623100087675347,
+                    "y": -0.5970289542998108
+                },
+                {
+                    "x": -0.24767576706760686,
+                    "y": -0.7378130745277138
+                },
+                {
+                    "x": 0.4562448340719065,
+                    "y": -0.6908850344517461
+                },
+                {
+                    "x": 0.9255252348315839,
+                    "y": -0.4093167939959402
+                },
+                {
+                    "x": 1.2540215153633572,
+                    "y": 0.3180678271815587
+                },
+                {
+                    "x": 1.2540215153633572,
+                    "y": 0.9515963682071219
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 2,
+            "x": 413.200798099349,
+            "y": 62.930646020818116,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 15,
+            "bodyB_ID": 10,
+            "ID": 16
+        },
+        {
+            "jointType": 2,
+            "x": 446.98898695404574,
+            "y": 63.63456662195763,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 15,
+            "bodyB_ID": 10,
+            "ID": 17
+        },
+        {
+            "x": 12.633888463550377,
+            "y": 8.968246568066073,
+            "rotation": 0,
+            "ID": 18,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.2947667517271704,
+                    "y": -1.4503697385978755
+                },
+                {
+                    "x": 0.9517593127907169,
+                    "y": -1.2391935582560212
+                },
+                {
+                    "x": 1.4210397135503925,
+                    "y": -0.6291290372684424
+                },
+                {
+                    "x": 1.491431773664349,
+                    "y": -0.11292059643279817
+                },
+                {
+                    "x": 1.2802555933224937,
+                    "y": 0.4971439245547824
+                },
+                {
+                    "x": 1.0925434330186228,
+                    "y": 0.8725682451625225
+                },
+                {
+                    "x": 0.764047152486846,
+                    "y": 1.2010645256942967
+                },
+                {
+                    "x": 0.15398263149926805,
+                    "y": 1.2949206058462313
+                },
+                {
+                    "x": -0.3622258093363797,
+                    "y": 1.2010645256942967
+                },
+                {
+                    "x": -0.7845781700200867,
+                    "y": 1.0602804054663935
+                },
+                {
+                    "x": -1.1834665106658129,
+                    "y": 0.7083201048966368
+                },
+                {
+                    "x": -1.3477146509316995,
+                    "y": 0.21557568409897598
+                },
+                {
+                    "x": -1.418106711045649,
+                    "y": -0.20677667658473275
+                },
+                {
+                    "x": -1.2538585707797623,
+                    "y": -0.722985117420377
+                },
+                {
+                    "x": -0.8549702301340361,
+                    "y": -1.2391935582560212
+                },
+                {
+                    "x": -0.24490570914645815,
+                    "y": -1.4503697385978755
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 0,
+            "x": 380.1165298457919,
+            "y": 266.3636997501379,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 561.5728395912048,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0,
+            "frequencyHz": 0,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 0,
+            "bodyB_ID": 18,
+            "ID": 19
+        },
+        {
+            "x": 15.767801639873586,
+            "y": 9.01957411189915,
+            "rotation": 0,
+            "ID": 20,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": false,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 0.2947667517271704,
+                    "y": -1.4503697385978755
+                },
+                {
+                    "x": 0.9517593127907169,
+                    "y": -1.2391935582560212
+                },
+                {
+                    "x": 1.4210397135503925,
+                    "y": -0.6291290372684424
+                },
+                {
+                    "x": 1.491431773664349,
+                    "y": -0.11292059643279817
+                },
+                {
+                    "x": 1.2802555933224937,
+                    "y": 0.4971439245547824
+                },
+                {
+                    "x": 1.0925434330186228,
+                    "y": 0.8725682451625225
+                },
+                {
+                    "x": 0.764047152486846,
+                    "y": 1.2010645256942967
+                },
+                {
+                    "x": 0.15398263149926805,
+                    "y": 1.2949206058462313
+                },
+                {
+                    "x": -0.3622258093363797,
+                    "y": 1.2010645256942967
+                },
+                {
+                    "x": -0.7845781700200867,
+                    "y": 1.0602804054663935
+                },
+                {
+                    "x": -1.1834665106658129,
+                    "y": 0.7083201048966368
+                },
+                {
+                    "x": -1.3477146509316995,
+                    "y": 0.21557568409897598
+                },
+                {
+                    "x": -1.418106711045649,
+                    "y": -0.20677667658473275
+                },
+                {
+                    "x": -1.2538585707797623,
+                    "y": -0.722985117420377
+                },
+                {
+                    "x": -0.8549702301340361,
+                    "y": -1.2391935582560212
+                },
+                {
+                    "x": -0.24490570914645815,
+                    "y": -1.4503697385978755
+                }
+            ],
+            "density": 25.185070278062028,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 0,
+            "x": 474.4418903984865,
+            "y": 267.0676203512772,
+            "collideConnected": false,
+            "enableMotor": true,
+            "maxMotorTorque": 480.9683055861671,
+            "motorSpeed": 20,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0,
+            "frequencyHz": 0,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 0,
+            "bodyB_ID": 20,
+            "ID": 21
+        },
+        {
+            "x": 13.988917068754317,
+            "y": 13.28981833415711,
+            "rotation": 0,
+            "ID": 22,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": true,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 6.419435447063096,
+                    "y": -1.3232262481411396
+                },
+                {
+                    "x": 6.777064162776918,
+                    "y": 1.072886147141464
+                },
+                {
+                    "x": -6.669775548062771,
+                    "y": 1.215937633426993
+                },
+                {
+                    "x": -6.526724061777243,
+                    "y": -0.9655975324273189
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "x": 27.264387275567046,
+            "y": 22.348888180032553,
+            "rotation": 0,
+            "ID": 23,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": true,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 6.419435447063096,
+                    "y": -1.3232262481411396
+                },
+                {
+                    "x": 6.777064162776918,
+                    "y": 1.072886147141464
+                },
+                {
+                    "x": -6.669775548062771,
+                    "y": 1.215937633426993
+                },
+                {
+                    "x": -6.526724061777243,
+                    "y": -0.9655975324273189
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "x": 44.24760614942456,
+            "y": 31.265172769418907,
+            "rotation": 0,
+            "ID": 24,
+            "type": 0,
+            "colorFill": "#999999",
+            "colorLine": "#000",
+            "fixed": true,
+            "awake": true,
+            "vertices": [
+                {
+                    "x": 6.419435447063096,
+                    "y": -1.3232262481411396
+                },
+                {
+                    "x": 6.777064162776918,
+                    "y": 1.072886147141464
+                },
+                {
+                    "x": -6.669775548062771,
+                    "y": 1.215937633426993
+                },
+                {
+                    "x": -6.526724061777243,
+                    "y": -0.9655975324273189
+                }
+            ],
+            "density": 1,
+            "group": "",
+            "refName": "",
+            "collision": 0
+        },
+        {
+            "jointType": 2,
+            "x": 408.42108185325833,
+            "y": 213.1102143681672,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.5,
+            "frequencyHz": 10,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 1,
+            "bodyB_ID": 0,
+            "ID": 25
+        }
+    ]
+}
