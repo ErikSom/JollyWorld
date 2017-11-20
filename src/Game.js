@@ -195,11 +195,15 @@ function Game(){
       if(this.vehicle){
          if(e.keyCode == 87){
             console.log("YES!!");
-            this.vehicle.engine.SetMaxMotorTorque(this.desiredVehicleTorque);
-            this.vehicle.engine.SetMotorSpeed(-this.desiredVehicleSpeed);
+            this.vehicle.engine1.SetMaxMotorTorque(this.desiredVehicleTorque);
+            this.vehicle.engine1.SetMotorSpeed(this.desiredVehicleSpeed);
+            this.vehicle.engine2.SetMaxMotorTorque(this.desiredVehicleTorque);
+            this.vehicle.engine2.SetMotorSpeed(-this.desiredVehicleSpeed);
          }else if(e.keyCode == 83){
-            this.vehicle.engine.SetMaxMotorTorque(this.desiredVehicleTorque);
-            this.vehicle.engine.SetMotorSpeed(this.desiredVehicleSpeed*0.6);
+            this.vehicle.engine1.SetMaxMotorTorque(this.desiredVehicleTorque);
+            this.vehicle.engine1.SetMotorSpeed(-this.desiredVehicleSpeed);
+            this.vehicle.engine2.SetMaxMotorTorque(this.desiredVehicleTorque);
+            this.vehicle.engine2.SetMotorSpeed(this.desiredVehicleSpeed);
          }
       }
 
@@ -213,8 +217,10 @@ function Game(){
       this.editor.onKeyUp(e);
 
       if(e.keyCode == 87 || e.keyCode == 83){
-         this.vehicle.engine.SetMaxMotorTorque(0);
-         this.vehicle.engine.SetMotorSpeed(0);
+         this.vehicle.engine1.SetMaxMotorTorque(0);
+         this.vehicle.engine1.SetMotorSpeed(0);
+         this.vehicle.engine2.SetMaxMotorTorque(0);
+         this.vehicle.engine2.SetMotorSpeed(0);
       }
    }
 
@@ -224,11 +230,13 @@ function Game(){
       if(this.vehicle){
 
          console.log("yes vehicle");
-         this.desiredVehicleTorque = this.vehicle.engine.GetMotorTorque();
-         this.desiredVehicleSpeed = this.vehicle.engine.GetMotorSpeed();
+         this.desiredVehicleTorque = this.vehicle.engine1.GetMotorTorque();
+         this.desiredVehicleSpeed = this.vehicle.engine1.GetMotorSpeed();
 
-         this.vehicle.engine.SetMaxMotorTorque(0);
-         this.vehicle.engine.SetMotorSpeed(0);
+         this.vehicle.engine1.SetMaxMotorTorque(0);
+         this.vehicle.engine1.SetMotorSpeed(0);
+         this.vehicle.engine2.SetMaxMotorTorque(0);
+         this.vehicle.engine2.SetMotorSpeed(0);
       }
    }
 

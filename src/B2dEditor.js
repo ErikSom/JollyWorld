@@ -1843,7 +1843,7 @@ function B2dEditor() {
 		var fixDef = new b2FixtureDef;
 		fixDef.density = obj.density;
 		fixDef.friction = 1;
-		fixDef.restitution = 0.2;
+		fixDef.restitution = 0.001;
 
 
 		var bd = new b2BodyDef();
