@@ -963,6 +963,27 @@
             "bodyA_ID": 10,
             "bodyB_ID": 15,
             "ID": 39
+        },
+        {
+            "jointType": 2,
+            "x": 332.2149691712566,
+            "y": -108.05278452167325,
+            "rotation": 0,
+            "collideConnected": false,
+            "enableMotor": false,
+            "maxMotorTorque": 1,
+            "motorSpeed": 10,
+            "enableLimit": false,
+            "upperAngle": 0,
+            "lowerAngle": 0,
+            "dampingRatio": 0.25,
+            "frequencyHz": 2,
+            "type": 2,
+            "group": "",
+            "refName": "",
+            "bodyA_ID": 10,
+            "bodyB_ID": 15,
+            "ID": 40
         }
     ]
 }

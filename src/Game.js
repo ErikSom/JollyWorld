@@ -28,6 +28,7 @@ function Game(){
    this.canvas;
    this.renderer;
    this.world; 
+   this.worldJSON;
 
    this.isMouseDown
    this.selectedBody
@@ -174,8 +175,10 @@ function Game(){
    this.onKeyDown = function(e) {
       if (e.keyCode == 82){//r
          this.run = false;
+         var worldJSON = JSON.parse(this.editor.worldJSON);
          this.editor.resetEditor();
-         this.initWorld();
+         //this.initWorld();
+         this.editor.buildJSON(worldJSON);
 
       }else if (e.keyCode == 80 ) {//p
          if(this.editor.editing){
