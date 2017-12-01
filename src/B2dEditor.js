@@ -184,6 +184,7 @@ function B2dEditor() {
 			this.editorGUI.editData.rotation = dataJoint.rotation;
 			this.editorGUI.editData.colorFill = dataJoint.colorFill;
 			this.editorGUI.editData.colorLine = dataJoint.colorLine;
+			this.editorGUI.editData.transparancy = dataJoint.transparancy;
 			this.editorGUI.editData.fixed = dataJoint.fixed;
 			this.editorGUI.editData.awake = dataJoint.awake;
 			this.editorGUI.editData.density = dataJoint.density;
@@ -212,10 +213,14 @@ function B2dEditor() {
 			controller.onChange(function (value) { this.humanUpdate = true; this.targetValue = value; }.bind(controller));
 			controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
 			controller.onChange(function (value) { this.humanUpdate = true; this.targetValue = value; }.bind(controller));
+			controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+			controller.onChange(function (value) { this.humanUpdate = true; this.targetValue = value; }.bind(controller));
+
+
 
 			this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function (value) { this.humanUpdate = true; this.targetValue = value });
 			this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function (value) { this.humanUpdate = true; this.targetValue = value });
-			controller = this.editorGUI.add(self.editorGUI.editData, "density", 1, 1000);
+			controller = this.editorGUI.add(self.editorGUI.editData, "density", 0, 1000);
 			controller.onChange(function (value) { this.humanUpdate = true; this.targetValue = value }.bind(controller));
 			controller = this.editorGUI.add(self.editorGUI.editData, "collision", 0, 7).step(1);
 			controller.onChange(function (value) { this.humanUpdate = true; this.targetValue = value }.bind(controller));
@@ -701,6 +706,7 @@ function B2dEditor() {
 		this.type = self.object_BODY;
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
+		this.transparancy = 1.0;
 		this.fixed = false;
 		this.awake = true;
 		this.vertices = [{ x: 0, y: 0 }, { x: 0, y: 0 }];
@@ -1569,8 +1575,8 @@ function B2dEditor() {
 							body.myGraphic.data.colorFill = controller.targetValue.toString();
 							var fixture = body.GetFixtureList();
 
-							if (body.myGraphic.data.radius) this.updateCircleShape(body.myGraphic, body.myGraphic.data.radius, body.myGraphic.data.colorFill, body.myGraphic.data.colorLine);
-							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.myGraphic.data.colorFill, body.myGraphic.data.colorLine);
+							if (body.myGraphic.data.radius) this.updateCircleShape(body.myGraphic, body.myGraphic.data.radius, body.myGraphic.data.colorFill, body.myGraphic.data.colorLine,body.myGraphic.data.transparancy);
+							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.myGraphic.data.colorFill, body.myGraphic.data.colorLine,body.myGraphic.data.transparancy);
 						}
 					} else if (controller.property == "colorLine") {
 						//body
@@ -1578,10 +1584,19 @@ function B2dEditor() {
 							body = this.selectedPhysicsBodies[j];
 							body.myGraphic.data.colorLine = controller.targetValue.toString();
 							var fixture = body.GetFixtureList();
-							if (body.myGraphic.data.radius) this.updateCircleShape(body.myGraphic, body.myGraphic.data.radius, body.myGraphic.data.colorFill, body.myGraphic.data.colorLine);
-							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.myGraphic.data.colorFill, body.myGraphic.data.colorLine);
+							if (body.myGraphic.data.radius) this.updateCircleShape(body.myGraphic, body.myGraphic.data.radius, body.myGraphic.data.colorFill, body.myGraphic.data.colorLine, body.myGraphic.data.transparancy);
+							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.myGraphic.data.colorFill, body.myGraphic.data.colorLine,body.myGraphic.data.transparancy);
 						}
-					} else if (controller.property == "fixed") {
+					} else if (controller.property == "transparancy") {
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.myGraphic.data.transparancy = controller.targetValue;
+							var fixture = body.GetFixtureList();
+							if (body.myGraphic.data.radius) this.updateCircleShape(body.myGraphic, body.myGraphic.data.radius, body.myGraphic.data.colorFill, body.myGraphic.data.colorLine,body.myGraphic.data.transparancy);
+							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.myGraphic.data.colorFill, body.myGraphic.data.colorLine,body.myGraphic.data.transparancy);
+						}
+					}else if (controller.property == "fixed") {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -1842,7 +1857,7 @@ function B2dEditor() {
 
 		var fixDef = new b2FixtureDef;
 		fixDef.density = obj.density;
-		fixDef.friction = 1;
+		fixDef.friction = 2000;
 		fixDef.restitution = 0.001;
 
 
@@ -1881,8 +1896,8 @@ function B2dEditor() {
 		this.textures.addChild(graphic);
 		body.myGraphic = graphic
 
-		if (!obj.radius) this.updatePolyShape(body.myGraphic, fixDef.shape, obj.colorFill, obj.colorLine);
-		else this.updateCircleShape(body.myGraphic, obj.radius, obj.colorFill, obj.colorLine);
+		if (!obj.radius) this.updatePolyShape(body.myGraphic, fixDef.shape, obj.colorFill, obj.colorLine, obj.transparancy);
+		else this.updateCircleShape(body.myGraphic, obj.radius, obj.colorFill, obj.colorLine, obj.transparancy);
 
 		body.myGraphic.myBody = body;
 		body.myGraphic.data = obj;
@@ -2139,7 +2154,7 @@ function B2dEditor() {
 		texture.myBody = null;
 	}
 
-	this.updatePolyShape = function (graphic, poly, colorFill, colorLine) {
+	this.updatePolyShape = function (graphic, poly, colorFill, colorLine, transparancy) {
 
 		var color;
 		color = colorFill.slice(1);
@@ -2147,12 +2162,12 @@ function B2dEditor() {
 		color = colorLine.slice(1);
 		var colorLineHex = parseInt(color, 16);
 
-
+ 
 		graphic.clear();
 		graphic.boundsPadding = 0;
 
-		graphic.lineStyle(1, colorLineHex, 1);
-		graphic.beginFill(colorFillHex, 1);
+		graphic.lineStyle(1, colorLineHex, transparancy);
+		graphic.beginFill(colorFillHex, transparancy);
 
 		var count = poly.GetVertexCount();
 
@@ -2175,7 +2190,7 @@ function B2dEditor() {
 		return graphic;
 
 	}
-	this.updateCircleShape = function (graphic, radius, colorFill, colorLine) {
+	this.updateCircleShape = function (graphic, radius, colorFill, colorLine, transparancy) {
 		var color;
 		color = colorFill.slice(1);
 		var colorFillHex = parseInt(color, 16);
@@ -2186,8 +2201,8 @@ function B2dEditor() {
 		graphic.clear();
 		graphic.boundsPadding = 0;
 
-		graphic.lineStyle(1, colorLineHex, 1);
-		graphic.beginFill(colorFillHex, 1);
+		graphic.lineStyle(1, colorLineHex, transparancy);
+		graphic.beginFill(colorFillHex, transparancy);
 
 
 		graphic.moveTo(radius, 0);
@@ -2422,14 +2437,14 @@ function B2dEditor() {
 	this.zoom = function (pos, isZoomIn) {
 
 		var direction = isZoomIn ? 1 : -1;
-
 		var factor = (1 + direction * 0.1);
-
+		this.setZoom(pos, this.container.scale.x*factor);
+	
+	}
+	this.setZoom = function(pos, scale){
 		var worldPos = { x: (pos.x), y: (pos.y) };
-		var newScale = { x: this.container.scale.x * factor, y: this.container.scale.y * factor };
-
+		var newScale = { x: scale, y: scale};
 		var newScreenPos = { x: (worldPos.x) * newScale.x + this.container.x, y: (worldPos.y) * newScale.y + this.container.y };
-
 		this.container.x -= (newScreenPos.x - (pos.x * this.container.scale.x + this.container.x));
 		this.container.y -= (newScreenPos.y - (pos.y * this.container.scale.y + this.container.y));
 		this.container.scale.x = newScale.x;
