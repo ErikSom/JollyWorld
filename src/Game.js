@@ -247,8 +247,6 @@ function Game() {
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
         this.editor.setZoom(cameraTargetPosition, currentZoom+(targetZoom-currentZoom)*zoomEase);
 
-        console.log(currentZoom+"  "+(targetZoom-currentZoom)*zoomEase);
-
         cameraTargetPosition.x -= this.canvas.width/2.0;
         cameraTargetPosition.y -= this.canvas.height/2.0;
 

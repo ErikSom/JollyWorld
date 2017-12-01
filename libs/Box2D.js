@@ -1586,10 +1586,11 @@ Box2D.postDefs = [];
             var subInput = new b2RayCastInput();
             subInput.p1 = input.p1;
             subInput.p2 = input.p2;
-            subInput.maxFraction = input.maxFraction;
-            maxFraction = callback(subInput, node);
-            if (maxFraction == 0.0) return;
-            if (maxFraction > 0.0) {
+            subInput.maxFraction = maxFraction;
+            var value = callback(subInput, node);
+            if (value == 0.0) return;
+            if (value > 0.0) {
+               maxFraction = value;
                tX = p1.x + maxFraction * (p2.x - p1.x);
                tY = p1.y + maxFraction * (p2.y - p1.y);
                segmentAABB.lowerBound.x = Math.min(p1.x, tX);
@@ -3275,7 +3276,7 @@ Box2D.postDefs = [];
                upper = numerator / denominator;
             }
          }
-         if (upper < lower - Number.MIN_VALUE) {
+         if (upper < lower - 1.19209290e-7) {
             return false;
          }
       }
@@ -6181,7 +6182,8 @@ Box2D.postDefs = [];
          if (hit) {
             var fraction = output.fraction;
             var point = new b2Vec2((1.0 - fraction) * point1.x + fraction * point2.x, (1.0 - fraction) * point1.y + fraction * point2.y);
-            return callback(fixture, point, output.normal, fraction);
+            console.log(callback);
+            return callback.ReportFixture(fixture, point, output.normal, fraction);
          }
          return input.maxFraction;
       };
