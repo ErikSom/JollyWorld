@@ -6182,7 +6182,6 @@ Box2D.postDefs = [];
          if (hit) {
             var fraction = output.fraction;
             var point = new b2Vec2((1.0 - fraction) * point1.x + fraction * point2.x, (1.0 - fraction) * point1.y + fraction * point2.y);
-            console.log(callback);
             return callback.ReportFixture(fixture, point, output.normal, fraction);
          }
          return input.maxFraction;

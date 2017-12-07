@@ -48,9 +48,10 @@ function Vehicle(){
     this.RaycastCallbackWheel.prototype.ReportFixture = function(fixture,point,normal,fraction) {
         //if ( ... not interested in this fixture ... )
           //  return -1;
-          console.log("PEEEENIS");
+        if(fixture.GetFilterData().groupIndex == game.editor.GROUPINDEX_CHARACTER) return -1;
+
         this.m_hit = true;
-        this.m_point = point;
+        this.m_point = point.Copy();
         this.m_normal = normal;
         this.m_fixture = fixture;
         return fraction;
@@ -61,27 +62,56 @@ function Vehicle(){
         //this.accelerateWheels(dir);
 
         var i;
+        var j;
         var wheel;
-        var offset = 0.01;
+        var offset = 0.5;
 
         for(i = 0; i<this.wheels.length; i++){
             wheel = this.wheels[i];
 
             var rayStart = wheel.GetBody().GetPosition();
-            var rayEnd = rayStart.Copy();
-            rayEnd.Add(new b2Vec2(0, 5));
-
-            var callback = new this.RaycastCallbackWheel();
-            console.log(callback);
-            wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
-            if ( callback.m_hit ) {
-                console.log("HOLY SHIT IM HITTING STUFF");
-                console.log(callback.m_fixture.GetBody().myGraphic.data);
+            var rayEnd;
+            // add 360 scope
+            var wheelRadius = wheel.GetShape().GetRadius();
+            var rayLength = wheelRadius+offset;
+            var checkSlize = (360/20)*this.DEG2RAD;
+            var totalCircleRad = 360*this.DEG2RAD;
+            for(j = 0; j<totalCircleRad; j+=checkSlize){
+                rayEnd = rayStart.Copy();
+                rayEnd.Add(new b2Vec2(Math.cos(j)*rayLength, Math.sin(j)*rayLength));
+                var callback = new this.RaycastCallbackWheel();
+                wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
+                if ( callback.m_hit ) {
+                    console.log("HIT");
+                    var forceDir = this.rotateVector(callback.m_normal, 90);
+                    this.applyImpulse(this.desiredVehicleSpeeds[i], forceDir);
+                    break;
+                }
             }
 
         }
 
 
+    }
+    this.applyImpulse = function(force, angle){
+        var i;
+        var body;
+        var dirFore = angle.Copy();
+        dirFore.Multiply(force*200.0)
+        
+        for(i = 0; i<this.vehicleBodies._bodies.length; i++){
+            body = this.vehicleBodies._bodies[i];
+            body.ApplyForce(dirFore, body.GetPosition());
+        }
+
+    }
+    this.rotateVector = function(vector, degrees){
+        var radians = degrees * this.DEG2RAD;
+        var sin = Math.sin(radians);
+        var cos = Math.cos(radians);
+        var tx = vector.x;
+        var ty = vector.y;
+        return new b2Vec2(cos * tx - sin * ty, sin * tx + cos * ty);
     }
 
     this.accelerateWheels = function(dir){
@@ -140,11 +170,14 @@ if ( callback.m_hit ) {
     }
     this.lean = function(dir){
 
-        var leanSpeed = 5.0;
+        var leanSpeed = 1.0;
         var velocity = leanSpeed*dir;
         this.frame.SetAngularVelocity(velocity*10);
 
     }
+
+    this.DEG2RAD = 0.017453292519943296;
+	this.RAD2DEG = 57.29577951308232;
 
 }
 

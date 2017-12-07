@@ -898,7 +898,7 @@
         "density": 1,
         "group": "",
         "refName": "",
-        "collision": 0,
+        "collision": 7,
         "radius": 17.804493814764825
     }, {
         "jointType": 0,
