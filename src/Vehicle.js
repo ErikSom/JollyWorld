@@ -84,7 +84,7 @@ function Vehicle(){
                 if ( callback.m_hit ) {
                     console.log("HIT");
                     var forceDir = this.rotateVector(callback.m_normal, 90);
-                    this.applyImpulse(this.desiredVehicleSpeeds[i], forceDir);
+                    this.applyImpulse(this.desiredVehicleSpeeds[i]*dir, forceDir);
                     break;
                 }
             }
@@ -97,8 +97,7 @@ function Vehicle(){
         var i;
         var body;
         var dirFore = angle.Copy();
-        dirFore.Multiply(force*200.0)
-        
+        dirFore.Multiply(force*10.0)
         for(i = 0; i<this.vehicleBodies._bodies.length; i++){
             body = this.vehicleBodies._bodies[i];
             body.ApplyForce(dirFore, body.GetPosition());
@@ -170,7 +169,7 @@ if ( callback.m_hit ) {
     }
     this.lean = function(dir){
 
-        var leanSpeed = 1.0;
+        var leanSpeed = 0.2;
         var velocity = leanSpeed*dir;
         this.frame.SetAngularVelocity(velocity*10);
 

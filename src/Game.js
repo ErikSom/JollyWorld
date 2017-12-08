@@ -179,6 +179,29 @@ function Game() {
         return true;
     };
 
+
+    this.inputUpdate = function () {
+        if (this.vehicle) {
+
+            if(Key.isDown(Key.W)){
+                this.vehicle.accelerate(1);
+            };
+            if(Key.isDown(Key.S)){
+                this.vehicle.accelerate(-1);
+            };
+            if(!Key.isDown(Key.W) && !Key.isDown(Key.S)){
+                this.vehicle.stopAccelerate();
+            };
+
+            if(Key.isDown(Key.A)){
+                this.vehicle.lean(-1);
+            }
+            if(Key.isDown(Key.D)){
+                this.vehicle.lean(1);
+            }
+        }
+    }
+
     this.onKeyDown = function (e) {
         if (e.keyCode == 82) { //r
             this.run = false;
@@ -194,29 +217,8 @@ function Game() {
 
             this.run = !this.run;
         }
-
-        //GAME
-        if (this.vehicle) {
-            if (e.keyCode == 87) { // W
-                console.log("YES!!");
-                this.vehicle.accelerate(-1);
-
-            } else if (e.keyCode == 83) { // S
-                this.vehicle.accelerate(1);
-            }
-
-            if (e.keyCode == 65) { //A
-                this.vehicle.lean(-1);
-            } else if (e.keyCode == 68) { //D
-                this.vehicle.lean(1);
-            }
-        }
-
-
+        Key.onKeydown(e);
         this.editor.onKeyDown(e);
-
-
-
     }
     this.onKeyUp = function (e) {
         this.editor.onKeyUp(e);
@@ -224,6 +226,7 @@ function Game() {
         if (e.keyCode == 87 || e.keyCode == 83) {
             this.vehicle.stopAccelerate();
         }
+        Key.onKeyup(e);
     }
 
     this.startGame = function () {
@@ -240,24 +243,29 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
-        var targetZoom = 0.7;
+        var targetZoom = 0.3;
 
         var currentZoom = this.editor.container.scale.x;
 
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
-        this.editor.setZoom(cameraTargetPosition, currentZoom+(targetZoom-currentZoom)*zoomEase);
+        this.editor.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
 
-        cameraTargetPosition.x -= this.canvas.width/2.0;
-        cameraTargetPosition.y -= this.canvas.height/2.0;
-
+        cameraTargetPosition.x -= this.canvas.width / 2.0 / this.editor.container.scale.x;
+        cameraTargetPosition.y -= this.canvas.height / 2.0 / this.editor.container.scale.y;
         cameraTargetPosition.x *= this.editor.container.scale.x;
         cameraTargetPosition.y *= this.editor.container.scale.y;
 
-        this.stage.x += (-cameraTargetPosition.x-this.stage.x)*panEase;
-        this.stage.y += (-cameraTargetPosition.y-this.stage.y)*panEase;
 
-        //this.stage.x = -cameraTargetPosition.x;
-        //this.stage.y = -cameraTargetPosition.y;
+        this.editor.container.x += (-cameraTargetPosition.x - this.editor.container.x) * panEase;
+        this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
+
+       // this.editor.container.x = -cameraTargetPosition.x;
+        //this.editor.container.y = -cameraTargetPosition.y;
+
+       // this.editor.container.position.x = 0;
+        //this.editor.container.position.y = 0;
+
+        //console.log(this.editor.container.position);
     }
 
 
@@ -271,16 +279,17 @@ function Game() {
             }
         }
         if (this.run) {
+            this.inputUpdate();
             this.world.Step(this.physicsTimeStep, 3, 2);
             this.world.ClearForces();
             this.camera();
         }
 
         this.editor.run();
-
         this.newDebugGraphics.clear();
         this.world.DrawDebugData();
         this.app.render();
+        Key.update();
 
     };
 }
