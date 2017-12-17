@@ -2,28 +2,213 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="libs/semantic/dist/semantic.min.css">
+  <!-- Standard Meta -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <!-- Site Properties -->
+  <title>Login Example - Semantic</title>
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/reset.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/site.css">
+
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/container.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/grid.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/header.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/image.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/menu.css">
+
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/divider.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/segment.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/form.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/input.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/button.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/list.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/message.css">
+  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/icon.css">
+
+  <style type="text/css">
+    body {
+      background-color: #DADADA;
+    }
+
+    body>.grid {
+      height: 100%;
+    }
+
+    .image {
+      margin-top: -100px;
+    }
+
+    .column {
+      max-width: 350px;
+    }
+    #register-box {
+      display:none
+    }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyCcDyXAnYNqnAsV2sieOxptnOtZQZFpV3M",
+      authDomain: "jollywheels-aa1ff.firebaseapp.com",
+      databaseURL: "https://jollywheels-aa1ff.firebaseio.com",
+      projectId: "jollywheels-aa1ff",
+      storageBucket: "jollywheels-aa1ff.appspot.com",
+      messagingSenderId: "109124726198"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="libs/semantic/dist/semantic.min.js"></script>
+  <script src="./libs/semantic/dist/components/form.js"></script>
+  <script src="./libs/semantic/dist/components/transition.js"></script>
+
+  <script src="./src/FireBaseManager.js"></script>
+  <script>
+    var firebaseManager = new FireBaseManager();
+
+    function showLogin() {
+      $("#login-box").css("display", "inline");
+      $("#register-box").css("display", "none");
+    }
+
+    function showRegister() {
+      $("#login-box").css("display", "none");
+      $("#register-box").css("display", "inline");
+    }
+    $(document)
+      .ready(function () {
+        $('#username').blur(
+          function () {
+            console.log("wtf");
+            var $name = $('.ui.form').form('get value', 'username');
+            firebaseManager.doesUserNameExist($name);
+            $('#username').parent().addClass('loading');
+
+          });
+        $('.ui.form')
+          .form({
+            on: 'blur',
+            fields: {
+              email: {
+                identifier: 'email',
+                rules: [{
+                    type: 'empty',
+                    prompt: 'Please enter your e-mail'
+                  },
+                  {
+                    type: 'email',
+                    prompt: 'Please enter a valid e-mail'
+                  }
+                ],
+              },
+              password: {
+                identifier: 'password',
+                rules: [{
+                    type: 'empty',
+                    prompt: 'Please enter your password'
+                  },
+                  {
+                    type: 'length[6]',
+                    prompt: 'Your password must be at least 6 characters'
+                  }
+                ]
+              },
+              name: {
+                identifier: 'username',
+                rules: [{
+                    type: 'empty',
+                    prompt: 'Please enter your name'
+                  },
+                  {
+                    type: 'length[3]',
+                    prompt: 'Your name must be at least 3 characters'
+                  }
+                ]
+              }
+            },
+            onSuccess: function () {
+              $('form').addClass('loading');
+              firebaseManager.createUser($('.ui.form').form('get value', 'email'), $('.ui.form').form('get value',
+                'password'));
+              return false;
+            }
+          });
+        showLogin();
+      });
+  </script>
 </head>
 
 <body>
-</body>
+  <div class="ui middle aligned center aligned grid">
+    <!-- Column Login -->
+    <div id="login-box" class="eight wide column">
+      <form class="ui large form">
+        <div class="ui stacked segment">
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="user icon"></i>
+              <input type="text" name="email" placeholder="E-mail address">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="lock icon"></i>
+              <input type="password" name="password" placeholder="Password">
+            </div>
+          </div>
+          <div class="ui fluid large teal submit button">Login</div>
+          <div class="ui message tiny">
+            New to us?
+            <a href="#" onclick="showRegister()" style="white-space:pre"> Sign Up</a>
+          </div>
+        </div>
 
-<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
-<script>
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyCcDyXAnYNqnAsV2sieOxptnOtZQZFpV3M",
-    authDomain: "jollywheels-aa1ff.firebaseapp.com",
-    databaseURL: "https://jollywheels-aa1ff.firebaseio.com",
-    projectId: "jollywheels-aa1ff",
-    storageBucket: "jollywheels-aa1ff.appspot.com",
-    messagingSenderId: "109124726198"
-  };
-  firebase.initializeApp(config);
-</script>
-<script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="libs/semantic/dist/semantic.min.js"></script>
-<script type="text/javascript" src="libs/Key.js"></script>
+
+        <div class="ui error message"></div>
+
+      </form>
+    </div>
+    <!-- Column Register -->
+    <div id="register-box" class="eight wide column">
+      <form class="ui large form">
+        <div class="ui stacked segment">
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="user icon"></i>
+              <input type="text" name="email" placeholder="E-mail address">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="lock icon"></i>
+              <input type="password" name="password" placeholder="Password">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="user icon"></i>
+              <input id="username" type="text" name="username" placeholder="Name">
+            </div>
+          </div>
+          <div class="ui fluid large teal submit button">Register</div>
+          <div class="ui message tiny">
+            Already an account?
+            <a href="#" onclick="showLogin()" style="white-space:pre"> Log in</a>
+          </div>
+        </div>
+
+        <div class="ui error message"></div>
+
+      </form>
+
+
+    </div>
+  </div>
+
+</body>
 
 </html>

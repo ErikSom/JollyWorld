@@ -1,7 +1,4 @@
 function B2dEditor() {
-
-
-
 	this.initialPTM;
 	this.PTM;
 	this.world;
