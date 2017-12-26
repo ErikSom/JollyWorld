@@ -48,6 +48,7 @@
     #register-box,
     #forgot-box,
     #reset-box,
+    #userdata-box,
     #signout-box {
       display: none
     }
@@ -75,55 +76,46 @@
 
   <script>
     function showLogin() {
+      showNothing();
       $("#login-box").css("display", "inline");
-      $("#register-box").css("display", "none");
-      $("#forgot-box").css("display", "none");
-      $("#reset-box").css("display", "none");
-      $("signout-box").css("display", "none");
     }
 
     function showRegister() {
-      $("#login-box").css("display", "none");
+      showNothing();
       $("#register-box").css("display", "inline");
-      $("#forgot-box").css("display", "none");
-      $("#reset-box").css("display", "none");
-      $("signout-box").css("display", "none");
     }
 
     function showForgot() {
-      $("#login-box").css("display", "none");
-      $("#register-box").css("display", "none");
+      showNothing();
       $("#forgot-box").css("display", "inline");
-      $("#reset-box").css("display", "none");
-      $("signout-box").css("display", "none");
     }
 
     function showReset() {
-      $("#login-box").css("display", "none");
-      $("#register-box").css("display", "none");
-      $("#forgot-box").css("display", "none");
+      showNothing();
       $("#reset-box").css("display", "inline");
-      $("signout-box").css("display", "none");
+    }
+
+    function showUserData() {
+      showNothing();
+      $("#userdata-box").css("display", "inline");
     }
 
     function showSignout() {
+      showNothing();
+      $("#signout-box").css("display", "inline");
+    }
+
+    function showNothing() {
       $("#login-box").css("display", "none");
       $("#register-box").css("display", "none");
       $("#forgot-box").css("display", "none");
       $("#reset-box").css("display", "none");
-      $("signout-box").css("display", "inline");
+      $("signout-box").css("display", "none");
+      $(".ui.positive.message").addClass('hidden');
+      $(".ui.negative.message").addClass('hidden');
     }
     $(document)
       .ready(function () {
-        $('#username').blur(
-          function () {
-            console.log("wtf");
-            var $name = $('.ui.form:visible').form('get value', 'username');
-            firebaseManager.doesUserNameExist($name, $('#username').parent());
-            $('#username').parent().addClass('loading');
-
-          });
-
         var formRules = {
           on: 'blur',
           fields: {
@@ -194,13 +186,27 @@
 
         formRules.onSuccess = function () {
           $('form').addClass('loading');
-          firebaseManager.resetPassword($(this).closest('.ui.form').form('get value', 'email'));
+          firebaseManager.resetPassword($(this).closest('.ui.form').form('get value', 'password'));
           return false;
         }
         $('#reset-box').children('.ui.form').form(formRules);
 
         formRules.onSuccess = function () {
           $('form').addClass('loading');
+          console.log("SIGN OUT");
+          var data = {
+            username: $(this).closest('.ui.form').form('get value', 'username'),
+            creationDate: Date.now()
+          }
+          firebaseManager.checkUserData(data);
+          return false;
+        }
+        $('#userdata-box').children('.ui.form').form(formRules);
+        firebaseManager.checkURLParameters();
+
+        formRules.onSuccess = function () {
+          $('form').addClass('loading');
+          console.log("SIGN OUT");
           firebaseManager.signout();
           return false;
         }
@@ -256,19 +262,6 @@
           <div class="field">
             <div class="ui left icon input">
               <i class="user icon"></i>
-              <input id="username" type="text" name="username" placeholder="Username">
-            </div>
-          </div>
-          <div id="uniqueusernameerror" class="ui negative message hidden">
-            <div class="header">
-              We're sorry you can't use that username
-            </div>
-            <p>Someone else already picked it
-            </p>
-          </div>
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
               <input type="text" name="email" placeholder="E-mail address">
             </div>
           </div>
@@ -279,7 +272,7 @@
             </div>
           </div>
           <div class="ui fluid large teal submit button">Register</div>
-          <div id="uniquemiscerror" class="ui negative message hidden">
+          <div class="ui negative message hidden">
             <div class="header">
               We're sorry
             </div>
@@ -313,19 +306,19 @@
           </div>
           <div class="ui fluid large teal submit button">Reset password</div>
           <div class="ui negative message hidden">
-              <div class="header">
-                We're sorry
-              </div>
-              <p>Someone else already picked it
-              </p>
+            <div class="header">
+              We're sorry
             </div>
-            <div class="ui positive message hidden">
-              <div class="header">
-                Great succes!
-              </div>
-              <p>Reset email has been sent.
-              </p>
+            <p>Someone else already picked it
+            </p>
+          </div>
+          <div class="ui positive message hidden">
+            <div class="header">
+              Great succes!
             </div>
+            <p>Reset email has been sent.
+            </p>
+          </div>
           <div class="ui message tiny">
             New to us?
             <a href="#" onclick="showRegister()" style="white-space:pre"> Sign Up</a>
@@ -368,7 +361,9 @@
             </p>
           </div>
           <div class="ui message tiny">
-            Already reset your password?
+            Action code expired?
+            <a href="#" onclick="showForgot()" style="white-space:pre"> Request a new one</a>
+            <br> Already reset your password?
             <a href="#" onclick="showLogin()" style="white-space:pre"> Log in</a>
           </div>
         </div>
@@ -378,16 +373,57 @@
       </form>
     </div>
 
-    <!-- Sign out -->
-    <div id="signout-box" class="eight wide column">
+    <!-- Register User Data -->
+    <div id="userdata-box" class="eight wide column">
       <form class="ui large form">
         <div class="ui stacked segment">
-          <div class="ui fluid large teal submit button">Sign out</div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="user icon"></i>
+              <input id="username" type="text" name="username" placeholder="Username">
+            </div>
+          </div>
+          <div class="ui fluid large teal submit button">Continue</div>
+          <div class="ui negative message hidden">
+            <div class="header">
+              We're sorry
+            </div>
+            <p>Someone else already picked it
+            </p>
+          </div>
+          <div class="ui positive message hidden">
+            <div class="header">
+              Great succes!
+            </div>
+            <p>Reset email has been sent.
+            </p>
+          </div>
+          <div class="ui message tiny">
+            New to us?
+            <a href="#" onclick="showRegister()" style="white-space:pre"> Sign Up</a>
+          </div>
         </div>
         <div class="ui error message"></div>
       </form>
     </div>
 
+    <!-- Sign out -->
+    <div id="signout-box" class="eight wide column">
+      <form class="ui large form">
+        <div class="ui stacked segment">
+          <div class="ui fluid large teal submit button">Sign out</div>
+          <div class="ui positive message hidden">
+            <div class="header">
+              Great succes!
+            </div>
+            <p>The password is successfuly changed, please login
+              <a href="#" style="white-space:pre"> here</a>
+            </p>
+          </div>
+        </div>
+        <div class="ui error message"></div>
+      </form>
+    </div>
 
   </div>
 
