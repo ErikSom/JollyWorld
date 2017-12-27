@@ -1,15 +1,6 @@
 {
-    "objects": [{
-        "x": 13.569863300944753,
-        "y": -0.32958036300122373,
-        "rotation": -0.7679448708775056,
-        "ID": 0,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+    "objects": [
+        [0, 13.569863300944753, -0.32958036300122373, -0.7679448708775056, "__character", "lupleg", 0, "#999999", "#000", 1, false, true, [{
             "x": -0.45534230357671035,
             "y": -0.9410407607252083
         }, {
@@ -27,36 +18,9 @@
         }, {
             "x": -0.364273842861369,
             "y": 1.540574793767881
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "lupleg",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 409.04526219995313,
-        "y": -4.4903856662402175,
-        "rotation": -0.7679448708775056,
-        "ID": 1,
-        "type": 1,
-        "textureName": "1upleg.png",
-        "bodyID": 0,
-        "texturePositionOffsetLength": 5.738283544852673,
-        "texturePositionOffsetAngle": -1.992130640224259,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 14.01232066467732,
-        "y": 1.3686898417457338,
-        "rotation": 0.31415926535897937,
-        "ID": 2,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 409.04526219995313, -4.4903856662402175, -0.7679448708775056, "", "", 1, "1upleg.png", 0, 5.738283544852673, -1.992130640224259, 0],
+        [0, 14.01232066467732, 1.3686898417457338, 0.31415926535897937, "__character", "llowleg", 2, "#999999", "#000", 1, false, true, [{
             "x": -0.32253413170017,
             "y": -0.46293134196965813
         }, {
@@ -74,36 +38,9 @@
         }, {
             "x": -0.32253413170017,
             "y": 1.5633419089467173
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "llowleg",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 422.4603980615108,
-        "y": 51.939785955912456,
-        "rotation": 0.31415926535897937,
-        "ID": 3,
-        "type": 1,
-        "textureName": "1lowleg.png",
-        "bodyID": 2,
-        "texturePositionOffsetLength": 11.078175286928426,
-        "texturePositionOffsetAngle": -1.0667688592172224,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 14.400556188270892,
-        "y": -2.342632732135924,
-        "rotation": -0.6806784082777884,
-        "ID": 4,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 422.4603980615108, 51.939785955912456, 0.31415926535897937, "", "", 3, "1lowleg.png", 2, 11.078175286928426, -1.0667688592172224, 0],
+        [0, 14.400556188270892, -2.342632732135924, -0.6806784082777884, "__character", "luparm", 4, "#999999", "#000", 1, false, true, [{
             "x": -0.3555555555555614,
             "y": -0.4111111111111114
         }, {
@@ -121,36 +58,9 @@
         }, {
             "x": -0.15555555555555856,
             "y": 0.9888888888888889
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "luparm",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 435.3603883639188,
-        "y": -68.26854062680185,
-        "rotation": -0.6806784082777884,
-        "ID": 5,
-        "type": 1,
-        "textureName": "1uparm.png",
-        "bodyID": 4,
-        "texturePositionOffsetLength": 3.9015666369065602,
-        "texturePositionOffsetAngle": -1.222025323211012,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 15.694070888946685,
-        "y": -1.0470564416591632,
-        "rotation": -0.8552113334772216,
-        "ID": 6,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 435.3603883639188, -68.26854062680185, -0.6806784082777884, "", "", 5, "1uparm.png", 4, 3.9015666369065602, -1.222025323211012, 0],
+        [0, 15.694070888946685, -1.0470564416591632, -0.8552113334772216, "__character", "llowarm", 6, "#999999", "#000", 1, false, true, [{
             "x": -0.1710527060768996,
             "y": -0.25657905911535295
         }, {
@@ -168,72 +78,17 @@
         }, {
             "x": -0.13684216486151968,
             "y": 1.0434215070691026
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "llowarm",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 471.20941201639846,
-        "y": -31.075031233010034,
-        "rotation": -0.8552113334772216,
-        "ID": 7,
-        "type": 1,
-        "textureName": "1lowarm.png",
-        "bodyID": 6,
-        "texturePositionOffsetLength": 0.5131581182307059,
-        "texturePositionOffsetAngle": -1.5707963267944536,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 17.042180339571704,
-        "y": 2.781136241618224,
-        "rotation": 0,
-        "ID": 8,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 471.20941201639846, -31.075031233010034, -0.8552113334772216, "", "", 7, "1lowarm.png", 6, 0.5131581182307059, -1.5707963267944536, 0],
+        [0, 17.042180339571704, 2.781136241618224, 0, "__vehicle", "", 8, "#999999", "#000", 1, false, true, [{
             "x": 0,
             "y": 0
         }, {
             "x": 0,
             "y": 0
-        }],
-        "density": 1,
-        "group": "__vehicle",
-        "refName": "",
-        "collision": 7,
-        "radius": 52.98392360831555,
-        "transparancy": 1
-    }, {
-        "x": 511.26541018715085,
-        "y": 83.43408724854663,
-        "rotation": 0,
-        "ID": 9,
-        "type": 1,
-        "textureName": "Bike1_Tire.png",
-        "bodyID": 8,
-        "texturePositionOffsetLength": 2.9673135796061134e-13,
-        "texturePositionOffsetAngle": 2.8501358591119264,
-        "textureAngleOffset": 0,
-        "group": "__vehicle",
-        "refName": ""
-    }, {
-        "x": 14.377123288910985,
-        "y": 1.7690802779387678,
-        "rotation": 0,
-        "ID": 10,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, 52.98392360831555],
+        [1, 511.26541018715085, 83.43408724854663, 0, "__vehicle", "", 9, "Bike1_Tire.png", 8, 2.9673135796061134e-13, 2.8501358591119264, 0],
+        [0, 14.377123288910985, 1.7690802779387678, 0, "__vehicle", "frame", 10, "#999999", "#000", 1, false, true, [{
             "x": -0.42292693052404395,
             "y": 1.7621955438501815
         }, {
@@ -248,92 +103,18 @@
         }, {
             "x": 3.3028579336163375,
             "y": 1.158014214530119
-        }],
-        "density": 1,
-        "group": "__vehicle",
-        "refName": "frame",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 429.1990640147094,
-        "y": 42.499235075061954,
-        "rotation": 0,
-        "ID": 11,
-        "type": 1,
-        "textureName": "Bike1_Frame.png",
-        "bodyID": 10,
-        "texturePositionOffsetLength": 10.782563357829968,
-        "texturePositionOffsetAngle": 1.7681918866447732,
-        "textureAngleOffset": 0,
-        "group": "__vehicle",
-        "refName": ""
-    }, {
-        "jointType": 0,
-        "x": 511.2757692113603,
-        "y": 83.44464195530094,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": true,
-        "maxMotorTorque": 159,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "__vehicle",
-        "refName": "engine2",
-        "bodyA_ID": 8,
-        "bodyB_ID": 10,
-        "ID": 12
-    }, {
-        "x": 11.740142323557947,
-        "y": 2.8148231974459206,
-        "rotation": 0,
-        "ID": 13,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 429.1990640147094, 42.499235075061954, 0, "__vehicle", "", 11, "Bike1_Frame.png", 10, 10.782563357829968, 1.7681918866447732, 0],
+        [2, 511.2757692113603, 83.44464195530094, 0, "__vehicle", "engine2", 8, 10, 0, false, true, 159, 10, false, 0, 0, 0, 0],
+        [0, 11.740142323557947, 2.8148231974459206, 0, "__vehicle", "", 13, "#999999", "#000", 1, false, true, [{
             "x": 0,
             "y": 0
         }, {
             "x": 0,
             "y": 0
-        }],
-        "density": 1,
-        "group": "__vehicle",
-        "refName": "",
-        "collision": 7,
-        "radius": 52.98392360831555,
-        "transparancy": 1
-    }, {
-        "x": 352.2042697067381,
-        "y": 84.44469592337754,
-        "rotation": 0,
-        "ID": 14,
-        "type": 1,
-        "textureName": "Bike1_Tire.png",
-        "bodyID": 13,
-        "texturePositionOffsetLength": 2.9673135796061134e-13,
-        "texturePositionOffsetAngle": 2.8501358591119264,
-        "textureAngleOffset": 0,
-        "group": "__vehicle",
-        "refName": ""
-    }, {
-        "x": 13.951462649916516,
-        "y": -2.3225608983698294,
-        "rotation": 0.5061454830783558,
-        "ID": 15,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, 52.98392360831555],
+        [1, 352.2042697067381, 84.44469592337754, 0, "__vehicle", "", 14, "Bike1_Tire.png", 13, 2.9673135796061134e-13, 2.8501358591119264, 0],
+        [0, 13.951462649916516, -2.3225608983698294, 0.5061454830783558, "__character", "body", 15, "#999999", "#000", 1, false, true, [{
             "x": -0.6285714285714263,
             "y": -0.5714285714285721
         }, {
@@ -354,72 +135,17 @@
         }, {
             "x": -0.6952380952380928,
             "y": 2.2285714285714286
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "body",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 410.7813187429939,
-        "y": -61.566126188571126,
-        "rotation": 0.5061454830783558,
-        "ID": 16,
-        "type": 1,
-        "textureName": "1body.png",
-        "bodyID": 15,
-        "texturePositionOffsetLength": 11.226790116793472,
-        "texturePositionOffsetAngle": -1.8281200417660084,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 15.01758164270499,
-        "y": -3.8433623253807623,
-        "rotation": 0.5061454830783558,
-        "ID": 17,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 410.7813187429939, -61.566126188571126, 0.5061454830783558, "", "", 16, "1body.png", 15, 11.226790116793472, -1.8281200417660084, 0],
+        [0, 15.01758164270499, -3.8433623253807623, 0.5061454830783558, "__character", "head", 17, "#999999", "#000", 1, false, true, [{
             "x": 0,
             "y": 0
         }, {
             "x": 0,
             "y": 0
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "head",
-        "collision": 7,
-        "radius": 14.000000000000057,
-        "transparancy": 1
-    }, {
-        "x": 450.5274492811496,
-        "y": -115.30086976142296,
-        "rotation": 0.5061454830783558,
-        "ID": 18,
-        "type": 1,
-        "textureName": "1head.png",
-        "bodyID": 17,
-        "texturePositionOffsetLength": 1.1718571004216928e-13,
-        "texturePositionOffsetAngle": 2.896613990462929,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 13.578884759305593,
-        "y": -0.26249854726544686,
-        "rotation": -1.0995574287564287,
-        "ID": 19,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, 14.000000000000057],
+        [1, 450.5274492811496, -115.30086976142296, 0.5061454830783558, "", "", 18, "1head.png", 17, 1.1718571004216928e-13, 2.896613990462929, 0],
+        [0, 13.578884759305593, -0.26249854726544686, -1.0995574287564287, "__character", "rupleg", 19, "#999999", "#000", 1, false, true, [{
             "x": -0.45534230357671035,
             "y": -0.9410407607252083
         }, {
@@ -437,36 +163,9 @@
         }, {
             "x": -0.364273842861369,
             "y": 1.540574793767881
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "rupleg",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 410.96680141018487,
-        "y": -3.406619386033742,
-        "rotation": -1.0995574287564287,
-        "ID": 20,
-        "type": 1,
-        "textureName": "1upleg.png",
-        "bodyID": 19,
-        "texturePositionOffsetLength": 5.738283544852673,
-        "texturePositionOffsetAngle": -1.992130640224259,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 14.552653446623149,
-        "y": 1.2978837653967965,
-        "rotation": 0.15707963267948966,
-        "ID": 21,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 410.96680141018487, -3.406619386033742, -1.0995574287564287, "", "", 20, "1upleg.png", 19, 5.738283544852673, -1.992130640224259, 0],
+        [0, 14.552653446623149, 1.2978837653967965, 0.15707963267948966, "__character", "rlowleg", 21, "#999999", "#000", 1, false, true, [{
             "x": -0.32253413170017,
             "y": -0.46293134196965813
         }, {
@@ -484,36 +183,9 @@
         }, {
             "x": -0.32253413170017,
             "y": 1.5633419089467173
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "rlowleg",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 440.3465053060989,
-        "y": 49.35459424916138,
-        "rotation": 0.15707963267948966,
-        "ID": 22,
-        "type": 1,
-        "textureName": "1lowleg.png",
-        "bodyID": 21,
-        "texturePositionOffsetLength": 11.078175286928426,
-        "texturePositionOffsetAngle": -1.0667688592172224,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 14.221635202492518,
-        "y": -2.1923429737251627,
-        "rotation": -0.38397243543875215,
-        "ID": 23,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 440.3465053060989, 49.35459424916138, 0.15707963267948966, "", "", 22, "1lowleg.png", 21, 11.078175286928426, -1.0667688592172224, 0],
+        [0, 14.221635202492518, -2.1923429737251627, -0.38397243543875215, "__character", "ruparm", 23, "#999999", "#000", 1, false, true, [{
             "x": -0.3555555555555614,
             "y": -0.4111111111111114
         }, {
@@ -531,36 +203,9 @@
         }, {
             "x": -0.15555555555555856,
             "y": 0.9888888888888889
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "ruparm",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 429.25885872338955,
-        "y": -62.87009053623114,
-        "rotation": -0.38397243543875215,
-        "ID": 24,
-        "type": 1,
-        "textureName": "1uparm.png",
-        "bodyID": 23,
-        "texturePositionOffsetLength": 3.9015666369065602,
-        "texturePositionOffsetAngle": -1.222025323211012,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "x": 15.498051075467774,
-        "y": -0.8171855752461141,
-        "rotation": -1.0995574287564276,
-        "ID": 25,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 429.25885872338955, -62.87009053623114, -0.38397243543875215, "", "", 24, "1uparm.png", 23, 3.9015666369065602, -1.222025323211012, 0],
+        [0, 15.498051075467774, -0.8171855752461141, -1.0995574287564276, "__character", "rlowarm", 25, "#999999", "#000", 1, false, true, [{
             "x": -0.1710527060768996,
             "y": -0.25657905911535295
         }, {
@@ -578,387 +223,31 @@
         }, {
             "x": -0.13684216486151968,
             "y": 1.0434215070691026
-        }],
-        "density": 1,
-        "group": "__character",
-        "refName": "rlowarm",
-        "collision": 7,
-        "transparancy": 1
-    }, {
-        "x": 465.3987594953171,
-        "y": -24.28259834684266,
-        "rotation": -1.0995574287564276,
-        "ID": 26,
-        "type": 1,
-        "textureName": "1lowarm.png",
-        "bodyID": 25,
-        "texturePositionOffsetLength": 0.5131581182307059,
-        "texturePositionOffsetAngle": -1.5707963267944536,
-        "textureAngleOffset": 0,
-        "group": "",
-        "refName": ""
-    }, {
-        "jointType": 0,
-        "x": 352.21131848266964,
-        "y": 84.43258859510519,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": true,
-        "maxMotorTorque": 5000,
-        "motorSpeed": 20,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "__vehicle",
-        "refName": "engine1",
-        "bodyA_ID": 13,
-        "bodyB_ID": 10,
-        "ID": 27
-    }, {
-        "jointType": 0,
-        "x": 443.5271816941965,
-        "y": -103.12174508301385,
-        "rotation": 46,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 58,
-        "lowerAngle": -64.38287153652392,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "__character",
-        "refName": "",
-        "bodyA_ID": 15,
-        "bodyB_ID": 17,
-        "ID": 28
-    }, {
-        "jointType": 0,
-        "x": 421.959445836097,
-        "y": -82.61287351830228,
-        "rotation": 31,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 19,
-        "lowerAngle": -180,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 15,
-        "bodyB_ID": 23,
-        "ID": 29
-    }, {
-        "jointType": 0,
-        "x": 436.5756457940343,
-        "y": -39.494193296532934,
-        "rotation": 29,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 152,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 25,
-        "bodyB_ID": 23,
-        "ID": 30
-    }, {
-        "jointType": 0,
-        "x": 387.40418567048306,
-        "y": -22.832929172701885,
-        "rotation": 25,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 142,
-        "lowerAngle": -16,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 19,
-        "bodyB_ID": 15,
-        "ID": 31
-    }, {
-        "jointType": 0,
-        "x": 441.7974898588507,
-        "y": 14.028539700385284,
-        "rotation": 1,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 0,
-        "lowerAngle": -149,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 21,
-        "bodyB_ID": 19,
-        "ID": 32
-    }, {
-        "jointType": 0,
-        "x": 427.3468358511842,
-        "y": -88.44319297454113,
-        "rotation": -1,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 180,
-        "lowerAngle": -19,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 4,
-        "bodyB_ID": 15,
-        "ID": 33
-    }, {
-        "jointType": 0,
-        "x": 454.95951558033187,
-        "y": -46.028142477629686,
-        "rotation": 1,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 152,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 6,
-        "bodyB_ID": 4,
-        "ID": 34
-    }, {
-        "jointType": 0,
-        "x": 387.4724943953105,
-        "y": -21.3480868558637,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 16,
-        "lowerAngle": -142,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 15,
-        "bodyB_ID": 0,
-        "ID": 35
-    }, {
-        "jointType": 0,
-        "x": 428.57410801892394,
-        "y": 15.368909359673129,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": true,
-        "upperAngle": 0,
-        "lowerAngle": -149,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 2,
-        "bodyB_ID": 0,
-        "ID": 36
-    }, {
-        "jointType": 0,
-        "x": 484.6012894842454,
-        "y": -10.194729958494204,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 10,
-        "bodyB_ID": 25,
-        "ID": 37
-    }, {
-        "jointType": 0,
-        "x": 489.68155485472965,
-        "y": -14.146047468870634,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 10,
-        "bodyB_ID": 6,
-        "ID": 38
-    }, {
-        "jointType": 0,
-        "x": 379.609138494243,
-        "y": -11.32367781860175,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 10,
-        "bodyB_ID": 15,
-        "ID": 39
-    }, {
-        "jointType": 2,
-        "x": 332.2149691712566,
-        "y": -108.05278452167325,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0.25,
-        "frequencyHz": 2,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 10,
-        "bodyB_ID": 15,
-        "ID": 40
-    }, {
-        "x": 13.917007658685995,
-        "y": 2.7922183391314426,
-        "rotation": 0,
-        "ID": 41,
-        "type": 0,
-        "colorFill": "#999999",
-        "colorLine": "#000",
-        "transparancy": 0,
-        "fixed": false,
-        "awake": true,
-        "vertices": [{
+        }], 1, 7, null],
+        [1, 465.3987594953171, -24.28259834684266, -1.0995574287564276, "", "", 26, "1lowarm.png", 25, 0.5131581182307059, -1.5707963267944536, 0],
+        [2, 352.21131848266964, 84.43258859510519, 0, "__vehicle", "engine1", 13, 10, 0, false, true, 5000, 20, false, 0, 0, 0, 0],
+        [2, 443.5271816941965, -103.12174508301385, 46, "__character", "", 15, 17, 0, false, false, 1, 10, true, 58, -64.38287153652392, 0, 0],
+        [2, 421.959445836097, -82.61287351830228, 31, "", "", 15, 23, 0, false, false, 1, 10, true, 19, -180, 0, 0],
+        [2, 436.5756457940343, -39.494193296532934, 29, "", "", 25, 23, 0, false, false, 1, 10, true, 152, 0, 0, 0],
+        [2, 387.40418567048306, -22.832929172701885, 25, "", "", 19, 15, 0, false, false, 1, 10, true, 142, -16, 0, 0],
+        [2, 441.7974898588507, 14.028539700385284, 1, "", "", 21, 19, 0, false, false, 1, 10, true, 0, -149, 0, 0],
+        [2, 427.3468358511842, -88.44319297454113, -1, "", "", 4, 15, 0, false, false, 1, 10, true, 180, -19, 0, 0],
+        [2, 454.95951558033187, -46.028142477629686, 1, "", "", 6, 4, 0, false, false, 1, 10, true, 152, 0, 0, 0],
+        [2, 387.4724943953105, -21.3480868558637, 0, "", "", 15, 0, 0, false, false, 1, 10, true, 16, -142, 0, 0],
+        [2, 428.57410801892394, 15.368909359673129, 0, "", "", 2, 0, 0, false, false, 1, 10, true, 0, -149, 0, 0],
+        [2, 484.6012894842454, -10.194729958494204, 0, "", "", 10, 25, 0, false, false, 1, 10, false, 0, 0, 0, 0],
+        [2, 489.68155485472965, -14.146047468870634, 0, "", "", 10, 6, 0, false, false, 1, 10, false, 0, 0, 0, 0],
+        [2, 379.609138494243, -11.32367781860175, 0, "", "", 10, 15, 0, false, false, 1, 10, false, 0, 0, 0, 0],
+        [2, 332.2149691712566, -108.05278452167325, 0, "", "", 10, 15, 2, false, false, 1, 10, false, 0, 0, 0.25, 2],
+        [0, 13.917007658685995, 2.7922183391314426, 0, "", "", 41, "#999999", "#000", 0, false, true, [{
             "x": 0,
             "y": 0
         }, {
             "x": 0,
             "y": 0
-        }],
-        "density": 1,
-        "group": "",
-        "refName": "",
-        "collision": 7,
-        "radius": 17.804493814764825
-    }, {
-        "jointType": 0,
-        "x": 416.56877022291786,
-        "y": 83.72144644903605,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": true,
-        "maxMotorTorque": 252.72879932829557,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 41,
-        "bodyB_ID": 10,
-        "ID": 42
-    }, {
-        "jointType": 0,
-        "x": 402.9085011156165,
-        "y": 84.34236777209523,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 41,
-        "bodyB_ID": 2,
-        "ID": 43
-    }, {
-        "jointType": 0,
-        "x": 433.9545672685743,
-        "y": 83.72144644903605,
-        "rotation": 0,
-        "collideConnected": false,
-        "enableMotor": false,
-        "maxMotorTorque": 1,
-        "motorSpeed": 10,
-        "enableLimit": false,
-        "upperAngle": 0,
-        "lowerAngle": 0,
-        "dampingRatio": 0,
-        "frequencyHz": 0,
-        "type": 2,
-        "group": "",
-        "refName": "",
-        "bodyA_ID": 41,
-        "bodyB_ID": 21,
-        "ID": 44
-    }]
+        }], 1, 7, 17.804493814764825],
+        [2, 416.56877022291786, 83.72144644903605, 0, "", "", 41, 10, 0, false, true, 252.72879932829557, 10, false, 0, 0, 0, 0],
+        [2, 402.9085011156165, 84.34236777209523, 0, "", "", 41, 2, 0, false, false, 1, 10, false, 0, 0, 0, 0],
+        [2, 433.9545672685743, 83.72144644903605, 0, "", "", 41, 21, 0, false, false, 1, 10, false, 0, 0, 0, 0]
+    ]
 }
