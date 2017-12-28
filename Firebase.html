@@ -59,12 +59,12 @@
   <script>
     // Initialize Firebase
     var config = {
-      apiKey: "AIzaSyCcDyXAnYNqnAsV2sieOxptnOtZQZFpV3M",
-      authDomain: "jollywheels-aa1ff.firebaseapp.com",
-      databaseURL: "https://jollywheels-aa1ff.firebaseio.com",
-      projectId: "jollywheels-aa1ff",
-      storageBucket: "jollywheels-aa1ff.appspot.com",
-      messagingSenderId: "109124726198"
+      apiKey: "AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0",
+      authDomain: "jolly-ad424.firebaseapp.com",
+      databaseURL: "https://jolly-ad424.firebaseio.com",
+      projectId: "jolly-ad424",
+      storageBucket: "jolly-ad424.appspot.com",
+      messagingSenderId: "186951023"
     };
     var firebaseManager = new FireBaseManager();
     firebaseManager.init(config);
@@ -110,9 +110,11 @@
       $("#register-box").css("display", "none");
       $("#forgot-box").css("display", "none");
       $("#reset-box").css("display", "none");
-      $("signout-box").css("display", "none");
+      $("#userdata-box").css("display", "none");
+      $("#signout-box").css("display", "none");
       $(".ui.positive.message").addClass('hidden');
       $(".ui.negative.message").addClass('hidden');
+      $('form').removeClass('loading');
     }
     $(document)
       .ready(function () {
