@@ -1,3 +1,4 @@
+
 function FireBaseManager() {
     this.app;
     this.user;
@@ -8,7 +9,15 @@ function FireBaseManager() {
     this.loginPassword;
     this.actionCode;
 
-    this.init = function (config) {
+    this.init = function(){
+        var config = {
+            apiKey: "AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0",
+            authDomain: "jolly-ad424.firebaseapp.com",
+            databaseURL: "https://jolly-ad424.firebaseio.com",
+            projectId: "jolly-ad424",
+            storageBucket: "jolly-ad424.appspot.com",
+            messagingSenderId: "186951023"
+          };
         this.app = firebase.initializeApp(config);
         var self = this;
         firebase.auth().onAuthStateChanged(function (user) {
@@ -84,7 +93,7 @@ function FireBaseManager() {
             if(snapshot.val()){
                 self.onLoginComplete();
             }else{
-                showUserData();
+                ui.showUserData();
             }
         }, function (error) {
             console.log(error.message);
@@ -95,7 +104,8 @@ function FireBaseManager() {
     }
     this.login = function (email, password) {
         var self = this;
-
+        console.log("LOGGING IN:");
+        console.log(firebase.auth());
         firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
             self.onLoginSucccess(user);
         }, function (error) {
@@ -104,7 +114,7 @@ function FireBaseManager() {
     }
     this.onLoginComplete = function () {
         console.log("USER LOGGED IN!");
-        showSignout();
+        ui.showSignout();
         console.log(this.app.auth().currentUser);
         $(".ui.positive.message").removeClass('hidden');
         $(".ui.positive.message > p").text("Logged in as " + this.app.auth().currentUser);
@@ -116,7 +126,7 @@ function FireBaseManager() {
     this.signout = function () {
         firebase.auth().signOut().then(function () {
             console.log("signed out");
-            showLogin();
+            ui.showLogin();
         }, function (error) {
             // An error happened.
             console.log("signout error" + error.message);
@@ -160,9 +170,9 @@ function FireBaseManager() {
         this.actionCode = urlParams.oobCode;
         var accountEmail;
         // Verify the password reset code is valid.
-        if (!mode) showLogin();
+        if (!mode) ui.showLogin();
         else if (mode == "resetPassword") {
-            showReset();
+            ui.showReset();
             this.app.auth().verifyPasswordResetCode(this.actionCode).then(function (email) {
                 var accountEmail = email;
                 console.log(accountEmail);
@@ -251,4 +261,5 @@ function FireBaseManager() {
 
 }
 
-//fetchProvidersForEmail
+var firebaseManager = new FireBaseManager();
+firebaseManager.init();

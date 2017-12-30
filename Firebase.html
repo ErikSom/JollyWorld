@@ -2,433 +2,246 @@
 <html>
 
 <head>
-  <!-- Standard Meta -->
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <!-- Site Properties -->
-  <title>Login Example - Semantic</title>
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/reset.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/site.css">
+  <title>Jolly</title>
 
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/container.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/grid.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/header.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/image.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/menu.css">
+  <link rel="stylesheet" type="text/css" href="libs/semantic/dist/semantic.min.css">
+  <link rel="stylesheet" type="text/css" href="css/B2dEditor.css">
+  <link rel="stylesheet" type="text/css" href="libs/dat-gui-light-theme.css">
 
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/divider.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/segment.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/form.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/input.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/button.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/list.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/message.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/icon.css">
-  <link rel="stylesheet" type="text/css" href="./libs/semantic/dist/components/transition.css">
-
-  <style type="text/css">
-    body {
-      background-color: #DADADA;
-    }
-
-    body>.grid {
-      height: 100%;
-    }
-
-    .image {
-      margin-top: -100px;
-    }
-
-    .column {
-      max-width: 350px;
-    }
-
-    #register-box,
-    #forgot-box,
-    #reset-box,
-    #userdata-box,
-    #signout-box {
-      display: none
-    }
-  </style>
-
-  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
-  <script src="./src/FireBaseManager.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
   <script>
     // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0",
-      authDomain: "jolly-ad424.firebaseapp.com",
-      databaseURL: "https://jolly-ad424.firebaseio.com",
-      projectId: "jolly-ad424",
-      storageBucket: "jolly-ad424.appspot.com",
-      messagingSenderId: "186951023"
-    };
-    var firebaseManager = new FireBaseManager();
-    firebaseManager.init(config);
+
   </script>
-  <script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
-  <script type="text/javascript" src="libs/semantic/dist/semantic.min.js"></script>
+  <script src="./src/FireBaseManager.js"></script>
+  <script src="./libs/jquery-3.1.1.min.js"></script>
+  <script src="./libs/semantic/dist/semantic.min.js"></script>
   <script src="./libs/semantic/dist/components/form.js"></script>
   <script src="./libs/semantic/dist/components/transition.js"></script>
+  
+  <script type="text/javascript" src="libs/pixi.js"></script>
+  <script type="text/javascript" src="libs/debugdraw.js"></script>
+   <script type="text/javascript" src="libs/Box2D.js"></script>
+ <script type="text/javascript" src="libs/dat.gui.min.js"></script>
+  <script type="text/javascript" src="libs/Key.js"></script>
+
+  <script type="text/javascript" src="src/Game.js"></script>
+  
+  <script type="text/javascript" src="src/Game-gui.js"></script>
+  <script type="text/javascript" src="src/B2dEditor.js"></script>
+  <script type="text/javascript" src="src/Vehicle.js"></script>
+
+  <script type="text/javascript" src="src/UIManager.js"></script>
 
   <script>
-    function showLogin() {
-      showNothing();
-      $("#login-box").css("display", "inline");
-    }
+     // window.ui = new UIManager();
+      //window.ui.initForm();
 
-    function showRegister() {
-      showNothing();
-      $("#register-box").css("display", "inline");
-    }
 
-    function showForgot() {
-      showNothing();
-      $("#forgot-box").css("display", "inline");
-    }
-
-    function showReset() {
-      showNothing();
-      $("#reset-box").css("display", "inline");
-    }
-
-    function showUserData() {
-      showNothing();
-      $("#userdata-box").css("display", "inline");
-    }
-
-    function showSignout() {
-      showNothing();
-      $("#signout-box").css("display", "inline");
-    }
-
-    function showNothing() {
-      $("#login-box").css("display", "none");
-      $("#register-box").css("display", "none");
-      $("#forgot-box").css("display", "none");
-      $("#reset-box").css("display", "none");
-      $("#userdata-box").css("display", "none");
-      $("#signout-box").css("display", "none");
-      $(".ui.positive.message").addClass('hidden');
-      $(".ui.negative.message").addClass('hidden');
-      $('form').removeClass('loading');
-    }
-    $(document)
-      .ready(function () {
-        var formRules = {
-          on: 'blur',
-          fields: {
-            email: {
-              identifier: 'email',
-              rules: [{
-                  type: 'empty',
-                  prompt: 'Please enter your e-mail'
-                },
-                {
-                  type: 'email',
-                  prompt: 'Please enter a valid e-mail'
-                }
-              ],
-            },
-            password: {
-              identifier: 'password',
-              rules: [{
-                  type: 'empty',
-                  prompt: 'Please enter your password'
-                },
-                {
-                  type: 'length[6]',
-                  prompt: 'Your password must be at least 6 characters'
-                }
-              ]
-            },
-            name: {
-              identifier: 'username',
-              rules: [{
-                  type: 'empty',
-                  prompt: 'Please enter your name'
-                },
-                {
-                  type: 'length[3]',
-                  prompt: 'Your name must be at least 3 characters'
-                }
-              ]
-            }
-          },
-          onSuccess: null
-        };
-
-        formRules.onSuccess = function () {
-          $('form').addClass('loading');
-          firebaseManager.login($(this).closest('.ui.form').form('get value', 'email'), $(this).closest(
-            '.ui.form').form('get value',
-            'password'));
-          return false;
-        };
-        $('#login-box').children('.ui.form').form(formRules);
-
-        formRules.onSuccess = function () {
-          $('form').addClass('loading');
-          firebaseManager.createUser($(this).closest('.ui.form').form('get value', 'email'), $(this).closest(
-            '.ui.form').form('get value',
-            'password'));
-          return false;
-        }
-        $('#register-box').children('.ui.form').form(formRules);
-
-        formRules.onSuccess = function () {
-          $('form').addClass('loading');
-          firebaseManager.requestResetPassword($(this).closest('.ui.form').form('get value', 'email'));
-          return false;
-        }
-        $('#forgot-box').children('.ui.form').form(formRules);
-
-        formRules.onSuccess = function () {
-          $('form').addClass('loading');
-          firebaseManager.resetPassword($(this).closest('.ui.form').form('get value', 'password'));
-          return false;
-        }
-        $('#reset-box').children('.ui.form').form(formRules);
-
-        formRules.onSuccess = function () {
-          $('form').addClass('loading');
-          console.log("SIGN OUT");
-          var data = {
-            username: $(this).closest('.ui.form').form('get value', 'username'),
-            creationDate: Date.now()
-          }
-          firebaseManager.checkUserData(data);
-          return false;
-        }
-        $('#userdata-box').children('.ui.form').form(formRules);
-        firebaseManager.checkURLParameters();
-
-        formRules.onSuccess = function () {
-          $('form').addClass('loading');
-          console.log("SIGN OUT");
-          firebaseManager.signout();
-          return false;
-        }
-        $('#signout-box').children('.ui.form').form(formRules);
-        firebaseManager.checkURLParameters();
-      });
+      //game.init();*/
   </script>
 </head>
 
 <body>
-  <div class="ui middle aligned center aligned grid">
-    <!-- Column Login -->
-    <div id="login-box" class="eight wide column">
-      <form class="ui large form">
-        <div class="ui stacked segment">
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
-              <input id="loginemail" type="text" name="email" placeholder="E-mail address">
+    <div class="ui top aligned left aligned grid">
+        <!-- Column Login -->
+        <div id="login-box" class="eight wide column">
+          <form class="ui large form">
+            <div class="ui stacked segment">
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="user icon"></i>
+                  <input id="loginemail" type="text" name="email" placeholder="E-mail address">
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="lock icon"></i>
+                  <input type="password" name="password" placeholder="Password">
+                </div>
+              </div>
+              <div class="ui fluid large teal submit button">Login</div>
+              <div class="ui negative message hidden">
+                <div class="header">
+                  We're sorry
+                </div>
+                <p>Someone else already picked it
+                </p>
+              </div>
+              <div class="ui message tiny">
+                New to us?
+                <a href="#" onclick="ui.showRegister()" style="white-space:pre"> Sign Up</a>
+                <br> Forgot password?
+                <a href="#" onclick="ui.showForgot()" style="white-space:pre"> Reset password</a>
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="lock icon"></i>
-              <input type="password" name="password" placeholder="Password">
-            </div>
-          </div>
-          <div class="ui fluid large teal submit button">Login</div>
-          <div class="ui negative message hidden">
-            <div class="header">
-              We're sorry
-            </div>
-            <p>Someone else already picked it
-            </p>
-          </div>
-          <div class="ui message tiny">
-            New to us?
-            <a href="#" onclick="showRegister()" style="white-space:pre"> Sign Up</a>
-            <br> Forgot password?
-            <a href="#" onclick="showForgot()" style="white-space:pre"> Reset password</a>
-          </div>
+            <div class="ui error message"></div>
+          </form>
         </div>
-
-
-        <div class="ui error message"></div>
-
-      </form>
-    </div>
-    <!-- Column Register -->
-    <div id="register-box" class="eight wide column">
-      <form class="ui large form">
-        <div class="ui stacked segment">
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
-              <input type="text" name="email" placeholder="E-mail address">
+        <!-- Column Register -->
+        <div id="register-box" class="eight wide column">
+          <form class="ui large form">
+            <div class="ui stacked segment">
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="user icon"></i>
+                  <input type="text" name="email" placeholder="E-mail address">
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="lock icon"></i>
+                  <input type="password" name="password" placeholder="Password">
+                </div>
+              </div>
+              <div class="ui fluid large teal submit button">Register</div>
+              <div class="ui negative message hidden">
+                <div class="header">
+                  We're sorry
+                </div>
+                <p>Someone else already picked it
+                </p>
+              </div>
+              <div class="ui message tiny">
+                Already an account?
+                <a href="#" onclick="ui.showLogin()" style="white-space:pre"> Log in</a>
+                <br> Forgot password?
+                <a href="#" onclick="ui.showForgot()" style="white-space:pre"> Reset password</a>
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="lock icon"></i>
-              <input type="password" name="password" placeholder="Password">
-            </div>
-          </div>
-          <div class="ui fluid large teal submit button">Register</div>
-          <div class="ui negative message hidden">
-            <div class="header">
-              We're sorry
-            </div>
-            <p>Someone else already picked it
-            </p>
-          </div>
-          <div class="ui message tiny">
-            Already an account?
-            <a href="#" onclick="showLogin()" style="white-space:pre"> Log in</a>
-            <br> Forgot password?
-            <a href="#" onclick="showForgot()" style="white-space:pre"> Reset password</a>
-          </div>
+            <div class="ui error message"></div>
+          </form>
         </div>
-
-        <div class="ui error message"></div>
-
-      </form>
-
-
-    </div>
-
-    <!-- Forgot password -->
-    <div id="forgot-box" class="eight wide column">
-      <form class="ui large form">
-        <div class="ui stacked segment">
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
-              <input id="forgotmail" type="text" name="email" placeholder="E-mail address">
+        <!-- Forgot password -->
+        <div id="forgot-box" class="eight wide column">
+          <form class="ui large form">
+            <div class="ui stacked segment">
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="user icon"></i>
+                  <input id="forgotmail" type="text" name="email" placeholder="E-mail address">
+                </div>
+              </div>
+              <div class="ui fluid large teal submit button">Reset password</div>
+              <div class="ui negative message hidden">
+                <div class="header">
+                  We're sorry
+                </div>
+                <p>Someone else already picked it
+                </p>
+              </div>
+              <div class="ui positive message hidden">
+                <div class="header">
+                  Great succes!
+                </div>
+                <p>Reset email has been sent.
+                </p>
+              </div>
+              <div class="ui message tiny">
+                New to us?
+                <a href="#" onclick="ui.showRegister()" style="white-space:pre"> Sign Up</a>
+              </div>
             </div>
-          </div>
-          <div class="ui fluid large teal submit button">Reset password</div>
-          <div class="ui negative message hidden">
-            <div class="header">
-              We're sorry
-            </div>
-            <p>Someone else already picked it
-            </p>
-          </div>
-          <div class="ui positive message hidden">
-            <div class="header">
-              Great succes!
-            </div>
-            <p>Reset email has been sent.
-            </p>
-          </div>
-          <div class="ui message tiny">
-            New to us?
-            <a href="#" onclick="showRegister()" style="white-space:pre"> Sign Up</a>
-          </div>
+            <div class="ui error message"></div>
+          </form>
         </div>
-
-
-        <div class="ui error message"></div>
-
-      </form>
-    </div>
-
-    <!-- Reset password -->
-    <div id="reset-box" class="eight wide column">
-      <form class="ui large form">
-        <div class="ui stacked segment">
-          <div class="ui message tiny">
-            <p>Resetting password for .....</p>
-          </div>
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="lock icon"></i>
-              <input type="password" name="password" placeholder="Password">
+        <!-- Reset password -->
+        <div id="reset-box" class="eight wide column">
+          <form class="ui large form">
+            <div class="ui stacked segment">
+              <div class="ui message tiny">
+                <p>Resetting password for .....</p>
+              </div>
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="lock icon"></i>
+                  <input type="password" name="password" placeholder="Password">
+                </div>
+              </div>
+              <div class="ui fluid large teal submit button">Reset password</div>
+              <div class="ui negative message hidden">
+                <div class="header">
+                  We're sorry
+                </div>
+                <p>Someone else already picked it
+                </p>
+              </div>
+              <div class="ui positive message hidden">
+                <div class="header">
+                  Great succes!
+                </div>
+                <p>The password is successfuly changed, please login
+                  <a href="#" style="white-space:pre"> here</a>
+                </p>
+              </div>
+              <div class="ui message tiny">
+                Action code expired?
+                <a href="#" onclick="ui.showForgot()" style="white-space:pre"> Request a new one</a>
+                <br> Already reset your password?
+                <a href="#" onclick="ui.showLogin()" style="white-space:pre"> Log in</a>
+              </div>
             </div>
-          </div>
-          <div class="ui fluid large teal submit button">Reset password</div>
-          <div class="ui negative message hidden">
-            <div class="header">
-              We're sorry
-            </div>
-            <p>Someone else already picked it
-            </p>
-          </div>
-          <div class="ui positive message hidden">
-            <div class="header">
-              Great succes!
-            </div>
-            <p>The password is successfuly changed, please login
-              <a href="#" style="white-space:pre"> here</a>
-            </p>
-          </div>
-          <div class="ui message tiny">
-            Action code expired?
-            <a href="#" onclick="showForgot()" style="white-space:pre"> Request a new one</a>
-            <br> Already reset your password?
-            <a href="#" onclick="showLogin()" style="white-space:pre"> Log in</a>
-          </div>
+            <div class="ui error message"></div>
+          </form>
         </div>
-
-        <div class="ui error message"></div>
-
-      </form>
-    </div>
-
-    <!-- Register User Data -->
-    <div id="userdata-box" class="eight wide column">
-      <form class="ui large form">
-        <div class="ui stacked segment">
-          <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
-              <input id="username" type="text" name="username" placeholder="Username">
+        <!-- Register User Data -->
+        <div id="userdata-box" class="eight wide column">
+          <form class="ui large form">
+            <div class="ui stacked segment">
+              <div class="field">
+                <div class="ui left icon input">
+                  <i class="user icon"></i>
+                  <input id="username" type="text" name="username" placeholder="Username">
+                </div>
+              </div>
+              <div class="ui fluid large teal submit button">Continue</div>
+              <div class="ui negative message hidden">
+                <div class="header">
+                  We're sorry
+                </div>
+                <p>Someone else already picked it
+                </p>
+              </div>
+              <div class="ui positive message hidden">
+                <div class="header">
+                  Great succes!
+                </div>
+                <p>Reset email has been sent.
+                </p>
+              </div>
+              <div class="ui message tiny">
+                New to us?
+                <a href="#" onclick="ui.showRegister()" style="white-space:pre"> Sign Up</a>
+              </div>
             </div>
-          </div>
-          <div class="ui fluid large teal submit button">Continue</div>
-          <div class="ui negative message hidden">
-            <div class="header">
-              We're sorry
-            </div>
-            <p>Someone else already picked it
-            </p>
-          </div>
-          <div class="ui positive message hidden">
-            <div class="header">
-              Great succes!
-            </div>
-            <p>Reset email has been sent.
-            </p>
-          </div>
-          <div class="ui message tiny">
-            New to us?
-            <a href="#" onclick="showRegister()" style="white-space:pre"> Sign Up</a>
-          </div>
+            <div class="ui error message"></div>
+          </form>
         </div>
-        <div class="ui error message"></div>
-      </form>
-    </div>
-
-    <!-- Sign out -->
-    <div id="signout-box" class="eight wide column">
-      <form class="ui large form">
-        <div class="ui stacked segment">
-          <div class="ui fluid large teal submit button">Sign out</div>
-          <div class="ui positive message hidden">
-            <div class="header">
-              Great succes!
+        <!-- Sign out -->
+        <div id="signout-box" class="eight wide column">
+          <form class="ui large form">
+            <div class="ui stacked segment">
+              <div class="ui fluid large teal submit button">Sign out</div>
+              <div class="ui positive message hidden">
+                <div class="header">
+                  Great succes!
+                </div>
+                <p>The password is successfuly changed, please login
+                  <a href="#" style="white-space:pre"> here</a>
+                </p>
+              </div>
             </div>
-            <p>The password is successfuly changed, please login
-              <a href="#" style="white-space:pre"> here</a>
-            </p>
-          </div>
+            <div class="ui error message"></div>
+          </form>
         </div>
-        <div class="ui error message"></div>
-      </form>
-    </div>
-
+      </div>
+      <div id="my-gui-container"></div>
   </div>
-
+    <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
 </body>
 
 </html>
