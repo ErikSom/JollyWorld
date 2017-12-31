@@ -36,20 +36,22 @@
   <script type="text/javascript" src="src/Vehicle.js"></script>
 
   <script type="text/javascript" src="src/UIManager.js"></script>
-
-  <script>
-     // window.ui = new UIManager();
-      //window.ui.initForm();
-
-
-      //game.init();*/
-  </script>
 </head>
 
 <body>
-    <div class="ui top aligned left aligned grid">
+  <!-- Login Bar -->
+    <div class="ui top aligned center aligned grid">
+        <div id="ingamemenu" class="eight wide column left floated">
+            <div class="ui stacked segment">
+              <div class="ui fluid large teal submit button">Sign out</div>
+              <div class="ui fluid large teal submit button">Sign out</div>
+              <div class="ui fluid large teal submit button">Sign out</div>
+              <div class="ui fluid large teal submit button">Sign out</div>
+              <div class="ui fluid large teal submit button">Sign out</div>
+            </div>
+          </div>
         <!-- Column Login -->
-        <div id="login-box" class="eight wide column">
+        <div id="login-box" class="eight wide column right floated">
           <form class="ui large form">
             <div class="ui stacked segment">
               <div class="field">
@@ -83,7 +85,7 @@
           </form>
         </div>
         <!-- Column Register -->
-        <div id="register-box" class="eight wide column">
+        <div id="register-box" class="eight wide column right floated">
           <form class="ui large form">
             <div class="ui stacked segment">
               <div class="field">
@@ -117,7 +119,7 @@
           </form>
         </div>
         <!-- Forgot password -->
-        <div id="forgot-box" class="eight wide column">
+        <div id="forgot-box" class="eight wide column right floated">
           <form class="ui large form">
             <div class="ui stacked segment">
               <div class="field">
@@ -150,7 +152,7 @@
           </form>
         </div>
         <!-- Reset password -->
-        <div id="reset-box" class="eight wide column">
+        <div id="reset-box" class="eight wide column right floated">
           <form class="ui large form">
             <div class="ui stacked segment">
               <div class="ui message tiny">
@@ -189,7 +191,7 @@
           </form>
         </div>
         <!-- Register User Data -->
-        <div id="userdata-box" class="eight wide column">
+        <div id="userdata-box" class="eight wide column right floated">
           <form class="ui large form">
             <div class="ui stacked segment">
               <div class="field">
@@ -222,7 +224,7 @@
           </form>
         </div>
         <!-- Sign out -->
-        <div id="signout-box" class="eight wide column">
+        <div id="signout-box" class="eight wide column right floated">
           <form class="ui large form">
             <div class="ui stacked segment">
               <div class="ui fluid large teal submit button">Sign out</div>
@@ -240,6 +242,7 @@
         </div>
       </div>
       <div id="my-gui-container"></div>
+    </div>
   </div>
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
 </body>

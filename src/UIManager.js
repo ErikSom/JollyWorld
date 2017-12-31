@@ -147,6 +147,4 @@ function UIManager() {
     }
 }
 var ui = new UIManager();
-window.onload = function () {
-  ui.initForm();
-};
+window.addEventListener("load", function() { ui.initForm();}.bind(this));

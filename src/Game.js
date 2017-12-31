@@ -293,3 +293,7 @@ function Game() {
 
     };
 }
+
+
+var game = new Game();
+window.addEventListener("load", function() { game.init();}.bind(this));
