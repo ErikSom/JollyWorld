@@ -2430,20 +2430,19 @@ function B2dEditor() {
 	}
 
 	this.stringifyWorldJSON = function () {
-
 		this.worldJSON = '{"objects":[';
 		var sprite;
 		var spriteData;
 		for (i = 0; i < this.textures.children.length; i++) {
 			if (i != 0) this.worldJSON += ',';
 			sprite = this.textures.getChildAt(i);
-
-			this.updateObject(sprite, sprite.data);
-			this.worldJSON += this.stringifyObject(sprite.data);
+			if(!sprite.excludeFromWorldJSON){
+				//TODO add to sprite creator - possibly add parameter to build function
+				this.updateObject(sprite, sprite.data);
+				this.worldJSON += this.stringifyObject(sprite.data);
+			}
 		}
 		this.worldJSON += ']}';
-
-		console.log(this.worldJSON);
 	}
 	/*this.bodyObject = function () {
 		[0]this.type = self.object_BODY;

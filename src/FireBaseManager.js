@@ -93,7 +93,7 @@ function FireBaseManager() {
             if(snapshot.val()){
                 self.onLoginComplete();
             }else{
-                ui.showUserData();
+                ui.showBox('#userdata-box')
             }
         }, function (error) {
             console.log(error.message);
@@ -114,7 +114,7 @@ function FireBaseManager() {
     }
     this.onLoginComplete = function () {
         console.log("USER LOGGED IN!");
-        ui.showSignout();
+        ui.showBox('#signout-box')
         console.log(this.app.auth().currentUser);
         $(".ui.positive.message").removeClass('hidden');
         $(".ui.positive.message > p").text("Logged in as " + this.app.auth().currentUser);
@@ -126,7 +126,7 @@ function FireBaseManager() {
     this.signout = function () {
         firebase.auth().signOut().then(function () {
             console.log("signed out");
-            ui.showLogin();
+            ui.showBox('#login-box')
         }, function (error) {
             // An error happened.
             console.log("signout error" + error.message);
@@ -170,9 +170,9 @@ function FireBaseManager() {
         this.actionCode = urlParams.oobCode;
         var accountEmail;
         // Verify the password reset code is valid.
-        if (!mode) ui.showLogin();
+        if (!mode) ui.showBox('#login-box');
         else if (mode == "resetPassword") {
-            ui.showReset();
+            ui.showBox('#reset-box')
             this.app.auth().verifyPasswordResetCode(this.actionCode).then(function (email) {
                 var accountEmail = email;
                 console.log(accountEmail);

@@ -1,49 +1,20 @@
 function UIManager() {
 
     var self = this;
-    this.showLogin = function () {
-        self.showNothing();
-        $("#login-box").css("display", "inline");
-    }
 
-    this.showRegister = function () {
+    this.showBox = function(name){
         self.showNothing();
-        $("#register-box").css("display", "inline");
-    }
-
-    this.showForgot = function () {
-        self.showNothing();
-        $("#forgot-box").css("display", "inline");
-    }
-
-    this.showReset = function () {
-        self.showNothing();
-        $("#reset-box").css("display", "inline");
-    }
-
-    this.showUserData = function () {
-        self.showNothing();
-        $("#userdata-box").css("display", "inline");
-    }
-
-    this.showSignout = function () {
-        self.showNothing();
-        $("#signout-box").css("display", "inline");
+        $(name).css("display", "inline");
     }
 
     this.showNothing = function () {
-        $("#login-box").css("display", "none");
-        $("#register-box").css("display", "none");
-        $("#forgot-box").css("display", "none");
-        $("#reset-box").css("display", "none");
-        $("#userdata-box").css("display", "none");
-        $("#signout-box").css("display", "none");
+        $('.eight.wide.column').css("display", "none");
         $(".ui.positive.message").addClass('hidden');
         $(".ui.negative.message").addClass('hidden');
         $('form').removeClass('loading');
     }
 
-    this.initForm = function () {
+    this.init = function () {
         console.log("init form!");
         var formRules = {
             on: 'blur',
@@ -89,62 +60,75 @@ function UIManager() {
         };
 
         formRules.onSuccess = function () {
-            console.log("LOGIN PRESS");
-            $('form').addClass('loading');
-            firebaseManager.login($(this).closest('.ui.form').form('get value', 'email'), $(this).closest(
-                '.ui.form').form('get value',
-                'password'));
-            return false;
-        };
-        $('#login-box').children('.ui.form').form(formRules);
-
-        console.log($('#login-box'));
-
-        formRules.onSuccess = function () {
-            $('form').addClass('loading');
-            firebaseManager.createUser($(this).closest('.ui.form').form('get value', 'email'), $(this).closest(
-                '.ui.form').form('get value',
-                'password'));
+            self.formSuccesFunction($(this));
             return false;
         }
-        $('#register-box').children('.ui.form').form(formRules);
+        $('.ui.form').form(formRules);
+        firebaseManager.checkURLParameters();
 
-        formRules.onSuccess = function () {
+        this.formSuccesFunction = function($form){
             $('form').addClass('loading');
-            firebaseManager.requestResetPassword($(this).closest('.ui.form').form('get value', 'email'));
-            return false;
-        }
-        $('#forgot-box').children('.ui.form').form(formRules);
+            var formName = $form.parent().attr('id');
+            switch(formName){
+                case "login-box":
+                    console.log("LOGIN PRESS");
+                    $('form').addClass('loading');
+                    firebaseManager.login($form.closest('.ui.form').form('get value', 'email'), $form.closest(
+                        '.ui.form').form('get value',
+                        'password'));
+                    return false;
+                break;
 
-        formRules.onSuccess = function () {
-            $('form').addClass('loading');
-            firebaseManager.resetPassword($(this).closest('.ui.form').form('get value', 'password'));
-            return false;
-        }
-        $('#reset-box').children('.ui.form').form(formRules);
+                case "register-box":
+                    firebaseManager.createUser($form.closest('.ui.form').form('get value', 'email'), $form.closest(
+                        '.ui.form').form('get value',
+                        'password'));
+                break;
 
-        formRules.onSuccess = function () {
-            $('form').addClass('loading');
-            console.log("SIGN OUT");
-            var data = {
-                username: $(this).closest('.ui.form').form('get value', 'username'),
-                creationDate: Date.now()
+                case "reset-box":
+                    firebaseManager.requestResetPassword($form.closest('.ui.form').form('get value', 'email'));
+                break;
+
+                case "reset-box":
+                    firebaseManager.resetPassword($form.closest('.ui.form').form('get value', 'password'));
+                break;
+
+                case "userdata-box":
+                    var data = {
+                        username: $form.closest('.ui.form').form('get value', 'username'),
+                        creationDate: Date.now()
+                    }
+                    firebaseManager.checkUserData(data);
+                break;
+
+                case "signout-box":
+                    console.log("SIGN OUT");
+                    firebaseManager.signout();
+                break;
+                default:
+                    console.log("NO FUNCTION SET FOR: "+formName);
+                break;
+
             }
-            firebaseManager.checkUserData(data);
-            return false;
         }
-        $('#userdata-box').children('.ui.form').form(formRules);
-        firebaseManager.checkURLParameters();
 
-        formRules.onSuccess = function () {
-            $('form').addClass('loading');
-            console.log("SIGN OUT");
-            firebaseManager.signout();
-            return false;
-        }
-        $('#signout-box').children('.ui.form').form(formRules);
-        firebaseManager.checkURLParameters();
+        //SIDEBAR FUNCTIONALITY
+        //EDITOR
+        $('#sidebar-btn').click(function() {
+            $('.ui.sidebar').sidebar('toggle');
+        });
+
+        $('#sidebar_loadlevel_btn').click(function(){
+            self.showBox("#loadlevel-box");
+        })
+        $('#sidebar_publishlevel_btn').click(function(){
+            self.showBox("#publishlevel-box");
+        })
+
+
+
+
     }
 }
 var ui = new UIManager();
-window.addEventListener("load", function() { ui.initForm();}.bind(this));
+window.addEventListener("load", function() { ui.init();}.bind(this));

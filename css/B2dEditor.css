@@ -13,10 +13,16 @@ body {
 
 body>.grid {
     height: 100%;
+    width: 100%;
+    position:absolute;
 }
 
 .column {
     max-width: 350px;
+    z-index:20;
+}
+.sidebar{
+    z-index:20;
 }
 .margintopfix {
     margin-top:10px !important;
@@ -34,11 +40,9 @@ body>.grid {
 #userdata-box,
 #signout-box {
     display: none;
-    z-index: 20;
 }
 
 #login-box{
-    z-index: 20;
 }
 
 #uicontainer {
