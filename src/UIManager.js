@@ -54,6 +54,18 @@ function UIManager() {
                             prompt: 'Your name must be at least 3 characters'
                         }
                     ]
+                },
+                level_title: {
+                    identifier: 'level_title',
+                    rules: [{
+                            type: 'empty',
+                            prompt: 'Please enter a level title'
+                        },
+                        {
+                            type: 'length[3]',
+                            prompt: 'Level title must be at least 3 characters'
+                        }
+                    ]
                 }
             },
             onSuccess: null
@@ -104,6 +116,28 @@ function UIManager() {
                 case "signout-box":
                     console.log("SIGN OUT");
                     firebaseManager.signout();
+                break;
+                case "publishlevel-box":
+                    console.log("PUBLISH LEVEL");
+                    game.editor.stringifyWorldJSON();
+                    var levelData = game.editor.worldJSON;
+
+                    var file1 = {file:levelData, dir:"levels", name:"levelData.json"};
+
+                    var uploader = new firebaseManager.uploadFiles([file1, file1, file1],
+                    function(urls){
+                        console.log("ui manager complete");
+                        console.log(urls);
+                    },
+                    function(progress){
+                        console.log("ui manager progress");
+                        console.log(progress);
+                    },
+                    function(error){
+                        console.log("ui manager error");
+                        console.log(error);
+                    }
+                    );
                 break;
                 default:
                     console.log("NO FUNCTION SET FOR: "+formName);
