@@ -7,6 +7,7 @@ function FireBaseManager() {
     this.loginEmail;
     this.loginPassword;
     this.actionCode;
+    this.baseDownloadURL = "https://firebasestorage.googleapis.com/v0/b/jolly-ad424.appspot.com/o/";
 
     this.init = function () {
         var config = {
@@ -201,9 +202,7 @@ function FireBaseManager() {
         this.currentFile;
         this.totalFiles = files.length;
         this.currentFileProgress = 0;
-        this.urls = []
-        
-
+        this.tokens = []
         var self = this;
 
 
@@ -228,12 +227,13 @@ function FireBaseManager() {
         }
         this.complete = function(task){
             var downloadURL = task.snapshot.downloadURL;
+            var token = downloadURL.split(firebaseManager.baseDownloadURL)[1];
             console.log("Upload files complete file");
-            console.log(downloadURL);
-            self.urls.push(downloadURL);
+            console.log(token);
+            self.tokens.push(token);
             self.currentFileProgress = 0;
             if(self.currentIndex == self.totalFiles){
-                if(completeCall) completeCall(self.urls);
+                if(completeCall) completeCall(self.tokens);
             } else{
                 self.uploadNext();
             }
