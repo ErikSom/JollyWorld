@@ -203,8 +203,8 @@ function FireBaseManager() {
         this.totalFiles = files.length;
         this.currentFileProgress = 0;
         this.tokens = []
+        this.uploadGUID = this.generateUUID();
         var self = this;
-
 
         this.uploadNext = function(){
             console.log("Upload files uploadNext");
@@ -241,7 +241,7 @@ function FireBaseManager() {
 
         this.uploadFile = function (file, dir, name) {
             console.log("Upload files uploadFile");
-            var storageRef = firebase.storage().ref(dir + "/" + this.generateUUID() + "/" + name);
+            var storageRef = firebase.storage().ref(dir + "/" + self.uploadGUID + "/" + name);
 
             var task;
             if (typeof file === 'string') {
@@ -261,19 +261,18 @@ function FireBaseManager() {
                 }
             );
         }
-        this.generateUUID = function () {
-            var d = new Date().getTime();
-            if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-                d += performance.now();
-            }
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = (d + Math.random() * 16) % 16 | 0;
-                d = Math.floor(d / 16);
-                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-            });
-        }
-
         this.uploadNext();
+    }
+    this.generateUUID = function () {
+        var d = new Date().getTime();
+        if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+            d += performance.now();
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
     }
 
 

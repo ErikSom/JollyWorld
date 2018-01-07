@@ -51,6 +51,11 @@ function B2dEditor() {
 	this.undoTransformRot = 0;
 	this.undoTransformDepthHigh = false;
 
+	this.cameraSize = {
+		w: 400,
+		h: 300
+	};
+
 
 	//COLORS
 	this.selectionBoxColor = "0x5294AE";
@@ -797,6 +802,8 @@ function B2dEditor() {
 			this.doVerticesDrawing();
 		} else if (this.editorMode == this.editorMode_DRAWCIRCLES) {
 			this.doCircleDrawing();
+		} else if (this.editorMode == this.editorMode_CAMERA) {
+			this.doCamera();
 		}
 	}
 	this.run = function () {
@@ -923,7 +930,40 @@ function B2dEditor() {
 	this.startSelectionMode = function () {
 		this.editorMode = this.editorMode_SELECTION;
 	}
+	this.startCameraMode = function () {
+		this.editorMode = this.editorMode_CAMERA;
+	}
+	this.takeSnapshot = function () {
+		this.debugGraphics.clear();
+		game.app.render();
+		var imageData = this.canvas.toDataURL('image/png');
+		var image = new Image();
+		image.src = imageData;
 
+		var canvas = $("#canvas-helper")[0];
+		var context = canvas.getContext("2d");
+		console.log(image.width + "  " + image.height);
+
+		var self = this;
+		image.onload = function () {
+			var scale = 1;
+			//var forceAspect = 600.0 / 800.0;
+			//var desiredImageHeight = image.width * forceAspect;
+			//var yOffset = (image.height - desiredImageHeight) / 2.0;
+
+
+			canvas.width = self.cameraSize.w;
+			canvas.height = self.cameraSize.h;
+
+			context.drawImage(image, self.mousePosPixel.x-self.cameraSize.w/2, self.mousePosPixel.y-self.cameraSize.h/2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
+			$(canvas).css("z-index", 1000);
+			// canvas.width = image.width * scale;
+			// canvas.height = image.height * scale;
+			// context.drawImage(image, 0, 0, canvas.width, canvas.height);
+			console.log("took snapshot");
+			console.log(image);
+		}
+	}
 
 	this.onMouseDown = function (evt) {
 
@@ -1059,6 +1099,8 @@ function B2dEditor() {
 				}
 			} else if (this.editorMode == this.editorMode_DRAWCIRCLES) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+			} else if (this.editorMode_CAMERA == this.editorMode_CAMERA) {
+				this.takeSnapshot();
 			}
 		}
 		this.updateMousePosition(evt);
@@ -1313,7 +1355,7 @@ function B2dEditor() {
 			}
 
 
-		} else if (e.keyCode == 77) { //d
+		} else if (e.keyCode == 77) { //m
 			console.log("selection! :)");
 			this.startSelectionMode();
 		} else if (e.keyCode == 81) { //q
@@ -1322,6 +1364,8 @@ function B2dEditor() {
 			this.attachJointPlaceHolder();
 		} else if (e.keyCode == 83) { //s
 			this.stringifyWorldJSON();
+		} else if (e.keyCode == 84) { //t
+			this.startCameraMode();
 		} else if (e.keyCode == 86) { // v
 			if (e.ctrlKey || e.metaKey) {
 				this.pasteSelection();
@@ -1928,8 +1972,6 @@ function B2dEditor() {
 					this.correctDrawVertice = true;
 
 				}
-
-
 				//calculate if we can still close
 				if (this.activeVertices.length > 2) {
 
@@ -1956,7 +1998,6 @@ function B2dEditor() {
 
 					//this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x, this.getPIXIPointFromWorldPoint(newVertice).y);
 					//this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).x, this.getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).y);
-
 
 					if (intersect(checkBaseSegmentNextVertice, imaginaryVerticeOnBaseSegment, newVertice, activeVertice)) {
 						this.debugGraphics.lineStyle(1, 0xFF00FF, 1);
@@ -2005,7 +2046,6 @@ function B2dEditor() {
 
 			this.debugGraphics.endFill();
 		}
-
 	}
 
 	this.createBodyObjectFromVerts = function (verts) {
@@ -2042,6 +2082,39 @@ function B2dEditor() {
 
 		return bodyObject;
 
+	}
+	this.cameraOverlayGUIColor = "#000000";
+	this.cameraOverlayGUICircleRadius = 20;
+	this.doCamera = function () {
+		this.debugGraphics.lineStyle(1, this.cameraOverlayGUIColor, 1);
+
+		var sX = this.mousePosPixel.x - this.cameraSize.w / 2;
+		var sY = this.mousePosPixel.y - this.cameraSize.h / 2;
+
+		this.drawBox(this.debugGraphics, sX, sY, this.cameraSize.w, this.cameraSize.h, this.cameraOverlayGUIColor, 1, 1);
+
+		var miniBoxScale = 0.3;
+		var cornerSizeScale = 0.2;
+
+		var mbhW = this.cameraSize.w * miniBoxScale / 2;
+		var mbhH = this.cameraSize.h * miniBoxScale / 2;
+		var cornerSize = mbhW * cornerSizeScale;
+
+		this.debugGraphics.moveTo(this.mousePosPixel.x - mbhW, this.mousePosPixel.y - mbhH + cornerSize);
+		this.debugGraphics.lineTo(this.mousePosPixel.x - mbhW, this.mousePosPixel.y - mbhH);
+		this.debugGraphics.lineTo(this.mousePosPixel.x - mbhW + cornerSize, this.mousePosPixel.y - mbhH);
+
+		this.debugGraphics.moveTo(this.mousePosPixel.x + mbhW, this.mousePosPixel.y - mbhH + cornerSize);
+		this.debugGraphics.lineTo(this.mousePosPixel.x + mbhW, this.mousePosPixel.y - mbhH);
+		this.debugGraphics.lineTo(this.mousePosPixel.x + mbhW - cornerSize, this.mousePosPixel.y - mbhH);
+
+		this.debugGraphics.moveTo(this.mousePosPixel.x - mbhW, this.mousePosPixel.y + mbhH - cornerSize);
+		this.debugGraphics.lineTo(this.mousePosPixel.x - mbhW, this.mousePosPixel.y + mbhH);
+		this.debugGraphics.lineTo(this.mousePosPixel.x - mbhW + cornerSize, this.mousePosPixel.y + mbhH);
+
+		this.debugGraphics.moveTo(this.mousePosPixel.x + mbhW, this.mousePosPixel.y + mbhH - cornerSize);
+		this.debugGraphics.lineTo(this.mousePosPixel.x + mbhW, this.mousePosPixel.y + mbhH);
+		this.debugGraphics.lineTo(this.mousePosPixel.x + mbhW - cornerSize, this.mousePosPixel.y + mbhH);
 	}
 	this.buildTextureFromObj = function (obj) {
 		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(obj.textureName));
@@ -2436,7 +2509,7 @@ function B2dEditor() {
 		for (i = 0; i < this.textures.children.length; i++) {
 			if (i != 0) this.worldJSON += ',';
 			sprite = this.textures.getChildAt(i);
-			if(!sprite.excludeFromWorldJSON){
+			if (!sprite.excludeFromWorldJSON) {
 				//TODO add to sprite creator - possibly add parameter to build function
 				this.updateObject(sprite, sprite.data);
 				this.worldJSON += this.stringifyObject(sprite.data);
@@ -2663,7 +2736,6 @@ function B2dEditor() {
 
 		if (fillColor != undefined) target.beginFill(fillColor, fillAlpha);
 
-
 		target.lineStyle(lineSize, lineColor, lineAlpha);
 		target.moveTo(x, y);
 		target.lineTo(x + width, y);
@@ -2751,9 +2823,6 @@ function B2dEditor() {
 						this.objectLookup[sprite.data.group][sprite.data.refName] = joint;
 					}
 				}
-				//
-
-
 			} else if (sprite.data.type == this.object_BODY) {
 				//
 				//add to live group
@@ -2847,10 +2916,10 @@ function B2dEditor() {
 
 
 	//CONSTS
+	this.editorMode_CAMERA = "camera";
 	this.editorMode_DRAWVERTICES = "drawVertices";
 	this.editorMode_DRAWCIRCLES = "drawCircles";
 	this.editorMode_SELECTION = "selection";
-
 
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
 

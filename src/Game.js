@@ -269,36 +269,7 @@ function Game() {
 
         //console.log(this.editor.container.position);
     }
-    this.takeSnapshot = function(){
-        this.app.render();
-        var imageData = this.canvas.toDataURL('image/png');
-        var image = new Image();
-        image.src = imageData;
 
-      var canvas = $("#canvas-helper")[0];
-      var context = canvas.getContext("2d");
-        console.log(image.width+"  "+image.height);
-        image.onload = function(){
-            var scale = 0.5;
-            var forceAspect = 600.0/800.0;
-            var desiredImageHeight = image.width * forceAspect;
-            var yOffset = (image.height-desiredImageHeight) / 2.0;
-
-
-            canvas.width = image.width * scale;
-            canvas.height = desiredImageHeight * scale;
-            console.log(image.width+"  "+desiredImageHeight+"  "+canvas.width +"  "+canvas.height);
-
-            context.drawImage(image, 0, yOffset, image.width, desiredImageHeight, 0, 0, canvas.width, canvas.height);
-
-
-           // canvas.width = image.width * scale;
-           // canvas.height = image.height * scale;
-           // context.drawImage(image, 0, 0, canvas.width, canvas.height);
-            console.log("took snapshot");
-            console.log(image);
-        }
-    }
     this.thumbnailFromImage = function(){
     }
 
@@ -330,4 +301,4 @@ function Game() {
 
 
 var game = new Game();
-window.addEventListener("load", function() { game.init();}.bind(this));
+window.addEventListener("load", function() { console.log("1 toto");game.init();}.bind(this));
