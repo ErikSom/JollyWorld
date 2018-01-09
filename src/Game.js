@@ -216,8 +216,6 @@ function Game() {
             }
 
             this.run = !this.run;
-        }else if (e.keyCode == 81){
-            this.takeSnapshot();
         }
         Key.onKeydown(e);
         this.editor.onKeyDown(e);

@@ -55,6 +55,10 @@ function B2dEditor() {
 		w: 400,
 		h: 300
 	};
+	this.cameraShotData = {
+		highRes: null,
+		lowRes: null
+	}
 
 
 	//COLORS
@@ -933,35 +937,47 @@ function B2dEditor() {
 	this.startCameraMode = function () {
 		this.editorMode = this.editorMode_CAMERA;
 	}
-	this.takeSnapshot = function () {
+	this.takeCameraShot = function () {
+		//first clean up screen
 		this.debugGraphics.clear();
+		game.newDebugGraphics.clear();
+		var i;
+		for(i = 0; i<this.editorIcons.length; i++){
+			this.editorIcons[i].visible = false;
+		}
 		game.app.render();
-		var imageData = this.canvas.toDataURL('image/png');
+		//
+		var imageData = this.canvas.toDataURL('image/jpeg', 1);
 		var image = new Image();
 		image.src = imageData;
-
 		var canvas = $("#canvas-helper")[0];
 		var context = canvas.getContext("2d");
-		console.log(image.width + "  " + image.height);
-
+		var shotQuality = 0.8;
 		var self = this;
 		image.onload = function () {
+			//highRes;
 			var scale = 1;
-			//var forceAspect = 600.0 / 800.0;
-			//var desiredImageHeight = image.width * forceAspect;
-			//var yOffset = (image.height - desiredImageHeight) / 2.0;
-
-
-			canvas.width = self.cameraSize.w;
-			canvas.height = self.cameraSize.h;
-
+			canvas.width = self.cameraSize.w*scale;
+			canvas.height = self.cameraSize.h*scale;
 			context.drawImage(image, self.mousePosPixel.x-self.cameraSize.w/2, self.mousePosPixel.y-self.cameraSize.h/2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
-			$(canvas).css("z-index", 1000);
-			// canvas.width = image.width * scale;
-			// canvas.height = image.height * scale;
-			// context.drawImage(image, 0, 0, canvas.width, canvas.height);
-			console.log("took snapshot");
-			console.log(image);
+			var highResThumb = canvas.toDataURL('image/jpeg', shotQuality);
+			/*var _image = new Image();
+			_image.src = highResThumb;
+			document.body.appendChild(_image);*/
+
+			//lowRes
+			scale = 0.25;
+			canvas.width = self.cameraSize.w*scale;
+			canvas.height = self.cameraSize.h*scale;
+			context.drawImage(image, self.mousePosPixel.x-self.cameraSize.w/2, self.mousePosPixel.y-self.cameraSize.h/2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
+			var lowResThumb = canvas.toDataURL('image/jpeg', shotQuality);
+			/*var _image = new Image();
+			_image.src = lowResThumb;
+			document.body.appendChild(_image);*/
+
+			this.cameraShotData.highRes = highResThumb;
+			this.cameraShotData.lowRes = lowResThumb;
+			console.log("Camera Shot Succesfull");
 		}
 	}
 
@@ -1100,7 +1116,7 @@ function B2dEditor() {
 			} else if (this.editorMode == this.editorMode_DRAWCIRCLES) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 			} else if (this.editorMode_CAMERA == this.editorMode_CAMERA) {
-				this.takeSnapshot();
+				this.takeCameraShot();
 			}
 		}
 		this.updateMousePosition(evt);
