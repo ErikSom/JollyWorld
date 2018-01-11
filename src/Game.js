@@ -267,8 +267,78 @@ function Game() {
 
         //console.log(this.editor.container.position);
     }
+    this.levelsSnapshot;
+    this.levelsLimitTo = 25;
+    this.retreiveNextLevelList = function(){
+        var levelRef = firebase.database().ref('/Levels/');
+        //if(this.levelsSnapshot == undefined){
+            levelRef.orderByChild("creationDate").limitToFirst(this.levelsLimitTo);
+        //}
+        levelRef.once('value').then(function (levelListSnapshot) {
+            console.log("Levels Loaded!!");
+            console.log(levelListSnapshot.val());
+            ui.displayLevels(levelListSnapshot.val());
+        }, function (error) {
+            console.log("ERROR!!");
+            console.log(error.message);
+        });
+    }
+    this.uploadLevelData = function(details){
+        console.log("upload details:");
+        console.log(details);
+        this.editor.stringifyWorldJSON();
+        var filesToUpload = [];
+        var levelData = this.editor.worldJSON;
+        filesToUpload.push({file:levelData, dir:"levels", name:"levelData.json"});
+        if(this.editor.cameraShotData.highRes != null){
+            filesToUpload.push({file:this.editor.cameraShotData.highRes, dir:"levels", name:"thumb_highRes.jpeg"})
+            filesToUpload.push({file:this.editor.cameraShotData.lowRes, dir:"levels", name:"thumb_lowRes.jpeg"})
+        }
+        var self = this;
+        var uploader = new firebaseManager.uploadFiles(filesToUpload, firebaseManager.generateUUID(),
+        function(urls){
+            console.log("ui manager complete");
+            console.log(urls);
+            self.storeLevelData(urls, details);
+        },
+        function(progress){
+            console.log("ui manager progress");
+            console.log(progress);
+        },
+        function(error){
+            console.log("ui manager error");
+            console.log(error);
+        }
+        );
+    }
+    this.storeLevelData = function(urls, details){
+        var levelObject = {};
+        levelObject["dataURL"] = urls[0];
+        if(urls.length>1){
+            levelObject["thumbHighResURL"] = urls[1];
+            levelObject["thumbLowResURL"] = urls[2];
+        }
+        levelObject["creationDate"] = Date.now();
+        levelObject["creator"] = firebaseManager.username;//username
+        levelObject["creatorID"] = firebaseManager.app.auth().currentUser.uid;//userid
+        levelObject["description"] = details.description;
+        levelObject["name"] = details.name;
+        levelObject["numVotes"] = 0;
+        levelObject["playCount"] = 0;
+        levelObject["sumVotes"] = 0;
+        levelObject["voters"] = {};
 
-    this.thumbnailFromImage = function(){
+        var levelRef = firebase.database().ref('/Levels/' + firebaseManager.app.auth().currentUser.uid);
+        levelRef.set(levelObject);
+        levelRef.once('value').then(function (snapshot) {
+            console.log("Level upload big succes!");
+            console.log(snapshot.val());
+            ui.levelPublishSuccess();
+        }, function (error) {
+            console.log("ERROR!!");
+            console.log(error.message);
+        });
+
     }
 
 

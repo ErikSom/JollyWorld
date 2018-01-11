@@ -90,7 +90,8 @@ function FireBaseManager() {
         console.log(this.app.auth().currentUser.uid + "  MY UID");
         var userRef = firebase.database().ref('/Users/' + this.app.auth().currentUser.uid);
         userRef.once('value').then(function (snapshot) {
-            if (snapshot.val()) {
+            self.username = snapshot.val().username;
+            if (self.username) {
                 self.onLoginComplete();
             } else {
                 ui.showBox('#userdata-box')
@@ -196,14 +197,14 @@ function FireBaseManager() {
         });
     }
 
-    this.uploadFiles = function (files, completeCall, progressCall, errorCall) {
+    this.uploadFiles = function (files, UUID, completeCall, progressCall, errorCall) {
         console.log("uploadFiles class init");
         this.currentIndex = 0;
         this.currentFile;
         this.totalFiles = files.length;
         this.currentFileProgress = 0;
         this.tokens = []
-        this.uploadGUID = this.generateUUID();
+        this.uploadUUID = UUID;
         var self = this;
 
         this.uploadNext = function(){
@@ -241,7 +242,7 @@ function FireBaseManager() {
 
         this.uploadFile = function (file, dir, name) {
             console.log("Upload files uploadFile");
-            var storageRef = firebase.storage().ref(dir + "/" + self.uploadGUID + "/" + name);
+            var storageRef = firebase.storage().ref(dir + "/" + self.uploadUUID + "/" + name);
 
             var task;
             if (typeof file === 'string') {

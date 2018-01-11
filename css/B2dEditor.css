@@ -21,6 +21,10 @@ body>.grid {
     max-width: 350px;
     z-index:20;
 }
+.fixedmaxwidth{
+    max-width: 500px !important;
+}
+
 .sidebar{
     z-index:20;
 }

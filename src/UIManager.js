@@ -14,6 +14,27 @@ function UIManager() {
         $('form').removeClass('loading');
     }
 
+    this.displayLevels = function(levelSnapshot){
+        for (var level in levelSnapshot) {
+            if (levelSnapshot.hasOwnProperty(level)) {
+                console.log("Level:");
+                console.log(levelSnapshot[level]);
+            }
+        }
+        var levelItemHolder = $("#loadlevel-box .segments");
+        var levelItemElement = $("#loadlevel-box .segment");
+        var itemClone;
+        var i;
+        console.log(levelItemElement);
+        for(i = 0; i<25; i++){
+            itemClone = levelItemElement.clone();
+            console.log(itemClone);
+            itemClone.appendTo(levelItemHolder);
+        }
+
+
+    }
+
     this.init = function () {
         console.log("init form!");
         var formRules = {
@@ -119,25 +140,7 @@ function UIManager() {
                 break;
                 case "publishlevel-box":
                     console.log("PUBLISH LEVEL");
-                    game.editor.stringifyWorldJSON();
-                    var levelData = game.editor.worldJSON;
-
-                    var file1 = {file:levelData, dir:"levels", name:"levelData.json"};
-
-                    var uploader = new firebaseManager.uploadFiles([file1, file1, file1],
-                    function(urls){
-                        console.log("ui manager complete");
-                        console.log(urls);
-                    },
-                    function(progress){
-                        console.log("ui manager progress");
-                        console.log(progress);
-                    },
-                    function(error){
-                        console.log("ui manager error");
-                        console.log(error);
-                    }
-                    );
+                    game.uploadLevelData({name:$form.closest('.ui.form').form('get value', 'level_title'), description:$form.closest('.ui.form').form('get value', 'level_description')});
                 break;
                 default:
                     console.log("NO FUNCTION SET FOR: "+formName);
@@ -154,14 +157,15 @@ function UIManager() {
 
         $('#sidebar_loadlevel_btn').click(function(){
             self.showBox("#loadlevel-box");
+            game.retreiveNextLevelList();
         })
         $('#sidebar_publishlevel_btn').click(function(){
             self.showBox("#publishlevel-box");
         })
-
-
-
-
+    }
+    this.levelPublishSuccess = function(){
+        $('form').removeClass('loading');
+        this.showNothing();
     }
 }
 var ui = new UIManager();
