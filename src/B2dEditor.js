@@ -2535,10 +2535,8 @@ function B2dEditor() {
 		for (i = 0; i < this.textures.children.length; i++) {
 			if (i != 0) this.worldJSON += ',';
 			sprite = this.textures.getChildAt(i);
-			if (!sprite.data.excludeFromWorldJSON) {
-				this.updateObject(sprite, sprite.data);
-				this.worldJSON += this.stringifyObject(sprite.data);
-			}
+			this.updateObject(sprite, sprite.data);
+			this.worldJSON += this.stringifyObject(sprite.data);
 		}
 		this.worldJSON += ']}';
 	}
@@ -2713,7 +2711,7 @@ function B2dEditor() {
 		data.ID = sprite.parent.getChildIndex(sprite);
 	}
 
-	this.buildJSON = function (json, excludeFromWorldJSON) {
+	this.buildJSON = function (json) {
 
 		console.log(json);
 
@@ -2730,7 +2728,6 @@ function B2dEditor() {
 				console.log(i);
 				obj = this.parseArrObject(worldObjects.objects[i]);
 				obj.ID += startChildIndex;
-				if(excludeFromWorldJSON) obj.excludeFromWorldJSON = true;
 
 				if (obj.type == this.object_BODY) {
 					this.buildBodyFromObj(obj);
