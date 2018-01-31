@@ -40,8 +40,8 @@
 <body>
   <!-- Side Bar Menu -->
   <div class="ui sidebar inverted vertical menu">
-    <div class="item">
-      <b>Menu</b>
+    <div class="header item">
+      Menu
     </div>
     <a id="sidebar_loadlevel_btn" class="item">
       Load Level
@@ -49,10 +49,13 @@
     <a id="sidebar_publishlevel_btn" class="item">
       Publish Level
     </a>
+    <a id="sidebar_loginout_btn" class="item">
+        Login
+      </a>
   </div>
   <div class="ui middle aligned center aligned grid">
     <!-- Publish Level Window -->
-    <div id="publishlevel-box" class="eight wide column">
+    <div id="publishlevel-box" class="eight wide column box">
       <form class="ui large form">
         <div class="ui stacked segment">
           <div class="field">
@@ -67,28 +70,28 @@
       </form>
     </div>
     <!-- Load Level Window -->
-    <div id="loadlevel-box" class="ten wide column fixedmaxwidth">
-      <div id="scrollable" style="height:400px; overflow:auto">
-        <div class="ui segments">
-          <div id="levelSelectItem" class="ui segment">
-            <div class="ui middle aligned left aligned container grid">
-              <div class="four wide column">
-                <div class="ui image">
-                  <img src="/assets/images/thumb_placeholder_lr.jpg">
+
+      <div id="loadlevel-box" class="ten wide column fixedmaxwidth box">
+        <div id="scrollable" style="height:400px; overflow:auto">
+          <div class="ui segments">
+            <div id="levelSelectItem" class="ui segment">
+              <div class="ui top aligned left aligned container grid">
+                <div class="four wide column">
+                  <div class="ui image">
+                    <img src="/assets/images/thumb_placeholder_lr.jpg">
+                  </div>
                 </div>
-              </div>
-              <div id="creator" class="three wide column">
-                Creator</div>
-              <div class="four wide column right floated">
-                <div id="playButton" class = "ui large button">Play</div>
-              </div>
+                <div id="creator" class="five wide column">Creator</div>
+                <div class="four wide column right floated">
+                  <div id="playButton" class = "ui large button">Play</div>
+                </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   <!-- Column Login -->
-  <div id="login-box" class="eight wide column">
+  <div id="login-box" class="eight wide column box">
     <form class="ui large form">
       <div class="ui stacked segment">
         <div class="field">
@@ -122,7 +125,7 @@
     </form>
   </div>
   <!-- Column Register -->
-  <div id="register-box" class="eight wide column">
+  <div id="register-box" class="eight wide column box">
     <form class="ui large form">
       <div class="ui stacked segment">
         <div class="field">
@@ -156,7 +159,7 @@
     </form>
   </div>
   <!-- Forgot password -->
-  <div id="forgot-box" class="eight wide column">
+  <div id="forgot-box" class="eight wide column box">
     <form class="ui large form">
       <div class="ui stacked segment">
         <div class="field">
@@ -189,7 +192,7 @@
     </form>
   </div>
   <!-- Reset password -->
-  <div id="reset-box" class="eight wide column">
+  <div id="reset-box" class="eight wide column box">
     <form class="ui large form">
       <div class="ui stacked segment">
         <div class="ui message tiny">
@@ -228,7 +231,7 @@
     </form>
   </div>
   <!-- Register User Data -->
-  <div id="userdata-box" class="eight wide column">
+  <div id="userdata-box" class="eight wide column box">
     <form class="ui large form">
       <div class="ui stacked segment">
         <div class="field">
@@ -261,7 +264,7 @@
     </form>
   </div>
   <!-- Sign out -->
-  <div id="signout-box" class="eight wide column">
+  <div id="signout-box" class="eight wide column box">
     <form class="ui large form">
       <div class="ui stacked segment">
         <div class="ui fluid large teal submit button">Sign out</div>

@@ -1,0 +1,163 @@
+﻿{"frames": {
+
+"Skin1_Arm0000":
+{
+	"frame": {"x":2,"y":2,"w":12,"h":47},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":47},
+	"sourceSize": {"w":12,"h":47}
+},
+"Skin1_Core0000":
+{
+	"frame": {"x":16,"y":2,"w":40,"h":119},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":119},
+	"sourceSize": {"w":40,"h":119}
+},
+"Skin1_Eye0000":
+{
+	"frame": {"x":58,"y":2,"w":18,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":20},
+	"sourceSize": {"w":18,"h":20}
+},
+"Skin1_Eye_Closed0000":
+{
+	"frame": {"x":78,"y":2,"w":18,"h":19},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":19},
+	"sourceSize": {"w":18,"h":19}
+},
+"Skin1_Feet0000":
+{
+	"frame": {"x":98,"y":2,"w":25,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":13},
+	"sourceSize": {"w":25,"h":13}
+},
+"Skin1_Hand0000":
+{
+	"frame": {"x":125,"y":2,"w":23,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":20},
+	"sourceSize": {"w":23,"h":20}
+},
+"Skin1_Head_Boring0000":
+{
+	"frame": {"x":150,"y":2,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_Idle0000":
+{
+	"frame": {"x":2,"y":123,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_Laugh0000":
+{
+	"frame": {"x":73,"y":123,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_Oh0000":
+{
+	"frame": {"x":144,"y":123,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_RnM0000":
+{
+	"frame": {"x":2,"y":194,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_Smile0000":
+{
+	"frame": {"x":73,"y":194,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_hurt10000":
+{
+	"frame": {"x":144,"y":194,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_hurt20000":
+{
+	"frame": {"x":2,"y":265,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_hurt30000":
+{
+	"frame": {"x":73,"y":265,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Head_hurt40000":
+{
+	"frame": {"x":144,"y":265,"w":69,"h":69},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":69},
+	"sourceSize": {"w":69,"h":69}
+},
+"Skin1_Leg0000":
+{
+	"frame": {"x":215,"y":265,"w":16,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":62},
+	"sourceSize": {"w":16,"h":62}
+},
+"Skin1_Shoulder0000":
+{
+	"frame": {"x":233,"y":265,"w":18,"h":57},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":57},
+	"sourceSize": {"w":18,"h":57}
+},
+"Skin1_Thigh0000":
+{
+	"frame": {"x":2,"y":336,"w":19,"h":71},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":71},
+	"sourceSize": {"w":19,"h":71}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "18.0.0.107",
+	"image": "Characters1.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":512},
+	"scale": "1"
+}
+}

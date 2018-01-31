@@ -65,9 +65,11 @@ function Game() {
         PIXI.loader
             .add("assets/images/bodyparts.json")
             .add("assets/images/vehicles.json")
+            .add("assets/images/Characters1.json")
             .add("worldData", "data/worldData.json")
             .add("vehicleData", "data/vehicle.json")
-            .add("characterData", "data/character.json");
+            .add("characterData", "data/character.json")
+            .add("characterData1", "data/character1.json");
 
         this.editor = new B2dEditor();
         this.editor.load(PIXI.loader);
@@ -100,6 +102,7 @@ function Game() {
             "2head.png", "2body.png", "2uparm.png", "2lowarm.png", "2upleg.png", "2lowleg.png",
             "3head.png", "3body.png", "3uparm.png", "3lowarm.png", "3upleg.png", "3lowleg.png"
         ];
+        this.editor.assetLists.maincharacters = ["Skin1_Head_Idle0000","Skin1_Head_Smile0000","Skin1_Head_Laugh0000","Skin1_Head_hurt10000","Skin1_Head_hurt20000","Skin1_Head_hurt30000","Skin1_Head_hurt40000","Skin1_Head_RnM0000","Skin1_Head_Oh0000", "Skin1_Head_Boring0000", "Skin1_Core0000", "Skin1_Thigh0000", "Skin1_Leg0000", "Skin1_Feet0000", "Skin1_Shoulder0000", "Skin1_Arm0000", "Skin1_Hand0000", "Skin1_Eye0000", "Skin1_Eye_Closed0000"];
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
         this.editor.init(myContainer, this.world, this.PTM);
 
@@ -118,9 +121,22 @@ function Game() {
     }
 
     this.initWorld = function () {
-        this.editor.buildJSON(PIXI.loader.resources.worldData.data);
-        this.editor.buildJSON(PIXI.loader.resources.vehicleData.data);
-        //this.editor.buildJSON(PIXI.loader.resources.characterData.data);
+        //this.editor.buildJSON(PIXI.loader.resources.worldData.data);
+        this.editor.buildJSON(PIXI.loader.resources.vehicleData.data, true);
+        this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
+    }
+    this.loadLevel = function(levelData){
+        console.log("Loading level..");
+        this.editor.resetEditor();
+        var self = this;
+        $('form').removeClass('loading');
+        $.getJSON(firebaseManager.baseDownloadURL+levelData.dataURL, function(data) {
+            self.editor.buildJSON(data);
+            self.initWorld();
+            ui.showNothing();
+            $('.sidebar').sidebar("hide");
+            console.log("Loading level success!!!");
+        });
     }
 
 
@@ -291,11 +307,12 @@ function Game() {
         var levelData = this.editor.worldJSON;
         filesToUpload.push({file:levelData, dir:"levels", name:"levelData.json"});
         if(this.editor.cameraShotData.highRes != null){
-            filesToUpload.push({file:this.editor.cameraShotData.highRes, dir:"levels", name:"thumb_highRes.jpeg"})
-            filesToUpload.push({file:this.editor.cameraShotData.lowRes, dir:"levels", name:"thumb_lowRes.jpeg"})
+            filesToUpload.push({file:this.editor.cameraShotData.highRes, dir:"levels", name:"thumb_highRes.jpg", datatype:"data_url"})
+            filesToUpload.push({file:this.editor.cameraShotData.highRes, dir:"levels", name:"thumb_lowRes.jpg", datatype:"data_url"})
         }
+        details.levelID = firebaseManager.generateUUID();
         var self = this;
-        var uploader = new firebaseManager.uploadFiles(filesToUpload, firebaseManager.generateUUID(),
+        var uploader = new firebaseManager.uploadFiles(filesToUpload, details.levelID,
         function(urls){
             console.log("ui manager complete");
             console.log(urls);
@@ -328,7 +345,7 @@ function Game() {
         levelObject["sumVotes"] = 0;
         levelObject["voters"] = {};
 
-        var levelRef = firebase.database().ref('/Levels/' + firebaseManager.app.auth().currentUser.uid);
+        var levelRef = firebase.database().ref('/Levels/' + details.levelID);
         levelRef.set(levelObject);
         levelRef.once('value').then(function (snapshot) {
             console.log("Level upload big succes!");

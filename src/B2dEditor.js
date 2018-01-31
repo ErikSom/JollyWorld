@@ -975,9 +975,12 @@ function B2dEditor() {
 			_image.src = lowResThumb;
 			document.body.appendChild(_image);*/
 
-			this.cameraShotData.highRes = highResThumb;
-			this.cameraShotData.lowRes = lowResThumb;
+			self.cameraShotData.highRes = highResThumb;
+			self.cameraShotData.lowRes = lowResThumb;
 			console.log("Camera Shot Succesfull");
+		}
+		for(i = 0; i<this.editorIcons.length; i++){
+			this.editorIcons[i].visible = true;
 		}
 	}
 
@@ -2429,8 +2432,17 @@ function B2dEditor() {
 				var dif = new b2Vec2(texture.x - body.GetPosition().x * this.PTM, texture.y - body.GetPosition().y * this.PTM);
 				var angleOffset = body.GetAngle() - Math.atan2(dif.y, dif.x);
 				var angle = body.GetAngle() - texture.rotation;
+
+
+
+				if(body.myGraphic.parent.getChildIndex(body.myGraphic) > texture.parent.getChildIndex(texture)){
+					body.myGraphic.parent.swapChildren(body.myGraphic, texture);
+				}
+
+
 				this.updateObject(body.myGraphic, body.myGraphic.data);
 				this.updateObject(texture, texture.data);
+
 				this.setTextureToBody(body, texture, dif.Length(), angleOffset, angle);
 
 			} else if (body.myTexture && texture.myBody) {
@@ -2525,8 +2537,7 @@ function B2dEditor() {
 		for (i = 0; i < this.textures.children.length; i++) {
 			if (i != 0) this.worldJSON += ',';
 			sprite = this.textures.getChildAt(i);
-			if (!sprite.excludeFromWorldJSON) {
-				//TODO add to sprite creator - possibly add parameter to build function
+			if (!sprite.data.excludeFromWorldJSON) {
 				this.updateObject(sprite, sprite.data);
 				this.worldJSON += this.stringifyObject(sprite.data);
 			}
@@ -2704,7 +2715,7 @@ function B2dEditor() {
 		data.ID = sprite.parent.getChildIndex(sprite);
 	}
 
-	this.buildJSON = function (json) {
+	this.buildJSON = function (json, excludeFromWorldJSON) {
 
 		console.log(json);
 
@@ -2721,6 +2732,7 @@ function B2dEditor() {
 				console.log(i);
 				obj = this.parseArrObject(worldObjects.objects[i]);
 				obj.ID += startChildIndex;
+				if(excludeFromWorldJSON) obj.excludeFromWorldJSON = true;
 
 				if (obj.type == this.object_BODY) {
 					this.buildBodyFromObj(obj);

@@ -8,31 +8,61 @@ function UIManager() {
     }
 
     this.showNothing = function () {
-        $('.eight.wide.column').css("display", "none");
+        $('.box').css("display", "none");
         $(".ui.positive.message").addClass('hidden');
         $(".ui.negative.message").addClass('hidden');
         $('form').removeClass('loading');
     }
 
     this.displayLevels = function(levelSnapshot){
-        for (var level in levelSnapshot) {
-            if (levelSnapshot.hasOwnProperty(level)) {
-                console.log("Level:");
-                console.log(levelSnapshot[level]);
-            }
-        }
         var levelItemHolder = $("#loadlevel-box .segments");
         var levelItemElement = $("#loadlevel-box .segment");
         var itemClone;
-        var i;
-        console.log(levelItemElement);
-        for(i = 0; i<25; i++){
-            itemClone = levelItemElement.clone();
-            console.log(itemClone);
-            itemClone.appendTo(levelItemHolder);
+        var level;
+        var i = 0;
+        var self = this;
+        for (var key in levelSnapshot) {
+            if (levelSnapshot.hasOwnProperty(key)) {
+
+                level = levelSnapshot[key];
+                itemClone = (i == 0) ? levelItemElement : levelItemElement.clone();
+                itemClone.find("#creator").html(level.name+"<br>by <a href="+"www.google.com"+">"+level.creator+"</a>");
+                if(level.thumbLowResURL){
+                    itemClone.find("img").attr("src", firebaseManager.baseDownloadURL+level.thumbLowResURL);
+                }
+                console.log("Level:");
+                console.log(levelSnapshot[key]);
+                itemClone.appendTo(levelItemHolder);
+                itemClone.find("#playButton").click(function(){
+                    $(this).parent().parent().parent().addClass('loading');
+                    game.loadLevel(levelSnapshot[key]);
+                })
+                i++;
+
+            }
         }
+    }
+    this.loggedIn = function(){
+        this.showNothing();
+       // $("#sidebar_loginout_btn").unbind("click");
+        $("#sidebar_loginout_btn").text("Signout");
+        $("#sidebar_loginout_btn").click(function(){
+            firebaseManager.signout();
+            console.log("menu loggedin");
+        });
 
-
+        $("#sidebar_loadlevel_btn").removeClass("disabled");
+        $("#sidebar_publishlevel_btn").removeClass("disabled");
+    }
+    this.signedOut = function(){
+        //$("#sidebar_loginout_btn").unbind("click");
+        $("#sidebar_loginout_btn").text("Login");
+        $("#sidebar_loginout_btn").click(function(){
+            ui.showBox('#login-box');
+            console.log("menu signedout!!");
+        });
+        $("#sidebar_loadlevel_btn").addClass("disabled");
+        $("#sidebar_publishlevel_btn").addClass("disabled");
     }
 
     this.init = function () {
@@ -162,6 +192,7 @@ function UIManager() {
         $('#sidebar_publishlevel_btn').click(function(){
             self.showBox("#publishlevel-box");
         })
+        this.signedOut();
     }
     this.levelPublishSuccess = function(){
         $('form').removeClass('loading');

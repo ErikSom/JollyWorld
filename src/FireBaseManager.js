@@ -115,7 +115,8 @@ function FireBaseManager() {
     }
     this.onLoginComplete = function () {
         console.log("USER LOGGED IN!");
-        ui.showBox('#signout-box')
+        ui.loggedIn();
+        //ui.showBox('#signout-box')
         console.log(this.app.auth().currentUser);
         $(".ui.positive.message").removeClass('hidden');
         $(".ui.positive.message > p").text("Logged in as " + this.app.auth().currentUser);
@@ -123,7 +124,7 @@ function FireBaseManager() {
     this.signout = function () {
         firebase.auth().signOut().then(function () {
             console.log("signed out");
-            ui.showBox('#login-box')
+            ui.signedOut();
         }, function (error) {
             // An error happened.
             console.log("signout error" + error.message);
@@ -167,7 +168,7 @@ function FireBaseManager() {
         this.actionCode = urlParams.oobCode;
         var accountEmail;
         // Verify the password reset code is valid.
-        if (!mode && !this.user) ui.showBox('#login-box');
+        if (!mode && !this.user); //READY
         else if (mode == "resetPassword") {
             ui.showBox('#reset-box')
             this.app.auth().verifyPasswordResetCode(this.actionCode).then(function (email) {
@@ -210,7 +211,7 @@ function FireBaseManager() {
         this.uploadNext = function(){
             console.log("Upload files uploadNext");
             self.currentFile = files[self.currentIndex];
-            self.uploadFile(self.currentFile.file, self.currentFile.dir, self.currentFile.name);
+            self.uploadFile(self.currentFile.file, self.currentFile.dir, self.currentFile.name, self.currentFile.datatype);
             self.currentIndex++;
         }
 
@@ -240,13 +241,18 @@ function FireBaseManager() {
             }
         }
 
-        this.uploadFile = function (file, dir, name) {
+        this.uploadFile = function (file, dir, name, datatype) {
             console.log("Upload files uploadFile");
             var storageRef = firebase.storage().ref(dir + "/" + self.uploadUUID + "/" + name);
 
             var task;
             if (typeof file === 'string') {
-                task = storageRef.putString(file);
+                if(datatype && datatype == "data_url"){
+                    console.log("PUTTING A THUMBBBB!");
+                    task = storageRef.putString(file, datatype);
+                }else{
+                    task = storageRef.putString(file);
+                }
             } else {
                 task = storageRef.put(file);
             }
