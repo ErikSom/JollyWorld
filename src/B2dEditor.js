@@ -2434,11 +2434,9 @@ function B2dEditor() {
 				var angle = body.GetAngle() - texture.rotation;
 
 
-
 				if(body.myGraphic.parent.getChildIndex(body.myGraphic) > texture.parent.getChildIndex(texture)){
 					body.myGraphic.parent.swapChildren(body.myGraphic, texture);
 				}
-
 
 				this.updateObject(body.myGraphic, body.myGraphic.data);
 				this.updateObject(texture, texture.data);
