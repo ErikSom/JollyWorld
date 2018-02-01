@@ -795,6 +795,7 @@ function B2dEditor() {
 					}
 				}
 			}
+			this.updateSelection();
 		}
 	}
 	this.doEditor = function () {
