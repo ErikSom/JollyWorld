@@ -66,6 +66,7 @@ function Game() {
             .add("assets/images/bodyparts.json")
             .add("assets/images/vehicles.json")
             .add("assets/images/Characters1.json")
+            .add("assets/images/Vehicles1.json")
             .add("worldData", "data/worldData.json")
             .add("vehicleData", "data/vehicle.json")
             .add("characterData", "data/character.json")
@@ -104,6 +105,7 @@ function Game() {
         ];
         this.editor.assetLists.maincharacters = ["Skin1_Head_Idle0000","Skin1_Head_Smile0000","Skin1_Head_Laugh0000","Skin1_Head_hurt10000","Skin1_Head_hurt20000","Skin1_Head_hurt30000","Skin1_Head_hurt40000","Skin1_Head_RnM0000","Skin1_Head_Oh0000", "Skin1_Head_Boring0000", "Skin1_Core0000", "Skin1_Thigh0000", "Skin1_Leg0000", "Skin1_Feet0000", "Skin1_Shoulder0000", "Skin1_Arm0000", "Skin1_Hand0000", "Skin1_Eye0000", "Skin1_Eye_Closed0000"];
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
+        this.editor.assetLists.vehicles1 = ["Bicycle_Body0000", "Bicycle_Pedals0000", "Bicycle_WheelFront0000", "Bicycle_WheelBack0000", "Unicycle_Body0000"];
         this.editor.init(myContainer, this.world, this.PTM);
 
 
