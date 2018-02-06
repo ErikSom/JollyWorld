@@ -34,9 +34,9 @@ module.exports = {
           new webpack.ProvidePlugin({
 			Key: 'Key'
           })
-    ],
-    externals: {
-        PIXI: 'PIXI',
-        jquery: 'jQuery'
-      }
+	],
+	externals: [{
+		jQuery:'jquery'
+		}
+	]
 };

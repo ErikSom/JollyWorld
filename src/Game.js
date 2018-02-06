@@ -4,6 +4,9 @@ import { B2dEditor } from "./B2dEditor";
 import { getPIXIDebugDraw } from "../libs/debugdraw";
 import { Vehicle } from "./Vehicle";
 
+var $ = require('jquery');
+var PIXI = require('pixi.js');
+
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2AABB = Box2D.Collision.b2AABB,
     b2BodyDef = Box2D.Dynamics.b2BodyDef,

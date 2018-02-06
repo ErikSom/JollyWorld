@@ -1,3 +1,9 @@
+import { firebaseManager } from './FireBaseManager';
+
+var $ = require('jquery');
+
+window.$ = window.jQuery = $;
+
 function UIManager() {
 
     var self = this;

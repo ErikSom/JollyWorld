@@ -1,3 +1,9 @@
+import { ui } from './UIManager';
+
+var firebase = require('firebase');
+var $ = require('jquery');
+
+
 function FireBaseManager() {
     this.app;
     this.user;
