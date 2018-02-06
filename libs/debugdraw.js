@@ -1,4 +1,6 @@
-function getPIXIDebugDraw(graphics, scale) {
+import { Box2D } from "./Box2D";
+
+export function getPIXIDebugDraw(graphics, scale) {
   function getColorFromDebugDrawCallback(color) {
     var red = (color._r * 255 * 255 * 255)|0;
     var green = (color._g * 255 * 255)|0;
@@ -15,6 +17,7 @@ function getPIXIDebugDraw(graphics, scale) {
     if (fill) {
       graphics.beginFill(color, 0.5);
     }
+    var tmpI;
     for(tmpI=0;tmpI<vertexCount;tmpI++) {
       var vert = vertices[tmpI];
       if ( tmpI === 0 )

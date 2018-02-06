@@ -185,13 +185,3 @@ var smallTextFont = {size: '14px',family: 'Arial', color:'0x000000'};
 
     ]
 }
-
-//helper
-EZGUI_addCloseButton = function (header, size, padding){
-    var closeButton = EZGUI.create({id: 'closeButton', component: 'Button', position: { x:header.parent.width-size-padding, y:padding}, width: size, height: size }, 'kenney');
-    header.addChild(closeButton);
-
-    closeButton.on('click', function () {
-                    header.parent.visible = false;
-                }); 
-}

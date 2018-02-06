@@ -296,5 +296,5 @@ function FireBaseManager() {
 
 }
 
-var firebaseManager = new FireBaseManager();
+export var firebaseManager = new FireBaseManager();
 firebaseManager.init();

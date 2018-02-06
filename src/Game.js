@@ -1,3 +1,9 @@
+import { Box2D } from "../libs/Box2D";
+import { Key } from "../libs/Key";
+import { B2dEditor } from "./B2dEditor";
+import { getPIXIDebugDraw } from "../libs/debugdraw";
+import { Vehicle } from "./Vehicle";
+
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2AABB = Box2D.Collision.b2AABB,
     b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -10,9 +16,6 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
     b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
     b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef;
-
-var game = new Game();
-
 
 function Game() {
 
@@ -387,5 +390,5 @@ function Game() {
 }
 
 
-var game = new Game();
+export var game = new Game();
 window.addEventListener("load", function() { console.log("1 toto");game.init();}.bind(this));

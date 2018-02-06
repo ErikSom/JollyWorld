@@ -199,5 +199,5 @@ function UIManager() {
         this.showNothing();
     }
 }
-var ui = new UIManager();
+export var ui = new UIManager();
 window.addEventListener("load", function() { ui.init();}.bind(this));
