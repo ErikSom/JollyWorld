@@ -1,3 +1,4 @@
+window.$ = window.jQuery = require("jquery");
 import 'FireBaseManager.js'
 import 'UIManager.js'
 import 'Vehicle.js'

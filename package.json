@@ -7,6 +7,9 @@
   "author": "Erik Sombroek <eriksombroek@gmail.com>",
   "license": "MIT",
   "private": false,
+  "scripts":{
+    "watch":"webpack --watch"
+  },
   "dependencies": {
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
@@ -17,6 +20,7 @@
     "firebase": "^4.9.1",
     "jquery": "^3.3.1",
     "pixi.js": "^4.7.0",
+    "semantic-ui": "^2.2.14",
     "webpack": "^3.10.0"
   }
 }

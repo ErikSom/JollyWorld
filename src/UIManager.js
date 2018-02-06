@@ -1,8 +1,10 @@
 import { firebaseManager } from './FireBaseManager';
 
-var $ = require('jquery');
+import $ from 'jquery';
 
-window.$ = window.jQuery = $;
+import '../dist/semantic';
+import '../dist/components/form';
+import '../dist/components/transition';
 
 function UIManager() {
 
