@@ -1,7 +1,10 @@
-window.$ = window.jQuery = require("jquery");
 import 'FireBaseManager.js'
 import 'UIManager.js'
 import 'Vehicle.js'
 import 'Game-gui.js'
 import 'B2dEditor.js'
 import 'Game.js'
+
+import '../libs/semantic/dist/semantic.css'
+import 'css/B2dEditor.css'
+import 'css/dat-gui-light-theme.css'

@@ -2265,6 +2265,9 @@ export function B2dEditor() {
 		6) collides only with characters
 		- set mask to CUSTOM_MASKBIT, FIXED_MASKBIT, NORMAL_MASKBIT
 
+		7) does not collide with character
+		-
+
 		all bits:
 		CHARACTER_MASKBIT;
 		CUSTOM_MASKBIT;
