@@ -242,7 +242,7 @@ function Game() {
             this.run = !this.run;
         }
         Key.onKeydown(e);
-        this.editor.onKeyDown(e);
+        if(!this.run) this.editor.onKeyDown(e);
     }
     this.onKeyUp = function (e) {
         this.editor.onKeyUp(e);
