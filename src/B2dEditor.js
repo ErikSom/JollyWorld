@@ -1,4 +1,7 @@
 import { Box2D } from "../libs/Box2D";
+import * as prefab from "./PrefabData";
+
+
 const PIXI = require('pixi.js');
 const dat = require('dat.gui').default;
 
@@ -21,6 +24,10 @@ export function B2dEditor() {
 	this.world;
 	this.debugGraphics = null;
 	this.textures = null;
+
+	this.prefabs = null;
+	this.prefabCounter = 0; //to ensure uniquenesss
+
 	this.container = null;
 	this.editorMode = "";
 	this.admin = true; // for future to dissalow certain changes like naming
@@ -58,8 +65,7 @@ export function B2dEditor() {
 	this.spaceDown = false;
 	this.editing = true;
 
-	this.editorObjectLookup = {}
-	this.objectLookup = {};
+	this.lookupGroups = {};
 
 	this.undoList = [];
 	this.undoIndex = 0;
@@ -95,6 +101,7 @@ export function B2dEditor() {
 		this.PTM = _PTM;
 		//Texture Draw
 		this.textures = new PIXI.Graphics();
+		this.prefabs = [];
 		this.container.addChild(this.textures);
 
 
@@ -108,6 +115,7 @@ export function B2dEditor() {
 		this.mousePosWorld = new b2Vec2(0, 0);
 
 		this.canvas = document.getElementById("canvas");
+		
 
 		this.initGui();
 
@@ -222,10 +230,10 @@ export function B2dEditor() {
 			this.editorGUI.editData.fixed = dataJoint.fixed;
 			this.editorGUI.editData.awake = dataJoint.awake;
 			this.editorGUI.editData.density = dataJoint.density;
-			if (this.isSelectionPropertyTheSame("group")) {
-				this.editorGUI.editData.group = dataJoint.group;
+			if (this.isSelectionPropertyTheSame("groups")) {
+				this.editorGUI.editData.groups = dataJoint.groups;
 			} else {
-				this.editorGUI.editData.group = "-";
+				this.editorGUI.editData.groups = "-";
 			}
 			this.editorGUI.editData.refName = dataJoint.refName;
 			this.editorGUI.editData.collision = dataJoint.collision;
@@ -248,7 +256,7 @@ export function B2dEditor() {
 				this.humanUpdate = true;
 				this.targetValue = value
 			});
-			this.editorGUI.add(self.editorGUI.editData, "group").onChange(function (value) {
+			this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
 			});
@@ -357,10 +365,10 @@ export function B2dEditor() {
 				this.editorGUI.editData.collideConnected = dataJoint.collideConnected;
 				this.editorGUI.editData.x = dataJoint.x;
 				this.editorGUI.editData.y = dataJoint.y;
-				if (this.isSelectionPropertyTheSame("group")) {
-					this.editorGUI.editData.group = dataJoint.group;
+				if (this.isSelectionPropertyTheSame("groups")) {
+					this.editorGUI.editData.groups = dataJoint.groups;
 				} else {
-					this.editorGUI.editData.group = "-";
+					this.editorGUI.editData.groups = "-";
 				}
 				this.editorGUI.editData.refName = dataJoint.refName;
 				this.editorGUI.editData.enableMotor = dataJoint.enableMotor;
@@ -391,7 +399,7 @@ export function B2dEditor() {
 					this.targetValue = value - this.initialValue;
 					this.initialValue = value;
 				});
-				this.editorGUI.add(self.editorGUI.editData, "group").onChange(function (value) {
+				this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
@@ -478,10 +486,10 @@ export function B2dEditor() {
 			this.editorGUI.editData.x = dataJoint.x * this.PTM;
 			this.editorGUI.editData.y = dataJoint.y * this.PTM;
 			this.editorGUI.editData.rotation = dataJoint.rotation;
-			if (this.isSelectionPropertyTheSame("group")) {
-				this.editorGUI.editData.group = dataJoint.group;
+			if (this.isSelectionPropertyTheSame("groups")) {
+				this.editorGUI.editData.groups = dataJoint.groups;
 			} else {
-				this.editorGUI.editData.group = "-";
+				this.editorGUI.editData.groups = "-";
 			}
 
 			var self = this;
@@ -499,7 +507,7 @@ export function B2dEditor() {
 				this.humanUpdate = true;
 				this.targetValue = value
 			});
-			this.editorGUI.add(self.editorGUI.editData, "group").onChange(function (value) {
+			this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
 			});
@@ -867,7 +875,7 @@ export function B2dEditor() {
 		this.x = null;
 		this.y = null;
 		this.rotation = 0;
-		this.group = "";
+		this.groups = "";
 		this.refName = "";
 		//
 		this.ID = 0;
@@ -892,7 +900,7 @@ export function B2dEditor() {
 		this.x = null;
 		this.y = null;
 		this.rotation = 0;
-		this.group = "";
+		this.groups = "";
 		this.refName = "";
 		//
 		this.ID = 0;
@@ -908,7 +916,7 @@ export function B2dEditor() {
 		this.x = null;
 		this.y = null;
 		this.rotation = 0;
-		this.group = "";
+		this.groups = "";
 		this.refName = "";
 		//
 		this.bodyA_ID;
@@ -928,7 +936,7 @@ export function B2dEditor() {
 		this.x = 0;
 		this.y = 0;
 		this.rotation = 0;
-		this.group = "";
+		this.groups = "";
 	}
 	this.lookupObject = function () {
 		this._bodies = [];
@@ -942,6 +950,13 @@ export function B2dEditor() {
 		this.transform;
 		this.objects = [];
 	}
+
+	this.prefabObject = function(){
+		this.type = self.object_PREFAB;
+		this.settings;
+		this.prefabName;
+	}
+	//{[4, {prefabType:0, showVehicle:false}, "character1.json"]}
 
 	this.startVerticesDrawing = function () {
 		this.editorMode = this.editorMode_DRAWVERTICES;
@@ -1809,15 +1824,15 @@ export function B2dEditor() {
 							sprite = this.selectedTextures[j];
 							sprite.rotation = controller.targetValue;
 						}
-					} else if (controller.property == "group" && controller.targetValue != "-") {
+					} else if (controller.property == "groups" && controller.targetValue != "-") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.myGraphic.data.group = controller.targetValue;
+							body.myGraphic.data.groups = controller.targetValue;
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							sprite.data.group = controller.targetValue;
+							sprite.data.groups = controller.targetValue;
 						}
 					} else if (controller.property == "refName" && controller.targetValue != "-") {
 						//body & sprite
@@ -2172,14 +2187,40 @@ export function B2dEditor() {
 			this.setTextureToBody(body, sprite, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
 		//handle groups and ref names
-		if (obj.group != "") {
-			if (this.editorObjectLookup[obj.group] == undefined) {
-				this.editorObjectLookup[obj.group] = new this.lookupObject;
-			}
-			this.editorObjectLookup[obj.group]._textures.push(sprite);
-		}
-
+		this.addItemToLookupGroups(sprite, sprite.data);
 	}
+	// ADD GROUP FUNCTIONALITY
+	// FIX GROUPS ON CHANGE OF INDIVIDUAL GROUP // SAME FOR INSTANCE LATER
+	// ADD UNIQUE GROUP TO PREFAB OBJECTS
+	// SET ALL JOINS IN GROUP TO NON VISIBLE
+
+	this.addItemToLookupGroups = function(obj, data){
+
+		//character1, .character, .vehicle, test
+		// subgroup + refname
+		if (data.groups && data.groups != "") {
+			var arr = data.groups.split(",");
+			var i;
+			var group;
+			for(i = 0; i<arr.length; i++){
+				group = arr[i].replace(/ /g,'');
+				if (this.lookupGroups[group] == undefined) {
+					this.lookupGroups[group] = new this.lookupObject;
+				}
+				if(data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
+				else if(data.type == this.object_BODY) this.lookupGroups[group]._bodies.push(obj);
+				else if(data.type == this.object_JOINT) this.lookupGroups[group]._joints.push(obj);
+
+				if (data.refName && data.refName != "") {
+					this.lookupGroups[group][data.refName] = obj;
+				}
+			}
+		}
+	}
+	this.removeItemFromLookupGroups = function(obj, groups){
+		//...
+	}
+
 	this.buildBodyFromObj = function (obj) {
 
 		var fixDef = new b2FixtureDef;
@@ -2232,13 +2273,7 @@ export function B2dEditor() {
 
 		this.setBodyCollision(body, obj.collision);
 
-
-		if (obj.group != "") {
-			if (this.editorObjectLookup[obj.group] == undefined) {
-				this.editorObjectLookup[obj.group] = new this.lookupObject;
-			}
-			this.editorObjectLookup[obj.group]._bodies.push(body);
-		}
+		this.addItemToLookupGroups(body, body.myGraphic.data);
 
 
 	}
@@ -2372,13 +2407,7 @@ export function B2dEditor() {
 		jointGraphics.scale.x = 1.0 / this.container.scale.x;
 		jointGraphics.scale.y = 1.0 / this.container.scale.y;
 
-
-		if (tarObj.group != "") {
-			if (this.editorObjectLookup[tarObj.group] == undefined) {
-				this.editorObjectLookup[tarObj.group] = new this.lookupObject;
-			}
-			this.editorObjectLookup[tarObj.group]._textures.push(jointGraphics);
-		}
+		this.addItemToLookupGroups(jointGraphics, jointGraphics.data);
 
 		this.editorIcons.push(jointGraphics);
 
@@ -2567,7 +2596,7 @@ export function B2dEditor() {
 		[1]this.x = null;
 		[2]this.y = null;
 		[3]this.rotation = 0;
-		[4]this.group = "";
+		[4]this.groups = "";
 		[5]this.refName = "";
 		//
 		[6]this.ID = 0;
@@ -2587,7 +2616,7 @@ export function B2dEditor() {
 		[1]this.x = null;
 		[2]this.y = null;
 		[3]this.rotation = 0;
-		[4]this.group = "";
+		[4]this.groups = "";
 		[5]this.refName = "";
 		//
 		[6]this.ID = 0;
@@ -2603,7 +2632,7 @@ export function B2dEditor() {
 		[1]this.x = null;
 		[2]this.y = null;
 		[3]this.rotation = 0;
-		[4]this.group = "";
+		[4]this.groups = "";
 		[5]this.refName = "";
 		//
 		[6]this.bodyA_ID;
@@ -2626,7 +2655,7 @@ export function B2dEditor() {
 		arr[1] = obj.x;
 		arr[2] = obj.y;
 		arr[3] = obj.rotation;
-		arr[4] = obj.group;
+		arr[4] = obj.groups;
 		arr[5] = obj.refName;
 
 		if (obj.type == this.object_BODY) {
@@ -2699,13 +2728,21 @@ export function B2dEditor() {
 			obj.lowerAngle = arr[15];
 			obj.dampingRatio = arr[16];
 			obj.frequencyHz = arr[17];
+		}else if(arr[0] == this.object_PREFAB){
+			obj = new this.prefabObject();
+			obj.settings = arr[1];
+			obj.prefabName = [arr[2]];
 		}
+
 		obj.type = arr[0];
-		obj.x = arr[1];
-		obj.y = arr[2];
-		obj.rotation = arr[3];
-		obj.group = arr[4];
-		obj.refName = arr[5];
+		if(arr[0] != this.object_PREFAB){
+			//shared vars
+			obj.x = arr[1];
+			obj.y = arr[2];
+			obj.rotation = arr[3];
+			obj.groups = arr[4];
+			obj.refName = arr[5];
+		}
 
 		return obj;
 	}
@@ -2733,11 +2770,12 @@ export function B2dEditor() {
 		data.ID = sprite.parent.getChildIndex(sprite);
 	}
 
-	this.buildJSON = function (json) {
+	this.buildJSON = function (json, prefabInstanceName) {
 
 		console.log(json);
 
 		var startChildIndex = this.textures.children.length;
+		var prefabOffset = 0;
 
 		if (json != null) {
 			//clone json to not destroy old references
@@ -2749,10 +2787,10 @@ export function B2dEditor() {
 			for (i = 0; i < worldObjects.objects.length; i++) {
 				console.log(i);
 				obj = this.parseArrObject(worldObjects.objects[i]);
-				obj.ID += startChildIndex;
+				if(obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
 
 				if (obj.type == this.object_BODY) {
-					this.buildBodyFromObj(obj);
+					this.buildBodyFromObj(obj); 
 				} else if (obj.type == this.object_TEXTURE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex;
@@ -2763,6 +2801,10 @@ export function B2dEditor() {
 					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
 
 					this.attachJointPlaceHolder(obj);
+				}else if(obj.type == this.object_PREFAB){
+					var prefabStartIndex = this.textures.children.length;
+					this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), obj.prefabName);
+					prefabOffset = this.textures.children.length-prefabOffset;
 				}
 
 			}
@@ -2842,8 +2884,7 @@ export function B2dEditor() {
 		var spritesToDestroy = [];
 		var sprite;
 
-		this.objectLookup = {};
-		this.editorObjectLookup = {};
+		this.lookupGroups = {};
 
 		var i;
 		for (i = 0; i < this.textures.children.length; i++) {
@@ -2857,55 +2898,11 @@ export function B2dEditor() {
 				var joint = this.attachJoint(sprite.data);
 				spritesToDestroy.push(sprite);
 
-				//
-				//add to live group
-				if (sprite.data.group != "") {
-					if (this.objectLookup[sprite.data.group] == undefined) {
-						this.objectLookup[sprite.data.group] = new this.lookupObject;
-					}
-					this.objectLookup[sprite.data.group]._joints.push(joint);
-
-					if (sprite.data.refName != "") {
-						this.objectLookup[sprite.data.group][sprite.data.refName] = joint;
-					}
-				}
+				this.addItemToLookupGroups(joint, sprite.data);
 			} else if (sprite.data.type == this.object_BODY) {
-				//
-				//add to live group
-				if (sprite.data.group != "") {
-					if (this.objectLookup[sprite.data.group] == undefined) {
-						this.objectLookup[sprite.data.group] = new this.lookupObject;
-					}
-					this.objectLookup[sprite.data.group]._bodies.push(sprite.myBody);
-
-					if (sprite.data.refName != "") {
-						this.objectLookup[sprite.data.group][sprite.data.refName] = sprite.myBody;
-					}
-				}
-				//
-
-				var fixture = sprite.myBody.GetFixtureList();
-
-
-
+				this.addItemToLookupGroups(sprite.myBody, sprite.data);
 			} else if (sprite.data.type == this.object_TEXTURE) {
-				if (sprite.myBody == undefined) {
-					//
-					//add to live group
-					if (sprite.data.group != "") {
-						if (this.objectLookup[sprite.data.group] == undefined) {
-							this.objectLookup[sprite.data.group] = new this.lookupObject;
-						}
-						this.objectLookup[sprite.data.group]._textures.push(sprite);
-
-						if (sprite.data.refName != "") {
-							this.objectLookup[sprite.data.group][sprite.data.refName] = sprite;
-						}
-					}
-					//
-
-				}
-
+				if (sprite.myBody == undefined) this.addItemToLookupGroups(sprite, sprite.data);
 			}
 		}
 		for (i = 0; i < spritesToDestroy.length; i++) {
@@ -2973,6 +2970,7 @@ export function B2dEditor() {
 	this.object_TEXTURE = 1;
 	this.object_JOINT = 2;
 	this.object_UNDO_MOVEMENT = 3;
+	this.object_PREFAB = 4;
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;

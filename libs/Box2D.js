@@ -30,7 +30,6 @@ export var Box2D = {};
             obj.__defineSetter__(p, cfg.set);
       }
    }
-   
    function emptyFn() {};
    a2j.inherit = function(cls, base) {
       var tmpCtr = cls;
@@ -38,7 +37,6 @@ export var Box2D = {};
       cls.prototype = new emptyFn;
       cls.prototype.constructor = tmpCtr;
    };
-   
    a2j.generateCallback = function generateCallback(context, cb) {
       return function () {
          cb.apply(context, arguments);

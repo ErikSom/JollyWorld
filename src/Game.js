@@ -127,7 +127,6 @@ function Game() {
         this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
     }
-
     this.initWorld = function () {
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
         this.editor.buildJSON(PIXI.loader.resources.vehicleData.data);
@@ -257,10 +256,11 @@ function Game() {
         this.editor.stringifyWorldJSON();
         this.editor.runWorld();
 
-        this.character = this.editor.objectLookup.__character;
+        this.character = this.editor.lookupGroups.__character;
         this.vehicle = new Vehicle();
 
-        this.vehicle.init(this.editor.objectLookup.__vehicle, this.character);
+        console.log(this.editor.lookupGroups.__vehicle);
+        this.vehicle.init(this.editor.lookupGroups.__vehicle, this.character);
         this.cameraFocusObject = this.character.body;
     }
 
