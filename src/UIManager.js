@@ -1,10 +1,12 @@
 import { firebaseManager } from './FireBaseManager';
-
+import {game} from './Game';
 import $ from 'jquery';
-
 import '../dist/semantic';
 import '../dist/components/form';
 import '../dist/components/transition';
+
+let levelItemHolder;
+let levelItemElement;
 
 function UIManager() {
 
@@ -23,8 +25,7 @@ function UIManager() {
     }
 
     this.displayLevels = function(levelSnapshot){
-        var levelItemHolder = $("#loadlevel-box .segments");
-        var levelItemElement = $("#loadlevel-box .segment");
+        levelItemHolder.empty();
         var itemClone;
         var level;
         var i = 0;
@@ -38,15 +39,18 @@ function UIManager() {
                 if(level.thumbLowResURL){
                     itemClone.find("img").attr("src", firebaseManager.baseDownloadURL+level.thumbLowResURL);
                 }
-                console.log("Level:");
+                console.log("Level:"+key);
                 console.log(levelSnapshot[key]);
                 itemClone.appendTo(levelItemHolder);
-                itemClone.find("#playButton").click(function(){
-                    $(this).parent().parent().parent().addClass('loading');
-                    game.loadLevel(levelSnapshot[key]);
-                })
-                i++;
 
+                (key => {
+                itemClone.find("#playButton").click( function () {
+                        $(this).parent().parent().parent().addClass('loading');
+                        console.log('loading key:'+key);
+                        console.log(levelSnapshot[key]);
+                        game.loadLevel(levelSnapshot[key]);
+                })})(key)
+                i++;
             }
         }
     }
@@ -201,6 +205,11 @@ function UIManager() {
             self.showBox("#publishlevel-box");
         })
         this.signedOut();
+
+        levelItemHolder = $("#loadlevel-box .segments");
+        levelItemElement = $("#loadlevel-box .segment").clone();
+        levelItemHolder.empty();
+
     }
     this.levelPublishSuccess = function(){
         $('form').removeClass('loading');

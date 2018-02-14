@@ -3,9 +3,11 @@ import { Key } from "../libs/Key";
 import { B2dEditor } from "./B2dEditor";
 import { getPIXIDebugDraw } from "../libs/debugdraw";
 import { Vehicle } from "./Vehicle";
-
-var $ = require('jquery');
-var PIXI = require('pixi.js');
+const firebase = require('firebase');
+const PIXI = require('pixi.js');
+import $ from 'jquery';
+import { ui } from "./UIManager";
+import { firebaseManager } from "./FireBaseManager";
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2AABB = Box2D.Collision.b2AABB,
@@ -134,6 +136,8 @@ function Game() {
     }
     this.loadLevel = function(levelData){
         console.log("Loading level..");
+        console.log(levelData);
+        console.log(firebaseManager.baseDownloadURL+levelData.dataURL);
         this.editor.resetEditor();
         var self = this;
         $('form').removeClass('loading');

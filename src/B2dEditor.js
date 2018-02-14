@@ -1,22 +1,26 @@
-import { Box2D } from "../libs/Box2D";
+import {
+	Box2D
+} from "../libs/Box2D";
 import * as prefab from "./PrefabData";
-
+import {
+	game
+} from "./Game";
 
 const PIXI = require('pixi.js');
 const dat = require('dat.gui').default;
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
-    b2AABB = Box2D.Collision.b2AABB,
-    b2BodyDef = Box2D.Dynamics.b2BodyDef,
-    b2Body = Box2D.Dynamics.b2Body,
-    b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-    b2Fixture = Box2D.Dynamics.b2Fixture,
-    b2World = Box2D.Dynamics.b2World,
-    b2MassData = Box2D.Collision.Shapes.b2MassData,
-    b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
-    b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
-    b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
-    b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef;
+	b2AABB = Box2D.Collision.b2AABB,
+	b2BodyDef = Box2D.Dynamics.b2BodyDef,
+	b2Body = Box2D.Dynamics.b2Body,
+	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
+	b2Fixture = Box2D.Dynamics.b2Fixture,
+	b2World = Box2D.Dynamics.b2World,
+	b2MassData = Box2D.Collision.Shapes.b2MassData,
+	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
+	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
+	b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
+	b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef;
 
 export function B2dEditor() {
 	this.initialPTM;
@@ -115,7 +119,7 @@ export function B2dEditor() {
 		this.mousePosWorld = new b2Vec2(0, 0);
 
 		this.canvas = document.getElementById("canvas");
-		
+
 
 		this.initGui();
 
@@ -951,7 +955,7 @@ export function B2dEditor() {
 		this.objects = [];
 	}
 
-	this.prefabObject = function(){
+	this.prefabObject = function () {
 		this.type = self.object_PREFAB;
 		this.settings;
 		this.prefabName;
@@ -975,7 +979,7 @@ export function B2dEditor() {
 		this.debugGraphics.clear();
 		game.newDebugGraphics.clear();
 		var i;
-		for(i = 0; i<this.editorIcons.length; i++){
+		for (i = 0; i < this.editorIcons.length; i++) {
 			this.editorIcons[i].visible = false;
 		}
 		game.app.render();
@@ -990,9 +994,9 @@ export function B2dEditor() {
 		image.onload = function () {
 			//highRes;
 			var scale = 1;
-			canvas.width = self.cameraSize.w*scale;
-			canvas.height = self.cameraSize.h*scale;
-			context.drawImage(image, self.mousePosPixel.x-self.cameraSize.w/2, self.mousePosPixel.y-self.cameraSize.h/2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
+			canvas.width = self.cameraSize.w * scale;
+			canvas.height = self.cameraSize.h * scale;
+			context.drawImage(image, self.mousePosPixel.x - self.cameraSize.w / 2, self.mousePosPixel.y - self.cameraSize.h / 2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
 			var highResThumb = canvas.toDataURL('image/jpeg', shotQuality);
 			/*var _image = new Image();
 			_image.src = highResThumb;
@@ -1000,9 +1004,9 @@ export function B2dEditor() {
 
 			//lowRes
 			scale = 0.25;
-			canvas.width = self.cameraSize.w*scale;
-			canvas.height = self.cameraSize.h*scale;
-			context.drawImage(image, self.mousePosPixel.x-self.cameraSize.w/2, self.mousePosPixel.y-self.cameraSize.h/2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
+			canvas.width = self.cameraSize.w * scale;
+			canvas.height = self.cameraSize.h * scale;
+			context.drawImage(image, self.mousePosPixel.x - self.cameraSize.w / 2, self.mousePosPixel.y - self.cameraSize.h / 2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
 			var lowResThumb = canvas.toDataURL('image/jpeg', shotQuality);
 			/*var _image = new Image();
 			_image.src = lowResThumb;
@@ -1012,7 +1016,7 @@ export function B2dEditor() {
 			self.cameraShotData.lowRes = lowResThumb;
 			console.log("Camera Shot Succesfull");
 		}
-		for(i = 0; i<this.editorIcons.length; i++){
+		for (i = 0; i < this.editorIcons.length; i++) {
 			this.editorIcons[i].visible = true;
 		}
 	}
@@ -2177,12 +2181,8 @@ export function B2dEditor() {
 		sprite.y = obj.y;
 		sprite.rotation = obj.rotation;
 		sprite.data = obj;
-		console.log("ID:" + sprite.data.bodyID);
 
 		if (sprite.data.bodyID != undefined) {
-
-			if (sprite.data.bodyID == 12) console.log("array length:" + this.textures.children.length);
-
 			var body = this.textures.getChildAt(sprite.data.bodyID).myBody;
 			this.setTextureToBody(body, sprite, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
@@ -2194,31 +2194,107 @@ export function B2dEditor() {
 	// ADD UNIQUE GROUP TO PREFAB OBJECTS
 	// SET ALL JOINS IN GROUP TO NON VISIBLE
 
-	this.addItemToLookupGroups = function(obj, data){
+	this.addItemToLookupGroups = function (obj, data) {
 
 		//character1, .character, .vehicle, test
 		// subgroup + refname
 		if (data.groups && data.groups != "") {
 			var arr = data.groups.split(",");
+			var subGroups = [];
+
 			var i;
+			for (i = 0; i < arr.length; i++) {
+				if (arr[i].charAt(0) === ".") {
+					subGroups.push(arr.splice(i, 1));
+					i--;
+				}
+			}
+
+
 			var group;
-			for(i = 0; i<arr.length; i++){
-				group = arr[i].replace(/ /g,'');
+			var subGroup;
+			var j;
+			for (i = 0; i < arr.length; i++) {
+				group = arr[i].replace(/ /g, '');
 				if (this.lookupGroups[group] == undefined) {
 					this.lookupGroups[group] = new this.lookupObject;
 				}
-				if(data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
-				else if(data.type == this.object_BODY) this.lookupGroups[group]._bodies.push(obj);
-				else if(data.type == this.object_JOINT) this.lookupGroups[group]._joints.push(obj);
+
+				if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
+				else if (data.type == this.object_BODY) this.lookupGroups[group]._bodies.push(obj);
+				else if (data.type == this.object_JOINT) this.lookupGroups[group]._joints.push(obj);
 
 				if (data.refName && data.refName != "") {
 					this.lookupGroups[group][data.refName] = obj;
 				}
+
+				for (j = 0; j < subGroups; j++) {
+					subGroup = subGroups[i].replace(/ /g, '');
+					if (this.lookupGroups[group][subGroup] == undefined) {
+						this.lookupGroups[group][subGroup] = new this.lookupObject;
+					}
+					if (this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
+						if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group][subGroup]._textures.push(obj);
+						else if (data.type == this.object_BODY) this.lookupGroups[group][subGroup]._bodies.push(obj);
+						else if (data.type == this.object_JOINT) this.lookupGroups[group][subGroup]._joints.push(obj);
+						if (data.refName && data.refName != "") {
+							this.lookupGroups[group][subGroup][data.refName] = obj;
+						}
+					}
+				}
 			}
 		}
 	}
-	this.removeItemFromLookupGroups = function(obj, groups){
-		//...
+	this.removeItemFromLookupGroups = function (obj, groups) {
+		if (data.groups && data.groups != "") {
+			var arr = data.groups.split(",");
+			var subGroups = [];
+
+			var i;
+			for (i = 0; i < arr.length; i++) {
+				if (arr[i].charAt(0) === ".") {
+					subGroups.push(arr.splice(i, 1));
+					i--;
+				}
+			}
+
+
+			var group;
+			var subGroup;
+			var j;
+			for (i = 0; i < arr.length; i++) {
+				group = arr[i].replace(/ /g, '');
+				if (this.lookupGroups[group] != undefined) {
+					var tarArray;
+					if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group];
+					else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group];
+					else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group];
+
+					var tarIndex = tarArray.indexOf(obj);
+					if (tarIndex > 0) tarArray.splice(tarIndex, 1);
+
+					if (data.refName && data.refName != "") {
+						delete this.lookupGroups[group][data.refName];
+					}
+
+					for (j = 0; j < subGroups; j++) {
+						subGroup = subGroups[i].replace(/ /g, '');
+						if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
+							if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup];
+							else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup];
+							else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group][subGroup];
+
+							tarIndex = tarArray.indexOf(obj);
+							if (tarIndex > 0) tarArray.splice(tarIndex, 1);
+
+							if (data.refName && data.refName != "") {
+								delete this.lookupGroups[group][subGroup][data.refName];
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	this.buildBodyFromObj = function (obj) {
@@ -2484,7 +2560,7 @@ export function B2dEditor() {
 				var angle = body.GetAngle() - texture.rotation;
 
 
-				if(body.myGraphic.parent.getChildIndex(body.myGraphic) > texture.parent.getChildIndex(texture)){
+				if (body.myGraphic.parent.getChildIndex(body.myGraphic) > texture.parent.getChildIndex(texture)) {
 					body.myGraphic.parent.swapChildren(body.myGraphic, texture);
 				}
 
@@ -2728,14 +2804,14 @@ export function B2dEditor() {
 			obj.lowerAngle = arr[15];
 			obj.dampingRatio = arr[16];
 			obj.frequencyHz = arr[17];
-		}else if(arr[0] == this.object_PREFAB){
+		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
 			obj.settings = arr[1];
 			obj.prefabName = [arr[2]];
 		}
 
 		obj.type = arr[0];
-		if(arr[0] != this.object_PREFAB){
+		if (arr[0] != this.object_PREFAB) {
 			//shared vars
 			obj.x = arr[1];
 			obj.y = arr[2];
@@ -2781,16 +2857,14 @@ export function B2dEditor() {
 			//clone json to not destroy old references
 			var worldObjects = JSON.parse(JSON.stringify(json));
 
-			console.log("START HERE" + startChildIndex);
 			var i;
 			var obj;
 			for (i = 0; i < worldObjects.objects.length; i++) {
-				console.log(i);
 				obj = this.parseArrObject(worldObjects.objects[i]);
-				if(obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
+				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
 
 				if (obj.type == this.object_BODY) {
-					this.buildBodyFromObj(obj); 
+					this.buildBodyFromObj(obj);
 				} else if (obj.type == this.object_TEXTURE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex;
@@ -2801,10 +2875,10 @@ export function B2dEditor() {
 					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
 
 					this.attachJointPlaceHolder(obj);
-				}else if(obj.type == this.object_PREFAB){
+				} else if (obj.type == this.object_PREFAB) {
 					var prefabStartIndex = this.textures.children.length;
 					this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), obj.prefabName);
-					prefabOffset = this.textures.children.length-prefabOffset;
+					prefabOffset = this.textures.children.length - prefabOffset;
 				}
 
 			}
