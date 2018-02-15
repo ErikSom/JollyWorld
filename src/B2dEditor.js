@@ -40,6 +40,8 @@ export function B2dEditor() {
 
 	this.selectedPhysicsBodies = [];
 	this.selectedTextures = [];
+	this.selectedPrefabs = {};
+
 	this.selectedBoundingBox;
 	this.startSelectionPoint;
 
@@ -959,8 +961,9 @@ export function B2dEditor() {
 		this.type = self.object_PREFAB;
 		this.settings;
 		this.prefabName;
+		this.instanceID;
 	}
-	//{[4, {prefabType:0, showVehicle:false}, "character1.json"]}
+	//{[4, {prefabType:0, showVehicle:false}, "character1.json", 1]}
 
 	this.startVerticesDrawing = function () {
 		this.editorMode = this.editorMode_DRAWVERTICES;
@@ -1069,8 +1072,8 @@ export function B2dEditor() {
 
 									fixture = fixture.GetNext();
 								}
-
 								if (!pointInsideBody) {
+									console.log("Deleting object:"+body.myGraphic.data.prefabInstanceName);
 									this.selectedPhysicsBodies.splice(i, 1);
 									i--;
 								}
@@ -1078,6 +1081,7 @@ export function B2dEditor() {
 						}
 						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 1);
 
+						this.filterSelectionForPrefabs();
 
 						//limit selection to highest indexed child
 
@@ -1379,6 +1383,7 @@ export function B2dEditor() {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && this.startSelectionPoint) {
 					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
+					this.filterSelectionForPrefabs();
 					this.updateSelection();
 				} else {
 					this.storeUndoMovement();
@@ -1557,10 +1562,26 @@ export function B2dEditor() {
 					queryGraphics.push(sprite);
 					if (queryGraphics.length == limitResult) break;
 				}
+			}else{
 			}
 		}
 		return queryGraphics;
 
+	}
+	this.filterSelectionForPrefabs = function(){
+		var i;
+		for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+			if(this.selectedPhysicsBodies[i].myGraphic.data.prefabInstanceName){
+				this.selectedPhysicsBodies.splice(i, 1);
+				i--;
+			}
+		}
+		for(i = 0; i<this.selectedTextures.length; i++){
+			if(this.selectedTextures[i].data.prefabInstanceName){
+				this.selectedTextures.splice(i, 1);
+				i--;
+			}
+		}
 	}
 
 
@@ -2172,6 +2193,9 @@ export function B2dEditor() {
 		this.debugGraphics.lineTo(this.mousePosPixel.x + mbhW, this.mousePosPixel.y + mbhH);
 		this.debugGraphics.lineTo(this.mousePosPixel.x + mbhW - cornerSize, this.mousePosPixel.y + mbhH);
 	}
+
+
+
 	this.buildTextureFromObj = function (obj) {
 		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(obj.textureName));
 
@@ -2542,6 +2566,11 @@ export function B2dEditor() {
 		return joint;
 	}
 
+	this.buildPrefabFromObj = function(obj){
+		this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), obj.prefabName+"_"+obj.instanceID);
+		if(obj.instanceID > this.prefabCounter) this.prefabCounter = obj.instanceID+1;
+	}
+
 
 	this.anchorTextureToBody = function () {
 		var bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);
@@ -2807,7 +2836,8 @@ export function B2dEditor() {
 		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
 			obj.settings = arr[1];
-			obj.prefabName = [arr[2]];
+			obj.prefabName = arr[2];
+			obj.instanceID = arr[3];
 		}
 
 		obj.type = arr[0];
@@ -2861,6 +2891,10 @@ export function B2dEditor() {
 			var obj;
 			for (i = 0; i < worldObjects.objects.length; i++) {
 				obj = this.parseArrObject(worldObjects.objects[i]);
+
+				if(prefabInstanceName){
+					 obj.prefabInstanceName = prefabInstanceName;
+				}
 				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
 
 				if (obj.type == this.object_BODY) {
@@ -2877,10 +2911,9 @@ export function B2dEditor() {
 					this.attachJointPlaceHolder(obj);
 				} else if (obj.type == this.object_PREFAB) {
 					var prefabStartIndex = this.textures.children.length;
-					this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), obj.prefabName);
+					this.buildPrefabFromObj(obj);
 					prefabOffset = this.textures.children.length - prefabOffset;
 				}
-
 			}
 		}
 
@@ -2913,6 +2946,7 @@ export function B2dEditor() {
 
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
+		this.selectedPrefabs = {};
 		this.selectedBoundingBox = null;
 		this.startSelectionPoint = null;
 		this.oldMousePosWorld = null;
