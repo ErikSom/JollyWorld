@@ -258,271 +258,215 @@ export function B2dEditor() {
 			} else {
 				currentCase = case_JUST_JOINTS;
 			}
-		} else if(this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0){
+		} else if (this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0) {
 			currentCase = case_MULTIPLE;
 		}
 
+		if (currentCase == case_NOTHING) return;
 
-		if (currentCase != case_NOTHING) {
-			this.editorGUI = new dat.GUI({
-				autoPlace: false,
-				width: 200
-			});
-			this.customGUIContainer.appendChild(this.editorGUI.domElement);
-			var dataJoint;
-			var self = this;
-			var controller;
-			var folder;
+		this.editorGUI = new dat.GUI({
+			autoPlace: false,
+			width: 200
+		});
+		this.customGUIContainer.appendChild(this.editorGUI.domElement);
+		var dataJoint;
+		var self = this;
+		var controller;
+		var folder;
 
-			//Init edit data;
-			switch(currentCase){
-				case case_JUST_BODIES:
-					this.editorGUI.editData = new this.bodyObject;
-					dataJoint = this.selectedPhysicsBodies[0].myGraphic.data;
-					if (this.selectedPhysicsBodies.length > 1) this.editorGUI.addFolder('multiple bodies');
-					else this.editorGUI.addFolder('body');
+		//Init edit data;
+		switch (currentCase) {
+			case case_JUST_BODIES:
+				this.editorGUI.editData = new this.bodyObject;
+				dataJoint = this.selectedPhysicsBodies[0].myGraphic.data;
+				if (this.selectedPhysicsBodies.length > 1) this.editorGUI.addFolder('multiple bodies');
+				else this.editorGUI.addFolder('body');
 				break;
-				case case_JUST_TEXTURES:
-					this.editorGUI.editData = new this.textureObject;
-					dataJoint = _selectedTextures[0].data;
-					if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple textures');
-					else this.editorGUI.addFolder('texture');
+			case case_JUST_TEXTURES:
+				this.editorGUI.editData = new this.textureObject;
+				dataJoint = _selectedTextures[0].data;
+				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple textures');
+				else this.editorGUI.addFolder('texture');
 				break;
-				case case_JUST_JOINTS:
-					var selectedType = ""
-					this.editorGUI.editData = new this.jointObject;
-					if (_selectedPinJoints.length > 0) {
-						dataJoint = _selectedPinJoints[0].data;
-						selectedType = "Pin";
-					}else if (_selectedSlideJoints.length > 0){
-						dataJoint = _selectedSlideJoints[0].data;
-						selectedType = "Slide";
-					}else if (_selectedDistanceJoints.length > 0){
-						dataJoint = _selectedDistanceJoints[0].data;
-						selectedType = "Distance";
-					}
-					if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple joints');
-					else this.editorGUI.addFolder(`${selectedType} joint`);
+			case case_JUST_JOINTS:
+				var selectedType = ""
+				this.editorGUI.editData = new this.jointObject;
+				if (_selectedPinJoints.length > 0) {
+					dataJoint = _selectedPinJoints[0].data;
+					selectedType = "Pin";
+				} else if (_selectedSlideJoints.length > 0) {
+					dataJoint = _selectedSlideJoints[0].data;
+					selectedType = "Slide";
+				} else if (_selectedDistanceJoints.length > 0) {
+					dataJoint = _selectedDistanceJoints[0].data;
+					selectedType = "Distance";
+				}
+				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple joints');
+				else this.editorGUI.addFolder(`${selectedType} joint`);
 				break;
-				case case_MULTIPLE:
-					this.editorGUI.editData = new this.multiObject;
-					dataJoint = this.selectedTextures[0].data;
-					this.editorGUI.addFolder('multiple objects');
+			case case_MULTIPLE:
+				this.editorGUI.editData = new this.multiObject;
+				dataJoint = this.selectedTextures[0].data;
+				this.editorGUI.addFolder('multiple objects');
 				break;
-			}
+		}
 
-			for(var key in this.editorGUI.editData){
-				if (this.editorGUI.editData.hasOwnProperty(key)) {
-					this.editorGUI.editData[key] = dataJoint[key];
+		for (var key in this.editorGUI.editData) {
+			if (this.editorGUI.editData.hasOwnProperty(key)) {
+				this.editorGUI.editData[key] = dataJoint[key];
 
-					if(currentCase == case_JUST_BODIES || currentCase == case_MULTIPLE){
-						if(key == "x" || key == "y"){
-							this.editorGUI.editData[key] *= this.PTM;
-						}
-					}
-					if(key == "groups"){
-						if(!this.isSelectionPropertyTheSame("groups")) this.editorGUI.editData.groups = "-";
+				if (currentCase == case_JUST_BODIES || currentCase == case_MULTIPLE) {
+					if (key == "x" || key == "y") {
+						this.editorGUI.editData[key] *= this.PTM;
 					}
 				}
-			}
-
-			//Populate GUI fields
-			switch (currentCase) {
-				case case_JUST_BODIES:
-					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-
-					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-					this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					if (this.selectedPhysicsBodies.length == 1) {
-						this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						});
-					}
-					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-					this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					controller = this.editorGUI.add(self.editorGUI.editData, "density", 0, 1000).step(0.1);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-					controller = this.editorGUI.add(self.editorGUI.editData, "collision", 0, 7).step(1);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-					break;
-				case case_JUST_TEXTURES:
-					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-					this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					});
-					if (this.selectedTextures.length == 1) {
-						this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						});
-					}
-					break;
-				case case_JUST_JOINTS:
-					var jointTypes = ["Pin", "Slide", "Distance"];
-					this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
-
-					this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					});
-					if (this.selectedTextures.length == 1) {
-						this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						});
-					}
-
-					if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
-
-						folder = this.editorGUI.addFolder('enable motor');
-						folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						});
-
-						controller = folder.add(self.editorGUI.editData, "maxMotorTorque", 0, 1000);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value
-						}.bind(controller));
-
-						controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value
-						}.bind(controller));
-
-						folder = this.editorGUI.addFolder('enable limits');
-						folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						});
-
-						controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						}.bind(controller));
-
-						controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value
-						}.bind(controller));
-
-					} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
-						folder = this.editorGUI.addFolder('spring');
-
-						controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						}.bind(controller));
-
-						controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value
-						}.bind(controller));
-					}
-					break;
-				case case_MULTIPLE:
-					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value - this.initialValue;
-						this.initialValue = value;
-					});
-					this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					});
-					break;
+				if (key == "groups") {
+					if (!this.isSelectionPropertyTheSame("groups")) this.editorGUI.editData.groups = "-";
+				}
 			}
 		}
+
+		//Populate default GUI Fields
+		this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
+			this.humanUpdate = true;
+			this.targetValue = value - this.initialValue;
+			this.initialValue = value;
+		});
+
+		this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
+			this.humanUpdate = true;
+			this.targetValue = value - this.initialValue;
+			this.initialValue = value;
+		});
+		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS) {
+			this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value
+			});
+		}
+		this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
+			this.humanUpdate = true;
+			this.targetValue = value;
+		});
+		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1) {
+			this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			});
+		}
+
+
+		//Populate custom  fields
+		switch (currentCase) {
+			case case_JUST_BODIES:
+
+				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				});
+				this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				});
+				controller = this.editorGUI.add(self.editorGUI.editData, "density", 0, 1000).step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				}.bind(controller));
+				controller = this.editorGUI.add(self.editorGUI.editData, "collision", 0, 7).step(1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				}.bind(controller));
+				break;
+			case case_JUST_TEXTURES:
+				break;
+			case case_JUST_JOINTS:
+				var jointTypes = ["Pin", "Slide", "Distance"];
+				this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
+
+				this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				});
+				this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				});
+
+				if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
+
+					folder = this.editorGUI.addFolder('enable motor');
+					folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					});
+
+					controller = folder.add(self.editorGUI.editData, "maxMotorTorque", 0, 1000);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+
+					controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+
+					folder = this.editorGUI.addFolder('enable limits');
+					folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					});
+
+					controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+
+					controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+
+				} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
+					folder = this.editorGUI.addFolder('spring');
+
+					controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+
+					controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+				}
+				break;
+			case case_MULTIPLE:
+				break;
+		}
+
 	}
 
 	this.isSelectionPropertyTheSame = function (property) {
@@ -2957,8 +2901,17 @@ export function B2dEditor() {
 
 				if (prefabInstanceName) {
 					obj.prefabInstanceName = prefabInstanceName;
-					obj.x += this.prefabs[prefabInstanceName].x;
-					obj.y += this.prefabs[prefabInstanceName].y;
+
+					var offsetX = this.prefabs[prefabInstanceName].x;
+					var offsetY = this.prefabs[prefabInstanceName].y;
+
+					if(obj.type != this.object_BODY){
+						offsetX *= this.PTM;
+						offsetY *= this.PTM;
+					}
+
+					obj.x += offsetX;
+					obj.y += offsetY;
 				}
 				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
 
