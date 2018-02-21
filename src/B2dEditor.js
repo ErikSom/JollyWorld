@@ -211,110 +211,24 @@ export function B2dEditor() {
 			this.editorGUI = null;
 		}
 
+		// hide asset gui
+		if (this.assetGUI != undefined) {
+			this.customGUIContainer.removeChild(this.assetGUI.domElement);
+			this.assetGUI = undefined;
+		}
+
+
+		var case_NOTHING = "0";
+		var case_JUST_BODIES = "1";
+		var case_JUST_TEXTURES = "2";
+		var case_JUST_JOINTS = "3";
+		var case_MULTIPLE = "4";
+
+		var currentCase = case_NOTHING;
+
 		if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0) {
-			// only holding physics bodies
-
-			this.editorGUI = new dat.GUI({
-				autoPlace: false,
-				width: 200
-			});
-			this.customGUIContainer.appendChild(this.editorGUI.domElement);
-			if (this.selectedPhysicsBodies.length > 1) this.editorGUI.addFolder('multiple bodies');
-			else this.editorGUI.addFolder('body');
-
-			this.editorGUI.editData = new this.bodyObject;
-
-			var dataJoint;
-			dataJoint = this.selectedPhysicsBodies[0].myGraphic.data;
-
-			this.editorGUI.editData.x = dataJoint.x * this.PTM;
-			this.editorGUI.editData.y = dataJoint.y * this.PTM;
-			this.editorGUI.editData.rotation = dataJoint.rotation;
-			this.editorGUI.editData.colorFill = dataJoint.colorFill;
-			this.editorGUI.editData.colorLine = dataJoint.colorLine;
-			this.editorGUI.editData.transparancy = dataJoint.transparancy;
-			this.editorGUI.editData.fixed = dataJoint.fixed;
-			this.editorGUI.editData.awake = dataJoint.awake;
-			this.editorGUI.editData.density = dataJoint.density;
-			if (this.isSelectionPropertyTheSame("groups")) {
-				this.editorGUI.editData.groups = dataJoint.groups;
-			} else {
-				this.editorGUI.editData.groups = "-";
-			}
-			this.editorGUI.editData.refName = dataJoint.refName;
-			this.editorGUI.editData.collision = dataJoint.collision;
-
-			var self = this;
-			var controller;
-			controller = this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value - this.initialValue;
-				this.initialValue = value;
-			});
-			//controller.domElement.style.pointerEvents = "none";
-
-			this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value - this.initialValue;
-				this.initialValue = value;
-			});
-			this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			});
-			this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			});
-			if (this.selectedPhysicsBodies.length == 1) {
-				this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				});
-			}
-
-
-			controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
-			controller.onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value;
-			}.bind(controller));
-			controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
-			controller.onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value;
-			}.bind(controller));
-			controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
-			controller.onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value;
-			}.bind(controller));
-
-
-
-			this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			});
-			this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			});
-			controller = this.editorGUI.add(self.editorGUI.editData, "density", 0, 1000).step(0.1);
-			controller.onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			}.bind(controller));
-			controller = this.editorGUI.add(self.editorGUI.editData, "collision", 0, 7).step(1);
-			controller.onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			}.bind(controller));
-
-
-
+			currentCase = case_JUST_BODIES;
 		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0) {
-
 			var _selectedTextures = [];
 			var _selectedPinJoints = [];
 			var _selectedSlideJoints = [];
@@ -336,198 +250,278 @@ export function B2dEditor() {
 					_selectedTextures.push(_texture);
 				}
 			}
-
 			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedTextureJoints.length > 0 ? 1 : 0);
-
 			if (editingMultipleObjects > 1) {
-				// editing multipleCrap
-
-
+				currentCase = case_MULTIPLE;
 			} else if (_selectedTextures.length > 0) {
-				// editing just textures
-
-
-			} else if (_selectedPinJoints.length > 0 || _selectedSlideJoints.length > 0 || _selectedDistanceJoints.length > 0) {
-				// editing just pin joints
-
-				this.editorGUI = new dat.GUI({
-					autoPlace: false,
-					width: 200
-				});
-				this.customGUIContainer.appendChild(this.editorGUI.domElement);
-				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple joints');
-				else this.editorGUI.addFolder('joint');
-
-				this.editorGUI.editData = new this.jointObject;
-				var jointTypes = ["Pin", "Slide", "Distance"];
-
-				var dataJoint;
-				if (_selectedPinJoints.length > 0) dataJoint = _selectedPinJoints[0].data;
-				else if (_selectedSlideJoints.length > 0) dataJoint = _selectedSlideJoints[0].data;
-				else if (_selectedDistanceJoints.length > 0) dataJoint = _selectedDistanceJoints[0].data;
-
-				this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
-
-				this.editorGUI.editData.collideConnected = dataJoint.collideConnected;
-				this.editorGUI.editData.x = dataJoint.x;
-				this.editorGUI.editData.y = dataJoint.y;
-				if (this.isSelectionPropertyTheSame("groups")) {
-					this.editorGUI.editData.groups = dataJoint.groups;
-				} else {
-					this.editorGUI.editData.groups = "-";
-				}
-				this.editorGUI.editData.refName = dataJoint.refName;
-				this.editorGUI.editData.enableMotor = dataJoint.enableMotor;
-				this.editorGUI.editData.maxMotorTorque = dataJoint.maxMotorTorque;
-				this.editorGUI.editData.motorSpeed = dataJoint.motorSpeed;
-				this.editorGUI.editData.enableLimit = dataJoint.enableLimit;
-				this.editorGUI.editData.upperAngle = dataJoint.upperAngle;
-				this.editorGUI.editData.lowerAngle = dataJoint.lowerAngle;
-				this.editorGUI.editData.frequencyHz = dataJoint.frequencyHz;
-				this.editorGUI.editData.dampingRatio = dataJoint.dampingRatio;
-
-				var self = this;
-				this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value
-				});
-				this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value
-				});
-				this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value - this.initialValue;
-					this.initialValue = value;
-				});
-				this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value - this.initialValue;
-					this.initialValue = value;
-				});
-				this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				});
-				if (this.selectedTextures.length == 1) {
-					this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					});
-				}
-
-				var folder;
-				var controller;
-
-				if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
-
-					folder = this.editorGUI.addFolder('enable motor');
-					folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					});
-
-					controller = folder.add(self.editorGUI.editData, "maxMotorTorque", 0, 1000);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-
-					controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-
-					folder = this.editorGUI.addFolder('enable limits');
-					folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					});
-
-					controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-
-					controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-
-				} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
-					folder = this.editorGUI.addFolder('spring');
-
-					controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-
-					controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-				}
-
+				currentCase = case_JUST_TEXTURES;
+			} else {
+				currentCase = case_JUST_JOINTS;
 			}
+		} else if(this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0){
+			currentCase = case_MULTIPLE;
+		}
 
-		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length > 0) {
-			//holding both bodies and textures
+
+		if (currentCase != case_NOTHING) {
 			this.editorGUI = new dat.GUI({
 				autoPlace: false,
 				width: 200
 			});
 			this.customGUIContainer.appendChild(this.editorGUI.domElement);
-			this.editorGUI.addFolder('multiple objects');
-
-			this.editorGUI.editData = new this.multiObject;
-
 			var dataJoint;
-			dataJoint = this.selectedPhysicsBodies[0].myGraphic.data;
+			var self = this;
+			var controller;
+			var folder;
 
-			this.editorGUI.editData.x = dataJoint.x * this.PTM;
-			this.editorGUI.editData.y = dataJoint.y * this.PTM;
-			this.editorGUI.editData.rotation = dataJoint.rotation;
-			if (this.isSelectionPropertyTheSame("groups")) {
-				this.editorGUI.editData.groups = dataJoint.groups;
-			} else {
-				this.editorGUI.editData.groups = "-";
+			//Init edit data;
+			switch(currentCase){
+				case case_JUST_BODIES:
+					this.editorGUI.editData = new this.bodyObject;
+					dataJoint = this.selectedPhysicsBodies[0].myGraphic.data;
+					if (this.selectedPhysicsBodies.length > 1) this.editorGUI.addFolder('multiple bodies');
+					else this.editorGUI.addFolder('body');
+				break;
+				case case_JUST_TEXTURES:
+					this.editorGUI.editData = new this.textureObject;
+					dataJoint = _selectedTextures[0].data;
+					if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple textures');
+					else this.editorGUI.addFolder('texture');
+				break;
+				case case_JUST_JOINTS:
+					var selectedType = ""
+					this.editorGUI.editData = new this.jointObject;
+					if (_selectedPinJoints.length > 0) {
+						dataJoint = _selectedPinJoints[0].data;
+						selectedType = "Pin";
+					}else if (_selectedSlideJoints.length > 0){
+						dataJoint = _selectedSlideJoints[0].data;
+						selectedType = "Slide";
+					}else if (_selectedDistanceJoints.length > 0){
+						dataJoint = _selectedDistanceJoints[0].data;
+						selectedType = "Distance";
+					}
+					if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple joints');
+					else this.editorGUI.addFolder(`${selectedType} joint`);
+				break;
+				case case_MULTIPLE:
+					this.editorGUI.editData = new this.multiObject;
+					dataJoint = this.selectedTextures[0].data;
+					this.editorGUI.addFolder('multiple objects');
+				break;
 			}
 
-			var self = this;
-			this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value - this.initialValue;
-				this.initialValue = value;
-			});
-			this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value - this.initialValue;
-				this.initialValue = value;
-			});
-			this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			});
-			this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value
-			});
+			for(var key in this.editorGUI.editData){
+				if (this.editorGUI.editData.hasOwnProperty(key)) {
+					this.editorGUI.editData[key] = dataJoint[key];
 
+					if(currentCase == case_JUST_BODIES || currentCase == case_MULTIPLE){
+						if(key == "x" || key == "y"){
+							this.editorGUI.editData[key] *= this.PTM;
+						}
+					}
+					if(key == "groups"){
+						if(!this.isSelectionPropertyTheSame("groups")) this.editorGUI.editData.groups = "-";
+					}
+				}
+			}
 
-		} else {
+			//Populate GUI fields
+			switch (currentCase) {
+				case case_JUST_BODIES:
+					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
 
-			//holding nothing
+					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
+					this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					if (this.selectedPhysicsBodies.length == 1) {
+						this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						});
+					}
+					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					controller = this.editorGUI.add(self.editorGUI.editData, "density", 0, 1000).step(0.1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+					controller = this.editorGUI.add(self.editorGUI.editData, "collision", 0, 7).step(1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+					break;
+				case case_JUST_TEXTURES:
+					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
+					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
+					this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					});
+					if (this.selectedTextures.length == 1) {
+						this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						});
+					}
+					break;
+				case case_JUST_JOINTS:
+					var jointTypes = ["Pin", "Slide", "Distance"];
+					this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
 
-			return;
-		}
-		if (this.assetGUI != undefined) {
-			this.customGUIContainer.removeChild(this.assetGUI.domElement);
-			this.assetGUI = undefined;
+					this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
+					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
+					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					});
+					if (this.selectedTextures.length == 1) {
+						this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						});
+					}
+
+					if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
+
+						folder = this.editorGUI.addFolder('enable motor');
+						folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						});
+
+						controller = folder.add(self.editorGUI.editData, "maxMotorTorque", 0, 1000);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value
+						}.bind(controller));
+
+						controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value
+						}.bind(controller));
+
+						folder = this.editorGUI.addFolder('enable limits');
+						folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						});
+
+						controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						}.bind(controller));
+
+						controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value
+						}.bind(controller));
+
+					} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
+						folder = this.editorGUI.addFolder('spring');
+
+						controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						}.bind(controller));
+
+						controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value
+						}.bind(controller));
+					}
+					break;
+				case case_MULTIPLE:
+					this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
+					this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value - this.initialValue;
+						this.initialValue = value;
+					});
+					this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					});
+					break;
+			}
 		}
 	}
 
@@ -960,12 +954,15 @@ export function B2dEditor() {
 	}
 
 	this.prefabObject = function () {
+		this.x = 0;
+		this.y = 0;
+		this.rotation = 0;
 		this.type = self.object_PREFAB;
 		this.settings;
 		this.prefabName;
 		this.instanceID;
 	}
-	//{[4, {prefabType:0, showVehicle:false}, "character1.json", 1]}
+	//{[0, 0, 0, 4, {prefabType:0, showVehicle:false}, "character1.json", 1]}
 
 	this.startVerticesDrawing = function () {
 		this.editorMode = this.editorMode_DRAWVERTICES;
@@ -1078,7 +1075,7 @@ export function B2dEditor() {
 									fixture = fixture.GetNext();
 								}
 								if (!pointInsideBody) {
-									console.log("Deleting object:"+body.myGraphic.data.prefabInstanceName);
+									console.log("Deleting object:" + body.myGraphic.data.prefabInstanceName);
 									this.selectedPhysicsBodies.splice(i, 1);
 									i--;
 								}
@@ -1110,12 +1107,12 @@ export function B2dEditor() {
 						}
 
 						if (highestObject) {
-							if(highestObject.data.prefabInstanceName){
+							if (highestObject.data.prefabInstanceName) {
 								this.selectedPrefabs[highestObject.data.prefabInstanceName] = true;
 								this.selectedPhysicsBodies = [];
 								this.selectedTextures = [];
 
-							}else{
+							} else {
 								if (highestObject.data.type == this.object_BODY || highestObject.myBody) {
 									this.selectedTextures = [];
 									this.selectedPrefabs = {};
@@ -1146,13 +1143,12 @@ export function B2dEditor() {
 								}
 							}
 							for (var key in oldSelectedPrefabs) {
-								if(oldSelectedPrefabs.hasOwnProperty(key)){
+								if (oldSelectedPrefabs.hasOwnProperty(key)) {
 									this.selectedPrefabs[key] = true;
 								}
 							}
 
 						}
-
 
 						this.updateSelection();
 					}
@@ -1583,23 +1579,22 @@ export function B2dEditor() {
 					queryGraphics.push(sprite);
 					if (queryGraphics.length == limitResult) break;
 				}
-			}else{
-			}
+			} else {}
 		}
 		return queryGraphics;
 
 	}
-	this.filterSelectionForPrefabs = function(){
+	this.filterSelectionForPrefabs = function () {
 		var i;
-		for(i = 0; i<this.selectedPhysicsBodies.length; i++){
-			if(this.selectedPhysicsBodies[i].myGraphic.data.prefabInstanceName){
+		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
+			if (this.selectedPhysicsBodies[i].myGraphic.data.prefabInstanceName) {
 				this.selectedPrefabs[this.selectedPhysicsBodies[i].myGraphic.data.prefabInstanceName] = true;
 				this.selectedPhysicsBodies.splice(i, 1);
 				i--;
 			}
 		}
-		for(i = 0; i<this.selectedTextures.length; i++){
-			if(this.selectedTextures[i].data.prefabInstanceName){
+		for (i = 0; i < this.selectedTextures.length; i++) {
+			if (this.selectedTextures[i].data.prefabInstanceName) {
 				this.selectedPrefabs[this.selectedTextures[i].data.prefabInstanceName] = true;
 				this.selectedTextures.splice(i, 1);
 				i--;
@@ -1631,9 +1626,9 @@ export function B2dEditor() {
 		//add elements from prefabs to selection
 		for (var key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
-				console.log("oh yeah:"+key)
+				console.log("oh yeah:" + key)
 				console.log(this.lookupGroups[key]);
-				if(this.lookupGroups[key] instanceof this.lookupObject){
+				if (this.lookupGroups[key] instanceof this.lookupObject) {
 					console.log("even better:");
 					console.log(this.lookupGroups[key]._bodies);
 					console.log(this.lookupGroups[key]._textures);
@@ -2269,7 +2264,7 @@ export function B2dEditor() {
 			var arr = data.groups.split(",");
 			var subGroups = [];
 
-			if(data.prefabInstanceName) arr.push(data.prefabInstanceName);
+			if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
 
 			var i;
 			for (i = 0; i < arr.length; i++) {
@@ -2401,6 +2396,7 @@ export function B2dEditor() {
 		}
 
 		var fixture = body.CreateFixture(fixDef);
+
 		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
 
 		body.SetAngle(obj.rotation);
@@ -2553,7 +2549,7 @@ export function B2dEditor() {
 		jointGraphics.scale.y = 1.0 / this.container.scale.y;
 
 
-		if(obj.prefabInstanceName) jointGraphics.visible = false;
+		if (obj.prefabInstanceName) jointGraphics.visible = false;
 
 		this.addItemToLookupGroups(jointGraphics, jointGraphics.data);
 
@@ -2614,11 +2610,11 @@ export function B2dEditor() {
 		return joint;
 	}
 
-	this.buildPrefabFromObj = function(obj){
-		var key = obj.prefabName+"_"+obj.instanceID;
+	this.buildPrefabFromObj = function (obj) {
+		var key = obj.prefabName + "_" + obj.instanceID;
 		this.prefabs[key] = obj;
 		this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), key);
-		if(obj.instanceID > this.prefabCounter) this.prefabCounter = obj.instanceID+1;
+		if (obj.instanceID > this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 	}
 
 
@@ -2738,11 +2734,19 @@ export function B2dEditor() {
 		var sprite;
 		var spriteData;
 		var i;
+		var stringifiedPrefabs = {};
+
 		for (i = 0; i < this.textures.children.length; i++) {
 			if (i != 0) this.worldJSON += ',';
 			sprite = this.textures.getChildAt(i);
 			this.updateObject(sprite, sprite.data);
-			this.worldJSON += this.stringifyObject(sprite.data);
+			if (sprite.prefabInstanceName) {
+				if (stringifiedPrefabs[sprite.prefabInstanceName]) continue;
+				this.worldJSON += this.stringifyObject(this.prefabs[sprite.prefabInstanceName]);
+				stringifiedPrefabs[sprite.prefabInstanceName] = true;
+			} else {
+				this.worldJSON += this.stringifyObject(sprite.data);
+			}
 		}
 		this.worldJSON += ']}';
 	}
@@ -2810,8 +2814,11 @@ export function B2dEditor() {
 		arr[1] = obj.x;
 		arr[2] = obj.y;
 		arr[3] = obj.rotation;
-		arr[4] = obj.groups;
-		arr[5] = obj.refName;
+
+		if (obj.type != this.object_PREFAB) {
+			arr[4] = obj.groups;
+			arr[5] = obj.refName;
+		}
 
 		if (obj.type == this.object_BODY) {
 			arr[6] = obj.ID;
@@ -2844,6 +2851,10 @@ export function B2dEditor() {
 			arr[15] = obj.lowerAngle;
 			arr[16] = obj.dampingRatio;
 			arr[17] = obj.frequencyHz;
+		} else if (obj.type == this.object_PREFAB) {
+			arr[4] = obj.settings
+			arr[5] = obj.prefabName
+			arr[6] = obj.instanceID
 		}
 		return JSON.stringify(arr);
 	}
@@ -2885,17 +2896,19 @@ export function B2dEditor() {
 			obj.frequencyHz = arr[17];
 		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
-			obj.settings = arr[1];
-			obj.prefabName = arr[2];
-			obj.instanceID = arr[3];
+			obj.settings = arr[4];
+			obj.prefabName = arr[5];
+			obj.instanceID = arr[6];
 		}
 
 		obj.type = arr[0];
+
+		//shared vars
+		obj.x = arr[1];
+		obj.y = arr[2];
+		obj.rotation = arr[3];
+
 		if (arr[0] != this.object_PREFAB) {
-			//shared vars
-			obj.x = arr[1];
-			obj.y = arr[2];
-			obj.rotation = arr[3];
 			obj.groups = arr[4];
 			obj.refName = arr[5];
 		}
@@ -2942,8 +2955,10 @@ export function B2dEditor() {
 			for (i = 0; i < worldObjects.objects.length; i++) {
 				obj = this.parseArrObject(worldObjects.objects[i]);
 
-				if(prefabInstanceName){
-					 obj.prefabInstanceName = prefabInstanceName;
+				if (prefabInstanceName) {
+					obj.prefabInstanceName = prefabInstanceName;
+					obj.x += this.prefabs[prefabInstanceName].x;
+					obj.y += this.prefabs[prefabInstanceName].y;
 				}
 				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
 
