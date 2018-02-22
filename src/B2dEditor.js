@@ -222,13 +222,18 @@ export function B2dEditor() {
 		var case_JUST_BODIES = "1";
 		var case_JUST_TEXTURES = "2";
 		var case_JUST_JOINTS = "3";
-		var case_MULTIPLE = "4";
+		var case_JUST_PREFABS = "4"
+		var case_MULTIPLE = "5";
 
 		var currentCase = case_NOTHING;
+		var prefabKeys = Object.keys(this.selectedPrefabs);
+		console.log(Object.keys(this.selectedPrefabs).length);
 
-		if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0) {
+		if(prefabKeys.length > 0 &&  this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0){
+			currentCase = case_JUST_PREFABS;
+		}if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0 && prefabKeys.length == 0) {
 			currentCase = case_JUST_BODIES;
-		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0) {
+		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0 && prefabKeys.length == 0) {
 			var _selectedTextures = [];
 			var _selectedPinJoints = [];
 			var _selectedSlideJoints = [];
@@ -258,7 +263,7 @@ export function B2dEditor() {
 			} else {
 				currentCase = case_JUST_JOINTS;
 			}
-		} else if (this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0) {
+		} else if (this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0 || prefabKeys.length > 0) {
 			currentCase = case_MULTIPLE;
 		}
 
@@ -304,6 +309,12 @@ export function B2dEditor() {
 				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple joints');
 				else this.editorGUI.addFolder(`${selectedType} joint`);
 				break;
+			case case_JUST_PREFABS:
+				this.editorGUI.editData = new this.prefabObject;
+				dataJoint = this.prefabs[prefabKeys[0]];
+				if (this.selectedPrefabs.length > 1) this.editorGUI.addFolder('multiple prefabs');
+				else this.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
+				break;
 			case case_MULTIPLE:
 				this.editorGUI.editData = new this.multiObject;
 				dataJoint = this.selectedTextures[0].data;
@@ -344,10 +355,12 @@ export function B2dEditor() {
 				this.targetValue = value
 			});
 		}
-		this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
-			this.humanUpdate = true;
-			this.targetValue = value;
-		});
+		if(prefabKeys.length == 0){
+			this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			});
+		}
 		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1) {
 			this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
 				this.humanUpdate = true;
@@ -1570,12 +1583,7 @@ export function B2dEditor() {
 		//add elements from prefabs to selection
 		for (var key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
-				console.log("oh yeah:" + key)
-				console.log(this.lookupGroups[key]);
 				if (this.lookupGroups[key] instanceof this.lookupObject) {
-					console.log("even better:");
-					console.log(this.lookupGroups[key]._bodies);
-					console.log(this.lookupGroups[key]._textures);
 					computeBodies = computeBodies.concat(this.lookupGroups[key]._bodies);
 					computeTextures = computeTextures.concat(this.lookupGroups[key]._textures);
 				}
