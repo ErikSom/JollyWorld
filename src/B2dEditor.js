@@ -229,9 +229,9 @@ export function B2dEditor() {
 		var prefabKeys = Object.keys(this.selectedPrefabs);
 		console.log(Object.keys(this.selectedPrefabs).length);
 
-		if(prefabKeys.length > 0 &&  this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0){
+		if (prefabKeys.length > 0 && this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) {
 			currentCase = case_JUST_PREFABS;
-		}if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0 && prefabKeys.length == 0) {
+		}else if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0 && prefabKeys.length == 0) {
 			currentCase = case_JUST_BODIES;
 		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0 && prefabKeys.length == 0) {
 			var _selectedTextures = [];
@@ -355,7 +355,7 @@ export function B2dEditor() {
 				this.targetValue = value
 			});
 		}
-		if(prefabKeys.length == 0){
+		if (prefabKeys.length == 0) {
 			this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
@@ -919,7 +919,6 @@ export function B2dEditor() {
 		this.prefabName;
 		this.instanceID;
 	}
-	//{[0, 0, 0, 4, {prefabType:0, showVehicle:false}, "character1.json", 1]}
 
 	this.startVerticesDrawing = function () {
 		this.editorMode = this.editorMode_DRAWVERTICES;
@@ -1173,11 +1172,25 @@ export function B2dEditor() {
 	}
 
 	this.applyToSelectedObjects = function (transformType, obj) {
+		var allObjects = this.selectedPhysicsBodies.concat(this.selectedTextures);
+		var bodies = this.selectedPhysicsBodies;
+		var textures = this.selectedTextures;
+
+		var key;
+		for(key in this.selectedPrefabs){
+			if(this.selectedPrefabs.hasOwnProperty(key)){
+				var lookup = this.lookupGroups[key];
+				allObjects = allObjects.concat(lookup._bodies, lookup._textures, lookup._joints);
+				bodies = bodies.concat(lookup._bodies);
+				textures = textures.concat(lookup._textures);
+			}
+		}
+
 		if (transformType == this.TRANSFORM_DEPTH) {
-			this.applyToObjects(transformType, obj, this.selectedPhysicsBodies.concat(this.selectedTextures))
+			this.applyToObjects(transformType, obj, allObjects)
 		} else {
-			this.applyToObjects(transformType, obj, this.selectedPhysicsBodies);
-			this.applyToObjects(transformType, obj, this.selectedTextures);
+			this.applyToObjects(transformType, obj, bodies);
+			this.applyToObjects(transformType, obj, textures);
 		}
 
 		if (transformType == this.TRANSFORM_MOVE) {
@@ -1654,7 +1667,6 @@ export function B2dEditor() {
 
 				var tarSprite;
 
-
 				if (sprite.data.enableLimit) {
 					var lineLength = 50 / sprite.scale.x;
 
@@ -1729,10 +1741,7 @@ export function B2dEditor() {
 
 
 
-
-
 		if (this.editorGUI && this.editorGUI.editData) {
-			//if(this.editorGUI.editData instanceof this.jointObject || this.editorGUI.editData instanceof this.bodyObject){
 			var controller;
 			var controllers = [];
 			var body;
@@ -1761,27 +1770,49 @@ export function B2dEditor() {
 						}
 						this.updateSelection();
 					} else if (controller.property == "x") {
-						//bodies & sprites
-						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-							body = this.selectedPhysicsBodies[j];
+						//bodies & sprites & prefabs
+						var bodies = this.selectedPhysicsBodies;
+						var textures = this.selectedTextures;
+
+						for (j in this.selectedPrefabs) {
+							if (this.selectedPrefabs.hasOwnProperty(j)) {
+								bodies = bodies.concat(this.lookupGroups[j]._bodies);
+								textures = textures.concat(this.lookupGroups[j]._textures);
+								this.prefabs[j].x += controller.targetValue;
+							}
+						}
+
+						for (j = 0; j < bodies.length; j++) {
+							body = bodies[j];
 							var pos = body.GetPosition();
 							pos.x += controller.targetValue / this.PTM;
 							body.SetPosition(pos);
 						}
-						for (j = 0; j < this.selectedTextures.length; j++) {
-							sprite = this.selectedTextures[j];
+						for (j = 0; j < textures.length; j++) {
+							sprite = textures[j];
 							sprite.x += controller.targetValue;
 						}
 					} else if (controller.property == "y") {
-						//bodies & sprites
-						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-							body = this.selectedPhysicsBodies[j];
+						//bodies & sprites & prefabs
+						var bodies = this.selectedPhysicsBodies;
+						var textures = this.selectedTextures;
+
+						for (j in this.selectedPrefabs) {
+							if (this.selectedPrefabs.hasOwnProperty(j)) {
+								bodies = bodies.concat(this.lookupGroups[j]._bodies);
+								textures = textures.concat(this.lookupGroups[j]._textures);
+								this.prefabs[j].x += controller.targetValue;
+							}
+						}
+
+						for (j = 0; j < bodies.length; j++) {
+							body = bodies[j];
 							var pos = body.GetPosition();
 							pos.y += controller.targetValue / this.PTM;
 							body.SetPosition(pos);
 						}
-						for (j = 0; j < this.selectedTextures.length; j++) {
-							sprite = this.selectedTextures[j];
+						for (j = 0; j < textures.length; j++) {
+							sprite = textures[j];
 							sprite.y += controller.targetValue;
 						}
 					} else if (controller.property == "collideConnected") {
@@ -1942,14 +1973,17 @@ export function B2dEditor() {
 				this.editorGUI.editData.x = pos.x * this.PTM;
 				this.editorGUI.editData.y = pos.y * this.PTM;
 				this.editorGUI.editData.rotation = this.selectedPhysicsBodies[0].GetAngle() * this.RAD2DEG;
-			} else {
+			} else if (this.editorGUI.editData.type == this.object_TEXTURE || this.editorGUI.editData.type == this.object_JOINT) {
 				this.editorGUI.editData.x = this.selectedTextures[0].x;
 				this.editorGUI.editData.y = this.selectedTextures[0].y;
 				this.editorGUI.editData.rotation = this.selectedTextures[0].rotation;
+			} else if(this.editorGUI.editData.type == this.object_PREFAB){
+				var key = Object.keys(this.selectedPrefabs)[0];
+				this.editorGUI.editData.x = this.prefabs[key].x;
+				this.editorGUI.editData.y = this.prefabs[key].y;
+				//this.editorGUI.editData.rotation = this.selectedPrefabs[0].rotation;
 			}
-			//}
 		}
-
 	}
 
 	this.correctedDrawVerticePosition;
@@ -2913,7 +2947,7 @@ export function B2dEditor() {
 					var offsetX = this.prefabs[prefabInstanceName].x;
 					var offsetY = this.prefabs[prefabInstanceName].y;
 
-					if(obj.type != this.object_BODY){
+					if (obj.type != this.object_BODY) {
 						offsetX *= this.PTM;
 						offsetY *= this.PTM;
 					}
