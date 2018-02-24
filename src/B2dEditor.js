@@ -1184,7 +1184,7 @@ export function B2dEditor() {
 				var lookup = this.lookupGroups[key];
 				allObjects = allObjects.concat(lookup._bodies, lookup._textures, lookup._joints);
 				bodies = bodies.concat(lookup._bodies);
-				textures = textures.concat(lookup._textures);
+				textures = textures.concat(lookup._textures, lookup._joints);
 			}
 		}
 
