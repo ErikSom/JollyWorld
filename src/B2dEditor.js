@@ -201,6 +201,8 @@ export function B2dEditor() {
 		}
 	}
 
+
+
 	this.updateSelection = function () {
 		//Joints
 		var i;
@@ -1186,7 +1188,7 @@ export function B2dEditor() {
 			}
 		}
 
-		if (transformType == this.TRANSFORM_DEPTH) {
+		if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE) {
 			this.applyToObjects(transformType, obj, allObjects)
 		} else {
 			this.applyToObjects(transformType, obj, bodies);
@@ -1243,12 +1245,14 @@ export function B2dEditor() {
 
 			for (i = 0; i < objects.length; i++) {
 
-				if (objects[i].myTexture != undefined) {
-					depthArray.push(objects[i].myTexture);
-					tarDepthIndexes.push(objects[i].myGraphic.parent.getChildIndex(objects[i].myTexture));
-				} else if (objects[i].myGraphic != undefined) {
+				if (objects[i].myGraphic != undefined) {
 					depthArray.push(objects[i].myGraphic);
 					tarDepthIndexes.push(objects[i].myGraphic.parent.getChildIndex(objects[i].myGraphic));
+					if (objects[i].myTexture != undefined) {
+						depthArray.push(objects[i].myTexture);
+						tarDepthIndexes.push(objects[i].myGraphic.parent.getChildIndex(objects[i].myTexture));
+					}
+
 				} else {
 					depthArray.push(objects[i]);
 					tarDepthIndexes.push(objects[i].parent.getChildIndex(objects[i]));
@@ -1266,21 +1270,33 @@ export function B2dEditor() {
 			for (i = 0; i < depthArray.length; i++) {
 				child = depthArray[i];
 
+				console.log("SWAP CHILD -> NEIGHBOUR");
+				console.log(child.parent.getChildIndex(child));
+
 				if ((obj && tarDepthIndexes[i] + 1 < child.parent.children.length) || (!obj && tarDepthIndexes[i] - 1 >= 0)) {
 
 					if (obj) neighbour = child.parent.getChildAt(tarDepthIndexes[i] + 1);
 					else neighbour = child.parent.getChildAt(tarDepthIndexes[i] - 1);
+
+					console.log(neighbour.parent.getChildIndex(neighbour));
+
 					child.parent.swapChildren(child, neighbour);
+
+
 				}
 			}
 
-
 		}
-
+		//update all objects
+		for (i = 0; i < objects.length; i++) {
+			if (objects[i].myGraphic != undefined) this.updateObject(objects[i].myGraphic, objects[i].myGraphic.data);
+			else this.updateObject(objects[i], objects[i].data);
+		}
 	}
 	this.TRANSFORM_MOVE = "move";
 	this.TRANSFORM_ROTATE = "rotate";
 	this.TRANSFORM_DEPTH = "depth";
+	this.TRANSFORM_UPDATE = "update";
 
 	this.storeUndoMovement = function () {
 		if (this.undoTransformRot != 0 || this.undoTransformXY.x != 0 || this.undoTransformXY.y != 0) {
@@ -1370,6 +1386,9 @@ export function B2dEditor() {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && this.startSelectionPoint) {
 					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
+
+					this.applyToSelectedObjects(this.TRANSFORM_UPDATE);
+
 					this.filterSelectionForPrefabs();
 					this.updateSelection();
 				} else {
@@ -1516,6 +1535,7 @@ export function B2dEditor() {
 
 		this.queryPhysicsBodies = [];
 		this.world.QueryAABB(this.getBodyCB.bind(this), aabb);
+
 		return this.queryPhysicsBodies;
 	}
 	this.queryWorldForGraphics = function (lowerBound, upperBound, onlyTextures, limitResult) {
@@ -2923,6 +2943,9 @@ export function B2dEditor() {
 			data.rotation = sprite.rotation
 		}
 		data.ID = sprite.parent.getChildIndex(sprite);
+	}
+	this.updateSelectedObjects = function(){
+		
 	}
 
 	this.buildJSON = function (json, prefabInstanceName) {
