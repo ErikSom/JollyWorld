@@ -56,6 +56,40 @@ export function Vehicle(){
         }
         this.characterBodies = _characterBodies;
 
+
+        this.maskHead();
+
+    }
+    this.maskHead = function(){
+
+
+        var head = this.characterBodies.head;
+
+        var maskGraphic = new PIXI.Graphics();
+        maskGraphic.beginFill(0xFFFFFF);
+        maskGraphic.drawRect(0, 0, head.myTexture.width, head.myTexture.height);
+        maskGraphic.endFill();
+        maskGraphic.beginFill(0, 1);
+        maskGraphic.drawCircle(head.myTexture.width/2, head.myTexture.height/2, 15);
+        maskGraphic.endFill();
+
+        var rt = PIXI.RenderTexture.create(maskGraphic.width, maskGraphic.height, 1);
+        game.app.renderer.render(maskGraphic, rt);
+        var sprite = new PIXI.Sprite(rt);
+        sprite.pivot.set(sprite.width / 2, sprite.height / 2);
+
+
+
+        head.myTexture.addChild(sprite);
+
+        console.log("MASK HEAD");
+        console.log(this.characterBodies.head.myTexture);
+        console.log(this.characterBodies.head.myTexture.children);
+
+
+        console.log("SPRITE");
+        console.log(sprite);
+
     }
 
     this.RaycastCallbackWheel = function() {

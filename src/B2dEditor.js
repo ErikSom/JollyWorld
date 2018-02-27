@@ -870,6 +870,7 @@ export function B2dEditor() {
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
+		this.isContainer = false;
 
 	}
 	this.jointObject = function () {
@@ -2241,26 +2242,34 @@ export function B2dEditor() {
 
 
 	this.buildTextureFromObj = function (obj) {
+
+		var container;
 		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(obj.textureName));
-
 		sprite.pivot.set(sprite.width / 2, sprite.height / 2);
-		this.textures.addChild(sprite);
-		sprite.x = obj.x;
-		sprite.y = obj.y;
-		sprite.rotation = obj.rotation;
-		sprite.data = obj;
 
-		if (sprite.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(sprite.data.bodyID).myBody;
-			this.setTextureToBody(body, sprite, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		if(obj.isContainer){
+			container = new PIXI.Container();
+			container.addChild(sprite);
+		}else{
+			container = sprite;
+		}
+
+		this.textures.addChild(container);
+
+		container.x = obj.x;
+		container.y = obj.y;
+		container.rotation = obj.rotation;
+		container.data = obj;
+
+		if (container.data.bodyID != undefined) {
+			var body = this.textures.getChildAt(container.data.bodyID).myBody;
+			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
 		//handle groups and ref names
-		this.addItemToLookupGroups(sprite, sprite.data);
+		this.addItemToLookupGroups(container, container.data);
 	}
-	// ADD GROUP FUNCTIONALITY
+
 	// FIX GROUPS ON CHANGE OF INDIVIDUAL GROUP // SAME FOR INSTANCE LATER
-	// ADD UNIQUE GROUP TO PREFAB OBJECTS
-	// SET ALL JOINS IN GROUP TO NON VISIBLE
 
 	this.addItemToLookupGroups = function (obj, data) {
 
@@ -2844,6 +2853,7 @@ export function B2dEditor() {
 			arr[9] = obj.texturePositionOffsetLength;
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
+			arr[12] = obj.isContainer;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.bodyA_ID;
 			arr[7] = obj.bodyB_ID;
@@ -2886,6 +2896,7 @@ export function B2dEditor() {
 			obj.texturePositionOffsetLength = arr[9];
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
+			obj.isContainer = arr[12];
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.bodyA_ID = arr[6];
@@ -2944,9 +2955,6 @@ export function B2dEditor() {
 		}
 		data.ID = sprite.parent.getChildIndex(sprite);
 	}
-	this.updateSelectedObjects = function(){
-		
-	}
 
 	this.buildJSON = function (json, prefabInstanceName) {
 
@@ -2999,11 +3007,7 @@ export function B2dEditor() {
 				}
 			}
 		}
-
-		console.log(this.textures.length);
 		console.log("END HERE");
-
-
 	}
 	this.drawBox = function (target, x, y, width, height, lineColor, lineSize, lineAlpha, fillColor, fillAlpha) {
 
