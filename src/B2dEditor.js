@@ -319,6 +319,11 @@ export function B2dEditor() {
 				break;
 			case case_MULTIPLE:
 				this.editorGUI.editData = new this.multiObject;
+
+				if(this.selectedTextures.length>0) dataJoint = this.selectedTextures[0].data;
+				else if(this.selectedPhysicsBodies.length>0) dataJoint = this.selectedPhysicsBodies[0].myGraphic.data;
+				else dataJoint = this.prefabs[prefabKeys[0]];
+
 				dataJoint = this.selectedTextures[0].data;
 				this.editorGUI.addFolder('multiple objects');
 				break;
@@ -328,10 +333,8 @@ export function B2dEditor() {
 			if (this.editorGUI.editData.hasOwnProperty(key)) {
 				this.editorGUI.editData[key] = dataJoint[key];
 
-				if (currentCase == case_JUST_BODIES || currentCase == case_MULTIPLE) {
-					if (key == "x" || key == "y") {
-						this.editorGUI.editData[key] *= this.PTM;
-					}
+				if (dataJoint.type == this.object_BODY && (key == "x" || key == "y")) {
+					this.editorGUI.editData[key] *= this.PTM;
 				}
 				if (key == "groups") {
 					if (!this.isSelectionPropertyTheSame("groups")) this.editorGUI.editData.groups = "-";
@@ -895,6 +898,7 @@ export function B2dEditor() {
 		this.frequencyHz = 0.0;
 	}
 	this.multiObject = function () {
+		this.type = self.object_MULTIPLE;
 		this.x = 0;
 		this.y = 0;
 		this.rotation = 0;
@@ -1216,6 +1220,44 @@ export function B2dEditor() {
 		//TODO: fix body
 
 		if (transformType == this.TRANSFORM_MOVE || transformType == this.TRANSFORM_ROTATE) {
+
+			var centerPoints = {};
+			var data;
+			var group;
+			//prepare centerpoints for rotation
+			if(transformType == this.TRANSFORM_ROTATE){
+				for(i = 0; i < objects.length; i++){
+					body = null;
+					sprite = null;
+					if (objects[i].myGraphic != undefined){
+						body = objects[i];
+						data = body.myGraphic.data;
+					}else{
+						sprite = objects[i];
+						data = sprite.data;
+					}
+					group = data.prefabInstanceName;
+					if(group){
+						if(centerPoints[group] == undefined) centerPoints[group] = {x:0, y:0, n:0};
+						if(body){
+							centerPoints[group].x += body.GetPosition().x * this.PTM;
+							centerPoints[group].y += body.GetPosition().y * this.PTM;
+						}else{
+							centerPoints[group].x += sprite.x;
+							centerPoints[group].y += sprite.y;
+						}
+						centerPoints[group].n ++;
+					}
+				}
+				for(i in centerPoints){
+					if(centerPoints.hasOwnProperty(i)){
+						centerPoints[i].x /= centerPoints[i].n;
+						centerPoints[i].y /= centerPoints[i].n;
+					}
+				}
+			}
+
+
 			for (i = 0; i < objects.length; i++) {
 
 				if (objects[i].myGraphic != undefined) {
@@ -1225,8 +1267,24 @@ export function B2dEditor() {
 						var oldPosition = body.GetPosition();
 						body.SetPosition(new b2Vec2(oldPosition.x + obj.x / this.PTM, oldPosition.y + obj.y / this.PTM));
 					} else if (transformType == this.TRANSFORM_ROTATE) {
+						//split between per object / group rotation
+
+						group = body.myGraphic.data.prefabInstanceName;
+
 						var oldAngle = body.GetAngle();
-						body.SetAngle(oldAngle + obj * this.DEG2RAD);
+						var rAngle = obj * this.DEG2RAD;
+						body.SetAngle(oldAngle + rAngle);
+
+						if(group){
+							var difX = (body.GetPosition().x * this.PTM ) - centerPoints[group].x;
+							var difY = (body.GetPosition().y * this.PTM ) - centerPoints[group].y;
+							var distanceToCenter = Math.sqrt( difX * difX + difY * difY);
+							var angleToCenter = Math.atan2(difY, difX);
+							var newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter+rAngle);
+							var newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter+rAngle);
+							body.SetPosition(new b2Vec2(newX / this.PTM, newY / this.PTM));
+						}
+
 					}
 				} else {
 					sprite = objects[i];
@@ -1774,6 +1832,7 @@ export function B2dEditor() {
 				controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
 			}
 
+
 			var i;
 			for (i in controllers) {
 				controller = controllers[i]
@@ -1792,50 +1851,22 @@ export function B2dEditor() {
 						this.updateSelection();
 					} else if (controller.property == "x") {
 						//bodies & sprites & prefabs
-						var bodies = this.selectedPhysicsBodies;
-						var textures = this.selectedTextures;
 
-						for (j in this.selectedPrefabs) {
-							if (this.selectedPrefabs.hasOwnProperty(j)) {
-								bodies = bodies.concat(this.lookupGroups[j]._bodies);
-								textures = textures.concat(this.lookupGroups[j]._textures);
-								this.prefabs[j].x += controller.targetValue;
-							}
-						}
+						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
+							x: controller.targetValue,
+							y: 0
+						});
+						this.storeUndoMovement();
 
-						for (j = 0; j < bodies.length; j++) {
-							body = bodies[j];
-							var pos = body.GetPosition();
-							pos.x += controller.targetValue / this.PTM;
-							body.SetPosition(pos);
-						}
-						for (j = 0; j < textures.length; j++) {
-							sprite = textures[j];
-							sprite.x += controller.targetValue;
-						}
 					} else if (controller.property == "y") {
 						//bodies & sprites & prefabs
-						var bodies = this.selectedPhysicsBodies;
-						var textures = this.selectedTextures;
 
-						for (j in this.selectedPrefabs) {
-							if (this.selectedPrefabs.hasOwnProperty(j)) {
-								bodies = bodies.concat(this.lookupGroups[j]._bodies);
-								textures = textures.concat(this.lookupGroups[j]._textures);
-								this.prefabs[j].x += controller.targetValue;
-							}
-						}
+						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
+							x: 0,
+							y: controller.targetValue
+						});
+						this.storeUndoMovement();
 
-						for (j = 0; j < bodies.length; j++) {
-							body = bodies[j];
-							var pos = body.GetPosition();
-							pos.y += controller.targetValue / this.PTM;
-							body.SetPosition(pos);
-						}
-						for (j = 0; j < textures.length; j++) {
-							sprite = textures[j];
-							sprite.y += controller.targetValue;
-						}
 					} else if (controller.property == "collideConnected") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
@@ -1989,21 +2020,47 @@ export function B2dEditor() {
 					controller.updateDisplay();
 				}
 			}
+			// DO SYNCING
+			var syncObject;
+
 			if (this.editorGUI.editData.type == this.object_BODY) {
-				var pos = this.selectedPhysicsBodies[0].GetPosition();
+				syncObject = this.selectedPhysicsBodies[0];
+			}else if (this.editorGUI.editData.type == this.object_TEXTURE || this.editorGUI.editData.type == this.object_JOINT) {
+				syncObject = this.selectedTextures[0];
+			}else if(this.editorGUI.editData.type == this.object_PREFAB){
+				var key = Object.keys(this.selectedPrefabs)[0];
+				syncObject = this.prefabs[key];
+			}else if(this.editorGUI.editData.type == this.object_MULTIPLE){
+				if(this.selectedTextures.length>0) syncObject = this.selectedTextures[0];
+				else if(this.selectedPhysicsBodies.length>0) syncObject = this.selectedPhysicsBodies[0];
+				else syncObject = this.prefabs[key];
+			}
+
+			if(syncObject.myGraphic){
+				var pos = syncObject.GetPosition();
 				this.editorGUI.editData.x = pos.x * this.PTM;
 				this.editorGUI.editData.y = pos.y * this.PTM;
-				this.editorGUI.editData.rotation = this.selectedPhysicsBodies[0].GetAngle() * this.RAD2DEG;
-			} else if (this.editorGUI.editData.type == this.object_TEXTURE || this.editorGUI.editData.type == this.object_JOINT) {
-				this.editorGUI.editData.x = this.selectedTextures[0].x;
-				this.editorGUI.editData.y = this.selectedTextures[0].y;
-				this.editorGUI.editData.rotation = this.selectedTextures[0].rotation;
-			} else if(this.editorGUI.editData.type == this.object_PREFAB){
-				var key = Object.keys(this.selectedPrefabs)[0];
-				this.editorGUI.editData.x = this.prefabs[key].x;
-				this.editorGUI.editData.y = this.prefabs[key].y;
-				//this.editorGUI.editData.rotation = this.selectedPrefabs[0].rotation;
+				this.editorGUI.editData.rotation = syncObject.GetAngle() * this.RAD2DEG;
+			}else{
+				this.editorGUI.editData.x = syncObject.x;
+				this.editorGUI.editData.y = syncObject.y;
+				this.editorGUI.editData.rotation = syncObject.rotation;
 			}
+
+			console.log(syncObject.x+"  "+syncObject.y);
+
+			//new sync for mouse movements
+			var i;
+			for (i in controllers) {
+				controller = controllers[i];
+				if (controller.property == "x") {
+					controller.initialValue = this.editorGUI.editData.x;
+				}else if (controller.property == "y") {
+					controller.initialValue = this.editorGUI.editData.y;
+				}
+			}
+
+
 		}
 	}
 
@@ -3166,6 +3223,7 @@ export function B2dEditor() {
 	this.object_JOINT = 2;
 	this.object_UNDO_MOVEMENT = 3;
 	this.object_PREFAB = 4;
+	this.object_MULTIPLE = 5;
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
