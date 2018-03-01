@@ -28,6 +28,8 @@ export function B2dEditor() {
 	this.world;
 	this.debugGraphics = null;
 	this.textures = null;
+	this.currentTime;
+	this.deltaTime;
 
 	this.prefabs = {};
 	this.prefabCounter = 0; //to ensure uniquenesss
@@ -806,6 +808,9 @@ export function B2dEditor() {
 			this.doEditor();
 		}
 
+		this.deltaTime = Date.now()-this.currentTime;
+		this.currentTime = Date.now();
+
 
 		var body = this.world.GetBodyList();
 		var i = 0
@@ -828,6 +833,14 @@ export function B2dEditor() {
 			}
 			i++;
 			body = body.GetNext();
+		}
+
+		//update prefabs
+		var key;
+		for(key in this.prefabs){
+			if(this.prefabs.hasOwnProperty(key)){
+				prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
+			}
 		}
 	}
 
@@ -3137,6 +3150,8 @@ export function B2dEditor() {
 		var sprite;
 
 		this.lookupGroups = {};
+		this.currentTime = Date.now();
+		this.deltaTime = 0;
 
 		var i;
 		for (i = 0; i < this.textures.children.length; i++) {
@@ -3166,6 +3181,20 @@ export function B2dEditor() {
 				baseTexture: false
 			});
 		}
+		var key;
+		for(key in this.prefabs){
+			if(this.prefabs.hasOwnProperty(key)){
+				console.log(key);
+				console.log(this.prefabs[key]);
+				console.log(this.prefabs[key].prefabName);
+				console.log(prefab.prefabs[this.prefabs[key].prefabName]);
+				//work here prefab.prefabs[key].init()
+				prefab.prefabs[this.prefabs[key].prefabName].init(this.prefabs[key]);
+			}
+		}
+
+
+
 		this.editing = false;
 	}
 

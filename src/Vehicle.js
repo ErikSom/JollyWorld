@@ -62,7 +62,6 @@ export function Vehicle(){
     }
     this.maskHead = function(){
 
-
         var head = this.characterBodies.head;
 
         var maskGraphic = new PIXI.Graphics();
@@ -78,17 +77,9 @@ export function Vehicle(){
         var sprite = new PIXI.Sprite(rt);
         sprite.pivot.set(sprite.width / 2, sprite.height / 2);
 
-
-
         head.myTexture.addChild(sprite);
 
-        console.log("MASK HEAD");
-        console.log(this.characterBodies.head.myTexture);
-        console.log(this.characterBodies.head.myTexture.children);
-
-
-        console.log("SPRITE");
-        console.log(sprite);
+        head.myTexture.mask = sprite;
 
     }
 
@@ -172,38 +163,6 @@ export function Vehicle(){
             engine.SetMotorSpeed(dir*this.desiredVehicleSpeeds[i]);
         }
     }
-    /*
-
-
-var RaycastCallback = function() {
-    this.m_hit = false;
-}
-RaycastCallback.prototype.ReportFixture = function(fixture,point,normal,fraction) {
-
-    if ( ... not interested in this fixture ... ) 
-        return -1;
-
-    this.m_hit = true;
-    this.m_point = point;
-    this.m_normal = normal;
-    return fraction;
-};
-Now make an instance of that to pass to the worlds RayCast function:
-
-var rayStart = ...;
-var rayEnd = ...;
-
-var callback = new RaycastCallback();
-
-world.RayCast(callback, rayStart, rayEnd);
-if ( callback.m_hit ) {
-    ... use callback.m_point etc ...
-}
-
-    */
-
-
-
     this.stopAccelerateWheels = function(){
         var i;
         var engine;
@@ -229,46 +188,3 @@ if ( callback.m_hit ) {
 	this.RAD2DEG = 57.29577951308232;
 
 }
-
-
-
-
-
-  /*
-  ROTATION EXAMPLE
-  var i;
-        var body;
-
-        for(i = 0; i<toBeRotatedBodies.length; i++){
-            body = toBeRotatedBodies[i];
-            body.SetType(b2Body.b2_kinematicBody)
-        }
-
-
-        for(i = 0; i<toBeRotatedBodies.length; i++){
-            body = toBeRotatedBodies[i];
-            var o = body.GetPosition();
-
-
-            var disX = (o.x-p.x);
-            var disY = (o.y-p.y);
-
-            var originalAngle = Math.atan2(disY, disX);
-
-            var len = Math.sqrt(disX*disX+disY*disY);
-
-            var tarAngle = originalAngle+angleChange;
-            var tarX = p.x+len*Math.cos(tarAngle);
-            var tarY = p.y+len*Math.sin(tarAngle)
-
-            //console.log(angleChange+"  "+tarX+"   "+tarY);
-            body.SetPosition(new b2Vec2(tarX, tarY));
-            //body.SetPositionAndAngle(new b2Vec2(tarX, tarY), body.GetAngle()-angleChange);
-        }
-
-        for(i = 0; i<toBeRotatedBodies.length; i++){
-            body = toBeRotatedBodies[i];
-            body.SetType(b2Body.b2_dynamicBody);
-        }
-
-        */
