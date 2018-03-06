@@ -75,6 +75,7 @@ function Game() {
             .add("assets/images/vehicles.json")
             .add("assets/images/Characters1.json")
             .add("assets/images/Vehicles1.json")
+            .add("assets/images/TextureTiles.json")
             .add("worldData", "data/worldData.json")
             .add("vehicleData", "data/vehicle.json")
             .add("characterData", "data/character.json")
@@ -114,6 +115,9 @@ function Game() {
         this.editor.assetLists.maincharacters = ["Skin1_Head_Idle0000","Skin1_Head_Smile0000","Skin1_Head_Laugh0000","Skin1_Head_hurt10000","Skin1_Head_hurt20000","Skin1_Head_hurt30000","Skin1_Head_hurt40000","Skin1_Head_RnM0000","Skin1_Head_Oh0000", "Skin1_Head_Boring0000", "Skin1_Core0000", "Skin1_Thigh0000", "Skin1_Leg0000", "Skin1_Feet0000", "Skin1_Shoulder0000", "Skin1_Arm0000", "Skin1_Hand0000", "Skin1_Eye0000", "Skin1_Eye_Closed0000"];
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
         this.editor.assetLists.vehicles1 = ["Bicycle_Body0000", "Bicycle_Pedals0000", "Bicycle_WheelFront0000", "Bicycle_WheelBack0000", "Unicycle_Body0000"];
+
+        this.editor.tileLists = ["tile_01", "tile_02", "tile_03", "tile_04", "tile_05", "tile_06", "tile_07", "tile_08", "tile_09", "tile_10", "tile_11", "tile_12", "tile_13", "tile_14", "tile_15", "tile_16", "tile_17", "tile_18", "tile_19", "tile_20", "tile_21", "tile_22", "tile_23", "tile_24", "tile_25", "tile_26", "tile_27", "tile_28", "tile_29", "tile_30"];
+
         this.editor.init(myContainer, this.world, this.PTM);
 
 
@@ -271,7 +275,7 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
-        var targetZoom = 0.3;
+        var targetZoom = 1;
 
         var currentZoom = this.editor.container.scale.x;
 

@@ -13,7 +13,7 @@ let character1 = new function(){
     const TIME_EYES_CLOSE = 3000;
     const TIME_EYES_OPEN = 3100;
     const timerReady = function(timer, target){ return (timer < target && timer+game.editor.deltaTime >= target) ?  true : false };
-
+    
     this.init = function(target){
         console.log("*****RUNNING INIT ON PREFAB:");
         console.log(target);
