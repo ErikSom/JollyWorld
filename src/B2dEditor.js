@@ -30,6 +30,7 @@ export function B2dEditor() {
 	this.textures = null;
 	this.currentTime;
 	this.deltaTime;
+	this.contactCallBackListener;
 
 	this.prefabs = {};
 	this.prefabCounter = 0; //to ensure uniquenesss
@@ -110,6 +111,7 @@ export function B2dEditor() {
 		this.world = _world;
 		this.initialPTM = _PTM;
 		this.PTM = _PTM;
+		this.world.SetContactListener(this.B2dEditorContactListener);
 		//Texture Draw
 		this.textures = new PIXI.Graphics();
 		this.prefabs = {};
@@ -2358,15 +2360,19 @@ export function B2dEditor() {
 		//character1, .character, .vehicle, test
 		// subgroup + refname
 		if (data.groups && data.groups != "") {
-			var arr = data.groups.split(",");
+
+			var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+			var arr = groupNoSpaces.split(",");
 			var subGroups = [];
 
 			if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
 
 			var i;
 			for (i = 0; i < arr.length; i++) {
+				console.log(arr[i]+"  "+arr[i].charAt(0));
 				if (arr[i].charAt(0) === ".") {
-					subGroups.push(arr.splice(i, 1));
+					subGroups.push(arr.splice(i, 1)[0]);
+					console.log("SPLITTING:"+subGroups[subGroups.length-1]);
 					i--;
 				}
 			}
@@ -2376,7 +2382,8 @@ export function B2dEditor() {
 			var subGroup;
 			var j;
 			for (i = 0; i < arr.length; i++) {
-				group = arr[i].replace(/ /g, '');
+				group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+				if(group == "") continue;
 				if (this.lookupGroups[group] == undefined) {
 					this.lookupGroups[group] = new this.lookupObject;
 				}
@@ -2389,8 +2396,10 @@ export function B2dEditor() {
 					this.lookupGroups[group][data.refName] = obj;
 				}
 
-				for (j = 0; j < subGroups; j++) {
-					subGroup = subGroups[i].replace(/ /g, '');
+				for (j = 0; j < subGroups.length; j++) {
+					console.log(subGroups);
+					subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
+					if(subGroup == "") continue;
 					if (this.lookupGroups[group][subGroup] == undefined) {
 						this.lookupGroups[group][subGroup] = new this.lookupObject;
 					}
@@ -2777,7 +2786,7 @@ export function B2dEditor() {
 		texture.myBody = null;
 	}
 
-	this.addDecalToBody = function(body){
+	this.addDecalToBody = function(body, worldPosition, textureName, carving){
 		if(!body.myDecals){
 			body.myDecals = new PIXI.Sprite();
 
@@ -3212,6 +3221,31 @@ export function B2dEditor() {
 			this.editorGUI = null;
 		}
 	}
+	var self = this;
+	this.B2dEditorContactListener = new Box2D.Dynamics.b2ContactListener();
+	this.B2dEditorContactListener.BeginContact = function (contact) {
+		if(self.contactCallBackListener){
+			self.contactCallBackListener.BeginContact(contact);
+		}
+	}
+	this.B2dEditorContactListener.EndContact = function (contact) {
+		if(self.contactCallBackListener){
+			self.contactCallBackListener.EndContact(contact);
+		}
+	}
+	this.B2dEditorContactListener.PreSolve = function (contact, oldManifold) {
+		if(self.contactCallBackListener){
+			self.contactCallBackListener.PreSolve(contact, oldManifold);
+		}
+	}
+	this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
+		if(self.contactCallBackListener){
+			self.contactCallBackListener.PreSolve(contact, impulse);
+		}
+	}
+
+
+
 	this.runWorld = function () {
 		this.editorIcons = [];
 		this.debugGraphics.clear();
@@ -3223,6 +3257,8 @@ export function B2dEditor() {
 		this.lookupGroups = {};
 		this.currentTime = Date.now();
 		this.deltaTime = 0;
+
+		this.world.SetContactListener(this.B2dEditorContactListener);
 
 		var i;
 		for (i = 0; i < this.textures.children.length; i++) {
