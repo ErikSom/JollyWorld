@@ -2787,15 +2787,21 @@ export function B2dEditor() {
 	}
 
 	this.addDecalToBody = function(body, worldPosition, textureName, carving){
-		if(!body.myDecals){
-			body.myDecals = new PIXI.Sprite();
 
-			var filter = new game.editor.MY_SHADERS.ColorFill(0xFFFFFF);
+		//console.log("ADDING DECAL:");
+		//console.log(body, worldPosition, textureName, carving);
+
+		var pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
+
+		//if(!body.myGraphic.mask){
+
+			/*var filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
 			body.myGraphic.filters = [filter];
 
 			var rt = PIXI.RenderTexture.create(body.myGraphic.width, body.myGraphic.height, 1);
 			game.app.renderer.render(body.myGraphic, rt);
-			rt.pivot.set(rt.width / 2, rt.height / 2);
+			var renderMask = new PIXI.Sprite(rt);
+			renderMask.pivot.set(renderMask.width / 2, renderMask.height / 2);
 
 			body.myGraphic.filters = [];
 
@@ -2804,14 +2810,28 @@ export function B2dEditor() {
 			graphics.drawRect(0, 0, rt.width, rt.height);
 			graphics.pivot.set(graphics.width /2, graphics.height / 2);
 
-			body.myDecalMask = new PIXI.Sprite();
-			body.myDecalMask.addChild(graphics)
-			body.myDecalMask.addChild(rt);
+			body.myMask = new PIXI.Sprite();
+			body.myMask.addChild(graphics)
+			body.myMask.addChild(renderMask);*/
 
-			body.myGraphic.addChild(body.myDecals);
-			body.myGraphic.addChild(body.myDecalMask);
+
+			var decal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
+			decal.pivot.set(decal.width / 2, decal.height / 2);
+
+			decal.x = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).x;
+			decal.y = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).y;
+
+			body.myTexture.addChild(decal);
+
+
+
+			console.log(body.myTexture);
+			console.log(decal);
+			//body.mySprite.addChild(body.myMask);
+			//console.log(body.myMask);
+			//body.myGraphic.addChild(body.myDecalMask);
 			//body.myDecals.mask = body.myDecalMask;
-		}
+		//}
 
 	}
 	this.updateBodyTileSprite = function(body){
@@ -3240,7 +3260,7 @@ export function B2dEditor() {
 	}
 	this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
 		if(self.contactCallBackListener){
-			self.contactCallBackListener.PreSolve(contact, impulse);
+			self.contactCallBackListener.PostSolve(contact, impulse);
 		}
 	}
 

@@ -16,25 +16,13 @@ let character1 = new function(){
 
 
     this.init = function(target){
-        console.log("*****RUNNING INIT ON PREFAB:");
-        console.log(target);
-        console.log(game.editor.lookupGroups);
         target.eyesTimer = 0.0;
         target.lookupObject = game.editor.lookupGroups[target.prefabName+"_"+target.instanceID];
 
-        console.log(target.lookupObject.flesh);
-
-        /*target.lookupObject.head.isFlesh = true;
-        target.lookupObject.body.isFlesh = true;
-        target.lookupObject.shoulder_left.isFlesh = true;
-        target.lookupObject.shoulder_right.isFlesh = true;
-        target.lookupObject.arm_left.isFlesh = true;
-        target.lookupObject.arm_right.isFlesh = true;
-        target.lookupObject.hand_left.isFlesh = true;
-        target.lookupObject.hand_right.isFlesh = true;
-        target.lookupObject.thigh_left.isFlesh = true;
-        target.lookupObject.thigh_right.isFlesh = true;*/
-
+        var i;
+        for(i=0; i<target.lookupObject.flesh._bodies.length; i++){
+            target.lookupObject.flesh._bodies[i].isFlesh = true;
+        }
     }
 
 

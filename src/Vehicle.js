@@ -57,7 +57,7 @@ export function Vehicle(){
         this.characterBodies = _characterBodies;
 
 
-        this.maskHead();
+        //this.maskHead();
 
     }
     this.maskHead = function(){

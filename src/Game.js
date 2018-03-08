@@ -374,19 +374,35 @@ function Game() {
         });
 
     }
-
+    var self = this;
     this.gameContactListener = new Box2D.Dynamics.b2ContactListener();
 	this.gameContactListener.BeginContact = function (contact) {
-        console.log("BEGIN CONTACT:");
-        console.log(contact);
 	}
 	this.gameContactListener.EndContact = function (contact) {
-        console.log("END CONTACT:");
-        console.log(contact);
 	}
 	this.gameContactListener.PreSolve = function (contact, oldManifold) {
 	}
 	this.gameContactListener.PostSolve = function (contact, impulse) {
+        console.log("POST SOLVE");
+
+        var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+        var body;
+
+        for(var i = 0; i<bodies.length; i++){
+            body = bodies[i];
+            if(body.isFlesh){
+
+                var worldManifold = new Box2D.Collision.b2WorldManifold();
+                contact.GetWorldManifold(worldManifold);
+                var worldCollisionPoint = worldManifold.m_points[0];
+
+                self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
+
+            }
+        }
+
+
+
 	}
 
 
