@@ -383,7 +383,6 @@ function Game() {
 	this.gameContactListener.PreSolve = function (contact, oldManifold) {
 	}
 	this.gameContactListener.PostSolve = function (contact, impulse) {
-        console.log("POST SOLVE");
 
         var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         var body;

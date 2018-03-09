@@ -895,7 +895,7 @@ export function B2dEditor() {
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
-		this.isContainer = false;
+		this.isCarvable = false;
 
 	}
 	this.jointObject = function () {
@@ -2329,14 +2329,12 @@ export function B2dEditor() {
 
 		var container;
 		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(obj.textureName));
-		sprite.pivot.set(sprite.width / 2, sprite.height / 2);
 
-		if(obj.isContainer){
-			container = new PIXI.Container();
-			container.addChild(sprite);
-		}else{
-			container = sprite;
-		}
+		container = new PIXI.Container();
+		container.pivot.set(sprite.width / 2, sprite.height / 2);
+		container.addChild(sprite);
+
+		container.originalSprite = sprite;
 
 		this.textures.addChild(container);
 
@@ -2785,7 +2783,6 @@ export function B2dEditor() {
 		body.mySprite.visible = true;
 		texture.myBody = null;
 	}
-
 	this.addDecalToBody = function(body, worldPosition, textureName, carving){
 
 		//console.log("ADDING DECAL:");
@@ -2793,45 +2790,52 @@ export function B2dEditor() {
 
 		var pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
-		//if(!body.myGraphic.mask){
+		if(!body.myDecalSprite){
 
-			/*var filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
-			body.myGraphic.filters = [filter];
+			var decalSprite = new PIXI.Sprite();
+			body.myTexture.addChild(decalSprite);
+			body.myDecalSprite = decalSprite;
+			decalSprite.pivot.set(decalSprite.width/2, decalSprite.height/2);
 
-			var rt = PIXI.RenderTexture.create(body.myGraphic.width, body.myGraphic.height, 1);
-			game.app.renderer.render(body.myGraphic, rt);
-			var renderMask = new PIXI.Sprite(rt);
-			renderMask.pivot.set(renderMask.width / 2, renderMask.height / 2);
-
-			body.myGraphic.filters = [];
+			//create mask
+			var renderMaskSprite = new PIXI.Sprite();
+			var filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
+			var drawGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
+			drawGraphic.filters = [filter];
 
 			var graphics = new PIXI.Graphics();
 			graphics.beginFill(0x000000);
-			graphics.drawRect(0, 0, rt.width, rt.height);
-			graphics.pivot.set(graphics.width /2, graphics.height / 2);
+			graphics.drawRect(0, 0, drawGraphic.width, drawGraphic.height);
+			renderMaskSprite.addChild(graphics);
+			renderMaskSprite.addChild(drawGraphic);
 
-			body.myMask = new PIXI.Sprite();
-			body.myMask.addChild(graphics)
-			body.myMask.addChild(renderMask);*/
+			var rt = PIXI.RenderTexture.create(body.myTexture.width, body.myTexture.height, 1);
+			game.app.renderer.render(renderMaskSprite, rt);
+			var renderMask = new PIXI.Sprite(rt);
 
+			body.myMask = renderMask
+			body.myTexture.addChild(body.myMask);
 
-			var decal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
-			decal.pivot.set(decal.width / 2, decal.height / 2);
+			body.myDecalSprite.mask = body.myMask;
 
-			decal.x = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).x;
-			decal.y = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).y;
-
-			body.myTexture.addChild(decal);
-
+		}
 
 
-			console.log(body.myTexture);
-			console.log(decal);
-			//body.mySprite.addChild(body.myMask);
-			//console.log(body.myMask);
-			//body.myGraphic.addChild(body.myDecalMask);
-			//body.myDecals.mask = body.myDecalMask;
-		//}
+		var decal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
+		decal.pivot.set(decal.width / 2, decal.height / 2);
+
+		decal.x = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).x;
+		decal.y = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).y;
+
+		body.myDecalSprite.addChild(decal);
+
+		//console.log(body.myTexture);
+		//console.log(decal);
+		//body.mySprite.addChild(body.myMask);
+		//console.log(body.myMask);
+		//body.myGraphic.addChild(body.myDecalMask);
+		//body.myDecals.mask = body.myDecalMask;
+		
 
 	}
 	this.updateBodyTileSprite = function(body){
@@ -3023,7 +3027,7 @@ export function B2dEditor() {
 			arr[9] = obj.texturePositionOffsetLength;
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
-			arr[12] = obj.isContainer;
+			arr[12] = obj.isCarvable;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.bodyA_ID;
 			arr[7] = obj.bodyB_ID;
@@ -3066,7 +3070,7 @@ export function B2dEditor() {
 			obj.texturePositionOffsetLength = arr[9];
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
-			obj.isContainer = arr[12];
+			obj.isCarvable = arr[12];
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.bodyA_ID = arr[6];
