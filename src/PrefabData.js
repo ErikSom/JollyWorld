@@ -22,6 +22,16 @@ let character1 = new function(){
         var i;
         for(i=0; i<target.lookupObject.flesh._bodies.length; i++){
             target.lookupObject.flesh._bodies[i].isFlesh = true;
+
+            var texture = target.lookupObject.flesh._bodies[i].myTexture;
+            //fix gore for Skin2, Skin3 etc
+
+            var fleshName = texture.data.textureName.split('0000')[0];
+            if(fleshName.indexOf('Head')>0) fleshName = "Skin1_Head";
+            var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(fleshName+"_Flesh0000"));
+            //sprite.pivot.set(sprite.width/2, sprite.height/2);
+            texture.addChildAt(sprite, 0);
+
         }
     }
 

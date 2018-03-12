@@ -2852,7 +2852,7 @@ export function B2dEditor() {
 
 			carveDecal.parent.removeChild(carveDecal);
 
-			body.myTexture.mask = body.myMask;
+			body.myTexture.originalSprite.mask = body.myMask;
 		}
 
 
