@@ -1,4 +1,5 @@
 import 'FireBaseManager.js'
+import 'AssetList.js'
 import 'UIManager.js'
 import 'Vehicle.js'
 import 'Game-gui.js'

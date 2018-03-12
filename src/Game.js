@@ -8,6 +8,7 @@ const PIXI = require('pixi.js');
 import $ from 'jquery';
 import { ui } from "./UIManager";
 import { firebaseManager } from "./FireBaseManager";
+import { LoadAssets } from "./AssetList";
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2AABB = Box2D.Collision.b2AABB,
@@ -69,18 +70,7 @@ function Game() {
         this.stage = this.app.stage;
 
         console.log(this.app);
-
-        PIXI.loader
-            .add("assets/images/bodyparts.json")
-            .add("assets/images/vehicles.json")
-            .add("assets/images/Characters1.json")
-            .add("assets/images/Vehicles1.json")
-            .add("assets/images/Decals.json")
-            .add("assets/images/TextureTiles.json")
-            .add("worldData", "data/worldData.json")
-            .add("vehicleData", "data/vehicle.json")
-            .add("characterData", "data/character.json")
-            .add("characterData1", "data/character1.json");
+        LoadCoreAssets(PIXI.loader);
 
         this.editor = new B2dEditor();
         this.editor.load(PIXI.loader);
@@ -117,7 +107,7 @@ function Game() {
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
         this.editor.assetLists.vehicles1 = ["Bicycle_Body0000", "Bicycle_Pedals0000", "Bicycle_WheelFront0000", "Bicycle_WheelBack0000", "Unicycle_Body0000"];
 
-        this.editor.tileLists = ["tile_01", "tile_02", "tile_03", "tile_04", "tile_05", "tile_06", "tile_07", "tile_08", "tile_09", "tile_10", "tile_11", "tile_12", "tile_13", "tile_14", "tile_15", "tile_16", "tile_17", "tile_18", "tile_19", "tile_20", "tile_21", "tile_22", "tile_23", "tile_24", "tile_25", "tile_26", "tile_27", "tile_28", "tile_29", "tile_30"];
+        this.editor.tileLists = ["tile1.jpg","tile2.jpg","tile3.jpg","tile4.jpg","tile5.jpg","tile6.jpg","tile7.jpg","tile8.jpg","tile9.jpg","tile10.jpg","tile11.jpg","tile12.jpg","tile13.jpg","tile14.jpg","tile15.jpg","tile16.jpg","tile16.jpg"] 
 
         this.editor.init(myContainer, this.world, this.PTM);
         this.editor.contactCallBackListener = this.gameContactListener;
