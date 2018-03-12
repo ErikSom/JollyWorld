@@ -880,6 +880,7 @@ export function B2dEditor() {
 		this.density = 1;
 		this.collision = 0;
 		this.radius;
+		this.tileTexture = "";
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -1103,6 +1104,11 @@ export function B2dEditor() {
 									this.selectedPrefabs = {};
 									if (highestObject.myBody) this.selectedPhysicsBodies = [highestObject.myBody];
 									else this.selectedPhysicsBodies = [highestObject];
+
+									game.app.renderer.plugins.graphics.updateGraphics(this.selectedPhysicsBodies[0].myGraphic);
+									console.log("INDICES FOR OBJECT:");
+									console.log(this.selectedPhysicsBodies[0].myGraphic._webGL[game.app.renderer.CONTEXT_UID]);
+
 								} else {
 									this.selectedPhysicsBodies = [];
 									this.selectedPrefabs = {};
@@ -2074,8 +2080,6 @@ export function B2dEditor() {
 				this.editorGUI.editData.rotation = syncObject.rotation;
 			}
 
-			console.log(syncObject.x+"  "+syncObject.y);
-
 			//new sync for mouse movements
 			var i;
 			for (i in controllers) {
@@ -2367,10 +2371,8 @@ export function B2dEditor() {
 
 			var i;
 			for (i = 0; i < arr.length; i++) {
-				console.log(arr[i]+"  "+arr[i].charAt(0));
 				if (arr[i].charAt(0) === ".") {
 					subGroups.push(arr.splice(i, 1)[0]);
-					console.log("SPLITTING:"+subGroups[subGroups.length-1]);
 					i--;
 				}
 			}
@@ -2395,7 +2397,6 @@ export function B2dEditor() {
 				}
 
 				for (j = 0; j < subGroups.length; j++) {
-					console.log(subGroups);
 					subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
 					if(subGroup == "") continue;
 					if (this.lookupGroups[group][subGroup] == undefined) {
@@ -2788,57 +2789,76 @@ export function B2dEditor() {
 		//console.log("ADDING DECAL:");
 		//console.log(body, worldPosition, textureName, carving);
 
-		var pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
+		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
 		if(!body.myDecalSprite){
 
-			var decalSprite = new PIXI.Sprite();
+			let decalSprite = new PIXI.Sprite();
 			body.myTexture.addChild(decalSprite);
 			body.myDecalSprite = decalSprite;
 			decalSprite.pivot.set(decalSprite.width/2, decalSprite.height/2);
 
 			//create mask
-			var renderMaskSprite = new PIXI.Sprite();
-			var filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
-			var drawGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
+			let renderMaskSprite = new PIXI.Sprite();
+			let filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
+			let drawGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
 			drawGraphic.filters = [filter];
 
-			var graphics = new PIXI.Graphics();
+			let graphics = new PIXI.Graphics();
 			graphics.beginFill(0x000000);
 			graphics.drawRect(0, 0, drawGraphic.width, drawGraphic.height);
 			renderMaskSprite.addChild(graphics);
 			renderMaskSprite.addChild(drawGraphic);
 
-			var rt = PIXI.RenderTexture.create(body.myTexture.width, body.myTexture.height, 1);
+			let rt = PIXI.RenderTexture.create(body.myTexture.width, body.myTexture.height, 1);
 			game.app.renderer.render(renderMaskSprite, rt);
-			var renderMask = new PIXI.Sprite(rt);
+			let renderMask = new PIXI.Sprite(rt);
 
 			body.myMask = renderMask
 			body.myTexture.addChild(body.myMask);
 
 			body.myDecalSprite.mask = body.myMask;
-
 		}
 
-
-		var decal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
+		let decal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
 		decal.pivot.set(decal.width / 2, decal.height / 2);
 
-		decal.x = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).x;
-		decal.y = body.myTexture.toLocal(pixelPosition, body.myTexture.parent).y;
+		var localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
+		decal.x = localPosition.x;
+		decal.y = localPosition.y;
 
 		body.myDecalSprite.addChild(decal);
 
-		//console.log(body.myTexture);
-		//console.log(decal);
-		//body.mySprite.addChild(body.myMask);
-		//console.log(body.myMask);
-		//body.myGraphic.addChild(body.myDecalMask);
-		//body.myDecals.mask = body.myDecalMask;
-		
+
+		if(carving){
+			let filter = new game.editor.SHADERS.ColorFill(0x000000);
+			let carveDecal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
+			carveDecal.pivot.set(carveDecal.width/2, carveDecal.height/2);
+
+			carveDecal.filters = [filter];
+			carveDecal.scale.x = 0.6;
+			carveDecal.scale.y = 0.6;
+
+			let drawGraphic = new PIXI.Sprite(body.myMask.texture);
+
+			drawGraphic.addChild(carveDecal);
+
+			carveDecal.y = decal.y;
+			carveDecal.x = decal.x;
+
+			let rt = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
+			game.app.renderer.render(drawGraphic, rt);
+			body.myMask.texture = rt;
+
+			carveDecal.parent.removeChild(carveDecal);
+
+			body.myTexture.mask = body.myMask;
+		}
+
 
 	}
 	this.updateBodyTileSprite = function(body){
+
 		var tileTexture = body.mySprite.data.tileTexture;
 
 		if(tileTexture && tileTexture != ""){
@@ -3020,6 +3040,7 @@ export function B2dEditor() {
 			arr[13] = obj.density;
 			arr[14] = obj.collision;
 			arr[15] = obj.radius;
+			arr[16] = obj.tileTexture;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -3062,6 +3083,7 @@ export function B2dEditor() {
 			obj.density = arr[13];
 			obj.collision = arr[14];
 			obj.radius = arr[15];
+			obj.tileTexture = arr[16];
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
