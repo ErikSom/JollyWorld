@@ -108,7 +108,7 @@ function Game() {
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
         this.editor.assetLists.vehicles1 = ["Bicycle_Body0000", "Bicycle_Pedals0000", "Bicycle_WheelFront0000", "Bicycle_WheelBack0000", "Unicycle_Body0000"];
 
-        this.editor.tileLists = ["tile1.jpg","tile2.jpg","tile3.jpg","tile4.jpg","tile5.jpg","tile6.jpg","tile7.jpg","tile8.jpg","tile9.jpg","tile10.jpg","tile11.jpg","tile12.jpg","tile13.jpg","tile14.jpg","tile15.jpg","tile16.jpg","tile16.jpg"] 
+        this.editor.tileLists = ["", "tile1.jpg","tile2.jpg","tile3.jpg","tile4.jpg","tile5.jpg","tile6.jpg","tile7.jpg","tile8.jpg","tile9.jpg","tile10.jpg","tile11.jpg","tile12.jpg","tile13.jpg","tile14.jpg","tile15.jpg","tile16.jpg","tile16.jpg"] 
 
         this.editor.init(myContainer, this.world, this.PTM);
         this.editor.contactCallBackListener = this.gameContactListener;
