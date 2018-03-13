@@ -2522,7 +2522,7 @@ export function B2dEditor() {
 		body.mySprite.data = obj;
 
 		//TO FIX
-		obj.tileTexture = "tile_03";
+		obj.tileTexture = "tile4.jpg";
 		this.updateBodyTileSprite(body);
 
 
@@ -2862,17 +2862,47 @@ export function B2dEditor() {
 		var tileTexture = body.mySprite.data.tileTexture;
 
 		if(tileTexture && tileTexture != ""){
-			if(!body.myTileSprite){
-				body.myTileSprite = PIXI.extras.TilingSprite.fromFrame(tileTexture);
-				body.mySprite.addChild(body.myTileSprite);
-			}else{
-				body.myTileSprite.texture = PIXI.extras.TilingSprite.fromFrame(tileTexture);
+			// if(!body.myTileSprite){
+			// 	body.myTileSprite = PIXI.extras.TilingSprite.fromFrame(tileTexture);
+			// 	body.mySprite.addChild(body.myTileSprite);
+			// }else{
+			// 	body.myTileSprite.texture = PIXI.extras.TilingSprite.fromFrame(tileTexture);
+			// }
+			// body.myTileSprite.texture.baseTexture.mipmap=false;
+			// body.myTileSprite.width = body.myGraphic.width+100;
+			// body.myTileSprite.height = body.myGraphic.height+100;
+			// body.myTileSprite.pivot.set(body.myTileSprite.width / 2, body.myTileSprite.height / 2);
+			// body.myTileSprite.mask = body.myGraphic;
+
+			var tex = PIXI.Texture.fromImage(tileTexture);
+			tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+			tex.baseTexture.uploadUvTransform = true;
+
+			game.app.renderer.plugins.graphics.updateGraphics(body.myGraphic);
+
+			var verticesColor = body.myGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glPoints;
+			var vertices = new Float32Array(verticesColor.length/3);
+
+			var i;
+			var j = 0;
+			for(i = 0; i<verticesColor.length; i+= 6){
+				vertices[j] = verticesColor[i];
+				vertices[j+1] = verticesColor[i+1];
+				j+=2;
 			}
-			body.myTileSprite.texture.baseTexture.mipmap=false;
-			body.myTileSprite.width = body.myGraphic.width+100;
-			body.myTileSprite.height = body.myGraphic.height+100;
-			body.myTileSprite.pivot.set(body.myTileSprite.width / 2, body.myTileSprite.height / 2);
-			body.myTileSprite.mask = body.myGraphic;
+
+			var indices = body.myGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
+			var uvs = new Float32Array(vertices.length);
+			for (i=0;i<vertices.length;i++) uvs[i] = vertices[i] * 2.0 / tex.width;
+
+			console.log("TEXTURE SIZE:"+tex.width+"  "+tex.height);
+			var mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
+			body.mySprite.addChild(mesh);
+
+			body.myTileSprite = mesh;
+
+
+
 		}else if(body.myTileSprite){
 			body.myTileSprite.mask = null;
 			body.myTileSprite.parent.removeChild(body.myTileSprite);

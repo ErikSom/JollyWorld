@@ -8,7 +8,7 @@ const PIXI = require('pixi.js');
 import $ from 'jquery';
 import { ui } from "./UIManager";
 import { firebaseManager } from "./FireBaseManager";
-import { LoadAssets } from "./AssetList";
+import { LoadCoreAssets } from "./AssetList";
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2AABB = Box2D.Collision.b2AABB,
@@ -80,6 +80,7 @@ function Game() {
 
     this.setup = function () {
         console.log("load completed");
+        
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
             , true //allow sleep
