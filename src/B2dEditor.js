@@ -3302,11 +3302,11 @@ export function B2dEditor() {
 	}
 	var self = this;
 	this.B2dEditorContactListener = new Box2D.Dynamics.b2ContactListener();
-	this.B2dEditorContactListener.BeginContact = function (contact) {
-		if (self.contactCallBackListener) {
-			self.contactCallBackListener.BeginContact(contact);
+	this.B2dEditorContactListener.BubbleEvent = function(name, contact, secondParam){
+		if(self.contactCallBackListener){
+			if(secondParam) self.contactCallBackListener[name](contact, secondParam);
+			else self.contactCallBackListener[name](contact);
 		}
-
 		var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 		var body;
 		var selectedPrefab = null;
@@ -3317,25 +3317,26 @@ export function B2dEditor() {
 
 				if(tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener){
 					selectedPrefab = tarPrefab;
+
+					if(secondParam) selectedPrefab.contactListener[name](contact, secondParam, self.prefabs[body.mySprite.data.prefabInstanceName]);
+					else selectedPrefab.contactListener[name](contact, self.prefabs[body.mySprite.data.prefabInstanceName]);
+
 					selectedPrefab.contactListener.BeginContact(contact, self.prefabs[body.mySprite.data.prefabInstanceName]);
 				}
 			}
 		}
 	}
+	this.B2dEditorContactListener.BeginContact = function (contact) {
+		this.BubbleEvent("BeginContact", contact);
+	}
 	this.B2dEditorContactListener.EndContact = function (contact) {
-		if (self.contactCallBackListener) {
-			self.contactCallBackListener.EndContact(contact);
-		}
+		this.BubbleEvent("EndContact", contact);
 	}
 	this.B2dEditorContactListener.PreSolve = function (contact, oldManifold) {
-		if (self.contactCallBackListener) {
-			self.contactCallBackListener.PreSolve(contact, oldManifold);
-		}
+		this.BubbleEvent("PreSolve", contact, oldManifold);
 	}
 	this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
-		if (self.contactCallBackListener) {
-			self.contactCallBackListener.PostSolve(contact, impulse);
-		}
+		this.BubbleEvent("PostSolve", contact, impulse);
 	}
 
 

@@ -51,7 +51,7 @@ let character1 = new function(){
 
     this.contactListener = new Box2D.Dynamics.b2ContactListener();
 	this.contactListener.BeginContact = function (contact, target) {
-        console.log("CHARACTER CONTACT LISTENER:");
+        console.log("CHARACTER CONTACT LISTENER2:");
         console.log(target.lookupObject);
 	}
 	this.contactListener.EndContact = function (contact, target) {
@@ -59,6 +59,8 @@ let character1 = new function(){
 	this.contactListener.PreSolve = function (contact, oldManifold, target) {
 	}
 	this.contactListener.PostSolve = function (contact, impulse, target) {
+        console.log("CHARACTER CONTACT LISTENER3:");
+        console.log(impulse);
     }
 }
 
