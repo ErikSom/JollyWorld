@@ -1,3 +1,4 @@
+import { Box2D } from "../libs/Box2D";
 import { game } from "./Game";
 
 let character1 = new function(){
@@ -29,15 +30,10 @@ let character1 = new function(){
             var fleshName = texture.data.textureName.split('0000')[0];
             if(fleshName.indexOf('Head')>0) fleshName = "Skin1_Head";
             var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(fleshName+"_Flesh0000"));
-            //sprite.pivot.set(sprite.width/2, sprite.height/2);
             texture.addChildAt(sprite, 0);
 
         }
     }
-
-
-
-
     this.update = function(target){
         if(timerReady(target.eyesTimer, TIME_EYES_CLOSE)){
             target.lookupObject.eye_left.myTexture.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
@@ -51,7 +47,24 @@ let character1 = new function(){
         target.eyesTimer += game.editor.deltaTime;
     }
     this.set = function(target, param){
+    }
 
+    this.contactListener = new Box2D.Dynamics.b2ContactListener();
+	this.contactListener.BeginContact = function (contact, target) {
+        console.log("CHARACTER CONTACT LISTENER:");
+        console.log(target.lookupObject);
+	}
+	this.contactListener.EndContact = function (contact, target) {
+	}
+	this.contactListener.PreSolve = function (contact, oldManifold, target) {
+	}
+	this.contactListener.PostSolve = function (contact, impulse, target) {
+    }
+}
+
+let vain = new function(){
+    this.init = function(target){
+        //swap childs
     }
 }
 
@@ -61,7 +74,15 @@ export var prefabs = {
         settings:character1.settings,
         init:character1.init,
         update:character1.update,
-        set:character1.set
+        set:character1.set,
+        contactListener:character1.contactListener
+    },
+    vain:{
+        json:'{"objects":[[0,0.003154367820629632,-0.07136374712007679,0,"","part1",0,"#890808","#630606",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[0,-0.048945224052909055,-0.21267429024827236,-0.7679448708775056,"","part2",1,"#890808","#6b0909",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[0,0.003347876330606313,-0.06824396020197912,0,"","part4",2,"#890808","#660505",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[0,-0.05108297945339905,-0.22011994128041493,2.4260076602721177,"","part3",3,"#890808","#600303",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[2,0.2604863299759831,-4.6079468327877935,0,"","part1_joint",1,0,0,false,false,1,10,false,0,0,0,0],[2,-3.3082859975393926,-8.384121948799184,0,"","part2_joint",3,1,0,false,false,1,10,false,0,0,0,0],[2,0.2729742921443762,-4.3639657228591675,0,"","part3_joint",2,3,0,false,false,1,10,false,0,0,0,0]]}',
+        settings:undefined,
+        init:vain.init,
+        update:undefined,
+        set:undefined
     }
 }
 

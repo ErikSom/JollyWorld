@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
+    "build": "env NODE_ENV=production yarn webpack",
     "watch": "npm-run-all --parallel watch:*",
     "watch:webpack": "webpack --watch",
     "watch:server": "yarn run server",

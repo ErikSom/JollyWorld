@@ -3306,6 +3306,21 @@ export function B2dEditor() {
 		if (self.contactCallBackListener) {
 			self.contactCallBackListener.BeginContact(contact);
 		}
+
+		var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+		var body;
+		var selectedPrefab = null;
+        for(var i = 0; i<bodies.length; i++){
+			body = bodies[i];
+			if(body.mySprite.data.prefabInstanceName){
+				var tarPrefab = prefab.prefabs[self.prefabs[body.mySprite.data.prefabInstanceName].prefabName];
+
+				if(tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener){
+					selectedPrefab = tarPrefab;
+					selectedPrefab.contactListener.BeginContact(contact, self.prefabs[body.mySprite.data.prefabInstanceName]);
+				}
+			}
+		}
 	}
 	this.B2dEditorContactListener.EndContact = function (contact) {
 		if (self.contactCallBackListener) {
