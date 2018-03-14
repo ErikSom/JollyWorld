@@ -51,16 +51,30 @@ let character1 = new function(){
 
     this.contactListener = new Box2D.Dynamics.b2ContactListener();
 	this.contactListener.BeginContact = function (contact, target) {
-        console.log("CHARACTER CONTACT LISTENER2:");
-        console.log(target.lookupObject);
 	}
 	this.contactListener.EndContact = function (contact, target) {
 	}
 	this.contactListener.PreSolve = function (contact, oldManifold, target) {
 	}
 	this.contactListener.PostSolve = function (contact, impulse, target) {
-        console.log("CHARACTER CONTACT LISTENER3:");
-        console.log(impulse);
+        var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+        var body;
+
+        for(var i = 0; i<bodies.length; i++){
+            body = bodies[i];
+            if(body == target.lookupObject["head"]){
+                var force = 0;
+                for(var j = 0; j<impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
+                if(force > 8){
+                    if(target.lookupObject["eye_right_joint"]){
+                        game.world.DestroyJoint(target.lookupObject["eye_right_joint"]);
+                        target.lookupObject["eye_right_joint"] = undefined;
+                    }
+                }
+
+            }
+        }
+
     }
 }
 

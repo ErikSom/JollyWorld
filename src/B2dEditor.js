@@ -2872,7 +2872,7 @@ export function B2dEditor() {
 		if (tileTexture && tileTexture != "") {
 			var tex;
 			if (!body.myTileSprite) {
-				
+
 				tex = PIXI.Texture.fromImage(tileTexture);
 				tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 
@@ -2895,9 +2895,6 @@ export function B2dEditor() {
 
 				var mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
 				body.mySprite.addChild(mesh);
-
-				console.log("MESH TEXTURE");
-				console.log(mesh.texture);
 
 				body.myTileSprite = mesh;
 			} else if(tileTexture != body.myTileSprite.texture.textureCacheIds[0]){
