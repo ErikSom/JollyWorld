@@ -2,6 +2,7 @@ import { Box2D } from "../libs/Box2D";
 import { game } from "./Game";
 
 let character1 = new function(){
+    const self = this;
     this.settings = new function(){
         this._options = {};
         this.showVehicle = false;
@@ -44,10 +45,17 @@ let character1 = new function(){
             target.eyesTimer = -game.editor.deltaTime;
         }
 
+
+        for(var i = 0; i<self.collisionUpdates.length; i++) self.doCollisionUpdate(self.collisionUpdates[i], target);
+        self.collisionUpdates = [];
+
         target.eyesTimer += game.editor.deltaTime;
     }
     this.set = function(target, param){
     }
+
+    const GORE_BASH = 0;
+    const GORE_SNAP = 1;
 
     this.contactListener = new Box2D.Dynamics.b2ContactListener();
 	this.contactListener.BeginContact = function (contact, target) {
@@ -66,15 +74,26 @@ let character1 = new function(){
                 var force = 0;
                 for(var j = 0; j<impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
                 if(force > 8){
-                    if(target.lookupObject["eye_right_joint"]){
-                        game.world.DestroyJoint(target.lookupObject["eye_right_joint"]);
-                        target.lookupObject["eye_right_joint"] = undefined;
-                    }
+                    self.collisionUpdates.push({type:GORE_SNAP, target:"eye_right"});
+                    self.collisionUpdates.push({type:GORE_SNAP, target:"eye_left"});
+                    self.collisionUpdates.push({type:GORE_SNAP, target:"arm_left"});
                 }
-
             }
         }
-
+    }
+    this.collisionUpdates = [];
+    this.doCollisionUpdate = function(update, target){
+        switch (update.type){
+            case GORE_BASH:
+            break;
+            case GORE_SNAP:
+                var targetJoint = target.lookupObject[update.target+"_joint"];
+                if(targetJoint){
+                    game.world.DestroyJoint(targetJoint);
+                    target.lookupObject[update.target+"_joint"] = undefined;
+                }
+            break;
+        }
     }
 }
 
