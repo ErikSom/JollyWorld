@@ -2364,6 +2364,8 @@ export function B2dEditor() {
 		}
 		//handle groups and ref names
 		this.addItemToLookupGroups(container, container.data);
+
+		return container;
 	}
 
 	// FIX GROUPS ON CHANGE OF INDIVIDUAL GROUP // SAME FOR INSTANCE LATER
@@ -2538,6 +2540,7 @@ export function B2dEditor() {
 
 		this.addItemToLookupGroups(body, body.mySprite.data);
 
+		return body;
 
 	}
 	this.setBodyCollision = function (body, collision) {
@@ -2614,7 +2617,6 @@ export function B2dEditor() {
 
 	this.attachJointPlaceHolder = function (obj) {
 
-
 		var tarObj;
 		var bodies = [];
 
@@ -2676,6 +2678,8 @@ export function B2dEditor() {
 		this.addItemToLookupGroups(jointGraphics, jointGraphics.data);
 
 		this.editorIcons.push(jointGraphics);
+
+		return jointGraphics;
 
 	}
 
@@ -3186,6 +3190,8 @@ export function B2dEditor() {
 
 		console.log(json);
 
+		var createdObjects = new this.lookupObject();
+
 		var startChildIndex = this.textures.children.length;
 		var prefabOffset = 0;
 
@@ -3195,6 +3201,7 @@ export function B2dEditor() {
 
 			var i;
 			var obj;
+			var worldObject;
 			for (i = 0; i < worldObjects.objects.length; i++) {
 				obj = this.parseArrObject(worldObjects.objects[i]);
 
@@ -3215,17 +3222,19 @@ export function B2dEditor() {
 				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
 
 				if (obj.type == this.object_BODY) {
-					this.buildBodyFromObj(obj);
+					worldObject = this.buildBodyFromObj(obj);
+					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXTURE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex;
 					}
-					this.buildTextureFromObj(obj);
+					worldObject = this.buildTextureFromObj(obj);
+					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_JOINT) {
 					obj.bodyA_ID += startChildIndex;
 					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
-
-					this.attachJointPlaceHolder(obj);
+					worldObject = this.attachJointPlaceHolder(obj);
+					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
 					var prefabStartIndex = this.textures.children.length;
 					this.buildPrefabFromObj(obj);
@@ -3233,6 +3242,7 @@ export function B2dEditor() {
 				}
 			}
 		}
+		return createdObjects;
 		console.log("END HERE");
 	}
 	this.drawBox = function (target, x, y, width, height, lineColor, lineSize, lineAlpha, fillColor, fillAlpha) {
