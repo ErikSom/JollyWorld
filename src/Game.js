@@ -9,6 +9,7 @@ import $ from 'jquery';
 import { ui } from "./UIManager";
 import { firebaseManager } from "./FireBaseManager";
 import { LoadCoreAssets } from "./AssetList";
+const Stats = require('stats.js');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2AABB = Box2D.Collision.b2AABB,
@@ -50,8 +51,13 @@ function Game() {
 
     this.cameraFocusObject;
 
+    this.stats;
 
     this.init = function () {
+
+        this.stats = new Stats();
+        this.stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild( this.stats.dom );
 
         this.canvas = document.getElementById("canvas");
 
@@ -397,6 +403,9 @@ function Game() {
 
 
     this.update = function () {
+
+        this.stats.begin();
+
         if (this.mouseJoint) {
             if (this.isMouseDown) {
                 this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y));
@@ -417,6 +426,8 @@ function Game() {
         this.world.DrawDebugData();
         this.app.render();
         Key.update();
+
+        this.stats.end();
 
     };
 }

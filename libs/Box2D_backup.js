@@ -644,18 +644,6 @@ if (typeof(Box2D.Dynamics.Joints) === "undefined") Box2D.Dynamics.Joints = {};
       if (this.constructor === b2WeldJointDef) this.b2WeldJointDef.apply(this, arguments);
    };
    Box2D.Dynamics.Joints.b2WeldJointDef = b2WeldJointDef;
-
-   function b2RopeJoint() {
-    b2RopeJoint.b2RopeJoint.apply(this, arguments);
-    if (this.constructor === b2RopeJoint) this.b2RopeJoint.apply(this, arguments);
-    };
-    Box2D.Dynamics.Joints.b2RopeJoint = b2RopeJoint;
-
-    function b2RopeJointDef() {
-      b2RopeJointDef.b2RopeJointDef.apply(this, arguments);
-        if (this.constructor === b2RopeJointDef) this.b2RopeJointDef.apply(this, arguments);
-    };
-    Box2D.Dynamics.Joints.b2RopeJointDef = b2RopeJointDef;
 })(); //definitions
 Box2D.postDefs = [];
 (function () {
@@ -4458,9 +4446,7 @@ Box2D.postDefs = [];
       b2RevoluteJoint = Box2D.Dynamics.Joints.b2RevoluteJoint,
       b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef,
       b2WeldJoint = Box2D.Dynamics.Joints.b2WeldJoint,
-      b2WeldJointDef = Box2D.Dynamics.Joints.b2WeldJointDef,
-      b2RopeJoint = Box2D.Dynamics.Joints.b2RopeJoint,
-      b2RopeJointDef = Box2D.Dynamics.Joints.b2RopeJointDef;
+      b2WeldJointDef = Box2D.Dynamics.Joints.b2WeldJointDef;
 
    b2Body.b2Body = function () {
       this.m_xf = new b2Transform();
@@ -7881,8 +7867,6 @@ Box2D.postDefs = [];
       b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef,
       b2WeldJoint = Box2D.Dynamics.Joints.b2WeldJoint,
       b2WeldJointDef = Box2D.Dynamics.Joints.b2WeldJointDef,
-      b2RopeJoint = Box2D.Dynamics.Joints.b2RopeJoint,
-      b2RopeJointDef = Box2D.Dynamics.Joints.b2RopeJointDef,
       b2Body = Box2D.Dynamics.b2Body,
       b2BodyDef = Box2D.Dynamics.b2BodyDef,
       b2ContactFilter = Box2D.Dynamics.b2ContactFilter,
@@ -8109,192 +8093,6 @@ Box2D.postDefs = [];
       this.frequencyHz = 0.0;
       this.dampingRatio = 0.0;
    }
-   //*********** */
-
-   Box2D.inherit(b2RopeJoint, Box2D.Dynamics.Joints.b2Joint);
-   b2RopeJoint.prototype.__super = Box2D.Dynamics.Joints.b2Joint.prototype;
-   b2RopeJoint.b2RopeJoint = function () {
-      Box2D.Dynamics.Joints.b2Joint.b2Joint.apply(this, arguments);
-      this.m_localAnchor1 = new b2Vec2();
-      this.m_localAnchor2 = new b2Vec2();
-      this.m_u = new b2Vec2();
-      this.m_rA = new b2Vec2();
-      this.m_rB = new b2Vec2();
-   };
-   b2RopeJoint.prototype.GetAnchorA = function () {
-      return this.m_bodyA.GetWorldPoint(this.m_localAnchor1);
-   }
-   b2RopeJoint.prototype.GetAnchorB = function () {
-      return this.m_bodyB.GetWorldPoint(this.m_localAnchor2);
-   }
-   b2RopeJoint.prototype.GetReactionForce = function (inv_dt) {
-      if (inv_dt === undefined) inv_dt = 0;
-      return new b2Vec2(inv_dt * this.m_impulse * this.m_u.x, inv_dt * this.m_impulse * this.m_u.y);
-   }
-   b2RopeJoint.prototype.GetReactionTorque = function (inv_dt) {
-      if (inv_dt === undefined) inv_dt = 0;
-      return 0.0;
-   }
-   b2RopeJoint.prototype.GetMaxLength = function () {
-      return this.m_maxLength;
-   }
-   b2RopeJoint.prototype.SetmaxLength = function (length) {
-      if (length === undefined) length = 0;
-      this.m_maxLength = length;
-   }
-   b2RopeJoint.prototype.b2RopeJoint = function (def) {
-      this.__super.b2Joint.call(this, def);
-      var tMat;
-      var tX = 0;
-      var tY = 0;
-      this.m_localAnchor1.SetV(def.localAnchorA);
-      this.m_localAnchor2.SetV(def.localAnchorB);
-      this.m_length = 0.0;
-      this.m_maxLength = def.maxLength;
-      this.m_impulse = 0.0;
-      this.m_gamma = 0.0;
-      this.m_bias = 0.0;
-      this.m_mass = 0.0;
-      this.m_state = b2Joint.e_inactiveLimit;
-   }
-   b2RopeJoint.prototype.InitVelocityConstraints = function (step) {
-    var bA = this.m_bodyA;
-    var bB = this.m_bodyB;
-
-		this.m_rA = b2Math.MulMV(bA.GetTransform().R, b2Math.SubtractVV(this.m_localAnchor1, bA.GetLocalCenter()));
-		this.m_rB = b2Math.MulMV(bB.GetTransform().R, b2Math.SubtractVV(this.m_localAnchor2, bB.GetLocalCenter()));
-
-		// Rope axis
-		this.m_u = b2Math.SubtractVV(b2Math.SubtractVV(b2Math.AddVV(bB.m_sweep.c, this.m_rB), bA.m_sweep.c), this.m_rA);
-
-		this.m_length = this.m_u.Length();
-
-		var C = this.m_length - this.m_maxLength;
-		if (C > 0.0)
-		{
-			this.m_state = b2Joint.e_atUpperLimit;
-		}
-		else
-		{
-			this.m_state = b2Joint.e_inactiveLimit;
-		}
-
-		if (this.m_length > b2Settings.b2_linearSlop)
-		{
-			this.m_u.Multiply(1.0 / this.m_length);
-		}
-		else
-		{
-			this.m_u.SetZero();
-			this.m_mass = 0.0;
-			this.m_impulse = 0.0;
-			return;
-		}
-		// Compute effective mass.
-		var crA = b2Math.CrossVV(this.m_rA, this.m_u);
-		var crB = b2Math.CrossVV(this.m_rB, this.m_u);
-		var invMass = bA.m_invMass + bA.m_invI * crA * crA + bB.m_invMass + bB.m_invI * crB * crB;
-
-		this.m_mass = invMass != 0.0 ? 1.0 / invMass : 0.0;
-
-		if (step.warmStarting)
-		{
-			// Scale the impulse to support a variable time step.
-			this.m_impulse *= step.dtRatio;
-
-			var P = b2Math.MulFV(this.m_impulse, this.m_u);
-			bA.m_linearVelocity.Subtract(b2Math.MulFV(bA.m_invMass, P));
-			bA.m_angularVelocity -= bA.m_invI * b2Math.CrossVV(this.m_rA, P);
-			bB.m_linearVelocity.Add(b2Math.MulFV(bB.m_invMass, P));
-			bB.m_angularVelocity += bB.m_invI * b2Math.CrossVV(this.m_rB, P);
-		}
-		else
-		{
-			this.m_impulse = 0.0;
-		}
-   }
-   b2RopeJoint.prototype.SolveVelocityConstraints = function (step) {
-    var bA = this.m_bodyA;
-		var bB = this.m_bodyB;
-
-		// Cdot = dot(u, v + cross(w, r))
-		var vA = b2Math.AddVV(bA.m_linearVelocity, b2Math.CrossFV(bA.m_angularVelocity, this.m_rA));
-		var vB = b2Math.AddVV(bB.m_linearVelocity, b2Math.CrossFV(bB.m_angularVelocity, this.m_rB));
-		var C = this.m_length - this.m_maxLength;
-		var Cdot = b2Math.Dot(this.m_u, b2Math.SubtractVV(vB, vA));
-
-		// Predictive constraint.
-		if (C < 0.0)
-		{
-			Cdot += step.inv_dt * C;
-		}
-
-		var impulse = -this.m_mass * Cdot;
-		var oldImpulse = this.m_impulse;
-		this.m_impulse = b2Math.Min(0.0, this.m_impulse + impulse);
-		impulse = this.m_impulse - oldImpulse;
-
-		var P = b2Math.MulFV(impulse, this.m_u);
-		bA.m_linearVelocity.Subtract(b2Math.MulFV(bA.m_invMass, P));
-		bA.m_angularVelocity -= bA.m_invI * b2Math.CrossVV(this.m_rA, P);
-		bB.m_linearVelocity.Add(b2Math.MulFV(bB.m_invMass, P));
-		bB.m_angularVelocity += bB.m_invI * b2Math.CrossVV(this.m_rB, P);
-   }
-   b2RopeJoint.prototype.SolvePositionConstraints = function (baumgarte) {
-    var bA = this.m_bodyA;
-		var bB = this.m_bodyB;
-
-		var rA = b2Math.MulMV(bA.GetTransform().R, b2Math.SubtractVV(this.m_localAnchor1, bA.GetLocalCenter()));
-		var rB = b2Math.MulMV(bB.GetTransform().R, b2Math.SubtractVV(this.m_localAnchor2, bB.GetLocalCenter()));
-
-		var u = b2Math.AddVV(bB.m_sweep.c, rB);
-		u.Subtract(bA.m_sweep.c);
-		u.Subtract(rA);
-
-		var length = u.Normalize();
-		var C = length - this.m_maxLength;
-
-		C = b2Math.Clamp(C, 0.0, b2Settings.b2_maxLinearCorrection);
-
-		var impulse = -this.m_mass * C;
-		var P = b2Math.MulFV(impulse, u);
-
-		bA.m_sweep.c.Subtract(b2Math.MulFV(bA.m_invMass, P));
-		bA.m_sweep.a -= bA.m_invI * b2Math.CrossVV(rA, P);
-		bB.m_sweep.c.Add(b2Math.MulFV(bB.m_invMass, P));
-		bB.m_sweep.a += bB.m_invI * b2Math.CrossVV(rB, P);
-
-		bA.SynchronizeTransform();
-		bB.SynchronizeTransform();
-
-		return length - this.m_maxLength < b2Settings.b2_linearSlop;
-   }
-   Box2D.inherit(b2RopeJointDef, Box2D.Dynamics.Joints.b2JointDef);
-   b2RopeJointDef.prototype.__super = Box2D.Dynamics.Joints.b2JointDef.prototype;
-   b2RopeJointDef.b2RopeJointDef = function () {
-      Box2D.Dynamics.Joints.b2JointDef.b2JointDef.apply(this, arguments);
-      this.localAnchorA = new b2Vec2();
-      this.localAnchorB = new b2Vec2();
-   };
-   b2RopeJointDef.prototype.b2RopeJointDef = function () {
-      this.__super.b2JointDef.call(this);
-      this.type = b2Joint.e_ropeJoint;
-      this.maxLength = 1.0;
-   }
-   b2RopeJointDef.prototype.Initialize = function (bA, bB, anchorA, anchorB) {
-      this.bodyA = bA;
-      this.bodyB = bB;
-      this.localAnchorA.SetV(this.bodyA.GetLocalPoint(anchorA));
-      this.localAnchorB.SetV(this.bodyB.GetLocalPoint(anchorB));
-      var dX = anchorB.x - anchorA.x;
-      var dY = anchorB.y - anchorA.y;
-      this.maxLength = Math.sqrt(dX * dX + dY * dY);
-   }
-
-   //*********** */
-
-
-
    Box2D.inherit(b2FrictionJoint, Box2D.Dynamics.Joints.b2Joint);
    b2FrictionJoint.prototype.__super = Box2D.Dynamics.Joints.b2Joint.prototype;
    b2FrictionJoint.b2FrictionJoint = function () {
@@ -8795,11 +8593,6 @@ Box2D.postDefs = [];
             joint = new b2FrictionJoint((def instanceof b2FrictionJointDef ? def : null));
          }
          break;
-      case b2Joint.e_ropeJoint:
-         {
-            joint = new b2RopeJoint((def instanceof b2RopeJointDef ? def : null));
-         }
-         break;
       default:
          break;
       }
@@ -8835,7 +8628,6 @@ Box2D.postDefs = [];
       Box2D.Dynamics.Joints.b2Joint.e_lineJoint = 7;
       Box2D.Dynamics.Joints.b2Joint.e_weldJoint = 8;
       Box2D.Dynamics.Joints.b2Joint.e_frictionJoint = 9;
-      Box2D.Dynamics.Joints.b2Joint.e_ropeJoint = 10;
       Box2D.Dynamics.Joints.b2Joint.e_inactiveLimit = 0;
       Box2D.Dynamics.Joints.b2Joint.e_atLowerLimit = 1;
       Box2D.Dynamics.Joints.b2Joint.e_atUpperLimit = 2;

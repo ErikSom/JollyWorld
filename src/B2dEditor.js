@@ -848,7 +848,7 @@ export function B2dEditor() {
 		var key;
 		for (key in this.prefabs) {
 			if (this.prefabs.hasOwnProperty(key)) {
-				prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
+				if(prefab.prefabs[this.prefabs[key].prefabName].update) prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
 			}
 		}
 	}
@@ -2374,7 +2374,7 @@ export function B2dEditor() {
 
 		//character1, .character, .vehicle, test
 		// subgroup + refname
-		if (data.groups && data.groups != "") {
+		if ((data.groups && data.groups != "") || data.prefabInstanceName) {
 
 			var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 			var arr = groupNoSpaces.split(",");
@@ -2389,8 +2389,6 @@ export function B2dEditor() {
 					i--;
 				}
 			}
-
-
 			var group;
 			var subGroup;
 			var j;
@@ -2739,8 +2737,9 @@ export function B2dEditor() {
 	this.buildPrefabFromObj = function (obj) {
 		var key = obj.prefabName + "_" + obj.instanceID;
 		this.prefabs[key] = obj;
-		this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), key);
+		var createdBodies = this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), key);
 		if (obj.instanceID > this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
+		return createdBodies;
 	}
 
 
@@ -3198,6 +3197,7 @@ export function B2dEditor() {
 		if (json != null) {
 			//clone json to not destroy old references
 			var worldObjects = JSON.parse(JSON.stringify(json));
+			console.log(worldObjects);
 
 			var i;
 			var obj;
@@ -3233,11 +3233,15 @@ export function B2dEditor() {
 				} else if (obj.type == this.object_JOINT) {
 					obj.bodyA_ID += startChildIndex;
 					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
-					worldObject = this.attachJointPlaceHolder(obj);
+					if(this.editing) worldObject = this.attachJointPlaceHolder(obj);
+					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
 					var prefabStartIndex = this.textures.children.length;
-					this.buildPrefabFromObj(obj);
+					var prefabObjects = this.buildPrefabFromObj(obj);
+					createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
+					createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
+					createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
 					prefabOffset = this.textures.children.length - prefabOffset;
 				}
 			}

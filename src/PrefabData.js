@@ -81,16 +81,49 @@ let character1 = new function(){
             }
         }
     }
+    
+
     this.collisionUpdates = [];
     this.doCollisionUpdate = function(update, target){
+
         switch (update.type){
             case GORE_BASH:
             break;
             case GORE_SNAP:
                 var targetJoint = target.lookupObject[update.target+"_joint"];
                 if(targetJoint){
-                    game.world.DestroyJoint(targetJoint);
-                    target.lookupObject[update.target+"_joint"] = undefined;
+
+                    var revoluteJointDef;
+                    var joint;
+
+                    var vainPrefab = '{"objects":[[4,'+targetJoint.GetAnchorA().x+','+targetJoint.GetAnchorA().y+',0,{},"vain",'+(game.editor.prefabCounter++)+']]}'
+
+                    var vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
+
+
+                    revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
+                    revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA());
+                    revoluteJointDef.collideConnected = false;
+                    joint = game.world.CreateJoint(revoluteJointDef);
+
+                    revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
+                    revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA());
+                    revoluteJointDef.collideConnected = false;
+                    joint = game.world.CreateJoint(revoluteJointDef);
+
+
+                    var ropeJointDef;
+
+                    ropeJointDef = new Box2D.Dynamics.Joints.b2RopeJointDef;
+                    ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(), targetJoint.GetAnchorA());
+                    ropeJointDef.maxLength = 0.3;
+
+                    joint = game.world.CreateJoint(ropeJointDef);
+
+                    if(targetJoint){
+                        game.world.DestroyJoint(targetJoint);
+                        target.lookupObject[update.target+"_joint"] = undefined;
+                    }
                 }
             break;
         }
@@ -113,7 +146,7 @@ export var prefabs = {
         contactListener:character1.contactListener
     },
     vain:{
-        json:'{"objects":[[0,0.003154367820629632,-0.07136374712007679,0,"","part1",0,"#890808","#630606",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[0,-0.048945224052909055,-0.21267429024827236,-0.7679448708775056,"","part2",1,"#890808","#6b0909",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[0,0.003347876330606313,-0.06824396020197912,0,"","part4",2,"#890808","#660505",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[0,-0.05108297945339905,-0.22011994128041493,2.4260076602721177,"","part3",3,"#890808","#600303",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],1,0,null,""],[2,0.2604863299759831,-4.6079468327877935,0,"","part1_joint",1,0,0,false,false,1,10,false,0,0,0,0],[2,-3.3082859975393926,-8.384121948799184,0,"","part2_joint",3,1,0,false,false,1,10,false,0,0,0,0],[2,0.2729742921443762,-4.3639657228591675,0,"","part3_joint",2,3,0,false,false,1,10,false,0,0,0,0]]}',
+        json:'{"objects":[[0,0.003154367820629632,-0.07136374712007679,0,"","part1",0,"#890808","#630606",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,7,null,""],[0,-0.048945224052909055,-0.21267429024827236,-0.7679448708775056,"","part2",1,"#890808","#6b0909",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,7,null,""],[0,-0.05108297945339905,-0.22011994128041493,2.4260076602721177,"","part3",3,"#890808","#600303",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,7,null,""],[0,0.003347876330606313,-0.06824396020197912,0,"","part4",2,"#890808","#660505",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,7,null,""],[2,0.2604863299759831,-4.6079468327877935,0,"","part1_joint",1,0,0,false,false,1,10,false,0,0,0,0],[2,-3.3082859975393926,-8.384121948799184,0,"","part2_joint",2,1,0,false,false,1,10,false,0,0,0,0],[2,0.2729742921443762,-4.3639657228591675,0,"","part3_joint",2,3,0,false,false,1,10,false,0,0,0,0]]}',
         settings:undefined,
         init:vain.init,
         update:undefined,
