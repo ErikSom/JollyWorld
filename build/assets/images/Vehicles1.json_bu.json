@@ -2,7 +2,7 @@
 
 "Bicycle_Body0000":
 {
-	"frame": {"x":59,"y":2,"w":185,"h":149},
+	"frame": {"x":2,"y":2,"w":185,"h":149},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":149},
@@ -10,7 +10,7 @@
 },
 "Bicycle_Pedals0000":
 {
-	"frame": {"x":2,"y":153,"w":35,"h":35},
+	"frame": {"x":189,"y":2,"w":35,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":35,"h":35},
@@ -18,7 +18,7 @@
 },
 "Bicycle_WheelBack0000":
 {
-	"frame": {"x":39,"y":153,"w":113,"h":113},
+	"frame": {"x":2,"y":153,"w":113,"h":113},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":113,"h":113},
@@ -26,7 +26,7 @@
 },
 "Bicycle_WheelFront0000":
 {
-	"frame": {"x":2,"y":268,"w":113,"h":113},
+	"frame": {"x":117,"y":153,"w":113,"h":113},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":113,"h":113},
@@ -34,7 +34,7 @@
 },
 "Unicycle_Body0000":
 {
-	"frame": {"x":2,"y":2,"w":55,"h":122},
+	"frame": {"x":2,"y":268,"w":55,"h":122},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":55,"h":122},

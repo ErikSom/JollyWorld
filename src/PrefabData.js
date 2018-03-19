@@ -100,6 +100,7 @@ let character1 = new function(){
 
                     var vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
+                    var vainSize = (vainBodies._bodies[0].myGraphic.height*vainBodies._bodies.length)/game.editor.PTM;
 
                     revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
                     revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA());
@@ -116,7 +117,7 @@ let character1 = new function(){
 
                     ropeJointDef = new Box2D.Dynamics.Joints.b2RopeJointDef;
                     ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(), targetJoint.GetAnchorA());
-                    ropeJointDef.maxLength = 0.3;
+                    ropeJointDef.maxLength = vainSize;
 
                     joint = game.world.CreateJoint(ropeJointDef);
 

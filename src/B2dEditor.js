@@ -2483,12 +2483,15 @@ export function B2dEditor() {
 		fixDef.density = obj.density;
 		fixDef.friction = 2000;
 		fixDef.restitution = 0.001;
+		fixDef.angularDrag
 
 
 		var bd = new b2BodyDef();
 
 		if (obj.fixed) bd.type = b2Body.b2_staticBody;
 		else bd.type = b2Body.b2_dynamicBody;
+
+		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
 
