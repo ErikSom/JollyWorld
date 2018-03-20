@@ -112,7 +112,6 @@ let character1 = new function(){
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
-
                     var ropeJointDef;
 
                     ropeJointDef = new Box2D.Dynamics.Joints.b2RopeJointDef;
@@ -125,6 +124,20 @@ let character1 = new function(){
                         game.world.DestroyJoint(targetJoint);
                         target.lookupObject[update.target+"_joint"] = undefined;
                     }
+
+
+                    //fix display positions:
+                    var swapBodies = vainBodies._bodies.concat().reverse();
+                    var tarSprite;
+                    var tarIndex = target.lookupObject[update.target].myTexture.parent.getChildIndex(target.lookupObject[update.target].myTexture);
+                    for(var i = 0; i<swapBodies.length; i++){
+                        tarSprite = swapBodies[i].mySprite;
+                        tarSprite.parent.removeChild(tarSprite);
+                        target.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
+                    }
+
+
+
                 }
             break;
         }

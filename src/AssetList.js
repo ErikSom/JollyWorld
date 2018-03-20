@@ -22,6 +22,11 @@ export var LoadCoreAssets = function (loader){
         .add("tile15.jpg", "assets/images/textures/tile15.jpg")
         .add("tile16.jpg", "assets/images/textures/tile16.jpg")
         .add("tile17.jpg", "assets/images/textures/tile17.jpg")
+        /*PARTICLE DATA*/
+        .add("blood-particles-data", "data/emitter_blood.json")
+        .add("particle.png", "assets/images/particles/particle.png")
+        .add("particle-grey.png", "assets/images/particles/particle-grey.png")
+        /*WORLD DATA*/
         .add("worldData", "data/worldData.json")
         .add("vehicleData", "data/vehicle.json")
         .add("characterData", "data/character.json")

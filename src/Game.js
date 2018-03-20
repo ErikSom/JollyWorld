@@ -1,14 +1,32 @@
-import { Box2D } from "../libs/Box2D";
-import { Key } from "../libs/Key";
-import { B2dEditor } from "./B2dEditor";
-import { getPIXIDebugDraw } from "../libs/debugdraw";
-import { Vehicle } from "./Vehicle";
+import {
+    Box2D
+} from "../libs/Box2D";
+import {
+    Key
+} from "../libs/Key";
+import {
+    B2dEditor
+} from "./B2dEditor";
+import {
+    getPIXIDebugDraw
+} from "../libs/debugdraw";
+import {
+    Vehicle
+} from "./Vehicle";
 const firebase = require('firebase');
 const PIXI = require('pixi.js');
 import $ from 'jquery';
-import { ui } from "./UIManager";
-import { firebaseManager } from "./FireBaseManager";
-import { LoadCoreAssets } from "./AssetList";
+import {
+    ui
+} from "./UIManager";
+import {
+    firebaseManager
+} from "./FireBaseManager";
+import {
+    LoadCoreAssets
+} from "./AssetList";
+
+const particles = require('pixi-particles');
 const Stats = require('stats.js');
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
@@ -32,6 +50,7 @@ function Game() {
     this.editor;
     this.app;
     this.stage;
+    this.myContainer;
     this.newDebugGraphic;
     this.canvas;
     this.renderer;
@@ -53,11 +72,13 @@ function Game() {
 
     this.stats;
 
+    this.emitters = [];
+
     this.init = function () {
 
         this.stats = new Stats();
-        this.stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-        document.body.appendChild( this.stats.dom );
+        this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild(this.stats.dom);
 
         this.canvas = document.getElementById("canvas");
 
@@ -86,21 +107,21 @@ function Game() {
 
     this.setup = function () {
         console.log("load completed");
-        
+
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
             , true //allow sleep
         );
 
         //container
-        var myContainer = new PIXI.Graphics();
-        this.stage.addChild(myContainer);
+        this.myContainer = new PIXI.Graphics();
+        this.stage.addChild(this.myContainer);
 
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, this.PTM);
         this.myDebugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-        myContainer.addChild(this.newDebugGraphics);
+        this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
         window.setInterval(this.update.bind(this), this.timeStep);
@@ -110,13 +131,13 @@ function Game() {
             "2head.png", "2body.png", "2uparm.png", "2lowarm.png", "2upleg.png", "2lowleg.png",
             "3head.png", "3body.png", "3uparm.png", "3lowarm.png", "3upleg.png", "3lowleg.png"
         ];
-        this.editor.assetLists.maincharacters = ["Skin1_Head_Idle0000","Skin1_Head_Smile0000","Skin1_Head_Laugh0000","Skin1_Head_hurt10000","Skin1_Head_hurt20000","Skin1_Head_hurt30000","Skin1_Head_hurt40000","Skin1_Head_RnM0000","Skin1_Head_Oh0000", "Skin1_Head_Boring0000", "Skin1_Core0000", "Skin1_Belly0000", "Skin1_Thigh0000", "Skin1_Leg0000", "Skin1_Feet0000", "Skin1_Shoulder0000", "Skin1_Arm0000", "Skin1_Hand0000", "Skin1_Eye0000", "Skin1_Eye_Closed0000"];
+        this.editor.assetLists.maincharacters = ["Skin1_Head_Idle0000", "Skin1_Head_Smile0000", "Skin1_Head_Laugh0000", "Skin1_Head_hurt10000", "Skin1_Head_hurt20000", "Skin1_Head_hurt30000", "Skin1_Head_hurt40000", "Skin1_Head_RnM0000", "Skin1_Head_Oh0000", "Skin1_Head_Boring0000", "Skin1_Core0000", "Skin1_Belly0000", "Skin1_Thigh0000", "Skin1_Leg0000", "Skin1_Feet0000", "Skin1_Shoulder0000", "Skin1_Arm0000", "Skin1_Hand0000", "Skin1_Eye0000", "Skin1_Eye_Closed0000"];
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
         this.editor.assetLists.vehicles1 = ["Bicycle_Body0000", "Bicycle_Pedals0000", "Bicycle_WheelFront0000", "Bicycle_WheelBack0000", "Unicycle_Body0000"];
 
-        this.editor.tileLists = ["", "tile1.jpg","tile2.jpg","tile3.jpg","tile4.jpg","tile5.jpg","tile6.jpg","tile7.jpg","tile8.jpg","tile9.jpg","tile10.jpg","tile11.jpg","tile12.jpg","tile13.jpg","tile14.jpg","tile15.jpg","tile16.jpg","tile16.jpg"] 
+        this.editor.tileLists = ["", "tile1.jpg", "tile2.jpg", "tile3.jpg", "tile4.jpg", "tile5.jpg", "tile6.jpg", "tile7.jpg", "tile8.jpg", "tile9.jpg", "tile10.jpg", "tile11.jpg", "tile12.jpg", "tile13.jpg", "tile14.jpg", "tile15.jpg", "tile16.jpg", "tile16.jpg"]
 
-        this.editor.init(myContainer, this.world, this.PTM);
+        this.editor.init(this.myContainer, this.world, this.PTM);
         this.editor.contactCallBackListener = this.gameContactListener;
 
         this.initWorld();
@@ -136,14 +157,14 @@ function Game() {
         this.editor.buildJSON(PIXI.loader.resources.vehicleData.data);
         this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
     }
-    this.loadLevel = function(levelData){
+    this.loadLevel = function (levelData) {
         console.log("Loading level..");
         console.log(levelData);
-        console.log(firebaseManager.baseDownloadURL+levelData.dataURL);
+        console.log(firebaseManager.baseDownloadURL + levelData.dataURL);
         this.editor.resetEditor();
         var self = this;
         $('form').removeClass('loading');
-        $.getJSON(firebaseManager.baseDownloadURL+levelData.dataURL, function(data) {
+        $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
             self.editor.buildJSON(data);
             self.initWorld();
             ui.showNothing();
@@ -212,20 +233,20 @@ function Game() {
     this.inputUpdate = function () {
         if (this.vehicle) {
 
-            if(Key.isDown(Key.W)){
+            if (Key.isDown(Key.W)) {
                 this.vehicle.accelerate(1);
             };
-            if(Key.isDown(Key.S)){
+            if (Key.isDown(Key.S)) {
                 this.vehicle.accelerate(-1);
             };
-            if(!Key.isDown(Key.W) && !Key.isDown(Key.S)){
+            if (!Key.isDown(Key.W) && !Key.isDown(Key.S)) {
                 this.vehicle.stopAccelerate();
             };
 
-            if(Key.isDown(Key.A)){
+            if (Key.isDown(Key.A)) {
                 this.vehicle.lean(-1);
             }
-            if(Key.isDown(Key.D)){
+            if (Key.isDown(Key.D)) {
                 this.vehicle.lean(1);
             }
         }
@@ -247,7 +268,7 @@ function Game() {
             this.run = !this.run;
         }
         Key.onKeydown(e);
-        if(!this.run) this.editor.onKeyDown(e);
+        if (!this.run) this.editor.onKeyDown(e);
     }
     this.onKeyUp = function (e) {
         this.editor.onKeyUp(e);
@@ -289,20 +310,20 @@ function Game() {
         this.editor.container.x += (-cameraTargetPosition.x - this.editor.container.x) * panEase;
         this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
 
-       // this.editor.container.x = -cameraTargetPosition.x;
+        // this.editor.container.x = -cameraTargetPosition.x;
         //this.editor.container.y = -cameraTargetPosition.y;
 
-       // this.editor.container.position.x = 0;
+        // this.editor.container.position.x = 0;
         //this.editor.container.position.y = 0;
 
         //console.log(this.editor.container.position);
     }
     this.levelsSnapshot;
     this.levelsLimitTo = 25;
-    this.retreiveNextLevelList = function(){
+    this.retreiveNextLevelList = function () {
         var levelRef = firebase.database().ref('/Levels/');
         //if(this.levelsSnapshot == undefined){
-            levelRef.orderByChild("creationDate").limitToFirst(this.levelsLimitTo);
+        levelRef.orderByChild("creationDate").limitToFirst(this.levelsLimitTo);
         //}
         levelRef.once('value').then(function (levelListSnapshot) {
             console.log("Levels Loaded!!");
@@ -313,45 +334,59 @@ function Game() {
             console.log(error.message);
         });
     }
-    this.uploadLevelData = function(details){
+    this.uploadLevelData = function (details) {
         console.log("upload details:");
         console.log(details);
         this.editor.stringifyWorldJSON();
         var filesToUpload = [];
         var levelData = this.editor.worldJSON;
-        filesToUpload.push({file:levelData, dir:"levels", name:"levelData.json"});
-        if(this.editor.cameraShotData.highRes != null){
-            filesToUpload.push({file:this.editor.cameraShotData.highRes, dir:"levels", name:"thumb_highRes.jpg", datatype:"data_url"})
-            filesToUpload.push({file:this.editor.cameraShotData.highRes, dir:"levels", name:"thumb_lowRes.jpg", datatype:"data_url"})
+        filesToUpload.push({
+            file: levelData,
+            dir: "levels",
+            name: "levelData.json"
+        });
+        if (this.editor.cameraShotData.highRes != null) {
+            filesToUpload.push({
+                file: this.editor.cameraShotData.highRes,
+                dir: "levels",
+                name: "thumb_highRes.jpg",
+                datatype: "data_url"
+            })
+            filesToUpload.push({
+                file: this.editor.cameraShotData.highRes,
+                dir: "levels",
+                name: "thumb_lowRes.jpg",
+                datatype: "data_url"
+            })
         }
         details.levelID = firebaseManager.generateUUID();
         var self = this;
         var uploader = new firebaseManager.uploadFiles(filesToUpload, details.levelID,
-        function(urls){
-            console.log("ui manager complete");
-            console.log(urls);
-            self.storeLevelData(urls, details);
-        },
-        function(progress){
-            console.log("ui manager progress");
-            console.log(progress);
-        },
-        function(error){
-            console.log("ui manager error");
-            console.log(error);
-        }
+            function (urls) {
+                console.log("ui manager complete");
+                console.log(urls);
+                self.storeLevelData(urls, details);
+            },
+            function (progress) {
+                console.log("ui manager progress");
+                console.log(progress);
+            },
+            function (error) {
+                console.log("ui manager error");
+                console.log(error);
+            }
         );
     }
-    this.storeLevelData = function(urls, details){
+    this.storeLevelData = function (urls, details) {
         var levelObject = {};
         levelObject["dataURL"] = urls[0];
-        if(urls.length>1){
+        if (urls.length > 1) {
             levelObject["thumbHighResURL"] = urls[1];
             levelObject["thumbLowResURL"] = urls[2];
         }
         levelObject["creationDate"] = Date.now();
-        levelObject["creator"] = firebaseManager.username;//username
-        levelObject["creatorID"] = firebaseManager.app.auth().currentUser.uid;//userid
+        levelObject["creator"] = firebaseManager.username; //username
+        levelObject["creatorID"] = firebaseManager.app.auth().currentUser.uid; //userid
         levelObject["description"] = details.description;
         levelObject["name"] = details.name;
         levelObject["numVotes"] = 0;
@@ -373,33 +408,68 @@ function Game() {
     }
     var self = this;
     this.gameContactListener = new Box2D.Dynamics.b2ContactListener();
-	this.gameContactListener.BeginContact = function (contact) {
-	}
-	this.gameContactListener.EndContact = function (contact) {
-	}
-	this.gameContactListener.PreSolve = function (contact, oldManifold) {
-	}
-	this.gameContactListener.PostSolve = function (contact, impulse) {
+    this.gameContactListener.BeginContact = function (contact) {}
+    this.gameContactListener.EndContact = function (contact) {}
+    this.gameContactListener.PreSolve = function (contact, oldManifold) {}
+    this.gameContactListener.PostSolve = function (contact, impulse) {
 
         var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         var body;
 
-        for(var i = 0; i<bodies.length; i++){
+        for (var i = 0; i < bodies.length; i++) {
             body = bodies[i];
-            if(body.isFlesh){
+            if (body.isFlesh) {
 
-                var worldManifold = new Box2D.Collision.b2WorldManifold();
-                contact.GetWorldManifold(worldManifold);
-                var worldCollisionPoint = worldManifold.m_points[0];
+                var force = 0;
+                for(var j = 0; j<impulse.normalImpulses.length; j++) if(impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
 
-                self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
-
+                var velocitySum = contact.GetFixtureA().GetBody().GetLinearVelocity().Length() + contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
+                console.log(velocitySum);
+                if(velocitySum > 10.0){
+                    var worldManifold = new Box2D.Collision.b2WorldManifold();
+                    contact.GetWorldManifold(worldManifold);
+                    var worldCollisionPoint = worldManifold.m_points[0];
+                    self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
+                    self.playOnceEmitter("blood", body, worldCollisionPoint);
+                }
             }
         }
+    }
+    this.playOnceEmitter = function (type, body, point) {
+        var emitter = this.getEmitter(type, body);
+        emitter.spawnPos = new PIXI.Point(point.x * game.editor.PTM, point.y * game.editor.PTM);
+        emitter.body = body;
+        var returnToPool = function () {
+            emitter.body = null;
+            emitter.lastUsed = Date.now();
+            body.emitters[emitter.type].push(emitter);
+        }
+        emitter.playOnce(returnToPool);
+    }
+    this.getEmitter = function (type, body) {
+        if (!body.emitters) body.emitters = {};
+        if (!body.emitters[type]) body.emitters[type] = [];
+        if (body.emitters[type].length > 0) return body.emitters[type].shift();
 
-
-
-	}
+        var emitter;
+        switch (type) {
+            case "blood":
+                emitter = new PIXI.particles.Emitter(
+                    this.myContainer, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-grey.png')],
+                    PIXI.loader.resources[type + '-particles-data'].data
+                );
+                break;
+        }
+        emitter.type = type;
+        this.emitters.push(emitter);
+        return emitter;
+    }
+    this.updateEmitters = function () {
+        console.log(this.emitters.length+"  TOTAL # EMITTERS");
+        for (var i = 0; i < this.emitters.length; i++) {
+            this.emitters[i].update(this.timeStep * 0.001);
+        }
+    }
 
 
     this.update = function () {
@@ -419,6 +489,7 @@ function Game() {
             this.world.Step(this.physicsTimeStep, 3, 2);
             this.world.ClearForces();
             this.camera();
+            this.updateEmitters();
         }
 
         this.editor.run();
@@ -434,4 +505,7 @@ function Game() {
 
 
 export var game = new Game();
-window.addEventListener("load", function() { console.log("1 toto");game.init();}.bind(this));
+window.addEventListener("load", function () {
+    console.log("1 toto");
+    game.init();
+}.bind(this));
