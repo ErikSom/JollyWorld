@@ -2843,7 +2843,6 @@ export function B2dEditor() {
 
 		body.myDecalSprite.addChild(decal);
 
-
 		if (carving) {
 			let filter = new game.editor.SHADERS.ColorFill(0x000000);
 			let carveDecal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
@@ -2868,8 +2867,6 @@ export function B2dEditor() {
 
 			body.myTexture.originalSprite.mask = body.myMask;
 		}
-
-
 	}
 	this.updateBodyTileSprite = function (body) {
 
