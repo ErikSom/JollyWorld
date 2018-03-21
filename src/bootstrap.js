@@ -5,6 +5,7 @@ import 'Vehicle.js'
 import 'Game-gui.js'
 import 'PrefabData.js'
 import 'B2dEditor.js'
+import 'Settings.js'
 import 'Game.js'
 
 import '../libs/semantic/dist/semantic.css'

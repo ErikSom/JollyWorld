@@ -25,6 +25,7 @@ import {
 import {
     LoadCoreAssets
 } from "./AssetList";
+import { Settings } from "./Settings";
 
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
@@ -73,6 +74,7 @@ function Game() {
     this.stats;
 
     this.emitters = [];
+    this.emittersPool = {};
 
     this.init = function () {
 
@@ -286,7 +288,6 @@ function Game() {
         this.character = this.editor.lookupGroups.__character;
         this.vehicle = new Vehicle();
 
-        console.log(this.editor.lookupGroups.__vehicle);
         this.vehicle.init(this.editor.lookupGroups.__vehicle, this.character);
         this.cameraFocusObject = this.character.body;
     }
@@ -423,33 +424,49 @@ function Game() {
                 var force = 0;
                 for(var j = 0; j<impulse.normalImpulses.length; j++) if(impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
 
-                var velocitySum = contact.GetFixtureA().GetBody().GetLinearVelocity().Length() + contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
-                console.log(velocitySum);
+                var velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
+                var velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
+                var impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y,contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y,contact.GetFixtureB().GetBody().GetLinearVelocity().x);
+                impactAngle *= game.editor.RAD2DEG + 180;
+                var velocitySum = velocityA+velocityB;
                 if(velocitySum > 10.0){
                     var worldManifold = new Box2D.Collision.b2WorldManifold();
                     contact.GetWorldManifold(worldManifold);
                     var worldCollisionPoint = worldManifold.m_points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
-                    self.playOnceEmitter("blood", body, worldCollisionPoint);
+                    self.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+
                 }
             }
         }
     }
-    this.playOnceEmitter = function (type, body, point) {
-        var emitter = this.getEmitter(type, body);
-        emitter.spawnPos = new PIXI.Point(point.x * game.editor.PTM, point.y * game.editor.PTM);
-        emitter.body = body;
-        var returnToPool = function () {
-            emitter.body = null;
-            emitter.lastUsed = Date.now();
-            body.emitters[emitter.type].push(emitter);
+    this.playOnceEmitter = function (type, body, point, angle) {
+        console.log(body.emitterCount);
+
+        if(!body.emitterCount || body.emitterCount < Settings.emittersPerBody){
+            let emitter = this.getEmitter(type, body);
+            emitter.spawnPos = new PIXI.Point(point.x * game.editor.PTM, point.y * game.editor.PTM);
+            emitter.body = body;
+            if(!body.emitterCount) body.emitterCount = 0;
+            body.emitterCount++;
+            var self = this;
+            function returnToPool() {
+                emitter.body.emitterCount--;
+                emitter.body = null;
+                emitter.lastUsed = Date.now();
+                emitter._completeCallback = null;
+                self.emittersPool[emitter.type].push(emitter);
+
+            }
+            var angleOffset = (emitter.maxStartRotation-emitter.minStartRotation)/2;
+            emitter.minStartRotation = angle-angleOffset;
+            emitter.maxStartRotation = angle+angleOffset;
+            emitter.playOnce(returnToPool);
         }
-        emitter.playOnce(returnToPool);
     }
     this.getEmitter = function (type, body) {
-        if (!body.emitters) body.emitters = {};
-        if (!body.emitters[type]) body.emitters[type] = [];
-        if (body.emitters[type].length > 0) return body.emitters[type].shift();
+        if (!this.emittersPool[type]) this.emittersPool[type] = [];
+        if (this.emittersPool[type].length > 0) return this.emittersPool[type].shift();
 
         var emitter;
         switch (type) {
@@ -465,9 +482,17 @@ function Game() {
         return emitter;
     }
     this.updateEmitters = function () {
-        console.log(this.emitters.length+"  TOTAL # EMITTERS");
+        console.log("emitters length:"+this.emitters.length);
         for (var i = 0; i < this.emitters.length; i++) {
-            this.emitters[i].update(this.timeStep * 0.001);
+            var emitter = this.emitters[i];
+            if(!emitter.body){
+                if(Date.now() - emitter.lastUsed > Settings.emitterMaxPoolTime){
+                    for(var j = 0; j<this.emittersPool[emitter.type].length; j++) if(this.emittersPool[emitter.type][j] == emitter) this.emittersPool[emitter.type].splice(j, 1);
+                    emitter.destroy();
+                    this.emitters.splice(i, 1);
+                    i--;
+                }
+            }else emitter.update(this.timeStep * 0.002);
         }
     }
 
