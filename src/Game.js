@@ -492,7 +492,7 @@ function Game() {
                     this.emitters.splice(i, 1);
                     i--;
                 }
-            }else emitter.update(this.timeStep * 0.002);
+            }else emitter.update(this.timeStep * 0.001);
         }
     }
 

@@ -37,11 +37,11 @@ let character1 = new function(){
     }
     this.update = function(target){
         if(timerReady(target.eyesTimer, TIME_EYES_CLOSE)){
-            target.lookupObject.eye_left.myTexture.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
-            target.lookupObject.eye_right.myTexture.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
+            target.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
+            target.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
         }else if(timerReady(target.eyesTimer, TIME_EYES_OPEN)){
-            target.lookupObject.eye_left.myTexture.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_left.myTexture.data.textureName);
-            target.lookupObject.eye_right.myTexture.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_right.myTexture.data.textureName);
+            target.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_left.myTexture.data.textureName);
+            target.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(target.lookupObject.eye_right.myTexture.data.textureName);
             target.eyesTimer = -game.editor.deltaTime;
         }
 
