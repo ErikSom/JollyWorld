@@ -46,7 +46,9 @@ let character1 = new function(){
         }
 
 
-        for(var i = 0; i<self.collisionUpdates.length; i++) self.doCollisionUpdate(self.collisionUpdates[i], target);
+        for(var i = 0; i<self.collisionUpdates.length; i++){
+             self.doCollisionUpdate(self.collisionUpdates[i], target);
+        }
         self.collisionUpdates = [];
 
         target.eyesTimer += game.editor.deltaTime;
@@ -120,11 +122,8 @@ let character1 = new function(){
 
                     joint = game.world.CreateJoint(ropeJointDef);
 
-                    if(targetJoint){
-                        game.world.DestroyJoint(targetJoint);
-                        target.lookupObject[update.target+"_joint"] = undefined;
-                    }
-
+                    game.world.DestroyJoint(targetJoint);
+                    target.lookupObject[update.target+"_joint"] = undefined;
 
                     //fix display positions:
                     var swapBodies = vainBodies._bodies.concat().reverse();

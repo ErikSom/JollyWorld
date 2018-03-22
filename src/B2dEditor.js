@@ -2804,40 +2804,36 @@ export function B2dEditor() {
 		//console.log("ADDING DECAL:");
 		//console.log(body, worldPosition, textureName, carving);
 
+		/*TODO
+		1) create a library of colored black/white sprites
+		2) pre-create the Mask Sprites
+		*/
+
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
 		if (!body.myDecalSprite) {
-
-			let decalSprite = new PIXI.Sprite();
-			body.myTexture.addChild(decalSprite);
-			body.myDecalSprite = decalSprite;
-			decalSprite.pivot.set(decalSprite.width / 2, decalSprite.height / 2);
-
-			//sprite.maskSprite = sprite2; //set it
-			//sprite2.renderable = false; //turn off rendering
-
-			//create mask
-			let renderMaskSprite = new PIXI.Sprite();
+						//prepare mask
 			let filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
 			let drawGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
 			drawGraphic.filters = [filter];
-
 			let graphics = new PIXI.Graphics();
 			graphics.beginFill(0x000000);
 			graphics.drawRect(0, 0, drawGraphic.width, drawGraphic.height);
-			renderMaskSprite.addChild(graphics);
-			renderMaskSprite.addChild(drawGraphic);
 
-			let rt = PIXI.RenderTexture.create(body.myTexture.width, body.myTexture.height, 1);
-			game.app.renderer.render(renderMaskSprite, rt);
-			let renderMask = new PIXI.heaven.Sprite(rt);
+			body.myMaskRT = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
+			game.app.renderer.render(graphics, body.myMaskRT, false, false, false, false, 1, false, true);
+			game.app.renderer.render(drawGraphic, body.myMaskRT, false, false, false, false, 1, false, true);
+			body.myMask = new PIXI.heaven.Sprite(body.myMaskRT);
+			body.myMask.renderable = false;
 
-			body.myMask = renderMask
+			body.myDecalSpriteRT = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
+			body.myDecalSprite = new PIXI.heaven.Sprite(body.myDecalSpriteRT);
+			body.myTexture.addChild(body.myDecalSprite);
+
+			body.myDecalSprite.maskSprite = body.myMask;
+			body.myDecalSprite.pluginName = 'spriteMasked';
+
 			body.myTexture.addChild(body.myMask);
-
-			renderMask.renderable = false;
-
-			//body.myDecalSprite.mask = body.myMask;
 		}
 
 		let decal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
@@ -2847,10 +2843,7 @@ export function B2dEditor() {
 		decal.x = localPosition.x;
 		decal.y = localPosition.y;
 
-		body.myDecalSprite.addChild(decal);
-
-		decal.maskSprite = body.myMask;
-		decal.pluginName = 'spriteMasked'; //enable special plugin rendering
+		game.app.renderer.render(decal, body.myDecalSpriteRT, false, false, false, false, 1, false, true);
 
 		if (carving) {
 			let filter = new game.editor.SHADERS.ColorFill(0x000000);
@@ -2861,21 +2854,22 @@ export function B2dEditor() {
 			carveDecal.scale.x = 0.6;
 			carveDecal.scale.y = 0.6;
 
-			let drawGraphic = new PIXI.heaven.Sprite(body.myMask.texture);
-
-			drawGraphic.addChild(carveDecal);
-
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;
 
-			let rt = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
-			game.app.renderer.render(drawGraphic, rt);
-			body.myMask.texture = rt;
+			game.app.renderer.render(carveDecal, body.myMaskRT, false, false, false, false, 1, false, true);
 
-			carveDecal.parent.removeChild(carveDecal);
-			body.myTexture.originalSprite.pluginName = 'spriteMasked'; //enable special plugin rendering
+			/*TODO
+			1) Render directly to the renderTexture that should be cached
+			*/
+
+			// let rt = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
+			// game.app.renderer.render(drawGraphic, rt);
+			// body.myMask.texture = rt;
+
+			//carveDecal.parent.removeChild(carveDecal);
+			body.myTexture.originalSprite.pluginName = 'spriteMasked';
 			body.myTexture.originalSprite.maskSprite = body.myMask;
-			//body.myTexture.originalSprite.mask = body.myMask;
 		}
 	}
 	this.updateBodyTileSprite = function (body) {
@@ -3207,7 +3201,6 @@ export function B2dEditor() {
 		if (json != null) {
 			//clone json to not destroy old references
 			var worldObjects = JSON.parse(JSON.stringify(json));
-			console.log(worldObjects);
 
 			var i;
 			var obj;
@@ -3532,6 +3525,7 @@ export function B2dEditor() {
 			if (hexVal !== undefined) {
 				this.hexColor = hexVal;
 			}
+			this.glShaderKey = "rgbfill";
 		}
 		ColorFill.prototype = Object.create(PIXI.Filter.prototype);
 		ColorFill.prototype.constructor = ColorFill;

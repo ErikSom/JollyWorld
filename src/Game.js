@@ -153,6 +153,12 @@ function Game() {
         this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), true);
         this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
+
+        /*TODO
+        1) Create proper pooler per available types
+        */
+        for(var i=0; i<Settings.emitterPool; i++) this.getEmitter('blood', null);
+
     }
     this.initWorld = function () {
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
@@ -435,13 +441,11 @@ function Game() {
                     var worldCollisionPoint = worldManifold.m_points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
                     self.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
-
                 }
             }
         }
     }
     this.playOnceEmitter = function (type, body, point, angle) {
-        console.log(body.emitterCount);
 
         if(!body.emitterCount || body.emitterCount < Settings.emittersPerBody){
             let emitter = this.getEmitter(type, body);
@@ -482,10 +486,9 @@ function Game() {
         return emitter;
     }
     this.updateEmitters = function () {
-        console.log("emitters length:"+this.emitters.length);
         for (var i = 0; i < this.emitters.length; i++) {
             var emitter = this.emitters[i];
-            if(!emitter.body){
+            if(!emitter.body && this.emittersPool[emitter.type]>Settings.emitterPool){
                 if(Date.now() - emitter.lastUsed > Settings.emitterMaxPoolTime){
                     for(var j = 0; j<this.emittersPool[emitter.type].length; j++) if(this.emittersPool[emitter.type][j] == emitter) this.emittersPool[emitter.type].splice(j, 1);
                     emitter.destroy();
