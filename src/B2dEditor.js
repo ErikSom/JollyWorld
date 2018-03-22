@@ -9,6 +9,7 @@ import {
 const PIXI = require('pixi.js');
 const dat = require('dat.gui').default;
 
+
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2AABB = Box2D.Collision.b2AABB,
 	b2BodyDef = Box2D.Dynamics.b2BodyDef,
@@ -2343,7 +2344,7 @@ export function B2dEditor() {
 	this.buildTextureFromObj = function (obj) {
 
 		var container;
-		var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(obj.textureName));
+		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(obj.textureName));
 
 		container = new PIXI.Container();
 		container.pivot.set(sprite.width / 2, sprite.height / 2);
@@ -2812,6 +2813,9 @@ export function B2dEditor() {
 			body.myDecalSprite = decalSprite;
 			decalSprite.pivot.set(decalSprite.width / 2, decalSprite.height / 2);
 
+			//sprite.maskSprite = sprite2; //set it
+			//sprite2.renderable = false; //turn off rendering
+
 			//create mask
 			let renderMaskSprite = new PIXI.Sprite();
 			let filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
@@ -2826,15 +2830,17 @@ export function B2dEditor() {
 
 			let rt = PIXI.RenderTexture.create(body.myTexture.width, body.myTexture.height, 1);
 			game.app.renderer.render(renderMaskSprite, rt);
-			let renderMask = new PIXI.Sprite(rt);
+			let renderMask = new PIXI.heaven.Sprite(rt);
 
 			body.myMask = renderMask
 			body.myTexture.addChild(body.myMask);
 
-			body.myDecalSprite.mask = body.myMask;
+			renderMask.renderable = false;
+
+			//body.myDecalSprite.mask = body.myMask;
 		}
 
-		let decal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
+		let decal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 		decal.pivot.set(decal.width / 2, decal.height / 2);
 
 		var localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
@@ -2843,16 +2849,19 @@ export function B2dEditor() {
 
 		body.myDecalSprite.addChild(decal);
 
+		decal.maskSprite = body.myMask;
+		decal.pluginName = 'spriteMasked'; //enable special plugin rendering
+
 		if (carving) {
 			let filter = new game.editor.SHADERS.ColorFill(0x000000);
-			let carveDecal = new PIXI.Sprite(PIXI.Texture.fromFrame(textureName));
+			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 			carveDecal.pivot.set(carveDecal.width / 2, carveDecal.height / 2);
 
 			carveDecal.filters = [filter];
 			carveDecal.scale.x = 0.6;
 			carveDecal.scale.y = 0.6;
 
-			let drawGraphic = new PIXI.Sprite(body.myMask.texture);
+			let drawGraphic = new PIXI.heaven.Sprite(body.myMask.texture);
 
 			drawGraphic.addChild(carveDecal);
 
@@ -2864,8 +2873,9 @@ export function B2dEditor() {
 			body.myMask.texture = rt;
 
 			carveDecal.parent.removeChild(carveDecal);
-
-			body.myTexture.originalSprite.mask = body.myMask;
+			body.myTexture.originalSprite.pluginName = 'spriteMasked'; //enable special plugin rendering
+			body.myTexture.originalSprite.maskSprite = body.myMask;
+			//body.myTexture.originalSprite.mask = body.myMask;
 		}
 	}
 	this.updateBodyTileSprite = function (body) {

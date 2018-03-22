@@ -6,6 +6,8 @@ import 'Game-gui.js'
 import 'PrefabData.js'
 import 'B2dEditor.js'
 import 'Settings.js'
+import '../libs/pixi-spine.js'
+import '../libs/pixi-heaven.js'
 import 'Game.js'
 
 import '../libs/semantic/dist/semantic.css'

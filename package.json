@@ -29,6 +29,7 @@
     "jquery": "^3.3.1",
     "npm-run-all": "^4.1.2",
     "pixi-particles": "^3.0.0",
+    "pixi-spine": "^1.5.13",
     "pixi.js": "^4.7.0",
     "semantic-ui": "^2.2.14",
     "stats.js": "^0.17.0",
