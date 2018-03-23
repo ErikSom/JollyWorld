@@ -2794,16 +2794,10 @@ export function B2dEditor() {
 		body.mySprite.visible = true;
 		texture.myBody = null;
 	}
-	this.addDecalToBody = function (body, worldPosition, textureName, carving) {
-
-
-		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
-
+	this.prepareBodyForDecals = function(body){
 		if (!body.myDecalSprite) {
-						//prepare mask
-			//let filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
+			//prepare mask
 			let drawGraphic = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
-			//drawGraphic.filters = [filter];
 			drawGraphic.tint = 0xffffff;
 			drawGraphic.color.dark[0] = drawGraphic.color.light[0];
 			drawGraphic.color.dark[1] = drawGraphic.color.light[1];
@@ -2829,6 +2823,11 @@ export function B2dEditor() {
 
 			body.myTexture.addChild(body.myMask);
 		}
+	}
+	this.addDecalToBody = function (body, worldPosition, textureName, carving) {
+		if(!body.myDecalSprite) this.prepareBodyForDecals(body);
+
+		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
 		let decal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 		decal.pivot.set(decal.width / 2, decal.height / 2);
@@ -2840,11 +2839,9 @@ export function B2dEditor() {
 		game.app.renderer.render(decal, body.myDecalSpriteRT, false);
 
 		if (carving) {
-			//let filter = new game.editor.SHADERS.ColorFill(0x000000);
 			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 			carveDecal.pivot.set(carveDecal.width / 2, carveDecal.height / 2);
 
-			//carveDecal.filters = [filter];
 			carveDecal.scale.x = 0.6;
 			carveDecal.scale.y = 0.6;
 

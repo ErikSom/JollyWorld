@@ -1,8 +1,8 @@
 export var Settings = {
     /*GORE*/
-    emittersPerBody:5,
+    emittersPerBody:3,
     emitterMaxPoolTime:5000,
-    emitterPool:10,
+    emitterPool:30,
     bloodMultiplayer:1
 
 }

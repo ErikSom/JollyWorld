@@ -97,7 +97,6 @@ export function Vehicle(){
                 var callback = new this.RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if ( callback.m_hit ) {
-                    console.log("HIT");
                     var forceDir = this.rotateVector(callback.m_normal, 90);
                     this.applyImpulse(this.desiredVehicleSpeeds[i]*dir, forceDir);
                     break;

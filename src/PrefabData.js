@@ -23,9 +23,11 @@ let character1 = new function(){
 
         var i;
         for(i=0; i<target.lookupObject.flesh._bodies.length; i++){
-            target.lookupObject.flesh._bodies[i].isFlesh = true;
+            var body = target.lookupObject.flesh._bodies[i]
+            body.isFlesh = true;
+            game.editor.prepareBodyForDecals(body);
 
-            var texture = target.lookupObject.flesh._bodies[i].myTexture;
+            var texture = body.myTexture;
             //fix gore for Skin2, Skin3 etc
 
             var fleshName = texture.data.textureName.split('0000')[0];

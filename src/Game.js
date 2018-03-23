@@ -158,6 +158,8 @@ function Game() {
         1) Create proper pooler per available types
         */
         for(var i=0; i<Settings.emitterPool; i++) this.getEmitter('blood', null);
+        for(var i=0; i<Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
+
 
     }
     this.initWorld = function () {
