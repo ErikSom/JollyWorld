@@ -2796,28 +2796,27 @@ export function B2dEditor() {
 	}
 	this.addDecalToBody = function (body, worldPosition, textureName, carving) {
 
-		//console.log("ADDING DECAL:");
-		//console.log(body, worldPosition, textureName, carving);
-
-		/*TODO
-		1) create a library of colored black/white sprites
-		2) pre-create the Mask Sprites
-		*/
 
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
 		if (!body.myDecalSprite) {
 						//prepare mask
-			let filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
-			let drawGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
-			drawGraphic.filters = [filter];
+			//let filter = new game.editor.SHADERS.ColorFill(0xFFFFFF);
+			let drawGraphic = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
+			//drawGraphic.filters = [filter];
+			drawGraphic.tint = 0xffffff;
+			drawGraphic.color.dark[0] = drawGraphic.color.light[0];
+			drawGraphic.color.dark[1] = drawGraphic.color.light[1];
+			drawGraphic.color.dark[2] = drawGraphic.color.light[2];
+			drawGraphic.color.invalidate();
+
 			let graphics = new PIXI.Graphics();
 			graphics.beginFill(0x000000);
 			graphics.drawRect(0, 0, drawGraphic.width, drawGraphic.height);
 
 			body.myMaskRT = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
-			game.app.renderer.render(graphics, body.myMaskRT, false, false, false, false, 1, false, true);
-			game.app.renderer.render(drawGraphic, body.myMaskRT, false, false, false, false, 1, false, true);
+			game.app.renderer.render(graphics, body.myMaskRT, false);
+			game.app.renderer.render(drawGraphic, body.myMaskRT, false);
 			body.myMask = new PIXI.heaven.Sprite(body.myMaskRT);
 			body.myMask.renderable = false;
 
@@ -2838,31 +2837,28 @@ export function B2dEditor() {
 		decal.x = localPosition.x;
 		decal.y = localPosition.y;
 
-		game.app.renderer.render(decal, body.myDecalSpriteRT, false, false, false, false, 1, false, true);
+		game.app.renderer.render(decal, body.myDecalSpriteRT, false);
 
 		if (carving) {
-			let filter = new game.editor.SHADERS.ColorFill(0x000000);
+			//let filter = new game.editor.SHADERS.ColorFill(0x000000);
 			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 			carveDecal.pivot.set(carveDecal.width / 2, carveDecal.height / 2);
 
-			carveDecal.filters = [filter];
+			//carveDecal.filters = [filter];
 			carveDecal.scale.x = 0.6;
 			carveDecal.scale.y = 0.6;
 
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;
 
-			game.app.renderer.render(carveDecal, body.myMaskRT, false, false, false, false, 1, false, true);
+			carveDecal.tint = 0x000000;
+			carveDecal.color.dark[0] = carveDecal.color.light[0];
+			carveDecal.color.dark[1] = carveDecal.color.light[1];
+			carveDecal.color.dark[2] = carveDecal.color.light[2];
+			carveDecal.color.invalidate();
 
-			/*TODO
-			1) Render directly to the renderTexture that should be cached
-			*/
+			game.app.renderer.render(carveDecal, body.myMaskRT, false);
 
-			// let rt = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
-			// game.app.renderer.render(drawGraphic, rt);
-			// body.myMask.texture = rt;
-
-			//carveDecal.parent.removeChild(carveDecal);
 			body.myTexture.originalSprite.pluginName = 'spriteMasked';
 			body.myTexture.originalSprite.maskSprite = body.myMask;
 		}
@@ -3480,68 +3476,4 @@ export function B2dEditor() {
 	this.GROUPINDEX_CHARACTER = -3;
 
 	this.minimumBodySurfaceArea = 0.3;
-
-	//
-	//ADDITIONAL NEEDED SHADERS
-	var self = this;
-	this.SHADERS = (function (exports) {
-		var str = "";
-		str += "attribute vec2 aVertexPosition;";
-		str += "attribute vec2 aTextureCoord;";
-		str += "uniform mat3 projectionMatrix;";
-		str += "varying vec2 vTextureCoord;";
-		str += "void main(void)";
-		str += "{";
-		str += "gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);";
-		str += "vTextureCoord = aTextureCoord;";
-		str += "}";
-		exports.DefaultVert = str;
-		return exports;
-	}(this.SHADERS || {}));
-	this.SHADERS = (function (exports) {
-		var ColorFill = function (hexVal) {
-			var str = "";
-			str += "precision mediump float;";
-			str += "varying vec2 vTextureCoord;";
-			str += "uniform sampler2D uSampler;";
-			str += "uniform vec3 rgbColor;";
-			str += "void main(void) {";
-			str += "gl_FragColor = texture2D(uSampler, vTextureCoord);";
-			str += "gl_FragColor.r = rgbColor.r * gl_FragColor.a;";
-			str += "gl_FragColor.g = rgbColor.g * gl_FragColor.a;";
-			str += "gl_FragColor.b = rgbColor.b * gl_FragColor.a;";
-			str += "}";
-			PIXI.Filter.call(this, self.SHADERS.DefaultVert, str);
-			if (hexVal !== undefined) {
-				this.hexColor = hexVal;
-			}
-			this.glShaderKey = "rgbfill";
-		}
-		ColorFill.prototype = Object.create(PIXI.Filter.prototype);
-		ColorFill.prototype.constructor = ColorFill;
-		Object.defineProperties(ColorFill.prototype, {
-			rgbColor: {
-				get: function () {
-					return this.uniforms.rgbColor;
-				},
-				set: function (value) {
-					this.uniforms.rgbColor = value;
-				}
-			},
-
-			hexColor: {
-				get: function () {
-					return PIXI.utils.rgb2hex(this.uniforms.rgbColor);
-				},
-				set: function (value) {
-					this.uniforms.rgbColor = PIXI.utils.hex2rgb(value);
-				}
-			},
-		});
-		exports.ColorFill = ColorFill;
-		return exports;
-	}(this.SHADERS || {}));
-	//**************** */
-
-
 }
