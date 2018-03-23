@@ -1,4 +1,4 @@
-import 'FireBaseManager.js'
+//import 'FireBaseManager.js'
 import 'AssetList.js'
 import 'UIManager.js'
 import 'Vehicle.js'

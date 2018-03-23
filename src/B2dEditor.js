@@ -153,11 +153,6 @@ export function B2dEditor() {
 
 		    console.log("erik is een koning en eric ook");
 		});*/
-
-
-
-
-
 	}
 	this.initGuiAssetSelection = function () {
 
@@ -3353,8 +3348,6 @@ export function B2dEditor() {
 		this.BubbleEvent("PostSolve", contact, impulse);
 	}
 
-
-
 	this.runWorld = function () {
 		this.editorIcons = [];
 		this.debugGraphics.clear();
@@ -3408,9 +3401,6 @@ export function B2dEditor() {
 				prefab.prefabs[this.prefabs[key].prefabName].init(this.prefabs[key]);
 			}
 		}
-
-
-
 		this.editing = false;
 	}
 
