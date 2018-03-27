@@ -17,35 +17,40 @@ body .dg .title {
     user-select: none;
 }
 
+body .dg .c, body .dg .property-name{
+    width:50%;
+}
+
 
 body .dg.main.taller-than-window .close-button {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #4F4F4F;
 }
 
 body .dg.main .close-button {
-    background-color: #fff;
+    background-color: #4F4F4F;
 }
  
 body .dg.main .close-button:hover {
-    background-color: #eee;
+    background-color: #4F4F4F;
 }
 
 body .dg {
-    color: #555;
+    color: #FFF;
     text-shadow: none !important;
+    font: bold 12px Arial !important;
 }
 
 body .dg.main::-webkit-scrollbar {
-    background: #fafafa;
+    background: #4F4F4F;
 }
 
 body .dg.main::-webkit-scrollbar-thumb {
-    background: #bbb;
+    background: #4F4F4F;
 }
  
 body .dg li:not(.folder) {
-    background: #fafafa;
-    border-bottom: 1px solid #ddd;
+    background: #666666;
+    border-bottom: 1px solid #666666;
 }
  
 body .dg li.save-row .button {
@@ -53,7 +58,16 @@ body .dg li.save-row .button {
 }
 
 body .dg li.title {
-    background: #e8e8e8 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
+    margin-left:0px;
+    background-color: #4F4F4F;
+    background-image: url(../../build/assets/images/gui/DragableBar_Pattern.png);
+    background-size: contain;
+}
+
+.dg .closed li.title{
+    background-color: #4F4F4F;
+    background-image: url(../../build/assets/images/gui/DragableBar_Pattern.png);
+    background-size: contain;
 }
 
 body .dg li.folder {
@@ -62,28 +76,28 @@ body .dg li.folder {
 
 body .dg .cr.function:hover,
 body .dg .cr.boolean:hover {
-    background: #fff;
+    background: #4F4F4F;
 }
  
 body .dg .c input[type=text] {
-    background: #e9e9e9;
+    background: #666666;
 }
  
 body .dg .c input[type=text]:hover {
-    background: #eee;
+    background: #707070;
 }
  
 body .dg .c input[type=text]:focus {
-    background: #eee;
+    background: #585858;
     color: #555;
 }
  
 body .dg .c .slider {
-    background: #e9e9e9;
+    background: #4F4F4F;
 }
 
 body .dg .c .slider:hover {
-    background: #eee;
+    background: #4F4F4F;
 }
 
 body .dg.a {
@@ -92,15 +106,66 @@ body .dg.a {
 }
 
 body .dg .cr.function {
-    background: #eee;
+    background: #4F4F4F;
 }
 
 body .dg .cr.function:hover {
-    background: #dadada;
+    background: #4F4F4F;
     border-bottom: 1px solid #2fa1d6;
 }
 
 body .dg .cr.function:active {
-    background: #ddd;
+    background: #4F4F4F;
     border-bottom: 1px solid #2fa1d6;
 }
+
+.dg .cr input{
+    font: bold 12px Arial !important;
+}
+
+.dg .cr.number input[type=text] {
+    color:#00FFFF;
+}
+.dg .cr.number input[type=text]:focus {
+    color:#FFF;
+}
+.dg .cr.string input[type=text]{
+    color:#00FFFF;
+}
+.dg .cr.string input[type=text]:focus{
+    color:#FFF;
+}
+.dg .c .slider-fg{
+    background-color:#00FFFF;
+}
+.dg .c .slider:hover .slider-fg{
+    background-color:rgb(2, 170, 170);
+}
+.dg.main .close-button.close-bottom{
+    display:none;
+}
+.dg.main{
+    border: 2px solid black;
+    border-radius: 5px;
+    box-shadow: 2px 2px 12px #000000;
+}
+/* .dg .cr.color{
+    height: 60px;
+}
+.dg .cr.color > div .c{
+    margin-left:10px;
+    width:90%;
+}
+.dg .cr.color span{
+    width:50%;
+}
+.dg .cr.number.has-slider{
+    height:60px;
+}
+.dg .cr.number.has-slider > div .c{
+    margin-left:10px;
+    width:90%;
+}
+.dg .cr.number.has-slider span{
+    width:50%;
+} */

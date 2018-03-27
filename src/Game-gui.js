@@ -1,187 +1,201 @@
-var assetSelectionJSON = 
- {
-    id: 'mainAssetSelection',
-    component: 'Window',
-    header: { id: 'headerAssetSelection', skin: 'blueheader', position: { x: 0, y: 0 }, height: 20, text: 'Asset Selection' },
-    draggable: true,
-    padding: 4,
-    position: { x: 0, y: 0 },
-    width: 300,
-    height: 130,
 
 
-    layout: [1, 2],
-    children: [
-        {
-        id: 'hlist1',
-        component: 'List',
+/*  DUMMY GUI FOR STYLING */
+function initDummyDatGUI() {
+    console.log("INIT DUMMY DAT GUI!")
+    var customGUIContainer = document.getElementById('my-gui-container');
+    var editorGUI = new dat.GUI({
+        autoPlace: false,
+        width: 150
+    });
+    customGUIContainer.appendChild(editorGUI.domElement);
 
-        padding: 3,
-        position: 'left',
-        width: 300,
-        height: 106,
-        layout: [3],
-        children: []
+    var dataJoint;
+    var controller;
+    var folder;
+
+    var bodyObject = function () {
+        this.type = 0;
+        this.x = 50;
+        this.y = 70;
+        this.rotation = 0;
+        this.groups = "group";
+        this.refName = "ref";
+        //
+        this.ID = 0;
+        this.colorFill = "#999999";
+        this.colorLine = "#000";
+        this.transparancy = 1.0;
+        this.fixed = false;
+        this.awake = true;
+        this.vertices = [{
+            x: 0,
+            y: 0
+        }, {
+            x: 0,
+            y: 0
+        }];
+        this.density = 1;
+        this.collision = 0;
+        this.radius = 0;
+        this.tileTexture = "";
     }
-    ]
+
+    editorGUI.editData = new bodyObject;
+    editorGUI.addFolder('body');
+    //Populate default GUI Fields
+    editorGUI.add(editorGUI.editData, "x").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value - this.initialValue;
+        this.initialValue = value;
+    });
+
+    editorGUI.add(editorGUI.editData, "y").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value - this.initialValue;
+        this.initialValue = value;
+    });
+    editorGUI.add(editorGUI.editData, "rotation").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
+    editorGUI.add(editorGUI.editData, "groups").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    });
+
+    editorGUI.add(editorGUI.editData, "refName").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    });
+
+    editorGUI.add(editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    });
+
+    controller = editorGUI.addColor(editorGUI.editData, "colorFill");
+    controller.onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    }.bind(controller));
+    controller = editorGUI.addColor(editorGUI.editData, "colorLine");
+    controller.onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    }.bind(controller));
+    controller = editorGUI.add(editorGUI.editData, "transparancy", 0, 1);
+    controller.onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    }.bind(controller));
+    editorGUI.add(editorGUI.editData, "fixed").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
+    editorGUI.add(editorGUI.editData, "awake").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
+    controller = editorGUI.add(editorGUI.editData, "density", 0, 1000).step(0.1);
+    controller.onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    }.bind(controller));
+    controller = editorGUI.add(editorGUI.editData, "collision", 0, 7).step(1);
+    controller.onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    }.bind(controller));
+
+    gui.registerWindow(editorGUI.domElement);
+
 }
 
-var smallTextFont = {size: '14px',family: 'Arial', color:'0x000000'};
 
- var jointPinEditorJSON = 
- {
-    id: 'jointPinEditor',
-    component: 'Window',
-    header: { id: 'jointPinEditor_header', skin: 'blueheader', position: { x: 0, y: 0 }, height: 20, text: 'Joint Editor'},
-    draggable: true,
-    padding: 20,
-    position: { x: 0, y: 0 },
-    width: 300,
-    height: 450,
+function createToolGui(){
+    var toolGui = document.createElement("div");
+    toolGui.setAttribute('class', 'toolgui main');
 
 
-    layout: [2, 14],
-    children: [
-        { id:'jointPinEditor_pinButton', text:'Pin Joint', component:'bluebutton', position:'center left', width:100, height:30, selected:true, font:smallTextFont},
-        { id:'jointPinEditor_slideButton', text:'Slide Joint', component:'Button', position:'center left', width:100, height:30, font:smallTextFont},
-        { id:'jointPinEditor_collideConnected', text: '  collide connected', component: 'Checkbox', position: 'center left', width: 20, height: 20,  font: smallTextFont,}, null,
-        { id:'jointPinEditor_enableMotor', text: '  enable motor', component: 'Checkbox', position: 'center left', width: 20, height: 20 , font: smallTextFont}, null,
+    var header = document.createElement('div');
+    header.setAttribute('class', 'dg');
+    var ul = document.createElement('ul');
+    header.appendChild(ul);
+    var li = document.createElement('li');
+    li.setAttribute('class', 'title')
+    li.innerText = "tools";
+    ul.appendChild(li);
+    toolGui.appendChild(header);
 
+    var icons = ['Icon_Zoom.png', 'Icon_Text.png','Icon_Specials.png', 'Icon_PolygonDrawing.png', 'Icon_PaintBucket.png', 'Icon_Joints.png', 'Icon_Hand.png', 'Icon_Geometry.png', 'Icon_Eraser.png'];
+    var buttonElement;
+    var imgElement;
+    for(var i = 0; i<icons.length; i++){
+        buttonElement = document.createElement("table");
+        buttonElement.setAttribute('class', 'toolgui button');
 
-        //Motor speed
-        {text: 'motor speed:', component: 'Label_', position: 'left', width: 100, height: 30, font: smallTextFont},null,
-        {component: 'Layout',
+        var row = document.createElement("tr");
+        buttonElement.appendChild(row);
 
-        z: 1, //the Z index allow to bring the navigation to the top so it can receive events (this is a workaround to the way PIXI handles events)
+        imgElement = document.createElement('td');
+        imgElement.setAttribute('class', 'toolgui img');
+        row.appendChild(imgElement);
 
-        position: { x: 0, y: -10 },
-        width: 300,
-        height: 30,
-        layout: [6, 1],
-        children: [
-            {
-                id: 'jointPinEditor_MotorSpeed_Slider',
-                component: 'Slider',
-                slide: { width: 18, height: 25 },
-                position: 'left',
-                width: 200,
-                height: 25,
-                valuePercentage: false,
-                minSlideValue: -10,
-                maxSlideValue: 10,
-                defaultSlideValue: 0,
-                slideScalar:"normal"
-            },null,null,null,
-            { id:'jointPinEditor_MotorSpeed_Slider_Text', text: '100', component: 'Label_', position: 'left', width: 30, height: 30, forceText:"100", font: smallTextFont}
-        ]},null,
-
-        // maxMotorTorque
-        {text: 'motor torque:', component: 'Label_', position: 'left', width: 100, height: 30, font: smallTextFont}, null,
-        {component: 'Layout',
-
-        z: 1, //the Z index allow to bring the navigation to the top so it can receive events (this is a workaround to the way PIXI handles events)
-
-        position: { x: 0, y: -10 },
-        width: 300,
-        height: 30,
-        layout: [6, 1],
-        children: [
-            {
-                id: 'jointPinEditor_MaxMotorTorque_Slider',
-                component: 'Slider',
-                slide: { width: 18, height: 25 },
-                position: 'left',
-                width: 200,
-                height: 25,
-                defaultSlideValue: 0
-            },null,null,null,
-            { id:'jointPinEditor_MaxMotorTorque_Slider_Text', text: '100', component: 'Label_', position: 'left', width: 30, height: 30, forceText:"100", font: smallTextFont}
-        ]}, null,
-
-
-
-
-         { id:'jointPinEditor_limitRotation', text: '  limit rotation', component: 'Checkbox', position: 'center left', width: 20, height: 20 , font: smallTextFont}, null,
-
-
-        //Motor speed
-        {text: 'upper limit:', component: 'Label_', position: 'left', width: 100, height: 30, font: smallTextFont},null,
-        {component: 'Layout',
-
-        z: 1, //the Z index allow to bring the navigation to the top so it can receive events (this is a workaround to the way PIXI handles events)
-
-        position: { x: 0, y: -10 },
-        width: 300,
-        height: 30,
-        layout: [6, 1],
-        children: [
-            {
-                id: 'jointPinEditor_UpperLimit_Slider',
-                component: 'Slider',
-                slide: { width: 18, height: 25 },
-                position: 'left',
-                width: 200,
-                height: 25,
-                valuePercentage: false,
-                minSlideValue: -10,
-                maxSlideValue: 10,
-                defaultSlideValue: 0,
-                slideScalar:"normal"
-            },null,null,null,
-            { id:'jointPinEditor_UpperLimit_Slider_Text', text: '100', component: 'Label_', position: 'left', width: 30, height: 30, forceText:"100", font: smallTextFont}
-        ]}, null,
-
-        // maxMotorTorque
-        {text: 'lower limit:', component: 'Label_', position: 'left', width: 100, height: 30, font: smallTextFont}, null,
-        {component: 'Layout',
-
-        z: 1, //the Z index allow to bring the navigation to the top so it can receive events (this is a workaround to the way PIXI handles events)
-
-        position: { x: 0, y: -10 },
-        width: 300,
-        height: 30,
-        layout: [6, 1],
-        children: [
-            {
-                id: 'jointPinEditor_LowerLimit_Slider',
-                component: 'Slider',
-                slide: { width: 18, height: 25 },
-                position: 'left',
-                width: 200,
-                height: 25,
-                defaultSlideValue: 0
-            },null,null,null,
-            { id:'jointPinEditor_LowerLimit_Slider_Text', text: '100', component: 'Label_', position: 'left', width: 30, height: 30, forceText:"100", font: smallTextFont}
-        ]},null,
-
-        {component: 'Layout',
-
-        z: 1, //the Z index allow to bring the navigation to the top so it can receive events (this is a workaround to the way PIXI handles events)
-
-        padding: 3,
-        position: { x: 0, y: 0 },
-        width: 300,
-        height: 50,
-        layout: [12, 1],
-        children: [
-            {text: 'x:', component: 'Label_', position: 'left', width: 10, height: 30, font: smallTextFont},
-            { id:'jointPinEditor_posX', text: '100', component: 'Input', position: 'left', width: 80, height: 30, z:1, forceText:"0-9", charLimit:3, font: smallTextFont}
-        ]
-         },
-        {component: 'Layout',
-
-        z: 1, //the Z index allow to bring the navigation to the top so it can receive events (this is a workaround to the way PIXI handles events)
-
-        padding: 3,
-        position: { x: 0, y: 0 },
-        width: 300,
-        height: 50,
-        layout: [12, 1],
-        children: [
-            {text: 'y:', component: 'Label_', position: 'left', width: 10, height: 30, font: smallTextFont},
-            { id:'jointPinEditor_posY', text: '100', component: 'Input', position: 'left', width: 80, height: 30, z:1, forceText:"0-9", charLimit:3, font: smallTextFont}
-        ]
-         }
-
-    ]
+        toolGui.appendChild(buttonElement);
+    }
+    document.getElementById('uicontainer').appendChild(toolGui);
+    var $buttons = $('.toolgui .img');
+    for(var i = 0; i<$buttons.length; i++){
+        console.log($($buttons[i]));
+        $($buttons[i]).css('background-image', 'url(build/assets/images/gui/'+icons[i]+')');
+        console.log($($buttons[i]).css('background-image'));
+    }
+    console.log($('.toolgui .button'));
 }
+
+
+function GUI(){
+    this.windows = [];
+
+    this.startDragPos = {x:0, y:0};
+    this.startDragMouse = {x:0, y:0};
+
+    var self = this;
+
+    this.initDrag = function(event, _window){
+        console.log('init drag');
+        var self = this;
+        $(document).on('mousemove', function(event){self.doDrag(event, _window)});
+        self.startDragMouse.x = event.pageX;
+        self.startDragMouse.y = event.pageY;
+        self.startDragPos.x = parseInt($(_window).css('left'), 10) || 0;
+        self.startDragPos.y = parseInt($(_window).css('top'), 10) || 0;
+    }
+    this.endDrag = function(event, _window){
+        $(document).off('mousemove');
+    }
+    this.doDrag = function(event, _window){
+        var difX = event.pageX-self.startDragMouse.x;
+        var difY = event.pageY-self.startDragMouse.y;
+
+        $(_window).css('left', self.startDragPos.x + difX);
+        $(_window).css('top', self.startDragPos.y + difY);
+    }
+
+    this.registerWindow = function(_window){
+        this.windows.push(_window);
+        var $titleBar = $(_window).find('.dg .title');
+        var self = this;
+        $(_window).css('position', 'absolute');
+        $titleBar.on('mousedown', function(event){self.initDrag(event, _window)});
+        $(document).on('mouseup', function(event){self.endDrag(event, _window)});
+    }
+}
+
+var gui = new GUI();
+
+initDummyDatGUI();
+initDummyDatGUI();
+
+createToolGui();
