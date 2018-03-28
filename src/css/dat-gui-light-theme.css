@@ -145,27 +145,18 @@ body .dg .cr.function:active {
     display:none;
 }
 .dg.main{
-    border: 2px solid black;
+    border: 1px solid black;
     border-radius: 5px;
-    box-shadow: 2px 2px 12px #000000;
+    box-shadow: 2px 2px 0px #000000
 }
-/* .dg .cr.color{
-    height: 60px;
+.dg.main {
+    top: 0;
+    display: inline-block;
 }
-.dg .cr.color > div .c{
-    margin-left:10px;
-    width:90%;
+
+.dg.main .close-button.close-bottom {
+    position: static !important;
+} 
+.dg .cr{
+    border-left: 0px solid !important;
 }
-.dg .cr.color span{
-    width:50%;
-}
-.dg .cr.number.has-slider{
-    height:60px;
-}
-.dg .cr.number.has-slider > div .c{
-    margin-left:10px;
-    width:90%;
-}
-.dg .cr.number.has-slider span{
-    width:50%;
-} */

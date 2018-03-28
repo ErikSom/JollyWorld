@@ -152,6 +152,8 @@ function createToolGui(){
         console.log($($buttons[i]).css('background-image'));
     }
     console.log($('.toolgui .button'));
+
+    gui.registerWindow(toolGui);
 }
 
 
