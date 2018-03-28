@@ -1,5 +1,9 @@
-import { firebaseManager } from './FireBaseManager';
-import {game} from './Game';
+import {
+    firebaseManager
+} from './FireBaseManager';
+import {
+    game
+} from './Game';
 import $ from 'jquery';
 import '../dist/semantic';
 import '../dist/components/form';
@@ -11,8 +15,8 @@ let levelItemElement;
 function UIManager() {
 
     var self = this;
-
-    this.showBox = function(name){
+   
+    this.showBox = function (name) {
         self.showNothing();
         $(name).css("display", "inline");
     }
@@ -24,7 +28,7 @@ function UIManager() {
         $('form').removeClass('loading');
     }
 
-    this.displayLevels = function(levelSnapshot){
+    this.displayLevels = function (levelSnapshot) {
         levelItemHolder.empty();
         var itemClone;
         var level;
@@ -35,30 +39,31 @@ function UIManager() {
 
                 level = levelSnapshot[key];
                 itemClone = (i == 0) ? levelItemElement : levelItemElement.clone();
-                itemClone.find("#creator").html(level.name+"<br>by <a href="+"www.google.com"+">"+level.creator+"</a>");
-                if(level.thumbLowResURL){
-                    itemClone.find("img").attr("src", firebaseManager.baseDownloadURL+level.thumbLowResURL);
+                itemClone.find("#creator").html(level.name + "<br>by <a href=" + "www.google.com" + ">" + level.creator + "</a>");
+                if (level.thumbLowResURL) {
+                    itemClone.find("img").attr("src", firebaseManager.baseDownloadURL + level.thumbLowResURL);
                 }
-                console.log("Level:"+key);
+                console.log("Level:" + key);
                 console.log(levelSnapshot[key]);
                 itemClone.appendTo(levelItemHolder);
 
                 (key => {
-                itemClone.find("#playButton").click( function () {
+                    itemClone.find("#playButton").click(function () {
                         $(this).parent().parent().parent().addClass('loading');
-                        console.log('loading key:'+key);
+                        console.log('loading key:' + key);
                         console.log(levelSnapshot[key]);
                         game.loadLevel(levelSnapshot[key]);
-                })})(key)
+                    })
+                })(key)
                 i++;
             }
         }
     }
-    this.loggedIn = function(){
+    this.loggedIn = function () {
         this.showNothing();
-       // $("#sidebar_loginout_btn").unbind("click");
+        // $("#sidebar_loginout_btn").unbind("click");
         $("#sidebar_loginout_btn").text("Signout");
-        $("#sidebar_loginout_btn").click(function(){
+        $("#sidebar_loginout_btn").click(function () {
             firebaseManager.signout();
             console.log("menu loggedin");
         });
@@ -66,10 +71,10 @@ function UIManager() {
         $("#sidebar_loadlevel_btn").removeClass("disabled");
         $("#sidebar_publishlevel_btn").removeClass("disabled");
     }
-    this.signedOut = function(){
+    this.signedOut = function () {
         //$("#sidebar_loginout_btn").unbind("click");
         $("#sidebar_loginout_btn").text("Login");
-        $("#sidebar_loginout_btn").click(function(){
+        $("#sidebar_loginout_btn").click(function () {
             ui.showBox('#login-box');
             console.log("menu signedout!!");
         });
@@ -139,82 +144,85 @@ function UIManager() {
             return false;
         }
         $('.ui.form').form(formRules);
-        firebaseManager.checkURLParameters();
-
-        this.formSuccesFunction = function($form){
-            $('form').addClass('loading');
-            var formName = $form.parent().attr('id');
-            switch(formName){
-                case "login-box":
-                    console.log("LOGIN PRESS");
-                    $('form').addClass('loading');
-                    firebaseManager.login($form.closest('.ui.form').form('get value', 'email'), $form.closest(
-                        '.ui.form').form('get value',
-                        'password'));
-                    return false;
-                break;
-
-                case "register-box":
-                    firebaseManager.createUser($form.closest('.ui.form').form('get value', 'email'), $form.closest(
-                        '.ui.form').form('get value',
-                        'password'));
-                break;
-
-                case "reset-box":
-                    firebaseManager.requestResetPassword($form.closest('.ui.form').form('get value', 'email'));
-                break;
-
-                case "reset-box":
-                    firebaseManager.resetPassword($form.closest('.ui.form').form('get value', 'password'));
-                break;
-
-                case "userdata-box":
-                    var data = {
-                        username: $form.closest('.ui.form').form('get value', 'username'),
-                        creationDate: Date.now()
-                    }
-                    firebaseManager.checkUserData(data);
-                break;
-
-                case "signout-box":
-                    console.log("SIGN OUT");
-                    firebaseManager.signout();
-                break;
-                case "publishlevel-box":
-                    console.log("PUBLISH LEVEL");
-                    game.uploadLevelData({name:$form.closest('.ui.form').form('get value', 'level_title'), description:$form.closest('.ui.form').form('get value', 'level_description')});
-                break;
-                default:
-                    console.log("NO FUNCTION SET FOR: "+formName);
-                break;
-
-            }
-        }
 
         //SIDEBAR FUNCTIONALITY
-        //EDITOR
-        $('#sidebar-btn').click(function() {
+        $('#sidebar-btn').click(function () {
             $('.ui.sidebar').sidebar('toggle');
         });
 
-        $('#sidebar_loadlevel_btn').click(function(){
+        $('#sidebar_loadlevel_btn').click(function () {
             self.showBox("#loadlevel-box");
             game.retreiveNextLevelList();
         })
-        $('#sidebar_publishlevel_btn').click(function(){
+        $('#sidebar_publishlevel_btn').click(function () {
             self.showBox("#publishlevel-box");
         })
-        this.signedOut();
 
         levelItemHolder = $("#loadlevel-box .segments");
         levelItemElement = $("#loadlevel-box .segment").clone();
         levelItemHolder.empty();
 
+        this.signedOut();
+        firebaseManager.checkURLParameters();
     }
-    this.levelPublishSuccess = function(){
+    this.formSuccesFunction = function ($form) {
+        $('form').addClass('loading');
+        var formName = $form.parent().attr('id');
+        switch (formName) {
+            case "login-box":
+                console.log("LOGIN PRESS");
+                $('form').addClass('loading');
+                firebaseManager.login($form.closest('.ui.form').form('get value', 'email'), $form.closest(
+                    '.ui.form').form('get value',
+                    'password'));
+                return false;
+                break;
+
+            case "register-box":
+                firebaseManager.createUser($form.closest('.ui.form').form('get value', 'email'), $form.closest(
+                    '.ui.form').form('get value',
+                    'password'));
+                break;
+
+            case "reset-box":
+                firebaseManager.requestResetPassword($form.closest('.ui.form').form('get value', 'email'));
+                break;
+
+            case "reset-box":
+                firebaseManager.resetPassword($form.closest('.ui.form').form('get value', 'password'));
+                break;
+
+            case "userdata-box":
+                var data = {
+                    username: $form.closest('.ui.form').form('get value', 'username'),
+                    creationDate: Date.now()
+                }
+                firebaseManager.checkUserData(data);
+                break;
+
+            case "signout-box":
+                console.log("SIGN OUT");
+                firebaseManager.signout();
+                break;
+            case "publishlevel-box":
+                console.log("PUBLISH LEVEL");
+                game.uploadLevelData({
+                    name: $form.closest('.ui.form').form('get value', 'level_title'),
+                    description: $form.closest('.ui.form').form('get value', 'level_description')
+                });
+                break;
+            default:
+                console.log("NO FUNCTION SET FOR: " + formName);
+                break;
+
+        }
+    }
+    this.levelPublishSuccess = function () {
         $('form').removeClass('loading');
         this.showNothing();
     }
 }
 export var ui = new UIManager();
-window.addEventListener("load", function() { ui.init();}.bind(this));
+window.addEventListener("load", function () {
+    ui.init();
+}.bind(this));

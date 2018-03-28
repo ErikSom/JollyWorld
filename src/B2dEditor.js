@@ -40,6 +40,7 @@ export function B2dEditor() {
 	this.editorMode = "";
 	this.admin = true; // for future to dissalow certain changes like naming
 	this.editorGUI;
+	this.editorGUIPos = {x:0, y:0};
 	this.customGUIContainer = document.getElementById('my-gui-container');
 
 	this.selectedPhysicsBodies = [];
@@ -59,6 +60,7 @@ export function B2dEditor() {
 	// future this can be an opject with keys like bricks/green/etc.
 
 	this.assetGUI;
+	this.assetGUIPos = {x:0, y:0};
 	this.assetSelectedTexture = "";
 	this.assetSelectedGroup = "";
 	this.assetSelectedObject = "";
@@ -134,28 +136,57 @@ export function B2dEditor() {
 		this.initGui();
 
 	}
+	this.windows = [];
+    this.startDragPos = {
+        x: 0,
+        y: 0
+    };
+    this.startDragMouse = {
+        x: 0,
+        y: 0
+    };
+    this.initDrag = function (event, _window) {
+        var self = this;
+        $(document).on('mousemove', function (event) {
+            self.doDrag(event, _window)
+        });
+        self.startDragMouse.x = event.pageX;
+        self.startDragMouse.y = event.pageY;
+        self.startDragPos.x = parseInt($(_window).css('left'), 10) || 0;
+        self.startDragPos.y = parseInt($(_window).css('top'), 10) || 0;
 
+        console.log('init drag');
+    }
+    this.endDrag = function (event, _window) {
+        $(document).off('mousemove');
+    }
+    this.doDrag = function (event, _window) {
+        console.log("do drag");
+        var difX = event.pageX - self.startDragMouse.x;
+        var difY = event.pageY - self.startDragMouse.y;
+
+        $(_window).css('left', self.startDragPos.x + difX);
+        $(_window).css('top', self.startDragPos.y + difY);
+    }
+    this.registerDragWindow = function (_window) {
+        this.windows.push(_window);
+        var $titleBar = $(_window).find('.dg .title');
+        $(_window).css('position', 'absolute');
+
+        console.log($titleBar);
+        $titleBar.on('mousedown', function (event) {
+            self.initDrag(event, _window)
+        });
+        $(document).on('mouseup', function (event) {
+            self.endDrag(event, _window)
+        });
+    }
 	this.initGui = function () {
-
 		this.initGuiAssetSelection();
-
+		this.createToolGUI();
 		this.canvas.focus();
-
-		/*var $container = $("#symanticui");
-
-		$container.append('<div id="button" class="ui animated button" tabindex="0"> <div class="visible content">Next</div><div class="hidden content"><i class="right arrow icon"></i></div></div>');
-
-
-		var $button = $("#button");
-		console.log($button);
-
-		$button.click(function() {
-
-		    console.log("erik is een koning en eric ook");
-		});*/
 	}
 	this.initGuiAssetSelection = function () {
-
 		this.removeGuiAssetSelection();
 
 		if (this.assetLists.__keys == undefined) this.assetLists.__keys = Object.keys(this.assetLists);
@@ -194,17 +225,52 @@ export function B2dEditor() {
 				}
 			}.bind(but);
 			folder.open();
+			this.registerDragWindow(this.assetGUI.domElement);
+			$(this.assetGUI.domElement).css('left', this.assetGUIPos.x);
+			$(this.assetGUI.domElement).css('top', this.assetGUIPos.y);
 		}
-
 	}
 	this.removeGuiAssetSelection = function () {
 		if (this.assetGUI != undefined) {
+			this.assetGUIPos = {x:parseInt($(this.assetGUI.domElement).css('left'), 10), y:parseInt($(this.assetGUI.domElement).css('top'), 10)};
 			this.customGUIContainer.removeChild(this.assetGUI.domElement);
 			this.assetGUI = undefined;
 		}
 	}
+	this.createToolGUI = function () {
+		var self = this;
+        var toolGui = document.createElement("div");
+        toolGui.setAttribute('class', 'toolgui main');
+        var header = document.createElement('div');
+        header.setAttribute('class', 'dg');
+        var ul = document.createElement('ul');
+        header.appendChild(ul);
+        var li = document.createElement('li');
+        li.setAttribute('class', 'title')
+        li.innerText = "tools";
+        ul.appendChild(li);
+        toolGui.appendChild(header);
+        const icons = ['Icon_Zoom.png', 'Icon_Text.png', 'Icon_Specials.png', 'Icon_PolygonDrawing.png', 'Icon_PaintBucket.png', 'Icon_Joints.png', 'Icon_Hand.png', 'Icon_Geometry.png', 'Icon_Eraser.png'];
+        var buttonElement;
+        var imgElement;
+        for (var i = 0; i < icons.length; i++) {
+            buttonElement = document.createElement("table");
+            buttonElement.setAttribute('class', 'toolgui button');
 
-
+            var row = document.createElement("tr");
+            buttonElement.appendChild(row);
+            imgElement = document.createElement('td');
+            imgElement.setAttribute('class', 'toolgui img');
+            row.appendChild(imgElement);
+            toolGui.appendChild(buttonElement);
+        }
+        document.getElementById('uicontainer').appendChild(toolGui);
+        var $buttons = $('.toolgui .img');
+        for (var i = 0; i < $buttons.length; i++) {
+            $($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');
+        }
+        self.registerDragWindow(toolGui);
+    }
 
 	this.updateSelection = function () {
 		//Joints
@@ -491,6 +557,8 @@ export function B2dEditor() {
 			case case_MULTIPLE:
 				break;
 		}
+
+		this.registerDragWindow(this.editorGUI.domElement);
 
 	}
 

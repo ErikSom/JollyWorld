@@ -2,7 +2,7 @@
 import 'AssetList.js'
 import 'UIManager.js'
 import 'Vehicle.js'
-import 'Game-gui.js'
+//import 'Game-gui.js'
 import 'PrefabData.js'
 import 'B2dEditor.js'
 import 'Settings.js'
