@@ -557,9 +557,7 @@ export function B2dEditor() {
 			case case_MULTIPLE:
 				break;
 		}
-
 		this.registerDragWindow(this.editorGUI.domElement);
-
 	}
 
 	this.isSelectionPropertyTheSame = function (property) {
@@ -2501,13 +2499,11 @@ export function B2dEditor() {
 					i--;
 				}
 			}
-
-
 			var group;
 			var subGroup;
 			var j;
 			for (i = 0; i < arr.length; i++) {
-				group = arr[i].replace(/ /g, '');
+				group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 				if (this.lookupGroups[group] != undefined) {
 					var tarArray;
 					if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group];
@@ -2520,9 +2516,8 @@ export function B2dEditor() {
 					if (data.refName && data.refName != "") {
 						delete this.lookupGroups[group][data.refName];
 					}
-
 					for (j = 0; j < subGroups; j++) {
-						subGroup = subGroups[i].replace(/ /g, '');
+						subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
 						if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
 							if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup];
 							else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup];
@@ -2981,7 +2976,6 @@ export function B2dEditor() {
 		color = colorLine.slice(1);
 		var colorLineHex = parseInt(color, 16);
 
-
 		graphic.clear();
 		graphic.boundsPadding = 0;
 
@@ -3007,7 +3001,6 @@ export function B2dEditor() {
 		graphic.originalGraphic = true;
 
 		return graphic;
-
 	}
 	this.updateCircleShape = function (graphic, radius, colorFill, colorLine, transparancy) {
 		var color;
@@ -3015,7 +3008,6 @@ export function B2dEditor() {
 		var colorFillHex = parseInt(color, 16);
 		color = colorLine.slice(1);
 		var colorLineHex = parseInt(color, 16);
-
 
 		graphic.clear();
 		graphic.boundsPadding = 0;
@@ -3504,8 +3496,6 @@ export function B2dEditor() {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
 	}
 
-
-
 	//CONSTS
 	this.editorMode_CAMERA = "camera";
 	this.editorMode_DRAWVERTICES = "drawVertices";
@@ -3528,7 +3518,6 @@ export function B2dEditor() {
 	this.mouseTransformType = 0;
 	this.mouseTransformType_Movement = 0;
 	this.mouseTransformType_Rotation = 1;
-
 
 	this.DEG2RAD = 0.017453292519943296;
 	this.RAD2DEG = 57.29577951308232;
