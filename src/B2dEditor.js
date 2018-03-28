@@ -37,10 +37,13 @@ export function B2dEditor() {
 	this.prefabCounter = 0; //to ensure uniquenesss
 
 	this.container = null;
-	this.editorMode = "";
+	this.selectedTool = 0;
 	this.admin = true; // for future to dissalow certain changes like naming
 	this.editorGUI;
-	this.editorGUIPos = {x:0, y:0};
+	this.editorGUIPos = {
+		x: 0,
+		y: 0
+	};
 	this.customGUIContainer = document.getElementById('my-gui-container');
 
 	this.selectedPhysicsBodies = [];
@@ -60,7 +63,10 @@ export function B2dEditor() {
 	// future this can be an opject with keys like bricks/green/etc.
 
 	this.assetGUI;
-	this.assetGUIPos = {x:0, y:0};
+	this.assetGUIPos = {
+		x: 0,
+		y: 0
+	};
 	this.assetSelectedTexture = "";
 	this.assetSelectedGroup = "";
 	this.assetSelectedObject = "";
@@ -125,7 +131,7 @@ export function B2dEditor() {
 		this.debugGraphics = new PIXI.Graphics();
 		this.container.parent.addChild(this.debugGraphics);
 
-		this.editorMode = this.editorMode_SELECTION;
+		this.selectTool(this.tool_SELECT);
 
 		this.mousePosPixel = new b2Vec2(0, 0);
 		this.mousePosWorld = new b2Vec2(0, 0);
@@ -137,50 +143,50 @@ export function B2dEditor() {
 
 	}
 	this.windows = [];
-    this.startDragPos = {
-        x: 0,
-        y: 0
-    };
-    this.startDragMouse = {
-        x: 0,
-        y: 0
-    };
-    this.initDrag = function (event, _window) {
-        var self = this;
-        $(document).on('mousemove', function (event) {
-            self.doDrag(event, _window)
-        });
-        self.startDragMouse.x = event.pageX;
-        self.startDragMouse.y = event.pageY;
-        self.startDragPos.x = parseInt($(_window).css('left'), 10) || 0;
-        self.startDragPos.y = parseInt($(_window).css('top'), 10) || 0;
+	this.startDragPos = {
+		x: 0,
+		y: 0
+	};
+	this.startDragMouse = {
+		x: 0,
+		y: 0
+	};
+	this.initDrag = function (event, _window) {
+		var self = this;
+		$(document).on('mousemove', function (event) {
+			self.doDrag(event, _window)
+		});
+		self.startDragMouse.x = event.pageX;
+		self.startDragMouse.y = event.pageY;
+		self.startDragPos.x = parseInt($(_window).css('left'), 10) || 0;
+		self.startDragPos.y = parseInt($(_window).css('top'), 10) || 0;
 
-        console.log('init drag');
-    }
-    this.endDrag = function (event, _window) {
-        $(document).off('mousemove');
-    }
-    this.doDrag = function (event, _window) {
-        console.log("do drag");
-        var difX = event.pageX - self.startDragMouse.x;
-        var difY = event.pageY - self.startDragMouse.y;
+		console.log('init drag');
+	}
+	this.endDrag = function (event, _window) {
+		$(document).off('mousemove');
+	}
+	this.doDrag = function (event, _window) {
+		console.log("do drag");
+		var difX = event.pageX - self.startDragMouse.x;
+		var difY = event.pageY - self.startDragMouse.y;
 
-        $(_window).css('left', self.startDragPos.x + difX);
-        $(_window).css('top', self.startDragPos.y + difY);
-    }
-    this.registerDragWindow = function (_window) {
-        this.windows.push(_window);
-        var $titleBar = $(_window).find('.dg .title');
-        $(_window).css('position', 'absolute');
+		$(_window).css('left', self.startDragPos.x + difX);
+		$(_window).css('top', self.startDragPos.y + difY);
+	}
+	this.registerDragWindow = function (_window) {
+		this.windows.push(_window);
+		var $titleBar = $(_window).find('.dg .title');
+		$(_window).css('position', 'absolute');
 
-        console.log($titleBar);
-        $titleBar.on('mousedown', function (event) {
-            self.initDrag(event, _window)
-        });
-        $(document).on('mouseup', function (event) {
-            self.endDrag(event, _window)
-        });
-    }
+		console.log($titleBar);
+		$titleBar.on('mousedown', function (event) {
+			self.initDrag(event, _window)
+		});
+		$(document).on('mouseup', function (event) {
+			self.endDrag(event, _window)
+		});
+	}
 	this.initGui = function () {
 		this.initGuiAssetSelection();
 		this.createToolGUI();
@@ -232,45 +238,84 @@ export function B2dEditor() {
 	}
 	this.removeGuiAssetSelection = function () {
 		if (this.assetGUI != undefined) {
-			this.assetGUIPos = {x:parseInt($(this.assetGUI.domElement).css('left'), 10), y:parseInt($(this.assetGUI.domElement).css('top'), 10)};
+			this.assetGUIPos = {
+				x: parseInt($(this.assetGUI.domElement).css('left'), 10),
+				y: parseInt($(this.assetGUI.domElement).css('top'), 10)
+			};
 			this.customGUIContainer.removeChild(this.assetGUI.domElement);
 			this.assetGUI = undefined;
 		}
 	}
 	this.createToolGUI = function () {
 		var self = this;
-        var toolGui = document.createElement("div");
-        toolGui.setAttribute('class', 'toolgui main');
-        var header = document.createElement('div');
-        header.setAttribute('class', 'dg');
-        var ul = document.createElement('ul');
-        header.appendChild(ul);
-        var li = document.createElement('li');
-        li.setAttribute('class', 'title')
-        li.innerText = "tools";
-        ul.appendChild(li);
-        toolGui.appendChild(header);
-        const icons = ['Icon_Zoom.png', 'Icon_Text.png', 'Icon_Specials.png', 'Icon_PolygonDrawing.png', 'Icon_PaintBucket.png', 'Icon_Joints.png', 'Icon_Hand.png', 'Icon_Geometry.png', 'Icon_Eraser.png'];
-        var buttonElement;
-        var imgElement;
-        for (var i = 0; i < icons.length; i++) {
-            buttonElement = document.createElement("table");
-            buttonElement.setAttribute('class', 'toolgui button');
+		var toolGui = document.createElement("div");
+		toolGui.setAttribute('class', 'toolgui main');
+		var header = document.createElement('div');
+		header.setAttribute('class', 'dg');
+		var ul = document.createElement('ul');
+		header.appendChild(ul);
+		var li = document.createElement('li');
+		li.setAttribute('class', 'title')
+		li.innerText = "tools";
+		ul.appendChild(li);
+		toolGui.appendChild(header);
+		const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png', 'Icon_Zoom.png', 'Icon_Hand.png', 'Icon_PaintBucket.png', 'Icon_Eraser.png'];
 
-            var row = document.createElement("tr");
-            buttonElement.appendChild(row);
-            imgElement = document.createElement('td');
-            imgElement.setAttribute('class', 'toolgui img');
-            row.appendChild(imgElement);
-            toolGui.appendChild(buttonElement);
-        }
-        document.getElementById('uicontainer').appendChild(toolGui);
-        var $buttons = $('.toolgui .img');
-        for (var i = 0; i < $buttons.length; i++) {
-            $($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');
-        }
-        self.registerDragWindow(toolGui);
-    }
+		var buttonElement;
+		var imgElement;
+		for (var i = 0; i < icons.length; i++) {
+			buttonElement = document.createElement("table");
+			buttonElement.setAttribute('class', 'toolgui button');
+			var row = document.createElement("tr");
+			buttonElement.appendChild(row);
+			imgElement = document.createElement('td');
+			imgElement.setAttribute('class', 'toolgui img');
+			row.appendChild(imgElement);
+			toolGui.appendChild(buttonElement);
+
+			var clickFunction = function (_i) {
+				return function(){
+					self.selectTool(_i)
+				}
+			};
+			$(buttonElement).on('click', clickFunction(i));
+		}
+		document.getElementById('uicontainer').appendChild(toolGui);
+		var $buttons = $('.toolgui .img');
+		for (var i = 0; i < $buttons.length; i++) {
+			$($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');
+		}
+		self.registerDragWindow(toolGui);
+	}
+	this.selectTool = function (i) {
+		this.selectedTool = i;
+
+		// switch (i) {
+		// 	case this.tool_SELECT:
+		// 		this.select();
+		// 		break
+		// 	case this.tool_GEOMETRY:
+		// 		this.startCircleDrawing()
+		// 		break
+		// 	case this.tool_POLYDRAWING:
+		// 		this.startVerticesDrawing();
+		// 		break
+		// 	case this.tool_JOINTS:
+		// 		break
+		// 	case this.tool_SPECIALS:
+		// 		break
+		// 	case this.tool_TEXT:
+		// 		break
+		// 	case this.tool_ZOOM:
+		// 		break
+		// 	case this.tool_MOVE:
+		// 		break
+		// 	case this.tool_PAINTBUCKET:
+		// 		break
+		// 	case this.tool_ERASER:
+		// 		break
+		// }
+	}
 
 	this.updateSelection = function () {
 		//Joints
@@ -863,13 +908,13 @@ export function B2dEditor() {
 	this.doEditor = function () {
 		this.debugGraphics.clear();
 
-		if (this.editorMode == this.editorMode_SELECTION) {
+		if (this.selectedTool == this.tool_SELECT) {
 			this.doSelection();
-		} else if (this.editorMode == this.editorMode_DRAWVERTICES) {
+		} else if (this.selectedTool == this.tool_POLYDRAWING) {
 			this.doVerticesDrawing();
-		} else if (this.editorMode == this.editorMode_DRAWCIRCLES) {
+		} else if (this.selectedTool == this.tool_GEOMETRY) {
 			this.doCircleDrawing();
-		} else if (this.editorMode == this.editorMode_CAMERA) {
+		} else if (this.selectedTool == this.tool_CAMERA) {
 			this.doCamera();
 		}
 	}
@@ -910,7 +955,7 @@ export function B2dEditor() {
 		var key;
 		for (key in this.prefabs) {
 			if (this.prefabs.hasOwnProperty(key)) {
-				if(prefab.prefabs[this.prefabs[key].prefabName].update) prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
+				if (prefab.prefabs[this.prefabs[key].prefabName].update) prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
 			}
 		}
 	}
@@ -1011,19 +1056,6 @@ export function B2dEditor() {
 		this.prefabName;
 		this.instanceID;
 	}
-
-	this.startVerticesDrawing = function () {
-		this.editorMode = this.editorMode_DRAWVERTICES;
-	}
-	this.startCircleDrawing = function () {
-		this.editorMode = this.editorMode_DRAWCIRCLES;
-	}
-	this.startSelectionMode = function () {
-		this.editorMode = this.editorMode_SELECTION;
-	}
-	this.startCameraMode = function () {
-		this.editorMode = this.editorMode_CAMERA;
-	}
 	this.takeCameraShot = function () {
 		//first clean up screen
 		this.debugGraphics.clear();
@@ -1072,9 +1104,9 @@ export function B2dEditor() {
 	}
 
 	this.onMouseDown = function (evt) {
-
+		console.log(this.selectedTool+"  "+this.tool_SELECT);
 		if (this.editing) {
-			if (this.editorMode == this.editorMode_SELECTION) {
+			if (this.selectedTool == this.tool_SELECT) {
 
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 				this.storeUndoMovement();
@@ -1207,7 +1239,7 @@ export function B2dEditor() {
 					}
 				}
 
-			} else if (this.editorMode == this.editorMode_DRAWVERTICES) {
+			} else if (this.selectedTool == this.tool_POLYDRAWING) {
 				if (!this.closeDrawing) {
 					if (this.correctDrawVertice && this.activeVertices.length > 1) {
 						this.activeVertices[this.activeVertices.length - 1] = {
@@ -1225,11 +1257,11 @@ export function B2dEditor() {
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 					this.buildBodyFromObj(bodyObject);
 					this.activeVertices = [];
-					this.editorMode = this.editorMode_SELECTION;
+					this.selectTool(this.tool_SELECT);
 				}
-			} else if (this.editorMode == this.editorMode_DRAWCIRCLES) {
+			} else if (this.selectedTool == this.tool_GEOMETRY) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-			} else if (this.editorMode_CAMERA == this.editorMode_CAMERA) {
+			} else if (this.selectedTool == this.tool_GEOMETRY) {
 				this.takeCameraShot();
 			}
 		}
@@ -1242,7 +1274,7 @@ export function B2dEditor() {
 		if (this.oldMousePosWorld == null) this.oldMousePosWorld = this.mousePosWorld;
 
 		if (this.editing) {
-			if (this.editorMode == this.editorMode_SELECTION) {
+			if (this.selectedTool == this.tool_SELECT) {
 				if (this.mouseDown) {
 					var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
 					if (this.spaceDown) {
@@ -1535,7 +1567,7 @@ export function B2dEditor() {
 
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
-			if (this.editorMode == this.editorMode_SELECTION) {
+			if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && this.startSelectionPoint) {
 					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
@@ -1547,7 +1579,7 @@ export function B2dEditor() {
 				} else {
 					this.storeUndoMovement();
 				}
-			} else if (this.editorMode == this.editorMode_DRAWCIRCLES) {
+			} else if (this.selectedTool == this.tool_GEOMETRY) {
 				var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
 				if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
 					var bodyObject = new this.bodyObject;
@@ -1561,23 +1593,16 @@ export function B2dEditor() {
 		this.mouseDown = false;
 	}
 	this.onKeyDown = function (e) {
-
-
 		if (e.keyCode == 68) { //d
-			console.log("draw! :)");
-			this.startVerticesDrawing();
+			this.selectTool(this.tool_POLYDRAWING);
 		} else if (e.keyCode == 67) { //c
 			if (e.ctrlKey || e.metaKey) {
 				this.copySelection();
 			} else {
-				console.log("circle! :)");
-				this.startCircleDrawing();
+				this.selectTool(this.tool_GEOMETRY);
 			}
-
-
 		} else if (e.keyCode == 77) { //m
-			console.log("selection! :)");
-			this.startSelectionMode();
+			this.selectTool(this.tool_SELECT);
 		} else if (e.keyCode == 81) { //q
 			this.anchorTextureToBody();
 		} else if (e.keyCode == 74) { //j
@@ -1585,7 +1610,7 @@ export function B2dEditor() {
 		} else if (e.keyCode == 83) { //s
 			this.stringifyWorldJSON();
 		} else if (e.keyCode == 84) { //t
-			this.startCameraMode();
+			this.selectTool(this.tool_CAMERA);
 		} else if (e.keyCode == 86) { // v
 			if (e.ctrlKey || e.metaKey) {
 				this.pasteSelection();
@@ -2594,7 +2619,7 @@ export function B2dEditor() {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
-		if(obj.tileTexture) this.updateBodyTileSprite(body);
+		if (obj.tileTexture) this.updateBodyTileSprite(body);
 
 		this.setBodyCollision(body, obj.collision);
 
@@ -2857,7 +2882,7 @@ export function B2dEditor() {
 		body.mySprite.visible = true;
 		texture.myBody = null;
 	}
-	this.prepareBodyForDecals = function(body){
+	this.prepareBodyForDecals = function (body) {
 		if (!body.myDecalSprite) {
 			//prepare mask
 			let drawGraphic = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
@@ -2888,7 +2913,7 @@ export function B2dEditor() {
 		}
 	}
 	this.addDecalToBody = function (body, worldPosition, textureName, carving) {
-		if(!body.myDecalSprite) this.prepareBodyForDecals(body);
+		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
 
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
@@ -2955,7 +2980,7 @@ export function B2dEditor() {
 				body.mySprite.addChild(mesh);
 
 				body.myTileSprite = mesh;
-			} else if(tileTexture != body.myTileSprite.texture.textureCacheIds[0]){
+			} else if (tileTexture != body.myTileSprite.texture.textureCacheIds[0]) {
 				tex = PIXI.Texture.fromImage(tileTexture);
 				tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 				body.myTileSprite.texture = tex;
@@ -3284,7 +3309,7 @@ export function B2dEditor() {
 				} else if (obj.type == this.object_JOINT) {
 					obj.bodyA_ID += startChildIndex;
 					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
-					if(this.editing) worldObject = this.attachJointPlaceHolder(obj);
+					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
 					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
@@ -3320,7 +3345,7 @@ export function B2dEditor() {
 
 	this.resetEditor = function () {
 		this.editing = true;
-		this.editorMode = this.editorMode_SELECTION;
+		this.selectTool(this.tool_SELECT);
 
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
@@ -3364,23 +3389,23 @@ export function B2dEditor() {
 	}
 	var self = this;
 	this.B2dEditorContactListener = new Box2D.Dynamics.b2ContactListener();
-	this.B2dEditorContactListener.BubbleEvent = function(name, contact, secondParam){
-		if(self.contactCallBackListener){
-			if(secondParam) self.contactCallBackListener[name](contact, secondParam);
+	this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
+		if (self.contactCallBackListener) {
+			if (secondParam) self.contactCallBackListener[name](contact, secondParam);
 			else self.contactCallBackListener[name](contact);
 		}
 		var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 		var body;
 		var selectedPrefab = null;
-        for(var i = 0; i<bodies.length; i++){
+		for (var i = 0; i < bodies.length; i++) {
 			body = bodies[i];
-			if(body.mySprite.data.prefabInstanceName){
+			if (body.mySprite.data.prefabInstanceName) {
 				var tarPrefab = prefab.prefabs[self.prefabs[body.mySprite.data.prefabInstanceName].prefabName];
 
-				if(tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener){
+				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
 					selectedPrefab = tarPrefab;
 
-					if(secondParam) selectedPrefab.contactListener[name](contact, secondParam, self.prefabs[body.mySprite.data.prefabInstanceName]);
+					if (secondParam) selectedPrefab.contactListener[name](contact, secondParam, self.prefabs[body.mySprite.data.prefabInstanceName]);
 					else selectedPrefab.contactListener[name](contact, self.prefabs[body.mySprite.data.prefabInstanceName]);
 
 					selectedPrefab.contactListener.BeginContact(contact, self.prefabs[body.mySprite.data.prefabInstanceName]);
@@ -3497,11 +3522,6 @@ export function B2dEditor() {
 	}
 
 	//CONSTS
-	this.editorMode_CAMERA = "camera";
-	this.editorMode_DRAWVERTICES = "drawVertices";
-	this.editorMode_DRAWCIRCLES = "drawCircles";
-	this.editorMode_SELECTION = "selection";
-
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
 
 	this.object_BODY = 0;
@@ -3528,6 +3548,18 @@ export function B2dEditor() {
 	this.MASKBIT_EVERYTHING_BUT_US = 0x0008;
 	this.MASKBIT_ONLY_US = 0x0010;
 	this.GROUPINDEX_CHARACTER = -3;
+
+	this.tool_SELECT = 0;
+	this.tool_GEOMETRY = 1;
+	this.tool_POLYDRAWING = 2;
+	this.tool_JOINTS = 3;
+	this.tool_SPECIALS = 4;
+	this.tool_TEXT = 5;
+	this.tool_ZOOM = 6;
+	this.tool_MOVE = 7;
+	this.tool_PAINTBUCKET = 8;
+	this.tool_ERASER = 9;
+	this.tool_CAMERA = 10;
 
 	this.minimumBodySurfaceArea = 0.3;
 }
