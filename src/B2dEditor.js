@@ -131,8 +131,6 @@ export function B2dEditor() {
 		this.debugGraphics = new PIXI.Graphics();
 		this.container.parent.addChild(this.debugGraphics);
 
-		this.selectTool(this.tool_SELECT);
-
 		this.mousePosPixel = new b2Vec2(0, 0);
 		this.mousePosWorld = new b2Vec2(0, 0);
 
@@ -140,7 +138,7 @@ export function B2dEditor() {
 
 
 		this.initGui();
-
+		this.selectTool(this.tool_SELECT);
 	}
 	this.windows = [];
 	this.startDragPos = {
@@ -289,6 +287,11 @@ export function B2dEditor() {
 	}
 	this.selectTool = function (i) {
 		this.selectedTool = i;
+
+		var $buttons = $('.toolgui .button');
+		$buttons.css("background-color", "#999999");
+		$($buttons[i]).css("background-color", "#4F4F4F");
+
 
 		// switch (i) {
 		// 	case this.tool_SELECT:
