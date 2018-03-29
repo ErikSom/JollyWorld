@@ -911,11 +911,13 @@ export function B2dEditor() {
 		if (this.selectedTool == this.tool_SELECT) {
 			this.doSelection();
 		} else if (this.selectedTool == this.tool_POLYDRAWING) {
-			this.doVerticesDrawing();
+			this.doVerticesDrawing(true);
 		} else if (this.selectedTool == this.tool_GEOMETRY) {
 			this.doCircleDrawing();
 		} else if (this.selectedTool == this.tool_CAMERA) {
 			this.doCamera();
+		}else if(this.selectedTool == this.tool_PAINTBUCKET){
+			this.doVerticesDrawing(false);
 		}
 	}
 	this.run = function () {
@@ -1004,7 +1006,22 @@ export function B2dEditor() {
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
 		this.isCarvable = false;
-
+	}
+	this.graphicGroup = function(){
+		this.ID = 0;
+		this.graphicObjects = [];
+	}
+	this.graphicObject = function(){
+		this.colorFill = "#999999";
+		this.colorLine = "#000";
+		this.transparancy = 1.0;
+		this.vertices = [{
+			x: 0,
+			y: 0
+		}, {
+			x: 0,
+			y: 0
+		}];
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -1210,10 +1227,7 @@ export function B2dEditor() {
 								}
 							}
 						}
-
 						//
-
-
 						if (this.shiftDown) {
 							//push old selection
 							var i;
@@ -1261,8 +1275,17 @@ export function B2dEditor() {
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-			} else if (this.selectedTool == this.tool_GEOMETRY) {
+			} else if (this.selectedTool == this.tool_CAMERA) {
 				this.takeCameraShot();
+			}else if(this.selectedTool == this.tool_PAINTBUCKET){
+				if(!this.closeDrawing){
+					this.activeVertices.push({
+						x: this.mousePosWorld.x,
+						y: this.mousePosWorld.y
+					});
+				}else{
+					
+				}
 			}
 		}
 		this.updateMousePosition(evt);
@@ -2198,13 +2221,14 @@ export function B2dEditor() {
 	this.closeDrawing = false;
 	this.activeVertices = [];
 
-	this.verticesLineColor = "#00FF00";
-	this.verticesFillColor = "#0000FF";
+	this.verticesLineColor = 0x000000;
+	this.verticesFillColor = 0x000000;
+	this.verticesFirstFillColor = 0xFFFF00;
+	this.verticesDoneFillColor = 0x00FF00;
 	this.verticesBulletRadius = 5;
 
-	this.doVerticesDrawing = function () {
+	this.doVerticesDrawing = function (convex) {
 		this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
-		this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
 		var i = 0;
 		var newVertice;
@@ -2220,7 +2244,7 @@ export function B2dEditor() {
 			}
 			activeVertice = this.activeVertices[this.activeVertices.length - 1];
 
-			if (this.activeVertices.length > 1) {
+			if (this.activeVertices.length > 1 && convex) {
 
 				previousVertice = this.activeVertices[this.activeVertices.length - 2];
 				// compare mouse base angle with mouse previous angle
@@ -2312,20 +2336,34 @@ export function B2dEditor() {
 						this.closeDrawing = true;
 					}
 				}
-
+			}else if (this.activeVertices.length > 1 && !convex) {
+				var firstVertice = this.activeVertices[0];
+				var disX = newVertice.x-firstVertice.x;
+				var disY = newVertice.y-firstVertice.y;
+				var dis = Math.sqrt(disX*disX+disY*disY);
+				const graphicClosingMargin = 1 / this.container.scale.x;
+				if(dis<=graphicClosingMargin){
+					this.closeDrawing = true;
+					newVertice = firstVertice;
+				}
 			}
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
+			if(this.closeDrawing) this.debugGraphics.beginFill(this.verticesDoneFillColor, 0.5);
+			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
 			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
 
 			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
-
 			this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
+			this.debugGraphics.endFill();
 		}
 		previousVertice = null;
 
 
 		for (i = 0; i < this.activeVertices.length; i++) {
+
+			if(i == 0) this.debugGraphics.beginFill(this.verticesFirstFillColor, 0.5);
+			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
 			activeVertice = this.activeVertices[i];
 
@@ -2338,10 +2376,8 @@ export function B2dEditor() {
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.container.scale.y + this.container.y);
 			}
+			this.debugGraphics.endFill();
 		}
-
-		this.debugGraphics.endFill();
-
 	}
 	this.doCircleDrawing = function () {
 		if (this.mouseDown) {
@@ -2358,7 +2394,6 @@ export function B2dEditor() {
 
 	this.createBodyObjectFromVerts = function (verts) {
 		var bodyObject = new this.bodyObject;
-
 		var i = 0;
 		var centerPoint = {
 			x: 0,
@@ -2383,7 +2418,6 @@ export function B2dEditor() {
 				y: verts[i].y - centerPoint.y
 			};
 		}
-
 		bodyObject.x = centerPoint.x;
 		bodyObject.y = centerPoint.y;
 		bodyObject.vertices = verts.reverse();
