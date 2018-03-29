@@ -136,7 +136,6 @@ export function B2dEditor() {
 
 		this.canvas = document.getElementById("canvas");
 
-
 		this.initGui();
 		this.selectTool(this.tool_SELECT);
 	}
@@ -1018,6 +1017,7 @@ export function B2dEditor() {
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.transparancy = 1.0;
+		this.radius;
 		this.vertices = [{
 			x: 0,
 			y: 0
@@ -1274,7 +1274,6 @@ export function B2dEditor() {
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 					this.buildBodyFromObj(bodyObject);
 					this.activeVertices = [];
-					this.selectTool(this.tool_SELECT);
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
@@ -1287,7 +1286,9 @@ export function B2dEditor() {
 						y: this.mousePosWorld.y
 					});
 				}else{
-					
+					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+					this.buildGraphicFromObj(graphicObject);
+					this.activeVertices = [];
 				}
 			}
 		}
@@ -2397,6 +2398,37 @@ export function B2dEditor() {
 
 	this.createBodyObjectFromVerts = function (verts) {
 		var bodyObject = new this.bodyObject;
+
+		var vertsConversion = this.convertGlobalVertsToLocalVerts(verts);
+		verts = vertsConversion[0];
+		var centerPoint = vertsConversion[1];
+
+		bodyObject.x = centerPoint.x;
+		bodyObject.y = centerPoint.y;
+		bodyObject.vertices = verts;
+
+		bodyObject.x = centerPoint.x;
+		bodyObject.y = centerPoint.y;
+		bodyObject.vertices = verts.reverse();
+		return bodyObject;
+	}
+	this.createGraphicObjectFromVerts = function (verts) {
+		var graphicObject = new this.graphicObject;
+		for(var i = 0; i<verts.length; i++){
+			verts[i].x = verts[i].x * this.PTM;
+			verts[i].y = verts[i].y * this.PTM;
+		}
+		var vertsConversion = this.convertGlobalVertsToLocalVerts(verts);
+		verts = vertsConversion[0];
+		var centerPoint = vertsConversion[1];
+
+		graphicObject.x = centerPoint.x;
+		graphicObject.y = centerPoint.y;
+		graphicObject.vertices = verts;
+
+		return graphicObject;
+	}
+	this.convertGlobalVertsToLocalVerts = function(verts){
 		var i = 0;
 		var centerPoint = {
 			x: 0,
@@ -2421,13 +2453,9 @@ export function B2dEditor() {
 				y: verts[i].y - centerPoint.y
 			};
 		}
-		bodyObject.x = centerPoint.x;
-		bodyObject.y = centerPoint.y;
-		bodyObject.vertices = verts.reverse();
-
-		return bodyObject;
-
+		return [verts, centerPoint];
 	}
+
 	this.cameraOverlayGUIColor = "#000000";
 	this.cameraOverlayGUICircleRadius = 20;
 	this.doCamera = function () {
@@ -2663,6 +2691,26 @@ export function B2dEditor() {
 		this.addItemToLookupGroups(body, body.mySprite.data);
 
 		return body;
+
+	}
+	this.buildGraphicFromObj = function (obj) {
+		//graphicGroup
+		var graphic = new PIXI.Graphics();
+		graphic.data = obj;
+		graphic.x = obj.x;
+		graphic.y = obj.y;
+
+		this.updatePolyGraphic(graphic, obj.vertices, obj.colorFill, obj.colorLine, obj.transparancy);
+		//if (!obj.radius) this.updatePolyShape(body.myGraphic, fixDef.shape, obj.colorFill, obj.colorLine, obj.transparancy);
+		//else this.updateCircleShape(body.myGraphic, obj.radius, obj.colorFill, obj.colorLine, obj.transparancy);
+
+		this.textures.addChild(graphic);
+
+		//if (obj.tileTexture) this.updateBodyTileSprite(body);
+
+		this.addItemToLookupGroups(graphic, graphic.data);
+		console.log('wtf');
+		return graphic;
 
 	}
 	this.setBodyCollision = function (body, collision) {
@@ -3030,6 +3078,35 @@ export function B2dEditor() {
 		}
 	}
 
+	this.updatePolyGraphic = function(graphic, verts, colorFill, colorLine, transparancy) {
+		var color;
+		color = colorFill.slice(1);
+		var colorFillHex = parseInt(color, 16);
+		color = colorLine.slice(1);
+		var colorLineHex = parseInt(color, 16);
+
+		graphic.clear();
+		graphic.boundsPadding = 0;
+
+		graphic.lineStyle(1, colorLineHex, transparancy);
+		graphic.beginFill(colorFillHex, transparancy);
+
+		var count = verts.length;
+		var startPoint = verts[0];
+
+		graphic.moveTo(startPoint.x, startPoint.y);
+
+		var i;
+		var nextPoint;
+		for (i = 1; i < count; i++) {
+			nextPoint = verts[i];
+			graphic.lineTo(nextPoint.x, nextPoint.y);
+		}
+		graphic.lineTo(startPoint.x, startPoint.y);
+		graphic.endFill();
+
+		return graphic;
+	}
 	this.updatePolyShape = function (graphic, poly, colorFill, colorLine, transparancy) {
 
 		var color;
