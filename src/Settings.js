@@ -4,5 +4,4 @@ export var Settings = {
     emitterMaxPoolTime:5000,
     emitterPool:30,
     bloodMultiplayer:1
-
 }

@@ -284,6 +284,16 @@ export function B2dEditor() {
 		}
 		self.registerDragWindow(toolGui);
 	}
+	this.destroyGUI = function(){
+		if (this.editorGUI != undefined) {
+			this.customGUIContainer.removeChild(this.editorGUI.domElement);
+			this.editorGUI = null;
+		}
+		if (this.assetGUI != undefined) {
+			this.customGUIContainer.removeChild(this.assetGUI.domElement);
+			this.assetGUI = undefined;
+		}
+	}
 	this.selectTool = function (i) {
 		this.selectedTool = i;
 
@@ -291,49 +301,58 @@ export function B2dEditor() {
 		$buttons.css("background-color", "#999999");
 		$($buttons[i]).css("background-color", "#4F4F4F");
 
+		this.destroyGUI();
 
-		// switch (i) {
-		// 	case this.tool_SELECT:
-		// 		this.select();
-		// 		break
-		// 	case this.tool_GEOMETRY:
-		// 		this.startCircleDrawing()
-		// 		break
-		// 	case this.tool_POLYDRAWING:
-		// 		this.startVerticesDrawing();
-		// 		break
-		// 	case this.tool_JOINTS:
-		// 		break
-		// 	case this.tool_SPECIALS:
-		// 		break
-		// 	case this.tool_TEXT:
-		// 		break
-		// 	case this.tool_ZOOM:
-		// 		break
-		// 	case this.tool_MOVE:
-		// 		break
-		// 	case this.tool_PAINTBUCKET:
-		// 		break
-		// 	case this.tool_ERASER:
-		// 		break
-		// }
+		switch (i) {
+			case this.tool_SELECT:
+				break
+			case this.tool_GEOMETRY:
+				break
+			case this.tool_POLYDRAWING:
+				break
+			case this.tool_JOINTS:
+				break
+			case this.tool_SPECIALS:
+				break
+			case this.tool_TEXT:
+				break
+			case this.tool_ZOOM:
+				break
+			case this.tool_MOVE:
+				break
+			case this.tool_PAINTBUCKET:
+
+				this.editorGUI = new dat.GUI({
+					autoPlace: false,
+					width: this.editorGUIWidth
+				});
+				this.customGUIContainer.appendChild(this.editorGUI.domElement);
+				var dataJoint;
+				var self = this;
+				var controller;
+				var folder;
+				this.editorGUI.editData = new this.bodyObject;
+				this.editorGUI.addFolder('draw graphics');
+
+				for (var key in this.editorGUI.editData) {
+					if (this.editorGUI.editData.hasOwnProperty(key)) {
+						//TODO:Load from saved data
+					}
+				}
+				this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+				this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+				this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				break
+			case this.tool_ERASER:
+				break
+		}
 	}
 
 	this.updateSelection = function () {
 		//Joints
 		var i;
 
-		//reset
-		if (this.editorGUI != undefined) {
-			this.customGUIContainer.removeChild(this.editorGUI.domElement);
-			this.editorGUI = null;
-		}
-
-		// hide asset gui
-		if (this.assetGUI != undefined) {
-			this.customGUIContainer.removeChild(this.assetGUI.domElement);
-			this.assetGUI = undefined;
-		}
+		this.destroyGUI();
 
 
 		var case_NOTHING = "0";
@@ -389,7 +408,7 @@ export function B2dEditor() {
 
 		this.editorGUI = new dat.GUI({
 			autoPlace: false,
-			width: 200
+			width: this.editorGUIWidth
 		});
 		this.customGUIContainer.appendChild(this.editorGUI.domElement);
 		var dataJoint;
@@ -921,6 +940,7 @@ export function B2dEditor() {
 		}else if(this.selectedTool == this.tool_PAINTBUCKET){
 			this.doVerticesDrawing(false);
 		}
+		this.doEditorGUI();
 	}
 	this.run = function () {
 		//update textures
@@ -1010,10 +1030,12 @@ export function B2dEditor() {
 		this.isCarvable = false;
 	}
 	this.graphicGroup = function(){
+		this.type;
 		this.ID = 0;
 		this.graphicObjects = [];
 	}
 	this.graphicObject = function(){
+		this.type = self.object_GRAPHIC;
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.transparancy = 1.0;
@@ -1075,6 +1097,11 @@ export function B2dEditor() {
 		this.settings;
 		this.prefabName;
 		this.instanceID;
+	}
+	this.editorGraphicDrawingObject = function(){
+		this.colorFill = "#999999";
+		this.colorLine = "#000";
+		this.transparancy = 1.0;
 	}
 	this.takeCameraShot = function () {
 		//first clean up screen
@@ -1962,10 +1989,8 @@ export function B2dEditor() {
 
 			}
 		}
-		//
-
-
-
+	}
+	this.doEditorGUI = function(){
 		if (this.editorGUI && this.editorGUI.editData) {
 			var controller;
 			var controllers = [];
@@ -2193,16 +2218,17 @@ export function B2dEditor() {
 				else if (this.selectedPhysicsBodies.length > 0) syncObject = this.selectedPhysicsBodies[0];
 				else syncObject = this.prefabs[key];
 			}
-
-			if (syncObject.mySprite) {
-				var pos = syncObject.GetPosition();
-				this.editorGUI.editData.x = pos.x * this.PTM;
-				this.editorGUI.editData.y = pos.y * this.PTM;
-				this.editorGUI.editData.rotation = syncObject.GetAngle() * this.RAD2DEG;
-			} else {
-				this.editorGUI.editData.x = syncObject.x;
-				this.editorGUI.editData.y = syncObject.y;
-				this.editorGUI.editData.rotation = syncObject.rotation;
+			if(syncObject){
+				if (syncObject.mySprite) {
+					var pos = syncObject.GetPosition();
+					this.editorGUI.editData.x = pos.x * this.PTM;
+					this.editorGUI.editData.y = pos.y * this.PTM;
+					this.editorGUI.editData.rotation = syncObject.GetAngle() * this.RAD2DEG;
+				} else {
+					this.editorGUI.editData.x = syncObject.x;
+					this.editorGUI.editData.y = syncObject.y;
+					this.editorGUI.editData.rotation = syncObject.rotation;
+				}
 			}
 
 			//new sync for mouse movements
@@ -2215,8 +2241,6 @@ export function B2dEditor() {
 					controller.initialValue = this.editorGUI.editData.y;
 				}
 			}
-
-
 		}
 	}
 
@@ -3496,10 +3520,7 @@ export function B2dEditor() {
 		console.log(this.textures.children.length);
 
 		//reset gui
-		if (this.editorGUI != undefined) {
-			this.customGUIContainer.removeChild(this.editorGUI.domElement);
-			this.editorGUI = null;
-		}
+		this.destroyGUI();
 	}
 	var self = this;
 	this.B2dEditorContactListener = new Box2D.Dynamics.b2ContactListener();
@@ -3644,6 +3665,7 @@ export function B2dEditor() {
 	this.object_UNDO_MOVEMENT = 3;
 	this.object_PREFAB = 4;
 	this.object_MULTIPLE = 5;
+	this.object_GRAPHIC = 6;
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
@@ -3676,4 +3698,5 @@ export function B2dEditor() {
 	this.tool_CAMERA = 10;
 
 	this.minimumBodySurfaceArea = 0.3;
+	this.editorGUIWidth = 200;
 }
