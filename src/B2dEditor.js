@@ -158,13 +158,11 @@ export function B2dEditor() {
 		self.startDragPos.x = parseInt($(_window).css('left'), 10) || 0;
 		self.startDragPos.y = parseInt($(_window).css('top'), 10) || 0;
 
-		console.log('init drag');
 	}
 	this.endDrag = function (event, _window) {
 		$(document).off('mousemove');
 	}
 	this.doDrag = function (event, _window) {
-		console.log("do drag");
 		var difX = event.pageX - self.startDragMouse.x;
 		var difY = event.pageY - self.startDragMouse.y;
 
@@ -175,8 +173,6 @@ export function B2dEditor() {
 		this.windows.push(_window);
 		var $titleBar = $(_window).find('.dg .title');
 		$(_window).css('position', 'absolute');
-
-		console.log($titleBar);
 		$titleBar.on('mousedown', function (event) {
 			self.initDrag(event, _window)
 		});
@@ -364,7 +360,6 @@ export function B2dEditor() {
 
 		var currentCase = case_NOTHING;
 		var prefabKeys = Object.keys(this.selectedPrefabs);
-		console.log(Object.keys(this.selectedPrefabs).length);
 
 		if (prefabKeys.length > 0 && this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) {
 			currentCase = case_JUST_PREFABS;
@@ -425,8 +420,11 @@ export function B2dEditor() {
 				else this.editorGUI.addFolder('body');
 				break;
 			case case_JUST_TEXTURES:
-				this.editorGUI.editData = new this.textureObject;
 				dataJoint = _selectedTextures[0].data;
+
+				if(dataJoint.type == this.object_TEXTURE) this.editorGUI.editData = new this.textureObject;
+				if(dataJoint.type == this.object_GRAPHIC) this.editorGUI.editData = new this.graphicObject;
+
 				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple textures');
 				else this.editorGUI.addFolder('texture');
 				break;
@@ -507,8 +505,6 @@ export function B2dEditor() {
 				this.targetValue = value;
 			});
 		}
-
-
 		//Populate custom  fields
 		switch (currentCase) {
 			case case_JUST_BODIES:
@@ -552,6 +548,24 @@ export function B2dEditor() {
 				}.bind(controller));
 				break;
 			case case_JUST_TEXTURES:
+				if(dataJoint.type == this.object_GRAPHIC){
+					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+				}
+
 				break;
 			case case_JUST_JOINTS:
 				var jointTypes = ["Pin", "Slide", "Distance"];
@@ -1036,6 +1050,12 @@ export function B2dEditor() {
 	}
 	this.graphicObject = function(){
 		this.type = self.object_GRAPHIC;
+		this.x = null;
+		this.y = null;
+		this.rotation = 0;
+		this.groups = "";
+		this.refName = "";
+		this.ID = 0;
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.transparancy = 1.0;
@@ -1151,7 +1171,6 @@ export function B2dEditor() {
 	}
 
 	this.onMouseDown = function (evt) {
-		console.log(this.selectedTool+"  "+this.tool_SELECT);
 		if (this.editing) {
 			if (this.selectedTool == this.tool_SELECT) {
 
@@ -1247,8 +1266,6 @@ export function B2dEditor() {
 									else this.selectedPhysicsBodies = [highestObject];
 
 									game.app.renderer.plugins.graphics.updateGraphics(this.selectedPhysicsBodies[0].myGraphic);
-									console.log("INDICES FOR OBJECT:");
-									console.log(this.selectedPhysicsBodies[0].myGraphic._webGL[game.app.renderer.CONTEXT_UID]);
 
 								} else {
 									this.selectedPhysicsBodies = [];
@@ -1508,20 +1525,10 @@ export function B2dEditor() {
 
 			for (i = 0; i < depthArray.length; i++) {
 				child = depthArray[i];
-
-				console.log("SWAP CHILD -> NEIGHBOUR");
-				console.log(child.parent.getChildIndex(child));
-
 				if ((obj && tarDepthIndexes[i] + 1 < child.parent.children.length) || (!obj && tarDepthIndexes[i] - 1 >= 0)) {
-
 					if (obj) neighbour = child.parent.getChildAt(tarDepthIndexes[i] + 1);
 					else neighbour = child.parent.getChildAt(tarDepthIndexes[i] - 1);
-
-					console.log(neighbour.parent.getChildIndex(neighbour));
-
 					child.parent.swapChildren(child, neighbour);
-
-
 				}
 			}
 
@@ -1775,10 +1782,8 @@ export function B2dEditor() {
 
 		aabb.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
 		aabb.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
-
 		var lowerBoundPixi = this.getPIXIPointFromWorldPoint(aabb.lowerBound);
 		var upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.upperBound);
-
 		//QueryTextures
 
 		var queryGraphics = [];
@@ -1874,7 +1879,7 @@ export function B2dEditor() {
 					aabb.Combine(aabb, fixture.GetAABB());
 					fixture = fixture.GetNext();
 				}
-			} else {
+			} else if(sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject){
 				//sprite.calculateBounds()
 
 				//sprite = sprite.getLocalBounds();
@@ -1882,6 +1887,12 @@ export function B2dEditor() {
 				var spriteAABB = new b2AABB;
 				spriteAABB.lowerBound = new b2Vec2((sprite.position.x - (bounds.width / 2) * sprite.scale.x) / this.PTM, (sprite.position.y - (bounds.height / 2) * sprite.scale.x) / this.PTM);
 				spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
+				aabb.Combine(aabb, spriteAABB);
+			}else{
+				var bounds = sprite.getPolyBounds();
+				var spriteAABB = new b2AABB;
+				spriteAABB.lowerBound = new b2Vec2((bounds.x) / this.PTM, (bounds.y) / this.PTM);
+				spriteAABB.upperBound = new b2Vec2((bounds.x+bounds.width) / this.PTM, (bounds.y+bounds.height) / this.PTM);
 				aabb.Combine(aabb, spriteAABB);
 			}
 		}
@@ -2121,7 +2132,7 @@ export function B2dEditor() {
 							this.updateBodyTileSprite(body);
 						}
 					} else if (controller.property == "colorFill") {
-						//body
+						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.colorFill = controller.targetValue.toString();
@@ -2130,8 +2141,14 @@ export function B2dEditor() {
 							if (body.mySprite.data.radius) this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
 							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
 						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.data.colorFill = controller.targetValue.toString();
+							if (sprite.data.radius); //this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							else  this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+						}
 					} else if (controller.property == "colorLine") {
-						//body
+						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.colorLine = controller.targetValue.toString();
@@ -2139,14 +2156,26 @@ export function B2dEditor() {
 							if (body.mySprite.data.radius) this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
 							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
 						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.data.colorLine = controller.targetValue.toString();
+							if (sprite.data.radius); //this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							else  this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+						}
 					} else if (controller.property == "transparancy") {
-						//body
+						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.transparancy = controller.targetValue;
 							var fixture = body.GetFixtureList();
 							if (body.mySprite.data.radius) this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
 							else this.updatePolyShape(body.myGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.data.transparancy = controller.targetValue.toString();
+							if (sprite.data.radius); //this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							else  this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 						}
 					} else if (controller.property == "fixed") {
 						//body
@@ -2442,12 +2471,24 @@ export function B2dEditor() {
 			verts[i].x = verts[i].x * this.PTM;
 			verts[i].y = verts[i].y * this.PTM;
 		}
+		var lowX = 0;
+		var lowY = 0;
+		for(var i =0; i<verts.length; i++){
+			if(verts[i].x < lowX) lowX = verts[i].x;
+			if(verts[i].y < lowY) lowY = verts[i].y;
+		}
+
+		for(var i =0; i<verts.length; i++){
+			verts[i].x += lowX;
+			verts[i].y += lowY;
+		}
+
 		var vertsConversion = this.convertGlobalVertsToLocalVerts(verts);
 		verts = vertsConversion[0];
 		var centerPoint = vertsConversion[1];
 
-		graphicObject.x = centerPoint.x;
-		graphicObject.y = centerPoint.y;
+		graphicObject.x = centerPoint.x-lowX;
+		graphicObject.y = centerPoint.y-lowY;
 		graphicObject.vertices = verts;
 
 		return graphicObject;
@@ -2733,7 +2774,6 @@ export function B2dEditor() {
 		//if (obj.tileTexture) this.updateBodyTileSprite(body);
 
 		this.addItemToLookupGroups(graphic, graphic.data);
-		console.log('wtf');
 		return graphic;
 
 	}
@@ -3264,6 +3304,26 @@ export function B2dEditor() {
 		[16]this.dampingRatio = 0.0;
 		[17]this.frequencyHz = 0.0;
 	}
+	this.graphicObject = function () {
+		this.type = self.object_GRAPHIC;
+		this.x = null;
+		this.y = null;
+		this.rotation = 0;
+		this.groups = "";
+		this.refName = "";
+		this.ID = 0;
+		this.colorFill = "#999999";
+		this.colorLine = "#000";
+		this.transparancy = 1.0;
+		this.radius;
+		this.vertices = [{
+			x: 0,
+			y: 0
+		}, {
+			x: 0,
+			y: 0
+		}];
+	}
 	*/
 	this.stringifyObject = function (obj) {
 		var arr = [];
@@ -3314,6 +3374,13 @@ export function B2dEditor() {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
 			arr[6] = obj.instanceID
+		} else if(obj.type == this.object_GRAPHIC){
+			arr[6] = obj.ID;
+			arr[7] = obj.colorFill;
+			arr[8] = obj.colorLine;
+			arr[9] = obj.transparancy;
+			arr[10] = obj.radius;
+			arr[11] = obj.vertices;
 		}
 		return JSON.stringify(arr);
 	}
@@ -3360,6 +3427,14 @@ export function B2dEditor() {
 			obj.settings = arr[4];
 			obj.prefabName = arr[5];
 			obj.instanceID = arr[6];
+		} else if(arr[0] == this.object_GRAPHIC){
+			obj = new this.graphicObject();
+			obj.ID = arr[6];
+			obj.colorFill = arr[7];
+			obj.colorLine = arr[8];
+			obj.transparancy = arr[9];
+			obj.radius = arr[10];
+			obj.vertices = arr[11];
 		}
 
 		obj.type = arr[0];
@@ -3457,6 +3532,9 @@ export function B2dEditor() {
 					createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 					createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
 					prefabOffset = this.textures.children.length - prefabOffset;
+				} else if(obj.type == this.object_GRAPHIC){
+					worldObject = this.buildGraphicFromObj(obj);
+					createdObjects._textures.push(worldObject);
 				}
 			}
 		}
@@ -3655,6 +3733,65 @@ export function B2dEditor() {
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
 	}
+	PIXI.Graphics.prototype.getPolyBounds = function() {
+		var minX = Infinity;
+		var maxX = -Infinity;
+		var minY = Infinity;
+		var maxY = -Infinity;
+		if (this.graphicsData.length) {
+		  this._recursivePostUpdateTransform();
+		  var mat = this.transform.worldTransform;
+		  for (var i = 0; i < this.graphicsData.length; i++) {
+			var data = this.graphicsData[i];
+			var type = data.type;
+			if (type === PIXI.SHAPES.POLY) {
+			  var lineWidth = data.lineWidth;
+			  var shape = data.shape;
+			  var points = shape.points;
+			  for (var j = 0; j + 2 < points.length; j += 2) {
+				  var u1 = points[j];
+				  var v1 = points[j + 1];
+				  var u2 = points[j + 2];
+				  var v2 = points[j + 3];
+				  var x = u1 * mat.a + v1 * mat.c + mat.tx;
+				  var y = u1 * mat.b + v1 * mat.d + mat.ty;
+				  var x2 = u2 * mat.a + v2 * mat.c + mat.tx;
+				  var y2 = u2 * mat.b + v2 * mat.d + mat.ty;
+				  var dx = Math.abs(x2 - x);
+				  var dy = Math.abs(y2 - y);
+				  var h = lineWidth;
+				  var w = Math.sqrt((dx * dx) + (dy * dy));
+				  if (w < 1e-9)
+				  {
+					  continue;
+				  }
+				  var rw = ((h / w * dy) + dx) / 2;
+				  var rh = ((h / w * dx) + dy) / 2;
+				  var cx = (x2 + x) / 2;
+				  var cy = (y2 + y) / 2;
+				  minX = cx - rw < minX ? cx - rw : minX;
+				  maxX = cx + rw > maxX ? cx + rw : maxX;
+				  minY = cy - rh < minY ? cy - rh : minY;
+				  maxY = cy + rh > maxY ? cy + rh : maxY;
+			  }
+			}
+		  }
+		}
+		else {
+		  minX = 0;
+		  maxX = 0;
+		  minY = 0;
+		  maxY = 0;
+		}
+		var padding = this.boundsPadding;
+		minX = minX - padding;
+		maxX = maxX + padding;
+		minY = minY - padding;
+		maxY = maxY + padding;
+
+		return new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
+	  };
+
 
 	//CONSTS
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
