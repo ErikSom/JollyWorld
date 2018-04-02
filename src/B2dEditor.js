@@ -1891,8 +1891,13 @@ export function B2dEditor() {
 			}else{
 				var bounds = sprite.getPolyBounds();
 				var spriteAABB = new b2AABB;
-				spriteAABB.lowerBound = new b2Vec2((bounds.x) / this.PTM, (bounds.y) / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((bounds.x+bounds.width) / this.PTM, (bounds.y+bounds.height) / this.PTM);
+				var posX = bounds.x/this.container.scale.x+this.container.x/this.container.scale.x;
+				var posY = bounds.y/this.container.scale.y+this.container.y/this.container.scale.y;
+				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
+				spriteAABB.upperBound = new b2Vec2((posX+bounds.width/this.container.scale.x) / this.PTM, (posY+bounds.height/this.container.scale.y) / this.PTM);
+				//spriteAABB.lowerBound = new b2Vec2((sprite.position.x - (bounds.width / 2) * sprite.scale.x) / this.PTM, (sprite.position.y - (bounds.height / 2) * sprite.scale.x) / this.PTM);
+				//spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
+				console.log(this.container.scale);
 				aabb.Combine(aabb, spriteAABB);
 			}
 		}
