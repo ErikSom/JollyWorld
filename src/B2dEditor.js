@@ -1662,6 +1662,10 @@ export function B2dEditor() {
 			} else {
 				this.selectTool(this.tool_GEOMETRY);
 			}
+		}else if(e.keyCode == 71){ // g
+			if(e.ctrlKey || e.metaKey){
+				this.groupOrUngroupObjects();
+			}
 		} else if (e.keyCode == 77) { //m
 			this.selectTool(this.tool_SELECT);
 		} else if (e.keyCode == 81) { //q
@@ -1895,9 +1899,6 @@ export function B2dEditor() {
 				var posY = bounds.y/this.container.scale.y+this.container.y/this.container.scale.y;
 				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
 				spriteAABB.upperBound = new b2Vec2((posX+bounds.width/this.container.scale.x) / this.PTM, (posY+bounds.height/this.container.scale.y) / this.PTM);
-				//spriteAABB.lowerBound = new b2Vec2((sprite.position.x - (bounds.width / 2) * sprite.scale.x) / this.PTM, (sprite.position.y - (bounds.height / 2) * sprite.scale.x) / this.PTM);
-				//spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
-				console.log(this.container.scale);
 				aabb.Combine(aabb, spriteAABB);
 			}
 		}
@@ -2782,6 +2783,90 @@ export function B2dEditor() {
 		return graphic;
 
 	}
+	this.buildGraphicGroupFromObj = function (obj) {
+		var graphic = new PIXI.Graphics();
+		graphic.data = obj;
+		graphic.x = obj.x;
+		graphic.y = obj.y;
+
+		for(var i = 0; i<obj.graphicObjects.length; i++){
+			var graphicObject = this.parseArrObject(JSON.parse(obj.graphicObjects[i]));
+
+			for(var j = 0; j<graphicObject.vertices.length; j++){
+				graphicObject.vertices[j].x += graphicObject.x;
+				graphicObject.vertices[j].y += graphicObject.y;
+			}
+
+			this.updatePolyGraphic(graphic, graphicObject.vertices, graphicObject.colorFill, graphicObject.colorLine, graphicObject.transparancy, true);
+		}
+
+		this.textures.addChild(graphic);
+
+		this.addItemToLookupGroups(graphic, graphic.data);
+		return graphic;
+	}
+
+	this.groupOrUngroupObjects = function(){
+		console.log("GROUP OR UNGROUP");
+		if(this.selectedTextures.length > 0){
+			if(this.selectedTextures.length == 1 && this.selectedTextures[0].data instanceof this.graphicGroup){
+				//ungroup
+			}else if(this.selectedTextures.length>1){
+				var graphicsToGroup = [];
+				for(var i = 0; i<this.selectedTextures.length; i++){
+					if(this.selectedTextures[i].data instanceof this.graphicObject) graphicsToGroup.push(this.selectedTextures[i]);
+					else if(this.selectedTextures[i].data instanceof this.graphicGroup) graphicsToGroup.push(this.ungroupGraphicObjects(this.selectedTextures[i]));
+				}
+				this.groupGraphicObjects(graphicsToGroup);
+			}
+		}
+	}
+
+	this.groupGraphicObjects = function(graphicObjects){
+		console.log("Grouping graphic objects"+graphicObjects.length);
+		var graphicGroup = new this.graphicGroup();
+		var sortArray = [];
+
+		//sort by childIndex
+		var graphic;
+		var i;
+		var centerPoint = {
+			x:0,
+			y:0
+		}
+		for (i = 0; i < graphicObjects.length; i++) {
+			graphic = graphicObjects[i];
+			this.updateObject(graphic, graphic.data);
+			centerPoint.x += graphic.x;
+			centerPoint.y += graphic.y;
+		}
+		centerPoint.x = centerPoint.x / graphicObjects.length;
+		centerPoint.y = centerPoint.y / graphicObjects.length;
+
+		graphicGroup.x = centerPoint.x;
+		graphicGroup.y = centerPoint.y;
+
+		graphicObjects.sort(function (a, b) {
+			return a.data.ID - b.data.ID;
+		});
+
+		for(i = 0; i<graphicObjects.length; i++){
+			graphicObjects[i].data.x -= centerPoint.x;
+			graphicObjects[i].data.y -= centerPoint.y;
+			graphicGroup.graphicObjects.push(this.stringifyObject(graphicObjects[i].data));
+			graphicObjects[i].parent.removeChild(graphicObjects[i]);
+		}
+
+
+		this.buildGraphicGroupFromObj(graphicGroup);
+
+	}
+	this.ungroupGraphicObjects = function(graphicGroup){
+		var graphicObjects = [];
+		return graphicObjects;
+	}
+
+
 	this.setBodyCollision = function (body, collision) {
 		// DO COLLISION
 		/*0) collides with everything
@@ -3147,14 +3232,14 @@ export function B2dEditor() {
 		}
 	}
 
-	this.updatePolyGraphic = function(graphic, verts, colorFill, colorLine, transparancy) {
+	this.updatePolyGraphic = function(graphic, verts, colorFill, colorLine, transparancy, dontClear) {
 		var color;
 		color = colorFill.slice(1);
 		var colorFillHex = parseInt(color, 16);
 		color = colorLine.slice(1);
 		var colorLineHex = parseInt(color, 16);
 
-		graphic.clear();
+		if(!dontClear) graphic.clear();
 		graphic.boundsPadding = 0;
 
 		graphic.lineStyle(1, colorLineHex, transparancy);
@@ -3463,7 +3548,7 @@ export function B2dEditor() {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
-		} else if (data.type == this.object_TEXTURE) {
+		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC) {
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation;
