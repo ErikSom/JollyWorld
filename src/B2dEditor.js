@@ -1907,7 +1907,7 @@ export function B2dEditor() {
 
 	this.doSelection = function () {
 		// DRAW outer selection lines
-
+		var i;
 		var aabb;
 		if (this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0 || Object.keys(this.selectedPrefabs).length > 0) {
 
@@ -1926,9 +1926,16 @@ export function B2dEditor() {
 		}
 		this.selectedBoundingBox = aabb;
 
+		for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+			const offsetInterval = 500;
+			var polygons = [];
+			for(var j = 0; j<this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({x:this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x*this.PTM, y:this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y*this.PTM});
+			this.debugGraphics.lineStyle(10, 0x00FF00, 0.8);
+			this.debugGraphics.drawDashedPolygon(polygons,this.selectedPhysicsBodies[i].mySprite.x, this.selectedPhysicsBodies[i].mySprite.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, (Date.now()%offsetInterval+1)/offsetInterval);
+		}
+
 
 		//JOINTS draw upper and lower limits
-		var i;
 		var sprite;
 		for (i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
@@ -3822,6 +3829,60 @@ export function B2dEditor() {
 	}
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
+	}
+
+	PIXI.Graphics.prototype.drawDashedPolygon = function(polygons, x, y, rotation, dash, gap, offsetPercentage){
+		var i;
+		var p1;
+		var p2;
+		var dashLeft = 0;
+		var gapLeft = 0;
+		if(offsetPercentage>0){
+			var progressOffset = (dash+gap)*offsetPercentage;
+			if(progressOffset <= dash) dashLeft = dash-progressOffset;
+			else gapLeft = gap-(progressOffset-dash);
+		}
+		var rotatedPolygons = [];
+		for(i = 0; i<polygons.length; i++){
+			var p = {x:polygons[i].x, y:polygons[i].y};
+			var cosAngle = Math.cos(rotation);
+			var sinAngle = Math.sin(rotation);
+			var dx = p.x;
+			var dy = p.y;
+			p.x = (dx*cosAngle-dy*sinAngle);
+			p.y = (dx*sinAngle+dy*cosAngle);
+			rotatedPolygons.push(p);
+		}
+		for(i = 0; i<rotatedPolygons.length; i++){
+			p1 = rotatedPolygons[i];
+			if(i == rotatedPolygons.length-1) p2 = rotatedPolygons[0];
+			else p2 = rotatedPolygons[i+1];
+			var dx = p2.x-p1.x;
+			var dy = p2.y-p1.y;
+			var len = Math.sqrt(dx*dx+dy*dy);
+			var normal = {x:dx/len, y:dy/len};
+			var progressOnLine = 0;
+			this.moveTo(x+p1.x+gapLeft*normal.x, y+p1.y+gapLeft*normal.y);
+			while(progressOnLine<=len){
+				progressOnLine+=gapLeft;
+				if(dashLeft > 0) progressOnLine += dashLeft;
+				else progressOnLine+= dash;
+				if(progressOnLine>len){
+					dashLeft = progressOnLine-len;
+					progressOnLine = len;
+				}else{
+					dashLeft = 0;
+				}
+				this.lineTo(x+p1.x+progressOnLine*normal.x, y+p1.y+progressOnLine*normal.y);
+				progressOnLine+= gap;
+				if(progressOnLine>len && dashLeft == 0){
+					gapLeft = progressOnLine-len;
+				}else{
+					gapLeft = 0;
+					this.moveTo(x+p1.x+progressOnLine*normal.x, y+p1.y+progressOnLine*normal.y);
+				}
+			}
+		}
 	}
 	PIXI.Graphics.prototype.getPolyBounds = function() {
 		var minX = Infinity;
