@@ -267,7 +267,7 @@ export function B2dEditor() {
 			toolGui.appendChild(buttonElement);
 
 			var clickFunction = function (_i) {
-				return function(){
+				return function () {
 					self.selectTool(_i)
 				}
 			};
@@ -280,7 +280,7 @@ export function B2dEditor() {
 		}
 		self.registerDragWindow(toolGui);
 	}
-	this.destroyGUI = function(){
+	this.destroyGUI = function () {
 		if (this.editorGUI != undefined) {
 			this.customGUIContainer.removeChild(this.editorGUI.domElement);
 			this.editorGUI = null;
@@ -299,42 +299,57 @@ export function B2dEditor() {
 
 		this.destroyGUI();
 
+		this.editorGUI = new dat.GUI({
+			autoPlace: false,
+			width: this.editorGUIWidth
+		});
+		this.customGUIContainer.appendChild(this.editorGUI.domElement);
+		var dataJoint;
+		var self = this;
+		var controller;
+		var folder;
+
 		switch (i) {
 			case this.tool_SELECT:
+				this.destroyGUI();
 				break
 			case this.tool_GEOMETRY:
+				this.editorGUI.editData = new this.editorGeometryObject;
+				this.editorGUI.addFolder('draw shapes');
+				var shapes = ["Circle", "Box", "Triangle"];
+				this.editorGUI.editData.shape = shapes[0];
+				this.editorGUI.add(self.editorGUI.editData, "shape", shapes);
+				this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+				this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+				this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				this.editorGUI.add(self.editorGUI.editData, "isPhysicsObject");
 				break
 			case this.tool_POLYDRAWING:
+				this.destroyGUI();
 				break
 			case this.tool_JOINTS:
+				this.destroyGUI()
 				break
 			case this.tool_SPECIALS:
+				this.destroyGUI();
 				break
 			case this.tool_TEXT:
+				this.destroyGUI();
 				break
 			case this.tool_ZOOM:
+				this.destroyGUI();
 				break
 			case this.tool_MOVE:
+				this.destroyGUI();
 				break
 			case this.tool_PAINTBUCKET:
-
-				this.editorGUI = new dat.GUI({
-					autoPlace: false,
-					width: this.editorGUIWidth
-				});
-				this.customGUIContainer.appendChild(this.editorGUI.domElement);
-				var dataJoint;
-				var self = this;
-				var controller;
-				var folder;
-				this.editorGUI.editData = new this.bodyObject;
+				this.editorGUI.editData = new this.editorGraphicDrawingObject;
 				this.editorGUI.addFolder('draw graphics');
-
-				for (var key in this.editorGUI.editData) {
-					if (this.editorGUI.editData.hasOwnProperty(key)) {
-						//TODO:Load from saved data
-					}
-				}
+				//for (var key in this.editorGUI.editData) {
+				//	if (this.editorGUI.editData.hasOwnProperty(key)) {
+				//TODO:Load from saved data
+				//	}
+				//}
 				this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
 				this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
 				this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
@@ -422,8 +437,8 @@ export function B2dEditor() {
 			case case_JUST_TEXTURES:
 				dataJoint = _selectedTextures[0].data;
 
-				if(dataJoint.type == this.object_TEXTURE) this.editorGUI.editData = new this.textureObject;
-				if(dataJoint.type == this.object_GRAPHIC) this.editorGUI.editData = new this.graphicObject;
+				if (dataJoint.type == this.object_TEXTURE) this.editorGUI.editData = new this.textureObject;
+				if (dataJoint.type == this.object_GRAPHIC) this.editorGUI.editData = new this.graphicObject;
 
 				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple textures');
 				else this.editorGUI.addFolder('texture');
@@ -548,7 +563,7 @@ export function B2dEditor() {
 				}.bind(controller));
 				break;
 			case case_JUST_TEXTURES:
-				if(dataJoint.type == this.object_GRAPHIC){
+				if (dataJoint.type == this.object_GRAPHIC) {
 					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
@@ -948,10 +963,10 @@ export function B2dEditor() {
 		} else if (this.selectedTool == this.tool_POLYDRAWING) {
 			this.doVerticesDrawing(true);
 		} else if (this.selectedTool == this.tool_GEOMETRY) {
-			this.doCircleDrawing();
+			this.doGeometryDrawing();
 		} else if (this.selectedTool == this.tool_CAMERA) {
 			this.doCamera();
-		}else if(this.selectedTool == this.tool_PAINTBUCKET){
+		} else if (this.selectedTool == this.tool_PAINTBUCKET) {
 			this.doVerticesDrawing(false);
 		}
 		this.doEditorGUI();
@@ -1043,12 +1058,12 @@ export function B2dEditor() {
 		this.textureAngleOffset = null;
 		this.isCarvable = false;
 	}
-	this.graphicGroup = function(){
+	this.graphicGroup = function () {
 		this.type;
 		this.ID = 0;
 		this.graphicObjects = [];
 	}
-	this.graphicObject = function(){
+	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
 		this.x = null;
 		this.y = null;
@@ -1118,10 +1133,17 @@ export function B2dEditor() {
 		this.prefabName;
 		this.instanceID;
 	}
-	this.editorGraphicDrawingObject = function(){
+	this.editorGraphicDrawingObject = function () {
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.transparancy = 1.0;
+	}
+	this.editorGeometryObject = function () {
+		this.shape = 0;
+		this.colorFill = "#999999";
+		this.colorLine = "#000";
+		this.transparancy = 1.0;
+		this.isPhysicsObject = true;
 	}
 	this.takeCameraShot = function () {
 		//first clean up screen
@@ -1323,13 +1345,13 @@ export function B2dEditor() {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 			} else if (this.selectedTool == this.tool_CAMERA) {
 				this.takeCameraShot();
-			}else if(this.selectedTool == this.tool_PAINTBUCKET){
-				if(!this.closeDrawing){
+			} else if (this.selectedTool == this.tool_PAINTBUCKET) {
+				if (!this.closeDrawing) {
 					this.activeVertices.push({
 						x: this.mousePosWorld.x,
 						y: this.mousePosWorld.y
 					});
-				}else{
+				} else {
 					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 					this.buildGraphicFromObj(graphicObject);
 					this.activeVertices = [];
@@ -1641,12 +1663,17 @@ export function B2dEditor() {
 					this.storeUndoMovement();
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
-				var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
-				if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
-					var bodyObject = new this.bodyObject;
-					bodyObject.x = this.startSelectionPoint.x;
-					bodyObject.y = this.startSelectionPoint.y;
-					bodyObject.radius = radius;
+				if(this.editorGUI.editData.shape == "Circle"){
+					var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
+					if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
+						var bodyObject = new this.bodyObject;
+						bodyObject.x = this.startSelectionPoint.x;
+						bodyObject.y = this.startSelectionPoint.y;
+						bodyObject.radius = radius;
+						this.buildBodyFromObj(bodyObject);
+					}
+				}else{
+					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 					this.buildBodyFromObj(bodyObject);
 				}
 			}
@@ -1662,8 +1689,8 @@ export function B2dEditor() {
 			} else {
 				this.selectTool(this.tool_GEOMETRY);
 			}
-		}else if(e.keyCode == 71){ // g
-			if(e.ctrlKey || e.metaKey){
+		} else if (e.keyCode == 71) { // g
+			if (e.ctrlKey || e.metaKey) {
 				this.groupOrUngroupObjects();
 			}
 		} else if (e.keyCode == 77) { //m
@@ -1883,7 +1910,7 @@ export function B2dEditor() {
 					aabb.Combine(aabb, fixture.GetAABB());
 					fixture = fixture.GetNext();
 				}
-			} else if(sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject){
+			} else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject) {
 				//sprite.calculateBounds()
 
 				//sprite = sprite.getLocalBounds();
@@ -1892,13 +1919,13 @@ export function B2dEditor() {
 				spriteAABB.lowerBound = new b2Vec2((sprite.position.x - (bounds.width / 2) * sprite.scale.x) / this.PTM, (sprite.position.y - (bounds.height / 2) * sprite.scale.x) / this.PTM);
 				spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
 				aabb.Combine(aabb, spriteAABB);
-			}else{
+			} else {
 				var bounds = sprite.getPolyBounds();
 				var spriteAABB = new b2AABB;
-				var posX = bounds.x/this.container.scale.x+this.container.x/this.container.scale.x;
-				var posY = bounds.y/this.container.scale.y+this.container.y/this.container.scale.y;
+				var posX = bounds.x / this.container.scale.x + this.container.x / this.container.scale.x;
+				var posY = bounds.y / this.container.scale.y + this.container.y / this.container.scale.y;
 				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((posX+bounds.width/this.container.scale.x) / this.PTM, (posY+bounds.height/this.container.scale.y) / this.PTM);
+				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
 				aabb.Combine(aabb, spriteAABB);
 			}
 		}
@@ -1926,12 +1953,15 @@ export function B2dEditor() {
 		}
 		this.selectedBoundingBox = aabb;
 
-		for(i = 0; i<this.selectedPhysicsBodies.length; i++){
+		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			const offsetInterval = 500;
 			var polygons = [];
-			for(var j = 0; j<this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({x:this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x*this.PTM, y:this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y*this.PTM});
+			for (var j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({
+				x: this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM,
+				y: this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM
+			});
 			this.debugGraphics.lineStyle(10, 0x00FF00, 0.8);
-			this.debugGraphics.drawDashedPolygon(polygons,this.selectedPhysicsBodies[i].mySprite.x, this.selectedPhysicsBodies[i].mySprite.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, (Date.now()%offsetInterval+1)/offsetInterval);
+			this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x, this.selectedPhysicsBodies[i].mySprite.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, (Date.now() % offsetInterval + 1) / offsetInterval);
 		}
 
 
@@ -2014,7 +2044,7 @@ export function B2dEditor() {
 			}
 		}
 	}
-	this.doEditorGUI = function(){
+	this.doEditorGUI = function () {
 		if (this.editorGUI && this.editorGUI.editData) {
 			var controller;
 			var controllers = [];
@@ -2158,7 +2188,7 @@ export function B2dEditor() {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorFill = controller.targetValue.toString();
 							if (sprite.data.radius); //this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
-							else  this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+							else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 						}
 					} else if (controller.property == "colorLine") {
 						//body & sprite
@@ -2173,7 +2203,7 @@ export function B2dEditor() {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorLine = controller.targetValue.toString();
 							if (sprite.data.radius); //this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
-							else  this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+							else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 						}
 					} else if (controller.property == "transparancy") {
 						//body & sprite
@@ -2188,7 +2218,7 @@ export function B2dEditor() {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue.toString();
 							if (sprite.data.radius); //this.updateCircleShape(body.myGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
-							else  this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+							else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 						}
 					} else if (controller.property == "fixed") {
 						//body
@@ -2260,7 +2290,7 @@ export function B2dEditor() {
 				else if (this.selectedPhysicsBodies.length > 0) syncObject = this.selectedPhysicsBodies[0];
 				else syncObject = this.prefabs[key];
 			}
-			if(syncObject){
+			if (syncObject) {
 				if (syncObject.mySprite) {
 					var pos = syncObject.GetPosition();
 					this.editorGUI.editData.x = pos.x * this.PTM;
@@ -2406,18 +2436,18 @@ export function B2dEditor() {
 						this.closeDrawing = true;
 					}
 				}
-			}else if (this.activeVertices.length > 1 && !convex) {
+			} else if (this.activeVertices.length > 1 && !convex) {
 				var firstVertice = this.activeVertices[0];
-				var disX = newVertice.x-firstVertice.x;
-				var disY = newVertice.y-firstVertice.y;
-				var dis = Math.sqrt(disX*disX+disY*disY);
+				var disX = newVertice.x - firstVertice.x;
+				var disY = newVertice.y - firstVertice.y;
+				var dis = Math.sqrt(disX * disX + disY * disY);
 				const graphicClosingMargin = 1 / this.container.scale.x;
-				if(dis<=graphicClosingMargin){
+				if (dis <= graphicClosingMargin) {
 					this.closeDrawing = true;
 					newVertice = firstVertice;
 				}
 			}
-			if(this.closeDrawing) this.debugGraphics.beginFill(this.verticesDoneFillColor, 0.5);
+			if (this.closeDrawing) this.debugGraphics.beginFill(this.verticesDoneFillColor, 0.5);
 			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
 			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
@@ -2432,7 +2462,7 @@ export function B2dEditor() {
 
 		for (i = 0; i < this.activeVertices.length; i++) {
 
-			if(i == 0) this.debugGraphics.beginFill(this.verticesFirstFillColor, 0.5);
+			if (i == 0) this.debugGraphics.beginFill(this.verticesFirstFillColor, 0.5);
 			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
 			activeVertice = this.activeVertices[i];
@@ -2449,16 +2479,41 @@ export function B2dEditor() {
 			this.debugGraphics.endFill();
 		}
 	}
-	this.doCircleDrawing = function () {
+	this.doGeometryDrawing = function () {
 		if (this.mouseDown) {
 			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
-			var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
 
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y);
-			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y, radius, 0, 2 * Math.PI, false);
+			if(this.editorGUI.editData.shape == "Circle"){
+				var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y, radius, 0, 2 * Math.PI, false);
+			}else if(this.editorGUI.editData.shape == "Box"){
+				this.activeVertices = [];
+				this.activeVertices.push({x:this.mousePosWorld.x, y:this.mousePosWorld.y});
+				this.activeVertices.push({x:this.mousePosWorld.x, y:this.startSelectionPoint.y});
+				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.startSelectionPoint.y});
+				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.mousePosWorld.y});
 
-			this.debugGraphics.endFill();
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[3]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[3]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
+			}else if(this.editorGUI.editData.shape == "Triangle"){
+				this.activeVertices = [];
+				var difX = this.mousePosWorld.x-this.startSelectionPoint.x;
+				this.activeVertices.push({x:this.mousePosWorld.x, y:this.mousePosWorld.y});
+				this.activeVertices.push({x:this.mousePosWorld.x-difX/2, y:this.startSelectionPoint.y});
+				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.mousePosWorld.y});
+
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
+
+			}
+				this.debugGraphics.endFill();
 		}
 	}
 
@@ -2471,27 +2526,24 @@ export function B2dEditor() {
 
 		bodyObject.x = centerPoint.x;
 		bodyObject.y = centerPoint.y;
-		bodyObject.vertices = verts;
-
-		bodyObject.x = centerPoint.x;
-		bodyObject.y = centerPoint.y;
 		bodyObject.vertices = verts.reverse();
+
 		return bodyObject;
 	}
 	this.createGraphicObjectFromVerts = function (verts) {
 		var graphicObject = new this.graphicObject;
-		for(var i = 0; i<verts.length; i++){
+		for (var i = 0; i < verts.length; i++) {
 			verts[i].x = verts[i].x * this.PTM;
 			verts[i].y = verts[i].y * this.PTM;
 		}
 		var lowX = 0;
 		var lowY = 0;
-		for(var i =0; i<verts.length; i++){
-			if(verts[i].x < lowX) lowX = verts[i].x;
-			if(verts[i].y < lowY) lowY = verts[i].y;
+		for (var i = 0; i < verts.length; i++) {
+			if (verts[i].x < lowX) lowX = verts[i].x;
+			if (verts[i].y < lowY) lowY = verts[i].y;
 		}
 
-		for(var i =0; i<verts.length; i++){
+		for (var i = 0; i < verts.length; i++) {
 			verts[i].x += lowX;
 			verts[i].y += lowY;
 		}
@@ -2500,13 +2552,13 @@ export function B2dEditor() {
 		verts = vertsConversion[0];
 		var centerPoint = vertsConversion[1];
 
-		graphicObject.x = centerPoint.x-lowX;
-		graphicObject.y = centerPoint.y-lowY;
+		graphicObject.x = centerPoint.x - lowX;
+		graphicObject.y = centerPoint.y - lowY;
 		graphicObject.vertices = verts;
 
 		return graphicObject;
 	}
-	this.convertGlobalVertsToLocalVerts = function(verts){
+	this.convertGlobalVertsToLocalVerts = function (verts) {
 		var i = 0;
 		var centerPoint = {
 			x: 0,
@@ -2796,10 +2848,10 @@ export function B2dEditor() {
 		graphic.x = obj.x;
 		graphic.y = obj.y;
 
-		for(var i = 0; i<obj.graphicObjects.length; i++){
+		for (var i = 0; i < obj.graphicObjects.length; i++) {
 			var graphicObject = this.parseArrObject(JSON.parse(obj.graphicObjects[i]));
 
-			for(var j = 0; j<graphicObject.vertices.length; j++){
+			for (var j = 0; j < graphicObject.vertices.length; j++) {
 				graphicObject.vertices[j].x += graphicObject.x;
 				graphicObject.vertices[j].y += graphicObject.y;
 			}
@@ -2813,24 +2865,24 @@ export function B2dEditor() {
 		return graphic;
 	}
 
-	this.groupOrUngroupObjects = function(){
+	this.groupOrUngroupObjects = function () {
 		console.log("GROUP OR UNGROUP");
-		if(this.selectedTextures.length > 0){
-			if(this.selectedTextures.length == 1 && this.selectedTextures[0].data instanceof this.graphicGroup){
+		if (this.selectedTextures.length > 0) {
+			if (this.selectedTextures.length == 1 && this.selectedTextures[0].data instanceof this.graphicGroup) {
 				//ungroup
-			}else if(this.selectedTextures.length>1){
+			} else if (this.selectedTextures.length > 1) {
 				var graphicsToGroup = [];
-				for(var i = 0; i<this.selectedTextures.length; i++){
-					if(this.selectedTextures[i].data instanceof this.graphicObject) graphicsToGroup.push(this.selectedTextures[i]);
-					else if(this.selectedTextures[i].data instanceof this.graphicGroup) graphicsToGroup.push(this.ungroupGraphicObjects(this.selectedTextures[i]));
+				for (var i = 0; i < this.selectedTextures.length; i++) {
+					if (this.selectedTextures[i].data instanceof this.graphicObject) graphicsToGroup.push(this.selectedTextures[i]);
+					else if (this.selectedTextures[i].data instanceof this.graphicGroup) graphicsToGroup.push(this.ungroupGraphicObjects(this.selectedTextures[i]));
 				}
 				this.groupGraphicObjects(graphicsToGroup);
 			}
 		}
 	}
 
-	this.groupGraphicObjects = function(graphicObjects){
-		console.log("Grouping graphic objects"+graphicObjects.length);
+	this.groupGraphicObjects = function (graphicObjects) {
+		console.log("Grouping graphic objects" + graphicObjects.length);
 		var graphicGroup = new this.graphicGroup();
 		var sortArray = [];
 
@@ -2838,8 +2890,8 @@ export function B2dEditor() {
 		var graphic;
 		var i;
 		var centerPoint = {
-			x:0,
-			y:0
+			x: 0,
+			y: 0
 		}
 		for (i = 0; i < graphicObjects.length; i++) {
 			graphic = graphicObjects[i];
@@ -2857,7 +2909,7 @@ export function B2dEditor() {
 			return a.data.ID - b.data.ID;
 		});
 
-		for(i = 0; i<graphicObjects.length; i++){
+		for (i = 0; i < graphicObjects.length; i++) {
 			graphicObjects[i].data.x -= centerPoint.x;
 			graphicObjects[i].data.y -= centerPoint.y;
 			graphicGroup.graphicObjects.push(this.stringifyObject(graphicObjects[i].data));
@@ -2868,7 +2920,7 @@ export function B2dEditor() {
 		this.buildGraphicGroupFromObj(graphicGroup);
 
 	}
-	this.ungroupGraphicObjects = function(graphicGroup){
+	this.ungroupGraphicObjects = function (graphicGroup) {
 		var graphicObjects = [];
 		return graphicObjects;
 	}
@@ -3239,14 +3291,14 @@ export function B2dEditor() {
 		}
 	}
 
-	this.updatePolyGraphic = function(graphic, verts, colorFill, colorLine, transparancy, dontClear) {
+	this.updatePolyGraphic = function (graphic, verts, colorFill, colorLine, transparancy, dontClear) {
 		var color;
 		color = colorFill.slice(1);
 		var colorFillHex = parseInt(color, 16);
 		color = colorLine.slice(1);
 		var colorLineHex = parseInt(color, 16);
 
-		if(!dontClear) graphic.clear();
+		if (!dontClear) graphic.clear();
 		graphic.boundsPadding = 0;
 
 		graphic.lineStyle(1, colorLineHex, transparancy);
@@ -3471,7 +3523,7 @@ export function B2dEditor() {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
 			arr[6] = obj.instanceID
-		} else if(obj.type == this.object_GRAPHIC){
+		} else if (obj.type == this.object_GRAPHIC) {
 			arr[6] = obj.ID;
 			arr[7] = obj.colorFill;
 			arr[8] = obj.colorLine;
@@ -3524,7 +3576,7 @@ export function B2dEditor() {
 			obj.settings = arr[4];
 			obj.prefabName = arr[5];
 			obj.instanceID = arr[6];
-		} else if(arr[0] == this.object_GRAPHIC){
+		} else if (arr[0] == this.object_GRAPHIC) {
 			obj = new this.graphicObject();
 			obj.ID = arr[6];
 			obj.colorFill = arr[7];
@@ -3629,7 +3681,7 @@ export function B2dEditor() {
 					createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 					createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
 					prefabOffset = this.textures.children.length - prefabOffset;
-				} else if(obj.type == this.object_GRAPHIC){
+				} else if (obj.type == this.object_GRAPHIC) {
 					worldObject = this.buildGraphicFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}
@@ -3831,108 +3883,112 @@ export function B2dEditor() {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
 	}
 
-	PIXI.Graphics.prototype.drawDashedPolygon = function(polygons, x, y, rotation, dash, gap, offsetPercentage){
+	PIXI.Graphics.prototype.drawDashedPolygon = function (polygons, x, y, rotation, dash, gap, offsetPercentage) {
 		var i;
 		var p1;
 		var p2;
 		var dashLeft = 0;
 		var gapLeft = 0;
-		if(offsetPercentage>0){
-			var progressOffset = (dash+gap)*offsetPercentage;
-			if(progressOffset <= dash) dashLeft = dash-progressOffset;
-			else gapLeft = gap-(progressOffset-dash);
+		if (offsetPercentage > 0) {
+			var progressOffset = (dash + gap) * offsetPercentage;
+			if (progressOffset <= dash) dashLeft = dash - progressOffset;
+			else gapLeft = gap - (progressOffset - dash);
 		}
 		var rotatedPolygons = [];
-		for(i = 0; i<polygons.length; i++){
-			var p = {x:polygons[i].x, y:polygons[i].y};
+		for (i = 0; i < polygons.length; i++) {
+			var p = {
+				x: polygons[i].x,
+				y: polygons[i].y
+			};
 			var cosAngle = Math.cos(rotation);
 			var sinAngle = Math.sin(rotation);
 			var dx = p.x;
 			var dy = p.y;
-			p.x = (dx*cosAngle-dy*sinAngle);
-			p.y = (dx*sinAngle+dy*cosAngle);
+			p.x = (dx * cosAngle - dy * sinAngle);
+			p.y = (dx * sinAngle + dy * cosAngle);
 			rotatedPolygons.push(p);
 		}
-		for(i = 0; i<rotatedPolygons.length; i++){
+		for (i = 0; i < rotatedPolygons.length; i++) {
 			p1 = rotatedPolygons[i];
-			if(i == rotatedPolygons.length-1) p2 = rotatedPolygons[0];
-			else p2 = rotatedPolygons[i+1];
-			var dx = p2.x-p1.x;
-			var dy = p2.y-p1.y;
-			var len = Math.sqrt(dx*dx+dy*dy);
-			var normal = {x:dx/len, y:dy/len};
+			if (i == rotatedPolygons.length - 1) p2 = rotatedPolygons[0];
+			else p2 = rotatedPolygons[i + 1];
+			var dx = p2.x - p1.x;
+			var dy = p2.y - p1.y;
+			var len = Math.sqrt(dx * dx + dy * dy);
+			var normal = {
+				x: dx / len,
+				y: dy / len
+			};
 			var progressOnLine = 0;
-			this.moveTo(x+p1.x+gapLeft*normal.x, y+p1.y+gapLeft*normal.y);
-			while(progressOnLine<=len){
-				progressOnLine+=gapLeft;
-				if(dashLeft > 0) progressOnLine += dashLeft;
-				else progressOnLine+= dash;
-				if(progressOnLine>len){
-					dashLeft = progressOnLine-len;
+			this.moveTo(x + p1.x + gapLeft * normal.x, y + p1.y + gapLeft * normal.y);
+			while (progressOnLine <= len) {
+				progressOnLine += gapLeft;
+				if (dashLeft > 0) progressOnLine += dashLeft;
+				else progressOnLine += dash;
+				if (progressOnLine > len) {
+					dashLeft = progressOnLine - len;
 					progressOnLine = len;
-				}else{
+				} else {
 					dashLeft = 0;
 				}
-				this.lineTo(x+p1.x+progressOnLine*normal.x, y+p1.y+progressOnLine*normal.y);
-				progressOnLine+= gap;
-				if(progressOnLine>len && dashLeft == 0){
-					gapLeft = progressOnLine-len;
-				}else{
+				this.lineTo(x + p1.x + progressOnLine * normal.x, y + p1.y + progressOnLine * normal.y);
+				progressOnLine += gap;
+				if (progressOnLine > len && dashLeft == 0) {
+					gapLeft = progressOnLine - len;
+				} else {
 					gapLeft = 0;
-					this.moveTo(x+p1.x+progressOnLine*normal.x, y+p1.y+progressOnLine*normal.y);
+					this.moveTo(x + p1.x + progressOnLine * normal.x, y + p1.y + progressOnLine * normal.y);
 				}
 			}
 		}
 	}
-	PIXI.Graphics.prototype.getPolyBounds = function() {
+	PIXI.Graphics.prototype.getPolyBounds = function () {
 		var minX = Infinity;
 		var maxX = -Infinity;
 		var minY = Infinity;
 		var maxY = -Infinity;
 		if (this.graphicsData.length) {
-		  this._recursivePostUpdateTransform();
-		  var mat = this.transform.worldTransform;
-		  for (var i = 0; i < this.graphicsData.length; i++) {
-			var data = this.graphicsData[i];
-			var type = data.type;
-			if (type === PIXI.SHAPES.POLY) {
-			  var lineWidth = data.lineWidth;
-			  var shape = data.shape;
-			  var points = shape.points;
-			  for (var j = 0; j + 2 < points.length; j += 2) {
-				  var u1 = points[j];
-				  var v1 = points[j + 1];
-				  var u2 = points[j + 2];
-				  var v2 = points[j + 3];
-				  var x = u1 * mat.a + v1 * mat.c + mat.tx;
-				  var y = u1 * mat.b + v1 * mat.d + mat.ty;
-				  var x2 = u2 * mat.a + v2 * mat.c + mat.tx;
-				  var y2 = u2 * mat.b + v2 * mat.d + mat.ty;
-				  var dx = Math.abs(x2 - x);
-				  var dy = Math.abs(y2 - y);
-				  var h = lineWidth;
-				  var w = Math.sqrt((dx * dx) + (dy * dy));
-				  if (w < 1e-9)
-				  {
-					  continue;
-				  }
-				  var rw = ((h / w * dy) + dx) / 2;
-				  var rh = ((h / w * dx) + dy) / 2;
-				  var cx = (x2 + x) / 2;
-				  var cy = (y2 + y) / 2;
-				  minX = cx - rw < minX ? cx - rw : minX;
-				  maxX = cx + rw > maxX ? cx + rw : maxX;
-				  minY = cy - rh < minY ? cy - rh : minY;
-				  maxY = cy + rh > maxY ? cy + rh : maxY;
-			  }
+			this._recursivePostUpdateTransform();
+			var mat = this.transform.worldTransform;
+			for (var i = 0; i < this.graphicsData.length; i++) {
+				var data = this.graphicsData[i];
+				var type = data.type;
+				if (type === PIXI.SHAPES.POLY) {
+					var lineWidth = data.lineWidth;
+					var shape = data.shape;
+					var points = shape.points;
+					for (var j = 0; j + 2 < points.length; j += 2) {
+						var u1 = points[j];
+						var v1 = points[j + 1];
+						var u2 = points[j + 2];
+						var v2 = points[j + 3];
+						var x = u1 * mat.a + v1 * mat.c + mat.tx;
+						var y = u1 * mat.b + v1 * mat.d + mat.ty;
+						var x2 = u2 * mat.a + v2 * mat.c + mat.tx;
+						var y2 = u2 * mat.b + v2 * mat.d + mat.ty;
+						var dx = Math.abs(x2 - x);
+						var dy = Math.abs(y2 - y);
+						var h = lineWidth;
+						var w = Math.sqrt((dx * dx) + (dy * dy));
+						if (w < 1e-9) {
+							continue;
+						}
+						var rw = ((h / w * dy) + dx) / 2;
+						var rh = ((h / w * dx) + dy) / 2;
+						var cx = (x2 + x) / 2;
+						var cy = (y2 + y) / 2;
+						minX = cx - rw < minX ? cx - rw : minX;
+						maxX = cx + rw > maxX ? cx + rw : maxX;
+						minY = cy - rh < minY ? cy - rh : minY;
+						maxY = cy + rh > maxY ? cy + rh : maxY;
+					}
+				}
 			}
-		  }
-		}
-		else {
-		  minX = 0;
-		  maxX = 0;
-		  minY = 0;
-		  maxY = 0;
+		} else {
+			minX = 0;
+			maxX = 0;
+			minY = 0;
+			maxY = 0;
 		}
 		var padding = this.boundsPadding;
 		minX = minX - padding;
@@ -3941,7 +3997,7 @@ export function B2dEditor() {
 		maxY = maxY + padding;
 
 		return new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
-	  };
+	};
 
 
 	//CONSTS
