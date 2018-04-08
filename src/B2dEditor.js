@@ -1338,7 +1338,7 @@ export function B2dEditor() {
 				} else {
 
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
-					this.buildBodyFromObj(bodyObject);
+					if(bodyObject) this.buildBodyFromObj(bodyObject);
 					this.activeVertices = [];
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
@@ -1674,7 +1674,7 @@ export function B2dEditor() {
 					}
 				}else{
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
-					this.buildBodyFromObj(bodyObject);
+					if(bodyObject) this.buildBodyFromObj(bodyObject);
 				}
 			}
 		}
@@ -2495,11 +2495,13 @@ export function B2dEditor() {
 				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.startSelectionPoint.y});
 				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.mousePosWorld.y});
 
+				if(this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
+
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[3]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[3]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);s
 			}else if(this.editorGUI.editData.shape == "Triangle"){
 				this.activeVertices = [];
 				var difX = this.mousePosWorld.x-this.startSelectionPoint.x;
@@ -2507,11 +2509,12 @@ export function B2dEditor() {
 				this.activeVertices.push({x:this.mousePosWorld.x-difX/2, y:this.startSelectionPoint.y});
 				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.mousePosWorld.y});
 
+				if(this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
+
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
-
 			}
 				this.debugGraphics.endFill();
 		}
@@ -2526,8 +2529,22 @@ export function B2dEditor() {
 
 		bodyObject.x = centerPoint.x;
 		bodyObject.y = centerPoint.y;
-		bodyObject.vertices = verts.reverse();
 
+
+		//check winding order
+
+		var area = 0
+		for(var i = 0; i<verts.length; i++){
+			var x1 = verts[i].x;
+			var y1 = verts[i].y;
+			var x2 = verts[(i+1) % verts.length].x;
+			var y2 = verts[(i+1) % verts.length].y;
+			area += (x1 * y2 - x2 * y1);
+		}
+		console.log("AREA:"+area*this.PTM)
+		if(Math.abs(area*this.PTM) < this.minimumBodySurfaceArea) return false;
+
+		bodyObject.vertices = area < 0 ? verts.reverse() : verts;
 		return bodyObject;
 	}
 	this.createGraphicObjectFromVerts = function (verts) {
@@ -4041,6 +4058,6 @@ export function B2dEditor() {
 	this.tool_ERASER = 9;
 	this.tool_CAMERA = 10;
 
-	this.minimumBodySurfaceArea = 0.3;
 	this.editorGUIWidth = 200;
+	this.minimumBodySurfaceArea = 0.3;
 }
