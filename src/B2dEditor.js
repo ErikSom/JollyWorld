@@ -1960,7 +1960,7 @@ export function B2dEditor() {
 				x: this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM,
 				y: this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM
 			});
-			this.debugGraphics.lineStyle(10, 0x00FF00, 0.8);
+			this.debugGraphics.lineStyle(6, 0x00FF00, 0.8);
 			this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x, this.selectedPhysicsBodies[i].mySprite.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, (Date.now() % offsetInterval + 1) / offsetInterval);
 		}
 
@@ -2505,9 +2505,9 @@ export function B2dEditor() {
 			}else if(this.editorGUI.editData.shape == "Triangle"){
 				this.activeVertices = [];
 				var difX = this.mousePosWorld.x-this.startSelectionPoint.x;
-				this.activeVertices.push({x:this.mousePosWorld.x, y:this.mousePosWorld.y});
-				this.activeVertices.push({x:this.mousePosWorld.x-difX/2, y:this.startSelectionPoint.y});
-				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.mousePosWorld.y});
+				this.activeVertices.push({x:this.mousePosWorld.x, y:this.startSelectionPoint.y});
+				this.activeVertices.push({x:this.mousePosWorld.x-difX/2, y:this.mousePosWorld.y});
+				this.activeVertices.push({x:this.startSelectionPoint.x, y:this.startSelectionPoint.y});
 
 				if(this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
 
