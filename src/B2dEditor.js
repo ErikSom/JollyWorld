@@ -366,12 +366,13 @@ export function B2dEditor() {
 		this.destroyGUI();
 
 
-		var case_NOTHING = "0";
-		var case_JUST_BODIES = "1";
-		var case_JUST_TEXTURES = "2";
-		var case_JUST_JOINTS = "3";
-		var case_JUST_PREFABS = "4"
-		var case_MULTIPLE = "5";
+		var case_NOTHING = 0;
+		var case_JUST_BODIES = 1;
+		var case_JUST_TEXTURES = 2;
+		var case_JUST_JOINTS = 3;
+		var case_JUST_PREFABS = 4;
+		var case_MULTIPLE = 5;
+		var case_JUST_GRAPHICS = 6;
 
 		var currentCase = case_NOTHING;
 		var prefabKeys = Object.keys(this.selectedPrefabs);
@@ -382,6 +383,7 @@ export function B2dEditor() {
 			currentCase = case_JUST_BODIES;
 		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0 && prefabKeys.length == 0) {
 			var _selectedTextures = [];
+			var _selectedGraphics = [];
 			var _selectedPinJoints = [];
 			var _selectedSlideJoints = [];
 			var _selectedDistanceJoints = [];
@@ -398,15 +400,19 @@ export function B2dEditor() {
 					} else if (_texture.data.jointType == this.jointObject_TYPE_DISTANCE) {
 						_selectedDistanceJoints.push(_texture);
 					}
+				}else if(_texture.data && _texture.data.type == this.object_GRAPHIC){
+					_selectedGraphics.push(_texture);
 				} else {
 					_selectedTextures.push(_texture);
 				}
 			}
-			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedTextureJoints.length > 0 ? 1 : 0);
+			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedTextureJoints.length > 0 ? 1 : 0);
 			if (editingMultipleObjects > 1) {
 				currentCase = case_MULTIPLE;
 			} else if (_selectedTextures.length > 0) {
 				currentCase = case_JUST_TEXTURES;
+			} else if(_selectedGraphics.length >0){
+				currentCase = case_JUST_GRAPHICS;
 			} else {
 				currentCase = case_JUST_JOINTS;
 			}
@@ -436,12 +442,15 @@ export function B2dEditor() {
 				break;
 			case case_JUST_TEXTURES:
 				dataJoint = _selectedTextures[0].data;
-
-				if (dataJoint.type == this.object_TEXTURE) this.editorGUI.editData = new this.textureObject;
-				if (dataJoint.type == this.object_GRAPHIC) this.editorGUI.editData = new this.graphicObject;
-
+				this.editorGUI.editData = new this.textureObject;
 				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple textures');
 				else this.editorGUI.addFolder('texture');
+				break;
+			case case_JUST_GRAPHICS:
+				dataJoint = _selectedGraphics[0].data;
+				this.editorGUI.editData = new this.graphicObject;
+				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple graphics');
+				else this.editorGUI.addFolder('graphic');
 				break;
 			case case_JUST_JOINTS:
 				var selectedType = ""
@@ -563,24 +572,23 @@ export function B2dEditor() {
 				}.bind(controller));
 				break;
 			case case_JUST_TEXTURES:
-				if (dataJoint.type == this.object_GRAPHIC) {
-					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-				}
-
+				break;
+			case case_JUST_GRAPHICS:
+				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				break;
 			case case_JUST_JOINTS:
 				var jointTypes = ["Pin", "Slide", "Distance"];
@@ -1511,7 +1519,7 @@ export function B2dEditor() {
 						sprite.x = sprite.x + obj.x;
 						sprite.y = sprite.y + obj.y;
 					} else if (transformType == this.TRANSFORM_ROTATE) {
-						sprite.rotation += obj;
+						sprite.rotation += obj * this.DEG2RAD;
 					}
 
 				}
@@ -2145,7 +2153,7 @@ export function B2dEditor() {
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							sprite.rotation = controller.targetValue;
+							sprite.rotation = controller.targetValue * this.DEG2RAD;
 						}
 					} else if (controller.property == "groups" && controller.targetValue != "-") {
 						//body & sprite
@@ -2280,7 +2288,7 @@ export function B2dEditor() {
 
 			if (this.editorGUI.editData.type == this.object_BODY) {
 				syncObject = this.selectedPhysicsBodies[0];
-			} else if (this.editorGUI.editData.type == this.object_TEXTURE || this.editorGUI.editData.type == this.object_JOINT) {
+			} else if (this.editorGUI.editData.type == this.object_TEXTURE || this.editorGUI.editData.type == this.object_JOINT || this.editorGUI.editData.type == this.object_GRAPHIC) {
 				syncObject = this.selectedTextures[0];
 			} else if (this.editorGUI.editData.type == this.object_PREFAB) {
 				var key = Object.keys(this.selectedPrefabs)[0];
