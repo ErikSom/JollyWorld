@@ -1957,11 +1957,11 @@ export function B2dEditor() {
 			const offsetInterval = 500;
 			var polygons = [];
 			for (var j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({
-				x: this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM,
-				y: this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM
+				x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM)*this.container.scale.x,
+				y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM)*this.container.scale.y
 			});
 			this.debugGraphics.lineStyle(6, 0x00FF00, 0.8);
-			this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x, this.selectedPhysicsBodies[i].mySprite.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, (Date.now() % offsetInterval + 1) / offsetInterval);
+			this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x*this.container.scale.x+this.container.x, this.selectedPhysicsBodies[i].mySprite.y*this.container.scale.y+this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, (Date.now() % offsetInterval + 1) / offsetInterval);
 		}
 
 
@@ -3937,6 +3937,7 @@ export function B2dEditor() {
 				y: dy / len
 			};
 			var progressOnLine = 0;
+			
 			this.moveTo(x + p1.x + gapLeft * normal.x, y + p1.y + gapLeft * normal.y);
 			while (progressOnLine <= len) {
 				progressOnLine += gapLeft;
