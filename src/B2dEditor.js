@@ -589,6 +589,19 @@ export function B2dEditor() {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+
+				this.editorGUI.editData.convertToBody = function(){};
+				controller = this.editorGUI.add(self.editorGUI.editData, "convertToBody").name(">Convert to physicsObject<");
+				this.editorGUI.editData.convertToBody = (function(_c){return function(){
+						if(_c.domElement.previousSibling.innerText != ">Click to Confirm<"){
+							_c.name(">Click to Confirm<");
+						}else{
+							_c.name(">Convert to physicsObject<");
+							console.log("Changing!!!!");
+						}
+					}
+				})(controller)
+
 				break;
 			case case_JUST_JOINTS:
 				var jointTypes = ["Pin", "Slide", "Distance"];

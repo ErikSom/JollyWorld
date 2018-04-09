@@ -106,11 +106,16 @@ body .dg.a {
 }
 
 body .dg .cr.function {
+
     background: #4F4F4F;
+}
+body .dg .cr.function .property-name{
+    width:100%;
+    text-align:center;
 }
 
 body .dg .cr.function:hover {
-    background: #4F4F4F;
+    background: rgb(61, 61, 61);
     border-bottom: 1px solid #2fa1d6;
 }
 
