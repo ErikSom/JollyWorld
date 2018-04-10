@@ -598,6 +598,7 @@ export function B2dEditor() {
 						}else{
 							_c.name(">Convert to physicsObject<");
 							console.log("Changing!!!!");
+							self.convertSelectedGraphicsToBodies();
 						}
 					}
 				})(controller)
@@ -1974,15 +1975,21 @@ export function B2dEditor() {
 		}
 		this.selectedBoundingBox = aabb;
 
+		this.debugGraphics.lineStyle(6, 0x00FF00, 0.8);
+		const offsetInterval = 500;
+		var offset = (Date.now() % offsetInterval + 1) / offsetInterval;
+
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
-			const offsetInterval = 500;
-			var polygons = [];
-			for (var j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({
-				x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM)*this.container.scale.x,
-				y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM)*this.container.scale.y
-			});
-			this.debugGraphics.lineStyle(6, 0x00FF00, 0.8);
-			this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x*this.container.scale.x+this.container.x, this.selectedPhysicsBodies[i].mySprite.y*this.container.scale.y+this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, (Date.now() % offsetInterval + 1) / offsetInterval);
+			if(this.selectedPhysicsBodies[i].mySprite.data.radius){
+				this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius, this.selectedPhysicsBodies[i].mySprite.x*this.container.scale.x+this.container.x, this.selectedPhysicsBodies[i].mySprite.y*this.container.scale.y+this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+			}else{
+				var polygons = [];
+				for (var j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({
+					x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM)*this.container.scale.x,
+					y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM)*this.container.scale.y
+				});
+				this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x*this.container.scale.x+this.container.x, this.selectedPhysicsBodies[i].mySprite.y*this.container.scale.y+this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+			}
 		}
 
 
@@ -2622,6 +2629,38 @@ export function B2dEditor() {
 			};
 		}
 		return [verts, centerPoint];
+	}
+	this.convertSelectedGraphicsToBodies = function(){
+		var graphic;
+		var body;
+		var bodiesCreated = [];
+		for(var i = 0; i<this.selectedTextures.length; i++){
+			graphic = this.selectedTextures[i];
+
+			var verts = graphic.data.vertices;
+			for(var j = 0; j<verts.length; j++){
+				verts[j].x /= this.PTM;
+				verts[j].y /= this.PTM;
+			}
+
+			this.updateObject(graphic, graphic.data);
+			var bodyObject = this.createBodyObjectFromVerts(verts);
+			bodyObject.colorFill = graphic.data.colorFill;
+			bodyObject.lineColor = graphic.data.lineColor;
+			bodyObject.transparancy = graphic.data.transparancy;
+			bodyObject.x = graphic.data.x/this.PTM;
+			bodyObject.y = graphic.data.y/this.PTM;
+			bodyObject.rotation = graphic.data.rotation;
+			if(bodyObject) body = this.buildBodyFromObj(bodyObject);
+			if(body){
+				console.log(body.myGraphic+"  "+graphic);
+				body.mySprite.parent.swapChildren(graphic, body.mySprite);
+				bodiesCreated.push(body);
+			}
+		}
+		this.deleteSelection();
+		this.selectedPhysicsBodies = bodiesCreated;
+		this.updateSelection();
 	}
 
 	this.cameraOverlayGUIColor = "#000000";
@@ -3920,7 +3959,37 @@ export function B2dEditor() {
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
 	}
+	PIXI.Graphics.prototype.drawDashedCircle = function (radius, x, y, rotation, dash, gap, offsetPercentage) {
+		var circum = radius * 2 * Math.PI;
+		var stepSize = dash+gap;
+		var chunks = Math.ceil(circum / stepSize);
+		var chunkAngle = (2*Math.PI)/chunks;
+		var dashAngle = (dash/stepSize) * chunkAngle;
 
+
+		var dashLeft = 0;
+		var gapLeft = 0;
+		if (offsetPercentage > 0) {
+			var progressOffset = (dash + gap) * offsetPercentage;
+			if (progressOffset <= dash) dashLeft = dash - progressOffset;
+			else gapLeft = gap - (progressOffset - dash);
+		}
+		var dashLeftAngle = (dashLeft/step) * chunkAngle;
+		var gapLeftAngle = (gapLeft/step) * chunkAngle;
+
+		var a = gapLeftAngle;
+		var p = {x:radius, y:0};
+
+		this.moveTo(x + p.x, y + p.y);
+		for (var i = 0; i < chunks; i++) {
+			a = chunkAngle*i;
+			this.arc(x, y, radius, a, dashLeftAngle > 0 ? a+dashLeftAngle :  a+dashAngle);
+			p = {x:radius*Math.cos(a+chunkAngle), y:radius*Math.sin(a+chunkAngle)};
+			this.moveTo(x + p.x, y + p.y);
+			dashLeftAngle = 0;
+		}
+		//TODO:FIX
+	}
 	PIXI.Graphics.prototype.drawDashedPolygon = function (polygons, x, y, rotation, dash, gap, offsetPercentage) {
 		var i;
 		var p1;
@@ -3958,7 +4027,6 @@ export function B2dEditor() {
 				y: dy / len
 			};
 			var progressOnLine = 0;
-			
 			this.moveTo(x + p1.x + gapLeft * normal.x, y + p1.y + gapLeft * normal.y);
 			while (progressOnLine <= len) {
 				progressOnLine += gapLeft;
