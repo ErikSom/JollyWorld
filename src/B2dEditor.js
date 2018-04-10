@@ -570,6 +570,20 @@ export function B2dEditor() {
 					this.humanUpdate = true;
 					this.targetValue = value
 				}.bind(controller));
+
+				this.editorGUI.editData.convertToGraphic = function(){};
+				var label = this.selectedTextures.length == 1 ? ">Convert to Graphic<" : ">Convert to Graphics<";
+				controller = this.editorGUI.add(self.editorGUI.editData, "convertToGraphic").name(label);
+				this.editorGUI.editData.convertToGraphic = (function(_c){return function(){
+						if(_c.domElement.previousSibling.innerText != ">Click to Confirm<"){
+							_c.name(">Click to Confirm<");
+						}else{
+							_c.name(label);
+							console.log("Changing!!!!");
+							self.convertSelectedBodiesToGraphics();
+						}
+					}
+				})(controller)
 				break;
 			case case_JUST_TEXTURES:
 				break;
@@ -591,12 +605,13 @@ export function B2dEditor() {
 				}.bind(controller));
 
 				this.editorGUI.editData.convertToBody = function(){};
-				controller = this.editorGUI.add(self.editorGUI.editData, "convertToBody").name(">Convert to physicsObject<");
+				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
+				controller = this.editorGUI.add(self.editorGUI.editData, "convertToBody").name(label);
 				this.editorGUI.editData.convertToBody = (function(_c){return function(){
 						if(_c.domElement.previousSibling.innerText != ">Click to Confirm<"){
 							_c.name(">Click to Confirm<");
 						}else{
-							_c.name(">Convert to physicsObject<");
+							_c.name(label);
 							console.log("Changing!!!!");
 							self.convertSelectedGraphicsToBodies();
 						}
@@ -2645,21 +2660,48 @@ export function B2dEditor() {
 
 			this.updateObject(graphic, graphic.data);
 			var bodyObject = this.createBodyObjectFromVerts(verts);
-			bodyObject.colorFill = graphic.data.colorFill;
-			bodyObject.lineColor = graphic.data.lineColor;
-			bodyObject.transparancy = graphic.data.transparancy;
-			bodyObject.x = graphic.data.x/this.PTM;
-			bodyObject.y = graphic.data.y/this.PTM;
-			bodyObject.rotation = graphic.data.rotation;
-			if(bodyObject) body = this.buildBodyFromObj(bodyObject);
+
+			if(bodyObject){
+				bodyObject.colorFill = graphic.data.colorFill;
+				bodyObject.lineColor = graphic.data.lineColor;
+				bodyObject.transparancy = graphic.data.transparancy;
+				bodyObject.x = graphic.data.x/this.PTM;
+				bodyObject.y = graphic.data.y/this.PTM;
+				bodyObject.rotation = graphic.data.rotation;
+				body = this.buildBodyFromObj(bodyObject);
+			}
 			if(body){
-				console.log(body.myGraphic+"  "+graphic);
 				body.mySprite.parent.swapChildren(graphic, body.mySprite);
 				bodiesCreated.push(body);
 			}
 		}
 		this.deleteSelection();
 		this.selectedPhysicsBodies = bodiesCreated;
+		this.updateSelection();
+	}
+	this.convertSelectedBodiesToGraphics = function(){
+		var body;
+		var graphic;
+		var graphicsCreated = [];
+		for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
+			body = this.selectedPhysicsBodies[i];
+			var verts = body.mySprite.data.vertices;
+			this.updateObject(body.mySprite, body.mySprite.data);
+			var graphicObject = this.createGraphicObjectFromVerts(verts);
+			graphicObject.colorFill = body.mySprite.data.colorFill;
+			graphicObject.lineColor = body.mySprite.data.lineColor;
+			graphicObject.transparancy = body.mySprite.data.transparancy;
+			graphicObject.x = body.mySprite.data.x*this.PTM;
+			graphicObject.y = body.mySprite.data.y*this.PTM;
+			graphicObject.rotation = body.mySprite.data.rotation;
+			graphic = this.buildGraphicFromObj(graphicObject);
+			if(graphic){
+				graphic.parent.swapChildren(body.mySprite, graphic);
+				graphicsCreated.push(graphic);
+			}
+		}
+		this.deleteSelection();
+		this.selectedTextures = graphicsCreated;
 		this.updateSelection();
 	}
 

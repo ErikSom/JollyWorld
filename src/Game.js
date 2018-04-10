@@ -63,7 +63,6 @@ function Game() {
     this.mouseJoint;
     this.run = false;
 
-
     this.character;
     this.vehicle;
     this.desiredVehicleSpeed = 0;
