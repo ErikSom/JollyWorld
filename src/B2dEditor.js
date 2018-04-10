@@ -1981,7 +1981,7 @@ export function B2dEditor() {
 
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			if(this.selectedPhysicsBodies[i].mySprite.data.radius){
-				this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius, this.selectedPhysicsBodies[i].mySprite.x*this.container.scale.x+this.container.x, this.selectedPhysicsBodies[i].mySprite.y*this.container.scale.y+this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+				this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius*this.container.scale.x, this.selectedPhysicsBodies[i].mySprite.x*this.container.scale.x+this.container.x, this.selectedPhysicsBodies[i].mySprite.y*this.container.scale.y+this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 			}else{
 				var polygons = [];
 				for (var j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({
@@ -3965,30 +3965,16 @@ export function B2dEditor() {
 		var chunks = Math.ceil(circum / stepSize);
 		var chunkAngle = (2*Math.PI)/chunks;
 		var dashAngle = (dash/stepSize) * chunkAngle;
-
-
-		var dashLeft = 0;
-		var gapLeft = 0;
-		if (offsetPercentage > 0) {
-			var progressOffset = (dash + gap) * offsetPercentage;
-			if (progressOffset <= dash) dashLeft = dash - progressOffset;
-			else gapLeft = gap - (progressOffset - dash);
-		}
-		var dashLeftAngle = (dashLeft/step) * chunkAngle;
-		var gapLeftAngle = (gapLeft/step) * chunkAngle;
-
-		var a = gapLeftAngle;
-		var p = {x:radius, y:0};
-
+		var offsetAngle = offsetPercentage*chunkAngle;
+		var a = offsetAngle;
+		var p = {x:radius*Math.cos(a), y:radius*Math.sin(a)};
 		this.moveTo(x + p.x, y + p.y);
 		for (var i = 0; i < chunks; i++) {
-			a = chunkAngle*i;
-			this.arc(x, y, radius, a, dashLeftAngle > 0 ? a+dashLeftAngle :  a+dashAngle);
+			a = chunkAngle*i+offsetAngle;
+			this.arc(x, y, radius, a, a+dashAngle);
 			p = {x:radius*Math.cos(a+chunkAngle), y:radius*Math.sin(a+chunkAngle)};
 			this.moveTo(x + p.x, y + p.y);
-			dashLeftAngle = 0;
 		}
-		//TODO:FIX
 	}
 	PIXI.Graphics.prototype.drawDashedPolygon = function (polygons, x, y, rotation, dash, gap, offsetPercentage) {
 		var i;
