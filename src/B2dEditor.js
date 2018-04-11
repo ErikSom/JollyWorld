@@ -2956,13 +2956,9 @@ export function B2dEditor() {
 		//build fixtures
 		var fixtureArray = obj.vertices;
 		if(obj.vertices[0] instanceof Array == false){
-			console.log("FIX FIXTURE LENGTH!");
 			fixtureArray = [];
 			fixtureArray[0] = obj.vertices;
 		}
-
-		console.log(fixtureArray.length +" FIXTURE LENGTH");
-
 		var fixDef;
 		var fixture;
 		for(var i = 0; i<fixtureArray.length; i++){
@@ -3078,38 +3074,46 @@ export function B2dEditor() {
 		if(this.selectedPhysicsBodies.length > 0){
 			var bodiesToGroup  = [];
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-				if (this.selectedPhysicsBodies[i].mySprite.data.vertices instanceof Array == false) bodiesToGroup.push(this.selectedTextures[i]);
-				else if (this.selectedPhysicsBodies[i].mySprite.data.vertices instanceof Array == true) bodiesToGroup.push(this.ungroupBodyObjects(this.selectedPhysicsBodies[i]));
+				if (this.selectedPhysicsBodies[i].mySprite.data.vertices[0] instanceof Array == false) bodiesToGroup.push(this.selectedPhysicsBodies[i]);
+				else if (this.selectedPhysicsBodies[i].mySprite.data.vertices[0] instanceof Array == true) bodiesToGroup.push(this.ungroupBodyObjects(this.selectedPhysicsBodies[i]));
 			}
 			this.groupBodyObjects(bodiesToGroup);
 
 		}
 	}
 	this.groupBodyObjects = function(bodyObjects){
-		var masterBody = bodyObjects[0];
-		masterBody.mySprite.data.vertices = [masterBody.mySprite.data.vertices];
-		masterBody.mySprite.data.colorFill = [masterBody.mySprite.data.colorFill];
-		masterBody.mySprite.data.lineColor = [masterBody.mySprite.data.lineColor];
-		masterBody.mySprite.data.transparancy = [masterBody.mySprite.data.transparancy];
+		var groupedBodyObject = new this.bodyObject;
+		groupedBodyObject.vertices = [];
+		groupedBodyObject.colorFill = [];
+		groupedBodyObject.colorLine = [];
+		groupedBodyObject.transparancy = [];
 
 		var i;
 		for(i = 0; i<bodyObjects.length; i++){
 			this.updateObject(bodyObjects[i].mySprite, bodyObjects[i].mySprite.data);
 		}
+		groupedBodyObject.x = bodyObjects[0].mySprite.data.x;
+		groupedBodyObject.y = bodyObjects[0].mySprite.data.y;
+		groupedBodyObject.rotation = bodyObjects[0].mySprite.data.rotation;
 
-
-		for(i = 1; i<bodyObjects.length; i++){
+		for(i = 0; i<bodyObjects.length; i++){
 			var verts = [];
-			for(var j = 0; j<bodyObjects[i].vertices.length; j++){
-				var dx = bodyObjecta[i].mySprite.data.x-masterBody.mySprite.data.x;
-				var dy = bodyObjecta[i].mySprite.data.y-masterBody.mySprite.data.y;
-				verts.push({x:bodyObjects[i].vertices[j].x+dx, y:bodyObjects[i].vertices[j].y+dy});
+			for(var j = 0; j<bodyObjects[i].mySprite.data.vertices.length; j++){
+				var dx = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
+				var dy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
+				verts.push({x:bodyObjects[i].mySprite.data.vertices[j].x+dx, y:bodyObjects[i].mySprite.data.vertices[j].y+dy});
 			}
-			masterBody.vertices.push(verts);
-			masterBody.colorFill.push(bodyObjecta[i].mySprite.data.colorFill);
-			masterBody.lineColor.push(bodyObjecta[i].mySprite.data.lineColor);
-			masterBody.transparancy.push(bodyObjecta[i].mySprite.data.transparancy);
+			groupedBodyObject.vertices.push(verts);
+			groupedBodyObject.colorFill.push(bodyObjects[i].mySprite.data.colorFill);
+			groupedBodyObject.colorLine.push(bodyObjects[i].mySprite.data.colorLine);
+			groupedBodyObject.transparancy.push(bodyObjects[i].mySprite.data.transparancy);
 		}
+		var groupedBody = this.buildBodyFromObj(groupedBodyObject);
+
+		groupedBody.mySprite.parent.swapChildren(groupedBody.mySprite, bodyObjects[0].mySprite);
+
+		this.deleteObjects(bodyObjects);
+		this.selectedPhysicsBodies = [groupedBody];
 	}
 	this.ungroupBodyObjects = function(body){
 		var bodies = [];
@@ -3562,7 +3566,6 @@ export function B2dEditor() {
 		color = colorLine.slice(1);
 		var colorLineHex = parseInt(color, 16);
 
-		graphic.clear();
 		graphic.boundsPadding = 0;
 
 		graphic.lineStyle(1, colorLineHex, transparancy);
