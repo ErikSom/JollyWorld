@@ -2874,53 +2874,65 @@ export function B2dEditor() {
 
 	this.buildBodyFromObj = function (obj) {
 
-		var fixDef = new b2FixtureDef;
-		fixDef.density = obj.density;
-		fixDef.friction = 2000;
-		fixDef.restitution = 0.001;
-		fixDef.angularDrag
-
+		
 
 		var bd = new b2BodyDef();
-
 		if (obj.fixed) bd.type = b2Body.b2_staticBody;
 		else bd.type = b2Body.b2_dynamicBody;
-
 		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
-
 		body.SetAwake(obj.awake);
-
-		if (!obj.radius) {
-			var i = 0;
-			var vert;
-			var b2Vec2Arr = [];
-			for (i = 0; i < obj.vertices.length; i++) {
-				vert = obj.vertices[i];
-				b2Vec2Arr.push(new b2Vec2(vert.x, vert.y));
-			}
-
-			fixDef.shape = new b2PolygonShape;
-			fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
-		} else {
-			fixDef.shape = new b2CircleShape;
-			fixDef.shape.Set(new b2Vec2(0, 0));
-			fixDef.shape.SetRadius(obj.radius / this.PTM);
-		}
-
-		var fixture = body.CreateFixture(fixDef);
-
-		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
-
-		body.SetAngle(obj.rotation);
-
 
 		var graphic = new PIXI.Graphics();
 		body.originalGraphic = graphic;
 
-		if (!obj.radius) this.updatePolyShape(body.originalGraphic, fixDef.shape, obj.colorFill, obj.colorLine, obj.transparancy);
-		else this.updateCircleShape(body.originalGraphic, obj.radius, obj.colorFill, obj.colorLine, obj.transparancy);
+		//build fixtures
+		var fixtureArray = obj.vertices;
+		if(obj.vertices[0] instanceof Array == false){
+			console.log("FIX FIXTURE LENGTH!");
+			fixtureArray = [];
+			fixtureArray[0] = obj.vertices;
+		}
+
+		console.log(fixtureArray.length +" FIXTURE LENGTH");
+
+		var fixDef;
+		var fixture;
+		for(var i = 0; i<fixtureArray.length; i++){
+			fixDef = new b2FixtureDef;
+			fixDef.density = obj.density instanceof Array ? obj.density[i] : obj.density;
+			fixDef.friction = 2000;
+			fixDef.restitution = 0.001;
+			var radius = obj.radius instanceof Array ? obj.radius[i] : obj.radius;
+			if (!radius) {
+				var vert;
+				var b2Vec2Arr = [];
+				var vertices = obj.vertices[0] instanceof Array ? obj.vertices[i] : obj.vertices;
+				for (var j = 0; j < vertices.length; j++) {
+					vert = vertices[j];
+					b2Vec2Arr.push(new b2Vec2(vert.x, vert.y));
+				}
+
+				fixDef.shape = new b2PolygonShape;
+				fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
+			} else {
+				fixDef.shape = new b2CircleShape;
+				fixDef.shape.Set(new b2Vec2(0, 0));
+				fixDef.shape.SetRadius(radius / this.PTM);
+			}
+			fixture = body.CreateFixture(fixDef);
+
+			var colorFill = obj.colorFill instanceof Array ? obj.colorFill[i] : obj.colorFill;
+			var colorLine = obj.colorLine instanceof Array ? obj.colorLine[i] : obj.colorLine;
+			var transparancy = obj.transparancy instanceof Array ? obj.transparancy[i] : obj.transparancy;
+			if (!radius) this.updatePolyShape(body.originalGraphic, fixDef.shape, colorFill, colorLine, transparancy);
+			else this.updateCircleShape(body.originalGraphic, radius, colorFill, colorLine, transparancy);
+		}
+
+		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
+		body.SetAngle(obj.rotation);
+
 
 		body.mySprite = new PIXI.Sprite();
 		this.textures.addChild(body.mySprite);
@@ -2996,7 +3008,9 @@ export function B2dEditor() {
 			}
 		}
 	}
+	this.groupBodyObjects = function(bodyObjects){
 
+	}
 	this.groupGraphicObjects = function (graphicObjects) {
 		console.log("Grouping graphic objects" + graphicObjects.length);
 		var graphicGroup = new this.graphicGroup();
