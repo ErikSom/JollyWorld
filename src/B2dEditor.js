@@ -718,11 +718,86 @@ export function B2dEditor() {
 		return true;
 	}
 
-
+	this.deleteObjects = function(arr){
+		for(var i = 0; i<arr.length; i++){
+			if(arr[i].data){
+				//graphic object
+				var sprite = arr[i];
+				if (sprite.data && sprite.data.type == this.object_JOINT) {
+					var j;
+					var myJoint;
+					if (sprite.bodies[0] != undefined) {
+						for (j = 0; j < sprite.bodies[0].myJoints.length; j++) {
+							myJoint = sprite.bodies[0].myJoints[j];
+							if (myJoint == sprite) {
+								sprite.bodies[0].myJoints.splice(j, 1);
+								j--;
+							}
+						}
+						if (sprite.bodies[0].myJoints.length == 0) sprite.bodies[0].myJoints = undefined;
+					}
+					if (sprite.bodies.length > 1 && sprite.bodies[1] != undefined) {
+						for (j = 0; j < sprite.bodies[1].myJoints.length; j++) {
+							myJoint = sprite.bodies[1].myJoints[j];
+							if (myJoint == sprite) {
+								sprite.bodies[1].myJoints.splice(j, 1);
+								j--;
+							}
+						}
+						if (sprite.bodies[1].myJoints.length == 0) sprite.bodies[1].myJoints = undefined;
+					}
+					for (j = 0; j < this.editorIcons.length; j++) {
+						if (this.editorIcons[j] == sprite) {
+							this.editorIcons.splice(j, 1);
+						}
+					}
+				}
+				sprite.parent.removeChild(sprite);
+				sprite.destroy({
+					children: true,
+					texture: false,
+					baseTexture: false
+				});
+			}else if(arr[i].mySprite.data){
+				var b = arr[i];
+				b.mySprite.parent.removeChild(b.mySprite);
+				b.mySprite.destroy({
+					children: true,
+					texture: false,
+					baseTexture: false
+				});
+				b.mySprite = null;
+				if (b.myJoints != undefined) {
+					var j;
+					var myJoint;
+					var k;
+					for (j = 0; j < b.myJoints.length; j++) {
+						myJoint = b.myJoints[j];
+						var alreadySelected = false;
+						for (k = 0; k < arr.length; k++) {
+							if (arr[k] == myJoint) {
+								alreadySelected = true;
+							}
+						}
+						if (!alreadySelected) arr.push(myJoint);
+					}
+				}
+				if (b.myTexture) {
+					var sprite = b.myTexture;
+					sprite.parent.removeChild(sprite);
+					sprite.destroy({
+						children: true,
+						texture: false,
+						baseTexture: false
+					});
+				}
+				this.world.DestroyBody(b);
+			}
+		}
+	}
 	this.deleteSelection = function () {
 		//Destroy selected bodies
-		var i;
-
+		/*var i;
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			var b = this.selectedPhysicsBodies[i];
 
@@ -774,9 +849,6 @@ export function B2dEditor() {
 		for (i = 0; i < this.selectedTextures.length; i++) {
 			var sprite = this.selectedTextures[i];
 			if (sprite.data && sprite.data.type == this.object_JOINT) {
-
-
-
 				var j;
 				var myJoint;
 				if (sprite.bodies[0] != undefined) {
@@ -799,23 +871,20 @@ export function B2dEditor() {
 					}
 					if (sprite.bodies[1].myJoints.length == 0) sprite.bodies[1].myJoints = undefined;
 				}
-
-
 				for (j = 0; j < this.editorIcons.length; j++) {
 					if (this.editorIcons[j] == sprite) {
 						this.editorIcons.splice(j, 1);
 					}
 				}
 			}
-
-
 			sprite.parent.removeChild(sprite);
 			sprite.destroy({
 				children: true,
 				texture: false,
 				baseTexture: false
 			});
-		}
+		}*/
+		this.deleteObjects([].concat(this.selectedPhysicsBodies, this.selectedTextures));
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.selectedPrefabs = {};
@@ -2873,9 +2942,6 @@ export function B2dEditor() {
 	}
 
 	this.buildBodyFromObj = function (obj) {
-
-		
-
 		var bd = new b2BodyDef();
 		if (obj.fixed) bd.type = b2Body.b2_staticBody;
 		else bd.type = b2Body.b2_dynamicBody;
@@ -3007,9 +3073,47 @@ export function B2dEditor() {
 				this.groupGraphicObjects(graphicsToGroup);
 			}
 		}
+
+
+		if(this.selectedPhysicsBodies.length > 0){
+			var bodiesToGroup  = [];
+			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+				if (this.selectedPhysicsBodies[i].mySprite.data.vertices instanceof Array == false) bodiesToGroup.push(this.selectedTextures[i]);
+				else if (this.selectedPhysicsBodies[i].mySprite.data.vertices instanceof Array == true) bodiesToGroup.push(this.ungroupBodyObjects(this.selectedPhysicsBodies[i]));
+			}
+			this.groupBodyObjects(bodiesToGroup);
+
+		}
 	}
 	this.groupBodyObjects = function(bodyObjects){
+		var masterBody = bodyObjects[0];
+		masterBody.mySprite.data.vertices = [masterBody.mySprite.data.vertices];
+		masterBody.mySprite.data.colorFill = [masterBody.mySprite.data.colorFill];
+		masterBody.mySprite.data.lineColor = [masterBody.mySprite.data.lineColor];
+		masterBody.mySprite.data.transparancy = [masterBody.mySprite.data.transparancy];
 
+		var i;
+		for(i = 0; i<bodyObjects.length; i++){
+			this.updateObject(bodyObjects[i].mySprite, bodyObjects[i].mySprite.data);
+		}
+
+
+		for(i = 1; i<bodyObjects.length; i++){
+			var verts = [];
+			for(var j = 0; j<bodyObjects[i].vertices.length; j++){
+				var dx = bodyObjecta[i].mySprite.data.x-masterBody.mySprite.data.x;
+				var dy = bodyObjecta[i].mySprite.data.y-masterBody.mySprite.data.y;
+				verts.push({x:bodyObjects[i].vertices[j].x+dx, y:bodyObjects[i].vertices[j].y+dy});
+			}
+			masterBody.vertices.push(verts);
+			masterBody.colorFill.push(bodyObjecta[i].mySprite.data.colorFill);
+			masterBody.lineColor.push(bodyObjecta[i].mySprite.data.lineColor);
+			masterBody.transparancy.push(bodyObjecta[i].mySprite.data.transparancy);
+		}
+	}
+	this.ungroupBodyObjects = function(body){
+		var bodies = [];
+		return bodies;
 	}
 	this.groupGraphicObjects = function (graphicObjects) {
 		console.log("Grouping graphic objects" + graphicObjects.length);
