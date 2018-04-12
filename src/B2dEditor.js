@@ -1168,6 +1168,9 @@ export function B2dEditor() {
 		this.type;
 		this.ID = 0;
 		this.graphicObjects = [];
+		this.texturePositionOffsetLength = null;
+		this.texturePositionOffsetAngle = null;
+		this.textureAngleOffset = null;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -1188,6 +1191,9 @@ export function B2dEditor() {
 			x: 0,
 			y: 0
 		}];
+		this.texturePositionOffsetLength = null;
+		this.texturePositionOffsetAngle = null;
+		this.textureAngleOffset = null;
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -3057,22 +3063,43 @@ export function B2dEditor() {
 
 	this.groupOrUngroupObjects = function () {
 		console.log("GROUP OR UNGROUP");
-		if (this.selectedTextures.length > 0) {
-			if (this.selectedTextures.length == 1 && this.selectedTextures[0].data instanceof this.graphicGroup) {
-				//ungroup
-			} else if (this.selectedTextures.length > 1) {
-				var graphicsToGroup = [];
-				for (var i = 0; i < this.selectedTextures.length; i++) {
-					if (this.selectedTextures[i].data instanceof this.graphicObject) graphicsToGroup.push(this.selectedTextures[i]);
-					else if (this.selectedTextures[i].data instanceof this.graphicGroup) graphicsToGroup.push(this.ungroupGraphicObjects(this.selectedTextures[i]));
+		var combinedGraphics;
+		var combinedBodies;
+
+		if(this.selectedPhysicsBodies.length > 0){
+			combinedBodies = this.selectedPhysicsBodies[0];
+			for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
+				if(this.selectedPhysicsBodies[i].myTexture){
+					this.selectedTextures.push(body.myTexture);
 				}
-				this.groupGraphicObjects(graphicsToGroup);
 			}
 		}
 
+		if (this.selectedTextures.length > 1) {
+			var graphicsToGroup = [];
+			for (var i = 0; i < this.selectedTextures.length; i++) {
+				if (this.selectedTextures[i].data instanceof this.graphicObject) graphicsToGroup.push(this.selectedTextures[i]);
+				else if (this.selectedTextures[i].data instanceof this.graphicGroup) graphicsToGroup.push(this.ungroupGraphicObjects(this.selectedTextures[i]));
+			}
+			combinedGraphics = this.groupGraphicObjects(graphicsToGroup);
+		}else if(this.selectedTextures.length == 1){
+			combinedGraphics = this.selectedTextures[0];
+		}
+		if(this.selectedPhysicsBodies.length > 1){
+			combinedBodies = this.groupBodyObjects(this.selectedPhysicsBodies);
+		}
 
-		if(this.selectedPhysicsBodies.length > 0){
-			this.groupBodyObjects(this.selectedPhysicsBodies);
+		if(combinedGraphics && combinedBodies){
+			//merge these two together yo
+			var dif = new b2Vec2(combinedGraphics.x - combinedBodies.GetPosition().x * this.PTM, combinedGraphics.y - combinedBodies.GetPosition().y * this.PTM);
+			var angleOffset = combinedBodies.GetAngle() - Math.atan2(dif.y, dif.x);
+			var angle = combinedBodies.GetAngle() - combinedGraphics.rotation;
+			if (combinedBodies.mySprite.parent.getChildIndex(combinedBodies.mySprite) > combinedGraphics.parent.getChildIndex(combinedGraphics)) {
+				combinedBodies.mySprite.parent.swapChildren(combinedBodies.mySprite, combinedGraphics);
+			}
+			this.updateObject(combinedBodies.mySprite, combinedBodies.mySprite.data);
+			this.updateObject(combinedGraphics, combinedGraphics.data);
+			this.setTextureToBody(combinedBodies, combinedGraphics, dif.Length(), angleOffset, angle);
 		}
 	}
 	this.groupBodyObjects = function(bodyObjects){
@@ -3154,6 +3181,7 @@ export function B2dEditor() {
 
 		this.deleteObjects(bodyObjects);
 		this.selectedPhysicsBodies = [groupedBody];
+		return groupedBody;
 	}
 	this.ungroupBodyObjects = function(body){
 		var bodies = [];
@@ -3195,7 +3223,7 @@ export function B2dEditor() {
 		}
 
 
-		this.buildGraphicGroupFromObj(graphicGroup);
+		return this.buildGraphicGroupFromObj(graphicGroup);
 
 	}
 	this.ungroupGraphicObjects = function (graphicGroup) {
@@ -3807,6 +3835,9 @@ export function B2dEditor() {
 			arr[9] = obj.transparancy;
 			arr[10] = obj.radius;
 			arr[11] = obj.vertices;
+			arr[12] = obj.texturePositionOffsetLength;
+			arr[13] = obj.texturePositionOffsetAngle;
+			arr[14] = obj.textureAngleOffset;
 		}
 		return JSON.stringify(arr);
 	}
@@ -3861,6 +3892,9 @@ export function B2dEditor() {
 			obj.transparancy = arr[9];
 			obj.radius = arr[10];
 			obj.vertices = arr[11];
+			obj.texturePositionOffsetLength = arr[12];
+			obj.texturePositionOffsetAngle = arr[13];
+			obj.textureAngleOffset = arr[14];
 		}
 
 		obj.type = arr[0];
