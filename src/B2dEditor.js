@@ -3072,16 +3072,15 @@ export function B2dEditor() {
 
 
 		if(this.selectedPhysicsBodies.length > 0){
-			var bodiesToGroup  = [];
-			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-				if (this.selectedPhysicsBodies[i].mySprite.data.vertices[0] instanceof Array == false) bodiesToGroup.push(this.selectedPhysicsBodies[i]);
-				else if (this.selectedPhysicsBodies[i].mySprite.data.vertices[0] instanceof Array == true) bodiesToGroup.push(this.ungroupBodyObjects(this.selectedPhysicsBodies[i]));
-			}
-			this.groupBodyObjects(bodiesToGroup);
-
+			this.groupBodyObjects(this.selectedPhysicsBodies);
 		}
 	}
 	this.groupBodyObjects = function(bodyObjects){
+
+		bodyObjects.sort(function (a, b) {
+			return a.mySprite.data.ID - b.mySprite.data.ID;
+		});
+
 		var groupedBodyObject = new this.bodyObject;
 		groupedBodyObject.vertices = [];
 		groupedBodyObject.colorFill = [];
@@ -3097,16 +3096,57 @@ export function B2dEditor() {
 		groupedBodyObject.rotation = bodyObjects[0].mySprite.data.rotation;
 
 		for(i = 0; i<bodyObjects.length; i++){
-			var verts = [];
-			for(var j = 0; j<bodyObjects[i].mySprite.data.vertices.length; j++){
-				var dx = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
-				var dy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
-				verts.push({x:bodyObjects[i].mySprite.data.vertices[j].x+dx, y:bodyObjects[i].mySprite.data.vertices[j].y+dy});
+			if(bodyObjects[i].mySprite.data.vertices[0] instanceof Array){
+				var vertices = [];
+				for(var j = 0; j<bodyObjects[i].mySprite.data.vertices.length; j++){
+					var verts = [];
+					for(var k = 0; k<bodyObjects[i].mySprite.data.vertices[j].length; k++){
+						var ox = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
+						var oy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
+
+						var p = {
+							x: bodyObjects[i].mySprite.data.vertices[j][k].x,
+							y: bodyObjects[i].mySprite.data.vertices[j][k].y
+						};
+						var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation);
+						var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation);
+						var dx = p.x;
+						var dy = p.y;
+						p.x = (dx * cosAngle - dy * sinAngle);
+						p.y = (dx * sinAngle + dy * cosAngle);
+
+						verts.push({x:p.x+ox, y:p.y+oy});
+					}
+					vertices.push(verts);
+				}
+				groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
+				groupedBodyObject.colorFill = groupedBodyObject.colorFill.concat(bodyObjects[i].mySprite.data.colorFill);
+				groupedBodyObject.colorLine = groupedBodyObject.colorLine.concat(bodyObjects[i].mySprite.data.colorLine);
+				groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
+			}else{
+				var verts = [];
+				for(var j = 0; j<bodyObjects[i].mySprite.data.vertices.length; j++){
+					var ox = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
+					var oy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
+
+					var p = {
+						x: bodyObjects[i].mySprite.data.vertices[j].x,
+						y: bodyObjects[i].mySprite.data.vertices[j].y
+					};
+					var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation);
+					var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation);
+					var dx = p.x;
+					var dy = p.y;
+					p.x = (dx * cosAngle - dy * sinAngle);
+					p.y = (dx * sinAngle + dy * cosAngle);
+
+					verts.push({x:p.x+ox, y:p.y+oy});
+				}
+				groupedBodyObject.vertices.push(verts);
+				groupedBodyObject.colorFill.push(bodyObjects[i].mySprite.data.colorFill);
+				groupedBodyObject.colorLine.push(bodyObjects[i].mySprite.data.colorLine);
+				groupedBodyObject.transparancy.push(bodyObjects[i].mySprite.data.transparancy);
 			}
-			groupedBodyObject.vertices.push(verts);
-			groupedBodyObject.colorFill.push(bodyObjects[i].mySprite.data.colorFill);
-			groupedBodyObject.colorLine.push(bodyObjects[i].mySprite.data.colorLine);
-			groupedBodyObject.transparancy.push(bodyObjects[i].mySprite.data.transparancy);
 		}
 		var groupedBody = this.buildBodyFromObj(groupedBodyObject);
 
