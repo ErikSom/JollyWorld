@@ -1800,7 +1800,13 @@ export function B2dEditor() {
 			}
 		} else if (e.keyCode == 71) { // g
 			if (e.ctrlKey || e.metaKey) {
-				this.groupOrUngroupObjects();
+
+				if((this.selectedTextures.length == 1 && this.selectedPhysicsBodies.length == 0) || (this.selectedTextures.length == 0 && this.selectedPhysicsBodies.length == 1)){
+					this.ungroupObjects();
+				}else{
+					this.groupObjects();
+				}
+				
 			}
 		} else if (e.keyCode == 77) { //m
 			this.selectTool(this.tool_SELECT);
@@ -3020,7 +3026,6 @@ export function B2dEditor() {
 
 	}
 	this.buildGraphicFromObj = function (obj) {
-		//graphicGroup
 		var graphic = new PIXI.Graphics();
 		graphic.data = obj;
 		graphic.x = obj.x;
@@ -3054,18 +3059,15 @@ export function B2dEditor() {
 
 			this.updatePolyGraphic(graphic, graphicObject.vertices, graphicObject.colorFill, graphicObject.colorLine, graphicObject.transparancy, true);
 		}
-
 		this.textures.addChild(graphic);
-
 		this.addItemToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
 
-	this.groupOrUngroupObjects = function () {
-		console.log("GROUP OR UNGROUP");
+	this.groupObjects = function () {
+		console.log("GROUP!");
 		var combinedGraphics;
 		var combinedBodies;
-
 		if(this.selectedPhysicsBodies.length > 0){
 			combinedBodies = this.selectedPhysicsBodies[0];
 			for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
@@ -3100,6 +3102,16 @@ export function B2dEditor() {
 			this.updateObject(combinedBodies.mySprite, combinedBodies.mySprite.data);
 			this.updateObject(combinedGraphics, combinedGraphics.data);
 			this.setTextureToBody(combinedBodies, combinedGraphics, dif.Length(), angleOffset, angle);
+		}
+
+		this.selectedTextures = [];
+		this.selectedPhysicsBodies = [];
+		this.updateSelection();
+	}
+	this.ungroupObjects = function(){
+		console.log("UNGROUP!");
+		if(this.selectedTextures.length == 1){
+			this.ungroupGraphicObjects(this.selectedTextures[0]);
 		}
 	}
 	this.groupBodyObjects = function(bodyObjects){
@@ -3222,12 +3234,37 @@ export function B2dEditor() {
 			graphicObjects[i].parent.removeChild(graphicObjects[i]);
 		}
 
+		var graphic = this.buildGraphicGroupFromObj(graphicGroup);
 
-		return this.buildGraphicGroupFromObj(graphicGroup);
+		var container = graphic.parent;
+		container.removeChild(graphic);
+		container.addChildAt(graphic, graphicObjects[0].data.ID);
+
+
+		return graphic;
 
 	}
 	this.ungroupGraphicObjects = function (graphicGroup) {
 		var graphicObjects = [];
+
+		this.updateObject(graphicGroup, graphicGroup.data);
+
+		for (var i = 0; i < graphicGroup.data.graphicObjects.length; i++) {
+			var graphicObject = this.parseArrObject(JSON.parse(graphicGroup.data.graphicObjects[i]));
+
+			graphicObject.x += graphicGroup.x;// + centerPoint.x;
+			graphicObject.y += graphicGroup.y;// + centerPoint.y;
+
+			var graphic = this.buildGraphicFromObj(graphicObject);
+
+			var container = graphic.parent;
+			container.removeChild(graphic);
+			container.addChildAt(graphic, graphicGroup.data.ID+i);
+
+			graphicObjects.push(graphic);
+		}
+		graphicGroup.parent.removeChild(graphicGroup);
+
 		return graphicObjects;
 	}
 
