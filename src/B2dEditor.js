@@ -2025,7 +2025,7 @@ export function B2dEditor() {
 					aabb.Combine(aabb, fixture.GetAABB());
 					fixture = fixture.GetNext();
 				}
-			} else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject) {
+			} else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject || sprite.data instanceof this.graphicGroup) {
 				//sprite.calculateBounds()
 
 				//sprite = sprite.getLocalBounds();
@@ -2819,35 +2819,9 @@ export function B2dEditor() {
 
 
 
-	this.buildTextureFromObj = function (obj) {
 
-		var container;
-		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(obj.textureName));
 
-		container = new PIXI.Container();
-		container.pivot.set(sprite.width / 2, sprite.height / 2);
-		container.addChild(sprite);
-
-		container.originalSprite = sprite;
-
-		this.textures.addChild(container);
-
-		container.x = obj.x;
-		container.y = obj.y;
-		container.rotation = obj.rotation;
-		container.data = obj;
-
-		if (container.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(container.data.bodyID).myBody;
-			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-		}
-		//handle groups and ref names
-		this.addItemToLookupGroups(container, container.data);
-
-		return container;
-	}
-
-	// FIX GROUPS ON CHANGE OF INDIVIDUAL GROUP // SAME FOR INSTANCE LATER
+	// TODO: FIX GROUPS ON CHANGE OF INDIVIDUAL GROUP // SAME FOR INSTANCE LATER
 
 	this.addItemToLookupGroups = function (obj, data) {
 
@@ -2953,6 +2927,34 @@ export function B2dEditor() {
 		}
 	}
 
+	this.buildTextureFromObj = function (obj) {
+
+		var container;
+		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(obj.textureName));
+
+		container = new PIXI.Container();
+		container.pivot.set(sprite.width / 2, sprite.height / 2);
+		container.addChild(sprite);
+
+		container.originalSprite = sprite;
+
+		this.textures.addChild(container);
+
+		container.x = obj.x;
+		container.y = obj.y;
+		container.rotation = obj.rotation;
+		container.data = obj;
+
+		if (container.data.bodyID != undefined) {
+			var body = this.textures.getChildAt(container.data.bodyID).myBody;
+			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		}
+		//handle groups and ref names
+		this.addItemToLookupGroups(container, container.data);
+
+		return container;
+	}
+
 	this.buildBodyFromObj = function (obj) {
 		var bd = new b2BodyDef();
 		if (obj.fixed) bd.type = b2Body.b2_staticBody;
@@ -3044,20 +3046,31 @@ export function B2dEditor() {
 
 	}
 	this.buildGraphicGroupFromObj = function (obj) {
-		var graphic = new PIXI.Graphics();
+		var graphic = new PIXI.Container();
 		graphic.data = obj;
 		graphic.x = obj.x;
 		graphic.y = obj.y;
 
+		var g;
 		for (var i = 0; i < obj.graphicObjects.length; i++) {
-			var graphicObject = this.parseArrObject(JSON.parse(obj.graphicObjects[i]));
+			var gObj = this.parseArrObject(JSON.parse(obj.graphicObjects[i]));
 
-			for (var j = 0; j < graphicObject.vertices.length; j++) {
-				graphicObject.vertices[j].x += graphicObject.x;
-				graphicObject.vertices[j].y += graphicObject.y;
+			if(gObj instanceof this.graphicObject){
+				g = new PIXI.Graphics();
+				/*for (var j = 0; j < graphicObject.vertices.length; j++) {
+					graphicObject.vertices[j].x += graphicObject.x;
+					graphicObject.vertices[j].y += graphicObject.y;
+				}*/
+				this.updatePolyGraphic(g, gObj.vertices, gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
+			}else if(gObj instanceof this.textureObject){
+				g = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(gObj.textureName));
+				g.pivot.set(g.width / 2, g.height / 2);
+				g.x = gObj.x;
 			}
-
-			this.updatePolyGraphic(graphic, graphicObject.vertices, graphicObject.colorFill, graphicObject.colorLine, graphicObject.transparancy, true);
+			graphic.addChild(g);
+			g.x = gObj.x;
+			g.y = gObj.y;
+			g.rotation = gObj.rotation;
 		}
 		this.textures.addChild(graphic);
 		this.addItemToLookupGroups(graphic, graphic.data);
@@ -3252,8 +3265,9 @@ export function B2dEditor() {
 		for (var i = 0; i < graphicGroup.data.graphicObjects.length; i++) {
 			var graphicObject = this.parseArrObject(JSON.parse(graphicGroup.data.graphicObjects[i]));
 
-			graphicObject.x += graphicGroup.x;// + centerPoint.x;
-			graphicObject.y += graphicGroup.y;// + centerPoint.y;
+			graphicObject.x += graphicGroup.x;
+			graphicObject.y += graphicGroup.y;
+			graphicObject.rotation = graphicGroup.rotation+graphicObject.rotation;
 
 			var graphic = this.buildGraphicFromObj(graphicObject);
 
