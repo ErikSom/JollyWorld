@@ -1165,6 +1165,9 @@ export function B2dEditor() {
 		this.isCarvable = false;
 	}
 	this.graphicGroup = function () {
+		this.x = null;
+		this.y = null;
+		this.rotation = 0;
 		this.type;
 		this.ID = 0;
 		this.graphicObjects = [];
@@ -2025,7 +2028,7 @@ export function B2dEditor() {
 					aabb.Combine(aabb, fixture.GetAABB());
 					fixture = fixture.GetNext();
 				}
-			} else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject || sprite.data instanceof this.graphicGroup) {
+			} else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject) {
 				//sprite.calculateBounds()
 
 				//sprite = sprite.getLocalBounds();
@@ -2035,7 +2038,7 @@ export function B2dEditor() {
 				spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
 				aabb.Combine(aabb, spriteAABB);
 			} else {
-				var bounds = sprite.getPolyBounds();
+				var bounds = sprite.getBounds();
 				var spriteAABB = new b2AABB;
 				var posX = bounds.x / this.container.scale.x + this.container.x / this.container.scale.x;
 				var posY = bounds.y / this.container.scale.y + this.container.y / this.container.scale.y;
@@ -3032,6 +3035,7 @@ export function B2dEditor() {
 		graphic.data = obj;
 		graphic.x = obj.x;
 		graphic.y = obj.y;
+		graphic.rotation = obj.rotation;
 
 		this.updatePolyGraphic(graphic, obj.vertices, obj.colorFill, obj.colorLine, obj.transparancy);
 		//if (!obj.radius) this.updatePolyShape(body.originalGraphic, fixDef.shape, obj.colorFill, obj.colorLine, obj.transparancy);
@@ -3050,6 +3054,7 @@ export function B2dEditor() {
 		graphic.data = obj;
 		graphic.x = obj.x;
 		graphic.y = obj.y;
+		graphic.rotation = obj.rotation;
 
 		var g;
 		for (var i = 0; i < obj.graphicObjects.length; i++) {
@@ -3265,9 +3270,18 @@ export function B2dEditor() {
 		for (var i = 0; i < graphicGroup.data.graphicObjects.length; i++) {
 			var graphicObject = this.parseArrObject(JSON.parse(graphicGroup.data.graphicObjects[i]));
 
+			var cosAngle = Math.cos(graphicGroup.rotation);
+			var sinAngle = Math.sin(graphicGroup.rotation);
+			var dx = graphicObject.x;
+			var dy = graphicObject.y;
+			graphicObject.x = (dx * cosAngle - dy * sinAngle);
+			graphicObject.y = (dx * sinAngle + dy * cosAngle);
+
 			graphicObject.x += graphicGroup.x;
 			graphicObject.y += graphicGroup.y;
 			graphicObject.rotation = graphicGroup.rotation+graphicObject.rotation;
+
+			console.log(graphicGroup.rotation);
 
 			var graphic = this.buildGraphicFromObj(graphicObject);
 
@@ -4320,63 +4334,113 @@ export function B2dEditor() {
 			}
 		}
 	}
-	PIXI.Graphics.prototype.getPolyBounds = function () {
-		var minX = Infinity;
-		var maxX = -Infinity;
-		var minY = Infinity;
-		var maxY = -Infinity;
-		if (this.graphicsData.length) {
-			this._recursivePostUpdateTransform();
-			var mat = this.transform.worldTransform;
-			for (var i = 0; i < this.graphicsData.length; i++) {
-				var data = this.graphicsData[i];
-				var type = data.type;
-				if (type === PIXI.SHAPES.POLY) {
-					var lineWidth = data.lineWidth;
-					var shape = data.shape;
-					var points = shape.points;
-					for (var j = 0; j + 2 < points.length; j += 2) {
-						var u1 = points[j];
-						var v1 = points[j + 1];
-						var u2 = points[j + 2];
-						var v2 = points[j + 3];
-						var x = u1 * mat.a + v1 * mat.c + mat.tx;
-						var y = u1 * mat.b + v1 * mat.d + mat.ty;
-						var x2 = u2 * mat.a + v2 * mat.c + mat.tx;
-						var y2 = u2 * mat.b + v2 * mat.d + mat.ty;
-						var dx = Math.abs(x2 - x);
-						var dy = Math.abs(y2 - y);
-						var h = lineWidth;
-						var w = Math.sqrt((dx * dx) + (dy * dy));
-						if (w < 1e-9) {
-							continue;
-						}
-						var rw = ((h / w * dy) + dx) / 2;
-						var rh = ((h / w * dx) + dy) / 2;
-						var cx = (x2 + x) / 2;
-						var cy = (y2 + y) / 2;
-						minX = cx - rw < minX ? cx - rw : minX;
-						maxX = cx + rw > maxX ? cx + rw : maxX;
-						minY = cy - rh < minY ? cy - rh : minY;
-						maxY = cy + rh > maxY ? cy + rh : maxY;
-					}
-				}
-			}
-		} else {
-			minX = 0;
-			maxX = 0;
-			minY = 0;
-			maxY = 0;
-		}
-		var padding = this.boundsPadding;
-		minX = minX - padding;
-		maxX = maxX + padding;
-		minY = minY - padding;
-		maxY = maxY + padding;
+	PIXI.Graphics.prototype._calculateBounds = function()
+    {
+        var minX = Infinity;
+        var maxX = -Infinity;
+        var minY = Infinity;
+        var maxY = -Infinity;
 
-		return new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
-	};
+        //this.rotation = 0;
+        if (this.graphicsData.length) {
+            this._recursivePostUpdateTransform();
+            var mat = this.transform.worldTransform;
 
+            for (var i = 0; i < this.graphicsData.length; i++) {
+                var data = this.graphicsData[i];
+                var type = data.type;
+                if (type === PIXI.SHAPES.RECT || type === PIXI.SHAPES.RREC) {
+                    x = shape.x - lineWidth / 2;
+                    y = shape.y - lineWidth / 2;
+                    w = shape.width + lineWidth;
+                    h = shape.height + lineWidth;
+
+                    minX = x < minX ? x : minX;
+                    maxX = x + w > maxX ? x + w : maxX;
+
+                    minY = y < minY ? y : minY;
+                    maxY = y + h > maxY ? y + h : maxY;
+                } else if (type === PIXI.SHAPES.CIRC) {
+                    x = shape.x;
+                    y = shape.y;
+                    w = shape.radius + lineWidth / 2;
+                    h = shape.radius + lineWidth / 2;
+
+                    minX = x - w < minX ? x - w : minX;
+                    maxX = x + w > maxX ? x + w : maxX;
+
+                    minY = y - h < minY ? y - h : minY;
+                    maxY = y + h > maxY ? y + h : maxY;
+                } else if (type === PIXI.SHAPES.ELIP) {
+                    x = shape.x;
+                    y = shape.y;
+                    w = shape.width + lineWidth / 2;
+                    h = shape.height + lineWidth / 2;
+
+                    minX = x - w < minX ? x - w : minX;
+                    maxX = x + w > maxX ? x + w : maxX;
+
+                    minY = y - h < minY ? y - h : minY;
+                    maxY = y + h > maxY ? y + h : maxY;
+                }else if (type === PIXI.SHAPES.POLY) {
+                    var lineWidth = data.lineWidth;
+                    var shape = data.shape;
+                    var points = shape.points;
+
+                    for (var j = 0; j + 2 < points.length; j += 2) {
+                        var u1 = points[j];
+                        var v1 = points[j + 1];
+                        var u2 = points[j + 2];
+                        var v2 = points[j + 3];
+
+                        var x = u1 * mat.a + v1 * mat.c + mat.tx;
+                        var y = u1 * mat.b + v1 * mat.d + mat.ty;
+                        var x2 = u2 * mat.a + v2 * mat.c + mat.tx;
+                        var y2 = u2 * mat.b + v2 * mat.d + mat.ty;
+
+                        var dx = Math.abs(x2 - x);
+                        var dy = Math.abs(y2 - y);
+                        var h = lineWidth;
+                        var w = Math.sqrt((dx * dx) + (dy * dy));
+
+                        if (w < 1e-9)
+                        {
+                            continue;
+                        }
+
+                        var rw = ((h / w * dy) + dx) / 2;
+                        var rh = ((h / w * dx) + dy) / 2;
+                        var cx = (x2 + x) / 2;
+                        var cy = (y2 + y) / 2;
+
+                        minX = cx - rw < minX ? cx - rw : minX;
+                        maxX = cx + rw > maxX ? cx + rw : maxX;
+
+                        minY = cy - rh < minY ? cy - rh : minY;
+                        maxY = cy + rh > maxY ? cy + rh : maxY;
+
+                    }
+                }
+            }
+        }
+        else {
+            minX = 0;
+            maxX = 0;
+            minY = 0;
+            maxY = 0;
+        }
+
+        var padding = this.boundsPadding;
+        minX = minX - padding;
+        maxX = maxX + padding;
+        minY = minY - padding;
+        maxY = maxY + padding;
+
+        this._bounds.minX = minX;
+        this._bounds.maxX = maxX;
+        this._bounds.minY = minY;
+        this._bounds.maxY = maxY;
+    }
 
 	//CONSTS
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
