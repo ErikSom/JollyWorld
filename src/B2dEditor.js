@@ -1465,6 +1465,9 @@ export function B2dEditor() {
 					});
 				} else {
 					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+					graphicObject.colorFill = this.editorGUI.editData.colorFill;
+					graphicObject.colorLine = this.editorGUI.editData.colorLine;
+					graphicObject.transparany = this.editorGUI.editData.transparancy;
 					this.buildGraphicFromObj(graphicObject);
 					this.activeVertices = [];
 				}
