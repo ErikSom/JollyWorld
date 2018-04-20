@@ -1165,10 +1165,12 @@ export function B2dEditor() {
 		this.isCarvable = false;
 	}
 	this.graphicGroup = function () {
+		this.type = self.object_GRAPHICGROUP;
 		this.x = null;
 		this.y = null;
 		this.rotation = 0;
-		this.type;
+		this.groups = "";
+		this.refName = "";
 		this.ID = 0;
 		this.graphicObjects = [];
 		this.texturePositionOffsetLength = null;
@@ -3906,6 +3908,12 @@ export function B2dEditor() {
 			arr[12] = obj.texturePositionOffsetLength;
 			arr[13] = obj.texturePositionOffsetAngle;
 			arr[14] = obj.textureAngleOffset;
+		} else if (arr[0] == this.object_GRAPHICGROUP) {
+			arr[6] = obj.ID;
+			arr[7] = obj.graphicObjects;
+			arr[8] = obj.texturePositionOffsetLength;
+			arr[9] = obj.texturePositionOffsetAngle;
+			arr[10] = obj.textureAngleOffset;
 		}
 		return JSON.stringify(arr);
 	}
@@ -3963,6 +3971,13 @@ export function B2dEditor() {
 			obj.texturePositionOffsetLength = arr[12];
 			obj.texturePositionOffsetAngle = arr[13];
 			obj.textureAngleOffset = arr[14];
+		} else if (arr[0] == this.object_GRAPHICGROUP) {
+			obj = new this.graphicObject();
+			obj.ID = arr[6];
+			obj.graphicObjects = arr[7];
+			obj.texturePositionOffsetLength = arr[8];
+			obj.texturePositionOffsetAngle = arr[9];
+			obj.textureAngleOffset = arr[10];
 		}
 
 		obj.type = arr[0];
@@ -4455,6 +4470,7 @@ export function B2dEditor() {
 	this.object_PREFAB = 4;
 	this.object_MULTIPLE = 5;
 	this.object_GRAPHIC = 6;
+	this.object_GRAPHICGROUP = 7;
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
