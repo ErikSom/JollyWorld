@@ -2045,8 +2045,8 @@ export function B2dEditor() {
 			} else {
 				var bounds = sprite.getBounds();
 				var spriteAABB = new b2AABB;
-				var posX = bounds.x / this.container.scale.x + this.container.x / this.container.scale.x;
-				var posY = bounds.y / this.container.scale.y + this.container.y / this.container.scale.y;
+				var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+				var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
 				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
 				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
 				aabb.Combine(aabb, spriteAABB);
@@ -3103,9 +3103,16 @@ export function B2dEditor() {
 		if (this.selectedTextures.length > 1) {
 			var graphicsToGroup = [];
 			for (var i = 0; i < this.selectedTextures.length; i++) {
-				if (this.selectedTextures[i].data instanceof this.graphicObject) graphicsToGroup.push(this.selectedTextures[i]);
-				else if (this.selectedTextures[i].data instanceof this.graphicGroup) graphicsToGroup.push(this.ungroupGraphicObjects(this.selectedTextures[i]));
+				if (this.selectedTextures[i].data instanceof this.graphicObject){
+					graphicsToGroup.push(this.selectedTextures[i]);
+					console.log("Normal Sprite");
+				} 
+				else if (this.selectedTextures[i].data instanceof this.graphicGroup){
+					graphicsToGroup = graphicsToGroup.concat(this.ungroupGraphicObjects(this.selectedTextures[i]));
+					console.log("Unpacking group:"+i);
+				} 
 			}
+			console.log(graphicsToGroup.length+"  total graphics");
 			combinedGraphics = this.groupGraphicObjects(graphicsToGroup);
 		}else if(this.selectedTextures.length == 1){
 			combinedGraphics = this.selectedTextures[0];
@@ -3972,7 +3979,7 @@ export function B2dEditor() {
 			obj.texturePositionOffsetAngle = arr[13];
 			obj.textureAngleOffset = arr[14];
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
-			obj = new this.graphicObject();
+			obj = new this.graphicGroup();
 			obj.ID = arr[6];
 			obj.graphicObjects = arr[7];
 			obj.texturePositionOffsetLength = arr[8];
@@ -4077,6 +4084,9 @@ export function B2dEditor() {
 					prefabOffset = this.textures.children.length - prefabOffset;
 				} else if (obj.type == this.object_GRAPHIC) {
 					worldObject = this.buildGraphicFromObj(obj);
+					createdObjects._textures.push(worldObject);
+				}else if (obj.type == this.object_GRAPHICGROUP) {
+					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}
 			}

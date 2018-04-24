@@ -137,8 +137,9 @@ export function Vehicle() {
             engine.SetMotorSpeed(-dir * this.desiredVehicleSpeeds[i]);
         }
         if(this.pedal_engine){
-            this.pedal_engine.SetMaxMotorTorque(this.desiredVehicleTorques[0]);
-            this.pedal_engine.SetMotorSpeed(-this.wheels[0].GetBody().GetAngularVelocity()*3.0);
+            this.pedal_engine.SetMaxMotorTorque(10000);
+            const desiredPedalSpeed = 20;
+            this.pedal_engine.SetMotorSpeed(Math.min(desiredPedalSpeed, Math.max(-desiredPedalSpeed, -this.wheels[0].GetBody().GetAngularVelocity()*3.0)));
         }
     }
     this.stopAccelerateWheels = function () {
