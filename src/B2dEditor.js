@@ -537,21 +537,25 @@ export function B2dEditor() {
 					this.targetValue = value;
 				});
 
-				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
-				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
-				controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
+				if(self.editorGUI.editData.colorFill instanceof Array){
+					//TODO: dont know yet ?
+				}else{
+					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+				}
 				this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
