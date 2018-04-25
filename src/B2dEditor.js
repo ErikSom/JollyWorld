@@ -2789,20 +2789,37 @@ export function B2dEditor() {
 		var graphicsCreated = [];
 		for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
 			body = this.selectedPhysicsBodies[i];
-			var verts = body.mySprite.data.vertices;
+			var verts = (body.mySprite.data.vertices[0] instanceof Array) ? body.mySprite.data.vertices : [body.mySprite.data.vertices];
+			var colorFill = (body.mySprite.data.colorFill instanceof Array) ? body.mySprite.data.colorFill : [body.mySprite.data.colorFill];
+			var lineColor = (body.mySprite.data.lineColor instanceof Array) ? body.mySprite.data.lineColor : [body.mySprite.data.lineColor];
+			var transparancy = (body.mySprite.data.transparancy instanceof Array) ? body.mySprite.data.transparancy : [body.mySprite.data.transparancy];
+
 			this.updateObject(body.mySprite, body.mySprite.data);
-			var graphicObject = this.createGraphicObjectFromVerts(verts);
-			graphicObject.colorFill = body.mySprite.data.colorFill;
-			graphicObject.lineColor = body.mySprite.data.lineColor;
-			graphicObject.transparancy = body.mySprite.data.transparancy;
-			graphicObject.x = body.mySprite.data.x*this.PTM;
-			graphicObject.y = body.mySprite.data.y*this.PTM;
-			graphicObject.rotation = body.mySprite.data.rotation;
-			graphic = this.buildGraphicFromObj(graphicObject);
+
+			var graphics = [];
+
+			for(var j = 0; j<verts.length; j++){
+				var graphicObject = this.createGraphicObjectFromVerts(verts[j]);
+				graphicObject.colorFill = colorFill[j];
+				graphicObject.lineColor = lineColor[j];
+				graphicObject.transparancy = transparancy[j];
+
+
+				graphicObject.x += body.mySprite.data.x*this.PTM;
+				graphicObject.y += body.mySprite.data.y*this.PTM;
+				graphicObject.rotation = body.mySprite.data.rotation;
+				graphic = this.buildGraphicFromObj(graphicObject);
+				if(graphic){
+					graphics.push(graphic);
+				}
+			}
+			if(graphics.length>1) graphic = this.groupGraphicObjects(graphics);
+
 			if(graphic){
 				graphic.parent.swapChildren(body.mySprite, graphic);
 				graphicsCreated.push(graphic);
 			}
+
 		}
 		this.deleteSelection();
 		this.selectedTextures = graphicsCreated;
