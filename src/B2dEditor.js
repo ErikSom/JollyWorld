@@ -3026,6 +3026,9 @@ export function B2dEditor() {
 			fixDef.friction = 2000;
 			fixDef.restitution = 0.001;
 			var radius = obj.radius instanceof Array ? obj.radius[i] : obj.radius;
+
+			console.log(radius);
+
 			if (!radius) {
 				var vert;
 				var b2Vec2Arr = [];
@@ -3039,7 +3042,11 @@ export function B2dEditor() {
 				fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
 			} else {
 				fixDef.shape = new b2CircleShape;
-				fixDef.shape.Set(new b2Vec2(0, 0));
+				if(obj.radius instanceof Array){ 
+					fixDef.shape.SetLocalPosition(new b2Vec2(obj.vertices[i][0].x, obj.vertices[i][0].y));
+					console.log(obj.vertices[i]);
+				}
+				else  fixDef.shape.SetLocalPosition(new b2Vec2(0, 0));
 				fixDef.shape.SetRadius(radius / this.PTM);
 			}
 			fixture = body.CreateFixture(fixDef);
@@ -3192,6 +3199,7 @@ export function B2dEditor() {
 		groupedBodyObject.colorFill = [];
 		groupedBodyObject.colorLine = [];
 		groupedBodyObject.transparancy = [];
+		groupedBodyObject.radius = [];
 
 		var i;
 		for(i = 0; i<bodyObjects.length; i++){
@@ -3202,7 +3210,7 @@ export function B2dEditor() {
 		groupedBodyObject.rotation = bodyObjects[0].mySprite.data.rotation;
 
 		for(i = 0; i<bodyObjects.length; i++){
-			if(bodyObjects[i].mySprite.data.vertices[0] instanceof Array){
+			if((bodyObjects[i].mySprite.data.vertices[0] instanceof Array) || (bodyObjects[i].mySprite.data.radius instanceof Array)){
 				var vertices = [];
 				for(var j = 0; j<bodyObjects[i].mySprite.data.vertices.length; j++){
 					var verts = [];
@@ -3226,6 +3234,7 @@ export function B2dEditor() {
 					vertices.push(verts);
 				}
 				groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
+				groupedBodyObject.radius = groupedBodyObject.radius.concat(bodyObjects[i].mySprite.data.radius)
 				groupedBodyObject.colorFill = groupedBodyObject.colorFill.concat(bodyObjects[i].mySprite.data.colorFill);
 				groupedBodyObject.colorLine = groupedBodyObject.colorLine.concat(bodyObjects[i].mySprite.data.colorLine);
 				groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
@@ -3248,7 +3257,14 @@ export function B2dEditor() {
 
 					verts.push({x:p.x+ox, y:p.y+oy});
 				}
-				groupedBodyObject.vertices.push(verts);
+				if(bodyObjects[i].mySprite.data.radius){
+					var dx = bodyObjects[i].mySprite.x-bodyObjects[0].mySprite.x;
+					var dy = bodyObjects[i].mySprite.y-bodyObjects[0].mySprite.y;
+					groupedBodyObject.vertices.push([{x:dx/this.PTM, y:dy/this.PTM}]);
+				}
+				else groupedBodyObject.vertices.push(verts);
+
+				groupedBodyObject.radius.push(bodyObjects[i].mySprite.data.radius);
 				groupedBodyObject.colorFill.push(bodyObjects[i].mySprite.data.colorFill);
 				groupedBodyObject.colorLine.push(bodyObjects[i].mySprite.data.colorLine);
 				groupedBodyObject.transparancy.push(bodyObjects[i].mySprite.data.transparancy);
