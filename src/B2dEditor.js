@@ -3265,6 +3265,16 @@ export function B2dEditor() {
 					for(var j = 0; j<bodyObjects[i].mySprite.data.vertices.length; j++){
 						var ox = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
 						var oy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
+						
+						var a = bodyObjects[0].mySprite.data.rotation;
+						var atanO = Math.atan2(oy, ox);
+						var sqrtO = Math.sqrt(ox*ox +oy*oy);
+
+						ox = sqrtO*Math.cos(-a+atanO);
+						oy = sqrtO*Math.sin(-a+atanO);
+
+
+
 
 						var p = {
 							x: bodyObjects[i].mySprite.data.vertices[j].x,
