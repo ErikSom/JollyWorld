@@ -3174,6 +3174,24 @@ export function B2dEditor() {
 			combinedGraphics = this.selectedTextures[0];
 		}
 		if(this.selectedPhysicsBodies.length > 1){
+			var bodiesToGroup = [];
+			for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
+
+				//TODO FIX THIS!
+				// if (this.selectedPhysicsBodies[i].mySprite.data instanceof this.bodyObject){
+				// 	graphicsToGroup.push(this.selectedTextures[i]);
+				// 	console.log("Normal Sprite");
+				// } 
+				// else if (this.selectedPhysicsBodies[i].mySprite.data instanceof this.bodyObject){
+				// 	graphicsToGroup = graphicsToGroup.concat(this.ungroupGraphicObjects(this.selectedTextures[i]));
+				// 	console.log("Unpacking group:"+i);
+				// } 
+
+
+			}
+
+
+
 			combinedBodies = this.groupBodyObjects(this.selectedPhysicsBodies);
 		}
 
@@ -3244,12 +3262,19 @@ export function B2dEditor() {
 						var ox = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
 						var oy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
 
+						var a = bodyObjects[0].mySprite.data.rotation;
+						var atanO = Math.atan2(oy, ox);
+						var sqrtO = Math.sqrt(ox*ox +oy*oy);
+
+						ox = sqrtO*Math.cos(-a+atanO);
+						oy = sqrtO*Math.sin(-a+atanO);
+
 						var p = {
 							x: bodyObjects[i].mySprite.data.vertices[j][k].x,
 							y: bodyObjects[i].mySprite.data.vertices[j][k].y
 						};
-						var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation);
-						var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation);
+						var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation-a);
+						var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation-a);
 						var dx = p.x;
 						var dy = p.y;
 						p.x = (dx * cosAngle - dy * sinAngle);
