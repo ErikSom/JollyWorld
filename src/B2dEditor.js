@@ -977,7 +977,7 @@ export function B2dEditor() {
 					copyArray.splice(i, 1);
 					i--;
 				}
-			} else if (data.type == this.object_TEXTURE) {
+			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP) {
 				for (j = 0; j < copyArray.length; j++) {
 					if (copyArray[j].ID == data.bodyID) {
 						data.bodyID = j;
@@ -1043,10 +1043,9 @@ export function B2dEditor() {
 				movY = 0;
 			}
 
-
 			for (i = startChildIndex; i < this.textures.children.length; i++) {
 				sprite = this.textures.getChildAt(i);
-				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE) {
+				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP) {
 					var pos = sprite.myBody.GetPosition();
 					pos.x -= movX / this.PTM;
 					pos.y -= movY / this.PTM;
@@ -1177,6 +1176,7 @@ export function B2dEditor() {
 		this.refName = "";
 		this.ID = 0;
 		this.graphicObjects = [];
+		this.bodyID = null;
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
@@ -1200,6 +1200,7 @@ export function B2dEditor() {
 			x: 0,
 			y: 0
 		}];
+		this.bodyID = null;
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
@@ -2328,7 +2329,7 @@ export function B2dEditor() {
 							// 	count++;
 							//}
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.colorLine = controller.targetValue.toString();
+							body.mySprite.data.colorFill = controller.targetValue.toString();
 							var fixture = body.GetFixtureList();
 							if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius,{x:0, y:0},  body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
 							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
@@ -3104,6 +3105,12 @@ export function B2dEditor() {
 	
 		this.textures.addChild(graphic);
 
+		if (graphic.data.bodyID != undefined) {
+			console.log("ATTACH TO BODY");
+			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
+			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		}
+
 		//if (obj.tileTexture) this.updateBodyTileSprite(body);
 
 		this.addItemToLookupGroups(graphic, graphic.data);
@@ -3139,6 +3146,12 @@ export function B2dEditor() {
 			g.rotation = gObj.rotation;
 		}
 		this.textures.addChild(graphic);
+
+		if (graphic.data.bodyID != undefined) {
+			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
+			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		}
+
 		this.addItemToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
@@ -3155,43 +3168,29 @@ export function B2dEditor() {
 				}
 			}
 		}
+		for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
+			if(this.selectedPhysicsBodies[i].myTexture){
+				var texture = this.selectedPhysicsBodies[i].myTexture;
+				this.removeTextureFromBody(this.selectedPhysicsBodies[i], texture);
+				this.selectedTextures.push(texture);
+			}
+		}
 
 		if (this.selectedTextures.length > 1) {
 			var graphicsToGroup = [];
 			for (var i = 0; i < this.selectedTextures.length; i++) {
 				if (this.selectedTextures[i].data instanceof this.graphicObject){
 					graphicsToGroup.push(this.selectedTextures[i]);
-					console.log("Normal Sprite");
-				} 
+				}
 				else if (this.selectedTextures[i].data instanceof this.graphicGroup){
 					graphicsToGroup = graphicsToGroup.concat(this.ungroupGraphicObjects(this.selectedTextures[i]));
-					console.log("Unpacking group:"+i);
-				} 
+				}
 			}
-			console.log(graphicsToGroup.length+"  total graphics");
 			combinedGraphics = this.groupGraphicObjects(graphicsToGroup);
 		}else if(this.selectedTextures.length == 1){
 			combinedGraphics = this.selectedTextures[0];
 		}
 		if(this.selectedPhysicsBodies.length > 1){
-			var bodiesToGroup = [];
-			for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
-
-				//TODO FIX THIS!
-				// if (this.selectedPhysicsBodies[i].mySprite.data instanceof this.bodyObject){
-				// 	graphicsToGroup.push(this.selectedTextures[i]);
-				// 	console.log("Normal Sprite");
-				// } 
-				// else if (this.selectedPhysicsBodies[i].mySprite.data instanceof this.bodyObject){
-				// 	graphicsToGroup = graphicsToGroup.concat(this.ungroupGraphicObjects(this.selectedTextures[i]));
-				// 	console.log("Unpacking group:"+i);
-				// } 
-
-
-			}
-
-
-
 			combinedBodies = this.groupBodyObjects(this.selectedPhysicsBodies);
 		}
 
@@ -4086,15 +4085,17 @@ export function B2dEditor() {
 			arr[9] = obj.transparancy;
 			arr[10] = obj.radius;
 			arr[11] = obj.vertices;
-			arr[12] = obj.texturePositionOffsetLength;
-			arr[13] = obj.texturePositionOffsetAngle;
-			arr[14] = obj.textureAngleOffset;
+			arr[12] = obj.bodyID;
+			arr[13] = obj.texturePositionOffsetLength;
+			arr[14] = obj.texturePositionOffsetAngle;
+			arr[15] = obj.textureAngleOffset;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
-			arr[8] = obj.texturePositionOffsetLength;
-			arr[9] = obj.texturePositionOffsetAngle;
-			arr[10] = obj.textureAngleOffset;
+			arr[8] = obj.bodyID;
+			arr[9] = obj.texturePositionOffsetLength;
+			arr[10] = obj.texturePositionOffsetAngle;
+			arr[11] = obj.textureAngleOffset;
 		}
 		return JSON.stringify(arr);
 	}
@@ -4149,16 +4150,18 @@ export function B2dEditor() {
 			obj.transparancy = arr[9];
 			obj.radius = arr[10];
 			obj.vertices = arr[11];
-			obj.texturePositionOffsetLength = arr[12];
-			obj.texturePositionOffsetAngle = arr[13];
-			obj.textureAngleOffset = arr[14];
+			obj.bodyID = arr[12];
+			obj.texturePositionOffsetLength = arr[13];
+			obj.texturePositionOffsetAngle = arr[14];
+			obj.textureAngleOffset = arr[15];
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
 			obj.graphicObjects = arr[7];
-			obj.texturePositionOffsetLength = arr[8];
-			obj.texturePositionOffsetAngle = arr[9];
-			obj.textureAngleOffset = arr[10];
+			obj.bodyID = arr[8];
+			obj.texturePositionOffsetLength = arr[9];
+			obj.texturePositionOffsetAngle = arr[10];
+			obj.textureAngleOffset = arr[11];
 		}
 
 		obj.type = arr[0];
@@ -4182,7 +4185,7 @@ export function B2dEditor() {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
-		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC) {
+		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP) {
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation;
@@ -4257,9 +4260,15 @@ export function B2dEditor() {
 					createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
 					prefabOffset = this.textures.children.length - prefabOffset;
 				} else if (obj.type == this.object_GRAPHIC) {
+					if (obj.bodyID != undefined) {
+						obj.bodyID += startChildIndex;
+					}
 					worldObject = this.buildGraphicFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}else if (obj.type == this.object_GRAPHICGROUP) {
+					if (obj.bodyID != undefined) {
+						obj.bodyID += startChildIndex;
+					}
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}
