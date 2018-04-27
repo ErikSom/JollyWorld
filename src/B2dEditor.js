@@ -3200,7 +3200,7 @@ export function B2dEditor() {
 		if(this.selectedPhysicsBodies.length == 1){
 			var myTexture = this.selectedPhysicsBodies[0].myTexture;
 			if(myTexture){
-				this.removeTextureFromBody(this.selectedPhysicsBodies[0]);
+				this.removeTextureFromBody(this.selectedPhysicsBodies[0], myTexture);
 				if(myTexture.data instanceof this.graphicGroup){
 					this.ungroupGraphicObjects(myTexture);
 				}
@@ -3266,21 +3266,18 @@ export function B2dEditor() {
 				groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
 			}else{
 				var verts = [];
+				var ox = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
+				var oy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
+				var a = bodyObjects[0].mySprite.data.rotation;
+				var atanO = Math.atan2(oy, ox);
+				var sqrtO = Math.sqrt(ox*ox +oy*oy);
+
+				ox = sqrtO*Math.cos(-a+atanO);
+				oy = sqrtO*Math.sin(-a+atanO);
 				if(i == 0){
 					verts = bodyObjects[i].mySprite.data.vertices;
 				}else{
 					for(var j = 0; j<bodyObjects[i].mySprite.data.vertices.length; j++){
-						var ox = bodyObjects[i].mySprite.data.x-bodyObjects[0].mySprite.data.x;
-						var oy = bodyObjects[i].mySprite.data.y-bodyObjects[0].mySprite.data.y;
-						
-						var a = bodyObjects[0].mySprite.data.rotation;
-						var atanO = Math.atan2(oy, ox);
-						var sqrtO = Math.sqrt(ox*ox +oy*oy);
-
-						ox = sqrtO*Math.cos(-a+atanO);
-						oy = sqrtO*Math.sin(-a+atanO);
-
-
 						var p = {
 							x: bodyObjects[i].mySprite.data.vertices[j].x,
 							y: bodyObjects[i].mySprite.data.vertices[j].y
@@ -3299,7 +3296,7 @@ export function B2dEditor() {
 				if(bodyObjects[i].mySprite.data.radius){
 					var dx = bodyObjects[i].mySprite.x-bodyObjects[0].mySprite.x;
 					var dy = bodyObjects[i].mySprite.y-bodyObjects[0].mySprite.y;
-					groupedBodyObject.vertices.push([{x:dx/this.PTM, y:dy/this.PTM}]);
+					groupedBodyObject.vertices.push([{x:ox, y:oy}]);
 				}
 				else groupedBodyObject.vertices.push(verts);
 
@@ -3691,7 +3688,7 @@ export function B2dEditor() {
 
 			} else if (body.myTexture && texture.myBody) {
 				if (body.myTexture == texture) {
-					this.removeTextureFromBody(body);
+					this.removeTextureFromBody(body, texture);
 				}
 			}
 
@@ -3706,7 +3703,7 @@ export function B2dEditor() {
 		//body.mySprite.visible = false;
 		texture.myBody = body;
 	}
-	this.removeTextureFromBody = function (body) {
+	this.removeTextureFromBody = function (body, texture) {
 		body.myTexture = null;
 		texture.data.bodyID = null;
 		texture.data.texturePositionOffsetLength = null;
