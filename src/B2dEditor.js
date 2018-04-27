@@ -3164,18 +3164,12 @@ export function B2dEditor() {
 			combinedBodies = this.selectedPhysicsBodies[0];
 			for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
 				if(this.selectedPhysicsBodies[i].myTexture){
-					this.selectedTextures.push(this.selectedPhysicsBodies[i].myTexture);
+					var texture = this.selectedPhysicsBodies[i].myTexture;
+					this.removeTextureFromBody(this.selectedPhysicsBodies[i], texture);
+					this.selectedTextures.push(texture);
 				}
 			}
 		}
-		for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
-			if(this.selectedPhysicsBodies[i].myTexture){
-				var texture = this.selectedPhysicsBodies[i].myTexture;
-				this.removeTextureFromBody(this.selectedPhysicsBodies[i], texture);
-				this.selectedTextures.push(texture);
-			}
-		}
-
 		if (this.selectedTextures.length > 1) {
 			var graphicsToGroup = [];
 			for (var i = 0; i < this.selectedTextures.length; i++) {
