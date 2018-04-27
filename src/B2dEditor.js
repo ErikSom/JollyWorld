@@ -1100,9 +1100,8 @@ export function B2dEditor() {
 				var angle = body.GetAngle() - body.myTexture.data.texturePositionOffsetAngle;
 				body.myTexture.x = body.GetPosition().x * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
 				body.myTexture.y = body.GetPosition().y * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
-				body.mySprite.x = body.GetPosition().x * this.PTM;
-				body.mySprite.y = body.GetPosition().y * this.PTM;
-
+				// body.mySprite.x = body.GetPosition().x * this.PTM;
+				// body.mySprite.y = body.GetPosition().y * this.PTM;
 				body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
 
 			}
@@ -3197,11 +3196,19 @@ export function B2dEditor() {
 	}
 	this.ungroupObjects = function(){
 		console.log("UNGROUP!");
+
+		if(this.selectedPhysicsBodies.length == 1){
+			var myTexture = this.selectedPhysicsBodies[0].myTexture;
+			if(myTexture){
+				this.removeTextureFromBody(this.selectedPhysicsBodies[0]);
+				if(myTexture.data instanceof this.graphicGroup){
+					this.ungroupGraphicObjects(myTexture);
+				}
+			}
+			this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
+		}
 		if(this.selectedTextures.length == 1){
 			this.ungroupGraphicObjects(this.selectedTextures[0]);
-		}
-		if(this.selectedPhysicsBodies.length == 1){
-			this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
 		}
 		this.selectedTextures = [];
 		this.selectedPhysicsBodies = [];
@@ -3274,14 +3281,12 @@ export function B2dEditor() {
 						oy = sqrtO*Math.sin(-a+atanO);
 
 
-
-
 						var p = {
 							x: bodyObjects[i].mySprite.data.vertices[j].x,
 							y: bodyObjects[i].mySprite.data.vertices[j].y
 						};
-						var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation);
-						var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation);
+						var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation-a);
+						var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation-a);
 						var dx = p.x;
 						var dy = p.y;
 						p.x = (dx * cosAngle - dy * sinAngle);
@@ -3319,7 +3324,7 @@ export function B2dEditor() {
 
 		var verts = (bodyGroup.mySprite.data.vertices[0] instanceof Array) ? bodyGroup.mySprite.data.vertices : [bodyGroup.mySprite.data.vertices];
 		var colorFill = (bodyGroup.mySprite.data.colorFill instanceof Array) ? bodyGroup.mySprite.data.colorFill : [bodyGroup.mySprite.data.colorFill];
-		var colorLine = (bodyGroup.mySprite.data.colorLine instanceof Array) ? bodyGroup.mySprite.data.colorLine : [bodyGroup.mySprite.data.lineColor];
+		var colorLine = (bodyGroup.mySprite.data.colorLine instanceof Array) ? bodyGroup.mySprite.data.colorLine : [bodyGroup.mySprite.data.colorLine];
 		var transparancy = (bodyGroup.mySprite.data.transparancy instanceof Array) ? bodyGroup.mySprite.data.transparancy : [bodyGroup.mySprite.data.transparancy];
 		var radius = (bodyGroup.mySprite.data.radius instanceof Array) ? bodyGroup.mySprite.data.radius : [bodyGroup.mySprite.data.radius];
 
@@ -3345,6 +3350,13 @@ export function B2dEditor() {
 				verts[i][j].x -= centerPoint.x;
 				verts[i][j].y -= centerPoint.y;
 			}
+
+			var a = bodyGroup.mySprite.data.rotation;
+			var atanO = Math.atan2(centerPoint.y, centerPoint.x);
+			var sqrtO = Math.sqrt(centerPoint.x*centerPoint.x + centerPoint.y*centerPoint.y);
+
+			centerPoint.x = sqrtO*Math.cos(a+atanO);
+			centerPoint.y = sqrtO*Math.sin(a+atanO);
 
 			bodyObject.x += bodyGroup.mySprite.x/this.PTM + centerPoint.x;
 			bodyObject.y += bodyGroup.mySprite.y/this.PTM + centerPoint.y;
