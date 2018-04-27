@@ -2338,7 +2338,7 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorFill = controller.targetValue.toString();
-							if (sprite.data.radius); //this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							if (sprite.data.radius) this.updateCircleShape(sprite, sprite.data.radius,{x:0, y:0}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 							else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 						}
 					} else if (controller.property == "colorLine") {
@@ -2353,7 +2353,7 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorLine = controller.targetValue.toString();
-							if (sprite.data.radius); //this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							if (sprite.data.radius) this.updateCircleShape(sprite, sprite.data.radius,{x:0, y:0}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 							else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 						}
 					} else if (controller.property == "transparancy") {
@@ -2370,7 +2370,7 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue.toString();
-							if (sprite.data.radius); //this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							if (sprite.data.radius) this.updateCircleShape(sprite, sprite.data.radius,{x:0, y:0}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 							else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 						}
 					} else if (controller.property == "fixed") {
@@ -2809,7 +2809,7 @@ export function B2dEditor() {
 			for(var j = 0; j<verts.length; j++){
 				var graphicObject;
 				if(radius[j]){
-					graphicObject = new graphicObject();
+					graphicObject = new this.graphicObject();
 					graphicObject.vertices = verts[j];
 				}else{
 					graphicObject = this.createGraphicObjectFromVerts(verts[j]);
@@ -3134,7 +3134,8 @@ export function B2dEditor() {
 					graphicObject.vertices[j].x += graphicObject.x;
 					graphicObject.vertices[j].y += graphicObject.y;
 				}*/
-				this.updatePolyGraphic(g, gObj.vertices, gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
+				if(!gObj.radius) this.updatePolyGraphic(g, gObj.vertices, gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
+				else this.updateCircleShape(g, gObj.radius, gObj.vertices[0], gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
 			}else if(gObj instanceof this.textureObject){
 				g = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
