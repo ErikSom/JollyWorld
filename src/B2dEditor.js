@@ -1951,19 +1951,19 @@ export function B2dEditor() {
 			var sprite = this.textures.getChildAt(i);
 
 			if (!onlyTextures || !sprite.myBody) {
-
-
-				if ((sprite.x + sprite.width / 2 > upperBoundPixi.x &&
-						sprite.x - sprite.width / 2 < lowerBoundPixi.x &&
-						sprite.y + sprite.height / 2 > upperBoundPixi.y &&
-						sprite.y - sprite.height / 2 < lowerBoundPixi.y) ||
-					(lowerBoundPixi.x < sprite.x - sprite.width / 2 &&
-						upperBoundPixi.x > sprite.x + sprite.width / 2 &&
-						lowerBoundPixi.y < sprite.y - sprite.height / 2 &&
-						upperBoundPixi.y > sprite.y + sprite.height / 2)) {
-					this.textureObject
+				var spriteBounds = sprite.getBounds();
+				var posX = spriteBounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+				var posY = spriteBounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+				var spriteRect = new PIXI.Rectangle(posX, posY, spriteBounds.width / this.container.scale.x, spriteBounds.height / this.container.scale.y);
+				var selectionRect = new PIXI.Rectangle(lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x-lowerBoundPixi.x, upperBoundPixi.y-lowerBoundPixi.y);
+				if(
+					!(((spriteRect.y + spriteRect.height) < selectionRect.y) ||
+					(spriteRect.y > (selectionRect.y + selectionRect.height)) ||
+					((spriteRect.x + spriteRect.width) < selectionRect.x) ||
+					(spriteRect.x > (selectionRect.x + selectionRect.width)))
+				){
 					queryGraphics.push(sprite);
-					if (queryGraphics.length == limitResult) break;
+					if (queryGraphics.length == limitResult && limitResult != 0) break;
 				}
 			} else {}
 		}
@@ -1991,7 +1991,11 @@ export function B2dEditor() {
 
 
 	this.getBodyCB = function (fixture) {
-		this.queryPhysicsBodies.push(fixture.GetBody());
+		var isIncluded = false;
+		for(var i = 0; i<this.queryPhysicsBodies.length; i++){
+			if(this.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
+		}
+		if(!isIncluded) this.queryPhysicsBodies.push(fixture.GetBody());
 		return true;
 	};
 
@@ -2038,16 +2042,23 @@ export function B2dEditor() {
 					aabb.Combine(aabb, fixture.GetAABB());
 					fixture = fixture.GetNext();
 				}
-			} else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject) {
+			} /*else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject) {
 				//sprite.calculateBounds()
 
 				//sprite = sprite.getLocalBounds();
-				var bounds = sprite.getLocalBounds();
+				// var bounds = sprite.getLocalBounds();
+				// var spriteAABB = new b2AABB;
+				// spriteAABB.lowerBound = new b2Vec2((sprite.position.x - (bounds.width / 2) * sprite.scale.x) / this.PTM, (sprite.position.y - (bounds.height / 2) * sprite.scale.x) / this.PTM);
+				// spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
+				// aabb.Combine(aabb, spriteAABB);
+				var bounds = sprite.getBounds(true);
 				var spriteAABB = new b2AABB;
-				spriteAABB.lowerBound = new b2Vec2((sprite.position.x - (bounds.width / 2) * sprite.scale.x) / this.PTM, (sprite.position.y - (bounds.height / 2) * sprite.scale.x) / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
+				var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+				var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
+				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
 				aabb.Combine(aabb, spriteAABB);
-			} else {
+			} */else {
 				var bounds = sprite.getBounds();
 				var spriteAABB = new b2AABB;
 				var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
