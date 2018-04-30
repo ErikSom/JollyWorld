@@ -30,5 +30,6 @@ export var LoadCoreAssets = function (loader){
         .add("worldData", "data/worldData.json")
         .add("vehicleData", "data/vehicle.json")
         .add("characterData", "data/character.json")
-        .add("characterData1", "data/character1.json");
+        .add("characterData1", "data/character1.json")
+        .add("testData", "data/testData.json");
 }

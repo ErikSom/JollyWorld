@@ -132,7 +132,11 @@ function Game() {
             "2head.png", "2body.png", "2uparm.png", "2lowarm.png", "2upleg.png", "2lowleg.png",
             "3head.png", "3body.png", "3uparm.png", "3lowarm.png", "3upleg.png", "3lowleg.png"
         ];
-        this.editor.assetLists.maincharacters = ["Normal_Head_Idle0000", "Normal_Head_Smile0000", "Normal_Head_Laugh0000", "Normal_Head_hurt10000", "Normal_Head_hurt20000", "Normal_Head_hurt30000", "Normal_Head_hurt40000", "Normal_Head_RnM0000", "Normal_Head_Oh0000", "Normal_Head_Boring0000", "Normal_Core0000", "Normal_Belly0000", "Normal_Thigh0000", "Normal_Leg0000", "Normal_Feet0000", "Normal_Shoulder0000", "Normal_Arm0000", "Normal_Hand0000", "Normal_Eye0000", "Normal_Eye_Closed0000"];
+        this.editor.assetLists.maincharacters = [
+        "Normal_Head_Idle0000", "Normal_Head_Smile0000", "Normal_Head_Laugh0000", "Normal_Head_hurt10000", "Normal_Head_hurt20000", "Normal_Head_hurt30000", "Normal_Head_hurt40000", "Normal_Head_RnM0000", "Normal_Head_Oh0000", "Normal_Head_Boring0000", "Normal_Core0000", "Normal_Belly0000", "Normal_Thigh0000", "Normal_Leg0000", "Normal_Feet0000", "Normal_Shoulder0000", "Normal_Arm0000", "Normal_Hand0000", "Normal_Eye0000", "Normal_Eye_Closed0000"
+        ,"Kid_Head_Idle0000", "Kid_Head_Smile0000", "Kid_Head_Laugh0000", "Kid_Head_hurt10000", "Kid_Head_hurt20000", "Kid_Head_hurt30000", "Kid_Head_hurt40000", "Kid_Head_RnM0000", "Kid_Head_Oh0000", "Kid_Head_Boring0000", "Kid_Core0000", "Kid_Belly0000", "Kid_Thigh0000", "Kid_Leg0000", "Kid_Feet0000", "Kid_Shoulder0000", "Kid_Arm0000", "Kid_Hand0000", "Kid_Eye0000", "Kid_Eye_Closed0000"
+        ,"Baby_Head_Idle0000", "Baby_Head_Smile0000", "Baby_Head_Laugh0000", "Baby_Head_hurt10000", "Baby_Head_hurt20000", "Baby_Head_hurt30000", "Baby_Head_hurt40000", "Baby_Head_RnM0000", "Baby_Head_Oh0000", "Baby_Head_Boring0000", "Baby_Core0000", "Baby_Belly0000", "Baby_Thigh0000", "Baby_Leg0000", "Baby_Feet0000", "Baby_Shoulder0000", "Baby_Arm0000", "Baby_Hand0000", "Baby_Eye0000", "Baby_Eye_Closed0000"
+        ];
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
         this.editor.assetLists.vehicles1 = ["Bicycle_Body0000", "Bicycle_Pedals0000", "Bicycle_WheelFront0000", "Bicycle_WheelBack0000", "Unicycle_Body0000"];
 
@@ -166,6 +170,7 @@ function Game() {
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
         this.editor.buildJSON(PIXI.loader.resources.vehicleData.data);
         this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
+        this.editor.buildJSON(PIXI.loader.resources.testData.data);
     }
     this.loadLevel = function (levelData) {
         console.log("Loading level..");

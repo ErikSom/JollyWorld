@@ -3618,7 +3618,7 @@ export function B2dEditor() {
 		jointGraphics.scale.y = 1.0 / this.container.scale.y;
 
 
-		if (obj.prefabInstanceName) jointGraphics.visible = false;
+		if (tarObj.prefabInstanceName) jointGraphics.visible = false;
 
 		this.addItemToLookupGroups(jointGraphics, jointGraphics.data);
 
@@ -3730,7 +3730,7 @@ export function B2dEditor() {
 		texture.data.texturePositionOffsetLength = positionOffsetLength;
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
-		//body.mySprite.visible = false;
+		body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
 	this.removeTextureFromBody = function (body, texture) {
@@ -3739,7 +3739,7 @@ export function B2dEditor() {
 		texture.data.texturePositionOffsetLength = null;
 		texture.data.texturePositionOffsetAngle = null;
 		texture.data.textureAngleOffset = null;
-		//body.mySprite.visible = true;
+		body.mySprite.renderable = true;
 		texture.myBody = null;
 	}
 	this.prepareBodyForDecals = function (body) {
