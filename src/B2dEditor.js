@@ -1662,24 +1662,55 @@ export function B2dEditor() {
 			depthArray.sort(function (a, b) {
 				return a.parent.getChildIndex(a) - b.parent.getChildIndex(b);
 			});
-			//if(obj) depthArray = depthArray.reverse();
+			tarDepthIndexes.sort(function (a, b) {
+				return a - b;
+			});
+			if(!obj){
+				 depthArray = depthArray.reverse();
+				 tarDepthIndexes = tarDepthIndexes.reverse();
+			}
 
 			var neighbour;
 			var child;
+
+			//while depthArray[i]+1 difference == 1 && [i] != d, check next depthArray, if distance > 1, swapChildren
 
 			for (i = 0; i < depthArray.length; i++) {
 				child = depthArray[i];
 				if ((obj && tarDepthIndexes[i] + 1 < child.parent.children.length) || (!obj && tarDepthIndexes[i] - 1 >= 0)) {
 					if (obj) neighbour = child.parent.getChildAt(tarDepthIndexes[i] + 1);
 					else neighbour = child.parent.getChildAt(tarDepthIndexes[i] - 1);
-					child.parent.swapChildren(child, neighbour);
+					console.log(tarDepthIndexes[i]+"  <--- index");
+
+					var allowed = true;
+					var j;
+					if(obj){
+						for(j = i+1; j<depthArray.length; j++){
+							if(j<depthArray.length && tarDepthIndexes[j] - tarDepthIndexes[j-1] > 1){
+								break;
+							}
+							if(j == depthArray.length-1 && tarDepthIndexes[j] == depthArray[depthArray.length-1].parent.children.length-1) allowed = false;
+						}
+					}else{
+						for(j = i+1; j<depthArray.length; j++){
+							if(j<depthArray.length && tarDepthIndexes[j] - tarDepthIndexes[j-1] > 1){
+								break;
+							}
+							if(j == depthArray.length-1 && tarDepthIndexes[j] == 0) allowed = false
+						}
+					}
+
+					if(allowed) child.parent.swapChildren(child, neighbour);
 				}
 			}
 
 		}
 		//update all objects
 		for (i = 0; i < objects.length; i++) {
-			if (objects[i].mySprite != undefined) this.updateObject(objects[i].mySprite, objects[i].mySprite.data);
+			if (objects[i].mySprite != undefined){
+				this.updateObject(objects[i].mySprite, objects[i].mySprite.data);
+				if(objects[i].myTexture) this.updateObject(objects[i].myTexture, objects[i].myTexture.data);
+			}
 			else this.updateObject(objects[i], objects[i].data);
 		}
 	}
@@ -3730,7 +3761,7 @@ export function B2dEditor() {
 		texture.data.texturePositionOffsetLength = positionOffsetLength;
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
-		body.mySprite.renderable = false;
+		//body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
 	this.removeTextureFromBody = function (body, texture) {
@@ -3739,7 +3770,7 @@ export function B2dEditor() {
 		texture.data.texturePositionOffsetLength = null;
 		texture.data.texturePositionOffsetAngle = null;
 		texture.data.textureAngleOffset = null;
-		body.mySprite.renderable = true;
+		//body.mySprite.renderable = true;
 		texture.myBody = null;
 	}
 	this.prepareBodyForDecals = function (body) {
