@@ -3520,7 +3520,7 @@ export function B2dEditor() {
 
 
 	this.setBodyCollision = function (body, collision) {
-		// DO COLLISION
+		// COLLISION HELP
 		/*0) collides with everything
 		- nothing
 
@@ -3761,7 +3761,7 @@ export function B2dEditor() {
 		texture.data.texturePositionOffsetLength = positionOffsetLength;
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
-		//body.mySprite.renderable = false;
+		body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
 	this.removeTextureFromBody = function (body, texture) {
@@ -3770,7 +3770,7 @@ export function B2dEditor() {
 		texture.data.texturePositionOffsetLength = null;
 		texture.data.texturePositionOffsetAngle = null;
 		texture.data.textureAngleOffset = null;
-		//body.mySprite.renderable = true;
+		body.mySprite.renderable = true;
 		texture.myBody = null;
 	}
 	this.prepareBodyForDecals = function (body) {
