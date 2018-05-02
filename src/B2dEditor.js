@@ -2703,7 +2703,7 @@ export function B2dEditor() {
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[3]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[3]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);s
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
 			}else if(this.editorGUI.editData.shape == "Triangle"){
 				this.activeVertices = [];
 				var difX = this.mousePosWorld.x-this.startSelectionPoint.x;
