@@ -4400,7 +4400,7 @@ export function B2dEditor() {
 		var selectedPrefab = null;
 		for (var i = 0; i < bodies.length; i++) {
 			body = bodies[i];
-			if (body.mySprite.data.prefabInstanceName) {
+			if (body.mySprite && body.mySprite.data.prefabInstanceName) {
 				var tarPrefab = prefab.prefabs[self.prefabs[body.mySprite.data.prefabInstanceName].prefabName];
 
 				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
