@@ -387,7 +387,7 @@ export function B2dEditor() {
 			var _selectedPinJoints = [];
 			var _selectedSlideJoints = [];
 			var _selectedDistanceJoints = [];
-			var _selectedTextureJoints = [];
+			var _selectedRopeJoints = [];
 			var _texture;
 			for (i = 0; i < this.selectedTextures.length; i++) {
 				_texture = this.selectedTextures[i];
@@ -399,6 +399,8 @@ export function B2dEditor() {
 						_selectedSlideJoints.push(_texture);
 					} else if (_texture.data.jointType == this.jointObject_TYPE_DISTANCE) {
 						_selectedDistanceJoints.push(_texture);
+					}else if (_texture.data.jointType == this.jointObject_TYPE_ROPE) {
+						_selectedRopeJoints.push(_texture);
 					}
 				}else if(_texture.data && _texture.data.type == this.object_GRAPHIC){
 					_selectedGraphics.push(_texture);
@@ -406,7 +408,7 @@ export function B2dEditor() {
 					_selectedTextures.push(_texture);
 				}
 			}
-			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedTextureJoints.length > 0 ? 1 : 0);
+			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0);
 			if (editingMultipleObjects > 1) {
 				currentCase = case_MULTIPLE;
 			} else if (_selectedTextures.length > 0) {
@@ -464,6 +466,9 @@ export function B2dEditor() {
 				} else if (_selectedDistanceJoints.length > 0) {
 					dataJoint = _selectedDistanceJoints[0].data;
 					selectedType = "Distance";
+				}else if (_selectedRopeJoints.length > 0) {
+					dataJoint = _selectedRopeJoints[0].data;
+					selectedType = "Rope";
 				}
 				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple joints');
 				else this.editorGUI.addFolder(`${selectedType} joint`);
@@ -624,7 +629,7 @@ export function B2dEditor() {
 
 				break;
 			case case_JUST_JOINTS:
-				var jointTypes = ["Pin", "Slide", "Distance"];
+				var jointTypes = ["Pin", "Slide", "Distance", "Rope"];
 				this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
 
 				this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
@@ -2248,6 +2253,8 @@ export function B2dEditor() {
 							this.selectedTextures[0].data.jointType = this.jointObject_TYPE_SLIDE;
 						} else if (controller.targetValue == "Distance") {
 							this.selectedTextures[0].data.jointType = this.jointObject_TYPE_DISTANCE;
+						}else if (controller.targetValue == "Rope") {
+							this.selectedTextures[0].data.jointType = this.jointObject_TYPE_ROPE;
 						}
 						this.updateSelection();
 					} else if (controller.property == "x") {
@@ -3708,6 +3715,14 @@ export function B2dEditor() {
 			distanceJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
 
 			joint = this.world.CreateJoint(distanceJointDef);
+		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
+			var ropeJointDef = new Box2D.Dynamics.Joints.b2RopeJointDef;
+			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyA.GetPosition());
+			var xd = bodyA.GetPosition().x-bodyB.GetPosition().x;
+			var yd = bodyA.GetPosition().y-bodyB.GetPosition().y;
+			ropeJointDef.maxLength = Math.sqrt(xd*xd + yd*yd);
+
+			joint = this.world.CreateJoint(ropeJointDef);
 		}
 		return joint;
 	}
@@ -4705,6 +4720,7 @@ export function B2dEditor() {
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
 	this.jointObject_TYPE_DISTANCE = 2;
+	this.jointObject_TYPE_ROPE = 3;
 
 	this.mouseTransformType = 0;
 	this.mouseTransformType_Movement = 0;

@@ -138,7 +138,7 @@ function Game() {
         ,"Baby_Head_Idle0000", "Baby_Head_Smile0000", "Baby_Head_Laugh0000", "Baby_Head_hurt10000", "Baby_Head_hurt20000", "Baby_Head_hurt30000", "Baby_Head_hurt40000", "Baby_Head_RnM0000", "Baby_Head_Oh0000", "Baby_Head_Boring0000", "Baby_Core0000", "Baby_Belly0000", "Baby_Thigh0000", "Baby_Leg0000", "Baby_Feet0000", "Baby_Shoulder0000", "Baby_Arm0000", "Baby_Hand0000", "Baby_Eye0000", "Baby_Eye_Closed0000"
         ];
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
-        this.editor.assetLists.vehicles1 = ["Bicycle_Body0000", "Bicycle_Pedals0000", "Bicycle_WheelFront0000", "Bicycle_WheelBack0000", "Unicycle_Body0000"];
+        this.editor.assetLists.vehicles1 = ["Bicycle_Body0000","Bicycle_Pedals0000","Bicycle_WheelBack0000","Bicycle_WheelFront0000","GoCart_Body0000","GoCart_Wheel0000","OfficeChair_Body0000","OfficeChair_Body20000","OfficeChair_Turbine0000","OfficeChair_Wheel0000","SuperMarketCart_Body0000","SuperMarketCart_Gear0000","SuperMarketCart_Wheel0000","Trolley_Body0000","Trolley_Drone0000","Trolley_WheelBack0000","Trolley_WheelFront0000","Unicycle_Body0000"];
 
         this.editor.tileLists = ["", "tile1.jpg", "tile2.jpg", "tile3.jpg", "tile4.jpg", "tile5.jpg", "tile6.jpg", "tile7.jpg", "tile8.jpg", "tile9.jpg", "tile10.jpg", "tile11.jpg", "tile12.jpg", "tile13.jpg", "tile14.jpg", "tile15.jpg", "tile16.jpg", "tile16.jpg"]
 
