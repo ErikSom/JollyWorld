@@ -3569,6 +3569,9 @@ export function B2dEditor() {
 		var filterData = fixture.GetFilterData();
 
 
+		//TODO: Set collision for all fixtures
+
+
 		if (body.GetType() == b2Body.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 		else filterData.categoryBits = this.MASKBIT_NORMAL;
 		filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
@@ -3690,6 +3693,8 @@ export function B2dEditor() {
 			fixDef.shape.SetAsBox(1, 1);
 
 			var fixture = bodyB.CreateFixture(fixDef);
+			fixture.SetSensor(true);
+
 		}
 		var joint;
 
@@ -3717,7 +3722,7 @@ export function B2dEditor() {
 			joint = this.world.CreateJoint(distanceJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
 			var ropeJointDef = new Box2D.Dynamics.Joints.b2RopeJointDef;
-			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyA.GetPosition());
+			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
 			var xd = bodyA.GetPosition().x-bodyB.GetPosition().x;
 			var yd = bodyA.GetPosition().y-bodyB.GetPosition().y;
 			ropeJointDef.maxLength = Math.sqrt(xd*xd + yd*yd);
