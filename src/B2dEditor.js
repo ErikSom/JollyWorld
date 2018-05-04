@@ -84,6 +84,7 @@ export function B2dEditor() {
 	this.mouseDown = false;
 	this.shiftDown = false;
 	this.spaceDown = false;
+	this.altDown = false;
 	this.editing = true;
 
 	this.lookupGroups = {};
@@ -1535,7 +1536,7 @@ export function B2dEditor() {
 			}
 		}
 
-		if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE) {
+		if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE || transformType == this.TRANSFORM_ROTATE) {
 			this.applyToObjects(transformType, obj, allObjects)
 		} else {
 			this.applyToObjects(transformType, obj, bodies);
@@ -1578,7 +1579,8 @@ export function B2dEditor() {
 						sprite = objects[i];
 						data = sprite.data;
 					}
-					group = data.prefabInstanceName;
+					console.log(i, body, sprite);
+					group = (this.altDown) ? "__altDownGroup" : data.prefabInstanceName;
 					if (group) {
 						if (centerPoints[group] == undefined) centerPoints[group] = {
 							x: 0,
@@ -1599,6 +1601,8 @@ export function B2dEditor() {
 					if (centerPoints.hasOwnProperty(i)) {
 						centerPoints[i].x /= centerPoints[i].n;
 						centerPoints[i].y /= centerPoints[i].n;
+
+						console.log(centerPoints[i].x, centerPoints[i].y, centerPoints[i].n);
 					}
 				}
 			}
@@ -1615,13 +1619,14 @@ export function B2dEditor() {
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						//split between per object / group rotation
 
-						group = body.mySprite.data.prefabInstanceName;
+						group = (this.altDown) ?  "__altDownGroup" : body.mySprite.data.prefabInstanceName;
 
 						var oldAngle = body.GetAngle();
 						var rAngle = obj * this.DEG2RAD;
 						body.SetAngle(oldAngle + rAngle);
 
 						if (group) {
+							console.log("APPLY SPECIAL ROT");
 							var difX = (body.GetPosition().x * this.PTM) - centerPoints[group].x;
 							var difY = (body.GetPosition().y * this.PTM) - centerPoints[group].y;
 							var distanceToCenter = Math.sqrt(difX * difX + difY * difY);
@@ -1639,6 +1644,18 @@ export function B2dEditor() {
 						sprite.y = sprite.y + obj.y;
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						sprite.rotation += obj * this.DEG2RAD;
+
+						if (group) {
+							console.log("APPLY SPECIAL ROT");
+							var difX = sprite.x - centerPoints[group].x;
+							var difY = sprite.y - centerPoints[group].y;
+							var distanceToCenter = Math.sqrt(difX * difX + difY * difY);
+							var angleToCenter = Math.atan2(difY, difX);
+							var newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter + rAngle);
+							var newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter + rAngle);
+							sprite.x = newX;
+							sprite.y = newY;
+						}
 					}
 
 				}
@@ -1855,7 +1872,6 @@ export function B2dEditor() {
 				}else{
 					this.groupObjects();
 				}
-				
 			}
 		} else if (e.keyCode == 77) { //m
 			this.selectTool(this.tool_SELECT);
@@ -1893,7 +1909,10 @@ export function B2dEditor() {
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = true;
-		} else if (e.keyCode == 187) { // +
+		} else if(e.keyCode == 18){ // alt
+			this.altDown = true;
+			console.log("ALT DOWN!!");
+		}else if (e.keyCode == 187) { // +
 			//zoomin
 			this.zoom({
 				x: this.mousePosWorld.x * this.PTM,
@@ -1951,11 +1970,15 @@ export function B2dEditor() {
 		}
 	}
 	this.onKeyUp = function (e) {
+
+
 		if (e.keyCode == 16) { //shift
 			this.shiftDown = false;
 			this.mouseTransformType = this.mouseTransformType_Movement;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = false;
+		}else if(e.keyCode == 18){
+			this.altDown = false;
 		}
 	}
 
