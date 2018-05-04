@@ -1536,12 +1536,12 @@ export function B2dEditor() {
 			}
 		}
 
-		if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE || transformType == this.TRANSFORM_ROTATE) {
+		//if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE || transformType == this.TRANSFORM_ROTATE) {
 			this.applyToObjects(transformType, obj, allObjects)
-		} else {
-			this.applyToObjects(transformType, obj, bodies);
-			this.applyToObjects(transformType, obj, textures);
-		}
+		//} else {
+		//	this.applyToObjects(transformType, obj, bodies);
+		//	this.applyToObjects(transformType, obj, textures);
+		//}
 
 		if (transformType == this.TRANSFORM_MOVE) {
 			this.undoTransformXY = {
@@ -1626,7 +1626,6 @@ export function B2dEditor() {
 						body.SetAngle(oldAngle + rAngle);
 
 						if (group) {
-							console.log("APPLY SPECIAL ROT");
 							var difX = (body.GetPosition().x * this.PTM) - centerPoints[group].x;
 							var difY = (body.GetPosition().y * this.PTM) - centerPoints[group].y;
 							var distanceToCenter = Math.sqrt(difX * difX + difY * difY);
@@ -1646,7 +1645,6 @@ export function B2dEditor() {
 						sprite.rotation += obj * this.DEG2RAD;
 
 						if (group) {
-							console.log("APPLY SPECIAL ROT");
 							var difX = sprite.x - centerPoints[group].x;
 							var difY = sprite.y - centerPoints[group].y;
 							var distanceToCenter = Math.sqrt(difX * difX + difY * difY);
