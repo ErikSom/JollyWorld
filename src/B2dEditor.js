@@ -1120,10 +1120,12 @@ export function B2dEditor() {
 		}
 
 		//update prefabs
+		if(!this.editing){
 		var key;
-		for (key in this.prefabs) {
-			if (this.prefabs.hasOwnProperty(key)) {
-				if (prefab.prefabs[this.prefabs[key].prefabName].update) prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
+			for (key in this.prefabs) {
+				if (this.prefabs.hasOwnProperty(key)) {
+					if (prefab.prefabs[this.prefabs[key].prefabName].update) prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
+				}
 			}
 		}
 	}
@@ -3754,7 +3756,12 @@ export function B2dEditor() {
 	}
 
 	this.buildPrefabFromObj = function (obj) {
+		if(obj.prefabName == "vehicle2"){
+			game.playerPrefabObject = obj;
+			console.log("SETTING PLAYERPREFABOBJECT!!");
+		}
 		var key = obj.prefabName + "_" + obj.instanceID;
+		obj.key = key;
 		this.prefabs[key] = obj;
 		var createdBodies = this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), key);
 		if (obj.instanceID > this.prefabCounter) this.prefabCounter = obj.instanceID + 1;

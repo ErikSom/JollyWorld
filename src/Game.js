@@ -63,6 +63,7 @@ function Game() {
     this.mouseJoint;
     this.run = false;
 
+    this.playerPrefabObject;
     this.character;
     this.vehicle;
     this.desiredVehicleSpeed = 0;
@@ -298,10 +299,10 @@ function Game() {
         this.editor.stringifyWorldJSON();
         this.editor.runWorld();
 
-        this.character = this.editor.lookupGroups.__character;
+        this.character = this.editor.lookupGroups[this.playerPrefabObject.key].character;
         this.vehicle = new Vehicle();
 
-        this.vehicle.init(this.editor.lookupGroups.__vehicle, this.character);
+        this.vehicle.init(this.editor.lookupGroups[this.playerPrefabObject.key].vehicle, this.character);
         this.cameraFocusObject = this.character.body;
     }
 
