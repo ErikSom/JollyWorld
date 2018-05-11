@@ -19,14 +19,11 @@ let characterFunctions = new function(){
         targetGroup.__eyesTimer = 0.0;
         targetGroup.__collisionUpdates = [];
 
-        console.log("INIT PREFABGROUP", group);
 
         var i;
         for(i=0; i<targetGroup._bodies.length; i++){
             var body = targetGroup._bodies[i];
             if(body.mySprite.data.groups.indexOf('.flesh') >= 0){
-
-                console.log(body.mySprite.data.groups);
 
                 body.isFlesh = true;
                 game.editor.prepareBodyForDecals(body);
@@ -35,7 +32,8 @@ let characterFunctions = new function(){
                 //fix gore for Skin2, Skin3 etc
 
                 var fleshName = texture.data.textureName.split('0000')[0];
-                if(fleshName.indexOf('Head')>0) fleshName = "Normal_Head";
+                if(fleshName.indexOf('Head')>0) fleshName = fleshName.substr(0, fleshName.indexOf('_'))+"_Head";
+
                 var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(fleshName+"_Flesh0000"));
                 texture.addChildAt(sprite, 0);
             }
@@ -43,8 +41,6 @@ let characterFunctions = new function(){
         }
     }
     this.update = function(target, group){
-        console.log("from character:", group);
-
         var targetGroup = target.lookupObject[group];
         if(timerReady(targetGroup.__eyesTimer, TIME_EYES_CLOSE)){
             targetGroup.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetGroup.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
@@ -161,7 +157,6 @@ let vehicle1 = new function(){ //Vehicle
     this.init = function(target){
         target.lookupObject = game.editor.lookupGroups[target.prefabName+"_"+target.instanceID];
         for(var i = 0; i<vehicleCharacters.length; i++){ 
-            console.log(vehicleCharacters[i]+"  INIT THE FOLLOWING GROUP");
             characterFunctions.init(target, vehicleCharacters[i]);
         }
     }
