@@ -37,7 +37,6 @@ let characterFunctions = new function(){
                 var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(fleshName+"_Flesh0000"));
                 texture.addChildAt(sprite, 0);
             }
-
         }
     }
     this.update = function(target, group){
@@ -76,7 +75,8 @@ let characterFunctions = new function(){
 
         for(var i = 0; i<bodies.length; i++){
             body = bodies[i];
-            if(body == targetGroup["head"]){
+
+            if(body == targetGroup["head"] && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID  || bodies[0].mySprite.data.prefabID == undefined)){
                 var force = 0;
                 for(var j = 0; j<impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
                 if(force > 8){
@@ -159,6 +159,18 @@ let vehicle1 = new function(){ //Vehicle
         for(var i = 0; i<vehicleCharacters.length; i++){ 
             characterFunctions.init(target, vehicleCharacters[i]);
         }
+
+        var targetGroup = target.lookupObject;
+        var i;
+        for(i=0; i<targetGroup._bodies.length; i++){
+            var body = targetGroup._bodies[i];
+                body.mySprite.data.prefabID = target.instanceID;
+        }
+
+
+
+
+        
     }
     this.update = function(target){
         for(var i = 0; i<vehicleCharacters.length; i++) characterFunctions.update(target, vehicleCharacters[i]);
