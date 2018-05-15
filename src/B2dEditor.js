@@ -3756,10 +3756,6 @@ export function B2dEditor() {
 	}
 
 	this.buildPrefabFromObj = function (obj) {
-		if(obj.prefabName == "vehicle2"){
-			game.playerPrefabObject = obj;
-			console.log("SETTING PLAYERPREFABOBJECT!!");
-		}
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
 		this.prefabs[key] = obj;

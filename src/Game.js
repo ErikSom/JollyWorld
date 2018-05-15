@@ -26,6 +26,8 @@ import {
     LoadCoreAssets
 } from "./AssetList";
 import { Settings } from "./Settings";
+import * as prefab from "./PrefabData";
+import { settings } from "pixi.js";
 
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
@@ -299,11 +301,28 @@ function Game() {
         this.editor.stringifyWorldJSON();
         this.editor.runWorld();
 
+        this.findPlayableCharacter();
+
         this.character = this.editor.lookupGroups[this.playerPrefabObject.key].character;
         this.vehicle = new Vehicle();
 
         this.vehicle.init(this.editor.lookupGroups[this.playerPrefabObject.key].vehicle, this.character);
         this.cameraFocusObject = this.character.body;
+    }
+    this.findPlayableCharacter = function(){
+        for(var key in this.editor.prefabs){
+            if(this.editor.prefabs.hasOwnProperty(key)){
+                console.log(key);
+                console.log(prefab.prefabs[this.editor.prefabs[key].prefabName]);
+                console.log(prefab.prefabs[this.editor.prefabs[key].prefabName].settings);
+                console.log(prefab.prefabs[this.editor.prefabs[key].prefabName].settings.playableCharacter);
+                if(prefab.prefabs[this.editor.prefabs[key].prefabName].settings.playableCharacter){
+                    console.log("FOUND CHARACTER!");
+                    this.playerPrefabObject = this.editor.prefabs[key];
+                    break;
+                }
+            }
+        }
     }
 
     this.camera = function () {

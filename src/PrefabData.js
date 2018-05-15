@@ -1,10 +1,6 @@
 import { Box2D } from "../libs/Box2D";
 import { game } from "./Game";
 
-
-
-
-
 const characterModels = ["character", "baby"];
 
 // write all properties to lookupObject, convert character1 to characterModel function, push all models like baby etc through this function.
@@ -14,7 +10,7 @@ let characterFunctions = new function(){
     const TIME_EYES_CLOSE = 3000;
     const TIME_EYES_OPEN = 3100;
     this.init = function(target, group){
-        
+
         var targetGroup = target.lookupObject[group];
         targetGroup.__eyesTimer = 0.0;
         targetGroup.__collisionUpdates = [];
@@ -144,14 +140,15 @@ let characterFunctions = new function(){
 let vehicle1 = new function(){ //Vehicle
     const self = this;
     const vehicleCharacters = ["character", "baby"];
-    this.settings = function(){
+    this.settings = new function(){
         this._options = {};
-        this.showVehicle = false;
-        this.skin = "Normal";
-        this._options["skin"] = ["Normal", "skin2", "skin3"];
-        this.speed = 10;
-        this._options["speed"] = {min:0, max:10, step:0.1};
-        this.skin_options
+        // this.showVehicle = false;
+        // this.skin = "Normal";
+        // this._options["skin"] = ["Normal", "skin2", "skin3"];
+        // this.speed = 10;
+        // this._options["speed"] = {min:0, max:10, step:0.1};
+        // this.skin_options;
+        this.playableCharacter = true;
     }
 
     this.init = function(target){
