@@ -894,6 +894,15 @@ export function B2dEditor() {
 				baseTexture: false
 			});
 		}*/
+
+		for(var key in this.selectedPrefabs){
+			if(this.selectedPrefabs.hasOwnProperty(key)){
+				this.selectedPhysicsBodies = this.selectedPhysicsBodies.concat(this.lookupGroups[this.prefabs[key].key]._bodies);
+				this.selectedTextures = this.selectedTextures.concat(this.lookupGroups[this.prefabs[key].key]._textures, this.lookupGroups[this.prefabs[key].key]._joints);
+				delete this.prefabs[key];
+			}
+		}
+
 		this.deleteObjects([].concat(this.selectedPhysicsBodies, this.selectedTextures));
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];

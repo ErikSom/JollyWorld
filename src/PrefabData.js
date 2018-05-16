@@ -95,7 +95,7 @@ let characterFunctions = new function(){
                     var revoluteJointDef;
                     var joint;
 
-                    var vainPrefab = '{"objects":[[4,'+targetJoint.GetAnchorA().x+','+targetJoint.GetAnchorA().y+',0,{},"vain",'+(game.editor.prefabCounter++)+']]}'
+                    var vainPrefab = '{"objects":[[4,'+targetJoint.GetAnchorA().x*game.editor.PTM+','+targetJoint.GetAnchorA().y*game.editor.PTM+',0,{},"vain",'+(game.editor.prefabCounter++)+']]}'
 
                     var vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
