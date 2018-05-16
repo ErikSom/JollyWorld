@@ -909,8 +909,7 @@ export function B2dEditor() {
 		var copyArray = [];
 		var cloneObject;
 
-		if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) return;
-
+		if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0) return;
 
 		// sort all objects based on childIndex
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -930,13 +929,22 @@ export function B2dEditor() {
 					data: cloneObject
 				});
 			}
-
 		}
 		var sprite;
 		for (i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
 			this.updateObject(sprite, sprite.data);
 			cloneObject = JSON.parse(JSON.stringify(sprite.data))
+			copyArray.push({
+				ID: cloneObject.ID,
+				data: cloneObject
+			})
+		}
+		var prefabKeys = Object.keys(this.selectedPrefabs);
+		for(i = 0; i<prefabKeys.length; i++){
+			this.updateObject(null, this.prefabs[prefabKeys[i]]);
+			cloneObject = JSON.parse(JSON.stringify(this.prefabs[prefabKeys[i]]));
+			cloneObject.instanceID = this.prefabCounter
 			copyArray.push({
 				ID: cloneObject.ID,
 				data: cloneObject
@@ -997,7 +1005,7 @@ export function B2dEditor() {
 			x: 0,
 			y: 0
 		};
-
+		var copiedPrefabCount = 0;
 		for (i = 0; i < copyArray.length; i++) {
 			if (i != 0) copyJSON += ',';
 			data = copyArray[i].data;
@@ -1010,6 +1018,10 @@ export function B2dEditor() {
 			} else {
 				this.copyCenterPoint.x += data.x;
 				this.copyCenterPoint.y += data.y;
+
+				if(data.type == this.object_PREFAB){
+					data.instanceID = copiedPrefabCount++;
+				}
 			}
 
 		}
@@ -1030,7 +1042,7 @@ export function B2dEditor() {
 	}
 
 	this.pasteSelection = function () {
-		if (this.copiedJSON != null) {
+		if (this.copiedJSON != null  && this.copiedJSON != '') {
 			var startChildIndex = this.textures.children.length;
 
 			this.buildJSON(this.copiedJSON);
@@ -1535,6 +1547,12 @@ export function B2dEditor() {
 				allObjects = allObjects.concat(lookup._bodies, lookup._textures, lookup._joints);
 				bodies = bodies.concat(lookup._bodies);
 				textures = textures.concat(lookup._textures, lookup._joints);
+				if (transformType == this.TRANSFORM_MOVE) {
+					this.prefabs[key].x += obj.x;
+					this.prefabs[key].y += obj.y;
+				} else if (transformType == this.TRANSFORM_ROTATE) {
+					this.prefabs[key].rotation += obj;
+				}
 			}
 		}
 
@@ -1826,7 +1844,7 @@ export function B2dEditor() {
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
 			if (this.selectedTool == this.tool_SELECT) {
-				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && this.startSelectionPoint) {
+				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
 
@@ -4261,7 +4279,6 @@ export function B2dEditor() {
 	}
 
 	this.updateObject = function (sprite, data) {
-
 		if (data.type == this.object_BODY) {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
@@ -4280,7 +4297,15 @@ export function B2dEditor() {
 			data.y = sprite.y;
 			data.rotation = sprite.rotation
 		}
-		data.ID = sprite.parent.getChildIndex(sprite);
+
+		if(!sprite && data.type == this.object_PREFAB){
+			var prefabGroup = this.lookupGroups[data.key];
+			var bodyIndex = (prefabGroup._bodies.length>0) ? prefabGroup._bodies[0].mySprite.parent.getChildIndex(prefabGroup._bodies[0].mySprite) : Number.POSITIVE_INFINITY;
+			var spriteIndex = (prefabGroup._textures.length>0) ? prefabGroup._textures[0].parent.getChildIndex(prefabGroup._textures[0]) : Number.POSITIVE_INFINITY;
+			var jointIndex = (prefabGroup._joints.length>0) ? prefabGroup._joints[0].parent.getChildIndex(prefabGroup._joints[0]) : Number.POSITIVE_INFINITY;
+			//to do add body, sprite and joint and compare childIndexes...
+			data.ID = Math.min(bodyIndex, spriteIndex, jointIndex);
+		}else data.ID = sprite.parent.getChildIndex(sprite);
 	}
 
 	this.buildJSON = function (json, prefabInstanceName) {
@@ -4290,6 +4315,7 @@ export function B2dEditor() {
 		var createdObjects = new this.lookupObject();
 
 		var startChildIndex = this.textures.children.length;
+		var startPrefabIDIndex = this.prefabCounter;
 		var prefabOffset = 0;
 
 		if (json != null) {
@@ -4308,9 +4334,9 @@ export function B2dEditor() {
 					var offsetX = this.prefabs[prefabInstanceName].x;
 					var offsetY = this.prefabs[prefabInstanceName].y;
 
-					if (obj.type != this.object_BODY) {
-						offsetX *= this.PTM;
-						offsetY *= this.PTM;
+					if (obj.type == this.object_BODY) {
+						offsetX /= this.PTM;
+						offsetY /= this.PTM;
 					}
 
 					obj.x += offsetX;
@@ -4334,8 +4360,10 @@ export function B2dEditor() {
 					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
-					var prefabStartIndex = this.textures.children.length;
+					var prefabStartChildIndex = this.textures.children.length;
+					obj.instanceID += startPrefabIDIndex;
 					var prefabObjects = this.buildPrefabFromObj(obj);
+					this.prefabs[obj.key].ID = prefabStartChildIndex;
 					createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
 					createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 					createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
