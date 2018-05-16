@@ -944,7 +944,6 @@ export function B2dEditor() {
 		for(i = 0; i<prefabKeys.length; i++){
 			this.updateObject(null, this.prefabs[prefabKeys[i]]);
 			cloneObject = JSON.parse(JSON.stringify(this.prefabs[prefabKeys[i]]));
-			cloneObject.instanceID = this.prefabCounter
 			copyArray.push({
 				ID: cloneObject.ID,
 				data: cloneObject
@@ -1068,17 +1067,27 @@ export function B2dEditor() {
 					pos.x -= movX / this.PTM;
 					pos.y -= movY / this.PTM;
 					sprite.myBody.SetPosition(pos);
-					this.selectedPhysicsBodies.push(sprite.myBody);
+
+					if(sprite.data.prefabInstanceName) this.selectedPrefabs[sprite.data.prefabInstanceName] = true;
+					else this.selectedPhysicsBodies.push(sprite.myBody);
 				} else {
 					sprite.x -= movX;
 					sprite.y -= movY;
 
 					if (!sprite.originalGraphic && sprite.myBody == null) {
-
-						this.selectedTextures.push(sprite);
+						if(sprite.data.prefabInstanceName) this.selectedPrefabs[sprite.data.prefabInstanceName] = true;
+						else this.selectedTextures.push(sprite);
 					}
 				}
 			}
+
+			var prefabKeys = Object.keys(this.selectedPrefabs);
+			for(i = 0; i<prefabKeys.length; i++){
+				this.prefabs[prefabKeys[i]].x -= movX;
+				this.prefabs[prefabKeys[i]].y -= movY;
+			}
+
+
 			this.updateSelection();
 		}
 	}
