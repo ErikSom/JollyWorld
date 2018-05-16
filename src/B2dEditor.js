@@ -379,7 +379,12 @@ export function B2dEditor() {
 		var prefabKeys = Object.keys(this.selectedPrefabs);
 
 		if (prefabKeys.length > 0 && this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) {
-			currentCase = case_JUST_PREFABS;
+			var uniqueSelectedPrefabs = {};
+			for(var i = 0; i<prefabKeys.length; i++){
+				uniqueSelectedPrefabs[this.prefabs[prefabKeys[i]].prefabName] = true;
+			}
+			if(Object.keys(uniqueSelectedPrefabs).length == 1) currentCase = case_JUST_PREFABS;
+			else currentCase = case_MULTIPLE;
 		} else if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0 && prefabKeys.length == 0) {
 			currentCase = case_JUST_BODIES;
 		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0 && prefabKeys.length == 0) {
@@ -695,6 +700,26 @@ export function B2dEditor() {
 						this.targetValue = value
 					}.bind(controller));
 				}
+				break;
+			case case_JUST_PREFABS:
+				var prefabObject = this.prefabs[Object.keys(this.selectedPrefabs)[0]];
+				var prefabFunctions = prefab.prefabs[prefabObject.prefabName];
+				var settings = prefabFunctions.settings;
+
+				for(var key in settings){
+					if(settings.hasOwnProperty(key)){
+						if(key == "_options") continue;
+						var argument;
+						this.editorGUI.editData[key] = settings[key];
+						if(settings[key] instanceof Array) argument = settings[key];
+						else argument = null;
+						this.editorGUI.add(self.editorGUI.editData, key, argument).onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value
+						});
+					}
+				}
+
 				break;
 			case case_MULTIPLE:
 				break;
@@ -2419,23 +2444,6 @@ export function B2dEditor() {
 					} else if (controller.property == "colorFill") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-							// body = this.selectedPhysicsBodies[j];
-							// if(body.mySprite.data.colorFill instanceof Array){
-							// 	body.mySprite.data.colorFill[0] = controller.targetValue.toString();
-							// }else{
-							// 	body.mySprite.data.colorFill = controller.targetValue.toString();
-							// }
-							// var fixture = body.GetFixtureList();
-							// var count = 0;
-							// while (fixture != null) {
-							// 	var colorFill = body.mySprite.data.colorFill instanceof Array ? body.mySprite.data.colorFill[count] : body.mySprite.data.colorFill;
-							// 	var colorLine = body.mySprite.data.colorLine instanceof Array ? body.mySprite.data.colorLine[count] : body.mySprite.data.colorLine;
-							// 	var transparancy = body.mySprite.data.transparancy instanceof Array ? body.mySprite.data.transparancy[count] : body.mySprite.data.transparancy;
-							// 	if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, colorFill, colorLine, transparancy, (count != 0));
-							// 	else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), colorFill, colorLine, transparancy, (count != 0));
-							// 	fixture = fixture.GetNext();
-							// 	count++;
-							//}
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.colorFill = controller.targetValue.toString();
 							var fixture = body.GetFixtureList();
@@ -2524,8 +2532,9 @@ export function B2dEditor() {
 							this.setBodyCollision(body, controller.targetValue);
 						}
 					} else if (controller.property == "tileTexture") {
-
 						//do tileTexture
+					}else{
+						//TODO: Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 
 
 					}

@@ -149,6 +149,8 @@ let vehicle1 = new function(){ //Vehicle
         // this._options["speed"] = {min:0, max:10, step:0.1};
         // this.skin_options;
         this.playableCharacter = true;
+        this.selectedVehicle = "vehicle1";
+        this._options["selectedVehicle"] = ["vehicle1", "vehicle2"];
     }
 
     this.init = function(target){
