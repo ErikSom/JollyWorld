@@ -4036,10 +4036,13 @@ export function B2dEditor() {
 			if (i != 0) this.worldJSON += ',';
 			sprite = this.textures.getChildAt(i);
 			this.updateObject(sprite, sprite.data);
-			if (sprite.prefabInstanceName) {
-				if (stringifiedPrefabs[sprite.prefabInstanceName]) continue;
-				this.worldJSON += this.stringifyObject(this.prefabs[sprite.prefabInstanceName]);
-				stringifiedPrefabs[sprite.prefabInstanceName] = true;
+			if (sprite.data.prefabInstanceName) {
+				if (stringifiedPrefabs[sprite.data.prefabInstanceName]){
+					this.worldJSON = this.worldJSON.slice(0, -1);
+					continue;
+				}
+				this.worldJSON += this.stringifyObject(this.prefabs[sprite.data.prefabInstanceName]);
+				stringifiedPrefabs[sprite.data.prefabInstanceName] = true;
 			} else {
 				this.worldJSON += this.stringifyObject(sprite.data);
 			}
@@ -4407,10 +4410,12 @@ export function B2dEditor() {
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.selectedPrefabs = {};
+		
 		this.selectedBoundingBox = null;
 		this.startSelectionPoint = null;
 		this.oldMousePosWorld = null;
 		this.mouseDown = false;
+		this.prefabCounter = 0;
 
 		this.editorIcons = [];
 
@@ -4437,6 +4442,8 @@ export function B2dEditor() {
 			i--;
 		}
 		console.log(this.textures.children.length);
+
+		this.prefabs = {};
 
 		//reset gui
 		this.destroyGUI();
