@@ -492,7 +492,6 @@ export function B2dEditor() {
 				else if (this.selectedPhysicsBodies.length > 0) dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
 				else dataJoint = this.prefabs[prefabKeys[0]];
 
-				dataJoint = this.selectedTextures[0].data;
 				this.editorGUI.addFolder('multiple objects');
 				break;
 		}
@@ -534,7 +533,7 @@ export function B2dEditor() {
 				this.targetValue = value;
 			});
 		}
-		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1) {
+		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1 && prefabKeys.length == 0) {
 			this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
@@ -703,16 +702,19 @@ export function B2dEditor() {
 				break;
 			case case_JUST_PREFABS:
 				var prefabObject = this.prefabs[Object.keys(this.selectedPrefabs)[0]];
-				var prefabFunctions = prefab.prefabs[prefabObject.prefabName];
-				var settings = prefabFunctions.settings;
+				var prefabClass = prefab.prefabs[prefabObject.prefabName];
+				var prefabObjectSettings = prefabObject.settings;
+				var prefabClassSettings = prefabClass.settings;
 
-				for(var key in settings){
-					if(settings.hasOwnProperty(key)){
+				for(var key in prefabClassSettings){
+					if(prefabClassSettings.hasOwnProperty(key)){
 						if(key == "_options") continue;
 						var argument;
-						this.editorGUI.editData[key] = settings[key];
-						if(settings[key] instanceof Array) argument = settings[key];
+						this.editorGUI.editData[key] = prefabObjectSettings[key];
+						if(prefabClassSettings._options[key] && prefabClassSettings._options[key] instanceof Array) argument = prefabClassSettings._options[key];
 						else argument = null;
+						console.log(prefabClassSettings._options[key]);
+						console.log(prefabClassSettings._options);
 						this.editorGUI.add(self.editorGUI.editData, key, argument).onChange(function (value) {
 							this.humanUpdate = true;
 							this.targetValue = value
@@ -831,95 +833,6 @@ export function B2dEditor() {
 		}
 	}
 	this.deleteSelection = function () {
-		//Destroy selected bodies
-		/*var i;
-		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
-			var b = this.selectedPhysicsBodies[i];
-
-			b.mySprite.parent.removeChild(b.mySprite);
-			b.mySprite.destroy({
-				children: true,
-				texture: false,
-				baseTexture: false
-			});
-			b.mySprite = null;
-
-
-			if (b.myJoints != undefined) {
-
-				var j;
-				var myJoint;
-				var k;
-
-				for (j = 0; j < b.myJoints.length; j++) {
-
-					myJoint = b.myJoints[j];
-					var alreadySelected = false;
-
-					for (k = 0; k < this.selectedTextures.length; k++) {
-						if (this.selectedTextures[k] == myJoint) {
-							alreadySelected = true;
-						}
-					}
-					if (!alreadySelected) this.selectedTextures.push(myJoint);
-				}
-			}
-
-			if (b.myTexture) {
-				var sprite = b.myTexture;
-				sprite.parent.removeChild(sprite);
-				sprite.destroy({
-					children: true,
-					texture: false,
-					baseTexture: false
-				});
-			}
-
-
-			this.world.DestroyBody(b);
-		}
-
-		//Destroy all selected graphics
-
-		for (i = 0; i < this.selectedTextures.length; i++) {
-			var sprite = this.selectedTextures[i];
-			if (sprite.data && sprite.data.type == this.object_JOINT) {
-				var j;
-				var myJoint;
-				if (sprite.bodies[0] != undefined) {
-					for (j = 0; j < sprite.bodies[0].myJoints.length; j++) {
-						myJoint = sprite.bodies[0].myJoints[j];
-						if (myJoint == sprite) {
-							sprite.bodies[0].myJoints.splice(j, 1);
-							j--;
-						}
-					}
-					if (sprite.bodies[0].myJoints.length == 0) sprite.bodies[0].myJoints = undefined;
-				}
-				if (sprite.bodies.length > 1 && sprite.bodies[1] != undefined) {
-					for (j = 0; j < sprite.bodies[1].myJoints.length; j++) {
-						myJoint = sprite.bodies[1].myJoints[j];
-						if (myJoint == sprite) {
-							sprite.bodies[1].myJoints.splice(j, 1);
-							j--;
-						}
-					}
-					if (sprite.bodies[1].myJoints.length == 0) sprite.bodies[1].myJoints = undefined;
-				}
-				for (j = 0; j < this.editorIcons.length; j++) {
-					if (this.editorIcons[j] == sprite) {
-						this.editorIcons.splice(j, 1);
-					}
-				}
-			}
-			sprite.parent.removeChild(sprite);
-			sprite.destroy({
-				children: true,
-				texture: false,
-				baseTexture: false
-			});
-		}*/
-
 		for(var key in this.selectedPrefabs){
 			if(this.selectedPrefabs.hasOwnProperty(key)){
 				this.selectedPhysicsBodies = this.selectedPhysicsBodies.concat(this.lookupGroups[this.prefabs[key].key]._bodies);
@@ -1786,7 +1699,8 @@ export function B2dEditor() {
 					if(allowed) child.parent.swapChildren(child, neighbour);
 				}
 			}
-
+		}else if(transformType == this.TRANSFORM_FORCEDEPTH){
+			console.log("Forcing depth:", obj);
 		}
 		//update all objects
 		for (i = 0; i < objects.length; i++) {
@@ -1800,6 +1714,7 @@ export function B2dEditor() {
 	this.TRANSFORM_MOVE = "move";
 	this.TRANSFORM_ROTATE = "rotate";
 	this.TRANSFORM_DEPTH = "depth";
+	this.TRANSFORM_FORCEDEPTH = "forcedepth";
 	this.TRANSFORM_UPDATE = "update";
 
 	this.storeUndoMovement = function () {
@@ -2535,7 +2450,10 @@ export function B2dEditor() {
 						//do tileTexture
 					}else{
 						//TODO: Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
-
+						var prefabKeys = Object.keys(this.selectedPrefabs);
+						if(prefabKeys.length > 0){
+							prefab.prefabs[this.prefabs[prefabKeys[0]].prefabName].set(this.prefabs[prefabKeys[0]], controller.property, controller.targetValue);
+						}
 
 					}
 

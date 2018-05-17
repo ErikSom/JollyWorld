@@ -1,1 +1,1 @@
-{"objects":[[4, -10, 10, 0, {"prefabType":0, "showVehicle":false}, "vehicle2", 1]]}
+{"objects":[[4, -10, 10, 0, {"playableCharacter":false, "selectedVehicle":"vehicle2"}, "vehicle2", 1]]}
