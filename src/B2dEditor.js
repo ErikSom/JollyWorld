@@ -284,7 +284,7 @@ export function B2dEditor() {
 	this.destroyGUI = function () {
 		if (this.editorGUI != undefined) {
 			this.customGUIContainer.removeChild(this.editorGUI.domElement);
-			this.editorGUI = null;
+			this.editorGUI = undefined;
 		}
 		if (this.assetGUI != undefined) {
 			this.customGUIContainer.removeChild(this.assetGUI.domElement);
@@ -381,6 +381,7 @@ export function B2dEditor() {
 		if (prefabKeys.length > 0 && this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) {
 			var uniqueSelectedPrefabs = {};
 			for (var i = 0; i < prefabKeys.length; i++) {
+				console.log(prefabKeys[i]);
 				uniqueSelectedPrefabs[this.prefabs[prefabKeys[i]].prefabName] = true;
 			}
 			if (Object.keys(uniqueSelectedPrefabs).length == 1) currentCase = case_JUST_PREFABS;
@@ -848,7 +849,6 @@ export function B2dEditor() {
 		this.selectedTextures = [];
 		this.selectedPrefabs = {};
 		this.updateSelection();
-
 	}
 
 	this.copySelection = function () {
@@ -2228,7 +2228,7 @@ export function B2dEditor() {
 		}
 	}
 	this.doEditorGUI = function () {
-		if (this.editorGUI && this.editorGUI.editData) {
+		if (this.editorGUI != undefined && this.editorGUI.editData) {
 			var controller;
 			var controllers = [];
 			var body;
