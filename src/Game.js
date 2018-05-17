@@ -312,13 +312,9 @@ function Game() {
     this.findPlayableCharacter = function(){
         for(var key in this.editor.prefabs){
             if(this.editor.prefabs.hasOwnProperty(key)){
-                console.log(key);
-                console.log(prefab.prefabs[this.editor.prefabs[key].prefabName]);
-                console.log(prefab.prefabs[this.editor.prefabs[key].prefabName].settings);
-                console.log(prefab.prefabs[this.editor.prefabs[key].prefabName].settings.playableCharacter);
-                if(prefab.prefabs[this.editor.prefabs[key].prefabName].settings.playableCharacter){
-                    console.log("FOUND CHARACTER!");
+                if(prefab.prefabs[this.editor.prefabs[key].prefabName].settings._playableCharacter){
                     this.playerPrefabObject = this.editor.prefabs[key];
+                    console.log("FOUND CHARACTER");
                     break;
                 }
             }

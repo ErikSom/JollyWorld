@@ -140,6 +140,7 @@ let characterFunctions = new function(){
 let vehicle1 = new function(){ //Vehicle
     const self = this;
     const vehicleCharacters = ["character", "baby"];
+
     this.settings = new function(){
         this._options = {};
         // this.showVehicle = false;
@@ -148,9 +149,10 @@ let vehicle1 = new function(){ //Vehicle
         // this.speed = 10;
         // this._options["speed"] = {min:0, max:10, step:0.1};
         // this.skin_options;
-        this.playableCharacter = true;
         this.selectedVehicle = "vehicle1";
         this._options["selectedVehicle"] = ["vehicle1", "vehicle2"];
+        this._playableCharacter = true;
+        this._forceUnique = true;
     }
 
     this.init = function(target){
