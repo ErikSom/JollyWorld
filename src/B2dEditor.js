@@ -1705,6 +1705,13 @@ export function B2dEditor() {
 			}
 		} else if (transformType == this.TRANSFORM_FORCEDEPTH) {
 			console.log("Forcing depth:", obj);
+			objects = this.sortObjectsByIndex(objects);
+			for(var i = 0; i<objects.length; i++){
+				var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
+				var container = sprite.parent;
+				container.removeChild(sprite);
+				container.addChildAt(sprite, obj+i);
+			}
 		}
 		//update all objects
 		for (i = 0; i < objects.length; i++) {
@@ -1713,6 +1720,29 @@ export function B2dEditor() {
 				if (objects[i].myTexture) this.updateObject(objects[i].myTexture, objects[i].myTexture.data);
 			} else this.updateObject(objects[i], objects[i].data);
 		}
+	}
+	this.getLowestChildIndex = function(objects){
+		console.log("Lowest child index:");
+		console.log(objects);
+		var childIndex = Number.POSITIVE_INFINITY;
+		console.log(childIndex);
+		for(var i = 0; i<objects.length; i++){
+			var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
+			var spriteIndex = sprite.parent.getChildIndex(sprite);
+			console.log(spriteIndex);
+			if(spriteIndex < childIndex) childIndex = spriteIndex;
+		}
+		console.log("final index", childIndex);
+		return childIndex;
+	}
+	this.sortObjectsByIndex = function(objects){
+		objects.sort(function (a, b) {
+			var aIndex = (a.mySprite) ? a.mySprite.parent.getChildIndex(a.mySprite) : a.parent.getChildIndex(a);
+			var bIndex = (b.mySprite) ? b.mySprite.parent.getChildIndex(b.mySprite) : b.parent.getChildIndex(b);
+			return aIndex - bIndex;
+		});
+		//objects.reverse();
+		return objects;
 	}
 	this.TRANSFORM_MOVE = "move";
 	this.TRANSFORM_ROTATE = "rotate";
@@ -2465,7 +2495,7 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.collision = controller.targetValue;
-							this.setBodyCollision(body, controller.targetValue);
+							this.setBodyCollision(body, controller.targetValue);x
 						}
 					} else if (controller.property == "tileTexture") {
 						//do tileTexture
@@ -3090,8 +3120,6 @@ export function B2dEditor() {
 	}
 
 	this.buildBodyFromObj = function (obj) {
-		console.log("Building:");
-		console.log(obj);
 		var bd = new b2BodyDef();
 		if (obj.fixed) bd.type = b2Body.b2_staticBody;
 		else bd.type = b2Body.b2_dynamicBody;

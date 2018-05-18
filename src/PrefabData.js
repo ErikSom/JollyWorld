@@ -172,13 +172,15 @@ let vehicle1 = new function(){ //Vehicle
         for(var i = 0; i<self.vehicleCharacters.length; i++) characterFunctions.update(target, self.vehicleCharacters[i]);
     }
     this.set = function(target, property, value){
+        var lookupObject = game.editor.lookupGroups[target.prefabName+"_"+target.instanceID];
         console.log("setting:", property, "with value", value, "on:", target);
         switch(property){
             case "selectedVehicle":
                 if(target.settings.selectedVehicle != value){
                     target.settings.selectedVehicle = value;
 
-                    var vehicleDepth = 0;
+                    var vehicleDepth = game.editor.getLowestChildIndex([].concat(lookupObject._bodies, lookupObject._textures, lookupObject._joints));
+                    console.log("Vehicle Depth :",vehicleDepth);
 
                     var vehiclePrefab = `{"objects":[[4,${target.x},${target.y},${target.rotation},${JSON.stringify(target.settings)},"${value}",${target.instanceID}]]}`;
                     var newObjects = game.editor.buildJSON(JSON.parse(vehiclePrefab));
