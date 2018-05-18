@@ -227,6 +227,28 @@ let vehicle1 = new function(){ //Vehicle
 }
 let vehicle2 = new vehicle1.constructor();
 vehicle2.vehicleCharacters = ["character", "baby"];
+vehicle2.update_super = vehicle2.update;
+vehicle2.update = function(target){
+    vehicle2.update_super(target);
+    var drone = target.lookupObject["drone"];
+    console.log(drone);
+    var dirFore = new Box2D.Common.Math.b2Vec2(0, -1);
+    dirFore.Multiply(400.0);
+    drone.ApplyForce(dirFore, drone.GetPosition());
+
+    var desiredAngle = 0;
+    var nextAngle = drone.GetAngle() + drone.GetAngularVelocity() / 60.0;
+    var totalRotation = desiredAngle - nextAngle;
+    while ( totalRotation < -180 * game.editor.DEG2RAD ) totalRotation += 360 * game.editor.DEG2RAD;
+    while ( totalRotation >  180 * game.editor.DEG2RAD ) totalRotation -= 360 * game.editor.DEG2RAD;
+    var desiredAngularVelocity = totalRotation * 60;
+    var change = 100 * game.editor.DEG2RAD; 
+    desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
+    var impulse = drone.GetInertia() * desiredAngularVelocity;
+    drone.m_angularVelocity += drone.m_invI * impulse;
+
+
+}
 
 let vain = new function(){
     this.init = function(target){
