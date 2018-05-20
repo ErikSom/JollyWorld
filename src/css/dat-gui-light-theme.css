@@ -41,11 +41,11 @@ body .dg {
 }
 
 body .dg.main::-webkit-scrollbar {
-    background: #4F4F4F;
+    background: #FFF;
 }
 
 body .dg.main::-webkit-scrollbar-thumb {
-    background: #4F4F4F;
+    background: #000;
 }
  
 body .dg li:not(.folder) {
@@ -152,7 +152,9 @@ body .dg .cr.function:active {
 .dg.main{
     border: 1px solid black;
     border-radius: 5px;
-    box-shadow: 2px 2px 0px #000000
+    box-shadow: 2px 2px 0px #000000;
+    max-height:90vh;
+    overflow:auto;
 }
 .dg.main {
     top: 0;

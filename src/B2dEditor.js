@@ -205,6 +205,7 @@ export function B2dEditor() {
 
 
 			var folder = this.assetGUI.addFolder('Textures');
+			console.log(folder);
 			var self = this;
 			folder.add(self, "assetSelectedGroup", this.assetLists.__keys).onChange(function (value) {
 				self.initGuiAssetSelection();
@@ -220,7 +221,33 @@ export function B2dEditor() {
 					data.y = (rect.top + 20) / self.container.scale.y - self.container.y / self.container.scale.x;
 					data.textureName = self.assetSelectedTexture;
 
-					self.buildTextureFromObj(data);
+					var texture = self.buildTextureFromObj(data);
+
+					game.app.renderer.extract.canvas(texture).toBlob(function(b){
+						var img = new Image();
+						img.src = URL.createObjectURL(b);
+
+						var guiFunction = $.parseHTML(`<li class="cr function">
+						<div>
+							<img src=""></img>
+							<div class="c">
+								<div class="button">
+								</div>
+							</div>
+						</div>
+						</li>`);
+						$(guiFunction).find('img').attr('src', URL.createObjectURL(b));
+						$(folder.domElement).append(guiFunction);
+						$(guiFunction).css('height', texture.height);
+						$(guiFunction).find('img').css('display', 'block');
+						$(guiFunction).find('img').css('margin', 'auto');
+
+
+
+
+
+					}, 'image/png');
+
 
 				}
 			}.bind(but);
