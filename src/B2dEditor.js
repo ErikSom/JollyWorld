@@ -220,38 +220,50 @@ export function B2dEditor() {
 					data.x = (rect.right + 50) / self.container.scale.x - self.container.x / self.container.scale.x;
 					data.y = (rect.top + 20) / self.container.scale.y - self.container.y / self.container.scale.x;
 					data.textureName = self.assetSelectedTexture;
-
-					var texture = self.buildTextureFromObj(data);
-
-					game.app.renderer.extract.canvas(texture).toBlob(function(b){
-						var img = new Image();
-						img.src = URL.createObjectURL(b);
-
-						var guiFunction = $.parseHTML(`<li class="cr function">
-						<div>
-							<img src=""></img>
-							<div class="c">
-								<div class="button">
-								</div>
-							</div>
-						</div>
-						</li>`);
-						$(guiFunction).find('img').attr('src', URL.createObjectURL(b));
-						$(folder.domElement).append(guiFunction);
-						$(guiFunction).css('height', texture.height);
-						$(guiFunction).find('img').css('display', 'block');
-						$(guiFunction).find('img').css('margin', 'auto');
-
-
-
-
-
-					}, 'image/png');
-
-
+					self.buildTextureFromObj(data);
 				}
 			}.bind(but);
 			folder.open();
+			$(folder.domElement).parent().parent().parent().hover(function(){
+				$(this).addClass('hover');
+			})
+
+			for(var i = 0; i<this.assetLists[this.assetSelectedGroup].length; i++){
+				var data = new self.textureObject;
+				data.textureName = this.assetLists[this.assetSelectedGroup][i];
+				var texture = self.buildTextureFromObj(data);
+				let image = game.app.renderer.plugins.extract.image(texture);
+				var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
+				guiFunction.find('img').attr('src', image.src);
+				//guiFunction.find('img').attr('draggable', false);
+				$(folder.domElement).append(guiFunction);
+				guiFunction.css('height', texture.height);
+				guiFunction.find('img').css('display', 'block');
+				guiFunction.find('img').css('margin', 'auto');
+				guiFunction.attr('textureName', data.textureName);
+		
+				guiFunction.on('click dragend', function (e) {
+					var guiAsset = $(this).parent().parent().parent().parent();
+					var rect = guiAsset[0].getBoundingClientRect();
+					var x = Math.max(e.pageX, rect.right+image.width/2);
+					var y = e.pageY;
+
+					var data = new self.textureObject;
+					if(x == e.pageX){
+						data.x = (x-image.width/2) / self.container.scale.x - self.container.x / self.container.scale.x;
+						data.y = (y+image.height/2) / self.container.scale.y - self.container.y / self.container.scale.x;
+					}else{
+						data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
+						data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
+					}
+					console.log(e);
+					data.textureName = $(this).attr('textureName');
+					var texture = self.buildTextureFromObj(data);
+
+				});
+			}
+
+
 			this.registerDragWindow(this.assetGUI.domElement);
 			$(this.assetGUI.domElement).css('left', this.assetGUIPos.x);
 			$(this.assetGUI.domElement).css('top', this.assetGUIPos.y);
