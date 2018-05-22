@@ -788,8 +788,6 @@ export function B2dEditor() {
 	}
 
 	this.deleteObjects = function (arr) {
-		console.log("Delete these objects:");
-		console.log(arr);
 		for (var i = 0; i < arr.length; i++) {
 			if(arr[i] instanceof this.prefabObject){
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
@@ -4644,8 +4642,10 @@ export function B2dEditor() {
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
 	}
-	this.renderPrefabToImage = function(json){
-		var objects = this.buildJSON(json);
+	this.renderPrefabToImage = function(prefabName){
+		var prefabObject = new this.prefabObject;
+		prefabObject.prefabName = prefabName;
+		var objects = this.buildPrefabFromObj(prefabObject);
 		objects = this.sortObjectsByIndex([].concat(objects._bodies, objects._textures));
 		var newContainer = new PIXI.Sprite();
 		for(var i = 0; i<objects.length; i++){
@@ -4653,12 +4653,11 @@ export function B2dEditor() {
 			sprite.parent.removeChild(sprite);
 			newContainer.addChild(sprite);
 		}
-		var image = this.app.renderer.plugins.extract.image(newContainer);
-		document.appendChild(image);
-		
+		var image = game.app.renderer.plugins.extract.image(newContainer);
 		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
 		var prefabObject = this.prefabs[sprite.data.prefabInstanceName];
-		deleteObjects([prefabObject]);
+		this.deleteObjects([prefabObject]);
+		return image;
 	}
 	PIXI.Graphics.prototype.drawDashedCircle = function (radius, x, y, rotation, dash, gap, offsetPercentage) {
 		var circum = radius * 2 * Math.PI;
