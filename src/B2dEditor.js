@@ -212,36 +212,25 @@ export function B2dEditor() {
 			});
 			folder.add(self, "assetSelectedTexture", this.assetLists[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
 			this.spawnTexture = function () {};
-			var but = folder.add(self, "spawnTexture").name("Spawn -->");
-			this.spawnTexture = function () {
-				if (self.assetSelectedTexture != undefined && this.assetSelectedTexture != "") {
-					var data = new self.textureObject;
-					var rect = this.domElement.getBoundingClientRect();
-					data.x = (rect.right + 50) / self.container.scale.x - self.container.x / self.container.scale.x;
-					data.y = (rect.top + 20) / self.container.scale.y - self.container.y / self.container.scale.x;
-					data.textureName = self.assetSelectedTexture;
-					self.buildTextureFromObj(data);
-				}
-			}.bind(but);
+
 			folder.open();
 			$(folder.domElement).parent().parent().parent().hover(function(){
 				$(this).addClass('hover');
 			})
 
 			for(var i = 0; i<this.assetLists[this.assetSelectedGroup].length; i++){
-				var data = new self.textureObject;
-				data.textureName = this.assetLists[this.assetSelectedGroup][i];
-				var texture = self.buildTextureFromObj(data);
+				var textureName = this.assetLists[this.assetSelectedGroup][i];
+				var texture = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 				let image = game.app.renderer.plugins.extract.image(texture);
 				var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
 				guiFunction.find('img').attr('src', image.src);
-				guiFunction.find('img').attr('title', data.textureName);
+				guiFunction.find('img').attr('title', textureName);
 				//guiFunction.find('img').attr('draggable', false);
 				$(folder.domElement).append(guiFunction);
 				guiFunction.css('height', texture.height);
 				guiFunction.find('img').css('display', 'block');
 				guiFunction.find('img').css('margin', 'auto');
-				guiFunction.attr('textureName', data.textureName);
+				guiFunction.attr('textureName', textureName);
 		
 				guiFunction.on('click dragend', function (e) {
 					var guiAsset = $(this).parent().parent().parent().parent();
@@ -799,10 +788,16 @@ export function B2dEditor() {
 	}
 
 	this.deleteObjects = function (arr) {
+		console.log("Delete these objects:");
+		console.log(arr);
 		for (var i = 0; i < arr.length; i++) {
-			if (arr[i].data) {
+			if(arr[i] instanceof this.prefabObject){
+				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
+				delete this.prefabs[arr[i].key];
+			}else if (arr[i].data) {
 				//graphic object
 				var sprite = arr[i];
+				this.removeObjectFromLookupGroups(sprite, sprite.data);
 				if (sprite.data && sprite.data.type == this.object_JOINT) {
 					var j;
 					var myJoint;
@@ -840,6 +835,7 @@ export function B2dEditor() {
 				});
 			} else if (arr[i].mySprite.data) {
 				var b = arr[i];
+				this.removeObjectFromLookupGroups(b.mySprite, b.mySprite.data);
 				b.mySprite.parent.removeChild(b.mySprite);
 				b.mySprite.destroy({
 					children: true,
@@ -876,15 +872,14 @@ export function B2dEditor() {
 		}
 	}
 	this.deleteSelection = function () {
+		var toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
-				this.selectedPhysicsBodies = this.selectedPhysicsBodies.concat(this.lookupGroups[this.prefabs[key].key]._bodies);
-				this.selectedTextures = this.selectedTextures.concat(this.lookupGroups[this.prefabs[key].key]._textures, this.lookupGroups[this.prefabs[key].key]._joints);
-				delete this.prefabs[key];
+				toBeDeletedPrefabs.push(this.prefabs[key]);
 			}
 		}
 
-		this.deleteObjects([].concat(this.selectedPhysicsBodies, this.selectedTextures));
+		this.deleteObjects([].concat(this.selectedPhysicsBodies, this.selectedTextures, toBeDeletedPrefabs));
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.selectedPrefabs = {};
@@ -3027,7 +3022,7 @@ export function B2dEditor() {
 
 	// TODO: FIX GROUPS ON CHANGE OF INDIVIDUAL GROUP // SAME FOR INSTANCE LATER
 
-	this.addItemToLookupGroups = function (obj, data) {
+	this.addObjectToLookupGroups = function (obj, data) {
 
 		//character1, .character, .vehicle, test
 		// subgroup + refname
@@ -3082,7 +3077,7 @@ export function B2dEditor() {
 			}
 		}
 	}
-	this.removeItemFromLookupGroups = function (obj, groups) {
+	this.removeObjectFromLookupGroups = function (obj, data) {
 		if (data.groups && data.groups != "") {
 			var arr = data.groups.split(",");
 			var subGroups = [];
@@ -3154,7 +3149,7 @@ export function B2dEditor() {
 			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
 		//handle groups and ref names
-		this.addItemToLookupGroups(container, container.data);
+		this.addObjectToLookupGroups(container, container.data);
 
 		return container;
 	}
@@ -3232,7 +3227,7 @@ export function B2dEditor() {
 
 		this.setBodyCollision(body, obj.collision);
 
-		this.addItemToLookupGroups(body, body.mySprite.data);
+		this.addObjectToLookupGroups(body, body.mySprite.data);
 
 		return body;
 
@@ -3257,7 +3252,7 @@ export function B2dEditor() {
 
 		//if (obj.tileTexture) this.updateBodyTileSprite(body);
 
-		this.addItemToLookupGroups(graphic, graphic.data);
+		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
 
 	}
@@ -3297,7 +3292,7 @@ export function B2dEditor() {
 			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
 
-		this.addItemToLookupGroups(graphic, graphic.data);
+		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
 
@@ -3766,7 +3761,7 @@ export function B2dEditor() {
 
 		if (tarObj.prefabInstanceName) jointGraphics.visible = false;
 
-		this.addItemToLookupGroups(jointGraphics, jointGraphics.data);
+		this.addObjectToLookupGroups(jointGraphics, jointGraphics.data);
 
 		this.editorIcons.push(jointGraphics);
 
@@ -3887,7 +3882,7 @@ export function B2dEditor() {
 		texture.data.texturePositionOffsetLength = positionOffsetLength;
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
-		body.mySprite.renderable = false;
+		//body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
 	this.removeTextureFromBody = function (body, texture) {
@@ -4581,11 +4576,11 @@ export function B2dEditor() {
 				var joint = this.attachJoint(sprite.data);
 				spritesToDestroy.push(sprite);
 
-				this.addItemToLookupGroups(joint, sprite.data);
+				this.addObjectToLookupGroups(joint, sprite.data);
 			} else if (sprite.data.type == this.object_BODY) {
-				this.addItemToLookupGroups(sprite.myBody, sprite.data);
+				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
 			} else if (sprite.data.type == this.object_TEXTURE) {
-				if (sprite.myBody == undefined) this.addItemToLookupGroups(sprite, sprite.data);
+				if (sprite.myBody == undefined) this.addObjectToLookupGroups(sprite, sprite.data);
 			}
 		}
 		for (i = 0; i < spritesToDestroy.length; i++) {
@@ -4648,6 +4643,22 @@ export function B2dEditor() {
 	}
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
+	}
+	this.renderPrefabToImage = function(json){
+		var objects = this.buildJSON(json);
+		objects = this.sortObjectsByIndex([].concat(objects._bodies, objects._textures));
+		var newContainer = new PIXI.Sprite();
+		for(var i = 0; i<objects.length; i++){
+			var sprite = objects[i].mySprite ? objects[i].mySprite : objects[i];
+			sprite.parent.removeChild(sprite);
+			newContainer.addChild(sprite);
+		}
+		var image = this.app.renderer.plugins.extract.image(newContainer);
+		document.appendChild(image);
+		
+		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
+		var prefabObject = this.prefabs[sprite.data.prefabInstanceName];
+		deleteObjects([prefabObject]);
 	}
 	PIXI.Graphics.prototype.drawDashedCircle = function (radius, x, y, rotation, dash, gap, offsetPercentage) {
 		var circum = radius * 2 * Math.PI;
