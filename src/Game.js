@@ -128,18 +128,16 @@ function Game() {
         this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
-        window.setInterval(this.update.bind(this), this.timeStep);
+        //window.setInterval(this.update.bind(this), this.timeStep);
+        startAnimating();
+
 
 
         this.editor.assetLists.characters = ["1head.png", "1body.png", "1uparm.png", "1lowarm.png", "1upleg.png", "1lowleg.png",
             "2head.png", "2body.png", "2uparm.png", "2lowarm.png", "2upleg.png", "2lowleg.png",
             "3head.png", "3body.png", "3uparm.png", "3lowarm.png", "3upleg.png", "3lowleg.png"
         ];
-        this.editor.assetLists.maincharacters = [
-        "Normal_Head_Idle0000", "Normal_Head_Smile0000", "Normal_Head_Laugh0000", "Normal_Head_hurt10000", "Normal_Head_hurt20000", "Normal_Head_hurt30000", "Normal_Head_hurt40000", "Normal_Head_RnM0000", "Normal_Head_Oh0000", "Normal_Head_Boring0000", "Normal_Core0000", "Normal_Belly0000", "Normal_Thigh0000", "Normal_Leg0000", "Normal_Feet0000", "Normal_Shoulder0000", "Normal_Arm0000", "Normal_Hand0000", "Normal_Eye0000", "Normal_Eye_Closed0000"
-        ,"Kid_Head_Idle0000", "Kid_Core0000", "Kid_Belly0000", "Kid_Thigh0000", "Kid_Leg0000", "Kid_Feet0000", "Kid_Shoulder0000", "Kid_Arm0000", "Kid_Hand0000", "Kid_Eye0000", "Kid_Eye_Closed0000"
-        ,"Baby_Head_Idle0000", "Baby_Core0000", "Baby_Belly0000", "Baby_Thigh0000", "Baby_Leg0000", "Baby_Feet0000", "Baby_Shoulder0000", "Baby_Arm0000", "Baby_Hand0000", "Baby_Eye0000", "Baby_Eye_Closed0000"
-        ];
+        this.editor.assetLists.maincharacters = Object.keys(PIXI.loader.resources["Characters1.json"].textures);
         this.editor.assetLists.vehicles = ["Bike1_Childseet.png", "Bike1_Frame.png", "Bike1_Tire.png"];
         this.editor.assetLists.vehicles1 = ["Bicycle_Body0000","Bicycle_Pedals0000","Bicycle_WheelBack0000","Bicycle_WheelFront0000","GoCart_Body0000","GoCart_Wheel0000","OfficeChair_Body0000","OfficeChair_Body20000","OfficeChair_Turbine0000","OfficeChair_Wheel0000","SuperMarketCart_Body0000","SuperMarketCart_Gear0000","SuperMarketCart_Wheel0000","Trolley_Body0000","Trolley_Drone0000","Trolley_WheelBack0000","Trolley_WheelFront0000","Unicycle_Body0000"];
 
@@ -168,8 +166,12 @@ function Game() {
         for(var i=0; i<Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
 
 
+        console.log(PIXI.TextureCache);
+
+
     }
     this.initWorld = function () {
+        console.log(PIXI.loader.resources);
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
         this.editor.buildJSON(PIXI.loader.resources.vehicleData.data);
         this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
@@ -522,6 +524,27 @@ function Game() {
         }
     }
 
+
+
+
+
+
+    var then, startTime, elapsed, now;
+    var self = this;
+
+    function startAnimating() {
+        then = window.performance.now();
+        animate();
+    }
+    function animate(newtime) {
+        requestAnimationFrame(animate);
+        now = newtime;
+        elapsed = now - then;
+        if (elapsed > self.timeStep) {
+            then = now - (elapsed % self.timeStep);
+            self.update();
+        }
+    }
 
     this.update = function () {
 

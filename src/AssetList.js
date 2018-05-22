@@ -1,10 +1,11 @@
 export var LoadCoreAssets = function (loader){
-    loader.add("assets/images/bodyparts.json")
-        .add("assets/images/vehicles.json")
-        .add("assets/images/Characters1.json")
-        .add("assets/images/Vehicles1.json")
+    loader.add("bodyparts.json", "assets/images/bodyparts.json")
+        .add("vehicles.json", "assets/images/vehicles.json")
+        .add("Characters1.json", "assets/images/Characters1.json")
+        .add("Vehicles1.json", "assets/images/Vehicles1.json")
         .add("assets/images/Decals.json")
-        .add("assets/images/TextureTiles.json")
+        .add("Movement.json", "assets/images/prefabs/Movement.json")
+        /*TILE DATA*/
         .add("tile1.jpg", "assets/images/textures/tile1.jpg")
         .add("tile2.jpg", "assets/images/textures/tile2.jpg")
         .add("tile3.jpg", "assets/images/textures/tile3.jpg")

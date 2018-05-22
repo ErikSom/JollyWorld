@@ -1,0 +1,27 @@
+﻿{"frames": {
+
+"Jumping0000":
+{
+	"frame": {"x":2,"y":2,"w":315,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":30},
+	"sourceSize": {"w":315,"h":30}
+},
+"Jumping_Pad0000":
+{
+	"frame": {"x":2,"y":34,"w":315,"h":7},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":7},
+	"sourceSize": {"w":315,"h":7}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "18.0.1.115",
+	"image": "Movement.png",
+	"format": "RGBA8888",
+	"size": {"w":512,"h":512},
+	"scale": "1"
+}
+}

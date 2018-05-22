@@ -235,6 +235,7 @@ export function B2dEditor() {
 				let image = game.app.renderer.plugins.extract.image(texture);
 				var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
 				guiFunction.find('img').attr('src', image.src);
+				guiFunction.find('img').attr('title', data.textureName);
 				//guiFunction.find('img').attr('draggable', false);
 				$(folder.domElement).append(guiFunction);
 				guiFunction.css('height', texture.height);
