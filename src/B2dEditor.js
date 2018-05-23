@@ -214,11 +214,11 @@ export function B2dEditor() {
 			this.spawnTexture = function () {};
 
 			folder.open();
-			$(folder.domElement).parent().parent().parent().hover(function(){
+			$(folder.domElement).parent().parent().parent().hover(function () {
 				$(this).addClass('hover');
 			})
 
-			for(var i = 0; i<this.assetLists[this.assetSelectedGroup].length; i++){
+			for (var i = 0; i < this.assetLists[this.assetSelectedGroup].length; i++) {
 				var textureName = this.assetLists[this.assetSelectedGroup][i];
 				var texture = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 				let image = game.app.renderer.plugins.extract.image(texture);
@@ -231,18 +231,18 @@ export function B2dEditor() {
 				guiFunction.find('img').css('display', 'block');
 				guiFunction.find('img').css('margin', 'auto');
 				guiFunction.attr('textureName', textureName);
-		
+
 				guiFunction.on('click dragend', function (e) {
 					var guiAsset = $(this).parent().parent().parent().parent();
 					var rect = guiAsset[0].getBoundingClientRect();
-					var x = Math.max(e.pageX, rect.right+image.width/2);
+					var x = Math.max(e.pageX, rect.right + image.width / 2);
 					var y = e.pageY;
 
 					var data = new self.textureObject;
-					if(x == e.pageX){
-						data.x = (x-image.width/2) / self.container.scale.x - self.container.x / self.container.scale.x;
-						data.y = (y+image.height/2) / self.container.scale.y - self.container.y / self.container.scale.x;
-					}else{
+					if (x == e.pageX) {
+						data.x = (x - image.width / 2) / self.container.scale.x - self.container.x / self.container.scale.x;
+						data.y = (y + image.height / 2) / self.container.scale.y - self.container.y / self.container.scale.x;
+					} else {
 						data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
 						data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
 					}
@@ -698,24 +698,37 @@ export function B2dEditor() {
 						this.targetValue = value
 					}.bind(controller));
 
+
 					folder = this.editorGUI.addFolder('enable limits');
 					folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					});
+					if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
+						controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						}.bind(controller));
 
-					controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
+						controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value
+						}.bind(controller));
+					} else {
+						controller = folder.add(self.editorGUI.editData, "upperLimit", 0, 100);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						}.bind(controller));
 
-					controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-
+						controller = folder.add(self.editorGUI.editData, "lowerLimit", -100, 0);
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value
+						}.bind(controller));
+					}
 				} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
 					folder = this.editorGUI.addFolder('spring');
 
@@ -789,10 +802,10 @@ export function B2dEditor() {
 
 	this.deleteObjects = function (arr) {
 		for (var i = 0; i < arr.length; i++) {
-			if(arr[i] instanceof this.prefabObject){
+			if (arr[i] instanceof this.prefabObject) {
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
 				delete this.prefabs[arr[i].key];
-			}else if (arr[i].data) {
+			} else if (arr[i].data) {
 				//graphic object
 				var sprite = arr[i];
 				this.removeObjectFromLookupGroups(sprite, sprite.data);
@@ -1238,6 +1251,8 @@ export function B2dEditor() {
 		this.lowerAngle = 0.0;
 		this.dampingRatio = 0.0;
 		this.frequencyHz = 0.0;
+		this.upperLimit = 0.0;
+		this.lowerLimit = 0.0;
 	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
@@ -1739,11 +1754,11 @@ export function B2dEditor() {
 		} else if (transformType == this.TRANSFORM_FORCEDEPTH) {
 			console.log("Forcing depth:", obj);
 			objects = this.sortObjectsByIndex(objects);
-			for(var i = 0; i<objects.length; i++){
+			for (var i = 0; i < objects.length; i++) {
 				var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
 				var container = sprite.parent;
 				container.removeChild(sprite);
-				container.addChildAt(sprite, obj+i);
+				container.addChildAt(sprite, obj + i);
 			}
 		}
 		//update all objects
@@ -1754,21 +1769,21 @@ export function B2dEditor() {
 			} else this.updateObject(objects[i], objects[i].data);
 		}
 	}
-	this.getLowestChildIndex = function(objects){
+	this.getLowestChildIndex = function (objects) {
 		console.log("Lowest child index:");
 		console.log(objects);
 		var childIndex = Number.POSITIVE_INFINITY;
 		console.log(childIndex);
-		for(var i = 0; i<objects.length; i++){
+		for (var i = 0; i < objects.length; i++) {
 			var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
 			var spriteIndex = sprite.parent.getChildIndex(sprite);
 			console.log(spriteIndex);
-			if(spriteIndex < childIndex) childIndex = spriteIndex;
+			if (spriteIndex < childIndex) childIndex = spriteIndex;
 		}
 		console.log("final index", childIndex);
 		return childIndex;
 	}
-	this.sortObjectsByIndex = function(objects){
+	this.sortObjectsByIndex = function (objects) {
 		objects.sort(function (a, b) {
 			var aIndex = (a.mySprite) ? a.mySprite.parent.getChildIndex(a.mySprite) : a.parent.getChildIndex(a);
 			var bIndex = (b.mySprite) ? b.mySprite.parent.getChildIndex(b.mySprite) : b.parent.getChildIndex(b);
@@ -2385,7 +2400,17 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							this.selectedTextures[j].data.dampingRatio = controller.targetValue;
 						}
-					} else if (controller.property == "rotation") {
+					} else if (controller.property == "upperLimit") {
+						//joint
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							this.selectedTextures[j].data.upperLimit = controller.targetValue;
+						}
+					} else if (controller.property == "lowerLimit") {
+						//joint
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							this.selectedTextures[j].data.lowerLimit = controller.targetValue;
+						}
+					}else if (controller.property == "rotation") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -2528,7 +2553,8 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.collision = controller.targetValue;
-							this.setBodyCollision(body, controller.targetValue);x
+							this.setBodyCollision(body, controller.targetValue);
+							x
 						}
 					} else if (controller.property == "tileTexture") {
 						//do tileTexture
@@ -3729,7 +3755,7 @@ export function B2dEditor() {
 
 			tarObj.jointType = this.jointObject_TYPE_PIN;
 			tarObj.x = this.mousePosWorld.x * this.PTM;
-			tarObj.y = this.mousePosWorld.y * this.PTM
+			tarObj.y = this.mousePosWorld.y * this.PTM;
 		}
 
 		var jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('pinJoint'));
@@ -3796,7 +3822,7 @@ export function B2dEditor() {
 		}
 		var joint;
 
-		if (jointPlaceHolder.jointType == this.jointObject_TYPE_PIN || jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE) {
+		if (jointPlaceHolder.jointType == this.jointObject_TYPE_PIN) {
 			var revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
 
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
@@ -3809,9 +3835,28 @@ export function B2dEditor() {
 			revoluteJointDef.enableLimit = jointPlaceHolder.enableLimit;
 			revoluteJointDef.enableMotor = jointPlaceHolder.enableMotor;
 
-
 			joint = this.world.CreateJoint(revoluteJointDef);
-		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
+		} else if(jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE){
+
+			var axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation), Math.sin(jointPlaceHolder.rotation));
+
+			var prismaticJointDef = new Box2D.Dynamics.Joints.b2PrismaticJointDef;
+
+			prismaticJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
+			prismaticJointDef.collideConnected = jointPlaceHolder.collideConnected;
+			prismaticJointDef.referenceAngle = 0.0;
+			prismaticJointDef.lowerTranslation = jointPlaceHolder.lowerLimit / this.PTM;
+			prismaticJointDef.upperTranslation = jointPlaceHolder.upperLimit / this.PTM;
+			prismaticJointDef.maxMotorTorque = jointPlaceHolder.maxMotorTorque;
+			prismaticJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
+			prismaticJointDef.enableLimit = jointPlaceHolder.enableLimit;
+			prismaticJointDef.enableMotor = jointPlaceHolder.enableMotor;
+
+			joint = this.world.CreateJoint(prismaticJointDef);
+
+
+
+		}else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
 			var distanceJointDef = new Box2D.Dynamics.Joints.b2DistanceJointDef;
 			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 			distanceJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
@@ -4098,7 +4143,7 @@ export function B2dEditor() {
 			sprite = this.textures.getChildAt(i);
 			this.updateObject(sprite, sprite.data);
 			if (sprite.data.prefabInstanceName) {
-				if (stringifiedPrefabs[sprite.data.prefabInstanceName]){
+				if (stringifiedPrefabs[sprite.data.prefabInstanceName]) {
 					this.worldJSON = this.worldJSON.slice(0, -1);
 					continue;
 				}
@@ -4233,6 +4278,8 @@ export function B2dEditor() {
 			arr[15] = obj.lowerAngle;
 			arr[16] = obj.dampingRatio;
 			arr[17] = obj.frequencyHz;
+			arr[18] = obj.upperLimit;
+			arr[19] = obj.lowerLimit;
 		} else if (obj.type == this.object_PREFAB) {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
@@ -4296,6 +4343,8 @@ export function B2dEditor() {
 			obj.lowerAngle = arr[15];
 			obj.dampingRatio = arr[16];
 			obj.frequencyHz = arr[17];
+			obj.upperLimit = arr[18];
+			obj.lowerLimit = arr[19];
 		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
 			obj.settings = arr[4];
@@ -4471,7 +4520,7 @@ export function B2dEditor() {
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.selectedPrefabs = {};
-		
+
 		this.selectedBoundingBox = null;
 		this.startSelectionPoint = null;
 		this.oldMousePosWorld = null;
@@ -4642,13 +4691,13 @@ export function B2dEditor() {
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
 	}
-	this.renderPrefabToImage = function(prefabName){
+	this.renderPrefabToImage = function (prefabName) {
 		var prefabObject = new this.prefabObject;
 		prefabObject.prefabName = prefabName;
 		var objects = this.buildPrefabFromObj(prefabObject);
 		objects = this.sortObjectsByIndex([].concat(objects._bodies, objects._textures));
 		var newContainer = new PIXI.Sprite();
-		for(var i = 0; i<objects.length; i++){
+		for (var i = 0; i < objects.length; i++) {
 			var sprite = objects[i].mySprite ? objects[i].mySprite : objects[i];
 			sprite.parent.removeChild(sprite);
 			newContainer.addChild(sprite);
