@@ -717,13 +717,13 @@ export function B2dEditor() {
 							this.targetValue = value
 						}.bind(controller));
 					} else {
-						controller = folder.add(self.editorGUI.editData, "upperLimit", 0, 100);
+						controller = folder.add(self.editorGUI.editData, "upperLimit", 0, 5000);
 						controller.onChange(function (value) {
 							this.humanUpdate = true;
 							this.targetValue = value;
 						}.bind(controller));
 
-						controller = folder.add(self.editorGUI.editData, "lowerLimit", -100, 0);
+						controller = folder.add(self.editorGUI.editData, "lowerLimit", -5000, 0);
 						controller.onChange(function (value) {
 							this.humanUpdate = true;
 							this.targetValue = value
@@ -2225,69 +2225,117 @@ export function B2dEditor() {
 			}
 		}
 
-
+		this.drawDebugJointHelpers();
+	}
+	this.drawDebugJointHelpers = function() {
 		//JOINTS draw upper and lower limits
 		var sprite;
-		for (i = 0; i < this.selectedTextures.length; i++) {
+		for (var i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
 			if (sprite.data.type == this.object_JOINT) {
-
 				var tarSprite;
 
-				if (sprite.data.enableLimit) {
-					var lineLength = 50 / sprite.scale.x;
+				if (sprite.data.jointType == this.jointObject_TYPE_PIN) {
+					if (sprite.data.enableLimit) {
+						var lineLength = 50 / sprite.scale.x;
+						//FOR OBJECT A
+						var lowAngle = -sprite.data.lowerAngle * this.DEG2RAD + sprite.rotation;
+						var upAngle = -sprite.data.upperAngle * this.DEG2RAD + sprite.rotation;
 
-
-					//FOR OBJECT A
-					var lowAngle = -sprite.data.lowerAngle * this.DEG2RAD + sprite.rotation;
-					var upAngle = -sprite.data.upperAngle * this.DEG2RAD + sprite.rotation;
-
-					tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
-
-					this.debugGraphics.lineStyle(1, "0x707070", 1);
-					this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-					this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(sprite.rotation));
-
-
-					this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-					this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-					this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(upAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(upAngle));
-
-					this.debugGraphics.lineStyle(1, "0xFF3300", 1);
-					this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-					this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(lowAngle));
-
-					this.debugGraphics.lineStyle(1, "0x000000", 0);
-					this.debugGraphics.beginFill("0xFF9900", 0.3);
-					this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-					this.debugGraphics.arc(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y, lineLength, upAngle, lowAngle, false);
-					this.debugGraphics.endFill();
-
-					//FOR OBJECT B
-
-					if (sprite.data.bodyB_ID != undefined) {
-						lowAngle = sprite.data.lowerAngle * this.DEG2RAD + sprite.rotation;
-						upAngle = sprite.data.upperAngle * this.DEG2RAD + sprite.rotation;
-
-						tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
+						tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
 
 						this.debugGraphics.lineStyle(1, "0x707070", 1);
 						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
 						this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(sprite.rotation));
 
-						this.debugGraphics.lineStyle(1, "0xC554FA", 1);
+
+						this.debugGraphics.lineStyle(1, "0xFF9900", 1);
 						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
 						this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(upAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(upAngle));
 
-						this.debugGraphics.lineStyle(1, "0x8105BB", 1);
+						this.debugGraphics.lineStyle(1, "0xFF3300", 1);
 						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
 						this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(lowAngle));
 
 						this.debugGraphics.lineStyle(1, "0x000000", 0);
-						this.debugGraphics.beginFill("0xC554FA", 0.3);
+						this.debugGraphics.beginFill("0xFF9900", 0.3);
 						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-						this.debugGraphics.arc(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y, lineLength, lowAngle, upAngle, false);
+						this.debugGraphics.arc(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y, lineLength, upAngle, lowAngle, false);
 						this.debugGraphics.endFill();
+
+						//FOR OBJECT B
+
+						if (sprite.data.bodyB_ID != undefined) {
+							lowAngle = sprite.data.lowerAngle * this.DEG2RAD + sprite.rotation;
+							upAngle = sprite.data.upperAngle * this.DEG2RAD + sprite.rotation;
+
+							tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
+
+							this.debugGraphics.lineStyle(1, "0x707070", 1);
+							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(sprite.rotation));
+
+							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
+							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(upAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(upAngle));
+
+							this.debugGraphics.lineStyle(1, "0x8105BB", 1);
+							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(lowAngle));
+
+							this.debugGraphics.lineStyle(1, "0x000000", 0);
+							this.debugGraphics.beginFill("0xC554FA", 0.3);
+							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.arc(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y, lineLength, lowAngle, upAngle, false);
+							this.debugGraphics.endFill();
+						}
+					}
+				}else if(sprite.data.jointType == this.jointObject_TYPE_SLIDE){
+					var self = this;
+					const drawArrow = function(x, y, rotation, arrowLength, arrowAngle){
+						arrowAngle = arrowAngle/self.DEG2RAD;
+						var upArrowVec = {x:arrowLength*Math.cos(rotation+arrowAngle), y:arrowLength*Math.sin(rotation+arrowAngle)};
+						var lowArrowVec = {x:arrowLength*Math.cos(rotation-arrowAngle), y:arrowLength*Math.sin(rotation-arrowAngle)};
+						self.debugGraphics.moveTo((x+upArrowVec.x)* self.container.scale.x + self.container.x, (y+upArrowVec.y)* self.container.scale.y + self.container.y);
+						self.debugGraphics.lineTo(x* self.container.scale.x + self.container.x, y * self.container.scale.y + self.container.y);
+						self.debugGraphics.lineTo((x+lowArrowVec.x)* self.container.scale.x + self.container.x, (y+lowArrowVec.y)* self.container.scale.y + self.container.y);
+						self.debugGraphics.lineTo((x+upArrowVec.x)* self.container.scale.x + self.container.x, (y+upArrowVec.y)* self.container.scale.y + self.container.y);
+					}
+					tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
+
+					if (sprite.data.enableLimit) {
+						const upperLengthVec = {x:sprite.data.upperLimit*Math.cos(sprite.rotation), y:sprite.data.upperLimit*Math.sin(sprite.rotation)};
+						const lowerLengthVec = {x:sprite.data.lowerLimit*Math.cos(sprite.rotation), y:sprite.data.lowerLimit*Math.sin(sprite.rotation)};
+
+						this.debugGraphics.lineStyle(1, "0xC554FA", 1);
+						this.debugGraphics.moveTo((tarSprite.x+lowerLengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y+lowerLengthVec.y)* this.container.scale.y + this.container.y);
+						this.debugGraphics.lineTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
+
+						drawArrow(tarSprite.x+lowerLengthVec.x, tarSprite.y+lowerLengthVec.y, sprite.rotation, 20, 45);
+						var arrowPosition = 0.2;
+						if(sprite.data.lowerLimit<-300) drawArrow(tarSprite.x+lowerLengthVec.x*arrowPosition, tarSprite.y+lowerLengthVec.y*arrowPosition, sprite.rotation, 20, 45);
+
+						this.debugGraphics.lineStyle(1, "0xFF9900", 1);
+						this.debugGraphics.moveTo((tarSprite.x+upperLengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y+upperLengthVec.y)* this.container.scale.y + this.container.y);
+						this.debugGraphics.lineTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
+
+						drawArrow(tarSprite.x+upperLengthVec.x, tarSprite.y+upperLengthVec.y, sprite.rotation, 20, 45);
+						var arrowPosition = 0.2;
+						if(sprite.data.upperLimit> 300) drawArrow(tarSprite.x+upperLengthVec.x*arrowPosition, tarSprite.y+upperLengthVec.y*arrowPosition, sprite.rotation, 20, 45);
+
+					}else{
+						const length = 5000 / this.container.scale.x;
+						var lengthVec = {x:length*Math.cos(sprite.rotation), y:length*Math.sin(sprite.rotation)};
+						var arrowPosition = 0.03;
+						this.debugGraphics.lineStyle(1, "0xC554FA", 1);
+						this.debugGraphics.moveTo((tarSprite.x-lengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y-lengthVec.y)* this.container.scale.y + this.container.y);
+						this.debugGraphics.lineTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
+						drawArrow(tarSprite.x-lengthVec.x*arrowPosition, tarSprite.y-lengthVec.y * arrowPosition, sprite.rotation, 20, 45);
+						
+						this.debugGraphics.lineStyle(1, "0xFF9900", 1);
+						this.debugGraphics.moveTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
+						this.debugGraphics.lineTo((tarSprite.x+lengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y+lengthVec.y)* this.container.scale.y + this.container.y);
+						drawArrow(tarSprite.x+lengthVec.x*arrowPosition, tarSprite.y+lengthVec.y * arrowPosition, sprite.rotation, 20, 45);
 					}
 				}
 				// draw joint lines
@@ -2410,7 +2458,7 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							this.selectedTextures[j].data.lowerLimit = controller.targetValue;
 						}
-					}else if (controller.property == "rotation") {
+					} else if (controller.property == "rotation") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -3836,7 +3884,7 @@ export function B2dEditor() {
 			revoluteJointDef.enableMotor = jointPlaceHolder.enableMotor;
 
 			joint = this.world.CreateJoint(revoluteJointDef);
-		} else if(jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE){
+		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE) {
 
 			var axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation), Math.sin(jointPlaceHolder.rotation));
 
@@ -3856,7 +3904,7 @@ export function B2dEditor() {
 
 
 
-		}else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
+		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
 			var distanceJointDef = new Box2D.Dynamics.Joints.b2DistanceJointDef;
 			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 			distanceJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
@@ -4343,8 +4391,8 @@ export function B2dEditor() {
 			obj.lowerAngle = arr[15];
 			obj.dampingRatio = arr[16];
 			obj.frequencyHz = arr[17];
-			obj.upperLimit = arr[18];
-			obj.lowerLimit = arr[19];
+			obj.upperLimit = arr[18] || obj.upperLimit;
+			obj.lowerLimit = arr[19] || obj.lowerLimit;
 		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
 			obj.settings = arr[4];
