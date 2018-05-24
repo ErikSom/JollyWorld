@@ -686,11 +686,24 @@ export function B2dEditor() {
 						this.targetValue = value;
 					});
 
-					controller = folder.add(self.editorGUI.editData, "maxMotorTorque", 0, 1000);
+					var lowerLimit = 0;
+					var higherLimit = 0;
+
+					if(dataJoint.jointType == this.jointObject_TYPE_PIN){
+						lowerLimit = 0;
+						higherLimit = 1000;
+					}else{
+						lowerLimit = 0;
+						higherLimit = 1000;
+					}
+
+					controller = folder.add(self.editorGUI.editData, "maxMotorTorque", lowerLimit, higherLimit);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value
 					}.bind(controller));
+
+					if(dataJoint.jointType == this.jointObject_TYPE_SLIDE) controller.name("maxMotorForce");
 
 					controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
 					controller.onChange(function (value) {
@@ -704,6 +717,7 @@ export function B2dEditor() {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					});
+
 					if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
 						controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
 						controller.onChange(function (value) {
@@ -3912,10 +3926,12 @@ export function B2dEditor() {
 			prismaticJointDef.referenceAngle = 0.0;
 			prismaticJointDef.lowerTranslation = jointPlaceHolder.lowerLimit / this.PTM;
 			prismaticJointDef.upperTranslation = jointPlaceHolder.upperLimit / this.PTM;
-			prismaticJointDef.maxMotorTorque = jointPlaceHolder.maxMotorTorque;
+			prismaticJointDef.maxMotorForce = jointPlaceHolder.maxMotorTorque;
 			prismaticJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
 			prismaticJointDef.enableLimit = jointPlaceHolder.enableLimit;
 			prismaticJointDef.enableMotor = jointPlaceHolder.enableMotor;
+
+			console.log(jointPlaceHolder.enableMotor, jointPlaceHolder.maxMotorTorque, jointPlaceHolder.motorSpeed);
 
 			joint = this.world.CreateJoint(prismaticJointDef);
 
