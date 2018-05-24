@@ -39,6 +39,7 @@ export function B2dEditor() {
 	this.container = null;
 	this.selectedTool = 0;
 	this.admin = true; // for future to dissalow certain changes like naming
+	this.breakPrefabs = false;
 	this.editorGUI;
 	this.editorGUIPos = {
 		x: 0,
@@ -3957,6 +3958,8 @@ export function B2dEditor() {
 	}
 
 	this.buildPrefabFromObj = function (obj) {
+		if(this.breakPrefabs) return this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json));
+
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
 		this.prefabs[key] = obj;
@@ -4553,11 +4556,13 @@ export function B2dEditor() {
 					var prefabStartChildIndex = this.textures.children.length;
 					obj.instanceID += startPrefabIDIndex;
 					var prefabObjects = this.buildPrefabFromObj(obj);
-					this.prefabs[obj.key].ID = prefabStartChildIndex;
-					createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
-					createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
-					createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
-					prefabOffset = this.textures.children.length - prefabOffset;
+					if(!this.breakPrefabs){
+						this.prefabs[obj.key].ID = prefabStartChildIndex;
+						createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
+						createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
+						createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
+						prefabOffset = this.textures.children.length - prefabOffset;
+					}
 				} else if (obj.type == this.object_GRAPHIC) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex;

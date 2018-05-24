@@ -157,11 +157,6 @@ function Game() {
         */
         for(var i=0; i<Settings.emitterPool; i++) this.getEmitter('blood', null);
         for(var i=0; i<Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
-
-
-        console.log(PIXI.TextureCache);
-
-
     }
     this.initWorld = function () {
         console.log(PIXI.loader.resources);
@@ -268,6 +263,7 @@ function Game() {
         if (e.keyCode == 82) { //r
             this.run = false;
             var worldJSON = JSON.parse(this.editor.worldJSON);
+            if(e.shiftKey) this.editor.breakPrefabs = true;
             this.editor.resetEditor();
             //this.initWorld();
             this.editor.buildJSON(worldJSON);
