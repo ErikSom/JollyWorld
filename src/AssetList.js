@@ -1,7 +1,5 @@
 export var LoadCoreAssets = function (loader){
-    loader.add("bodyparts.json", "assets/images/bodyparts.json")
-        .add("vehicles.json", "assets/images/vehicles.json")
-        .add("Characters1.json", "assets/images/Characters1.json")
+    loader.add("Characters1.json", "assets/images/Characters1.json")
         .add("Vehicles1.json", "assets/images/Vehicles1.json")
         .add("assets/images/Decals.json")
         .add("Movement.json", "assets/images/prefabs/Movement.json")
@@ -29,8 +27,6 @@ export var LoadCoreAssets = function (loader){
         .add("particle-grey.png", "assets/images/particles/particle-grey.png")
         /*WORLD DATA*/
         .add("worldData", "data/worldData.json")
-        .add("vehicleData", "data/vehicle.json")
-        .add("characterData", "data/character.json")
         .add("characterData1", "data/character1.json")
         .add("testData", "data/testData.json");
 }

@@ -2227,7 +2227,7 @@ export function B2dEditor() {
 
 		this.drawDebugJointHelpers();
 	}
-	this.drawDebugJointHelpers = function() {
+	this.drawDebugJointHelpers = function () {
 		//JOINTS draw upper and lower limits
 		var sprite;
 		for (var i = 0; i < this.selectedTextures.length; i++) {
@@ -2290,53 +2290,70 @@ export function B2dEditor() {
 							this.debugGraphics.endFill();
 						}
 					}
-				}else if(sprite.data.jointType == this.jointObject_TYPE_SLIDE){
+				} else if (sprite.data.jointType == this.jointObject_TYPE_SLIDE) {
 					var self = this;
-					const drawArrow = function(x, y, rotation, arrowLength, arrowAngle){
-						arrowAngle = arrowAngle/self.DEG2RAD;
-						var upArrowVec = {x:arrowLength*Math.cos(rotation+arrowAngle), y:arrowLength*Math.sin(rotation+arrowAngle)};
-						var lowArrowVec = {x:arrowLength*Math.cos(rotation-arrowAngle), y:arrowLength*Math.sin(rotation-arrowAngle)};
-						self.debugGraphics.moveTo((x+upArrowVec.x)* self.container.scale.x + self.container.x, (y+upArrowVec.y)* self.container.scale.y + self.container.y);
-						self.debugGraphics.lineTo(x* self.container.scale.x + self.container.x, y * self.container.scale.y + self.container.y);
-						self.debugGraphics.lineTo((x+lowArrowVec.x)* self.container.scale.x + self.container.x, (y+lowArrowVec.y)* self.container.scale.y + self.container.y);
-						self.debugGraphics.lineTo((x+upArrowVec.x)* self.container.scale.x + self.container.x, (y+upArrowVec.y)* self.container.scale.y + self.container.y);
+					const drawArrow = function (x, y, rotation, arrowLength, arrowAngle) {
+						arrowAngle = arrowAngle / self.DEG2RAD;
+						var upArrowVec = {
+							x: arrowLength * Math.cos(rotation + arrowAngle),
+							y: arrowLength * Math.sin(rotation + arrowAngle)
+						};
+						var lowArrowVec = {
+							x: arrowLength * Math.cos(rotation - arrowAngle),
+							y: arrowLength * Math.sin(rotation - arrowAngle)
+						};
+						self.debugGraphics.moveTo((x + upArrowVec.x) * self.container.scale.x + self.container.x, (y + upArrowVec.y) * self.container.scale.y + self.container.y);
+						self.debugGraphics.lineTo(x * self.container.scale.x + self.container.x, y * self.container.scale.y + self.container.y);
+						self.debugGraphics.lineTo((x + lowArrowVec.x) * self.container.scale.x + self.container.x, (y + lowArrowVec.y) * self.container.scale.y + self.container.y);
+						self.debugGraphics.lineTo((x + upArrowVec.x) * self.container.scale.x + self.container.x, (y + upArrowVec.y) * self.container.scale.y + self.container.y);
 					}
-					tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
+					var spritesToDraw = [sprite.parent.getChildAt(sprite.data.bodyA_ID), sprite];
 
-					if (sprite.data.enableLimit) {
-						const upperLengthVec = {x:sprite.data.upperLimit*Math.cos(sprite.rotation), y:sprite.data.upperLimit*Math.sin(sprite.rotation)};
-						const lowerLengthVec = {x:sprite.data.lowerLimit*Math.cos(sprite.rotation), y:sprite.data.lowerLimit*Math.sin(sprite.rotation)};
+					spritesToDraw.map(tarSprite => {
+						if (sprite.data.enableLimit) {
+							const upperLengthVec = {
+								x: sprite.data.upperLimit * Math.cos(sprite.rotation + 270 * this.DEG2RAD),
+								y: sprite.data.upperLimit * Math.sin(sprite.rotation + 270 * this.DEG2RAD)
+							};
+							const lowerLengthVec = {
+								x: sprite.data.lowerLimit * Math.cos(sprite.rotation + 270 * this.DEG2RAD),
+								y: sprite.data.lowerLimit * Math.sin(sprite.rotation + 270 * this.DEG2RAD)
+							};
 
-						this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-						this.debugGraphics.moveTo((tarSprite.x+lowerLengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y+lowerLengthVec.y)* this.container.scale.y + this.container.y);
-						this.debugGraphics.lineTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
+							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
+							this.debugGraphics.moveTo((tarSprite.x + lowerLengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y + lowerLengthVec.y) * this.container.scale.y + this.container.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
 
-						drawArrow(tarSprite.x+lowerLengthVec.x, tarSprite.y+lowerLengthVec.y, sprite.rotation, 20, 45);
-						var arrowPosition = 0.2;
-						if(sprite.data.lowerLimit<-300) drawArrow(tarSprite.x+lowerLengthVec.x*arrowPosition, tarSprite.y+lowerLengthVec.y*arrowPosition, sprite.rotation, 20, 45);
+							drawArrow(tarSprite.x + lowerLengthVec.x, tarSprite.y + lowerLengthVec.y, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							var arrowPosition = 0.2;
+							if (sprite.data.lowerLimit < -300) drawArrow(tarSprite.x + lowerLengthVec.x * arrowPosition, tarSprite.y + lowerLengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 
-						this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-						this.debugGraphics.moveTo((tarSprite.x+upperLengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y+upperLengthVec.y)* this.container.scale.y + this.container.y);
-						this.debugGraphics.lineTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
+							this.debugGraphics.lineStyle(1, "0xFF9900", 1);
+							this.debugGraphics.moveTo((tarSprite.x + upperLengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y + upperLengthVec.y) * this.container.scale.y + this.container.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
 
-						drawArrow(tarSprite.x+upperLengthVec.x, tarSprite.y+upperLengthVec.y, sprite.rotation, 20, 45);
-						var arrowPosition = 0.2;
-						if(sprite.data.upperLimit> 300) drawArrow(tarSprite.x+upperLengthVec.x*arrowPosition, tarSprite.y+upperLengthVec.y*arrowPosition, sprite.rotation, 20, 45);
+							drawArrow(tarSprite.x + upperLengthVec.x, tarSprite.y + upperLengthVec.y, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							var arrowPosition = 0.2;
+							if (sprite.data.upperLimit > 300) drawArrow(tarSprite.x + upperLengthVec.x * arrowPosition, tarSprite.y + upperLengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 
-					}else{
-						const length = 5000 / this.container.scale.x;
-						var lengthVec = {x:length*Math.cos(sprite.rotation), y:length*Math.sin(sprite.rotation)};
-						var arrowPosition = 0.03;
-						this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-						this.debugGraphics.moveTo((tarSprite.x-lengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y-lengthVec.y)* this.container.scale.y + this.container.y);
-						this.debugGraphics.lineTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
-						drawArrow(tarSprite.x-lengthVec.x*arrowPosition, tarSprite.y-lengthVec.y * arrowPosition, sprite.rotation, 20, 45);
-						
-						this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-						this.debugGraphics.moveTo(tarSprite.x* this.container.scale.x + this.container.x, tarSprite.y* this.container.scale.y + this.container.y);
-						this.debugGraphics.lineTo((tarSprite.x+lengthVec.x)* this.container.scale.x + this.container.x, (tarSprite.y+lengthVec.y)* this.container.scale.y + this.container.y);
-						drawArrow(tarSprite.x+lengthVec.x*arrowPosition, tarSprite.y+lengthVec.y * arrowPosition, sprite.rotation, 20, 45);
-					}
+						} else {
+							const length = 5000 / this.container.scale.x;
+							var lengthVec = {
+								x: length * Math.cos(sprite.rotation + 270 * this.DEG2RAD),
+								y: length * Math.sin(sprite.rotation + 270 * this.DEG2RAD)
+							};
+							var arrowPosition = 0.03;
+							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
+							this.debugGraphics.moveTo((tarSprite.x - lengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y - lengthVec.y) * this.container.scale.y + this.container.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							drawArrow(tarSprite.x - lengthVec.x * arrowPosition, tarSprite.y - lengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+
+							this.debugGraphics.lineStyle(1, "0xFF9900", 1);
+							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.lineTo((tarSprite.x + lengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y + lengthVec.y) * this.container.scale.y + this.container.y);
+							drawArrow(tarSprite.x + lengthVec.x * arrowPosition, tarSprite.y + lengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+						}
+					});
 				}
 				// draw joint lines
 				this.debugGraphics.lineStyle(1, this.jointLineColor, 1);
@@ -3886,7 +3903,7 @@ export function B2dEditor() {
 			joint = this.world.CreateJoint(revoluteJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE) {
 
-			var axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation), Math.sin(jointPlaceHolder.rotation));
+			var axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation+90*this.DEG2RAD), Math.sin(jointPlaceHolder.rotation+90*this.DEG2RAD));
 
 			var prismaticJointDef = new Box2D.Dynamics.Joints.b2PrismaticJointDef;
 

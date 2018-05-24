@@ -166,7 +166,6 @@ function Game() {
     this.initWorld = function () {
         console.log(PIXI.loader.resources);
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
-        this.editor.buildJSON(PIXI.loader.resources.vehicleData.data);
         this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
         this.editor.buildJSON(PIXI.loader.resources.testData.data);
     }
