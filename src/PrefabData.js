@@ -3,7 +3,34 @@ import { game } from "./Game";
 
 const characterModels = ["character", "baby"];
 
-// write all properties to lookupObject, convert character1 to characterModel function, push all models like baby etc through this function.
+
+
+let basePrefab = function() {
+    basePrefab.settings = {};
+    this.prefabObject;
+    this.lookupObject;
+    this.init = function(target){
+    }
+    this.settings = function(target){
+    }
+    this.set = function(target, property, value){
+    }
+    this.update = function(target){
+    }
+    this.contactListener = new Box2D.Dynamics.b2ContactListener();
+	this.contactListener.BeginContact = function (contact, target) {
+	}
+	this.contactListener.EndContact = function (contact, target) {
+	}
+	this.contactListener.PreSolve = function (contact, oldManifold, target) {
+	}
+	this.contactListener.PostSolve = function (contact, impulse, target) {
+    }
+}
+
+
+
+
 
 let characterFunctions = new function(){
     const self = this;
@@ -245,13 +272,38 @@ vehicle2.update = function(target){
     desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
     var impulse = drone.GetInertia() * desiredAngularVelocity;
     drone.m_angularVelocity += drone.m_invI * impulse;
-
-
 }
 
 let vain = new function(){
     this.init = function(target){
         //swap childs
+    }
+}
+
+let jumppad = new function(){
+    var self = this;
+    this.init = function(target){
+        target.lookupObject = game.editor.lookupGroups[target.prefabName+"_"+target.instanceID];
+        target.__jumpPadTimer = 0;
+    }
+    this.settings = function(target){
+        this._options = {};
+        this.delay = 0;
+
+    }
+    this.set = function(target, property, value){
+    }
+    this.update = function(target){
+        target_jumpPadTimer += game.editor.deltaTime;
+    }
+    this.contactListener = new Box2D.Dynamics.b2ContactListener();
+	this.contactListener.BeginContact = function (contact, target) {
+	}
+	this.contactListener.EndContact = function (contact, target) {
+	}
+	this.contactListener.PreSolve = function (contact, oldManifold, target) {
+	}
+	this.contactListener.PostSolve = function (contact, impulse, target) {
     }
 }
 
@@ -278,6 +330,14 @@ export var prefabs = {
         init:vain.init,
         update:undefined,
         set:undefined
+    },
+    jumppad:{
+        json:'{"objects":[[0,18.101371061146075,7.110018799757279,0,"","pad",0,["#707070","#999999"],["#423f3f","#000"],[1,1],false,true,[[{"x":-3.942850401425633,"y":0.4035988599884508},{"x":-3.942850401425633,"y":-0.4035988599884508},{"x":3.942850401425633,"y":-0.4035988599884508},{"x":3.942850401425633,"y":0.4035988599884508}],[{"x":-5.146081262043283,"y":-0.37157711946319416},{"x":-5.146081262043283,"y":-0.5382437861298603},{"x":5.353918737956719,"y":-0.5382437861298603},{"x":5.353918737956719,"y":-0.37157711946319416}]],1,0,[null,null],""],[0,18.217690462441496,7.177991029756618,0,"","platform",1,"#999999","#000",1,false,true,[{"x":-5.2,"y":0.3999999999999999},{"x":-5.2,"y":-0.3999999999999999},{"x":5.2,"y":-0.3999999999999999},{"x":5.2,"y":0.3999999999999999}],1,0,null,""],[1,547.0307138732447,216.33973089269867,0,"","",2,"Jumping0000",1,1.1180339887499458,-1.107148717794227,0,false],[1,546.1586939730835,199.1532504088225,0,"","",3,"Jumping_Pad0000",0,14.486741363389783,1.353898614790059,0,false],[2,546.940732062234,217.98024402074498,-0.01745329251994333,"","pad_joint",0,1,1,false,false,1,10,true,0,0,0,0,23,0]]}',
+        settings:jumppad.settings,
+        init:jumppad.init,
+        update:jumppad.update,
+        set:jumppad.set,
+        contactListener:jumppad.contactListener
     }
 }
 
