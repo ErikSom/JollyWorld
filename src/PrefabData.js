@@ -37,10 +37,10 @@ let characterFunctions = new function(){
     }
     this.update = function(target, group){
         var targetGroup = target.lookupObject[group];
-        if(timerReady(targetGroup.__eyesTimer, TIME_EYES_CLOSE)){
+        if(timerReady(targetGroup.__eyesTimer, TIME_EYES_CLOSE, true)){
             targetGroup.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetGroup.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
             targetGroup.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetGroup.eye_left.myTexture.data.textureName.replace("0000","_Closed0000"));
-        }else if(timerReady(targetGroup.__eyesTimer, TIME_EYES_OPEN)){
+        }else if(timerReady(targetGroup.__eyesTimer, TIME_EYES_OPEN, false)){
             targetGroup.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetGroup.eye_left.myTexture.data.textureName);
             targetGroup.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetGroup.eye_right.myTexture.data.textureName);
             targetGroup.__eyesTimer = -game.editor.deltaTime;
@@ -50,7 +50,6 @@ let characterFunctions = new function(){
              self.doCollisionUpdate(targetGroup.__collisionUpdates[i], target, group);
         }
         targetGroup.__collisionUpdates = [];
-
         targetGroup.__eyesTimer += game.editor.deltaTime;
     }
     const GORE_BASH = 0;
@@ -283,5 +282,5 @@ export var prefabs = {
 }
 
 
-const timerReady = function(timer, target){ return (timer < target && timer+game.editor.deltaTime >= target) ?  true : false };
+const timerReady = function(timer, target, singleCallback){return singleCallback ?  (timer < target && timer+game.editor.deltaTime >= target) : timer>target;}
 
