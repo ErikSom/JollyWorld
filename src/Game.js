@@ -304,7 +304,6 @@ function Game() {
             if(this.editor.prefabs.hasOwnProperty(key)){
                 if(this.editor.prefabs[key].class.constructor.playableCharacter){
                     this.playerPrefabObject = this.editor.prefabs[key];
-                    console.log("FOUND CHARACTER");
                     break;
                 }
             }

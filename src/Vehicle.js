@@ -35,9 +35,7 @@ export function Vehicle() {
             var maxEngines = 4;
             for (i = 1; i <= maxEngines; i++) {
                 var engine = this.vehicleBodies["engine" + i.toString()];
-                console.log(engine + "  " + i);
                 if (engine != null) {
-                    console.log(engine + "  " + i);
                     this.engines.push(engine);
                     this.desiredVehicleTorques.push(engine.GetMotorTorque());
                     this.desiredVehicleSpeeds.push(engine.GetMotorSpeed());
