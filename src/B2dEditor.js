@@ -206,7 +206,6 @@ export function B2dEditor() {
 
 
 			var folder = this.assetGUI.addFolder('Textures');
-			console.log(folder);
 			var self = this;
 			folder.add(self, "assetSelectedGroup", this.assetLists.__keys).onChange(function (value) {
 				self.initGuiAssetSelection();
@@ -247,7 +246,6 @@ export function B2dEditor() {
 						data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
 						data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
 					}
-					console.log(e);
 					data.textureName = $(this).attr('textureName');
 					var texture = self.buildTextureFromObj(data);
 
@@ -411,7 +409,6 @@ export function B2dEditor() {
 		if (prefabKeys.length > 0 && this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) {
 			var uniqueSelectedPrefabs = {};
 			for (var i = 0; i < prefabKeys.length; i++) {
-				console.log(prefabKeys[i]);
 				uniqueSelectedPrefabs[this.prefabs[prefabKeys[i]].prefabName] = true;
 			}
 			if (Object.keys(uniqueSelectedPrefabs).length == 1) currentCase = case_JUST_PREFABS;
@@ -625,7 +622,6 @@ export function B2dEditor() {
 							_c.name(">Click to Confirm<");
 						} else {
 							_c.name(label);
-							console.log("Changing!!!!");
 							self.convertSelectedBodiesToGraphics();
 						}
 					}
@@ -659,7 +655,6 @@ export function B2dEditor() {
 							_c.name(">Click to Confirm<");
 						} else {
 							_c.name(label);
-							console.log("Changing!!!!");
 							self.convertSelectedGraphicsToBodies();
 						}
 					}
@@ -773,8 +768,6 @@ export function B2dEditor() {
 						this.editorGUI.editData[key] = prefabObjectSettings[key];
 						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
 						else argument = null;
-						console.log(prefabClassOptions[key]);
-						console.log(prefabClassOptions);
 						this.editorGUI.add(self.editorGUI.editData, key, argument).onChange(function (value) {
 							this.humanUpdate = true;
 							this.targetValue = value
@@ -1408,7 +1401,6 @@ export function B2dEditor() {
 									fixture = fixture.GetNext();
 								}
 								if (!pointInsideBody) {
-									console.log("Deleting object:" + body.mySprite.data.prefabInstanceName);
 									this.selectedPhysicsBodies.splice(i, 1);
 									i--;
 								}
@@ -1622,7 +1614,6 @@ export function B2dEditor() {
 						sprite = objects[i];
 						data = sprite.data;
 					}
-					console.log(i, body, sprite);
 					group = (this.altDown) ? "__altDownGroup" : data.prefabInstanceName;
 					if (group) {
 						if (centerPoints[group] == undefined) centerPoints[group] = {
@@ -1644,8 +1635,6 @@ export function B2dEditor() {
 					if (centerPoints.hasOwnProperty(i)) {
 						centerPoints[i].x /= centerPoints[i].n;
 						centerPoints[i].y /= centerPoints[i].n;
-
-						console.log(centerPoints[i].x, centerPoints[i].y, centerPoints[i].n);
 					}
 				}
 			}
@@ -1743,8 +1732,6 @@ export function B2dEditor() {
 				if ((obj && tarDepthIndexes[i] + 1 < child.parent.children.length) || (!obj && tarDepthIndexes[i] - 1 >= 0)) {
 					if (obj) neighbour = child.parent.getChildAt(tarDepthIndexes[i] + 1);
 					else neighbour = child.parent.getChildAt(tarDepthIndexes[i] - 1);
-					console.log(tarDepthIndexes[i] + "  <--- index");
-
 					var allowed = true;
 					var j;
 					if (obj) {
@@ -1767,7 +1754,6 @@ export function B2dEditor() {
 				}
 			}
 		} else if (transformType == this.TRANSFORM_FORCEDEPTH) {
-			console.log("Forcing depth:", obj);
 			objects = this.sortObjectsByIndex(objects);
 			for (var i = 0; i < objects.length; i++) {
 				var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
@@ -1785,17 +1771,12 @@ export function B2dEditor() {
 		}
 	}
 	this.getLowestChildIndex = function (objects) {
-		console.log("Lowest child index:");
-		console.log(objects);
 		var childIndex = Number.POSITIVE_INFINITY;
-		console.log(childIndex);
 		for (var i = 0; i < objects.length; i++) {
 			var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
 			var spriteIndex = sprite.parent.getChildIndex(sprite);
-			console.log(spriteIndex);
 			if (spriteIndex < childIndex) childIndex = spriteIndex;
 		}
-		console.log("final index", childIndex);
 		return childIndex;
 	}
 	this.sortObjectsByIndex = function (objects) {
@@ -1983,7 +1964,6 @@ export function B2dEditor() {
 			this.spaceDown = true;
 		} else if (e.keyCode == 18) { // alt
 			this.altDown = true;
-			console.log("ALT DOWN!!");
 		} else if (e.keyCode == 187) { // +
 			//zoomin
 			this.zoom({
@@ -2940,7 +2920,6 @@ export function B2dEditor() {
 			var y2 = verts[(i + 1) % verts.length].y;
 			area += (x1 * y2 - x2 * y1);
 		}
-		console.log("AREA:" + area * this.PTM)
 		if (Math.abs(area * this.PTM) < this.minimumBodySurfaceArea) return false;
 
 		bodyObject.vertices = area < 0 ? verts.reverse() : verts;
@@ -3155,13 +3134,12 @@ export function B2dEditor() {
 							var newPrefabObj = new this.prefabObject();
 							newPrefabObj.prefabName = prefabName;
 							newPrefabObj.instanceID = instanceID;
-							console.log(key, newPrefabObj.prefabName, newPrefabObj.instanceID);
 							createdPrefabObject = newPrefabObj;
-							console.log(newPrefabObj.class);
 							newPrefabObj.key = key;
 							this.prefabs[key] = newPrefabObj;
 						}
 						arr.push(key);
+						data.subPrefabInstanceName = key;
 					}
 					subGroups.push(subGroup);
 					i--;
@@ -3320,9 +3298,6 @@ export function B2dEditor() {
 			fixDef.friction = 2000;
 			fixDef.restitution = 0.001;
 			var radius = obj.radius instanceof Array ? obj.radius[i] : obj.radius;
-
-			console.log(radius);
-
 			if (!radius) {
 				var vert;
 				var b2Vec2Arr = [];
@@ -3338,7 +3313,6 @@ export function B2dEditor() {
 				fixDef.shape = new b2CircleShape;
 				if (obj.radius instanceof Array) {
 					fixDef.shape.SetLocalPosition(new b2Vec2(obj.vertices[i][0].x, obj.vertices[i][0].y));
-					console.log(obj.vertices[i]);
 				} else fixDef.shape.SetLocalPosition(new b2Vec2(0, 0));
 				fixDef.shape.SetRadius(radius / this.PTM);
 			}
@@ -3385,7 +3359,6 @@ export function B2dEditor() {
 		this.textures.addChild(graphic);
 
 		if (graphic.data.bodyID != undefined) {
-			console.log("ATTACH TO BODY");
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
 			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
@@ -3437,7 +3410,6 @@ export function B2dEditor() {
 	}
 
 	this.groupObjects = function () {
-		console.log("GROUP!");
 		var combinedGraphics;
 		var combinedBodies;
 		if (this.selectedPhysicsBodies.length > 0) {
@@ -3485,8 +3457,6 @@ export function B2dEditor() {
 		this.updateSelection();
 	}
 	this.ungroupObjects = function () {
-		console.log("UNGROUP!");
-
 		if (this.selectedPhysicsBodies.length == 1) {
 			var myTexture = this.selectedPhysicsBodies[0].myTexture;
 			if (myTexture) {
@@ -3687,7 +3657,6 @@ export function B2dEditor() {
 		return bodies;
 	}
 	this.groupGraphicObjects = function (graphicObjects) {
-		console.log("Grouping graphic objects" + graphicObjects.length);
 		var graphicGroup = new this.graphicGroup();
 		var sortArray = [];
 
@@ -3749,8 +3718,6 @@ export function B2dEditor() {
 			graphicObject.x += graphicGroup.x;
 			graphicObject.y += graphicGroup.y;
 			graphicObject.rotation = graphicGroup.rotation + graphicObject.rotation;
-
-			console.log(graphicGroup.rotation);
 
 			var graphic = this.buildGraphicFromObj(graphicObject);
 
@@ -3967,8 +3934,6 @@ export function B2dEditor() {
 			prismaticJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
 			prismaticJointDef.enableLimit = jointPlaceHolder.enableLimit;
 			prismaticJointDef.enableMotor = jointPlaceHolder.enableMotor;
-
-			console.log(jointPlaceHolder.enableMotor, jointPlaceHolder.maxMotorTorque, jointPlaceHolder.motorSpeed);
 
 			joint = this.world.CreateJoint(prismaticJointDef);
 
@@ -4663,8 +4628,6 @@ export function B2dEditor() {
 		}
 
 		//Destroy all graphics
-		console.log("Destroying all textures");
-		console.log(this.textures.children.length);
 		for (i = 0; i < this.textures.children.length; i++) {
 			var sprite = this.textures.getChildAt(i);
 			sprite.parent.removeChild(sprite);
@@ -4675,8 +4638,6 @@ export function B2dEditor() {
 			});
 			i--;
 		}
-		console.log(this.textures.children.length);
-
 		this.prefabs = {};
 
 		//reset gui
@@ -4692,16 +4653,23 @@ export function B2dEditor() {
 		var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 		var body;
 		var selectedPrefab = null;
+		var selectedSubPrefab = null
 		for (var i = 0; i < bodies.length; i++) {
 			body = bodies[i];
 			if (body.mySprite && body.mySprite.data.prefabInstanceName) {
 				var tarPrefab = self.prefabs[body.mySprite.data.prefabInstanceName].class;
-
 				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
 					selectedPrefab = tarPrefab;
-
 					if (secondParam) selectedPrefab.contactListener[name](contact, secondParam);
 					else selectedPrefab.contactListener[name](contact);
+				}
+			}
+			if (body.mySprite && body.mySprite.data.subPrefabInstanceName) {
+				var tarPrefab = self.prefabs[body.mySprite.data.subPrefabInstanceName].class;
+				if (tarPrefab && tarPrefab != selectedSubPrefab && tarPrefab.contactListener) {
+					selectedSubPrefab = tarPrefab;
+					if (secondParam) selectedSubPrefab.contactListener[name](contact, secondParam);
+					else selectedSubPrefab.contactListener[name](contact);
 				}
 			}
 		}
@@ -4744,7 +4712,6 @@ export function B2dEditor() {
 
 				var joint = this.attachJoint(sprite.data);
 				spritesToDestroy.push(sprite);
-
 				this.addObjectToLookupGroups(joint, sprite.data);
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
@@ -4764,11 +4731,6 @@ export function B2dEditor() {
 		var key;
 		for (key in this.prefabs) {
 			if (this.prefabs.hasOwnProperty(key)) {
-				console.log(key);
-				console.log(this.prefabs[key]);
-				console.log(this.prefabs[key].prefabName);
-				console.log(prefab.prefabs[this.prefabs[key].prefabName]);
-				//work here prefab.prefabs[key].init()
 				this.prefabs[key].class.init();
 			}
 		}

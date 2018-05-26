@@ -568,6 +568,5 @@ function Game() {
 
 export var game = new Game();
 window.addEventListener("load", function () {
-    console.log("1 toto");
     game.init();
 }.bind(this));
