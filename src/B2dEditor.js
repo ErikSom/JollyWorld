@@ -762,19 +762,19 @@ export function B2dEditor() {
 				break;
 			case case_JUST_PREFABS:
 				var prefabObject = this.prefabs[Object.keys(this.selectedPrefabs)[0]];
-				var prefabClass = prefab.prefabs[prefabObject.prefabName];
+				var prefabClass = prefab.prefabs[prefabObject.prefabName].class;
 				var prefabObjectSettings = prefabObject.settings;
 				var prefabClassSettings = prefabClass.settings;
+				var prefabClassOptions = prefabClass.settingsOptions;
 
-				for (var key in prefabClassSettings) {
-					if (prefabClassSettings.hasOwnProperty(key)) {
-						if (key.charAt(0) === "_") continue;
+				for (var key in prefabClassOptions) {
+					if (prefabClassOptions.hasOwnProperty(key)) {
 						var argument;
 						this.editorGUI.editData[key] = prefabObjectSettings[key];
-						if (prefabClassSettings._options[key] && prefabClassSettings._options[key] instanceof Array) argument = prefabClassSettings._options[key];
+						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
 						else argument = null;
-						console.log(prefabClassSettings._options[key]);
-						console.log(prefabClassSettings._options);
+						console.log(prefabClassOptions[key]);
+						console.log(prefabClassOptions);
 						this.editorGUI.add(self.editorGUI.editData, key, argument).onChange(function (value) {
 							this.humanUpdate = true;
 							this.targetValue = value
@@ -1157,7 +1157,7 @@ export function B2dEditor() {
 			var key;
 			for (key in this.prefabs) {
 				if (this.prefabs.hasOwnProperty(key)) {
-					if (prefab.prefabs[this.prefabs[key].prefabName].update) prefab.prefabs[this.prefabs[key].prefabName].update(this.prefabs[key]);
+					this.prefabs[key].class.update();
 				}
 			}
 		}
@@ -2642,7 +2642,7 @@ export function B2dEditor() {
 						//TODO: Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
-							prefab.prefabs[this.prefabs[prefabKeys[0]].prefabName].set(this.prefabs[prefabKeys[0]], controller.property, controller.targetValue);
+							this.prefabs[prefabKeys[0]].class.set(controller.property, controller.targetValue);
 						}
 
 					}
@@ -3965,6 +3965,8 @@ export function B2dEditor() {
 		this.prefabs[key] = obj;
 		var createdBodies = this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), key);
 		if (obj.instanceID > this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
+		obj.class = new prefab.prefabs[obj.prefabName].class(obj);
+
 		return createdBodies;
 	}
 
@@ -4657,15 +4659,13 @@ export function B2dEditor() {
 		for (var i = 0; i < bodies.length; i++) {
 			body = bodies[i];
 			if (body.mySprite && body.mySprite.data.prefabInstanceName) {
-				var tarPrefab = prefab.prefabs[self.prefabs[body.mySprite.data.prefabInstanceName].prefabName];
+				var tarPrefab = self.prefabs[body.mySprite.data.prefabInstanceName].class;
 
 				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
 					selectedPrefab = tarPrefab;
 
-					if (secondParam) selectedPrefab.contactListener[name](contact, secondParam, self.prefabs[body.mySprite.data.prefabInstanceName]);
-					else selectedPrefab.contactListener[name](contact, self.prefabs[body.mySprite.data.prefabInstanceName]);
-
-					selectedPrefab.contactListener.BeginContact(contact, self.prefabs[body.mySprite.data.prefabInstanceName]);
+					if (secondParam) selectedPrefab.contactListener[name](contact, secondParam);
+					else selectedPrefab.contactListener[name](contact);
 				}
 			}
 		}
@@ -4733,7 +4733,7 @@ export function B2dEditor() {
 				console.log(this.prefabs[key].prefabName);
 				console.log(prefab.prefabs[this.prefabs[key].prefabName]);
 				//work here prefab.prefabs[key].init()
-				prefab.prefabs[this.prefabs[key].prefabName].init(this.prefabs[key]);
+				this.prefabs[key].class.init();
 			}
 		}
 		this.editing = false;
@@ -4980,6 +4980,10 @@ export function B2dEditor() {
 		this._bounds.minY = minY;
 		this._bounds.maxY = maxY;
 	}
+
+	Function.prototype.inherits = function(parent) {
+	this.prototype = Object.create(parent.prototype);
+	};
 
 	//CONSTS
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];

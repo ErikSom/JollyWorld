@@ -302,7 +302,7 @@ function Game() {
     this.findPlayableCharacter = function(){
         for(var key in this.editor.prefabs){
             if(this.editor.prefabs.hasOwnProperty(key)){
-                if(prefab.prefabs[this.editor.prefabs[key].prefabName].settings._playableCharacter){
+                if(this.editor.prefabs[key].class.constructor.playableCharacter){
                     this.playerPrefabObject = this.editor.prefabs[key];
                     console.log("FOUND CHARACTER");
                     break;
