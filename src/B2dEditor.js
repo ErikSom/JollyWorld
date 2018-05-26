@@ -3128,7 +3128,7 @@ export function B2dEditor() {
 
 	this.addObjectToLookupGroups = function (obj, data) {
 
-		//character1, .character, .vehicle, test
+		//character1#character, .character, .vehicle, test
 		// subgroup + refname
 		if ((data.groups && data.groups != "") || data.prefabInstanceName) {
 
@@ -3138,10 +3138,32 @@ export function B2dEditor() {
 
 			if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
 
+			var createdPrefabObject;
+
 			var i;
 			for (i = 0; i < arr.length; i++) {
 				if (arr[i].charAt(0) === ".") {
-					subGroups.push(arr.splice(i, 1)[0]);
+					var subGroup = arr.splice(i, 1)[0];
+					var classIndex = subGroup.indexOf('#');
+					if(classIndex>0){
+						var className = subGroup.substr(classIndex+1, subGroup.length);
+						subGroup = subGroup.substr(0, classIndex);
+						var prefabName = subGroup.substr(1, subGroup.length);
+						var instanceID = this.prefabs[data.prefabInstanceName].instanceID;
+						var key = prefabName+"_"+instanceID;
+						if(!this.prefabs[key]){
+							var newPrefabObj = new this.prefabObject();
+							newPrefabObj.prefabName = prefabName;
+							newPrefabObj.instanceID = instanceID;
+							console.log(key, newPrefabObj.prefabName, newPrefabObj.instanceID);
+							createdPrefabObject = newPrefabObj;
+							console.log(newPrefabObj.class);
+							newPrefabObj.key = key;
+							this.prefabs[key] = newPrefabObj;
+						}
+						arr.push(key);
+					}
+					subGroups.push(subGroup);
 					i--;
 				}
 			}
@@ -3179,6 +3201,8 @@ export function B2dEditor() {
 					}
 				}
 			}
+			
+			if(createdPrefabObject) createdPrefabObject.class = new prefab.prefabs[className].class(createdPrefabObject);
 		}
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
@@ -3189,7 +3213,18 @@ export function B2dEditor() {
 			var i;
 			for (i = 0; i < arr.length; i++) {
 				if (arr[i].charAt(0) === ".") {
-					subGroups.push(arr.splice(i, 1));
+					var subGroup = arr.splice(i, 1)[0];
+					var classIndex = subGroup.indexOf('#');
+					if(classIndex>0){
+						var className = subGroup.substr(classIndex+1, subGroup.length);
+						subGroup = subGroup.substr(0, classIndex);
+						var key = subGroup+"_"+this.prefabCounter.toString();
+						if(this.prefabs[key] && this.lookupObject[key].__bodies.length+this.lookupObject[key].__textures.length+this.lookupObject[key].__joints.length == 1){
+							delete prefabs[key];
+						}
+						arr.push(key);
+					}
+					subGroups.push(subGroup);
 					i--;
 				}
 			}
@@ -3200,9 +3235,9 @@ export function B2dEditor() {
 				group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 				if (this.lookupGroups[group] != undefined) {
 					var tarArray;
-					if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group];
-					else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group];
-					else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group];
+					if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group]._textures;
+					else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group]._bodies;
+					else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group]._joints;
 
 					var tarIndex = tarArray.indexOf(obj);
 					if (tarIndex > 0) tarArray.splice(tarIndex, 1);
@@ -3213,9 +3248,9 @@ export function B2dEditor() {
 					for (j = 0; j < subGroups; j++) {
 						subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
 						if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
-							if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup];
-							else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup];
-							else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group][subGroup];
+							if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup]._textures;
+							else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup]._bodies;
+							else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group][subGroup]._joints;
 
 							tarIndex = tarArray.indexOf(obj);
 							if (tarIndex > 0) tarArray.splice(tarIndex, 1);
@@ -3225,6 +3260,7 @@ export function B2dEditor() {
 							}
 						}
 					}
+					if(this.lookupGroups[group].__bodies.length+this.lookupGroups[group].__textures.length+this.lookupGroups[group].__joints.length == 0) delete this.lookupGroups[group];
 				}
 			}
 		}
@@ -4980,10 +5016,6 @@ export function B2dEditor() {
 		this._bounds.minY = minY;
 		this._bounds.maxY = maxY;
 	}
-
-	Function.prototype.inherits = function(parent) {
-	this.prototype = Object.create(parent.prototype);
-	};
 
 	//CONSTS
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
