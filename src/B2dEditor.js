@@ -762,16 +762,30 @@ export function B2dEditor() {
 				var prefabClassSettings = prefabClass.settings;
 				var prefabClassOptions = prefabClass.settingsOptions;
 
+				console.log(prefabObject.prefabName);
+				console.log(prefabClass);
+				console.log(prefabObjectSettings);
+				console.log(prefabClassOptions);
+				
+
 				for (var key in prefabClassOptions) {
 					if (prefabClassOptions.hasOwnProperty(key)) {
 						var argument;
 						this.editorGUI.editData[key] = prefabObjectSettings[key];
-						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
-						else argument = null;
-						this.editorGUI.add(self.editorGUI.editData, key, argument).onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value
-						});
+						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Object){
+							argument = prefabClassOptions[key];
+							this.editorGUI.add(self.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
+								this.humanUpdate = true;
+								this.targetValue = value
+							});
+						}else{
+							if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
+							else argument = null;
+							this.editorGUI.add(self.editorGUI.editData, key, argument).onChange(function (value) {
+								this.humanUpdate = true;
+								this.targetValue = value
+							});
+						}
 					}
 				}
 
