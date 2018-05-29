@@ -4658,6 +4658,7 @@ export function B2dEditor() {
 			i--;
 		}
 		this.prefabs = {};
+		this.lookupGroups = {};
 
 		//reset gui
 		this.destroyGUI();
