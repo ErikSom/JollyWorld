@@ -11,7 +11,7 @@ class basePrefab {
     static forceUnique = false;
     constructor(target) {
         this.prefabObject = target;
-        this.lookupObject = undefined;
+        this.lookupObject = game.editor.lookupGroups[this.prefabObject.prefabName + "_" + this.prefabObject.instanceID];;
         this.contactListener;
     }
     init() {

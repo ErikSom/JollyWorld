@@ -772,7 +772,8 @@ export function B2dEditor() {
 					if (prefabClassOptions.hasOwnProperty(key)) {
 						var argument;
 						this.editorGUI.editData[key] = prefabObjectSettings[key];
-						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Object){
+						console.log(prefabClassOptions[key])
+						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)){
 							argument = prefabClassOptions[key];
 							this.editorGUI.add(self.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
 								this.humanUpdate = true;
@@ -3208,11 +3209,13 @@ export function B2dEditor() {
 					var subGroup = arr.splice(i, 1)[0];
 					var classIndex = subGroup.indexOf('#');
 					if(classIndex>0){
-						var className = subGroup.substr(classIndex+1, subGroup.length);
 						subGroup = subGroup.substr(0, classIndex);
-						var key = subGroup+"_"+this.prefabCounter.toString();
-						if(this.prefabs[key] && this.lookupObject[key].__bodies.length+this.lookupObject[key].__textures.length+this.lookupObject[key].__joints.length == 1){
-							delete prefabs[key];
+						var key = data.subPrefabInstanceName;
+						console.log(this.lookupGroups[key]);
+						console.log(this.lookupGroups[key]._bodies.length+this.lookupGroups[key]._textures.length+this.lookupGroups[key]._joints.length);
+						if(this.prefabs[key] && this.lookupGroups[key]._bodies.length+this.lookupGroups[key]._textures.length+this.lookupGroups[key]._joints.length == 1){
+							console.log("DELETE PREFAB!!!");
+							delete this.prefabs[key];
 						}
 						arr.push(key);
 					}
@@ -3231,8 +3234,10 @@ export function B2dEditor() {
 					else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group]._bodies;
 					else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group]._joints;
 
-					var tarIndex = tarArray.indexOf(obj);
-					if (tarIndex > 0) tarArray.splice(tarIndex, 1);
+					var tarObject = data.type == this.object_BODY ? obj.myBody : obj;
+
+					var tarIndex = tarArray.indexOf(tarObject);
+					if (tarIndex >= 0) tarArray.splice(tarIndex, 1);
 
 					if (data.refName && data.refName != "") {
 						delete this.lookupGroups[group][data.refName];
@@ -3252,7 +3257,7 @@ export function B2dEditor() {
 							}
 						}
 					}
-					if(this.lookupGroups[group].__bodies.length+this.lookupGroups[group].__textures.length+this.lookupGroups[group].__joints.length == 0) delete this.lookupGroups[group];
+					if(this.lookupGroups[group]._bodies.length+this.lookupGroups[group]._textures.length+this.lookupGroups[group]._joints.length == 0) delete this.lookupGroups[group];
 				}
 			}
 		}
