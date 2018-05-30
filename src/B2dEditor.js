@@ -251,8 +251,6 @@ export function B2dEditor() {
 
 				});
 			}
-
-
 			this.registerDragWindow(this.assetGUI.domElement);
 			$(this.assetGUI.domElement).css('left', this.assetGUIPos.x);
 			$(this.assetGUI.domElement).css('top', this.assetGUIPos.y);
@@ -319,6 +317,54 @@ export function B2dEditor() {
 			this.assetGUI = undefined;
 		}
 	}
+	this.showPrefabList = function(){
+		var prefabPages = prefab.prefabs.libraryKeys;
+		if(this.admin) prefabPages.push("admin");
+		this.editorGUI.addFolder('Prefab Selection');
+		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = this.prefabPages[0];
+		this.assetSelectedTexture = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][0];
+		var folder = this.editorGUI.addFolder('Prefabs');
+		var self = this;
+		folder.add(self, "assetSelectedGroup", prefab.prefabs.libraryKeys).onChange(function (value) {
+			self.showPrefabList();
+		});
+		folder.add(self, "assetSelectedTexture", this.assetLists[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
+		this.spawnTexture = function () {};
+		folder.open();
+		$(folder.domElement).parent().parent().parent().hover(function () {
+			$(this).addClass('hover');
+		})
+		for (var i = 0; i < prefab.prefabs.libraryDictionary[this.assetSelectedGroup].length; i++) {
+			var prefabName = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][i];
+
+			let image = this.renderPrefabToImage(prefabName);
+			var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
+			guiFunction.find('img').attr('src', image.src);
+			guiFunction.find('img').attr('title', prefabName);
+			$(folder.domElement).append(guiFunction);
+			guiFunction.css('height', '100px');
+			guiFunction.find('img').css('display', 'block');
+			guiFunction.find('img').css('margin', 'auto');
+			guiFunction.attr('prefabName', prefabName);
+
+			guiFunction.on('click dragend', function (e) {
+				var guiAsset = $(this).parent().parent().parent().parent();
+				var rect = guiAsset[0].getBoundingClientRect();
+				var x = Math.max(e.pageX, rect.right + 200);
+				var y = e.pageY;
+
+				var data = new self.prefabObject;
+				data.instanceID = self.prefabCounter++;
+
+				data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
+				data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
+
+				data.prefabName = $(this).attr('prefabName');
+				var prefab = self.buildPrefabFromObj(data);
+
+			});
+		}
+	}
 	this.selectTool = function (i) {
 		this.selectedTool = i;
 
@@ -333,6 +379,8 @@ export function B2dEditor() {
 			width: this.editorGUIWidth
 		});
 		this.customGUIContainer.appendChild(this.editorGUI.domElement);
+		this.registerDragWindow(this.editorGUI.domElement);
+
 		var dataJoint;
 		var self = this;
 		var controller;
@@ -340,7 +388,6 @@ export function B2dEditor() {
 
 		switch (i) {
 			case this.tool_SELECT:
-				this.destroyGUI();
 				break
 			case this.tool_GEOMETRY:
 				this.editorGUI.editData = new this.editorGeometryObject;
@@ -354,22 +401,17 @@ export function B2dEditor() {
 				this.editorGUI.add(self.editorGUI.editData, "isPhysicsObject");
 				break
 			case this.tool_POLYDRAWING:
-				this.destroyGUI();
 				break
 			case this.tool_JOINTS:
-				this.destroyGUI()
 				break
 			case this.tool_SPECIALS:
-				this.destroyGUI();
+				this.showPrefabList();
 				break
 			case this.tool_TEXT:
-				this.destroyGUI();
 				break
 			case this.tool_ZOOM:
-				this.destroyGUI();
 				break
 			case this.tool_MOVE:
-				this.destroyGUI();
 				break
 			case this.tool_PAINTBUCKET:
 				this.editorGUI.editData = new this.editorGraphicDrawingObject;
