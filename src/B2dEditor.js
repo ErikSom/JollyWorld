@@ -3172,142 +3172,141 @@ export function B2dEditor() {
 
 		//character1#character, .character, .vehicle, test
 		// subgroup + refname
-		if ((data.groups && data.groups != "") || data.prefabInstanceName) {
+		var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+		var arr = (group == "") ? [] : groupNoSpaces.split(",");
+		var subGroups = [];
+		if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
 
-			var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
-			var arr = groupNoSpaces.split(",");
-			var subGroups = [];
+		if(arr.length == 0) return;
 
-			if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
+		var createdPrefabObject;
 
-			var createdPrefabObject;
-
-			var i;
-			for (i = 0; i < arr.length; i++) {
-				if (arr[i].charAt(0) === ".") {
-					var subGroup = arr.splice(i, 1)[0];
-					var classIndex = subGroup.indexOf('#');
-					if(classIndex>0){
-						var className = subGroup.substr(classIndex+1, subGroup.length);
-						subGroup = subGroup.substr(0, classIndex);
-						var prefabName = subGroup.substr(1, subGroup.length);
-						var instanceID = this.prefabs[data.prefabInstanceName].instanceID;
-						var key = prefabName+"_"+instanceID;
-						if(!this.prefabs[key]){
-							var newPrefabObj = new this.prefabObject();
-							newPrefabObj.prefabName = prefabName;
-							newPrefabObj.instanceID = instanceID;
-							createdPrefabObject = newPrefabObj;
-							newPrefabObj.key = key;
-							this.prefabs[key] = newPrefabObj;
-						}
-						arr.push(key);
-						data.subPrefabInstanceName = key;
+		var i;
+		for (i = 0; i < arr.length; i++) {
+			if (arr[i].charAt(0) === ".") {
+				var subGroup = arr.splice(i, 1)[0];
+				var classIndex = subGroup.indexOf('#');
+				if(classIndex>0){
+					var className = subGroup.substr(classIndex+1, subGroup.length);
+					subGroup = subGroup.substr(0, classIndex);
+					var prefabName = subGroup.substr(1, subGroup.length);
+					var instanceID = this.prefabs[data.prefabInstanceName].instanceID;
+					var key = prefabName+"_"+instanceID;
+					if(!this.prefabs[key]){
+						var newPrefabObj = new this.prefabObject();
+						newPrefabObj.prefabName = prefabName;
+						newPrefabObj.instanceID = instanceID;
+						createdPrefabObject = newPrefabObj;
+						newPrefabObj.key = key;
+						this.prefabs[key] = newPrefabObj;
 					}
-					subGroups.push(subGroup);
-					i--;
+					arr.push(key);
+					data.subPrefabInstanceName = key;
 				}
+				subGroups.push(subGroup);
+				i--;
 			}
-			var group;
-			var subGroup;
-			var j;
-			for (i = 0; i < arr.length; i++) {
-				group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
-				if (group == "") continue;
-				if (this.lookupGroups[group] == undefined) {
-					this.lookupGroups[group] = new this.lookupObject;
-				}
-
-				if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
-				else if (data.type == this.object_BODY) this.lookupGroups[group]._bodies.push(obj);
-				else if (data.type == this.object_JOINT) this.lookupGroups[group]._joints.push(obj);
-
-				if (data.refName && data.refName != "") {
-					this.lookupGroups[group][data.refName] = obj;
-				}
-
-				for (j = 0; j < subGroups.length; j++) {
-					subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
-					if (subGroup == "") continue;
-					if (this.lookupGroups[group][subGroup] == undefined) {
-						this.lookupGroups[group][subGroup] = new this.lookupObject;
-					}
-					if (this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
-						if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group][subGroup]._textures.push(obj);
-						else if (data.type == this.object_BODY) this.lookupGroups[group][subGroup]._bodies.push(obj);
-						else if (data.type == this.object_JOINT) this.lookupGroups[group][subGroup]._joints.push(obj);
-						if (data.refName && data.refName != "") {
-							this.lookupGroups[group][subGroup][data.refName] = obj;
-						}
-					}
-				}
-			}
-			
-			if(createdPrefabObject) createdPrefabObject.class = new prefab.prefabs[className].class(createdPrefabObject);
 		}
+		var group;
+		var subGroup;
+		var j;
+		for (i = 0; i < arr.length; i++) {
+			group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+			if (group == "") continue;
+			if (this.lookupGroups[group] == undefined) {
+				this.lookupGroups[group] = new this.lookupObject;
+			}
+
+			if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
+			else if (data.type == this.object_BODY) this.lookupGroups[group]._bodies.push(obj);
+			else if (data.type == this.object_JOINT) this.lookupGroups[group]._joints.push(obj);
+
+			if (data.refName && data.refName != "") {
+				this.lookupGroups[group][data.refName] = obj;
+			}
+
+			for (j = 0; j < subGroups.length; j++) {
+				subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
+				if (subGroup == "") continue;
+				if (this.lookupGroups[group][subGroup] == undefined) {
+					this.lookupGroups[group][subGroup] = new this.lookupObject;
+				}
+				if (this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
+					if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group][subGroup]._textures.push(obj);
+					else if (data.type == this.object_BODY) this.lookupGroups[group][subGroup]._bodies.push(obj);
+					else if (data.type == this.object_JOINT) this.lookupGroups[group][subGroup]._joints.push(obj);
+					if (data.refName && data.refName != "") {
+						this.lookupGroups[group][subGroup][data.refName] = obj;
+					}
+				}
+			}
+		}
+		if(createdPrefabObject) createdPrefabObject.class = new prefab.prefabs[className].class(createdPrefabObject);
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
-		if (data.groups && data.groups != "") {
-			var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
-			var arr = groupNoSpaces.split(",");
-			var subGroups = [];
+		var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+		var arr = (group == "") ? [] : groupNoSpaces.split(",");
+		var subGroups = [];
+		if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
 
-			if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
+		if(arr.length == 0) return;
 
-			var i;
-			for (i = 0; i < arr.length; i++) {
-				if (arr[i].charAt(0) === ".") {
-					var subGroup = arr.splice(i, 1)[0];
-					var classIndex = subGroup.indexOf('#');
-					if(classIndex>0){
-						subGroup = subGroup.substr(0, classIndex);
-						var key = data.subPrefabInstanceName;
-						if(this.prefabs[key] && this.lookupGroups[key]._bodies.length+this.lookupGroups[key]._textures.length+this.lookupGroups[key]._joints.length == 1){
-							console.log("DELETE PREFAB!!!");
-							delete this.prefabs[key];
-						}
-						arr.push(key);
+		var i;
+		for (i = 0; i < arr.length; i++) {
+			if (arr[i].charAt(0) === ".") {
+				var subGroup = arr.splice(i, 1)[0];
+				var classIndex = subGroup.indexOf('#');
+				if(classIndex>0){
+					subGroup = subGroup.substr(0, classIndex);
+					var key = data.subPrefabInstanceName;
+					if(this.prefabs[key] && this.lookupGroups[key]._bodies.length+this.lookupGroups[key]._textures.length+this.lookupGroups[key]._joints.length == 1){
+						console.log("DELETE PREFAB!!!");
+						delete this.prefabs[key];
 					}
-					subGroups.push(subGroup);
-					i--;
+					arr.push(key);
 				}
+				subGroups.push(subGroup);
+				i--;
 			}
-			var group;
-			var subGroup;
-			var j;
-			for (i = 0; i < arr.length; i++) {
-				group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
-				if (this.lookupGroups[group] != undefined) {
-					var tarArray;
-					if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group]._textures;
-					else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group]._bodies;
-					else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group]._joints;
+		}
+		var group;
+		var subGroup;
+		var j;
+		for (i = 0; i < arr.length; i++) {
+			group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+			if (this.lookupGroups[group] != undefined) {
+				var tarArray;
+				if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group]._textures;
+				else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group]._bodies;
+				else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group]._joints;
 
-					console.log(obj);
-					console.log(tarArray);
-					var tarIndex = tarArray.indexOf(obj);
-					if (tarIndex >= 0) tarArray.splice(tarIndex, 1);
 
-					if (data.refName && data.refName != "") {
-						delete this.lookupGroups[group][data.refName];
-					}
-					for (j = 0; j < subGroups; j++) {
-						subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
-						if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
-							if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup]._textures;
-							else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup]._bodies;
-							else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group][subGroup]._joints;
+				var tarIndex = tarArray.indexOf(obj);
+				if (tarIndex >= 0) tarArray.splice(tarIndex, 1);
+				if(data.type == this.object_JOINT){
+					console.log(obj, tarIndex);
+					console.log(tarArray.length);
+				}
 
-							tarIndex = tarArray.indexOf(obj);
-							if (tarIndex > 0) tarArray.splice(tarIndex, 1);
+				if (data.refName && data.refName != "") {
+					delete this.lookupGroups[group][data.refName];
+				}
+				for (j = 0; j < subGroups; j++) {
+					subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
+					if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
+						if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup]._textures;
+						else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup]._bodies;
+						else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group][subGroup]._joints;
 
-							if (data.refName && data.refName != "") {
-								delete this.lookupGroups[group][subGroup][data.refName];
-							}
+						tarIndex = tarArray.indexOf(obj);
+						if (tarIndex > 0) tarArray.splice(tarIndex, 1);
+
+						if (data.refName && data.refName != "") {
+							delete this.lookupGroups[group][subGroup][data.refName];
 						}
 					}
-					if(this.lookupGroups[group]._bodies.length+this.lookupGroups[group]._textures.length+this.lookupGroups[group]._joints.length == 0) delete this.lookupGroups[group];
 				}
+				if(this.lookupGroups[group]._bodies.length+this.lookupGroups[group]._textures.length+this.lookupGroups[group]._joints.length == 0) delete this.lookupGroups[group];
 			}
 		}
 	}
