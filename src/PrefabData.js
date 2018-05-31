@@ -321,6 +321,9 @@ jumppad.settingsOptions = Object.assign({}, jumppad.settingsOptions, {
     }
 });
 
+const LIBRARY_ADMIN = "admin",
+LIBRARY_MOVEMENT = "movement";
+
 export var prefabs = {
     libraryKeys:[],
     libraryDictionary:{},
@@ -350,13 +353,12 @@ export var prefabs = {
 for (let key in prefabs) {
     if (prefabs.hasOwnProperty(key)) {
         if(prefabs[key].library){
-             prefabs.libraryKeys.push(key);
+             if(!prefabs.libraryDictionary[prefabs[key].library]) prefabs.libraryDictionary[prefabs[key].library] = [];
              prefabs.libraryDictionary[prefabs[key].library].push(key);
         }
     }
 }
-const LIBRARY_ADMIN = "admin",
-LIBRARY_MOVEMENT = "movement";
+prefabs.libraryKeys = Object.keys(prefabs.libraryDictionary);
 
 
 const timerReady = function (timer, target, singleCallback) {

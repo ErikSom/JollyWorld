@@ -307,7 +307,15 @@ export function B2dEditor() {
 		}
 		self.registerDragWindow(toolGui);
 	}
-	this.destroyGUI = function () {
+	this.buildEditorGUI = function(){
+		this.editorGUI = new dat.GUI({
+			autoPlace: false,
+			width: this.editorGUIWidth
+		});
+		this.customGUIContainer.appendChild(this.editorGUI.domElement);
+		this.registerDragWindow(this.editorGUI.domElement);
+	}
+	this.destroyEditorGUI = function () {
 		if (this.editorGUI != undefined) {
 			this.customGUIContainer.removeChild(this.editorGUI.domElement);
 			this.editorGUI = undefined;
@@ -321,14 +329,17 @@ export function B2dEditor() {
 		var prefabPages = prefab.prefabs.libraryKeys;
 		if(this.admin) prefabPages.push("admin");
 		this.editorGUI.addFolder('Prefab Selection');
-		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = this.prefabPages[0];
+		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
+		console.log(prefabPages);
 		this.assetSelectedTexture = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][0];
 		var folder = this.editorGUI.addFolder('Prefabs');
 		var self = this;
-		folder.add(self, "assetSelectedGroup", prefab.prefabs.libraryKeys).onChange(function (value) {
+		folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
+			self.destroyEditorGUI();
+			self.buildEditorGUI();
 			self.showPrefabList();
 		});
-		folder.add(self, "assetSelectedTexture", this.assetLists[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
+		folder.add(self, "assetSelectedTexture", prefab.prefabs.libraryDictionary[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
 		this.spawnTexture = function () {};
 		folder.open();
 		$(folder.domElement).parent().parent().parent().hover(function () {
@@ -372,14 +383,8 @@ export function B2dEditor() {
 		$buttons.css("background-color", "#999999");
 		$($buttons[i]).css("background-color", "#4F4F4F");
 
-		this.destroyGUI();
-
-		this.editorGUI = new dat.GUI({
-			autoPlace: false,
-			width: this.editorGUIWidth
-		});
-		this.customGUIContainer.appendChild(this.editorGUI.domElement);
-		this.registerDragWindow(this.editorGUI.domElement);
+		this.destroyEditorGUI();
+		this.buildEditorGUI();
 
 		var dataJoint;
 		var self = this;
@@ -434,7 +439,7 @@ export function B2dEditor() {
 		//Joints
 		var i;
 
-		this.destroyGUI();
+		this.destroyEditorGUI();
 
 
 		var case_NOTHING = 0;
@@ -866,6 +871,7 @@ export function B2dEditor() {
 	}
 
 	this.deleteObjects = function (arr) {
+		console.log(arr);
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] instanceof this.prefabObject) {
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
@@ -911,7 +917,7 @@ export function B2dEditor() {
 				});
 			} else if (arr[i].mySprite.data) {
 				var b = arr[i];
-				this.removeObjectFromLookupGroups(b.mySprite, b.mySprite.data);
+				this.removeObjectFromLookupGroups(b, b.mySprite.data);
 				b.mySprite.parent.removeChild(b.mySprite);
 				b.mySprite.destroy({
 					children: true,
@@ -3242,8 +3248,11 @@ export function B2dEditor() {
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
 		if (data.groups && data.groups != "") {
-			var arr = data.groups.split(",");
+			var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+			var arr = groupNoSpaces.split(",");
 			var subGroups = [];
+
+			if (data.prefabInstanceName) arr.push(data.prefabInstanceName);
 
 			var i;
 			for (i = 0; i < arr.length; i++) {
@@ -3253,8 +3262,6 @@ export function B2dEditor() {
 					if(classIndex>0){
 						subGroup = subGroup.substr(0, classIndex);
 						var key = data.subPrefabInstanceName;
-						console.log(this.lookupGroups[key]);
-						console.log(this.lookupGroups[key]._bodies.length+this.lookupGroups[key]._textures.length+this.lookupGroups[key]._joints.length);
 						if(this.prefabs[key] && this.lookupGroups[key]._bodies.length+this.lookupGroups[key]._textures.length+this.lookupGroups[key]._joints.length == 1){
 							console.log("DELETE PREFAB!!!");
 							delete this.prefabs[key];
@@ -3276,9 +3283,9 @@ export function B2dEditor() {
 					else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group]._bodies;
 					else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group]._joints;
 
-					var tarObject = data.type == this.object_BODY ? obj.myBody : obj;
-
-					var tarIndex = tarArray.indexOf(tarObject);
+					console.log(obj);
+					console.log(tarArray);
+					var tarIndex = tarArray.indexOf(obj);
 					if (tarIndex >= 0) tarArray.splice(tarIndex, 1);
 
 					if (data.refName && data.refName != "") {
@@ -4703,7 +4710,7 @@ export function B2dEditor() {
 		this.lookupGroups = {};
 
 		//reset gui
-		this.destroyGUI();
+		this.destroyEditorGUI();
 	}
 	var self = this;
 	this.B2dEditorContactListener = new Box2D.Dynamics.b2ContactListener();
@@ -4840,6 +4847,7 @@ export function B2dEditor() {
 	this.renderPrefabToImage = function (prefabName) {
 		var prefabObject = new this.prefabObject;
 		prefabObject.prefabName = prefabName;
+		prefabObject.instanceID = -1;
 		var objects = this.buildPrefabFromObj(prefabObject);
 		objects = this.sortObjectsByIndex([].concat(objects._bodies, objects._textures));
 		var newContainer = new PIXI.Sprite();
@@ -4851,7 +4859,13 @@ export function B2dEditor() {
 		var image = game.app.renderer.plugins.extract.image(newContainer);
 		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
 		var prefabObject = this.prefabs[sprite.data.prefabInstanceName];
+		var instanceName = sprite.data.prefabInstanceName;
+		console.log("before", instanceName);
+		console.log(this.lookupGroups[instanceName]);
 		this.deleteObjects([prefabObject]);
+		console.log("after", instanceName);
+		console.log(this.lookupGroups[instanceName]);
+
 		return image;
 	}
 	PIXI.Graphics.prototype.drawDashedCircle = function (radius, x, y, rotation, dash, gap, offsetPercentage) {
