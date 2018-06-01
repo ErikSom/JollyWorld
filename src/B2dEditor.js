@@ -330,7 +330,6 @@ export function B2dEditor() {
 		if(this.admin) prefabPages.push("admin");
 		this.editorGUI.addFolder('Prefab Selection');
 		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
-		console.log(prefabPages);
 		this.assetSelectedTexture = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][0];
 		var folder = this.editorGUI.addFolder('Prefabs');
 		var self = this;
@@ -365,13 +364,14 @@ export function B2dEditor() {
 				var y = e.pageY;
 
 				var data = new self.prefabObject;
-				data.instanceID = self.prefabCounter++;
+				data.instanceID = self.prefabCounter;
 
 				data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
 				data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
 
 				data.prefabName = $(this).attr('prefabName');
-				var prefab = self.buildPrefabFromObj(data);
+				data.settings = JSON.parse(JSON.stringify(prefab.prefabs[data.prefabName].class.settings));
+				var newPrefab = self.buildPrefabFromObj(data);
 
 			});
 		}
@@ -981,6 +981,9 @@ export function B2dEditor() {
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			body = this.selectedPhysicsBodies[i];
 			this.updateObject(body.mySprite, body.mySprite.data);
+
+			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(body.mySprite.data)));
+
 			cloneObject = JSON.parse(JSON.stringify(body.mySprite.data))
 			copyArray.push({
 				ID: cloneObject.ID,
@@ -989,7 +992,7 @@ export function B2dEditor() {
 
 			if (body.myTexture) {
 				this.updateObject(body.myTexture, body.myTexture.data);
-				cloneObject = JSON.parse(JSON.stringify(body.myTexture.data))
+				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(body.myTexture.data)));
 				copyArray.push({
 					ID: cloneObject.ID,
 					data: cloneObject
@@ -1000,7 +1003,7 @@ export function B2dEditor() {
 		for (i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
 			this.updateObject(sprite, sprite.data);
-			cloneObject = JSON.parse(JSON.stringify(sprite.data))
+			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(sprite.data)));
 			copyArray.push({
 				ID: cloneObject.ID,
 				data: cloneObject
@@ -1008,9 +1011,10 @@ export function B2dEditor() {
 		}
 		var prefabKeys = Object.keys(this.selectedPrefabs);
 		for (i = 0; i < prefabKeys.length; i++) {
-			if (!prefab.prefabs[this.prefabs[prefabKeys[i]].prefabName].settings._forceUnique) {
+			if (!prefab.prefabs[this.prefabs[prefabKeys[i]].prefabName].class.forceUnique) {
 				this.updateObject(null, this.prefabs[prefabKeys[i]]);
-				cloneObject = JSON.parse(JSON.stringify(this.prefabs[prefabKeys[i]]));
+				console.log(this.prefabs[prefabKeys[i]]);
+				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(this.prefabs[prefabKeys[i]])));
 				copyArray.push({
 					ID: cloneObject.ID,
 					data: cloneObject
@@ -1173,6 +1177,15 @@ export function B2dEditor() {
 		} else if (this.selectedTool == this.tool_PAINTBUCKET) {
 			this.doVerticesDrawing(false);
 		}
+
+		// Draw 0,0 reference
+		this.debugGraphics.lineStyle(3, "0x00FF00", 1);
+		const crossSize = 100;
+		this.debugGraphics.moveTo(this.container.x, -crossSize + this.container.y);
+		this.debugGraphics.lineTo(this.container.x, crossSize + this.container.y);
+		this.debugGraphics.moveTo(-crossSize + this.container.x, this.container.y);
+		this.debugGraphics.lineTo(crossSize + this.container.x, this.container.y);
+
 		this.doEditorGUI();
 	}
 	this.run = function () {
@@ -3186,7 +3199,7 @@ export function B2dEditor() {
 			if (arr[i].charAt(0) === ".") {
 				var subGroup = arr.splice(i, 1)[0];
 				var classIndex = subGroup.indexOf('#');
-				if(classIndex>0){
+				if(classIndex>0 && !this.breakPrefabs){
 					var className = subGroup.substr(classIndex+1, subGroup.length);
 					subGroup = subGroup.substr(0, classIndex);
 					var prefabName = subGroup.substr(1, subGroup.length);
@@ -3256,7 +3269,7 @@ export function B2dEditor() {
 			if (arr[i].charAt(0) === ".") {
 				var subGroup = arr.splice(i, 1)[0];
 				var classIndex = subGroup.indexOf('#');
-				if(classIndex>0){
+				if(classIndex>0  && !this.breakPrefabs){
 					subGroup = subGroup.substr(0, classIndex);
 					var key = data.subPrefabInstanceName;
 					if(this.prefabs[key] && this.lookupGroups[key]._bodies.length+this.lookupGroups[key]._textures.length+this.lookupGroups[key]._joints.length == 1){
@@ -4027,13 +4040,15 @@ export function B2dEditor() {
 
 	this.buildPrefabFromObj = function (obj) {
 		if(this.breakPrefabs) return this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json));
-
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
 		this.prefabs[key] = obj;
 		var createdBodies = this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), key);
-		if (obj.instanceID > this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
+		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 		obj.class = new prefab.prefabs[obj.prefabName].class(obj);
+
+		
+		console.log("ID, COUNT", obj.instanceID, this.prefabCounter);
 
 		return createdBodies;
 	}
@@ -4859,11 +4874,7 @@ export function B2dEditor() {
 		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
 		var prefabObject = this.prefabs[sprite.data.prefabInstanceName];
 		var instanceName = sprite.data.prefabInstanceName;
-		console.log("before", instanceName);
-		console.log(this.lookupGroups[instanceName]);
 		this.deleteObjects([prefabObject]);
-		console.log("after", instanceName);
-		console.log(this.lookupGroups[instanceName]);
 
 		return image;
 	}
