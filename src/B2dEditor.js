@@ -1025,8 +1025,6 @@ export function B2dEditor() {
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
 		});
-
-
 		// Fix copied joints (make sure no anchor body is null)
 		var data;
 		var j;
@@ -4047,7 +4045,10 @@ export function B2dEditor() {
 		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 		obj.class = new prefab.prefabs[obj.prefabName].class(obj);
 
-		
+
+		console.log(obj.rotation, "<--- rotation");
+		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(createdBodies._bodies, createdBodies._textures, createdBodies._joints));
+
 		console.log("ID, COUNT", obj.instanceID, this.prefabCounter);
 
 		return createdBodies;
