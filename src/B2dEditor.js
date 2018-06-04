@@ -313,7 +313,6 @@ export function B2dEditor() {
 			width: this.editorGUIWidth
 		});
 		this.customGUIContainer.appendChild(this.editorGUI.domElement);
-		this.registerDragWindow(this.editorGUI.domElement);
 	}
 	this.destroyEditorGUI = function () {
 		if (this.editorGUI != undefined) {
@@ -393,6 +392,7 @@ export function B2dEditor() {
 
 		switch (i) {
 			case this.tool_SELECT:
+				this.destroyEditorGUI();
 				break
 			case this.tool_GEOMETRY:
 				this.editorGUI.editData = new this.editorGeometryObject;
@@ -433,6 +433,7 @@ export function B2dEditor() {
 			case this.tool_ERASER:
 				break
 		}
+		if(this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
 	}
 
 	this.updateSelection = function () {
