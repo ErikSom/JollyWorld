@@ -10810,8 +10810,6 @@ Box2D.postDefs = [];
    }
    b2WeldJoint.prototype.InitVelocityConstraints = function (step) {
 
-      console.log('INITIALIZE:'+this.m_frequencyHz+"  "+this.m_dampingRatio);
-
       var tMat;
       var tX = 0;
       var bA = this.m_bodyA;
@@ -10989,8 +10987,6 @@ Box2D.postDefs = [];
       var bA = this.m_bodyA;
       var bB = this.m_bodyB;
 
-      console.log("#33");
-      console.log(JSON.stringify(bA.m_sweep));
 
       tMat = bA.m_xf.R;
       var rAX = this.m_localAnchorA.x - bA.m_sweep.localCenter.x;
@@ -11061,8 +11057,6 @@ Box2D.postDefs = [];
       }
       bA.SynchronizeTransform();
       bB.SynchronizeTransform();
-
-      console.log(JSON.stringify(bA.m_sweep));
 
       return positionError <= b2Settings.b2_linearSlop && angularError <= b2Settings.b2_angularSlop;
    }

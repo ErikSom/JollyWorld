@@ -3298,10 +3298,6 @@ export function B2dEditor() {
 
 				var tarIndex = tarArray.indexOf(obj);
 				if (tarIndex >= 0) tarArray.splice(tarIndex, 1);
-				if (data.type == this.object_JOINT) {
-					console.log(obj, tarIndex);
-					console.log(tarArray.length);
-				}
 
 				if (data.refName && data.refName != "") {
 					delete this.lookupGroups[group][data.refName];
@@ -4589,7 +4585,7 @@ export function B2dEditor() {
 
 	this.buildJSON = function (json, prefabInstanceName) {
 
-		console.log(json);
+		//console.log(json);
 
 		var createdObjects = new this.lookupObject();
 
@@ -4665,7 +4661,7 @@ export function B2dEditor() {
 			}
 		}
 		return createdObjects;
-		console.log("END HERE");
+		//console.log("END HERE");
 	}
 	this.drawBox = function (target, x, y, width, height, lineColor, lineSize, lineAlpha, fillColor, fillAlpha) {
 
