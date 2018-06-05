@@ -377,6 +377,7 @@ export function B2dEditor() {
 		}
 	}
 	this.selectTool = function (i) {
+		if(this.selectedTool == this.tool_MOVE) this.spaceCameraDrag = false;
 		this.selectedTool = i;
 
 		var $buttons = $('.toolgui .button');
@@ -418,6 +419,7 @@ export function B2dEditor() {
 			case this.tool_ZOOM:
 				break
 			case this.tool_MOVE:
+				this.spaceCameraDrag = true;
 				break
 			case this.tool_PAINTBUCKET:
 				this.editorGUI.editData = new this.editorGraphicDrawingObject;
@@ -435,6 +437,7 @@ export function B2dEditor() {
 				break
 		}
 		if(this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
+		this.canvas.focus();
 	}
 
 	this.updateSelection = function () {
@@ -1954,7 +1957,7 @@ export function B2dEditor() {
 
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
-			if(this.spaceCameraDrag){
+			if(this.spaceCameraDrag && this.selectedTool != this.tool_MOVE){
 				this.spaceCameraDrag = false;
 			}else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
@@ -2040,6 +2043,7 @@ export function B2dEditor() {
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = true;
+			console.log("SPACE DOWN TRUE");
 		} else if (e.keyCode == 18) { // alt
 			this.altDown = true;
 		} else if (e.keyCode == 187) { // +
@@ -2916,7 +2920,7 @@ export function B2dEditor() {
 		}
 	}
 	this.doGeometryDrawing = function () {
-		if (this.mouseDown) {
+		if (this.mouseDown && !this.spaceCameraDrag) {
 			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
