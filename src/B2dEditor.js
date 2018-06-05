@@ -85,6 +85,7 @@ export function B2dEditor() {
 	this.mouseDown = false;
 	this.shiftDown = false;
 	this.spaceDown = false;
+	this.spaceCameraDrag = false;
 	this.altDown = false;
 	this.editing = true;
 
@@ -1427,7 +1428,9 @@ export function B2dEditor() {
 
 	this.onMouseDown = function (evt) {
 		if (this.editing) {
-			if (this.selectedTool == this.tool_SELECT) {
+			if(this.spaceDown){
+				this.spaceCameraDrag = true;
+			}else if (this.selectedTool == this.tool_SELECT) {
 
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 				this.storeUndoMovement();
@@ -1436,119 +1439,117 @@ export function B2dEditor() {
 					y: 0.0
 				};
 				this.undoTransformRot = 0.0;
-				if (!this.spaceDown) {
 
-					var aabb = new b2AABB;
-					aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
-					aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
+				var aabb = new b2AABB;
+				aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
+				aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
 
 
-					if (!this.selectedBoundingBox.Contains(aabb) || this.shiftDown) {
-						//reset selectionie
-						var oldSelectedPhysicsBodies = [];
-						var oldSelectedTextures = [];
-						var oldSelectedPrefabs = {};
+				if (!this.selectedBoundingBox.Contains(aabb) || this.shiftDown) {
+					//reset selectionie
+					var oldSelectedPhysicsBodies = [];
+					var oldSelectedTextures = [];
+					var oldSelectedPrefabs = {};
 
-						if (this.shiftDown) {
-							oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
-							oldSelectedTextures = this.selectedTextures;
-							oldSelectedPrefabs = JSON.parse(JSON.stringify(this.selectedPrefabs));
-						}
+					if (this.shiftDown) {
+						oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
+						oldSelectedTextures = this.selectedTextures;
+						oldSelectedPrefabs = JSON.parse(JSON.stringify(this.selectedPrefabs));
+					}
 
-						var i;
-						var body;
+					var i;
+					var body;
 
-						this.selectedPrefabs = {};
-						this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-						if (this.selectedPhysicsBodies.length > 0) {
+					this.selectedPrefabs = {};
+					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
+					if (this.selectedPhysicsBodies.length > 0) {
 
-							var fixture;
-							var pointInsideBody = false;
-							for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
-								body = this.selectedPhysicsBodies[i];
-								fixture = body.GetFixtureList();
-
-								while (fixture != null) {
-									if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), this.mousePosWorld)) {
-										pointInsideBody = true;
-									}
-
-									fixture = fixture.GetNext();
-								}
-								if (!pointInsideBody) {
-									this.selectedPhysicsBodies.splice(i, 1);
-									i--;
-								}
-							}
-						}
-						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 1);
-
-						//this.filterSelectionForPrefabs();
-
-						//limit selection to highest indexed child
-
-						var highestObject;
+						var fixture;
+						var pointInsideBody = false;
 						for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 							body = this.selectedPhysicsBodies[i];
-							var texture = body.mySprite;
-							if (body.myTexture) texture = body.myTexture;
-							if (highestObject == undefined) highestObject = texture;
-							if (texture.parent.getChildIndex(texture) > highestObject.parent.getChildIndex(highestObject)) {
-								highestObject = texture;
+							fixture = body.GetFixtureList();
+
+							while (fixture != null) {
+								if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), this.mousePosWorld)) {
+									pointInsideBody = true;
+								}
+
+								fixture = fixture.GetNext();
+							}
+							if (!pointInsideBody) {
+								this.selectedPhysicsBodies.splice(i, 1);
+								i--;
 							}
 						}
-						var sprite;
-						for (i = 0; i < this.selectedTextures.length; i++) {
-							sprite = this.selectedTextures[i];
-							if (highestObject == undefined) highestObject = sprite;
-							if (sprite.parent.getChildIndex(sprite) > highestObject.parent.getChildIndex(highestObject)) {
-								highestObject = sprite;
-							}
-						}
-
-						if (highestObject) {
-							if (highestObject.data.prefabInstanceName) {
-								this.selectedPrefabs[highestObject.data.prefabInstanceName] = true;
-								this.selectedPhysicsBodies = [];
-								this.selectedTextures = [];
-
-							} else {
-								if (highestObject.data.type == this.object_BODY || highestObject.myBody) {
-									this.selectedTextures = [];
-									this.selectedPrefabs = {};
-									if (highestObject.myBody) this.selectedPhysicsBodies = [highestObject.myBody];
-									else this.selectedPhysicsBodies = [highestObject];
-								} else {
-									this.selectedPhysicsBodies = [];
-									this.selectedPrefabs = {};
-									this.selectedTextures = [highestObject];
-								}
-							}
-						}
-						//
-						if (this.shiftDown) {
-							//push old selection
-							var i;
-							for (i = 0; i < oldSelectedPhysicsBodies.length; i++) {
-								if (oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]) {
-									this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
-								}
-							}
-							for (i = 0; i < oldSelectedTextures.length; i++) {
-								if (oldSelectedTextures[i] != this.selectedTextures[0]) {
-									this.selectedTextures.push(oldSelectedTextures[i]);
-								}
-							}
-							for (var key in oldSelectedPrefabs) {
-								if (oldSelectedPrefabs.hasOwnProperty(key)) {
-									this.selectedPrefabs[key] = true;
-								}
-							}
-
-						}
-
-						this.updateSelection();
 					}
+					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 1);
+
+					//this.filterSelectionForPrefabs();
+
+					//limit selection to highest indexed child
+
+					var highestObject;
+					for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
+						body = this.selectedPhysicsBodies[i];
+						var texture = body.mySprite;
+						if (body.myTexture) texture = body.myTexture;
+						if (highestObject == undefined) highestObject = texture;
+						if (texture.parent.getChildIndex(texture) > highestObject.parent.getChildIndex(highestObject)) {
+							highestObject = texture;
+						}
+					}
+					var sprite;
+					for (i = 0; i < this.selectedTextures.length; i++) {
+						sprite = this.selectedTextures[i];
+						if (highestObject == undefined) highestObject = sprite;
+						if (sprite.parent.getChildIndex(sprite) > highestObject.parent.getChildIndex(highestObject)) {
+							highestObject = sprite;
+						}
+					}
+
+					if (highestObject) {
+						if (highestObject.data.prefabInstanceName) {
+							this.selectedPrefabs[highestObject.data.prefabInstanceName] = true;
+							this.selectedPhysicsBodies = [];
+							this.selectedTextures = [];
+
+						} else {
+							if (highestObject.data.type == this.object_BODY || highestObject.myBody) {
+								this.selectedTextures = [];
+								this.selectedPrefabs = {};
+								if (highestObject.myBody) this.selectedPhysicsBodies = [highestObject.myBody];
+								else this.selectedPhysicsBodies = [highestObject];
+							} else {
+								this.selectedPhysicsBodies = [];
+								this.selectedPrefabs = {};
+								this.selectedTextures = [highestObject];
+							}
+						}
+					}
+					//
+					if (this.shiftDown) {
+						//push old selection
+						var i;
+						for (i = 0; i < oldSelectedPhysicsBodies.length; i++) {
+							if (oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]) {
+								this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
+							}
+						}
+						for (i = 0; i < oldSelectedTextures.length; i++) {
+							if (oldSelectedTextures[i] != this.selectedTextures[0]) {
+								this.selectedTextures.push(oldSelectedTextures[i]);
+							}
+						}
+						for (var key in oldSelectedPrefabs) {
+							if (oldSelectedPrefabs.hasOwnProperty(key)) {
+								this.selectedPrefabs[key] = true;
+							}
+						}
+
+					}
+
+					this.updateSelection();
 				}
 
 			} else if (this.selectedTool == this.tool_POLYDRAWING) {
@@ -1599,25 +1600,22 @@ export function B2dEditor() {
 		if (this.oldMousePosWorld == null) this.oldMousePosWorld = this.mousePosWorld;
 
 		if (this.editing) {
-			if (this.selectedTool == this.tool_SELECT) {
-				if (this.mouseDown) {
-					var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
-					if (this.spaceDown) {
-						move.Multiply(this.container.scale.x);
-						this.container.x += move.x * this.PTM;
-						this.container.y += move.y * this.PTM;
-						this.mousePosWorld.x -= move.x / this.container.scale.x;
-						this.mousePosWorld.y -= move.y / this.container.scale.y;
-
-					} else {
-						if (this.mouseTransformType == this.mouseTransformType_Movement) {
-							this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-								x: move.x * this.PTM,
-								y: move.y * this.PTM
-							});
-						} else if (this.mouseTransformType == this.mouseTransformType_Rotation) {
-							this.applyToSelectedObjects(this.TRANSFORM_ROTATE, move.x * this.PTM / 10);
-						}
+			if(this.mouseDown){
+				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
+				if(this.spaceCameraDrag){
+					move.Multiply(this.container.scale.x);
+					this.container.x += move.x * this.PTM;
+					this.container.y += move.y * this.PTM;
+					this.mousePosWorld.x -= move.x / this.container.scale.x;
+					this.mousePosWorld.y -= move.y / this.container.scale.y;
+				}else if (this.selectedTool == this.tool_SELECT) {
+					if (this.mouseTransformType == this.mouseTransformType_Movement) {
+						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
+							x: move.x * this.PTM,
+							y: move.y * this.PTM
+						});
+					} else if (this.mouseTransformType == this.mouseTransformType_Rotation) {
+						this.applyToSelectedObjects(this.TRANSFORM_ROTATE, move.x * this.PTM / 10);
 					}
 				}
 			}
@@ -1956,7 +1954,9 @@ export function B2dEditor() {
 
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
-			if (this.selectedTool == this.tool_SELECT) {
+			if(this.spaceCameraDrag){
+				this.spaceCameraDrag = false;
+			}else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
@@ -2277,7 +2277,7 @@ export function B2dEditor() {
 			aabb = new b2AABB;
 
 			//Making selection
-			if (this.mouseDown && !this.spaceDown && this.startSelectionPoint) this.drawBox(this.debugGraphics, this.container.x + this.startSelectionPoint.x * this.PTM * this.container.scale.x, this.container.y + this.startSelectionPoint.y * this.PTM * this.container.scale.y, (this.mousePosWorld.x * this.PTM - this.startSelectionPoint.x * this.PTM) * this.container.scale.x, (this.mousePosWorld.y * this.PTM - this.startSelectionPoint.y * this.PTM) * this.container.scale.y, "#000000");
+			if (this.mouseDown && !this.spaceCameraDrag && this.startSelectionPoint) this.drawBox(this.debugGraphics, this.container.x + this.startSelectionPoint.x * this.PTM * this.container.scale.x, this.container.y + this.startSelectionPoint.y * this.PTM * this.container.scale.y, (this.mousePosWorld.x * this.PTM - this.startSelectionPoint.x * this.PTM) * this.container.scale.x, (this.mousePosWorld.y * this.PTM - this.startSelectionPoint.y * this.PTM) * this.container.scale.y, "#000000");
 		}
 		this.selectedBoundingBox = aabb;
 
