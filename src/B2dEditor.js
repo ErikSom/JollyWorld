@@ -814,17 +814,11 @@ export function B2dEditor() {
 				var prefabClassSettings = prefabClass.settings;
 				var prefabClassOptions = prefabClass.settingsOptions;
 
-				console.log(prefabObject.prefabName);
-				console.log(prefabClass);
-				console.log(prefabObjectSettings);
-				console.log(prefabClassOptions);
-
 
 				for (var key in prefabClassOptions) {
 					if (prefabClassOptions.hasOwnProperty(key)) {
 						var argument;
 						this.editorGUI.editData[key] = prefabObjectSettings[key];
-						console.log(prefabClassOptions[key])
 						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
 							this.editorGUI.add(self.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
@@ -876,7 +870,6 @@ export function B2dEditor() {
 	}
 
 	this.deleteObjects = function (arr) {
-		console.log(arr);
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] instanceof this.prefabObject) {
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
@@ -1018,7 +1011,6 @@ export function B2dEditor() {
 		for (i = 0; i < prefabKeys.length; i++) {
 			if (!prefab.prefabs[this.prefabs[prefabKeys[i]].prefabName].class.forceUnique) {
 				this.updateObject(null, this.prefabs[prefabKeys[i]]);
-				console.log(this.prefabs[prefabKeys[i]]);
 				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(this.prefabs[prefabKeys[i]])));
 				copyArray.push({
 					ID: cloneObject.ID,
@@ -2043,7 +2035,6 @@ export function B2dEditor() {
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = true;
-			console.log("SPACE DOWN TRUE");
 		} else if (e.keyCode == 18) { // alt
 			this.altDown = true;
 		} else if (e.keyCode == 187) { // +
@@ -3279,7 +3270,6 @@ export function B2dEditor() {
 					subGroup = subGroup.substr(0, classIndex);
 					var key = data.subPrefabInstanceName;
 					if (this.prefabs[key] && this.lookupGroups[key]._bodies.length + this.lookupGroups[key]._textures.length + this.lookupGroups[key]._joints.length == 1) {
-						console.log("DELETE PREFAB!!!");
 						delete this.prefabs[key];
 					}
 					arr.push(key);
