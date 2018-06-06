@@ -380,6 +380,10 @@ export function B2dEditor() {
 		if(this.selectedTool == this.tool_MOVE) this.spaceCameraDrag = false;
 		this.selectedTool = i;
 
+		this.selectedTextures = [];
+		this.selectedPhysicsBodies = [];
+		this.selectedPrefabs = [];
+
 		var $buttons = $('.toolgui .button');
 		$buttons.css("background-color", "#999999");
 		$($buttons[i]).css("background-color", "#4F4F4F");
@@ -408,8 +412,14 @@ export function B2dEditor() {
 				this.editorGUI.add(self.editorGUI.editData, "isPhysicsObject");
 				break
 			case this.tool_POLYDRAWING:
+				this.destroyEditorGUI();
 				break
 			case this.tool_JOINTS:
+				this.editorGUI.editData = new this.jointObject;
+				this.editorGUI.addFolder('add joints');
+
+				this.addJointGUI(new this.jointObject);
+
 				break
 			case this.tool_SPECIALS:
 				this.showPrefabList();
@@ -419,6 +429,7 @@ export function B2dEditor() {
 			case this.tool_ZOOM:
 				break
 			case this.tool_MOVE:
+				this.destroyEditorGUI();
 				this.spaceCameraDrag = true;
 				break
 			case this.tool_PAINTBUCKET:
@@ -714,98 +725,8 @@ export function B2dEditor() {
 
 				break;
 			case case_JUST_JOINTS:
-				var jointTypes = ["Pin", "Slide", "Distance", "Rope"];
-				this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
-
-				this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value
-				});
-				this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value
-				});
-
-				if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
-
-					folder = this.editorGUI.addFolder('enable motor');
-					folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					});
-
-					var lowerLimit = 0;
-					var higherLimit = 0;
-
-					if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
-						lowerLimit = 0;
-						higherLimit = 1000;
-					} else {
-						lowerLimit = 0;
-						higherLimit = 1000;
-					}
-
-					controller = folder.add(self.editorGUI.editData, "maxMotorTorque", lowerLimit, higherLimit);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-
-					if (dataJoint.jointType == this.jointObject_TYPE_SLIDE) controller.name("maxMotorForce");
-
-					controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-
-
-					folder = this.editorGUI.addFolder('enable limits');
-					folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					});
-
-					if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
-						controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						}.bind(controller));
-
-						controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value
-						}.bind(controller));
-					} else {
-						controller = folder.add(self.editorGUI.editData, "upperLimit", 0, 5000);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value;
-						}.bind(controller));
-
-						controller = folder.add(self.editorGUI.editData, "lowerLimit", -5000, 0);
-						controller.onChange(function (value) {
-							this.humanUpdate = true;
-							this.targetValue = value
-						}.bind(controller));
-					}
-				} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
-					folder = this.editorGUI.addFolder('spring');
-
-					controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
-
-					controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value
-					}.bind(controller));
-				}
+				console.log("CASE JUST JOINTS");
+				this.addJointGUI(dataJoint);
 				break;
 			case case_JUST_PREFABS:
 				var prefabObject = this.prefabs[Object.keys(this.selectedPrefabs)[0]];
@@ -841,6 +762,103 @@ export function B2dEditor() {
 				break;
 		}
 		this.registerDragWindow(this.editorGUI.domElement);
+	}
+	this.addJointGUI = function(dataJoint){
+		var self = this;
+		var controller;
+		var folder;
+		var jointTypes = ["Pin", "Slide", "Distance", "Rope"];
+		this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
+
+		this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
+			this.humanUpdate = true;
+			this.targetValue = value
+		});
+		this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
+			this.humanUpdate = true;
+			this.targetValue = value
+		});
+
+		if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
+
+			folder = this.editorGUI.addFolder('enable motor');
+			folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			});
+
+			var lowerLimit = 0;
+			var higherLimit = 0;
+
+			if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
+				lowerLimit = 0;
+				higherLimit = 1000;
+			} else {
+				lowerLimit = 0;
+				higherLimit = 1000;
+			}
+
+			controller = folder.add(self.editorGUI.editData, "maxMotorTorque", lowerLimit, higherLimit);
+			controller.onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value
+			}.bind(controller));
+
+			if (dataJoint.jointType == this.jointObject_TYPE_SLIDE) controller.name("maxMotorForce");
+
+			controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
+			controller.onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value
+			}.bind(controller));
+
+
+			folder = this.editorGUI.addFolder('enable limits');
+			folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			});
+
+			if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
+				controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
+				controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				}.bind(controller));
+			} else {
+				controller = folder.add(self.editorGUI.editData, "upperLimit", 0, 5000);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
+				controller = folder.add(self.editorGUI.editData, "lowerLimit", -5000, 0);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				}.bind(controller));
+			}
+		} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
+			folder = this.editorGUI.addFolder('spring');
+
+			controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
+			controller.onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			}.bind(controller));
+
+			controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
+			controller.onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value
+			}.bind(controller));
+		}
 	}
 
 	this.isSelectionPropertyTheSame = function (property) {
@@ -2459,17 +2477,36 @@ export function B2dEditor() {
 				if (controller.humanUpdate) {
 					controller.humanUpdate = false;
 					if (controller.property == "typeName") {
+						if(this.selectedTool == this.tool_JOINTS){
+							var oldData = this.editorGUI.editData;
+							if (controller.targetValue == "Pin") {
+								oldData.jointType = this.jointObject_TYPE_PIN;
+							} else if (controller.targetValue == "Slide") {
+								oldData.jointType = this.jointObject_TYPE_SLIDE;
+							} else if (controller.targetValue == "Distance") {
+								oldData.jointType = this.jointObject_TYPE_DISTANCE;
+							} else if (controller.targetValue == "Rope") {
+								oldData.jointType = this.jointObject_TYPE_ROPE;
+							}
+							this.destroyEditorGUI();
+							this.buildEditorGUI();
+							this.editorGUI.editData = oldData;
+							this.editorGUI.addFolder('add joints');
+							this.addJointGUI(oldData);
+							if(this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
+						}else{
 						//joint
-						if (controller.targetValue == "Pin") {
-							this.selectedTextures[0].data.jointType = this.jointObject_TYPE_PIN;
-						} else if (controller.targetValue == "Slide") {
-							this.selectedTextures[0].data.jointType = this.jointObject_TYPE_SLIDE;
-						} else if (controller.targetValue == "Distance") {
-							this.selectedTextures[0].data.jointType = this.jointObject_TYPE_DISTANCE;
-						} else if (controller.targetValue == "Rope") {
-							this.selectedTextures[0].data.jointType = this.jointObject_TYPE_ROPE;
+							if (controller.targetValue == "Pin") {
+								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_PIN;
+							} else if (controller.targetValue == "Slide") {
+								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_SLIDE;
+							} else if (controller.targetValue == "Distance") {
+								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_DISTANCE;
+							} else if (controller.targetValue == "Rope") {
+								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_ROPE;
+							}
+							this.updateSelection();
 						}
-						this.updateSelection();
 					} else if (controller.property == "x") {
 						//bodies & sprites & prefabs
 
