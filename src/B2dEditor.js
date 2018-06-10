@@ -401,7 +401,7 @@ export function B2dEditor() {
 				this.destroyEditorGUI();
 				break
 			case this.tool_GEOMETRY:
-				this.editorGUI.editData = new this.editorGeometryObject;
+				this.editorGUI.editData = this.editorGeometryObject;
 				this.editorGUI.addFolder('draw shapes');
 				var shapes = ["Circle", "Box", "Triangle"];
 				this.editorGUI.editData.shape = shapes[0];
@@ -415,10 +415,10 @@ export function B2dEditor() {
 				this.destroyEditorGUI();
 				break
 			case this.tool_JOINTS:
-				this.editorGUI.editData = new this.jointObject;
+				this.editorGUI.editData = this.editorJointObject;
 				this.editorGUI.addFolder('add joints');
 
-				this.addJointGUI(new this.jointObject);
+				this.addJointGUI(this.editorJointObject);
 
 				break
 			case this.tool_SPECIALS:
@@ -433,7 +433,7 @@ export function B2dEditor() {
 				this.spaceCameraDrag = true;
 				break
 			case this.tool_PAINTBUCKET:
-				this.editorGUI.editData = new this.editorGraphicDrawingObject;
+				this.editorGUI.editData = this.editorGraphicDrawingObject;
 				this.editorGUI.addFolder('draw graphics');
 				//for (var key in this.editorGUI.editData) {
 				//	if (this.editorGUI.editData.hasOwnProperty(key)) {
@@ -1380,12 +1380,14 @@ export function B2dEditor() {
 		this.prefabName;
 		this.instanceID;
 	}
-	this.editorGraphicDrawingObject = function () {
+	this.editorJointObject = new this.jointObject();
+
+	this.editorGraphicDrawingObject = new function () {
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.transparancy = 1.0;
 	}
-	this.editorGeometryObject = function () {
+	this.editorGeometryObject = new function () {
 		this.shape = 0;
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
@@ -2468,7 +2470,6 @@ export function B2dEditor() {
 			for (var propt in this.editorGUI.__folders) {
 				controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
 			}
-
 
 			var i;
 			for (i in controllers) {
