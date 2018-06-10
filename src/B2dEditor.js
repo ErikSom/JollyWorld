@@ -377,7 +377,7 @@ export function B2dEditor() {
 		}
 	}
 	this.selectTool = function (i) {
-		if(this.selectedTool == this.tool_MOVE) this.spaceCameraDrag = false;
+		if (this.selectedTool == this.tool_MOVE) this.spaceCameraDrag = false;
 		this.selectedTool = i;
 
 		this.selectedTextures = [];
@@ -447,7 +447,7 @@ export function B2dEditor() {
 			case this.tool_ERASER:
 				break
 		}
-		if(this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
+		if (this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
 		this.canvas.focus();
 	}
 
@@ -763,7 +763,7 @@ export function B2dEditor() {
 		}
 		this.registerDragWindow(this.editorGUI.domElement);
 	}
-	this.addJointGUI = function(dataJoint){
+	this.addJointGUI = function (dataJoint) {
 		var self = this;
 		var controller;
 		var folder;
@@ -1179,7 +1179,7 @@ export function B2dEditor() {
 	this.doEditor = function () {
 		this.debugGraphics.clear();
 
-		if (this.selectedTool == this.tool_SELECT) {
+		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
 			this.doSelection();
 		} else if (this.selectedTool == this.tool_POLYDRAWING) {
 			this.doVerticesDrawing(true);
@@ -1443,9 +1443,9 @@ export function B2dEditor() {
 
 	this.onMouseDown = function (evt) {
 		if (this.editing) {
-			if(this.spaceDown){
+			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
-			}else if (this.selectedTool == this.tool_SELECT) {
+			} else if (this.selectedTool == this.tool_SELECT) {
 
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 				this.storeUndoMovement();
@@ -1604,6 +1604,18 @@ export function B2dEditor() {
 					this.buildGraphicFromObj(graphicObject);
 					this.activeVertices = [];
 				}
+			} else if (this.selectedTool == this.tool_JOINTS) {
+				var joint = this.attachJointPlaceHolder();
+				if (joint) {
+					var jointData = JSON.parse(JSON.stringify(this.editorGUI.editData))
+					delete jointData.bodyA_ID;
+					delete jointData.bodyB_ID;
+					delete jointData.x;
+					delete jointData.y;
+					delete jointData.rotation;
+					Object.assign(joint.data, jointData);
+					this.selectedTextures.push(joint);
+				}
 			}
 		}
 		this.updateMousePosition(evt);
@@ -1615,15 +1627,15 @@ export function B2dEditor() {
 		if (this.oldMousePosWorld == null) this.oldMousePosWorld = this.mousePosWorld;
 
 		if (this.editing) {
-			if(this.mouseDown){
+			if (this.mouseDown) {
 				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
-				if(this.spaceCameraDrag){
+				if (this.spaceCameraDrag) {
 					move.Multiply(this.container.scale.x);
 					this.container.x += move.x * this.PTM;
 					this.container.y += move.y * this.PTM;
 					this.mousePosWorld.x -= move.x / this.container.scale.x;
 					this.mousePosWorld.y -= move.y / this.container.scale.y;
-				}else if (this.selectedTool == this.tool_SELECT) {
+				} else if (this.selectedTool == this.tool_SELECT) {
 					if (this.mouseTransformType == this.mouseTransformType_Movement) {
 						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 							x: move.x * this.PTM,
@@ -1702,7 +1714,7 @@ export function B2dEditor() {
 						sprite = objects[i];
 						data = sprite.data;
 					}
-					if(!data) continue;
+					if (!data) continue;
 					group = (this.altDown) ? "__altDownGroup" : data.prefabInstanceName;
 					if (group) {
 						if (centerPoints[group] == undefined) centerPoints[group] = {
@@ -1969,9 +1981,9 @@ export function B2dEditor() {
 
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
-			if(this.spaceCameraDrag && this.selectedTool != this.tool_MOVE){
+			if (this.spaceCameraDrag && this.selectedTool != this.tool_MOVE) {
 				this.spaceCameraDrag = false;
-			}else if (this.selectedTool == this.tool_SELECT) {
+			} else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
@@ -2024,7 +2036,9 @@ export function B2dEditor() {
 		} else if (e.keyCode == 81) { //q
 			this.anchorTextureToBody();
 		} else if (e.keyCode == 74) { //j
-			this.attachJointPlaceHolder();
+			if (e.ctrlKey || e.metaKey) {
+				this.selectedTextures.push(this.attachJointPlaceHolder());
+			}else this.selectTool(this.tool_JOINTS);
 		} else if (e.keyCode == 83) { //s
 			this.stringifyWorldJSON();
 		} else if (e.keyCode == 84) { //t
@@ -2478,7 +2492,7 @@ export function B2dEditor() {
 				if (controller.humanUpdate) {
 					controller.humanUpdate = false;
 					if (controller.property == "typeName") {
-						if(this.selectedTool == this.tool_JOINTS){
+						if (this.selectedTool == this.tool_JOINTS) {
 							var oldData = this.editorGUI.editData;
 							if (controller.targetValue == "Pin") {
 								oldData.jointType = this.jointObject_TYPE_PIN;
@@ -2494,9 +2508,9 @@ export function B2dEditor() {
 							this.editorGUI.editData = oldData;
 							this.editorGUI.addFolder('add joints');
 							this.addJointGUI(oldData);
-							if(this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
-						}else{
-						//joint
+							if (this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
+						} else {
+							//joint
 							if (controller.targetValue == "Pin") {
 								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_PIN;
 							} else if (controller.targetValue == "Slide") {
@@ -2529,57 +2543,79 @@ export function B2dEditor() {
 					} else if (controller.property == "collideConnected") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.collideConnected = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.collideConnected = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "enableMotor") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.enableMotor = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.enableMotor = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "maxMotorTorque") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.maxMotorTorque = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.maxMotorTorque = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "motorSpeed") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.motorSpeed = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.motorSpeed = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "enableLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.enableLimit = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.enableLimit = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "upperAngle") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.upperAngle = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.upperAngle = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "lowerAngle") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.lowerAngle = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.lowerAngle = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "frequencyHz") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.frequencyHz = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.frequencyHz = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "dampingRatio") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.dampingRatio = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.dampingRatio = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "upperLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.upperLimit = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.upperLimit = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "lowerLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							this.selectedTextures[j].data.lowerLimit = controller.targetValue;
+							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.lowerLimit = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "rotation") {
 						//body & sprite
