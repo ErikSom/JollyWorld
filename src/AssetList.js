@@ -1,7 +1,7 @@
 export var LoadCoreAssets = function (loader){
-    loader.add("Characters1.json", "assets/images/Characters1.json")
-        .add("Vehicles1.json", "assets/images/Vehicles1.json")
-        .add("assets/images/Decals.json")
+    loader.add("Characters_1.json", "assets/images/characters/Characters_1.json")
+        .add("Vehicles_1.json", "assets/images/vehicles/Vehicles_1.json")
+        .add("assets/images/particles/Decals.json")
         .add("Movement.json", "assets/images/prefabs/Movement.json")
         /*TILE DATA*/
         .add("tile1.jpg", "assets/images/textures/tile1.jpg")

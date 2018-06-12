@@ -114,7 +114,7 @@ export function B2dEditor() {
 
 
 	this.load = function (loader) {
-		loader.add("assets/images/iconSet.json");
+		loader.add("assets/images/gui/iconSet.json");
 	}
 
 	this.init = function (_container, _world, _PTM) {
@@ -1851,7 +1851,18 @@ export function B2dEditor() {
 						}
 					}
 
-					if (allowed) child.parent.swapChildren(child, neighbour);
+					if (allowed){
+						 child.parent.swapChildren(child, neighbour);
+						 if(obj && child.myBody && child.myBody.myJoints && child.myBody.myJoints.length>0){
+							 for(j = 0; j<child.myBody.myJoints.length; j++){
+								 var tarIndex = child.parent.getChildIndex(child)+1;
+								 var joint = child.myBody.myJoints[j];
+								 var container = joint.parent;
+								 container.removeChild(joint);
+								 container.addChildAt(joint, tarIndex);
+							 }
+						 }
+					}
 				}
 			}
 		} else if (transformType == this.TRANSFORM_FORCEDEPTH) {

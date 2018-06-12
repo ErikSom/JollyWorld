@@ -795,7 +795,7 @@
 "meta": {
 	"app": "Adobe Animate",
 	"version": "18.0.0.107",
-	"image": "Characters1.png",
+	"image": "Characters_1.png",
 	"format": "RGBA8888",
 	"size": {"w":1024,"h":1024},
 	"scale": "1"

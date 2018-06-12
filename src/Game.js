@@ -131,8 +131,8 @@ function Game() {
         //window.setInterval(this.update.bind(this), this.timeStep);
         startAnimating();
 
-        this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters1.json"].textures);
-        this.editor.assetLists.vehicles = ["Bicycle_Body0000","Bicycle_Pedals0000","Bicycle_WheelBack0000","Bicycle_WheelFront0000","GoCart_Body0000","GoCart_Wheel0000","OfficeChair_Body0000","OfficeChair_Body20000","OfficeChair_Turbine0000","OfficeChair_Wheel0000","SuperMarketCart_Body0000","SuperMarketCart_Gear0000","SuperMarketCart_Wheel0000","Trolley_Body0000","Trolley_Drone0000","Trolley_WheelBack0000","Trolley_WheelFront0000","Unicycle_Body0000"];
+        this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
+        this.editor.assetLists.vehicles = Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures);
         this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
         this.editor.tileLists = ["", "tile1.jpg", "tile2.jpg", "tile3.jpg", "tile4.jpg", "tile5.jpg", "tile6.jpg", "tile7.jpg", "tile8.jpg", "tile9.jpg", "tile10.jpg", "tile11.jpg", "tile12.jpg", "tile13.jpg", "tile14.jpg", "tile15.jpg", "tile16.jpg", "tile16.jpg"]
 
