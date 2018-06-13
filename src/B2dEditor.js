@@ -1806,6 +1806,13 @@ export function B2dEditor() {
 						tarDepthIndexes.push(objects[i].mySprite.parent.getChildIndex(objects[i].myTexture));
 					}
 
+					if(objects[i].myJoints) objects[i].myJoints.map(joint => {
+						if(!(objects.includes(joint))){
+							depthArray.push(joint);
+							tarDepthIndexes.push(joint.parent.getChildIndex(joint));
+						}
+					});
+
 				} else {
 					depthArray.push(objects[i]);
 					tarDepthIndexes.push(objects[i].parent.getChildIndex(objects[i]));
@@ -1853,15 +1860,6 @@ export function B2dEditor() {
 
 					if (allowed){
 						 child.parent.swapChildren(child, neighbour);
-						 if(obj && child.myBody && child.myBody.myJoints && child.myBody.myJoints.length>0){
-							 for(j = 0; j<child.myBody.myJoints.length; j++){
-								 var tarIndex = child.parent.getChildIndex(child)+1;
-								 var joint = child.myBody.myJoints[j];
-								 var container = joint.parent;
-								 container.removeChild(joint);
-								 container.addChildAt(joint, tarIndex);
-							 }
-						 }
 					}
 				}
 			}
