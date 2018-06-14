@@ -730,7 +730,6 @@ export function B2dEditor() {
 
 				break;
 			case case_JUST_JOINTS:
-				console.log("CASE JUST JOINTS");
 				this.addJointGUI(dataJoint);
 				break;
 			case case_JUST_PREFABS:
@@ -1024,6 +1023,7 @@ export function B2dEditor() {
 		for (i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
 			this.updateObject(sprite, sprite.data);
+
 			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(sprite.data)));
 			copyArray.push({
 				ID: cloneObject.ID,
@@ -1865,7 +1865,7 @@ export function B2dEditor() {
 					}
 
 					if (allowed){
-						 child.parent.swapChildren(child, neighbour);int
+						 child.parent.swapChildren(child, neighbour);
 					}
 				}
 			}
@@ -4529,20 +4529,21 @@ export function B2dEditor() {
 			arr[12] = obj.isCarvable;
 			arr[13] = obj.tint;
 		} else if (obj.type == this.object_JOINT) {
-			arr[6] = obj.bodyA_ID;
-			arr[7] = obj.bodyB_ID;
-			arr[8] = obj.jointType;
-			arr[9] = obj.collideConnected;
-			arr[10] = obj.enableMotor;
-			arr[11] = obj.maxMotorTorque;
-			arr[12] = obj.motorSpeed;
-			arr[13] = obj.enableLimit;
-			arr[14] = obj.upperAngle;
-			arr[15] = obj.lowerAngle;
-			arr[16] = obj.dampingRatio;
-			arr[17] = obj.frequencyHz;
-			arr[18] = obj.upperLimit;
-			arr[19] = obj.lowerLimit;
+			arr[6] = obj.ID;
+			arr[7] = obj.bodyA_ID;
+			arr[8] = obj.bodyB_ID;
+			arr[9] = obj.jointType;
+			arr[10] = obj.collideConnected;
+			arr[11] = obj.enableMotor;
+			arr[12] = obj.maxMotorTorque;
+			arr[13] = obj.motorSpeed;
+			arr[14] = obj.enableLimit;
+			arr[15] = obj.upperAngle;
+			arr[16] = obj.lowerAngle;
+			arr[17] = obj.dampingRatio;
+			arr[18] = obj.frequencyHz;
+			arr[19] = obj.upperLimit;
+			arr[20] = obj.lowerLimit;
 		} else if (obj.type == this.object_PREFAB) {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
@@ -4595,20 +4596,21 @@ export function B2dEditor() {
 			obj.tint = arr[13] || '#FFFFFF';
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
-			obj.bodyA_ID = arr[6];
-			obj.bodyB_ID = arr[7];
-			obj.jointType = arr[8];
-			obj.collideConnected = arr[9];
-			obj.enableMotor = arr[10];
-			obj.maxMotorTorque = arr[11];
-			obj.motorSpeed = arr[12];
-			obj.enableLimit = arr[13];
-			obj.upperAngle = arr[14];
-			obj.lowerAngle = arr[15];
-			obj.dampingRatio = arr[16];
-			obj.frequencyHz = arr[17];
-			obj.upperLimit = arr[18] || obj.upperLimit;
-			obj.lowerLimit = arr[19] || obj.lowerLimit;
+			obj.ID = arr[6];
+			obj.bodyA_ID = arr[7];
+			obj.bodyB_ID = arr[8];
+			obj.jointType = arr[9];
+			obj.collideConnected = arr[10];
+			obj.enableMotor = arr[11];
+			obj.maxMotorTorque = arr[12];
+			obj.motorSpeed = arr[13];
+			obj.enableLimit = arr[14];
+			obj.upperAngle = arr[15];
+			obj.lowerAngle = arr[16];
+			obj.dampingRatio = arr[17];
+			obj.frequencyHz = arr[18];
+			obj.upperLimit = arr[19] || obj.upperLimit;
+			obj.lowerLimit = arr[20] || obj.lowerLimit;
 		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
 			obj.settings = arr[4];
@@ -4729,6 +4731,7 @@ export function B2dEditor() {
 				} else if (obj.type == this.object_JOINT) {
 					obj.bodyA_ID += startChildIndex;
 					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
+
 					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
 					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
