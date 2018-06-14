@@ -773,7 +773,6 @@ export function B2dEditor() {
 		var folder;
 		var jointTypes = ["Pin", "Slide", "Distance", "Rope"];
 		this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
-
 		this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value
@@ -1005,6 +1004,7 @@ export function B2dEditor() {
 			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(body.mySprite.data)));
 
 			cloneObject = JSON.parse(JSON.stringify(body.mySprite.data))
+
 			copyArray.push({
 				ID: cloneObject.ID,
 				data: cloneObject
@@ -1024,7 +1024,7 @@ export function B2dEditor() {
 			sprite = this.selectedTextures[i];
 			this.updateObject(sprite, sprite.data);
 
-			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(sprite.data)));
+			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(sprite.data)), true);
 			copyArray.push({
 				ID: cloneObject.ID,
 				data: cloneObject
@@ -4666,6 +4666,8 @@ export function B2dEditor() {
 
 		} else if (data.type == this.object_JOINT) {
 
+
+
 			data.bodyA_ID = sprite.bodies[0].mySprite.parent.getChildIndex(sprite.bodies[0].mySprite);
 			if (sprite.bodies.length > 1) data.bodyB_ID = sprite.bodies[1].mySprite.parent.getChildIndex(sprite.bodies[1].mySprite);
 			data.x = sprite.x;
@@ -4723,7 +4725,7 @@ export function B2dEditor() {
 					worldObject = this.buildBodyFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXTURE) {
-					if (obj.bodyID != undefined) {
+					if (obj.bodyID != undefined) {  
 						obj.bodyID += startChildIndex;
 					}
 					worldObject = this.buildTextureFromObj(obj);
