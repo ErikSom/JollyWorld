@@ -150,11 +150,11 @@ body .dg .cr.function:active {
     display:none;
 }
 .dg.main{
+    overflow:visible;
     border: 1px solid black;
     border-radius: 5px;
     box-shadow: 2px 2px 0px #000000;
     max-height:90vh;
-    overflow:auto;
 }
 .dg.main {
     top: 0;

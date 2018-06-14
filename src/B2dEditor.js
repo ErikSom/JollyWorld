@@ -691,6 +691,11 @@ export function B2dEditor() {
 				})(controller)
 				break;
 			case case_JUST_TEXTURES:
+				controller = this.editorGUI.addColor(self.editorGUI.editData, "tint");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				break;
 			case case_JUST_GRAPHICS:
 				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
@@ -1289,6 +1294,7 @@ export function B2dEditor() {
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
 		this.isCarvable = false;
+		this.tint = '#FFFFFF';
 	}
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
@@ -1859,7 +1865,7 @@ export function B2dEditor() {
 					}
 
 					if (allowed){
-						 child.parent.swapChildren(child, neighbour);
+						 child.parent.swapChildren(child, neighbour);int
 					}
 				}
 			}
@@ -2663,7 +2669,16 @@ export function B2dEditor() {
 							body.mySprite.data.tileTexture = controller.targetValue;
 							this.updateBodyTileSprite(body);
 						}
-					} else if (controller.property == "colorFill") {
+					} else if (controller.property == "tint") {
+						// sprite
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.data.tint = controller.targetValue;
+							var color = sprite.data.tint;
+							color = color.slice(1);
+							sprite.originalSprite.tint = parseInt(color, 16);
+						}
+					}else if (controller.property == "colorFill") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -3416,6 +3431,10 @@ export function B2dEditor() {
 		container.y = obj.y;
 		container.rotation = obj.rotation;
 		container.data = obj;
+
+		var color = obj.tint;
+		color = color.slice(1);
+		container.originalSprite.tint = parseInt(color, 16);
 
 		if (container.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
@@ -4508,6 +4527,7 @@ export function B2dEditor() {
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
 			arr[12] = obj.isCarvable;
+			arr[13] = obj.tint;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.bodyA_ID;
 			arr[7] = obj.bodyB_ID;
@@ -4572,6 +4592,7 @@ export function B2dEditor() {
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
 			obj.isCarvable = arr[12];
+			obj.tint = arr[13] || '#FFFFFF';
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.bodyA_ID = arr[6];
