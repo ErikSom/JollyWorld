@@ -110,10 +110,13 @@ export function Vehicle() {
         var i;
         var body;
         var dirFore = angle.Copy();
-        dirFore.Multiply(force * 10.0)
+        dirFore.Multiply(force * 0.01)
         for (i = 0; i < this.vehicleBodies._bodies.length; i++) {
             body = this.vehicleBodies._bodies[i];
-            body.ApplyForce(dirFore, body.GetPosition());
+            //body.ApplyForce(dirFore, body.GetPosition());
+            var oldVelocity = body.GetLinearVelocity();
+            var newVelocity = new b2Vec2(oldVelocity.x+dirFore.x, oldVelocity.y+dirFore.y);
+            body.SetLinearVelocity(newVelocity);
         }
 
     }
