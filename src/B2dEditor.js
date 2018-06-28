@@ -2558,77 +2558,77 @@ export function B2dEditor() {
 					} else if (controller.property == "collideConnected") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.collideConnected = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "enableMotor") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.enableMotor = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "maxMotorTorque") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.maxMotorTorque = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "motorSpeed") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.motorSpeed = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "enableLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.enableLimit = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "upperAngle") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.upperAngle = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "lowerAngle") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.lowerAngle = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "frequencyHz") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.frequencyHz = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "dampingRatio") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.dampingRatio = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "upperLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.upperLimit = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "lowerLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[i].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.lowerLimit = controller.targetValue;
 							}
 						}
@@ -2785,7 +2785,6 @@ export function B2dEditor() {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.collision = controller.targetValue;
 							this.setBodyCollision(body, controller.targetValue);
-							x
 						}
 					} else if (controller.property == "tileTexture") {
 						//do tileTexture
