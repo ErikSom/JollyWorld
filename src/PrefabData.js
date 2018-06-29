@@ -118,26 +118,26 @@ class character extends basePrefab {
                     var revoluteJointDef;
                     var joint;
 
-                    var vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA().x * game.editor.PTM + ',' + targetJoint.GetAnchorA().y * game.editor.PTM + ',0,{},"vain",' + (game.editor.prefabCounter++) + ']]}'
+                    var vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * game.editor.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * game.editor.PTM + ',0,{},"vain",' + (game.editor.prefabCounter++) + ']]}'
 
                     var vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
                     var vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / game.editor.PTM;
 
                     revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                    revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA());
+                    revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
                     revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                    revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA());
+                    revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
                     var ropeJointDef;
 
                     ropeJointDef = new Box2D.b2RopeJointDef;
-                    ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(), targetJoint.GetAnchorA());
+                    ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
                     ropeJointDef.maxLength = vainSize;
 
                     joint = game.world.CreateJoint(ropeJointDef);

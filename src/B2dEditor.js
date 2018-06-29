@@ -2747,8 +2747,8 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.fixed = controller.targetValue;
-							if (body.mySprite.data.fixed) body.SetType(b2Body.b2_staticBody);
-							else body.SetType(b2Body.b2_dynamicBody);
+							if (body.mySprite.data.fixed) body.SetType(Box2D.b2BodyType.b2_staticBody);
+							else body.SetType(Box2D.b2BodyType.b2_dynamicBody);
 
 							var oldPosition = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
 							body.SetPosition(new b2Vec2(1000, 1000));
@@ -2758,7 +2758,7 @@ export function B2dEditor() {
 							this.setBodyCollision(body, body.mySprite.data.collision);
 
 							//awake fix
-							if (body.GetType() == b2Body.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
+							if (body.GetType() == Box2D.b2BodyType.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
 						}
 
 					} else if (controller.property == "awake") {
@@ -3445,8 +3445,8 @@ export function B2dEditor() {
 
 	this.buildBodyFromObj = function (obj) {
 		var bd = new b2BodyDef();
-		if (obj.fixed) bd.type = b2Body.b2_staticBody;
-		else bd.type = b2Body.b2_dynamicBody;
+		if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
+		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
 		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
@@ -3950,7 +3950,7 @@ export function B2dEditor() {
 		//TODO: Set collision for all fixtures
 
 
-		if (body.GetType() == b2Body.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+		if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 		else filterData.categoryBits = this.MASKBIT_NORMAL;
 		filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
 		fixture.SetSensor(false);
@@ -4062,7 +4062,7 @@ export function B2dEditor() {
 			fixDef.restitution = 0.2;
 
 			var bd = new b2BodyDef();
-			bd.type = b2Body.b2_staticBody;
+			bd.type = Box2D.b2BodyType.b2_staticBody;
 			bodyB = this.world.CreateBody(bd);
 			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 

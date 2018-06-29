@@ -112,7 +112,6 @@ function Game() {
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
-            , true //allow sleep
         );
         const bodyDef = new Box2D.b2BodyDef();
         this.m_groundBody = this.world.CreateBody(bodyDef);
@@ -124,8 +123,8 @@ function Game() {
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, this.PTM);
-        console.log(b2DebugDraw.e_shapeBit, b2DebugDraw.e_jointBit);
-        this.myDebugDraw.SetFlags(b2DebugDraw.e_shapeBit| b2DebugDraw.e_jointBit);
+        console.log(Box2D.b2DrawFlags.e_shapeBit, Box2D.b2DrawFlags.e_jointBit);
+        this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit| Box2D.b2DrawFlags.e_jointBit);
         this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
@@ -451,9 +450,9 @@ function Game() {
                 impactAngle *= game.editor.RAD2DEG + 180;
                 var velocitySum = velocityA+velocityB;
                 if(velocitySum > 10.0){
-                    var worldManifold = new Box2D.Collision.b2WorldManifold();
+                    var worldManifold = new Box2D.b2WorldManifold();
                     contact.GetWorldManifold(worldManifold);
-                    var worldCollisionPoint = worldManifold.m_points[0];
+                    var worldCollisionPoint = worldManifold.points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
                     self.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
                 }
