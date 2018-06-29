@@ -1,6 +1,4 @@
-import {
-    Box2D
-} from "../libs/Box2D";
+import * as Box2D from "../libs/Box2D_NEW";
 import {
     Key
 } from "../libs/Key";
@@ -32,18 +30,18 @@ import { settings } from "pixi.js";
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
 
-var b2Vec2 = Box2D.Common.Math.b2Vec2,
-    b2AABB = Box2D.Collision.b2AABB,
-    b2BodyDef = Box2D.Dynamics.b2BodyDef,
-    b2Body = Box2D.Dynamics.b2Body,
-    b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-    b2Fixture = Box2D.Dynamics.b2Fixture,
-    b2World = Box2D.Dynamics.b2World,
-    b2MassData = Box2D.Collision.Shapes.b2MassData,
-    b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
-    b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
-    b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
-    b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef;
+var b2Vec2 = Box2D.b2Vec2,
+	b2AABB = Box2D.b2AABB,
+	b2BodyDef = Box2D.b2BodyDef,
+	b2Body = Box2D.b2Body,
+	b2FixtureDef = Box2D.b2FixtureDef,
+	b2Fixture = Box2D.b2Fixture,
+	b2World = Box2D.b2World,
+	b2MassData = Box2D.b2MassData,
+	b2PolygonShape = Box2D.b2PolygonShape,
+	b2CircleShape = Box2D.b2CircleShape,
+	b2DebugDraw = Box2D.b2DebugDraw,
+	b2MouseJointDef = Box2D.b2MouseJointDef;
 
 function Game() {
 
@@ -116,6 +114,8 @@ function Game() {
             new b2Vec2(0, 10) //gravity
             , true //allow sleep
         );
+        const bodyDef = new Box2D.b2BodyDef();
+        this.m_groundBody = this.world.CreateBody(bodyDef);
 
         //container
         this.myContainer = new PIXI.Graphics();
@@ -124,7 +124,8 @@ function Game() {
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, this.PTM);
-        this.myDebugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+        console.log(b2DebugDraw.e_shapeBit, b2DebugDraw.e_jointBit);
+        this.myDebugDraw.SetFlags(b2DebugDraw.e_shapeBit| b2DebugDraw.e_jointBit);
         this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
@@ -188,9 +189,9 @@ function Game() {
             var body = this.getBodyAtMouse();
             if (body) {
                 var md = new b2MouseJointDef();
-                md.bodyA = this.world.GetGroundBody();
+                md.bodyA = this.m_groundBody;
                 md.bodyB = body;
-                md.target.Set(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y);
+                md.target = new Box2D.b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y);
                 md.collideConnected = true;
                 md.maxForce = 300.0 * body.GetMass();
                 this.mouseJoint = this.world.CreateJoint(md);
@@ -222,18 +223,20 @@ function Game() {
         // Query the world for overlapping shapes.
 
         this.selectedBody = null;
-        this.world.QueryAABB(this.getBodyCB.bind(this), aabb);
+        this.world.QueryAABB(this.getBodyCB, aabb);
         return this.selectedBody;
     };
-
-    this.getBodyCB = function (fixture) {
+    
+    this.getBodyCB = new function () {
+        this.ReportFixture = function(fixture){
         if (fixture.GetBody().GetType() != b2Body.b2_staticBody) {
-            if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), this.editor.mousePosWorld)) {
-                this.selectedBody = fixture.GetBody();
+            if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
+                self.selectedBody = fixture.GetBody();
                 return false;
             }
         }
         return true;
+        }
     };
 
 
@@ -426,7 +429,7 @@ function Game() {
 
     }
     var self = this;
-    this.gameContactListener = new Box2D.Dynamics.b2ContactListener();
+    this.gameContactListener = new Box2D.b2ContactListener();
     this.gameContactListener.BeginContact = function (contact) {}
     this.gameContactListener.EndContact = function (contact) {}
     this.gameContactListener.PreSolve = function (contact, oldManifold) {}

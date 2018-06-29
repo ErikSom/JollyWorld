@@ -1,4 +1,4 @@
-import { Box2D } from "./Box2D";
+import * as Box2D  from "./Box2D_NEW";
 
 export function getPIXIDebugDraw(graphics, scale) {
   function getColorFromDebugDrawCallback(color) {
@@ -72,12 +72,13 @@ export function getPIXIDebugDraw(graphics, scale) {
     drawAxes(graphics, pos.x, pos.y, transform.GetAngle());
   }
 
-  var debugDraw = new Box2D.Dynamics.b2DebugDraw();
+  var debugDraw = new Box2D.b2DebugDraw();
   debugDraw.m_sprite.graphics.clear = function (){};
   debugDraw.DrawSegment = function(vert1, vert2, color) {
     drawSegment(graphics, vert1, vert2, getColorFromDebugDrawCallback(color));
   };
   debugDraw.DrawPolygon = function(vertices, vertexCount, color) {
+    console.log("DRAWING POLYGON!");
     drawPolygon(graphics, vertices, vertexCount, false, getColorFromDebugDrawCallback(color));
   };
   debugDraw.DrawSolidPolygon = function(vertices, vertexCount, color) {

@@ -44,9 +44,9 @@ module.exports = {
 	},
 	plugins: [
         new webpack.optimize.UglifyJsPlugin(),
-		new webpack.ProvidePlugin({
-			Box2D: 'Box2D'
-          }),
+		// new webpack.ProvidePlugin({
+		// 	Box2D: 'Box2D_NEW'
+        //   }),
           new webpack.ProvidePlugin({
 			Key: 'Key'
 		  }),

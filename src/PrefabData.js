@@ -1,6 +1,4 @@
-import {
-    Box2D
-} from "../libs/Box2D";
+import * as Box2D from "../libs/Box2D_NEW";
 import {
     game
 } from "./Game";
@@ -21,7 +19,7 @@ class basePrefab {
     set(property, value) {}
     update() {}
     initContactListener() {
-        this.contactListener = new Box2D.Dynamics.b2ContactListener();
+        this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {}
         this.contactListener.EndContact = function (contact, target) {}
         this.contactListener.PreSolve = function (contact, oldManifold) {}
@@ -126,19 +124,19 @@ class character extends basePrefab {
 
                     var vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / game.editor.PTM;
 
-                    revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
+                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
                     revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA());
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
-                    revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
+                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
                     revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA());
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
                     var ropeJointDef;
 
-                    ropeJointDef = new Box2D.Dynamics.Joints.b2RopeJointDef;
+                    ropeJointDef = new Box2D.b2RopeJointDef;
                     ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(), targetJoint.GetAnchorA());
                     ropeJointDef.maxLength = vainSize;
 
@@ -226,8 +224,8 @@ class vehicle2 extends vehicle {
     update() {
         super.update();
         var drone = this.lookupObject["drone"];
-        var dirFore = new Box2D.Common.Math.b2Vec2(0, -1);
-        dirFore.Multiply(400.0);
+        var dirFore = new Box2D.b2Vec2(0, -1);
+        dirFore.SelfMul(400.0);
         drone.ApplyForce(dirFore, drone.GetPosition());
 
         var desiredAngle = 0;
