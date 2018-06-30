@@ -536,7 +536,7 @@ function Game() {
 
     this.update = function () {
 
-        this.stats.begin();
+        
 
         if (this.mouseJoint) {
             if (this.isMouseDown) {
@@ -548,7 +548,9 @@ function Game() {
         }
         if (this.run) {
             this.inputUpdate();
+            this.stats.begin();
             this.world.Step(this.physicsTimeStep, 3, 2);
+            this.stats.end();
             this.world.ClearForces();
             this.camera();
             this.updateEmitters();
@@ -560,7 +562,7 @@ function Game() {
         this.app.render();
         Key.update();
 
-        this.stats.end();
+        
 
     };
 }
