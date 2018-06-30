@@ -1,6 +1,4 @@
-import {
-	Box2D
-} from "../libs/Box2D";
+import * as Box2D from "../libs/Box2D_NEW";
 import * as prefab from "./PrefabData";
 import {
 	game
@@ -9,19 +7,18 @@ import {
 const PIXI = require('pixi.js');
 const dat = require('dat.gui').default;
 
-
-var b2Vec2 = Box2D.Common.Math.b2Vec2,
-	b2AABB = Box2D.Collision.b2AABB,
-	b2BodyDef = Box2D.Dynamics.b2BodyDef,
-	b2Body = Box2D.Dynamics.b2Body,
-	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-	b2Fixture = Box2D.Dynamics.b2Fixture,
-	b2World = Box2D.Dynamics.b2World,
-	b2MassData = Box2D.Collision.Shapes.b2MassData,
-	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
-	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
-	b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
-	b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef;
+var b2Vec2 = Box2D.b2Vec2,
+	b2AABB = Box2D.b2AABB,
+	b2BodyDef = Box2D.b2BodyDef,
+	b2Body = Box2D.b2Body,
+	b2FixtureDef = Box2D.b2FixtureDef,
+	b2Fixture = Box2D.b2Fixture,
+	b2World = Box2D.b2World,
+	b2MassData = Box2D.b2MassData,
+	b2PolygonShape = Box2D.b2PolygonShape,
+	b2CircleShape = Box2D.b2CircleShape,
+	b2DebugDraw = Box2D.b2DebugDraw,
+	b2MouseJointDef = Box2D.b2MouseJointDef;
 
 export function B2dEditor() {
 	this.initialPTM;
@@ -1636,7 +1633,7 @@ export function B2dEditor() {
 			if (this.mouseDown) {
 				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
 				if (this.spaceCameraDrag) {
-					move.Multiply(this.container.scale.x);
+					move.SelfMul(this.container.scale.x);
 					this.container.x += move.x * this.PTM;
 					this.container.y += move.y * this.PTM;
 					this.mousePosWorld.x -= move.x / this.container.scale.x;
@@ -2165,7 +2162,7 @@ export function B2dEditor() {
 		aabb.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
 
 		this.queryPhysicsBodies = [];
-		this.world.QueryAABB(this.getBodyCB.bind(this), aabb);
+		this.world.QueryAABB(this.getBodyCB, aabb);
 
 		return this.queryPhysicsBodies;
 	}
@@ -2220,15 +2217,16 @@ export function B2dEditor() {
 	}
 
 
-
-	this.getBodyCB = function (fixture) {
+	this.getBodyCB = new function(){
+	this.ReportFixture = function(fixture){
 		var isIncluded = false;
-		for (var i = 0; i < this.queryPhysicsBodies.length; i++) {
-			if (this.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
+		for (var i = 0; i < self.queryPhysicsBodies.length; i++) {
+			if (self.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
 		}
-		if (!isIncluded) this.queryPhysicsBodies.push(fixture.GetBody());
+		if (!isIncluded) self.queryPhysicsBodies.push(fixture.GetBody());
 		return true;
-	};
+	}
+};
 
 
 
@@ -2258,7 +2256,7 @@ export function B2dEditor() {
 			body = computeBodies[i];
 			fixture = body.GetFixtureList();
 			while (fixture != null) {
-				aabb.Combine(aabb, fixture.GetAABB());
+				aabb.Combine1(fixture.GetAABB(0));
 				fixture = fixture.GetNext();
 			}
 		}
@@ -2270,7 +2268,7 @@ export function B2dEditor() {
 			if (sprite.myBody) {
 				fixture = sprite.myBody.GetFixtureList();
 				while (fixture != null) {
-					aabb.Combine(aabb, fixture.GetAABB());
+					aabb.Combine1(fixture.GetAABB(0));
 					fixture = fixture.GetNext();
 				}
 			}
@@ -2298,7 +2296,7 @@ export function B2dEditor() {
 				var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
 				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
 				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
-				aabb.Combine(aabb, spriteAABB);
+				aabb.Combine1(spriteAABB);
 			}
 		}
 		return aabb;
@@ -2749,8 +2747,8 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.fixed = controller.targetValue;
-							if (body.mySprite.data.fixed) body.SetType(b2Body.b2_staticBody);
-							else body.SetType(b2Body.b2_dynamicBody);
+							if (body.mySprite.data.fixed) body.SetType(Box2D.b2BodyType.b2_staticBody);
+							else body.SetType(Box2D.b2BodyType.b2_dynamicBody);
 
 							var oldPosition = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
 							body.SetPosition(new b2Vec2(1000, 1000));
@@ -2760,7 +2758,7 @@ export function B2dEditor() {
 							this.setBodyCollision(body, body.mySprite.data.collision);
 
 							//awake fix
-							if (body.GetType() == b2Body.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
+							if (body.GetType() == Box2D.b2BodyType.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
 						}
 
 					} else if (controller.property == "awake") {
@@ -3447,8 +3445,8 @@ export function B2dEditor() {
 
 	this.buildBodyFromObj = function (obj) {
 		var bd = new b2BodyDef();
-		if (obj.fixed) bd.type = b2Body.b2_staticBody;
-		else bd.type = b2Body.b2_dynamicBody;
+		if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
+		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
 		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
@@ -3952,7 +3950,7 @@ export function B2dEditor() {
 		//TODO: Set collision for all fixtures
 
 
-		if (body.GetType() == b2Body.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+		if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 		else filterData.categoryBits = this.MASKBIT_NORMAL;
 		filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
 		fixture.SetSensor(false);
@@ -4064,7 +4062,7 @@ export function B2dEditor() {
 			fixDef.restitution = 0.2;
 
 			var bd = new b2BodyDef();
-			bd.type = b2Body.b2_staticBody;
+			bd.type = Box2D.b2BodyType.b2_staticBody;
 			bodyB = this.world.CreateBody(bd);
 			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
@@ -4079,9 +4077,10 @@ export function B2dEditor() {
 		var joint;
 
 		if (jointPlaceHolder.jointType == this.jointObject_TYPE_PIN) {
-			var revoluteJointDef = new Box2D.Dynamics.Joints.b2RevoluteJointDef;
+			var revoluteJointDef = new Box2D.b2RevoluteJointDef;
 
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
+			
 			revoluteJointDef.collideConnected = jointPlaceHolder.collideConnected;
 			revoluteJointDef.referenceAngle = 0.0;
 			revoluteJointDef.lowerAngle = jointPlaceHolder.lowerAngle * this.DEG2RAD;
@@ -4096,7 +4095,7 @@ export function B2dEditor() {
 
 			var axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation + 90 * this.DEG2RAD), Math.sin(jointPlaceHolder.rotation + 90 * this.DEG2RAD));
 
-			var prismaticJointDef = new Box2D.Dynamics.Joints.b2PrismaticJointDef;
+			var prismaticJointDef = new Box2D.b2PrismaticJointDef;
 
 			prismaticJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
 			prismaticJointDef.collideConnected = jointPlaceHolder.collideConnected;
@@ -4113,14 +4112,14 @@ export function B2dEditor() {
 
 
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
-			var distanceJointDef = new Box2D.Dynamics.Joints.b2DistanceJointDef;
+			var distanceJointDef = new Box2D.b2DistanceJointDef;
 			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 			distanceJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
 			distanceJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
 
 			joint = this.world.CreateJoint(distanceJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
-			var ropeJointDef = new Box2D.Dynamics.Joints.b2RopeJointDef;
+			var ropeJointDef = new Box2D.b2RopeJointDef;
 			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
 			var xd = bodyA.GetPosition().x - bodyB.GetPosition().x;
 			var yd = bodyA.GetPosition().y - bodyB.GetPosition().y;
@@ -4826,7 +4825,7 @@ export function B2dEditor() {
 		this.destroyEditorGUI();
 	}
 	var self = this;
-	this.B2dEditorContactListener = new Box2D.Dynamics.b2ContactListener();
+	this.B2dEditorContactListener = new Box2D.b2ContactListener();
 	this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
 		if (self.contactCallBackListener) {
 			if (secondParam) self.contactCallBackListener[name](contact, secondParam);

@@ -1,22 +1,20 @@
-import {
-    Box2D
-} from "../libs/Box2D";
+import * as Box2D from "../libs/Box2D_NEW";
 import {
     game
 } from "./Game";
 
-var b2Vec2 = Box2D.Common.Math.b2Vec2,
-    b2AABB = Box2D.Collision.b2AABB,
-    b2BodyDef = Box2D.Dynamics.b2BodyDef,
-    b2Body = Box2D.Dynamics.b2Body,
-    b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-    b2Fixture = Box2D.Dynamics.b2Fixture,
-    b2World = Box2D.Dynamics.b2World,
-    b2MassData = Box2D.Collision.Shapes.b2MassData,
-    b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
-    b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
-    b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
-    b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef;
+var b2Vec2 = Box2D.b2Vec2,
+	b2AABB = Box2D.b2AABB,
+	b2BodyDef = Box2D.b2BodyDef,
+	b2Body = Box2D.b2Body,
+	b2FixtureDef = Box2D.b2FixtureDef,
+	b2Fixture = Box2D.b2Fixture,
+	b2World = Box2D.b2World,
+	b2MassData = Box2D.b2MassData,
+	b2PolygonShape = Box2D.b2PolygonShape,
+	b2CircleShape = Box2D.b2CircleShape,
+	b2DebugDraw = Box2D.b2DebugDraw,
+	b2MouseJointDef = Box2D.b2MouseJointDef;
 
 export function Vehicle() {
     this.engines = [];
@@ -67,7 +65,7 @@ export function Vehicle() {
         if (fixture.GetFilterData().groupIndex == game.editor.GROUPINDEX_CHARACTER) return -1;
 
         this.m_hit = true;
-        this.m_point = point.Copy();
+        this.m_point = point.Clone();
         this.m_normal = normal;
         this.m_fixture = fixture;
         return fraction;
@@ -93,8 +91,8 @@ export function Vehicle() {
             var checkSlize = (360 / 20) * this.DEG2RAD;
             var totalCircleRad = 360 * this.DEG2RAD;
             for (j = 0; j < totalCircleRad; j += checkSlize) {
-                rayEnd = rayStart.Copy();
-                rayEnd.Add(new b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
+                rayEnd = rayStart.Clone();
+                rayEnd.SelfAdd(new b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
                 var callback = new this.RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if (callback.m_hit) {
@@ -109,8 +107,8 @@ export function Vehicle() {
     this.applyImpulse = function (force, angle) {
         var i;
         var body;
-        var dirFore = angle.Copy();
-        dirFore.Multiply(force * 0.01)
+        var dirFore = angle.Clone(); 
+        dirFore.SelfMul(force * 0.01)
         for (i = 0; i < this.vehicleBodies._bodies.length; i++) {
             body = this.vehicleBodies._bodies[i];
             //body.ApplyForce(dirFore, body.GetPosition());
