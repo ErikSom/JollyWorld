@@ -163,6 +163,7 @@ function Game() {
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
         this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
         this.editor.buildJSON(PIXI.loader.resources.testData.data);
+        this.editor.buildJSON(PIXI.loader.resources.testData2.data);
     }
     this.loadLevel = function (levelData) {
         console.log("Loading level..");
@@ -313,7 +314,7 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
-        var targetZoom = 1;
+        var targetZoom = 0.1;
 
         var currentZoom = this.editor.container.scale.x;
 
