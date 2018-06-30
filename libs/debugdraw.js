@@ -5,7 +5,6 @@ class DebugDraw extends Box2D.b2Draw {
   constructor() {
       super();
       this.m_ctx = null;
-      this.offset = new Box2D.b2Vec2();
   }
   PushTransform(xf) {
       const ctx = this.m_ctx;
@@ -14,8 +13,6 @@ class DebugDraw extends Box2D.b2Draw {
           ctx.translate(xf.p.x, xf.p.y);
           ctx.rotate(xf.q.GetAngle());
       }
-      this.offset = new Box2D.b2Vec2(xf.p.x, xf.p.y);
-
   }
   PopTransform(xf) {
       const ctx = this.m_ctx;
@@ -210,7 +207,7 @@ export function getPIXIDebugDraw(graphics, scale) {
     graphics.moveTo(vert1.x * scale, vert1.y * scale);
     graphics.lineTo(vert2.x * scale, vert2.y * scale);
   }
-  function drawPolygon(graphics, vertices, vertexCount, fill, color, offset) {
+  function drawPolygon(graphics, vertices, vertexCount, fill, color) {
 
     graphics.lineStyle(1, color, 1);
     if (fill) {
@@ -278,19 +275,19 @@ export function getPIXIDebugDraw(graphics, scale) {
 
   };
   debugDraw.DrawPolygon = function(vertices, vertexCount, color) {
-    drawPolygon(graphics, vertices, vertexCount, false, getColorFromDebugDrawCallback(color), this.offset);
+    drawPolygon(graphics, vertices, vertexCount, false, getColorFromDebugDrawCallback(color));
 
   };
   debugDraw.DrawSolidPolygon = function(vertices, vertexCount, color) {
-    drawPolygon(graphics, vertices, vertexCount, true, getColorFromDebugDrawCallback(color), this.offset);
+    drawPolygon(graphics, vertices, vertexCount, true, getColorFromDebugDrawCallback(color));
 
 
   };
   debugDraw.DrawCircle = function(center, radius, color) {
-    drawCircle(graphics, center, radius, Box2D.Box2D.b2Vec2(0,0), false, getColorFromDebugDrawCallback(color), this.offset);
+    drawCircle(graphics, center, radius, Box2D.Box2D.b2Vec2(0,0), false, getColorFromDebugDrawCallback(color));
   };
   debugDraw.DrawSolidCircle = function(center, radius, axis, color) {
-    drawCircle(graphics, center, radius, axis, true, getColorFromDebugDrawCallback(color), this.offset);
+    drawCircle(graphics, center, radius, axis, true, getColorFromDebugDrawCallback(color));
 
   };
   debugDraw.DrawTransform = function(transform) {

@@ -4969,6 +4969,9 @@
         SetRadius(radius){
             this.m_radius = radius;
         }
+        GetRadius(){
+            return this.m_radius;
+        }
         /// Implement b2Shape.
         Clone() {
             return new b2CircleShape().Copy(this);
@@ -19877,7 +19880,6 @@
         }
         // #if B2_ENABLE_PARTICLE
         Step(dt, velocityIterations, positionIterations, particleIterations = this.CalculateReasonableParticleIterations(dt)) {
-            console.log("STEP!");
             // #else
             // public Step(dt: number, velocityIterations: number, positionIterations: number): void {
             // #endif
@@ -19907,7 +19909,6 @@
             const timer = b2World.Step_s_timer.Reset();
             this.m_contactManager.Collide();
             this.m_profile.collide = timer.GetMilliseconds();
-            console.log("Step 1", this.m_stepComplete, step.dt);
             // Integrate velocities, solve velocity constraints, and integrate positions.
             if (this.m_stepComplete && step.dt > 0) {
                 const timer = b2World.Step_s_timer.Reset();
@@ -19918,7 +19919,6 @@
                 // #endif
                 this.Solve(step);
                 this.m_profile.solve = timer.GetMilliseconds();
-                console.log("Step2");
             }
             // Handle TOI events.
             if (this.m_continuousPhysics && step.dt > 0) {
@@ -19972,10 +19972,7 @@
             }
             const flags = this.m_debugDraw.GetFlags();
             const color = b2World.DrawDebugData_s_color.SetRGB(0, 0, 0);
-            console.log("Draw Debug Data", flags, exports.b2DrawFlags.e_shapeBit);
-            console.log("WHAT");
             if (flags & exports.b2DrawFlags.e_shapeBit) {
-            console.log("Draw Debug Data Flags", flags);
 
                 for (let b = this.m_bodyList; b; b = b.m_next) {
                     const xf = b.m_xf;
@@ -20475,10 +20472,13 @@
             switch (shape.m_type) {
                 case exports.b2ShapeType.e_circleShape: {
                     const circle = shape;
-                    const center = circle.m_p;
                     const radius = circle.m_radius;
-                    const axis = b2Vec2.UNITX;
+                    var xf = fixture.GetBody().GetTransform();
+                    var center = b2Transform.MulXV(xf, circle.m_p, new b2Vec2());
+                    var axis = xf.q.GetXAxis(new b2Vec2());
                     this.m_debugDraw.DrawSolidCircle(center, radius, axis, color);
+
+
                     break;
                 }
                 case exports.b2ShapeType.e_edgeShape: {
