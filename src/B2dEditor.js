@@ -1798,6 +1798,7 @@ export function B2dEditor() {
 		} else if (transformType == this.TRANSFORM_DEPTH) {
 			var tarDepthIndexes = [];
 			var depthArray = [];
+			var jointArray = []
 
 			for (i = 0; i < objects.length; i++) {
 
@@ -1814,6 +1815,7 @@ export function B2dEditor() {
 							depthArray.push(joint);
 							tarDepthIndexes.push(joint.parent.getChildIndex(joint));
 						}
+						if(!(jointArray.includes(joint))) jointArray.push(joint);
 					});
 
 				} else {
@@ -1865,6 +1867,27 @@ export function B2dEditor() {
 						 child.parent.swapChildren(child, neighbour);
 					}
 				}
+			}
+
+
+			// post process joints to make sure they are always on top
+			for(i = 0; i<jointArray.length; i++){
+				var joint = jointArray[i];
+				var jointIndex = joint.parent.getChildIndex(joint);
+				console.log(i, joint, joint.bodies);
+				joint.bodies.map(body => {
+					console.log(body, jointIndex, body.mySprite.parent.getChildIndex(body.mySprite));
+					if(body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite)>jointIndex){
+							joint.parent.swapChildren(joint, body.mySprite);
+							console.log("Fix sprite");
+					}
+					console.log(body, jointIndex, body.myTexture.parent.getChildIndex(body.myTexture));
+
+					if(body.myTexture && body.myTexture.parent.getChildIndex(body.myTexture)>jointIndex){
+						joint.parent.swapChildren(joint, body.myTexture);
+						console.log("Fix Texture");
+					}
+				});
 			}
 		} else if (transformType == this.TRANSFORM_FORCEDEPTH) {
 			objects = this.sortObjectsByIndex(objects);

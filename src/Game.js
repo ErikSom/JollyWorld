@@ -163,7 +163,7 @@ function Game() {
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
         this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
         this.editor.buildJSON(PIXI.loader.resources.testData.data);
-        this.editor.buildJSON(PIXI.loader.resources.testData2.data);
+        //this.editor.buildJSON(PIXI.loader.resources.testData2.data);
     }
     this.loadLevel = function (levelData) {
         console.log("Loading level..");
@@ -316,7 +316,7 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
-        var targetZoom = 0.1;
+        var targetZoom = 0.8;
 
         var currentZoom = this.editor.container.scale.x;
 
@@ -537,9 +537,6 @@ function Game() {
     }
 
     this.update = function () {
-
-        
-
         if (this.mouseJoint) {
             if (this.isMouseDown) {
                 this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y));
