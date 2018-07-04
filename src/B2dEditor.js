@@ -762,6 +762,12 @@ export function B2dEditor() {
 			case case_MULTIPLE:
 				break;
 		}
+		//TODO:Maybe add admin mode / pro mode for lockselection
+		if(self.editorGUI.editData.lockselection == undefined) self.editorGUI.editData.lockselection = false;
+		this.editorGUI.add(self.editorGUI.editData, "lockselection").onChange(function (value) {
+			this.humanUpdate = true;
+			this.targetValue = value;
+		});
 		this.registerDragWindow(this.editorGUI.domElement);
 	}
 	this.addJointGUI = function (dataJoint) {
@@ -1810,12 +1816,12 @@ export function B2dEditor() {
 						tarDepthIndexes.push(objects[i].mySprite.parent.getChildIndex(objects[i].myTexture));
 					}
 
-					if(objects[i].myJoints) objects[i].myJoints.map(joint => {
-						if(!(objects.includes(joint))){
+					if (objects[i].myJoints) objects[i].myJoints.map(joint => {
+						if (!(objects.includes(joint))) {
 							depthArray.push(joint);
 							tarDepthIndexes.push(joint.parent.getChildIndex(joint));
 						}
-						if(!(jointArray.includes(joint))) jointArray.push(joint);
+						if (!(jointArray.includes(joint))) jointArray.push(joint);
 					});
 
 				} else {
@@ -1863,27 +1869,27 @@ export function B2dEditor() {
 						}
 					}
 
-					if (allowed){
-						 child.parent.swapChildren(child, neighbour);
+					if (allowed) {
+						child.parent.swapChildren(child, neighbour);
 					}
 				}
 			}
 
 
 			// post process joints to make sure they are always on top
-			for(i = 0; i<jointArray.length; i++){
+			for (i = 0; i < jointArray.length; i++) {
 				var joint = jointArray[i];
 				var jointIndex = joint.parent.getChildIndex(joint);
 				console.log(i, joint, joint.bodies);
 				joint.bodies.map(body => {
 					console.log(body, jointIndex, body.mySprite.parent.getChildIndex(body.mySprite));
-					if(body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite)>jointIndex){
-							joint.parent.swapChildren(joint, body.mySprite);
-							console.log("Fix sprite");
+					if (body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite) > jointIndex) {
+						joint.parent.swapChildren(joint, body.mySprite);
+						console.log("Fix sprite");
 					}
 					console.log(body, jointIndex, body.myTexture.parent.getChildIndex(body.myTexture));
 
-					if(body.myTexture && body.myTexture.parent.getChildIndex(body.myTexture)>jointIndex){
+					if (body.myTexture && body.myTexture.parent.getChildIndex(body.myTexture) > jointIndex) {
 						joint.parent.swapChildren(joint, body.myTexture);
 						console.log("Fix Texture");
 					}
@@ -2073,7 +2079,7 @@ export function B2dEditor() {
 		} else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
 				this.selectedTextures.push(this.attachJointPlaceHolder());
-			}else this.selectTool(this.tool_JOINTS);
+			} else this.selectTool(this.tool_JOINTS);
 		} else if (e.keyCode == 83) { //s
 			this.stringifyWorldJSON();
 		} else if (e.keyCode == 84) { //t
@@ -2186,6 +2192,16 @@ export function B2dEditor() {
 
 		this.queryPhysicsBodies = [];
 		this.world.QueryAABB(this.getBodyCB, aabb);
+		if (!this.altDown) {
+			var body;
+			for (var i = 0; i < this.queryPhysicsBodies.length; i++) {
+				body = this.queryPhysicsBodies[i];
+				if (body.mySprite.data.lockselection) {
+					this.queryPhysicsBodies.splice(i, 1);
+					i--;
+				}
+			}
+		}
 
 		return this.queryPhysicsBodies;
 	}
@@ -2218,6 +2234,19 @@ export function B2dEditor() {
 				}
 			} else {}
 		}
+
+		if (!this.altDown) {
+			var graphic;
+			for (var i = 0; i < queryGraphics.length; i++) {
+				graphic = queryGraphics[i];
+				if (graphic.data.lockselection) {
+					queryGraphics.splice(i, 1);
+					i--;
+				}
+			}
+		}
+
+
 		return queryGraphics;
 
 	}
@@ -2240,16 +2269,16 @@ export function B2dEditor() {
 	}
 
 
-	this.getBodyCB = new function(){
-	this.ReportFixture = function(fixture){
-		var isIncluded = false;
-		for (var i = 0; i < self.queryPhysicsBodies.length; i++) {
-			if (self.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
+	this.getBodyCB = new function () {
+		this.ReportFixture = function (fixture) {
+			var isIncluded = false;
+			for (var i = 0; i < self.queryPhysicsBodies.length; i++) {
+				if (self.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
+			}
+			if (!isIncluded) self.queryPhysicsBodies.push(fixture.GetBody());
+			return true;
 		}
-		if (!isIncluded) self.queryPhysicsBodies.push(fixture.GetBody());
-		return true;
-	}
-};
+	};
 
 
 
@@ -2699,7 +2728,7 @@ export function B2dEditor() {
 							color = color.slice(1);
 							sprite.originalSprite.tint = parseInt(color, 16);
 						}
-					}else if (controller.property == "colorFill") {
+					} else if (controller.property == "colorFill") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -2809,6 +2838,16 @@ export function B2dEditor() {
 						}
 					} else if (controller.property == "tileTexture") {
 						//do tileTexture
+					} else if (controller.property == "lockselection" && controller.targetValue != "-") {
+						//body & sprite
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.lockselection = controller.targetValue;
+						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.data.lockselection = controller.targetValue;
+						}
 					} else {
 						//TODO: Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
@@ -4103,7 +4142,7 @@ export function B2dEditor() {
 			var revoluteJointDef = new Box2D.b2RevoluteJointDef;
 
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
-			
+
 			revoluteJointDef.collideConnected = jointPlaceHolder.collideConnected;
 			revoluteJointDef.referenceAngle = 0.0;
 			revoluteJointDef.lowerAngle = jointPlaceHolder.lowerAngle * this.DEG2RAD;
@@ -4746,7 +4785,7 @@ export function B2dEditor() {
 					worldObject = this.buildBodyFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXTURE) {
-					if (obj.bodyID != undefined) {  
+					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex;
 					}
 					worldObject = this.buildTextureFromObj(obj);
