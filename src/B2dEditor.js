@@ -1281,6 +1281,7 @@ export function B2dEditor() {
 		this.collision = 0;
 		this.radius;
 		this.tileTexture = "";
+		this.lockselection = false;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -1298,6 +1299,7 @@ export function B2dEditor() {
 		this.textureAngleOffset = null;
 		this.isCarvable = false;
 		this.tint = '#FFFFFF';
+		this.lockselection = false;
 	}
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
@@ -1312,6 +1314,7 @@ export function B2dEditor() {
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
+		this.lockselection = false;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -1336,6 +1339,7 @@ export function B2dEditor() {
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
+		this.lockselection = false;
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -1359,6 +1363,7 @@ export function B2dEditor() {
 		this.frequencyHz = 0.0;
 		this.upperLimit = 0.0;
 		this.lowerLimit = 0.0;
+		this.lockselection = false;
 	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
@@ -1366,6 +1371,7 @@ export function B2dEditor() {
 		this.y = 0;
 		this.rotation = 0;
 		this.groups = "";
+		this.lockselection = false;
 	}
 	this.lookupObject = function () {
 		this._bodies = [];
@@ -2838,7 +2844,7 @@ export function B2dEditor() {
 						}
 					} else if (controller.property == "tileTexture") {
 						//do tileTexture
-					} else if (controller.property == "lockselection" && controller.targetValue != "-") {
+					} else if (controller.property == "lockselection") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -2847,6 +2853,17 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.lockselection = controller.targetValue;
+						}
+						var key;
+						for (key in this.selectedPrefabs) {
+							if (this.selectedPrefabs.hasOwnProperty(key)) {
+								var lookup = this.lookupGroups[key];
+								var allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
+								for(j = 0; j<allObjects.length; j++){
+									if(allObjects[j].mySprite) allObjects[j].mySprite.data.lockselection = controller.targetValue;
+									else allObjects[j].data.lockselection = controller.targetValue;
+								}
+							}
 						}
 					} else {
 						//TODO: Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
