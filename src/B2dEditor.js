@@ -2198,14 +2198,12 @@ export function B2dEditor() {
 
 		this.queryPhysicsBodies = [];
 		this.world.QueryAABB(this.getBodyCB, aabb);
-		if (!this.altDown) {
-			var body;
-			for (var i = 0; i < this.queryPhysicsBodies.length; i++) {
-				body = this.queryPhysicsBodies[i];
-				if (body.mySprite.data.lockselection) {
-					this.queryPhysicsBodies.splice(i, 1);
-					i--;
-				}
+		var body;
+		for (var i = 0; i < this.queryPhysicsBodies.length; i++) {
+			body = this.queryPhysicsBodies[i];
+			if (Boolean(body.mySprite.data.lockselection) != this.altDown) {
+				this.queryPhysicsBodies.splice(i, 1);
+				i--;
 			}
 		}
 
@@ -2849,19 +2847,36 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.lockselection = controller.targetValue;
+							if(body.mySprite.data.lockselection) body.mySprite.alpha /= 2;
+							else body.mySprite.alpha = body.mySprite.data.alpha || 1;
+							if(body.myTexture){
+								if(body.mySprite.data.lockselection) body.myTexture.alpha /= 2;
+								else body.myTexture.alpha = body.myTexture.data.alpha || 1;
+							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.lockselection = controller.targetValue;
+							if(sprite.data.lockselection) sprite.alpha /= 2;
+							else sprite.alpha = sprite.data.alpha || 1;
 						}
 						var key;
 						for (key in this.selectedPrefabs) {
 							if (this.selectedPrefabs.hasOwnProperty(key)) {
 								var lookup = this.lookupGroups[key];
 								var allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
+								var sprite;
 								for(j = 0; j<allObjects.length; j++){
-									if(allObjects[j].mySprite) allObjects[j].mySprite.data.lockselection = controller.targetValue;
-									else allObjects[j].data.lockselection = controller.targetValue;
+									if(allObjects[j].mySprite) sprite = allObjects[j].mySprite;
+									else sprite = allObjects[j];
+									sprite.data.lockselection = controller.targetValue;
+									if(sprite.data.lockselection) sprite.alpha /= 2;
+									else sprite.alpha = sprite.data.alpha || 1;
+
+									if(sprite.myBody && sprite.myBody.myTexture){
+										if(sprite.data.lockselection) sprite.myBody.myTexture.alpha /= 2;
+										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.alpha || 1;
+									}
 								}
 							}
 						}
