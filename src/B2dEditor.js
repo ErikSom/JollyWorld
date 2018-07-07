@@ -798,7 +798,7 @@ export function B2dEditor() {
 
 			if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
 				lowerLimit = 0;
-				higherLimit = 1000;
+				higherLimit = 10000;
 			} else {
 				lowerLimit = 0;
 				higherLimit = 1000;
