@@ -24,10 +24,11 @@ export function Vehicle() {
     this.desiredVehicleSpeeds = [];
     this.frame;
     this.vehicleBodies;
-    this.characterBodies;
+    this.prefabObject;
 
-    this.init = function (_vehicleBodies, _characterBodies) {
-        this.vehicleBodies = _vehicleBodies;
+    this.init = function (_prefabObject) {
+        this.prefabObject = _prefabObject;
+        this.vehicleBodies = game.editor.lookupGroups[this.prefabObject.key];
         if (this.vehicleBodies) {
             var i;
             var maxEngines = 4;
@@ -53,7 +54,6 @@ export function Vehicle() {
             this.frame.SetAngularDamping(0.8);
             this.stopAccelerateWheels();
         }
-        this.characterBodies = _characterBodies;
     }
 
     this.RaycastCallbackWheel = function () {
@@ -77,7 +77,7 @@ export function Vehicle() {
         var i;
         var j;
         var wheel;
-        var offset = 0.5;
+        const offset = 0.5;
         var grounded = false;
 
         for (i = 0; i < this.wheels.length; i++) {
@@ -103,6 +103,7 @@ export function Vehicle() {
                 }
             }
         }
+        if(this.prefabObject.class && this.prefabObject.class.accelerate) this.prefabObject.class.accelerate(dir);
     }
     this.applyImpulse = function (force, angle) {
         var i;
@@ -157,6 +158,7 @@ export function Vehicle() {
 
     this.stopAccelerate = function () {
         this.stopAccelerateWheels();
+        if(this.prefabObject.class && this.prefabObject.class.stopAccelerate) this.prefabObject.class.stopAccelerate();
     }
     this.lean = function (dir) {
 

@@ -299,7 +299,7 @@ function Game() {
         this.character = this.editor.lookupGroups[this.playerPrefabObject.key].character;
         this.vehicle = new Vehicle();
 
-        this.vehicle.init(this.editor.lookupGroups[this.playerPrefabObject.key], this.character);
+        this.vehicle.init(this.playerPrefabObject);
         this.cameraFocusObject = this.character.body;
     }
     this.findPlayableCharacter = function(){
