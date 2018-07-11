@@ -2,6 +2,9 @@ import * as Box2D from "../libs/Box2D_NEW";
 import {
     game
 } from "./Game";
+import {
+    Vehicle
+} from "./Vehicle";
 
 class basePrefab {
     static settings = {};
@@ -337,12 +340,12 @@ class vehicle_horse extends vehicle {
             var rayEnd;
             var wheelRadius = wheel.GetShape().GetRadius();
             var rayLength = wheelRadius + offset;
-            const checkSlize = (360 / 20) * this.DEG2RAD;
-            const totalCircleRad = 360 * this.DEG2RAD;
+            const checkSlize = (360 / 20) * game.editor.DEG2RAD;
+            const totalCircleRad = 360 * game.editor.DEG2RAD;
             for (var j = 0; j < totalCircleRad; j += checkSlize) {
                 rayEnd = rayStart.Clone();
-                rayEnd.SelfAdd(new b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
-                var callback = new this.RaycastCallbackWheel();
+                rayEnd.SelfAdd(new Box2D.b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
+                let callback = new RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if (callback.m_hit) {
                     if(i == 0) backFeetGrounded = true;
@@ -382,6 +385,21 @@ class vehicle_horse extends vehicle {
         }
     }
 }
+const RaycastCallbackWheel = function () {
+    this.m_hit = false;
+}
+RaycastCallbackWheel.prototype.ReportFixture = function (fixture, point, normal, fraction) {
+    //if ( ... not interested in this fixture ... )
+    //  return -1;
+    if (fixture.GetFilterData().groupIndex == game.editor.GROUPINDEX_CHARACTER) return -1;
+    if (fixture.IsSensor()) return -1;
+
+    this.m_hit = true;
+    this.m_point = point.Clone();
+    this.m_normal = normal;
+    this.m_fixture = fixture;
+    return fraction;
+};
 
 class vain extends basePrefab {
     constructor(target) {

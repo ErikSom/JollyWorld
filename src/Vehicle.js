@@ -63,6 +63,7 @@ export function Vehicle() {
         //if ( ... not interested in this fixture ... )
         //  return -1;
         if (fixture.GetFilterData().groupIndex == game.editor.GROUPINDEX_CHARACTER) return -1;
+        if (fixture.IsSensor()) return -1;
 
         this.m_hit = true;
         this.m_point = point.Clone();
