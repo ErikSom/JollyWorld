@@ -163,7 +163,7 @@ export function Vehicle() {
     }
     this.lean = function (dir) {
 
-        var leanSpeed = 0.2;
+        var leanSpeed = this.prefabObject.class.leanSpeed || 0.2;
         var velocity = leanSpeed * dir;
         this.frame.SetAngularVelocity(velocity * 10);
 
