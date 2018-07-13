@@ -1964,18 +1964,12 @@ export function B2dEditor() {
 			for (i = 0; i < jointArray.length; i++) {
 				var joint = jointArray[i];
 				var jointIndex = joint.parent.getChildIndex(joint);
-				console.log(i, joint, joint.bodies);
 				joint.bodies.map(body => {
-					console.log(body, jointIndex, body.mySprite.parent.getChildIndex(body.mySprite));
 					if (body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite) > jointIndex) {
 						joint.parent.swapChildren(joint, body.mySprite);
-						console.log("Fix sprite");
 					}
-					console.log(body, jointIndex, body.myTexture.parent.getChildIndex(body.myTexture));
-
 					if (body.myTexture && body.myTexture.parent.getChildIndex(body.myTexture) > jointIndex) {
 						joint.parent.swapChildren(joint, body.myTexture);
-						console.log("Fix Texture");
 					}
 				});
 			}
@@ -4556,7 +4550,6 @@ export function B2dEditor() {
 	}
 	this.updateCircleShape = function (graphic, radius, pos, colorFill, colorLine, transparancy, dontClear) {
 		var color;
-		console.log(colorFill);
 		color = colorFill.slice(1);
 		var colorFillHex = parseInt(color, 16);
 		color = colorLine.slice(1);
