@@ -469,6 +469,7 @@ export function B2dEditor() {
 		var case_JUST_PREFABS = 4;
 		var case_MULTIPLE = 5;
 		var case_JUST_GRAPHICS = 6;
+		var case_JUST_TRIGGERS = 7;
 
 		var currentCase = case_NOTHING;
 		var prefabKeys = Object.keys(this.selectedPrefabs);
@@ -481,7 +482,19 @@ export function B2dEditor() {
 			if (Object.keys(uniqueSelectedPrefabs).length == 1) currentCase = case_JUST_PREFABS;
 			else currentCase = case_MULTIPLE;
 		} else if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0 && prefabKeys.length == 0) {
-			currentCase = case_JUST_BODIES;
+			var _triggers = []
+			var _bodies = []
+			var _body;
+			for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
+				_body = this.selectedPhysicsBodies[i];
+				if(_body.mySprite.data.type == this.object_BODY) _bodies.push(_body);
+				else if(_body.mySprite.data.type == this.object_TRIGGER) _triggers.push(_body);
+
+				var editingMultipleObjects = (_bodies.length > 0 ? 1 : 0) + (_triggers.length > 0 ? 1 : 0);
+				if(editingMultipleObjects > 1) currentCase = case_MULTIPLE;
+				else if(_triggers.length > 0) currentCase = case_JUST_TRIGGERS;
+				else currentCase = case_JUST_BODIES;
+			}
 		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0 && prefabKeys.length == 0) {
 			var _selectedTextures = [];
 			var _selectedGraphics = [];
@@ -588,6 +601,12 @@ export function B2dEditor() {
 				else dataJoint = this.prefabs[prefabKeys[0]];
 
 				this.editorGUI.addFolder('multiple objects');
+				break;
+			case case_JUST_TRIGGERS:
+				this.editorGUI.editData = new this.triggerObject;
+				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
+				if (this.selectedPhysicsBodies.length > 1) this.editorGUI.addFolder('multiple triggers');
+				else this.editorGUI.addFolder('trigger');
 				break;
 		}
 
@@ -1670,7 +1689,7 @@ export function B2dEditor() {
 				triggerObject.x = this.startSelectionPoint.x;
 				triggerObject.y = this.startSelectionPoint.y;
 				const triggerStartSize = 50 / game.editor.PTM;
-				if (this.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize;
+				if (this.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize*game.editor.PTM;
 				else triggerObject.vertices = [{
 						x: -triggerStartSize,
 						y: -triggerStartSize
@@ -1688,7 +1707,7 @@ export function B2dEditor() {
 						y: triggerStartSize
 					}
 				]
-				this.buildBodyFromObj(triggerObject);
+				this.buildTriggerFromObj(triggerObject);
 			}
 
 		}
@@ -3599,8 +3618,8 @@ export function B2dEditor() {
 		var bodyObject = JSON.parse(JSON.stringify(obj));
 		bodyObject.fixed = true;
 		bodyObject.density = 1;
-		bodyObject.colorFill = '0xFF';
-		bodyObject.colorLine = '0xFF';
+		bodyObject.colorFill = '#FFFFFF';
+		bodyObject.colorLine = '#FFFFFF';
 		bodyObject.transparancy = 0.2;
 		bodyObject.collision = 2;
 
@@ -4540,6 +4559,7 @@ export function B2dEditor() {
 	}
 	this.updateCircleShape = function (graphic, radius, pos, colorFill, colorLine, transparancy, dontClear) {
 		var color;
+		console.log(colorFill);
 		color = colorFill.slice(1);
 		var colorFillHex = parseInt(color, 16);
 		color = colorLine.slice(1);
