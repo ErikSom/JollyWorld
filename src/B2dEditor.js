@@ -2317,17 +2317,14 @@ export function B2dEditor() {
 			} else {}
 		}
 
-		if (!this.altDown) {
-			var graphic;
-			for (var i = 0; i < queryGraphics.length; i++) {
-				graphic = queryGraphics[i];
-				if (graphic.data.lockselection) {
-					queryGraphics.splice(i, 1);
-					i--;
-				}
+		var graphic;
+		for (var i = 0; i < queryGraphics.length; i++) {
+			graphic = queryGraphics[i];
+			if (Boolean(graphic.data.lockselection) != this.altDown) {
+				queryGraphics.splice(i, 1);
+				i--;
 			}
 		}
-
 
 		return queryGraphics;
 
