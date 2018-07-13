@@ -442,6 +442,13 @@ export function B2dEditor() {
 				this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
 				break
 			case this.tool_ERASER:
+				this.editorGUI.editData = this.editorTriggerObject;
+				this.editorGUI.addFolder('add triggers');
+
+				var shapes = ["Circle", "Box"];
+				this.editorGUI.editData.shape = shapes[0];
+				this.editorGUI.add(self.editorGUI.editData, "shape", shapes);
+
 				break
 		}
 		if (this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
@@ -763,7 +770,7 @@ export function B2dEditor() {
 				break;
 		}
 		//TODO:Maybe add admin mode / pro mode for lockselection
-		if(self.editorGUI.editData.lockselection == undefined) self.editorGUI.editData.lockselection = false;
+		if (self.editorGUI.editData.lockselection == undefined) self.editorGUI.editData.lockselection = false;
 		this.editorGUI.add(self.editorGUI.editData, "lockselection").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value;
@@ -1365,6 +1372,29 @@ export function B2dEditor() {
 		this.lowerLimit = 0.0;
 		this.lockselection = false;
 	}
+	this.triggerObject = function () {
+		this.type = self.object_TRIGGER;
+		this.x = null;
+		this.y = null;
+		this.rotation = 0;
+		this.groups = "";
+		this.refName = "";
+		//
+		this.vertices = [{
+			x: 0,
+			y: 0
+		}, {
+			x: 0,
+			y: 0
+		}];
+		this.radius;
+		this.enabled = true;
+		this.triggerType = 0;
+		this.repeatType = 0;
+		this.triggerObjects = [];
+		this.triggerActions = [];
+		this.lockselection = false;
+	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
 		this.x = 0;
@@ -1408,6 +1438,9 @@ export function B2dEditor() {
 		this.colorLine = "#000";
 		this.transparancy = 1.0;
 		this.isPhysicsObject = true;
+	}
+	this.editorTriggerObject = new function () {
+		this.shape = 0;
 	}
 	this.takeCameraShot = function () {
 		//first clean up screen
@@ -1631,7 +1664,33 @@ export function B2dEditor() {
 					Object.assign(joint.data, jointData);
 					this.selectedTextures.push(joint);
 				}
+			} else if (this.selectedTool == this.tool_ERASER) {
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+				var triggerObject = new this.triggerObject;
+				triggerObject.x = this.startSelectionPoint.x;
+				triggerObject.y = this.startSelectionPoint.y;
+				const triggerStartSize = 50 / game.editor.PTM;
+				if (this.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize;
+				else triggerObject.vertices = [{
+						x: -triggerStartSize,
+						y: -triggerStartSize
+					},
+					{
+						x: triggerStartSize,
+						y: -triggerStartSize
+					},
+					{
+						x: triggerStartSize,
+						y: triggerStartSize
+					},
+					{
+						x: -triggerStartSize,
+						y: triggerStartSize
+					}
+				]
+				this.buildBodyFromObj(triggerObject);
 			}
+
 		}
 		this.updateMousePosition(evt);
 		this.mouseDown = true;
@@ -2847,17 +2906,17 @@ export function B2dEditor() {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.lockselection = controller.targetValue;
-							if(body.mySprite.data.lockselection) body.mySprite.alpha /= 2;
+							if (body.mySprite.data.lockselection) body.mySprite.alpha /= 2;
 							else body.mySprite.alpha = body.mySprite.data.alpha || 1;
-							if(body.myTexture){
-								if(body.mySprite.data.lockselection) body.myTexture.alpha /= 2;
+							if (body.myTexture) {
+								if (body.mySprite.data.lockselection) body.myTexture.alpha /= 2;
 								else body.myTexture.alpha = body.myTexture.data.alpha || 1;
 							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.lockselection = controller.targetValue;
-							if(sprite.data.lockselection) sprite.alpha /= 2;
+							if (sprite.data.lockselection) sprite.alpha /= 2;
 							else sprite.alpha = sprite.data.alpha || 1;
 						}
 						var key;
@@ -2866,15 +2925,15 @@ export function B2dEditor() {
 								var lookup = this.lookupGroups[key];
 								var allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
 								var sprite;
-								for(j = 0; j<allObjects.length; j++){
-									if(allObjects[j].mySprite) sprite = allObjects[j].mySprite;
+								for (j = 0; j < allObjects.length; j++) {
+									if (allObjects[j].mySprite) sprite = allObjects[j].mySprite;
 									else sprite = allObjects[j];
 									sprite.data.lockselection = controller.targetValue;
-									if(sprite.data.lockselection) sprite.alpha /= 2;
+									if (sprite.data.lockselection) sprite.alpha /= 2;
 									else sprite.alpha = sprite.data.alpha || 1;
 
-									if(sprite.myBody && sprite.myBody.myTexture){
-										if(sprite.data.lockselection) sprite.myBody.myTexture.alpha /= 2;
+									if (sprite.myBody && sprite.myBody.myTexture) {
+										if (sprite.data.lockselection) sprite.myBody.myTexture.alpha /= 2;
 										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.alpha || 1;
 									}
 								}
@@ -3536,8 +3595,23 @@ export function B2dEditor() {
 
 		return container;
 	}
+	this.buildTriggerFromObj = function (obj) {
+		var bodyObject = JSON.parse(JSON.stringify(obj));
+		bodyObject.fixed = true;
+		bodyObject.density = 1;
+		bodyObject.colorFill = '0xFF';
+		bodyObject.colorLine = '0xFF';
+		bodyObject.transparancy = 0.2;
+		bodyObject.collision = 2;
 
+		var body = this.buildBodyFromObj(bodyObject);
+		this.removeObjectFromLookupGroups(body, body.mySprite.data);
+
+		body.mySprite.data = obj;
+		this.addObjectToLookupGroups(body, body.mySprite.data);
+	}
 	this.buildBodyFromObj = function (obj) {
+
 		var bd = new b2BodyDef();
 		if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
 		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
@@ -5268,6 +5342,7 @@ export function B2dEditor() {
 	this.object_MULTIPLE = 5;
 	this.object_GRAPHIC = 6;
 	this.object_GRAPHICGROUP = 7;
+	this.object_TRIGGER = 8;
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
