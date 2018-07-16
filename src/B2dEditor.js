@@ -489,12 +489,12 @@ export function B2dEditor() {
 			var _body;
 			for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 				_body = this.selectedPhysicsBodies[i];
-				if(_body.mySprite.data.type == this.object_BODY) _bodies.push(_body);
-				else if(_body.mySprite.data.type == this.object_TRIGGER) _triggers.push(_body);
+				if (_body.mySprite.data.type == this.object_BODY) _bodies.push(_body);
+				else if (_body.mySprite.data.type == this.object_TRIGGER) _triggers.push(_body);
 
 				var editingMultipleObjects = (_bodies.length > 0 ? 1 : 0) + (_triggers.length > 0 ? 1 : 0);
-				if(editingMultipleObjects > 1) currentCase = case_MULTIPLE;
-				else if(_triggers.length > 0) currentCase = case_JUST_TRIGGERS;
+				if (editingMultipleObjects > 1) currentCase = case_MULTIPLE;
+				else if (_triggers.length > 0) currentCase = case_JUST_TRIGGERS;
 				else currentCase = case_JUST_BODIES;
 			}
 		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0 && prefabKeys.length == 0) {
@@ -793,7 +793,7 @@ export function B2dEditor() {
 				this.editorGUI.editData.selectTarget = function () {};
 				var label = ">Select Target<";
 				controller = this.editorGUI.add(self.editorGUI.editData, "selectTarget").name(label);
-				this.editorGUI.editData.selectTarget =  function(){
+				this.editorGUI.editData.selectTarget = function () {
 					self.selectingTriggerTarget = true;
 					console.log(self);
 				}
@@ -1225,7 +1225,7 @@ export function B2dEditor() {
 		this.debugGraphics.clear();
 
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
-			if(this.selectingTriggerTarget)	this.doTriggerTargetSelection();
+			if (this.selectingTriggerTarget) this.doTriggerTargetSelection();
 			else this.doSelection();
 		} else if (this.selectedTool == this.tool_POLYDRAWING) {
 			this.doVerticesDrawing(true);
@@ -1524,6 +1524,17 @@ export function B2dEditor() {
 		if (this.editing) {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
+			} else if (this.selectingTriggerTarget) {
+				var highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
+				if (highestObject) {
+					for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+						if (this.selectedPhysicsBodies[i].mySprite && this.selectedPhysicsBodies[i].mySprite.data.type == this.object_TRIGGER) {
+							if (!this.selectedPhysicsBodies[i].mySprite.targets) this.selectedPhysicsBodies[i].mySprite.targets = [];
+							this.selectedPhysicsBodies[i].mySprite.targets.push(highestObject);
+						}
+					}
+				} else this.selectingTriggerTarget = false;
+
 			} else if (this.selectedTool == this.tool_SELECT) {
 
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
@@ -1649,7 +1660,7 @@ export function B2dEditor() {
 				triggerObject.x = this.startSelectionPoint.x;
 				triggerObject.y = this.startSelectionPoint.y;
 				const triggerStartSize = 50 / game.editor.PTM;
-				if (this.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize*game.editor.PTM;
+				if (this.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize * game.editor.PTM;
 				else triggerObject.vertices = [{
 						x: -triggerStartSize,
 						y: -triggerStartSize
@@ -3189,11 +3200,11 @@ export function B2dEditor() {
 			this.debugGraphics.endFill();
 		}
 	}
-	this.doTriggerTargetSelection = function(){
+	this.doTriggerTargetSelection = function () {
 		console.log("Trigger Target selection");
 		console.log(this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld));
 	}
-	this.retrieveHighestSelectedObject = function(lowerBound, upperBound){
+	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
 		var i;
 		var body;
 		var selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
@@ -4606,84 +4617,7 @@ export function B2dEditor() {
 		}
 		this.worldJSON += ']}';
 	}
-	/*this.bodyObject = function () {
-		[0]this.type = self.object_BODY;
-		[1]this.x = null;
-		[2]this.y = null;
-		[3]this.rotation = 0;
-		[4]this.groups = "";
-		[5]this.refName = "";
-		//
-		[6]this.ID = 0;
-		[7]this.colorFill = "#999999";
-		[8]this.colorLine = "#000";
-		[9]this.transparancy = 1.0;
-		[10]this.fixed = false;
-		[11]this.awake = true;
-		[12]this.vertices = [{ x: 0, y: 0 }, { x: 0, y: 0 }];
-		[13]this.density = 1;
-		[14]this.collision = 0;
-		[15]this.radius;
-	}*/
-	/*
-	this.textureObject = function () {
-		[0]this.type = self.object_TEXTURE;
-		[1]this.x = null;
-		[2]this.y = null;
-		[3]this.rotation = 0;
-		[4]this.groups = "";
-		[5]this.refName = "";
-		//
-		[6]this.ID = 0;
-		[7]this.textureName = null;
-		[8]this.bodyID = null;
-		[9]this.texturePositionOffsetLength = null;
-		[10]this.texturePositionOffsetAngle = null;
-		[11]this.textureAngleOffset = null;
-	}*/
-	/*
-	this.jointObject = function () {
-		[0]this.type = self.object_JOINT;
-		[1]this.x = null;
-		[2]this.y = null;
-		[3]this.rotation = 0;
-		[4]this.groups = "";
-		[5]this.refName = "";
-		//
-		[6]this.bodyA_ID;
-		[7]this.bodyB_ID;
-		[8]this.jointType = 0;
-		[9]this.collideConnected = false;
-		[10]this.enableMotor = false;
-		[11]this.maxMotorTorque = 1.0;
-		[12]this.motorSpeed = 10.0;
-		[13]this.enableLimit = false;
-		[14]this.upperAngle = 0.0;
-		[15]this.lowerAngle = 0.0;
-		[16]this.dampingRatio = 0.0;
-		[17]this.frequencyHz = 0.0;
-	}
-	this.graphicObject = function () {
-		this.type = self.object_GRAPHIC;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		this.ID = 0;
-		this.colorFill = "#999999";
-		this.colorLine = "#000";
-		this.transparancy = 1.0;
-		this.radius;
-		this.vertices = [{
-			x: 0,
-			y: 0
-		}, {
-			x: 0,
-			y: 0
-		}];
-	}
-	*/
+
 	this.stringifyObject = function (obj) {
 		var arr = [];
 		arr[0] = obj.type;
