@@ -1,10 +1,10 @@
-import * as Box2D from "../libs/Box2D_NEW";
+import * as Box2D from "../../libs/Box2D_NEW";
 import {
     game
-} from "./Game";
+} from "../Game";
 import {
     Vehicle
-} from "./Vehicle";
+} from "../Vehicle";
 
 class basePrefab {
     static settings = {};

@@ -4,7 +4,7 @@ import {
 } from "../libs/Key";
 import {
     B2dEditor
-} from "./B2dEditor";
+} from "./b2Editor/B2dEditor";
 import {
     getPIXIDebugDraw
 } from "../libs/debugdraw";
@@ -24,8 +24,6 @@ import {
     LoadCoreAssets
 } from "./AssetList";
 import { Settings } from "./Settings";
-import * as prefab from "./PrefabData";
-import { settings } from "pixi.js";
 
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
@@ -101,7 +99,7 @@ function Game() {
         console.log(this.app);
         LoadCoreAssets(PIXI.loader);
 
-        this.editor = new B2dEditor();
+        this.editor = B2dEditor;
         this.editor.load(PIXI.loader);
 
         PIXI.loader.load(this.setup.bind(this));

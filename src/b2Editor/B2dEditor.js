@@ -1,8 +1,9 @@
-import * as Box2D from "../libs/Box2D_NEW";
+import * as Box2D from "../../libs/Box2D_NEW";
 import * as prefab from "./PrefabData";
+import * as drawing from "./utils/drawing";
 import {
 	game
-} from "./Game";
+} from "../Game";
 
 const PIXI = require('pixi.js');
 const dat = require('dat.gui').default;
@@ -20,7 +21,7 @@ var b2Vec2 = Box2D.b2Vec2,
 	b2DebugDraw = Box2D.b2DebugDraw,
 	b2MouseJointDef = Box2D.b2MouseJointDef;
 
-export function B2dEditor() {
+const _B2dEditor = function() {
 	this.initialPTM;
 	this.PTM;
 	this.world;
@@ -3201,8 +3202,20 @@ export function B2dEditor() {
 		}
 	}
 	this.doTriggerTargetSelection = function () {
-		console.log("Trigger Target selection");
-		console.log(this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld));
+		let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
+		if (highestObject) {
+			let tarPos;
+			if (highestObject.mySprite) {
+				tarPos = highestObject.GetPosition();
+				tarPos = this.getPIXIPointFromWorldPoint(tarPos.x, tarPos.y);
+			} else tarPos = highestObject.position;
+			let myPos;
+			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+				myPos = this.selectedPhysicsBodies[i].GetPosition();
+				myPos = this.getPIXIPointFromWorldPoint(myPos);
+				drawing.drawLine(myPos, tarPos);
+			}
+		}
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
 		var i;
@@ -5335,3 +5348,5 @@ export function B2dEditor() {
 	this.editorGUIWidth = 200;
 	this.minimumBodySurfaceArea = 0.3;
 }
+
+export const B2dEditor = new _B2dEditor();
