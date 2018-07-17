@@ -1527,16 +1527,19 @@ const _B2dEditor = function() {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
 			} else if (this.selectingTriggerTarget) {
-				var highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
+				var highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 				if (highestObject) {
 					for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-						if (this.selectedPhysicsBodies[i].mySprite && this.selectedPhysicsBodies[i].mySprite.data.type == this.object_TRIGGER) {
-							if (!this.selectedPhysicsBodies[i].mySprite.targets) this.selectedPhysicsBodies[i].mySprite.targets = [];
-							this.selectedPhysicsBodies[i].mySprite.targets.push(highestObject);
+						var body = this.selectedPhysicsBodies[i];
+						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+							if(body != highestObject){
+								if (!body.mySprite.targets) body.mySprite.targets = [];
+								if(!(body.mySprite.targets.includes(highestObject))) body.mySprite.targets.push(highestObject);
+							}
 						}
 					}
-				} else this.selectingTriggerTarget = false;
-
+				}
+				this.selectingTriggerTarget = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
 
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
@@ -2439,6 +2442,7 @@ const _B2dEditor = function() {
 		}
 
 		this.drawDebugJointHelpers();
+		drawing.drawDebugTriggerHelpers();
 	}
 	this.drawDebugJointHelpers = function () {
 		//JOINTS draw upper and lower limits
@@ -2583,6 +2587,7 @@ const _B2dEditor = function() {
 			}
 		}
 	}
+
 	this.doEditorGUI = function () {
 		if (this.editorGUI != undefined && this.editorGUI.editData) {
 			var controller;
@@ -3212,9 +3217,11 @@ const _B2dEditor = function() {
 			} else tarPos = highestObject.position;
 			let myPos;
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-				myPos = this.selectedPhysicsBodies[i].GetPosition();
-				myPos = this.getPIXIPointFromWorldPoint(myPos);
-				drawing.drawLine(myPos, tarPos, {label:"test", labelPosition:0.5});
+				if(this.selectedPhysicsBodies[i] != highestObject){
+					myPos = this.selectedPhysicsBodies[i].GetPosition();
+					myPos = this.getPIXIPointFromWorldPoint(myPos);
+					drawing.drawLine(myPos, tarPos, {color:"0xFFFF00"});
+				}
 			}
 		}
 	}

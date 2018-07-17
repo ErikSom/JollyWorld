@@ -10,19 +10,42 @@ const lineOptionsBase = {
     alpha:1.0,
     type: undefined,
     label: undefined,
-    labelPosition: undefined
+    labelPosition: 0.5,
+    labelColor: "0xFFF",
 }
 const fillOptionsBase = {
-    color:0xFFFFFF,
+    color:"0xFFFFFF",
     alpha:1.0,
 }
 const textOptionsBase = {
     fontFamily : 'Helvetica',
-    fontSize: 20,
+    fontSize: 14,
     fill : 0xFFFFFF,
     align : 'center'
 }
 
+
+export const drawDebugTriggerHelpers = function(){
+	for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
+        var body = B2dEditor.selectedPhysicsBodies[i];
+        if(body.mySprite && body.mySprite.data && body.mySprite.data.type == B2dEditor.object_TRIGGER){
+            if(body.mySprite.targets){
+                var myPos = body.GetPosition();
+                myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
+                let count;
+                for(var i = 0; i<body.mySprite.targets.length; i++){
+                    var target = body.mySprite.targets[i];
+                    var tarPos;
+                    if(target.mySprite) tarPos = B2dEditor.getPIXIPointFromWorldPoint(target.GetPosition());
+                    else tarPos = target.position;
+                    drawLine(myPos, tarPos, {color: "0x000", label:i, labelPosition:0.5, labelColor:"0x999"});
+                };
+            }
+        }
+    }
+}
+
+// ESSENTIALS
 export const drawLine = function(sp, ep, _lineOptions){
 
     const lineOptions = Object.assign({}, lineOptionsBase, _lineOptions);
@@ -31,14 +54,16 @@ export const drawLine = function(sp, ep, _lineOptions){
     B2dEditor.debugGraphics.moveTo(sp.x * B2dEditor.container.scale.x + B2dEditor.container.x, sp.y * B2dEditor.container.scale.y + B2dEditor.container.y);
     B2dEditor.debugGraphics.lineTo(ep.x * B2dEditor.container.scale.x + B2dEditor.container.x, ep.y * B2dEditor.container.scale.y + B2dEditor.container.y);
 
-    if(lineOptions.label){
+    if(lineOptions.label != undefined){
         const v = new b2Vec2(ep.x-sp.x, ep.y-sp.y);
         const l = v.Length();
         v.SelfNormalize();
         const tl = l*lineOptions.labelPosition;
         v.SelfMul(tl);
         const tp = sp.Clone().SelfAdd(v);
-        drawCircle(tp, 10, lineOptions, {color:"0xFF0000"});
+        drawCircle(tp, 10, lineOptions, {color:lineOptions.labelColor});
+        tp.SelfMul(B2dEditor.container.scale.x);
+        tp.SelfAdd(B2dEditor.container.position);
         addText(lineOptions.label, B2dEditor.debugGraphics, tp)
     }
 }
