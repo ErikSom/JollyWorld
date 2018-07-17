@@ -21,7 +21,7 @@ var b2Vec2 = Box2D.b2Vec2,
 	b2DebugDraw = Box2D.b2DebugDraw,
 	b2MouseJointDef = Box2D.b2MouseJointDef;
 
-const _B2dEditor = function() {
+const _B2dEditor = function () {
 	this.initialPTM;
 	this.PTM;
 	this.world;
@@ -792,7 +792,7 @@ const _B2dEditor = function() {
 				break;
 			case case_JUST_TRIGGERS:
 				this.editorGUI.editData.selectTarget = function () {};
-				var label = ">Select Target<";
+				var label = ">Add Target<";
 				controller = this.editorGUI.add(self.editorGUI.editData, "selectTarget").name(label);
 				this.editorGUI.editData.selectTarget = function () {
 					self.selectingTriggerTarget = true;
@@ -969,6 +969,23 @@ const _B2dEditor = function() {
 						}
 					}
 				}
+
+				if (sprite.myTriggers != undefined) {
+					var j;
+					var myTrigger;
+					var k;
+					for (j = 0; j < sprite.myTriggers.length; j++) {
+						myTrigger = sprite.myTriggers[j];
+						for (k = 0; k < myTrigger.mySprite.targets.length; k++) {
+							if (myTrigger.mySprite.targets[k] == sprite) {
+								myTrigger.mySprite.targets.splice(k, 1);
+								k--;
+							}
+						}
+					}
+				}
+
+
 				sprite.parent.removeChild(sprite);
 				sprite.destroy({
 					children: true,
@@ -978,6 +995,39 @@ const _B2dEditor = function() {
 			} else if (arr[i].mySprite.data) {
 				var b = arr[i];
 				this.removeObjectFromLookupGroups(b, b.mySprite.data);
+
+				if (b.mySprite.data && b.mySprite.data.type == this.object_TRIGGER) {
+					var j;
+					var k;
+					var myTrigger;
+					if (b.mySprite.targets) {
+						for (j = 0; j < b.mySprite.targets.length; j++) {
+							for (k = 0; k < b.mySprite.targets[j].myTriggers.length; k++) {
+								myTrigger = b.mySprite.targets[j].myTriggers[k];
+								if (myTrigger == b) {
+									b.mySprite.targets[j].myTriggers.splice(k, 1);
+									k--;
+								}
+							}
+							if (b.mySprite.targets[j].myTriggers.length == 0) b.mySprite.targets[j].myTriggers = undefined;
+						}
+					}
+				}
+				if (b.mySprite.myTriggers != undefined) {
+					var j;
+					var myTrigger;
+					var k;
+					for (j = 0; j < b.mySprite.myTriggers.length; j++) {
+						myTrigger = b.mySprite.myTriggers[j];
+						for (k = 0; k < myTrigger.mySprite.targets.length; k++) {
+							if (myTrigger.mySprite.targets[k] == b.mySprite) {
+								myTrigger.mySprite.targets.splice(k, 1);
+								k--;
+							}
+						}
+					}
+				}
+
 				b.mySprite.parent.removeChild(b.mySprite);
 				b.mySprite.destroy({
 					children: true,
@@ -1224,7 +1274,10 @@ const _B2dEditor = function() {
 	}
 	this.doEditor = function () {
 		this.debugGraphics.clear();
-		while(this.debugGraphics.children.length > 0){   var child = this.debugGraphics.getChildAt(0);  this.debugGraphics.removeChild(child);}
+		while (this.debugGraphics.children.length > 0) {
+			var child = this.debugGraphics.getChildAt(0);
+			this.debugGraphics.removeChild(child);
+		}
 
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
 			if (this.selectingTriggerTarget) this.doTriggerTargetSelection();
@@ -1532,9 +1585,14 @@ const _B2dEditor = function() {
 					for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
 						var body = this.selectedPhysicsBodies[i];
 						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-							if(body != highestObject){
+							if (body.mySprite != highestObject) {
 								if (!body.mySprite.targets) body.mySprite.targets = [];
-								if(!(body.mySprite.targets.includes(highestObject))) body.mySprite.targets.push(highestObject);
+								if (!(body.mySprite.targets.includes(highestObject))) {
+									body.mySprite.targets.push(highestObject);
+									if (!highestObject.myTriggers) highestObject.myTriggers = [];
+									highestObject.myTriggers.push(body);
+									console.log(highestObject);
+								}
 							}
 						}
 					}
@@ -3217,10 +3275,12 @@ const _B2dEditor = function() {
 			} else tarPos = highestObject.position;
 			let myPos;
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-				if(this.selectedPhysicsBodies[i] != highestObject){
+				if (this.selectedPhysicsBodies[i] != highestObject) {
 					myPos = this.selectedPhysicsBodies[i].GetPosition();
 					myPos = this.getPIXIPointFromWorldPoint(myPos);
-					drawing.drawLine(myPos, tarPos, {color:"0xFFFF00"});
+					drawing.drawLine(myPos, tarPos, {
+						color: "0xFFFF00"
+					});
 				}
 			}
 		}
