@@ -1224,6 +1224,7 @@ const _B2dEditor = function() {
 	}
 	this.doEditor = function () {
 		this.debugGraphics.clear();
+		while(this.debugGraphics.children.length > 0){   var child = this.debugGraphics.getChildAt(0);  this.debugGraphics.removeChild(child);}
 
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
 			if (this.selectingTriggerTarget) this.doTriggerTargetSelection();
@@ -3213,7 +3214,7 @@ const _B2dEditor = function() {
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
 				myPos = this.selectedPhysicsBodies[i].GetPosition();
 				myPos = this.getPIXIPointFromWorldPoint(myPos);
-				drawing.drawLine(myPos, tarPos);
+				drawing.drawLine(myPos, tarPos, {label:"test", labelPosition:0.5});
 			}
 		}
 	}
