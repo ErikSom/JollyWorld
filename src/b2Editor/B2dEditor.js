@@ -934,6 +934,12 @@ const _B2dEditor = function () {
 	this.deleteObjects = function (arr) {
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] instanceof this.prefabObject) {
+				if(arr[i].myTriggers != undefined){
+					for(var j = 0; j<(arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++){
+						console.log(arr[i].myTriggers, arr[i]);
+						this.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
+					}
+				}
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
 				delete this.prefabs[arr[i].key];
 			} else if (arr[i].data) {
@@ -973,15 +979,9 @@ const _B2dEditor = function () {
 				if (sprite.myTriggers != undefined) {
 					var j;
 					var myTrigger;
-					var k;
-					for (j = 0; j < sprite.myTriggers.length; j++) {
+					for (j = 0; j < (sprite.myTriggers ? sprite.myTriggers.length : 0); j++) {
 						myTrigger = sprite.myTriggers[j];
-						for (k = 0; k < myTrigger.mySprite.targets.length; k++) {
-							if (myTrigger.mySprite.targets[k] == sprite) {
-								myTrigger.mySprite.targets.splice(k, 1);
-								k--;
-							}
-						}
+						this.removeTargetFromTrigger(myTrigger, sprite);
 					}
 				}
 
@@ -1002,29 +1002,16 @@ const _B2dEditor = function () {
 					var myTrigger;
 					if (b.mySprite.targets) {
 						for (j = 0; j < b.mySprite.targets.length; j++) {
-							for (k = 0; k < b.mySprite.targets[j].myTriggers.length; k++) {
-								myTrigger = b.mySprite.targets[j].myTriggers[k];
-								if (myTrigger == b) {
-									b.mySprite.targets[j].myTriggers.splice(k, 1);
-									k--;
-								}
-							}
-							if (b.mySprite.targets[j].myTriggers.length == 0) b.mySprite.targets[j].myTriggers = undefined;
+							this.removeTargetFromTrigger(b, mySprite.targets[j]);
 						}
 					}
 				}
 				if (b.mySprite.myTriggers != undefined) {
 					var j;
 					var myTrigger;
-					var k;
-					for (j = 0; j < b.mySprite.myTriggers.length; j++) {
+					for (j = 0; j < (b.mySprite.myTriggers ? b.mySprite.myTriggers.length : 0); j++) {
 						myTrigger = b.mySprite.myTriggers[j];
-						for (k = 0; k < myTrigger.mySprite.targets.length; k++) {
-							if (myTrigger.mySprite.targets[k] == b.mySprite) {
-								myTrigger.mySprite.targets.splice(k, 1);
-								k--;
-							}
-						}
+						this.removeTargetFromTrigger(myTrigger, b.mySprite);
 					}
 				}
 
@@ -1585,15 +1572,7 @@ const _B2dEditor = function () {
 					for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
 						var body = this.selectedPhysicsBodies[i];
 						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-							if (body.mySprite != highestObject) {
-								if (!body.mySprite.targets) body.mySprite.targets = [];
-								if (!(body.mySprite.targets.includes(highestObject))) {
-									body.mySprite.targets.push(highestObject);
-									if (!highestObject.myTriggers) highestObject.myTriggers = [];
-									highestObject.myTriggers.push(body);
-									console.log(highestObject);
-								}
-							}
+							this.addTargetToTrigger(body, highestObject);
 						}
 					}
 				}
@@ -4412,6 +4391,36 @@ const _B2dEditor = function () {
 		}
 		return joint;
 	}
+	this.addTargetToTrigger = function (trigger, target) {
+		if(target.data.prefabInstanceName != undefined){
+			target = this.prefabs[target.data.prefabInstanceName];
+		}
+		if (trigger.mySprite != target) {
+			if (!trigger.mySprite.targets) trigger.mySprite.targets = [];
+			if (!(trigger.mySprite.targets.includes(target))) {
+				trigger.mySprite.targets.push(target);
+				if (!target.myTriggers) target.myTriggers = [];
+				target.myTriggers.push(trigger);
+			}
+		}
+	}
+	this.removeTargetFromTrigger = function (trigger, target) {
+		var i;
+		for (i = 0; i < trigger.mySprite.targets.length; i++) {
+			if (trigger.mySprite.targets[i] == target) {
+				trigger.mySprite.targets.splice(i, 1);
+				i--;
+			}
+		}
+		for (i = 0; i < target.myTriggers.length; i++) {
+			if (target.myTriggers[i] == trigger) {
+				target.myTriggers.splice(i, 1);
+				i--;
+			}
+		}
+		if (target.myTriggers.length == 0) target.myTriggers = undefined;
+
+	}
 
 	this.buildPrefabFromObj = function (obj) {
 		if (this.breakPrefabs) return this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json));
@@ -4677,7 +4686,6 @@ const _B2dEditor = function () {
 	this.stringifyWorldJSON = function () {
 		this.worldJSON = '{"objects":[';
 		var sprite;
-		var spriteData;
 		var i;
 		var stringifiedPrefabs = {};
 

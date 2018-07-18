@@ -32,12 +32,11 @@ export const drawDebugTriggerHelpers = function(){
             if(body.mySprite.targets){
                 var myPos = body.GetPosition();
                 myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
-                let count;
                 for(var i = 0; i<body.mySprite.targets.length; i++){
                     var target = body.mySprite.targets[i];
                     var tarPos;
                     if(target.mySprite) tarPos = B2dEditor.getPIXIPointFromWorldPoint(target.GetPosition());
-                    else tarPos = target.position;
+                    else tarPos = new b2Vec2(target.x, target.y);
                     drawLine(myPos, tarPos, {color: "0x000", label:i, labelPosition:0.5, labelColor:"0x999"});
                 };
             }
