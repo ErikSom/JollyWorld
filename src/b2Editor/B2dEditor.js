@@ -1,6 +1,7 @@
 import * as Box2D from "../../libs/Box2D_NEW";
 import * as prefab from "./PrefabData";
 import * as drawing from "./utils/drawing";
+import * as trigger from "./objects/trigger";
 import {
 	game
 } from "../Game";
@@ -549,7 +550,6 @@ const _B2dEditor = function () {
 		var dataJoint;
 		var self = this;
 		var controller;
-		var folder;
 
 		//Init edit data;
 		switch (currentCase) {
@@ -791,13 +791,7 @@ const _B2dEditor = function () {
 			case case_MULTIPLE:
 				break;
 			case case_JUST_TRIGGERS:
-				this.editorGUI.editData.selectTarget = function () {};
-				var label = ">Add Target<";
-				controller = this.editorGUI.add(self.editorGUI.editData, "selectTarget").name(label);
-				this.editorGUI.editData.selectTarget = function () {
-					self.selectingTriggerTarget = true;
-					console.log(self);
-				}
+				trigger.addTriggerGUI(dataJoint);
 				break;
 		}
 		//TODO:Maybe add admin mode / pro mode for lockselection
@@ -4391,16 +4385,17 @@ const _B2dEditor = function () {
 		}
 		return joint;
 	}
-	this.addTargetToTrigger = function (trigger, target) {
+	this.addTargetToTrigger = function (_trigger, target) {
 		if(target.data.prefabInstanceName != undefined){
 			target = this.prefabs[target.data.prefabInstanceName];
 		}
-		if (trigger.mySprite != target) {
-			if (!trigger.mySprite.targets) trigger.mySprite.targets = [];
-			if (!(trigger.mySprite.targets.includes(target))) {
-				trigger.mySprite.targets.push(target);
+		if (_trigger.mySprite != target) {
+			if (!_trigger.mySprite.targets) _trigger.mySprite.targets = [];
+			if (!(_trigger.mySprite.targets.includes(target))) {
+				_trigger.mySprite.targets.push(target);
+				_trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
 				if (!target.myTriggers) target.myTriggers = [];
-				target.myTriggers.push(trigger);
+				target.myTriggers.push(_trigger);
 			}
 		}
 	}
@@ -4409,6 +4404,7 @@ const _B2dEditor = function () {
 		for (i = 0; i < trigger.mySprite.targets.length; i++) {
 			if (trigger.mySprite.targets[i] == target) {
 				trigger.mySprite.targets.splice(i, 1);
+				trigger.mySprite.data.triggerActions.splice(i, 1);
 				i--;
 			}
 		}
