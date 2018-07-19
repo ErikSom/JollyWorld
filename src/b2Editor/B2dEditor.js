@@ -1,4 +1,4 @@
-import * as Box2D from "../../libs/Box2D_NEW";
+import * as Box2D from "../../libs/Box2D";
 import * as prefab from "./PrefabData";
 import * as drawing from "./utils/drawing";
 import * as trigger from "./objects/trigger";

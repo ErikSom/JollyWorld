@@ -1,5 +1,5 @@
 import { B2dEditor } from "../B2dEditor";
-import * as Box2D from "../../../libs/Box2D_NEW";
+import * as Box2D from "../../../libs/Box2D";
 import { Settings } from "../../Settings";
 
 var b2Vec2 = Box2D.b2Vec2;
