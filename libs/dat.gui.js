@@ -1983,12 +1983,9 @@ Common.extend(GUI.prototype,
     this.__folders[name] = gui;
     var li = addRow(this, gui.domElement);
     dom.addClass(li, 'folder');
-
     var arrow = document.createElement('div');
     dom.addClass(arrow, 'arrow');
     gui.domElement.firstChild.insertBefore(arrow, gui.domElement.firstChild.firstChild);
-    console.log("MUHUHAHAHAHAAH");
-
     return gui;
   },
   removeFolder: function removeFolder(folder) {

@@ -32,7 +32,7 @@ export const getAction = function (action) {
 export const getActionOptions = function (action) {
     return actionDictionary[`actionOptions_${action}`];
 }
-
+export const guitype_MINMAX = 0;
 export const actionDictionary = {
     //*** IMPULSE ***/
     actionObject_Impulse: {
@@ -82,7 +82,7 @@ export const addTriggerGUI = function (dataJoint) {
         var actionString;
         var actionFolder;
         for (var j = 0; j < dataJoint.triggerActions[i].length; j++) {
-            actionFolder = actionsFolder.addFolder(`Action ${j}`);
+            actionFolder = actionsFolder.addFolder(`-- Action ${j}`);
             actionString = `${actionsString}_action_${j}`
             var action = dataJoint.triggerActions[i][j];
             var actionVarString;
@@ -93,11 +93,11 @@ export const addTriggerGUI = function (dataJoint) {
                     B2dEditor.editorGUI.editData[actionVarString] = action[key];
 
                     var controller;
-                    switch (actionOptions.type) {
+                    switch (actionOptions[key].type) {
                         case guitype_MINMAX:
-                            controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, actionOptions.min, actionOptions.max)
-                            controller.step(actionOptions.step);
-                            constroller.name(key);
+                            controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
+                            controller.step(actionOptions[key].step);
+                            controller.name(key);
                             controller.onChange(function (value) {
                                 this.humanUpdate = true;
                                 this.targetValue = value
@@ -209,5 +209,3 @@ export const addTriggerGUI = function (dataJoint) {
     // 	}.bind(controller));
     // }
 }
-
-export const guitype_MINMAX = 0;
