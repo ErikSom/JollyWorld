@@ -22,7 +22,6 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-1": "^6.24.1",
     "css-loader": "^0.28.9",
-    "dat.gui": "^0.7.0",
     "firebase": "^4.9.1",
     "firebase-tools": "^3.17.4",
     "http-server": "^0.11.1",

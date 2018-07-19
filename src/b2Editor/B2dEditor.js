@@ -2,12 +2,13 @@ import * as Box2D from "../../libs/Box2D_NEW";
 import * as prefab from "./PrefabData";
 import * as drawing from "./utils/drawing";
 import * as trigger from "./objects/trigger";
+import * as dat from "../../libs/dat.gui";
+
 import {
 	game
 } from "../Game";
 
 const PIXI = require('pixi.js');
-const dat = require('dat.gui').default;
 
 var b2Vec2 = Box2D.b2Vec2,
 	b2AABB = Box2D.b2AABB,
