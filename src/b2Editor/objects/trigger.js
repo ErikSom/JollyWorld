@@ -111,101 +111,37 @@ export const addTriggerGUI = function (dataJoint) {
             B2dEditor.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
         }
     }
+}
+export const triggerTargetType = {
+    mainCharacter: "maincharacter",
+    anyCharacter:"anycharacter",
+    anyButMainCharacter:"anybutmaincharacter",
+    groupName:"groupname",
+    allObjects:"anybody",
+    attachedTargetsOnly:"attachedtargetsonly",
+    click:"click",
+}
+export const triggerRepeat = {
+    once:"once",
+    onceEveryContact:"onceeverycontact",
+    continuesOnContact:"continuesoncontact",
+    onActivation:"onactivation"
 
-    // var controller;
-    // var folder;
-    // var jointTypes = ["Pin", "Slide", "Distance", "Rope"];
-
-
-    // this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
-
-    // this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
-    // 	this.humanUpdate = true;
-    // 	this.targetValue = value
-    // });
-    // this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
-    // 	this.humanUpdate = true;
-    // 	this.targetValue = value
-    // });
-
-    // if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
-
-    // 	folder = this.editorGUI.addFolder('enable motor');
-    // 	folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
-    // 		this.humanUpdate = true;
-    // 		this.targetValue = value;
-    // 	});
-
-    // 	var lowerLimit = 0;
-    // 	var higherLimit = 0;
-
-    // 	if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
-    // 		lowerLimit = 0;
-    // 		higherLimit = 10000;
-    // 	} else {
-    // 		lowerLimit = 0;
-    // 		higherLimit = 1000;
-    // 	}
-
-    // 	controller = folder.add(self.editorGUI.editData, "maxMotorTorque", lowerLimit, higherLimit);
-    // 	controller.onChange(function (value) {
-    // 		this.humanUpdate = true;
-    // 		this.targetValue = value
-    // 	}.bind(controller));
-
-    // 	if (dataJoint.jointType == this.jointObject_TYPE_SLIDE) controller.name("maxMotorForce");
-
-    // 	controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
-    // 	controller.onChange(function (value) {
-    // 		this.humanUpdate = true;
-    // 		this.targetValue = value
-    // 	}.bind(controller));
-
-
-    // 	folder = this.editorGUI.addFolder('enable limits');
-    // 	folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
-    // 		this.humanUpdate = true;
-    // 		this.targetValue = value;
-    // 	});
-
-    // 	if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
-    // 		controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
-    // 		controller.onChange(function (value) {
-    // 			this.humanUpdate = true;
-    // 			this.targetValue = value;
-    // 		}.bind(controller));
-
-    // 		controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
-    // 		controller.onChange(function (value) {
-    // 			this.humanUpdate = true;
-    // 			this.targetValue = value
-    // 		}.bind(controller));
-    // 	} else {
-    // 		controller = folder.add(self.editorGUI.editData, "upperLimit", 0, 5000);
-    // 		controller.onChange(function (value) {
-    // 			this.humanUpdate = true;
-    // 			this.targetValue = value;
-    // 		}.bind(controller));
-
-    // 		controller = folder.add(self.editorGUI.editData, "lowerLimit", -5000, 0);
-    // 		controller.onChange(function (value) {
-    // 			this.humanUpdate = true;
-    // 			this.targetValue = value
-    // 		}.bind(controller));
-    // 	}
-    // } else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
-    // 	folder = this.editorGUI.addFolder('spring');
-
-    // 	controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
-    // 	controller.onChange(function (value) {
-    // 		this.humanUpdate = true;
-    // 		this.targetValue = value;
-    // 	}.bind(controller));
-
-    // 	controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
-    // 	controller.onChange(function (value) {
-    // 		this.humanUpdate = true;
-    // 		this.targetValue = value
-    // 	}.bind(controller));
-    // }
+}
+export class triggerCore {
+    //static xyz = {};
+    constructor() {
+        this.contactListener;
+    }
+    init(data) {
+        this.initContactListener();
+    }
+    update() {}
+    initContactListener() {
+        this.contactListener = new Box2D.b2ContactListener();
+        this.contactListener.BeginContact = function (contact, target) {}
+        this.contactListener.EndContact = function (contact, target) {}
+        this.contactListener.PreSolve = function (contact, oldManifold) {}
+        this.contactListener.PostSolve = function (contact, impulse) {}
+    }
 }

@@ -73,6 +73,7 @@ const _B2dEditor = function () {
 	this.assetSelectedObject = "";
 
 	this.editorIcons = [];
+	this.triggerObjects = [];
 
 	this.worldJSON;
 
@@ -3698,6 +3699,8 @@ const _B2dEditor = function () {
 
 		body.mySprite.data = obj;
 		this.addObjectToLookupGroups(body, body.mySprite.data);
+
+		this.triggerObjects.push(body);
 	}
 	this.buildBodyFromObj = function (obj) {
 
@@ -5008,6 +5011,7 @@ const _B2dEditor = function () {
 		this.prefabCounter = 0;
 
 		this.editorIcons = [];
+		this.triggerObjects = [];
 
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
