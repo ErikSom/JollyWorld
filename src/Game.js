@@ -305,6 +305,10 @@ function Game() {
             if(this.editor.prefabs.hasOwnProperty(key)){
                 if(this.editor.prefabs[key].class.constructor.playableCharacter){
                     this.playerPrefabObject = this.editor.prefabs[key];
+                    var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
+                    bodies.map(body =>{
+                        body.mainCharacter = true;
+                    });
                     break;
                 }
             }

@@ -166,7 +166,7 @@ export const triggerRepeatType = {
 export const containsTargetType = function(targetType, body){
     switch(targetType){
         case triggerTargetType.mainCharacter:
-            
+            return body.mainCharacter;
         break;
     }
 }
@@ -180,6 +180,7 @@ export class triggerCore {
     }
     init(trigger) {
         this.trigger = trigger;
+        this.data = trigger.mySprite.data;
         this.actions = trigger.mySprite.data.triggerActions;
         this.targets = trigger.mySprite.targets;
         this.initContactListener();
@@ -187,20 +188,22 @@ export class triggerCore {
     update() {
         if(this.destroy){
             B2dEditor.deleteObjects(this.trigger);
-        }else if(this.data.triggerRepeat == triggerRepeatType.continuesOnContact){
+        }else if(this.data.repeatType == triggerRepeatType.continuesOnContact){
             this.doTrigger();
         }
     }
     initContactListener() {
+        var self = this;
         this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            for(var i = 0; i<contact.bodies.length; i++){
-                if(containsTargetType(this.data.targetType, bodies[i])){
+            for(var i = 0; i<bodies.length; i++){
+                if(containsTargetType(self.data.targetType, bodies[i])){
+                    console.log("HOLY SHEEEIT!!!");
                     this.touchingTarget = true;
-                    if(this.data.triggerRepeat == triggerRepeatType.once || this.data.triggerRepeat == triggerRepeatType.onceEveryContact){
+                    if(self.data.triggerRepeat == triggerRepeatType.once || self.data.triggerRepeat == triggerRepeatType.onceEveryContact){
                         doTrigger();
-                        if(this.data.triggerRepeat == triggerRepeatType.once){
+                        if(self.data.triggerRepeat == triggerRepeatType.once){
                             this.destroy = true;
                         }
                     }
@@ -209,8 +212,8 @@ export class triggerCore {
         }
         this.contactListener.EndContact = function (contact, target) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            for(var i = 0; i<contact.bodies.length; i++){
-                if(containsTargetType(this.data.targetType, bodies[i])){
+            for(var i = 0; i<bodies.length; i++){
+                if(containsTargetType(self.data.targetType, bodies[i])){
                     this.touchingTarget = false;
                 }
             }

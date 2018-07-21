@@ -1002,8 +1002,8 @@ const _B2dEditor = function () {
 						}
 					}
 					for (j = 0; j < this.triggerObjects.length; j++) {
-						if (this.triggerObjects[j] == body) {
-							this.triggerObjects.splice(body, i);
+						if (this.triggerObjects[j] == b) {
+							this.triggerObjects.splice(i, 1);
 							break;
 						}
 					}
@@ -5096,7 +5096,7 @@ const _B2dEditor = function () {
 					else selectedSubPrefab.contactListener[name](contact);
 				}
 			}
-			if(body.mySprite.data.type == this.object_TRIGGER){
+			if(body.mySprite.data.type == self.object_TRIGGER){
 				if (secondParam) body.class.contactListener[name](contact, secondParam);
 				else body.class.contactListener[name](contact);
 			}
