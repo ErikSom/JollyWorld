@@ -191,7 +191,7 @@ export class triggerCore {
     update() {
         if (this.destroy) {
             B2dEditor.deleteObjects([this.trigger]);
-        } else if (this.data.repeatType == triggerRepeatType.continuesOnContact) {
+        } else if (this.touchingTarget && this.data.repeatType == triggerRepeatType.continuesOnContact) {
             this.doTrigger();
         }
     }

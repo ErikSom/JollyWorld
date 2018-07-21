@@ -2974,13 +2974,13 @@ const _B2dEditor = function () {
 								}
 							}
 						}
-					}else if (controller.property == "targetType") {
+					}else if (controller.property == "targetTypeDropDown") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.targetType = trigger.triggerTargetType[controller.targetValue];
 						}
-					}else if (controller.property == "repeatType") {
+					}else if (controller.property == "repeatTypeDropDown") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -3718,6 +3718,7 @@ const _B2dEditor = function () {
 		return container;
 	}
 	this.buildTriggerFromObj = function (obj) {
+		console.log(obj);
 		var bodyObject = JSON.parse(JSON.stringify(obj));
 		bodyObject.fixed = true;
 		bodyObject.density = 1;
@@ -4810,6 +4811,14 @@ const _B2dEditor = function () {
 			arr[9] = obj.texturePositionOffsetLength;
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
+		}else if (arr[0] == this.object_TRIGGER){
+			arr[6] = obj.vertices;
+			arr[7] = obj.radius;
+			arr[8] = obj.enabled;
+			arr[9] = obj.targetType;
+			arr[10] = obj.repeatType;
+			arr[11] = obj.triggerObjects;
+			arr[12] = obj.triggerActions;
 		}
 		return JSON.stringify(arr);
 	}
@@ -4880,6 +4889,15 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[9];
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
+		}else if (arr[0] == this.object_TRIGGER){
+			obj = new this.triggerObject();
+			obj.vertices = arr[6];
+			obj.radius = arr[7];
+			obj.enabled = arr[8];
+			obj.targetType = arr[9];
+			obj.repeatType = arr[10];
+			obj.triggerObjects = arr[11];
+			obj.triggerActions = arr[12];
 		}
 
 		obj.type = arr[0];
@@ -4909,14 +4927,17 @@ const _B2dEditor = function () {
 			if (data.bodyID != undefined) data.bodyID = sprite.myBody.mySprite.parent.getChildIndex(sprite.myBody.mySprite);
 
 		} else if (data.type == this.object_JOINT) {
-
-
-
 			data.bodyA_ID = sprite.bodies[0].mySprite.parent.getChildIndex(sprite.bodies[0].mySprite);
 			if (sprite.bodies.length > 1) data.bodyB_ID = sprite.bodies[1].mySprite.parent.getChildIndex(sprite.bodies[1].mySprite);
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation
+		}else if(data.type == this.object_TRIGGER){
+			data.x = sprite.myBody.GetPosition().x;
+			data.y = sprite.myBody.GetPosition().y;
+			data.rotation = sprite.myBody.GetAngle();
+
+			//TODO:fix triggerbodies indexes
 		}
 
 		if (!sprite && data.type == this.object_PREFAB) {
@@ -5004,6 +5025,9 @@ const _B2dEditor = function () {
 					}
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
+				}else if(obj.type == this.object_TRIGGER){
+					worldObject = this.buildTriggerFromObj(obj);
+					createdObjects._bodies.push(worldObject);
 				}
 			}
 		}
