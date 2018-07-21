@@ -930,8 +930,8 @@ const _B2dEditor = function () {
 	this.deleteObjects = function (arr) {
 		for (var i = 0; i < arr.length; i++) {
 			if (arr[i] instanceof this.prefabObject) {
-				if(arr[i].myTriggers != undefined){
-					for(var j = 0; j<(arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++){
+				if (arr[i].myTriggers != undefined) {
+					for (var j = 0; j < (arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++) {
 						console.log(arr[i].myTriggers, arr[i]);
 						this.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
 					}
@@ -1001,6 +1001,13 @@ const _B2dEditor = function () {
 							this.removeTargetFromTrigger(b, mySprite.targets[j]);
 						}
 					}
+					for (j = 0; j < this.triggerObjects.length; j++) {
+						if (this.triggerObjects[j] == body) {
+							this.triggerObjects.splice(body, i);
+							break;
+						}
+					}
+
 				}
 				if (b.mySprite.myTriggers != undefined) {
 					var j;
@@ -1318,13 +1325,16 @@ const _B2dEditor = function () {
 			body = body.GetNext();
 		}
 
-		//update prefabs
+		//update objects
 		if (!this.editing) {
 			var key;
 			for (key in this.prefabs) {
 				if (this.prefabs.hasOwnProperty(key)) {
 					this.prefabs[key].class.update();
 				}
+			}
+			for (i = 0; i < this.triggerObjects.length; i++){
+				this.triggerObjects[i].class.update();
 			}
 		}
 	}
@@ -1458,7 +1468,7 @@ const _B2dEditor = function () {
 		}];
 		this.radius;
 		this.enabled = true;
-		this.triggerType = 0;
+		this.targetType = 0;
 		this.repeatType = 0;
 		this.triggerObjects = [];
 		this.triggerActions = [];
@@ -2960,8 +2970,26 @@ const _B2dEditor = function () {
 								}
 							}
 						}
-					} else {
-						//TODO: Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
+					}else if (controller.property == "targetType") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.targetType = trigger.triggerTargetType[controller.targetValue];
+						}
+					}else if (controller.property == "repeatType") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.repeatType = trigger.triggerRepeatType[controller.targetValue];
+						}
+					}else if(controller.triggerActionKey != undefined){
+						//trigger action
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+						}
+					}else {
+						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
 							this.prefabs[prefabKeys[0]].class.set(controller.property, controller.targetValue);
@@ -4390,7 +4418,7 @@ const _B2dEditor = function () {
 		return joint;
 	}
 	this.addTargetToTrigger = function (_trigger, target) {
-		if(target.data.prefabInstanceName != undefined){
+		if (target.data.prefabInstanceName != undefined) {
 			target = this.prefabs[target.data.prefabInstanceName];
 		}
 		if (_trigger.mySprite != target) {
@@ -5068,6 +5096,10 @@ const _B2dEditor = function () {
 					else selectedSubPrefab.contactListener[name](contact);
 				}
 			}
+			if(body.mySprite.data.type == this.object_TRIGGER){
+				if (secondParam) body.class.contactListener[name](contact, secondParam);
+				else body.class.contactListener[name](contact);
+			}
 		}
 	}
 	this.B2dEditorContactListener.BeginContact = function (contact) {
@@ -5129,6 +5161,10 @@ const _B2dEditor = function () {
 			if (this.prefabs.hasOwnProperty(key)) {
 				this.prefabs[key].class.init();
 			}
+		}
+		for (i = 0; i < this.triggerObjects.length; i++){
+			this.triggerObjects[i].class = new trigger.triggerCore();
+			this.triggerObjects[i].class.init(this.triggerObjects[i]);
 		}
 		this.editing = false;
 	}

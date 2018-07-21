@@ -1,8 +1,7 @@
 import {
     B2dEditor
 } from "../B2dEditor";
-
-const self = this;
+import * as Box2D from "../../../libs/Box2D";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -31,6 +30,20 @@ export const getAction = function (action) {
 }
 export const getActionOptions = function (action) {
     return actionDictionary[`actionOptions_${action}`];
+}
+export const doAction = function(actionData, targets){
+    if(!(target instanceof Array)) targets = [targets];
+
+    switch(actionData.type){
+        case "Impulse":
+        targets.map(target => {
+            const a = (acionData.direction*360) * B2dEditor.DEG2RAD;
+            const impulse = new Box2D.b2Vec2(actionData.impulseForce*Math.cos(a), actionData.impulseForce*Math.sin(a))
+            target.ApplyLinearImpulse(impulse, target.GetPosition(), true)
+            target.ApplyTorque(actionData.rotationForce, true)
+        });
+        break;
+    }
 }
 export const guitype_MINMAX = 0;
 export const actionDictionary = {
@@ -67,13 +80,35 @@ export const actionDictionary = {
     /******************/
 }
 export const addTriggerGUI = function (dataJoint) {
-    console.log(B2dEditor, B2dEditor.editorGUI);
+    var targetTypes = Object.keys(triggerTargetType);
+    targetTypes.map(key => {
+        if(triggerTargetType[key] == dataJoint.targetType){
+            B2dEditor.editorGUI.editData.targetTypeDropDown = key;
+        }
+    })
+    B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, "targetTypeDropDown", targetTypes).onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
+
+    var repeatTypes = Object.keys(triggerRepeatType);
+    repeatTypes.map(key => {
+        if(triggerRepeatType[key] == dataJoint.repeatType){
+            B2dEditor.editorGUI.editData.repeatTypeDropDown = key;
+        }
+    })
+    B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, "repeatTypeDropDown", repeatTypes).onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
     B2dEditor.editorGUI.editData.selectTarget = function () {};
     var label = ">Add Target<";
     controller = B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, "selectTarget").name(label);
     B2dEditor.editorGUI.editData.selectTarget = function () {
         B2dEditor.selectingTriggerTarget = true;
     }
+
+
     var actionsString;
     var actionsFolder;
     for (var i = 0; i < dataJoint.triggerActions.length; i++) {
@@ -104,6 +139,7 @@ export const addTriggerGUI = function (dataJoint) {
                             });
                             break
                     }
+                    controller.triggerActionKey = key;
                     controller.triggerTargetID = i;
                     controller.triggerActionID = j;
                 }
@@ -113,35 +149,83 @@ export const addTriggerGUI = function (dataJoint) {
     }
 }
 export const triggerTargetType = {
-    mainCharacter: "maincharacter",
-    anyCharacter:"anycharacter",
-    anyButMainCharacter:"anybutmaincharacter",
-    groupName:"groupname",
-    allObjects:"anybody",
-    attachedTargetsOnly:"attachedtargetsonly",
-    click:"click",
+    mainCharacter: 0,
+    anyCharacter:1,
+    anyButMainCharacter:2,
+    groupName:3,
+    allObjects:4,
+    attachedTargetsOnly:5,
+    click:6,
 }
-export const triggerRepeat = {
-    once:"once",
-    onceEveryContact:"onceeverycontact",
-    continuesOnContact:"continuesoncontact",
-    onActivation:"onactivation"
-
+export const triggerRepeatType = {
+    once:0,
+    onceEveryContact:1,
+    continuesOnContact:2,
+    onActivation:3,
+}
+export const containsTargetType = function(targetType, body){
+    switch(targetType){
+        case triggerTargetType.mainCharacter:
+            
+        break;
+    }
 }
 export class triggerCore {
-    //static xyz = {};
     constructor() {
+        this.data;
+        this.activated = false;
+        this.touchingTarget = false;
+        this.destroy = false;
         this.contactListener;
     }
-    init(data) {
+    init(trigger) {
+        this.trigger = trigger;
+        this.actions = trigger.mySprite.data.triggerActions;
+        this.targets = trigger.mySprite.targets;
         this.initContactListener();
     }
-    update() {}
+    update() {
+        if(this.destroy){
+            B2dEditor.deleteObjects(this.trigger);
+        }else if(this.data.triggerRepeat == triggerRepeatType.continuesOnContact){
+            this.doTrigger();
+        }
+    }
     initContactListener() {
         this.contactListener = new Box2D.b2ContactListener();
-        this.contactListener.BeginContact = function (contact, target) {}
-        this.contactListener.EndContact = function (contact, target) {}
+        this.contactListener.BeginContact = function (contact, target) {
+            var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            for(var i = 0; i<contact.bodies.length; i++){
+                if(containsTargetType(this.data.targetType, bodies[i])){
+                    this.touchingTarget = true;
+                    if(this.data.triggerRepeat == triggerRepeatType.once || this.data.triggerRepeat == triggerRepeatType.onceEveryContact){
+                        doTrigger();
+                        if(this.data.triggerRepeat == triggerRepeatType.once){
+                            this.destroy = true;
+                        }
+                    }
+                }
+            }
+        }
+        this.contactListener.EndContact = function (contact, target) {
+            var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            for(var i = 0; i<contact.bodies.length; i++){
+                if(containsTargetType(this.data.targetType, bodies[i])){
+                    this.touchingTarget = false;
+                }
+            }
+        }
         this.contactListener.PreSolve = function (contact, oldManifold) {}
         this.contactListener.PostSolve = function (contact, impulse) {}
+    }
+    doTrigger(){
+        for(var i = 0; i<this.targets.length; i++){
+            var targetObject = this.targets[i];
+            var actionData;
+            for(var j = 0; j<this.data.triggerActions[i].length; j++){
+                actionData = this.data.triggerActions[i][j];
+                doAction(actionData, targetObject);
+            }
+        }
     }
 }
