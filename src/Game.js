@@ -160,7 +160,7 @@ function Game() {
         console.log(PIXI.loader.resources);
         this.editor.buildJSON(PIXI.loader.resources.worldData.data);
         this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
-        this.editor.buildJSON(PIXI.loader.resources.testData.data);
+        //this.editor.buildJSON(PIXI.loader.resources.testData.data);
         //this.editor.buildJSON(PIXI.loader.resources.testData2.data);
     }
     this.loadLevel = function (levelData) {

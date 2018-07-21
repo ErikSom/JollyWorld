@@ -26,23 +26,24 @@ export const getActionsForObject = function (object) {
     return actions;
 }
 export const getAction = function (action) {
-    return actionDictionary[`actionObject_${action}`];
+    return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
 }
 export const getActionOptions = function (action) {
     return actionDictionary[`actionOptions_${action}`];
 }
-export const doAction = function(actionData, targets){
-    if(!(target instanceof Array)) targets = [targets];
+export const doAction = function (actionData, targets) {
+    if (!(targets instanceof Array)) targets = [targets];
 
-    switch(actionData.type){
+    switch (actionData.type) {
         case "Impulse":
-        targets.map(target => {
-            const a = (acionData.direction*360) * B2dEditor.DEG2RAD;
-            const impulse = new Box2D.b2Vec2(actionData.impulseForce*Math.cos(a), actionData.impulseForce*Math.sin(a))
-            target.ApplyLinearImpulse(impulse, target.GetPosition(), true)
-            target.ApplyTorque(actionData.rotationForce, true)
-        });
-        break;
+            targets.map(target => {
+                var body = target.myBody;
+                const a = (actionData.direction * 360) * B2dEditor.DEG2RAD;
+                const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
+                body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
+                body.ApplyTorque(actionData.rotationForce, true)
+            });
+            break;
     }
 }
 export const guitype_MINMAX = 0;
@@ -82,7 +83,7 @@ export const actionDictionary = {
 export const addTriggerGUI = function (dataJoint) {
     var targetTypes = Object.keys(triggerTargetType);
     targetTypes.map(key => {
-        if(triggerTargetType[key] == dataJoint.targetType){
+        if (triggerTargetType[key] == dataJoint.targetType) {
             B2dEditor.editorGUI.editData.targetTypeDropDown = key;
         }
     })
@@ -93,7 +94,7 @@ export const addTriggerGUI = function (dataJoint) {
 
     var repeatTypes = Object.keys(triggerRepeatType);
     repeatTypes.map(key => {
-        if(triggerRepeatType[key] == dataJoint.repeatType){
+        if (triggerRepeatType[key] == dataJoint.repeatType) {
             B2dEditor.editorGUI.editData.repeatTypeDropDown = key;
         }
     })
@@ -134,6 +135,7 @@ export const addTriggerGUI = function (dataJoint) {
                             controller.step(actionOptions[key].step);
                             controller.name(key);
                             controller.onChange(function (value) {
+                                console.log("YES");
                                 this.humanUpdate = true;
                                 this.targetValue = value
                             });
@@ -150,30 +152,31 @@ export const addTriggerGUI = function (dataJoint) {
 }
 export const triggerTargetType = {
     mainCharacter: 0,
-    anyCharacter:1,
-    anyButMainCharacter:2,
-    groupName:3,
-    allObjects:4,
-    attachedTargetsOnly:5,
-    click:6,
+    anyCharacter: 1,
+    anyButMainCharacter: 2,
+    groupName: 3,
+    allObjects: 4,
+    attachedTargetsOnly: 5,
+    click: 6,
 }
 export const triggerRepeatType = {
-    once:0,
-    onceEveryContact:1,
-    continuesOnContact:2,
-    onActivation:3,
+    once: 0,
+    onceEveryContact: 1,
+    continuesOnContact: 2,
+    onActivation: 3,
 }
-export const containsTargetType = function(targetType, body){
-    switch(targetType){
+export const containsTargetType = function (targetType, body) {
+    switch (targetType) {
         case triggerTargetType.mainCharacter:
             return body.mainCharacter;
-        break;
+            break;
     }
 }
 export class triggerCore {
     constructor() {
         this.data;
         this.activated = false;
+        this.touchingObjects = [];
         this.touchingTarget = false;
         this.destroy = false;
         this.contactListener;
@@ -186,9 +189,9 @@ export class triggerCore {
         this.initContactListener();
     }
     update() {
-        if(this.destroy){
-            B2dEditor.deleteObjects(this.trigger);
-        }else if(this.data.repeatType == triggerRepeatType.continuesOnContact){
+        if (this.destroy) {
+            B2dEditor.deleteObjects([this.trigger]);
+        } else if (this.data.repeatType == triggerRepeatType.continuesOnContact) {
             this.doTrigger();
         }
     }
@@ -197,14 +200,22 @@ export class triggerCore {
         this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            for(var i = 0; i<bodies.length; i++){
-                if(containsTargetType(self.data.targetType, bodies[i])){
-                    console.log("HOLY SHEEEIT!!!");
-                    this.touchingTarget = true;
-                    if(self.data.triggerRepeat == triggerRepeatType.once || self.data.triggerRepeat == triggerRepeatType.onceEveryContact){
-                        doTrigger();
-                        if(self.data.triggerRepeat == triggerRepeatType.once){
-                            this.destroy = true;
+            for (var i = 0; i < bodies.length; i++) {
+                if (containsTargetType(self.data.targetType, bodies[i])) {
+                    console.log("WHOOJOO contains target");
+                    if (!self.touchingObjects.includes(bodies[i])) self.touchingObjects.push(bodies[i]);
+                    self.touchingTarget = true;
+                    if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
+                    console.log("WHOOJOO right type", self.touchingObjects.length);
+
+                        if (self.touchingObjects.length == 1) {
+                    console.log("WHOOJOO do trigger");
+
+                            self.doTrigger();
+                            console.log(self.data.repeatType, triggerRepeatType.once);
+                            if (self.data.repeatType == triggerRepeatType.once) {
+                                self.destroy = true;
+                            }
                         }
                     }
                 }
@@ -212,20 +223,27 @@ export class triggerCore {
         }
         this.contactListener.EndContact = function (contact, target) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            for(var i = 0; i<bodies.length; i++){
-                if(containsTargetType(self.data.targetType, bodies[i])){
-                    this.touchingTarget = false;
+            for (var i = 0; i < bodies.length; i++) {
+                if (containsTargetType(self.data.targetType, bodies[i])) {
+                    for (var j = 0; j < self.touchingObjects.length; j++) {
+                        if (self.touchingObjects[j] == bodies[i]) {
+                            self.touchingObjects.splice(j, 1);
+                            break;
+                        }
+                    }
+                    if (self.touchingObjects.length == 0) self.touchingTarget = false;
                 }
             }
         }
         this.contactListener.PreSolve = function (contact, oldManifold) {}
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
-    doTrigger(){
-        for(var i = 0; i<this.targets.length; i++){
+    doTrigger() {
+        if(!this.targets) return;
+        for (var i = 0; i < this.targets.length; i++) {
             var targetObject = this.targets[i];
             var actionData;
-            for(var j = 0; j<this.data.triggerActions[i].length; j++){
+            for (var j = 0; j < this.data.triggerActions[i].length; j++) {
                 actionData = this.data.triggerActions[i][j];
                 doAction(actionData, targetObject);
             }

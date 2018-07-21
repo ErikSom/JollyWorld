@@ -998,7 +998,7 @@ const _B2dEditor = function () {
 					var myTrigger;
 					if (b.mySprite.targets) {
 						for (j = 0; j < b.mySprite.targets.length; j++) {
-							this.removeTargetFromTrigger(b, mySprite.targets[j]);
+							this.removeTargetFromTrigger(b, b.mySprite.targets[j]);
 						}
 					}
 					for (j = 0; j < this.triggerObjects.length; j++) {
@@ -2642,6 +2642,10 @@ const _B2dEditor = function () {
 
 			for (var propt in this.editorGUI.__folders) {
 				controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
+				for(var _propt in this.editorGUI.__folders[propt].__folders){
+					//folders in folders
+					controllers = controllers.concat(this.editorGUI.__folders[propt].__folders[_propt].__controllers);
+				}
 			}
 
 			var i;
@@ -5096,7 +5100,7 @@ const _B2dEditor = function () {
 					else selectedSubPrefab.contactListener[name](contact);
 				}
 			}
-			if(body.mySprite.data.type == self.object_TRIGGER){
+			if(body.mySprite && body.mySprite.data.type == self.object_TRIGGER){
 				if (secondParam) body.class.contactListener[name](contact, secondParam);
 				else body.class.contactListener[name](contact);
 			}
