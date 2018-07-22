@@ -996,10 +996,8 @@ const _B2dEditor = function () {
 					var j;
 					var k;
 					var myTrigger;
-					if (b.mySprite.targets) {
-						for (j = 0; j < b.mySprite.targets.length; j++) {
-							this.removeTargetFromTrigger(b, b.mySprite.targets[j]);
-						}
+					for (j = 0; j < b.mySprite.targets.length; j++) {
+						this.removeTargetFromTrigger(b, b.mySprite.targets[j]);
 					}
 					for (j = 0; j < this.triggerObjects.length; j++) {
 						if (this.triggerObjects[j] == b) {
@@ -1458,6 +1456,7 @@ const _B2dEditor = function () {
 		this.rotation = 0;
 		this.groups = "";
 		this.refName = "";
+		this.ID = 0;
 		//
 		this.vertices = [{
 			x: 0,
@@ -3731,6 +3730,7 @@ const _B2dEditor = function () {
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
 
 		body.mySprite.data = obj;
+		body.mySprite.targets = [];
 		this.addObjectToLookupGroups(body, body.mySprite.data);
 
 		this.triggerObjects.push(body);
@@ -4427,7 +4427,6 @@ const _B2dEditor = function () {
 			target = this.prefabs[target.data.prefabInstanceName];
 		}
 		if (_trigger.mySprite != target) {
-			if (!_trigger.mySprite.targets) _trigger.mySprite.targets = [];
 			if (!(_trigger.mySprite.targets.includes(target))) {
 				_trigger.mySprite.targets.push(target);
 				_trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
@@ -4937,7 +4936,10 @@ const _B2dEditor = function () {
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
 
-			//TODO:fix triggerbodies indexes
+			data.triggerObjects = [];
+			for(var i = 0; i<sprite.targets.length; i++){
+				data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
+			}
 		}
 
 		if (!sprite && data.type == this.object_PREFAB) {
@@ -5031,6 +5033,19 @@ const _B2dEditor = function () {
 				}
 			}
 		}
+
+		//Fix trigger object targets
+		for(var i = 0; i<this.triggerObjects.length; i++){
+			var trigger = this.triggerObjects[i];
+			for(var j = 0; j<trigger.mySprite.data.triggerObjects.length; j++){
+				var targetObject = this.textures.getChildAt(trigger.mySprite.data.triggerObjects[j]);
+				trigger.mySprite.targets.push(targetObject);
+				if(!targetObject.myTriggers) targetObject.myTriggers = [];
+				targetObject.myTriggers.push(trigger);
+			}
+		}
+
+
 		return createdObjects;
 		//console.log("END HERE");
 	}

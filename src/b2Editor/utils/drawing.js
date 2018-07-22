@@ -70,7 +70,7 @@ export const drawCircle = function(point, radius, _lineOptions, _fillOptions){
 
     const lineOptions = Object.assign({}, lineOptionsBase, _lineOptions);
     const fillOptions = Object.assign({}, fillOptionsBase, _fillOptions);
-    B2dEditor.debugGraphics.moveTo(point.x +radius * B2dEditor.container.scale.x + B2dEditor.container.x, point.y * B2dEditor.container.scale.y + B2dEditor.container.y);
+    B2dEditor.debugGraphics.moveTo(radius+point.x * B2dEditor.container.scale.x + B2dEditor.container.x, point.y * B2dEditor.container.scale.y + B2dEditor.container.y);
 
     B2dEditor.debugGraphics.lineStyle(lineOptions.size,  lineOptions.color, lineOptions.alpha);
     B2dEditor.debugGraphics.beginFill(fillOptions.color, fillOptions.alpha);
