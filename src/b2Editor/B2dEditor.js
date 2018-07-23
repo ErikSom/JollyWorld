@@ -1179,7 +1179,7 @@ const _B2dEditor = function () {
 			data = copyArray[i].data;
 			data.ID = i;
 			copyJSON += this.stringifyObject(data);
-			if (data.type == this.object_BODY) {
+			if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
 				this.copyCenterPoint.x += data.x * this.PTM;
 				this.copyCenterPoint.y += data.y * this.PTM;
 
@@ -1725,7 +1725,8 @@ const _B2dEditor = function () {
 						y: triggerStartSize
 					}
 				]
-				this.buildTriggerFromObj(triggerObject);
+				var _trigger = this.buildTriggerFromObj(triggerObject);
+				_trigger.mySprite.triggerInitialized = true;
 			}
 
 		}
@@ -3276,9 +3277,21 @@ const _B2dEditor = function () {
 		if (highestObject) {
 			let tarPos;
 			if (highestObject.mySprite) {
-				tarPos = highestObject.GetPosition();
-				tarPos = this.getPIXIPointFromWorldPoint(tarPos.x, tarPos.y);
-			} else tarPos = highestObject.position;
+				if(highestObject.mySprite.data.prefabInstanceName){
+					const tarPrefab = this.prefabs[highestObject.mySprite.data.prefabInstanceName];
+					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
+				}else{
+					tarPos = highestObject.GetPosition();
+					tarPos = this.getPIXIPointFromWorldPoint(tarPos.x, tarPos.y);
+				}
+			} else{
+				if(highestObject.data.prefabInstanceName){
+					const tarPrefab = this.prefabs[highestObject.data.prefabInstanceName];
+					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
+				}else{
+					tarPos = highestObject.position;
+				}
+			}
 			let myPos;
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
 				if (this.selectedPhysicsBodies[i] != highestObject) {
@@ -3731,9 +3744,12 @@ const _B2dEditor = function () {
 
 		body.mySprite.data = obj;
 		body.mySprite.targets = [];
+		body.mySprite.targetPrefabs = [];
 		this.addObjectToLookupGroups(body, body.mySprite.data);
 
 		this.triggerObjects.push(body);
+
+		return body;
 	}
 	this.buildBodyFromObj = function (obj) {
 
@@ -4423,34 +4439,43 @@ const _B2dEditor = function () {
 		return joint;
 	}
 	this.addTargetToTrigger = function (_trigger, target) {
-		if (target.data.prefabInstanceName != undefined) {
-			target = this.prefabs[target.data.prefabInstanceName];
+		if (_trigger.mySprite == target) return;
+		if (_trigger.mySprite.targets.includes(target)) return;
+		if(target.data.prefabInstanceName){
+			if(_trigger.mySprite.targetPrefabs.includes(target.data.prefabInstanceName)) return;
+			_trigger.mySprite.targetPrefabs.push(target.data.prefabInstanceName);
 		}
-		if (_trigger.mySprite != target) {
-			if (!(_trigger.mySprite.targets.includes(target))) {
-				_trigger.mySprite.targets.push(target);
-				_trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
-				if (!target.myTriggers) target.myTriggers = [];
-				target.myTriggers.push(_trigger);
-			}
-		}
+
+		_trigger.mySprite.targets.push(target);
+		if(_trigger.mySprite.data.triggerActions.length <_trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
+		if (!target.myTriggers) target.myTriggers = [];
+		target.myTriggers.push(_trigger);
 	}
-	this.removeTargetFromTrigger = function (trigger, target) {
+	this.removeTargetFromTrigger = function (_trigger, target) {
 		var i;
-		for (i = 0; i < trigger.mySprite.targets.length; i++) {
-			if (trigger.mySprite.targets[i] == target) {
-				trigger.mySprite.targets.splice(i, 1);
-				trigger.mySprite.data.triggerActions.splice(i, 1);
+		for (i = 0; i < _trigger.mySprite.targets.length; i++) {
+			if (_trigger.mySprite.targets[i] == target) {
+				_trigger.mySprite.targets.splice(i, 1);
+				_trigger.mySprite.data.triggerActions.splice(i, 1);
 				i--;
 			}
 		}
 		for (i = 0; i < target.myTriggers.length; i++) {
-			if (target.myTriggers[i] == trigger) {
+			if (target.myTriggers[i] == _trigger) {
 				target.myTriggers.splice(i, 1);
 				i--;
 			}
 		}
 		if (target.myTriggers.length == 0) target.myTriggers = undefined;
+
+		if(target.data.prefabInstanceName){
+			for(i = 0; i<_trigger.mySprite.targetPrefabs; i++){
+				if(_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName){
+					_trigger.mySprite.targetPrefabs.splice(i, 1);
+					break;
+				}
+			}
+		}
 
 	}
 
@@ -4938,7 +4963,8 @@ const _B2dEditor = function () {
 
 			data.triggerObjects = [];
 			for(var i = 0; i<sprite.targets.length; i++){
-				data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
+				if(sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);
+				else data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
 			}
 		}
 
@@ -5037,12 +5063,12 @@ const _B2dEditor = function () {
 		//Fix trigger object targets
 		for(var i = 0; i<this.triggerObjects.length; i++){
 			var trigger = this.triggerObjects[i];
+			if(trigger.mySprite.triggerInitialized) continue;
 			for(var j = 0; j<trigger.mySprite.data.triggerObjects.length; j++){
 				var targetObject = this.textures.getChildAt(trigger.mySprite.data.triggerObjects[j]);
-				trigger.mySprite.targets.push(targetObject);
-				if(!targetObject.myTriggers) targetObject.myTriggers = [];
-				targetObject.myTriggers.push(trigger);
+				this.addTargetToTrigger(trigger, targetObject);
 			}
+			trigger.mySprite.triggerInitialized = true;
 		}
 
 

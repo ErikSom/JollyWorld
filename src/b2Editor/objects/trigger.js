@@ -5,20 +5,26 @@ import * as Box2D from "../../../libs/Box2D";
 
 export const getActionsForObject = function (object) {
     var actions = [];
-    switch (object.data.type) {
-        case B2dEditor.object_BODY:
-            actions.push("Impulse") //, "SetAwake");
-            break;
-            // B2dEditor.object_TEXTURE = 1;
-            // B2dEditor.object_JOINT = 2;
-            // B2dEditor.object_UNDO_MOVEMENT = 3;
-            // B2dEditor.object_PREFAB = 4;
-            // B2dEditor.object_MULTIPLE = 5;
-            // B2dEditor.object_GRAPHIC = 6;
-            // B2dEditor.object_GRAPHICGROUP = 7;
-            // B2dEditor.object_TRIGGER = 8;
-        default:
-            break;
+    if (object.data.prefabInstanceName != undefined) {
+        //detect if prefab
+        actions.push("Impulse") //, "SetAwake");
+        console.log("IS PREFAB");
+    } else {
+        switch (object.data.type) {
+            case B2dEditor.object_BODY:
+                actions.push("Impulse") //, "SetAwake");
+                break;
+                // B2dEditor.object_TEXTURE = 1;
+                // B2dEditor.object_JOINT = 2;
+                // B2dEditor.object_UNDO_MOVEMENT = 3;
+                // B2dEditor.object_PREFAB = 4;
+                // B2dEditor.object_MULTIPLE = 5;
+                // B2dEditor.object_GRAPHIC = 6;
+                // B2dEditor.object_GRAPHICGROUP = 7;
+                // B2dEditor.object_TRIGGER = 8;
+            default:
+                break;
+        }
     }
     if (object.data.type != B2dEditor.object_JOINT) {
         //actions.push("SetPosition", "SetRotation")
@@ -34,14 +40,21 @@ export const getActionOptions = function (action) {
 export const doAction = function (actionData, targets) {
     if (!(targets instanceof Array)) targets = [targets];
 
+
     switch (actionData.type) {
         case "Impulse":
             targets.map(target => {
-                var body = target.myBody;
-                const a = (actionData.direction * 360) * B2dEditor.DEG2RAD;
-                const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
-                body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
-                body.ApplyTorque(actionData.rotationForce, true)
+                var bodies;
+                console.log(target);
+                if (target.data.prefabInstanceName) {
+                    bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
+                } else bodies = [target.myBody];
+                bodies.map(body => {
+                    const a = (actionData.direction * 360) * B2dEditor.DEG2RAD;
+                    const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
+                    body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
+                    body.ApplyTorque(actionData.rotationForce, true)
+                });
             });
             break;
     }
@@ -206,10 +219,10 @@ export class triggerCore {
                     if (!self.touchingObjects.includes(bodies[i])) self.touchingObjects.push(bodies[i]);
                     self.touchingTarget = true;
                     if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
-                    console.log("WHOOJOO right type", self.touchingObjects.length);
+                        console.log("WHOOJOO right type", self.touchingObjects.length);
 
                         if (self.touchingObjects.length == 1) {
-                    console.log("WHOOJOO do trigger");
+                            console.log("WHOOJOO do trigger");
 
                             self.doTrigger();
                             console.log(self.data.repeatType, triggerRepeatType.once);
@@ -239,7 +252,7 @@ export class triggerCore {
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
     doTrigger() {
-        if(!this.targets) return;
+        if (!this.targets) return;
         for (var i = 0; i < this.targets.length; i++) {
             var targetObject = this.targets[i];
             var actionData;
