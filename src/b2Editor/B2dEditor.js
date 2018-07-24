@@ -2989,9 +2989,13 @@ const _B2dEditor = function () {
 						}
 					}else if(controller.triggerActionKey != undefined){
 						//trigger action
+						console.log(controller.triggerActionKey);
 							for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 								body = this.selectedPhysicsBodies[j];
 								if(controller.triggerActionKey == 'targetActionDropDown'){
+									console.log(trigger.getAction(controller.targetValue));
+
+									
 									body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
 									trigger.updateTriggerGUI();
 								}else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
@@ -4618,41 +4622,39 @@ const _B2dEditor = function () {
 	}
 	this.updateBodyTileSprite = function (body) {
 
-		var tileTexture = body.mySprite.data.tileTexture;
+		const tileTexture = body.mySprite.data.tileTexture;
 
 		if (tileTexture && tileTexture != "") {
-			var tex;
+
+			if(body.myTileSprite && body.myTileSprite.texture && tileTexture == body.myTileSprite.texture.textureCacheIds[0]) return;
+
+			let tex = PIXI.Texture.fromImage(tileTexture);
+			tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+
 			if (!body.myTileSprite) {
-
-				tex = PIXI.Texture.fromImage(tileTexture);
-				tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-
 				game.app.renderer.plugins.graphics.updateGraphics(body.originalGraphic);
 
-				var verticesColor = body.originalGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glPoints;
-				var vertices = new Float32Array(verticesColor.length / 3);
+				const verticesColor = body.originalGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glPoints;
+				let vertices = new Float32Array(verticesColor.length / 3);
 
-				var i;
-				var j = 0;
+				let i;
+				let j = 0;
 				for (i = 0; i < verticesColor.length; i += 6) {
 					vertices[j] = verticesColor[i];
 					vertices[j + 1] = verticesColor[i + 1];
 					j += 2;
 				}
 
-				var indices = body.originalGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
-				var uvs = new Float32Array(vertices.length);
+				const indices = body.originalGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
+				let uvs = new Float32Array(vertices.length);
 				for (i = 0; i < vertices.length; i++) uvs[i] = vertices[i] * 2.0 / tex.width;
 
-				var mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
+				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
 				body.mySprite.addChild(mesh);
 
 				body.myTileSprite = mesh;
-			} else if (tileTexture != body.myTileSprite.texture.textureCacheIds[0]) {
-				tex = PIXI.Texture.fromImage(tileTexture);
-				tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-				body.myTileSprite.texture = tex;
 			}
+			body.myTileSprite.texture = tex;
 
 		} else if (body.myTileSprite) {
 			body.myTileSprite.mask = null;

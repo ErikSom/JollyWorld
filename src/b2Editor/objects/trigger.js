@@ -120,29 +120,26 @@ export const actionDictionary = {
     },
     /******************/
     actionObject_SetPosition: {
-        type: "SetPosition",
-        setAdd: 0,
+        type: 'SetPosition',
+        setAdd: 'fixed',
         X: 0,
         Y: 0,
     },
     actionOptions_SetPosition: {
         setAdd: {
-            setType: guitype_LIST,
-            items: ["fixed", "add"],
-            values: [0, 1],
+            type: guitype_LIST,
+            items: ['fixed', 'ad'],
         },
         X: {
             type: guitype_MINMAX,
             min: -1000,
             max: 1000,
-            value: 0,
             step: 0.1,
         },
         Y: {
             type: guitype_MINMAX,
             min: -1000,
             max: 1000,
-            value: 0,
             step: 0.1
         },
     },
@@ -217,11 +214,18 @@ export const addTriggerGUI = function (dataJoint) {
                             controller.step(actionOptions[key].step);
                             controller.name(key);
                             controller.onChange(function (value) {
-                                console.log("YES");
                                 this.humanUpdate = true;
                                 this.targetValue = value
                             });
-                            break
+                        break
+                        case guitype_LIST:
+                            controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, actionOptions[key].items)
+                            controller.name(key);
+                            controller.onChange(function (value) {
+                                this.humanUpdate = true;
+                                this.targetValue = value
+                            });
+                        break;
                     }
                     controller.triggerActionKey = key;
                     controller.triggerTargetID = i;
