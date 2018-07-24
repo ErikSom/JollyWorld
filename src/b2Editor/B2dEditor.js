@@ -1578,6 +1578,7 @@ const _B2dEditor = function () {
 						var body = this.selectedPhysicsBodies[i];
 						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
 							this.addTargetToTrigger(body, highestObject);
+    						trigger.updateTriggerGUI();
 						}
 					}
 				}
@@ -2988,10 +2989,13 @@ const _B2dEditor = function () {
 						}
 					}else if(controller.triggerActionKey != undefined){
 						//trigger action
-						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
-						}
+							for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+								body = this.selectedPhysicsBodies[j];
+								if(controller.triggerActionKey == 'targetActionDropDown'){
+									body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
+									trigger.updateTriggerGUI();
+								}else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+							}
 					}else {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);

@@ -27,7 +27,7 @@ export const getActionsForObject = function (object) {
         }
     }
     if (object.data.type != B2dEditor.object_JOINT) {
-        //actions.push("SetPosition", "SetRotation")
+        actions.push("SetPosition", "SetRotation")
     }
     return actions;
 }
@@ -40,11 +40,12 @@ export const getActionOptions = function (action) {
 export const doAction = function (actionData, targets) {
     if (!(targets instanceof Array)) targets = [targets];
 
+    var bodies;
+
 
     switch (actionData.type) {
         case "Impulse":
             targets.map(target => {
-                var bodies;
                 console.log(target);
                 if (target.data.prefabInstanceName) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
@@ -57,9 +58,35 @@ export const doAction = function (actionData, targets) {
                 });
             });
             break;
+        case "SetPosition":
+            targets.map(target => {
+                console.log("DO SET POSITION")
+                var objects;
+                var targetPos;
+
+                if (target.data.prefabInstanceName) {
+                    objects = [].concat(B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies, B2dEditor.lookupGroups[target.data.prefabInstanceName]._textures);
+                    targetPos = new Box2D.b2Vec2(target.x, target.y);
+                } else if(target.myBody) {
+                    objects = [target.myBody];
+                    targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x*B2dEditor.PTM, target.myBody.GetPosition().y*B2dEditor.PTM);
+                }else{
+                    objects = [target];
+                    targetPos = new Box2D.b2Vec2(target.x, target.y);
+                }
+
+                if(actionData.setAdd == 0) targetPos = new Box2D.b2Vec2(actionData.X-targetPos.x, actionData.Y-targetPos.y);
+                else targetPos = new Box2D.b2Vec2(actionData.X, actionData.Y);
+                console.log(targetPos, objects);
+
+                B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
+            });
+            break;
     }
 }
 export const guitype_MINMAX = 0;
+export const guitype_LIST = 1;
+
 export const actionDictionary = {
     //*** IMPULSE ***/
     actionObject_Impulse: {
@@ -90,8 +117,35 @@ export const actionDictionary = {
             value: 0,
             step: 1
         },
-    }
+    },
     /******************/
+    actionObject_SetPosition: {
+        type: "SetPosition",
+        setAdd: 0,
+        X: 0,
+        Y: 0,
+    },
+    actionOptions_SetPosition: {
+        setAdd: {
+            setType: guitype_LIST,
+            items: ["fixed", "add"],
+            values: [0, 1],
+        },
+        X: {
+            type: guitype_MINMAX,
+            min: -1000,
+            max: 1000,
+            value: 0,
+            step: 0.1,
+        },
+        Y: {
+            type: guitype_MINMAX,
+            min: -1000,
+            max: 1000,
+            value: 0,
+            step: 0.1
+        },
+    },
 }
 export const addTriggerGUI = function (dataJoint) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -126,6 +180,7 @@ export const addTriggerGUI = function (dataJoint) {
     var actionsString;
     var actionsFolder;
     for (var i = 0; i < dataJoint.triggerActions.length; i++) {
+        var targetObject = B2dEditor.selectedPhysicsBodies[0].mySprite.targets[i];
         actionsString = `_triggerActions_${i}`;
         actionsFolder = B2dEditor.editorGUI.addFolder(`Actions ${i}`);
         var actionString;
@@ -136,12 +191,26 @@ export const addTriggerGUI = function (dataJoint) {
             var action = dataJoint.triggerActions[i][j];
             var actionVarString;
             var actionOptions = getActionOptions(action.type);
+
+            actionVarString = `${actionString}_targetActionDropDown`;
+
+            B2dEditor.editorGUI.editData[actionVarString] = action.type;
+            var controller;
+            controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, getActionsForObject(targetObject)).onChange(function (value) {
+                this.humanUpdate = true;
+                this.targetValue = value
+            });
+            controller.name('actionType');
+            controller.triggerActionKey = 'targetActionDropDown';
+            controller.triggerTargetID = i;
+            controller.triggerActionID = j;
+
+
             for (var key in action) {
                 if (action.hasOwnProperty(key) && key != "type") {
                     actionVarString = `${action}_${key}`;
                     B2dEditor.editorGUI.editData[actionVarString] = action[key];
 
-                    var controller;
                     switch (actionOptions[key].type) {
                         case guitype_MINMAX:
                             controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
@@ -162,6 +231,9 @@ export const addTriggerGUI = function (dataJoint) {
             B2dEditor.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
         }
     }
+}
+export const updateTriggerGUI = function () {
+    B2dEditor.updateSelection();
 }
 export const triggerTargetType = {
     mainCharacter: 0,
@@ -193,6 +265,7 @@ export class triggerCore {
         this.touchingTarget = false;
         this.destroy = false;
         this.contactListener;
+        this.runTriggerOnce = false;
     }
     init(trigger) {
         this.trigger = trigger;
@@ -202,6 +275,10 @@ export class triggerCore {
         this.initContactListener();
     }
     update() {
+        if(this.runTriggerOnce){
+            this.doTrigger();
+            this.runTriggerOnce = false;
+        }
         if (this.destroy) {
             B2dEditor.deleteObjects([this.trigger]);
         } else if (this.touchingTarget && this.data.repeatType == triggerRepeatType.continuesOnContact) {
@@ -223,8 +300,7 @@ export class triggerCore {
 
                         if (self.touchingObjects.length == 1) {
                             console.log("WHOOJOO do trigger");
-
-                            self.doTrigger();
+                            self.runTriggerOnce = true;
                             console.log(self.data.repeatType, triggerRepeatType.once);
                             if (self.data.repeatType == triggerRepeatType.once) {
                                 self.destroy = true;
