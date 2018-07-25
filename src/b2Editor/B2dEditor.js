@@ -2989,7 +2989,7 @@ const _B2dEditor = function () {
 						}
 					}else if(controller.triggerActionKey != undefined){
 						//trigger action
-						console.log(controller.triggerActionKey);
+						console.log(controller.triggerActionKey, controller.triggerTargetID, controller.triggerActionID);
 							for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 								body = this.selectedPhysicsBodies[j];
 								if(controller.triggerActionKey == 'targetActionDropDown'){
