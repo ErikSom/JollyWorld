@@ -60,7 +60,6 @@ export const doAction = function (actionData, targets) {
             break;
         case "SetPosition":
             targets.map(target => {
-                console.log("DO SET POSITION")
                 var objects;
                 var targetPos;
 
@@ -75,9 +74,8 @@ export const doAction = function (actionData, targets) {
                     targetPos = new Box2D.b2Vec2(target.x, target.y);
                 }
 
-                if(actionData.setAdd == 0) targetPos = new Box2D.b2Vec2(actionData.X-targetPos.x, actionData.Y-targetPos.y);
+                if(actionData.setAdd == "fixed") targetPos = new Box2D.b2Vec2(actionData.X-targetPos.x, actionData.Y-targetPos.y);
                 else targetPos = new Box2D.b2Vec2(actionData.X, actionData.Y);
-                console.log(targetPos, objects);
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
             });
@@ -128,7 +126,7 @@ export const actionDictionary = {
     actionOptions_SetPosition: {
         setAdd: {
             type: guitype_LIST,
-            items: ['fixed', 'ad'],
+            items: ['fixed', 'add'],
         },
         X: {
             type: guitype_MINMAX,
@@ -179,11 +177,11 @@ export const addTriggerGUI = function (dataJoint) {
     for (var i = 0; i < dataJoint.triggerActions.length; i++) {
         var targetObject = B2dEditor.selectedPhysicsBodies[0].mySprite.targets[i];
         actionsString = `_triggerActions_${i}`;
-        actionsFolder = B2dEditor.editorGUI.addFolder(`Actions ${i}`);
+        actionsFolder = B2dEditor.editorGUI.addFolder(`Target ${i+1}`);
         var actionString;
         var actionFolder;
         for (var j = 0; j < dataJoint.triggerActions[i].length; j++) {
-            actionFolder = actionsFolder.addFolder(`-- Action ${j}`);
+            actionFolder = actionsFolder.addFolder(`-- Action ${j+1}`);
             actionString = `${actionsString}_action_${j}`
             var action = dataJoint.triggerActions[i][j];
             var actionVarString;
@@ -216,7 +214,7 @@ export const addTriggerGUI = function (dataJoint) {
                             controller.onChange(function (value) {
                                 this.humanUpdate = true;
                                 this.targetValue = value
-                            });
+                            }.bind(controller));
                         break
                         case guitype_LIST:
                             controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, actionOptions[key].items)
@@ -224,7 +222,7 @@ export const addTriggerGUI = function (dataJoint) {
                             controller.onChange(function (value) {
                                 this.humanUpdate = true;
                                 this.targetValue = value
-                            });
+                            }.bind(controller));
                         break;
                     }
                     controller.triggerActionKey = key;
@@ -234,10 +232,56 @@ export const addTriggerGUI = function (dataJoint) {
             }
             B2dEditor.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
         }
+        B2dEditor.editorGUI.editData[`addAction_${i}`] = function () {};
+        var label = `>Add Action<`;
+        let targetIndex = i;
+        controller = B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, `addAction_${i}`).name(label);
+        B2dEditor.editorGUI.editData[`addAction_${i}`] = function () {
+            for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
+                const targetSprite = B2dEditor.selectedPhysicsBodies[i].mySprite;
+                targetSprite.data.triggerActions[targetIndex].push(getAction(getActionsForObject(targetSprite.targets[targetIndex])[0]));
+                updateTriggerGUI();
+            }
+        }
+
+        B2dEditor.editorGUI.editData[`removeTarget_${i}`] = function () {};
+        var label = `>Remove Target ${i+1}<`;
+        controller = B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, `removeTarget_${i}`).name(label);
+        B2dEditor.editorGUI.editData[`removeTarget_${i}`] = function () {
+            for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
+                B2dEditor.selectedPhysicsBodies[i].mySprite.targets.splice(targetIndex, 1);
+                B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions.splice(targetIndex, 1);
+                updateTriggerGUI();
+            }
+        }
+
+
     }
 }
+export const triggerGUIState = {};
 export const updateTriggerGUI = function () {
+    //save folder status
+    let folder;
+    for (var propt in B2dEditor.editorGUI.__folders) {
+        folder = B2dEditor.editorGUI.__folders[propt];
+        triggerGUIState[folder.domElement.innerText] = folder.closed;
+        for(var _propt in B2dEditor.editorGUI.__folders[propt].__folders){
+            folder = B2dEditor.editorGUI.__folders[propt].__folders[_propt];
+            triggerGUIState[folder.domElement.innerText] = folder.closed;
+        }
+    }
+
     B2dEditor.updateSelection();
+
+    //restore folder status
+    for (var propt in B2dEditor.editorGUI.__folders) {
+        folder = B2dEditor.editorGUI.__folders[propt];
+        folder.closed = triggerGUIState[folder.domElement.innerText] || false;
+        for(var _propt in B2dEditor.editorGUI.__folders[propt].__folders){
+            folder = B2dEditor.editorGUI.__folders[propt].__folders[_propt];
+            folder.closed = triggerGUIState[folder.domElement.innerText] || false;
+        }
+    }
 }
 export const triggerTargetType = {
     mainCharacter: 0,

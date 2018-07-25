@@ -2993,9 +2993,6 @@ const _B2dEditor = function () {
 							for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 								body = this.selectedPhysicsBodies[j];
 								if(controller.triggerActionKey == 'targetActionDropDown'){
-									console.log(trigger.getAction(controller.targetValue));
-
-									
 									body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
 									trigger.updateTriggerGUI();
 								}else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;

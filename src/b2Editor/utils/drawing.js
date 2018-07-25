@@ -49,7 +49,7 @@ export const drawDebugTriggerHelpers = function(){
                             tarPos = new b2Vec2(target.x, target.y);
                         }
                     }
-                    drawLine(myPos, tarPos, {color: "0x000", label:i, labelPosition:0.5, labelColor:"0x999"});
+                    drawLine(myPos, tarPos, {color: "0x000", label:i+1, labelPosition:0.5, labelColor:"0x999"});
                 };
             }
         }
