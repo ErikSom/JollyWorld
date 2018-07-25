@@ -236,6 +236,20 @@ export const addTriggerGUI = function (dataJoint) {
                 }
             }
             B2dEditor.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
+
+            B2dEditor.editorGUI.editData[`removeAction_${j}`] = function () {};
+            var label = `>Remove Action ${j+1}<`;
+            let targetIndex = i;
+            let targetAction = j;
+            controller = actionFolder.add(B2dEditor.editorGUI.editData, `removeAction_${j}`).name(label);
+            B2dEditor.editorGUI.editData[`removeAction_${j}`] = function () {
+                for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
+                    if(B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length>1){
+                        B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].splice(targetAction, 1);
+                        updateTriggerGUI();
+                    }
+                }
+            }
         }
         B2dEditor.editorGUI.editData[`addAction_${i}`] = function () {};
         var label = `>Add Action<`;
