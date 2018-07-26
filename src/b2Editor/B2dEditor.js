@@ -1168,6 +1168,31 @@ const _B2dEditor = function () {
 				}
 			}
 		}
+
+		//fix copied triggerObjects
+		var k;
+		for (i = 0; i < copyArray.length; i++) {
+			data = copyArray[i].data;
+			if (data.type == this.object_TRIGGER) {
+				for(j = 0; j<data.triggerObjects.length; j++){
+					var foundBody = -1;
+					for(k = 0; k<copyArray.length; k++){
+						if(data.triggerObjects[j] == copyArray[k].ID){
+							console.log("Found triggerObject");
+							foundBody = k;
+							break;
+						}
+					}
+					if(foundBody>=0) data.triggerObjects[j] = foundBody;
+					else{
+						data.triggerObjects.splice(j, 1);
+						data.triggerActions.splice(j, 1);
+						j--;
+					}
+				}
+			}
+		}
+
 		var copyJSON = '{"objects":[';
 		this.copyCenterPoint = {
 			x: 0,
@@ -5057,6 +5082,9 @@ const _B2dEditor = function () {
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}else if(obj.type == this.object_TRIGGER){
+					for(var j = 0; j<obj.triggerObjects.length; j++){
+						obj.triggerObjects[j] += startChildIndex;
+					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				}
