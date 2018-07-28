@@ -526,9 +526,9 @@ const _B2dEditor = function () {
 					}
 				} else if (_texture.data && _texture.data.type == this.object_GRAPHIC) {
 					_selectedGraphics.push(_texture);
-				} else if(_texture.data && _texture.data.type == this.object_GRAPHICGROUP){
+				} else if (_texture.data && _texture.data.type == this.object_GRAPHICGROUP) {
 					_selectedGraphicGroups.push(_texture);
-				}else {
+				} else {
 					_selectedTextures.push(_texture);
 				}
 			}
@@ -539,7 +539,7 @@ const _B2dEditor = function () {
 				currentCase = case_JUST_TEXTURES;
 			} else if (_selectedGraphics.length > 0) {
 				currentCase = case_JUST_GRAPHICS;
-			}else if (_selectedGraphicGroups.length > 0) {
+			} else if (_selectedGraphicGroups.length > 0) {
 				currentCase = case_JUST_GRAPHICGROUPS;
 			} else {
 				currentCase = case_JUST_JOINTS;
@@ -784,7 +784,7 @@ const _B2dEditor = function () {
 						}
 					}
 				})(controller)
-			break;
+				break;
 			case case_JUST_JOINTS:
 				this.addJointGUI(dataJoint);
 				break;
@@ -2470,32 +2470,31 @@ const _B2dEditor = function () {
 			for (i = 0; i < computeBodies.length; i++) {
 				body = computeBodies[i];
 				oldRot = body.GetAngle();
-				if(origin) body.SetAngle(0);
+				if (origin) body.SetAngle(0);
 				fixture = body.GetFixtureList();
 				while (fixture != null) {
 					aabb.Combine1(fixture.GetAABB(0));
 					fixture = fixture.GetNext();
 				}
-				if(origin) body.SetAngle(oldRot);
+				if (origin) body.SetAngle(oldRot);
 			}
 		}
-		if(computeTextures) {
+		if (computeTextures) {
 			for (i = 0; i < computeTextures.length; i++) {
 				var sprite = computeTextures[i];
 
 				if (sprite.myBody) {
 					oldRot = sprite.myBody.GetAngle();
-					if(origin) sprite.myBody.SetAngle(0);
+					if (origin) sprite.myBody.SetAngle(0);
 					fixture = sprite.myBody.GetFixtureList();
 					while (fixture != null) {
 						aabb.Combine1(fixture.GetAABB(0));
 						fixture = fixture.GetNext();
 					}
-					if(origin) sprite.myBody.SetAngle(oldRot);
-				}
-				else {
+					if (origin) sprite.myBody.SetAngle(oldRot);
+				} else {
 					oldRot = sprite.rotation;
-					if(origin) sprite.rotation = 0;
+					if (origin) sprite.rotation = 0;
 					var bounds = sprite.getBounds();
 					var spriteAABB = new b2AABB;
 					var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
@@ -2503,7 +2502,7 @@ const _B2dEditor = function () {
 					spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
 					spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
 					aabb.Combine1(spriteAABB);
-					if(origin) sprite.rotation = oldRot;
+					if (origin) sprite.rotation = oldRot;
 				}
 			}
 		}
@@ -3523,40 +3522,74 @@ const _B2dEditor = function () {
 	}
 	this.convertSelectedGraphicsToBodies = function () {
 		var graphic;
-		var body;
 		var bodiesCreated = [];
 		for (var i = 0; i < this.selectedTextures.length; i++) {
-			graphic = this.selectedTextures[i];
+			var innerGraphics = [];
 
-			var verts = graphic.data.vertices;
-			for (var j = 0; j < verts.length; j++) {
-				verts[j].x /= this.PTM;
-				verts[j].y /= this.PTM;
+			var graphicContainer = this.selectedTextures[i];
+
+			if (graphicContainer.data.type == this.object_GRAPHIC) innerGraphics.push(graphicContainer.data);
+			else graphicContainer.data.graphicObjects.map( g => {
+				innerGraphics.push(this.parseArrObject(JSON.parse(g)));
+			});
+
+			this.updateObject(graphicContainer, graphicContainer.data);
+
+			var innerBodies = [];
+			for (var j = 0; j < innerGraphics.length; j++) {
+
+				graphic = innerGraphics[j];
+
+				var verts = graphic.vertices;
+				for (var k = 0; k < verts.length; k++) {
+					verts[k].x /= this.PTM;
+					verts[k].y /= this.PTM;
+				}
+				let bodyObject;
+				if (graphic.radius) {
+					bodyObject = new this.bodyObject;
+					bodyObject.vertices = [{x:0, y:0}];
+				} else bodyObject = this.createBodyObjectFromVerts(verts);
+
+				if (bodyObject) {
+					bodyObject.colorFill = graphic.colorFill;
+					bodyObject.colorLine = graphic.colorLine;
+					bodyObject.transparancy = graphic.transparancy;
+					bodyObject.radius = graphic.radius;
+					bodyObject.x = graphic.x / this.PTM;
+					bodyObject.y = graphic.y / this.PTM;
+
+					if(graphic.radius){
+						bodyObject.x += graphic.vertices[0].x*this.PTM;
+						bodyObject.y += graphic.vertices[0].y*this.PTM;
+					}
+
+
+					bodyObject.rotation = graphic.rotation;
+					innerBodies.push(this.buildBodyFromObj(bodyObject));
+				}
+				console.log("Inner body:");
+				console.log(graphic.x, graphic.y);
 			}
 
-			this.updateObject(graphic, graphic.data);
-			var bodyObject
+			innerBodies.map(b => {
+				this.updateObject(b.mySprite, b.mySprite.data);
+			});
 
-			if(graphic.data.radius){
-				bodyObject = new this.bodyObject;
-			}else bodyObject = this.createBodyObjectFromVerts(verts);
 
-			if (bodyObject) {
-				bodyObject.colorFill = graphic.data.colorFill;
-				bodyObject.colorLine = graphic.data.colorLine;
-				bodyObject.transparancy = graphic.data.transparancy;
-				bodyObject.radius = graphic.data.radius;
-				bodyObject.x = graphic.data.x / this.PTM;
-				bodyObject.y = graphic.data.y / this.PTM;
-				bodyObject.rotation = graphic.data.rotation;
-				body = this.buildBodyFromObj(bodyObject);
-			}
-			console.log(bodyObject);
+			var body = null;
+			if(innerBodies.length>=1) body = this.groupBodyObjects(innerBodies);
+			else body = innerBodies[0];
+
 			if (body) {
-				body.mySprite.parent.swapChildren(graphic, body.mySprite);
+				body.mySprite.parent.swapChildren(graphicContainer, body.mySprite);
 				bodiesCreated.push(body);
+				body.SetPosition(new b2Vec2(graphicContainer.x/this.PTM, graphicContainer.y/this.PTM));
+				body.SetAngle(graphicContainer.rotation);
+
 			}
 		}
+		this.selectedPhysicsBodies = [];
 		this.deleteSelection();
 		this.selectedPhysicsBodies = bodiesCreated;
 		this.updateSelection();
@@ -3964,7 +3997,6 @@ const _B2dEditor = function () {
 			} else if (gObj instanceof this.textureObject) {
 				g = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
-				g.x = gObj.x;
 			}
 			graphic.addChild(g);
 			g.x = gObj.x;
@@ -4068,6 +4100,8 @@ const _B2dEditor = function () {
 		groupedBodyObject.y = bodyObjects[0].mySprite.data.y;
 		groupedBodyObject.rotation = bodyObjects[0].mySprite.data.rotation;
 
+		console.log("Grouping body objects");
+
 		for (i = 0; i < bodyObjects.length; i++) {
 			if ((bodyObjects[i].mySprite.data.vertices[0] instanceof Array) || (bodyObjects[i].mySprite.data.radius instanceof Array)) {
 				var vertices = [];
@@ -4100,6 +4134,7 @@ const _B2dEditor = function () {
 							y: p.y + oy
 						});
 					}
+
 					vertices.push(verts);
 				}
 				groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
@@ -4107,6 +4142,9 @@ const _B2dEditor = function () {
 				groupedBodyObject.colorFill = groupedBodyObject.colorFill.concat(bodyObjects[i].mySprite.data.colorFill);
 				groupedBodyObject.colorLine = groupedBodyObject.colorLine.concat(bodyObjects[i].mySprite.data.colorLine);
 				groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
+				
+				console.log("Path 1");
+				
 			} else {
 				var verts = [];
 				var ox = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
@@ -4140,20 +4178,27 @@ const _B2dEditor = function () {
 				}
 				// TODO: Rotate arround groupedBodyObjectRotation
 				if (bodyObjects[i].mySprite.data.radius) {
-					var dx = bodyObjects[i].mySprite.x - bodyObjects[0].mySprite.x;
-					var dy = bodyObjects[i].mySprite.y - bodyObjects[0].mySprite.y;
+					var dx = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
+					var dy = bodyObjects[i].mySprite.data.y - bodyObjects[0].mySprite.data.y;
 					groupedBodyObject.vertices.push([{
 						x: ox,
 						y: oy
 					}]);
+					console.log("Radius xys");
+					console.log(ox, oy, dx, dy)
+
 				} else groupedBodyObject.vertices.push(verts);
 
 				groupedBodyObject.radius.push(bodyObjects[i].mySprite.data.radius);
 				groupedBodyObject.colorFill.push(bodyObjects[i].mySprite.data.colorFill);
 				groupedBodyObject.colorLine.push(bodyObjects[i].mySprite.data.colorLine);
 				groupedBodyObject.transparancy.push(bodyObjects[i].mySprite.data.transparancy);
+
+				console.log("Path 2", bodyObjects[i].mySprite.data.x, bodyObjects[i].mySprite.data.y);
 			}
 		}
+		console.log("Grouped body:");
+		console.log(groupedBodyObject);
 		var groupedBody = this.buildBodyFromObj(groupedBodyObject);
 
 		groupedBody.mySprite.parent.swapChildren(groupedBody.mySprite, bodyObjects[0].mySprite);
