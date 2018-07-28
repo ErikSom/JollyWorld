@@ -476,6 +476,7 @@ const _B2dEditor = function () {
 		var case_MULTIPLE = 5;
 		var case_JUST_GRAPHICS = 6;
 		var case_JUST_TRIGGERS = 7;
+		var case_JUST_GRAPHICGROUPS = 8;
 
 		var currentCase = case_NOTHING;
 		var prefabKeys = Object.keys(this.selectedPrefabs);
@@ -504,6 +505,7 @@ const _B2dEditor = function () {
 		} else if (this.selectedTextures.length > 0 && this.selectedPhysicsBodies.length == 0 && prefabKeys.length == 0) {
 			var _selectedTextures = [];
 			var _selectedGraphics = [];
+			var _selectedGraphicGroups = [];
 			var _selectedPinJoints = [];
 			var _selectedSlideJoints = [];
 			var _selectedDistanceJoints = [];
@@ -524,17 +526,21 @@ const _B2dEditor = function () {
 					}
 				} else if (_texture.data && _texture.data.type == this.object_GRAPHIC) {
 					_selectedGraphics.push(_texture);
-				} else {
+				} else if(_texture.data && _texture.data.type == this.object_GRAPHICGROUP){
+					_selectedGraphicGroups.push(_texture);
+				}else {
 					_selectedTextures.push(_texture);
 				}
 			}
-			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0);
+			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedGraphicGroups.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0);
 			if (editingMultipleObjects > 1) {
 				currentCase = case_MULTIPLE;
 			} else if (_selectedTextures.length > 0) {
 				currentCase = case_JUST_TEXTURES;
 			} else if (_selectedGraphics.length > 0) {
 				currentCase = case_JUST_GRAPHICS;
+			}else if (_selectedGraphicGroups.length > 0) {
+				currentCase = case_JUST_GRAPHICGROUPS;
 			} else {
 				currentCase = case_JUST_JOINTS;
 			}
@@ -572,6 +578,12 @@ const _B2dEditor = function () {
 				this.editorGUI.editData = new this.graphicObject;
 				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple graphics');
 				else this.editorGUI.addFolder('graphic');
+				break;
+			case case_JUST_GRAPHICGROUPS:
+				dataJoint = _selectedGraphicGroups[0].data;
+				this.editorGUI.editData = new this.graphicGroup;
+				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple graphicGroups');
+				else this.editorGUI.addFolder('graphicGroup');
 				break;
 			case case_JUST_JOINTS:
 				var selectedType = ""
@@ -653,6 +665,7 @@ const _B2dEditor = function () {
 			});
 		}
 		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1 && prefabKeys.length == 0) {
+			console.log(self.editorGUI.editData);
 			this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
@@ -757,6 +770,21 @@ const _B2dEditor = function () {
 				})(controller)
 
 				break;
+			case case_JUST_GRAPHICGROUPS:
+				this.editorGUI.editData.convertToBody = function () {};
+				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
+				controller = this.editorGUI.add(self.editorGUI.editData, "convertToBody").name(label);
+				this.editorGUI.editData.convertToBody = (function (_c) {
+					return function () {
+						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
+							_c.name(">Click to Confirm<");
+						} else {
+							_c.name(label);
+							self.convertSelectedGraphicsToBodies();
+						}
+					}
+				})(controller)
+			break;
 			case case_JUST_JOINTS:
 				this.addJointGUI(dataJoint);
 				break;
@@ -1005,9 +1033,6 @@ const _B2dEditor = function () {
 							break;
 						}
 					}
-
-
-
 				}
 				if (b.mySprite.myTriggers != undefined) {
 					var j;
@@ -1176,17 +1201,17 @@ const _B2dEditor = function () {
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
 			if (data.type == this.object_TRIGGER) {
-				for(j = 0; j<data.triggerObjects.length; j++){
+				for (j = 0; j < data.triggerObjects.length; j++) {
 					var foundBody = -1;
-					for(k = 0; k<copyArray.length; k++){
-						if(data.triggerObjects[j] == copyArray[k].ID){
+					for (k = 0; k < copyArray.length; k++) {
+						if (data.triggerObjects[j] == copyArray[k].ID) {
 							console.log("Found triggerObject");
 							foundBody = k;
 							break;
 						}
 					}
-					if(foundBody>=0) data.triggerObjects[j] = foundBody;
-					else{
+					if (foundBody >= 0) data.triggerObjects[j] = foundBody;
+					else {
 						data.triggerObjects.splice(j, 1);
 						data.triggerActions.splice(j, 1);
 						j--;
@@ -1358,7 +1383,7 @@ const _B2dEditor = function () {
 					this.prefabs[key].class.update();
 				}
 			}
-			for (i = 0; i < this.triggerObjects.length; i++){
+			for (i = 0; i < this.triggerObjects.length; i++) {
 				this.triggerObjects[i].class.update();
 			}
 		}
@@ -1617,7 +1642,7 @@ const _B2dEditor = function () {
 						var body = this.selectedPhysicsBodies[i];
 						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
 							this.addTargetToTrigger(body, highestObject);
-    						trigger.updateTriggerGUI();
+							trigger.updateTriggerGUI();
 						}
 					}
 				}
@@ -2415,13 +2440,6 @@ const _B2dEditor = function () {
 
 
 	this.computeSelectionAABB = function () {
-		var aabb = new b2AABB;
-		aabb.lowerBound = new b2Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
-		aabb.upperBound = new b2Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
-		var i;
-		var j;
-		var body;
-		var fixture;
 
 		var computeBodies = this.selectedPhysicsBodies;
 		var computeTextures = this.selectedTextures;
@@ -2435,52 +2453,58 @@ const _B2dEditor = function () {
 				}
 			}
 		}
+		return this.computeObjectsAABB(computeBodies, computeTextures);
+	}
+	this.computeObjectsAABB = function (computeBodies, computeTextures, origin = false) {
+		var aabb = new b2AABB;
+		aabb.lowerBound = new b2Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
+		aabb.upperBound = new b2Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
+		var i;
+		var j;
+		var body;
+		var fixture;
 
-		for (i = 0; i < computeBodies.length; i++) {
-			body = computeBodies[i];
-			fixture = body.GetFixtureList();
-			while (fixture != null) {
-				aabb.Combine1(fixture.GetAABB(0));
-				fixture = fixture.GetNext();
-			}
-		}
+		let oldRot;
 
-
-		for (i = 0; i < computeTextures.length; i++) {
-			var sprite = computeTextures[i];
-
-			if (sprite.myBody) {
-				fixture = sprite.myBody.GetFixtureList();
+		if (computeBodies) {
+			for (i = 0; i < computeBodies.length; i++) {
+				body = computeBodies[i];
+				oldRot = body.GetAngle();
+				if(origin) body.SetAngle(0);
+				fixture = body.GetFixtureList();
 				while (fixture != null) {
 					aabb.Combine1(fixture.GetAABB(0));
 					fixture = fixture.GetNext();
 				}
+				if(origin) body.SetAngle(oldRot);
 			}
-			/*else if (sprite.data instanceof this.textureObject || sprite.data instanceof this.jointObject) {
-				//sprite.calculateBounds()
+		}
+		if(computeTextures) {
+			for (i = 0; i < computeTextures.length; i++) {
+				var sprite = computeTextures[i];
 
-				//sprite = sprite.getLocalBounds();
-				// var bounds = sprite.getLocalBounds();
-				// var spriteAABB = new b2AABB;
-				// spriteAABB.lowerBound = new b2Vec2((sprite.position.x - (bounds.width / 2) * sprite.scale.x) / this.PTM, (sprite.position.y - (bounds.height / 2) * sprite.scale.x) / this.PTM);
-				// spriteAABB.upperBound = new b2Vec2((sprite.position.x + (bounds.width / 2) * sprite.scale.y) / this.PTM, (sprite.position.y + (bounds.height / 2) * sprite.scale.y) / this.PTM);
-				// aabb.Combine(aabb, spriteAABB);
-				var bounds = sprite.getBounds(true);
-				var spriteAABB = new b2AABB;
-				var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-				var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
-				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
-				aabb.Combine(aabb, spriteAABB);
-			} */
-			else {
-				var bounds = sprite.getBounds();
-				var spriteAABB = new b2AABB;
-				var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-				var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
-				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
-				aabb.Combine1(spriteAABB);
+				if (sprite.myBody) {
+					oldRot = sprite.myBody.GetAngle();
+					if(origin) sprite.myBody.SetAngle(0);
+					fixture = sprite.myBody.GetFixtureList();
+					while (fixture != null) {
+						aabb.Combine1(fixture.GetAABB(0));
+						fixture = fixture.GetNext();
+					}
+					if(origin) sprite.myBody.SetAngle(oldRot);
+				}
+				else {
+					oldRot = sprite.rotation;
+					if(origin) sprite.rotation = 0;
+					var bounds = sprite.getBounds();
+					var spriteAABB = new b2AABB;
+					var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+					var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+					spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
+					spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
+					aabb.Combine1(spriteAABB);
+					if(origin) sprite.rotation = oldRot;
+				}
 			}
 		}
 		return aabb;
@@ -2682,7 +2706,7 @@ const _B2dEditor = function () {
 
 			for (var propt in this.editorGUI.__folders) {
 				controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
-				for(var _propt in this.editorGUI.__folders[propt].__folders){
+				for (var _propt in this.editorGUI.__folders[propt].__folders) {
 					//folders in folders
 					controllers = controllers.concat(this.editorGUI.__folders[propt].__folders[_propt].__controllers);
 				}
@@ -2743,7 +2767,7 @@ const _B2dEditor = function () {
 						});
 						this.storeUndoMovement();
 
-					}else if (controller.property == "width") {
+					} else if (controller.property == "width") {
 						//bodies & sprites & prefabs
 
 						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
@@ -2752,7 +2776,7 @@ const _B2dEditor = function () {
 						});
 						this.storeUndoMovement();
 
-					}else if (controller.property == "height") {
+					} else if (controller.property == "height") {
 						//bodies & sprites & prefabs
 
 						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
@@ -3032,29 +3056,29 @@ const _B2dEditor = function () {
 								}
 							}
 						}
-					}else if (controller.property == "targetTypeDropDown") {
+					} else if (controller.property == "targetTypeDropDown") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.targetType = trigger.triggerTargetType[controller.targetValue];
 						}
-					}else if (controller.property == "repeatTypeDropDown") {
+					} else if (controller.property == "repeatTypeDropDown") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.repeatType = trigger.triggerRepeatType[controller.targetValue];
 						}
-					}else if(controller.triggerActionKey != undefined){
+					} else if (controller.triggerActionKey != undefined) {
 						//trigger action
 						console.log(controller.triggerActionKey, controller.triggerTargetID, controller.triggerActionID);
-							for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-								body = this.selectedPhysicsBodies[j];
-								if(controller.triggerActionKey == 'targetActionDropDown'){
-									body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
-									trigger.updateTriggerGUI();
-								}else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
-							}
-					}else {
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							if (controller.triggerActionKey == 'targetActionDropDown') {
+								body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
+								trigger.updateTriggerGUI();
+							} else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+						}
+					} else {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
@@ -3339,18 +3363,18 @@ const _B2dEditor = function () {
 		if (highestObject) {
 			let tarPos;
 			if (highestObject.mySprite) {
-				if(highestObject.mySprite.data.prefabInstanceName){
+				if (highestObject.mySprite.data.prefabInstanceName) {
 					const tarPrefab = this.prefabs[highestObject.mySprite.data.prefabInstanceName];
 					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
-				}else{
+				} else {
 					tarPos = highestObject.GetPosition();
 					tarPos = this.getPIXIPointFromWorldPoint(tarPos.x, tarPos.y);
 				}
-			} else{
-				if(highestObject.data.prefabInstanceName){
+			} else {
+				if (highestObject.data.prefabInstanceName) {
 					const tarPrefab = this.prefabs[highestObject.data.prefabInstanceName];
 					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
-				}else{
+				} else {
 					tarPos = highestObject.position;
 				}
 			}
@@ -3511,7 +3535,11 @@ const _B2dEditor = function () {
 			}
 
 			this.updateObject(graphic, graphic.data);
-			var bodyObject = this.createBodyObjectFromVerts(verts);
+			var bodyObject
+
+			if(graphic.data.radius){
+				bodyObject = new this.bodyObject;
+			}else bodyObject = this.createBodyObjectFromVerts(verts);
 
 			if (bodyObject) {
 				bodyObject.colorFill = graphic.data.colorFill;
@@ -3523,6 +3551,7 @@ const _B2dEditor = function () {
 				bodyObject.rotation = graphic.data.rotation;
 				body = this.buildBodyFromObj(bodyObject);
 			}
+			console.log(bodyObject);
 			if (body) {
 				body.mySprite.parent.swapChildren(graphic, body.mySprite);
 				bodiesCreated.push(body);
@@ -3563,13 +3592,15 @@ const _B2dEditor = function () {
 
 				graphicObject.x += body.mySprite.data.x * this.PTM;
 				graphicObject.y += body.mySprite.data.y * this.PTM;
-				graphicObject.rotation = body.mySprite.data.rotation;
 				graphic = this.buildGraphicFromObj(graphicObject);
 				if (graphic) {
 					graphics.push(graphic);
 				}
 			}
+
 			if (graphics.length > 1) graphic = this.groupGraphicObjects(graphics);
+
+			graphic.rotation = body.mySprite.data.rotation;
 
 			if (graphic) {
 				graphic.parent.swapChildren(body.mySprite, graphic);
@@ -4503,13 +4534,13 @@ const _B2dEditor = function () {
 	this.addTargetToTrigger = function (_trigger, target) {
 		if (_trigger.mySprite == target) return;
 		if (_trigger.mySprite.targets.includes(target)) return;
-		if(target.data.prefabInstanceName){
-			if(_trigger.mySprite.targetPrefabs.includes(target.data.prefabInstanceName)) return;
+		if (target.data.prefabInstanceName) {
+			if (_trigger.mySprite.targetPrefabs.includes(target.data.prefabInstanceName)) return;
 			_trigger.mySprite.targetPrefabs.push(target.data.prefabInstanceName);
 		}
 
 		_trigger.mySprite.targets.push(target);
-		if(_trigger.mySprite.data.triggerActions.length <_trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
+		if (_trigger.mySprite.data.triggerActions.length < _trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
 		if (!target.myTriggers) target.myTriggers = [];
 		target.myTriggers.push(_trigger);
 	}
@@ -4530,9 +4561,9 @@ const _B2dEditor = function () {
 		}
 		if (target.myTriggers.length == 0) target.myTriggers = undefined;
 
-		if(target.data.prefabInstanceName){
-			for(i = 0; i<_trigger.mySprite.targetPrefabs; i++){
-				if(_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName){
+		if (target.data.prefabInstanceName) {
+			for (i = 0; i < _trigger.mySprite.targetPrefabs; i++) {
+				if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
 					_trigger.mySprite.targetPrefabs.splice(i, 1);
 					break;
 				}
@@ -4680,7 +4711,7 @@ const _B2dEditor = function () {
 
 		if (tileTexture && tileTexture != "") {
 
-			if(body.myTileSprite && body.myTileSprite.texture && tileTexture == body.myTileSprite.texture.textureCacheIds[0]) return;
+			if (body.myTileSprite && body.myTileSprite.texture && tileTexture == body.myTileSprite.texture.textureCacheIds[0]) return;
 
 			let tex = PIXI.Texture.fromImage(tileTexture);
 			tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
@@ -4903,7 +4934,7 @@ const _B2dEditor = function () {
 			arr[11] = obj.textureAngleOffset;
 			arr[12] = obj.width;
 			arr[13] = obj.height;
-		}else if (arr[0] == this.object_TRIGGER){
+		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
 			arr[8] = obj.enabled;
@@ -4991,7 +5022,7 @@ const _B2dEditor = function () {
 			obj.textureAngleOffset = arr[11];
 			obj.width = arr[12];
 			obj.height = arr[13];
-		}else if (arr[0] == this.object_TRIGGER){
+		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
 			obj.radius = arr[7];
@@ -5036,14 +5067,14 @@ const _B2dEditor = function () {
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation
-		}else if(data.type == this.object_TRIGGER){
+		} else if (data.type == this.object_TRIGGER) {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
 
 			data.triggerObjects = [];
-			for(var i = 0; i<sprite.targets.length; i++){
-				if(sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);
+			for (var i = 0; i < sprite.targets.length; i++) {
+				if (sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);
 				else data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
 			}
 		}
@@ -5133,8 +5164,8 @@ const _B2dEditor = function () {
 					}
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
-				}else if(obj.type == this.object_TRIGGER){
-					for(var j = 0; j<obj.triggerObjects.length; j++){
+				} else if (obj.type == this.object_TRIGGER) {
+					for (var j = 0; j < obj.triggerObjects.length; j++) {
 						obj.triggerObjects[j] += startChildIndex;
 					}
 					worldObject = this.buildTriggerFromObj(obj);
@@ -5144,10 +5175,10 @@ const _B2dEditor = function () {
 		}
 
 		//Fix trigger object targets
-		for(var i = 0; i<this.triggerObjects.length; i++){
+		for (var i = 0; i < this.triggerObjects.length; i++) {
 			var trigger = this.triggerObjects[i];
-			if(trigger.mySprite.triggerInitialized) continue;
-			for(var j = 0; j<trigger.mySprite.data.triggerObjects.length; j++){
+			if (trigger.mySprite.triggerInitialized) continue;
+			for (var j = 0; j < trigger.mySprite.data.triggerObjects.length; j++) {
 				var targetObject = this.textures.getChildAt(trigger.mySprite.data.triggerObjects[j]);
 				this.addTargetToTrigger(trigger, targetObject);
 			}
@@ -5248,7 +5279,7 @@ const _B2dEditor = function () {
 					else selectedSubPrefab.contactListener[name](contact);
 				}
 			}
-			if(body.mySprite && body.mySprite.data.type == self.object_TRIGGER){
+			if (body.mySprite && body.mySprite.data.type == self.object_TRIGGER) {
 				if (secondParam) body.class.contactListener[name](contact, secondParam);
 				else body.class.contactListener[name](contact);
 			}
@@ -5314,7 +5345,7 @@ const _B2dEditor = function () {
 				this.prefabs[key].class.init();
 			}
 		}
-		for (i = 0; i < this.triggerObjects.length; i++){
+		for (i = 0; i < this.triggerObjects.length; i++) {
 			this.triggerObjects[i].class = new trigger.triggerCore();
 			this.triggerObjects[i].class.init(this.triggerObjects[i]);
 		}
