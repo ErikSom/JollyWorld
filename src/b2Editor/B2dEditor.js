@@ -1001,10 +1001,12 @@ const _B2dEditor = function () {
 					}
 					for (j = 0; j < this.triggerObjects.length; j++) {
 						if (this.triggerObjects[j] == b) {
-							this.triggerObjects.splice(i, 1);
+							this.triggerObjects.splice(j, 1);
 							break;
 						}
 					}
+
+
 
 				}
 				if (b.mySprite.myTriggers != undefined) {
@@ -1391,6 +1393,8 @@ const _B2dEditor = function () {
 		this.radius;
 		this.tileTexture = "";
 		this.lockselection = false;
+		this.width = 0;
+		this.height = 0;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -1409,6 +1413,8 @@ const _B2dEditor = function () {
 		this.isCarvable = false;
 		this.tint = '#FFFFFF';
 		this.lockselection = false;
+		this.width = 0;
+		this.height = 0;
 	}
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
@@ -1424,6 +1430,8 @@ const _B2dEditor = function () {
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
 		this.lockselection = false;
+		this.width = 0;
+		this.height = 0;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -1449,6 +1457,8 @@ const _B2dEditor = function () {
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
 		this.lockselection = false;
+		this.width = 0;
+		this.height = 0;
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -1497,6 +1507,8 @@ const _B2dEditor = function () {
 		this.triggerObjects = [];
 		this.triggerActions = [];
 		this.lockselection = false;
+		this.width = 0;
+		this.height = 0;
 	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
@@ -1505,6 +1517,8 @@ const _B2dEditor = function () {
 		this.rotation = 0;
 		this.groups = "";
 		this.lockselection = false;
+		this.width = 0;
+		this.height = 0;
 	}
 	this.lookupObject = function () {
 		this._bodies = [];
@@ -2721,6 +2735,24 @@ const _B2dEditor = function () {
 						this.storeUndoMovement();
 
 					} else if (controller.property == "y") {
+						//bodies & sprites & prefabs
+
+						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
+							x: 0,
+							y: controller.targetValue
+						});
+						this.storeUndoMovement();
+
+					}else if (controller.property == "width") {
+						//bodies & sprites & prefabs
+
+						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
+							x: 0,
+							y: controller.targetValue
+						});
+						this.storeUndoMovement();
+
+					}else if (controller.property == "height") {
 						//bodies & sprites & prefabs
 
 						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
@@ -4816,6 +4848,8 @@ const _B2dEditor = function () {
 			arr[14] = obj.collision;
 			arr[15] = obj.radius;
 			arr[16] = obj.tileTexture;
+			arr[17] = obj.width;
+			arr[18] = obj.height;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -4825,6 +4859,8 @@ const _B2dEditor = function () {
 			arr[11] = obj.textureAngleOffset;
 			arr[12] = obj.isCarvable;
 			arr[13] = obj.tint;
+			arr[14] = obj.width;
+			arr[15] = obj.height;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.bodyA_ID;
@@ -4856,6 +4892,8 @@ const _B2dEditor = function () {
 			arr[13] = obj.texturePositionOffsetLength;
 			arr[14] = obj.texturePositionOffsetAngle;
 			arr[15] = obj.textureAngleOffset;
+			arr[16] = obj.width;
+			arr[17] = obj.height;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -4863,6 +4901,8 @@ const _B2dEditor = function () {
 			arr[9] = obj.texturePositionOffsetLength;
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
+			arr[12] = obj.width;
+			arr[13] = obj.height;
 		}else if (arr[0] == this.object_TRIGGER){
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -4871,6 +4911,8 @@ const _B2dEditor = function () {
 			arr[10] = obj.repeatType;
 			arr[11] = obj.triggerObjects;
 			arr[12] = obj.triggerActions;
+			arr[13] = obj.width;
+			arr[14] = obj.height;
 		}
 		return JSON.stringify(arr);
 	}
@@ -4889,6 +4931,8 @@ const _B2dEditor = function () {
 			obj.collision = arr[14];
 			obj.radius = arr[15];
 			obj.tileTexture = arr[16] || "";
+			obj.width = arr[17];
+			obj.height = arr[18];
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
@@ -4899,6 +4943,8 @@ const _B2dEditor = function () {
 			obj.textureAngleOffset = arr[11];
 			obj.isCarvable = arr[12];
 			obj.tint = arr[13] || '#FFFFFF';
+			obj.width = arr[14];
+			obj.height = arr[15];
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.ID = arr[6];
@@ -4933,6 +4979,8 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[13];
 			obj.texturePositionOffsetAngle = arr[14];
 			obj.textureAngleOffset = arr[15];
+			obj.width = arr[16];
+			obj.height = arr[17];
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
@@ -4941,6 +4989,8 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[9];
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
+			obj.width = arr[12];
+			obj.height = arr[13];
 		}else if (arr[0] == this.object_TRIGGER){
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
@@ -4950,6 +5000,8 @@ const _B2dEditor = function () {
 			obj.repeatType = arr[10];
 			obj.triggerObjects = arr[11];
 			obj.triggerActions = arr[12];
+			obj.width = arr[13];
+			obj.height = arr[14];
 		}
 
 		obj.type = arr[0];
