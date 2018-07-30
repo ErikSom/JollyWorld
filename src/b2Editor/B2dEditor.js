@@ -665,7 +665,6 @@ const _B2dEditor = function () {
 			});
 		}
 		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1 && prefabKeys.length == 0) {
-			console.log(self.editorGUI.editData);
 			this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
@@ -960,7 +959,6 @@ const _B2dEditor = function () {
 			if (arr[i] instanceof this.prefabObject) {
 				if (arr[i].myTriggers != undefined) {
 					for (var j = 0; j < (arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++) {
-						console.log(arr[i].myTriggers, arr[i]);
 						this.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
 					}
 				}
@@ -1205,7 +1203,6 @@ const _B2dEditor = function () {
 					var foundBody = -1;
 					for (k = 0; k < copyArray.length; k++) {
 						if (data.triggerObjects[j] == copyArray[k].ID) {
-							console.log("Found triggerObject");
 							foundBody = k;
 							break;
 						}
@@ -3069,7 +3066,6 @@ const _B2dEditor = function () {
 						}
 					} else if (controller.triggerActionKey != undefined) {
 						//trigger action
-						console.log(controller.triggerActionKey, controller.triggerTargetID, controller.triggerActionID);
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							if (controller.triggerActionKey == 'targetActionDropDown') {
@@ -3568,8 +3564,6 @@ const _B2dEditor = function () {
 					bodyObject.rotation = graphic.rotation;
 					innerBodies.push(this.buildBodyFromObj(bodyObject));
 				}
-				console.log("Inner body:");
-				console.log(graphic.x, graphic.y);
 			}
 
 			innerBodies.map(b => {
@@ -3856,7 +3850,6 @@ const _B2dEditor = function () {
 		return container;
 	}
 	this.buildTriggerFromObj = function (obj) {
-		console.log(obj);
 		var bodyObject = JSON.parse(JSON.stringify(obj));
 		bodyObject.fixed = true;
 		bodyObject.density = 1;
@@ -4100,8 +4093,6 @@ const _B2dEditor = function () {
 		groupedBodyObject.y = bodyObjects[0].mySprite.data.y;
 		groupedBodyObject.rotation = bodyObjects[0].mySprite.data.rotation;
 
-		console.log("Grouping body objects");
-
 		for (i = 0; i < bodyObjects.length; i++) {
 			if ((bodyObjects[i].mySprite.data.vertices[0] instanceof Array) || (bodyObjects[i].mySprite.data.radius instanceof Array)) {
 				var vertices = [];
@@ -4142,9 +4133,7 @@ const _B2dEditor = function () {
 				groupedBodyObject.colorFill = groupedBodyObject.colorFill.concat(bodyObjects[i].mySprite.data.colorFill);
 				groupedBodyObject.colorLine = groupedBodyObject.colorLine.concat(bodyObjects[i].mySprite.data.colorLine);
 				groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
-				
-				console.log("Path 1");
-				
+
 			} else {
 				var verts = [];
 				var ox = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
@@ -4184,8 +4173,6 @@ const _B2dEditor = function () {
 						x: ox,
 						y: oy
 					}]);
-					console.log("Radius xys");
-					console.log(ox, oy, dx, dy)
 
 				} else groupedBodyObject.vertices.push(verts);
 
@@ -4194,11 +4181,9 @@ const _B2dEditor = function () {
 				groupedBodyObject.colorLine.push(bodyObjects[i].mySprite.data.colorLine);
 				groupedBodyObject.transparancy.push(bodyObjects[i].mySprite.data.transparancy);
 
-				console.log("Path 2", bodyObjects[i].mySprite.data.x, bodyObjects[i].mySprite.data.y);
 			}
 		}
-		console.log("Grouped body:");
-		console.log(groupedBodyObject);
+
 		var groupedBody = this.buildBodyFromObj(groupedBodyObject);
 
 		groupedBody.mySprite.parent.swapChildren(groupedBody.mySprite, bodyObjects[0].mySprite);
