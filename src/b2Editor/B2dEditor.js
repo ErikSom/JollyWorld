@@ -653,6 +653,14 @@ const _B2dEditor = function () {
 			this.initialValue = value;
 		});
 		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS) {
+			this.editorGUI.add(self.editorGUI.editData, "width").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			});
+			this.editorGUI.add(self.editorGUI.editData, "height").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			});
 			this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
@@ -2533,12 +2541,12 @@ const _B2dEditor = function () {
 
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			if (this.selectedPhysicsBodies[i].mySprite.data.radius) {
-				this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius * this.container.scale.x, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+				this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 			} else {
 				var polygons = [];
 				for (var j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({
-					x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM) * this.container.scale.x,
-					y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM) * this.container.scale.y
+					x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM) * this.container.scale.x*this.selectedPhysicsBodies[i].mySprite.scale.x,
+					y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM) * this.container.scale.y*this.selectedPhysicsBodies[i].mySprite.scale.y
 				});
 				this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 			}
@@ -2764,22 +2772,32 @@ const _B2dEditor = function () {
 						this.storeUndoMovement();
 
 					} else if (controller.property == "width") {
-						//bodies & sprites & prefabs
+						//bodies & sprites & ??prefabs
 
-						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-							x: 0,
-							y: controller.targetValue
-						});
-						this.storeUndoMovement();
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.width = controller.targetValue;
+							this.setScale(body);
+						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.data.width = controller.targetValue;
+							this.setScale(sprite);
+						}
 
-					} else if (controller.property == "height") {
-						//bodies & sprites & prefabs
+					}else if (controller.property == "height") {
+						//bodies & sprites & ??prefabs
 
-						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-							x: 0,
-							y: controller.targetValue
-						});
-						this.storeUndoMovement();
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.height = controller.targetValue;
+							this.setScale(body);
+						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.data.height = controller.targetValue;
+							this.setScale(sprite);
+						}
 
 					} else if (controller.property == "collideConnected") {
 						//joint
@@ -3936,6 +3954,11 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
+
+
+		this.setScale(body);
+
+
 		if (obj.tileTexture) this.updateBodyTileSprite(body);
 
 		this.setBodyCollision(body, obj.collision);
@@ -4005,6 +4028,77 @@ const _B2dEditor = function () {
 
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
+	}
+	this.setScale = function(obj){
+		var aabb;
+		var data;
+		if(obj.mySprite){
+			aabb = this.computeObjectsAABB([obj], [], true);
+			data = obj.mySprite.data;
+		}
+		else{
+			aabb = this.computeObjectsAABB([], [obj], true);
+			data = obj.data;
+		}
+
+		const widthExtents = aabb.GetExtents().x*2*this.PTM;
+		const heightExtents = aabb.GetExtents().y*2*this.PTM;
+
+		let scaleX;
+		if(data.width == undefined || data.width == 0){
+			 data.width = widthExtents;
+			 scaleX = 1;
+		}
+		else{
+			scaleX = data.width/widthExtents;
+		}
+
+		let scaleY;
+		if(data.height == undefined || data.height == 0){
+			data.height = heightExtents;
+			scaleY = 1;
+		}else{
+			scaleY = data.height/heightExtents;
+		}
+
+		if(Math.round(scaleX*100)/100 == 1 && Math.round(scaleY*100)/100 == 1) return;
+
+
+		console.log("scale factors", scaleX, scaleY)
+
+
+		if(data.type == this.object_BODY || data.type == this.object_TRIGGER){
+
+			let oldFixtures = []
+			const body = obj;
+			let fixture = body.GetFixtureList();
+			while (fixture != null) {
+				oldFixtures.push(fixture);
+				fixture = fixture.GetNext();
+			}
+
+			oldFixtures.map(fixture => {
+				var shape = fixture.GetShape();
+				if(shape instanceof Box2D.b2PolygonShape){
+					let oldVertices = shape.GetVertices();
+
+					for(var i = 0; i<oldVertices.length; i++){
+						oldVertices[i].x = oldVertices[i].x*scaleX;
+						oldVertices[i].y = oldVertices[i].y*scaleY;
+					}
+					shape.Set(oldVertices);
+
+					fixture.DestroyProxies();
+					fixture.CreateProxies(body.m_xf);
+				}
+
+			});
+			body.mySprite.scale.x *= scaleX;
+			body.mySprite.scale.y *= scaleY;
+
+		}
+
+
 	}
 
 	this.groupObjects = function () {
