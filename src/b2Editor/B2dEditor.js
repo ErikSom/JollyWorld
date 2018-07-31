@@ -3934,13 +3934,8 @@ const _B2dEditor = function () {
 				fixDef.shape.SetRadius(radius / this.PTM);
 			}
 			fixture = body.CreateFixture(fixDef);
-
-			var colorFill = obj.colorFill instanceof Array ? obj.colorFill[i] : obj.colorFill;
-			var colorLine = obj.colorLine instanceof Array ? obj.colorLine[i] : obj.colorLine;
-			var transparancy = obj.transparancy instanceof Array ? obj.transparancy[i] : obj.transparancy;
-			if (!radius) this.updatePolyShape(body.originalGraphic, fixDef.shape, colorFill, colorLine, transparancy, (i != 0));
-			else this.updateCircleShape(body.originalGraphic, radius, fixDef.shape.GetLocalPosition(), colorFill, colorLine, transparancy, (i != 0));
 		}
+
 
 		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
 		body.SetAngle(obj.rotation);
@@ -3955,8 +3950,9 @@ const _B2dEditor = function () {
 		body.mySprite.data = obj;
 
 
+		this.updateBodyShapes(body);
 
-		this.setScale(body);
+		//this.setScale(body);
 
 
 		if (obj.tileTexture) this.updateBodyTileSprite(body);
@@ -4044,6 +4040,12 @@ const _B2dEditor = function () {
 		const widthExtents = aabb.GetExtents().x*2*this.PTM;
 		const heightExtents = aabb.GetExtents().y*2*this.PTM;
 
+
+		//do we include a circle?
+
+
+		console.log("extents", widthExtents, heightExtents);
+
 		let scaleX;
 		if(data.width == undefined || data.width == 0){
 			 data.width = widthExtents;
@@ -4063,9 +4065,7 @@ const _B2dEditor = function () {
 
 		if(Math.round(scaleX*100)/100 == 1 && Math.round(scaleY*100)/100 == 1) return;
 
-
 		console.log("scale factors", scaleX, scaleY)
-
 
 		if(data.type == this.object_BODY || data.type == this.object_TRIGGER){
 
@@ -4074,28 +4074,59 @@ const _B2dEditor = function () {
 			let fixture = body.GetFixtureList();
 			while (fixture != null) {
 				oldFixtures.push(fixture);
+				if(fixture.GetShape() instanceof b2CircleShape){
+					//oh shit we have a circle, must scale with aspect ratio
+					if(Math.round(scaleX*100)/100 != 1){
+						scaleY = scaleX;
+						data.height = data.width;
+					}else{
+						scaleX = scaleY;
+						data.width = data.height;
+					}
+				}
 				fixture = fixture.GetNext();
 			}
 
-			oldFixtures.map(fixture => {
+			oldFixtures.reverse();
+
+
+			for(let i = 0; i<oldFixtures.length; i++){
+				let fixture = oldFixtures[i];
 				var shape = fixture.GetShape();
 				if(shape instanceof Box2D.b2PolygonShape){
 					let oldVertices = shape.GetVertices();
 
-					for(var i = 0; i<oldVertices.length; i++){
-						oldVertices[i].x = oldVertices[i].x*scaleX;
-						oldVertices[i].y = oldVertices[i].y*scaleY;
+					for(let j = 0; j<oldVertices.length; j++){
+						oldVertices[j].x = oldVertices[j].x*scaleX;
+						oldVertices[j].y = oldVertices[j].y*scaleY;
 					}
 					shape.Set(oldVertices);
 
-					fixture.DestroyProxies();
-					fixture.CreateProxies(body.m_xf);
+					if(obj.mySprite.data.vertices[i] instanceof Array) oldVertices = obj.mySprite.data.vertices[i];
+					else oldVertices = obj.mySprite.data.vertices;
+
+					for(let j = 0; j<oldVertices.length; j++){
+						oldVertices[j].x = oldVertices[j].x*scaleX;
+						oldVertices[j].y = oldVertices[j].y*scaleY;
+					}
+
+					// if(obj.mySprite.data.vertices[i] instanceof Array)  obj.mySprite.data.vertices[i] = oldVertices;
+					// else obj.mySprite.data.vertices = oldVertices;
+
+				}else if(shape instanceof Box2D.b2CircleShape){
+					shape.SetRadius(shape.GetRadius() * scaleX);
+					body.mySprite.data.radius *= scaleX;
 				}
+				fixture.DestroyProxies();
+				fixture.CreateProxies(body.m_xf);
 
-			});
-			body.mySprite.scale.x *= scaleX;
-			body.mySprite.scale.y *= scaleY;
+			};
+			this.updateBodyShapes(body);
 
+		}else{
+			var sprite = obj;
+			sprite.width = data.width;
+			sprite.height= data.height;
 		}
 
 
@@ -4827,6 +4858,28 @@ const _B2dEditor = function () {
 
 			body.myTexture.originalSprite.pluginName = 'spriteMasked';
 			body.myTexture.originalSprite.maskSprite = body.myMask;
+		}
+	}
+	this.updateBodyShapes = function(body){
+		let fixtureArray = [];
+		let fixture = body.GetFixtureList();
+		while (fixture != null) {
+			fixtureArray.push(fixture);
+			fixture = fixture.GetNext();
+		}
+		fixtureArray.reverse();
+
+		for (let i = 0; i < fixtureArray.length; i++) {
+
+			fixture = fixtureArray[i];
+
+			console.log(fixture.GetShape());
+			let radius = body.mySprite.data.radius instanceof Array ? body.mySprite.data.radius[i] : body.mySprite.data.radius;
+			let colorFill = body.mySprite.data.colorFill instanceof Array ? body.mySprite.data.colorFill[i] : body.mySprite.data.colorFill;
+			let colorLine = body.mySprite.data.colorLine instanceof Array ? body.mySprite.data.colorLine[i] : body.mySprite.data.colorLine;
+			let transparancy = body.mySprite.data.transparancy instanceof Array ? body.mySprite.data.transparancy[i] : body.mySprite.data.transparancy;
+			if (!radius) this.updatePolyShape(body.originalGraphic, fixture.GetShape(), colorFill, colorLine, transparancy, (i != 0));
+			else this.updateCircleShape(body.originalGraphic, radius, fixture.GetShape().GetLocalPosition(), colorFill, colorLine, transparancy, (i != 0));
 		}
 	}
 	this.updateBodyTileSprite = function (body) {
