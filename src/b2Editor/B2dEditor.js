@@ -653,10 +653,10 @@ const _B2dEditor = function () {
 			this.initialValue = value;
 		});
 		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS) {
-			var tarObject;
-			if(this.selectedPhysicsBodies.length>0) tarObject = this.selectedPhysicsBodies[0];
-			else tarObject = this.selectedTextures[0];
-			const currentSize = this.getSize(tarObject);
+
+			var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+			var currentSize = {width:aabb.GetExtents().x*2*this.PTM, height:aabb.GetExtents().y*2*this.PTM}
+
 			self.editorGUI.editData.width = currentSize.width;
 			self.editorGUI.editData.height = currentSize.height;
 
@@ -2767,33 +2767,59 @@ const _B2dEditor = function () {
 						});
 						this.storeUndoMovement();
 
-					} else if (controller.property == "width") {
+					} else if (controller.property == "width" || controller.property == "height") {
 						//bodies & sprites & ??prefabs
+
+						var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+						var currentSize = {width:aabb.GetExtents().x*2*this.PTM, height:aabb.GetExtents().y*2*this.PTM}
+
+						let targetWidth = currentSize.width;
+						let targetHeight = currentSize.height;
+
+						if(controller.property == "width") targetWidth = controller.targetValue;
+						else targetHeight = controller.targetValue;
+
+						let scaleX = targetWidth/currentSize.width;
+						let scaleY = targetHeight/currentSize.height;
+
+						let centerPoint = {x:0, y:0};
+
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							let currentSize = this.getSize(body);
-							this.setScale(body, controller.targetValue, currentSize.height);
+							centerPoint.x += body.GetPosition().x*this.PTM;
+							centerPoint.y += body.GetPosition().y*this.PTM;
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							let currentSize = this.getSize(sprite);
-							this.setScale(sprite, controller.targetValue, currentSize.height);
+							centerPoint.x += sprite.x;
+							centerPoint.y += sprite.y;
 						}
+						centerPoint.x /= (this.selectedPhysicsBodies.length+this.selectedTextures.length);
+						centerPoint.y /= (this.selectedPhysicsBodies.length+this.selectedTextures.length);
 
-					}else if (controller.property == "height") {
-						//bodies & sprites & ??prefabs
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							let currentSize = this.getSize(body);
-							this.setScale(body, currentSize.width, controller.targetValue);
+
+							var xDif = body.GetPosition().x *this.PTM - centerPoint.x;
+							var yDif = body.GetPosition().y *this.PTM - centerPoint.y;
+
+							this.setScale(body, scaleX, scaleY);
+
+							body.SetPosition(new b2Vec2((centerPoint.x+xDif*scaleX)/this.PTM, (centerPoint.y+yDif*scaleY)/this.PTM))
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							let currentSize = this.getSize(sprite);
-							this.setScale(sprite, currentSize.width, controller.targetValue);
+
+							var xDif = sprite.x - centerPoint.x;
+							var yDif = sprite.y - centerPoint.y;
+
+							sprite.x = centerPoint.x + xDif*scale;
+							sprite.y = centerPoint.y + yDif*scale;
+
+							this.setScale(sprite, scaleX, scaleY);
 						}
 
-					} else if (controller.property == "collideConnected") {
+					}else if (controller.property == "collideConnected") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							if (this.selectedTextures[j].data.type == this.object_JOINT) {
@@ -4019,32 +4045,12 @@ const _B2dEditor = function () {
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
-	this.getSize = function(obj){
-		var aabb;
-		var data;
-		if(obj.mySprite){
-			aabb = this.computeObjectsAABB([obj], [], true);
-			data = obj.mySprite.data;
-		}
-		else{
-			aabb = this.computeObjectsAABB([], [obj], true);
-			data = obj.data;
-		}
-		return {width:aabb.GetExtents().x*2*this.PTM, height:aabb.GetExtents().y*2*this.PTM}
-	}
-	this.setScale = function(obj, targetWidth, targetHeight){
-		const currentSize = this.getSize(obj);
+	this.setScale = function(obj, scaleX, scaleY){
 
 		//do we include a circle?
 		let data;
 		if(obj.mySprite) data = obj.mySprite.data;
 		else data = obj.data;
-
-
-		console.log("extents", currentSize.width, currentSize.height);
-
-		let scaleX = targetWidth/currentSize.width;
-		let scaleY = targetHeight/currentSize.height;
 
 		if(Math.round(scaleX*100)/100 == 1 && Math.round(scaleY*100)/100 == 1) return;
 
@@ -4061,10 +4067,8 @@ const _B2dEditor = function () {
 					//oh shit we have a circle, must scale with aspect ratio
 					if(Math.round(scaleX*100)/100 != 1){
 						scaleY = scaleX;
-						data.height = data.width;
 					}else{
 						scaleX = scaleY;
-						data.width = data.height;
 					}
 				}
 				fixture = fixture.GetNext();
@@ -4109,7 +4113,7 @@ const _B2dEditor = function () {
 		}else{
 			var sprite = obj;
 			sprite.width = data.width;
-			sprite.height= data.height;
+			sprite.height = data.height;
 		}
 
 
