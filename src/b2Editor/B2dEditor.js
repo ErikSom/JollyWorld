@@ -2782,6 +2782,7 @@ const _B2dEditor = function () {
 						let scaleX = targetWidth/currentSize.width;
 						let scaleY = targetHeight/currentSize.height;
 
+
 						let centerPoint = {x:0, y:0};
 
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
@@ -2813,8 +2814,10 @@ const _B2dEditor = function () {
 							var xDif = sprite.x - centerPoint.x;
 							var yDif = sprite.y - centerPoint.y;
 
-							sprite.x = centerPoint.x + xDif*scale;
-							sprite.y = centerPoint.y + yDif*scale;
+							sprite.x = centerPoint.x + xDif*scaleX;
+							sprite.y = centerPoint.y + yDif*scaleY;
+
+							console.log(sprite.x, sprite.y);
 
 							this.setScale(sprite, scaleX, scaleY);
 						}
@@ -4076,7 +4079,6 @@ const _B2dEditor = function () {
 
 			oldFixtures.reverse();
 
-
 			for(let i = 0; i<oldFixtures.length; i++){
 				let fixture = oldFixtures[i];
 				var shape = fixture.GetShape();
@@ -4112,8 +4114,16 @@ const _B2dEditor = function () {
 
 		}else{
 			var sprite = obj;
-			sprite.width = data.width;
-			sprite.height = data.height;
+
+			for(let j = 0; j<sprite.data.vertices.length; j++){
+				sprite.data.vertices[j].x *= scaleX;
+				sprite.data.vertices[j].y *= scaleY;
+			}
+			if(sprite.data.radius) sprite.data.radius *= scaleX;
+
+			if (!sprite.data.radius) this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+			else this.updateCircleShape(sprite, sprite.data.radius, sprite.data.vertices[0], sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+
 		}
 
 
