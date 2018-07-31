@@ -653,6 +653,14 @@ const _B2dEditor = function () {
 			this.initialValue = value;
 		});
 		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS) {
+			var tarObject;
+			if(this.selectedPhysicsBodies.length>0) tarObject = this.selectedPhysicsBodies[0];
+			else tarObject = this.selectedTextures[0];
+			const currentSize = this.getSize(tarObject);
+			self.editorGUI.editData.width = currentSize.width;
+			self.editorGUI.editData.height = currentSize.height;
+
+
 			this.editorGUI.add(self.editorGUI.editData, "width").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
@@ -1423,8 +1431,6 @@ const _B2dEditor = function () {
 		this.radius;
 		this.tileTexture = "";
 		this.lockselection = false;
-		this.width = 0;
-		this.height = 0;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -1443,8 +1449,6 @@ const _B2dEditor = function () {
 		this.isCarvable = false;
 		this.tint = '#FFFFFF';
 		this.lockselection = false;
-		this.width = 0;
-		this.height = 0;
 	}
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
@@ -1460,8 +1464,6 @@ const _B2dEditor = function () {
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
 		this.lockselection = false;
-		this.width = 0;
-		this.height = 0;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -1487,8 +1489,6 @@ const _B2dEditor = function () {
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
 		this.lockselection = false;
-		this.width = 0;
-		this.height = 0;
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -1537,8 +1537,6 @@ const _B2dEditor = function () {
 		this.triggerObjects = [];
 		this.triggerActions = [];
 		this.lockselection = false;
-		this.width = 0;
-		this.height = 0;
 	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
@@ -1547,8 +1545,6 @@ const _B2dEditor = function () {
 		this.rotation = 0;
 		this.groups = "";
 		this.lockselection = false;
-		this.width = 0;
-		this.height = 0;
 	}
 	this.lookupObject = function () {
 		this._bodies = [];
@@ -2773,30 +2769,28 @@ const _B2dEditor = function () {
 
 					} else if (controller.property == "width") {
 						//bodies & sprites & ??prefabs
-
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.width = controller.targetValue;
-							this.setScale(body);
+							let currentSize = this.getSize(body);
+							this.setScale(body, controller.targetValue, currentSize.height);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							sprite.data.width = controller.targetValue;
-							this.setScale(sprite);
+							let currentSize = this.getSize(sprite);
+							this.setScale(sprite, controller.targetValue, currentSize.height);
 						}
 
 					}else if (controller.property == "height") {
 						//bodies & sprites & ??prefabs
-
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.height = controller.targetValue;
-							this.setScale(body);
+							let currentSize = this.getSize(body);
+							this.setScale(body, currentSize.width, controller.targetValue);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							sprite.data.height = controller.targetValue;
-							this.setScale(sprite);
+							let currentSize = this.getSize(sprite);
+							this.setScale(sprite, currentSize.width, controller.targetValue);
 						}
 
 					} else if (controller.property == "collideConnected") {
@@ -4025,7 +4019,7 @@ const _B2dEditor = function () {
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
-	this.setScale = function(obj){
+	this.getSize = function(obj){
 		var aabb;
 		var data;
 		if(obj.mySprite){
@@ -4036,32 +4030,21 @@ const _B2dEditor = function () {
 			aabb = this.computeObjectsAABB([], [obj], true);
 			data = obj.data;
 		}
-
-		const widthExtents = aabb.GetExtents().x*2*this.PTM;
-		const heightExtents = aabb.GetExtents().y*2*this.PTM;
-
+		return {width:aabb.GetExtents().x*2*this.PTM, height:aabb.GetExtents().y*2*this.PTM}
+	}
+	this.setScale = function(obj, targetWidth, targetHeight){
+		const currentSize = this.getSize(obj);
 
 		//do we include a circle?
+		let data;
+		if(obj.mySprite) data = obj.mySprite.data;
+		else data = obj.data;
 
 
-		console.log("extents", widthExtents, heightExtents);
+		console.log("extents", currentSize.width, currentSize.height);
 
-		let scaleX;
-		if(data.width == undefined || data.width == 0){
-			 data.width = widthExtents;
-			 scaleX = 1;
-		}
-		else{
-			scaleX = data.width/widthExtents;
-		}
-
-		let scaleY;
-		if(data.height == undefined || data.height == 0){
-			data.height = heightExtents;
-			scaleY = 1;
-		}else{
-			scaleY = data.height/heightExtents;
-		}
+		let scaleX = targetWidth/currentSize.width;
+		let scaleY = targetHeight/currentSize.height;
 
 		if(Math.round(scaleX*100)/100 == 1 && Math.round(scaleY*100)/100 == 1) return;
 
@@ -5056,8 +5039,6 @@ const _B2dEditor = function () {
 			arr[14] = obj.collision;
 			arr[15] = obj.radius;
 			arr[16] = obj.tileTexture;
-			arr[17] = obj.width;
-			arr[18] = obj.height;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -5067,8 +5048,6 @@ const _B2dEditor = function () {
 			arr[11] = obj.textureAngleOffset;
 			arr[12] = obj.isCarvable;
 			arr[13] = obj.tint;
-			arr[14] = obj.width;
-			arr[15] = obj.height;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.bodyA_ID;
@@ -5100,8 +5079,6 @@ const _B2dEditor = function () {
 			arr[13] = obj.texturePositionOffsetLength;
 			arr[14] = obj.texturePositionOffsetAngle;
 			arr[15] = obj.textureAngleOffset;
-			arr[16] = obj.width;
-			arr[17] = obj.height;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -5109,8 +5086,6 @@ const _B2dEditor = function () {
 			arr[9] = obj.texturePositionOffsetLength;
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
-			arr[12] = obj.width;
-			arr[13] = obj.height;
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -5119,8 +5094,6 @@ const _B2dEditor = function () {
 			arr[10] = obj.repeatType;
 			arr[11] = obj.triggerObjects;
 			arr[12] = obj.triggerActions;
-			arr[13] = obj.width;
-			arr[14] = obj.height;
 		}
 		return JSON.stringify(arr);
 	}
@@ -5139,8 +5112,6 @@ const _B2dEditor = function () {
 			obj.collision = arr[14];
 			obj.radius = arr[15];
 			obj.tileTexture = arr[16] || "";
-			obj.width = arr[17];
-			obj.height = arr[18];
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
@@ -5151,8 +5122,6 @@ const _B2dEditor = function () {
 			obj.textureAngleOffset = arr[11];
 			obj.isCarvable = arr[12];
 			obj.tint = arr[13] || '#FFFFFF';
-			obj.width = arr[14];
-			obj.height = arr[15];
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.ID = arr[6];
@@ -5187,8 +5156,6 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[13];
 			obj.texturePositionOffsetAngle = arr[14];
 			obj.textureAngleOffset = arr[15];
-			obj.width = arr[16];
-			obj.height = arr[17];
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
@@ -5197,8 +5164,6 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[9];
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
-			obj.width = arr[12];
-			obj.height = arr[13];
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
@@ -5208,8 +5173,6 @@ const _B2dEditor = function () {
 			obj.repeatType = arr[10];
 			obj.triggerObjects = arr[11];
 			obj.triggerActions = arr[12];
-			obj.width = arr[13];
-			obj.height = arr[14];
 		}
 
 		obj.type = arr[0];
