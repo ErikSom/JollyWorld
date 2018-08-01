@@ -754,6 +754,10 @@ const _B2dEditor = function () {
 				}.bind(controller));
 				break;
 			case case_JUST_GRAPHICS:
+				this.editorGUI.add(self.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				});
 				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -1488,6 +1492,7 @@ const _B2dEditor = function () {
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
+		this.tileTexture = "";
 		this.lockselection = false;
 	}
 	this.jointObject = function () {
@@ -2817,8 +2822,6 @@ const _B2dEditor = function () {
 							sprite.x = centerPoint.x + xDif*scaleX;
 							sprite.y = centerPoint.y + yDif*scaleY;
 
-							console.log(sprite.x, sprite.y);
-
 							this.setScale(sprite, scaleX, scaleY);
 						}
 
@@ -2934,7 +2937,12 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.tileTexture = controller.targetValue;
-							this.updateBodyTileSprite(body);
+							this.updateTileSprite(body);
+						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedPhysicsBodies[j];
+							sprite.data.tileTexture = controller.targetValue;
+							this.updateTileSprite(sprite);
 						}
 					} else if (controller.property == "tint") {
 						// sprite
@@ -3586,6 +3594,7 @@ const _B2dEditor = function () {
 				if (graphic.radius) {
 					bodyObject = new this.bodyObject;
 					bodyObject.vertices = [{x:0, y:0}];
+
 				} else bodyObject = this.createBodyObjectFromVerts(verts);
 
 				if (bodyObject) {
@@ -3600,7 +3609,7 @@ const _B2dEditor = function () {
 						bodyObject.x += graphic.vertices[0].x*this.PTM;
 						bodyObject.y += graphic.vertices[0].y*this.PTM;
 					}
-
+					bodyObject.tileTexture = graphic.tileTexture;
 
 					bodyObject.rotation = graphic.rotation;
 					innerBodies.push(this.buildBodyFromObj(bodyObject));
@@ -3660,6 +3669,7 @@ const _B2dEditor = function () {
 
 				graphicObject.x += body.mySprite.data.x * this.PTM;
 				graphicObject.y += body.mySprite.data.y * this.PTM;
+				graphicObject.tileTexture = body.mySprite.data.tileTexture;
 				graphic = this.buildGraphicFromObj(graphicObject);
 				if (graphic) {
 					graphics.push(graphic);
@@ -3975,10 +3985,7 @@ const _B2dEditor = function () {
 
 		this.updateBodyShapes(body);
 
-		//this.setScale(body);
-
-
-		if (obj.tileTexture) this.updateBodyTileSprite(body);
+		if (obj.tileTexture != "") this.updateTileSprite(body);
 
 		this.setBodyCollision(body, obj.collision);
 
@@ -4004,7 +4011,8 @@ const _B2dEditor = function () {
 			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
 
-		//if (obj.tileTexture) this.updateBodyTileSprite(body);
+		if (obj.tileTexture != "") this.updateTileSprite(graphic);
+
 
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
@@ -4036,8 +4044,6 @@ const _B2dEditor = function () {
 		else data = obj.data;
 
 		if(Math.round(scaleX*100)/100 == 1 && Math.round(scaleY*100)/100 == 1) return;
-
-		console.log("scale factors", scaleX, scaleY)
 
 		if(data.type == this.object_BODY || data.type == this.object_TRIGGER){
 
@@ -4091,6 +4097,7 @@ const _B2dEditor = function () {
 
 			};
 			this.updateBodyShapes(body);
+			this.updateTileSprite(body, true);
 
 			if(body.myTexture) this.setScale(body.myTexture, scaleX, scaleY);
 
@@ -4145,6 +4152,7 @@ const _B2dEditor = function () {
 				if(sprite.data.radius) sprite.data.radius *= scaleX;
 				if (!sprite.data.radius) this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
 				else this.updateCircleShape(sprite, sprite.data.radius, sprite.data.vertices[0], sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+				this.updateTileSprite(sprite, true);
 			}else if(sprite.data.type == this.object_TEXTURE){
 				sprite.width = sprite.width*scaleX;
 				sprite.height = sprite.height*scaleY;
@@ -4244,6 +4252,8 @@ const _B2dEditor = function () {
 		groupedBodyObject.x = bodyObjects[0].mySprite.data.x;
 		groupedBodyObject.y = bodyObjects[0].mySprite.data.y;
 		groupedBodyObject.rotation = bodyObjects[0].mySprite.data.rotation;
+		groupedBodyObject.tileTexture = bodyObjects[0].mySprite.data.tileTexture;
+
 
 		for (i = 0; i < bodyObjects.length; i++) {
 			if ((bodyObjects[i].mySprite.data.vertices[0] instanceof Array) || (bodyObjects[i].mySprite.data.radius instanceof Array)) {
@@ -4900,7 +4910,6 @@ const _B2dEditor = function () {
 
 			fixture = fixtureArray[i];
 
-			console.log(fixture.GetShape());
 			let radius = body.mySprite.data.radius instanceof Array ? body.mySprite.data.radius[i] : body.mySprite.data.radius;
 			let colorFill = body.mySprite.data.colorFill instanceof Array ? body.mySprite.data.colorFill[i] : body.mySprite.data.colorFill;
 			let colorLine = body.mySprite.data.colorLine instanceof Array ? body.mySprite.data.colorLine[i] : body.mySprite.data.colorLine;
@@ -4930,21 +4939,40 @@ const _B2dEditor = function () {
 			g.rotation = gObj.rotation;
 		}
 	}
-	this.updateBodyTileSprite = function (body) {
+	this.updateTileSprite = function (target, forceNew = false) {
 
-		const tileTexture = body.mySprite.data.tileTexture;
+		let tileTexture;
+		let targetGraphic;
+		let targetSprite;
+
+		if(target.mySprite){
+			tileTexture = target.mySprite.data.tileTexture;
+			targetGraphic = target.originalGraphic;
+			targetSprite = target.mySprite;
+		}else{
+			tileTexture = target.data.tileTexture;
+			targetGraphic = target;
+			targetSprite = target;
+		}
+		if(forceNew || tileTexture == undefined || tileTexture == ""){
+			if(target.myTileSprite){
+				target.myTileSprite.parent.removeChild(target.myTileSprite);
+				target.myTileSprite = undefined;
+			}
+			if(!forceNew) return;
+		}
 
 		if (tileTexture && tileTexture != "") {
 
-			if (body.myTileSprite && body.myTileSprite.texture && tileTexture == body.myTileSprite.texture.textureCacheIds[0]) return;
+			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) return;
 
 			let tex = PIXI.Texture.fromImage(tileTexture);
 			tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 
-			if (!body.myTileSprite) {
-				game.app.renderer.plugins.graphics.updateGraphics(body.originalGraphic);
+			if (!target.myTileSprite) {
+				game.app.renderer.plugins.graphics.updateGraphics(targetGraphic);
 
-				const verticesColor = body.originalGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glPoints;
+				const verticesColor = targetGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glPoints;
 				let vertices = new Float32Array(verticesColor.length / 3);
 
 				let i;
@@ -4955,21 +4983,17 @@ const _B2dEditor = function () {
 					j += 2;
 				}
 
-				const indices = body.originalGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
+				const indices = targetGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
 				let uvs = new Float32Array(vertices.length);
 				for (i = 0; i < vertices.length; i++) uvs[i] = vertices[i] * 2.0 / tex.width;
 
 				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
-				body.mySprite.addChild(mesh);
+				targetSprite.addChild(mesh);
 
-				body.myTileSprite = mesh;
+				target.myTileSprite = mesh;
 			}
-			body.myTileSprite.texture = tex;
+			target.myTileSprite.texture = tex;
 
-		} else if (body.myTileSprite) {
-			body.myTileSprite.mask = null;
-			body.myTileSprite.parent.removeChild(body.myTileSprite);
-			body.myTileSprite = undefined;
 		}
 	}
 
@@ -5144,6 +5168,7 @@ const _B2dEditor = function () {
 			arr[13] = obj.texturePositionOffsetLength;
 			arr[14] = obj.texturePositionOffsetAngle;
 			arr[15] = obj.textureAngleOffset;
+			arr[16] = obj.tileTexture || "";
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -5221,6 +5246,7 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[13];
 			obj.texturePositionOffsetAngle = arr[14];
 			obj.textureAngleOffset = arr[15];
+			obj.tileTexture = arr[16] || "";
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
