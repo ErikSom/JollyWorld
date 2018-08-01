@@ -4017,27 +4017,7 @@ const _B2dEditor = function () {
 		graphic.y = obj.y;
 		graphic.rotation = obj.rotation;
 
-		var g;
-		for (var i = 0; i < obj.graphicObjects.length; i++) {
-			var gObj = this.parseArrObject(JSON.parse(obj.graphicObjects[i]));
-
-			if (gObj instanceof this.graphicObject) {
-				g = new PIXI.Graphics();
-				/*for (var j = 0; j < graphicObject.vertices.length; j++) {
-					graphicObject.vertices[j].x += graphicObject.x;
-					graphicObject.vertices[j].y += graphicObject.y;
-				}*/
-				if (!gObj.radius) this.updatePolyGraphic(g, gObj.vertices, gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
-				else this.updateCircleShape(g, gObj.radius, gObj.vertices[0], gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
-			} else if (gObj instanceof this.textureObject) {
-				g = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(gObj.textureName));
-				g.pivot.set(g.width / 2, g.height / 2);
-			}
-			graphic.addChild(g);
-			g.x = gObj.x;
-			g.y = gObj.y;
-			g.rotation = gObj.rotation;
-		}
+		this.updateGraphicShapes(graphic);
 		this.textures.addChild(graphic);
 
 		if (graphic.data.bodyID != undefined) {
@@ -4112,20 +4092,70 @@ const _B2dEditor = function () {
 			};
 			this.updateBodyShapes(body);
 
+			if(body.myTexture) this.setScale(body.myTexture, scaleX, scaleY);
+
 		}else{
 			var sprite = obj;
 
-			for(let j = 0; j<sprite.data.vertices.length; j++){
-				sprite.data.vertices[j].x *= scaleX;
-				sprite.data.vertices[j].y *= scaleY;
-			}
-			if(sprite.data.radius) sprite.data.radius *= scaleX;
+			if(sprite.data.type == this.object_GRAPHICGROUP){
 
-			if (!sprite.data.radius) this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
-			else this.updateCircleShape(sprite, sprite.data.radius, sprite.data.vertices[0], sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+				let centerPoint = {x:0, y:0};
+				for(let j = 0; j<sprite.data.graphicObjects.length; j++){
+					const gObj = this.parseArrObject(JSON.parse(sprite.data.graphicObjects[j]));
+
+					if(gObj instanceof this.graphicObject){
+						if(gObj.radius){
+							if(Math.round(scaleX*100)/100 != 1){
+								scaleY = scaleX;
+							}else{
+								scaleX = scaleY;
+							}
+						}
+					}
+					centerPoint.x += gObj.x;
+					centerPoint.y += gObj.y;
+				}
+
+				centerPoint.x /= sprite.data.graphicObjects.length;
+				centerPoint.y /= sprite.data.graphicObjects.length;
+
+				for(let j = 0; j<sprite.data.graphicObjects.length; j++){
+					const gObj = this.parseArrObject(JSON.parse(sprite.data.graphicObjects[j]));
+
+					if(gObj instanceof this.graphicObject){
+						for(var k = 0; k<gObj.vertices.length; k++){
+							gObj.vertices[k].x *= scaleX;
+							gObj.vertices[k].y *= scaleY;
+						}
+					}
+					const xDif = gObj.x - centerPoint.x;
+					const yDif = gObj.y - centerPoint.y;
+					gObj.x = centerPoint.x + xDif *scaleX;
+					gObj.y = centerPoint.y + yDif *scaleY;
+
+					sprite.data.graphicObjects[j] = this.stringifyObject(gObj);
+				}
+				this.updateGraphicShapes(sprite);
+
+			}else if(sprite.data.type == this.object_GRAPHIC){
+				for(let j = 0; j<sprite.data.vertices.length; j++){
+					sprite.data.vertices[j].x *= scaleX;
+					sprite.data.vertices[j].y *= scaleY;
+				}
+				if(sprite.data.radius) sprite.data.radius *= scaleX;
+				if (!sprite.data.radius) this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+				else this.updateCircleShape(sprite, sprite.data.radius, sprite.data.vertices[0], sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+			}else if(sprite.data.type == this.object_TEXTURE){
+				sprite.width = sprite.width*scaleX;
+				sprite.height = sprite.height*scaleY;
+
+				var xL = sprite.data.texturePositionOffsetLength*Math.cos(sprite.data.texturePositionOffsetAngle) * scaleX;
+				var yL = sprite.data.texturePositionOffsetLength*Math.sin(sprite.data.texturePositionOffsetAngle) * scaleY;
+				sprite.data.texturePositionOffsetLength = Math.sqrt(xL*xL + yL*yL);
+
+			}
 
 		}
-
 
 	}
 
@@ -4877,6 +4907,27 @@ const _B2dEditor = function () {
 			let transparancy = body.mySprite.data.transparancy instanceof Array ? body.mySprite.data.transparancy[i] : body.mySprite.data.transparancy;
 			if (!radius) this.updatePolyShape(body.originalGraphic, fixture.GetShape(), colorFill, colorLine, transparancy, (i != 0));
 			else this.updateCircleShape(body.originalGraphic, radius, fixture.GetShape().GetLocalPosition(), colorFill, colorLine, transparancy, (i != 0));
+		}
+	}
+	this.updateGraphicShapes = function(graphic){
+		while(graphic.children.length > 0) graphic.removeChild(graphic.getChildAt(0));
+
+		let g;
+		for (var i = 0; i < graphic.data.graphicObjects.length; i++) {
+			const gObj = this.parseArrObject(JSON.parse(graphic.data.graphicObjects[i]));
+
+			if (gObj instanceof this.graphicObject) {
+				g = new PIXI.Graphics();
+				if (!gObj.radius) this.updatePolyGraphic(g, gObj.vertices, gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
+				else this.updateCircleShape(g, gObj.radius, gObj.vertices[0], gObj.colorFill, gObj.colorLine, gObj.transparancy, true);
+			} else if (gObj instanceof this.textureObject) {
+				g = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(gObj.textureName));
+				g.pivot.set(g.width / 2, g.height / 2);
+			}
+			graphic.addChild(g);
+			g.x = gObj.x;
+			g.y = gObj.y;
+			g.rotation = gObj.rotation;
 		}
 	}
 	this.updateBodyTileSprite = function (body) {
