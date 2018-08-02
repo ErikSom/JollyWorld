@@ -1,8 +1,24 @@
 ﻿{"frames": {
 
+"Booster0000":
+{
+	"frame": {"x":2,"y":62,"w":315,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":30},
+	"sourceSize": {"w":315,"h":30}
+},
+"Jumper0000":
+{
+	"frame": {"x":2,"y":2,"w":391,"h":58},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":391,"h":58},
+	"sourceSize": {"w":391,"h":58}
+},
 "Jumping0000":
 {
-	"frame": {"x":2,"y":2,"w":315,"h":30},
+	"frame": {"x":2,"y":94,"w":315,"h":30},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":30},
@@ -10,11 +26,19 @@
 },
 "Jumping_Pad0000":
 {
-	"frame": {"x":2,"y":34,"w":315,"h":7},
+	"frame": {"x":2,"y":158,"w":315,"h":7},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":7},
 	"sourceSize": {"w":315,"h":7}
+},
+"Slower0000":
+{
+	"frame": {"x":2,"y":126,"w":315,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":30},
+	"sourceSize": {"w":315,"h":30}
 }},
 "meta": {
 	"app": "Adobe Animate",

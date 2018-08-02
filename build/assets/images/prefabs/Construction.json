@@ -16,25 +16,9 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":420},
 	"sourceSize": {"w":91,"h":420}
 },
-"CurveSign0000":
-{
-	"frame": {"x":382,"y":2,"w":201,"h":200},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":201,"h":200},
-	"sourceSize": {"w":201,"h":200}
-},
-"Do NOt Enter0000":
-{
-	"frame": {"x":585,"y":2,"w":194,"h":199},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":194,"h":199},
-	"sourceSize": {"w":194,"h":199}
-},
 "Log0000":
 {
-	"frame": {"x":781,"y":2,"w":65,"h":418},
+	"frame": {"x":382,"y":2,"w":65,"h":418},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":65,"h":418},
@@ -42,7 +26,7 @@
 },
 "Rail0000":
 {
-	"frame": {"x":2,"y":424,"w":498,"h":34},
+	"frame": {"x":2,"y":490,"w":498,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":498,"h":34},
@@ -50,26 +34,18 @@
 },
 "SteelBean0000":
 {
-	"frame": {"x":502,"y":424,"w":497,"h":64},
+	"frame": {"x":2,"y":424,"w":497,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":497,"h":64},
 	"sourceSize": {"w":497,"h":64}
-},
-"StopSign0000":
-{
-	"frame": {"x":2,"y":490,"w":194,"h":194},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":194,"h":194},
-	"sourceSize": {"w":194,"h":194}
 }},
 "meta": {
 	"app": "Adobe Animate",
 	"version": "18.0.1.115",
 	"image": "Construction.png",
 	"format": "RGBA8888",
-	"size": {"w":1024,"h":1024},
+	"size": {"w":512,"h":1024},
 	"scale": "1"
 }
 }

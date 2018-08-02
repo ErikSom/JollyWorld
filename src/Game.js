@@ -126,13 +126,15 @@ function Game() {
         this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
-        //window.setInterval(this.update.bind(this), this.timeStep);
         startAnimating();
 
         this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
         this.editor.assetLists.vehicles = Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures);
         this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
-        this.editor.tileLists = ["", "tile1.jpg", "tile2.jpg", "tile3.jpg", "tile4.jpg", "tile5.jpg", "tile6.jpg", "tile7.jpg", "tile8.jpg", "tile9.jpg", "tile10.jpg", "tile11.jpg", "tile12.jpg", "tile13.jpg", "tile14.jpg", "tile15.jpg", "tile16.jpg", "tile16.jpg"]
+        this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);
+        this.editor.assetLists.nature = Object.keys(PIXI.loader.resources["Nature.json"].textures);
+        this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
+        this.editor.tileLists = ["", "grass.jpg", "dirt.jpg", "fence.png"]
 
         this.editor.init(this.myContainer, this.world, this.PTM);
 
