@@ -3,4 +3,5 @@ export var Settings = {
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
     emitterPool:30,
+    outlineSize:2.0,
 }
