@@ -702,7 +702,12 @@ const _B2dEditor = function () {
 				});
 
 				if (self.editorGUI.editData.colorFill instanceof Array) {
-					//TODO: dont know yet ?
+					self.editorGUI.editData.transparancy = self.editorGUI.editData.transparancy[0];
+					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
 				} else {
 					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
@@ -807,6 +812,11 @@ const _B2dEditor = function () {
 
 				break;
 			case case_JUST_GRAPHICGROUPS:
+				controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				this.editorGUI.editData.convertToBody = function () {};
 				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
 				controller = this.editorGUI.add(self.editorGUI.editData, "convertToBody").name(label);
@@ -1485,6 +1495,7 @@ const _B2dEditor = function () {
 		this.texturePositionOffsetLength = null;
 		this.texturePositionOffsetAngle = null;
 		this.textureAngleOffset = null;
+		this.transparancy = 1;
 		this.lockselection = false;
 	}
 	this.graphicObject = function () {
@@ -3048,26 +3059,34 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.transparancy = controller.targetValue;
-							var fixture = body.GetFixtureList();
-							if (body.mySprite.data.transparancy == 0) body.originalGraphic.visible = false;
-							else body.originalGraphic.visible = true;
-							if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, {
-								x: 0,
-								y: 0
-							}, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, body.mySprite.data.transparancy);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, body.mySprite.data.transparancy);
-							this.updateTileSprite(body);
+							if(body.mySprite.data.transparancy instanceof Array){
+								body.mySprite.data.transparancy[0] = controller.targetValue;
+								body.mySprite.alpha = body.mySprite.data.transparancy[0];
+							}
+							else{
+								 body.mySprite.data.transparancy = controller.targetValue;
+								var fixture = body.GetFixtureList();
+								if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, {
+									x: 0,
+									y: 0
+								}, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, controller.targetValue);
+								else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, controller.targetValue);
+								this.updateTileSprite(body);
+							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue.toString();
-							if (sprite.data.radius) this.updateCircleShape(sprite, sprite.data.radius, {
-								x: 0,
-								y: 0
-							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
-							else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
-							this.updateTileSprite(sprite);
+							if(sprite.data.type = this.object_GRAPHICGROUP){
+								sprite.alpha = sprite.data.transparancy;
+							}else{
+								if (sprite.data.radius) this.updateCircleShape(sprite, sprite.data.radius, {
+									x: 0,
+									y: 0
+								}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
+								else this.updatePolyGraphic(sprite, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
+								this.updateTileSprite(sprite);
+							}
 						}
 					} else if (controller.property == "fixed") {
 						//body
@@ -3681,6 +3700,10 @@ const _B2dEditor = function () {
 
 			if (body) {
 				body.mySprite.parent.swapChildren(graphicContainer, body.mySprite);
+				if(graphicContainer.data.type == this.object_GRAPHICGROUP){
+					body.mySprite.alpha = graphicContainer.data.transparancy;
+					body.mySprite.data.transparancy[0] = graphicContainer.data.transparancy;
+				}
 				bodiesCreated.push(body);
 				body.SetPosition(new b2Vec2(graphicContainer.x / this.PTM, graphicContainer.y / this.PTM));
 				body.SetAngle(graphicContainer.rotation);
@@ -3720,7 +3743,7 @@ const _B2dEditor = function () {
 				graphicObject.colorFill = colorFill[j];
 				graphicObject.colorLine = colorLine[j];
 				graphicObject.lineWidth = lineWidth[j];
-				graphicObject.transparancy = transparancy[j];
+				graphicObject.transparancy = transparancy[j+1];
 				graphicObject.radius = radius[j];
 
 				graphicObject.x += body.mySprite.data.x * this.PTM;
@@ -3737,6 +3760,10 @@ const _B2dEditor = function () {
 			graphic.rotation = body.mySprite.data.rotation;
 
 			if (graphic) {
+				if(body.mySprite.data.transparancy instanceof Array){
+					graphic.alpha = body.mySprite.data.transparancy[0];
+					graphic.data.transparancy = body.mySprite.data.transparancy[0];
+				}
 				graphic.parent.swapChildren(body.mySprite, graphic);
 				graphicsCreated.push(graphic);
 			}
@@ -4039,6 +4066,8 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
+		if(obj.transparancy instanceof Array) body.mySprite.alpha = obj.transparancy[0];
+
 
 		this.updateBodyShapes(body);
 
@@ -4089,6 +4118,8 @@ const _B2dEditor = function () {
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
 			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
+
+		graphic.alpha = obj.transparancy;
 
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
@@ -4303,7 +4334,7 @@ const _B2dEditor = function () {
 		groupedBodyObject.colorFill = [];
 		groupedBodyObject.colorLine = [];
 		groupedBodyObject.lineWidth = [];
-		groupedBodyObject.transparancy = [];
+		groupedBodyObject.transparancy = [1];
 		groupedBodyObject.radius = [];
 
 		var i;
@@ -4469,7 +4500,7 @@ const _B2dEditor = function () {
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
-			bodyObject.transparancy = transparancy[i];
+			bodyObject.transparancy = transparancy[i+1];
 			bodyObject.radius = radius[i];
 
 			var body = this.buildBodyFromObj(bodyObject);
@@ -4979,7 +5010,7 @@ const _B2dEditor = function () {
 			let colorFill = body.mySprite.data.colorFill instanceof Array ? body.mySprite.data.colorFill[i] : body.mySprite.data.colorFill;
 			let colorLine = body.mySprite.data.colorLine instanceof Array ? body.mySprite.data.colorLine[i] : body.mySprite.data.colorLine;
 			let lineWidth = body.mySprite.data.lineWidth instanceof Array ? body.mySprite.data.lineWidth[i] : body.mySprite.data.lineWidth;
-			let transparancy = body.mySprite.data.transparancy instanceof Array ? body.mySprite.data.transparancy[i] : body.mySprite.data.transparancy;
+			let transparancy = body.mySprite.data.transparancy instanceof Array ? body.mySprite.data.transparancy[i+1] : body.mySprite.data.transparancy;
 			if (!radius) this.updatePolyShape(body.originalGraphic, fixture.GetShape(), colorFill, colorLine, lineWidth, transparancy, (i != 0));
 			else this.updateCircleShape(body.originalGraphic, radius, fixture.GetShape().GetLocalPosition(), colorFill, colorLine, lineWidth, transparancy, (i != 0));
 		}
@@ -5257,6 +5288,8 @@ const _B2dEditor = function () {
 			arr[9] = obj.texturePositionOffsetLength;
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
+			arr[12] = obj.transparancy || 1;
+
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -5338,6 +5371,7 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[9];
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
+			obj.transparancy = arr[12] || 1;
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
