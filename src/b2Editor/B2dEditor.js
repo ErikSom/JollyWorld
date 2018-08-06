@@ -771,6 +771,7 @@ const _B2dEditor = function () {
 				}.bind(controller));
 				break;
 			case case_JUST_GRAPHICS:
+				console.log("check", self.editorGUI.editData);
 				this.editorGUI.add(self.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -3725,7 +3726,7 @@ const _B2dEditor = function () {
 			var colorFill = (body.mySprite.data.colorFill instanceof Array) ? body.mySprite.data.colorFill : [body.mySprite.data.colorFill];
 			var colorLine = (body.mySprite.data.colorLine instanceof Array) ? body.mySprite.data.colorLine : [body.mySprite.data.colorLine];
 			var lineWidth = (body.mySprite.data.lineWidth instanceof Array) ? body.mySprite.data.lineWidth : [body.mySprite.data.lineWidth];
-			var transparancy = (body.mySprite.data.transparancy instanceof Array) ? body.mySprite.data.transparancy : [body.mySprite.data.transparancy];
+			var transparancy = (body.mySprite.data.transparancy instanceof Array) ? body.mySprite.data.transparancy : [1, body.mySprite.data.transparancy];
 			var radius = (body.mySprite.data.radius instanceof Array) ? body.mySprite.data.radius : [body.mySprite.data.radius];
 
 			this.updateObject(body.mySprite, body.mySprite.data);
@@ -3760,6 +3761,7 @@ const _B2dEditor = function () {
 			graphic.rotation = body.mySprite.data.rotation;
 
 			if (graphic) {
+				console.log(body.mySprite.data.transparancy);
 				if(body.mySprite.data.transparancy instanceof Array){
 					graphic.alpha = body.mySprite.data.transparancy[0];
 					graphic.data.transparancy = body.mySprite.data.transparancy[0];
