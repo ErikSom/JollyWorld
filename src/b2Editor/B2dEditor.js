@@ -2979,7 +2979,7 @@ const _B2dEditor = function () {
 							this.updateTileSprite(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							sprite = this.selectedPhysicsBodies[j];
+							sprite = this.selectedTextures[j];
 							sprite.data.tileTexture = controller.targetValue;
 							this.updateTileSprite(sprite);
 						}
