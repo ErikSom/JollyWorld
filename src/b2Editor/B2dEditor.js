@@ -2415,7 +2415,7 @@ const _B2dEditor = function () {
 
 		var queryGraphics = [];
 		var i;
-		for (i = this.textures.children.length - 1; i > 0; i--) {
+		for (i = this.textures.children.length - 1; i >= 0; i--) {
 			var sprite = this.textures.getChildAt(i);
 
 			if (!onlyTextures || !sprite.myBody) {
@@ -3078,7 +3078,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue.toString();
-							if(sprite.data.type = this.object_GRAPHICGROUP){
+							if(sprite.data.type == this.object_GRAPHICGROUP){
 								sprite.alpha = sprite.data.transparancy;
 							}else{
 								if (sprite.data.radius) this.updateCircleShape(sprite, sprite.data.radius, {
@@ -3642,6 +3642,8 @@ const _B2dEditor = function () {
 			var innerGraphics = [];
 
 			var graphicContainer = this.selectedTextures[i];
+
+			console.log(graphicContainer);
 
 			if (graphicContainer.data.type == this.object_GRAPHIC) innerGraphics.push(graphicContainer.data);
 			else graphicContainer.data.graphicObjects.map(g => {
