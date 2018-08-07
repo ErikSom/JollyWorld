@@ -5088,7 +5088,9 @@ const _B2dEditor = function () {
 
 			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]){
 				target.myTileSprite.alpha = targetSprite.data.transparancy;
-				targetSprite.filters = [new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1)]
+				let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
+				outlineFilter.padding = targetSprite.data.lineWidth;
+				targetSprite.filters = [outlineFilter]
 				targetGraphic.alpha = 0;
 				return;
 			}
@@ -5126,7 +5128,9 @@ const _B2dEditor = function () {
 
 			target.myTileSprite.texture = tex;
 			console.log(targetSprite.data.transparancy);
-			targetSprite.filters = [new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1)]
+			let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
+			outlineFilter.padding = targetSprite.data.lineWidth;
+			targetSprite.filters = [outlineFilter];
 			targetGraphic.alpha = 0;
 		}
 	}
