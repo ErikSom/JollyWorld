@@ -3052,6 +3052,7 @@ const _B2dEditor = function () {
 								y: 0
 							}, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, body.mySprite.data.transparancy);
 							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine,  body.mySprite.data.lineWidth,  body.mySprite.data.transparancy);
+							this.updateTileSprite(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
@@ -3061,6 +3062,7 @@ const _B2dEditor = function () {
 								y: 0
 							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
 							else this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
+							this.updateTileSprite(sprite);
 						}
 					}  else if (controller.property == "transparancy") {
 						//body & sprite
