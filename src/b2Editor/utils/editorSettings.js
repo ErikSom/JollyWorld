@@ -1,3 +1,3 @@
 export const editorSettings = {
-    outlineSize:1,
+    worldSize:{width:10000, height:10000},
 }

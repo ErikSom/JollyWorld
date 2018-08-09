@@ -1,8 +1,10 @@
 import * as Box2D from "../../libs/Box2D";
 import * as prefab from "./PrefabData";
 import * as drawing from "./utils/drawing";
+import * as scrollBars from "./utils/scrollBars";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
+
 
 
 import {
@@ -192,6 +194,7 @@ const _B2dEditor = function () {
 		this.initGuiAssetSelection();
 		this.createToolGUI();
 		this.canvas.focus();
+		scrollBars.update();
 	}
 	this.initGuiAssetSelection = function () {
 		this.removeGuiAssetSelection();
@@ -1857,6 +1860,7 @@ const _B2dEditor = function () {
 					this.container.y += move.y * this.PTM;
 					this.mousePosWorld.x -= move.x / this.container.scale.x;
 					this.mousePosWorld.y -= move.y / this.container.scale.y;
+					scrollBars.update();
 				} else if (this.selectedTool == this.tool_SELECT) {
 					if (this.mouseTransformType == this.mouseTransformType_Movement) {
 						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {

@@ -111,6 +111,25 @@ canvas {
     background-color:transparent;
 }
 
+.scrollBar{
+    position: absolute;
+    bottom:0px;
+    left:10%;
+    width:80%;
+    height:30px;
+    background-color: #999999;;
+    border: 1px solid black;
+}
+.dragBar{
+    position:absolute;
+    width:10%;
+    height:100%;
+    background-color: #666666;
+    background-image: url(../../build/assets/images/gui/DragableBar_Pattern.png);
+    background-size: contain;
+    border: 1px solid black;
+}
+
 
 /**/
 
