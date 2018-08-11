@@ -21,10 +21,6 @@ export const update = function(){
     const horizontalScroll = (position.x+screenWidth/2.0) / (editorSettings.worldSize.width*zoom);
     const horizontalVisible = (screenWidth/zoom) / editorSettings.worldSize.width;
 
-
-    console.log(screenWidth/zoom, editorSettings.worldSize.width);
-
-
     horizontalDrag.style.width = `${horizontalVisible*100}%`;
     horizontalDrag.style.left = `${horizontalScroll*100}%`
 
