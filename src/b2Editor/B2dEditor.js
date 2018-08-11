@@ -2,14 +2,13 @@ import * as Box2D from "../../libs/Box2D";
 import * as prefab from "./PrefabData";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
+import * as camera from "./utils/camera";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
-
-
-
 import {
 	game
 } from "../Game";
+import { editorSettings } from "./utils/editorSettings";
 
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
@@ -1856,10 +1855,7 @@ const _B2dEditor = function () {
 				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
 				if (this.spaceCameraDrag) {
 					move.SelfMul(this.container.scale.x);
-					this.container.x += move.x * this.PTM;
-					this.container.y += move.y * this.PTM;
-					this.mousePosWorld.x -= move.x / this.container.scale.x;
-					this.mousePosWorld.y -= move.y / this.container.scale.y;
+					camera.pan(move);
 					scrollBars.update();
 				} else if (this.selectedTool == this.tool_SELECT) {
 					if (this.mouseTransformType == this.mouseTransformType_Movement) {
@@ -2325,13 +2321,13 @@ const _B2dEditor = function () {
 			this.altDown = true;
 		} else if (e.keyCode == 187) { // +
 			//zoomin
-			this.zoom({
+			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
 				y: this.mousePosWorld.y * this.PTM
 			}, true);
 		} else if (e.keyCode == 189) { // -
 			//zoomout
-			this.zoom({
+			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
 				y: this.mousePosWorld.y * this.PTM
 			}, false);
@@ -5730,38 +5726,6 @@ const _B2dEditor = function () {
 			this.triggerObjects[i].class.init(this.triggerObjects[i]);
 		}
 		this.editing = false;
-	}
-
-	this.zoom = function (pos, isZoomIn) {
-
-		var direction = isZoomIn ? 1 : -1;
-		var factor = (1 + direction * 0.1);
-		this.setZoom(pos, this.container.scale.x * factor);
-
-	}
-	this.setZoom = function (pos, scale) {
-		var worldPos = {
-			x: (pos.x),
-			y: (pos.y)
-		};
-		var newScale = {
-			x: scale,
-			y: scale
-		};
-		var newScreenPos = {
-			x: (worldPos.x) * newScale.x + this.container.x,
-			y: (worldPos.y) * newScale.y + this.container.y
-		};
-		this.container.x -= (newScreenPos.x - (pos.x * this.container.scale.x + this.container.x));
-		this.container.y -= (newScreenPos.y - (pos.y * this.container.scale.y + this.container.y));
-		this.container.scale.x = newScale.x;
-		this.container.scale.y = newScale.y;
-
-		var i;
-		for (i = 0; i < this.editorIcons.length; i++) {
-			this.editorIcons[i].scale.x = 1.0 / newScale.x;
-			this.editorIcons[i].scale.y = 1.0 / newScale.y;
-		}
 	}
 
 	this.getWorldPointFromPixelPoint = function (pixelPoint) {

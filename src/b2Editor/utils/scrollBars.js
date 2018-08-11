@@ -6,19 +6,21 @@ let verticalDrag;
 import { B2dEditor } from "../B2dEditor";
 import {editorSettings} from "./editorSettings";
 
+export let screenWidth = 1;
+export let screenHeight= 1;
+
 export const update = function(){
     if(!horizontalScrollBar){
         buildScrollBars();
     }
-    
-    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    const position = {x:B2dEditor.container.x-screenWidth/2, y:B2dEditor.container.y-screenHeight/2};
+    screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
     const zoom = B2dEditor.container.scale.x;
+    const position = {x:-B2dEditor.container.x+editorSettings.worldSize.width/2.0, y:B2dEditor.container.y-screenHeight/2/zoom+editorSettings.worldSize.height/2.0};
+    const horizontalScroll = (position.x+screenWidth/2.0) / (editorSettings.worldSize.width);
+    const horizontalVisible = (screenWidth/zoom) / editorSettings.worldSize.width;
 
-
-    const horizontalScroll = (editorSettings.worldSize.width-(screenWidth/zoom))/ position.x;
-    const horizontalVisible = editorSettings.worldSize.width/(screenWidth/zoom);
 
     horizontalDrag.style.width = `${horizontalVisible*100}%`;
     horizontalDrag.style.left = `${horizontalScroll*100}%`
