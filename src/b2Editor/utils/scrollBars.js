@@ -17,9 +17,12 @@ export const update = function(){
     screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
     const zoom = B2dEditor.container.scale.x;
-    const position = {x:-B2dEditor.container.x+editorSettings.worldSize.width/2.0, y:B2dEditor.container.y-screenHeight/2/zoom+editorSettings.worldSize.height/2.0};
-    const horizontalScroll = (position.x+screenWidth/2.0) / (editorSettings.worldSize.width);
+    const position = {x:-B2dEditor.container.x+editorSettings.worldSize.width/2.0*zoom, y:B2dEditor.container.y-screenHeight/2/zoom+editorSettings.worldSize.height/2.0};
+    const horizontalScroll = (position.x+screenWidth/2.0) / (editorSettings.worldSize.width*zoom);
     const horizontalVisible = (screenWidth/zoom) / editorSettings.worldSize.width;
+
+
+    console.log(screenWidth/zoom, editorSettings.worldSize.width);
 
 
     horizontalDrag.style.width = `${horizontalVisible*100}%`;

@@ -54,10 +54,10 @@ export const setZoom = function (pos, scale) {
     scrollBars.update();
 }
 export const constrainCameraPosition = function(){
-    let difX = -B2dEditor.container.x + (editorSettings.worldSize.width/2);
+    let difX = (-B2dEditor.container.x) + (editorSettings.worldSize.width/2*B2dEditor.container.scale.x)
     console.log("first", difX);
     if(difX>0) {
-        difX = (editorSettings.worldSize.width/2-scrollBars.screenWidth) + (B2dEditor.container.x);
+        difX = (editorSettings.worldSize.width/2*B2dEditor.container.scale.x-scrollBars.screenWidth) + (B2dEditor.container.x);
         if(difX>0){
             difX = 0;
         }

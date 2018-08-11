@@ -1392,6 +1392,18 @@ const _B2dEditor = function () {
 		this.debugGraphics.moveTo(-crossSize + this.container.x, this.container.y);
 		this.debugGraphics.lineTo(crossSize + this.container.x, this.container.y);
 
+
+		this.debugGraphics.moveTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, -crossSize + this.container.y);
+		this.debugGraphics.lineTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, crossSize + this.container.y);
+		this.debugGraphics.moveTo(-crossSize + this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
+		this.debugGraphics.lineTo(crossSize + this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
+
+		this.debugGraphics.moveTo(this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, -crossSize + this.container.y);
+		this.debugGraphics.lineTo(this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, crossSize + this.container.y);
+		this.debugGraphics.moveTo(-crossSize + this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
+		this.debugGraphics.lineTo(crossSize + this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
+
+
 		this.doEditorGUI();
 	}
 	this.run = function () {
