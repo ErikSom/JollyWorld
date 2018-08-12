@@ -17,23 +17,37 @@ export const update = function(){
     screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
     const zoom = B2dEditor.container.scale.x;
-    const position = {x:-B2dEditor.container.x+editorSettings.worldSize.width/2.0*zoom, y:B2dEditor.container.y-screenHeight/2/zoom+editorSettings.worldSize.height/2.0};
+    const position = {x:-B2dEditor.container.x+editorSettings.worldSize.width/2.0*zoom, y:-B2dEditor.container.y+editorSettings.worldSize.height/2.0*zoom};
+
     const horizontalScroll = (position.x+screenWidth/2.0) / (editorSettings.worldSize.width*zoom);
     const horizontalVisible = (screenWidth/zoom) / editorSettings.worldSize.width;
-
     horizontalDrag.style.width = `${horizontalVisible*100}%`;
-    horizontalDrag.style.left = `${horizontalScroll*100}%`
+    horizontalDrag.style.left = `${horizontalScroll*100}%`;
+
+    const verticalScroll = (position.y+screenHeight/2.0) / (editorSettings.worldSize.height*zoom);
+    const verticalVisible = (screenHeight/zoom) / editorSettings.worldSize.height;
+    verticalDrag.style.height = `${verticalVisible*100}%`;
+    verticalDrag.style.top = `${verticalScroll*100}%`;
 
 }
 
 const buildScrollBars = function (){
 
     horizontalScrollBar = document.createElement('div');
+    horizontalScrollBar.classList.add('horizontal');
     horizontalScrollBar.classList.add('scrollBar');
     horizontalDrag = document.createElement('div');
     horizontalDrag.classList.add('dragBar');
     horizontalScrollBar.appendChild(horizontalDrag);
+    
+    verticalScrollBar = document.createElement('div');
+    verticalScrollBar.classList.add('vertical');
+    verticalScrollBar.classList.add('scrollBar');
+    verticalDrag = document.createElement('div');
+    verticalDrag.classList.add('dragBar');
+    verticalScrollBar.appendChild(verticalDrag);
 
     document.body.appendChild(horizontalScrollBar);
+    document.body.appendChild(verticalScrollBar);
 
 }

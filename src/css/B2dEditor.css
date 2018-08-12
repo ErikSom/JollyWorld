@@ -114,21 +114,36 @@ canvas {
 .scrollBar{
     position: absolute;
     bottom:0px;
-    left:10%;
-    width:80%;
-    height:30px;
     background-color: #999999;;
     border: 1px solid black;
 }
+.horizontal.scrollBar{
+    left:10%;
+    width:80%;
+    height:30px;
+}
+.vertical.scrollBar{
+    top:10%;
+    right:0%;
+    height:80%;
+    width:30px;
+}
 .dragBar{
     position:absolute;
-    width:10%;
-    height:100%;
     background-color: #666666;
     background-image: url(../../build/assets/images/gui/DragableBar_Pattern.png);
     background-size: contain;
     border: 1px solid black;
+}
+.horizontal .dragBar{
+    width:10%;
+    height:100%;
     transform:translateX(-50%);
+}
+.vertical .dragBar{
+    width:100%;
+    height:10%;
+    transform:translateY(-50%);
 }
 
 
