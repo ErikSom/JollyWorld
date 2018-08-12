@@ -5,6 +5,7 @@ let verticalDrag;
 
 import { B2dEditor } from "../B2dEditor";
 import {editorSettings} from "./editorSettings";
+import * as camera from "./camera";
 
 export let screenWidth = 1;
 export let screenHeight= 1;
@@ -28,7 +29,6 @@ export const update = function(){
     const verticalVisible = (screenHeight/zoom) / editorSettings.worldSize.height;
     verticalDrag.style.height = `${verticalVisible*100}%`;
     verticalDrag.style.top = `${verticalScroll*100}%`;
-
 }
 
 const buildScrollBars = function (){
@@ -39,7 +39,7 @@ const buildScrollBars = function (){
     horizontalDrag = document.createElement('div');
     horizontalDrag.classList.add('dragBar');
     horizontalScrollBar.appendChild(horizontalDrag);
-    
+
     verticalScrollBar = document.createElement('div');
     verticalScrollBar.classList.add('vertical');
     verticalScrollBar.classList.add('scrollBar');
@@ -50,4 +50,40 @@ const buildScrollBars = function (){
     document.body.appendChild(horizontalScrollBar);
     document.body.appendChild(verticalScrollBar);
 
+    horizontalScrollBar.addEventListener("mousedown", initHorizontalDragScroll);
+    verticalScrollBar.addEventListener("mousedown", initVerticalDragScroll);
+}
+const initHorizontalDragScroll = function(e){
+    document.addEventListener("mousemove", doHorizontalScroll);
+    document.addEventListener("mouseup", endHorizontalScroll);
+    doHorizontalScroll(e);
+}
+const endHorizontalScroll = function(e){
+    document.removeEventListener("mousemove", doHorizontalScroll);
+    document.removeEventListener("mouseup", endHorizontalScroll);
+}
+const doHorizontalScroll = function(e){
+    var rect = horizontalScrollBar.getBoundingClientRect();
+    let targetPerc = (e.pageX-rect.left)/(rect.right-rect.left);
+    targetPerc = Math.min(1.0, Math.max(0.0, targetPerc));
+    B2dEditor.container.x = -(targetPerc * (editorSettings.worldSize.width*B2dEditor.container.scale.x)-screenWidth/2.0-editorSettings.worldSize.width/2.0*B2dEditor.container.scale.x);
+    camera.constrainCameraPosition();
+    update();
+}
+const initVerticalDragScroll = function(e){
+    document.addEventListener("mousemove", doVerticalScroll);
+    document.addEventListener("mouseup", endVerticalScroll);
+    doVerticalScroll(e);
+}
+const endVerticalScroll = function(e){
+    document.removeEventListener("mousemove", doVerticalScroll);
+    document.removeEventListener("mouseup", endVerticalScroll);
+}
+const doVerticalScroll = function(e){
+    var rect = verticalScrollBar.getBoundingClientRect();
+    let targetPerc = (e.pageY-rect.top)/(rect.bottom-rect.top);
+    targetPerc = Math.min(1.0, Math.max(0.0, targetPerc));
+    B2dEditor.container.y = -(targetPerc * (editorSettings.worldSize.height*B2dEditor.container.scale.y)-screenHeight/2.0-editorSettings.worldSize.height/2.0*B2dEditor.container.scale.y);
+    camera.constrainCameraPosition();
+    update();
 }
