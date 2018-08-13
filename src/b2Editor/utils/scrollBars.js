@@ -53,9 +53,15 @@ const buildScrollBars = function (){
     horizontalScrollBar.addEventListener("mousedown", initHorizontalDragScroll);
     verticalScrollBar.addEventListener("mousedown", initVerticalDragScroll);
 }
+let scrollHorizontalOffset = 0;
+let scrollVerticalOffset = 0;
 const initHorizontalDragScroll = function(e){
     document.addEventListener("mousemove", doHorizontalScroll);
     document.addEventListener("mouseup", endHorizontalScroll);
+    var rect = horizontalDrag.getBoundingClientRect();
+    if(e.pageX>rect.left && e.pageX<rect.right){
+        scrollHorizontalOffset = (e.pageX-rect.left)-(rect.right-rect.left)/2
+    }else scrollHorizontalOffset = 0;
     doHorizontalScroll(e);
 }
 const endHorizontalScroll = function(e){
@@ -64,7 +70,7 @@ const endHorizontalScroll = function(e){
 }
 const doHorizontalScroll = function(e){
     var rect = horizontalScrollBar.getBoundingClientRect();
-    let targetPerc = (e.pageX-rect.left)/(rect.right-rect.left);
+    let targetPerc = (e.pageX-scrollHorizontalOffset-rect.left)/(rect.right-rect.left);
     targetPerc = Math.min(1.0, Math.max(0.0, targetPerc));
     B2dEditor.container.x = -(targetPerc * (editorSettings.worldSize.width*B2dEditor.container.scale.x)-screenWidth/2.0-editorSettings.worldSize.width/2.0*B2dEditor.container.scale.x);
     camera.constrainCameraPosition();
@@ -73,6 +79,10 @@ const doHorizontalScroll = function(e){
 const initVerticalDragScroll = function(e){
     document.addEventListener("mousemove", doVerticalScroll);
     document.addEventListener("mouseup", endVerticalScroll);
+    var rect = verticalDrag.getBoundingClientRect();
+    if(e.pageY>rect.top && e.pageY<rect.bottom){
+        scrollVerticalOffset = (e.pageY-rect.top)-(rect.bottom-rect.top)/2
+    }else scrollVerticalOffset = 0;
     doVerticalScroll(e);
 }
 const endVerticalScroll = function(e){
@@ -81,7 +91,7 @@ const endVerticalScroll = function(e){
 }
 const doVerticalScroll = function(e){
     var rect = verticalScrollBar.getBoundingClientRect();
-    let targetPerc = (e.pageY-rect.top)/(rect.bottom-rect.top);
+    let targetPerc = (e.pageY-scrollVerticalOffset-rect.top)/(rect.bottom-rect.top);
     targetPerc = Math.min(1.0, Math.max(0.0, targetPerc));
     B2dEditor.container.y = -(targetPerc * (editorSettings.worldSize.height*B2dEditor.container.scale.y)-screenHeight/2.0-editorSettings.worldSize.height/2.0*B2dEditor.container.scale.y);
     camera.constrainCameraPosition();
