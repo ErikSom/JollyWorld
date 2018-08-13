@@ -1,21 +1,41 @@
 import {
     firebaseManager
-} from './FireBaseManager';
+} from '../FireBaseManager';
 import {
     game
-} from './Game';
+} from '../Game';
 import $ from 'jquery';
-import '../dist/semantic';
-import '../dist/components/form';
-import '../dist/components/transition';
+import '../../dist/semantic';
+import '../../dist/components/form';
+import '../../dist/components/transition';
 
 let levelItemHolder;
 let levelItemElement;
 
+let mainMenu;
+
 function UIManager() {
 
     var self = this;
-   
+
+    this.buildMainMenu = function(){
+        mainMenu = document.createElement('div');
+        mainMenu.setAttribute('id', 'mainMenu')
+        document.body.appendChild(mainMenu);
+
+        let button = document.createElement('div');
+        button.setAttribute('id', 'startButton')
+        button.classList.add('menuButton');
+        button.innerHTML = 'Play';
+        mainMenu.appendChild(button);
+
+        button = document.createElement('div');
+        button.setAttribute('id', 'editorButton')
+        button.classList.add('menuButton');
+        button.innerHTML = 'Editor';
+        mainMenu.appendChild(button);
+    }
+
     this.showBox = function (name) {
         self.showNothing();
         $(name).css("display", "inline");

@@ -170,3 +170,27 @@ canvas {
     margin-top: 8px;
     margin-left: 5px;
 }
+#mainMenu{
+    font-family: 'Lily Script One', cursive;
+    position:absolute;
+    top:50%;left:50%;
+    transform: translate(-50%, -50%);
+}
+.menuButton{
+    font-size: 30px;
+    color: white;
+    margin: 20px;
+    background-color: #FF6600;
+    width: 200px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    border-radius: 30px;
+    border: 3px solid black;
+    box-shadow: inset 0px 4px 1px rgba(255, 255, 255, 0.60), 0px 0px 0px 3px hsl(0, 0%, 100%);
+}
+#editorButton{
+    background-color: #51A328;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Lily+Script+One');

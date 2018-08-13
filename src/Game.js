@@ -16,30 +16,35 @@ const PIXI = require('pixi.js');
 import $ from 'jquery';
 import {
     ui
-} from "./UIManager";
+} from "./ui/UIManager";
 import {
     firebaseManager
 } from "./FireBaseManager";
 import {
     LoadCoreAssets
 } from "./AssetList";
-import { Settings } from "./Settings";
+import {
+    Settings
+} from "./Settings";
+import {
+    levelData
+} from "./data/levelData";
 
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
 
 var b2Vec2 = Box2D.b2Vec2,
-	b2AABB = Box2D.b2AABB,
-	b2BodyDef = Box2D.b2BodyDef,
-	b2Body = Box2D.b2Body,
-	b2FixtureDef = Box2D.b2FixtureDef,
-	b2Fixture = Box2D.b2Fixture,
-	b2World = Box2D.b2World,
-	b2MassData = Box2D.b2MassData,
-	b2PolygonShape = Box2D.b2PolygonShape,
-	b2CircleShape = Box2D.b2CircleShape,
-	b2DebugDraw = Box2D.b2DebugDraw,
-	b2MouseJointDef = Box2D.b2MouseJointDef;
+    b2AABB = Box2D.b2AABB,
+    b2BodyDef = Box2D.b2BodyDef,
+    b2Body = Box2D.b2Body,
+    b2FixtureDef = Box2D.b2FixtureDef,
+    b2Fixture = Box2D.b2Fixture,
+    b2World = Box2D.b2World,
+    b2MassData = Box2D.b2MassData,
+    b2PolygonShape = Box2D.b2PolygonShape,
+    b2CircleShape = Box2D.b2CircleShape,
+    b2DebugDraw = Box2D.b2DebugDraw,
+    b2MouseJointDef = Box2D.b2MouseJointDef;
 
 function Game() {
 
@@ -96,7 +101,6 @@ function Game() {
         });
         this.stage = this.app.stage;
 
-        console.log(this.app);
         LoadCoreAssets(PIXI.loader);
 
         this.editor = B2dEditor;
@@ -106,7 +110,6 @@ function Game() {
     };
 
     this.setup = function () {
-        console.log("load completed");
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
@@ -121,8 +124,7 @@ function Game() {
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, this.PTM);
-        console.log(Box2D.b2DrawFlags.e_shapeBit, Box2D.b2DrawFlags.e_jointBit);
-        this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit| Box2D.b2DrawFlags.e_jointBit);
+        this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
         this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
@@ -140,7 +142,8 @@ function Game() {
 
         this.editor.contactCallBackListener = this.gameContactListener;
 
-        this.initWorld();
+        this.initLevel(levelData.mainMenuLevel);
+        ui.buildMainMenu();
 
         this.canvas.addEventListener("keydown", this.onKeyDown.bind(this), true);
         this.canvas.addEventListener("keyup", this.onKeyUp.bind(this), true);
@@ -155,15 +158,14 @@ function Game() {
         /*TODO
         1) Create proper pooler per available types
         */
-        for(var i=0; i<Settings.emitterPool; i++) this.getEmitter('blood', null);
-        for(var i=0; i<Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
+        for (var i = 0; i < Settings.emitterPool; i++) this.getEmitter('blood', null);
+        for (var i = 0; i < Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
     }
-    this.initWorld = function () {
-        console.log(PIXI.loader.resources);
-        this.editor.buildJSON(PIXI.loader.resources.worldData.data);
+    this.initLevel = function (data) {
+        this.editor.buildJSON(JSON.parse(data));
         //this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
         //this.editor.buildJSON(PIXI.loader.resources.testData.data);
-        this.editor.buildJSON(PIXI.loader.resources.testData2.data);
+        //this.editor.buildJSON(PIXI.loader.resources.testData2.data);
     }
     this.loadLevel = function (levelData) {
         console.log("Loading level..");
@@ -226,16 +228,16 @@ function Game() {
         this.world.QueryAABB(this.getBodyCB, aabb);
         return this.selectedBody;
     };
-    
+
     this.getBodyCB = new function () {
-        this.ReportFixture = function(fixture){
-        if (fixture.GetBody().GetType() != b2Body.b2_staticBody) {
-            if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
-                self.selectedBody = fixture.GetBody();
-                return false;
+        this.ReportFixture = function (fixture) {
+            if (fixture.GetBody().GetType() != b2Body.b2_staticBody) {
+                if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
+                    self.selectedBody = fixture.GetBody();
+                    return false;
+                }
             }
-        }
-        return true;
+            return true;
         }
     };
 
@@ -266,7 +268,7 @@ function Game() {
         if (e.keyCode == 82) { //r
             this.run = false;
             var worldJSON = JSON.parse(this.editor.worldJSON);
-            if(e.shiftKey) this.editor.breakPrefabs = true;
+            if (e.shiftKey) this.editor.breakPrefabs = true;
             this.editor.resetEditor();
             //this.initWorld();
             this.editor.buildJSON(worldJSON);
@@ -302,13 +304,13 @@ function Game() {
         this.vehicle.init(this.playerPrefabObject);
         this.cameraFocusObject = this.character.body;
     }
-    this.findPlayableCharacter = function(){
-        for(var key in this.editor.prefabs){
-            if(this.editor.prefabs.hasOwnProperty(key)){
-                if(this.editor.prefabs[key].class.constructor.playableCharacter){
+    this.findPlayableCharacter = function () {
+        for (var key in this.editor.prefabs) {
+            if (this.editor.prefabs.hasOwnProperty(key)) {
+                if (this.editor.prefabs[key].class.constructor.playableCharacter) {
                     this.playerPrefabObject = this.editor.prefabs[key];
                     var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
-                    bodies.map(body =>{
+                    bodies.map(body => {
                         body.mainCharacter = true;
                     });
                     break;
@@ -336,13 +338,6 @@ function Game() {
         this.editor.container.x += (-cameraTargetPosition.x - this.editor.container.x) * panEase;
         this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
 
-        // this.editor.container.x = -cameraTargetPosition.x;
-        //this.editor.container.y = -cameraTargetPosition.y;
-
-        // this.editor.container.position.x = 0;
-        //this.editor.container.position.y = 0;
-
-        //console.log(this.editor.container.position);
     }
     this.levelsSnapshot;
     this.levelsLimitTo = 25;
@@ -444,17 +439,18 @@ function Game() {
 
         for (var i = 0; i < bodies.length; i++) {
             body = bodies[i];
-            if (body.isFlesh && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID  || bodies[0].mySprite.data.prefabID == undefined)) {
+            if (body.isFlesh && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
 
                 var force = 0;
-                for(var j = 0; j<impulse.normalImpulses.length; j++) if(impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+                for (var j = 0; j < impulse.normalImpulses.length; j++)
+                    if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
 
                 var velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
                 var velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
-                var impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y,contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y,contact.GetFixtureB().GetBody().GetLinearVelocity().x);
+                var impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
                 impactAngle *= game.editor.RAD2DEG + 180;
-                var velocitySum = velocityA+velocityB;
-                if(velocitySum > 10.0){
+                var velocitySum = velocityA + velocityB;
+                if (velocitySum > 10.0) {
                     var worldManifold = new Box2D.b2WorldManifold();
                     contact.GetWorldManifold(worldManifold);
                     var worldCollisionPoint = worldManifold.points[0];
@@ -466,13 +462,14 @@ function Game() {
     }
     this.playOnceEmitter = function (type, body, point, angle) {
 
-        if(!body.emitterCount || body.emitterCount < Settings.emittersPerBody){
+        if (!body.emitterCount || body.emitterCount < Settings.emittersPerBody) {
             let emitter = this.getEmitter(type, body);
             emitter.spawnPos = new PIXI.Point(point.x * game.editor.PTM, point.y * game.editor.PTM);
             emitter.body = body;
-            if(!body.emitterCount) body.emitterCount = 0;
+            if (!body.emitterCount) body.emitterCount = 0;
             body.emitterCount++;
             var self = this;
+
             function returnToPool() {
                 emitter.body.emitterCount--;
                 emitter.body = null;
@@ -481,9 +478,9 @@ function Game() {
                 self.emittersPool[emitter.type].push(emitter);
 
             }
-            var angleOffset = (emitter.maxStartRotation-emitter.minStartRotation)/2;
-            emitter.minStartRotation = angle-angleOffset;
-            emitter.maxStartRotation = angle+angleOffset;
+            var angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
+            emitter.minStartRotation = angle - angleOffset;
+            emitter.maxStartRotation = angle + angleOffset;
             emitter.playOnce(returnToPool);
         }
     }
@@ -507,29 +504,28 @@ function Game() {
     this.updateEmitters = function () {
         for (var i = 0; i < this.emitters.length; i++) {
             var emitter = this.emitters[i];
-            if(!emitter.body && this.emittersPool[emitter.type]>Settings.emitterPool){
-                if(Date.now() - emitter.lastUsed > Settings.emitterMaxPoolTime){
-                    for(var j = 0; j<this.emittersPool[emitter.type].length; j++) if(this.emittersPool[emitter.type][j] == emitter) this.emittersPool[emitter.type].splice(j, 1);
+            if (!emitter.body && this.emittersPool[emitter.type] > Settings.emitterPool) {
+                if (Date.now() - emitter.lastUsed > Settings.emitterMaxPoolTime) {
+                    for (var j = 0; j < this.emittersPool[emitter.type].length; j++)
+                        if (this.emittersPool[emitter.type][j] == emitter) this.emittersPool[emitter.type].splice(j, 1);
                     emitter.destroy();
                     this.emitters.splice(i, 1);
                     i--;
                 }
-            }else emitter.update(this.timeStep * 0.001);
+            } else emitter.update(this.timeStep * 0.001);
         }
     }
 
 
 
-
-
-
-    var then, startTime, elapsed, now;
+    var then, elapsed, now;
     var self = this;
 
     function startAnimating() {
         then = window.performance.now();
         animate();
     }
+
     function animate(newtime) {
         requestAnimationFrame(animate);
         now = newtime;
@@ -565,11 +561,8 @@ function Game() {
         this.app.render();
         Key.update();
 
-        
-
     };
 }
-
 
 export var game = new Game();
 window.addEventListener("load", function () {

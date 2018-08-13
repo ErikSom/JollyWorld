@@ -1,4 +1,4 @@
-import { ui } from './UIManager';
+import { ui } from './ui/UIManager';
 const firebase = require('firebase');
 import $ from 'jquery';
 
