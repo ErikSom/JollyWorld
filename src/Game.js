@@ -145,6 +145,8 @@ function Game() {
         this.initLevel(levelData.mainMenuLevel);
         ui.buildMainMenu();
 
+        this.runWorld();
+
         this.canvas.addEventListener("keydown", this.onKeyDown.bind(this), true);
         this.canvas.addEventListener("keyup", this.onKeyUp.bind(this), true);
         this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this), true);
@@ -266,19 +268,15 @@ function Game() {
 
     this.onKeyDown = function (e) {
         if (e.keyCode == 82) { //r
-            this.run = false;
+            this.stopWorld();
             var worldJSON = JSON.parse(this.editor.worldJSON);
             if (e.shiftKey) this.editor.breakPrefabs = true;
-            this.editor.resetEditor();
-            //this.initWorld();
             this.editor.buildJSON(worldJSON);
 
         } else if (e.keyCode == 80) { //p
             if (this.editor.editing) {
                 this.startGame();
             }
-
-            this.run = !this.run;
         }
         Key.onKeydown(e);
         if (!this.run) this.editor.onKeyDown(e);
@@ -291,24 +289,32 @@ function Game() {
         }
         Key.onKeyup(e);
     }
-
-    this.startGame = function () {
+    this.runWorld = function(){
         this.editor.stringifyWorldJSON();
         this.editor.runWorld();
+        this.run = true;
+        this.findPlayableCharacter();
+    }
+    this.stopWorld = function(){
+        this.editor.resetEditor();
+        this.run = false;
+    }
+    this.startGame = function () {
 
+        this.runWorld();
         this.findPlayableCharacter();
 
-        this.character = this.editor.lookupGroups[this.playerPrefabObject.key].character;
         this.vehicle = new Vehicle();
-
         this.vehicle.init(this.playerPrefabObject);
-        this.cameraFocusObject = this.character.body;
     }
     this.findPlayableCharacter = function () {
         for (var key in this.editor.prefabs) {
             if (this.editor.prefabs.hasOwnProperty(key)) {
                 if (this.editor.prefabs[key].class.constructor.playableCharacter) {
                     this.playerPrefabObject = this.editor.prefabs[key];
+                    this.character = this.editor.lookupGroups[this.playerPrefabObject.key].character;
+                    this.cameraFocusObject = this.character.body;
+
                     var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
                     bodies.map(body => {
                         body.mainCharacter = true;
@@ -327,7 +333,7 @@ function Game() {
         var currentZoom = this.editor.container.scale.x;
 
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
-        this.editor.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
+        this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
 
         cameraTargetPosition.x -= this.canvas.width / 2.0 / this.editor.container.scale.x;
         cameraTargetPosition.y -= this.canvas.height / 2.0 / this.editor.container.scale.y;
@@ -557,7 +563,9 @@ function Game() {
 
         this.editor.run();
         this.newDebugGraphics.clear();
-        this.world.DrawDebugData();
+        if(this.editor.editorSettings.physicsDebug){
+            this.world.DrawDebugData();
+        }
         this.app.render();
         Key.update();
 

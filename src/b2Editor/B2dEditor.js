@@ -2,14 +2,14 @@ import * as Box2D from "../../libs/Box2D";
 import * as prefab from "./PrefabData";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
-import * as camera from "./utils/camera";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import {
 	game
 } from "../Game";
-import { editorSettings } from "./utils/editorSettings";
 
+const camera = require("./utils/camera");
+const editorSettings = require('./utils/editorSettings');
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
 
@@ -102,6 +102,8 @@ const _B2dEditor = function () {
 	this.undoTransformRot = 0;
 	this.undoTransformDepthHigh = false;
 
+	this.editorSettings = editorSettings;
+	this.camera = camera;
 	this.cameraSize = {
 		w: 400,
 		h: 300
@@ -1414,7 +1416,6 @@ const _B2dEditor = function () {
 
 		this.deltaTime = Date.now() - this.currentTime;
 		this.currentTime = Date.now();
-
 
 		var body = this.world.GetBodyList();
 		var i = 0
