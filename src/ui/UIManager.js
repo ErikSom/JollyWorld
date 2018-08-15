@@ -33,7 +33,16 @@ function UIManager() {
         button.setAttribute('id', 'editorButton')
         button.classList.add('menuButton');
         button.innerHTML = 'Editor';
+
+        button.addEventListener("click", ()=>{
+            self.hideMainMenu();
+            game.stopWorld();
+        });
         mainMenu.appendChild(button);
+    }
+
+    this.hideMainMenu = function(){
+        mainMenu.style.display = "none";
     }
 
     this.showBox = function (name) {

@@ -44,12 +44,6 @@ const _B2dEditor = function () {
 	this.selectedTool = 0;
 	this.admin = true; // for future to dissalow certain changes like naming
 	this.breakPrefabs = false;
-	this.editorGUI;
-	this.editorGUIPos = {
-		x: 0,
-		y: 0
-	};
-	this.customGUIContainer = document.getElementById('my-gui-container');
 
 	this.selectedPhysicsBodies = [];
 	this.selectedTextures = [];
@@ -64,9 +58,16 @@ const _B2dEditor = function () {
 	this.oldMousePosWorld;
 
 	this.assetLists = {};
-	this.tileLists = {};
-	// future this can be an opject with keys like bricks/green/etc.
+	this.tileLists = {};	// future this can be an opject with keys like bricks/green/etc.
 
+	this.customGUIContainer = document.getElementById('my-gui-container');
+
+	this.editorGUI;
+	this.editorGUIPos = {
+		x: 0,
+		y: 0
+	};
+	this.toolGUI;
 	this.assetGUI;
 	this.assetGUIPos = {
 		x: 0,
@@ -279,8 +280,8 @@ const _B2dEditor = function () {
 	}
 	this.createToolGUI = function () {
 		var self = this;
-		var toolGui = document.createElement("div");
-		toolGui.setAttribute('class', 'toolgui main');
+		this.toolGUI = document.createElement("div");
+		this.toolGUI.setAttribute('class', 'toolgui main');
 		var header = document.createElement('div');
 		header.setAttribute('class', 'dg');
 		var ul = document.createElement('ul');
@@ -289,7 +290,7 @@ const _B2dEditor = function () {
 		li.setAttribute('class', 'title')
 		li.innerText = "tools";
 		ul.appendChild(li);
-		toolGui.appendChild(header);
+		this.toolGUI.appendChild(header);
 		const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png', 'Icon_Zoom.png', 'Icon_Hand.png', 'Icon_PaintBucket.png', 'Icon_Eraser.png'];
 
 		var buttonElement;
@@ -302,7 +303,7 @@ const _B2dEditor = function () {
 			imgElement = document.createElement('td');
 			imgElement.setAttribute('class', 'toolgui img');
 			row.appendChild(imgElement);
-			toolGui.appendChild(buttonElement);
+			this.toolGUI.appendChild(buttonElement);
 
 			var clickFunction = function (_i) {
 				return function () {
@@ -311,12 +312,12 @@ const _B2dEditor = function () {
 			};
 			$(buttonElement).on('click', clickFunction(i));
 		}
-		document.getElementById('uicontainer').appendChild(toolGui);
+		document.getElementById('uicontainer').appendChild(this.toolGUI);
 		var $buttons = $('.toolgui .img');
 		for (var i = 0; i < $buttons.length; i++) {
 			$($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');
 		}
-		self.registerDragWindow(toolGui);
+		self.registerDragWindow(this.toolGUI);
 	}
 	this.buildEditorGUI = function () {
 		this.editorGUI = new dat.GUI({
@@ -5639,6 +5640,7 @@ const _B2dEditor = function () {
 
 		//reset gui
 		this.destroyEditorGUI();
+		ui.show();
 	}
 	var self = this;
 	this.B2dEditorContactListener = new Box2D.b2ContactListener();
@@ -5740,6 +5742,7 @@ const _B2dEditor = function () {
 			this.triggerObjects[i].class.init(this.triggerObjects[i]);
 		}
 		this.editing = false;
+		ui.hide();
 	}
 
 	this.getWorldPointFromPixelPoint = function (pixelPoint) {

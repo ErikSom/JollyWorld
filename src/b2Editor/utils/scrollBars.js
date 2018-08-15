@@ -97,3 +97,11 @@ const doVerticalScroll = function(e){
     camera.constrainCameraPosition();
     update();
 }
+export const hide = function(){
+    horizontalScrollBar.style.display = "none";
+    verticalScrollBar.style.display = "none";
+}
+export const show = function(){
+    horizontalScrollBar.style.display = "block";
+    verticalScrollBar.style.display = "block";
+}

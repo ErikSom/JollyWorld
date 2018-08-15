@@ -190,6 +190,7 @@ canvas {
     box-shadow: inset 0px 4px 1px rgba(255, 255, 255, 0.60), 0px 0px 0px 3px hsl(0, 0%, 100%);
     user-select: none;
     position: relative;
+    cursor: pointer;
 }
 .menuButton::after {
     content: '';
