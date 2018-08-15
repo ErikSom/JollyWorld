@@ -5,12 +5,13 @@ import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
+import {editorSettings} from './utils/editorSettings';
+
 import {
 	game
 } from "../Game";
 
 const camera = require("./utils/camera");
-const editorSettings = require('./utils/editorSettings');
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
 
@@ -1395,7 +1396,7 @@ const _B2dEditor = function () {
 		this.debugGraphics.lineTo(this.container.x, crossSize + this.container.y);
 		this.debugGraphics.moveTo(-crossSize + this.container.x, this.container.y);
 		this.debugGraphics.lineTo(crossSize + this.container.x, this.container.y);
-
+		
 
 		this.debugGraphics.moveTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, -crossSize + this.container.y);
 		this.debugGraphics.lineTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, crossSize + this.container.y);
