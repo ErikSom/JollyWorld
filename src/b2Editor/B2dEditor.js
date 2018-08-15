@@ -2,6 +2,7 @@ import * as Box2D from "../../libs/Box2D";
 import * as prefab from "./PrefabData";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
+import * as ui from "./utils/ui";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import {
