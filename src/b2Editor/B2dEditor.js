@@ -2394,7 +2394,6 @@ const _B2dEditor = function () {
 	}
 	this.onKeyUp = function (e) {
 
-
 		if (e.keyCode == 16) { //shift
 			this.shiftDown = false;
 			this.mouseTransformType = this.mouseTransformType_Movement;
@@ -5256,6 +5255,10 @@ const _B2dEditor = function () {
 			}
 		}
 		this.worldJSON += ']}';
+		console.log("********************** World Data **********************");
+		console.log(this.worldJSON);
+		console.log("********************************************************");
+		return this.worldJSON;
 	}
 
 	this.stringifyObject = function (obj) {
@@ -5492,6 +5495,7 @@ const _B2dEditor = function () {
 		var prefabOffset = 0;
 
 		if (json != null) {
+			if( typeof json == 'string') json = JSON.parse(json);
 			//clone json to not destroy old references
 			var worldObjects = JSON.parse(JSON.stringify(json));
 

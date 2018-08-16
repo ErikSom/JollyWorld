@@ -36,7 +36,7 @@ function UIManager() {
 
         button.addEventListener("click", ()=>{
             self.hideMainMenu();
-            game.stopWorld();
+            game.openEditor();
         });
         mainMenu.appendChild(button);
     }

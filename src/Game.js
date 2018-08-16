@@ -30,6 +30,8 @@ import {
     levelData
 } from "./data/levelData";
 
+import * as SaveManager from "./utils/SaveManager";
+
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
 
@@ -284,7 +286,7 @@ function Game() {
     this.onKeyUp = function (e) {
         this.editor.onKeyUp(e);
 
-        if (e.keyCode == 87 || e.keyCode == 83) {
+        if (e.keyCode == 87 || e.keyCode == 83 && this.run) {
             this.vehicle.stopAccelerate();
         }
         Key.onKeyup(e);
@@ -298,6 +300,10 @@ function Game() {
     this.stopWorld = function(){
         this.editor.resetEditor();
         this.run = false;
+    }
+    this.openEditor = function(){
+        this.stopWorld();
+        this.editor.buildJSON(SaveManager.getTempEditorWorld());
     }
     this.startGame = function () {
 
