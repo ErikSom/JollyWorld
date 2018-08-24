@@ -6,27 +6,35 @@ import {
 } from "../../Game";
 
 
-let mainEditorMenu;
 let toolGUI;
 export let assetGUI;
 export let editorGUI;
-let editorGUIWidth = 200;
 
+let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
 
 export const hide = function(){
-    toolGUI.style.display = "none";
+    uiContainer.style.display = "none";
     scrollBars.hide();
 }
 export const show = function(){
-    toolGUI.style.display = "block";
+    uiContainer.style.display = "block";
     scrollBars.show();
+}
+
+export const initGui = function () {
+    initGuiAssetSelection();
+    createToolGUI();
+    buildMenuButton();
+    B2dEditor.canvas.focus();
+    scrollBars.update();
 }
 let editorGUIPos = {
     x: 0,
     y: 0
 };
 export const buildEditorGUI = function () {
+    const editorGUIWidth = 200;
     editorGUI = new dat.GUI({
         autoPlace: false,
         width: editorGUIWidth
@@ -41,9 +49,9 @@ export const destroyEditorGUI = function () {
     removeGuiAssetSelection();
 }
 export const buildMenuButton = function(){
-    let hamburger = document.createElement('div');
-    hamburger.setAttribute('class', 'toolgui menu button');
-    document.getElementById('uicontainer').appendChild(hamburger);
+    let mainMenuButton = document.createElement('div');
+    mainMenuButton.setAttribute('class', 'toolgui menu button');
+    customGUIContainer.appendChild(mainMenuButton);
 }
 
 export const createEditorStyledGUI  = function(name){
@@ -84,7 +92,7 @@ export const createToolGUI = function () {
         };
         $(buttonElement).on('click', clickFunction(i));
     }
-    document.getElementById('uicontainer').appendChild(toolGUI);
+    uiContainer.appendChild(toolGUI);
     var $buttons = $('.toolgui .img');
     for (var i = 0; i < $buttons.length; i++) {
         $($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');

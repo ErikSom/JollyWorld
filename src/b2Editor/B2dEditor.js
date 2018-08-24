@@ -135,16 +135,11 @@ const _B2dEditor = function () {
 
 		this.canvas = document.getElementById("canvas");
 
-		this.initGui();
+		ui.initGui();
 		this.selectTool(this.tool_SELECT);
 	}
 
-	this.initGui = function () {
-		ui.initGuiAssetSelection();
-		ui.createToolGUI();
-		this.canvas.focus();
-		scrollBars.update();
-	}
+
 
 
 	this.showPrefabList = function () {
