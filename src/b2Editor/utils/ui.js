@@ -9,6 +9,9 @@ import {
 let mainEditorMenu;
 let toolGUI;
 export let assetGUI;
+export let editorGUI;
+let editorGUIWidth = 200;
+
 let customGUIContainer = document.getElementById('my-gui-container');
 
 export const hide = function(){
@@ -18,6 +21,24 @@ export const hide = function(){
 export const show = function(){
     toolGUI.style.display = "block";
     scrollBars.show();
+}
+let editorGUIPos = {
+    x: 0,
+    y: 0
+};
+export const buildEditorGUI = function () {
+    editorGUI = new dat.GUI({
+        autoPlace: false,
+        width: editorGUIWidth
+    });
+    customGUIContainer.appendChild(editorGUI.domElement);
+}
+export const destroyEditorGUI = function () {
+    if (editorGUI != undefined) {
+        customGUIContainer.removeChild(editorGUI.domElement);
+        editorGUI = undefined;
+    }
+    removeGuiAssetSelection();
 }
 export const buildMenuButton = function(){
     let hamburger = document.createElement('div');

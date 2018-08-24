@@ -63,12 +63,6 @@ const _B2dEditor = function () {
 
 	this.customGUIContainer = document.getElementById('my-gui-container');
 
-	this.editorGUI;
-	this.editorGUIPos = {
-		x: 0,
-		y: 0
-	};
-
 	this.editorIcons = [];
 	this.triggerObjects = [];
 
@@ -152,31 +146,18 @@ const _B2dEditor = function () {
 		scrollBars.update();
 	}
 
-	this.buildEditorGUI = function () {
-		this.editorGUI = new dat.GUI({
-			autoPlace: false,
-			width: this.editorGUIWidth
-		});
-		this.customGUIContainer.appendChild(this.editorGUI.domElement);
-	}
-	this.destroyEditorGUI = function () {
-		if (this.editorGUI != undefined) {
-			this.customGUIContainer.removeChild(this.editorGUI.domElement);
-			this.editorGUI = undefined;
-		}
-		ui.removeGuiAssetSelection();
-	}
+
 	this.showPrefabList = function () {
 		var prefabPages = prefab.prefabs.libraryKeys;
 		if (this.admin) prefabPages.push("admin");
-		this.editorGUI.addFolder('Prefab Selection');
+		ui.editorGUI.addFolder('Prefab Selection');
 		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
 		this.assetSelectedTexture = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][0];
-		var folder = this.editorGUI.addFolder('Prefabs');
+		var folder = ui.editorGUI.addFolder('Prefabs');
 		var self = this;
 		folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
-			self.destroyEditorGUI();
-			self.buildEditorGUI();
+			ui.destroyEditorGUI();
+			ui.buildEditorGUI();
 			self.showPrefabList();
 		});
 		folder.add(self, "assetSelectedTexture", prefab.prefabs.libraryDictionary[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
@@ -224,13 +205,14 @@ const _B2dEditor = function () {
 		this.selectedTextures = [];
 		this.selectedPhysicsBodies = [];
 		this.selectedPrefabs = [];
+		this.activeVertices = [];
 
 		var $buttons = $('.toolgui .button');
 		$buttons.css("background-color", "#999999");
 		$($buttons[i]).css("background-color", "#4F4F4F");
 
-		this.destroyEditorGUI();
-		this.buildEditorGUI();
+		ui.destroyEditorGUI();
+		ui.buildEditorGUI();
 
 		var dataJoint;
 		var self = this;
@@ -239,26 +221,26 @@ const _B2dEditor = function () {
 
 		switch (i) {
 			case this.tool_SELECT:
-				this.destroyEditorGUI();
+				ui.destroyEditorGUI();
 				break
 			case this.tool_GEOMETRY:
-				this.editorGUI.editData = this.editorGeometryObject;
-				this.editorGUI.addFolder('draw shapes');
+				ui.editorGUI.editData = this.editorGeometryObject;
+				ui.editorGUI.addFolder('draw shapes');
 				var shapes = ["Circle", "Box", "Triangle"];
-				this.editorGUI.editData.shape = shapes[0];
-				this.editorGUI.add(self.editorGUI.editData, "shape", shapes);
-				this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
-				this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
-				this.editorGUI.add(self.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
-				this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
-				this.editorGUI.add(self.editorGUI.editData, "isPhysicsObject");
+				ui.editorGUI.editData.shape = shapes[0];
+				ui.editorGUI.add(ui.editorGUI.editData, "shape", shapes);
+				ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
+				ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
+				ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				ui.editorGUI.add(ui.editorGUI.editData, "isPhysicsObject");
 				break
 			case this.tool_POLYDRAWING:
-				this.destroyEditorGUI();
+				ui.destroyEditorGUI();
 				break
 			case this.tool_JOINTS:
-				this.editorGUI.editData = this.editorJointObject;
-				this.editorGUI.addFolder('add joints');
+				ui.editorGUI.editData = this.editorJointObject;
+				ui.editorGUI.addFolder('add joints');
 
 				this.addJointGUI(this.editorJointObject);
 
@@ -271,37 +253,37 @@ const _B2dEditor = function () {
 			case this.tool_ZOOM:
 				break
 			case this.tool_MOVE:
-				this.destroyEditorGUI();
+				ui.destroyEditorGUI();
 				this.spaceCameraDrag = true;
 				break
 			case this.tool_PAINTBUCKET:
-				this.editorGUI.editData = this.editorGraphicDrawingObject;
-				this.editorGUI.addFolder('draw graphics');
-				//for (var key in this.editorGUI.editData) {
-				//	if (this.editorGUI.editData.hasOwnProperty(key)) {
+				ui.editorGUI.editData = this.editorGraphicDrawingObject;
+				ui.editorGUI.addFolder('draw graphics');
+				//for (var key in ui.editorGUI.editData) {
+				//	if (ui.editorGUI.editData.hasOwnProperty(key)) {
 				//TODO:Load from saved data
 				//	}
 				//}
-				this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
-				this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
-				var realVal = self.editorGUI.editData.transparancy;
-				self.editorGUI.editData.transparancy = 0.1;
-				this.editorGUI.add(self.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
-				self.editorGUI.editData.transparancy = realVal;
+				ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
+				ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
+				var realVal = ui.editorGUI.editData.transparancy;
+				ui.editorGUI.editData.transparancy = 0.1;
+				ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				ui.editorGUI.editData.transparancy = realVal;
 
-				this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				break
 			case this.tool_ERASER:
-				this.editorGUI.editData = this.editorTriggerObject;
-				this.editorGUI.addFolder('add triggers');
+				ui.editorGUI.editData = this.editorTriggerObject;
+				ui.editorGUI.addFolder('add triggers');
 
 				var shapes = ["Circle", "Box"];
-				this.editorGUI.editData.shape = shapes[0];
-				this.editorGUI.add(self.editorGUI.editData, "shape", shapes);
+				ui.editorGUI.editData.shape = shapes[0];
+				ui.editorGUI.add(ui.editorGUI.editData, "shape", shapes);
 
 				break
 		}
-		if (this.editorGUI) ui.registerDragWindow(this.editorGUI.domElement);
+		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI.domElement);
 		this.canvas.focus();
 	}
 
@@ -309,7 +291,7 @@ const _B2dEditor = function () {
 		//Joints
 		var i;
 
-		this.destroyEditorGUI();
+		ui.destroyEditorGUI();
 
 
 		var case_NOTHING = 0;
@@ -394,11 +376,7 @@ const _B2dEditor = function () {
 
 		if (currentCase == case_NOTHING) return;
 
-		this.editorGUI = new dat.GUI({
-			autoPlace: false,
-			width: this.editorGUIWidth
-		});
-		this.customGUIContainer.appendChild(this.editorGUI.domElement);
+		ui.buildEditorGUI();
 		var dataJoint;
 		var self = this;
 		var controller;
@@ -406,32 +384,32 @@ const _B2dEditor = function () {
 		//Init edit data;
 		switch (currentCase) {
 			case case_JUST_BODIES:
-				this.editorGUI.editData = new this.bodyObject;
+				ui.editorGUI.editData = new this.bodyObject;
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
-				if (this.selectedPhysicsBodies.length > 1) this.editorGUI.addFolder('multiple bodies');
-				else this.editorGUI.addFolder('body');
+				if (this.selectedPhysicsBodies.length > 1) ui.editorGUI.addFolder('multiple bodies');
+				else ui.editorGUI.addFolder('body');
 				break;
 			case case_JUST_TEXTURES:
 				dataJoint = _selectedTextures[0].data;
-				this.editorGUI.editData = new this.textureObject;
-				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple textures');
-				else this.editorGUI.addFolder('texture');
+				ui.editorGUI.editData = new this.textureObject;
+				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple textures');
+				else ui.editorGUI.addFolder('texture');
 				break;
 			case case_JUST_GRAPHICS:
 				dataJoint = _selectedGraphics[0].data;
-				this.editorGUI.editData = new this.graphicObject;
-				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple graphics');
-				else this.editorGUI.addFolder('graphic');
+				ui.editorGUI.editData = new this.graphicObject;
+				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple graphics');
+				else ui.editorGUI.addFolder('graphic');
 				break;
 			case case_JUST_GRAPHICGROUPS:
 				dataJoint = _selectedGraphicGroups[0].data;
-				this.editorGUI.editData = new this.graphicGroup;
-				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple graphicGroups');
-				else this.editorGUI.addFolder('graphicGroup');
+				ui.editorGUI.editData = new this.graphicGroup;
+				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple graphicGroups');
+				else ui.editorGUI.addFolder('graphicGroup');
 				break;
 			case case_JUST_JOINTS:
 				var selectedType = ""
-				this.editorGUI.editData = new this.jointObject;
+				ui.editorGUI.editData = new this.jointObject;
 				if (_selectedPinJoints.length > 0) {
 					dataJoint = _selectedPinJoints[0].data;
 					selectedType = "Pin";
@@ -445,53 +423,53 @@ const _B2dEditor = function () {
 					dataJoint = _selectedRopeJoints[0].data;
 					selectedType = "Rope";
 				}
-				if (this.selectedTextures.length > 1) this.editorGUI.addFolder('multiple joints');
-				else this.editorGUI.addFolder(`${selectedType} joint`);
+				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple joints');
+				else ui.editorGUI.addFolder(`${selectedType} joint`);
 				break;
 			case case_JUST_PREFABS:
-				this.editorGUI.editData = new this.prefabObject;
+				ui.editorGUI.editData = new this.prefabObject;
 				dataJoint = this.prefabs[prefabKeys[0]];
-				if (this.selectedPrefabs.length > 1) this.editorGUI.addFolder('multiple prefabs');
-				else this.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
+				if (this.selectedPrefabs.length > 1) ui.editorGUI.addFolder('multiple prefabs');
+				else ui.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
 				break;
 			case case_MULTIPLE:
-				this.editorGUI.editData = new this.multiObject;
+				ui.editorGUI.editData = new this.multiObject;
 
 				if (this.selectedTextures.length > 0) dataJoint = this.selectedTextures[0].data;
 				else if (this.selectedPhysicsBodies.length > 0) dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
 				else dataJoint = this.prefabs[prefabKeys[0]];
 
-				this.editorGUI.addFolder('multiple objects');
+				ui.editorGUI.addFolder('multiple objects');
 				break;
 			case case_JUST_TRIGGERS:
-				this.editorGUI.editData = new this.triggerObject;
+				ui.editorGUI.editData = new this.triggerObject;
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
-				if (this.selectedPhysicsBodies.length > 1) this.editorGUI.addFolder('multiple triggers');
-				else this.editorGUI.addFolder('trigger');
+				if (this.selectedPhysicsBodies.length > 1) ui.editorGUI.addFolder('multiple triggers');
+				else ui.editorGUI.addFolder('trigger');
 				break;
 		}
 
-		for (var key in this.editorGUI.editData) {
-			if (this.editorGUI.editData.hasOwnProperty(key)) {
-				this.editorGUI.editData[key] = dataJoint[key];
+		for (var key in ui.editorGUI.editData) {
+			if (ui.editorGUI.editData.hasOwnProperty(key)) {
+				ui.editorGUI.editData[key] = dataJoint[key];
 
 				if (dataJoint.type == this.object_BODY && (key == "x" || key == "y")) {
-					this.editorGUI.editData[key] *= this.PTM;
+					ui.editorGUI.editData[key] *= this.PTM;
 				}
 				if (key == "groups") {
-					if (!this.isSelectionPropertyTheSame("groups")) this.editorGUI.editData.groups = "-";
+					if (!this.isSelectionPropertyTheSame("groups")) ui.editorGUI.editData.groups = "-";
 				}
 			}
 		}
 
 		//Populate default GUI Fields
-		this.editorGUI.add(self.editorGUI.editData, "x").onChange(function (value) {
+		ui.editorGUI.add(ui.editorGUI.editData, "x").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
 		});
 
-		this.editorGUI.add(self.editorGUI.editData, "y").onChange(function (value) {
+		ui.editorGUI.add(ui.editorGUI.editData, "y").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
@@ -504,31 +482,31 @@ const _B2dEditor = function () {
 				height: aabb.GetExtents().y * 2 * this.PTM
 			}
 
-			self.editorGUI.editData.width = currentSize.width;
-			self.editorGUI.editData.height = currentSize.height;
+			ui.editorGUI.editData.width = currentSize.width;
+			ui.editorGUI.editData.height = currentSize.height;
 
 
-			this.editorGUI.add(self.editorGUI.editData, "width").onChange(function (value) {
+			ui.editorGUI.add(ui.editorGUI.editData, "width").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
-			this.editorGUI.add(self.editorGUI.editData, "height").onChange(function (value) {
+			ui.editorGUI.add(ui.editorGUI.editData, "height").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
-			this.editorGUI.add(self.editorGUI.editData, "rotation").onChange(function (value) {
+			ui.editorGUI.add(ui.editorGUI.editData, "rotation").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
 			});
 		}
 		if (prefabKeys.length == 0) {
-			this.editorGUI.add(self.editorGUI.editData, "groups").onChange(function (value) {
+			ui.editorGUI.add(ui.editorGUI.editData, "groups").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
 		}
 		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1 && prefabKeys.length == 0) {
-			this.editorGUI.add(self.editorGUI.editData, "refName").onChange(function (value) {
+			ui.editorGUI.add(ui.editorGUI.editData, "refName").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
@@ -536,64 +514,64 @@ const _B2dEditor = function () {
 		//Populate custom  fields
 		switch (currentCase) {
 			case case_JUST_BODIES:
-				this.editorGUI.add(self.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+				ui.editorGUI.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
 
-				if (self.editorGUI.editData.colorFill instanceof Array) {
-					self.editorGUI.editData.transparancy = self.editorGUI.editData.transparancy[0];
-					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				if (ui.editorGUI.editData.colorFill instanceof Array) {
+					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
+					controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
 				} else {
-					console.log(this.editorGUI.editData);
-					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+					console.log(ui.editorGUI.editData);
+					controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+					controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = this.editorGUI.add(self.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+					controller = ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+					controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
 				}
-				this.editorGUI.add(self.editorGUI.editData, "fixed").onChange(function (value) {
+				ui.editorGUI.add(ui.editorGUI.editData, "fixed").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				this.editorGUI.add(self.editorGUI.editData, "awake").onChange(function (value) {
+				ui.editorGUI.add(ui.editorGUI.editData, "awake").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				controller = this.editorGUI.add(self.editorGUI.editData, "density", 0, 1000).step(0.1);
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				}.bind(controller));
-				controller = this.editorGUI.add(self.editorGUI.editData, "collision", 0, 7).step(1);
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "collision", 0, 7).step(1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				}.bind(controller));
 
-				this.editorGUI.editData.convertToGraphic = function () {};
+				ui.editorGUI.editData.convertToGraphic = function () {};
 				var label = this.selectedTextures.length == 1 ? ">Convert to Graphic<" : ">Convert to Graphics<";
-				controller = this.editorGUI.add(self.editorGUI.editData, "convertToGraphic").name(label);
-				this.editorGUI.editData.convertToGraphic = (function (_c) {
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "convertToGraphic").name(label);
+				ui.editorGUI.editData.convertToGraphic = (function (_c) {
 					return function () {
 						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
 							_c.name(">Click to Confirm<");
@@ -605,43 +583,43 @@ const _B2dEditor = function () {
 				})(controller)
 				break;
 			case case_JUST_TEXTURES:
-				controller = this.editorGUI.addColor(self.editorGUI.editData, "tint");
+				controller = ui.editorGUI.addColor(ui.editorGUI.editData, "tint");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 				break;
 			case case_JUST_GRAPHICS:
-				console.log("check", self.editorGUI.editData);
-				this.editorGUI.add(self.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+				console.log("check", ui.editorGUI.editData);
+				ui.editorGUI.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorFill");
+				controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = this.editorGUI.addColor(self.editorGUI.editData, "colorLine");
+				controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = this.editorGUI.add(self.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 
-				this.editorGUI.editData.convertToBody = function () {};
+				ui.editorGUI.editData.convertToBody = function () {};
 				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
-				controller = this.editorGUI.add(self.editorGUI.editData, "convertToBody").name(label);
-				this.editorGUI.editData.convertToBody = (function (_c) {
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "convertToBody").name(label);
+				ui.editorGUI.editData.convertToBody = (function (_c) {
 					return function () {
 						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
 							_c.name(">Click to Confirm<");
@@ -654,15 +632,15 @@ const _B2dEditor = function () {
 
 				break;
 			case case_JUST_GRAPHICGROUPS:
-				controller = this.editorGUI.add(self.editorGUI.editData, "transparancy", 0, 1);
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				this.editorGUI.editData.convertToBody = function () {};
+				ui.editorGUI.editData.convertToBody = function () {};
 				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
-				controller = this.editorGUI.add(self.editorGUI.editData, "convertToBody").name(label);
-				this.editorGUI.editData.convertToBody = (function (_c) {
+				controller = ui.editorGUI.add(ui.editorGUI.editData, "convertToBody").name(label);
+				ui.editorGUI.editData.convertToBody = (function (_c) {
 					return function () {
 						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
 							_c.name(">Click to Confirm<");
@@ -687,17 +665,17 @@ const _B2dEditor = function () {
 				for (var key in prefabClassOptions) {
 					if (prefabClassOptions.hasOwnProperty(key)) {
 						var argument;
-						this.editorGUI.editData[key] = prefabObjectSettings[key];
+						ui.editorGUI.editData[key] = prefabObjectSettings[key];
 						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
-							this.editorGUI.add(self.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
+							ui.editorGUI.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
 							});
 						} else {
 							if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
 							else argument = null;
-							this.editorGUI.add(self.editorGUI.editData, key, argument).onChange(function (value) {
+							ui.editorGUI.add(ui.editorGUI.editData, key, argument).onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
 							});
@@ -713,32 +691,32 @@ const _B2dEditor = function () {
 				break;
 		}
 		//TODO:Maybe add admin mode / pro mode for lockselection
-		if (self.editorGUI.editData.lockselection == undefined) self.editorGUI.editData.lockselection = false;
-		this.editorGUI.add(self.editorGUI.editData, "lockselection").onChange(function (value) {
+		if (ui.editorGUI.editData.lockselection == undefined) ui.editorGUI.editData.lockselection = false;
+		ui.editorGUI.add(ui.editorGUI.editData, "lockselection").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value;
 		});
-		ui.registerDragWindow(this.editorGUI.domElement);
+		ui.registerDragWindow(ui.editorGUI.domElement);
 	}
 	this.addJointGUI = function (dataJoint) {
 		var self = this;
 		var controller;
 		var folder;
 		var jointTypes = ["Pin", "Slide", "Distance", "Rope"];
-		this.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
-		this.editorGUI.add(self.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
+		ui.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
+		ui.editorGUI.add(ui.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value
 		});
-		this.editorGUI.add(self.editorGUI.editData, "collideConnected").onChange(function (value) {
+		ui.editorGUI.add(ui.editorGUI.editData, "collideConnected").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value
 		});
 
 		if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
 
-			folder = this.editorGUI.addFolder('enable motor');
-			folder.add(self.editorGUI.editData, "enableMotor").onChange(function (value) {
+			folder = ui.editorGUI.addFolder('enable motor');
+			folder.add(ui.editorGUI.editData, "enableMotor").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
@@ -754,7 +732,7 @@ const _B2dEditor = function () {
 				higherLimit = 1000;
 			}
 
-			controller = folder.add(self.editorGUI.editData, "maxMotorTorque", lowerLimit, higherLimit);
+			controller = folder.add(ui.editorGUI.editData, "maxMotorTorque", lowerLimit, higherLimit);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
@@ -762,54 +740,54 @@ const _B2dEditor = function () {
 
 			if (dataJoint.jointType == this.jointObject_TYPE_SLIDE) controller.name("maxMotorForce");
 
-			controller = folder.add(self.editorGUI.editData, "motorSpeed", -20, 20);
+			controller = folder.add(ui.editorGUI.editData, "motorSpeed", -20, 20);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
 			}.bind(controller));
 
 
-			folder = this.editorGUI.addFolder('enable limits');
-			folder.add(self.editorGUI.editData, "enableLimit").onChange(function (value) {
+			folder = ui.editorGUI.addFolder('enable limits');
+			folder.add(ui.editorGUI.editData, "enableLimit").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
 
 			if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
-				controller = folder.add(self.editorGUI.editData, "upperAngle", 0, 180);
+				controller = folder.add(ui.editorGUI.editData, "upperAngle", 0, 180);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 
-				controller = folder.add(self.editorGUI.editData, "lowerAngle", -180, 0);
+				controller = folder.add(ui.editorGUI.editData, "lowerAngle", -180, 0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				}.bind(controller));
 			} else {
-				controller = folder.add(self.editorGUI.editData, "upperLimit", 0, 5000);
+				controller = folder.add(ui.editorGUI.editData, "upperLimit", 0, 5000);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 
-				controller = folder.add(self.editorGUI.editData, "lowerLimit", -5000, 0);
+				controller = folder.add(ui.editorGUI.editData, "lowerLimit", -5000, 0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				}.bind(controller));
 			}
 		} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
-			folder = this.editorGUI.addFolder('spring');
+			folder = ui.editorGUI.addFolder('spring');
 
-			controller = folder.add(self.editorGUI.editData, "frequencyHz", 0, 180);
+			controller = folder.add(ui.editorGUI.editData, "frequencyHz", 0, 180);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			}.bind(controller));
 
-			controller = folder.add(self.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
+			controller = folder.add(ui.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
@@ -1640,16 +1618,16 @@ const _B2dEditor = function () {
 					});
 				} else {
 					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
-					graphicObject.colorFill = this.editorGUI.editData.colorFill;
-					graphicObject.colorLine = this.editorGUI.editData.colorLine;
-					graphicObject.transparany = this.editorGUI.editData.transparancy;
+					graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+					graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+					graphicObject.transparany = ui.editorGUI.editData.transparancy;
 					this.buildGraphicFromObj(graphicObject);
 					this.activeVertices = [];
 				}
 			} else if (this.selectedTool == this.tool_JOINTS) {
 				var joint = this.attachJointPlaceHolder();
 				if (joint) {
-					var jointData = JSON.parse(JSON.stringify(this.editorGUI.editData))
+					var jointData = JSON.parse(JSON.stringify(ui.editorGUI.editData))
 					delete jointData.bodyA_ID;
 					delete jointData.bodyB_ID;
 					delete jointData.x;
@@ -1664,7 +1642,7 @@ const _B2dEditor = function () {
 				triggerObject.x = this.startSelectionPoint.x;
 				triggerObject.y = this.startSelectionPoint.y;
 				const triggerStartSize = 50 / game.editor.PTM;
-				if (this.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize * game.editor.PTM;
+				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize * game.editor.PTM;
 				else triggerObject.vertices = [{
 						x: -triggerStartSize,
 						y: -triggerStartSize
@@ -2089,7 +2067,7 @@ const _B2dEditor = function () {
 					this.storeUndoMovement();
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
-				if (this.editorGUI.editData.shape == "Circle") {
+				if (ui.editorGUI.editData.shape == "Circle") {
 					var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
 					if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
 						var bodyObject = new this.bodyObject;
@@ -2584,19 +2562,19 @@ const _B2dEditor = function () {
 	}
 
 	this.doEditorGUI = function () {
-		if (this.editorGUI != undefined && this.editorGUI.editData) {
+		if (ui.editorGUI != undefined && ui.editorGUI.editData) {
 			var controller;
 			var controllers = [];
 			var body;
 			var sprite;
 			var j;
-			controllers = controllers.concat(this.editorGUI.__controllers);
+			controllers = controllers.concat(ui.editorGUI.__controllers);
 
-			for (var propt in this.editorGUI.__folders) {
-				controllers = controllers.concat(this.editorGUI.__folders[propt].__controllers);
-				for (var _propt in this.editorGUI.__folders[propt].__folders) {
+			for (var propt in ui.editorGUI.__folders) {
+				controllers = controllers.concat(ui.editorGUI.__folders[propt].__controllers);
+				for (var _propt in ui.editorGUI.__folders[propt].__folders) {
 					//folders in folders
-					controllers = controllers.concat(this.editorGUI.__folders[propt].__folders[_propt].__controllers);
+					controllers = controllers.concat(ui.editorGUI.__folders[propt].__folders[_propt].__controllers);
 				}
 			}
 
@@ -2608,7 +2586,7 @@ const _B2dEditor = function () {
 					controller.humanUpdate = false;
 					if (controller.property == "typeName") {
 						if (this.selectedTool == this.tool_JOINTS) {
-							var oldData = this.editorGUI.editData;
+							var oldData = ui.editorGUI.editData;
 							if (controller.targetValue == "Pin") {
 								oldData.jointType = this.jointObject_TYPE_PIN;
 							} else if (controller.targetValue == "Slide") {
@@ -2618,12 +2596,12 @@ const _B2dEditor = function () {
 							} else if (controller.targetValue == "Rope") {
 								oldData.jointType = this.jointObject_TYPE_ROPE;
 							}
-							this.destroyEditorGUI();
-							this.buildEditorGUI();
-							this.editorGUI.editData = oldData;
-							this.editorGUI.addFolder('add joints');
+							ui.destroyEditorGUI();
+							ui.buildEditorGUI();
+							ui.editorGUI.editData = oldData;
+							ui.editorGUI.addFolder('add joints');
 							this.addJointGUI(oldData);
-							if (this.editorGUI) ui.registerDragWindow(this.editorGUI.domElement);
+							if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI.domElement);
 						} else {
 							//joint
 							if (controller.targetValue == "Pin") {
@@ -3062,14 +3040,14 @@ const _B2dEditor = function () {
 			// DO SYNCING
 			var syncObject;
 
-			if (this.editorGUI.editData.type == this.object_BODY) {
+			if (ui.editorGUI.editData.type == this.object_BODY) {
 				syncObject = this.selectedPhysicsBodies[0];
-			} else if (this.editorGUI.editData.type == this.object_TEXTURE || this.editorGUI.editData.type == this.object_JOINT || this.editorGUI.editData.type == this.object_GRAPHIC) {
+			} else if (ui.editorGUI.editData.type == this.object_TEXTURE || ui.editorGUI.editData.type == this.object_JOINT || ui.editorGUI.editData.type == this.object_GRAPHIC) {
 				syncObject = this.selectedTextures[0];
-			} else if (this.editorGUI.editData.type == this.object_PREFAB) {
+			} else if (ui.editorGUI.editData.type == this.object_PREFAB) {
 				var key = Object.keys(this.selectedPrefabs)[0];
 				syncObject = this.prefabs[key];
-			} else if (this.editorGUI.editData.type == this.object_MULTIPLE) {
+			} else if (ui.editorGUI.editData.type == this.object_MULTIPLE) {
 				if (this.selectedTextures.length > 0) syncObject = this.selectedTextures[0];
 				else if (this.selectedPhysicsBodies.length > 0) syncObject = this.selectedPhysicsBodies[0];
 				else syncObject = this.prefabs[key];
@@ -3077,13 +3055,13 @@ const _B2dEditor = function () {
 			if (syncObject) {
 				if (syncObject.mySprite) {
 					var pos = syncObject.GetPosition();
-					this.editorGUI.editData.x = pos.x * this.PTM;
-					this.editorGUI.editData.y = pos.y * this.PTM;
-					this.editorGUI.editData.rotation = syncObject.GetAngle() * this.RAD2DEG;
+					ui.editorGUI.editData.x = pos.x * this.PTM;
+					ui.editorGUI.editData.y = pos.y * this.PTM;
+					ui.editorGUI.editData.rotation = syncObject.GetAngle() * this.RAD2DEG;
 				} else {
-					this.editorGUI.editData.x = syncObject.x;
-					this.editorGUI.editData.y = syncObject.y;
-					this.editorGUI.editData.rotation = syncObject.rotation;
+					ui.editorGUI.editData.x = syncObject.x;
+					ui.editorGUI.editData.y = syncObject.y;
+					ui.editorGUI.editData.rotation = syncObject.rotation;
 				}
 			}
 
@@ -3092,9 +3070,9 @@ const _B2dEditor = function () {
 			for (i in controllers) {
 				controller = controllers[i];
 				if (controller.property == "x") {
-					controller.initialValue = this.editorGUI.editData.x;
+					controller.initialValue = ui.editorGUI.editData.x;
 				} else if (controller.property == "y") {
-					controller.initialValue = this.editorGUI.editData.y;
+					controller.initialValue = ui.editorGUI.editData.y;
 				}
 			}
 		}
@@ -3268,11 +3246,11 @@ const _B2dEditor = function () {
 			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
-			if (this.editorGUI.editData.shape == "Circle") {
+			if (ui.editorGUI.editData.shape == "Circle") {
 				var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y, radius, 0, 2 * Math.PI, false);
-			} else if (this.editorGUI.editData.shape == "Box") {
+			} else if (ui.editorGUI.editData.shape == "Box") {
 				this.activeVertices = [];
 				this.activeVertices.push({
 					x: this.mousePosWorld.x,
@@ -3298,7 +3276,7 @@ const _B2dEditor = function () {
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[3]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[3]).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
-			} else if (this.editorGUI.editData.shape == "Triangle") {
+			} else if (ui.editorGUI.editData.shape == "Triangle") {
 				this.activeVertices = [];
 				var difX = this.mousePosWorld.x - this.startSelectionPoint.x;
 				this.activeVertices.push({
@@ -5473,7 +5451,7 @@ const _B2dEditor = function () {
 		this.lookupGroups = {};
 
 		//reset gui
-		this.destroyEditorGUI();
+		ui.destroyEditorGUI();
 		ui.show();
 	}
 	var self = this;
@@ -5836,7 +5814,6 @@ const _B2dEditor = function () {
 	this.tool_ERASER = 9;
 	this.tool_CAMERA = 10;
 
-	this.editorGUIWidth = 200;
 	this.minimumBodySurfaceArea = 0.3;
 }
 

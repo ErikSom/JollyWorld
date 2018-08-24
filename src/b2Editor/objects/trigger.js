@@ -1,6 +1,7 @@
 import {
     B2dEditor
 } from "../B2dEditor";
+import * as ui from "../utils/ui";
 import * as Box2D from "../../../libs/Box2D";
 
 export const getActionsForObject = function (object) {
@@ -146,10 +147,10 @@ export const addTriggerGUI = function (dataJoint) {
     var targetTypes = Object.keys(triggerTargetType);
     targetTypes.map(key => {
         if (triggerTargetType[key] == dataJoint.targetType) {
-            B2dEditor.editorGUI.editData.targetTypeDropDown = key;
+            ui.editorGUI.editData.targetTypeDropDown = key;
         }
     })
-    B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, "targetTypeDropDown", targetTypes).onChange(function (value) {
+    ui.editorGUI.add(ui.editorGUI.editData, "targetTypeDropDown", targetTypes).onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
     });
@@ -157,17 +158,17 @@ export const addTriggerGUI = function (dataJoint) {
     var repeatTypes = Object.keys(triggerRepeatType);
     repeatTypes.map(key => {
         if (triggerRepeatType[key] == dataJoint.repeatType) {
-            B2dEditor.editorGUI.editData.repeatTypeDropDown = key;
+            ui.editorGUI.editData.repeatTypeDropDown = key;
         }
     })
-    B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, "repeatTypeDropDown", repeatTypes).onChange(function (value) {
+    ui.editorGUI.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
     });
-    B2dEditor.editorGUI.editData.selectTarget = function () {};
+    ui.editorGUI.editData.selectTarget = function () {};
     var label = ">Add Target<";
-    controller = B2dEditor.editorGUI.add(B2dEditor.editorGUI.editData, "selectTarget").name(label);
-    B2dEditor.editorGUI.editData.selectTarget = function () {
+    controller = ui.editorGUI.add(ui.editorGUI.editData, "selectTarget").name(label);
+    ui.editorGUI.editData.selectTarget = function () {
         B2dEditor.selectingTriggerTarget = true;
     }
 
@@ -177,7 +178,7 @@ export const addTriggerGUI = function (dataJoint) {
     for (let i = 0; i < dataJoint.triggerActions.length; i++) {
         var targetObject = B2dEditor.selectedPhysicsBodies[0].mySprite.targets[i];
         actionsString = `_triggerActions_${i}`;
-        actionsFolder = B2dEditor.editorGUI.addFolder(`Target ${i+1}`);
+        actionsFolder = ui.editorGUI.addFolder(`Target ${i+1}`);
         var actionString;
         var actionFolder;
         for (let j = 0; j < dataJoint.triggerActions[i].length; j++) {
@@ -189,9 +190,9 @@ export const addTriggerGUI = function (dataJoint) {
 
             actionVarString = `${actionString}_targetActionDropDown`;
 
-            B2dEditor.editorGUI.editData[actionVarString] = action.type;
+            ui.editorGUI.editData[actionVarString] = action.type;
             var controller;
-            controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, getActionsForObject(targetObject)).onChange(function (value) {
+            controller = actionFolder.add(ui.editorGUI.editData, actionVarString, getActionsForObject(targetObject)).onChange(function (value) {
                 this.humanUpdate = true;
                 this.targetValue = value
             });
@@ -209,11 +210,11 @@ export const addTriggerGUI = function (dataJoint) {
             for (var key in action) {
                 if (action.hasOwnProperty(key) && key != "type") {
                     actionVarString = `${actionString}_${key}`;
-                    B2dEditor.editorGUI.editData[actionVarString] = action[key];
+                    ui.editorGUI.editData[actionVarString] = action[key];
 
                     switch (actionOptions[key].type) {
                         case guitype_MINMAX:
-                            controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
+                            controller = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
                             controller.step(actionOptions[key].step);
                             controller.name(key);
                             controller.onChange(function (value) {
@@ -222,7 +223,7 @@ export const addTriggerGUI = function (dataJoint) {
                             }.bind(controller));
                         break
                         case guitype_LIST:
-                            controller = actionFolder.add(B2dEditor.editorGUI.editData, actionVarString, actionOptions[key].items)
+                            controller = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
                             controller.name(key);
                             controller.onChange(function (value) {
                                 this.humanUpdate = true;
@@ -235,14 +236,14 @@ export const addTriggerGUI = function (dataJoint) {
                     controller.triggerActionID = actionID;
                 }
             }
-            B2dEditor.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
+            ui.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
 
-            B2dEditor.editorGUI.editData[`removeAction_${j}`] = function () {};
+            ui.editorGUI.editData[`removeAction_${j}`] = function () {};
             var label = `>Remove Action ${j+1}<`;
             let targetIndex = i;
             let targetAction = j;
-            controller = actionFolder.add(B2dEditor.editorGUI.editData, `removeAction_${j}`).name(label);
-            B2dEditor.editorGUI.editData[`removeAction_${j}`] = function () {
+            controller = actionFolder.add(ui.editorGUI.editData, `removeAction_${j}`).name(label);
+            ui.editorGUI.editData[`removeAction_${j}`] = function () {
                 for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
                     if(B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length>1){
                         B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].splice(targetAction, 1);
@@ -251,11 +252,11 @@ export const addTriggerGUI = function (dataJoint) {
                 }
             }
         }
-        B2dEditor.editorGUI.editData[`addAction_${i}`] = function () {};
+        ui.editorGUI.editData[`addAction_${i}`] = function () {};
         var label = `>Add Action<`;
         let targetIndex = i;
-        controller = actionsFolder.add(B2dEditor.editorGUI.editData, `addAction_${i}`).name(label);
-        B2dEditor.editorGUI.editData[`addAction_${i}`] = function () {
+        controller = actionsFolder.add(ui.editorGUI.editData, `addAction_${i}`).name(label);
+        ui.editorGUI.editData[`addAction_${i}`] = function () {
             for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
                 const targetSprite = B2dEditor.selectedPhysicsBodies[i].mySprite;
                 targetSprite.data.triggerActions[targetIndex].push(getAction(getActionsForObject(targetSprite.targets[targetIndex])[0]));
@@ -263,10 +264,10 @@ export const addTriggerGUI = function (dataJoint) {
             }
         }
 
-        B2dEditor.editorGUI.editData[`removeTarget_${i}`] = function () {};
+        ui.editorGUI.editData[`removeTarget_${i}`] = function () {};
         var label = `>Remove Target ${i+1}<`;
-        controller = actionsFolder.add(B2dEditor.editorGUI.editData, `removeTarget_${i}`).name(label);
-        B2dEditor.editorGUI.editData[`removeTarget_${i}`] = function () {
+        controller = actionsFolder.add(ui.editorGUI.editData, `removeTarget_${i}`).name(label);
+        ui.editorGUI.editData[`removeTarget_${i}`] = function () {
             for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
                 B2dEditor.selectedPhysicsBodies[i].mySprite.targets.splice(targetIndex, 1);
                 B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions.splice(targetIndex, 1);
@@ -281,11 +282,11 @@ export const triggerGUIState = {};
 export const updateTriggerGUI = function () {
     //save folder status
     let folder;
-    for (var propt in B2dEditor.editorGUI.__folders) {
-        folder = B2dEditor.editorGUI.__folders[propt];
+    for (var propt in ui.editorGUI.__folders) {
+        folder = ui.editorGUI.__folders[propt];
         triggerGUIState[folder.domElement.innerText] = folder.closed;
-        for(var _propt in B2dEditor.editorGUI.__folders[propt].__folders){
-            folder = B2dEditor.editorGUI.__folders[propt].__folders[_propt];
+        for(var _propt in ui.editorGUI.__folders[propt].__folders){
+            folder = ui.editorGUI.__folders[propt].__folders[_propt];
             triggerGUIState[folder.domElement.innerText] = folder.closed;
         }
     }
@@ -293,11 +294,11 @@ export const updateTriggerGUI = function () {
     B2dEditor.updateSelection();
 
     //restore folder status
-    for (var propt in B2dEditor.editorGUI.__folders) {
-        folder = B2dEditor.editorGUI.__folders[propt];
+    for (var propt in ui.editorGUI.__folders) {
+        folder = ui.editorGUI.__folders[propt];
         folder.closed = triggerGUIState[folder.domElement.innerText] || false;
-        for(var _propt in B2dEditor.editorGUI.__folders[propt].__folders){
-            folder = B2dEditor.editorGUI.__folders[propt].__folders[_propt];
+        for(var _propt in ui.editorGUI.__folders[propt].__folders){
+            folder = ui.editorGUI.__folders[propt].__folders[_propt];
             folder.closed = triggerGUIState[folder.domElement.innerText] || false;
         }
     }
