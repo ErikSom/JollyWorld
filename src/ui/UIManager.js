@@ -45,6 +45,30 @@ function UIManager() {
         mainMenu.style.display = "none";
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    // LEGACY STUFF, HAS TO BE DELETED AT SOME POINT BUT CAN BORROW CODE
+
     this.showBox = function (name) {
         self.showNothing();
         $(name).css("display", "inline");

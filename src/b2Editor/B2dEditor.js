@@ -68,15 +68,6 @@ const _B2dEditor = function () {
 		x: 0,
 		y: 0
 	};
-	this.toolGUI;
-	this.assetGUI;
-	this.assetGUIPos = {
-		x: 0,
-		y: 0
-	};
-	this.assetSelectedTexture = "";
-	this.assetSelectedGroup = "";
-	this.assetSelectedObject = "";
 
 	this.editorIcons = [];
 	this.triggerObjects = [];
@@ -153,173 +144,14 @@ const _B2dEditor = function () {
 		this.initGui();
 		this.selectTool(this.tool_SELECT);
 	}
-	this.windows = [];
-	this.startDragPos = {
-		x: 0,
-		y: 0
-	};
-	this.startDragMouse = {
-		x: 0,
-		y: 0
-	};
-	this.initDrag = function (event, _window) {
-		var self = this;
-		$(document).on('mousemove', function (event) {
-			self.doDrag(event, _window)
-		});
-		self.startDragMouse.x = event.pageX;
-		self.startDragMouse.y = event.pageY;
-		self.startDragPos.x = parseInt($(_window).css('left'), 10) || 0;
-		self.startDragPos.y = parseInt($(_window).css('top'), 10) || 0;
 
-	}
-	this.endDrag = function (event, _window) {
-		$(document).off('mousemove');
-	}
-	this.doDrag = function (event, _window) {
-		var difX = event.pageX - self.startDragMouse.x;
-		var difY = event.pageY - self.startDragMouse.y;
-
-		$(_window).css('left', self.startDragPos.x + difX);
-		$(_window).css('top', self.startDragPos.y + difY);
-	}
-	this.registerDragWindow = function (_window) {
-		this.windows.push(_window);
-		var $titleBar = $(_window).find('.dg .title');
-		$(_window).css('position', 'absolute');
-		$titleBar.on('mousedown', function (event) {
-			self.initDrag(event, _window)
-		});
-		$(document).on('mouseup', function (event) {
-			self.endDrag(event, _window)
-		});
-	}
 	this.initGui = function () {
-		this.initGuiAssetSelection();
-		this.createToolGUI();
+		ui.initGuiAssetSelection();
+		ui.createToolGUI();
 		this.canvas.focus();
 		scrollBars.update();
 	}
-	this.initGuiAssetSelection = function () {
-		this.removeGuiAssetSelection();
 
-		if (this.assetLists.__keys == undefined) this.assetLists.__keys = Object.keys(this.assetLists);
-
-		if (this.assetLists.__keys.length > 0) {
-
-			this.assetGUI = new dat.GUI({
-				autoPlace: false,
-				width: 300
-			});
-			this.customGUIContainer.appendChild(this.assetGUI.domElement);
-			this.assetGUI.addFolder('Asset Selection');
-
-			if (this.assetSelectedGroup == "") this.assetSelectedGroup = this.assetLists.__keys[0];
-			this.assetSelectedTexture = this.assetLists[this.assetSelectedGroup][0];
-
-
-			var folder = this.assetGUI.addFolder('Textures');
-			var self = this;
-			folder.add(self, "assetSelectedGroup", this.assetLists.__keys).onChange(function (value) {
-				self.initGuiAssetSelection();
-			});
-			folder.add(self, "assetSelectedTexture", this.assetLists[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
-			this.spawnTexture = function () {};
-
-			folder.open();
-			$(folder.domElement).parent().parent().parent().hover(function () {
-				$(this).addClass('hover');
-			})
-
-			for (var i = 0; i < this.assetLists[this.assetSelectedGroup].length; i++) {
-				var textureName = this.assetLists[this.assetSelectedGroup][i];
-				var texture = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
-				let image = game.app.renderer.plugins.extract.image(texture);
-				var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
-				guiFunction.find('img').attr('src', image.src);
-				guiFunction.find('img').attr('title', textureName);
-				//guiFunction.find('img').attr('draggable', false);
-				$(folder.domElement).append(guiFunction);
-				guiFunction.css('height', texture.height);
-				guiFunction.find('img').css('display', 'block');
-				guiFunction.find('img').css('margin', 'auto');
-				guiFunction.attr('textureName', textureName);
-
-				guiFunction.on('click dragend', function (e) {
-					var guiAsset = $(this).parent().parent().parent().parent();
-					var rect = guiAsset[0].getBoundingClientRect();
-					var x = Math.max(e.pageX, rect.right + image.width / 2);
-					var y = e.pageY;
-
-					var data = new self.textureObject;
-					if (x == e.pageX) {
-						data.x = (x - image.width / 2) / self.container.scale.x - self.container.x / self.container.scale.x;
-						data.y = (y + image.height / 2) / self.container.scale.y - self.container.y / self.container.scale.x;
-					} else {
-						data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
-						data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
-					}
-					data.textureName = $(this).attr('textureName');
-					var texture = self.buildTextureFromObj(data);
-
-				});
-			}
-			this.registerDragWindow(this.assetGUI.domElement);
-			$(this.assetGUI.domElement).css('left', this.assetGUIPos.x);
-			$(this.assetGUI.domElement).css('top', this.assetGUIPos.y);
-		}
-	}
-	this.removeGuiAssetSelection = function () {
-		if (this.assetGUI != undefined) {
-			this.assetGUIPos = {
-				x: parseInt($(this.assetGUI.domElement).css('left'), 10),
-				y: parseInt($(this.assetGUI.domElement).css('top'), 10)
-			};
-			this.customGUIContainer.removeChild(this.assetGUI.domElement);
-			this.assetGUI = undefined;
-		}
-	}
-	this.createToolGUI = function () {
-		var self = this;
-		this.toolGUI = document.createElement("div");
-		this.toolGUI.setAttribute('class', 'toolgui main');
-		var header = document.createElement('div');
-		header.setAttribute('class', 'dg');
-		var ul = document.createElement('ul');
-		header.appendChild(ul);
-		var li = document.createElement('li');
-		li.setAttribute('class', 'title')
-		li.innerText = "tools";
-		ul.appendChild(li);
-		this.toolGUI.appendChild(header);
-		const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png', 'Icon_Zoom.png', 'Icon_Hand.png', 'Icon_PaintBucket.png', 'Icon_Eraser.png'];
-
-		var buttonElement;
-		var imgElement;
-		for (var i = 0; i < icons.length; i++) {
-			buttonElement = document.createElement("table");
-			buttonElement.setAttribute('class', 'toolgui button');
-			var row = document.createElement("tr");
-			buttonElement.appendChild(row);
-			imgElement = document.createElement('td');
-			imgElement.setAttribute('class', 'toolgui img');
-			row.appendChild(imgElement);
-			this.toolGUI.appendChild(buttonElement);
-
-			var clickFunction = function (_i) {
-				return function () {
-					self.selectTool(_i)
-				}
-			};
-			$(buttonElement).on('click', clickFunction(i));
-		}
-		document.getElementById('uicontainer').appendChild(this.toolGUI);
-		var $buttons = $('.toolgui .img');
-		for (var i = 0; i < $buttons.length; i++) {
-			$($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');
-		}
-		self.registerDragWindow(this.toolGUI);
-	}
 	this.buildEditorGUI = function () {
 		this.editorGUI = new dat.GUI({
 			autoPlace: false,
@@ -332,10 +164,7 @@ const _B2dEditor = function () {
 			this.customGUIContainer.removeChild(this.editorGUI.domElement);
 			this.editorGUI = undefined;
 		}
-		if (this.assetGUI != undefined) {
-			this.customGUIContainer.removeChild(this.assetGUI.domElement);
-			this.assetGUI = undefined;
-		}
+		ui.removeGuiAssetSelection();
 	}
 	this.showPrefabList = function () {
 		var prefabPages = prefab.prefabs.libraryKeys;
@@ -472,7 +301,7 @@ const _B2dEditor = function () {
 
 				break
 		}
-		if (this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
+		if (this.editorGUI) ui.registerDragWindow(this.editorGUI.domElement);
 		this.canvas.focus();
 	}
 
@@ -889,7 +718,7 @@ const _B2dEditor = function () {
 			this.humanUpdate = true;
 			this.targetValue = value;
 		});
-		this.registerDragWindow(this.editorGUI.domElement);
+		ui.registerDragWindow(this.editorGUI.domElement);
 	}
 	this.addJointGUI = function (dataJoint) {
 		var self = this;
@@ -2348,10 +2177,10 @@ const _B2dEditor = function () {
 				y: this.mousePosWorld.y * this.PTM
 			}, false);
 		} else if (e.keyCode == 112) { // F1
-			if (this.assetGUI == undefined) {
-				this.initGuiAssetSelection();
+			if (ui.assetGUI == undefined) {
+				ui.initGuiAssetSelection();
 			} else {
-				this.removeGuiAssetSelection();
+				ui.removeGuiAssetSelection();
 			}
 			e.preventDefault();
 		} else if (e.keyCode == 38) { // up arrow
@@ -2794,7 +2623,7 @@ const _B2dEditor = function () {
 							this.editorGUI.editData = oldData;
 							this.editorGUI.addFolder('add joints');
 							this.addJointGUI(oldData);
-							if (this.editorGUI) this.registerDragWindow(this.editorGUI.domElement);
+							if (this.editorGUI) ui.registerDragWindow(this.editorGUI.domElement);
 						} else {
 							//joint
 							if (controller.targetValue == "Pin") {
