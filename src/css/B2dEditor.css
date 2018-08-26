@@ -204,6 +204,8 @@ canvas {
     user-select: none;
     position: relative;
     cursor: pointer;
+    margin-left:auto;
+    margin-right:auto;
 }
 .menuButton::after {
     content: '';

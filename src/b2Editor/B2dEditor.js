@@ -203,16 +203,11 @@ const _B2dEditor = function () {
 		this.activeVertices = [];
 
 		var $buttons = $('.toolgui .button');
-		$buttons.css("background-color", "#999999");
-		$($buttons[i]).css("background-color", "#4F4F4F");
+		$buttons.css("background-color", '');
+		$($buttons[i]).css("background-color", '#4F4F4F');
 
 		ui.destroyEditorGUI();
 		ui.buildEditorGUI();
-
-		var dataJoint;
-		var self = this;
-		var controller;
-		var folder;
 
 		switch (i) {
 			case this.tool_SELECT:

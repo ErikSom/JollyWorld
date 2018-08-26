@@ -9,6 +9,7 @@ import {
 let toolGUI;
 export let assetGUI;
 export let editorGUI;
+let mainMenu;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -26,6 +27,7 @@ export const initGui = function () {
     initGuiAssetSelection();
     createToolGUI();
     buildMenuButton();
+    buildMainMenu();
     B2dEditor.canvas.focus();
     scrollBars.update();
 }
@@ -52,6 +54,44 @@ export const buildMenuButton = function(){
     let mainMenuButton = document.createElement('div');
     mainMenuButton.setAttribute('class', 'toolgui menu button');
     customGUIContainer.appendChild(mainMenuButton);
+}
+export const buildMainMenu = function(){
+    mainMenu = new dat.GUI({
+        autoPlace: false,
+        width: 300,
+    });
+    mainMenu.addFolder('Menu');
+
+
+    const itemList = mainMenu.domElement.getElementsByTagName('ul')[0];
+    itemList.style.backgroundColor = 'grey';
+
+    console.log(itemList);
+
+    let button = document.createElement('div');
+    button.classList.add('menuButton');
+    button.innerHTML = 'New Level';
+    itemList.appendChild(button);
+
+    button = document.createElement('div');
+    button.classList.add('menuButton');
+    button.innerHTML = 'Load Level';
+    itemList.appendChild(button);
+
+    var testObject = {
+        showPhysicsDebug:true,
+        backgroundColor:'0xFFFFFF'
+
+    }
+
+    mainMenu.add(testObject, "showPhysicsDebug", ).onChange(function (value) {
+    });
+    mainMenu.add(testObject, "backgroundColor", ).onChange(function (value) {
+    });
+
+
+    customGUIContainer.appendChild(mainMenu.domElement);
+
 }
 
 export const createEditorStyledGUI  = function(name){
