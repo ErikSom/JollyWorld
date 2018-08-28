@@ -9,7 +9,7 @@ import {
 let toolGUI;
 export let assetGUI;
 export let editorGUI;
-let mainMenu;
+let headerBar;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -26,10 +26,58 @@ export const show = function(){
 export const initGui = function () {
     initGuiAssetSelection();
     createToolGUI();
-    buildMenuButton();
-    buildMainMenu();
+    buildHeaderBar();
     B2dEditor.canvas.focus();
     scrollBars.update();
+}
+const buildHeaderBar = function(){
+    headerBar = document.createElement('div');
+    headerBar.setAttribute('class', 'editorHeader');
+    customGUIContainer.appendChild(headerBar);
+
+    let smallLogo = document.createElement('div');
+    smallLogo.setAttribute('class', 'logoSmall');
+    headerBar.appendChild(smallLogo);
+
+    let button = document.createElement('div');
+    button.setAttribute('class', 'headerButton test');
+    button.innerHTML = "Test";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton save');
+    button.innerHTML = "Save";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton publish');
+    button.innerHTML = "Publish";
+    headerBar.appendChild(button);
+
+    let levelName = document.createElement('span');
+    levelName.innerHTML = "Test 123";
+    button.setAttribute('id', 'levelName');
+    headerBar.appendChild(levelName);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerIcon edit');
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton new');
+    button.innerHTML = "New";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton load');
+    button.innerHTML = "Load";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton exit');
+    button.innerHTML = "Exit";
+    headerBar.appendChild(button);
+
 }
 let editorGUIPos = {
     x: 0,
@@ -49,49 +97,6 @@ export const destroyEditorGUI = function () {
         editorGUI = undefined;
     }
     removeGuiAssetSelection();
-}
-export const buildMenuButton = function(){
-    let mainMenuButton = document.createElement('div');
-    mainMenuButton.setAttribute('class', 'toolgui menu button');
-    customGUIContainer.appendChild(mainMenuButton);
-}
-export const buildMainMenu = function(){
-    mainMenu = new dat.GUI({
-        autoPlace: false,
-        width: 300,
-    });
-    mainMenu.addFolder('Menu');
-
-
-    const itemList = mainMenu.domElement.getElementsByTagName('ul')[0];
-    itemList.style.backgroundColor = 'grey';
-
-    console.log(itemList);
-
-    let button = document.createElement('div');
-    button.classList.add('menuButton');
-    button.innerHTML = 'New Level';
-    itemList.appendChild(button);
-
-    button = document.createElement('div');
-    button.classList.add('menuButton');
-    button.innerHTML = 'Load Level';
-    itemList.appendChild(button);
-
-    var testObject = {
-        showPhysicsDebug:true,
-        backgroundColor:'0xFFFFFF'
-
-    }
-
-    mainMenu.add(testObject, "showPhysicsDebug", ).onChange(function (value) {
-    });
-    mainMenu.add(testObject, "backgroundColor", ).onChange(function (value) {
-    });
-
-
-    customGUIContainer.appendChild(mainMenu.domElement);
-
 }
 
 export const createEditorStyledGUI  = function(name){

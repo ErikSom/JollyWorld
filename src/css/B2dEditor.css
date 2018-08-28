@@ -63,6 +63,7 @@ canvas {
     z-index: 1;
     top:0;
     height:100%;
+    width:100%;
 }
 #ingamemenu{
     z-index: 20;
@@ -71,7 +72,7 @@ canvas {
 #my-gui-container,
 #symanticui {
     z-index: 10;
-    height: 10;
+    width: 100%;
     float: left;
     margin: 10px;
     position:absolute;
@@ -223,6 +224,38 @@ canvas {
     transition: opacity 0.1s;
   }
 .menuButton:hover::after {opacity:1;}
+
+.editorHeader{
+    height:50px;
+    width:100%;
+    position:absolute;
+    top:0px;
+    left:0px;
+    background-color: #999999;
+    margin:-10px;
+}
+.editorHeader div, .editorHeader span{
+    float:left;
+    margin:5px;
+    margin-top:10px;
+}
+.editorHeader span, .editorHeader .new, .editorHeader .load, .editorHeader .exit{
+    float:right;
+}
+.headerButton{
+    width: 90px;
+    height:30px;
+    margin:5px;
+    text-align: center;
+    background-color:#666666;
+
+}
+.logoSmall{
+    background-image:url('../../build/assets/images/gui/Logo_Small.png');
+    width:calc(235px*0.5);
+    height:calc(73px*0.5);
+    background-size: contain;
+}
 
 #editorButton{
     background-color: #51A328;
