@@ -40,43 +40,51 @@ const buildHeaderBar = function(){
     headerBar.appendChild(smallLogo);
 
     let button = document.createElement('div');
-    button.setAttribute('class', 'headerButton test');
-    button.innerHTML = "Test";
+    button.setAttribute('class', 'headerButton test buttonOverlay dark');
+    button.innerHTML = "TEST";
     headerBar.appendChild(button);
 
     button = document.createElement('div');
-    button.setAttribute('class', 'headerButton save');
-    button.innerHTML = "Save";
+    button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    button.innerHTML = "SAVE";
     headerBar.appendChild(button);
 
     button = document.createElement('div');
-    button.setAttribute('class', 'headerButton publish');
-    button.innerHTML = "Publish";
+    button.setAttribute('class', 'headerButton publish buttonOverlay dark');
+    button.innerHTML = "PUBLISH";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton exit buttonOverlay dark');
+    button.innerHTML = "EXIT";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton load buttonOverlay dark');
+    button.innerHTML = "LOAD";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton new buttonOverlay dark');
+    button.innerHTML = "NEW";
+    headerBar.appendChild(button);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerIcon edit buttonOverlay dark');
     headerBar.appendChild(button);
 
     let levelName = document.createElement('span');
-    levelName.innerHTML = "Test 123";
+    levelName.innerHTML = "TEST 123";
     button.setAttribute('id', 'levelName');
     headerBar.appendChild(levelName);
 
-    button = document.createElement('div');
-    button.setAttribute('class', 'headerIcon edit');
-    headerBar.appendChild(button);
 
-    button = document.createElement('div');
-    button.setAttribute('class', 'headerButton new');
-    button.innerHTML = "New";
-    headerBar.appendChild(button);
 
-    button = document.createElement('div');
-    button.setAttribute('class', 'headerButton load');
-    button.innerHTML = "Load";
-    headerBar.appendChild(button);
 
-    button = document.createElement('div');
-    button.setAttribute('class', 'headerButton exit');
-    button.innerHTML = "Exit";
-    headerBar.appendChild(button);
+
+
+
+
 
 }
 let editorGUIPos = {
