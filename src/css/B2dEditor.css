@@ -235,21 +235,21 @@ canvas {
 /* HEADER BAR */
 
 .editorHeader{
-    height:50px;
-    width:100%;
-    position:absolute;
-    top:0px;
-    left:0px;
+    height: 40px;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
     background-color: #999999;
-    margin:-10px;
+    margin: -10px;
     min-width: 640px;
 }
 .editorHeader div, .editorHeader span{
-    float:left;
-    margin:3px;
-    margin-top:10px;
+    float: left;
+    margin: 3px;
     line-height: 30px;
-    margin-top: 10px;
+    margin-top: 5px;
+    font-size: 11px;
 }
 
 
@@ -277,10 +277,10 @@ canvas {
 .editorHeader .headerIcon{
     background-image: url('../../build/assets/images/gui/Icon_EditLevel.png');
     background-size: contain;
-    width:40px;
-    height:40px;
-    margin-top:5px;
-    position:relative;
+    width: 30px;
+    height: 30px;
+    margin-top: 5px;
+    position: relative;
 }
 .editorHeader span{
     color: white;
@@ -292,12 +292,12 @@ canvas {
     text-overflow: ellipsis;
 }
 .headerButton{
-    width: 70px;
-    height:30px;
-    margin:5px;
+    width: 60px;
+    height: 30px;
+    margin: 5px;
     text-align: center;
-    background-color:#666666;
-    position:relative;
+    background-color: #666666;
+    position: relative;
 
 }
 .logoSmall{
@@ -305,6 +305,6 @@ canvas {
     width:calc(235px*0.4);
     height:calc(73px*0.4);
     background-size: contain;
-    margin-top: 13px !important;
+    margin-top: 8px !important;
 }
 @import url('https://fonts.googleapis.com/css?family=Lily+Script+One');
