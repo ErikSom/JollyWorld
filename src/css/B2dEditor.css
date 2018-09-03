@@ -62,7 +62,6 @@ canvas {
     position: absolute;
     z-index: 1;
     top:0;
-    height:100%;
     width:100%;
 }
 #ingamemenu{
@@ -91,7 +90,7 @@ canvas {
     border-radius: 5px;
     border: 1px solid black;
     box-shadow: 2px 2px 0px #000000;
-    top:50%;
+    top:50vh;
     transform:translateY(-50%);
 }
 .toolgui.button{
@@ -240,7 +239,7 @@ canvas {
     position: absolute;
     top: 0px;
     left: 0px;
-    background-color: #999999;
+    background-color: #666666;
     margin: -10px;
     min-width: 640px;
 }
@@ -274,6 +273,17 @@ canvas {
 .editorHeader span, .editorHeader .new, .editorHeader .load, .editorHeader .exit, .editorHeader .headerIcon{
     float:right;
 }
+.editorHeader .publish, .editorHeader .exit{
+    background-color:#FF3300;
+}
+
+.editorHeader .save{
+    background-color:#51A328;
+}
+.editorHeader .test{
+    background-color:#E0B300;
+}
+
 .editorHeader .headerIcon{
     background-image: url('../../build/assets/images/gui/Icon_EditLevel.png');
     background-size: contain;
@@ -281,6 +291,11 @@ canvas {
     height: 30px;
     margin-top: 5px;
     position: relative;
+    background-color: #999999;
+    border-radius:2px;
+    border: black solid 1px;
+    cursor: pointer;
+
 }
 .editorHeader span{
     color: white;
@@ -296,9 +311,13 @@ canvas {
     height: 30px;
     margin: 5px;
     text-align: center;
-    background-color: #666666;
+    background-color: #999999;
     position: relative;
-
+    border-radius:2px;
+    border: black solid 1px;
+    color:white;
+    font-weight: bolder;
+    cursor: pointer;
 }
 .logoSmall{
     background-image:url('../../build/assets/images/gui/Logo_Small.png');
