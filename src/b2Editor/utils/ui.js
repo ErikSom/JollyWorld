@@ -4,12 +4,14 @@ import * as dat from "../../../libs/dat.gui";
 import {
 	game
 } from "../../Game";
+import { firebaseManager } from "../../FireBaseManager";
 
 
 let toolGUI;
 export let assetGUI;
 export let editorGUI;
 let headerBar;
+let levelEditScreen;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -50,9 +52,10 @@ const buildHeaderBar = function(){
     headerBar.appendChild(button);
 
     button = document.createElement('div');
-    button.setAttribute('class', 'headerButton publish buttonOverlay dark');
-    button.innerHTML = "PUBLISH";
+    button.setAttribute('class', 'headerButton login buttonOverlay dark');
+    button.innerHTML = "LOGIN";
     headerBar.appendChild(button);
+
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton exit buttonOverlay dark');
@@ -72,20 +75,76 @@ const buildHeaderBar = function(){
     button = document.createElement('div');
     button.setAttribute('class', 'headerIcon edit buttonOverlay dark');
     headerBar.appendChild(button);
+    button.addEventListener('click', openLevelEditScreen);
+
 
     let levelName = document.createElement('span');
     levelName.innerHTML = "TEST 123";
     button.setAttribute('id', 'levelName');
     headerBar.appendChild(levelName);
 
+}
+export const updateStatusHeaderBar = function(){
+    if(firebaseManager.user){
+
+    }else{
+
+    }
+
+}
+
+const openLevelEditScreen = function(){
+    if(!levelEditScreen){
+        const loginGUIWidth = 200;
+
+        levelEditScreen =  new dat.GUI({
+            autoPlace: false,
+            width: loginGUIWidth
+        });
+
+        let folder = levelEditScreen.addFolder('Login Screen');
+
+        let levelThumbnail = document.createElement('div');
+        levelThumbnail.setAttribute('id', 'levelThumbnail');
+        folder.domElement.appendChild(levelThumbnail);
+
+        let span = document.createElement('span');
+        span.innerText = 'Set the level Thumbnail';
+        folder.domElement.appendChild(span);
+
+        let youtubeFeed = document.createElement('div');
+        youtubeFeed.setAttribute('id', 'youtubeFeed');
+        folder.domElement.appendChild(youtubeFeed);
+
+        span = document.createElement('span');
+        span.innerText = 'Add YouTube links';
+        folder.domElement.appendChild(span);
+
+        let input = document.createElement('input');
+        input.setAttribute('value', 'Title...');
+        folder.domElement.appendChild(input);
+
+        span = document.createElement('span');
+        span.innerText = 'Characters left:100';
+        folder.domElement.appendChild(span);
+
+        input = document.createElement('input');
+        input.setAttribute('value', 'Description...');
+        folder.domElement.appendChild(input);
+
+        span = document.createElement('span');
+        span.innerText = 'Characters left:500';
+        folder.domElement.appendChild(span);
 
 
+        var levelOptions = {backgroundColor:'#FFFFFF'};
 
+        levelEditScreen.addColor(levelOptions, "backgroundColor");
 
+        customGUIContainer.appendChild(levelEditScreen.domElement);
 
-
-
-
+    }
+    levelEditScreen.domElement.style.display = "block";
 }
 let editorGUIPos = {
     x: 0,
