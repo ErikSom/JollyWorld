@@ -95,22 +95,29 @@ export const updateStatusHeaderBar = function(){
 
 const openLevelEditScreen = function(){
     if(!levelEditScreen){
-        const loginGUIWidth = 200;
+        const loginGUIWidth = 300;
 
         levelEditScreen =  new dat.GUI({
             autoPlace: false,
             width: loginGUIWidth
         });
+        levelEditScreen.domElement.setAttribute('id', 'levelEditScreen');
 
         let folder = levelEditScreen.addFolder('Login Screen');
+        folder.domElement.classList.add('custom');
 
         let levelThumbnail = document.createElement('div');
         levelThumbnail.setAttribute('id', 'levelThumbnail');
         folder.domElement.appendChild(levelThumbnail);
 
+        folder.domElement.appendChild(document.createElement('br'));
+
+
         let span = document.createElement('span');
         span.innerText = 'Set the level Thumbnail';
         folder.domElement.appendChild(span);
+
+        folder.domElement.appendChild(document.createElement('br'));
 
         let youtubeFeed = document.createElement('div');
         youtubeFeed.setAttribute('id', 'youtubeFeed');
@@ -120,17 +127,24 @@ const openLevelEditScreen = function(){
         span.innerText = 'Add YouTube links';
         folder.domElement.appendChild(span);
 
-        let input = document.createElement('input');
-        input.setAttribute('value', 'Title...');
-        folder.domElement.appendChild(input);
+        folder.domElement.appendChild(document.createElement('br'));
+
+
+        let textarea = document.createElement('textarea');
+        textarea.value = 'Title...';
+        folder.domElement.appendChild(textarea);
 
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
         folder.domElement.appendChild(span);
 
-        input = document.createElement('input');
-        input.setAttribute('value', 'Description...');
-        folder.domElement.appendChild(input);
+        folder.domElement.appendChild(document.createElement('br'));
+        folder.domElement.appendChild(document.createElement('br'));
+
+        textarea = document.createElement('textarea');
+        textarea.value = 'Description...';
+        folder.domElement.appendChild(textarea);
+        textarea.style.height = '40px';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:500';
@@ -142,6 +156,8 @@ const openLevelEditScreen = function(){
         levelEditScreen.addColor(levelOptions, "backgroundColor");
 
         customGUIContainer.appendChild(levelEditScreen.domElement);
+
+        registerDragWindow(levelEditScreen.domElement);
 
     }
     levelEditScreen.domElement.style.display = "block";

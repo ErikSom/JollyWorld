@@ -123,6 +123,11 @@ canvas {
     background-size:auto;
     background-color:transparent;
 }
+.dg.custom > div, .dg.custom > span, .dg.custom > textarea{
+    display:inline-block;
+    width:100%;
+    margin-left:5px;
+}
 
 .scrollBar{
     position: absolute;

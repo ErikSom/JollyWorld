@@ -39,6 +39,11 @@ body .dg {
     text-shadow: none !important;
     font: bold 12px Arial !important;
 }
+body .dg.main{
+    background-color: #666666;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
 
 body .dg.main::-webkit-scrollbar {
     background: #FFF;
