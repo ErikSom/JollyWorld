@@ -1330,7 +1330,8 @@ var ColorController = function (_Controller) {
       height: '102px',
       padding: '3px',
       backgroundColor: '#222',
-      boxShadow: '0px 1px 3px rgba(0,0,0,0.3)'
+      boxShadow: '0px 1px 3px rgba(0,0,0,0.3)',
+      position:'fixed',
     });
     Common.extend(_this2.__field_knob.style, {
       position: 'absolute',

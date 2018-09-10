@@ -106,17 +106,6 @@ const openLevelEditScreen = function(){
         let folder = levelEditScreen.addFolder('Login Screen');
         folder.domElement.classList.add('custom');
 
-        let levelThumbnail = document.createElement('div');
-        levelThumbnail.setAttribute('id', 'levelThumbnail');
-        folder.domElement.appendChild(levelThumbnail);
-
-        let span = document.createElement('span');
-        span.innerText = 'Set the level Thumbnail';
-        folder.domElement.appendChild(span);
-
-        folder.domElement.appendChild(document.createElement('br'));
-        folder.domElement.appendChild(document.createElement('br'));
-
         let youtubeFeed = document.createElement('div');
         youtubeFeed.setAttribute('id', 'youtubeFeed');
         folder.domElement.appendChild(youtubeFeed);
