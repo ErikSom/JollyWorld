@@ -124,9 +124,9 @@ canvas {
     background-color:transparent;
 }
 .dg.custom > div, .dg.custom > span, .dg.custom > textarea{
-    display:inline-block;
     width:100%;
-    margin-left:5px;
+    margin:5px;
+
 }
 
 .scrollBar{
@@ -278,11 +278,11 @@ canvas {
 .editorHeader span, .editorHeader .new, .editorHeader .load, .editorHeader .exit, .editorHeader .headerIcon{
     float:right;
 }
-.editorHeader .publish, .editorHeader .exit{
+.editorHeader .publish, .editorHeader .exit, #levelEditScreen .publish{
     background-color:#FF3300;
 }
 
-.editorHeader .save{
+.editorHeader .save, #levelEditScreen .save{
     background-color:#51A328;
 }
 .editorHeader .test{
@@ -330,5 +330,20 @@ canvas {
     height:calc(73px*0.4);
     background-size: contain;
     margin-top: 8px !important;
+}
+#levelEditScreen #levelThumbnail, #levelEditScreen #youtubeLink {
+    width:90px;
+    height:67.5px;
+    border: 1px solid black;
+    margin:5px;
+}
+#youtubeFeed{
+    display: flex;
+    justify-content: center;
+    margin: unset;
+}
+#levelEditScreen .save, #levelEditScreen .publish{
+    float: left;
+    line-height: 30px;
 }
 @import url('https://fonts.googleapis.com/css?family=Lily+Script+One');

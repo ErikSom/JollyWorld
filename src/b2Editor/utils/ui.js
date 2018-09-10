@@ -110,23 +110,29 @@ const openLevelEditScreen = function(){
         levelThumbnail.setAttribute('id', 'levelThumbnail');
         folder.domElement.appendChild(levelThumbnail);
 
-        folder.domElement.appendChild(document.createElement('br'));
-
-
         let span = document.createElement('span');
         span.innerText = 'Set the level Thumbnail';
         folder.domElement.appendChild(span);
 
+        folder.domElement.appendChild(document.createElement('br'));
         folder.domElement.appendChild(document.createElement('br'));
 
         let youtubeFeed = document.createElement('div');
         youtubeFeed.setAttribute('id', 'youtubeFeed');
         folder.domElement.appendChild(youtubeFeed);
 
+        let youtubeLink;
+        for(let i = 0; i<3; i++){
+            youtubeLink = document.createElement('div');
+            youtubeLink.setAttribute('id', 'youtubeLink');
+            youtubeFeed.appendChild(youtubeLink);
+        }
+
         span = document.createElement('span');
         span.innerText = 'Add YouTube links';
         folder.domElement.appendChild(span);
 
+        folder.domElement.appendChild(document.createElement('br'));
         folder.domElement.appendChild(document.createElement('br'));
 
 
@@ -150,12 +156,27 @@ const openLevelEditScreen = function(){
         span.innerText = 'Characters left:500';
         folder.domElement.appendChild(span);
 
+        folder.domElement.appendChild(document.createElement('br'));
 
         var levelOptions = {backgroundColor:'#FFFFFF'};
 
         levelEditScreen.addColor(levelOptions, "backgroundColor");
 
+
+
+        let button = document.createElement('div');
+        button.setAttribute('class', 'headerButton save buttonOverlay dark');
+        button.innerHTML = "SAVE";
+        levelEditScreen.domElement.appendChild(button);
+
+        button = document.createElement('div');
+        button.setAttribute('class', 'headerButton publish buttonOverlay dark');
+        button.innerHTML = "PUBLISH";
+        levelEditScreen.domElement.appendChild(button);
+
+
         customGUIContainer.appendChild(levelEditScreen.domElement);
+
 
         registerDragWindow(levelEditScreen.domElement);
 

@@ -93,8 +93,8 @@ const _B2dEditor = function () {
 	this.editorSettings = editorSettings;
 	this.camera = camera;
 	this.cameraSize = {
-		w: 400,
-		h: 300
+		w: 200,
+		h: 150
 	};
 	this.cameraShotData = {
 		highRes: null,
@@ -1473,7 +1473,7 @@ const _B2dEditor = function () {
 			document.body.appendChild(_image);*/
 
 			//lowRes
-			scale = 0.25;
+			scale = 0.5;
 			canvas.width = self.cameraSize.w * scale;
 			canvas.height = self.cameraSize.h * scale;
 			context.drawImage(image, self.mousePosPixel.x - self.cameraSize.w / 2, self.mousePosPixel.y - self.cameraSize.h / 2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
