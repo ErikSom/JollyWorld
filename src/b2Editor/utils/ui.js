@@ -104,7 +104,7 @@ const openLevelEditScreen = function(){
         levelEditScreen.domElement.setAttribute('id', 'levelEditScreen');
 
         let folder = levelEditScreen.addFolder('Login Screen');
-        folder.domElement.classList.add('custom');
+        folder.domElement.classList.add('custom'); 
 
         let youtubeFeed = document.createElement('div');
         youtubeFeed.setAttribute('id', 'youtubeFeed');
@@ -117,9 +117,10 @@ const openLevelEditScreen = function(){
             youtubeFeed.appendChild(youtubeLink);
         }
 
-        span = document.createElement('span');
+        let span = document.createElement('span');
         span.innerText = 'Add YouTube links';
         folder.domElement.appendChild(span);
+
 
         folder.domElement.appendChild(document.createElement('br'));
         folder.domElement.appendChild(document.createElement('br'));
@@ -128,10 +129,26 @@ const openLevelEditScreen = function(){
         let textarea = document.createElement('textarea');
         textarea.value = 'Title...';
         folder.domElement.appendChild(textarea);
+        textarea.style.fontSize = '18px';
+        textarea.style.height = '30px';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
         folder.domElement.appendChild(span);
+
+
+        let func = (textarea, span) =>{
+            let _text = textarea;
+            let _span = span;
+            var f = () => {
+                const maxChars = 32;
+                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+                _span.innerText = `Characters left:${maxChars-_text.value.length}`;
+            }
+            f();
+            return f;
+        }
+        $(textarea).on('input selectionchange propertychange', func(textarea, span));
 
         folder.domElement.appendChild(document.createElement('br'));
         folder.domElement.appendChild(document.createElement('br'));
@@ -139,11 +156,25 @@ const openLevelEditScreen = function(){
         textarea = document.createElement('textarea');
         textarea.value = 'Description...';
         folder.domElement.appendChild(textarea);
-        textarea.style.height = '40px';
+        textarea.style.height = '100px';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:500';
         folder.domElement.appendChild(span);
+
+
+        func = (textarea, span) =>{
+            let _text = textarea;
+            let _span = span;
+            var f = () => {
+                const maxChars = 300;
+                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+                _span.innerText = `Characters left:${maxChars-_text.value.length}`;
+            }
+            f();
+            return f;
+        }
+        $(textarea).on('input selectionchange propertychange', func(textarea, span));
 
         folder.domElement.appendChild(document.createElement('br'));
 
