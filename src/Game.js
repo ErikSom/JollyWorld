@@ -294,6 +294,15 @@ function Game() {
         this.currentLevelData = levelData;
         this.editor.buildJSON(levelData.json);
     }
+    this.newLevel = function(){
+        levelData = {
+            json:'{"objects":[]}',
+            title:'<Fill in Title>',
+            description:'<Fill in Description>',
+            background:'#FFFFFF',
+            crossPromos:[],
+        }
+    }
     // this.loadLevel = function (levelData) {
     //     console.log("Loading level..");
     //     console.log(levelData);

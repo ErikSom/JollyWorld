@@ -6,13 +6,6 @@ import {
 export const SAVEKEYS = {
     tempEditorWorld:"tempEditorWorld",
 }
-export const levelDataObject = {
-    json:'{"objects":[]}',
-    title:'<Fill in Title>',
-    description:'<Fill in Description>',
-    background:'#FFFFFF',
-    crossPromos:[],
-}
 
 export const saveTempEditorWorld = function(json){
     saveData(SAVEKEYS.tempEditorWorld, json);

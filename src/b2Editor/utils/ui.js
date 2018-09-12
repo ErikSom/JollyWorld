@@ -72,6 +72,10 @@ const buildHeaderBar = function(){
     button.innerHTML = "NEW";
     headerBar.appendChild(button);
 
+    button.addEventListener('click', ()=>{
+
+    });
+
     button = document.createElement('div');
     button.setAttribute('class', 'headerIcon edit buttonOverlay dark');
     headerBar.appendChild(button);
