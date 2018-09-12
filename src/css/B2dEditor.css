@@ -85,19 +85,18 @@ canvas {
 }
 
 .toolgui.main{
-    background-color:#666666;
-    margin:5px;
+    background-color: #666666;
     border-radius: 5px;
     border: 1px solid black;
     box-shadow: 2px 2px 0px #000000;
-    top:50vh;
-    transform:translateY(-50%);
+    top: 14vh;
+    width: 30px;
+    position: absolute;
 }
 .toolgui.button{
-    width:50px;
-    height:50px;
+    width:30px;
+    height:30px;
     background-color: #999999;
-    margin:5px;
     border: 1px solid black;
     border-radius: 5px;
     cursor: pointer;
@@ -120,7 +119,7 @@ canvas {
     height:100%;
     background-position:center center;
     background-repeat: no-repeat;
-    background-size:auto;
+    background-size:contain;
     background-color:transparent;
 }
 .dg.custom > div, .dg.custom > span, .dg.custom > textarea{
@@ -139,13 +138,13 @@ canvas {
 .horizontal.scrollBar{
     left:10%;
     width:80%;
-    height:30px;
+    height:20px;
 }
 .vertical.scrollBar{
     top:10%;
     right:0%;
     height:80%;
-    width:30px;
+    width:20px;
 }
 .dragBar{
     position:absolute;

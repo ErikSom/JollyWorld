@@ -81,6 +81,8 @@ function Game() {
     this.emitters = [];
     this.emittersPool = {};
 
+    this.currentLevelData;
+
     this.init = function () {
 
         this.stats = new Stats();
@@ -167,27 +169,7 @@ function Game() {
         for (var i = 0; i < Settings.emitterPool; i++) this.getEmitter('blood', null);
         for (var i = 0; i < Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
     }
-    this.initLevel = function (data) {
-        this.editor.buildJSON(JSON.parse(data));
-        //this.editor.buildJSON(PIXI.loader.resources.characterData1.data);
-        //this.editor.buildJSON(PIXI.loader.resources.testData.data);
-        //this.editor.buildJSON(PIXI.loader.resources.testData2.data);
-    }
-    this.loadLevel = function (levelData) {
-        console.log("Loading level..");
-        console.log(levelData);
-        console.log(firebaseManager.baseDownloadURL + levelData.dataURL);
-        this.editor.resetEditor();
-        var self = this;
-        $('form').removeClass('loading');
-        $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
-            self.editor.buildJSON(data);
-            self.initWorld();
-            ui.showNothing();
-            $('.sidebar').sidebar("hide");
-            console.log("Loading level success!!!");
-        });
-    }
+
 
 
     //mouse
@@ -305,8 +287,28 @@ function Game() {
     }
     this.openEditor = function(){
         this.stopWorld();
-        this.editor.buildJSON(SaveManager.getTempEditorWorld());
+        this.initLevel(SaveManager.getTempEditorWorld());
     }
+    this.initLevel = function(levelData){
+        console.log(levelData);
+        this.currentLevelData = levelData;
+        this.editor.buildJSON(levelData.json);
+    }
+    // this.loadLevel = function (levelData) {
+    //     console.log("Loading level..");
+    //     console.log(levelData);
+    //     console.log(firebaseManager.baseDownloadURL + levelData.dataURL);
+    //     this.editor.resetEditor();
+    //     var self = this;
+    //     $('form').removeClass('loading');
+    //     $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
+    //         self.editor.buildJSON(data);
+    //         self.initWorld();
+    //         ui.showNothing();
+    //         $('.sidebar').sidebar("hide");
+    //         console.log("Loading level success!!!");
+    //     });
+    // }
     this.startGame = function () {
 
         this.runWorld();

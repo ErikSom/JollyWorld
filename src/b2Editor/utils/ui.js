@@ -266,7 +266,8 @@ export const createToolGUI = function () {
     for (var i = 0; i < $buttons.length; i++) {
         $($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');
     }
-    registerDragWindow(toolGUI);
+
+    $(toolGUI).find('.dg').remove();
 }
 
 let assetSelection = {

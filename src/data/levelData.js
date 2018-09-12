@@ -1,5 +1,6 @@
 export const levelData = {
-    mainMenuLevel:`{
+    mainMenuLevel: {
+        json: `{
         "objects": [
             [6, 0, 838.5543600150933, 0, "", "", 0, "#999999", "#000", 1, null, [{
                 "x": -1249.640273221399,
@@ -91,5 +92,10 @@ export const levelData = {
             [1, -524.7015731954175, 611.1885534685905, 0, "", "", 9, "Bush40000", null, null, null, null, false, "#FFFFFF"]
         ]
     }`,
+    title:'Main Menu Level',
+    description:'This level is used in the main menu and might help you better understand the editor',
+    background:'#FFFFFF',
+    crossPromo:[],
+    }
 
 };

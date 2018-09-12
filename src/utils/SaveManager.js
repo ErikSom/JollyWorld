@@ -6,26 +6,33 @@ import {
 export const SAVEKEYS = {
     tempEditorWorld:"tempEditorWorld",
 }
+export const levelDataObject = {
+    json:'{"objects":[]}',
+    title:'<Fill in Title>',
+    description:'<Fill in Description>',
+    background:'#FFFFFF',
+    crossPromos:[],
+}
 
 export const saveTempEditorWorld = function(json){
     saveData(SAVEKEYS.tempEditorWorld, json);
 }
 export const getTempEditorWorld = function(){
     var tempWorld = loadData(SAVEKEYS.tempEditorWorld);
-    if(!tempWorld) tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelData.mainMenuLevel);
+    if(!tempWorld){
+        tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelData.mainMenuLevel);
+    }
     return tempWorld;
 }
 
 const saveData = function(key, value){
     if(window.localStorage){
-        window.localStorage[key] = value;
+        window.localStorage[key] = JSON.stringify(value);
         return value;
     }
     console.alert("Browser does not support saving of data");
 }
 const loadData = function(key){
-    if(window.localStorage){
-        return window.localStorage[key];
-    }
+    if(window.localStorage && window.localStorage[key]) return JSON.parse(window.localStorage[key]);
     return undefined;
 }
