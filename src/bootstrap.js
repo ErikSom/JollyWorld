@@ -8,6 +8,5 @@ import '../libs/pixi-spine.js'
 import '../libs/pixi-heaven.js'
 import 'Game.js'
 
-import '../libs/semantic/dist/semantic.css'
 import 'css/B2dEditor.css'
 import 'css/dat-gui-light-theme.css'

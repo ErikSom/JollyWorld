@@ -34,6 +34,7 @@ import * as SaveManager from "./utils/SaveManager";
 
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
+const nanoid = require('nanoid');
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
@@ -293,15 +294,18 @@ function Game() {
         console.log(levelData);
         this.currentLevelData = levelData;
         this.editor.buildJSON(levelData.json);
+        SaveManager.saveTempEditorWorld(levelData);
     }
     this.newLevel = function(){
-        levelData = {
+        let levelData = {
             json:'{"objects":[]}',
-            title:'<Fill in Title>',
-            description:'<Fill in Description>',
+            title:Settings.levelEditScreen_DefaultTitleText,
+            description:Settings.levelEditScreen_DefaultDescriptionText,
             background:'#FFFFFF',
             crossPromos:[],
+            uid:nanoid(),
         }
+        this.initLevel(levelData);
     }
     // this.loadLevel = function (levelData) {
     //     console.log("Loading level..");

@@ -1,19 +1,22 @@
 import {
     levelData
 } from "../data/levelData";
-
+const nanoid = require('nanoid');
 
 export const SAVEKEYS = {
     tempEditorWorld:"tempEditorWorld",
 }
+export const saveLevel = function(){
 
-export const saveTempEditorWorld = function(json){
-    saveData(SAVEKEYS.tempEditorWorld, json);
+}
+export const saveTempEditorWorld = function(levelData){
+    saveData(SAVEKEYS.tempEditorWorld, levelData);
 }
 export const getTempEditorWorld = function(){
     var tempWorld = loadData(SAVEKEYS.tempEditorWorld);
     if(!tempWorld){
         tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelData.mainMenuLevel);
+        tempWorld.uid = nanoid();
     }
     return tempWorld;
 }

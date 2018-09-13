@@ -6,11 +6,17 @@ canvas {
     padding: 0;
     display: block;
 }
+html{
+    box-sizing:border-box;
+}
 
 body {
     background-color: #DADADA;
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
-
+*, *:before, *:after {
+    box-sizing: inherit;
+}
 body>.grid {
     height: 100%;
     width: 100%;

@@ -56,7 +56,6 @@ const buildHeaderBar = function(){
     button.innerHTML = "LOGIN";
     headerBar.appendChild(button);
 
-
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton exit buttonOverlay dark');
     button.innerHTML = "EXIT";
@@ -73,7 +72,7 @@ const buildHeaderBar = function(){
     headerBar.appendChild(button);
 
     button.addEventListener('click', ()=>{
-
+        game.newLevel();
     });
 
     button = document.createElement('div');

@@ -5,9 +5,6 @@ import {
     game
 } from '../Game';
 import $ from 'jquery';
-import '../../dist/semantic';
-import '../../dist/components/form';
-import '../../dist/components/transition';
 
 let levelItemHolder;
 let levelItemElement;
@@ -277,5 +274,4 @@ function UIManager() {
 }
 export var ui = new UIManager();
 window.addEventListener("load", function () {
-    ui.init();
 }.bind(this));
