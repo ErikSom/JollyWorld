@@ -273,7 +273,7 @@ const _B2dEditor = function () {
 
 				break
 		}
-		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI.domElement);
+		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 		this.canvas.focus();
 	}
 
@@ -686,7 +686,7 @@ const _B2dEditor = function () {
 			this.humanUpdate = true;
 			this.targetValue = value;
 		});
-		ui.registerDragWindow(ui.editorGUI.domElement);
+		ui.registerDragWindow(ui.editorGUI);
 	}
 	this.addJointGUI = function (dataJoint) {
 		var self = this;
@@ -2591,7 +2591,7 @@ const _B2dEditor = function () {
 							ui.editorGUI.editData = oldData;
 							ui.editorGUI.addFolder('add joints');
 							this.addJointGUI(oldData);
-							if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI.domElement);
+							if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 						} else {
 							//joint
 							if (controller.targetValue == "Pin") {

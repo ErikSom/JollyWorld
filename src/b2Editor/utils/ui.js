@@ -206,7 +206,7 @@ const openLevelEditScreen = function(){
         customGUIContainer.appendChild(levelEditScreen.domElement);
 
 
-        registerDragWindow(levelEditScreen.domElement);
+        registerDragWindow(levelEditScreen);
 
     }
     levelEditScreen.domElement.style.display = "block";
@@ -345,7 +345,7 @@ export const initGuiAssetSelection = function () {
 
             });
         }
-        registerDragWindow(assetGUI.domElement);
+        registerDragWindow(assetGUI);
         $(assetGUI.domElement).css('left', assetGUIPos.x);
         $(assetGUI.domElement).css('top', assetGUIPos.y);
     }
@@ -384,8 +384,8 @@ export const initDrag = function (event, _window) {
     });
     startDragMouse.x = event.pageX;
     startDragMouse.y = event.pageY;
-    startDragPos.x = parseInt($(_window).css('left'), 10) || 0;
-    startDragPos.y = parseInt($(_window).css('top'), 10) || 0;
+    startDragPos.x = parseInt($(_window.domElement).css('left'), 10) || 0;
+    startDragPos.y = parseInt($(_window.domElement).css('top'), 10) || 0;
 
 }
 export const endDrag = function (event, _window) {
@@ -395,14 +395,15 @@ export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
 
-    $(_window).css('left', startDragPos.x + difX);
-    $(_window).css('top', startDragPos.y + difY);
+    $(_window.domElement).css('left', startDragPos.x + difX);
+    $(_window.domElement).css('top', startDragPos.y + difY);
+
 }
 
 export const registerDragWindow = function (_window) {
     windows.push(_window);
-    var $titleBar = $(_window).find('.dg .title');
-    $(_window).css('position', 'absolute');
+    var $titleBar = $(_window.domElement).find('.dg .title');
+    $(_window.domElement).css('position', 'absolute');
     $titleBar.on('mousedown', function (event) {
         initDrag(event, _window)
     });
