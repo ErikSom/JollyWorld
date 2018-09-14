@@ -295,13 +295,15 @@ export const initGuiAssetSelection = function () {
             width: 300
         });
         customGUIContainer.appendChild(assetGUI.domElement);
-        assetGUI.addFolder('Asset Selection');
+        let folder = assetGUI.addFolder('Asset Selection');
+        folder.open();
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
         if (assetSelection.assetSelectedGroup == "") assetSelection.assetSelectedGroup = B2dEditor.assetLists.__keys[0];
         assetSelection.assetSelectedTexture = B2dEditor.assetLists[assetSelection.assetSelectedGroup][0];
 
 
-        var folder = assetGUI.addFolder('Textures');
+        folder = folder.addFolder('Textures');
         folder.add(assetSelection, "assetSelectedGroup", B2dEditor.assetLists.__keys).onChange(function (value) {
             initGuiAssetSelection();
         });
@@ -320,7 +322,7 @@ export const initGuiAssetSelection = function () {
             guiFunction.find('img').attr('src', image.src);
             guiFunction.find('img').attr('title', textureName);
             //guiFunction.find('img').attr('draggable', false);
-            $(folder.domElement).append(guiFunction);
+            $(targetDomElement).append(guiFunction);
             guiFunction.css('height', texture.height);
             guiFunction.find('img').css('display', 'block');
             guiFunction.find('img').css('margin', 'auto');
@@ -390,10 +392,16 @@ export const initDrag = function (event, _window) {
 }
 export const endDrag = function (event, _window) {
     $(document).off('mousemove');
+    $(_window.domElement).find('.title').data('moved', false);
+
 }
 export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
+
+    if(Math.abs(difX)+Math.abs(difY) > 5){
+        $(_window.domElement).find('.title').data('moved', true);
+    }
 
     $(_window.domElement).css('left', startDragPos.x + difX);
     $(_window.domElement).css('top', startDragPos.y + difY);
@@ -407,7 +415,15 @@ export const registerDragWindow = function (_window) {
     $titleBar.on('mousedown', function (event) {
         initDrag(event, _window)
     });
-    $(document).on('mouseup', function (event) {
+    $(document).on('click', function (event) {
+
+        if($(_window.domElement).find('.title').data('moved') == true){
+            var tarFolder = _window.__folders[$(_window.domElement).find('.title')[0].innerText]
+            if(tarFolder.closed) tarFolder.open();
+            else tarFolder.close();
+        }
+
+
         endDrag(event, _window)
     });
 }

@@ -19,10 +19,10 @@ body {
     box-sizing: inherit;
 }
 .dg .closed div:not(.arrow):not(.title), .dg .closed ul div, .dg .closed span, .dg .closed br, .dg .closed textarea, .dg .closed ul div>*{
-    height: 0;
-    overflow: hidden;
-    border: 0;
-    display:none;
+    height: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    display:none !important;
 }
 body>.grid {
     height: 100%;
