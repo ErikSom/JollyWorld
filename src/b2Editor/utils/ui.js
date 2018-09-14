@@ -109,9 +109,14 @@ const openLevelEditScreen = function(){
         let folder = levelEditScreen.addFolder('Login Screen');
         folder.domElement.classList.add('custom'); 
 
+        folder.open();
+
+
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
         let youtubeFeed = document.createElement('div');
         youtubeFeed.setAttribute('id', 'youtubeFeed');
-        folder.domElement.appendChild(youtubeFeed);
+        targetDomElement.appendChild(youtubeFeed);
 
         let youtubeLink;
         for(let i = 0; i<3; i++){
@@ -122,22 +127,22 @@ const openLevelEditScreen = function(){
 
         let span = document.createElement('span');
         span.innerText = 'Add YouTube links';
-        folder.domElement.appendChild(span);
+        targetDomElement.appendChild(span);
 
 
-        folder.domElement.appendChild(document.createElement('br'));
-        folder.domElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
 
 
         let textarea = document.createElement('textarea');
         textarea.value = 'Title...';
-        folder.domElement.appendChild(textarea);
+        targetDomElement.appendChild(textarea);
         textarea.style.fontSize = '18px';
         textarea.style.height = '30px';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
-        folder.domElement.appendChild(span);
+        targetDomElement.appendChild(span);
 
 
         let func = (textarea, span) =>{
@@ -153,17 +158,17 @@ const openLevelEditScreen = function(){
         }
         $(textarea).on('input selectionchange propertychange', func(textarea, span));
 
-        folder.domElement.appendChild(document.createElement('br'));
-        folder.domElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
 
         textarea = document.createElement('textarea');
         textarea.value = 'Description...';
-        folder.domElement.appendChild(textarea);
+        targetDomElement.appendChild(textarea);
         textarea.style.height = '100px';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:500';
-        folder.domElement.appendChild(span);
+        targetDomElement.appendChild(span);
 
 
         func = (textarea, span) =>{
@@ -179,23 +184,23 @@ const openLevelEditScreen = function(){
         }
         $(textarea).on('input selectionchange propertychange', func(textarea, span));
 
-        folder.domElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
 
         var levelOptions = {backgroundColor:'#FFFFFF'};
 
-        levelEditScreen.addColor(levelOptions, "backgroundColor");
+        folder.addColor(levelOptions, "backgroundColor");
 
 
 
         let button = document.createElement('div');
         button.setAttribute('class', 'headerButton save buttonOverlay dark');
         button.innerHTML = "SAVE";
-        levelEditScreen.domElement.appendChild(button);
+        targetDomElement.appendChild(button);
 
         button = document.createElement('div');
         button.setAttribute('class', 'headerButton publish buttonOverlay dark');
         button.innerHTML = "PUBLISH";
-        levelEditScreen.domElement.appendChild(button);
+        targetDomElement.appendChild(button);
 
 
         customGUIContainer.appendChild(levelEditScreen.domElement);

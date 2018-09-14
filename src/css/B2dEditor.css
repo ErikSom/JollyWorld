@@ -13,9 +13,16 @@ html{
 body {
     background-color: #DADADA;
     font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    overflow:hidden;
 }
 *, *:before, *:after {
     box-sizing: inherit;
+}
+.dg .closed div:not(.arrow):not(.title), .dg .closed ul div, .dg .closed span, .dg .closed br, .dg .closed textarea, .dg .closed ul div>*{
+    height: 0;
+    overflow: hidden;
+    border: 0;
+    display:none;
 }
 body>.grid {
     height: 100%;
@@ -128,7 +135,7 @@ canvas {
     background-size:contain;
     background-color:transparent;
 }
-.dg.custom > div, .dg.custom > span, .dg.custom > textarea{
+.dg.custom > div, .dg.custom span, .dg.custom textarea{
     width:100%;
     margin:5px;
 
