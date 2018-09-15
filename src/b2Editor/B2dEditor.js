@@ -145,10 +145,15 @@ const _B2dEditor = function () {
 	this.showPrefabList = function () {
 		var prefabPages = prefab.prefabs.libraryKeys;
 		if (this.admin) prefabPages.push("admin");
-		ui.editorGUI.addFolder('Prefab Selection');
+
+
+		let targetFolder = ui.editorGUI.addFolder('Prefab Selection');
+		targetFolder.open();
+
+
 		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
 		this.assetSelectedTexture = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][0];
-		var folder = ui.editorGUI.addFolder('Prefabs');
+		var folder = targetFolder.addFolder('Prefabs');
 		var self = this;
 		folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
 			ui.destroyEditorGUI();
@@ -209,30 +214,37 @@ const _B2dEditor = function () {
 		ui.destroyEditorGUI();
 		ui.buildEditorGUI();
 
+		let targetFolder;
+
 		switch (i) {
 			case this.tool_SELECT:
 				ui.destroyEditorGUI();
 				break
 			case this.tool_GEOMETRY:
 				ui.editorGUI.editData = this.editorGeometryObject;
-				ui.editorGUI.addFolder('draw shapes');
+
+				let targetFolder = ui.editorGUI.addFolder('draw shapes');
+				targetFolder.open();
+
 				var shapes = ["Circle", "Box", "Triangle"];
 				ui.editorGUI.editData.shape = shapes[0];
-				ui.editorGUI.add(ui.editorGUI.editData, "shape", shapes);
-				ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
-				ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
-				ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
-				ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
-				ui.editorGUI.add(ui.editorGUI.editData, "isPhysicsObject");
+				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
+				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
+				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
 				break
 			case this.tool_POLYDRAWING:
 				ui.destroyEditorGUI();
 				break
 			case this.tool_JOINTS:
 				ui.editorGUI.editData = this.editorJointObject;
-				ui.editorGUI.addFolder('add joints');
 
-				this.addJointGUI(this.editorJointObject);
+				targetFolder = ui.editorGUI.addFolder('add joints');
+				targetFolder.open();
+
+				this.addJointGUI(this.editorJointObject, targetFolder);
 
 				break
 			case this.tool_SPECIALS:
@@ -248,28 +260,32 @@ const _B2dEditor = function () {
 				break
 			case this.tool_PAINTBUCKET:
 				ui.editorGUI.editData = this.editorGraphicDrawingObject;
-				ui.editorGUI.addFolder('draw graphics');
+
+				targetFolder = ui.editorGUI.addFolder('draw graphics');
+				targetFolder.open();
 				//for (var key in ui.editorGUI.editData) {
 				//	if (ui.editorGUI.editData.hasOwnProperty(key)) {
 				//TODO:Load from saved data
 				//	}
 				//}
-				ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
-				ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
+				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				var realVal = ui.editorGUI.editData.transparancy;
 				ui.editorGUI.editData.transparancy = 0.1;
-				ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				ui.editorGUI.editData.transparancy = realVal;
 
-				ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				break
 			case this.tool_ERASER:
 				ui.editorGUI.editData = this.editorTriggerObject;
-				ui.editorGUI.addFolder('add triggers');
+
+				targetFolder = ui.editorGUI.addFolder('add triggers');
+				targetFolder.open();
 
 				var shapes = ["Circle", "Box"];
 				ui.editorGUI.editData.shape = shapes[0];
-				ui.editorGUI.add(ui.editorGUI.editData, "shape", shapes);
+				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
 
 				break
 		}
@@ -371,31 +387,33 @@ const _B2dEditor = function () {
 		var self = this;
 		var controller;
 
+		let targetFolder;
+
 		//Init edit data;
 		switch (currentCase) {
 			case case_JUST_BODIES:
 				ui.editorGUI.editData = new this.bodyObject;
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
-				if (this.selectedPhysicsBodies.length > 1) ui.editorGUI.addFolder('multiple bodies');
-				else ui.editorGUI.addFolder('body');
+				if (this.selectedPhysicsBodies.length > 1) targetFolder = ui.editorGUI.addFolder('multiple bodies');
+				else targetFolder = ui.editorGUI.addFolder('body');
 				break;
 			case case_JUST_TEXTURES:
 				dataJoint = _selectedTextures[0].data;
 				ui.editorGUI.editData = new this.textureObject;
-				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple textures');
-				else ui.editorGUI.addFolder('texture');
+				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple textures');
+				else targetFolder = ui.editorGUI.addFolder('texture');
 				break;
 			case case_JUST_GRAPHICS:
 				dataJoint = _selectedGraphics[0].data;
 				ui.editorGUI.editData = new this.graphicObject;
-				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple graphics');
-				else ui.editorGUI.addFolder('graphic');
+				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple graphics');
+				else targetFolder = ui.editorGUI.addFolder('graphic');
 				break;
 			case case_JUST_GRAPHICGROUPS:
 				dataJoint = _selectedGraphicGroups[0].data;
 				ui.editorGUI.editData = new this.graphicGroup;
-				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple graphicGroups');
-				else ui.editorGUI.addFolder('graphicGroup');
+				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple graphicGroups');
+				else targetFolder = ui.editorGUI.addFolder('graphicGroup');
 				break;
 			case case_JUST_JOINTS:
 				var selectedType = ""
@@ -413,14 +431,14 @@ const _B2dEditor = function () {
 					dataJoint = _selectedRopeJoints[0].data;
 					selectedType = "Rope";
 				}
-				if (this.selectedTextures.length > 1) ui.editorGUI.addFolder('multiple joints');
-				else ui.editorGUI.addFolder(`${selectedType} joint`);
+				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple joints');
+				else targetFolder = ui.editorGUI.addFolder(`${selectedType} joint`);
 				break;
 			case case_JUST_PREFABS:
 				ui.editorGUI.editData = new this.prefabObject;
 				dataJoint = this.prefabs[prefabKeys[0]];
-				if (this.selectedPrefabs.length > 1) ui.editorGUI.addFolder('multiple prefabs');
-				else ui.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
+				if (this.selectedPrefabs.length > 1) targetFolder = ui.editorGUI.addFolder('multiple prefabs');
+				else targetFolder = ui.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
 				break;
 			case case_MULTIPLE:
 				ui.editorGUI.editData = new this.multiObject;
@@ -429,15 +447,16 @@ const _B2dEditor = function () {
 				else if (this.selectedPhysicsBodies.length > 0) dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
 				else dataJoint = this.prefabs[prefabKeys[0]];
 
-				ui.editorGUI.addFolder('multiple objects');
+				targetFolder = ui.editorGUI.addFolder('multiple objects');
 				break;
 			case case_JUST_TRIGGERS:
 				ui.editorGUI.editData = new this.triggerObject;
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
-				if (this.selectedPhysicsBodies.length > 1) ui.editorGUI.addFolder('multiple triggers');
-				else ui.editorGUI.addFolder('trigger');
+				if (this.selectedPhysicsBodies.length > 1) targetFolder = ui.editorGUI.addFolder('multiple triggers');
+				else targetFolder = ui.editorGUI.addFolder('trigger');
 				break;
 		}
+		targetFolder.open();
 
 		for (var key in ui.editorGUI.editData) {
 			if (ui.editorGUI.editData.hasOwnProperty(key)) {
@@ -453,13 +472,13 @@ const _B2dEditor = function () {
 		}
 
 		//Populate default GUI Fields
-		ui.editorGUI.add(ui.editorGUI.editData, "x").onChange(function (value) {
+		targetFolder.add(ui.editorGUI.editData, "x").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
 		});
 
-		ui.editorGUI.add(ui.editorGUI.editData, "y").onChange(function (value) {
+		targetFolder.add(ui.editorGUI.editData, "y").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
@@ -476,27 +495,27 @@ const _B2dEditor = function () {
 			ui.editorGUI.editData.height = currentSize.height;
 
 
-			ui.editorGUI.add(ui.editorGUI.editData, "width").onChange(function (value) {
+			targetFolder.add(ui.editorGUI.editData, "width").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
-			ui.editorGUI.add(ui.editorGUI.editData, "height").onChange(function (value) {
+			targetFolder.add(ui.editorGUI.editData, "height").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
-			ui.editorGUI.add(ui.editorGUI.editData, "rotation").onChange(function (value) {
+			targetFolder.add(ui.editorGUI.editData, "rotation").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
 			});
 		}
 		if (prefabKeys.length == 0) {
-			ui.editorGUI.add(ui.editorGUI.editData, "groups").onChange(function (value) {
+			targetFolder.add(ui.editorGUI.editData, "groups").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
 		}
 		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1 && prefabKeys.length == 0) {
-			ui.editorGUI.add(ui.editorGUI.editData, "refName").onChange(function (value) {
+			targetFolder.add(ui.editorGUI.editData, "refName").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
@@ -504,55 +523,54 @@ const _B2dEditor = function () {
 		//Populate custom  fields
 		switch (currentCase) {
 			case case_JUST_BODIES:
-				ui.editorGUI.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+			targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
 
 				if (ui.editorGUI.editData.colorFill instanceof Array) {
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
-					controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
+					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
 				} else {
-					console.log(ui.editorGUI.editData);
-					controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
+					controller = targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
+					controller = targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+					controller = targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
+					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
 				}
-				ui.editorGUI.add(ui.editorGUI.editData, "fixed").onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "fixed").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				ui.editorGUI.add(ui.editorGUI.editData, "awake").onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "awake").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				}.bind(controller));
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "collision", 0, 7).step(1);
+				controller = targetFolder.add(ui.editorGUI.editData, "collision", 0, 7).step(1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
@@ -560,7 +578,7 @@ const _B2dEditor = function () {
 
 				ui.editorGUI.editData.convertToGraphic = function () {};
 				var label = this.selectedTextures.length == 1 ? ">Convert to Graphic<" : ">Convert to Graphics<";
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "convertToGraphic").name(label);
+				controller = targetFolder.add(ui.editorGUI.editData, "convertToGraphic").name(label);
 				ui.editorGUI.editData.convertToGraphic = (function (_c) {
 					return function () {
 						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
@@ -573,34 +591,33 @@ const _B2dEditor = function () {
 				})(controller)
 				break;
 			case case_JUST_TEXTURES:
-				controller = ui.editorGUI.addColor(ui.editorGUI.editData, "tint");
+				controller = targetFolder.addColor(ui.editorGUI.editData, "tint");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 				break;
 			case case_JUST_GRAPHICS:
-				console.log("check", ui.editorGUI.editData);
-				ui.editorGUI.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorFill");
+				controller = targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = ui.editorGUI.addColor(ui.editorGUI.editData, "colorLine");
+				controller = targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				controller = targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -608,7 +625,7 @@ const _B2dEditor = function () {
 
 				ui.editorGUI.editData.convertToBody = function () {};
 				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "convertToBody").name(label);
+				controller = targetFolder.add(ui.editorGUI.editData, "convertToBody").name(label);
 				ui.editorGUI.editData.convertToBody = (function (_c) {
 					return function () {
 						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
@@ -622,14 +639,14 @@ const _B2dEditor = function () {
 
 				break;
 			case case_JUST_GRAPHICGROUPS:
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 				ui.editorGUI.editData.convertToBody = function () {};
 				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
-				controller = ui.editorGUI.add(ui.editorGUI.editData, "convertToBody").name(label);
+				controller = targetFolder.add(ui.editorGUI.editData, "convertToBody").name(label);
 				ui.editorGUI.editData.convertToBody = (function (_c) {
 					return function () {
 						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
@@ -642,7 +659,7 @@ const _B2dEditor = function () {
 				})(controller)
 				break;
 			case case_JUST_JOINTS:
-				this.addJointGUI(dataJoint);
+				this.addJointGUI(dataJoint, targetFolder);
 				break;
 			case case_JUST_PREFABS:
 				var prefabObject = this.prefabs[Object.keys(this.selectedPrefabs)[0]];
@@ -658,14 +675,14 @@ const _B2dEditor = function () {
 						ui.editorGUI.editData[key] = prefabObjectSettings[key];
 						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
-							ui.editorGUI.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
+							targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
 							});
 						} else {
 							if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
 							else argument = null;
-							ui.editorGUI.add(ui.editorGUI.editData, key, argument).onChange(function (value) {
+							targetFolder.add(ui.editorGUI.editData, key, argument).onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
 							});
@@ -677,35 +694,35 @@ const _B2dEditor = function () {
 			case case_MULTIPLE:
 				break;
 			case case_JUST_TRIGGERS:
-				trigger.addTriggerGUI(dataJoint);
+				trigger.addTriggerGUI(dataJoint, targetFolder);
 				break;
 		}
 		//TODO:Maybe add admin mode / pro mode for lockselection
 		if (ui.editorGUI.editData.lockselection == undefined) ui.editorGUI.editData.lockselection = false;
-		ui.editorGUI.add(ui.editorGUI.editData, "lockselection").onChange(function (value) {
+		targetFolder.add(ui.editorGUI.editData, "lockselection").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value;
 		});
 		ui.registerDragWindow(ui.editorGUI);
 	}
-	this.addJointGUI = function (dataJoint) {
+	this.addJointGUI = function (dataJoint, _folder) {
 		var self = this;
 		var controller;
 		var folder;
 		var jointTypes = ["Pin", "Slide", "Distance", "Rope"];
 		ui.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
-		ui.editorGUI.add(ui.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
+		_folder.add(ui.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value
 		});
-		ui.editorGUI.add(ui.editorGUI.editData, "collideConnected").onChange(function (value) {
+		_folder.add(ui.editorGUI.editData, "collideConnected").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value
 		});
 
 		if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE) {
 
-			folder = ui.editorGUI.addFolder('enable motor');
+			folder = _folder.addFolder('enable motor');
 			folder.add(ui.editorGUI.editData, "enableMotor").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
@@ -737,7 +754,7 @@ const _B2dEditor = function () {
 			}.bind(controller));
 
 
-			folder = ui.editorGUI.addFolder('enable limits');
+			folder = _folder.addFolder('enable limits');
 			folder.add(ui.editorGUI.editData, "enableLimit").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
@@ -769,7 +786,7 @@ const _B2dEditor = function () {
 				}.bind(controller));
 			}
 		} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
-			folder = ui.editorGUI.addFolder('spring');
+			folder = _folder.addFolder('spring');
 
 			controller = folder.add(ui.editorGUI.editData, "frequencyHz", 0, 180);
 			controller.onChange(function (value) {
@@ -2589,8 +2606,11 @@ const _B2dEditor = function () {
 							ui.destroyEditorGUI();
 							ui.buildEditorGUI();
 							ui.editorGUI.editData = oldData;
-							ui.editorGUI.addFolder('add joints');
-							this.addJointGUI(oldData);
+
+							let targetFolder = ui.editorGUI.addFolder('add joints');
+							targetFolder.open();
+
+							this.addJointGUI(oldData, targetFolder);
 							if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 						} else {
 							//joint

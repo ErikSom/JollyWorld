@@ -143,14 +143,14 @@ export const actionDictionary = {
         },
     },
 }
-export const addTriggerGUI = function (dataJoint) {
+export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
     targetTypes.map(key => {
         if (triggerTargetType[key] == dataJoint.targetType) {
             ui.editorGUI.editData.targetTypeDropDown = key;
         }
     })
-    ui.editorGUI.add(ui.editorGUI.editData, "targetTypeDropDown", targetTypes).onChange(function (value) {
+    _folder.add(ui.editorGUI.editData, "targetTypeDropDown", targetTypes).onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
     });
@@ -161,13 +161,13 @@ export const addTriggerGUI = function (dataJoint) {
             ui.editorGUI.editData.repeatTypeDropDown = key;
         }
     })
-    ui.editorGUI.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).onChange(function (value) {
+    _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
     });
     ui.editorGUI.editData.selectTarget = function () {};
     var label = ">Add Target<";
-    controller = ui.editorGUI.add(ui.editorGUI.editData, "selectTarget").name(label);
+    controller = _folder.add(ui.editorGUI.editData, "selectTarget").name(label);
     ui.editorGUI.editData.selectTarget = function () {
         B2dEditor.selectingTriggerTarget = true;
     }
@@ -178,7 +178,7 @@ export const addTriggerGUI = function (dataJoint) {
     for (let i = 0; i < dataJoint.triggerActions.length; i++) {
         var targetObject = B2dEditor.selectedPhysicsBodies[0].mySprite.targets[i];
         actionsString = `_triggerActions_${i}`;
-        actionsFolder = ui.editorGUI.addFolder(`Target ${i+1}`);
+        actionsFolder = _folder.addFolder(`Target ${i+1}`);
         var actionString;
         var actionFolder;
         for (let j = 0; j < dataJoint.triggerActions[i].length; j++) {
