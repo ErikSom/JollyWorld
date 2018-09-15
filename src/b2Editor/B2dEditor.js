@@ -4699,7 +4699,7 @@ const _B2dEditor = function () {
 		if (target.myTriggers.length == 0) target.myTriggers = undefined;
 
 		if (target.data.prefabInstanceName) {
-			for (i = 0; i < _trigger.mySprite.targetPrefabs; i++) {
+			for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
 				if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
 					_trigger.mySprite.targetPrefabs.splice(i, 1);
 					break;
