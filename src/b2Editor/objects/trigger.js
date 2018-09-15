@@ -269,9 +269,13 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         controller = actionsFolder.add(ui.editorGUI.editData, `removeTarget_${i}`).name(label);
         ui.editorGUI.editData[`removeTarget_${i}`] = function () {
             for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
-                B2dEditor.selectedPhysicsBodies[i].mySprite.targets.splice(targetIndex, 1);
-                B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions.splice(targetIndex, 1);
+                // B2dEditor.selectedPhysicsBodies[i].mySprite.targets.splice(targetIndex, 1);
+                // B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions.splice(targetIndex, 1);
+
+                const targetTrigger = B2dEditor.selectedPhysicsBodies[i];
+                B2dEditor.removeTargetFromTrigger(targetTrigger, targetTrigger.mySprite.targets[targetIndex]);
                 updateTriggerGUI();
+
             }
         }
 
@@ -281,25 +285,39 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 export const triggerGUIState = {};
 export const updateTriggerGUI = function () {
     //save folder status
+
+    var targetFolder = ui.editorGUI.__folders[$(ui.editorGUI.domElement).find('.title')[0].innerText]
+
+
     let folder;
-    for (var propt in ui.editorGUI.__folders) {
-        folder = ui.editorGUI.__folders[propt];
-        triggerGUIState[folder.domElement.innerText] = folder.closed;
-        for(var _propt in ui.editorGUI.__folders[propt].__folders){
-            folder = ui.editorGUI.__folders[propt].__folders[_propt];
-            triggerGUIState[folder.domElement.innerText] = folder.closed;
+    for (var propt in targetFolder.__folders) {
+        folder = targetFolder.__folders[propt];
+        console.log("ADD:", propt);
+        
+        triggerGUIState[propt] = folder.closed;
+        for(var _propt in targetFolder.__folders[propt].__folders){
+            folder = targetFolder.__folders[propt].__folders[_propt];
+            triggerGUIState[propt+_propt] = folder.closed;
         }
     }
 
     B2dEditor.updateSelection();
 
+    console.log(triggerGUIState);
+
+    targetFolder = ui.editorGUI.__folders[$(ui.editorGUI.domElement).find('.title')[0].innerText]
+
     //restore folder status
-    for (var propt in ui.editorGUI.__folders) {
-        folder = ui.editorGUI.__folders[propt];
-        folder.closed = triggerGUIState[folder.domElement.innerText] || false;
-        for(var _propt in ui.editorGUI.__folders[propt].__folders){
-            folder = ui.editorGUI.__folders[propt].__folders[_propt];
-            folder.closed = triggerGUIState[folder.domElement.innerText] || false;
+    for (var propt in targetFolder.__folders) {
+        console.log(propt);
+
+        folder = targetFolder.__folders[propt];
+        folder.closed = triggerGUIState[propt] || false;
+
+        console.log(targetFolder.__folders[propt]);
+        for(var _propt in targetFolder.__folders[propt].__folders){
+            folder = targetFolder.__folders[propt].__folders[_propt];
+            folder.closed = triggerGUIState[propt+_propt] || false;
         }
     }
 }
