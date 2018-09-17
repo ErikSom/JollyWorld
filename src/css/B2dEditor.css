@@ -135,7 +135,7 @@ canvas {
     background-size:contain;
     background-color:transparent;
 }
-.dg.custom > div, .dg.custom span, .dg.custom textarea{
+.dg.custom > div, .dg.custom ul > span, .dg.custom textarea{
     width:100%;
     margin:5px;
 
@@ -357,5 +357,13 @@ canvas {
 #levelEditScreen .save, #levelEditScreen .publish{
     float: left;
     line-height: 30px;
+}
+.text_button:hover {
+    color: #04bd04;
+}
+
+.text_button {
+    color: #00FF00;
+    cursor: pointer;
 }
 @import url('https://fonts.googleapis.com/css?family=Lily+Script+One');

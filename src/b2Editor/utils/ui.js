@@ -12,6 +12,7 @@ export let assetGUI;
 export let editorGUI;
 let headerBar;
 let levelEditScreen;
+let loginScreen;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -55,6 +56,7 @@ const buildHeaderBar = function(){
     button.setAttribute('class', 'headerButton login buttonOverlay dark');
     button.innerHTML = "LOGIN";
     headerBar.appendChild(button);
+    button.addEventListener('click', showLoginScreen);
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton exit buttonOverlay dark');
@@ -96,18 +98,124 @@ export const updateStatusHeaderBar = function(){
 
 }
 
-const openLevelEditScreen = function(){
-    if(!levelEditScreen){
+export const showLoginScreen = function(){
+    if(!loginScreen){
         const loginGUIWidth = 300;
 
-        levelEditScreen =  new dat.GUI({
+        loginScreen =  new dat.GUI({
             autoPlace: false,
             width: loginGUIWidth
         });
+        loginScreen.domElement.setAttribute('id', 'loginScreen');
+
+        let folder = loginScreen.addFolder('Login Screen');
+        folder.domElement.classList.add('custom'); 
+
+        folder.open();
+
+
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+
+
+        let span = document.createElement('span');
+        span.innerText = 'SIGN UP';
+        targetDomElement.appendChild(span);
+
+
+        let func = (textarea) =>{
+            let _text = textarea;
+            var f = () => {
+                const maxChars = 32;
+                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+            }
+            f();
+            return f;
+        }
+
+        let textarea = document.createElement('textarea');
+        textarea.value = 'User Name';
+        targetDomElement.appendChild(textarea);
+        textarea.style.fontSize = '18px';
+        textarea.style.height = '30px';
+        $(textarea).on('input selectionchange propertychange', func(textarea));
+
+
+        textarea = document.createElement('textarea');
+        textarea.value = 'Password';
+        targetDomElement.appendChild(textarea);
+        textarea.style.fontSize = '18px';
+        textarea.style.height = '30px';
+        $(textarea).on('input selectionchange propertychange', func(textarea));
+
+
+        textarea = document.createElement('textarea');
+        textarea.value = 'Re-type Password';
+        targetDomElement.appendChild(textarea);
+        textarea.style.fontSize = '18px';
+        textarea.style.height = '30px';
+        $(textarea).on('input selectionchange propertychange', func(textarea));
+
+
+        textarea = document.createElement('textarea');
+        textarea.value = 'Email';
+        targetDomElement.appendChild(textarea);
+        textarea.style.fontSize = '18px';
+        textarea.style.height = '30px';
+        $(textarea).on('input selectionchange propertychange', func(textarea));
+
+
+        span = document.createElement('span');
+        span.innerText = 'Do you agree to our';
+        targetDomElement.appendChild(span);
+
+        span = document.createElement('span');
+        span.innerText = 'Terms of Use?';
+        targetDomElement.appendChild(span);
+        span.setAttribute('class', 'text_button');
+
+
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
+
+
+        span = document.createElement('span');
+        span.innerText = 'Have an account?';
+        targetDomElement.appendChild(span);
+
+        span = document.createElement('span');
+        span.innerText = 'Log In!';
+        targetDomElement.appendChild(span);
+        span.setAttribute('class', 'text_button');
+
+
+        let button = document.createElement('div');
+        button.setAttribute('class', 'headerButton save buttonOverlay dark');
+        button.innerHTML = "SAVE";
+        targetDomElement.appendChild(button);
+
+
+        customGUIContainer.appendChild(loginScreen.domElement);
+
+
+        registerDragWindow(loginScreen);
+
+    }
+    loginScreen.domElement.style.display = "block";
+}
+
+const openLevelEditScreen = function(){
+    if(!levelEditScreen){
+        const levelEditGUIWidth = 300;
+
+        levelEditScreen =  new dat.GUI({
+            autoPlace: false,
+            width: levelEditGUIWidth
+        });
         levelEditScreen.domElement.setAttribute('id', 'levelEditScreen');
 
-        let folder = levelEditScreen.addFolder('Login Screen');
-        folder.domElement.classList.add('custom'); 
+        let folder = levelEditScreen.addFolder('Level Settings');
+        folder.domElement.classList.add('custom');
 
         folder.open();
 

@@ -67,15 +67,15 @@ export const doAction = function (actionData, targets) {
                 if (target.data.prefabInstanceName) {
                     objects = [].concat(B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies, B2dEditor.lookupGroups[target.data.prefabInstanceName]._textures);
                     targetPos = new Box2D.b2Vec2(target.x, target.y);
-                } else if(target.myBody) {
+                } else if (target.myBody) {
                     objects = [target.myBody];
-                    targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x*B2dEditor.PTM, target.myBody.GetPosition().y*B2dEditor.PTM);
-                }else{
+                    targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x * B2dEditor.PTM, target.myBody.GetPosition().y * B2dEditor.PTM);
+                } else {
                     objects = [target];
                     targetPos = new Box2D.b2Vec2(target.x, target.y);
                 }
 
-                if(actionData.setAdd == "fixed") targetPos = new Box2D.b2Vec2(actionData.X-targetPos.x, actionData.Y-targetPos.y);
+                if (actionData.setAdd == "fixed") targetPos = new Box2D.b2Vec2(actionData.X - targetPos.x, actionData.Y - targetPos.y);
                 else targetPos = new Box2D.b2Vec2(actionData.X, actionData.Y);
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
@@ -221,7 +221,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
                                 this.humanUpdate = true;
                                 this.targetValue = value
                             }.bind(controller));
-                        break
+                            break
                         case guitype_LIST:
                             controller = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
                             controller.name(key);
@@ -229,7 +229,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
                                 this.humanUpdate = true;
                                 this.targetValue = value
                             }.bind(controller));
-                        break;
+                            break;
                     }
                     controller.triggerActionKey = key;
                     controller.triggerTargetID = targetID;
@@ -244,8 +244,8 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             let targetAction = j;
             controller = actionFolder.add(ui.editorGUI.editData, `removeAction_${j}`).name(label);
             ui.editorGUI.editData[`removeAction_${j}`] = function () {
-                for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
-                    if(B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length>1){
+                for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
+                    if (B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length > 1) {
                         B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].splice(targetAction, 1);
                         updateTriggerGUI();
                     }
@@ -257,7 +257,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         let targetIndex = i;
         controller = actionsFolder.add(ui.editorGUI.editData, `addAction_${i}`).name(label);
         ui.editorGUI.editData[`addAction_${i}`] = function () {
-            for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
+            for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
                 const targetSprite = B2dEditor.selectedPhysicsBodies[i].mySprite;
                 targetSprite.data.triggerActions[targetIndex].push(getAction(getActionsForObject(targetSprite.targets[targetIndex])[0]));
                 updateTriggerGUI();
@@ -268,12 +268,12 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         var label = `>Remove Target ${i+1}<`;
         controller = actionsFolder.add(ui.editorGUI.editData, `removeTarget_${i}`).name(label);
         ui.editorGUI.editData[`removeTarget_${i}`] = function () {
-            for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
+            for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
                 // B2dEditor.selectedPhysicsBodies[i].mySprite.targets.splice(targetIndex, 1);
                 // B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions.splice(targetIndex, 1);
 
                 const targetTrigger = B2dEditor.selectedPhysicsBodies[i];
-                B2dEditor.removeTargetFromTrigger(targetTrigger, targetTrigger.mySprite.targets[targetIndex]);
+                removeTargetFromTrigger(targetTrigger, targetTrigger.mySprite.targets[targetIndex]);
                 updateTriggerGUI();
 
             }
@@ -293,11 +293,11 @@ export const updateTriggerGUI = function () {
     for (var propt in targetFolder.__folders) {
         folder = targetFolder.__folders[propt];
         console.log("ADD:", propt);
-        
+
         triggerGUIState[propt] = folder.closed;
-        for(var _propt in targetFolder.__folders[propt].__folders){
+        for (var _propt in targetFolder.__folders[propt].__folders) {
             folder = targetFolder.__folders[propt].__folders[_propt];
-            triggerGUIState[propt+_propt] = folder.closed;
+            triggerGUIState[propt + _propt] = folder.closed;
         }
     }
 
@@ -315,9 +315,9 @@ export const updateTriggerGUI = function () {
         folder.closed = triggerGUIState[propt] || false;
 
         console.log(targetFolder.__folders[propt]);
-        for(var _propt in targetFolder.__folders[propt].__folders){
+        for (var _propt in targetFolder.__folders[propt].__folders) {
             folder = targetFolder.__folders[propt].__folders[_propt];
-            folder.closed = triggerGUIState[propt+_propt] || false;
+            folder.closed = triggerGUIState[propt + _propt] || false;
         }
     }
 }
@@ -361,7 +361,7 @@ export class triggerCore {
         this.initContactListener();
     }
     update() {
-        if(this.runTriggerOnce){
+        if (this.runTriggerOnce) {
             this.doTrigger();
             this.runTriggerOnce = false;
         }
@@ -421,6 +421,45 @@ export class triggerCore {
             for (var j = 0; j < this.data.triggerActions[i].length; j++) {
                 actionData = this.data.triggerActions[i][j];
                 doAction(actionData, targetObject);
+            }
+        }
+    }
+}
+export const addTargetToTrigger = function (_trigger, target) {
+    if (_trigger.mySprite == target) return;
+    if (_trigger.mySprite.targets.includes(target)) return;
+    if (target.data.prefabInstanceName) {
+        if (_trigger.mySprite.targetPrefabs.includes(target.data.prefabInstanceName)) return;
+        _trigger.mySprite.targetPrefabs.push(target.data.prefabInstanceName);
+    }
+
+    _trigger.mySprite.targets.push(target);
+    if (_trigger.mySprite.data.triggerActions.length < _trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
+    if (!target.myTriggers) target.myTriggers = [];
+    target.myTriggers.push(_trigger);
+}
+export const removeTargetFromTrigger = function (_trigger, target) {
+    var i;
+    for (i = 0; i < _trigger.mySprite.targets.length; i++) {
+        if (_trigger.mySprite.targets[i] == target) {
+            _trigger.mySprite.targets.splice(i, 1);
+            _trigger.mySprite.data.triggerActions.splice(i, 1);
+            i--;
+        }
+    }
+    for (i = 0; i < target.myTriggers.length; i++) {
+        if (target.myTriggers[i] == _trigger) {
+            target.myTriggers.splice(i, 1);
+            i--;
+        }
+    }
+    if (target.myTriggers.length == 0) target.myTriggers = undefined;
+
+    if (target.data.prefabInstanceName) {
+        for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
+            if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
+                _trigger.mySprite.targetPrefabs.splice(i, 1);
+                break;
             }
         }
     }

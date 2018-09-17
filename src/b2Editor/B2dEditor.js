@@ -833,7 +833,7 @@ const _B2dEditor = function () {
 			if (arr[i] instanceof this.prefabObject) {
 				if (arr[i].myTriggers != undefined) {
 					for (var j = 0; j < (arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++) {
-						this.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
+						trigger.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
 					}
 				}
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
@@ -877,7 +877,7 @@ const _B2dEditor = function () {
 					var myTrigger;
 					for (j = 0; j < (sprite.myTriggers ? sprite.myTriggers.length : 0); j++) {
 						myTrigger = sprite.myTriggers[j];
-						this.removeTargetFromTrigger(myTrigger, sprite);
+						trigger.removeTargetFromTrigger(myTrigger, sprite);
 					}
 				}
 
@@ -897,7 +897,7 @@ const _B2dEditor = function () {
 					var k;
 					var myTrigger;
 					for (j = 0; j < b.mySprite.targets.length; j++) {
-						this.removeTargetFromTrigger(b, b.mySprite.targets[j]);
+						trigger.removeTargetFromTrigger(b, b.mySprite.targets[j]);
 					}
 					for (j = 0; j < this.triggerObjects.length; j++) {
 						if (this.triggerObjects[j] == b) {
@@ -911,7 +911,7 @@ const _B2dEditor = function () {
 					var myTrigger;
 					for (j = 0; j < (b.mySprite.myTriggers ? b.mySprite.myTriggers.length : 0); j++) {
 						myTrigger = b.mySprite.myTriggers[j];
-						this.removeTargetFromTrigger(myTrigger, b.mySprite);
+						trigger.removeTargetFromTrigger(myTrigger, b.mySprite);
 					}
 				}
 
@@ -1518,7 +1518,7 @@ const _B2dEditor = function () {
 					for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
 						var body = this.selectedPhysicsBodies[i];
 						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-							this.addTargetToTrigger(body, highestObject);
+							trigger.addTargetToTrigger(body, highestObject);
 							trigger.updateTriggerGUI();
 						}
 					}
@@ -4668,46 +4668,7 @@ const _B2dEditor = function () {
 		}
 		return joint;
 	}
-	this.addTargetToTrigger = function (_trigger, target) {
-		if (_trigger.mySprite == target) return;
-		if (_trigger.mySprite.targets.includes(target)) return;
-		if (target.data.prefabInstanceName) {
-			if (_trigger.mySprite.targetPrefabs.includes(target.data.prefabInstanceName)) return;
-			_trigger.mySprite.targetPrefabs.push(target.data.prefabInstanceName);
-		}
-
-		_trigger.mySprite.targets.push(target);
-		if (_trigger.mySprite.data.triggerActions.length < _trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
-		if (!target.myTriggers) target.myTriggers = [];
-		target.myTriggers.push(_trigger);
-	}
-	this.removeTargetFromTrigger = function (_trigger, target) {
-		var i;
-		for (i = 0; i < _trigger.mySprite.targets.length; i++) {
-			if (_trigger.mySprite.targets[i] == target) {
-				_trigger.mySprite.targets.splice(i, 1);
-				_trigger.mySprite.data.triggerActions.splice(i, 1);
-				i--;
-			}
-		}
-		for (i = 0; i < target.myTriggers.length; i++) {
-			if (target.myTriggers[i] == _trigger) {
-				target.myTriggers.splice(i, 1);
-				i--;
-			}
-		}
-		if (target.myTriggers.length == 0) target.myTriggers = undefined;
-
-		if (target.data.prefabInstanceName) {
-			for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
-				if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
-					_trigger.mySprite.targetPrefabs.splice(i, 1);
-					break;
-				}
-			}
-		}
-
-	}
+	
 
 	this.buildPrefabFromObj = function (obj) {
 		if (this.breakPrefabs) return this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json));
@@ -5393,7 +5354,7 @@ const _B2dEditor = function () {
 			if (trigger.mySprite.triggerInitialized) continue;
 			for (var j = 0; j < trigger.mySprite.data.triggerObjects.length; j++) {
 				var targetObject = this.textures.getChildAt(trigger.mySprite.data.triggerObjects[j]);
-				this.addTargetToTrigger(trigger, targetObject);
+				trigger.addTargetToTrigger(trigger, targetObject);
 			}
 			trigger.mySprite.triggerInitialized = true;
 		}

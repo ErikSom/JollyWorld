@@ -292,6 +292,7 @@ function Game() {
     }
     this.initLevel = function(levelData){
         console.log(levelData);
+        this.editor.resetEditor();
         this.currentLevelData = levelData;
         this.editor.buildJSON(levelData.json);
         SaveManager.saveTempEditorWorld(levelData);
