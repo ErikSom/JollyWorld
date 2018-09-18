@@ -145,56 +145,89 @@ export const showLoginScreen = function(){
             f();
             return f;
         };
-        let blur = (textarea, value) =>{
-            let _text = textarea;
-            let _value = value;
-            var f = () =>{
-                if(_text.value == '') textarea.value = _value;
-            }
-            f();
-            return f;
-        };
+
         let divWrapper = document.createElement('div');
         divWrapper.style.padding = '0px 20px';
 
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
-        let textarea = document.createElement('textarea');
-        textarea.value = DEFAULT_TEXTS.login_DefaultUsername;
-        divWrapper.appendChild(textarea);
-        textarea.style = textAreanStyle;
-        $(textarea).on('input selectionchange propertychange', func(textarea));
-        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultUsername));
-        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultUsername));
+        let username = document.createElement('textarea');
+        username.value = DEFAULT_TEXTS.login_DefaultUsername;
+        divWrapper.appendChild(username);
+        username.style = textAreanStyle;
+        $(username).on('input selectionchange propertychange', func(username));
+        $(username).focus(focus(username, DEFAULT_TEXTS.login_DefaultUsername));
+
+        let password = document.createElement('textarea');
+        password.value = DEFAULT_TEXTS.login_DefaultPassword;
+        divWrapper.appendChild(password);
+        password.style = textAreanStyle;
+        $(password).on('input selectionchange propertychange', func(password));
+        $(password).focus(focus(password, DEFAULT_TEXTS.login_DefaultPassword));
 
 
-        textarea = document.createElement('textarea');
-        textarea.value = DEFAULT_TEXTS.login_DefaultPassword;
-        divWrapper.appendChild(textarea);
-        textarea.style = textAreanStyle;
-        $(textarea).on('input selectionchange propertychange', func(textarea));
-        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultPassword));
-        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultPassword));
+        let repassword = document.createElement('textarea');
+        repassword.value = DEFAULT_TEXTS.login_DefaultRePassword;
+        divWrapper.appendChild(repassword);
+        repassword.style = textAreanStyle;
+        $(repassword).on('input selectionchange propertychange', func(repassword));
+        $(repassword).focus(focus(repassword, DEFAULT_TEXTS.login_DefaultRePassword));
+
+        let email = document.createElement('textarea');
+        email.value = DEFAULT_TEXTS.login_DefaultEmail;
+        divWrapper.appendChild(email);
+        email.style = textAreanStyle;
+        $(email).on('input selectionchange propertychange', func(email));
+        $(email).focus(focus(email, DEFAULT_TEXTS.login_DefaultEmail));
+
+        let errorSpan = document.createElement('span');
+        errorSpan.innerText = '';
+        errorSpan.style.display = 'block';
+        errorSpan.style.color = '#ff4b00';
+        divWrapper.appendChild(errorSpan);
 
 
+        const errorChecks = ()=>{
+            var errorStack = [];
+            if(username.value != DEFAULT_TEXTS.login_DefaultUsername){
+                if(username.value.length<3) errorStack.push("Username must be at last 3 characters long");
+            }
+            if(password.value != DEFAULT_TEXTS.login_DefaultPassword){
+                if(password.value.length<6) errorStack.push("Password must be at last 6 characters long");
 
-        textarea = document.createElement('textarea');
-        textarea.value = DEFAULT_TEXTS.login_DefaultRePassword;
-        divWrapper.appendChild(textarea);
-        textarea.style = textAreanStyle;
-        $(textarea).on('input selectionchange propertychange', func(textarea));
-        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultRePassword));
-        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultRePassword));
+            }
+            if(repassword.value != DEFAULT_TEXTS.login_DefaultRePassword){
+                if(repassword != password) errorStack.push("Your passwords do not match, please re-type them");
+
+            }
+            if(email.value != DEFAULT_TEXTS.login_DefaultEmail){
+                var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+                if(!re.test(String(email).toLowerCase())) errorStack.push("Email entered is not a valid email address");
+            }
+
+            errorSpan.innerText = '';
+            errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
+            for(var i = 0; i<errorStack.length; i++){
+                errorSpan.innerText += errorStack[i]+'\n';
+            }
+
+        }
+        let blur = (textarea, value) =>{
+            let _text = textarea;
+            let _value = value;
+            var f = () =>{
+                if(_text.value == '') textarea.value = _value;
+                errorChecks();
+            }
+            f();
+            return f;
+        };
 
 
-
-        textarea = document.createElement('textarea');
-        textarea.value = DEFAULT_TEXTS.login_DefaultEmail;
-        divWrapper.appendChild(textarea);
-        textarea.style = textAreanStyle;
-        $(textarea).on('input selectionchange propertychange', func(textarea));
-        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultEmail));
-        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultEmail));
+        $(username).blur(blur(username, DEFAULT_TEXTS.login_DefaultUsername));
+        $(password).blur(blur(password, DEFAULT_TEXTS.login_DefaultPassword));
+        $(repassword).blur(blur(repassword, DEFAULT_TEXTS.login_DefaultRePassword));
+        $(email).blur(blur(email, DEFAULT_TEXTS.login_DefaultEmail));
 
 
         targetDomElement.appendChild(divWrapper);
@@ -215,6 +248,11 @@ export const showLoginScreen = function(){
         button.innerHTML = 'Accept!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
+
+
+        $(button).on('click', ()=>{
+
+        });
 
 
         span = document.createElement('span');
