@@ -109,7 +109,8 @@ export const showLoginScreen = function(){
         loginScreen.domElement.setAttribute('id', 'loginScreen');
 
         let folder = loginScreen.addFolder('Login Screen');
-        folder.domElement.classList.add('custom'); 
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
 
         folder.open();
 
@@ -121,6 +122,9 @@ export const showLoginScreen = function(){
         let span = document.createElement('span');
         span.innerText = 'SIGN UP';
         targetDomElement.appendChild(span);
+        span.style.fontSize = '20px';
+        span.style.marginTop = '20px';
+        span.style.display = 'inline-block';
 
 
         let func = (textarea) =>{
@@ -132,41 +136,72 @@ export const showLoginScreen = function(){
             f();
             return f;
         }
+        let focus = (textarea, value) =>{
+            let _text = textarea;
+            let _value = value;
+            var f = () =>{
+                if(_text.value == _value) textarea.value = '';
+            }
+            f();
+            return f;
+        };
+        let blur = (textarea, value) =>{
+            let _text = textarea;
+            let _value = value;
+            var f = () =>{
+                if(_text.value == '') textarea.value = _value;
+            }
+            f();
+            return f;
+        };
+        let divWrapper = document.createElement('div');
+        divWrapper.style.padding = '0px 20px';
+
+        var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let textarea = document.createElement('textarea');
-        textarea.value = 'User Name';
-        targetDomElement.appendChild(textarea);
-        textarea.style.fontSize = '18px';
-        textarea.style.height = '30px';
+        textarea.value = DEFAULT_TEXTS.login_DefaultUsername;
+        divWrapper.appendChild(textarea);
+        textarea.style = textAreanStyle;
         $(textarea).on('input selectionchange propertychange', func(textarea));
+        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultUsername));
+        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultUsername));
 
 
         textarea = document.createElement('textarea');
-        textarea.value = 'Password';
-        targetDomElement.appendChild(textarea);
-        textarea.style.fontSize = '18px';
-        textarea.style.height = '30px';
+        textarea.value = DEFAULT_TEXTS.login_DefaultPassword;
+        divWrapper.appendChild(textarea);
+        textarea.style = textAreanStyle;
         $(textarea).on('input selectionchange propertychange', func(textarea));
+        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultPassword));
+        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultPassword));
+
 
 
         textarea = document.createElement('textarea');
-        textarea.value = 'Re-type Password';
-        targetDomElement.appendChild(textarea);
-        textarea.style.fontSize = '18px';
-        textarea.style.height = '30px';
+        textarea.value = DEFAULT_TEXTS.login_DefaultRePassword;
+        divWrapper.appendChild(textarea);
+        textarea.style = textAreanStyle;
         $(textarea).on('input selectionchange propertychange', func(textarea));
+        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultRePassword));
+        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultRePassword));
+
 
 
         textarea = document.createElement('textarea');
-        textarea.value = 'Email';
-        targetDomElement.appendChild(textarea);
-        textarea.style.fontSize = '18px';
-        textarea.style.height = '30px';
+        textarea.value = DEFAULT_TEXTS.login_DefaultEmail;
+        divWrapper.appendChild(textarea);
+        textarea.style = textAreanStyle;
         $(textarea).on('input selectionchange propertychange', func(textarea));
+        $(textarea).focus(focus(textarea, DEFAULT_TEXTS.login_DefaultEmail));
+        $(textarea).blur(blur(textarea, DEFAULT_TEXTS.login_DefaultEmail));
+
+
+        targetDomElement.appendChild(divWrapper);
 
 
         span = document.createElement('span');
-        span.innerText = 'Do you agree to our';
+        span.innerText = 'Do you agree to our ';
         targetDomElement.appendChild(span);
 
         span = document.createElement('span');
@@ -174,13 +209,16 @@ export const showLoginScreen = function(){
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
 
-
-        targetDomElement.appendChild(document.createElement('br'));
-        targetDomElement.appendChild(document.createElement('br'));
+        let button = document.createElement('div');
+        button.setAttribute('id', 'acceptButton')
+        button.classList.add('menuButton');
+        button.innerHTML = 'Accept!';
+        targetDomElement.appendChild(button);
+        button.style.margin = '10px auto';
 
 
         span = document.createElement('span');
-        span.innerText = 'Have an account?';
+        span.innerText = 'Have an account? ';
         targetDomElement.appendChild(span);
 
         span = document.createElement('span');
@@ -188,11 +226,9 @@ export const showLoginScreen = function(){
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
 
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
 
-        let button = document.createElement('div');
-        button.setAttribute('class', 'headerButton save buttonOverlay dark');
-        button.innerHTML = "SAVE";
-        targetDomElement.appendChild(button);
 
 
         customGUIContainer.appendChild(loginScreen.domElement);
@@ -222,9 +258,12 @@ const openLevelEditScreen = function(){
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
+        let divWrapper = document.createElement('div');
+        divWrapper.style.padding = '20px';
+
         let youtubeFeed = document.createElement('div');
         youtubeFeed.setAttribute('id', 'youtubeFeed');
-        targetDomElement.appendChild(youtubeFeed);
+        divWrapper.appendChild(youtubeFeed);
 
         let youtubeLink;
         for(let i = 0; i<3; i++){
@@ -233,24 +272,27 @@ const openLevelEditScreen = function(){
             youtubeFeed.appendChild(youtubeLink);
         }
 
+
+
         let span = document.createElement('span');
         span.innerText = 'Add YouTube links';
-        targetDomElement.appendChild(span);
+        divWrapper.appendChild(span);
 
 
-        targetDomElement.appendChild(document.createElement('br'));
-        targetDomElement.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
 
 
         let textarea = document.createElement('textarea');
         textarea.value = 'Title...';
-        targetDomElement.appendChild(textarea);
+        divWrapper.appendChild(textarea);
         textarea.style.fontSize = '18px';
         textarea.style.height = '30px';
+        textarea.style.fontWeight = 'bold';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
-        targetDomElement.appendChild(span);
+        divWrapper.appendChild(span);
 
 
         let func = (textarea, span) =>{
@@ -266,17 +308,18 @@ const openLevelEditScreen = function(){
         }
         $(textarea).on('input selectionchange propertychange', func(textarea, span));
 
-        targetDomElement.appendChild(document.createElement('br'));
-        targetDomElement.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
 
         textarea = document.createElement('textarea');
         textarea.value = 'Description...';
-        targetDomElement.appendChild(textarea);
+        divWrapper.appendChild(textarea);
         textarea.style.height = '100px';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:500';
-        targetDomElement.appendChild(span);
+        divWrapper.appendChild(span);
+
 
 
         func = (textarea, span) =>{
@@ -292,23 +335,37 @@ const openLevelEditScreen = function(){
         }
         $(textarea).on('input selectionchange propertychange', func(textarea, span));
 
-        targetDomElement.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
+
 
         var levelOptions = {backgroundColor:'#FFFFFF'};
+        var item = folder.addColor(levelOptions, "backgroundColor");
+        divWrapper.appendChild(item.domElement.parentNode.parentNode);
+        item.domElement.parentNode.parentNode.style.padding = '0px';
 
-        folder.addColor(levelOptions, "backgroundColor");
-
+        divWrapper.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
 
 
         let button = document.createElement('div');
         button.setAttribute('class', 'headerButton save buttonOverlay dark');
         button.innerHTML = "SAVE";
-        targetDomElement.appendChild(button);
+        button.style.marginLeft = '0px';
+        button.style.marginRight = '5px';
+        divWrapper.appendChild(button);
+
 
         button = document.createElement('div');
         button.setAttribute('class', 'headerButton publish buttonOverlay dark');
         button.innerHTML = "PUBLISH";
-        targetDomElement.appendChild(button);
+        divWrapper.appendChild(button);
+
+        divWrapper.appendChild(document.createElement('br'));
+        divWrapper.appendChild(document.createElement('br'));
+
+
+        targetDomElement.appendChild(divWrapper);
 
 
         customGUIContainer.appendChild(levelEditScreen.domElement);
@@ -534,4 +591,14 @@ export const registerDragWindow = function (_window) {
 
         endDrag(event, _window)
     });
+}
+
+
+const DEFAULT_TEXTS = {
+    levelEditScreen_DefaultTitleText:"Fill in Title",
+    levelEditScreen_DefaultDescriptionText:"Fill in Description",
+    login_DefaultUsername:"Username",
+    login_DefaultPassword:"Password",
+    login_DefaultRePassword:"Re-type Password",
+    login_DefaultEmail:"E-mail addres",
 }
