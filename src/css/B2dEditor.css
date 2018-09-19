@@ -135,7 +135,7 @@ canvas {
     background-size:contain;
     background-color:transparent;
 }
-.dg.custom > div, .dg.custom ul > span, .dg.custom textarea{
+.dg.custom > div, .dg.custom ul > span, .dg.custom textarea, .dg.custom input{
     width:100%;
 }
 

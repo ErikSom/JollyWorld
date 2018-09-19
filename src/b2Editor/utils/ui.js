@@ -141,6 +141,7 @@ export const showLoginScreen = function(){
             let _value = value;
             var f = () =>{
                 if(_text.value == _value) textarea.value = '';
+                if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
             }
             f();
             return f;
@@ -151,29 +152,31 @@ export const showLoginScreen = function(){
 
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
-        let username = document.createElement('textarea');
+        let username = document.createElement('input');
         username.value = DEFAULT_TEXTS.login_DefaultUsername;
         divWrapper.appendChild(username);
         username.style = textAreanStyle;
         $(username).on('input selectionchange propertychange', func(username));
         $(username).focus(focus(username, DEFAULT_TEXTS.login_DefaultUsername));
 
-        let password = document.createElement('textarea');
+        let password = document.createElement('input');
         password.value = DEFAULT_TEXTS.login_DefaultPassword;
+        password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
         password.style = textAreanStyle;
         $(password).on('input selectionchange propertychange', func(password));
         $(password).focus(focus(password, DEFAULT_TEXTS.login_DefaultPassword));
 
 
-        let repassword = document.createElement('textarea');
+        let repassword = document.createElement('input');
         repassword.value = DEFAULT_TEXTS.login_DefaultRePassword;
+        repassword.setAttribute('type', 'password');
         divWrapper.appendChild(repassword);
         repassword.style = textAreanStyle;
         $(repassword).on('input selectionchange propertychange', func(repassword));
         $(repassword).focus(focus(repassword, DEFAULT_TEXTS.login_DefaultRePassword));
 
-        let email = document.createElement('textarea');
+        let email = document.createElement('input');
         email.value = DEFAULT_TEXTS.login_DefaultEmail;
         divWrapper.appendChild(email);
         email.style = textAreanStyle;
@@ -187,36 +190,73 @@ export const showLoginScreen = function(){
         divWrapper.appendChild(errorSpan);
 
 
-        const errorChecks = ()=>{
+        const errorChecks = (noDefault=false)=>{
             var errorStack = [];
+            const textAreaDefaultColor = '#fff';
+            const textAreaErrorColor = '#e8764b';
+
+            username.style.backgroundColor = textAreaDefaultColor;
+            password.style.backgroundColor = textAreaDefaultColor;
+            repassword.style.backgroundColor = textAreaDefaultColor;
+            email.style.backgroundColor = textAreaDefaultColor;
+
             if(username.value != DEFAULT_TEXTS.login_DefaultUsername){
-                if(username.value.length<3) errorStack.push("Username must be at last 3 characters long");
+                if(username.value.length<3){
+                     errorStack.push("Username must be at last 3 characters long");
+                     username.style.backgroundColor = textAreaErrorColor;
+                }
+            }else if(noDefault){
+                 username.style.backgroundColor = textAreaErrorColor;
+                 errorStack.push('Default values are not allowed');
             }
+
             if(password.value != DEFAULT_TEXTS.login_DefaultPassword){
-                if(password.value.length<6) errorStack.push("Password must be at last 6 characters long");
-
+                if(password.value.length<6){
+                    errorStack.push("Password must be at last 6 characters long");
+                    password.style.backgroundColor = textAreaErrorColor;
+                }
+            }else if(noDefault){
+                 password.style.backgroundColor = textAreaErrorColor;
+                 errorStack.push('Default values are not allowed');
             }
+
             if(repassword.value != DEFAULT_TEXTS.login_DefaultRePassword){
-                if(repassword != password) errorStack.push("Your passwords do not match, please re-type them");
-
+                if(repassword.value != password.value){
+                     errorStack.push("Your passwords do not match");
+                     repassword.style.backgroundColor = textAreaErrorColor;
+                }
+            }else if(noDefault){
+                 repassword.style.backgroundColor = textAreaErrorColor;
+                 errorStack.push('Default values are not allowed');
             }
+
             if(email.value != DEFAULT_TEXTS.login_DefaultEmail){
                 var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-                if(!re.test(String(email).toLowerCase())) errorStack.push("Email entered is not a valid email address");
+                if(!re.test(String(email.value).toLowerCase())){
+                     errorStack.push("Email entered is not a valid email address");
+                     email.style.backgroundColor = textAreaErrorColor;
+                }
+            }else if(noDefault){
+                 email.style.backgroundColor = textAreaErrorColor;
+                 errorStack.push('Default values are not allowed');
             }
 
             errorSpan.innerText = '';
             errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
+            if(errorStack.length == 0) return true;
             for(var i = 0; i<errorStack.length; i++){
                 errorSpan.innerText += errorStack[i]+'\n';
             }
-
+            return false;
         }
         let blur = (textarea, value) =>{
             let _text = textarea;
             let _value = value;
             var f = () =>{
-                if(_text.value == '') textarea.value = _value;
+                if(_text.value == ''){
+                     textarea.value = _value;
+                     if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
+                }
                 errorChecks();
             }
             f();
@@ -251,7 +291,9 @@ export const showLoginScreen = function(){
 
 
         $(button).on('click', ()=>{
-
+            if(errorChecks(true)){
+                alert("Send registration!");
+            }
         });
 
 
