@@ -1,4 +1,6 @@
-import { ui } from './ui/UIManager';
+import {
+    ui
+} from './ui/UIManager';
 const firebase = require('firebase');
 import $ from 'jquery';
 
@@ -34,26 +36,16 @@ function FireBaseManager() {
         });
     }
 
-    this.createUser = function (email, password, form) {
-        console.log(email + "  " + password);
-        var self = this;
-        firebase.auth().createUserWithEmailAndPassword(email, password).then(function (user) {
-            self.onCreateUserSuccess(user)
-        }, function (error) {
-            self.onCreateUserError(error)
+    this.registerUser = function (email, password) {
+        return new Promise((resolve, reject) => {
+            firebase.auth().createUserWithEmailAndPassword(email, password).then(function (user) {
+                resolve();
+            }, function (error) {
+                reject(error);
+            });
         });
     }
-    this.onCreateUserSuccess = function (user) {
-        console.log("YAY YOU SIGNED IN!!!!")
-        console.log(user);
-        $('form').removeClass('loading');
-        $(".ui.negative.message").addClass('hidden');
-    }
-    this.onCreateUserError = function (error) {
-        $('form').removeClass('loading');
-        $(".ui.negative.message").removeClass('hidden');
-        $(".ui.negative.message > p").text(error.message)
-    }
+
     this.checkUserData = function (data) {
         var self = this;
         var usernameRef = firebase.database().ref('/Usernames').orderByKey().equalTo(data.username);
@@ -91,23 +83,28 @@ function FireBaseManager() {
             console.log(error.message);
         });
     }
+    this.isLoggedIn = function(){
+        return this.user != undefined;
+    }
     this.onLogin = function () {
-        var self = this;
-        console.log(this.app.auth().currentUser.uid + "  MY UID");
-        var userRef = firebase.database().ref('/Users/' + this.app.auth().currentUser.uid);
-        userRef.once('value').then(function (snapshot) {
-            self.username = snapshot.val().username;
-            if (self.username) {
-                self.onLoginComplete();
-            } else {
-                ui.showBox('#userdata-box')
-            }
-        }, function (error) {
-            console.log(error.message);
-            $(".ui.negative.message").removeClass('hidden');
-            $(".ui.negative.message > p").text(error.message);
-            self.signout();
-        });
+        // var self = this;
+        // console.log(this.app.auth().currentUser.uid + "  MY UID");
+        // var userRef = firebase.database().ref('/Users/' + this.app.auth().currentUser.uid);
+        // userRef.once('value').then(function (snapshot) {
+        //     self.username = snapshot.val().username;
+        //     if (self.username) {
+        //         self.onLoginComplete();
+        //     } else {
+        //         ui.showBox('#userdata-box')
+        //     }
+        // }, function (error) {
+        //     console.log(error.message);
+        //     $(".ui.negative.message").removeClass('hidden');
+        //     $(".ui.negative.message > p").text(error.message);
+        //     self.signout();
+        // });
+        console.log("LOGGED IN MTF");
+        this.dispatchEvent('login');
     }
     this.login = function (email, password) {
         var self = this;
@@ -214,35 +211,35 @@ function FireBaseManager() {
         this.uploadUUID = UUID;
         var self = this;
 
-        this.uploadNext = function(){
+        this.uploadNext = function () {
             console.log("Upload files uploadNext");
             self.currentFile = files[self.currentIndex];
             self.uploadFile(self.currentFile.file, self.currentFile.dir, self.currentFile.name, self.currentFile.datatype);
             self.currentIndex++;
         }
 
-        this.progress = function(snapshot){
+        this.progress = function (snapshot) {
             self.currentFileProgress = snapshot.bytesTransferred / snapshot.totalBytes;
-            var totalProgress = (self.currentIndex-1+self.currentFileProgress) / self.totalFiles;
+            var totalProgress = (self.currentIndex - 1 + self.currentFileProgress) / self.totalFiles;
             console.log("Upload files progress");
             console.log(totalProgress);
-            if(progressCall) progressCall(totalProgress);
+            if (progressCall) progressCall(totalProgress);
         }
-        this.error = function(error){
+        this.error = function (error) {
             console.log("Upload files error");
             console.log(error.message);
-            if(errorCall) errorCall(error);
+            if (errorCall) errorCall(error);
         }
-        this.complete = function(task){
+        this.complete = function (task) {
             var downloadURL = task.snapshot.downloadURL;
             var token = downloadURL.split(firebaseManager.baseDownloadURL)[1];
             console.log("Upload files complete file");
             console.log(token);
             self.tokens.push(token);
             self.currentFileProgress = 0;
-            if(self.currentIndex == self.totalFiles){
-                if(completeCall) completeCall(self.tokens);
-            } else{
+            if (self.currentIndex == self.totalFiles) {
+                if (completeCall) completeCall(self.tokens);
+            } else {
                 self.uploadNext();
             }
         }
@@ -253,10 +250,10 @@ function FireBaseManager() {
 
             var task;
             if (typeof file === 'string') {
-                if(datatype && datatype == "data_url"){
+                if (datatype && datatype == "data_url") {
                     console.log("PUTTING A THUMBBBB!");
                     task = storageRef.putString(file, datatype);
-                }else{
+                } else {
                     task = storageRef.putString(file);
                 }
             } else {
@@ -288,7 +285,30 @@ function FireBaseManager() {
         });
     }
 
-
+    //UTILS
+    //SIMPLE CALLBACK SYSTEM
+    this.callBacks = {};
+    this.registerListener = function(type, func){
+        if(!this.callBacks[type]) this.callBacks[type] = [];
+        this.callBacks[type].push(func);
+    }
+    this.removeListener = function(type, func){
+        if(!this.callBacks[type]) return;
+        for(var i = 0; i <this.callBacks[type].length; i++){
+            if(this.callBacks[type][i] == func){
+                this.callBacks[type].splice(i, 1);
+                break;
+            }
+        }
+    }
+    this.dispatchEvent = function(type, data = {}){
+        if(!this.callBacks[type]) return;
+        data.type = type;
+        for(var i = 0; i <this.callBacks[type].length; i++){
+            this.callBacks[type][i](data);
+        }
+    }
+    //URL PARAMS
     this.getUrlParams = function (prop) {
         var params = {};
         var search = decodeURIComponent(window.location.href.slice(window.location.href.indexOf('?') + 1));

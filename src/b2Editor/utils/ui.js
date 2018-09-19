@@ -32,6 +32,11 @@ export const initGui = function () {
     buildHeaderBar();
     B2dEditor.canvas.focus();
     scrollBars.update();
+
+    firebaseManager.registerListener('login', handleLoginStatusChange);
+}
+const handleLoginStatusChange = function(event){
+    console.log("RECEIVED EVENT:", event.type);
 }
 const buildHeaderBar = function(){
     headerBar = document.createElement('div');
@@ -87,14 +92,6 @@ const buildHeaderBar = function(){
     levelName.innerHTML = "TEST 123";
     button.setAttribute('id', 'levelName');
     headerBar.appendChild(levelName);
-
-}
-export const updateStatusHeaderBar = function(){
-    if(firebaseManager.user){
-
-    }else{
-
-    }
 
 }
 
@@ -158,6 +155,7 @@ export const showLoginScreen = function(){
         errorSpan.innerText = '';
         errorSpan.style.display = 'block';
         errorSpan.style.color = '#ff4b00';
+        errorSpan.style.margin = '20px auto';
         divWrapper.appendChild(errorSpan);
 
 
@@ -201,7 +199,7 @@ export const showLoginScreen = function(){
             }
 
             errorSpan.innerText = '';
-            errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
+            //errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
             if(errorStack.length == 0) return true;
             for(var i = 0; i<errorStack.length; i++){
                 errorSpan.innerText += errorStack[i]+'\n';
@@ -281,7 +279,12 @@ export const showLoginScreen = function(){
 
         $(button).on('click', ()=>{
             if(errorChecks(true)){
-                alert("Send registration!");
+                firebaseManager.registerUser(email.value, password.value).then(()=>{
+                    console.log("Succesfully registered!!");
+                }).catch((error) =>{
+                    console.log("Firebase responded with", error.code);
+                    errorSpan.innerText = error.message;
+                });
             }
         });
 
