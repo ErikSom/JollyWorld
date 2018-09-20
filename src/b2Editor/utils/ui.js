@@ -38,7 +38,6 @@ export const initGui = function () {
     handleLoginStatusChange();
 }
 const handleLoginStatusChange = function(event){
-    console.log("RECEIVED EVENT:", event.type);
     if(firebaseManager.isLoggedIn){
 
     }
