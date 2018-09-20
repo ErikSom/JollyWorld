@@ -60,16 +60,6 @@ canvas {
     left: 0;
 }
 
-#login-box,
-#register-box,
-#forgot-box,
-#reset-box,
-#userdata-box,
-#signout-box,
-#loadlevel-box,
-#publishlevel-box {
-    display: none;
-}
 
 #uicontainer {
     position: absolute;
@@ -267,6 +257,10 @@ canvas {
     line-height: 30px;
     margin-top: 5px;
     font-size: 11px;
+}
+.editorHeader .profile{
+    background-image:url('../../build/assets/images/gui/Profile_Button.png');
+    background-size:contain;
 }
 
 

@@ -4,8 +4,6 @@ import {
 const firebase = require('firebase');
 import $ from 'jquery';
 
-
-
 function FireBaseManager() {
     this.app;
     this.user;
@@ -34,6 +32,8 @@ function FireBaseManager() {
                 self.onLogin();
             }
         });
+        console.log("INIT FB");
+        console.log(firebase.auth());
     }
 
     this.registerUser = function (email, password) {
@@ -83,7 +83,7 @@ function FireBaseManager() {
             console.log(error.message);
         });
     }
-    this.isLoggedIn = function(){
+    this.isLoggedIn = function () {
         return this.user != undefined;
     }
     this.onLogin = function () {
@@ -107,48 +107,24 @@ function FireBaseManager() {
         this.dispatchEvent('login');
     }
     this.login = function (email, password) {
-        var self = this;
-        console.log("LOGGING IN:");
-        console.log(firebase.auth());
-        firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
-            self.onLoginSucccess(user);
-        }, function (error) {
-            self.onLoginError(error);
+        return new Promise((resolve, reject) => {
+            firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
+                resolve();
+            }, function (error) {
+                reject(error);
+            });
         });
-    }
-    this.onLoginComplete = function () {
-        console.log("USER LOGGED IN!");
-        ui.loggedIn();
-        //ui.showBox('#signout-box')
-        console.log(this.app.auth().currentUser);
-        $(".ui.positive.message").removeClass('hidden');
-        $(".ui.positive.message > p").text("Logged in as " + this.app.auth().currentUser);
     }
     this.signout = function () {
-        firebase.auth().signOut().then(function () {
-            console.log("signed out");
-            ui.signedOut();
-        }, function (error) {
-            // An error happened.
-            console.log("signout error" + error.message);
-            $(".ui.negative.message").removeClass('hidden');
-            $(".ui.negative.message > p").text(error.message);
+        return new Promise((resolve, reject) => {
+            firebase.auth().signOut().then(function () {
+                resolve();
+            }, function (error) {
+                reject(error);
+            });
         });
     }
-    this.onLoginSucccess = function (user) {
-        console.log("LOGIN SUCCES")
-        console.log(user);
-        // go to application
-        $('form').removeClass('loading');
-        $(".ui.negative.message:visible").addClass('hidden');
-    }
-    this.onLoginError = function (error) {
-        $('form').removeClass('loading');
-        console.log($(".ui.negative.message:visible"));
-        $(".ui.negative.message").removeClass('hidden');
-        $(".ui.negative.message > p").text(error.message);
-        console.log("ERROR" + error.message);
-    }
+
     this.requestResetPassword = function (email) {
         console.log("reset password for:" + email);
         this.app.auth().sendPasswordResetEmail(email).then(function () {
@@ -288,23 +264,23 @@ function FireBaseManager() {
     //UTILS
     //SIMPLE CALLBACK SYSTEM
     this.callBacks = {};
-    this.registerListener = function(type, func){
-        if(!this.callBacks[type]) this.callBacks[type] = [];
+    this.registerListener = function (type, func) {
+        if (!this.callBacks[type]) this.callBacks[type] = [];
         this.callBacks[type].push(func);
     }
-    this.removeListener = function(type, func){
-        if(!this.callBacks[type]) return;
-        for(var i = 0; i <this.callBacks[type].length; i++){
-            if(this.callBacks[type][i] == func){
+    this.removeListener = function (type, func) {
+        if (!this.callBacks[type]) return;
+        for (var i = 0; i < this.callBacks[type].length; i++) {
+            if (this.callBacks[type][i] == func) {
                 this.callBacks[type].splice(i, 1);
                 break;
             }
         }
     }
-    this.dispatchEvent = function(type, data = {}){
-        if(!this.callBacks[type]) return;
+    this.dispatchEvent = function (type, data = {}) {
+        if (!this.callBacks[type]) return;
         data.type = type;
-        for(var i = 0; i <this.callBacks[type].length; i++){
+        for (var i = 0; i < this.callBacks[type].length; i++) {
             this.callBacks[type][i](data);
         }
     }

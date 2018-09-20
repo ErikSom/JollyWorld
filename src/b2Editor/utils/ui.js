@@ -13,6 +13,7 @@ export let editorGUI;
 let headerBar;
 let levelEditScreen;
 let loginScreen;
+let registerScreen;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -34,9 +35,13 @@ export const initGui = function () {
     scrollBars.update();
 
     firebaseManager.registerListener('login', handleLoginStatusChange);
+    handleLoginStatusChange();
 }
 const handleLoginStatusChange = function(event){
     console.log("RECEIVED EVENT:", event.type);
+    if(firebaseManager.isLoggedIn){
+
+    }
 }
 const buildHeaderBar = function(){
     headerBar = document.createElement('div');
@@ -61,6 +66,13 @@ const buildHeaderBar = function(){
     button.setAttribute('class', 'headerButton login buttonOverlay dark');
     button.innerHTML = "LOGIN";
     headerBar.appendChild(button);
+    button.addEventListener('click', showLoginScreen);
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton profile buttonOverlay dark');
+    headerBar.appendChild(button);
+    button.style.width = '48px';
+    button.style.height = '30px';
     button.addEventListener('click', showLoginScreen);
 
     button = document.createElement('div');
@@ -94,7 +106,6 @@ const buildHeaderBar = function(){
     headerBar.appendChild(levelName);
 
 }
-
 export const showLoginScreen = function(){
     if(!loginScreen){
         const loginGUIWidth = 300;
@@ -106,6 +117,185 @@ export const showLoginScreen = function(){
         loginScreen.domElement.setAttribute('id', 'loginScreen');
 
         let folder = loginScreen.addFolder('Login Screen');
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
+
+        folder.open();
+
+
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+
+
+        let span = document.createElement('span');
+        span.innerText = 'LOG IN';
+        targetDomElement.appendChild(span);
+        span.style.fontSize = '20px';
+        span.style.marginTop = '20px';
+        span.style.display = 'inline-block';
+
+
+        let divWrapper = document.createElement('div');
+        divWrapper.style.padding = '0px 20px';
+
+        var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
+
+        let email = document.createElement('input');
+        email.value = DEFAULT_TEXTS.login_DefaultEmail;
+        divWrapper.appendChild(email);
+        email.style = textAreanStyle;
+
+        let password = document.createElement('input');
+        password.value = DEFAULT_TEXTS.login_DefaultPassword;
+        password.setAttribute('type', 'password');
+        divWrapper.appendChild(password);
+        password.style = textAreanStyle;
+
+
+        let errorSpan = document.createElement('span');
+        errorSpan.innerText = '';
+        errorSpan.style.display = 'block';
+        errorSpan.style.color = '#ff4b00';
+        errorSpan.style.margin = '20px auto';
+        divWrapper.appendChild(errorSpan);
+
+
+        const errorChecks = (noDefault=false)=>{
+            var errorStack = [];
+            const textAreaDefaultColor = '#fff';
+            const textAreaErrorColor = '#e8764b';
+
+            email.style.backgroundColor = textAreaDefaultColor;
+            password.style.backgroundColor = textAreaDefaultColor;
+
+            if(email.value != DEFAULT_TEXTS.login_DefaultEmail || noDefault){
+                var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+                if(!re.test(String(email.value).toLowerCase())){
+                     errorStack.push("Email entered is not a valid email address");
+                     email.style.backgroundColor = textAreaErrorColor;
+                }
+            }
+
+            if(password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault){
+                if(password.value.length<6){
+                    errorStack.push("Password must be at last 6 characters long");
+                    password.style.backgroundColor = textAreaErrorColor;
+                }
+            }
+
+            errorSpan.innerText = '';
+            //errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
+            if(errorStack.length == 0) return true;
+            for(var i = 0; i<errorStack.length; i++){
+                errorSpan.innerText += errorStack[i]+'\n';
+            }
+            return false;
+        }
+        let func = (textarea) =>{
+            let _text = textarea;
+            var f = () => {
+                const maxChars = 32;
+                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+                errorChecks();
+            }
+            f();
+            return f;
+        }
+        let focus = (textarea, value) =>{
+            let _text = textarea;
+            let _value = value;
+            var f = () =>{
+                if(_text.value == _value) textarea.value = '';
+                if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
+            }
+            f();
+            return f;
+        };
+        let blur = (textarea, value) =>{
+            let _text = textarea;
+            let _value = value;
+            var f = () =>{
+                if(_text.value == ''){
+                     textarea.value = _value;
+                     if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
+                }
+                errorChecks();
+            }
+            f();
+            return f;
+        };
+
+        $(email).on('input selectionchange propertychange', func(email));
+        $(email).focus(focus(email, DEFAULT_TEXTS.login_DefaultEmail));
+        $(email).blur(blur(email, DEFAULT_TEXTS.login_DefaultEmail));
+
+        $(password).on('input selectionchange propertychange', func(password));
+        $(password).focus(focus(password, DEFAULT_TEXTS.login_DefaultPassword));
+        $(password).blur(blur(password, DEFAULT_TEXTS.login_DefaultPassword));
+
+        targetDomElement.appendChild(divWrapper);
+
+        span = document.createElement('span');
+        span.innerText = 'No account?';
+        targetDomElement.appendChild(span);
+
+        span = document.createElement('span');
+        span.innerText = 'Sign Up!';
+        targetDomElement.appendChild(span);
+        span.setAttribute('class', 'text_button');
+        $(span).on('click', ()=>{
+            $(loginScreen.domElement).toggle();
+            showRegisterScreen();
+        });
+
+        let button = document.createElement('div');
+        button.setAttribute('id', 'acceptButton')
+        button.classList.add('menuButton');
+        button.innerHTML = 'Login!';
+        targetDomElement.appendChild(button);
+        button.style.margin = '10px auto';
+
+
+        $(button).on('click', ()=>{
+            if(errorChecks(true)){
+                firebaseManager.login(email.value, password.value).then(()=>{
+                    console.log("Succesfully registered!!");
+                }).catch((error) =>{
+                    console.log("Firebase responded with", error.code);
+                    errorSpan.innerText = error.message;
+                });
+            }
+        });
+
+        span = document.createElement('span');
+        span.innerText = 'Forgot your password?';
+        targetDomElement.appendChild(span);
+        span.setAttribute('class', 'text_button');
+
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
+
+
+        customGUIContainer.appendChild(loginScreen.domElement);
+
+
+        registerDragWindow(loginScreen);
+
+    }
+    loginScreen.domElement.style.display = "block";
+}
+
+export const showRegisterScreen = function(){
+    if(!registerScreen){
+        const loginGUIWidth = 300;
+
+        registerScreen =  new dat.GUI({
+            autoPlace: false,
+            width: loginGUIWidth
+        });
+        registerScreen.domElement.setAttribute('id', 'registerScreen');
+
+        let folder = registerScreen.addFolder('Register Screen');
         folder.domElement.classList.add('custom');
         folder.domElement.style.textAlign = 'center';
 
@@ -297,19 +487,23 @@ export const showLoginScreen = function(){
         span.innerText = 'Log In!';
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
+        $(span).on('click', ()=>{
+            $(registerScreen).toggle();
+            showLoginScreen();
+        });
 
         targetDomElement.appendChild(document.createElement('br'));
         targetDomElement.appendChild(document.createElement('br'));
 
 
 
-        customGUIContainer.appendChild(loginScreen.domElement);
+        customGUIContainer.appendChild(registerScreen.domElement);
 
 
-        registerDragWindow(loginScreen);
+        registerDragWindow(registerScreen);
 
     }
-    loginScreen.domElement.style.display = "block";
+    registerScreen.domElement.style.display = "block";
 }
 
 const openLevelEditScreen = function(){
