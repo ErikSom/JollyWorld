@@ -126,6 +126,7 @@ const buildHeaderBar = function () {
 
     handleLoginStatusChange();
 }
+
 export const showLoginScreen = function () {
     if (!loginScreen) {
         const loginGUIWidth = 300;
@@ -293,15 +294,20 @@ export const showLoginScreen = function () {
 
         $(button).on('click', () => {
             if (errorChecks(true)) {
+                let oldText = button.innerHTML;
+                button.innerHTML = '';
+                button.appendChild(dotShell);
                 $(dotShell).show();
                 firebaseManager.login(email.value, password.value).then(() => {
                     console.log("Succesfully logged in!!");
                     $(loginScreen.domElement).hide(windowHideTime);
+                    button.innerHTML = oldText;
                     $(dotShell).hide();
 
                 }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     errorSpan.innerText = error.message;
+                    button.innerHTML = oldText;
                     $(dotShell).hide();
                 });
             }
@@ -323,6 +329,11 @@ export const showLoginScreen = function () {
 
     }
     $(loginScreen.domElement).show();
+
+    if(registerScreen){
+        loginScreen.domElement.style.top = registerScreen.domElement.style.top;
+        loginScreen.domElement.style.left = registerScreen.domElement.style.left;
+    }
 }
 
 export const showRegisterScreen = function () {
@@ -527,14 +538,19 @@ export const showRegisterScreen = function () {
         $(button).on('click', () => {
             if (errorChecks(true)) {
                 $(dotShell).show();
+                let oldText = button.innerHTML;
+                button.innerHTML = '';
+                button.appendChild(dotShell);
                 firebaseManager.registerUser(email.value, password.value).then(() => {
                     console.log("Succesfully registered!!");
                     $(registerScreen.domElement).hide(windowHideTime);
                     $(dotShell).hide();
+                    button.innerHTML = oldText;
                 }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     errorSpan.innerText = error.message;
                     $(dotShell).hide();
+                    button.innerHTML = oldText;
                 });
             }
         });
@@ -565,6 +581,11 @@ export const showRegisterScreen = function () {
 
     }
     registerScreen.domElement.style.display = "block";
+
+    if(loginScreen){
+        registerScreen.domElement.style.top = loginScreen.domElement.style.top;
+        registerScreen.domElement.style.left = loginScreen.domElement.style.left;
+    }
 }
 
 const openLevelEditScreen = function () {

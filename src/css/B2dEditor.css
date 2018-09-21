@@ -370,7 +370,7 @@ canvas {
  */
  .dot-shell{
     position: absolute;
-    right: 25px;
+    left: 50%;
     top: 50%;
  }
  .dot-pulse {

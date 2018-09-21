@@ -214,8 +214,6 @@ const _B2dEditor = function () {
 		ui.destroyEditorGUI();
 		ui.buildEditorGUI();
 
-		let targetFolder;
-
 		switch (i) {
 			case this.tool_SELECT:
 				ui.destroyEditorGUI();
