@@ -84,6 +84,7 @@ function FireBaseManager() {
         });
     }
     this.isLoggedIn = function () {
+        console.log(this.user);
         return this.user != undefined;
     }
     this.onLogin = function () {
@@ -116,8 +117,11 @@ function FireBaseManager() {
         });
     }
     this.signout = function () {
+        var self = this;
         return new Promise((resolve, reject) => {
             firebase.auth().signOut().then(function () {
+                self.user = undefined
+                self.dispatchEvent('logout');
                 resolve();
             }, function (error) {
                 reject(error);

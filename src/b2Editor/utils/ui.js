@@ -1,10 +1,14 @@
-import { B2dEditor } from "../B2dEditor";
+import {
+    B2dEditor
+} from "../B2dEditor";
 import * as scrollBars from "./scrollBars";
 import * as dat from "../../../libs/dat.gui";
 import {
-	game
+    game
 } from "../../Game";
-import { firebaseManager } from "../../FireBaseManager";
+import {
+    firebaseManager
+} from "../../FireBaseManager";
 
 
 let toolGUI;
@@ -17,12 +21,13 @@ let registerScreen;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
+let windowHideTime = 500;
 
-export const hide = function(){
+export const hide = function () {
     uiContainer.style.display = "none";
     scrollBars.hide();
 }
-export const show = function(){
+export const show = function () {
     uiContainer.style.display = "block";
     scrollBars.show();
 }
@@ -35,14 +40,23 @@ export const initGui = function () {
     scrollBars.update();
 
     firebaseManager.registerListener('login', handleLoginStatusChange);
+    firebaseManager.registerListener('logout', handleLoginStatusChange);
+
     handleLoginStatusChange();
 }
-const handleLoginStatusChange = function(event){
-    if(firebaseManager.isLoggedIn){
-
+const handleLoginStatusChange = function (event) {
+    if (headerBar) {
+        console.log(firebaseManager.isLoggedIn());
+        if (firebaseManager.isLoggedIn()) {
+            $(headerBar).find('#loginButton').hide();
+            $(headerBar).find('#profileButton').show();
+        } else {
+            $(headerBar).find('#loginButton').show();
+            $(headerBar).find('#profileButton').hide();
+        }
     }
 }
-const buildHeaderBar = function(){
+const buildHeaderBar = function () {
     headerBar = document.createElement('div');
     headerBar.setAttribute('class', 'editorHeader');
     customGUIContainer.appendChild(headerBar);
@@ -63,16 +77,21 @@ const buildHeaderBar = function(){
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton login buttonOverlay dark');
+    button.setAttribute('id', 'loginButton');
     button.innerHTML = "LOGIN";
     headerBar.appendChild(button);
     button.addEventListener('click', showLoginScreen);
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton profile buttonOverlay dark');
+    button.setAttribute('id', 'profileButton');
     headerBar.appendChild(button);
     button.style.width = '48px';
     button.style.height = '30px';
-    button.addEventListener('click', showLoginScreen);
+    button.addEventListener('click', () => {
+        firebaseManager.signout();
+    });
+
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton exit buttonOverlay dark');
@@ -89,7 +108,7 @@ const buildHeaderBar = function(){
     button.innerHTML = "NEW";
     headerBar.appendChild(button);
 
-    button.addEventListener('click', ()=>{
+    button.addEventListener('click', () => {
         game.newLevel();
     });
 
@@ -104,12 +123,14 @@ const buildHeaderBar = function(){
     button.setAttribute('id', 'levelName');
     headerBar.appendChild(levelName);
 
+
+    handleLoginStatusChange();
 }
-export const showLoginScreen = function(){
-    if(!loginScreen){
+export const showLoginScreen = function () {
+    if (!loginScreen) {
         const loginGUIWidth = 300;
 
-        loginScreen =  new dat.GUI({
+        loginScreen = new dat.GUI({
             autoPlace: false,
             width: loginGUIWidth
         });
@@ -141,11 +162,13 @@ export const showLoginScreen = function(){
 
         let email = document.createElement('input');
         email.value = DEFAULT_TEXTS.login_DefaultEmail;
+        email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
         email.style = textAreanStyle;
 
         let password = document.createElement('input');
         password.value = DEFAULT_TEXTS.login_DefaultPassword;
+        password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
         password.style = textAreanStyle;
@@ -159,7 +182,7 @@ export const showLoginScreen = function(){
         divWrapper.appendChild(errorSpan);
 
 
-        const errorChecks = (noDefault=false)=>{
+        const errorChecks = (noDefault = false) => {
             var errorStack = [];
             const textAreaDefaultColor = '#fff';
             const textAreaErrorColor = '#e8764b';
@@ -167,16 +190,16 @@ export const showLoginScreen = function(){
             email.style.backgroundColor = textAreaDefaultColor;
             password.style.backgroundColor = textAreaDefaultColor;
 
-            if(email.value != DEFAULT_TEXTS.login_DefaultEmail || noDefault){
+            if (email.value != DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
                 var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-                if(!re.test(String(email.value).toLowerCase())){
-                     errorStack.push("Email entered is not a valid email address");
-                     email.style.backgroundColor = textAreaErrorColor;
+                if (!re.test(String(email.value).toLowerCase())) {
+                    errorStack.push("Email entered is not a valid email address");
+                    email.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if(password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault){
-                if(password.value.length<6){
+            if (password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
+                if (password.value.length < 6) {
                     errorStack.push("Password must be at last 6 characters long");
                     password.style.backgroundColor = textAreaErrorColor;
                 }
@@ -184,39 +207,39 @@ export const showLoginScreen = function(){
 
             errorSpan.innerText = '';
             //errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
-            if(errorStack.length == 0) return true;
-            for(var i = 0; i<errorStack.length; i++){
-                errorSpan.innerText += errorStack[i]+'\n';
+            if (errorStack.length == 0) return true;
+            for (var i = 0; i < errorStack.length; i++) {
+                errorSpan.innerText += errorStack[i] + '\n';
             }
             return false;
         }
-        let func = (textarea) =>{
+        let func = (textarea) => {
             let _text = textarea;
             var f = () => {
                 const maxChars = 32;
-                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+                if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
                 errorChecks();
             }
             f();
             return f;
         }
-        let focus = (textarea, value) =>{
+        let focus = (textarea, value) => {
             let _text = textarea;
             let _value = value;
-            var f = () =>{
-                if(_text.value == _value) textarea.value = '';
-                if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
+            var f = () => {
+                if (_text.value == _value) textarea.value = '';
+                if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
             }
             f();
             return f;
         };
-        let blur = (textarea, value) =>{
+        let blur = (textarea, value) => {
             let _text = textarea;
             let _value = value;
-            var f = () =>{
-                if(_text.value == ''){
-                     textarea.value = _value;
-                     if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
+            var f = () => {
+                if (_text.value == '') {
+                    textarea.value = _value;
+                    if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
                 }
                 errorChecks();
             }
@@ -235,33 +258,51 @@ export const showLoginScreen = function(){
         targetDomElement.appendChild(divWrapper);
 
         span = document.createElement('span');
-        span.innerText = 'No account?';
+        span.innerText = 'No account? ';
         targetDomElement.appendChild(span);
 
         span = document.createElement('span');
         span.innerText = 'Sign Up!';
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
-        $(span).on('click', ()=>{
+        $(span).on('click', () => {
             $(loginScreen.domElement).toggle();
             showRegisterScreen();
         });
 
         let button = document.createElement('div');
         button.setAttribute('id', 'acceptButton')
+        button.setAttribute('tabindex', '0');
         button.classList.add('menuButton');
         button.innerHTML = 'Login!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
+        $(button).keypress(function (e) {
+            if (e.keyCode == 13)
+                $(button).click();
+        });
+
+        var dotShell = document.createElement('div');
+        dotShell.setAttribute('class', 'dot-shell')
+        button.appendChild(dotShell);
+        var dots = document.createElement('div');
+        dots.setAttribute('class', 'dot-pulse')
+        dotShell.appendChild(dots);
+        $(dotShell).hide();
 
 
-        $(button).on('click', ()=>{
-            if(errorChecks(true)){
-                firebaseManager.login(email.value, password.value).then(()=>{
-                    console.log("Succesfully registered!!");
-                }).catch((error) =>{
+        $(button).on('click', () => {
+            if (errorChecks(true)) {
+                $(dotShell).show();
+                firebaseManager.login(email.value, password.value).then(() => {
+                    console.log("Succesfully logged in!!");
+                    $(loginScreen.domElement).hide(windowHideTime);
+                    $(dotShell).hide();
+
+                }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     errorSpan.innerText = error.message;
+                    $(dotShell).hide();
                 });
             }
         });
@@ -281,14 +322,14 @@ export const showLoginScreen = function(){
         registerDragWindow(loginScreen);
 
     }
-    loginScreen.domElement.style.display = "block";
+    $(loginScreen.domElement).show();
 }
 
-export const showRegisterScreen = function(){
-    if(!registerScreen){
+export const showRegisterScreen = function () {
+    if (!registerScreen) {
         const loginGUIWidth = 300;
 
-        registerScreen =  new dat.GUI({
+        registerScreen = new dat.GUI({
             autoPlace: false,
             width: loginGUIWidth
         });
@@ -320,23 +361,27 @@ export const showRegisterScreen = function(){
 
         let username = document.createElement('input');
         username.value = DEFAULT_TEXTS.login_DefaultUsername;
+        username.setAttribute('tabindex', '0');
         divWrapper.appendChild(username);
         username.style = textAreanStyle;
 
         let password = document.createElement('input');
         password.value = DEFAULT_TEXTS.login_DefaultPassword;
+        password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
         password.style = textAreanStyle;
 
         let repassword = document.createElement('input');
         repassword.value = DEFAULT_TEXTS.login_DefaultRePassword;
+        repassword.setAttribute('tabindex', '0');
         repassword.setAttribute('type', 'password');
         divWrapper.appendChild(repassword);
         repassword.style = textAreanStyle;
 
         let email = document.createElement('input');
         email.value = DEFAULT_TEXTS.login_DefaultEmail;
+        email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
         email.style = textAreanStyle;
 
@@ -348,7 +393,7 @@ export const showRegisterScreen = function(){
         divWrapper.appendChild(errorSpan);
 
 
-        const errorChecks = (noDefault=false)=>{
+        const errorChecks = (noDefault = false) => {
             var errorStack = [];
             const textAreaDefaultColor = '#fff';
             const textAreaErrorColor = '#e8764b';
@@ -358,70 +403,70 @@ export const showRegisterScreen = function(){
             repassword.style.backgroundColor = textAreaDefaultColor;
             email.style.backgroundColor = textAreaDefaultColor;
 
-            if(username.value != DEFAULT_TEXTS.login_DefaultUsername || noDefault){
-                if(username.value.length<3){
-                     errorStack.push("Username must be at last 3 characters long");
-                     username.style.backgroundColor = textAreaErrorColor;
+            if (username.value != DEFAULT_TEXTS.login_DefaultUsername || noDefault) {
+                if (username.value.length < 3) {
+                    errorStack.push("Username must be at last 3 characters long");
+                    username.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if(password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault){
-                if(password.value.length<6){
+            if (password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
+                if (password.value.length < 6) {
                     errorStack.push("Password must be at last 6 characters long");
                     password.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if(repassword.value != DEFAULT_TEXTS.login_DefaultRePassword || noDefault){
-                if(repassword.value != password.value){
-                     errorStack.push("Your passwords do not match");
-                     repassword.style.backgroundColor = textAreaErrorColor;
+            if (repassword.value != DEFAULT_TEXTS.login_DefaultRePassword || noDefault) {
+                if (repassword.value != password.value) {
+                    errorStack.push("Your passwords do not match");
+                    repassword.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if(email.value != DEFAULT_TEXTS.login_DefaultEmail || noDefault){
+            if (email.value != DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
                 var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-                if(!re.test(String(email.value).toLowerCase())){
-                     errorStack.push("Email entered is not a valid email address");
-                     email.style.backgroundColor = textAreaErrorColor;
+                if (!re.test(String(email.value).toLowerCase())) {
+                    errorStack.push("Email entered is not a valid email address");
+                    email.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
             errorSpan.innerText = '';
             //errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
-            if(errorStack.length == 0) return true;
-            for(var i = 0; i<errorStack.length; i++){
-                errorSpan.innerText += errorStack[i]+'\n';
+            if (errorStack.length == 0) return true;
+            for (var i = 0; i < errorStack.length; i++) {
+                errorSpan.innerText += errorStack[i] + '\n';
             }
             return false;
         }
-        let func = (textarea) =>{
+        let func = (textarea) => {
             let _text = textarea;
             var f = () => {
                 const maxChars = 32;
-                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+                if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
                 errorChecks();
             }
             f();
             return f;
         }
-        let focus = (textarea, value) =>{
+        let focus = (textarea, value) => {
             let _text = textarea;
             let _value = value;
-            var f = () =>{
-                if(_text.value == _value) textarea.value = '';
-                if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
+            var f = () => {
+                if (_text.value == _value) textarea.value = '';
+                if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
             }
             f();
             return f;
         };
-        let blur = (textarea, value) =>{
+        let blur = (textarea, value) => {
             let _text = textarea;
             let _value = value;
-            var f = () =>{
-                if(_text.value == ''){
-                     textarea.value = _value;
-                     if(_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
+            var f = () => {
+                if (_text.value == '') {
+                    textarea.value = _value;
+                    if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
                 }
                 errorChecks();
             }
@@ -460,19 +505,36 @@ export const showRegisterScreen = function(){
 
         let button = document.createElement('div');
         button.setAttribute('id', 'acceptButton')
+        button.setAttribute('tabindex', '0');
         button.classList.add('menuButton');
         button.innerHTML = 'Accept!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
+        $(button).keypress(function (e) {
+            if (e.keyCode == 13)
+                $(button).click();
+        });
+
+        var dotShell = document.createElement('div');
+        dotShell.setAttribute('class', 'dot-shell')
+        button.appendChild(dotShell);
+        var dots = document.createElement('div');
+        dots.setAttribute('class', 'dot-pulse')
+        dotShell.appendChild(dots);
+        $(dotShell).hide();
 
 
-        $(button).on('click', ()=>{
-            if(errorChecks(true)){
-                firebaseManager.registerUser(email.value, password.value).then(()=>{
+        $(button).on('click', () => {
+            if (errorChecks(true)) {
+                $(dotShell).show();
+                firebaseManager.registerUser(email.value, password.value).then(() => {
                     console.log("Succesfully registered!!");
-                }).catch((error) =>{
+                    $(registerScreen.domElement).hide(windowHideTime);
+                    $(dotShell).hide();
+                }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     errorSpan.innerText = error.message;
+                    $(dotShell).hide();
                 });
             }
         });
@@ -486,8 +548,8 @@ export const showRegisterScreen = function(){
         span.innerText = 'Log In!';
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
-        $(span).on('click', ()=>{
-            $(registerScreen).toggle();
+        $(span).on('click', () => {
+            $(registerScreen.domElement).hide();
             showLoginScreen();
         });
 
@@ -505,11 +567,11 @@ export const showRegisterScreen = function(){
     registerScreen.domElement.style.display = "block";
 }
 
-const openLevelEditScreen = function(){
-    if(!levelEditScreen){
+const openLevelEditScreen = function () {
+    if (!levelEditScreen) {
         const levelEditGUIWidth = 300;
 
-        levelEditScreen =  new dat.GUI({
+        levelEditScreen = new dat.GUI({
             autoPlace: false,
             width: levelEditGUIWidth
         });
@@ -531,7 +593,7 @@ const openLevelEditScreen = function(){
         divWrapper.appendChild(youtubeFeed);
 
         let youtubeLink;
-        for(let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             youtubeLink = document.createElement('div');
             youtubeLink.setAttribute('id', 'youtubeLink');
             youtubeFeed.appendChild(youtubeLink);
@@ -560,12 +622,12 @@ const openLevelEditScreen = function(){
         divWrapper.appendChild(span);
 
 
-        let func = (textarea, span) =>{
+        let func = (textarea, span) => {
             let _text = textarea;
             let _span = span;
             var f = () => {
                 const maxChars = 32;
-                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+                if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
                 _span.innerText = `Characters left:${maxChars-_text.value.length}`;
             }
             f();
@@ -587,12 +649,12 @@ const openLevelEditScreen = function(){
 
 
 
-        func = (textarea, span) =>{
+        func = (textarea, span) => {
             let _text = textarea;
             let _span = span;
             var f = () => {
                 const maxChars = 300;
-                if(_text.value.length>maxChars) _text.value = _text.value.substr(0, maxChars);
+                if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
                 _span.innerText = `Characters left:${maxChars-_text.value.length}`;
             }
             f();
@@ -604,7 +666,9 @@ const openLevelEditScreen = function(){
         divWrapper.appendChild(document.createElement('br'));
 
 
-        var levelOptions = {backgroundColor:'#FFFFFF'};
+        var levelOptions = {
+            backgroundColor: '#FFFFFF'
+        };
         var item = folder.addColor(levelOptions, "backgroundColor");
         divWrapper.appendChild(item.domElement.parentNode.parentNode);
         item.domElement.parentNode.parentNode.style.padding = '0px';
@@ -661,7 +725,7 @@ export const destroyEditorGUI = function () {
     removeGuiAssetSelection();
 }
 
-export const createEditorStyledGUI  = function(name){
+export const createEditorStyledGUI = function (name) {
     var element = document.createElement("div");
     element.setAttribute('class', 'toolgui main');
     var header = document.createElement('div');
@@ -709,10 +773,13 @@ export const createToolGUI = function () {
 }
 
 let assetSelection = {
-    assetSelectedGroup:"",
-    assetSelectedTexture:"",
+    assetSelectedGroup: "",
+    assetSelectedTexture: "",
 }
-let assetGUIPos = {x:0, y:0};
+let assetGUIPos = {
+    x: 0,
+    y: 0
+};
 export const initGuiAssetSelection = function () {
     removeGuiAssetSelection();
 
@@ -829,7 +896,7 @@ export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
 
-    if(Math.abs(difX)+Math.abs(difY) > 5){
+    if (Math.abs(difX) + Math.abs(difY) > 5) {
         $(_window.domElement).find('.title').data('moved', true);
     }
 
@@ -847,9 +914,9 @@ export const registerDragWindow = function (_window) {
     });
     $(document).on('click', function (event) {
 
-        if($(_window.domElement).find('.title').data('moved') == true){
+        if ($(_window.domElement).find('.title').data('moved') == true) {
             var tarFolder = _window.__folders[$(_window.domElement).find('.title')[0].innerText]
-            if(tarFolder.closed) tarFolder.open();
+            if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
 
@@ -860,10 +927,10 @@ export const registerDragWindow = function (_window) {
 
 
 const DEFAULT_TEXTS = {
-    levelEditScreen_DefaultTitleText:"Fill in Title",
-    levelEditScreen_DefaultDescriptionText:"Fill in Description",
-    login_DefaultUsername:"Username",
-    login_DefaultPassword:"Password",
-    login_DefaultRePassword:"Re-type Password",
-    login_DefaultEmail:"E-mail addres",
+    levelEditScreen_DefaultTitleText: "Fill in Title",
+    levelEditScreen_DefaultDescriptionText: "Fill in Description",
+    login_DefaultUsername: "Username",
+    login_DefaultPassword: "Password",
+    login_DefaultRePassword: "Re-type Password",
+    login_DefaultEmail: "E-mail addres",
 }
