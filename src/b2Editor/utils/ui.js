@@ -18,6 +18,7 @@ let headerBar;
 let levelEditScreen;
 let loginScreen;
 let registerScreen;
+let usernameScreen;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -46,7 +47,6 @@ export const initGui = function () {
 }
 const handleLoginStatusChange = function (event) {
     if (headerBar) {
-        console.log(firebaseManager.isLoggedIn());
         if (firebaseManager.isLoggedIn()) {
             $(headerBar).find('#loginButton').hide();
             $(headerBar).find('#profileButton').show();
@@ -54,6 +54,13 @@ const handleLoginStatusChange = function (event) {
             $(headerBar).find('#loginButton').show();
             $(headerBar).find('#profileButton').hide();
         }
+    }
+    console.log("RECEIVED EVENT!!!");
+    if((event && event.type == 'login') || firebaseManager.isLoggedIn()){
+        firebaseManager.getUserData().then(()=>{
+        }).catch((error)=>{
+            showUsernameScreen();
+        });
     }
 }
 const buildHeaderBar = function () {
@@ -370,11 +377,11 @@ export const showRegisterScreen = function () {
 
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
-        let username = document.createElement('input');
-        username.value = DEFAULT_TEXTS.login_DefaultUsername;
-        username.setAttribute('tabindex', '0');
-        divWrapper.appendChild(username);
-        username.style = textAreanStyle;
+        let email = document.createElement('input');
+        email.value = DEFAULT_TEXTS.login_DefaultEmail;
+        email.setAttribute('tabindex', '0');
+        divWrapper.appendChild(email);
+        email.style = textAreanStyle;
 
         let password = document.createElement('input');
         password.value = DEFAULT_TEXTS.login_DefaultPassword;
@@ -390,12 +397,6 @@ export const showRegisterScreen = function () {
         divWrapper.appendChild(repassword);
         repassword.style = textAreanStyle;
 
-        let email = document.createElement('input');
-        email.value = DEFAULT_TEXTS.login_DefaultEmail;
-        email.setAttribute('tabindex', '0');
-        divWrapper.appendChild(email);
-        email.style = textAreanStyle;
-
         let errorSpan = document.createElement('span');
         errorSpan.innerText = '';
         errorSpan.style.display = 'block';
@@ -409,17 +410,9 @@ export const showRegisterScreen = function () {
             const textAreaDefaultColor = '#fff';
             const textAreaErrorColor = '#e8764b';
 
-            username.style.backgroundColor = textAreaDefaultColor;
             password.style.backgroundColor = textAreaDefaultColor;
             repassword.style.backgroundColor = textAreaDefaultColor;
             email.style.backgroundColor = textAreaDefaultColor;
-
-            if (username.value != DEFAULT_TEXTS.login_DefaultUsername || noDefault) {
-                if (username.value.length < 3) {
-                    errorStack.push("Username must be at last 3 characters long");
-                    username.style.backgroundColor = textAreaErrorColor;
-                }
-            }
 
             if (password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
                 if (password.value.length < 6) {
@@ -485,10 +478,6 @@ export const showRegisterScreen = function () {
             return f;
         };
 
-        $(username).on('input selectionchange propertychange', func(username));
-        $(username).focus(focus(username, DEFAULT_TEXTS.login_DefaultUsername));
-        $(username).blur(blur(username, DEFAULT_TEXTS.login_DefaultUsername));
-
         $(password).on('input selectionchange propertychange', func(password));
         $(password).focus(focus(password, DEFAULT_TEXTS.login_DefaultPassword));
         $(password).blur(blur(password, DEFAULT_TEXTS.login_DefaultPassword));
@@ -541,7 +530,7 @@ export const showRegisterScreen = function () {
                 let oldText = button.innerHTML;
                 button.innerHTML = '';
                 button.appendChild(dotShell);
-                firebaseManager.registerUser(username.value, email.value, password.value).then(() => {
+                firebaseManager.registerUser(email.value, password.value).then(() => {
                     console.log("Succesfully registered!!");
                     $(registerScreen.domElement).hide(windowHideTime);
                     $(dotShell).hide();
@@ -549,7 +538,7 @@ export const showRegisterScreen = function () {
                 }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     let errorMessage = error.message;
-                    if(error.code == 'PERMISSION_DENIED') errorMessage = 'Username already taken';
+                    if(error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
                     errorSpan.innerText = errorMessage;
                     $(dotShell).hide();
                     button.innerHTML = oldText;
@@ -574,10 +563,7 @@ export const showRegisterScreen = function () {
         targetDomElement.appendChild(document.createElement('br'));
         targetDomElement.appendChild(document.createElement('br'));
 
-
-
         customGUIContainer.appendChild(registerScreen.domElement);
-
 
         registerDragWindow(registerScreen);
 
@@ -587,6 +573,171 @@ export const showRegisterScreen = function () {
     if(loginScreen){
         registerScreen.domElement.style.top = loginScreen.domElement.style.top;
         registerScreen.domElement.style.left = loginScreen.domElement.style.left;
+    }
+}
+export const showUsernameScreen = function () {
+    if (!usernameScreen) {
+        const loginGUIWidth = 300;
+
+        usernameScreen = new dat.GUI({
+            autoPlace: false,
+            width: loginGUIWidth
+        });
+        usernameScreen.domElement.setAttribute('id', 'usernameScreen');
+
+        let folder = usernameScreen.addFolder('Username Screen');
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
+
+        folder.open();
+
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+
+        let span = document.createElement('span');
+        span.innerText = 'USERNAME';
+        targetDomElement.appendChild(span);
+        span.style.fontSize = '20px';
+        span.style.marginTop = '20px';
+        span.style.display = 'inline-block';
+
+
+        let divWrapper = document.createElement('div');
+        divWrapper.style.padding = '0px 20px';
+
+        var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
+
+        let username = document.createElement('input');
+        username.value = DEFAULT_TEXTS.login_DefaultUsername;
+        username.setAttribute('tabindex', '0');
+        divWrapper.appendChild(username);
+        username.style = textAreanStyle;
+
+        let errorSpan = document.createElement('span');
+        errorSpan.innerText = '';
+        errorSpan.style.display = 'block';
+        errorSpan.style.color = '#ff4b00';
+        errorSpan.style.margin = '20px auto';
+        divWrapper.appendChild(errorSpan);
+
+
+        const errorChecks = (noDefault = false) => {
+            var errorStack = [];
+            const textAreaDefaultColor = '#fff';
+            const textAreaErrorColor = '#e8764b';
+
+            username.style.backgroundColor = textAreaDefaultColor;
+
+            if (username.value != DEFAULT_TEXTS.login_DefaultUsername || noDefault) {
+                if (username.value.length < 3) {
+                    errorStack.push("Username must be at last 3 characters long");
+                    username.style.backgroundColor = textAreaErrorColor;
+                }
+            }
+            errorSpan.innerText = '';
+            //errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
+            if (errorStack.length == 0) return true;
+            for (var i = 0; i < errorStack.length; i++) {
+                errorSpan.innerText += errorStack[i] + '\n';
+            }
+            return false;
+        }
+        let func = (textarea) => {
+            let _text = textarea;
+            var f = () => {
+                const maxChars = 32;
+                if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
+                errorChecks();
+            }
+            f();
+            return f;
+        }
+        let focus = (textarea, value) => {
+            let _text = textarea;
+            let _value = value;
+            var f = () => {
+                if (_text.value == _value) textarea.value = '';
+            }
+            f();
+            return f;
+        };
+        let blur = (textarea, value) => {
+            let _text = textarea;
+            let _value = value;
+            var f = () => {
+                if (_text.value == '') {
+                    textarea.value = _value;
+                }
+                errorChecks();
+            }
+            f();
+            return f;
+        };
+
+        $(username).on('input selectionchange propertychange', func(username));
+        $(username).focus(focus(username, DEFAULT_TEXTS.login_DefaultUsername));
+        $(username).blur(blur(username, DEFAULT_TEXTS.login_DefaultUsername));
+
+        targetDomElement.appendChild(divWrapper);
+
+
+        let button = document.createElement('div');
+        button.setAttribute('id', 'acceptButton')
+        button.setAttribute('tabindex', '0');
+        button.classList.add('menuButton');
+        button.innerHTML = 'Accept!';
+        targetDomElement.appendChild(button);
+        button.style.margin = '10px auto';
+        $(button).keypress(function (e) {
+            if (e.keyCode == 13)
+                $(button).click();
+        });
+
+        var dotShell = document.createElement('div');
+        dotShell.setAttribute('class', 'dot-shell')
+        button.appendChild(dotShell);
+        var dots = document.createElement('div');
+        dots.setAttribute('class', 'dot-pulse')
+        dotShell.appendChild(dots);
+        $(dotShell).hide();
+
+
+        $(button).on('click', () => {
+            if (errorChecks(true)) {
+                $(dotShell).show();
+                let oldText = button.innerHTML;
+                button.innerHTML = '';
+                button.appendChild(dotShell);
+                firebaseManager.claimUsername(username.value).then(() => {
+                    console.log("Succesfully claimed username!!");
+                    $(usernameScreen.domElement).hide(windowHideTime);
+                    $(dotShell).hide();
+                    button.innerHTML = oldText;
+                }).catch((error) => {
+                    console.log("Firebase responded with", error.code);
+                    let errorMessage = error.message;
+                    if(error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
+                    errorSpan.innerText = errorMessage;
+                    $(dotShell).hide();
+                    button.innerHTML = oldText;
+                });
+            }
+        });
+
+
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
+
+
+        customGUIContainer.appendChild(usernameScreen.domElement);
+
+        registerDragWindow(usernameScreen);
+
+    }
+    usernameScreen.domElement.style.display = "block";
+    if(loginScreen){
+        usernameScreen.domElement.style.top = loginScreen.domElement.style.top;
+        usernameScreen.domElement.style.left = loginScreen.domElement.style.left;
     }
 }
 

@@ -7,12 +7,7 @@ import $ from 'jquery';
 function FireBaseManager() {
     this.app;
     this.user;
-    this.username;
-    this.usernameUnique = false;
-    this.createdUserdata = false;
-    this.loginEmail;
-    this.loginPassword;
-    this.actionCode;
+    this.userData;
     this.baseDownloadURL = "https://firebasestorage.googleapis.com/v0/b/jolly-ad424.appspot.com/o/";
 
     this.init = function () {
@@ -36,58 +31,42 @@ function FireBaseManager() {
         console.log(firebase.auth());
     }
 
-    this.registerUser = function (username, email, password) {
-        var self = this;
+    this.registerUser = function (email, password) {
         return new Promise((resolve, reject) => {
-            if (firebase.auth().currentUser) {
-                self.claimUsername(username).then(() => {
-                    resolve();
-                }).catch((error) => {
-                    reject(error);
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then(() => {
+                    resolve()
                 })
-            } else {
-                firebase.auth().createUserWithEmailAndPassword(email, password).then(function (user) {
-                    self.claimUsername(username).then(() => {
-                        resolve();
-                    }).catch((error) => {
-                        reject(error);
-                    })
-                }, (error) => {
+                .catch((error) => {
                     reject(error);
                 });
-            }
         });
     }
     this.claimUsername = function (username) {
         username = username.toLowerCase();
         return new Promise((resolve, reject) => {
             console.log(self.app);
-            firebase.database().ref('/Usernames/'+username).set(firebase.auth().currentUser.uid, function (err) {
+            firebase.database().ref('/Usernames/' + username).set(firebase.auth().currentUser.uid, function (err) {
                 if (err) reject(err);
                 else resolve();
             });
         });
     }
 
-    this.checkUserData = function (data) {
-        var self = this;
-        var usernameRef = firebase.database().ref('/Usernames').orderByKey().equalTo(data.username);
-        usernameRef.once('value').then(snapshot => {
-            var username = snapshot.val();
-            $(".ui.negative.message").addClass('hidden');
-            if (!username) {
-                self.usernameUnique = true;
-                self.username = name;
-                self.storeUserData(data);
-            } else {
-                $('form').removeClass('loading');
-                $(".ui.negative.message").removeClass('hidden');
-                $(".ui.negative.message > p").text("Someone else already picked that");
-            }
-        })
+    this.getUserData = function () {
+        return new Promise((resolve, reject) => {
+            var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
+            usernameRef.once('value').then(snapshot => {
+                this.userData = snapshot.val();
+                if (!this.userData) {
+                    reject({message:"Username is not set"});
+                } else {
+                    resolve();
+                }
+            })
+        });
     }
     this.storeUserData = function (data) {
-        console.log(this.app.auth());
         var self = this;
         var userRef = firebase.database().ref('/Users/' + this.app.auth().currentUser.uid);
         userRef.set(data);
@@ -111,22 +90,6 @@ function FireBaseManager() {
         return this.user != undefined;
     }
     this.onLogin = function () {
-        // var self = this;
-        // console.log(this.app.auth().currentUser.uid + "  MY UID");
-        // var userRef = firebase.database().ref('/Users/' + this.app.auth().currentUser.uid);
-        // userRef.once('value').then(function (snapshot) {
-        //     self.username = snapshot.val().username;
-        //     if (self.username) {
-        //         self.onLoginComplete();
-        //     } else {
-        //         ui.showBox('#userdata-box')
-        //     }
-        // }, function (error) {
-        //     console.log(error.message);
-        //     $(".ui.negative.message").removeClass('hidden');
-        //     $(".ui.negative.message > p").text(error.message);
-        //     self.signout();
-        // });
         console.log("LOGGED IN MTF");
         this.dispatchEvent('login');
     }
