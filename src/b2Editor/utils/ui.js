@@ -647,6 +647,7 @@ export const showUsernameScreen = function () {
             var f = () => {
                 const maxChars = 32;
                 if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
+                _text.value = _text.value.replace(/[^A-Z0-9_-]/ig, '');
                 errorChecks();
             }
             f();
