@@ -36,12 +36,35 @@ function FireBaseManager() {
         console.log(firebase.auth());
     }
 
-    this.registerUser = function (email, password) {
+    this.registerUser = function (username, email, password) {
+        var self = this;
         return new Promise((resolve, reject) => {
-            firebase.auth().createUserWithEmailAndPassword(email, password).then(function (user) {
-                resolve();
-            }, function (error) {
-                reject(error);
+            if (firebase.auth().currentUser) {
+                self.claimUsername(username).then(() => {
+                    resolve();
+                }).catch((error) => {
+                    reject(error);
+                })
+            } else {
+                firebase.auth().createUserWithEmailAndPassword(email, password).then(function (user) {
+                    self.claimUsername(username).then(() => {
+                        resolve();
+                    }).catch((error) => {
+                        reject(error);
+                    })
+                }, (error) => {
+                    reject(error);
+                });
+            }
+        });
+    }
+    this.claimUsername = function (username) {
+        username = username.toLowerCase();
+        return new Promise((resolve, reject) => {
+            console.log(self.app);
+            firebase.database().ref('/Usernames/'+username).set(firebase.auth().currentUser.uid, function (err) {
+                if (err) reject(err);
+                else resolve();
             });
         });
     }

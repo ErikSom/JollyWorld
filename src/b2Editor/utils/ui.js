@@ -541,14 +541,16 @@ export const showRegisterScreen = function () {
                 let oldText = button.innerHTML;
                 button.innerHTML = '';
                 button.appendChild(dotShell);
-                firebaseManager.registerUser(email.value, password.value).then(() => {
+                firebaseManager.registerUser(username.value, email.value, password.value).then(() => {
                     console.log("Succesfully registered!!");
                     $(registerScreen.domElement).hide(windowHideTime);
                     $(dotShell).hide();
                     button.innerHTML = oldText;
                 }).catch((error) => {
                     console.log("Firebase responded with", error.code);
-                    errorSpan.innerText = error.message;
+                    let errorMessage = error.message;
+                    if(error.code == 'PERMISSION_DENIED') errorMessage = 'Username already taken';
+                    errorSpan.innerText = errorMessage;
                     $(dotShell).hide();
                     button.innerHTML = oldText;
                 });
