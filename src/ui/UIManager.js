@@ -1,6 +1,6 @@
 import {
     firebaseManager
-} from '../FireBaseManager';
+} from '../utils/FireBaseManager';
 import {
     game
 } from '../Game';

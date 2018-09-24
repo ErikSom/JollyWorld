@@ -1,6 +1,6 @@
 import {
     ui
-} from './ui/UIManager';
+} from '../ui/UIManager';
 const firebase = require('firebase');
 import $ from 'jquery';
 
@@ -59,7 +59,9 @@ function FireBaseManager() {
             usernameRef.once('value').then(snapshot => {
                 this.userData = snapshot.val();
                 if (!this.userData) {
-                    reject({message:"Username is not set"});
+                    reject({
+                        message: "Username is not set"
+                    });
                 } else {
                     resolve();
                 }
@@ -67,22 +69,12 @@ function FireBaseManager() {
         });
     }
     this.storeUserData = function (data) {
-        var self = this;
-        var userRef = firebase.database().ref('/Users/' + this.app.auth().currentUser.uid);
-        userRef.set(data);
-        userRef.once('value').then(function (snapshot) {
-            var usernameRef = firebase.database().ref('/Usernames/' + data.username);
-            usernameRef.set(self.app.auth().currentUser.uid);
-            usernameRef.once('value').then(function (snapshot) {
-                console.log("username successfully stored!!");
-                self.onLoginComplete();
-            }, function (error) {
-                console.log("ERROR!!");
-                console.log(error.message);
+        return new Promise((resolve, reject) => {
+            var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
+            usernameRef.set(data, function(error) {
+                if (error) reject(error);
+                else resolve();
             });
-        }, function (error) {
-            console.log("ERROR!!");
-            console.log(error.message);
         });
     }
     this.isLoggedIn = function () {

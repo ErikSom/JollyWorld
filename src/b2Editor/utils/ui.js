@@ -8,7 +8,7 @@ import {
 } from "../../Game";
 import {
     firebaseManager
-} from "../../FireBaseManager";
+} from "../../utils/FireBaseManager";
 
 
 let toolGUI;
@@ -55,7 +55,6 @@ const handleLoginStatusChange = function (event) {
             $(headerBar).find('#profileButton').hide();
         }
     }
-    console.log("RECEIVED EVENT!!!");
     if((event && event.type == 'login') || firebaseManager.isLoggedIn()){
         firebaseManager.getUserData().then(()=>{
         }).catch((error)=>{
@@ -709,8 +708,14 @@ export const showUsernameScreen = function () {
                 let oldText = button.innerHTML;
                 button.innerHTML = '';
                 button.appendChild(dotShell);
-                firebaseManager.claimUsername(username.value).then(() => {
-                    console.log("Succesfully claimed username!!");
+
+                var userData = {
+                    username:username.value,
+                    creationDate:Date.now(),
+                }
+                firebaseManager.claimUsername(username.value)
+                .then(firebaseManager.storeUserData(userData))
+                .then(()=>{
                     $(usernameScreen.domElement).hide(windowHideTime);
                     $(dotShell).hide();
                     button.innerHTML = oldText;

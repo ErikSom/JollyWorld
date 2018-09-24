@@ -19,7 +19,7 @@ import {
 } from "./ui/UIManager";
 import {
     firebaseManager
-} from "./FireBaseManager";
+} from "./utils/FireBaseManager";
 import {
     LoadCoreAssets
 } from "./AssetList";
