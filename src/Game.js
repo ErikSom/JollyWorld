@@ -281,6 +281,7 @@ function Game() {
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
+        SaveManager.saveTempEditorWorld(levelData);
     }
     this.stopWorld = function(){
         this.editor.resetEditor();
@@ -296,6 +297,21 @@ function Game() {
         this.currentLevelData = levelData;
         this.editor.buildJSON(levelData.json);
         SaveManager.saveTempEditorWorld(levelData);
+    }
+    // playWorld/testWorld/editoWorld
+    this.autoSaveTimeOutID;
+    this.doAutoSave = function (){
+        let self = this;
+        this.stopAutoSave();
+        this.autoSaveTimeOutID = setTimeout(()=>{
+            self.currentLevelData.json = this.editor.stringifyWorldJSON();
+            SaveManager.saveTempEditorWorld(self.currentLevelData);
+            self.doAutoSave();
+        }, 1000);
+    }
+    this.stopAutoSave = function (){
+        clearTimeout(this.autoSaveTimeOutID);
+        this.autoSaveTimeOutID = undefined;
     }
     this.newLevel = function(){
         let levelData = {
