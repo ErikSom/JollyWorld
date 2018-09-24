@@ -27,8 +27,8 @@ import {
     Settings
 } from "./Settings";
 import {
-    levelData
-} from "./data/levelData";
+    levelsData
+} from "./data/levelsData";
 
 import * as SaveManager from "./utils/SaveManager";
 
@@ -68,6 +68,7 @@ function Game() {
     this.selectedBody
     this.mouseJoint;
     this.run = false;
+    this.play = false; // for play mode (not testing)
 
     this.playerPrefabObject;
     this.character;
@@ -149,10 +150,10 @@ function Game() {
 
         this.editor.contactCallBackListener = this.gameContactListener;
 
-        this.initLevel(levelData.mainMenuLevel);
+        this.initLevel(levelsData.mainMenuLevel);
         ui.buildMainMenu();
 
-        this.runWorld();
+        this.testWorld();
 
         this.canvas.addEventListener("keydown", this.onKeyDown.bind(this), true);
         this.canvas.addEventListener("keyup", this.onKeyUp.bind(this), true);
@@ -276,12 +277,16 @@ function Game() {
         }
         Key.onKeyup(e);
     }
-    this.runWorld = function(){
+    this.testWorld = function(){
         this.editor.stringifyWorldJSON();
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
-        SaveManager.saveTempEditorWorld(levelData);
+    }
+    this.testWorldAndSaveData = function(){
+        this.testWorld();
+        SaveManager.saveTempEditorWorld(this.currentLevelData);
+        this.stopAutoSave();
     }
     this.stopWorld = function(){
         this.editor.resetEditor();
@@ -290,31 +295,31 @@ function Game() {
     this.openEditor = function(){
         this.stopWorld();
         this.initLevel(SaveManager.getTempEditorWorld());
+        this.doAutoSave();
     }
-    this.initLevel = function(levelData){
-        console.log(levelData);
+    this.initLevel = function(data){
         this.editor.resetEditor();
-        this.currentLevelData = levelData;
-        this.editor.buildJSON(levelData.json);
-        SaveManager.saveTempEditorWorld(levelData);
+        this.currentLevelData = data;
+        this.editor.buildJSON(data.json);
     }
     // playWorld/testWorld/editoWorld
     this.autoSaveTimeOutID;
     this.doAutoSave = function (){
+        console.log("AUTO SAVING GAME!!!")
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(()=>{
             self.currentLevelData.json = this.editor.stringifyWorldJSON();
             SaveManager.saveTempEditorWorld(self.currentLevelData);
             self.doAutoSave();
-        }, 1000);
+        }, Settings.autoSaveInterval);
     }
     this.stopAutoSave = function (){
         clearTimeout(this.autoSaveTimeOutID);
         this.autoSaveTimeOutID = undefined;
     }
     this.newLevel = function(){
-        let levelData = {
+        let data = {
             json:'{"objects":[]}',
             title:Settings.levelEditScreen_DefaultTitleText,
             description:Settings.levelEditScreen_DefaultDescriptionText,
@@ -322,7 +327,7 @@ function Game() {
             crossPromos:[],
             uid:nanoid(),
         }
-        this.initLevel(levelData);
+        this.initLevel(data);
     }
     // this.loadLevel = function (levelData) {
     //     console.log("Loading level..");
@@ -341,7 +346,7 @@ function Game() {
     // }
     this.startGame = function () {
 
-        this.runWorld();
+        this.testWorld();
         this.findPlayableCharacter();
 
         this.vehicle = new Vehicle();

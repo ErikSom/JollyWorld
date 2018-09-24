@@ -1,6 +1,6 @@
 import {
-    levelData
-} from "../data/levelData";
+    levelsData
+} from "../data/levelsData";
 const nanoid = require('nanoid');
 
 export const SAVEKEYS = {
@@ -9,21 +9,25 @@ export const SAVEKEYS = {
 export const saveLevel = function(){
 
 }
-export const saveTempEditorWorld = function(levelData){
-    saveData(SAVEKEYS.tempEditorWorld, levelData);
+export const saveTempEditorWorld = function(data){
+    saveData(SAVEKEYS.tempEditorWorld, data);
 }
 export const getTempEditorWorld = function(){
     var tempWorld = loadData(SAVEKEYS.tempEditorWorld);
+    console.log("tempWorld", tempWorld);
     if(!tempWorld){
-        tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelData.mainMenuLevel);
+        tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.mainMenuLevel);
         tempWorld.uid = nanoid();
     }
     return tempWorld;
 }
 
 const saveData = function(key, value){
+
     if(window.localStorage){
+        console.log("SAVED DATA!!!!", value);
         window.localStorage[key] = JSON.stringify(value);
+        console.log(window.localStorage[key]);
         return value;
     }
     console.alert("Browser does not support saving of data");

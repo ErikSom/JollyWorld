@@ -1,4 +1,4 @@
-export const levelData = {
+export const levelsData = {
     mainMenuLevel: {
         json: `{
         "objects": [
