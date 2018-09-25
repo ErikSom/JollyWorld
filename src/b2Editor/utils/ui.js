@@ -960,8 +960,32 @@ const showSaveScreen = function(){
         span.innerText = 'Title';
         levelNameFilter.appendChild(span);
 
+        var levelDateFilter = document.createElement('div');
+        levelDateFilter.setAttribute('class', 'levelDateFilter');
+        filterBar.appendChild(levelDateFilter);
 
-        levelNameFilter.style.width = '70%';
+        var filterIcon = document.createElement('div');
+        filterIcon.setAttribute('class', 'filterIcon green arrow');
+        levelDateFilter.appendChild(filterIcon);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'filterTitle');
+        span.innerText = 'Date';
+        levelDateFilter.appendChild(span);
+
+        var levelPlayFilter = document.createElement('div');
+        levelPlayFilter.setAttribute('class', 'levelPlayFilter');
+        filterBar.appendChild(levelPlayFilter);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'filterTitle');
+        span.innerText = 'Save';
+        levelPlayFilter.appendChild(span);
+
+
+        levelNameFilter.style.width = '60%';
+        levelDateFilter.style.width = '15%';
+        levelPlayFilter.style.width = '25%';
 
 
 
@@ -972,7 +996,7 @@ const showSaveScreen = function(){
         itemBar.setAttribute('class', 'listItem');
 
         var levelNameDiv = document.createElement('div');
-        levelNameDiv.setAttribute('class', 'listBlock');
+        levelNameDiv.setAttribute('class', 'levelNameDiv');
         itemBar.appendChild(levelNameDiv);
 
         var thumb = document.createElement('div');
