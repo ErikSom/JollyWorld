@@ -19,6 +19,8 @@ let levelEditScreen;
 let loginScreen;
 let registerScreen;
 let usernameScreen;
+let saveScreen;
+let loadScreen;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -36,7 +38,7 @@ export const show = function () {
 export const initGui = function () {
     initGuiAssetSelection();
     createToolGUI();
-    buildHeaderBar();
+    showHeaderBar();
     B2dEditor.canvas.focus();
     scrollBars.update();
 
@@ -62,7 +64,7 @@ const handleLoginStatusChange = function (event) {
         });
     }
 }
-const buildHeaderBar = function () {
+const showHeaderBar = function () {
     headerBar = document.createElement('div');
     headerBar.setAttribute('class', 'editorHeader');
     customGUIContainer.appendChild(headerBar);
@@ -80,6 +82,7 @@ const buildHeaderBar = function () {
     button.setAttribute('class', 'headerButton save buttonOverlay dark');
     button.innerHTML = "SAVE";
     headerBar.appendChild(button);
+    button.addEventListener('click', showSaveScreen);
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton login buttonOverlay dark');
@@ -884,6 +887,131 @@ const openLevelEditScreen = function () {
 
     }
     levelEditScreen.domElement.style.display = "block";
+}
+const showSaveScreen = function(){
+    if (!saveScreen) {
+        const loginGUIWidth = 400;
+
+        saveScreen = new dat.GUI({
+            autoPlace: false,
+            width: loginGUIWidth
+        });
+        saveScreen.domElement.setAttribute('id', 'saveScreen');
+
+        let folder = saveScreen.addFolder('Save Screen');
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
+
+        folder.open();
+
+
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+
+        let span = document.createElement('span');
+        span.innerText = 'SAVE IN';
+        targetDomElement.appendChild(span);
+        span.style.fontSize = '20px';
+        span.style.marginTop = '20px';
+        span.style.display = 'inline-block';
+
+
+        let button = document.createElement('div');
+        button.setAttribute('id', 'saveButton')
+        button.setAttribute('tabindex', '0');
+        button.classList.add('menuButton');
+        button.innerHTML = 'New!';
+        targetDomElement.appendChild(button);
+        button.style.margin = '10px auto';
+        $(button).keypress(function (e) {
+            if (e.keyCode == 13)
+                $(button).click();
+        });
+
+        var dotShell = document.createElement('div');
+        dotShell.setAttribute('class', 'dot-shell')
+        button.appendChild(dotShell);
+        var dots = document.createElement('div');
+        dots.setAttribute('class', 'dot-pulse')
+        dotShell.appendChild(dots);
+        $(dotShell).hide();
+
+        $(button).on('click', () => {
+
+        });
+
+        let divWrapper = document.createElement('div');
+        divWrapper.style.padding = '0px 20px';
+
+        //fill here
+        var filterBar = document.createElement('div');
+        filterBar.setAttribute('class', 'filterBar');
+
+        var levelNameFilter = document.createElement('div');
+        levelNameFilter.setAttribute('class', 'levelNameFilter');
+        filterBar.appendChild(levelNameFilter);
+
+        var filterIcon = document.createElement('div');
+        filterIcon.setAttribute('class', 'filterIcon green arrow');
+        levelNameFilter.appendChild(filterIcon);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'filterTitle');
+        span.innerText = 'Title';
+        levelNameFilter.appendChild(span);
+
+
+        levelNameFilter.style.width = '70%';
+
+
+
+        divWrapper.appendChild(filterBar);
+
+
+        var itemBar = document.createElement('div');
+        itemBar.setAttribute('class', 'listItem');
+
+        var levelNameDiv = document.createElement('div');
+        levelNameDiv.setAttribute('class', 'listBlock');
+        itemBar.appendChild(levelNameDiv);
+
+        var thumb = document.createElement('div');
+        thumb.setAttribute('class', 'thumb');
+        levelNameDiv.appendChild(thumb);
+
+        span = document.createElement('span');
+        span.innerText = 'Level Title';
+        levelNameDiv.appendChild(span);
+
+        span = document.createElement('span');
+        span.innerText = 'Level Description...';
+        levelNameDiv.appendChild(span);
+
+        divWrapper.appendChild(itemBar);
+
+
+
+        // end here
+
+        targetDomElement.appendChild(divWrapper);
+
+
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
+
+
+        customGUIContainer.appendChild(saveScreen.domElement);
+
+
+        registerDragWindow(saveScreen);
+
+    }
+    $(saveScreen.domElement).show();
+
+    if(loadScreen){
+        saveScreen.domElement.style.top = loadScreen.domElement.style.top;
+        saveScreen.domElement.style.left = loadScreen.domElement.style.left;
+    }
 }
 let editorGUIPos = {
     x: 0,
