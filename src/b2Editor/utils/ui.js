@@ -1016,14 +1016,14 @@ const showSaveScreen = function(){
         levelNameDiv.appendChild(span);
 
         const clampDot = (target)=>{
-            if(!$(target) || !$(target)[0].offsetHeight) {
+            if(!$(target)[0] || !$(target)[0].offsetHeight) {
                 console.log("RETRY offsetHeight");
                 setTimeout(()=>{clampDot(target)}, 10);
                 return;
             }
             console.log($(target)[0].offsetHeight);
             while($(target)[0].offsetHeight>(14*3)){
-                $(target)[0].innerText = $(target)[0].innerText.substr(0, target.innerText.length-6)+'...';
+                $(target)[0].innerText = $(target)[0].innerText.substr(0, $(target)[0].innerText.length-6)+'...';
             }
 
         }
