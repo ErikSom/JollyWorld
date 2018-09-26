@@ -1004,12 +1004,31 @@ const showSaveScreen = function(){
         levelNameDiv.appendChild(thumb);
 
         span = document.createElement('span');
+        span.setAttribute('class', 'itemTitle');
         span.innerText = 'Level Title';
         levelNameDiv.appendChild(span);
 
+        levelNameDiv.appendChild(document.createElement('br'));
+
         span = document.createElement('span');
-        span.innerText = 'Level Description...';
+        span.setAttribute('class', 'itemDescription');
+        span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
         levelNameDiv.appendChild(span);
+
+        const clampDot = (target)=>{
+            if(!$(target) || !$(target)[0].offsetHeight) {
+                console.log("RETRY offsetHeight");
+                setTimeout(()=>{clampDot(target)}, 10);
+                return;
+            }
+            console.log($(target)[0].offsetHeight);
+            while($(target)[0].offsetHeight>(14*3)){
+                $(target)[0].innerText = $(target)[0].innerText.substr(0, target.innerText.length-6)+'...';
+            }
+
+        }
+        clampDot('.itemDescription');
+
 
         divWrapper.appendChild(itemBar);
 
@@ -1018,6 +1037,7 @@ const showSaveScreen = function(){
         // end here
 
         targetDomElement.appendChild(divWrapper);
+
 
 
         targetDomElement.appendChild(document.createElement('br'));

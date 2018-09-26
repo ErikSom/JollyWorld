@@ -413,24 +413,33 @@ canvas {
 .listItem .levelNameDiv{
     width: 60%;
     height: 100%;
-}
-.listItem .levelNameDiv > span{
-    margin-top: 5px;
-    width: 55%;
-    height: 20px;
-    overflow-wrap: normal;
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding:5px;
+    text-align:center;
     text-align: left;
 }
+.listItem .itemTitle{
+    margin-top: 5px;
+    font-size: 16px;
+    color: #00FF00;
+    height: 14px;
+    white-space: nowrap;
+}
+.listItem .itemDescription{
+    margin-top: 0px;
+}
+.listItem .levelNameDiv > span{
+    width: 55%;
+    overflow-wrap: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .listItem .thumb{
     width: 80px;
     height: 60px;
     border: 1px solid black;
     float: left;
-    margin:5px
+    margin-right:5px
 }
 
 
