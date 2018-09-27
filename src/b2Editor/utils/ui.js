@@ -937,6 +937,7 @@ const showSaveScreen = function(){
         $(dotShell).hide();
 
         $(button).on('click', () => {
+            firebaseManager.uploadLevelData(game.currentLevelData, JSON.parse(game.editor.stringifyWorldJSON()), game.editor.cameraShotData);
 
         });
 

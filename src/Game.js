@@ -34,7 +34,6 @@ import * as SaveManager from "./utils/SaveManager";
 
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
-const nanoid = require('nanoid');
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
@@ -329,21 +328,7 @@ function Game() {
         }
         this.initLevel(data);
     }
-    // this.loadLevel = function (levelData) {
-    //     console.log("Loading level..");
-    //     console.log(levelData);
-    //     console.log(firebaseManager.baseDownloadURL + levelData.dataURL);
-    //     this.editor.resetEditor();
-    //     var self = this;
-    //     $('form').removeClass('loading');
-    //     $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
-    //         self.editor.buildJSON(data);
-    //         self.initWorld();
-    //         ui.showNothing();
-    //         $('.sidebar').sidebar("hide");
-    //         console.log("Loading level success!!!");
-    //     });
-    // }
+
     this.startGame = function () {
 
         this.testWorld();
@@ -390,94 +375,7 @@ function Game() {
         this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
 
     }
-    this.levelsSnapshot;
-    this.levelsLimitTo = 25;
-    this.retreiveNextLevelList = function () {
-        var levelRef = firebase.database().ref('/Levels/');
-        //if(this.levelsSnapshot == undefined){
-        levelRef.orderByChild("creationDate").limitToFirst(this.levelsLimitTo);
-        //}
-        levelRef.once('value').then(function (levelListSnapshot) {
-            console.log("Levels Loaded!!");
-            console.log(levelListSnapshot.val());
-            ui.displayLevels(levelListSnapshot.val());
-        }, function (error) {
-            console.log("ERROR!!");
-            console.log(error.message);
-        });
-    }
-    this.uploadLevelData = function (details) {
-        console.log("upload details:");
-        console.log(details);
-        this.editor.stringifyWorldJSON();
-        var filesToUpload = [];
-        var levelData = this.editor.worldJSON;
-        filesToUpload.push({
-            file: levelData,
-            dir: "levels",
-            name: "levelData.json"
-        });
-        if (this.editor.cameraShotData.highRes != null) {
-            filesToUpload.push({
-                file: this.editor.cameraShotData.highRes,
-                dir: "levels",
-                name: "thumb_highRes.jpg",
-                datatype: "data_url"
-            })
-            filesToUpload.push({
-                file: this.editor.cameraShotData.highRes,
-                dir: "levels",
-                name: "thumb_lowRes.jpg",
-                datatype: "data_url"
-            })
-        }
-        details.levelID = firebaseManager.generateUUID();
-        var self = this;
-        var uploader = new firebaseManager.uploadFiles(filesToUpload, details.levelID,
-            function (urls) {
-                console.log("ui manager complete");
-                console.log(urls);
-                self.storeLevelData(urls, details);
-            },
-            function (progress) {
-                console.log("ui manager progress");
-                console.log(progress);
-            },
-            function (error) {
-                console.log("ui manager error");
-                console.log(error);
-            }
-        );
-    }
-    this.storeLevelData = function (urls, details) {
-        var levelObject = {};
-        levelObject["dataURL"] = urls[0];
-        if (urls.length > 1) {
-            levelObject["thumbHighResURL"] = urls[1];
-            levelObject["thumbLowResURL"] = urls[2];
-        }
-        levelObject["creationDate"] = Date.now();
-        levelObject["creator"] = firebaseManager.username; //username
-        levelObject["creatorID"] = firebaseManager.app.auth().currentUser.uid; //userid
-        levelObject["description"] = details.description;
-        levelObject["name"] = details.name;
-        levelObject["numVotes"] = 0;
-        levelObject["playCount"] = 0;
-        levelObject["sumVotes"] = 0;
-        levelObject["voters"] = {};
 
-        var levelRef = firebase.database().ref('/Levels/' + details.levelID);
-        levelRef.set(levelObject);
-        levelRef.once('value').then(function (snapshot) {
-            console.log("Level upload big succes!");
-            console.log(snapshot.val());
-            ui.levelPublishSuccess();
-        }, function (error) {
-            console.log("ERROR!!");
-            console.log(error.message);
-        });
-
-    }
     var self = this;
     this.gameContactListener = new Box2D.b2ContactListener();
     this.gameContactListener.BeginContact = function (contact) {}
