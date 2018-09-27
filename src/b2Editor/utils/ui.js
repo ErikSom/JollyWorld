@@ -984,8 +984,8 @@ const showSaveScreen = function(){
 
 
         levelNameFilter.style.width = '60%';
-        levelDateFilter.style.width = '15%';
-        levelPlayFilter.style.width = '25%';
+        levelDateFilter.style.width = '20%';
+        levelPlayFilter.style.width = '20%';
 
 
 
@@ -1015,19 +1015,27 @@ const showSaveScreen = function(){
         span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
         levelNameDiv.appendChild(span);
 
-        const clampDot = (target)=>{
-            if(!$(target)[0] || !$(target)[0].offsetHeight) {
-                console.log("RETRY offsetHeight");
-                setTimeout(()=>{clampDot(target)}, 10);
-                return;
-            }
-            console.log($(target)[0].offsetHeight);
-            while($(target)[0].offsetHeight>(14*3)){
-                $(target)[0].innerText = $(target)[0].innerText.substr(0, $(target)[0].innerText.length-6)+'...';
-            }
+        clampDot('.itemDescription', 3, 14);
 
-        }
-        clampDot('.itemDescription');
+        var levelDateDiv = document.createElement('div');
+        levelDateDiv.setAttribute('class', 'levelDateDiv');
+        itemBar.appendChild(levelDateDiv);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'itemDate');
+        span.innerText = '31-12-2020';
+        levelDateDiv.appendChild(span);
+
+        var levelSaveDiv = document.createElement('div');
+        levelSaveDiv.setAttribute('class', 'levelSaveDiv');
+        itemBar.appendChild(levelSaveDiv);
+
+        button = document.createElement('div');
+        button.setAttribute('class', 'headerButton save buttonOverlay dark');
+        button.innerHTML = "SAVE";
+        levelSaveDiv.appendChild(button);
+
+
 
 
         divWrapper.appendChild(itemBar);
@@ -1275,6 +1283,18 @@ export const registerDragWindow = function (_window) {
 
         endDrag(event, _window)
     });
+}
+
+
+
+const clampDot = (target, lines=1, lineHeight=14)=>{
+    if(!$(target)[0] || !$(target)[0].offsetHeight) {
+        setTimeout(()=>{clampDot(target, lines, lineHeight)}, 10);
+        return;
+    }
+    while($(target)[0].offsetHeight>(lineHeight*lines)){
+        $(target)[0].innerText = $(target)[0].innerText.substr(0, $(target)[0].innerText.length-6)+'...';
+    }
 }
 
 

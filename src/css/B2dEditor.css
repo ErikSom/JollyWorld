@@ -400,6 +400,9 @@ canvas {
     display:inline-block;
     float:left;
 }
+.filterBar .levelNameFilter, .filterBar .levelDateFilter{
+    cursor: pointer;
+}
 .filterBar .levelPlayFilter > span{
     text-align: center;
     margin-left: 0px;
@@ -408,14 +411,36 @@ canvas {
     height: 70px;
     background-color: #4F4F4F;
     width: 100%;
+    display:flex;
 }
 
-.listItem .levelNameDiv{
-    width: 60%;
+.listItem .levelNameDiv, .levelDateDiv, .levelSaveDiv{
     height: 100%;
     padding:5px;
     text-align:center;
     text-align: left;
+    display:inline-block;
+}
+.levelNameDiv{
+    width: 60%;
+}
+.levelDateDiv{
+    width: 20%;
+    line-height: 60px;
+}
+.levelSaveDiv{
+    width: 20%;
+}
+.levelSaveDiv .headerButton{
+    margin: auto auto;
+    line-height: 30px;
+    margin-top: 14px;
+    background-color:#FF6600;
+}
+.levelDateDiv span{
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1em;
 }
 .listItem .itemTitle{
     margin-top: 5px;
