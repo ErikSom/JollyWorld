@@ -57,6 +57,7 @@ function FireBaseManager() {
 
     this.getUserData = function () {
         return new Promise((resolve, reject) => {
+            if (this.userData) return resolve();
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
             usernameRef.once('value').then(snapshot => {
                 this.userData = snapshot.val();
@@ -73,7 +74,7 @@ function FireBaseManager() {
     this.storeUserData = function (data) {
         return new Promise((resolve, reject) => {
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
-            usernameRef.set(data, function(error) {
+            usernameRef.set(data, function (error) {
                 if (error) reject(error);
                 else resolve();
             });
@@ -85,6 +86,8 @@ function FireBaseManager() {
     }
     this.onLogin = function () {
         console.log("LOGGED IN MTF");
+        this.getUserData();
+
         this.dispatchEvent('login');
     }
     this.login = function (email, password) {
@@ -174,6 +177,7 @@ function FireBaseManager() {
         this.uploadNext = function () {
             console.log("Upload files uploadNext");
             self.currentFile = files[self.currentIndex];
+            console.log("Upload", self.currentFile);
             self.uploadFile(self.currentFile.file, self.currentFile.dir, self.currentFile.name, self.currentFile.datatype);
             self.currentIndex++;
         }
@@ -205,7 +209,7 @@ function FireBaseManager() {
         }
 
         this.uploadFile = function (file, dir, name, datatype) {
-            console.log("Upload files uploadFile");
+            console.log("Upload files uploadFile", file);
             var storageRef = firebase.storage().ref(dir + "/" + self.uploadUUID + "/" + name);
 
             var task;
@@ -250,73 +254,75 @@ function FireBaseManager() {
             console.log(error.message);
         });
     }
-    this.uploadLevelData = function (details, levelData, cameraShotData) {
-        var filesToUpload = [];
-        filesToUpload.push({
-            file: levelData,
-            dir: "levels",
-            name: "levelData.json"
-        });
-        if (cameraShotData != null) {
+    this.uploadUserLevelData = function (details, levelData, cameraShotData) {
+        return new Promise((resolve, reject) => {
+            if (!this.userData) return reject({
+                message: "Userdata not loaded"
+            });
+            var filesToUpload = [];
             filesToUpload.push({
-                file: cameraShotData.highRes,
+                file: levelData,
                 dir: "levels",
-                name: "thumb_highRes.jpg",
-                datatype: "data_url"
-            })
-            filesToUpload.push({
-                file: cameraShotData.highRes,
-                dir: "levels",
-                name: "thumb_lowRes.jpg",
-                datatype: "data_url"
-            })
-        }
-        var self = this;
-        var uploader = new this.uploadFiles(filesToUpload, details.uid,
-            function (urls) {
-                console.log("ui manager complete");
-                console.log(urls);
-                self.storeLevelData(urls, details);
-            },
-            function (progress) {
-                console.log("ui manager progress");
-                console.log(progress);
-            },
-            function (error) {
-                console.log("ui manager error");
-                console.log(error);
+                name: "levelData.json"
+            });
+            if (cameraShotData != null) {
+                filesToUpload.push({
+                    file: cameraShotData.highRes,
+                    dir: "levels",
+                    name: "thumb_highRes.jpg",
+                    datatype: "data_url"
+                })
+                filesToUpload.push({
+                    file: cameraShotData.highRes,
+                    dir: "levels",
+                    name: "thumb_lowRes.jpg",
+                    datatype: "data_url"
+                })
             }
-        );
-    }
-    this.storeLevelData = function (urls, details) {
-        var levelObject = {};
-        levelObject["dataURL"] = urls[0];
-        if (urls.length > 1) {
-            levelObject["thumbHighResURL"] = urls[1];
-            levelObject["thumbLowResURL"] = urls[2];
-        }
-        levelObject["creationDate"] = Date.now();
-        levelObject["creator"] = "Username"; //username
-        levelObject["creatorID"] = this.app.auth().currentUser.uid; //userid
-        levelObject["description"] = details.description;
-        levelObject["title"] = details.title;
-        levelObject["background"] = details.background;
-        levelObject["numVotes"] = 0;
-        levelObject["playCount"] = 0;
-        levelObject["sumVotes"] = 0;
-        levelObject["voters"] = {};
-
-        var levelRef = firebase.database().ref('/Levels/' + details.uid);
-        levelRef.set(levelObject);
-        levelRef.once('value').then(function (snapshot) {
-            console.log("Level upload big succes!");
-            console.log(snapshot.val());
-            ui.levelPublishSuccess();
-        }, function (error) {
-            console.log("ERROR!!");
-            console.log(error.message);
+            var self = this;
+            var uploader = new this.uploadFiles(filesToUpload, details.uid,
+                function (urls) {
+                    console.log("ui manager complete");
+                    console.log(urls);
+                    self.storeUserLevelData(urls, details).then(() => {
+                        resolve();
+                    }).catch((error) => {
+                        reject(error);
+                    })
+                },
+                function (progress) {
+                    console.log("ui manager progress");
+                    console.log(progress);
+                },
+                function (error) {
+                    console.log("ui manager error");
+                    console.log(error);
+                    reject(error);
+                }
+            );
         });
+    }
+    this.storeUserLevelData = function (urls, details) {
+        return new Promise((resolve, reject) => {
+            var levelObject = {};
+            levelObject["dataURL"] = urls[0];
+            if (urls.length > 1) {
+                levelObject["thumbHighResURL"] = urls[1];
+                levelObject["thumbLowResURL"] = urls[2];
+            }
+            levelObject["creationDate"] = details.creationDate;
+            levelObject["description"] = details.description;
+            levelObject["title"] = details.title;
+            levelObject["background"] = details.background;
 
+            var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/${details.uid}`);
+            levelRef.set(levelObject);
+            levelRef.once('value').then(function (snapshot) {
+                resolve();
+            }, function (error) {
+                reject(error);
+            });
+        });
     }
 
 

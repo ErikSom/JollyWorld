@@ -348,6 +348,7 @@ canvas {
     color:white;
     font-weight: bolder;
     cursor: pointer;
+    line-height: 30px;
 }
 .logoSmall{
     background-image:url('../../build/assets/images/gui/Logo_Small.png');
@@ -369,7 +370,6 @@ canvas {
 }
 #levelEditScreen .save, #levelEditScreen .publish{
     float: left;
-    line-height: 30px;
 }
 .text_button:hover {
     color: #04bd04;
@@ -433,7 +433,6 @@ canvas {
 }
 .levelSaveDiv .headerButton{
     margin: auto auto;
-    line-height: 30px;
     margin-top: 14px;
     background-color:#FF6600;
 }

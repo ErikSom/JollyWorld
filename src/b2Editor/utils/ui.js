@@ -21,6 +21,7 @@ let registerScreen;
 let usernameScreen;
 let saveScreen;
 let loadScreen;
+let notice;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -889,6 +890,10 @@ const openLevelEditScreen = function () {
     levelEditScreen.domElement.style.display = "block";
 }
 const showSaveScreen = function(){
+
+    if(!firebaseManager.isLoggedIn()) return showNotice(DEFAULT_TEXTS.save_notLoggedIn);
+
+
     if (!saveScreen) {
         const loginGUIWidth = 400;
 
@@ -937,7 +942,11 @@ const showSaveScreen = function(){
         $(dotShell).hide();
 
         $(button).on('click', () => {
-            firebaseManager.uploadLevelData(game.currentLevelData, JSON.parse(game.editor.stringifyWorldJSON()), game.editor.cameraShotData);
+            firebaseManager.uploadUserLevelData(game.currentLevelData, JSON.parse(game.editor.stringifyWorldJSON()), game.editor.cameraShotData).then(()=>{
+                console.log("Uploading level was a success!!");
+            }).catch((error)=>{
+                console.log("Uploading error:", error.message);
+            })
 
         });
 
@@ -1220,6 +1229,70 @@ export const removeGuiAssetSelection = function () {
         assetGUI = undefined;
     }
 }
+export const showNotice = function (message) {
+    if(notice) $(notice.domElement).remove();
+
+
+    const loginGUIWidth = 400;
+
+    notice = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+    notice.domElement.setAttribute('id', 'notice');
+
+    let folder = notice.addFolder('Notice');
+    folder.domElement.classList.add('custom');
+    folder.domElement.style.textAlign = 'center';
+
+    folder.open();
+
+    var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+    let span = document.createElement('span');
+    span.innerText = 'NOTICE';
+    targetDomElement.appendChild(span);
+    span.style.fontSize = '20px';
+    span.style.marginTop = '20px';
+    span.style.display = 'inline-block';
+
+    let divWrapper = document.createElement('div');
+    divWrapper.style.padding = '0px 20px';
+
+    span = document.createElement('span');
+    span.setAttribute('class', 'itemDate');
+    span.innerText = message;
+    divWrapper.appendChild(span);
+
+    divWrapper.appendChild(document.createElement('br'));
+    divWrapper.appendChild(document.createElement('br'));
+
+    let button = document.createElement('div');
+    button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    button.style.margin = 'auto';
+    button.innerHTML = "OK";
+    divWrapper.appendChild(button);
+
+    button.addEventListener('click', ()=>{
+        $(notice.domElement).remove();
+    })
+
+    targetDomElement.appendChild(divWrapper);
+
+
+    targetDomElement.appendChild(document.createElement('br'));
+
+
+    customGUIContainer.appendChild(notice.domElement);
+
+    $(notice.domElement).css('left', $(window).width()/2-$(notice.domElement).width()/2);
+    $(notice.domElement).css('top', $(window).height()/2-$(notice.domElement).height()/2);
+
+
+    registerDragWindow(notice);
+
+    return false;
+}
 
 
 
@@ -1239,6 +1312,7 @@ let startDragMouse = {
     y: 0
 };
 export const initDrag = function (event, _window) {
+
     $(document).on('mousemove', function (event) {
         doDrag(event, _window)
     });
@@ -1257,13 +1331,13 @@ export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
 
-    if (Math.abs(difX) + Math.abs(difY) > 5) {
+    if (Math.abs(difX) + Math.abs(difY) > 5 && !$(_window.domElement).find('.title').data('moved')) {
         $(_window.domElement).find('.title').data('moved', true);
+        $(_window.domElement).parent().append($(_window.domElement));
     }
 
     $(_window.domElement).css('left', startDragPos.x + difX);
     $(_window.domElement).css('top', startDragPos.y + difY);
-
 }
 
 export const registerDragWindow = function (_window) {
@@ -1271,17 +1345,22 @@ export const registerDragWindow = function (_window) {
     var $titleBar = $(_window.domElement).find('.dg .title');
     $(_window.domElement).css('position', 'absolute');
     $titleBar.on('mousedown', function (event) {
-        initDrag(event, _window)
+        initDrag(event, _window);
+        event.stopPropagation();
+    });
+    $(_window.domElement).on('mousedown', function(event){
+        $(_window.domElement).parent().append($(_window.domElement));
+        console.log("FOCUS THIS");
+    })
+    $titleBar.on('mouseup', function (event) {
+        endDrag(event, _window);
     });
     $(document).on('click', function (event) {
-
         if ($(_window.domElement).find('.title').data('moved') == true) {
             var tarFolder = _window.__folders[$(_window.domElement).find('.title')[0].innerText]
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
-
-
         endDrag(event, _window)
     });
 }
@@ -1306,4 +1385,5 @@ const DEFAULT_TEXTS = {
     login_DefaultPassword: "Password",
     login_DefaultRePassword: "Re-type Password",
     login_DefaultEmail: "E-mail addres",
+    save_notLoggedIn: "You must be logged in to save levels in the cloud. The current level is automatically saved to this PC.",
 }

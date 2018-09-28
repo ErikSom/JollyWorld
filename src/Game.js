@@ -324,6 +324,7 @@ function Game() {
             description:Settings.levelEditScreen_DefaultDescriptionText,
             background:'#FFFFFF',
             crossPromos:[],
+            creationDate:Date.now(),
             uid:nanoid(),
         }
         this.initLevel(data);
