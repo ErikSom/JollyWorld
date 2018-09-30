@@ -9,6 +9,7 @@ import {
 import {
     firebaseManager
 } from "../../utils/FireBaseManager";
+import { Settings } from "../../Settings";
 
 
 let toolGUI;
@@ -172,13 +173,13 @@ export const showLoginScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let email = document.createElement('input');
-        email.value = DEFAULT_TEXTS.login_DefaultEmail;
+        email.value = Settings.DEFAULT_TEXTS.login_DefaultEmail;
         email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
         email.style = textAreanStyle;
 
         let password = document.createElement('input');
-        password.value = DEFAULT_TEXTS.login_DefaultPassword;
+        password.value = Settings.DEFAULT_TEXTS.login_DefaultPassword;
         password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
@@ -201,7 +202,7 @@ export const showLoginScreen = function () {
             email.style.backgroundColor = textAreaDefaultColor;
             password.style.backgroundColor = textAreaDefaultColor;
 
-            if (email.value != DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
+            if (email.value != Settings.DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
                 var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
                 if (!re.test(String(email.value).toLowerCase())) {
                     errorStack.push("Email entered is not a valid email address");
@@ -209,7 +210,7 @@ export const showLoginScreen = function () {
                 }
             }
 
-            if (password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
+            if (password.value != Settings.DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
                 if (password.value.length < 6) {
                     errorStack.push("Password must be at last 6 characters long");
                     password.style.backgroundColor = textAreaErrorColor;
@@ -239,7 +240,7 @@ export const showLoginScreen = function () {
             let _value = value;
             var f = () => {
                 if (_text.value == _value) textarea.value = '';
-                if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
+                if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
             }
             f();
             return f;
@@ -250,7 +251,7 @@ export const showLoginScreen = function () {
             var f = () => {
                 if (_text.value == '') {
                     textarea.value = _value;
-                    if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
+                    if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
                 }
                 errorChecks();
             }
@@ -259,12 +260,12 @@ export const showLoginScreen = function () {
         };
 
         $(email).on('input selectionchange propertychange', func(email));
-        $(email).focus(focus(email, DEFAULT_TEXTS.login_DefaultEmail));
-        $(email).blur(blur(email, DEFAULT_TEXTS.login_DefaultEmail));
+        $(email).focus(focus(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
+        $(email).blur(blur(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
 
         $(password).on('input selectionchange propertychange', func(password));
-        $(password).focus(focus(password, DEFAULT_TEXTS.login_DefaultPassword));
-        $(password).blur(blur(password, DEFAULT_TEXTS.login_DefaultPassword));
+        $(password).focus(focus(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
+        $(password).blur(blur(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
 
         targetDomElement.appendChild(divWrapper);
 
@@ -381,20 +382,20 @@ export const showRegisterScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let email = document.createElement('input');
-        email.value = DEFAULT_TEXTS.login_DefaultEmail;
+        email.value = Settings.DEFAULT_TEXTS.login_DefaultEmail;
         email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
         email.style = textAreanStyle;
 
         let password = document.createElement('input');
-        password.value = DEFAULT_TEXTS.login_DefaultPassword;
+        password.value = Settings.DEFAULT_TEXTS.login_DefaultPassword;
         password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
         password.style = textAreanStyle;
 
         let repassword = document.createElement('input');
-        repassword.value = DEFAULT_TEXTS.login_DefaultRePassword;
+        repassword.value = Settings.DEFAULT_TEXTS.login_DefaultRePassword;
         repassword.setAttribute('tabindex', '0');
         repassword.setAttribute('type', 'password');
         divWrapper.appendChild(repassword);
@@ -417,21 +418,21 @@ export const showRegisterScreen = function () {
             repassword.style.backgroundColor = textAreaDefaultColor;
             email.style.backgroundColor = textAreaDefaultColor;
 
-            if (password.value != DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
+            if (password.value != Settings.DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
                 if (password.value.length < 6) {
                     errorStack.push("Password must be at last 6 characters long");
                     password.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if (repassword.value != DEFAULT_TEXTS.login_DefaultRePassword || noDefault) {
+            if (repassword.value != Settings.DEFAULT_TEXTS.login_DefaultRePassword || noDefault) {
                 if (repassword.value != password.value) {
                     errorStack.push("Your passwords do not match");
                     repassword.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if (email.value != DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
+            if (email.value != Settings.DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
                 var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
                 if (!re.test(String(email.value).toLowerCase())) {
                     errorStack.push("Email entered is not a valid email address");
@@ -462,7 +463,7 @@ export const showRegisterScreen = function () {
             let _value = value;
             var f = () => {
                 if (_text.value == _value) textarea.value = '';
-                if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
+                if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
             }
             f();
             return f;
@@ -473,7 +474,7 @@ export const showRegisterScreen = function () {
             var f = () => {
                 if (_text.value == '') {
                     textarea.value = _value;
-                    if (_value == DEFAULT_TEXTS.login_DefaultPassword || _value == DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
+                    if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
                 }
                 errorChecks();
             }
@@ -482,16 +483,16 @@ export const showRegisterScreen = function () {
         };
 
         $(password).on('input selectionchange propertychange', func(password));
-        $(password).focus(focus(password, DEFAULT_TEXTS.login_DefaultPassword));
-        $(password).blur(blur(password, DEFAULT_TEXTS.login_DefaultPassword));
+        $(password).focus(focus(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
+        $(password).blur(blur(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
 
         $(repassword).on('input selectionchange propertychange', func(repassword));
-        $(repassword).focus(focus(repassword, DEFAULT_TEXTS.login_DefaultRePassword));
-        $(repassword).blur(blur(repassword, DEFAULT_TEXTS.login_DefaultRePassword));
+        $(repassword).focus(focus(repassword, Settings.DEFAULT_TEXTS.login_DefaultRePassword));
+        $(repassword).blur(blur(repassword, Settings.DEFAULT_TEXTS.login_DefaultRePassword));
 
         $(email).on('input selectionchange propertychange', func(email));
-        $(email).focus(focus(email, DEFAULT_TEXTS.login_DefaultEmail));
-        $(email).blur(blur(email, DEFAULT_TEXTS.login_DefaultEmail));
+        $(email).focus(focus(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
+        $(email).blur(blur(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
 
 
         targetDomElement.appendChild(divWrapper);
@@ -611,7 +612,7 @@ export const showUsernameScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let username = document.createElement('input');
-        username.value = DEFAULT_TEXTS.login_DefaultUsername;
+        username.value = Settings.DEFAULT_TEXTS.login_DefaultUsername;
         username.setAttribute('tabindex', '0');
         divWrapper.appendChild(username);
         username.style = textAreanStyle;
@@ -631,7 +632,7 @@ export const showUsernameScreen = function () {
 
             username.style.backgroundColor = textAreaDefaultColor;
 
-            if (username.value != DEFAULT_TEXTS.login_DefaultUsername || noDefault) {
+            if (username.value != Settings.DEFAULT_TEXTS.login_DefaultUsername || noDefault) {
                 if (username.value.length < 3) {
                     errorStack.push("Username must be at last 3 characters long");
                     username.style.backgroundColor = textAreaErrorColor;
@@ -679,8 +680,8 @@ export const showUsernameScreen = function () {
         };
 
         $(username).on('input selectionchange propertychange', func(username));
-        $(username).focus(focus(username, DEFAULT_TEXTS.login_DefaultUsername));
-        $(username).blur(blur(username, DEFAULT_TEXTS.login_DefaultUsername));
+        $(username).focus(focus(username, Settings.DEFAULT_TEXTS.login_DefaultUsername));
+        $(username).blur(blur(username, Settings.DEFAULT_TEXTS.login_DefaultUsername));
 
         targetDomElement.appendChild(divWrapper);
 
@@ -891,7 +892,7 @@ const openLevelEditScreen = function () {
 }
 const showSaveScreen = function(){
 
-    if(!firebaseManager.isLoggedIn()) return showNotice(DEFAULT_TEXTS.save_notLoggedIn);
+    if(!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
 
     if (!saveScreen) {
@@ -942,7 +943,7 @@ const showSaveScreen = function(){
         $(dotShell).hide();
 
         $(button).on('click', () => {
-            firebaseManager.uploadUserLevelData(game.currentLevelData, JSON.parse(game.editor.stringifyWorldJSON()), game.editor.cameraShotData).then(()=>{
+            firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then(()=>{
                 console.log("Uploading level was a success!!");
             }).catch((error)=>{
                 console.log("Uploading error:", error.message);
@@ -1349,11 +1350,8 @@ export const registerDragWindow = function (_window) {
         event.stopPropagation();
     });
     $(_window.domElement).on('mousedown', function(event){
-        console.log($(_window.domElement).parent());
-        console.log($(_window.domElement).parent().children().index(_window.domElement), $(_window.domElement).parent().children().length-1);
         if($(_window.domElement).parent().children().index(_window.domElement) !== $(_window.domElement).parent().children().length-1){
             $(_window.domElement).parent().append($(_window.domElement));
-            console.log("FOCUS THIS");
         }
     })
     $titleBar.on('mouseup', function (event) {
@@ -1379,15 +1377,4 @@ const clampDot = (target, lines=1, lineHeight=14)=>{
     while($(target)[0].offsetHeight>(lineHeight*lines)){
         $(target)[0].innerText = $(target)[0].innerText.substr(0, $(target)[0].innerText.length-6)+'...';
     }
-}
-
-
-const DEFAULT_TEXTS = {
-    levelEditScreen_DefaultTitleText: "Fill in Title",
-    levelEditScreen_DefaultDescriptionText: "Fill in Description",
-    login_DefaultUsername: "Username",
-    login_DefaultPassword: "Password",
-    login_DefaultRePassword: "Re-type Password",
-    login_DefaultEmail: "E-mail addres",
-    save_notLoggedIn: "You must be logged in to save levels in the cloud. The current level is automatically saved to this PC.",
 }

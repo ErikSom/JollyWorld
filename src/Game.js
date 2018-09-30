@@ -305,7 +305,6 @@ function Game() {
     // playWorld/testWorld/editoWorld
     this.autoSaveTimeOutID;
     this.doAutoSave = function (){
-        console.log("AUTO SAVING GAME!!!")
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(()=>{
@@ -321,8 +320,8 @@ function Game() {
     this.newLevel = function(){
         let data = {
             json:'{"objects":[]}',
-            title:Settings.levelEditScreen_DefaultTitleText,
-            description:Settings.levelEditScreen_DefaultDescriptionText,
+            title:Settings.DEFAULT_TEXTS.levelEditScreen_DefaultTitleText,
+            description:Settings.DEFAULT_TEXTS.levelEditScreen_DefaultDescriptionText,
             background:'#FFFFFF',
             crossPromos:[],
             creationDate:Date.now(),

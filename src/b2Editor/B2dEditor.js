@@ -5031,9 +5031,9 @@ const _B2dEditor = function () {
 			}
 		}
 		this.worldJSON += ']}';
-		console.log("********************** World Data **********************");
-		console.log(this.worldJSON);
-		console.log("********************************************************");
+		//console.log("********************** World Data **********************");
+		//console.log(this.worldJSON);
+		//console.log("********************************************************");
 		return this.worldJSON;
 	}
 

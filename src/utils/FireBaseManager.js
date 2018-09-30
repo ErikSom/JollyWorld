@@ -48,20 +48,21 @@ function FireBaseManager() {
         username = username.toLowerCase();
         return new Promise((resolve, reject) => {
             console.log(self.app);
-            firebase.database().ref('/Usernames/' + username).set(firebase.auth().currentUser.uid, function (err) {
-                if (err) reject(err);
-                else resolve();
+            firebase.database().ref('/Usernames/' + username).set(firebase.auth().currentUser.uid, function (error) {
+                if (error) return reject(error);
+                else return resolve();
             });
         });
     }
 
     this.getUserData = function () {
+        var self = this;
         return new Promise((resolve, reject) => {
             if (this.userData) return resolve();
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
             usernameRef.once('value').then(snapshot => {
-                this.userData = snapshot.val();
-                if (!this.userData) {
+                self.userData = snapshot.val();
+                if (!self.userData) {
                     reject({
                         message: "Username is not set"
                     });
@@ -76,12 +77,14 @@ function FireBaseManager() {
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
             usernameRef.set(data, function (error) {
                 if (error) reject(error);
-                else resolve();
+                else {
+                    this.userData = data;
+                    resolve();
+                };
             });
         });
     }
     this.isLoggedIn = function () {
-        console.log(this.user);
         return this.user != undefined;
     }
     this.onLogin = function () {
@@ -265,7 +268,7 @@ function FireBaseManager() {
                 dir: "levels",
                 name: "levelData.json"
             });
-            if (cameraShotData != null) {
+            if (cameraShotData.highRes != null) {
                 filesToUpload.push({
                     file: cameraShotData.highRes,
                     dir: "levels",

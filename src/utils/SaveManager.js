@@ -25,9 +25,7 @@ export const getTempEditorWorld = function(){
 const saveData = function(key, value){
 
     if(window.localStorage){
-        console.log("SAVED DATA!!!!", value);
         window.localStorage[key] = JSON.stringify(value);
-        console.log(window.localStorage[key]);
         return value;
     }
     console.alert("Browser does not support saving of data");
