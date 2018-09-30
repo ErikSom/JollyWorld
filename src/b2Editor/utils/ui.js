@@ -1349,8 +1349,12 @@ export const registerDragWindow = function (_window) {
         event.stopPropagation();
     });
     $(_window.domElement).on('mousedown', function(event){
-        $(_window.domElement).parent().append($(_window.domElement));
-        console.log("FOCUS THIS");
+        console.log($(_window.domElement).parent());
+        console.log($(_window.domElement).parent().children().index(_window.domElement), $(_window.domElement).parent().children().length-1);
+        if($(_window.domElement).parent().children().index(_window.domElement) !== $(_window.domElement).parent().children().length-1){
+            $(_window.domElement).parent().append($(_window.domElement));
+            console.log("FOCUS THIS");
+        }
     })
     $titleBar.on('mouseup', function (event) {
         endDrag(event, _window);

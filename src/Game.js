@@ -32,6 +32,7 @@ import {
 
 import * as SaveManager from "./utils/SaveManager";
 
+const nanoid = require('nanoid');
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
 
