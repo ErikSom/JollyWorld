@@ -329,6 +329,14 @@ function Game() {
         }
         this.initLevel(data);
     }
+    this.saveNewLevelData = function(){
+        game.currentLevelData.uid = nanoid();
+        game.currentLevelData.creationDate = Date.now();
+        return this.saveLevelData();
+    }
+    this.saveLevelData = function(){
+        return firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData);
+    }
 
     this.startGame = function () {
 

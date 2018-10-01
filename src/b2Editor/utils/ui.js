@@ -11,6 +11,8 @@ import {
 } from "../../utils/FireBaseManager";
 import { Settings } from "../../Settings";
 
+const nanoid = require('nanoid');
+
 
 let toolGUI;
 export let assetGUI;
@@ -922,30 +924,40 @@ const showSaveScreen = function(){
         span.style.display = 'inline-block';
 
 
-        let button = document.createElement('div');
-        button.setAttribute('id', 'saveButton')
-        button.setAttribute('tabindex', '0');
-        button.classList.add('menuButton');
-        button.innerHTML = 'New!';
-        targetDomElement.appendChild(button);
-        button.style.margin = '10px auto';
-        $(button).keypress(function (e) {
+        let new_button = document.createElement('div');
+        new_button.setAttribute('id', 'saveButton')
+        new_button.setAttribute('tabindex', '0');
+        new_button.classList.add('menuButton');
+        new_button.innerHTML = 'New!';
+        targetDomElement.appendChild(new_button);
+        new_button.style.margin = '10px auto';
+        $(new_button).keypress(function (e) {
             if (e.keyCode == 13)
-                $(button).click();
+                $(new_button).click();
         });
 
         var dotShell = document.createElement('div');
         dotShell.setAttribute('class', 'dot-shell')
-        button.appendChild(dotShell);
+        new_button.appendChild(dotShell);
         var dots = document.createElement('div');
         dots.setAttribute('class', 'dot-pulse')
         dotShell.appendChild(dots);
         $(dotShell).hide();
 
-        $(button).on('click', () => {
-            firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then(()=>{
+        $(new_button).on('click', () => {
+            let oldText = new_button.innerHTML;
+            new_button.innerHTML = '';
+            console.log(new_button);
+            new_button.appendChild(dotShell);
+            $(dotShell).show();
+
+            game.saveNewLevelData().then(()=>{
+                new_button.innerHTML = oldText;
+                $(dotShell).hide();
                 console.log("Uploading level was a success!!");
             }).catch((error)=>{
+                new_button.innerHTML = oldText;
+                $(dotShell).hide();
                 console.log("Uploading error:", error.message);
             })
 
@@ -1002,6 +1014,7 @@ const showSaveScreen = function(){
 
         divWrapper.appendChild(filterBar);
 
+        // Single item
 
         var itemBar = document.createElement('div');
         itemBar.setAttribute('class', 'listItem');
@@ -1041,16 +1054,20 @@ const showSaveScreen = function(){
         levelSaveDiv.setAttribute('class', 'levelSaveDiv');
         itemBar.appendChild(levelSaveDiv);
 
-        button = document.createElement('div');
+        let button = document.createElement('div');
         button.setAttribute('class', 'headerButton save buttonOverlay dark');
         button.innerHTML = "SAVE";
         levelSaveDiv.appendChild(button);
 
 
+        //divWrapper.appendChild(itemBar);
+        firebaseManager.getUserLevels().then((levels)=> {
+            console.log('received', levels);
+
+        })
 
 
-        divWrapper.appendChild(itemBar);
-
+        //
 
 
         // end here

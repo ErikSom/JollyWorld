@@ -318,14 +318,23 @@ function FireBaseManager() {
             levelObject["title"] = details.title;
             levelObject["background"] = details.background;
 
-            var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/${details.uid}`);
-            levelRef.set(levelObject);
-            levelRef.once('value').then(function (snapshot) {
-                resolve();
-            }, function (error) {
-                reject(error);
+            var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
+            levelRef.set(levelObject, function (error) {
+                if (error) reject(error);
+                else resolve();
             });
         });
+    }
+    this.getUserLevels = function () {
+        return new Promise((resolve, reject) => {
+            var levelsRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/`);
+            levelsRef.once('value', function (snapshot) {
+                console.log(snapshot);;
+                return resolve(snapshot.val());
+            }, function (error) {
+                return reject(error);
+            });
+        })
     }
 
 
