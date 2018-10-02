@@ -964,7 +964,7 @@ const showSaveScreen = function(){
         });
 
         let divWrapper = document.createElement('div');
-        divWrapper.style.padding = '0px 20px';
+        divWrapper.style.padding = '0px 10px';
 
         //fill here
         var filterBar = document.createElement('div');
@@ -1014,6 +1014,7 @@ const showSaveScreen = function(){
 
         divWrapper.appendChild(filterBar);
 
+        //*********************************/
         // Single item
 
         var itemBar = document.createElement('div');
@@ -1058,11 +1059,29 @@ const showSaveScreen = function(){
         button.setAttribute('class', 'headerButton save buttonOverlay dark');
         button.innerHTML = "SAVE";
         levelSaveDiv.appendChild(button);
+        //*********************************/
 
+        let itemList = document.createElement('div');
+        itemList.setAttribute('class', 'itemList');
+        divWrapper.appendChild(itemList);
+       
+        let $itemBar;
 
-        //divWrapper.appendChild(itemBar);
         firebaseManager.getUserLevels().then((levels)=> {
-            console.log('received', levels);
+            for(var level_id in levels){
+                if(levels.hasOwnProperty(level_id)){
+                    const level = levels[level_id];
+                    console.log(level);
+                    $itemBar = $(itemBar).clone();
+                    $(divWrapper).append($itemBar);
+                    $itemBar.find('.itemTitle').text(level.title);
+                    $itemBar.find('.itemDescription').text(level.description);
+                    $itemBar.find('.itemDate').text(level.creationDate);
+                    $itemBar.find('.headerButton.save').on('click', ()=>{
+                        console.log($(this)+' got pressed, id:'+level_id);
+                    });
+                }
+            }
 
         })
 
