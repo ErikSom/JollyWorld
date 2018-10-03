@@ -45,7 +45,7 @@ export const show = function () {
 export const initGui = function () {
     initGuiAssetSelection();
     createToolGUI();
-    showHeaderBar();
+    this.showHeaderBar();
     B2dEditor.canvas.focus();
     scrollBars.update();
 
@@ -71,7 +71,8 @@ const handleLoginStatusChange = function (event) {
         });
     }
 }
-const showHeaderBar = function () {
+export const showHeaderBar = function () {
+    console.log(this);
     headerBar = document.createElement('div');
     headerBar.setAttribute('class', 'editorHeader');
     customGUIContainer.appendChild(headerBar);
@@ -89,7 +90,8 @@ const showHeaderBar = function () {
     button.setAttribute('class', 'headerButton save buttonOverlay dark');
     button.innerHTML = "SAVE";
     headerBar.appendChild(button);
-    button.addEventListener('click', showSaveScreen);
+    console.log(this, self);
+    button.addEventListener('click', this.showSaveScreen.bind(this));
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton login buttonOverlay dark');
@@ -895,7 +897,7 @@ const openLevelEditScreen = function () {
     }
     levelEditScreen.domElement.style.display = "block";
 }
-const showSaveScreen = function(){
+export const showSaveScreen = function(){
 
     if(!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
@@ -1067,13 +1069,14 @@ const showSaveScreen = function(){
         let itemList = document.createElement('div');
         itemList.setAttribute('class', 'itemList');
         divWrapper.appendChild(itemList);
-       
-        let $itemBar;
-        
+
         var self = this;
+        console.log(self);
+        let $itemBar;
         firebaseManager.getUserLevels().then((levels)=> {
             for(let level_id in levels){
                 if(levels.hasOwnProperty(level_id)){
+
                     const level = levels[level_id];
                     console.log(level);
                     $itemBar = $(itemBar).clone();
@@ -1082,8 +1085,13 @@ const showSaveScreen = function(){
                     $itemBar.find('.itemDescription').text(level.description);
                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
                     $itemBar.find('.headerButton.save').on('click', ()=>{
+
                         console.log($(this)+' got pressed, id:'+level_id);
-                        self.showPrompt(`Are you sure you want to overwrite level ${levels[level_id]} with your new level?`, 'Yes!', 'NOPE!');
+                        self.showPrompt(`Are you sure you want to overwrite level ${levels[level_id].title} with your new level?`, 'Yes!', 'NOPE!').then(()=>{
+                            console.log("NOW DO THE SHIT!!");
+                        }).catch((error)=> {
+                            console.log("Definitly DON'T DO SHIT!");
+                        });
                         // game.currentLevelData.uid = level_id;
                         // game.saveLevelData();
                     });
@@ -1373,28 +1381,16 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     divWrapper.appendChild(document.createElement('br'));
     divWrapper.appendChild(document.createElement('br'));
 
-    let button = document.createElement('div');
-    button.setAttribute('class', 'headerButton save buttonOverlay dark');
-    button.style.margin = 'auto';
-    button.innerHTML = positivePrompt;
-    divWrapper.appendChild(button);
+    let yes_button = document.createElement('div');
+    yes_button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    yes_button.innerHTML = positivePrompt;
+    divWrapper.appendChild(yes_button);
 
-    button.addEventListener('click', ()=>{
-        $(prompt.domElement).remove();
-        console.log("positive prompt");
-    })
+    let no_button = document.createElement('div');
+    no_button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    no_button.innerHTML = negativePrompt;
+    divWrapper.appendChild(no_button);
 
-    button = document.createElement('div');
-    button.setAttribute('class', 'headerButton save buttonOverlay dark');
-    button.style.margin = 'auto';
-    button.innerHTML = negativePrompt;
-    divWrapper.appendChild(button);
-
-    button.addEventListener('click', ()=>{
-        $(prompt.domElement).remove();
-        console.log("negative prompt");
-
-    })
 
     targetDomElement.appendChild(divWrapper);
 
@@ -1402,7 +1398,7 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     targetDomElement.appendChild(document.createElement('br'));
 
 
-    customGUIContainer.appendChild(notice.domElement);
+    customGUIContainer.appendChild(prompt.domElement);
 
     $(prompt.domElement).css('left', $(window).width()/2-$(prompt.domElement).width()/2);
     $(prompt.domElement).css('top', $(window).height()/2-$(prompt.domElement).height()/2);
@@ -1410,7 +1406,18 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     registerDragWindow(prompt);
 
-    return false;
+    return new Promise((resolve, reject) =>{
+        yes_button.addEventListener('click', ()=>{
+            $(prompt.domElement).remove();
+            console.log("positive prompt");
+            return resolve();
+        })
+        no_button.addEventListener('click', ()=>{
+            $(prompt.domElement).remove();
+            console.log("negative prompt");
+            return reject();
+        })
+    });
 }
 
 
