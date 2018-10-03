@@ -10,8 +10,10 @@ import {
     firebaseManager
 } from "../../utils/FireBaseManager";
 import { Settings } from "../../Settings";
+import * as formatTimestamp from './formatTimestamp';
 
 const nanoid = require('nanoid');
+
 
 
 let toolGUI;
@@ -25,6 +27,7 @@ let usernameScreen;
 let saveScreen;
 let loadScreen;
 let notice;
+let prompt;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -1066,19 +1069,23 @@ const showSaveScreen = function(){
         divWrapper.appendChild(itemList);
        
         let $itemBar;
-
+        
+        var self = this;
         firebaseManager.getUserLevels().then((levels)=> {
-            for(var level_id in levels){
+            for(let level_id in levels){
                 if(levels.hasOwnProperty(level_id)){
                     const level = levels[level_id];
                     console.log(level);
                     $itemBar = $(itemBar).clone();
-                    $(divWrapper).append($itemBar);
+                    $(itemList).append($itemBar);
                     $itemBar.find('.itemTitle').text(level.title);
                     $itemBar.find('.itemDescription').text(level.description);
-                    $itemBar.find('.itemDate').text(level.creationDate);
+                    $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
                     $itemBar.find('.headerButton.save').on('click', ()=>{
                         console.log($(this)+' got pressed, id:'+level_id);
+                        self.showPrompt(`Are you sure you want to overwrite level ${levels[level_id]} with your new level?`, 'Yes!', 'NOPE!');
+                        // game.currentLevelData.uid = level_id;
+                        // game.saveLevelData();
                     });
                 }
             }
@@ -1087,7 +1094,6 @@ const showSaveScreen = function(){
 
 
         //
-
 
         // end here
 
@@ -1330,6 +1336,84 @@ export const showNotice = function (message) {
 
     return false;
 }
+export const showPrompt = function (message, positivePrompt, negativePrompt) {
+    if(prompt) $(prompt.domElement).remove();
+
+    const loginGUIWidth = 400;
+
+    prompt = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+    prompt.domElement.setAttribute('id', 'prompt');
+
+    let folder = prompt.addFolder('Prompt');
+    folder.domElement.classList.add('custom');
+    folder.domElement.style.textAlign = 'center';
+
+    folder.open();
+
+    var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+    let span = document.createElement('span');
+    span.innerText = 'PROMPT';
+    targetDomElement.appendChild(span);
+    span.style.fontSize = '20px';
+    span.style.marginTop = '20px';
+    span.style.display = 'inline-block';
+
+    let divWrapper = document.createElement('div');
+    divWrapper.style.padding = '0px 20px';
+
+    span = document.createElement('span');
+    span.setAttribute('class', 'itemDate');
+    span.innerText = message;
+    divWrapper.appendChild(span);
+
+    divWrapper.appendChild(document.createElement('br'));
+    divWrapper.appendChild(document.createElement('br'));
+
+    let button = document.createElement('div');
+    button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    button.style.margin = 'auto';
+    button.innerHTML = positivePrompt;
+    divWrapper.appendChild(button);
+
+    button.addEventListener('click', ()=>{
+        $(prompt.domElement).remove();
+        console.log("positive prompt");
+    })
+
+    button = document.createElement('div');
+    button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    button.style.margin = 'auto';
+    button.innerHTML = negativePrompt;
+    divWrapper.appendChild(button);
+
+    button.addEventListener('click', ()=>{
+        $(prompt.domElement).remove();
+        console.log("negative prompt");
+
+    })
+
+    targetDomElement.appendChild(divWrapper);
+
+
+    targetDomElement.appendChild(document.createElement('br'));
+
+
+    customGUIContainer.appendChild(notice.domElement);
+
+    $(prompt.domElement).css('left', $(window).width()/2-$(prompt.domElement).width()/2);
+    $(prompt.domElement).css('top', $(window).height()/2-$(prompt.domElement).height()/2);
+
+
+    registerDragWindow(prompt);
+
+    return false;
+}
+
+
 
 
 
