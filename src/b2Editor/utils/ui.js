@@ -802,12 +802,12 @@ const openLevelEditScreen = function () {
         divWrapper.appendChild(document.createElement('br'));
 
 
-        let textarea = document.createElement('textarea');
-        textarea.value = 'Title...';
-        divWrapper.appendChild(textarea);
-        textarea.style.fontSize = '18px';
-        textarea.style.height = '30px';
-        textarea.style.fontWeight = 'bold';
+        let title = document.createElement('input');
+        title.setAttribute('placeholder', 'Title');
+        divWrapper.appendChild(title);
+        title.style.fontSize = '18px';
+        title.style.height = '30px';
+        title.style.fontWeight = 'bold';
 
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
@@ -825,18 +825,22 @@ const openLevelEditScreen = function () {
             f();
             return f;
         }
-        $(textarea).on('input selectionchange propertychange', func(textarea, span));
+        $(title).on('input selectionchange propertychange', func(title, span));
+        $(title).on('blur', ()=>{
+            game.currentLevelData.title = $(title).val();
+            $('.editorHeader > span').text($(title).val());
+        });
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));
 
-        textarea = document.createElement('textarea');
-        textarea.value = 'Description...';
-        divWrapper.appendChild(textarea);
-        textarea.style.height = '100px';
+        let description = document.createElement('textarea');
+        description.setAttribute('placeholder', 'Description');
+        divWrapper.appendChild(description);
+        description.style.height = '100px';
 
         span = document.createElement('span');
-        span.innerText = 'Characters left:500';
+        span.innerText = 'Characters left:300';
         divWrapper.appendChild(span);
 
 
@@ -852,7 +856,10 @@ const openLevelEditScreen = function () {
             f();
             return f;
         }
-        $(textarea).on('input selectionchange propertychange', func(textarea, span));
+        $(description).on('input selectionchange propertychange', func(description, span));
+        $(description).on('blur', ()=>{
+            game.currentLevelData.title = $(description).val();
+        });
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));
@@ -1071,33 +1078,40 @@ export const showSaveScreen = function(){
         divWrapper.appendChild(itemList);
 
         var self = this;
-        console.log(self);
-        let $itemBar;
-        firebaseManager.getUserLevels().then((levels)=> {
+
+
+        const buildLevelList = (levels)=>{
             for(let level_id in levels){
                 if(levels.hasOwnProperty(level_id)){
 
                     const level = levels[level_id];
                     console.log(level);
-                    $itemBar = $(itemBar).clone();
+                    let $itemBar = $(itemBar).clone();
                     $(itemList).append($itemBar);
                     $itemBar.find('.itemTitle').text(level.title);
                     $itemBar.find('.itemDescription').text(level.description);
                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
-                    $itemBar.find('.headerButton.save').on('click', ()=>{
-
-                        console.log($(this)+' got pressed, id:'+level_id);
+                    let saveButton = $itemBar.find('.headerButton.save');
+                    saveButton.on('click', ()=>{
                         self.showPrompt(`Are you sure you want to overwrite level ${levels[level_id].title} with your new level?`, 'Yes!', 'NOPE!').then(()=>{
-                            console.log("NOW DO THE SHIT!!");
-                        }).catch((error)=> {
-                            console.log("Definitly DON'T DO SHIT!");
-                        });
-                        // game.currentLevelData.uid = level_id;
-                        // game.saveLevelData();
+                            game.currentLevelData.uid = level_id;
+                            saveButton[0].style.backgroundColor = 'grey';
+                            saveButton[0].innerText = 'SAVING..';
+                            game.saveLevelData().then(()=>{
+                                saveButton[0].style.backgroundColor = '';
+                                saveButton[0].innerText = 'SAVE';
+                            }).catch((error)=>{
+                                saveButton[0].style.backgroundColor = '';
+                                saveButton[0].innerText = 'SAVE';
+                            });
+                        }).catch((error)=> {});
                     });
                 }
             }
+        }
 
+        firebaseManager.getUserLevels().then((levels)=> {
+            buildLevelList(levels);
         })
 
 
