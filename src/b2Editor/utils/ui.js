@@ -808,6 +808,7 @@ const openLevelEditScreen = function () {
         title.style.fontSize = '18px';
         title.style.height = '30px';
         title.style.fontWeight = 'bold';
+        title.value = game.currentLevelData.title;
 
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
@@ -826,10 +827,6 @@ const openLevelEditScreen = function () {
             return f;
         }
         $(title).on('input selectionchange propertychange', func(title, span));
-        $(title).on('blur', ()=>{
-            game.currentLevelData.title = $(title).val();
-            $('.editorHeader > span').text($(title).val());
-        });
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));
@@ -838,6 +835,8 @@ const openLevelEditScreen = function () {
         description.setAttribute('placeholder', 'Description');
         divWrapper.appendChild(description);
         description.style.height = '100px';
+        description.value = game.currentLevelData.description;
+
 
         span = document.createElement('span');
         span.innerText = 'Characters left:300';
@@ -876,18 +875,44 @@ const openLevelEditScreen = function () {
         divWrapper.appendChild(document.createElement('br'));
 
 
-        let button = document.createElement('div');
-        button.setAttribute('class', 'headerButton save buttonOverlay dark');
-        button.innerHTML = "SAVE";
-        button.style.marginLeft = '0px';
-        button.style.marginRight = '5px';
-        divWrapper.appendChild(button);
+        let saveButton = document.createElement('div');
+        saveButton.setAttribute('class', 'headerButton save buttonOverlay dark');
+        saveButton.innerHTML = "SAVE";
+        saveButton.style.marginLeft = '0px';
+        saveButton.style.marginRight = '5px';
+        divWrapper.appendChild(saveButton);
+
+        $(saveButton).on('click', ()=>{
+            //save locally first
+
+            if(!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
 
-        button = document.createElement('div');
-        button.setAttribute('class', 'headerButton publish buttonOverlay dark');
-        button.innerHTML = "PUBLISH";
-        divWrapper.appendChild(button);
+
+            game.currentLevelData.title = $(title).val();
+            $('.editorHeader > span').text(game.currentLevelData.title);
+            game.currentLevelData.description = $(description).val();
+
+            saveButton[0].style.backgroundColor = 'grey';
+            saveButton[0].innerText = 'SAVING..';
+
+            //try to save online
+            game.saveLevelData().then(()=>{
+                saveButton[0].style.backgroundColor = '';
+                saveButton[0].innerText = 'SAVE';
+            }).catch((error)=>{
+                saveButton[0].style.backgroundColor = '';
+                saveButton[0].innerText = 'SAVE';
+            });
+        });
+
+
+
+
+        let publishButton = document.createElement('div');
+        publishButton.setAttribute('class', 'headerButton publish buttonOverlay dark');
+        publishButton.innerHTML = "PUBLISH";
+        divWrapper.appendChild(publishButton);
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));

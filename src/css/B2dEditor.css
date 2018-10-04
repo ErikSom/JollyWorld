@@ -180,6 +180,7 @@ canvas {
     position: absolute;
     margin-top: 10px;
     margin-left: 3px;
+    pointer-events:none;
 }
 .closed .arrow {
     border-top: 5px solid transparent;
