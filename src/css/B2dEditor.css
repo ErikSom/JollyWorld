@@ -311,6 +311,7 @@ canvas {
 .editorHeader .save, #levelEditScreen .save{
     background-color:#51A328;
 }
+
 .editorHeader .test{
     background-color:#E0B300;
 }
@@ -369,8 +370,11 @@ canvas {
     justify-content: center;
     margin: unset;
 }
-#levelEditScreen .save, #levelEditScreen .publish{
+#levelEditScreen .save, #levelEditScreen .publish, #levelEditScreen .saveas{
     float: left;
+}
+#levelEditScreen .saveas{
+    background-color:#FF6600;
 }
 .text_button:hover {
     color: #04bd04;

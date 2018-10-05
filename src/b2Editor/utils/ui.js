@@ -180,7 +180,7 @@ export const showLoginScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let email = document.createElement('input');
-        // email.value = '1@1.nl';
+        email.value = '1@1.nl'; //PLACEHOLDER
         email.setAttribute('placeholder', 'Email');
         email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
@@ -188,7 +188,7 @@ export const showLoginScreen = function () {
 
         let password = document.createElement('input');
         password.setAttribute('placeholder', 'Password');
-        //password.value = 'appelsap';
+        password.value = 'appelsap'; //PLACEHOLDER
         password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
@@ -854,6 +854,35 @@ const openLevelEditScreen = function () {
             }).catch((error)=>{
                 saveButton.style.backgroundColor = '';
                 saveButton.innerText = 'SAVE';
+            });
+        });
+
+        let saveAsButton = document.createElement('div');
+        saveAsButton.setAttribute('class', 'headerButton saveas buttonOverlay dark');
+        saveAsButton.innerHTML = "SAVE AS";
+        divWrapper.appendChild(saveAsButton);
+
+        $(saveAsButton).on('click', ()=>{
+            //save locally first
+
+            if(!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+
+
+
+            game.currentLevelData.title = $(title).val();
+            $('.editorHeader > span').text(game.currentLevelData.title);
+            game.currentLevelData.description = $(description).val();
+
+            saveAsButton.style.backgroundColor = 'grey';
+            saveAsButton.innerText = 'SAVING..';
+
+            //try to save online
+            game.saveLevelData().then(()=>{
+                saveAsButton.style.backgroundColor = '';
+                saveAsButton.innerText = 'SAVE';
+            }).catch((error)=>{
+                saveAsButton.style.backgroundColor = '';
+                saveAsButton.innerText = 'SAVE';
             });
         });
 
