@@ -180,13 +180,15 @@ export const showLoginScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let email = document.createElement('input');
-        email.value = Settings.DEFAULT_TEXTS.login_DefaultEmail;
+        // email.value = '1@1.nl';
+        email.setAttribute('placeholder', 'Email');
         email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
         email.style = textAreanStyle;
 
         let password = document.createElement('input');
-        password.value = Settings.DEFAULT_TEXTS.login_DefaultPassword;
+        password.setAttribute('placeholder', 'Password');
+        //password.value = 'appelsap';
         password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
@@ -209,7 +211,7 @@ export const showLoginScreen = function () {
             email.style.backgroundColor = textAreaDefaultColor;
             password.style.backgroundColor = textAreaDefaultColor;
 
-            if (email.value != Settings.DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
+            if (email.value != '' || noDefault) {
                 var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
                 if (!re.test(String(email.value).toLowerCase())) {
                     errorStack.push("Email entered is not a valid email address");
@@ -217,7 +219,7 @@ export const showLoginScreen = function () {
                 }
             }
 
-            if (password.value != Settings.DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
+            if (password.value != '' || noDefault) {
                 if (password.value.length < 6) {
                     errorStack.push("Password must be at last 6 characters long");
                     password.style.backgroundColor = textAreaErrorColor;
@@ -242,37 +244,12 @@ export const showLoginScreen = function () {
             f();
             return f;
         }
-        let focus = (textarea, value) => {
-            let _text = textarea;
-            let _value = value;
-            var f = () => {
-                if (_text.value == _value) textarea.value = '';
-                if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
-            }
-            f();
-            return f;
-        };
-        let blur = (textarea, value) => {
-            let _text = textarea;
-            let _value = value;
-            var f = () => {
-                if (_text.value == '') {
-                    textarea.value = _value;
-                    if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
-                }
-                errorChecks();
-            }
-            f();
-            return f;
-        };
 
         $(email).on('input selectionchange propertychange', func(email));
-        $(email).focus(focus(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
-        $(email).blur(blur(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
+        $(email).blur(errorChecks);
 
         $(password).on('input selectionchange propertychange', func(password));
-        $(password).focus(focus(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
-        $(password).blur(blur(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
+        $(password).blur(errorChecks);
 
         targetDomElement.appendChild(divWrapper);
 
@@ -374,7 +351,6 @@ export const showRegisterScreen = function () {
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
 
-
         let span = document.createElement('span');
         span.innerText = 'SIGN UP';
         targetDomElement.appendChild(span);
@@ -389,20 +365,20 @@ export const showRegisterScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let email = document.createElement('input');
-        email.value = Settings.DEFAULT_TEXTS.login_DefaultEmail;
+        email.setAttribute('placeholder', 'Email');
         email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
         email.style = textAreanStyle;
 
         let password = document.createElement('input');
-        password.value = Settings.DEFAULT_TEXTS.login_DefaultPassword;
+        password.setAttribute('placeholder', 'Password');
         password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
         password.style = textAreanStyle;
 
         let repassword = document.createElement('input');
-        repassword.value = Settings.DEFAULT_TEXTS.login_DefaultRePassword;
+        repassword.setAttribute('placeholder', 'Re-type Password');
         repassword.setAttribute('tabindex', '0');
         repassword.setAttribute('type', 'password');
         divWrapper.appendChild(repassword);
@@ -425,21 +401,21 @@ export const showRegisterScreen = function () {
             repassword.style.backgroundColor = textAreaDefaultColor;
             email.style.backgroundColor = textAreaDefaultColor;
 
-            if (password.value != Settings.DEFAULT_TEXTS.login_DefaultPassword || noDefault) {
+            if (password.value != '' || noDefault) {
                 if (password.value.length < 6) {
                     errorStack.push("Password must be at last 6 characters long");
                     password.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if (repassword.value != Settings.DEFAULT_TEXTS.login_DefaultRePassword || noDefault) {
+            if (repassword.value != '' || noDefault) {
                 if (repassword.value != password.value) {
                     errorStack.push("Your passwords do not match");
                     repassword.style.backgroundColor = textAreaErrorColor;
                 }
             }
 
-            if (email.value != Settings.DEFAULT_TEXTS.login_DefaultEmail || noDefault) {
+            if (email.value != '' || noDefault) {
                 var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
                 if (!re.test(String(email.value).toLowerCase())) {
                     errorStack.push("Email entered is not a valid email address");
@@ -465,41 +441,16 @@ export const showRegisterScreen = function () {
             f();
             return f;
         }
-        let focus = (textarea, value) => {
-            let _text = textarea;
-            let _value = value;
-            var f = () => {
-                if (_text.value == _value) textarea.value = '';
-                if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'password');
-            }
-            f();
-            return f;
-        };
-        let blur = (textarea, value) => {
-            let _text = textarea;
-            let _value = value;
-            var f = () => {
-                if (_text.value == '') {
-                    textarea.value = _value;
-                    if (_value == Settings.DEFAULT_TEXTS.login_DefaultPassword || _value == Settings.DEFAULT_TEXTS.login_DefaultRePassword) _text.setAttribute('type', 'text');
-                }
-                errorChecks();
-            }
-            f();
-            return f;
-        };
+
 
         $(password).on('input selectionchange propertychange', func(password));
-        $(password).focus(focus(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
-        $(password).blur(blur(password, Settings.DEFAULT_TEXTS.login_DefaultPassword));
+        $(password).blur(errorChecks);
 
         $(repassword).on('input selectionchange propertychange', func(repassword));
-        $(repassword).focus(focus(repassword, Settings.DEFAULT_TEXTS.login_DefaultRePassword));
-        $(repassword).blur(blur(repassword, Settings.DEFAULT_TEXTS.login_DefaultRePassword));
+        $(repassword).blur(errorChecks);
 
         $(email).on('input selectionchange propertychange', func(email));
-        $(email).focus(focus(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
-        $(email).blur(blur(email, Settings.DEFAULT_TEXTS.login_DefaultEmail));
+        $(email).blur(errorChecks);
 
 
         targetDomElement.appendChild(divWrapper);
@@ -893,16 +844,16 @@ const openLevelEditScreen = function () {
             $('.editorHeader > span').text(game.currentLevelData.title);
             game.currentLevelData.description = $(description).val();
 
-            saveButton[0].style.backgroundColor = 'grey';
-            saveButton[0].innerText = 'SAVING..';
+            saveButton.style.backgroundColor = 'grey';
+            saveButton.innerText = 'SAVING..';
 
             //try to save online
             game.saveLevelData().then(()=>{
-                saveButton[0].style.backgroundColor = '';
-                saveButton[0].innerText = 'SAVE';
+                saveButton.style.backgroundColor = '';
+                saveButton.innerText = 'SAVE';
             }).catch((error)=>{
-                saveButton[0].style.backgroundColor = '';
-                saveButton[0].innerText = 'SAVE';
+                saveButton.style.backgroundColor = '';
+                saveButton.innerText = 'SAVE';
             });
         });
 
