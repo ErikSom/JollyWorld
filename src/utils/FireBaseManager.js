@@ -325,6 +325,15 @@ function FireBaseManager() {
             });
         });
     }
+    this.deleteUserLevelData = function (details) {
+        return new Promise((resolve, reject) => {
+            var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
+            levelRef.set(null, function (error) {
+                if (error) reject(error);
+                else resolve();
+            });
+        });
+    }
     this.getUserLevels = function () {
         return new Promise((resolve, reject) => {
             var levelsRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/`);

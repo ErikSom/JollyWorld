@@ -337,6 +337,9 @@ function Game() {
     this.saveLevelData = function(){
         return firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData);
     }
+    this.deleteLevelData = function(){
+        return firebaseManager.deleteUserLevelData(game.currentLevelData);
+    }
 
     this.startGame = function () {
 

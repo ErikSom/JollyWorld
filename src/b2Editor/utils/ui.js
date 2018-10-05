@@ -54,6 +54,18 @@ export const initGui = function () {
 
     handleLoginStatusChange();
 }
+export const hideEditorPanels = function(){
+    hidePanel(levelEditScreen);
+    hidePanel(loginScreen);
+    hidePanel(registerScreen);
+    hidePanel(saveScreen);
+    hidePanel(loadScreen);
+    hidePanel(notice);
+    hidePanel(prompt);
+}
+export const hidePanel = function(panel){
+    if(panel) $(panel.domElement).hide(windowHideTime);
+}
 const handleLoginStatusChange = function (event) {
     if (headerBar) {
         if (firebaseManager.isLoggedIn()) {
@@ -72,7 +84,6 @@ const handleLoginStatusChange = function (event) {
     }
 }
 export const showHeaderBar = function () {
-    console.log(this);
     headerBar = document.createElement('div');
     headerBar.setAttribute('class', 'editorHeader');
     customGUIContainer.appendChild(headerBar);
@@ -86,12 +97,13 @@ export const showHeaderBar = function () {
     button.innerHTML = "TEST";
     headerBar.appendChild(button);
 
+    let self = this;
+
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton save buttonOverlay dark');
     button.innerHTML = "SAVE";
     headerBar.appendChild(button);
-    console.log(this, self);
-    button.addEventListener('click', this.showSaveScreen.bind(this));
+    button.addEventListener('click', self.showSaveScreen.bind(self));
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton login buttonOverlay dark');
@@ -128,12 +140,13 @@ export const showHeaderBar = function () {
 
     button.addEventListener('click', () => {
         game.newLevel();
+        hideEditorPanels();
     });
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerIcon edit buttonOverlay dark');
     headerBar.appendChild(button);
-    button.addEventListener('click', openLevelEditScreen);
+    button.addEventListener('click', self.showLevelEditScreen.bind(self));
 
 
     let levelName = document.createElement('span');
@@ -295,7 +308,7 @@ export const showLoginScreen = function () {
                 $(dotShell).show();
                 firebaseManager.login(email.value, password.value).then(() => {
                     console.log("Succesfully logged in!!");
-                    $(loginScreen.domElement).hide(windowHideTime);
+                    hidePanel(loginScreen);
                     button.innerHTML = oldText;
                     $(dotShell).hide();
 
@@ -494,7 +507,7 @@ export const showRegisterScreen = function () {
                 button.appendChild(dotShell);
                 firebaseManager.registerUser(email.value, password.value).then(() => {
                     console.log("Succesfully registered!!");
-                    $(registerScreen.domElement).hide(windowHideTime);
+                    hidePanel(registerScreen);
                     $(dotShell).hide();
                     button.innerHTML = oldText;
                 }).catch((error) => {
@@ -679,7 +692,7 @@ export const showUsernameScreen = function () {
                 firebaseManager.claimUsername(username.value)
                 .then(firebaseManager.storeUserData(userData))
                 .then(()=>{
-                    $(usernameScreen.domElement).hide(windowHideTime);
+                    hidePanel(usernameScreen);
                     $(dotShell).hide();
                     button.innerHTML = oldText;
                 }).catch((error) => {
@@ -710,9 +723,9 @@ export const showUsernameScreen = function () {
     }
 }
 
-const openLevelEditScreen = function () {
+export const showLevelEditScreen = function () {
     if (!levelEditScreen) {
-        const levelEditGUIWidth = 300;
+        const levelEditGUIWidth = 350;
 
         levelEditScreen = new dat.GUI({
             autoPlace: false,
@@ -829,8 +842,6 @@ const openLevelEditScreen = function () {
         let saveButton = document.createElement('div');
         saveButton.setAttribute('class', 'headerButton save buttonOverlay dark');
         saveButton.innerHTML = "SAVE";
-        saveButton.style.marginLeft = '0px';
-        saveButton.style.marginRight = '5px';
         divWrapper.appendChild(saveButton);
 
         $(saveButton).on('click', ()=>{
@@ -861,38 +872,38 @@ const openLevelEditScreen = function () {
         saveAsButton.setAttribute('class', 'headerButton saveas buttonOverlay dark');
         saveAsButton.innerHTML = "SAVE AS";
         divWrapper.appendChild(saveAsButton);
-
-        $(saveAsButton).on('click', ()=>{
-            //save locally first
-
-            if(!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
-
-
-
-            game.currentLevelData.title = $(title).val();
-            $('.editorHeader > span').text(game.currentLevelData.title);
-            game.currentLevelData.description = $(description).val();
-
-            saveAsButton.style.backgroundColor = 'grey';
-            saveAsButton.innerText = 'SAVING..';
-
-            //try to save online
-            game.saveLevelData().then(()=>{
-                saveAsButton.style.backgroundColor = '';
-                saveAsButton.innerText = 'SAVE';
-            }).catch((error)=>{
-                saveAsButton.style.backgroundColor = '';
-                saveAsButton.innerText = 'SAVE';
-            });
-        });
-
-
-
+        saveAsButton.addEventListener('click', this.showSaveScreen.bind(this));
 
         let publishButton = document.createElement('div');
         publishButton.setAttribute('class', 'headerButton publish buttonOverlay dark');
         publishButton.innerHTML = "PUBLISH";
         divWrapper.appendChild(publishButton);
+
+        let deleteButton = document.createElement('div');
+        deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
+        deleteButton.innerHTML = "DELETE";
+        deleteButton.style.float = 'right';
+        divWrapper.appendChild(deleteButton);
+
+        let self = this;
+        $(saveButton).on('click', ()=>{
+            self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, 'Yes!', 'NOPE!').then(()=>{
+                deleteButton.style.backgroundColor = 'grey';
+                deleteButton.innerText = 'SAVING..';
+                game.deleteLevelData().then(()=>{
+                    deleteButton.style.backgroundColor = '';
+                    deleteButton.innerText = 'SAVE';
+                    game.newLevel();
+                    hideEditorPanels();
+                    showNotice("Level succesfully deleted!");
+                }).catch((error)=>{
+                    deleteButton.style.backgroundColor = '';
+                    deleteButton.innerText = 'SAVE';
+                    showNotice("Error deleting level?");
+
+                });
+            }).catch((error)=> {});
+        });
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));

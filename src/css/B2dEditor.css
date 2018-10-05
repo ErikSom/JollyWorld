@@ -370,7 +370,7 @@ canvas {
     justify-content: center;
     margin: unset;
 }
-#levelEditScreen .save, #levelEditScreen .publish, #levelEditScreen .saveas{
+#levelEditScreen .save, #levelEditScreen .publish, #levelEditScreen .saveas, #levelEditScreen .delete{
     float: left;
 }
 #levelEditScreen .saveas{
