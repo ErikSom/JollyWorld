@@ -3481,8 +3481,6 @@ const _B2dEditor = function () {
 
 			var graphicContainer = this.selectedTextures[i];
 
-			console.log(graphicContainer);
-
 			if (graphicContainer.data.type == this.object_GRAPHIC) innerGraphics.push(graphicContainer.data);
 			else graphicContainer.data.graphicObjects.map(g => {
 				innerGraphics.push(this.parseArrObject(JSON.parse(g)));
@@ -3601,7 +3599,6 @@ const _B2dEditor = function () {
 			graphic.rotation = body.mySprite.data.rotation;
 
 			if (graphic) {
-				console.log(body.mySprite.data.transparancy);
 				if(body.mySprite.data.transparancy instanceof Array){
 					graphic.alpha = body.mySprite.data.transparancy[0];
 					graphic.data.transparancy = body.mySprite.data.transparancy[0];
@@ -4918,7 +4915,6 @@ const _B2dEditor = function () {
 			}
 
 			target.myTileSprite.texture = tex;
-			console.log(targetSprite.data.transparancy);
 			let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
 			outlineFilter.padding = targetSprite.data.lineWidth;
 			targetSprite.filters = [outlineFilter];

@@ -69,7 +69,6 @@ export const hidePanel = function (panel) {
     if (panel) $(panel.domElement).hide(windowHideTime);
 }
 export const setLevelSpecifics = function () {
-    console.log("SETTING EDITOR HEADER TO", game.currentLevelData.title);
     $('.editorHeader > span').text(game.currentLevelData.title);
 }
 const handleLoginStatusChange = function (event) {
@@ -978,7 +977,6 @@ export const showSaveScreen = function () {
         $(new_button).on('click', () => {
             let oldText = new_button.innerHTML;
             new_button.innerHTML = '';
-            console.log(new_button);
             new_button.appendChild(dotShell);
             $(dotShell).show();
 

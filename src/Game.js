@@ -347,12 +347,9 @@ function Game() {
     }
     this.loadUserLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
-            console.log("STARTING TO LOAD LEVEL JSON");
             game.currentLevelData = levelData;
             var self = this;
             $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
-                console.log("JSON LOAD COMPLETE");
-
                 self.currentLevelData.json = JSON.stringify(data);
                 self.initLevel(self.currentLevelData);
                 return resolve();

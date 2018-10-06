@@ -29,8 +29,6 @@ function FireBaseManager() {
                 self.onLogin();
             }
         });
-        console.log("INIT FB");
-        console.log(firebase.auth());
     }
 
     this.registerUser = function (email, password) {
@@ -47,7 +45,6 @@ function FireBaseManager() {
     this.claimUsername = function (username) {
         username = username.toLowerCase();
         return new Promise((resolve, reject) => {
-            console.log(self.app);
             firebase.database().ref('/Usernames/' + username).set(firebase.auth().currentUser.uid, function (error) {
                 if (error) return reject(error);
                 else return resolve();
@@ -88,9 +85,7 @@ function FireBaseManager() {
         return this.user != undefined;
     }
     this.onLogin = function () {
-        console.log("LOGGED IN MTF");
         this.getUserData();
-
         this.dispatchEvent('login');
     }
     this.login = function (email, password) {
@@ -168,7 +163,6 @@ function FireBaseManager() {
     }
 
     this.uploadFiles = function (files, UUID, completeCall, progressCall, errorCall) {
-        console.log("uploadFiles class init");
         this.currentIndex = 0;
         this.currentFile;
         this.totalFiles = files.length;
@@ -178,9 +172,7 @@ function FireBaseManager() {
         var self = this;
 
         this.uploadNext = function () {
-            console.log("Upload files uploadNext");
             self.currentFile = files[self.currentIndex];
-            console.log("Upload", self.currentFile);
             self.uploadFile(self.currentFile.file, self.currentFile.dir, self.currentFile.name, self.currentFile.datatype);
             self.currentIndex++;
         }
@@ -188,20 +180,15 @@ function FireBaseManager() {
         this.progress = function (snapshot) {
             self.currentFileProgress = snapshot.bytesTransferred / snapshot.totalBytes;
             var totalProgress = (self.currentIndex - 1 + self.currentFileProgress) / self.totalFiles;
-            console.log("Upload files progress");
-            console.log(totalProgress);
             if (progressCall) progressCall(totalProgress);
         }
         this.error = function (error) {
-            console.log("Upload files error");
             console.log(error.message);
             if (errorCall) errorCall(error);
         }
         this.complete = function (task) {
             var downloadURL = task.snapshot.downloadURL;
             var token = downloadURL.split(firebaseManager.baseDownloadURL)[1];
-            console.log("Upload files complete file");
-            console.log(token);
             self.tokens.push(token);
             self.currentFileProgress = 0;
             if (self.currentIndex == self.totalFiles) {
@@ -212,13 +199,10 @@ function FireBaseManager() {
         }
 
         this.uploadFile = function (file, dir, name, datatype) {
-            console.log("Upload files uploadFile", file);
             var storageRef = firebase.storage().ref(dir + "/" + self.uploadUUID + "/" + name);
-
             var task;
             if (typeof file === 'string') {
                 if (datatype && datatype == "data_url") {
-                    console.log("PUTTING A THUMBBBB!");
                     task = storageRef.putString(file, datatype);
                 } else {
                     task = storageRef.putString(file);
@@ -249,11 +233,8 @@ function FireBaseManager() {
         levelRef.orderByChild("creationDate").limitToFirst(this.levelsLimitTo);
         //}
         levelRef.once('value').then(function (levelListSnapshot) {
-            console.log("Levels Loaded!!");
-            console.log(levelListSnapshot.val());
             ui.displayLevels(levelListSnapshot.val());
         }, function (error) {
-            console.log("ERROR!!");
             console.log(error.message);
         });
     }
@@ -285,8 +266,6 @@ function FireBaseManager() {
             var self = this;
             var uploader = new this.uploadFiles(filesToUpload, details.uid,
                 function (urls) {
-                    console.log("ui manager complete");
-                    console.log(urls);
                     self.storeUserLevelData(urls, details).then(() => {
                         resolve();
                     }).catch((error) => {
@@ -294,12 +273,8 @@ function FireBaseManager() {
                     })
                 },
                 function (progress) {
-                    console.log("ui manager progress");
-                    console.log(progress);
                 },
                 function (error) {
-                    console.log("ui manager error");
-                    console.log(error);
                     reject(error);
                 }
             );
@@ -338,7 +313,6 @@ function FireBaseManager() {
         return new Promise((resolve, reject) => {
             var levelsRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/`);
             levelsRef.once('value', function (snapshot) {
-                console.log(snapshot);;
                 return resolve(snapshot.val());
             }, function (error) {
                 return reject(error);
