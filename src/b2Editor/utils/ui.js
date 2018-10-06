@@ -820,9 +820,6 @@ export const showLevelEditScreen = function () {
             return f;
         }
         $(description).on('input selectionchange propertychange', func(description, span));
-        $(description).on('blur', ()=>{
-            game.currentLevelData.title = $(description).val();
-        });
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));
@@ -886,7 +883,7 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(deleteButton);
 
         let self = this;
-        $(saveButton).on('click', ()=>{
+        $(deleteButton).on('click', ()=>{
             self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, 'Yes!', 'NOPE!').then(()=>{
                 deleteButton.style.backgroundColor = 'grey';
                 deleteButton.innerText = 'SAVING..';
