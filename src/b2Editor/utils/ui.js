@@ -103,11 +103,37 @@ export const showHeaderBar = function () {
 
     let self = this;
 
-    button = document.createElement('div');
-    button.setAttribute('class', 'headerButton save buttonOverlay dark');
-    button.innerHTML = "SAVE";
-    headerBar.appendChild(button);
-    button.addEventListener('click', self.showSaveScreen.bind(self));
+    let saveButton = document.createElement('div');
+    saveButton.setAttribute('class', 'headerButton save buttonOverlay dark');
+    saveButton.innerHTML = "SAVE";
+    headerBar.appendChild(saveButton);
+
+    $(saveButton).on('click', () => {
+        //save locally first
+
+        if(game.currentLevelData.title == ''){
+            self.showLevelEditScreen();
+            return;
+        }
+
+        if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+
+        game.currentLevelData.title = $(title).val();
+        game.currentLevelData.description = $(description).val();
+        setLevelSpecifics();
+
+        saveButton.style.backgroundColor = 'grey';
+        saveButton.innerText = 'SAVING..';
+
+        //try to save online
+        game.saveLevelData().then(() => {
+            saveButton.style.backgroundColor = '';
+            saveButton.innerText = 'SAVE';
+        }).catch((error) => {
+            saveButton.style.backgroundColor = '';
+            saveButton.innerText = 'SAVE';
+        });
+    });
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton login buttonOverlay dark');
@@ -773,12 +799,12 @@ export const showLevelEditScreen = function () {
 
 
         let title = document.createElement('input');
+        title.setAttribute('id', 'levelEdit_title');
         title.setAttribute('placeholder', 'Title');
         divWrapper.appendChild(title);
         title.style.fontSize = '18px';
         title.style.height = '30px';
         title.style.fontWeight = 'bold';
-        title.value = game.currentLevelData.title;
 
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
@@ -802,10 +828,10 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(document.createElement('br'));
 
         let description = document.createElement('textarea');
+        description.setAttribute('id', 'levelEdit_description');
         description.setAttribute('placeholder', 'Description');
         divWrapper.appendChild(description);
         description.style.height = '100px';
-        description.value = game.currentLevelData.description;
 
 
         span = document.createElement('span');
@@ -842,6 +868,34 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(document.createElement('br'));
 
 
+
+        let errorSpan = document.createElement('span');
+        errorSpan.innerText = '';
+        errorSpan.style.color = '#ff4b00';
+        divWrapper.appendChild(errorSpan);
+
+        const errorChecks = () => {
+            var errorStack = [];
+            const textAreaDefaultColor = '#fff';
+            const textAreaErrorColor = '#e8764b';
+
+            title.style.backgroundColor = textAreaDefaultColor;
+            description.style.backgroundColor = textAreaDefaultColor;
+
+            if (title.value.length<3) {
+                title.style.backgroundColor = textAreaErrorColor;
+                errorStack.push("Title must be at least 3 characters long");
+            }
+
+            errorSpan.innerText = '';
+            if (errorStack.length == 0) return true;
+            for (var i = 0; i < errorStack.length; i++) {
+                errorSpan.innerText += errorStack[i] + '\n';
+            }
+            return false;
+        }
+
+
         let saveButton = document.createElement('div');
         saveButton.setAttribute('class', 'headerButton save buttonOverlay dark');
         saveButton.innerHTML = "SAVE";
@@ -849,7 +903,7 @@ export const showLevelEditScreen = function () {
 
         $(saveButton).on('click', () => {
             //save locally first
-
+            if(!errorChecks()) return;
             if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
             game.currentLevelData.title = $(title).val();
@@ -921,6 +975,9 @@ export const showLevelEditScreen = function () {
 
     }
     levelEditScreen.domElement.style.display = "block";
+    // set values
+    $(levelEditScreen).find('#levelEdit_title').text(game.currentLevelData.title);
+    $(levelEditScreen).find('#levelEdit_description').text(game.currentLevelData.description);
 }
 export const showSaveScreen = function () {
 

@@ -104,6 +104,7 @@ function FireBaseManager() {
             firebase.auth().signOut().then(function () {
                 self.user = undefined
                 self.dispatchEvent('logout');
+                self.userData = undefined;
                 resolve();
             }, function (error) {
                 reject(error);

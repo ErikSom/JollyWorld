@@ -321,8 +321,8 @@ function Game() {
     this.newLevel = function () {
         let data = {
             json: '{"objects":[]}',
-            title: Settings.DEFAULT_TEXTS.levelEditScreen_DefaultTitleText,
-            description: Settings.DEFAULT_TEXTS.levelEditScreen_DefaultDescriptionText,
+            title: '',
+            description: '',
             background: '#FFFFFF',
             crossPromos: [],
             creationDate: Date.now(),
