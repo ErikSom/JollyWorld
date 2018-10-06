@@ -71,11 +71,12 @@ function FireBaseManager() {
     }
     this.storeUserData = function (data) {
         return new Promise((resolve, reject) => {
+            var self = this;
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
             usernameRef.set(data, function (error) {
                 if (error) reject(error);
                 else {
-                    this.userData = data;
+                    self.userData = data;
                     resolve();
                 };
             });

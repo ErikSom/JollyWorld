@@ -199,7 +199,7 @@ export const showLoginScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let email = document.createElement('input');
-        email.value = '1@1.nl'; //PLACEHOLDER
+        // email.value = '1@1.nl'; //PLACEHOLDER
         email.setAttribute('placeholder', 'Email');
         email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
@@ -207,7 +207,7 @@ export const showLoginScreen = function () {
 
         let password = document.createElement('input');
         password.setAttribute('placeholder', 'Password');
-        password.value = 'appelsap'; //PLACEHOLDER
+        // password.value = 'appelsap'; //PLACEHOLDER
         password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
