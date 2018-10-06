@@ -346,8 +346,6 @@ function FireBaseManager() {
         })
     }
 
-
-
     //UTILS
     //SIMPLE CALLBACK SYSTEM
     this.callBacks = {};

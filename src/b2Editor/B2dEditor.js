@@ -73,6 +73,7 @@ const _B2dEditor = function () {
 		x: 0,
 		y: 0
 	};
+	this.ui = ui;
 
 	this.mouseDown = false;
 	this.shiftDown = false;
@@ -124,7 +125,6 @@ const _B2dEditor = function () {
 		this.textures = new PIXI.Graphics();
 		this.prefabs = {};
 		this.container.addChild(this.textures);
-
 
 		//Editor Draw
 		this.debugGraphics = new PIXI.Graphics();

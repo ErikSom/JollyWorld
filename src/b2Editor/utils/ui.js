@@ -9,7 +9,9 @@ import {
 import {
     firebaseManager
 } from "../../utils/FireBaseManager";
-import { Settings } from "../../Settings";
+import {
+    Settings
+} from "../../Settings";
 import * as formatTimestamp from './formatTimestamp';
 
 const nanoid = require('nanoid');
@@ -54,7 +56,7 @@ export const initGui = function () {
 
     handleLoginStatusChange();
 }
-export const hideEditorPanels = function(){
+export const hideEditorPanels = function () {
     hidePanel(levelEditScreen);
     hidePanel(loginScreen);
     hidePanel(registerScreen);
@@ -63,8 +65,12 @@ export const hideEditorPanels = function(){
     hidePanel(notice);
     hidePanel(prompt);
 }
-export const hidePanel = function(panel){
-    if(panel) $(panel.domElement).hide(windowHideTime);
+export const hidePanel = function (panel) {
+    if (panel) $(panel.domElement).hide(windowHideTime);
+}
+export const setLevelSpecifics = function () {
+    console.log("SETTING EDITOR HEADER TO", game.currentLevelData.title);
+    $('.editorHeader > span').text(game.currentLevelData.title);
 }
 const handleLoginStatusChange = function (event) {
     if (headerBar) {
@@ -76,9 +82,8 @@ const handleLoginStatusChange = function (event) {
             $(headerBar).find('#profileButton').hide();
         }
     }
-    if((event && event.type == 'login') || firebaseManager.isLoggedIn()){
-        firebaseManager.getUserData().then(()=>{
-        }).catch((error)=>{
+    if ((event && event.type == 'login') || firebaseManager.isLoggedIn()) {
+        firebaseManager.getUserData().then(() => {}).catch((error) => {
             showUsernameScreen();
         });
     }
@@ -132,6 +137,7 @@ export const showHeaderBar = function () {
     button.setAttribute('class', 'headerButton load buttonOverlay dark');
     button.innerHTML = "LOAD";
     headerBar.appendChild(button);
+    button.addEventListener('click', self.showLoadScreen.bind(self));
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton new buttonOverlay dark');
@@ -141,6 +147,7 @@ export const showHeaderBar = function () {
     button.addEventListener('click', () => {
         game.newLevel();
         hideEditorPanels();
+        setLevelSpecifics();
     });
 
     button = document.createElement('div');
@@ -338,7 +345,7 @@ export const showLoginScreen = function () {
     }
     $(loginScreen.domElement).show();
 
-    if(registerScreen){
+    if (registerScreen) {
         loginScreen.domElement.style.top = registerScreen.domElement.style.top;
         loginScreen.domElement.style.left = registerScreen.domElement.style.left;
     }
@@ -513,7 +520,7 @@ export const showRegisterScreen = function () {
                 }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     let errorMessage = error.message;
-                    if(error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
+                    if (error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
                     errorSpan.innerText = errorMessage;
                     $(dotShell).hide();
                     button.innerHTML = oldText;
@@ -545,7 +552,7 @@ export const showRegisterScreen = function () {
     }
     registerScreen.domElement.style.display = "block";
 
-    if(loginScreen){
+    if (loginScreen) {
         registerScreen.domElement.style.top = loginScreen.domElement.style.top;
         registerScreen.domElement.style.left = loginScreen.domElement.style.left;
     }
@@ -686,23 +693,23 @@ export const showUsernameScreen = function () {
                 button.appendChild(dotShell);
 
                 var userData = {
-                    username:username.value,
-                    creationDate:Date.now(),
+                    username: username.value,
+                    creationDate: Date.now(),
                 }
                 firebaseManager.claimUsername(username.value)
-                .then(firebaseManager.storeUserData(userData))
-                .then(()=>{
-                    hidePanel(usernameScreen);
-                    $(dotShell).hide();
-                    button.innerHTML = oldText;
-                }).catch((error) => {
-                    console.log("Firebase responded with", error.code);
-                    let errorMessage = error.message;
-                    if(error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
-                    errorSpan.innerText = errorMessage;
-                    $(dotShell).hide();
-                    button.innerHTML = oldText;
-                });
+                    .then(firebaseManager.storeUserData(userData))
+                    .then(() => {
+                        hidePanel(usernameScreen);
+                        $(dotShell).hide();
+                        button.innerHTML = oldText;
+                    }).catch((error) => {
+                        console.log("Firebase responded with", error.code);
+                        let errorMessage = error.message;
+                        if (error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
+                        errorSpan.innerText = errorMessage;
+                        $(dotShell).hide();
+                        button.innerHTML = oldText;
+                    });
             }
         });
 
@@ -717,7 +724,7 @@ export const showUsernameScreen = function () {
 
     }
     usernameScreen.domElement.style.display = "block";
-    if(loginScreen){
+    if (loginScreen) {
         usernameScreen.domElement.style.top = loginScreen.domElement.style.top;
         usernameScreen.domElement.style.left = loginScreen.domElement.style.left;
     }
@@ -841,25 +848,23 @@ export const showLevelEditScreen = function () {
         saveButton.innerHTML = "SAVE";
         divWrapper.appendChild(saveButton);
 
-        $(saveButton).on('click', ()=>{
+        $(saveButton).on('click', () => {
             //save locally first
 
-            if(!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
-
-
+            if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
             game.currentLevelData.title = $(title).val();
-            $('.editorHeader > span').text(game.currentLevelData.title);
             game.currentLevelData.description = $(description).val();
+            setLevelSpecifics();
 
             saveButton.style.backgroundColor = 'grey';
             saveButton.innerText = 'SAVING..';
 
             //try to save online
-            game.saveLevelData().then(()=>{
+            game.saveLevelData().then(() => {
                 saveButton.style.backgroundColor = '';
                 saveButton.innerText = 'SAVE';
-            }).catch((error)=>{
+            }).catch((error) => {
                 saveButton.style.backgroundColor = '';
                 saveButton.innerText = 'SAVE';
             });
@@ -883,23 +888,24 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(deleteButton);
 
         let self = this;
-        $(deleteButton).on('click', ()=>{
-            self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, 'Yes!', 'NOPE!').then(()=>{
+        $(deleteButton).on('click', () => {
+            self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 deleteButton.style.backgroundColor = 'grey';
                 deleteButton.innerText = 'SAVING..';
-                game.deleteLevelData().then(()=>{
+                game.deleteLevelData().then(() => {
                     deleteButton.style.backgroundColor = '';
                     deleteButton.innerText = 'SAVE';
                     game.newLevel();
                     hideEditorPanels();
+                    setLevelSpecifics();
                     showNotice("Level succesfully deleted!");
-                }).catch((error)=>{
+                }).catch((error) => {
                     deleteButton.style.backgroundColor = '';
                     deleteButton.innerText = 'SAVE';
                     showNotice("Error deleting level?");
 
                 });
-            }).catch((error)=> {});
+            }).catch((error) => {});
         });
 
         divWrapper.appendChild(document.createElement('br'));
@@ -917,9 +923,9 @@ export const showLevelEditScreen = function () {
     }
     levelEditScreen.domElement.style.display = "block";
 }
-export const showSaveScreen = function(){
+export const showSaveScreen = function () {
 
-    if(!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
 
     if (!saveScreen) {
@@ -976,11 +982,11 @@ export const showSaveScreen = function(){
             new_button.appendChild(dotShell);
             $(dotShell).show();
 
-            game.saveNewLevelData().then(()=>{
+            game.saveNewLevelData().then(() => {
                 new_button.innerHTML = oldText;
                 $(dotShell).hide();
                 console.log("Uploading level was a success!!");
-            }).catch((error)=>{
+            }).catch((error) => {
                 new_button.innerHTML = oldText;
                 $(dotShell).hide();
                 console.log("Uploading error:", error.message);
@@ -1057,6 +1063,7 @@ export const showSaveScreen = function(){
         span.setAttribute('class', 'itemTitle');
         span.innerText = 'Level Title';
         levelNameDiv.appendChild(span);
+        clampDot('.itemTitle', 1, 14);
 
         levelNameDiv.appendChild(document.createElement('br'));
 
@@ -1093,9 +1100,9 @@ export const showSaveScreen = function(){
         var self = this;
 
 
-        const buildLevelList = (levels)=>{
-            for(let level_id in levels){
-                if(levels.hasOwnProperty(level_id)){
+        const buildLevelList = (levels) => {
+            for (let level_id in levels) {
+                if (levels.hasOwnProperty(level_id)) {
 
                     const level = levels[level_id];
                     console.log(level);
@@ -1105,25 +1112,25 @@ export const showSaveScreen = function(){
                     $itemBar.find('.itemDescription').text(level.description);
                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
                     let saveButton = $itemBar.find('.headerButton.save');
-                    saveButton.on('click', ()=>{
-                        self.showPrompt(`Are you sure you want to overwrite level ${levels[level_id].title} with your new level?`, 'Yes!', 'NOPE!').then(()=>{
+                    saveButton.on('click', () => {
+                        self.showPrompt(`Are you sure you want to overwrite level ${levels[level_id].title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                             game.currentLevelData.uid = level_id;
                             saveButton[0].style.backgroundColor = 'grey';
                             saveButton[0].innerText = 'SAVING..';
-                            game.saveLevelData().then(()=>{
+                            game.saveLevelData().then(() => {
                                 saveButton[0].style.backgroundColor = '';
                                 saveButton[0].innerText = 'SAVE';
-                            }).catch((error)=>{
+                            }).catch((error) => {
                                 saveButton[0].style.backgroundColor = '';
                                 saveButton[0].innerText = 'SAVE';
                             });
-                        }).catch((error)=> {});
+                        }).catch((error) => {});
                     });
                 }
             }
         }
 
-        firebaseManager.getUserLevels().then((levels)=> {
+        firebaseManager.getUserLevels().then((levels) => {
             buildLevelList(levels);
         })
 
@@ -1148,9 +1155,211 @@ export const showSaveScreen = function(){
     }
     $(saveScreen.domElement).show();
 
-    if(loadScreen){
+    if (loadScreen) {
         saveScreen.domElement.style.top = loadScreen.domElement.style.top;
         saveScreen.domElement.style.left = loadScreen.domElement.style.left;
+    }
+}
+export const showLoadScreen = function () {
+
+    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.load_notLoggedIn);
+
+
+    if (!loadScreen) {
+        const loginGUIWidth = 400;
+
+        loadScreen = new dat.GUI({
+            autoPlace: false,
+            width: loginGUIWidth
+        });
+        loadScreen.domElement.setAttribute('id', 'loadScreen');
+
+        let folder = loadScreen.addFolder('Load Screen');
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
+
+        folder.open();
+
+
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+
+        let span = document.createElement('span');
+        span.innerText = 'LOAD';
+        targetDomElement.appendChild(span);
+        span.style.fontSize = '20px';
+        span.style.marginTop = '20px';
+        span.style.display = 'inline-block';
+
+        let divWrapper = document.createElement('div');
+        divWrapper.style.padding = '0px 10px';
+
+        //fill here
+        var filterBar = document.createElement('div');
+        filterBar.setAttribute('class', 'filterBar');
+
+        var levelNameFilter = document.createElement('div');
+        levelNameFilter.setAttribute('class', 'levelNameFilter');
+        filterBar.appendChild(levelNameFilter);
+
+        var filterIcon = document.createElement('div');
+        filterIcon.setAttribute('class', 'filterIcon green arrow');
+        levelNameFilter.appendChild(filterIcon);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'filterTitle');
+        span.innerText = 'Title';
+        levelNameFilter.appendChild(span);
+
+        var levelDateFilter = document.createElement('div');
+        levelDateFilter.setAttribute('class', 'levelDateFilter');
+        filterBar.appendChild(levelDateFilter);
+
+        var filterIcon = document.createElement('div');
+        filterIcon.setAttribute('class', 'filterIcon green arrow');
+        levelDateFilter.appendChild(filterIcon);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'filterTitle');
+        span.innerText = 'Date';
+        levelDateFilter.appendChild(span);
+
+        var levelPlayFilter = document.createElement('div');
+        levelPlayFilter.setAttribute('class', 'levelPlayFilter');
+        filterBar.appendChild(levelPlayFilter);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'filterTitle');
+        span.innerText = 'Load';
+        levelPlayFilter.appendChild(span);
+
+
+        levelNameFilter.style.width = '60%';
+        levelDateFilter.style.width = '20%';
+        levelPlayFilter.style.width = '20%';
+
+
+
+        divWrapper.appendChild(filterBar);
+
+        //*********************************/
+        // Single item
+
+        var itemBar = document.createElement('div');
+        itemBar.setAttribute('class', 'listItem');
+
+        var levelNameDiv = document.createElement('div');
+        levelNameDiv.setAttribute('class', 'levelNameDiv');
+        itemBar.appendChild(levelNameDiv);
+
+        var thumb = document.createElement('div');
+        thumb.setAttribute('class', 'thumb');
+        levelNameDiv.appendChild(thumb);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'itemTitle');
+        span.innerText = 'Level Title';
+        clampDot('.itemTitle', 1, 14);
+        levelNameDiv.appendChild(span);
+
+        levelNameDiv.appendChild(document.createElement('br'));
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'itemDescription');
+        span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
+        levelNameDiv.appendChild(span);
+
+        clampDot('.itemDescription', 3, 14);
+
+        var levelDateDiv = document.createElement('div');
+        levelDateDiv.setAttribute('class', 'levelDateDiv');
+        itemBar.appendChild(levelDateDiv);
+
+        span = document.createElement('span');
+        span.setAttribute('class', 'itemDate');
+        span.innerText = '31-12-2020';
+        levelDateDiv.appendChild(span);
+
+        var levelLoadDiv = document.createElement('div');
+        levelLoadDiv.setAttribute('class', 'levelLoadDiv');
+        itemBar.appendChild(levelLoadDiv);
+
+        let button = document.createElement('div');
+        button.setAttribute('class', 'headerButton save buttonOverlay dark');
+        button.innerHTML = "LOAD";
+        levelLoadDiv.appendChild(button);
+        //*********************************/
+
+        let itemList = document.createElement('div');
+        itemList.setAttribute('class', 'itemList');
+        divWrapper.appendChild(itemList);
+
+        var self = this;
+
+
+        const buildLevelList = (levels) => {
+            for (let level_id in levels) {
+                if (levels.hasOwnProperty(level_id)) {
+
+                    const level = levels[level_id];
+                    let $itemBar = $(itemBar).clone();
+                    $(itemList).append($itemBar);
+                    $itemBar.find('.itemTitle').text(level.title);
+                    $itemBar.find('.itemDescription').text(level.description);
+                    $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
+                    let loadButton = $itemBar.find('.headerButton.save');
+                    loadButton.on('click', () => {
+                        const doLevelLoad = () => {
+                            loadButton[0].style.backgroundColor = 'grey';
+                            loadButton[0].innerText = 'LOADING..';
+                            game.loadUserLevelData(levels[level_id]).then(() => {
+                                loadButton[0].style.backgroundColor = '';
+                                loadButton[0].innerText = 'LOAD';
+                                self.hideEditorPanels();
+                                self.setLevelSpecifics();
+                            }).catch((error) => {
+                                loadButton[0].style.backgroundColor = '';
+                                loadButton[0].innerText = 'LOAD';
+                            });
+                        }
+                        if (game.levelHasChanges()) {
+                            self.showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+                                doLevelLoad();
+                            }).catch((error) => {});
+                        } else doLevelLoad();
+                    });
+                }
+            }
+        }
+
+        firebaseManager.getUserLevels().then((levels) => {
+            buildLevelList(levels);
+        })
+
+
+        //
+
+        // end here
+
+        targetDomElement.appendChild(divWrapper);
+
+
+
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
+
+
+        customGUIContainer.appendChild(loadScreen.domElement);
+
+
+        registerDragWindow(loadScreen);
+
+    }
+    $(loadScreen.domElement).show();
+
+    if (saveScreen) {
+        loadScreen.domElement.style.top = saveScreen.domElement.style.top;
+        loadScreen.domElement.style.left = saveScreen.domElement.style.left;
     }
 }
 let editorGUIPos = {
@@ -1308,7 +1517,7 @@ export const removeGuiAssetSelection = function () {
     }
 }
 export const showNotice = function (message) {
-    if(notice) $(notice.domElement).remove();
+    if (notice) $(notice.domElement).remove();
 
 
     const loginGUIWidth = 400;
@@ -1351,7 +1560,7 @@ export const showNotice = function (message) {
     button.innerHTML = "OK";
     divWrapper.appendChild(button);
 
-    button.addEventListener('click', ()=>{
+    button.addEventListener('click', () => {
         $(notice.domElement).remove();
     })
 
@@ -1363,8 +1572,8 @@ export const showNotice = function (message) {
 
     customGUIContainer.appendChild(notice.domElement);
 
-    $(notice.domElement).css('left', $(window).width()/2-$(notice.domElement).width()/2);
-    $(notice.domElement).css('top', $(window).height()/2-$(notice.domElement).height()/2);
+    $(notice.domElement).css('left', $(window).width() / 2 - $(notice.domElement).width() / 2);
+    $(notice.domElement).css('top', $(window).height() / 2 - $(notice.domElement).height() / 2);
 
 
     registerDragWindow(notice);
@@ -1372,7 +1581,7 @@ export const showNotice = function (message) {
     return false;
 }
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
-    if(prompt) $(prompt.domElement).remove();
+    if (prompt) $(prompt.domElement).remove();
 
     const loginGUIWidth = 400;
 
@@ -1427,19 +1636,19 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     customGUIContainer.appendChild(prompt.domElement);
 
-    $(prompt.domElement).css('left', $(window).width()/2-$(prompt.domElement).width()/2);
-    $(prompt.domElement).css('top', $(window).height()/2-$(prompt.domElement).height()/2);
+    $(prompt.domElement).css('left', $(window).width() / 2 - $(prompt.domElement).width() / 2);
+    $(prompt.domElement).css('top', $(window).height() / 2 - $(prompt.domElement).height() / 2);
 
 
     registerDragWindow(prompt);
 
-    return new Promise((resolve, reject) =>{
-        yes_button.addEventListener('click', ()=>{
+    return new Promise((resolve, reject) => {
+        yes_button.addEventListener('click', () => {
             $(prompt.domElement).remove();
             console.log("positive prompt");
             return resolve();
         })
-        no_button.addEventListener('click', ()=>{
+        no_button.addEventListener('click', () => {
             $(prompt.domElement).remove();
             console.log("negative prompt");
             return reject();
@@ -1503,8 +1712,8 @@ export const registerDragWindow = function (_window) {
         initDrag(event, _window);
         event.stopPropagation();
     });
-    $(_window.domElement).on('mousedown', function(event){
-        if($(_window.domElement).parent().children().index(_window.domElement) !== $(_window.domElement).parent().children().length-1){
+    $(_window.domElement).on('mousedown', function (event) {
+        if ($(_window.domElement).parent().children().index(_window.domElement) !== $(_window.domElement).parent().children().length - 1) {
             $(_window.domElement).parent().append($(_window.domElement));
         }
     })
@@ -1517,18 +1726,20 @@ export const registerDragWindow = function (_window) {
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
-        endDrag(event, _window)
+        endDrag(event, _window);
     });
 }
 
 
 
-const clampDot = (target, lines=1, lineHeight=14)=>{
-    if(!$(target)[0] || !$(target)[0].offsetHeight) {
-        setTimeout(()=>{clampDot(target, lines, lineHeight)}, 10);
+const clampDot = (target, lines = 1, lineHeight = 14) => {
+    if (!$(target)[0] || !$(target)[0].offsetHeight) {
+        setTimeout(() => {
+            clampDot(target, lines, lineHeight)
+        }, 10);
         return;
     }
-    while($(target)[0].offsetHeight>(lineHeight*lines)){
-        $(target)[0].innerText = $(target)[0].innerText.substr(0, $(target)[0].innerText.length-6)+'...';
+    while ($(target)[0].offsetHeight > (lineHeight * lines)) {
+        $(target)[0].innerText = $(target)[0].innerText.substr(0, $(target)[0].innerText.length - 6) + '...';
     }
 }

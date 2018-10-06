@@ -277,68 +277,91 @@ function Game() {
         }
         Key.onKeyup(e);
     }
-    this.testWorld = function(){
+    this.testWorld = function () {
         this.editor.stringifyWorldJSON();
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
     }
-    this.testWorldAndSaveData = function(){
+    this.testWorldAndSaveData = function () {
         this.testWorld();
         SaveManager.saveTempEditorWorld(this.currentLevelData);
         this.stopAutoSave();
     }
-    this.stopWorld = function(){
+    this.stopWorld = function () {
         this.editor.resetEditor();
         this.run = false;
     }
-    this.openEditor = function(){
+    this.openEditor = function () {
         this.stopWorld();
         this.initLevel(SaveManager.getTempEditorWorld());
         this.doAutoSave();
     }
-    this.initLevel = function(data){
+    this.initLevel = function (data) {
         this.editor.resetEditor();
         this.currentLevelData = data;
+        this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
     }
     // playWorld/testWorld/editoWorld
     this.autoSaveTimeOutID;
-    this.doAutoSave = function (){
+    this.doAutoSave = function () {
         let self = this;
         this.stopAutoSave();
-        this.autoSaveTimeOutID = setTimeout(()=>{
+        this.autoSaveTimeOutID = setTimeout(() => {
             self.currentLevelData.json = this.editor.stringifyWorldJSON();
             SaveManager.saveTempEditorWorld(self.currentLevelData);
             self.doAutoSave();
         }, Settings.autoSaveInterval);
     }
-    this.stopAutoSave = function (){
+    this.stopAutoSave = function () {
         clearTimeout(this.autoSaveTimeOutID);
         this.autoSaveTimeOutID = undefined;
     }
-    this.newLevel = function(){
+    this.newLevel = function () {
         let data = {
-            json:'{"objects":[]}',
-            title:Settings.DEFAULT_TEXTS.levelEditScreen_DefaultTitleText,
-            description:Settings.DEFAULT_TEXTS.levelEditScreen_DefaultDescriptionText,
-            background:'#FFFFFF',
-            crossPromos:[],
-            creationDate:Date.now(),
-            uid:nanoid(),
+            json: '{"objects":[]}',
+            title: Settings.DEFAULT_TEXTS.levelEditScreen_DefaultTitleText,
+            description: Settings.DEFAULT_TEXTS.levelEditScreen_DefaultDescriptionText,
+            background: '#FFFFFF',
+            crossPromos: [],
+            creationDate: Date.now(),
+            uid: nanoid(),
         }
         this.initLevel(data);
     }
-    this.saveNewLevelData = function(){
+    this.saveNewLevelData = function () {
         game.currentLevelData.uid = nanoid();
         game.currentLevelData.creationDate = Date.now();
         return this.saveLevelData();
     }
-    this.saveLevelData = function(){
+    this.saveLevelData = function () {
         return firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData);
     }
-    this.deleteLevelData = function(){
+    this.deleteLevelData = function () {
         return firebaseManager.deleteUserLevelData(game.currentLevelData);
+    }
+    this.levelHasChanges = function () {
+        if (game.currentLevelData.json != game.editor.stringifyWorldJSON()) return true;
+        return false;
+    }
+    this.loadUserLevelData = function (levelData) {
+        return new Promise((resolve, reject) => {
+            console.log("STARTING TO LOAD LEVEL JSON");
+            game.currentLevelData = levelData;
+            var self = this;
+            $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
+                console.log("JSON LOAD COMPLETE");
+
+                self.currentLevelData.json = JSON.stringify(data);
+                self.initLevel(self.currentLevelData);
+                return resolve();
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                return reject({
+                    message: textStatus
+                });
+            });
+        });
     }
 
     this.startGame = function () {
@@ -518,7 +541,7 @@ function Game() {
 
         this.editor.run();
         this.newDebugGraphics.clear();
-        if(this.editor.editorSettings.physicsDebug){
+        if (this.editor.editorSettings.physicsDebug) {
             this.world.DrawDebugData();
         }
         this.app.render();
