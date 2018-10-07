@@ -927,7 +927,11 @@ export const showLevelEditScreen = function () {
         saveAsButton.setAttribute('class', 'headerButton saveas buttonOverlay dark');
         saveAsButton.innerHTML = "SAVE AS";
         divWrapper.appendChild(saveAsButton);
-        saveAsButton.addEventListener('click', this.showSaveScreen.bind(this));
+
+        saveAsButton.addEventListener('click', ()=>{
+            if(!errorChecks()) return;
+            self.showSaveScreen().bind(self)
+        });
 
         let publishButton = document.createElement('div');
         publishButton.setAttribute('class', 'headerButton publish buttonOverlay dark');
@@ -1031,6 +1035,8 @@ export const showSaveScreen = function () {
         dotShell.appendChild(dots);
         $(dotShell).hide();
 
+        let self = this;
+
         $(new_button).on('click', () => {
             let oldText = new_button.innerHTML;
             new_button.innerHTML = '';
@@ -1041,6 +1047,7 @@ export const showSaveScreen = function () {
                 new_button.innerHTML = oldText;
                 $(dotShell).hide();
                 console.log("Uploading level was a success!!");
+                self.hideEditorPanels();
             }).catch((error) => {
                 new_button.innerHTML = oldText;
                 $(dotShell).hide();
@@ -1152,8 +1159,6 @@ export const showSaveScreen = function () {
         itemList.setAttribute('class', 'itemList');
         divWrapper.appendChild(itemList);
 
-        var self = this;
-
 
         const buildLevelList = (levels) => {
             for (let level_id in levels) {
@@ -1175,6 +1180,7 @@ export const showSaveScreen = function () {
                             game.saveLevelData().then(() => {
                                 saveButton[0].style.backgroundColor = '';
                                 saveButton[0].innerText = 'SAVE';
+                                self.hideEditorPanels();
                             }).catch((error) => {
                                 saveButton[0].style.backgroundColor = '';
                                 saveButton[0].innerText = 'SAVE';
