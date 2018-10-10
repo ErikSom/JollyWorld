@@ -161,6 +161,23 @@ class character extends basePrefab {
                 break;
         }
     }
+    detachFromVehicle(){
+        console.log("DETACH");
+        for(var i = 0; i<this.lookupObject._bodies.length; i++){
+            var body = this.lookupObject._bodies[i];
+            var joint = body.GetJointList();
+            while (joint) {
+                joint = joint.GetNext();
+                console.log("Joint:");
+                console.log(joint);
+            }
+
+
+
+
+
+        }
+    }
 }
 class horseanimal extends basePrefab {
     static TIME_EYES_CLOSE = 3000;

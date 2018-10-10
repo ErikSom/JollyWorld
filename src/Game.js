@@ -251,6 +251,10 @@ function Game() {
             if (Key.isDown(Key.D)) {
                 this.vehicle.lean(1);
             }
+            if (Key.isPressed(Key.Z)) {
+                console.log(this.character);
+                this.character.detachFromVehicle();
+            };
         }
     }
 
@@ -309,7 +313,9 @@ function Game() {
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(() => {
+            console.log("AUTO SAVE!");
             self.currentLevelData.json = this.editor.stringifyWorldJSON();
+            console.log(self.currentLevelData.json);
             SaveManager.saveTempEditorWorld(self.currentLevelData);
             self.doAutoSave();
         }, Settings.autoSaveInterval);
@@ -320,7 +326,7 @@ function Game() {
     }
     this.newLevel = function () {
         let data = {
-            json: '{"objects":[]}',
+            json: '{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"vehicle2"}, "vehicle2", 0]]}',
             title: '',
             description: '',
             background: '#FFFFFF',
@@ -374,8 +380,10 @@ function Game() {
             if (this.editor.prefabs.hasOwnProperty(key)) {
                 if (this.editor.prefabs[key].class.constructor.playableCharacter) {
                     this.playerPrefabObject = this.editor.prefabs[key];
-                    this.character = this.editor.lookupGroups[this.playerPrefabObject.key].character;
-                    this.cameraFocusObject = this.character.body;
+                    console.log(this.playerPrefabObject);
+
+                    this.character = this.editor.prefabs[this.playerPrefabObject.class.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+                    this.cameraFocusObject = this.character.lookupObject.body;
 
                     var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
                     bodies.map(body => {
