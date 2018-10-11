@@ -335,6 +335,7 @@ function Game() {
             uid: nanoid(),
         }
         this.initLevel(data);
+        SaveManager.saveTempEditorWorld(this.currentLevelData);
     }
     this.saveNewLevelData = function () {
         game.currentLevelData.uid = nanoid();
