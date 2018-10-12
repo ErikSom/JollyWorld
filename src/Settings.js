@@ -3,6 +3,8 @@ export var Settings = {
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
     emitterPool:30,
+    /*CHARACTER*/
+    detachForce:300,
     /*EDITOR*/
     autoSaveInterval:5000,
 

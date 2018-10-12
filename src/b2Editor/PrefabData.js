@@ -5,6 +5,7 @@ import {
 import {
     Vehicle
 } from "../Vehicle";
+import { Settings } from "../Settings";
 
 class basePrefab {
     static settings = {};
@@ -12,7 +13,7 @@ class basePrefab {
     static forceUnique = false;
     constructor(target) {
         this.prefabObject = target;
-        this.lookupObject = game.editor.lookupGroups[this.prefabObject.prefabName + "_" + this.prefabObject.instanceID];;
+        this.lookupObject = game.editor.lookupGroups[this.prefabObject.prefabName + "_" + this.prefabObject.instanceID];
         this.contactListener;
     }
     init() {
@@ -40,6 +41,7 @@ class character extends basePrefab {
         super.init();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
+        this.attachedToVehicle = true;
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -162,6 +164,8 @@ class character extends basePrefab {
         }
     }
     detachFromVehicle(){
+        if(!this.attachedToVehicle) return;
+
         var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
         console.log(this.lookupObject);
         for(var i = 0; i<this.lookupObject._bodies.length; i++){
@@ -188,6 +192,15 @@ class character extends basePrefab {
                 }
                 jointEdge = nextJoint;
             }
+
+            // Launch character a little bit in the air
+            var body = this.lookupObject["body"];
+            var bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
+            var dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+            dirFore.SelfMul(Settings.detachForce);
+            body.ApplyForce(dirFore, body.GetPosition());
+            this.attachedToVehicle = false;
+
         }
     }
 }
