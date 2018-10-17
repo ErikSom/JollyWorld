@@ -233,7 +233,7 @@ function Game() {
 
 
     this.inputUpdate = function () {
-        if (this.vehicle) {
+        if (this.vehicle && this.character.attachedToVehicle) {
 
             if (Key.isDown(Key.W)) {
                 this.vehicle.accelerate(1);
@@ -255,6 +255,20 @@ function Game() {
                 console.log(this.character);
                 this.character.detachFromVehicle();
             };
+        }else if(this.character && !this.character.attachedToVehicle){
+            if (Key.isDown(Key.W)) {
+                this.character.positionBody('up');
+            };
+            if (Key.isDown(Key.S)) {
+                this.character.positionBody('down');
+            };
+
+            if (Key.isDown(Key.A)) {
+                this.character.positionBody('left');
+            }
+            if (Key.isDown(Key.D)) {
+                this.character.positionBody('right');
+            }
         }
     }
 
@@ -286,6 +300,7 @@ function Game() {
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
+        this.stopAutoSave();
     }
     this.testWorldAndSaveData = function () {
         this.testWorld();
@@ -295,6 +310,7 @@ function Game() {
     this.stopWorld = function () {
         this.editor.resetEditor();
         this.run = false;
+        this.doAutoSave();
     }
     this.openEditor = function () {
         this.stopWorld();

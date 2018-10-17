@@ -5,7 +5,9 @@ import {
 import {
     Vehicle
 } from "../Vehicle";
-import { Settings } from "../Settings";
+import {
+    Settings
+} from "../Settings";
 
 class basePrefab {
     static settings = {};
@@ -163,28 +165,202 @@ class character extends basePrefab {
                 break;
         }
     }
-    detachFromVehicle(){
-        if(!this.attachedToVehicle) return;
+    positionBody(direction) {
+        const positions = {
+            up: {
+                thigh_right: {
+                    angle: 0,
+                    reference: "body",
+                    clockwise: 1
+                },
+                thigh_left: {
+                    angle: 0,
+                    reference: "body",
+                    clockwise: 1
+                },
+                leg_right: {
+                    angle: 0,
+                    reference: "thigh_right",
+                    clockwise: -1
+                },
+                leg_left: {
+                    angle: 0,
+                    reference: "thigh_left",
+                    clockwise: -1
+                },
+                shoulder_right: {
+                    angle: 180,
+                    reference: "body",
+                    clockwise: -1
+                },
+                shoulder_left: {
+                    angle: 180,
+                    reference: "body",
+                    clockwise: -1
+                },
+                arm_right: {
+                    angle: 0,
+                    reference: "shoulder_right",
+                    clockwise: -1
+                },
+                arm_left: {
+                    angle: 0,
+                    reference: "shoulder_left",
+                    clockwise: -1
+                },
+                head: {
+                    angle: 40,
+                    reference: "body",
+                    clockwise: 0
+                },
+                belly: {
+                    angle:0,
+                    reference: "body",
+                    clockwise:0,
+                }
+            },
+            down: {
+                thigh_right: {
+                    angle: 120,
+                    reference: "body",
+                    clockwise: -1
+                },
+                thigh_left: {
+                    angle: 120,
+                    reference: "body",
+                    clockwise: -1
+                },
+                leg_right: {
+                    angle: -140,
+                    reference: "thigh_right",
+                    clockwise: 1
+                },
+                leg_left: {
+                    angle: -140,
+                    reference: "thigh_left",
+                    clockwise: 1
+                },
+                shoulder_right: {
+                    angle: 0,
+                    reference: "body",
+                    clockwise: 1
+                },
+                shoulder_left: {
+                    angle: 0,
+                    reference: "body",
+                    clockwise: 1
+                },
+                arm_right: {
+                    angle: 60,
+                    reference: "shoulder_right",
+                    clockwise: -1
+                },
+                arm_left: {
+                    angle: 60,
+                    reference: "shoulder_left",
+                    clockwise: -1
+                },
+                head: {
+                    angle: -64,
+                    reference: "body",
+                    clockwise: 0
+                },
+                belly: {
+                    angle:0,
+                    reference: "body",
+                    clockwise:0,
+                }
+            },
+        }
+
+        let targetPosition = positions[direction];
+
+        for (let body_part in targetPosition) {
+            if (targetPosition.hasOwnProperty(body_part)) {
+
+                let body = this.lookupObject[body_part];
+                let refBody = this.lookupObject[targetPosition[body_part].reference];
+                let refJoint = this.lookupObject[body_part + '_joint'];
+                let desiredAngle = refBody.GetAngle() - targetPosition[body_part].angle * game.editor.DEG2RAD;
+                const positioningSpeed = 20.0;
+                let nextAngle = body.GetAngle() + body.GetAngularVelocity() / positioningSpeed;
+                let totalRotation = desiredAngle - nextAngle;
+
+                //rotation logic
+
+
+                if (targetPosition[body_part].clockwise == 0 || !refJoint || !refJoint.IsLimitEnabled()) {
+                    while (totalRotation < -180 * game.editor.DEG2RAD) totalRotation += 360 * game.editor.DEG2RAD;
+                    while (totalRotation > 180 * game.editor.DEG2RAD) totalRotation -= 360 * game.editor.DEG2RAD;
+                } else if (targetPosition[body_part].clockwise == 1) {
+                    if (totalRotation < 0) {
+
+                        var upperLimit = refJoint.GetUpperLimit();
+                        var lowerLimit = refJoint.GetLowerLimit();
+
+                        let upperRotDif = body.GetAngle() - upperLimit;
+                        let lowerRotDif = body.GetAngle() - lowerLimit;
+
+                        while (upperRotDif < -180 * game.editor.DEG2RAD) upperRotDif += 360 * game.editor.DEG2RAD;
+                        while (upperRotDif > 180 * game.editor.DEG2RAD) upperRotDif -= 360 * game.editor.DEG2RAD;
+
+                        while (lowerRotDif < -180 * game.editor.DEG2RAD) lowerRotDif += 360 * game.editor.DEG2RAD;
+                        while (lowerRotDif > 180 * game.editor.DEG2RAD) lowerRotDif -= 360 * game.editor.DEG2RAD;
+
+                        if(lowerLimit>upperLimit){
+                            while (totalRotation < 0 * game.editor.DEG2RAD) totalRotation += 360 * game.editor.DEG2RAD;
+                        }
+                    }
+                } else if (targetPosition[body_part].clockwise == -1) {
+                    if (totalRotation > 0) {
+
+                        var upperLimit = refJoint.GetUpperLimit();
+                        var lowerLimit = refJoint.GetLowerLimit();
+
+                        let upperRotDif = body.GetAngle() - upperLimit;
+                        let lowerRotDif = body.GetAngle() - lowerLimit;
+
+                        while (upperRotDif < -180 * game.editor.DEG2RAD) upperRotDif += 360 * game.editor.DEG2RAD;
+                        while (upperRotDif > 180 * game.editor.DEG2RAD) upperRotDif -= 360 * game.editor.DEG2RAD;
+
+                        while (lowerRotDif < -180 * game.editor.DEG2RAD) lowerRotDif += 360 * game.editor.DEG2RAD;
+                        while (lowerRotDif > 180 * game.editor.DEG2RAD) lowerRotDif -= 360 * game.editor.DEG2RAD;
+
+                        if(lowerLimit>upperLimit){
+                            while (totalRotation > 0 * game.editor.DEG2RAD) totalRotation -= 360 * game.editor.DEG2RAD;
+                        }
+                    }
+                }
+
+                let desiredAngularVelocity = totalRotation * 60;
+                let torque = body.GetInertia() * desiredAngularVelocity / (1 / positioningSpeed);;
+                body.ApplyTorque(torque);
+            }
+        }
+
+    }
+    detachFromVehicle() {
+        if (!this.attachedToVehicle) return;
 
         var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
         console.log(this.lookupObject);
-        for(var i = 0; i<this.lookupObject._bodies.length; i++){
+        for (var i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
             var jointEdge = body.GetJointList();
 
-            if(body.mySprite.data.refName == "feet_right"){
+            if (body.mySprite.data.refName == "feet_right") {
                 console.log("feet_right_edge", jointEdge);
             }
             while (jointEdge) {
                 var nextJoint = jointEdge.next;
                 var joint = jointEdge.joint;
-                if(joint.GetType() != 1){
+                if (joint.GetType() != 1) {
                     game.world.DestroyJoint(joint);
-                }else{
+                } else {
                     var bodies = [joint.GetBodyA(), joint.GetBodyB()];
-                    for(var j = 0; j<bodies.length; j++){
-                        if(!bodies[j]) continue;
-                        if(bodies[j].mySprite.data.subPrefabInstanceName != compareClass){
+                    for (var j = 0; j < bodies.length; j++) {
+                        if (!bodies[j]) continue;
+                        if (bodies[j].mySprite.data.subPrefabInstanceName != compareClass) {
                             game.world.DestroyJoint(joint);
                             break;
                         }
@@ -391,7 +567,7 @@ class vehicle_horse extends vehicle {
                 let callback = new RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if (callback.m_hit) {
-                    if(i == 0) backFeetGrounded = true;
+                    if (i == 0) backFeetGrounded = true;
                     else frontFeetGrounded = true;
                     break;
                 }
@@ -400,16 +576,16 @@ class vehicle_horse extends vehicle {
 
         this.stopLegEngines();
         let activeLeg = -1;
-        if(backFeetGrounded) activeLeg = 0;
-        else if(frontFeetGrounded) activeLeg = 2;
+        if (backFeetGrounded) activeLeg = 0;
+        else if (frontFeetGrounded) activeLeg = 2;
 
-        if(activeLeg>=0){
+        if (activeLeg >= 0) {
             this.lookupObject[vehicle_horse.legEngines[activeLeg]].EnableMotor(true);
             this.lookupObject[vehicle_horse.legEngines[activeLeg]].SetMaxMotorTorque(5000);
             this.lookupObject[vehicle_horse.legEngines[activeLeg]].SetMotorSpeed(moveForward ? -legSpeed : legSpeed);
             for (var i = 1; i < vehicle_horse.legWheels.length; i++) {
-                if(!backFeetGrounded && i == 1) continue;
-                if(!frontFeetGrounded && i>1) break;
+                if (!backFeetGrounded && i == 1) continue;
+                if (!frontFeetGrounded && i > 1) break;
                 var body = this.lookupObject[vehicle_horse.legWheels[i]];
                 var desiredAngle = this.lookupObject[vehicle_horse.legWheels[activeLeg]].GetAngle() + tarAngleOffsets[i - 1] * game.editor.DEG2RAD;
                 var angleDif = desiredAngle - body.GetAngle();
@@ -478,8 +654,9 @@ class jumppad extends basePrefab {
     }
     set(property, value) {
         switch (property) {
-            default: this.prefabObject.settings[property] = value;
-            break;
+            default:
+                this.prefabObject.settings[property] = value;
+                break;
         }
     }
     initContactListener() {
