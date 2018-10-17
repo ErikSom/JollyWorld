@@ -271,6 +271,58 @@ class character extends basePrefab {
                     clockwise:0,
                 }
             },
+            right: {
+                thigh_right: {
+                    angle: 0,
+                    reference: "body",
+                    clockwise: 1
+                },
+                thigh_left: {
+                    angle: 0,
+                    reference: "body",
+                    clockwise: 1
+                },
+                leg_right: {
+                    angle: 0,
+                    reference: "thigh_right",
+                    clockwise: -1
+                },
+                leg_left: {
+                    angle: 0,
+                    reference: "thigh_left",
+                    clockwise: -1
+                },
+                shoulder_right: {
+                    angle: 90,
+                    reference: "body",
+                    clockwise: -1
+                },
+                shoulder_left: {
+                    angle: 90,
+                    reference: "body",
+                    clockwise: -1
+                },
+                arm_right: {
+                    angle: 0,
+                    reference: "shoulder_right",
+                    clockwise: -1
+                },
+                arm_left: {
+                    angle: 0,
+                    reference: "shoulder_left",
+                    clockwise: -1
+                },
+                head: {
+                    angle: 40,
+                    reference: "body",
+                    clockwise: 0
+                },
+                belly: {
+                    angle:0,
+                    reference: "body",
+                    clockwise:0,
+                }
+            },
         }
 
         let targetPosition = positions[direction];
@@ -282,7 +334,7 @@ class character extends basePrefab {
                 let refBody = this.lookupObject[targetPosition[body_part].reference];
                 let refJoint = this.lookupObject[body_part + '_joint'];
                 let desiredAngle = refBody.GetAngle() - targetPosition[body_part].angle * game.editor.DEG2RAD;
-                const positioningSpeed = 20.0;
+                const positioningSpeed = 10.0;
                 let nextAngle = body.GetAngle() + body.GetAngularVelocity() / positioningSpeed;
                 let totalRotation = desiredAngle - nextAngle;
 
