@@ -3,6 +3,7 @@ import {
 } from "../B2dEditor";
 import * as ui from "../utils/ui";
 import * as Box2D from "../../../libs/Box2D";
+import { Settings } from "../../Settings";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -69,7 +70,7 @@ export const doAction = function (actionData, targets) {
                     targetPos = new Box2D.b2Vec2(target.x, target.y);
                 } else if (target.myBody) {
                     objects = [target.myBody];
-                    targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x * B2dEditor.PTM, target.myBody.GetPosition().y * B2dEditor.PTM);
+                    targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x * Settings.PTM, target.myBody.GetPosition().y * Settings.PTM);
                 } else {
                     objects = [target];
                     targetPos = new Box2D.b2Vec2(target.x, target.y);

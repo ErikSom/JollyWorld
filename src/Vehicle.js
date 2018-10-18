@@ -51,7 +51,7 @@ export function Vehicle() {
             this.pedal_engine = this.vehicleBodies.pedal_engine;
 
             this.frame = this.vehicleBodies.frame;
-            this.frame.SetAngularDamping(0.8);
+            if(this.frame) this.frame.SetAngularDamping(0.8);
             this.stopAccelerateWheels();
         }
     }
@@ -162,11 +162,11 @@ export function Vehicle() {
         if(this.prefabObject.class && this.prefabObject.class.stopAccelerate) this.prefabObject.class.stopAccelerate();
     }
     this.lean = function (dir) {
-
-        var leanSpeed = this.prefabObject.class.leanSpeed || 0.2;
-        var velocity = leanSpeed * dir;
-        this.frame.SetAngularVelocity(velocity * 10);
-
+        if(this.frame){
+            var leanSpeed = this.prefabObject.class.leanSpeed || 0.2;
+            var velocity = leanSpeed * dir;
+            this.frame.SetAngularVelocity(velocity * 10);
+        }
     }
 
     this.DEG2RAD = 0.017453292519943296;

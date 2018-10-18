@@ -2,11 +2,12 @@
 import { B2dEditor } from "../B2dEditor";
 import {editorSettings} from "./editorSettings";
 import * as scrollBars from "./scrollBars";
+import { Settings } from "../../Settings";
 
 
 export const pan = function(move){
-    B2dEditor.container.x += move.x * B2dEditor.PTM;
-    B2dEditor.container.y += move.y * B2dEditor.PTM;
+    B2dEditor.container.x += move.x * Settings.PTM;
+    B2dEditor.container.y += move.y * Settings.PTM;
     B2dEditor.mousePosWorld.x -= move.x / B2dEditor.container.scale.x;
     B2dEditor.mousePosWorld.y -= move.y / B2dEditor.container.scale.y;
     constrainCameraPosition();
@@ -73,6 +74,6 @@ export const constrainCameraPosition = function(){
 
     B2dEditor.container.x -= difX;
     B2dEditor.container.y -= difY;
-    B2dEditor.mousePosWorld.x += difX / B2dEditor.PTM / B2dEditor.container.scale.x;
-    B2dEditor.mousePosWorld.y += difY / B2dEditor.PTM / B2dEditor.container.scale.y;
+    B2dEditor.mousePosWorld.x += difX / Settings.PTM / B2dEditor.container.scale.x;
+    B2dEditor.mousePosWorld.y += difY / Settings.PTM / B2dEditor.container.scale.y;
 }

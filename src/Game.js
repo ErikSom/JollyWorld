@@ -51,9 +51,6 @@ var b2Vec2 = Box2D.b2Vec2,
 
 function Game() {
 
-    this.PTM = 30;
-    this.timeStep = 1000 / 60;
-    this.physicsTimeStep = 1 / 60;
     this.editor;
     this.app;
     this.stage;
@@ -131,7 +128,7 @@ function Game() {
 
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
-        this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, this.PTM);
+        this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
         this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
         this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
@@ -146,7 +143,7 @@ function Game() {
         this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
         this.editor.tileLists = ["", "grass.jpg", "dirt.jpg", "fence.png"]
 
-        this.editor.init(this.myContainer, this.world, this.PTM);
+        this.editor.init(this.myContainer, this.world, Settings.PTM);
 
         this.editor.contactCallBackListener = this.gameContactListener;
 
@@ -233,6 +230,7 @@ function Game() {
 
 
     this.inputUpdate = function () {
+        //console.log(this.vehicle, this.character.attachedToVehicle);
         if (this.vehicle && this.character.attachedToVehicle) {
 
             if (Key.isDown(Key.W)) {
@@ -470,7 +468,7 @@ function Game() {
 
         if (!body.emitterCount || body.emitterCount < Settings.emittersPerBody) {
             let emitter = this.getEmitter(type, body);
-            emitter.spawnPos = new PIXI.Point(point.x * game.editor.PTM, point.y * game.editor.PTM);
+            emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
             emitter.body = body;
             if (!body.emitterCount) body.emitterCount = 0;
             body.emitterCount++;
@@ -518,7 +516,7 @@ function Game() {
                     this.emitters.splice(i, 1);
                     i--;
                 }
-            } else emitter.update(this.timeStep * 0.001);
+            } else emitter.update(Settings.timeStep * 0.001);
         }
     }
 
@@ -536,8 +534,8 @@ function Game() {
         requestAnimationFrame(animate);
         now = newtime;
         elapsed = now - then;
-        if (elapsed > self.timeStep) {
-            then = now - (elapsed % self.timeStep);
+        if (elapsed > Settings.timeStep) {
+            then = now - (elapsed % Settings.timeStep);
             self.update();
         }
     }
@@ -554,7 +552,7 @@ function Game() {
         if (this.run) {
             this.inputUpdate();
             this.stats.begin();
-            this.world.Step(this.physicsTimeStep, 3, 2);
+            this.world.Step(Settings.physicsTimeStep, 3, 2);
             this.stats.end();
             this.world.ClearForces();
             this.camera();
