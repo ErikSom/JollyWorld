@@ -83,24 +83,28 @@ class character extends basePrefab {
         this.processJointDamage();
     }
     processJointDamage(){
-        var jointsToAnalyse = ["leg_left_joint", "lef_right_joint"];
-        for(var i = 0; i<this.lookupObject._joints.length; i++){
-            let targetJoint = this.lookupObject._joints[i];
-
+        var jointsToAnalyse = ["leg_left_joint", "leg_right_joint"];
+        var maxForce = [80000, 80000];
+        for(var i = 0; i<jointsToAnalyse.length; i++){
+            let targetJoint = this.lookupObject[jointsToAnalyse[i]];
+            if(!targetJoint) continue;
 
             let reactionForce = new Box2D.b2Vec2();
             targetJoint.GetReactionForce(1/Settings.physicsTimeStep, reactionForce);
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque =  targetJoint.GetReactionTorque(1/Settings.physicsTimeStep);
 
-            //console.log(reactionForce, reactionTorque);
+            console.log(reactionForce, reactionTorque);
 
             // if(targetJoint.getReactionTorque(1/Settings.physicsTimeStep) > 100){
             //     console.log("BREAK")
             // }
-            // if(targetJoint.getReactionForce(1/Settings.physicsTimeStep) > 100){
-            //     console.log("BREAK")
-            // }
+            if(reactionForce > maxForce[i]){
+                this.collisionUpdates.push({
+                    type: character.GORE_SNAP,
+                    target: jointsToAnalyse[i].split('_joint')[0],
+                });
+            }
 
         }
     }
@@ -173,6 +177,14 @@ class character extends basePrefab {
                     ropeJointDef.maxLength = vainSize;
 
                     joint = game.world.CreateJoint(ropeJointDef);
+
+
+                    console.log(targetJoint);
+                    //carve bodies
+
+                    if(targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
+                    if(targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
+
 
                     game.world.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];
