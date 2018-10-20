@@ -105,8 +105,11 @@ class character extends basePrefab {
                     target: jointsToAnalyse[i].split('_joint')[0],
                 });
             }
-
         }
+    }
+    lean(dir){
+        const velocity = Settings.characterLeanSpeed * dir;
+        this.lookupObject['body'].SetAngularVelocity(velocity);
     }
 
     static GORE_BASH = 0;

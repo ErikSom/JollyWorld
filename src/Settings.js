@@ -10,6 +10,7 @@ export var Settings = {
     emitterPool:30,
     /*CHARACTER*/
     detachForce:300,
+    characterLeanSpeed:2,
     /*EDITOR*/
     autoSaveInterval:5000,
 

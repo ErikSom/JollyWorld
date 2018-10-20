@@ -254,17 +254,17 @@ function Game() {
         }else if(this.character && !this.character.attachedToVehicle){
             if (Key.isDown(Key.W)) {
                 this.character.positionBody('up');
-            };
-            if (Key.isDown(Key.S)) {
+                if(Key.isDown(Key.A)) this.character.lean(-1);
+                else if(Key.isDown(Key.D)) this.character.lean(1);
+            }else if (Key.isDown(Key.S)) {
                 this.character.positionBody('down');
-            };
-            if(Key.isPressed(Key.A)){
+                if(Key.isDown(Key.A)) this.character.lean(-1);
+                else if(Key.isDown(Key.D)) this.character.lean(1);
+            }else if(Key.isPressed(Key.A)){
                 this.character.positionBody('set-random');
             }else if (Key.isDown(Key.A)) {
                 this.character.positionBody('random');
-            }
-
-            if (Key.isDown(Key.D)) {
+            }else if (Key.isDown(Key.D)) {
                 this.character.positionBody('right');
             }
         }

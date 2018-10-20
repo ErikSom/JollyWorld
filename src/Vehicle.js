@@ -60,8 +60,6 @@ export function Vehicle() {
         this.m_hit = false;
     }
     this.RaycastCallbackWheel.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-        //if ( ... not interested in this fixture ... )
-        //  return -1;
         if (fixture.GetFilterData().groupIndex == game.editor.GROUPINDEX_CHARACTER) return -1;
         if (fixture.IsSensor()) return -1;
 
@@ -79,7 +77,6 @@ export function Vehicle() {
         var j;
         var wheel;
         const offset = 0.5;
-        var grounded = false;
 
         for (i = 0; i < this.wheels.length; i++) {
             wheel = this.wheels[i];
@@ -109,7 +106,7 @@ export function Vehicle() {
     this.applyImpulse = function (force, angle) {
         var i;
         var body;
-        var dirFore = angle.Clone(); 
+        var dirFore = angle.Clone();
         dirFore.SelfMul(force * 0.01)
         for (i = 0; i < this.vehicleBodies._bodies.length; i++) {
             body = this.vehicleBodies._bodies[i];
@@ -121,11 +118,11 @@ export function Vehicle() {
 
     }
     this.rotateVector = function (vector, degrees) {
-        var radians = degrees * this.DEG2RAD;
-        var sin = Math.sin(radians);
-        var cos = Math.cos(radians);
-        var tx = vector.x;
-        var ty = vector.y;
+        const radians = degrees * this.DEG2RAD;
+        const sin = Math.sin(radians);
+        const cos = Math.cos(radians);
+        const tx = vector.x;
+        const ty = vector.y;
         return new b2Vec2(cos * tx - sin * ty, sin * tx + cos * ty);
     }
 
