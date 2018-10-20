@@ -67,7 +67,6 @@ export var Key = {
         return this._released[keyCode];
     },
     isPressed: function (keyCode){
-        console.log("Is Pressed", keyCode);
         return this._pressed[keyCode];
     },
 
