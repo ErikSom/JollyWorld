@@ -67,19 +67,23 @@ export var Key = {
         return this._released[keyCode];
     },
     isPressed: function (keyCode){
+        console.log("Is Pressed", keyCode);
         return this._pressed[keyCode];
     },
 
     onKeydown: function (event) {
+
+        if(!this._down[event.keyCode]) this._pressed[event.keyCode] = true;
         this._down[event.keyCode] = true;
-        this._pressed[event.keyCode] = true;
 
         if(event.keyCode == 91){
             //fix command
+            if(!this._down[93]){
+                this._pressed[93] = true;
+                this._pressed[224] = true;
+            }
             this._down[93] = true;
-            this._pressed[93] = true;
             this._down[224] = true;
-            this._pressed[224] = true;
         }
     },
 

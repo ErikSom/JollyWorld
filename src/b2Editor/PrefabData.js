@@ -94,7 +94,7 @@ class character extends basePrefab {
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque =  targetJoint.GetReactionTorque(1/Settings.physicsTimeStep);
 
-            console.log(reactionForce, reactionTorque);
+            //console.log(reactionForce, reactionTorque);
 
             // if(targetJoint.getReactionTorque(1/Settings.physicsTimeStep) > 100){
             //     console.log("BREAK")
@@ -179,7 +179,6 @@ class character extends basePrefab {
                     joint = game.world.CreateJoint(ropeJointDef);
 
 
-                    console.log(targetJoint);
                     //carve bodies
 
                     if(targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
@@ -361,8 +360,14 @@ class character extends basePrefab {
                 }
             },
         }
+        if(direction == 'set-random'){
+            const randomPoses = ['up', 'down', 'right'];
+            this.randomPose = randomPoses[Math.floor(Math.random()*randomPoses.length)];
+            return;
+        }
 
         let targetPosition = positions[direction];
+        if(direction == 'random') targetPosition = positions[this.randomPose];
 
         for (let body_part in targetPosition) {
             if (targetPosition.hasOwnProperty(body_part)) {
@@ -433,14 +438,10 @@ class character extends basePrefab {
         if (!this.attachedToVehicle) return;
 
         var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
-        console.log(this.lookupObject);
         for (var i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
             var jointEdge = body.GetJointList();
 
-            if (body.mySprite.data.refName == "feet_right") {
-                console.log("feet_right_edge", jointEdge);
-            }
             while (jointEdge) {
                 var nextJoint = jointEdge.next;
                 var joint = jointEdge.joint;

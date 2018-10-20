@@ -230,7 +230,6 @@ function Game() {
 
 
     this.inputUpdate = function () {
-        //console.log(this.vehicle, this.character.attachedToVehicle);
         if (this.vehicle && this.character.attachedToVehicle) {
 
             if (Key.isDown(Key.W)) {
@@ -250,7 +249,6 @@ function Game() {
                 this.vehicle.lean(1);
             }
             if (Key.isPressed(Key.Z)) {
-                console.log(this.character);
                 this.character.detachFromVehicle();
             };
         }else if(this.character && !this.character.attachedToVehicle){
@@ -260,10 +258,12 @@ function Game() {
             if (Key.isDown(Key.S)) {
                 this.character.positionBody('down');
             };
-
-            if (Key.isDown(Key.A)) {
-                this.character.positionBody('left');
+            if(Key.isPressed(Key.A)){
+                this.character.positionBody('set-random');
+            }else if (Key.isDown(Key.A)) {
+                this.character.positionBody('random');
             }
+
             if (Key.isDown(Key.D)) {
                 this.character.positionBody('right');
             }
@@ -327,9 +327,7 @@ function Game() {
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(() => {
-            console.log("AUTO SAVE!");
             self.currentLevelData.json = this.editor.stringifyWorldJSON();
-            console.log(self.currentLevelData.json);
             SaveManager.saveTempEditorWorld(self.currentLevelData);
             self.doAutoSave();
         }, Settings.autoSaveInterval);
@@ -395,7 +393,6 @@ function Game() {
             if (this.editor.prefabs.hasOwnProperty(key)) {
                 if (this.editor.prefabs[key].class.constructor.playableCharacter) {
                     this.playerPrefabObject = this.editor.prefabs[key];
-                    console.log(this.playerPrefabObject);
 
                     this.character = this.editor.prefabs[this.playerPrefabObject.class.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
                     this.cameraFocusObject = this.character.lookupObject.body;
