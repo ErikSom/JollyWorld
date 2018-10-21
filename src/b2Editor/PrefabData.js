@@ -3,9 +3,6 @@ import {
     game
 } from "../Game";
 import {
-    Vehicle
-} from "../Vehicle";
-import {
     Settings
 } from "../Settings";
 
@@ -822,7 +819,7 @@ class vehicle_horse extends vehicle {
         }
     }
 }
-class vehicle_character extends vehicle {
+export class vehicle_character extends vehicle {
     constructor(target) {
         super(target);
         this.character;
@@ -929,8 +926,8 @@ jumppad.settingsOptions = Object.assign({}, jumppad.settingsOptions, {
     }
 });
 
-const LIBRARY_ADMIN = "admin",
-    LIBRARY_MOVEMENT = "movement";
+export const LIBRARY_ADMIN = "admin";
+export const LIBRARY_MOVEMENT = "movement";
 
 export var prefabs = {
     libraryKeys: [],
@@ -971,15 +968,19 @@ export var prefabs = {
         library: LIBRARY_MOVEMENT
     }
 }
-for (let key in prefabs) {
-    if (prefabs.hasOwnProperty(key)) {
-        if (prefabs[key].library) {
-            if (!prefabs.libraryDictionary[prefabs[key].library]) prefabs.libraryDictionary[prefabs[key].library] = [];
-            prefabs.libraryDictionary[prefabs[key].library].push(key);
+export const getLibraryKeys = function() {
+    if(prefabs.libraryKeys) return prefabs.libraryKeys;
+    for (let key in prefabs) {
+        if (prefabs.hasOwnProperty(key)) {
+            if (prefabs[key].library) {
+                if (!prefabs.libraryDictionary[prefabs[key].library]) prefabs.libraryDictionary[prefabs[key].library] = [];
+                prefabs.libraryDictionary[prefabs[key].library].push(key);
+            }
         }
     }
+    prefabs.libraryKeys = Object.keys(prefabs.libraryDictionary);
+    return prefabs.libraryKeys;
 }
-prefabs.libraryKeys = Object.keys(prefabs.libraryDictionary);
 
 
 const timerReady = function (timer, target, singleCallback) {

@@ -1,6 +1,5 @@
 //import 'FireBaseManager.js'
 import 'AssetList.js'
-import 'Vehicle.js'
 //import 'Game-gui.js'
 import './b2Editor/B2dEditor'
 import 'Settings.js'

@@ -8,9 +8,6 @@ import {
 import {
     getPIXIDebugDraw
 } from "../libs/debugdraw";
-import {
-    Vehicle
-} from "./Vehicle";
 const firebase = require('firebase');
 const PIXI = require('pixi.js');
 import $ from 'jquery';
