@@ -385,8 +385,6 @@ function Game() {
         this.testWorld();
         this.findPlayableCharacter();
 
-        this.vehicle = new Vehicle();
-        this.vehicle.init(this.playerPrefabObject);
     }
     this.findPlayableCharacter = function () {
         for (var key in this.editor.prefabs) {
@@ -395,6 +393,8 @@ function Game() {
                     this.playerPrefabObject = this.editor.prefabs[key];
 
                     this.character = this.editor.prefabs[this.playerPrefabObject.class.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+                    console.log(this.playerPrefabObject.class.prefabObject.prefabName);
+                    this.vehicle = this.editor.prefabs[this.playerPrefabObject.class.prefabObject.key].class;
                     this.cameraFocusObject = this.character.lookupObject.body;
 
                     var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
