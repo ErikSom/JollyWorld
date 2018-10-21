@@ -6,7 +6,7 @@ import {
     Settings
 } from "../Settings";
 
-import * as extramath from './utils/extramath';
+import * as extramath from '../b2Editor/utils/extramath';
 
 class basePrefab {
     static settings = {};
@@ -619,7 +619,7 @@ class vehicle extends basePrefab {
                     if (newObjects._bodies.length > 0) instanceName = newObjects._bodies[0].mySprite.data.prefabInstanceName;
                     else if (newObjects._textures.length > 0) instanceName = newObjects._textures[0].data.prefabInstanceName;
 
-                    game.editor.selectedPrefabs[instanceName] = true;
+                    game.editor.selected[instanceName] = true;
                     game.editor.updateSelection();
                 }
                 break;
@@ -826,7 +826,7 @@ export class vehicle_character extends vehicle {
     }
     init() {
         super.init();
-        this.character = game.editor.prefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+        this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
     }
     update() {
         super.update();
@@ -929,7 +929,7 @@ jumppad.settingsOptions = Object.assign({}, jumppad.settingsOptions, {
 export const LIBRARY_ADMIN = "admin";
 export const LIBRARY_MOVEMENT = "movement";
 
-export var prefabs = {
+export var prefabLibrary = {
     libraryKeys: [],
     libraryDictionary: {},
     vehicle1: { /*Character Bike*/
@@ -969,17 +969,17 @@ export var prefabs = {
     }
 }
 export const getLibraryKeys = function() {
-    if(prefabs.libraryKeys) return prefabs.libraryKeys;
-    for (let key in prefabs) {
-        if (prefabs.hasOwnProperty(key)) {
-            if (prefabs[key].library) {
-                if (!prefabs.libraryDictionary[prefabs[key].library]) prefabs.libraryDictionary[prefabs[key].library] = [];
-                prefabs.libraryDictionary[prefabs[key].library].push(key);
+    if(prefabLibrary.libraryKeys.length>0) return prefabLibrary.libraryKeys;
+    for (let key in prefabLibrary) {
+        if (prefabLibrary.hasOwnProperty(key)) {
+            if (prefabLibrary[key].library) {
+                if (!prefabLibrary.libraryDictionary[prefabLibrary[key].library]) prefabLibrary.libraryDictionary[prefabLibrary[key].library] = [];
+                prefabLibrary.libraryDictionary[prefabLibrary[key].library].push(key);
             }
         }
     }
-    prefabs.libraryKeys = Object.keys(prefabs.libraryDictionary);
-    return prefabs.libraryKeys;
+    prefabLibrary.libraryKeys = Object.keys(prefabLibrary.libraryDictionary);
+    return prefabLibrary.libraryKeys;
 }
 
 

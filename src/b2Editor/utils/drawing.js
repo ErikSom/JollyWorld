@@ -38,12 +38,12 @@ export const drawDebugTriggerHelpers = function(){
                     var tarPrefab;
                     if(target.mySprite){
                         if(target.mySprite.data.prefabInstanceName){
-                            tarPrefab = B2dEditor.prefabs[target.mySprite.data.prefabInstanceName];
+                            tarPrefab = B2dEditor.activePrefabs[target.mySprite.data.prefabInstanceName];
                             tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
                         }else tarPos = B2dEditor.getPIXIPointFromWorldPoint(target.GetPosition());
                     } else{
                         if(target.data.prefabInstanceName){
-                            tarPrefab = B2dEditor.prefabs[target.data.prefabInstanceName];
+                            tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
                             tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
                         }else{
                             tarPos = new b2Vec2(target.x, target.y);

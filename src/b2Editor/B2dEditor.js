@@ -1,5 +1,5 @@
 import * as Box2D from "../../libs/Box2D";
-import * as prefab from "./PrefabData";
+import * as PrefabManager from "../prefabs/PrefabManager";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
@@ -38,7 +38,7 @@ const _B2dEditor = function () {
 	this.deltaTime;
 	this.contactCallBackListener;
 
-	this.prefabs = {};
+	this.activePrefabs = {};
 	this.prefabCounter = 0; //to ensure uniquenesss
 
 	this.container = null;
@@ -123,7 +123,7 @@ const _B2dEditor = function () {
 		this.world.SetContactListener(this.B2dEditorContactListener);
 		//Texture Draw
 		this.textures = new PIXI.Graphics();
-		this.prefabs = {};
+		this.activePrefabs = {};
 		this.container.addChild(this.textures);
 
 		//Editor Draw
@@ -143,7 +143,8 @@ const _B2dEditor = function () {
 
 
 	this.showPrefabList = function () {
-		var prefabPages = prefab.prefabs.libraryKeys;
+		var prefabPages = PrefabManager.getLibraryKeys();
+		console.log(prefabPages);
 		if (this.admin) prefabPages.push("admin");
 
 
@@ -152,7 +153,7 @@ const _B2dEditor = function () {
 
 
 		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
-		this.assetSelectedTexture = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][0];
+		this.assetSelectedTexture = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup][0];
 		var folder = targetFolder.addFolder('Prefabs');
 		var self = this;
 		folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
@@ -160,14 +161,14 @@ const _B2dEditor = function () {
 			ui.buildEditorGUI();
 			self.showPrefabList();
 		});
-		folder.add(self, "assetSelectedTexture", prefab.prefabs.libraryDictionary[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
+		folder.add(self, "assetSelectedTexture", PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
 		this.spawnTexture = function () {};
 		folder.open();
 		$(folder.domElement).parent().parent().parent().hover(function () {
 			$(this).addClass('hover');
 		})
-		for (var i = 0; i < prefab.prefabs.libraryDictionary[this.assetSelectedGroup].length; i++) {
-			var prefabName = prefab.prefabs.libraryDictionary[this.assetSelectedGroup][i];
+		for (var i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup].length; i++) {
+			var prefabName = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup][i];
 
 			let image = this.renderPrefabToImage(prefabName);
 			var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
@@ -192,7 +193,7 @@ const _B2dEditor = function () {
 				data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
 
 				data.prefabName = $(this).attr('prefabName');
-				data.settings = JSON.parse(JSON.stringify(prefab.prefabs[data.prefabName].class.settings));
+				data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
 				var newPrefab = self.buildPrefabFromObj(data);
 
 			});
@@ -314,7 +315,7 @@ const _B2dEditor = function () {
 		if (prefabKeys.length > 0 && this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0) {
 			var uniqueSelectedPrefabs = {};
 			for (var i = 0; i < prefabKeys.length; i++) {
-				uniqueSelectedPrefabs[this.prefabs[prefabKeys[i]].prefabName] = true;
+				uniqueSelectedPrefabs[this.activePrefabs[prefabKeys[i]].prefabName] = true;
 			}
 			if (Object.keys(uniqueSelectedPrefabs).length == 1) currentCase = case_JUST_PREFABS;
 			else currentCase = case_MULTIPLE;
@@ -434,7 +435,7 @@ const _B2dEditor = function () {
 				break;
 			case case_JUST_PREFABS:
 				ui.editorGUI.editData = new this.prefabObject;
-				dataJoint = this.prefabs[prefabKeys[0]];
+				dataJoint = this.activePrefabs[prefabKeys[0]];
 				if (this.selectedPrefabs.length > 1) targetFolder = ui.editorGUI.addFolder('multiple prefabs');
 				else targetFolder = ui.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
 				break;
@@ -443,7 +444,7 @@ const _B2dEditor = function () {
 
 				if (this.selectedTextures.length > 0) dataJoint = this.selectedTextures[0].data;
 				else if (this.selectedPhysicsBodies.length > 0) dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
-				else dataJoint = this.prefabs[prefabKeys[0]];
+				else dataJoint = this.activePrefabs[prefabKeys[0]];
 
 				targetFolder = ui.editorGUI.addFolder('multiple objects');
 				break;
@@ -660,8 +661,8 @@ const _B2dEditor = function () {
 				this.addJointGUI(dataJoint, targetFolder);
 				break;
 			case case_JUST_PREFABS:
-				var prefabObject = this.prefabs[Object.keys(this.selectedPrefabs)[0]];
-				var prefabClass = prefab.prefabs[prefabObject.prefabName].class;
+				var prefabObject = this.activePrefabs[Object.keys(this.selectedPrefabs)[0]];
+				var prefabClass = PrefabManager.prefabLibrary[prefabObject.prefabName].class;
 				var prefabObjectSettings = prefabObject.settings;
 				var prefabClassSettings = prefabClass.settings;
 				var prefabClassOptions = prefabClass.settingsOptions;
@@ -835,7 +836,7 @@ const _B2dEditor = function () {
 					}
 				}
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
-				delete this.prefabs[arr[i].key];
+				delete this.activePrefabs[arr[i].key];
 			} else if (arr[i].data) {
 				//graphic object
 				var sprite = arr[i];
@@ -952,7 +953,7 @@ const _B2dEditor = function () {
 		var toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
-				toBeDeletedPrefabs.push(this.prefabs[key]);
+				toBeDeletedPrefabs.push(this.activePrefabs[key]);
 			}
 		}
 
@@ -1008,9 +1009,9 @@ const _B2dEditor = function () {
 		}
 		var prefabKeys = Object.keys(this.selectedPrefabs);
 		for (i = 0; i < prefabKeys.length; i++) {
-			if (!prefab.prefabs[this.prefabs[prefabKeys[i]].prefabName].class.forceUnique) {
-				this.updateObject(null, this.prefabs[prefabKeys[i]]);
-				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(this.prefabs[prefabKeys[i]])));
+			if (!PrefabManager.prefabLibrary[this.activePrefabs[prefabKeys[i]].prefabName].class.forceUnique) {
+				this.updateObject(null, this.activePrefabs[prefabKeys[i]]);
+				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(this.activePrefabs[prefabKeys[i]])));
 				copyArray.push({
 					ID: cloneObject.ID,
 					data: cloneObject
@@ -1173,8 +1174,8 @@ const _B2dEditor = function () {
 
 			var prefabKeys = Object.keys(this.selectedPrefabs);
 			for (i = 0; i < prefabKeys.length; i++) {
-				this.prefabs[prefabKeys[i]].x -= movX;
-				this.prefabs[prefabKeys[i]].y -= movY;
+				this.activePrefabs[prefabKeys[i]].x -= movX;
+				this.activePrefabs[prefabKeys[i]].y -= movY;
 			}
 
 
@@ -1258,9 +1259,9 @@ const _B2dEditor = function () {
 		//update objects
 		if (!this.editing) {
 			var key;
-			for (key in this.prefabs) {
-				if (this.prefabs.hasOwnProperty(key)) {
-					this.prefabs[key].class.update();
+			for (key in this.activePrefabs) {
+				if (this.activePrefabs.hasOwnProperty(key)) {
+					this.activePrefabs[key].class.update();
 				}
 			}
 			for (i = 0; i < this.triggerObjects.length; i++) {
@@ -1713,10 +1714,10 @@ const _B2dEditor = function () {
 				bodies = bodies.concat(lookup._bodies);
 				textures = textures.concat(lookup._textures, lookup._joints);
 				if (transformType == this.TRANSFORM_MOVE) {
-					this.prefabs[key].x += obj.x;
-					this.prefabs[key].y += obj.y;
+					this.activePrefabs[key].x += obj.x;
+					this.activePrefabs[key].y += obj.y;
 				} else if (transformType == this.TRANSFORM_ROTATE) {
-					this.prefabs[key].rotation += obj;
+					this.activePrefabs[key].rotation += obj;
 				}
 			}
 		}
@@ -3034,7 +3035,7 @@ const _B2dEditor = function () {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
-							this.prefabs[prefabKeys[0]].class.set(controller.property, controller.targetValue);
+							this.activePrefabs[prefabKeys[0]].class.set(controller.property, controller.targetValue);
 						}
 
 					}
@@ -3054,11 +3055,11 @@ const _B2dEditor = function () {
 				syncObject = this.selectedTextures[0];
 			} else if (ui.editorGUI.editData.type == this.object_PREFAB) {
 				var key = Object.keys(this.selectedPrefabs)[0];
-				syncObject = this.prefabs[key];
+				syncObject = this.activePrefabs[key];
 			} else if (ui.editorGUI.editData.type == this.object_MULTIPLE) {
 				if (this.selectedTextures.length > 0) syncObject = this.selectedTextures[0];
 				else if (this.selectedPhysicsBodies.length > 0) syncObject = this.selectedPhysicsBodies[0];
-				else syncObject = this.prefabs[key];
+				else syncObject = this.activePrefabs[key];
 			}
 			if (syncObject) {
 				if (syncObject.mySprite) {
@@ -3316,7 +3317,7 @@ const _B2dEditor = function () {
 			let tarPos;
 			if (highestObject.mySprite) {
 				if (highestObject.mySprite.data.prefabInstanceName) {
-					const tarPrefab = this.prefabs[highestObject.mySprite.data.prefabInstanceName];
+					const tarPrefab = this.activePrefabs[highestObject.mySprite.data.prefabInstanceName];
 					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
 				} else {
 					tarPos = highestObject.GetPosition();
@@ -3324,7 +3325,7 @@ const _B2dEditor = function () {
 				}
 			} else {
 				if (highestObject.data.prefabInstanceName) {
-					const tarPrefab = this.prefabs[highestObject.data.prefabInstanceName];
+					const tarPrefab = this.activePrefabs[highestObject.data.prefabInstanceName];
 					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
 				} else {
 					tarPos = highestObject.position;
@@ -3675,15 +3676,15 @@ const _B2dEditor = function () {
 					var className = subGroup.substr(classIndex + 1, subGroup.length);
 					subGroup = subGroup.substr(0, classIndex);
 					var prefabName = subGroup.substr(1, subGroup.length);
-					var instanceID = this.prefabs[data.prefabInstanceName].instanceID;
+					var instanceID = this.activePrefabs[data.prefabInstanceName].instanceID;
 					var key = prefabName + "_" + instanceID;
-					if (!this.prefabs[key]) {
+					if (!this.activePrefabs[key]) {
 						var newPrefabObj = new this.prefabObject();
 						newPrefabObj.prefabName = prefabName;
 						newPrefabObj.instanceID = instanceID;
 						createdPrefabObject = newPrefabObj;
 						newPrefabObj.key = key;
-						this.prefabs[key] = newPrefabObj;
+						this.activePrefabs[key] = newPrefabObj;
 					}
 					arr.push(key);
 					data.subPrefabInstanceName = key;
@@ -3726,7 +3727,7 @@ const _B2dEditor = function () {
 				}
 			}
 		}
-		if (createdPrefabObject) createdPrefabObject.class = new prefab.prefabs[className].class(createdPrefabObject);
+		if (createdPrefabObject) createdPrefabObject.class = new PrefabManager.prefabLibrary[className].class(createdPrefabObject);
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
 		var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
@@ -3744,8 +3745,8 @@ const _B2dEditor = function () {
 				if (classIndex > 0 && !this.breakPrefabs) {
 					subGroup = subGroup.substr(0, classIndex);
 					var key = data.subPrefabInstanceName;
-					if (this.prefabs[key] && this.lookupGroups[key]._bodies.length + this.lookupGroups[key]._textures.length + this.lookupGroups[key]._joints.length == 1) {
-						delete this.prefabs[key];
+					if (this.activePrefabs[key] && this.lookupGroups[key]._bodies.length + this.lookupGroups[key]._textures.length + this.lookupGroups[key]._joints.length == 1) {
+						delete this.activePrefabs[key];
 					}
 					arr.push(key);
 				}
@@ -4666,13 +4667,13 @@ const _B2dEditor = function () {
 	
 
 	this.buildPrefabFromObj = function (obj) {
-		if (this.breakPrefabs) return this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json));
+		if (this.breakPrefabs) return this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json));
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
-		this.prefabs[key] = obj;
-		var createdBodies = this.buildJSON(JSON.parse(prefab.prefabs[obj.prefabName].json), key);
+		this.activePrefabs[key] = obj;
+		var createdBodies = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
 		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
-		obj.class = new prefab.prefabs[obj.prefabName].class(obj);
+		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
 
 		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(createdBodies._bodies, createdBodies._textures, createdBodies._joints));
 
@@ -5020,7 +5021,7 @@ const _B2dEditor = function () {
 					this.worldJSON = this.worldJSON.slice(0, -1);
 					continue;
 				}
-				this.worldJSON += this.stringifyObject(this.prefabs[sprite.data.prefabInstanceName]);
+				this.worldJSON += this.stringifyObject(this.activePrefabs[sprite.data.prefabInstanceName]);
 				stringifiedPrefabs[sprite.data.prefabInstanceName] = true;
 			} else {
 				this.worldJSON += this.stringifyObject(sprite.data);
@@ -5280,8 +5281,8 @@ const _B2dEditor = function () {
 				if (prefabInstanceName) {
 					obj.prefabInstanceName = prefabInstanceName;
 
-					var offsetX = this.prefabs[prefabInstanceName].x;
-					var offsetY = this.prefabs[prefabInstanceName].y;
+					var offsetX = this.activePrefabs[prefabInstanceName].x;
+					var offsetY = this.activePrefabs[prefabInstanceName].y;
 
 					if (obj.type == this.object_BODY) {
 						offsetX /= this.PTM;
@@ -5314,7 +5315,7 @@ const _B2dEditor = function () {
 					obj.instanceID += startPrefabIDIndex;
 					var prefabObjects = this.buildPrefabFromObj(obj);
 					if (!this.breakPrefabs) {
-						this.prefabs[obj.key].ID = prefabStartChildIndex;
+						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
 						createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
 						createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 						createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
@@ -5412,7 +5413,7 @@ const _B2dEditor = function () {
 			});
 			i--;
 		}
-		this.prefabs = {};
+		this.activePrefabs = {};
 		this.lookupGroups = {};
 
 		//reset gui
@@ -5433,7 +5434,7 @@ const _B2dEditor = function () {
 		for (var i = 0; i < bodies.length; i++) {
 			body = bodies[i];
 			if (body.mySprite && body.mySprite.data.prefabInstanceName) {
-				var tarPrefab = self.prefabs[body.mySprite.data.prefabInstanceName].class;
+				var tarPrefab = self.activePrefabs[body.mySprite.data.prefabInstanceName].class;
 				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
 					selectedPrefab = tarPrefab;
 					if (secondParam) selectedPrefab.contactListener[name](contact, secondParam);
@@ -5441,7 +5442,7 @@ const _B2dEditor = function () {
 				}
 			}
 			if (body.mySprite && body.mySprite.data.subPrefabInstanceName) {
-				var tarPrefab = self.prefabs[body.mySprite.data.subPrefabInstanceName].class;
+				var tarPrefab = self.activePrefabs[body.mySprite.data.subPrefabInstanceName].class;
 				if (tarPrefab && tarPrefab != selectedSubPrefab && tarPrefab.contactListener) {
 					selectedSubPrefab = tarPrefab;
 					if (secondParam) selectedSubPrefab.contactListener[name](contact, secondParam);
@@ -5509,9 +5510,9 @@ const _B2dEditor = function () {
 			});
 		}
 		var key;
-		for (key in this.prefabs) {
-			if (this.prefabs.hasOwnProperty(key)) {
-				this.prefabs[key].class.init();
+		for (key in this.activePrefabs) {
+			if (this.activePrefabs.hasOwnProperty(key)) {
+				this.activePrefabs[key].class.init();
 			}
 		}
 		for (i = 0; i < this.triggerObjects.length; i++) {
@@ -5542,7 +5543,7 @@ const _B2dEditor = function () {
 		}
 		var image = game.app.renderer.plugins.extract.image(newContainer);
 		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
-		var prefabObject = this.prefabs[sprite.data.prefabInstanceName];
+		var prefabObject = this.activePrefabs[sprite.data.prefabInstanceName];
 		var instanceName = sprite.data.prefabInstanceName;
 		this.deleteObjects([prefabObject]);
 
