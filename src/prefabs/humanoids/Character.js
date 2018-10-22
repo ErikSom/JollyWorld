@@ -3,7 +3,9 @@ import * as Box2D from '../../../libs/Box2D'
 import {
     game
 } from "../../Game";
-import { Settings } from '../../Settings';
+import {
+    Settings
+} from '../../Settings';
 
 class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -55,8 +57,8 @@ class Character extends PrefabManager.basePrefab {
         this.processJointDamage();
     }
     processJointDamage() {
-        var jointsToAnalyse = ["leg_left_joint", "leg_right_joint"];
-        var maxForce = [1000000, 1000000];
+        var jointsToAnalyse = ["leg_left_joint", "leg_right_joint", "head_joint"];
+        var maxForce = [1000000, 1000000, 14000000];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
@@ -66,7 +68,7 @@ class Character extends PrefabManager.basePrefab {
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
-            //console.log(reactionForce, reactionTorque);
+            if(jointsToAnalyse[i] == "head_joint") console.log(reactionForce, reactionTorque);
 
             // if(targetJoint.getReactionTorque(1/Settings.physicsTimeStep) > 100){
             //     console.log("BREAK")
@@ -96,22 +98,24 @@ class Character extends PrefabManager.basePrefab {
             for (var i = 0; i < bodies.length; i++) {
                 body = bodies[i];
 
-                if (body == self.lookupObject["head"] && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
+                if ((bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
+
                     var force = 0;
                     for (var j = 0; j < impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
-                    if (force > 8) {
-                        self.collisionUpdates.push({
-                            type: Character.GORE_SNAP,
-                            target: "eye_right"
-                        });
-                        self.collisionUpdates.push({
-                            type: Character.GORE_SNAP,
-                            target: "eye_left"
-                        });
-                        self.collisionUpdates.push({
-                            type: Character.GORE_SNAP,
-                            target: "arm_left"
-                        });
+                    //console.log(force);
+                    //if(force > 400) BASH IT
+
+                    if (force > 100) {
+                        if (body == self.lookupObject["head"]) {
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Character.GORE_SNAP,
+                                target: "eye_right"
+                            });
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Character.GORE_SNAP,
+                                target: "eye_left"
+                            });
+                        }
                     }
                 }
             }
@@ -447,6 +451,6 @@ class Character extends PrefabManager.basePrefab {
     }
 }
 
-PrefabManager.prefabLibrary.Character =  {
+PrefabManager.prefabLibrary.Character = {
     class: Character,
 }

@@ -52,6 +52,9 @@ export const getLibraryKeys = function() {
 export const timerReady = function (timer, target, singleCallback) {
     return singleCallback ? (timer < target && timer + game.editor.deltaTime >= target) : timer > target;
 }
+export const chancePercent = function(percent){
+    return Math.random()*100<percent;
+}
 
 function importAll (r) {
     r.keys().forEach(r);

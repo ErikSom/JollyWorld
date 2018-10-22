@@ -1,5 +1,9 @@
 import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
+import {
+    game
+} from "../../Game";
+
 
 export class NoVehicle extends BaseVehicle {
     constructor(target) {
