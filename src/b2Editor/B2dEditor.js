@@ -838,6 +838,7 @@ const _B2dEditor = function () {
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
 				delete this.activePrefabs[arr[i].key];
 			} else if (arr[i].data) {
+				console.log(arr[i]);
 				//graphic object
 				var sprite = arr[i];
 				this.removeObjectFromLookupGroups(sprite, sprite.data);
@@ -4662,9 +4663,10 @@ const _B2dEditor = function () {
 
 			joint = this.world.CreateJoint(ropeJointDef);
 		}
+		bodyA.myJoints = undefined;
+		if(bodyB) bodyB.myJoints = undefined;
 		return joint;
 	}
-	
 
 	this.buildPrefabFromObj = function (obj) {
 		if (this.breakPrefabs) return this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json));

@@ -68,8 +68,6 @@ class Character extends PrefabManager.basePrefab {
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
-            if(jointsToAnalyse[i] == 'belly_joint') console.log(reactionForce, reactionTorque);
-
             if (reactionForce > maxForce[i] || Math.abs(reactionTorque) > 600) {
                 this.collisionUpdates.push({
                     type: Character.GORE_SNAP,
@@ -99,9 +97,6 @@ class Character extends PrefabManager.basePrefab {
 
                     var force = 0;
                     for (var j = 0; j < impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
-                    //console.log(force);
-                    //if(force > 400) BASH IT
-
                     if (force > 100) {
                         if (body == self.lookupObject["head"]) {
                             if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
@@ -114,6 +109,15 @@ class Character extends PrefabManager.basePrefab {
                             });
                         }
                     }
+                    if(force > 400){
+                        console.log(body.mySprite.data.refName);
+                        self.collisionUpdates.push({
+                            type: Character.GORE_BASH,
+                            target: body.mySprite.data.refName,
+                        });
+                        break;
+                    }
+
                 }
             }
         }
@@ -122,6 +126,17 @@ class Character extends PrefabManager.basePrefab {
     doCollisionUpdate(update) {
         switch (update.type) {
             case Character.GORE_BASH:
+
+                var targetBody = this.lookupObject[update.target];
+                if(targetBody){
+                    console.log(targetBody);
+                    game.editor.deleteObjects([targetBody]);
+                    if(targetBody.data){
+                        console.log("THIS MTFFF *************************");
+                        console.log(targetBody);
+                    }
+                }
+
                 break;
             case Character.GORE_SNAP:
                 var targetJoint = this.lookupObject[update.target + "_joint"];
