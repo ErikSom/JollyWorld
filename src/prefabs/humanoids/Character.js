@@ -58,7 +58,7 @@ class Character extends PrefabManager.basePrefab {
     }
     processJointDamage() {
         var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint', 'head_joint', 'belly_joint', 'arm_left_joint', , 'arm_right_joint'];
-        var maxForce = [1000000, 1000000, 14000000, 500000, 800000, 800000];
+        var maxForce = [1000000, 1000000, 14000000, 3000000, 800000, 800000];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
@@ -68,9 +68,9 @@ class Character extends PrefabManager.basePrefab {
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
-            if(jointsToAnalyse[i] == 'leg_left_joint') console.log(reactionForce, reactionTorque);
+            if(jointsToAnalyse[i] == 'belly_joint') console.log(reactionForce, reactionTorque);
 
-            if (reactionForce > maxForce[i] || Math.abs(reactionTorque) > 250) {
+            if (reactionForce > maxForce[i] || Math.abs(reactionTorque) > 600) {
                 this.collisionUpdates.push({
                     type: Character.GORE_SNAP,
                     target: jointsToAnalyse[i].split('_joint')[0],
