@@ -123,7 +123,6 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         }
     }
     applyImpulse(force, angle) {
-        console.log(force, angle);
         var i;
         var body;
         var dirFore = angle.Clone();
@@ -146,7 +145,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         }
         if (this.lookupObject.pedal_engine) {
             this.lookupObject.pedal_engine.SetMaxMotorTorque(10000);
-            const desiredPedalSpeed = 20;
+            const desiredPedalSpeed = 10;
             this.lookupObject.pedal_engine.SetMotorSpeed(Math.min(desiredPedalSpeed, Math.max(-desiredPedalSpeed, -this.wheels[0].GetBody().GetAngularVelocity() * 3.0)));
         }
     }

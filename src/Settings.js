@@ -2,7 +2,7 @@ export var Settings = {
     /*REFRESHRATE*/
     timeStep:1000 / 60,
     /*PHYSICS*/
-    physicsTimeStep:1 / 60,
+    physicsTimeStep:1 / 30,
     PTM:30,
     /*GORE*/
     emittersPerBody:3,

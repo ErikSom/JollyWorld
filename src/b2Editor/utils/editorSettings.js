@@ -1,4 +1,4 @@
 export const editorSettings = {
-    worldSize:{width:3000.0, height:3000.0},
+    worldSize:{width:50000.0, height:50000.0},
     physicsDebug:false,
 }
