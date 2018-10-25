@@ -546,7 +546,7 @@ function Game() {
         if (this.run) {
             this.inputUpdate();
             this.stats.begin();
-            this.world.Step(Settings.physicsTimeStep, 3, 2);
+            this.world.Step(Settings.physicsTimeStep, 4, 3);
             this.stats.end();
             this.world.ClearForces();
             this.camera();
