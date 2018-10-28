@@ -1,8 +1,39 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121901447-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-121901447-2');
+    </script>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,height=device-height,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>JollyWorld</title>
+    <meta name="description" content="..." />
+
+    <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+    <script>
+        var config = {
+            apiKey: "AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0",
+            authDomain: "jolly-ad424.firebaseapp.com",
+            databaseURL: "https://jolly-ad424.firebaseio.com",
+            projectId: "jolly-ad424",
+            storageBucket: "jolly-ad424.appspot.com",
+            messagingSenderId: "186951023"
+        };
+        firebase.initializeApp(config);
+    </script>
+
 </head>
 
 <body>
@@ -11,21 +42,7 @@
         <div id="my-gui-container"></div>
     </div>
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
+    <script type="text/javascript" src="awesome-game.js"></script>
 </body>
-
-<script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
-<script>
-  var config = {
-    apiKey: "AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0",
-    authDomain: "jolly-ad424.firebaseapp.com",
-    databaseURL: "https://jolly-ad424.firebaseio.com",
-    projectId: "jolly-ad424",
-    storageBucket: "jolly-ad424.appspot.com",
-    messagingSenderId: "186951023"
-  };
-  firebase.initializeApp(config);
-</script>
-
-<script type="text/javascript" src="awesome-game.js"></script>
 
 </html>
