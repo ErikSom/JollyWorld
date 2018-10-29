@@ -200,7 +200,6 @@ const _B2dEditor = function () {
 		}
 	}
 	this.selectTool = function (i) {
-		if (this.selectedTool == this.tool_MOVE) this.spaceCameraDrag = false;
 		this.selectedTool = i;
 
 		this.selectedTextures = [];
@@ -215,6 +214,8 @@ const _B2dEditor = function () {
 		ui.destroyEditorGUI();
 		ui.buildEditorGUI();
 
+		let targetFolder
+
 		switch (i) {
 			case this.tool_SELECT:
 				ui.destroyEditorGUI();
@@ -222,7 +223,7 @@ const _B2dEditor = function () {
 			case this.tool_GEOMETRY:
 				ui.editorGUI.editData = this.editorGeometryObject;
 
-				let targetFolder = ui.editorGUI.addFolder('draw shapes');
+				targetFolder = ui.editorGUI.addFolder('draw shapes');
 				targetFolder.open();
 
 				var shapes = ["Circle", "Box", "Triangle"];
@@ -250,12 +251,33 @@ const _B2dEditor = function () {
 				this.showPrefabList();
 				break
 			case this.tool_TEXT:
+				ui.editorGUI.editData = this.editorTextObject;
+
+				targetFolder = ui.editorGUI.addFolder('draw shapes');
+				targetFolder.open();
+
+
+				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
+
+				var fonts = ["Arial", "Helvetica"];
+				ui.editorGUI.editData.fontName = fonts[0];
+				targetFolder.add(ui.editorGUI.editData, "fontName", fonts);
+
+				var alignments = ["left", "center", "right"];
+				ui.editorGUI.editData.align = alignments[0];
+				targetFolder.add(ui.editorGUI.editData, "align", alignments);
+
+
+				// this.colorFill = "#999999";
+				// this.transparancy = 1.0;
+				// this.fontSize = 12;
+				// this.fontName = "Arial";
+				// this.align = 'left';
+
 				break
 			case this.tool_ZOOM:
-				break
-			case this.tool_MOVE:
-				ui.destroyEditorGUI();
-				this.spaceCameraDrag = true;
 				break
 			case this.tool_PAINTBUCKET:
 				ui.editorGUI.editData = this.editorGraphicDrawingObject;
@@ -276,7 +298,7 @@ const _B2dEditor = function () {
 
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				break
-			case this.tool_ERASER:
+			case this.tool_TRIGGER:
 				ui.editorGUI.editData = this.editorTriggerObject;
 
 				targetFolder = ui.editorGUI.addFolder('add triggers');
@@ -1458,6 +1480,13 @@ const _B2dEditor = function () {
 		this.transparancy = 1.0;
 		this.isPhysicsObject = true;
 	}
+	this.editorTextObject = new function () {
+		this.colorFill = "#999999";
+		this.transparancy = 1.0;
+		this.fontSize = 12;
+		this.fontName = "Arial";
+		this.align = 'left';
+	}
 	this.editorTriggerObject = new function () {
 		this.shape = 0;
 	}
@@ -1643,7 +1672,7 @@ const _B2dEditor = function () {
 					Object.assign(joint.data, jointData);
 					this.selectedTextures.push(joint);
 				}
-			} else if (this.selectedTool == this.tool_ERASER) {
+			} else if (this.selectedTool == this.tool_TRIGGER) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 				var triggerObject = new this.triggerObject;
 				triggerObject.x = this.startSelectionPoint.x;
@@ -2059,7 +2088,7 @@ const _B2dEditor = function () {
 
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
-			if (this.spaceCameraDrag && this.selectedTool != this.tool_MOVE) {
+			if (this.spaceCameraDrag) {
 				this.spaceCameraDrag = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
@@ -3828,10 +3857,6 @@ const _B2dEditor = function () {
 		var bodyObject = JSON.parse(JSON.stringify(obj));
 		bodyObject.fixed = true;
 		bodyObject.density = 1;
-		bodyObject.colorFill = '#FFFFFF';
-		bodyObject.colorLine = '#FFFFFF';
-		bodyObject.lineWidth = 1;
-		bodyObject.transparancy = 0.2;
 		bodyObject.collision = 2;
 
 		var body = this.buildBodyFromObj(bodyObject);
@@ -4819,6 +4844,15 @@ const _B2dEditor = function () {
 			let colorLine = body.mySprite.data.colorLine instanceof Array ? body.mySprite.data.colorLine[i] : body.mySprite.data.colorLine;
 			let lineWidth = body.mySprite.data.lineWidth instanceof Array ? body.mySprite.data.lineWidth[i] : body.mySprite.data.lineWidth;
 			let transparancy = body.mySprite.data.transparancy instanceof Array ? body.mySprite.data.transparancy[i+1] : body.mySprite.data.transparancy;
+
+			if(body.mySprite.data.type == this.object_TRIGGER){
+				//color trigger
+				colorFill = '#FFFFFF';
+				colorLine = '#FFFFFF';
+				lineWidth = 1;
+				transparancy = 0.2;
+			}
+
 			if (!radius) this.updatePolyShape(body.originalGraphic, fixture.GetShape(), colorFill, colorLine, lineWidth, transparancy, (i != 0));
 			else this.updateCircleShape(body.originalGraphic, radius, fixture.GetShape().GetLocalPosition(), colorFill, colorLine, lineWidth, transparancy, (i != 0));
 		}
@@ -5777,10 +5811,9 @@ const _B2dEditor = function () {
 	this.tool_SPECIALS = 4;
 	this.tool_TEXT = 5;
 	this.tool_ZOOM = 6;
-	this.tool_MOVE = 7;
-	this.tool_PAINTBUCKET = 8;
-	this.tool_ERASER = 9;
-	this.tool_CAMERA = 10;
+	this.tool_PAINTBUCKET = 7;
+	this.tool_TRIGGER = 8;
+	this.tool_CAMERA = 9;
 
 	this.minimumBodySurfaceArea = 0.3;
 }
