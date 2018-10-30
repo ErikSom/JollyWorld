@@ -253,11 +253,10 @@ const _B2dEditor = function () {
 			case this.tool_TEXT:
 				ui.editorGUI.editData = this.editorTextObject;
 
-				targetFolder = ui.editorGUI.addFolder('draw shapes');
+				targetFolder = ui.editorGUI.addFolder('add text');
 				targetFolder.open();
 
-
-				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+				targetFolder.addColor(ui.editorGUI.editData, "color");
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
 
@@ -268,13 +267,6 @@ const _B2dEditor = function () {
 				var alignments = ["left", "center", "right"];
 				ui.editorGUI.editData.align = alignments[0];
 				targetFolder.add(ui.editorGUI.editData, "align", alignments);
-
-
-				// this.colorFill = "#999999";
-				// this.transparancy = 1.0;
-				// this.fontSize = 12;
-				// this.fontName = "Arial";
-				// this.align = 'left';
 
 				break
 			case this.tool_ZOOM:
@@ -330,6 +322,7 @@ const _B2dEditor = function () {
 		var case_JUST_GRAPHICS = 6;
 		var case_JUST_TRIGGERS = 7;
 		var case_JUST_GRAPHICGROUPS = 8;
+		var case_JUST_TEXTS = 9;
 
 		var currentCase = case_NOTHING;
 		var prefabKeys = Object.keys(this.selectedPrefabs);
@@ -363,6 +356,7 @@ const _B2dEditor = function () {
 			var _selectedSlideJoints = [];
 			var _selectedDistanceJoints = [];
 			var _selectedRopeJoints = [];
+			var _selectedTexts = [];
 			var _texture;
 			for (i = 0; i < this.selectedTextures.length; i++) {
 				_texture = this.selectedTextures[i];
@@ -381,11 +375,13 @@ const _B2dEditor = function () {
 					_selectedGraphics.push(_texture);
 				} else if (_texture.data && _texture.data.type == this.object_GRAPHICGROUP) {
 					_selectedGraphicGroups.push(_texture);
+				} else if (_texture.data && _texture.data.type == this.object_TEXT) {
+					_selectedTexts.push(_texture);
 				} else {
 					_selectedTextures.push(_texture);
 				}
 			}
-			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedGraphicGroups.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0);
+			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedGraphicGroups.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0);
 			if (editingMultipleObjects > 1) {
 				currentCase = case_MULTIPLE;
 			} else if (_selectedTextures.length > 0) {
@@ -394,6 +390,8 @@ const _B2dEditor = function () {
 				currentCase = case_JUST_GRAPHICS;
 			} else if (_selectedGraphicGroups.length > 0) {
 				currentCase = case_JUST_GRAPHICGROUPS;
+			} else if (_selectedTexts.length > 0) {
+				currentCase = case_JUST_TEXTS;
 			} else {
 				currentCase = case_JUST_JOINTS;
 			}
@@ -475,6 +473,12 @@ const _B2dEditor = function () {
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
 				if (this.selectedPhysicsBodies.length > 1) targetFolder = ui.editorGUI.addFolder('multiple triggers');
 				else targetFolder = ui.editorGUI.addFolder('trigger');
+				break;
+			case case_JUST_TEXTS:
+				dataJoint = _selectedTexts[0].data;
+				ui.editorGUI.editData = new this.textObject;
+				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple texts');
+				else targetFolder = ui.editorGUI.addFolder('text');
 				break;
 		}
 		targetFolder.open();
@@ -1232,7 +1236,6 @@ const _B2dEditor = function () {
 		this.debugGraphics.lineTo(this.container.x, crossSize + this.container.y);
 		this.debugGraphics.moveTo(-crossSize + this.container.x, this.container.y);
 		this.debugGraphics.lineTo(crossSize + this.container.x, this.container.y);
-		
 
 		this.debugGraphics.moveTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, -crossSize + this.container.y);
 		this.debugGraphics.lineTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, crossSize + this.container.y);
@@ -1434,6 +1437,22 @@ const _B2dEditor = function () {
 		this.triggerActions = [];
 		this.lockselection = false;
 	}
+	this.textObject = function(){
+		this.type = self.object_TEXT;
+		this.x = null;
+		this.y = null;
+		this.rotation = 0;
+		this.groups = "";
+		this.refName = "";
+		this.ID = 0;
+		this.text = 'Write your text here';
+		this.color = "#FFF";
+		this.transparancy = 1.0;
+		this.fontSize = 12;
+		this.fontName = "Arial";
+		this.align = 'left';
+		this.lockselection = false;
+	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
 		this.x = 0;
@@ -1481,7 +1500,7 @@ const _B2dEditor = function () {
 		this.isPhysicsObject = true;
 	}
 	this.editorTextObject = new function () {
-		this.colorFill = "#999999";
+		this.color = "#999999";
 		this.transparancy = 1.0;
 		this.fontSize = 12;
 		this.fontName = "Arial";
@@ -1698,6 +1717,13 @@ const _B2dEditor = function () {
 				]
 				var _trigger = this.buildTriggerFromObj(triggerObject);
 				_trigger.mySprite.triggerInitialized = true;
+			}else if (this.selectedTool == this.tool_TEXT) {
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+
+				var textObject = new this.textObject;
+				textObject.x = this.startSelectionPoint.x*this.PTM;
+				textObject.y = this.startSelectionPoint.y*this.PTM;
+				var _text = this.buildTextFromObj(textObject);
 			}
 
 		}
@@ -3871,6 +3897,37 @@ const _B2dEditor = function () {
 
 		return body;
 	}
+	this.buildTextFromObj = function (obj) {
+		console.log("BUILD TEXT", obj);
+		let container;
+		let text = new PIXI.Text();
+		let style = new PIXI.TextStyle();
+		style.fontFamily = obj.fontName;
+		style.fontSize = obj.fontSize;
+		style.fill = obj.color;
+		style.align = obj.align;
+
+		text.text = obj.text;
+		text.style = style;
+
+		container = new PIXI.Container();
+		container.pivot.set(text.width / 2, text.height / 2);
+		container.addChild(text);
+
+		container.textSprite = text;
+
+		this.textures.addChild(container);
+
+		container.x = obj.x;
+		container.y = obj.y;
+		container.rotation = obj.rotation;
+		container.data = obj;
+
+		//handle groups and ref names
+		this.addObjectToLookupGroups(container, container.data);
+
+		return container;
+	}
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
@@ -5784,6 +5841,7 @@ const _B2dEditor = function () {
 	this.object_GRAPHIC = 6;
 	this.object_GRAPHICGROUP = 7;
 	this.object_TRIGGER = 8;
+	this.object_TEXT = 9;
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
