@@ -30,6 +30,7 @@ let saveScreen;
 let loadScreen;
 let notice;
 let prompt;
+let textEditor;
 
 let uiContainer = document.getElementById('uicontainer');
 let customGUIContainer = document.getElementById('my-gui-container');
@@ -1638,6 +1639,65 @@ export const showNotice = function (message) {
 
 
     registerDragWindow(notice);
+
+    return false;
+}
+export const showTextEditor = function(startValue, callBack){
+    if (textEditor) $(textEditor.domElement).remove();
+
+    const loginGUIWidth = 400;
+
+    textEditor = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+    textEditor.domElement.setAttribute('id', 'textEditor');
+
+    let folder = textEditor.addFolder('text editor');
+    folder.domElement.classList.add('custom');
+    folder.domElement.style.textAlign = 'center';
+
+    folder.open();
+
+    var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+    let divWrapper = document.createElement('div');
+    divWrapper.style.padding = '0px 20px';
+
+    let textarea = document.createElement('textarea');
+    textarea.value = startValue;
+    textarea.setAttribute('tabindex', '0');
+    textarea.style.height = '250px';
+    divWrapper.appendChild(textarea);
+
+
+    divWrapper.appendChild(document.createElement('br'));
+    divWrapper.appendChild(document.createElement('br'));
+
+    let button = document.createElement('div');
+    button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    button.style.margin = 'auto';
+    button.innerHTML = "SAVE";
+    divWrapper.appendChild(button);
+
+    button.addEventListener('click', () => {
+        callBack(textarea.value);
+        $(textEditor.domElement).remove();
+    })
+
+    targetDomElement.appendChild(divWrapper);
+
+
+    targetDomElement.appendChild(document.createElement('br'));
+
+
+    customGUIContainer.appendChild(textEditor.domElement);
+
+    $(textEditor.domElement).css('left', $(window).width() / 2 - $(textEditor.domElement).width() / 2);
+    $(textEditor.domElement).css('top', $(window).height() / 2 - $(textEditor.domElement).height() / 2);
+
+
+    registerDragWindow(textEditor);
 
     return false;
 }

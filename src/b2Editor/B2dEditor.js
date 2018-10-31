@@ -199,6 +199,22 @@ const _B2dEditor = function () {
 			});
 		}
 	}
+	this.openTextEditor = function(){
+		const self = this;
+		if(!self.selectedTextures[0].textSprite) return;
+		const startValue = self.selectedTextures[0].textSprite.text;
+		const callBack = (value) =>{
+			for (let j = 0; j < self.selectedTextures.length; j++) {
+				let textContainer = self.selectedTextures[j];
+				if(textContainer.textSprite){
+					textContainer.data.text = value;
+					textContainer.textSprite.text = value;
+				}
+			}
+
+		}
+		ui.showTextEditor(startValue, callBack);
+	}
 	this.selectTool = function (i) {
 		this.selectedTool = i;
 
@@ -256,7 +272,7 @@ const _B2dEditor = function () {
 				targetFolder = ui.editorGUI.addFolder('add text');
 				targetFolder.open();
 
-				targetFolder.addColor(ui.editorGUI.editData, "color");
+				targetFolder.addColor(ui.editorGUI.editData, "textColor");
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
 
@@ -265,8 +281,8 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "fontName", fonts);
 
 				var alignments = ["left", "center", "right"];
-				ui.editorGUI.editData.align = alignments[0];
-				targetFolder.add(ui.editorGUI.editData, "align", alignments);
+				ui.editorGUI.editData.textAlign = alignments[0];
+				targetFolder.add(ui.editorGUI.editData, "textAlign", alignments);
 
 				break
 			case this.tool_ZOOM:
@@ -720,6 +736,33 @@ const _B2dEditor = function () {
 				break;
 			case case_JUST_TRIGGERS:
 				trigger.addTriggerGUI(dataJoint, targetFolder);
+				break;
+			case case_JUST_TEXTS:
+
+				ui.editorGUI.editData.openTextEditorCaller = function () {};
+				controller = targetFolder.add(ui.editorGUI.editData, "openTextEditorCaller").name(">Edit Text<");
+				ui.editorGUI.editData.openTextEditorCaller = self.openTextEditor.bind(this);
+
+
+				controller = targetFolder.addColor(ui.editorGUI.editData, "textColor");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
+				controller = targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100).step(1.0);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				targetFolder.add(ui.editorGUI.editData, "fontName", this.tileLists).onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				});
+				targetFolder.add(ui.editorGUI.editData, "textAlign", this.tileLists).onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				});
 				break;
 		}
 		//TODO:Maybe add admin mode / pro mode for lockselection
@@ -1446,11 +1489,11 @@ const _B2dEditor = function () {
 		this.refName = "";
 		this.ID = 0;
 		this.text = 'Write your text here';
-		this.color = "#FFF";
+		this.textColor = "#FFF";
 		this.transparancy = 1.0;
 		this.fontSize = 12;
 		this.fontName = "Arial";
-		this.align = 'left';
+		this.textAlign = 'left';
 		this.lockselection = false;
 	}
 	this.multiObject = function () {
@@ -1500,11 +1543,11 @@ const _B2dEditor = function () {
 		this.isPhysicsObject = true;
 	}
 	this.editorTextObject = new function () {
-		this.color = "#999999";
+		this.textColor = "#999999";
 		this.transparancy = 1.0;
 		this.fontSize = 12;
 		this.fontName = "Arial";
-		this.align = 'left';
+		this.textAlign = 'left';
 	}
 	this.editorTriggerObject = new function () {
 		this.shape = 0;
@@ -3087,7 +3130,35 @@ const _B2dEditor = function () {
 								trigger.updateTriggerGUI();
 							} else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
 						}
-					} else {
+					} else if(controller.property == "textColor"){
+						//Text Object
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							var textContainer = this.selectedTextures[j];
+							textContainer.data.textColor = controller.targetValue;
+							textContainer.textSprite.style.fill = textContainer.data.textColor;
+						}
+					}else if(controller.property == "fontSize"){
+						//Text Object
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							var textContainer = this.selectedTextures[j];
+							textContainer.data.fontSize = controller.targetValue;
+							textContainer.textSprite.style.fontSize = textContainer.data.fontSize;
+						}
+					}else if(controller.property == "fontName"){
+						//Text Object
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							var textContainer = this.selectedTextures[j];
+							textContainer.data.fontName = controller.targetValue;
+							textContainer.textSprite.style.fontFamily = textContainer.data.fontName;
+						}
+					}else if(controller.property == "textAlign"){
+						//Text Object
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							var textContainer = this.selectedTextures[j];
+							textContainer.data.textAlign = controller.targetValue;
+							textContainer.textSprite.style.align = textContainer.data.textAlign;
+						}
+					}else {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
@@ -3898,14 +3969,13 @@ const _B2dEditor = function () {
 		return body;
 	}
 	this.buildTextFromObj = function (obj) {
-		console.log("BUILD TEXT", obj);
 		let container;
 		let text = new PIXI.Text();
 		let style = new PIXI.TextStyle();
 		style.fontFamily = obj.fontName;
 		style.fontSize = obj.fontSize;
-		style.fill = obj.color;
-		style.align = obj.align;
+		style.fill = obj.textColor;
+		style.align = obj.textAlign;
 
 		text.text = obj.text;
 		text.style = style;
