@@ -5,12 +5,38 @@ import * as scrollBars from "./scrollBars";
 import { Settings } from "../../Settings";
 
 
+let storedCameraPosition = {
+    x:0,
+    y:0
+}
+let storedZoom;
+
 export const pan = function(move){
     B2dEditor.container.x += move.x * Settings.PTM;
     B2dEditor.container.y += move.y * Settings.PTM;
     B2dEditor.mousePosWorld.x -= move.x / B2dEditor.container.scale.x;
     B2dEditor.mousePosWorld.y -= move.y / B2dEditor.container.scale.y;
     constrainCameraPosition();
+}
+export const set = function(pos){
+    B2dEditor.container.x = pos.x;
+    B2dEditor.container.y = pos.y;
+    constrainCameraPosition();
+}
+export const storeCurrentPosition = function(){
+    console.log(B2dEditor.container.x, "THIS IS THE X!!!");
+    storedCameraPosition = {x:B2dEditor.container.x, y:B2dEditor.container.y};
+    storedZoom = B2dEditor.container.scale.x;
+    console.log(storedCameraPosition, storedZoom);
+}
+
+export const resetToStoredPosition = function(){
+    if(!storedZoom) return;
+    console.log(storedZoom);
+    console.log(storedCameraPosition);
+    B2dEditor.container.scale.x = storedZoom;
+    B2dEditor.container.scale.y = storedZoom;
+    set(storedCameraPosition);
 }
 
 export const zoom = function (pos, isZoomIn) {

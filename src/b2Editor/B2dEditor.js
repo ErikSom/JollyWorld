@@ -144,7 +144,6 @@ const _B2dEditor = function () {
 
 	this.showPrefabList = function () {
 		var prefabPages = PrefabManager.getLibraryKeys();
-		console.log(prefabPages);
 		if (this.admin) prefabPages.push("admin");
 
 
@@ -907,7 +906,6 @@ const _B2dEditor = function () {
 				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
 				delete this.activePrefabs[arr[i].key];
 			} else if (arr[i].data) {
-				console.log(arr[i]);
 				//graphic object
 				var sprite = arr[i];
 				this.removeObjectFromLookupGroups(sprite, sprite.data);
@@ -3969,7 +3967,6 @@ const _B2dEditor = function () {
 		return body;
 	}
 	this.buildTextFromObj = function (obj) {
-		console.log(obj);
 		let container;
 		let text = new PIXI.Text();
 		let style = new PIXI.TextStyle();
@@ -5564,6 +5561,8 @@ const _B2dEditor = function () {
 	}
 
 	this.resetEditor = function () {
+		camera.resetToStoredPosition();
+
 		this.editing = true;
 		this.selectTool(this.tool_SELECT);
 
@@ -5656,6 +5655,8 @@ const _B2dEditor = function () {
 	}
 
 	this.runWorld = function () {
+		camera.storeCurrentPosition();
+
 		this.editorIcons = [];
 		this.debugGraphics.clear();
 		this.editing = false;
