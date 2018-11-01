@@ -5653,10 +5653,12 @@ const _B2dEditor = function () {
 	this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
 		this.BubbleEvent("PostSolve", contact, impulse);
 	}
+	this.testWorld = function (){
+		camera.storeCurrentPosition();
+		this.runWorld();
+	}
 
 	this.runWorld = function () {
-		camera.storeCurrentPosition();
-
 		this.editorIcons = [];
 		this.debugGraphics.clear();
 		this.editing = false;

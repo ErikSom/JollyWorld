@@ -9,7 +9,7 @@ let storedCameraPosition = {
     x:0,
     y:0
 }
-let storedZoom;
+let storedZoom = undefined;
 
 export const pan = function(move){
     B2dEditor.container.x += move.x * Settings.PTM;
@@ -31,11 +31,15 @@ export const storeCurrentPosition = function(){
 }
 
 export const resetToStoredPosition = function(){
-    if(!storedZoom) return;
-    console.log(storedZoom);
+    if(storedZoom){
+        console.log(storedZoom);
+        B2dEditor.container.scale.x = storedZoom;
+        B2dEditor.container.scale.y = storedZoom;
+    }else{
+        storedCameraPosition.x = $(window).width()/2;
+        storedCameraPosition.y = $(window).height()/2;
+    }
     console.log(storedCameraPosition);
-    B2dEditor.container.scale.x = storedZoom;
-    B2dEditor.container.scale.y = storedZoom;
     set(storedCameraPosition);
 }
 

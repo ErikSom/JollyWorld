@@ -147,7 +147,7 @@ function Game() {
         this.initLevel(levelsData.mainMenuLevel);
         ui.buildMainMenu();
 
-        this.testWorld();
+        this.runWorld();
 
         this.canvas.addEventListener("keydown", this.onKeyDown.bind(this), true);
         this.canvas.addEventListener("keyup", this.onKeyUp.bind(this), true);
@@ -289,7 +289,7 @@ function Game() {
 
         } else if (e.keyCode == 80) { //p
             if (this.editor.editing) {
-                this.startGame();
+                this.testWorld();
             }
         }
         Key.onKeydown(e);
@@ -303,9 +303,15 @@ function Game() {
         }
         Key.onKeyup(e);
     }
+    this.runWorld = function(){
+        this.editor.runWorld();
+        this.run = true;
+        this.findPlayableCharacter();
+        this.stopAutoSave();
+    }
     this.testWorld = function () {
         this.editor.stringifyWorldJSON();
-        this.editor.runWorld();
+        this.editor.testWorld();
         this.run = true;
         this.findPlayableCharacter();
         this.stopAutoSave();
@@ -390,12 +396,6 @@ function Game() {
         });
     }
 
-    this.startGame = function () {
-
-        this.testWorld();
-        this.findPlayableCharacter();
-
-    }
     this.findPlayableCharacter = function () {
         for (var key in this.editor.activePrefabs) {
             if (this.editor.activePrefabs.hasOwnProperty(key)) {
