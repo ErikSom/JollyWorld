@@ -5710,6 +5710,12 @@ const _B2dEditor = function () {
 		this.editing = false;
 		ui.hide();
 	}
+	this.resize = function(){
+		console.log("RESIZING");
+		console.log(this.canvas);
+		this.canvas.width  = $(window).width();
+		this.canvas.height = $(window).height();
+	}
 
 	this.getWorldPointFromPixelPoint = function (pixelPoint) {
 		return new b2Vec2(((pixelPoint.x - this.container.x) / this.container.scale.x) / this.PTM, ((pixelPoint.y - this.container.y) / this.container.scale.y) / this.PTM);

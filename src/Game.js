@@ -89,11 +89,11 @@ function Game() {
 
         this.canvas = document.getElementById("canvas");
 
-        var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-        var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        var w = $(window).width();
+        var h = $(window).height();
 
-        this.canvas.width = w; //document.width is obsolete
-        this.canvas.height = h; //document.height is obsolete
+        this.canvas.width = w;
+        this.canvas.height = h;
 
         this.app = new PIXI.Application({
             view: this.canvas,
@@ -158,6 +158,8 @@ function Game() {
         this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), true);
         this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
+        window.addEventListener('resize', this.handleResize.bind(this));
+
 
         /*TODO
         1) Create proper pooler per available types
@@ -201,6 +203,17 @@ function Game() {
     this.onMouseMove = function (e) {
         this.editor.onMouseMove(e);
     };
+
+    this.handleResize = function(e){
+        const w = $(window).width();
+        const h = $(window).height();
+
+        this.canvas.width = w;
+        this.canvas.height = h;
+        this.app.renderer.resize(w, h);
+
+//        this.editor.resize();
+    }
 
     this.getBodyAtMouse = function () {
         var aabb = new b2AABB();
