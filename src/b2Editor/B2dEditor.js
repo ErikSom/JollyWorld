@@ -3969,6 +3969,7 @@ const _B2dEditor = function () {
 		return body;
 	}
 	this.buildTextFromObj = function (obj) {
+		console.log(obj);
 		let container;
 		let text = new PIXI.Text();
 		let style = new PIXI.TextStyle();
@@ -5281,6 +5282,14 @@ const _B2dEditor = function () {
 			arr[10] = obj.repeatType;
 			arr[11] = obj.triggerObjects;
 			arr[12] = obj.triggerActions;
+		}else if(arr[0] == this.object_TEXT){
+			arr[6] = obj.ID;
+			arr[7] = obj.text;
+			arr[8] = obj.textColor;
+			arr[9] = obj.transparancy;
+			arr[10] = obj.fontSize;
+			arr[11] = obj.fontName;
+			arr[12] = obj.textAlign;
 		}
 		return JSON.stringify(arr);
 	}
@@ -5364,6 +5373,15 @@ const _B2dEditor = function () {
 			obj.repeatType = arr[10];
 			obj.triggerObjects = arr[11];
 			obj.triggerActions = arr[12];
+		}else if (arr[0] == this.object_TEXT) {
+			obj = new this.textObject();
+			obj.ID = arr[6];
+			obj.text = arr[7];
+			obj.textColor = arr[8];
+			obj.transparancy = arr[9];
+			obj.fontSize = arr[10];
+			obj.fontName = arr[11];
+			obj.textAlign = arr[12];
 		}
 
 		obj.type = arr[0];
@@ -5386,7 +5404,7 @@ const _B2dEditor = function () {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
-		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP) {
+		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT) {
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation;
@@ -5502,6 +5520,12 @@ const _B2dEditor = function () {
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
+				}else if(obj.type == this.object_TEXT){
+					if (obj.bodyID != undefined) {
+						obj.bodyID += startChildIndex;
+					}
+					worldObject = this.buildTextFromObj(obj);
+					createdObjects._textures.push(worldObject);
 				}
 			}
 		}
