@@ -10,6 +10,7 @@ import {editorSettings} from './utils/editorSettings';
 import {
 	game
 } from "../Game";
+import { Settings } from "../Settings";
 
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
@@ -275,7 +276,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
 
-				var fonts = ["Arial", "Helvetica"];
+				var fonts = Settings.availableFonts;
 				ui.editorGUI.editData.fontName = fonts[0];
 				targetFolder.add(ui.editorGUI.editData, "fontName", fonts);
 
@@ -754,11 +755,12 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				targetFolder.add(ui.editorGUI.editData, "fontName", this.tileLists).onChange(function (value) {
+
+				targetFolder.add(ui.editorGUI.editData, 'fontName', Settings.availableFonts).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				targetFolder.add(ui.editorGUI.editData, "textAlign", this.tileLists).onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, 'textAlign', ['left', 'center', 'right']).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});

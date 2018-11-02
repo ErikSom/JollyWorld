@@ -109,6 +109,8 @@ function Game() {
         this.editor.load(PIXI.loader);
 
         PIXI.loader.load(this.setup.bind(this));
+
+        this.prepareGameFonts();
     };
 
     this.setup = function () {
@@ -573,8 +575,21 @@ function Game() {
         }
         this.app.render();
         Key.update();
-
     };
+
+    this.prepareGameFonts = function(){
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        for(let i = 0; i<Settings.availableFonts.length; i++){
+            const el = document.createElement('p');
+            el.style.fontFamily = Settings.availableFonts[i];
+            el.style.fontSize = "0px";
+            el.style.visibility = "hidden";
+            el.innerHTML = '.';
+            container.appendChild(el);
+        }
+        setTimeout(()=>{container.remove()}, 5000);
+    }
 }
 
 export var game = new Game();

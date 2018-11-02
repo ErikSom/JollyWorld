@@ -14,6 +14,8 @@ export var Settings = {
     /*EDITOR*/
     autoSaveInterval:5000,
 
+    availableFonts:["Lily Script One", "Karla","Squada One","Unlock","Arapey","Economica","Erica One","Trochut","Spinnaker"],
+
     /*TEXT*/
     DEFAULT_TEXTS:{
         levelEditScreen_DefaultTitleText: 'Fill in Title',
