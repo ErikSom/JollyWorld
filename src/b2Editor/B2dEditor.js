@@ -5980,5 +5980,4 @@ const _B2dEditor = function () {
 
 	this.minimumBodySurfaceArea = 0.3;
 }
-
 export const B2dEditor = new _B2dEditor();

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121901447-2"></script>
@@ -21,6 +22,7 @@
     <title>JollyWorld</title>
     <meta name="description" content="..." />
 
+
     <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
     <script>
         var config = {
@@ -41,8 +43,45 @@
         <div id="my-gui-container"></div>
     </div>
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lily+Script+One|Karla|Squada+One|Unlock|Arapey|Economica|Erica+One|Trochut|Spinnaker">
-    <script type="text/javascript" src="awesome-game.js"></script>
+
+    <script>
+        function loadJS(url, onDone, onError) {
+            if (!onDone) onDone = function () {};
+            if (!onError) onError = function () {};
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200 || xhr.status == 0) {
+                        try {
+                            eval(xhr.responseText);
+                        } catch (e) {
+                            onError(e);
+                            return;
+                        }
+                        onDone();
+                    } else {
+                        onError(xhr.status);
+                    }
+                }
+            }.bind(this);
+            try {
+                xhr.open("GET", url, true);
+                xhr.send();
+            } catch (e) {
+                onError(e);
+            }
+            xhr.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    var percentComplete = Math.round(event.loaded * 100 / event.total);
+                    console.log(percentComplete);
+                }
+            }
+        }
+        loadJS('awesome-game.js', function () {
+            console.log('done')
+        });
+    </script>
+    <!-- <script type="text/javascript" src="awesome-game.js"></script> -->
 
 </body>
 

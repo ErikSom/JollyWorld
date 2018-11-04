@@ -577,3 +577,51 @@ canvas {
       box-shadow: 10014px 0 0 -5px #fff;
     }
   }
+  @font-face {
+    font-family: 'Arapey';
+    src: url('./fonts/Arapey-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Economica';
+    src: url('./fonts/Economica-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'EricaOne';
+    src: url('./fonts/EricaOne-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Karla';
+    src: url('./fonts/Karla-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'LilyScriptOne';
+    src: url('./fonts/LilyScriptOne-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Spinnaker';
+    src: url('./fonts/Spinnaker-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'SquadaOne';
+    src: url('./fonts/SquadaOne-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Trochut';
+    src: url('./fonts/Trochut-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }

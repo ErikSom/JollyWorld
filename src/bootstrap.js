@@ -1,7 +1,7 @@
 //import 'FireBaseManager.js'
 import 'AssetList.js'
 //import 'Game-gui.js'
-import './b2Editor/B2dEditor'
+import './b2Editor/B2dEditor.js'
 import 'Settings.js'
 import '../libs/pixi-spine.js'
 import '../libs/pixi-heaven.js'

@@ -591,8 +591,5 @@ function Game() {
         setTimeout(()=>{container.remove()}, 5000);
     }
 }
-
 export var game = new Game();
-window.addEventListener("load", function () {
-    game.init();
-}.bind(this));
+setTimeout(()=>{game.init();}, 0); // guarantee all context is loaded and fix webpack order issue

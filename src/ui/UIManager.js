@@ -273,5 +273,3 @@ function UIManager() {
     }
 }
 export var ui = new UIManager();
-window.addEventListener("load", function () {
-}.bind(this));
