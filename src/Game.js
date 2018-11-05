@@ -592,4 +592,4 @@ function Game() {
     }
 }
 export var game = new Game();
-setTimeout(()=>{game.init();}, 0); // guarantee all context is loaded and fix webpack order issue
+setTimeout(()=>{game.init();}, 1); // guarantee all context is loaded and fix webpack order issue

@@ -78,8 +78,7 @@
                     var total = xhr.getResponseHeader('content-length')
                     var encoding = xhr.getResponseHeader('content-encoding')
                     if (total && encoding && (encoding.indexOf('gzip') > -1)) {
-                        // assuming average gzip compression ratio to be 25%
-                        total *= 4 // original size / compressed size
+                        total *= 4
                         console.log(Math.min(100, event.loaded / total * 100));
                     } else {
                         console.log('lengthComputable failed')

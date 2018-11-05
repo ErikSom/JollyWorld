@@ -16,6 +16,14 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":101,"h":302},
 	"sourceSize": {"w":101,"h":302}
 },
+"C40000":
+{
+	"frame": {"x":297,"y":216,"w":34,"h":53},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":53},
+	"sourceSize": {"w":34,"h":53}
+},
 "Cannon0000":
 {
 	"frame": {"x":171,"y":107,"w":241,"h":107},
@@ -26,7 +34,7 @@
 },
 "Cannon_Ball0000":
 {
-	"frame": {"x":297,"y":260,"w":34,"h":34},
+	"frame": {"x":333,"y":216,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -58,7 +66,7 @@
 },
 "Grenade0000":
 {
-	"frame": {"x":297,"y":216,"w":33,"h":42},
+	"frame": {"x":638,"y":261,"w":33,"h":42},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":33,"h":42},
@@ -80,9 +88,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":167,"h":168},
 	"sourceSize": {"w":167,"h":168}
 },
+"Spikes0000":
+{
+	"frame": {"x":535,"y":306,"w":152,"h":126},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":152,"h":126},
+	"sourceSize": {"w":152,"h":126}
+},
 "Sword0000":
 {
-	"frame": {"x":638,"y":2,"w":36,"h":171},
+	"frame": {"x":689,"y":261,"w":36,"h":171},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":171},
@@ -90,7 +106,7 @@
 },
 "Tank_Flamable0000":
 {
-	"frame": {"x":548,"y":152,"w":87,"h":148},
+	"frame": {"x":638,"y":2,"w":87,"h":148},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":87,"h":148},
@@ -98,7 +114,7 @@
 },
 "Tank_Poison0000":
 {
-	"frame": {"x":535,"y":306,"w":88,"h":148},
+	"frame": {"x":548,"y":152,"w":88,"h":148},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":148},
@@ -114,7 +130,7 @@
 },
 "WoodWheel0000":
 {
-	"frame": {"x":625,"y":302,"w":107,"h":107},
+	"frame": {"x":638,"y":152,"w":107,"h":107},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":107},
