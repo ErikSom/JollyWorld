@@ -1,4 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
+import * as Box2D from '../../../libs/Box2D'
 import {
     game
 } from "../../Game";
@@ -20,14 +21,24 @@ export class SharpObject extends PrefabManager.basePrefab {
             contact.GetWorldManifold(worldManifold);
             var worldCollisionPoint = worldManifold.points[0];
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            let vel1 = bodies[0].GetLinearVelocityFromWorldPoint( worldCollisionPoint );
-            let vel2 = bodies[1].GetLinearVelocityFromWorldPoint( worldCollisionPoint );
-            let impactVelocity = vel1.Clone().SelfSub(vel2);
-            let collisionAngle = Math.atan2(impactVelocity.y, impactVelocity.x);
 
-            const sharpBody = this.lookupObject['sharpBody'];
+            const sharpBody = self.lookupObject['sharpBody'];
+
+            const angleVector = sharpBody.GetPosition().Clone().SelfSub(worldCollisionPoint);
+            let angleOfAttack = Math.atan2(angleVector.y, angleVector.x)*game.editor.RAD2DEG - sharpBody.GetAngle()*game.editor.RAD2DEG;
+
+            while ( angleOfAttack < -180) angleOfAttack += 360;
+            while ( angleOfAttack >  180) angleOfAttack -= 360;
+
+            angleOfAttack += 45;
+
             console.log("SHARP CALC");
-            console.log(collisionAngle, sharpBody.GetAngle());
+            console.log(angleOfAttack, self.minAngleOfAttack, self.maxAngleOfAttack);
+
+            if(angleOfAttack>self.minAngleOfAttack && angleOfAttack<self.maxAngleOfAttack){
+                console.log("ATTACH!!!!");
+            }
+
         }
     }
 }
