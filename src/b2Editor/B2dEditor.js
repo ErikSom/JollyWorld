@@ -5711,6 +5711,7 @@ const _B2dEditor = function () {
 			this.triggerObjects[i].class = new trigger.triggerCore();
 			this.triggerObjects[i].class.init(this.triggerObjects[i]);
 		}
+		console.log(this.lookupGroups);
 		this.editing = false;
 		ui.hide();
 	}

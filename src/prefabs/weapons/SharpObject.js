@@ -9,36 +9,71 @@ export class SharpObject extends PrefabManager.basePrefab {
         super(target);
     }
     init() {
-        this.minAngleOfAttack = -45;
-        this.maxAngleOfAttack = 45;
+        this.bodiesToStick = [];
+        this.bodiesToSeperate = [];
+        this.connectedBodies = {};
         super.init();
+    }
+    update(){
+        super.update();
+
+        if(this.bodiesToStick.length>0){
+            const sharpBody = this.lookupObject['sharpBody'];
+
+            for(let i = 0; i<this.bodiesToStick.length; i++){
+
+                var prismaticJointDef = new Box2D.b2PrismaticJointDef;
+                const axisRotation = sharpBody.GetAngle() + 90 * game.editor.DEG2RAD;
+                var axis = new Box2D.b2Vec2(Math.cos(axisRotation), Math.sin(axisRotation));
+                prismaticJointDef.Initialize(this.bodiesToStick[i].body, sharpBody, this.bodiesToStick[i].pos, axis);
+                prismaticJointDef.collideConnected = true;
+                // prismaticJointDef.referenceAngle = 0.0;
+                // prismaticJointDef.maxMotorForce = 0;
+                // prismaticJointDef.motorSpeed = 0;
+                // prismaticJointDef.enableMotor = false;
+                let joint = game.world.CreateJoint(prismaticJointDef);
+                this.connectedBodies[this.bodiesToStick[i].body] = joint;
+                console.log("ATTACH BODY");
+            }
+            this.bodiesToStick = [];
+        }
+        if(this.bodiesToSeperate.length>0){
+            for(let i = 0; i<this.bodiesToSeperate.length; i++){
+                var joint = this.connectedBodies[this.bodiesToSeperate[i].body];
+                console.log(joint);
+                if(!joint) continue;
+                game.world.DestroyJoint(joint);
+                delete this.connectedBodies[this.bodiesToSeperate[i].body];
+
+                console.log("DETACH BODY");
+
+            }
+            this.bodiesToSeperate = [];
+        }
     }
     initContactListener() {
         super.initContactListener();
         var self = this;
-        this.contactListener.PreSolve = function (contact, oldManifold) {
-            var worldManifold = new Box2D.b2WorldManifold();
-            contact.GetWorldManifold(worldManifold);
-            var worldCollisionPoint = worldManifold.points[0];
-            var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-
+        this.contactListener.BeginContact = function (contact) {
+            const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             const sharpBody = self.lookupObject['sharpBody'];
+            if(bodies[0] != sharpBody && bodies[1] != sharpBody) return;
 
-            const angleVector = sharpBody.GetPosition().Clone().SelfSub(worldCollisionPoint);
-            let angleOfAttack = Math.atan2(angleVector.y, angleVector.x)*game.editor.RAD2DEG - sharpBody.GetAngle()*game.editor.RAD2DEG;
+            const worldManifold = new Box2D.b2WorldManifold();
+            contact.GetWorldManifold(worldManifold);
 
-            while ( angleOfAttack < -180) angleOfAttack += 360;
-            while ( angleOfAttack >  180) angleOfAttack -= 360;
+            const otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
 
-            angleOfAttack += 45;
-
-            console.log("SHARP CALC");
-            console.log(angleOfAttack, self.minAngleOfAttack, self.maxAngleOfAttack);
-
-            if(angleOfAttack>self.minAngleOfAttack && angleOfAttack<self.maxAngleOfAttack){
-                console.log("ATTACH!!!!");
-            }
-
+            if(self.connectedBodies[otherBody] != undefined) return;
+            self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
+        }
+        this.contactListener.EndContact = function (contact) {
+            const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            const sharpBody = self.lookupObject['sharpBody'];
+            if(bodies[0] != sharpBody && bodies[1] != sharpBody) return;
+            const otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
+            if(self.connectedBodies[otherBody] == undefined) return;
+            self.bodiesToSeperate.push({body:otherBody});
         }
     }
 }
