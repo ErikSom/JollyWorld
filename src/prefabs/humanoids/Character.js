@@ -141,6 +141,8 @@ class Character extends PrefabManager.basePrefab {
             case Character.GORE_SNAP:
                 var targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
+                    break;
+                    if(targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
 
                     var revoluteJointDef;
                     var joint;

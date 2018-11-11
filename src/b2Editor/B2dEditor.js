@@ -1015,6 +1015,11 @@ const _B2dEditor = function () {
 						baseTexture: false
 					});
 				}
+				if(b.connectedSpike){
+					let tarIndex = b.connectedSpike.connectedBodies.indexOf(b);
+					b.connectedSpike.connectedBodies.splice(tarIndex);
+					b.connectedSpike.connectedJoints.splice(tarIndex);
+				}
 				this.world.DestroyBody(b);
 			}
 		}
@@ -4022,8 +4027,8 @@ const _B2dEditor = function () {
 		for (var i = 0; i < fixtureArray.length; i++) {
 			fixDef = new b2FixtureDef;
 			fixDef.density = obj.density instanceof Array ? obj.density[i] : obj.density;
-			fixDef.friction = 2000;
-			fixDef.restitution = 0.001;
+			fixDef.friction = 0.5;
+			fixDef.restitution = 0.2;
 			var radius = obj.radius instanceof Array ? obj.radius[i] : obj.radius;
 			if (!radius) {
 				var vert;
