@@ -30,6 +30,7 @@ export class basePrefab {
 export const LIBRARY_ADMIN = "admin";
 export const LIBRARY_MOVEMENT = "movement";
 export const LIBRARY_WEAPON = "weapon";
+export const LIBRARY_LEVEL = "level";
 
 export var prefabLibrary = {
     libraryKeys: [],
@@ -38,17 +39,14 @@ export var prefabLibrary = {
 export const getLibraryKeys = function() {
     if(prefabLibrary.libraryKeys.length>0) return prefabLibrary.libraryKeys;
     for (let key in prefabLibrary) {
-        console.log(key);
         if (prefabLibrary.hasOwnProperty(key)) {
             if (prefabLibrary[key].library) {
-                console.log('hmmkay true');
                 if (!prefabLibrary.libraryDictionary[prefabLibrary[key].library]) prefabLibrary.libraryDictionary[prefabLibrary[key].library] = [];
                 prefabLibrary.libraryDictionary[prefabLibrary[key].library].push(key);
             }
         }
     }
     prefabLibrary.libraryKeys = Object.keys(prefabLibrary.libraryDictionary);
-    console.log(prefabLibrary);
     return prefabLibrary.libraryKeys;
 }
 
@@ -69,3 +67,5 @@ importAll(require.context('./animals', true, /\.js$/));
 importAll(require.context('./humanoids', true, /\.js$/));
 importAll(require.context('./vehicles', true, /\.js$/));
 importAll(require.context('./weapons', true, /\.js$/));
+importAll(require.context('./movement', true, /\.js$/));
+importAll(require.context('./level', true, /\.js$/));

@@ -8,7 +8,6 @@ import {
 import {
     getPIXIDebugDraw
 } from "../libs/debugdraw";
-const firebase = require('firebase');
 const PIXI = require('pixi.js');
 import $ from 'jquery';
 import {
@@ -26,6 +25,7 @@ import {
 import {
     levelsData
 } from "./data/levelsData";
+const moment = require('moment');
 
 import * as SaveManager from "./utils/SaveManager";
 
@@ -78,6 +78,9 @@ function Game() {
     this.emittersPool = {};
 
     this.currentLevelData;
+
+    this.levelStartTime = 0;
+    this.levelWon = false;
 
     this.init = function () {
 
@@ -140,6 +143,8 @@ function Game() {
         this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);
         this.editor.assetLists.nature = Object.keys(PIXI.loader.resources["Nature.json"].textures);
         this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
+        this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
+
         this.editor.tileLists = ["", "grass.jpg", "dirt.jpg", "fence.png"]
 
         this.editor.init(this.myContainer, this.world, Settings.PTM);
@@ -317,6 +322,7 @@ function Game() {
         this.run = true;
         this.findPlayableCharacter();
         this.stopAutoSave();
+        this.levelStartTime = Date.now();
     }
     this.testWorldAndSaveData = function () {
         this.testWorld();
@@ -326,6 +332,7 @@ function Game() {
     this.stopWorld = function () {
         this.editor.resetEditor();
         this.run = false;
+        this.levelWon = false;
         this.doAutoSave();
     }
     this.openEditor = function () {
@@ -381,6 +388,16 @@ function Game() {
     this.levelHasChanges = function () {
         if (game.currentLevelData.json != game.editor.stringifyWorldJSON()) return true;
         return false;
+    }
+    this.win = function(){
+        this.levelWon = true;
+        var ms = moment(this.levelStartTime).diff(moment(Date.now()));
+        var d = moment.duration(ms);
+        var s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+
+        alert(`You Won! Time:${s}!`)
+
+
     }
     this.loadUserLevelData = function (levelData) {
         return new Promise((resolve, reject) => {

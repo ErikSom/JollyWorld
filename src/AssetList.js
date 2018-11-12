@@ -6,6 +6,7 @@ export var LoadCoreAssets = function (loader){
         .add("Construction.json", "assets/images/prefabs/Construction.json")
         .add("Nature.json", "assets/images/prefabs/Nature.json")
         .add("Weapons.json", "assets/images/prefabs/Weapons.json")
+        .add("Level.json", "assets/images/prefabs/Level.json")
         /*TILE DATA*/
         .add("dirt.jpg", "assets/images/textures/dirt.jpg")
         .add("grass.jpg", "assets/images/textures/grass.jpg")
