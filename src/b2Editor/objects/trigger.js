@@ -17,7 +17,7 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 break;
             case B2dEditor.object_JOINT:
-                actions.push("MotorEnabled") //, "SetAwake");
+                actions.push("MotorEnabled", "LimitEnabled", "SetLimits", "SetMotorSpeed", "SetMaxMotorTorque") //, "SetAwake");
                 //slide joint: MotorEnabled, LimitEnabled, SetMotorSpeed, SetLimits, Destroy
                 break;
                 // B2dEditor.object_TEXTURE = 1;
@@ -92,6 +92,35 @@ export const doAction = function (actionData, targets) {
                 target.EnableMotor(actionData.enabled);
             });
             break;
+        case "LimitEnabled":
+            targets.map(target => {
+                target.EnableLimit(actionData.enabled);
+            });
+            break;
+        case "SetLimits":
+            targets.map(target => {
+                target.SetLimits(actionData.lowerAngle, actionData.upperAngle);
+            });
+            break;
+        case "SetMotorSpeed":
+            targets.map(target => {
+                let targetMotorSpeed;
+                if (actionData.setAdd == "fixed") targetMotorSpeed =  actionData.speed;
+                else if (actionData.setAdd == "add") targetMotorSpeed = target.GetMotorSpeed()+actionData.speed;
+                targetMotorSpeed = Math.min(Settings.motorSpeedLimit, Math.max(-Settings.motorSpeedLimit, targetMotorSpeed));
+                target.SetMotorSpeed(targetMotorSpeed);
+            });
+            break;
+        case "SetMaxMotorTorque":
+            targets.map(target => {
+                let targetMotorForce;
+                if (actionData.setAdd == "fixed") targetMotorForce =  actionData.force;
+                else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce()+actionData.force;
+                targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
+                target.SetMaxMotorForce(targetMotorForce);
+            });
+            break;
+
     }
 }
 export const guitype_MINMAX = 0;
@@ -165,6 +194,71 @@ export const actionDictionary = {
         },
     },
     /*******************/
+    actionObject_LimitEnabled: {
+        type: 'LimitEnabled',
+        enabled: true,
+    },
+    actionOptions_LimitEnabled: {
+        enabled: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
+    actionObject_SetMotorSpeed: {
+        type: 'SetMotorSpeed',
+        setAdd: 'fixed',
+        speed: 0,
+    },
+    actionOptions_SetMotorSpeed: {
+        setAdd: {
+            type: guitype_LIST,
+            items: ['fixed', 'add'],
+        },
+        speed: {
+            type: guitype_MINMAX,
+            min: -Settings.motorSpeedLimit,
+            max: Settings.motorSpeedLimit,
+            step: 0.1,
+        },
+    },
+    /*******************/
+    actionObject_SetLimits: {
+        type: 'SetLimits',
+        upperAngle: 0,
+        lowerAngle: 0,
+    },
+    actionOptions_SetLimits: {
+        upperAngle: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 180,
+            step: 0.1,
+        },
+        lowerAngle: {
+            type: guitype_MINMAX,
+            min: -180,
+            max: 0,
+            step: 0.1
+        },
+    },
+    /*******************/
+    actionObject_SetMaxMotorTorque: {
+        type: 'SetMaxMotorTorque',
+        setAdd: 'fixed',
+        force: 0,
+    },
+    actionOptions_SetMaxMotorTorque: {
+        setAdd: {
+            type: guitype_LIST,
+            items: ['fixed', 'add'],
+        },
+        force: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: Settings.motorForceLimit,
+            step: 0.1,
+        },
+    },
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -217,17 +311,18 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             var controller;
             controller = actionFolder.add(ui.editorGUI.editData, actionVarString, getActionsForObject(targetObject)).onChange(function (value) {
                 this.humanUpdate = true;
-                this.targetValue = value
-            });
+                this.targetValue = value;
+                this.triggerActionKey = 'targetActionDropDown';
+                this.triggerTargetID = targetID;
+                this.triggerActionID = actionID;
+            }.bind(controller));
 
 
             let targetID = i;
             let actionID = j;
 
             controller.name('actionType');
-            controller.triggerActionKey = 'targetActionDropDown';
-            controller.triggerTargetID = targetID;
-            controller.triggerActionID = actionID;
+
 
 
             for (var key in action) {

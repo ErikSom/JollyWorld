@@ -2693,6 +2693,7 @@ const _B2dEditor = function () {
 				controller = controllers[i]
 
 				if (controller.humanUpdate) {
+					console.log(controller);
 					controller.humanUpdate = false;
 					if (controller.property == "typeName") {
 						if (this.selectedTool == this.tool_JOINTS) {
@@ -3128,6 +3129,7 @@ const _B2dEditor = function () {
 						}
 					} else if (controller.triggerActionKey != undefined) {
 						//trigger action
+						console.log("ACTION DROP DOWN");
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							if (controller.triggerActionKey == 'targetActionDropDown') {

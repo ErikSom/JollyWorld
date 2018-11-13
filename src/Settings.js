@@ -13,8 +13,12 @@ export var Settings = {
     characterLeanSpeed:2,
     /*EDITOR*/
     autoSaveInterval:5000,
-
     availableFonts:["Lily Script One", "Karla","Squada One","Unlock","Arapey","Economica","Erica One","Trochut","Spinnaker"],
+
+
+    /*LIMITS*/
+    motorSpeedLimit:20,
+    motorForceLimit:10000,
 
     /*TEXT*/
     DEFAULT_TEXTS:{
@@ -30,5 +34,9 @@ export var Settings = {
         confirm:'Yes!',
         decline:'NOPE!',
     }
+
+
+
+
 
 }
