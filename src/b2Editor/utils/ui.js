@@ -1434,6 +1434,8 @@ export const buildEditorGUI = function () {
         autoPlace: false,
         width: editorGUIWidth
     });
+    editorGUI.domElement.style.top = '50px';
+    editorGUI.domElement.style.left = '50px';
     customGUIContainer.appendChild(editorGUI.domElement);
 }
 export const destroyEditorGUI = function () {

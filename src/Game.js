@@ -391,9 +391,9 @@ function Game() {
     }
     this.win = function(){
         this.levelWon = true;
-        var ms = moment(this.levelStartTime).diff(moment(Date.now()));
+        var ms = moment(Date.now()).diff(moment(this.levelStartTime));
         var d = moment.duration(ms);
-        var s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+        var s = Math.floor(d.asMinutes()) + moment.utc(ms).format(":ss:SSS");
 
         alert(`You Won! Time:${s}!`)
 

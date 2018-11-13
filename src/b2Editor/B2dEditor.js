@@ -5536,13 +5536,13 @@ const _B2dEditor = function () {
 
 		//Fix trigger object targets
 		for (var i = 0; i < this.triggerObjects.length; i++) {
-			var trigger = this.triggerObjects[i];
-			if (trigger.mySprite.triggerInitialized) continue;
-			for (var j = 0; j < trigger.mySprite.data.triggerObjects.length; j++) {
-				var targetObject = this.textures.getChildAt(trigger.mySprite.data.triggerObjects[j]);
-				trigger.addTargetToTrigger(trigger, targetObject);
+			var _trigger = this.triggerObjects[i];
+			if (_trigger.mySprite.triggerInitialized) continue;
+			for (var j = 0; j < _trigger.mySprite.data.triggerObjects.length; j++) {
+				var targetObject = this.textures.getChildAt(_trigger.mySprite.data.triggerObjects[j]);
+				trigger.addTargetToTrigger(_trigger, targetObject);
 			}
-			trigger.mySprite.triggerInitialized = true;
+			_trigger.mySprite.triggerInitialized = true;
 		}
 
 
@@ -5689,6 +5689,13 @@ const _B2dEditor = function () {
 				this.updateObject(sprite, sprite.data);
 
 				var joint = this.attachJoint(sprite.data);
+
+				if (sprite.myTriggers != undefined) {
+					for (var j = 0; j < sprite.myTriggers.length; j++) {
+						trigger.replaceTargetOnTrigger(sprite.myTriggers[j], sprite, joint);
+					}
+				}
+
 				spritesToDestroy.push(sprite);
 				this.addObjectToLookupGroups(joint, sprite.data);
 			} else if (sprite.data.type == this.object_BODY) {

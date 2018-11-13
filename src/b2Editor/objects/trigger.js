@@ -16,6 +16,10 @@ export const getActionsForObject = function (object) {
             case B2dEditor.object_BODY:
                 actions.push("Impulse") //, "SetAwake");
                 break;
+            case B2dEditor.object_JOINT:
+                actions.push("MotorEnabled") //, "SetAwake");
+                //slide joint: MotorEnabled, LimitEnabled, SetMotorSpeed, SetLimits, Destroy
+                break;
                 // B2dEditor.object_TEXTURE = 1;
                 // B2dEditor.object_JOINT = 2;
                 // B2dEditor.object_UNDO_MOVEMENT = 3;
@@ -31,6 +35,7 @@ export const getActionsForObject = function (object) {
     if (object.data.type != B2dEditor.object_JOINT) {
         actions.push("SetPosition", "SetRotation")
     }
+    actions.push("Destroy");
     return actions;
 }
 export const getAction = function (action) {
@@ -82,10 +87,16 @@ export const doAction = function (actionData, targets) {
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
             });
             break;
+        case "MotorEnabled":
+            targets.map(target => {
+                target.EnableMotor(actionData.enabled);
+            });
+            break;
     }
 }
 export const guitype_MINMAX = 0;
 export const guitype_LIST = 1;
+export const guitype_BOOL = 2;
 
 export const actionDictionary = {
     //*** IMPULSE ***/
@@ -143,6 +154,17 @@ export const actionDictionary = {
             step: 0.1
         },
     },
+    /*******************/
+    actionObject_MotorEnabled: {
+        type: 'MotorEnabled',
+        enabled: true,
+    },
+    actionOptions_MotorEnabled: {
+        enabled: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -225,6 +247,14 @@ export const addTriggerGUI = function (dataJoint, _folder) {
                             break
                         case guitype_LIST:
                             controller = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
+                            controller.name(key);
+                            controller.onChange(function (value) {
+                                this.humanUpdate = true;
+                                this.targetValue = value
+                            }.bind(controller));
+                            break;
+                        case guitype_BOOL:
+                            controller = actionFolder.add(ui.editorGUI.editData, actionVarString)
                             controller.name(key);
                             controller.onChange(function (value) {
                                 this.humanUpdate = true;
@@ -435,10 +465,20 @@ export const addTargetToTrigger = function (_trigger, target) {
     }
 
     _trigger.mySprite.targets.push(target);
-    if (_trigger.mySprite.data.triggerActions.length < _trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([trigger.getAction(trigger.getActionsForObject(target)[0])]);
+    if (_trigger.mySprite.data.triggerActions.length < _trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([getAction(getActionsForObject(target)[0])]);
     if (!target.myTriggers) target.myTriggers = [];
     target.myTriggers.push(_trigger);
 }
+
+export const replaceTargetOnTrigger = function (_trigger, old, _new) {
+    for(let i = 0; i<_trigger.mySprite.targets.length; i++){
+        if(_trigger.mySprite.targets[i] == old) _trigger.mySprite.targets[i] = _new;
+        old.myTriggers.filter(item => item !== _trigger);
+        if (!_new.myTriggers) _new.myTriggers = [];
+        _new.myTriggers.push(_trigger);
+    }
+}
+
 export const removeTargetFromTrigger = function (_trigger, target) {
     var i;
     for (i = 0; i < _trigger.mySprite.targets.length; i++) {
@@ -456,6 +496,7 @@ export const removeTargetFromTrigger = function (_trigger, target) {
     }
     if (target.myTriggers.length == 0) target.myTriggers = undefined;
 
+    if(!target.data) return;
     if (target.data.prefabInstanceName) {
         for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
             if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
