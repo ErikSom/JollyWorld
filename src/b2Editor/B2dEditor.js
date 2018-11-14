@@ -802,7 +802,7 @@ const _B2dEditor = function () {
 
 			if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
 				lowerLimit = 0;
-				higherLimit = 10000;
+				higherLimit = Settings.motorForceLimit;
 			} else {
 				lowerLimit = 0;
 				higherLimit = 1000;
@@ -842,13 +842,13 @@ const _B2dEditor = function () {
 					this.targetValue = value
 				}.bind(controller));
 			} else {
-				controller = folder.add(ui.editorGUI.editData, "upperLimit", 0, 5000);
+				controller = folder.add(ui.editorGUI.editData, "upperLimit", 0, Settings.slideJointDistanceLimit);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 
-				controller = folder.add(ui.editorGUI.editData, "lowerLimit", -5000, 0);
+				controller = folder.add(ui.editorGUI.editData, "lowerLimit", -Settings.slideJointDistanceLimit, 0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
@@ -2685,6 +2685,10 @@ const _B2dEditor = function () {
 				for (var _propt in ui.editorGUI.__folders[propt].__folders) {
 					//folders in folders
 					controllers = controllers.concat(ui.editorGUI.__folders[propt].__folders[_propt].__controllers);
+					for (var __propt in ui.editorGUI.__folders[propt].__folders[_propt].__folders) {
+						//folders in folders in folders..
+						controllers = controllers.concat(ui.editorGUI.__folders[propt].__folders[_propt].__folders[__propt].__controllers);
+					}
 				}
 			}
 
@@ -2693,7 +2697,7 @@ const _B2dEditor = function () {
 				controller = controllers[i]
 
 				if (controller.humanUpdate) {
-					console.log(controller);
+					console.log("CHECK:", controller);
 					controller.humanUpdate = false;
 					if (controller.property == "typeName") {
 						if (this.selectedTool == this.tool_JOINTS) {
@@ -2718,15 +2722,26 @@ const _B2dEditor = function () {
 							if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 						} else {
 							//joint
-							if (controller.targetValue == "Pin") {
-								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_PIN;
-							} else if (controller.targetValue == "Slide") {
-								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_SLIDE;
-							} else if (controller.targetValue == "Distance") {
-								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_DISTANCE;
-							} else if (controller.targetValue == "Rope") {
-								this.selectedTextures[0].data.jointType = this.jointObject_TYPE_ROPE;
+							for(let j = 0; j<this.selectedTextures.length; j++){
+								if (controller.targetValue == "Pin") {
+									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_PIN;
+								} else if (controller.targetValue == "Slide") {
+									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_SLIDE;
+								} else if (controller.targetValue == "Distance") {
+									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_DISTANCE;
+								} else if (controller.targetValue == "Rope") {
+									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_ROPE;
+								}
+								console.log(this.selectedTextures[j]);
+								if(this.selectedTextures[j].myTriggers){
+									console.log(this.selectedTextures[j].myTriggers);
+									const triggerLength = this.selectedTextures[j].myTriggers.length;
+									for(let k = 0; k<triggerLength; k++){
+										trigger.removeTargetFromTrigger(this.selectedTextures[j].myTriggers[0], this.selectedTextures[j]);
+									}
+								}
 							}
+
 							this.updateSelection();
 						}
 					} else if (controller.property == "x") {

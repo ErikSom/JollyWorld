@@ -17,7 +17,11 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 break;
             case B2dEditor.object_JOINT:
-                actions.push("MotorEnabled", "LimitEnabled", "SetLimits", "SetMotorSpeed", "SetMaxMotorTorque") //, "SetAwake");
+                if(object.data.jointType == B2dEditor.jointObject_TYPE_PIN || object.data.jointType == B2dEditor.jointObject_TYPE_DISTANCE){
+                    actions.push("MotorEnabled", "LimitEnabled", "SetMotorSpeed", "SetMaxMotorTorque");
+                }
+                if(object.data.jointType == B2dEditor.jointObject_TYPE_PIN) actions.push("SetAngleLimits");
+                if(object.data.jointType == B2dEditor.jointObject_TYPE_DISTANCE) actions.push("SetDistanceLimits");
                 //slide joint: MotorEnabled, LimitEnabled, SetMotorSpeed, SetLimits, Destroy
                 break;
                 // B2dEditor.object_TEXTURE = 1;
@@ -48,7 +52,6 @@ export const doAction = function (actionData, targets) {
     if (!(targets instanceof Array)) targets = [targets];
 
     var bodies;
-
 
     switch (actionData.type) {
         case "Impulse":
@@ -97,9 +100,14 @@ export const doAction = function (actionData, targets) {
                 target.EnableLimit(actionData.enabled);
             });
             break;
-        case "SetLimits":
+        case "SetAngleLimits":
             targets.map(target => {
                 target.SetLimits(actionData.lowerAngle, actionData.upperAngle);
+            });
+            break;
+        case "SetDistanceLimits":
+            targets.map(target => {
+                target.SetLimits(actionData.lowerLimit, actionData.upperLimit);
             });
             break;
         case "SetMotorSpeed":
@@ -118,6 +126,11 @@ export const doAction = function (actionData, targets) {
                 else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce()+actionData.force;
                 targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
                 target.SetMaxMotorForce(targetMotorForce);
+            });
+            break;
+        case "Destroy":
+            targets.map(target => {
+                //
             });
             break;
 
@@ -222,12 +235,12 @@ export const actionDictionary = {
         },
     },
     /*******************/
-    actionObject_SetLimits: {
-        type: 'SetLimits',
+    actionObject_SetAngleLimits: {
+        type: 'SetAngleLimits',
         upperAngle: 0,
         lowerAngle: 0,
     },
-    actionOptions_SetLimits: {
+    actionOptions_SetAngleLimits: {
         upperAngle: {
             type: guitype_MINMAX,
             min: 0,
@@ -237,6 +250,26 @@ export const actionDictionary = {
         lowerAngle: {
             type: guitype_MINMAX,
             min: -180,
+            max: 0,
+            step: 0.1
+        },
+    },
+    /*******************/
+       actionObject_SetDistanceLimits: {
+        type: 'SetDistanceLimits',
+        upperLimit: 0,
+        lowerLimit: 0,
+    },
+    actionOptions_SetDistanceLimits: {
+        upperLimit: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: Settings.slideJointDistanceLimit,
+            step: 0.1,
+        },
+        lowerLimit: {
+            type: guitype_MINMAX,
+            min: -Settings.slideJointDistanceLimit,
             max: 0,
             step: 0.1
         },
@@ -258,6 +291,12 @@ export const actionDictionary = {
             max: Settings.motorForceLimit,
             step: 0.1,
         },
+    },
+    /*******************/
+    actionObject_Destroy: {
+        type: 'Destroy',
+    },
+    actionOptions_Destroy: {
     },
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
@@ -317,49 +356,54 @@ export const addTriggerGUI = function (dataJoint, _folder) {
                 this.triggerActionID = actionID;
             }.bind(controller));
 
-
             let targetID = i;
             let actionID = j;
 
             controller.name('actionType');
 
-
-
-            for (var key in action) {
+            for (let key in action) {
+                let actionController;
                 if (action.hasOwnProperty(key) && key != "type") {
                     actionVarString = `${actionString}_${key}`;
                     ui.editorGUI.editData[actionVarString] = action[key];
 
                     switch (actionOptions[key].type) {
                         case guitype_MINMAX:
-                            controller = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
-                            controller.step(actionOptions[key].step);
-                            controller.name(key);
-                            controller.onChange(function (value) {
+                            actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
+                            actionController.step(actionOptions[key].step);
+                            actionController.name(key);
+                            actionController.onChange(function (value) {
                                 this.humanUpdate = true;
                                 this.targetValue = value
-                            }.bind(controller));
+                                this.triggerActionKey = key;
+                                this.triggerTargetID = targetID;
+                                this.triggerActionID = actionID;
+                            }.bind(actionController));
                             break
                         case guitype_LIST:
-                            controller = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
-                            controller.name(key);
-                            controller.onChange(function (value) {
+                            actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
+                            actionController.name(key);
+                            actionController.onChange(function (value) {
                                 this.humanUpdate = true;
-                                this.targetValue = value
-                            }.bind(controller));
+                                this.targetValue = value;
+                                this.triggerActionKey = key;
+                                this.triggerTargetID = targetID;
+                                this.triggerActionID = actionID;
+                            }.bind(actionController));
                             break;
                         case guitype_BOOL:
-                            controller = actionFolder.add(ui.editorGUI.editData, actionVarString)
-                            controller.name(key);
-                            controller.onChange(function (value) {
+                            actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
+                            actionController.name(key);
+                            actionController.onChange(function (value) {
                                 this.humanUpdate = true;
-                                this.targetValue = value
-                            }.bind(controller));
+                                this.targetValue = value;
+                                this.triggerActionKey = key;
+                                this.triggerTargetID = targetID;
+                                this.triggerActionID = actionID;
+                            }.bind(actionController));
                             break;
                     }
-                    controller.triggerActionKey = key;
-                    controller.triggerTargetID = targetID;
-                    controller.triggerActionID = actionID;
+
                 }
             }
             ui.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
@@ -418,8 +462,6 @@ export const updateTriggerGUI = function () {
     let folder;
     for (var propt in targetFolder.__folders) {
         folder = targetFolder.__folders[propt];
-        console.log("ADD:", propt);
-
         triggerGUIState[propt] = folder.closed;
         for (var _propt in targetFolder.__folders[propt].__folders) {
             folder = targetFolder.__folders[propt].__folders[_propt];
@@ -429,18 +471,14 @@ export const updateTriggerGUI = function () {
 
     B2dEditor.updateSelection();
 
-    console.log(triggerGUIState);
 
     targetFolder = ui.editorGUI.__folders[$(ui.editorGUI.domElement).find('.title')[0].innerText]
 
     //restore folder status
     for (var propt in targetFolder.__folders) {
-        console.log(propt);
-
         folder = targetFolder.__folders[propt];
         folder.closed = triggerGUIState[propt] || false;
 
-        console.log(targetFolder.__folders[propt]);
         for (var _propt in targetFolder.__folders[propt].__folders) {
             folder = targetFolder.__folders[propt].__folders[_propt];
             folder.closed = triggerGUIState[propt + _propt] || false;
@@ -504,16 +542,11 @@ export class triggerCore {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 if (containsTargetType(self.data.targetType, bodies[i])) {
-                    console.log("WHOOJOO contains target");
                     if (!self.touchingObjects.includes(bodies[i])) self.touchingObjects.push(bodies[i]);
                     self.touchingTarget = true;
                     if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
-                        console.log("WHOOJOO right type", self.touchingObjects.length);
-
                         if (self.touchingObjects.length == 1) {
-                            console.log("WHOOJOO do trigger");
                             self.runTriggerOnce = true;
-                            console.log(self.data.repeatType, triggerRepeatType.once);
                             if (self.data.repeatType == triggerRepeatType.once) {
                                 self.destroy = true;
                             }
@@ -575,6 +608,7 @@ export const replaceTargetOnTrigger = function (_trigger, old, _new) {
 }
 
 export const removeTargetFromTrigger = function (_trigger, target) {
+    console.log("REMOVE TARGET");
     var i;
     for (i = 0; i < _trigger.mySprite.targets.length; i++) {
         if (_trigger.mySprite.targets[i] == target) {

@@ -19,6 +19,7 @@ export var Settings = {
     /*LIMITS*/
     motorSpeedLimit:20,
     motorForceLimit:10000,
+    slideJointDistanceLimit:5000,
 
     /*TEXT*/
     DEFAULT_TEXTS:{
