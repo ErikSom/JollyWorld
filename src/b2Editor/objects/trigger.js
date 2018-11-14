@@ -129,9 +129,8 @@ export const doAction = function (actionData, targets) {
             });
             break;
         case "Destroy":
-            targets.map(target => {
-                //
-            });
+            console.log("Destroy", targets);
+            B2dEditor.deleteObjects(targets);
             break;
 
     }
@@ -577,7 +576,8 @@ export class triggerCore {
         for (var i = 0; i < this.targets.length; i++) {
             var targetObject = this.targets[i];
             var actionData;
-            for (var j = 0; j < this.data.triggerActions[i].length; j++) {
+            const triggerLength = this.data.triggerActions[i].length;
+            for (var j = 0; j < triggerLength; j++) {
                 actionData = this.data.triggerActions[i][j];
                 doAction(actionData, targetObject);
             }

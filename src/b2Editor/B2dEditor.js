@@ -899,7 +899,21 @@ const _B2dEditor = function () {
 
 	this.deleteObjects = function (arr) {
 		for (var i = 0; i < arr.length; i++) {
-			if (arr[i] instanceof this.prefabObject) {
+			if(arr[i] instanceof Box2D.b2Joint){
+				let joint = arr[i];
+				if (joint.myTriggers != undefined) {
+					var j;
+					var myTrigger;
+					for (j = 0; j < (joint.myTriggers ? joint.myTriggers.length : 0); j++) {
+						myTrigger = joint.myTriggers[j];
+						trigger.removeTargetFromTrigger(myTrigger, joint);
+					}
+				}
+				this.removeObjectFromLookupGroups(joint, joint.spriteData);
+				this.world.DestroyJoint(joint);
+
+				//TODO: remove joints from lookup object???
+			}else if (arr[i] instanceof this.prefabObject) {
 				if (arr[i].myTriggers != undefined) {
 					for (var j = 0; j < (arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++) {
 						trigger.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
@@ -5715,6 +5729,7 @@ const _B2dEditor = function () {
 
 				spritesToDestroy.push(sprite);
 				this.addObjectToLookupGroups(joint, sprite.data);
+				joint.spriteData = sprite.data;
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
 			} else if (sprite.data.type == this.object_TEXTURE) {
