@@ -14,6 +14,7 @@ export class SharpObject extends PrefabManager.basePrefab {
         this.extent = 4.50;
         this.width = 2.25;
         this.spread = 0.75;
+        this.resistance = 600.0;
         this.bodiesToStick = [];
         this.bodiesToSeperate = [];
         this.connectedBodies = [];
@@ -48,18 +49,16 @@ export class SharpObject extends PrefabManager.basePrefab {
                 prismaticJointDef.Initialize(this.bodiesToStick[i].body, sharpBody, sharpBody.GetPosition(), axis);
                 prismaticJointDef.collideConnected = true;
                 // prismaticJointDef.referenceAngle = 0.0;
-                // prismaticJointDef.maxMotorForce = 0;
-                // prismaticJointDef.motorSpeed = 0;
-                // prismaticJointDef.enableMotor = false;
-                // let fixture = this.bodiesToStick[i].body.GetFixtureList();
+                prismaticJointDef.maxMotorForce = this.resistance;
+                prismaticJointDef.motorSpeed = 0;
+                prismaticJointDef.enableMotor = true;
+                let fixture = this.bodiesToStick[i].body.GetFixtureList();
                 // while (fixture != null) {
                 //     fixture.SetDensity(0.001);
                 //     fixture = fixture.GetNext();
                 // }
                 this.bodiesToStick[i].body.ResetMassData();
                 this.bodiesToStick[i].body.connectedSpike = this;
-
-
 
                 // attach decals
                 var basePosition = sharpBody.GetPosition();

@@ -4978,7 +4978,7 @@ const _B2dEditor = function () {
 
 			carveDecal.scale.x = size*0.6;
 			carveDecal.scale.y = size*0.6;
-			
+
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;
 
