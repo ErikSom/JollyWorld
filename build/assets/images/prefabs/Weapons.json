@@ -90,15 +90,15 @@
 },
 "Spikes0000":
 {
-	"frame": {"x":535,"y":306,"w":152,"h":139},
+	"frame": {"x":535,"y":306,"w":151,"h":139},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":152,"h":139},
-	"sourceSize": {"w":152,"h":139}
+	"spriteSourceSize": {"x":0,"y":0,"w":151,"h":139},
+	"sourceSize": {"w":151,"h":139}
 },
 "Sword0000":
 {
-	"frame": {"x":689,"y":261,"w":36,"h":171},
+	"frame": {"x":688,"y":261,"w":36,"h":171},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":171},

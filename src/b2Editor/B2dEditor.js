@@ -4953,7 +4953,7 @@ const _B2dEditor = function () {
 			body.myTexture.addChild(body.myMask);
 		}
 	}
-	this.addDecalToBody = function (body, worldPosition, textureName, carving) {
+	this.addDecalToBody = function (body, worldPosition, textureName, carving, size = 0.6) {
 		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
 
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
@@ -4971,8 +4971,8 @@ const _B2dEditor = function () {
 			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 			carveDecal.pivot.set(carveDecal.width / 2, carveDecal.height / 2);
 
-			carveDecal.scale.x = 0.6;
-			carveDecal.scale.y = 0.6;
+			carveDecal.scale.x = size;
+			carveDecal.scale.y = size;
 
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;

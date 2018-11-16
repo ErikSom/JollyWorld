@@ -1,5 +1,7 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D'
+import * as Box2D from '../../../libs/Box2D';
+import * as drawing from '../../b2Editor/utils/drawing';
+
 import {
     game
 } from "../../Game";
@@ -9,11 +11,27 @@ export class SharpObject extends PrefabManager.basePrefab {
         super(target);
     }
     init() {
+        this.extent = 4.50;
+        this.width = 2.25;
+        this.spread = 0.75;
         this.bodiesToStick = [];
         this.bodiesToSeperate = [];
         this.connectedBodies = [];
         this.connectedJoints = [];
         super.init();
+
+        this.RaycastCallbackSpike = function () {
+            this.m_hit = false;
+        }
+        this.RaycastCallbackSpike.prototype.ReportFixture = function (fixture, point, normal, fraction) {
+            if (!fixture.GetBody().isFlesh) return -1;
+            if (fixture.IsSensor()) return -1;
+            this.m_hit = true;
+            this.m_point = point.Clone();
+            this.m_normal = normal;
+            this.m_fixture = fixture;
+            return fraction;
+        };
     }
     update(){
         super.update();
@@ -42,11 +60,49 @@ export class SharpObject extends PrefabManager.basePrefab {
                 this.bodiesToStick[i].body.connectedSpike = this;
 
 
+
+                // attach decals
+                var basePosition = sharpBody.GetPosition();
+                var extentAngle = sharpBody.GetAngle()-90*game.editor.DEG2RAD;
+                var extentPosition = new Box2D.b2Vec2(basePosition.x+this.extent*Math.cos(extentAngle), basePosition.y+this.extent*Math.sin(extentAngle));
+                extentPosition = basePosition;
+
+                var startAngle = sharpBody.GetAngle()+180*game.editor.DEG2RAD;
+                var startPosition = new Box2D.b2Vec2(extentPosition.x+this.width*Math.cos(startAngle), extentPosition.y+this.width*Math.sin(startAngle));
+
+
+                const numSpreadParts = Math.floor((this.width*2)/this.spread)+1;
+
+                const spreadAngle = sharpBody.GetAngle();
+                const bladeAngle = sharpBody.GetAngle()-90*game.editor.DEG2RAD;
+
+
+                for(var j = 0; j<numSpreadParts; j++){
+                    const totalSpread = this.spread*j;
+                    let bladePosition = new Box2D.b2Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
+                    let bladeEndPosition = new Box2D.b2Vec2(bladePosition.x + this.extent * Math.cos(bladeAngle),bladePosition.y + this.extent * Math.sin(bladeAngle));
+
+                    var callback = new this.RaycastCallbackSpike();
+                    sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
+                    if (callback.m_hit) {
+                        var body = callback.m_fixture.GetBody();
+                        game.editor.addDecalToBody(body, callback.m_point, "Decal10000", true, 0.2);
+                        game.playOnceEmitter("blood", body, callback.m_point, extentAngle);
+                    }
+                }
+
+                //game.editor.getLowestChildIndex
+                //game.editor.applyToObjects(game.editor.TRANSFORM_FORCEDEPTH, vehicleDepth, [].concat(newObjects._bodies, newObjects._textures, newObjects._joints));
+                //drawing.drawLine(bladePosition.Clone().SelfMul(game.editor.PTM), bladeEndPosition.Clone().SelfMul(game.editor.PTM), {});
+                console.log(game.editor.activePrefabs[sharpBody.mySprite.data.subPrefabInstanceName]);
+
+
+
+
                 let joint = game.world.CreateJoint(prismaticJointDef);
                 this.connectedBodies.push(this.bodiesToStick[i].body);
                 this.connectedJoints.push(joint);
                 console.log("ATTACH", this.bodiesToStick[i].body.mySprite.data.refName, joint);
-                //debugger;
             }
             this.bodiesToStick = [];
         }
