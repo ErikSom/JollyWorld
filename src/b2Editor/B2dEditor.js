@@ -2053,6 +2053,7 @@ const _B2dEditor = function () {
 			objects = this.sortObjectsByIndex(objects);
 			for (var i = 0; i < objects.length; i++) {
 				var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
+				sprite = (objects[i].myTexture) ?  objects[i].myTexture : sprite;
 				var container = sprite.parent;
 				container.removeChild(sprite);
 				container.addChildAt(sprite, obj + i);
@@ -4953,7 +4954,8 @@ const _B2dEditor = function () {
 			body.myTexture.addChild(body.myMask);
 		}
 	}
-	this.addDecalToBody = function (body, worldPosition, textureName, carving, size = 0.6) {
+	this.addDecalToBody = function (body, worldPosition, textureName, carving, size) {
+		if(!size) size = 1;
 		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
 
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
@@ -4965,15 +4967,18 @@ const _B2dEditor = function () {
 		decal.x = localPosition.x;
 		decal.y = localPosition.y;
 
+		decal.scale.x = size;
+		decal.scale.y = size;
+
 		game.app.renderer.render(decal, body.myDecalSpriteRT, false);
 
 		if (carving) {
 			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 			carveDecal.pivot.set(carveDecal.width / 2, carveDecal.height / 2);
 
-			carveDecal.scale.x = size;
-			carveDecal.scale.y = size;
-
+			carveDecal.scale.x = size*0.6;
+			carveDecal.scale.y = size*0.6;
+			
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;
 

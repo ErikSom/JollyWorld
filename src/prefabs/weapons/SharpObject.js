@@ -86,24 +86,23 @@ export class SharpObject extends PrefabManager.basePrefab {
                     sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
                     if (callback.m_hit) {
                         var body = callback.m_fixture.GetBody();
-                        game.editor.addDecalToBody(body, callback.m_point, "Decal10000", true, 0.2);
+                        game.editor.addDecalToBody(body, callback.m_point, "Decal10000", true, 0.5);
+                        game.editor.addDecalToBody(sharpBody, callback.m_point, "Decal10000", false, 1.3);
+
                         game.playOnceEmitter("blood", body, callback.m_point, extentAngle);
                     }
                 }
 
-                //game.editor.getLowestChildIndex
-                //game.editor.applyToObjects(game.editor.TRANSFORM_FORCEDEPTH, vehicleDepth, [].concat(newObjects._bodies, newObjects._textures, newObjects._joints));
-                //drawing.drawLine(bladePosition.Clone().SelfMul(game.editor.PTM), bladeEndPosition.Clone().SelfMul(game.editor.PTM), {});
-                console.log(game.editor.activePrefabs[sharpBody.mySprite.data.subPrefabInstanceName]);
-
-
-
-
                 let joint = game.world.CreateJoint(prismaticJointDef);
                 this.connectedBodies.push(this.bodiesToStick[i].body);
                 this.connectedJoints.push(joint);
-                console.log("ATTACH", this.bodiesToStick[i].body.mySprite.data.refName, joint);
             }
+
+            var lowestDepth = game.editor.getLowestChildIndex(this.connectedBodies);
+            if(lowestDepth < this.lookupObject['sharpBody'].myTexture.parent.getChildIndex(this.lookupObject['sharpBody'].myTexture)){
+                game.editor.applyToObjects(game.editor.TRANSFORM_FORCEDEPTH, lowestDepth, [].concat(this.lookupObject._bodies, this.lookupObject._textures, this.lookupObject._joints));
+            };
+
             this.bodiesToStick = [];
         }
         if(this.bodiesToSeperate.length>0){
@@ -112,12 +111,10 @@ export class SharpObject extends PrefabManager.basePrefab {
                 var joint = this.connectedJoints[tarIndex];
                 if(!joint) continue;
                 game.world.DestroyJoint(joint);
-                console.log("DETACH", this.bodiesToSeperate[i].body.mySprite.data.refName);
 
                 this.bodiesToSeperate[i].body.connectedSpike = undefined;
                 this.connectedBodies.splice(tarIndex, 1);
                 this.connectedJoints.splice(tarIndex, 1);
-                console.log(this.connectedBodies);
 
             }
             this.bodiesToSeperate = [];
