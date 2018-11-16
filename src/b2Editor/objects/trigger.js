@@ -10,7 +10,6 @@ export const getActionsForObject = function (object) {
     if (object.data.prefabInstanceName != undefined) {
         //detect if prefab
         actions.push("Impulse") //, "SetAwake");
-        console.log("IS PREFAB");
     } else {
         switch (object.data.type) {
             case B2dEditor.object_BODY:
@@ -56,7 +55,6 @@ export const doAction = function (actionData, targets) {
     switch (actionData.type) {
         case "Impulse":
             targets.map(target => {
-                console.log(target);
                 if (target.data.prefabInstanceName) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
                 } else bodies = [target.myBody];
@@ -129,7 +127,6 @@ export const doAction = function (actionData, targets) {
             });
             break;
         case "Destroy":
-            console.log("Destroy", targets);
             B2dEditor.deleteObjects(targets);
             break;
 
@@ -608,7 +605,6 @@ export const replaceTargetOnTrigger = function (_trigger, old, _new) {
 }
 
 export const removeTargetFromTrigger = function (_trigger, target) {
-    console.log("REMOVE TARGET");
     var i;
     for (i = 0; i < _trigger.mySprite.targets.length; i++) {
         if (_trigger.mySprite.targets[i] == target) {
