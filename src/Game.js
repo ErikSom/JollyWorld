@@ -28,6 +28,7 @@ import {
 const moment = require('moment');
 
 import * as SaveManager from "./utils/SaveManager";
+import * as PIXICuller from "./utils/PIXICuller";
 
 const nanoid = require('nanoid');
 const particles = require('pixi-particles');
@@ -114,6 +115,7 @@ function Game() {
         PIXI.loader.load(this.setup.bind(this));
 
         this.prepareGameFonts();
+
     };
 
     this.setup = function () {
@@ -173,6 +175,8 @@ function Game() {
         */
         for (var i = 0; i < Settings.emitterPool; i++) this.getEmitter('blood', null);
         for (var i = 0; i < Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
+
+        PIXICuller.init(this.myContainer);
     }
 
 
@@ -591,6 +595,7 @@ function Game() {
             this.world.DrawDebugData();
         }
         this.app.render();
+        PIXICuller.update();
         Key.update();
     };
 
