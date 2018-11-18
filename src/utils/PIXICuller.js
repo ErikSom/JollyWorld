@@ -34,6 +34,7 @@ export const init = function (_container) {
         _pixiContainerAddChildSuper.apply(this, child);
         for (let i = 0; i < child.length; i++) {
             //make sure graphics are drawn
+            console.log("ADD CHILD!", child[i]);
             setTimeout(()=>{placeGraphicInCells(child[i])}, 0);
         }
     };
@@ -107,6 +108,7 @@ const initGraphicForCulling = function(graphic){
     };
     graphic._cullingSizeDirty = true;
     graphic._cullingCells = [];
+    graphic._cullingVisibleCells = 0;
     graphic._cullings = 0;
 }
 const getSizeInfoForGraphic = function(graphic){
