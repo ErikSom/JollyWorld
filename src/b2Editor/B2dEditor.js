@@ -1332,15 +1332,15 @@ const _B2dEditor = function () {
 				body.myTexture.y = body.GetPosition().y * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
 				// body.mySprite.x = body.GetPosition().x * this.PTM;
 				// body.mySprite.y = body.GetPosition().y * this.PTM;
-				if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
-				body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
+				//if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
+					body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
 
 			}
 			if (body.mySprite && body.mySprite.visible) {
 				body.mySprite.x = body.GetPosition().x * this.PTM;
 				body.mySprite.y = body.GetPosition().y * this.PTM;
-				if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
-				body.mySprite.rotation = body.GetAngle();
+				//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
+					body.mySprite.rotation = body.GetAngle();
 			}
 			i++;
 			body = body.GetNext();
@@ -1830,6 +1830,7 @@ const _B2dEditor = function () {
 		for (key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
 				var lookup = this.lookupGroups[key];
+				console.log(lookup._joints);
 				allObjects = allObjects.concat(lookup._bodies, lookup._textures, lookup._joints);
 				bodies = bodies.concat(lookup._bodies);
 				textures = textures.concat(lookup._textures, lookup._joints);

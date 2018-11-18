@@ -19,6 +19,7 @@ const settingsIndexCount = 2;
 export let debug = true;
 
 export const init = function (_container) {
+
     container = _container;
 
     cellDictionary = {};
@@ -52,11 +53,13 @@ export const init = function (_container) {
         }
     };
     update();
+    console.log(cellDictionary);
 }
 
 const placeGraphicInCells = function (graphic) {
-    if (graphic == debugGraphics) return;
-    if (graphic._cullingCells) {
+    if(graphic == debugGraphics) return;
+    if (!graphic.visible) return;
+    if (graphic._cullingCells != undefined) {
         removeGraphicFromCells(graphic);
     } else {
         initGraphicForCulling(graphic);
@@ -77,10 +80,13 @@ const placeGraphicInCells = function (graphic) {
             cellDictionary[cell].push(graphic);
 
             if(cellDictionary[cell][0]) graphic._cullingVisibleCells++;
+
+
+            //if(graphic.data && graphic.data.refName == 'test123') console.log(cellDictionary[cell]);
+
             graphic._cullingCells.push(cell);
         }
     }
-    if(graphic.data && graphic.data.refName == 'head')  console.log("PLACE GRAPHIC IN CELL");
     setGraphicsVisible([0, 0, graphic]);
 }
 const removeGraphicFromCells = function (graphic) {
@@ -95,14 +101,13 @@ const initGraphicForCulling = function(graphic){
     const _pixiContainerUpdateSuper = graphic.updateTransform;
     graphic.updateTransform = function updateTransform() {
         if (this.transform._localID != this.transform._currentLocalID) {
-            console.log(this.transform);
             placeGraphicInCells(graphic);
         }
         _pixiContainerUpdateSuper.apply(this);
     };
     graphic._cullingSizeDirty = true;
     graphic._cullingCells = [];
-    graphic._cullingVisibleCells = 0;
+    graphic._cullings = 0;
 }
 const getSizeInfoForGraphic = function(graphic){
     const bounds = graphic.getBounds();
@@ -143,7 +148,7 @@ const updateVisibleCells = function () {
             } else {
                 cellDictionary[cell][1] = updateTicks;
             }
-            visibleCells[cell] = cellDictionary[cell];
+            visibleCells[cell] = cell;
 
             if (debug) {
                 debugGraphics.lineStyle(10, 0x008800, 0.5);
@@ -155,34 +160,34 @@ const updateVisibleCells = function () {
 }
 const updateCells = function () {
     Object.keys(visibleCells).map(cell => {
-        if (visibleCells[cell][1] != updateTicks) {
-            console.log('NOT VISIBLE!', cell, visibleCells[cell].length);
-            visibleCells[cell][0] = false;
-            for (let i = settingsIndexCount; i < visibleCells[cell].length; i++) {
-                visibleCells[cell][i]._cullingVisibleCells--;
+        if (cellDictionary[cell][1] != updateTicks) {
+            console.log('NOT VISIBLE!', cell, cellDictionary[cell].length);
+            cellDictionary[cell][0] = false;
+            for (let i = settingsIndexCount; i < cellDictionary[cell].length; i++) {
+                cellDictionary[cell][i]._cullingVisibleCells--;
             }
             //was visible is now not visible any more
             console.log("CHECK VISIBILITY:");
-            setGraphicsVisible(visibleCells[cell]);
+            setGraphicsVisible(cellDictionary[cell]);
             console.log("UP HEREEEEE");
 
-            if (visibleCells[cell].length == settingsIndexCount) delete cellDictionary[cell];
+            if (cellDictionary[cell].length == settingsIndexCount) delete cellDictionary[cell];
             delete visibleCells[cell];
-        } else if (visibleCells[cell][1] == updateTicks && visibleCells[cell][0] == false) {
-            visibleCells[cell][0] = true;
+        } else if (cellDictionary[cell][1] == updateTicks && cellDictionary[cell][0] == false) {
+            cellDictionary[cell][0] = true;
             // was not visible and is now visible
-            for (let i = settingsIndexCount; i < visibleCells[cell].length; i++) {
-                visibleCells[cell][i]._cullingVisibleCells++
+            for (let i = settingsIndexCount; i < cellDictionary[cell].length; i++) {
+                cellDictionary[cell][i]._cullingVisibleCells++
             }
             console.log("2CHECK VISIBILITY:");
-            setGraphicsVisible(visibleCells[cell]);
+            setGraphicsVisible(cellDictionary[cell]);
             console.log("2UP HEREEEEE");
         }
     });
 }
 const setGraphicsVisible = function (arr) {
     for (let i = settingsIndexCount; i < arr.length; i++) {
-        if(arr[i].data && arr[i].data.refName == 'head') console.log(arr[i]._cullingVisibleCells);
+        //if(arr[i].data && arr[i].data.refName == 'head') console.log(arr[i]._cullingVisibleCells);
         arr[i].renderable = (arr[i]._cullingVisibleCells>0);
     }
 }
