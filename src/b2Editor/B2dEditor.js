@@ -1332,12 +1332,14 @@ const _B2dEditor = function () {
 				body.myTexture.y = body.GetPosition().y * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
 				// body.mySprite.x = body.GetPosition().x * this.PTM;
 				// body.mySprite.y = body.GetPosition().y * this.PTM;
+				if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
 				body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
 
 			}
 			if (body.mySprite && body.mySprite.visible) {
 				body.mySprite.x = body.GetPosition().x * this.PTM;
 				body.mySprite.y = body.GetPosition().y * this.PTM;
+				if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
 				body.mySprite.rotation = body.GetAngle();
 			}
 			i++;
@@ -4978,7 +4980,7 @@ const _B2dEditor = function () {
 
 			carveDecal.scale.x = size*0.6;
 			carveDecal.scale.y = size*0.6;
-
+			
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;
 

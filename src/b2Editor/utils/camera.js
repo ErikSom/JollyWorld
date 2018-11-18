@@ -24,22 +24,18 @@ export const set = function(pos){
     constrainCameraPosition();
 }
 export const storeCurrentPosition = function(){
-    console.log(B2dEditor.container.x, "THIS IS THE X!!!");
     storedCameraPosition = {x:B2dEditor.container.x, y:B2dEditor.container.y};
     storedZoom = B2dEditor.container.scale.x;
-    console.log(storedCameraPosition, storedZoom);
 }
 
 export const resetToStoredPosition = function(){
     if(storedZoom){
-        console.log(storedZoom);
         B2dEditor.container.scale.x = storedZoom;
         B2dEditor.container.scale.y = storedZoom;
     }else{
         storedCameraPosition.x = $(window).width()/2;
         storedCameraPosition.y = $(window).height()/2;
     }
-    console.log(storedCameraPosition);
     set(storedCameraPosition);
 }
 
