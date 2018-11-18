@@ -176,7 +176,7 @@ function Game() {
         for (var i = 0; i < Settings.emitterPool; i++) this.getEmitter('blood', null);
         for (var i = 0; i < Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
 
-        PIXICuller.init(this.myContainer);
+        PIXICuller.init(this.editor.textures);
     }
 
 
