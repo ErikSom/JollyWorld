@@ -227,8 +227,11 @@ function Game() {
         this.canvas.height = h;
         this.app.renderer.resize(w, h);
 
-        PIXICuller.renderArea.width = w;
-        PIXICuller.renderArea.height = h;
+        // PIXICuller.renderArea.width = w;
+        // PIXICuller.renderArea.height = h;
+
+        PIXICuller.renderArea.width = 400;
+        PIXICuller.renderArea.height = 400;
 
 //        this.editor.resize();
     }
