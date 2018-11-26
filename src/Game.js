@@ -99,12 +99,16 @@ function Game() {
         this.canvas.width = w;
         this.canvas.height = h;
 
+        PIXICuller.renderArea.width = w;
+        PIXICuller.renderArea.height = h;
+
         this.app = new PIXI.Application({
             view: this.canvas,
             backgroundColor: 0xD4D4D4,
             width: w,
             height: h
         });
+        this.app.stop(); // do custom render step
         this.stage = this.app.stage;
 
         LoadCoreAssets(PIXI.loader);
@@ -137,7 +141,7 @@ function Game() {
         this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
-        startAnimating();
+        this.render();
 
         this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
         this.editor.assetLists.vehicles = Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures);
@@ -223,6 +227,9 @@ function Game() {
         this.canvas.height = h;
         this.app.renderer.resize(w, h);
 
+        PIXICuller.renderArea.width = w;
+        PIXICuller.renderArea.height = h;
+
 //        this.editor.resize();
     }
 
@@ -251,6 +258,7 @@ function Game() {
 
 
     this.inputUpdate = function () {
+        if(this.character.alive){
         if (this.vehicle && this.character.attachedToVehicle) {
 
             if (Key.isDown(Key.W)) {
@@ -288,6 +296,7 @@ function Game() {
             }else if (Key.isDown(Key.D)) {
                 this.character.positionBody('right');
             }
+        }
         }
     }
 
@@ -552,18 +561,12 @@ function Game() {
 
 
 
-    var then, elapsed, now;
-    var self = this;
-
-    function startAnimating() {
-        then = window.performance.now();
-        animate();
-    }
-
-    function animate(newtime) {
-        requestAnimationFrame(animate);
+    let then, now;
+    this.render = (newtime) => {
+        if (!then) then = window.performance.now();
+        requestAnimationFrame(self.render);
         now = newtime;
-        elapsed = now - then;
+        const elapsed = now - then;
         if (elapsed > Settings.timeStep) {
             then = now - (elapsed % Settings.timeStep);
             self.update();

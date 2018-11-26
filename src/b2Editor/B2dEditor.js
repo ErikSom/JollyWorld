@@ -1830,7 +1830,6 @@ const _B2dEditor = function () {
 		for (key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
 				var lookup = this.lookupGroups[key];
-				console.log(lookup._joints);
 				allObjects = allObjects.concat(lookup._bodies, lookup._textures, lookup._joints);
 				bodies = bodies.concat(lookup._bodies);
 				textures = textures.concat(lookup._textures, lookup._joints);
@@ -2715,7 +2714,6 @@ const _B2dEditor = function () {
 				controller = controllers[i]
 
 				if (controller.humanUpdate) {
-					console.log("CHECK:", controller);
 					controller.humanUpdate = false;
 					if (controller.property == "typeName") {
 						if (this.selectedTool == this.tool_JOINTS) {
@@ -2750,9 +2748,7 @@ const _B2dEditor = function () {
 								} else if (controller.targetValue == "Rope") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_ROPE;
 								}
-								console.log(this.selectedTextures[j]);
 								if(this.selectedTextures[j].myTriggers){
-									console.log(this.selectedTextures[j].myTriggers);
 									const triggerLength = this.selectedTextures[j].myTriggers.length;
 									for(let k = 0; k<triggerLength; k++){
 										trigger.removeTargetFromTrigger(this.selectedTextures[j].myTriggers[0], this.selectedTextures[j]);
@@ -3162,7 +3158,6 @@ const _B2dEditor = function () {
 						}
 					} else if (controller.triggerActionKey != undefined) {
 						//trigger action
-						console.log("ACTION DROP DOWN");
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							if (controller.triggerActionKey == 'targetActionDropDown') {
@@ -5763,13 +5758,10 @@ const _B2dEditor = function () {
 			this.triggerObjects[i].class = new trigger.triggerCore();
 			this.triggerObjects[i].class.init(this.triggerObjects[i]);
 		}
-		console.log(this.lookupGroups);
 		this.editing = false;
 		ui.hide();
 	}
 	this.resize = function(){
-		console.log("RESIZING");
-		console.log(this.canvas);
 		this.canvas.width  = $(window).width();
 		this.canvas.height = $(window).height();
 	}

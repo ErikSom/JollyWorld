@@ -1,28 +1,55 @@
-const PIXI = require('pixi.js');
+import * as PIXI from 'pixi.js';
 
 let cellDictionary = {};
-let renderArea = {
-    x: 100,
-    y: 300,
+export var renderArea = {
+    x: 0,
+    y: 0,
     width: 400,
     height: 400
 };
-let cellSize = {
+export var cellSize = {
     x: 200,
     y: 200
 };
+export const margin = 0;
 let container;
 let updateTicks = 0;
 let debugGraphics;
 let visibleCells = {};
 const settingsIndexCount = 2;
-export let debug = true;
+let debug = false;
+let enabled = true;
+
+
+export const toggleDebug = ()=>{
+    setDebug(!debug);
+}
+export const setDebug = (bool) => {
+    debug = bool;
+    if(debugGraphics)debugGraphics.clear();
+}
+export const toggleEnabled = ()=>{
+    setEnabled(!enabled);
+}
+export const setEnabled = (bool) => {
+    if(enabled == bool) return;
+    container.children.map((child)=>{
+        child.renderable = !bool;
+        if(!bool) child._cullingCells = undefined;
+        if(debugGraphics) debugGraphics.clear();
+    })
+
+    enabled = bool;
+}
 
 export const init = function (_container) {
 
     container = _container;
 
     cellDictionary = {};
+    updateTicks = 0;
+    visibleCells = {};
+
     for (var i = 0; i < container.children.length; i++) {
         //graphic.renderable = false;
         placeGraphicInCells(container.children[i]);
@@ -34,8 +61,9 @@ export const init = function (_container) {
         _pixiContainerAddChildSuper.apply(this, child);
         for (let i = 0; i < child.length; i++) {
             //make sure graphics are drawn
-            console.log("ADD CHILD!", child[i]);
-            setTimeout(()=>{placeGraphicInCells(child[i])}, 0);
+            setTimeout(() => {
+                placeGraphicInCells(child[i])
+            }, 0);
         }
     };
     const _pixiContainerAddChildAtSuper = container.addChildAt;
@@ -43,7 +71,9 @@ export const init = function (_container) {
         _pixiContainerAddChildAtSuper.apply(this, [child, index]);
         if (child._cullingCells != undefined) return;
         //make sure graphics are drawn
-        setTimeout(()=>{placeGraphicInCells(child[i])}, 0);
+        setTimeout(() => {
+            placeGraphicInCells(child[i])
+        }, 0);
     };
     const _pixiContainerRemoveChildSuper = container.removeChild;
     container.removeChild = function removeChild(child) {
@@ -54,11 +84,11 @@ export const init = function (_container) {
         }
     };
     update();
-    console.log(cellDictionary);
 }
 
 const placeGraphicInCells = function (graphic) {
-    if(graphic == debugGraphics) return;
+    if(!enabled) return;
+    if (graphic == debugGraphics) return;
     if (!graphic.visible) return;
     if (graphic._cullingCells != undefined) {
         removeGraphicFromCells(graphic);
@@ -66,13 +96,13 @@ const placeGraphicInCells = function (graphic) {
         initGraphicForCulling(graphic);
     }
 
-    if(graphic._cullingSizeDirty) getSizeInfoForGraphic(graphic);
+    if (graphic._cullingSizeDirty) getSizeInfoForGraphic(graphic);
 
     const startX = Math.floor((graphic.x - graphic._cullingWidthExtent) / cellSize.x);
     const startY = Math.floor((graphic.y - graphic._cullingHeightExtent) / cellSize.y);
 
-    for(let i = 0; i<graphic._cullingXTiles; i++){
-        for(let j = 0; j<graphic._cullingYTiles; j++){
+    for (let i = 0; i < graphic._cullingXTiles; i++) {
+        for (let j = 0; j < graphic._cullingYTiles; j++) {
 
             const cellX = startX + i;
             const cellY = startY + j;
@@ -80,10 +110,7 @@ const placeGraphicInCells = function (graphic) {
             if (cellDictionary[cell] == undefined) cellDictionary[cell] = [false, 0];
             cellDictionary[cell].push(graphic);
 
-            if(cellDictionary[cell][0]) graphic._cullingVisibleCells++;
-
-
-            //if(graphic.data && graphic.data.refName == 'test123') console.log(cellDictionary[cell]);
+            if (cellDictionary[cell][0]) graphic._cullingVisibleCells++;
 
             graphic._cullingCells.push(cell);
         }
@@ -91,6 +118,7 @@ const placeGraphicInCells = function (graphic) {
     setGraphicsVisible([0, 0, graphic]);
 }
 const removeGraphicFromCells = function (graphic) {
+    if(!graphic._cullingCells) return;
     graphic._cullingCells.map((cell) => {
         cellDictionary[cell] = cellDictionary[cell].filter(item => item !== graphic);
         if (cellDictionary[cell].length == settingsIndexCount && !cellDictionary[cell][0]) delete cellDictionary[cell];
@@ -98,7 +126,7 @@ const removeGraphicFromCells = function (graphic) {
     graphic._cullingVisibleCells = 0;
     graphic._cullingCells = [];
 }
-const initGraphicForCulling = function(graphic){
+const initGraphicForCulling = function (graphic) {
     const _pixiContainerUpdateSuper = graphic.updateTransform;
     graphic.updateTransform = function updateTransform() {
         if (this.transform._localID != this.transform._currentLocalID) {
@@ -111,10 +139,10 @@ const initGraphicForCulling = function(graphic){
     graphic._cullingVisibleCells = 0;
     graphic._cullings = 0;
 }
-const getSizeInfoForGraphic = function(graphic){
+export const getSizeInfoForGraphic = function (graphic) {
     const bounds = graphic.getBounds();
-    graphic._cullingWidthExtent = bounds.width/2;
-    graphic._cullingHeightExtent = bounds.height/2;
+    graphic._cullingWidthExtent = bounds.width / 2;
+    graphic._cullingHeightExtent = bounds.height / 2;
     graphic._cullingXTiles = Math.ceil(bounds.width / cellSize.x);
     graphic._cullingYTiles = Math.ceil(bounds.height / cellSize.y);
     graphic._cullingSizeDirty = false;
@@ -122,8 +150,8 @@ const getSizeInfoForGraphic = function(graphic){
 
 const updateVisibleCells = function () {
     updateTicks++;
-    const global_sp = new PIXI.Point(renderArea.x, renderArea.y);
-    const global_ep = new PIXI.Point(renderArea.x + renderArea.width, renderArea.y + renderArea.height);
+    const global_sp = new PIXI.Point(renderArea.x-margin, renderArea.y-margin);
+    const global_ep = new PIXI.Point(renderArea.x + renderArea.width+margin, renderArea.y + renderArea.height+margin);
     const sp = container.toLocal(global_sp);
     const ep = container.toLocal(global_ep);
     const w = ep.x - sp.x;
@@ -163,15 +191,12 @@ const updateVisibleCells = function () {
 const updateCells = function () {
     Object.keys(visibleCells).map(cell => {
         if (cellDictionary[cell][1] != updateTicks) {
-            console.log('NOT VISIBLE!', cell, cellDictionary[cell].length);
             cellDictionary[cell][0] = false;
             for (let i = settingsIndexCount; i < cellDictionary[cell].length; i++) {
                 cellDictionary[cell][i]._cullingVisibleCells--;
             }
             //was visible is now not visible any more
-            console.log("CHECK VISIBILITY:");
             setGraphicsVisible(cellDictionary[cell]);
-            console.log("UP HEREEEEE");
 
             if (cellDictionary[cell].length == settingsIndexCount) delete cellDictionary[cell];
             delete visibleCells[cell];
@@ -181,16 +206,13 @@ const updateCells = function () {
             for (let i = settingsIndexCount; i < cellDictionary[cell].length; i++) {
                 cellDictionary[cell][i]._cullingVisibleCells++
             }
-            console.log("2CHECK VISIBILITY:");
             setGraphicsVisible(cellDictionary[cell]);
-            console.log("2UP HEREEEEE");
         }
     });
 }
 const setGraphicsVisible = function (arr) {
     for (let i = settingsIndexCount; i < arr.length; i++) {
-        //if(arr[i].data && arr[i].data.refName == 'head') console.log(arr[i]._cullingVisibleCells);
-        arr[i].renderable = (arr[i]._cullingVisibleCells>0);
+        arr[i].renderable = (arr[i]._cullingVisibleCells > 0);
     }
 }
 const drawAllCells = function () {
@@ -203,6 +225,7 @@ const drawAllCells = function () {
     });
 }
 export const update = function () {
+    if(!enabled) return;
     if (debug) {
         if (!debugGraphics) {
             debugGraphics = container;

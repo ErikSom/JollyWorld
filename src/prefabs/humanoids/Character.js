@@ -18,6 +18,7 @@ class Character extends PrefabManager.basePrefab {
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
         this.attachedToVehicle = true;
+        this.alive = true;
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -109,6 +110,7 @@ class Character extends PrefabManager.basePrefab {
                             });
                         }
                     }
+                    console.log(force);
                     if(force > 400){
                         console.log(body.mySprite.data.refName);
                         self.collisionUpdates.push({
@@ -129,12 +131,8 @@ class Character extends PrefabManager.basePrefab {
 
                 var targetBody = this.lookupObject[update.target];
                 if(targetBody){
-                    console.log(targetBody);
                     game.editor.deleteObjects([targetBody]);
-                    if(targetBody.data){
-                        console.log("THIS MTFFF *************************");
-                        console.log(targetBody);
-                    }
+                    if(targetBody == this.lookupObject['head'] || targetBody == this.lookupObject['body']) this.alive = false;
                 }
 
                 break;
