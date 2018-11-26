@@ -98,7 +98,7 @@ class Character extends PrefabManager.basePrefab {
 
                     var force = 0;
                     for (var j = 0; j < impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
-                    if (force > 100) {
+                    if (force > body.GetMass()*Settings.bashMaxForceMultiplier/3) {
                         if (body == self.lookupObject["head"]) {
                             if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
                                 type: Character.GORE_SNAP,
@@ -110,9 +110,8 @@ class Character extends PrefabManager.basePrefab {
                             });
                         }
                     }
-                    console.log(force);
-                    if(force > 400){
-                        console.log(body.mySprite.data.refName);
+
+                    if(force > body.GetMass()*Settings.bashMaxForceMultiplier){
                         self.collisionUpdates.push({
                             type: Character.GORE_BASH,
                             target: body.mySprite.data.refName,

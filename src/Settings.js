@@ -8,6 +8,7 @@ export var Settings = {
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
     emitterPool:30,
+    bashMaxForceMultiplier:100,
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,
