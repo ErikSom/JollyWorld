@@ -1842,12 +1842,13 @@ const _B2dEditor = function () {
 			}
 		}
 
-		//if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE || transformType == this.TRANSFORM_ROTATE) {
+
+		//if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE || transformType == this.TRANSFORM_ROTATE)
 		this.applyToObjects(transformType, obj, allObjects)
 		//} else {
 		//	this.applyToObjects(transformType, obj, bodies);
 		//	this.applyToObjects(transformType, obj, textures);
-		//}
+		//}//
 
 		if (transformType == this.TRANSFORM_MOVE) {
 			this.undoTransformXY = {
@@ -1943,8 +1944,8 @@ const _B2dEditor = function () {
 				} else {
 					sprite = objects[i];
 					if (transformType == this.TRANSFORM_MOVE) {
-						sprite.x = sprite.x + obj.x;
-						sprite.y = sprite.y + obj.y;
+						sprite.x += obj.x;
+						sprite.y += obj.y;
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						sprite.rotation += obj * this.DEG2RAD;
 

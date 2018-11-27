@@ -192,6 +192,7 @@ class Character extends PrefabManager.basePrefab {
         }
     }
     positionBody(direction) {
+        console.log(this.alive);
         const positions = {
             up: {
                 thigh_right: {
