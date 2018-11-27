@@ -15,7 +15,7 @@ export var Settings = {
     /*EDITOR*/
     autoSaveInterval:5000,
     availableFonts:["Lily Script One", "Karla","Squada One","Unlock","Arapey","Economica","Erica One","Trochut","Spinnaker"],
-
+    /*CULLING SETTINGS*/
 
     /*LIMITS*/
     motorSpeedLimit:20,

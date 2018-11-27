@@ -11,7 +11,7 @@ export var cellSize = {
     x: 200,
     y: 200
 };
-export const margin = 0;
+export const marginTiles = 2;
 let container;
 let updateTicks = 0;
 let debugGraphics;
@@ -98,6 +98,7 @@ const placeGraphicInCells = function (graphic) {
 
     if (graphic._cullingSizeDirty){
          getSizeInfoForGraphic(graphic);
+         //"getSizeInfoForGraphic" calls "updateTransform" which calls recursive "place"  so its ok , but this is a bit hacky
          return;
     }
 
@@ -148,21 +149,27 @@ const initGraphicForCulling = function (graphic) {
     graphic._cullings = 0;
 }
 export const getSizeInfoForGraphic = function (graphic) {
-    const bounds = graphic.getBounds();
+    const bounds = graphic.getLocalBounds();
     graphic._cullingWidthExtent = bounds.width / 2;
     graphic._cullingHeightExtent = bounds.height / 2;
     graphic._cullingXTiles = Math.ceil(bounds.width / cellSize.x);
     graphic._cullingYTiles = Math.ceil(bounds.height / cellSize.y);
     graphic._cullingSizeDirty = false;
 
-
-    console.log(bounds.width, graphic._cullingXTiles);
+    //fix to allow rotation
+    if(graphic._cullingWidthExtent > graphic._cullingHeightExtent){
+        graphic._cullingHeightExtent = graphic._cullingWidthExtent;
+        graphic._cullingYTiles = graphic._cullingXTiles;
+    }else{
+        graphic._cullingWidthExtent = graphic._cullingHeightExtent;
+        graphic._cullingXTiles = graphic._cullingYTiles;
+    }
 }
 
 const updateVisibleCells = function () {
     updateTicks++;
-    const global_sp = new PIXI.Point(renderArea.x-margin, renderArea.y-margin);
-    const global_ep = new PIXI.Point(renderArea.x + renderArea.width+margin, renderArea.y + renderArea.height+margin);
+    const global_sp = new PIXI.Point(renderArea.x, renderArea.y);
+    const global_ep = new PIXI.Point(renderArea.x + renderArea.width, renderArea.y + renderArea.height);
     const sp = container.toLocal(global_sp);
     const ep = container.toLocal(global_ep);
     const w = ep.x - sp.x;
@@ -178,8 +185,8 @@ const updateVisibleCells = function () {
     const visibileXTiles = Math.ceil(w / cellSize.x) + 1;
     const visibileYTiles = Math.ceil(h / cellSize.y) + 1;
 
-    for (let i = 0; i < visibileXTiles; i++) {
-        for (let j = 0; j < visibileYTiles; j++) {
+    for (let i = -marginTiles; i < visibileXTiles+marginTiles; i++) {
+        for (let j = -marginTiles; j < visibileYTiles+marginTiles; j++) {
             let tileX = startTileX + i;
             let tileY = startTileY + j;
             let cell = `${tileX}_${tileY}`;

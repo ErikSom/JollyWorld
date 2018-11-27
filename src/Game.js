@@ -99,8 +99,8 @@ function Game() {
         this.canvas.width = w;
         this.canvas.height = h;
 
-        PIXICuller.renderArea.width = 400;
-        PIXICuller.renderArea.height = 400;
+        PIXICuller.renderArea.width = w;
+        PIXICuller.renderArea.height = h;
 
         this.app = new PIXI.Application({
             view: this.canvas,
@@ -227,11 +227,8 @@ function Game() {
         this.canvas.height = h;
         this.app.renderer.resize(w, h);
 
-        // PIXICuller.renderArea.width = w;
-        // PIXICuller.renderArea.height = h;
-
-        PIXICuller.renderArea.width = 400;
-        PIXICuller.renderArea.height = 400;
+        PIXICuller.renderArea.width = w;
+        PIXICuller.renderArea.height = h;
 
 //        this.editor.resize();
     }
