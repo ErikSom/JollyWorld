@@ -40,12 +40,13 @@ class Character extends PrefabManager.basePrefab {
     }
     update() {
         super.update();
+
         if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_CLOSE, true)) {
-            this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
-            this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
+            if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
+            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
         } else if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_OPEN, false)) {
-            this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName);
-            this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName);
+            if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName);
+            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName);
             this.eyesTimer = -game.editor.deltaTime;
         }
 
@@ -98,7 +99,7 @@ class Character extends PrefabManager.basePrefab {
 
                     var force = 0;
                     for (var j = 0; j < impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
-                    if (force > body.GetMass()*Settings.bashMaxForceMultiplier/3) {
+                    if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {
                         if (body == self.lookupObject["head"]) {
                             if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
                                 type: Character.GORE_SNAP,
@@ -111,7 +112,7 @@ class Character extends PrefabManager.basePrefab {
                         }
                     }
 
-                    if(force > body.GetMass()*Settings.bashMaxForceMultiplier){
+                    if (force > body.GetMass() * Settings.bashMaxForceMultiplier) {
                         self.collisionUpdates.push({
                             type: Character.GORE_BASH,
                             target: body.mySprite.data.refName,
@@ -129,9 +130,9 @@ class Character extends PrefabManager.basePrefab {
             case Character.GORE_BASH:
 
                 var targetBody = this.lookupObject[update.target];
-                if(targetBody){
+                if (targetBody) {
                     game.editor.deleteObjects([targetBody]);
-                    if(targetBody == this.lookupObject['head'] || targetBody == this.lookupObject['body']) this.alive = false;
+                    if (targetBody == this.lookupObject['head'] || targetBody == this.lookupObject['body']) this.alive = false;
                 }
 
                 break;
@@ -139,7 +140,7 @@ class Character extends PrefabManager.basePrefab {
                 var targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
                     break;
-                    if(targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
+                    if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
 
                     var revoluteJointDef;
                     var joint;

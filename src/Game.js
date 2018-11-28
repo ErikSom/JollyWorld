@@ -119,6 +119,9 @@ function Game() {
         PIXI.loader.load(this.setup.bind(this));
 
         this.prepareGameFonts();
+        
+
+        console.log(Settings);
 
     };
 

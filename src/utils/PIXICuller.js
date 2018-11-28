@@ -11,7 +11,7 @@ export var cellSize = {
     x: 200,
     y: 200
 };
-export const marginTiles = 2;
+export const marginCells = 1;
 let container;
 let updateTicks = 0;
 let debugGraphics;
@@ -185,8 +185,8 @@ const updateVisibleCells = function () {
     const visibileXTiles = Math.ceil(w / cellSize.x) + 1;
     const visibileYTiles = Math.ceil(h / cellSize.y) + 1;
 
-    for (let i = -marginTiles; i < visibileXTiles+marginTiles; i++) {
-        for (let j = -marginTiles; j < visibileYTiles+marginTiles; j++) {
+    for (let i = -marginCells; i < visibileXTiles+marginCells; i++) {
+        for (let j = -marginCells; j < visibileYTiles+marginCells; j++) {
             let tileX = startTileX + i;
             let tileY = startTileY + j;
             let cell = `${tileX}_${tileY}`;
