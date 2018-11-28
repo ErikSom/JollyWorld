@@ -1,6 +1,8 @@
+const targetFPS = 60;
 export var Settings = {
     /*REFRESHRATE*/
-    timeStep:1000 / 60,
+    targetFPS,
+    timeStep:1000 / targetFPS,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
     PTM:30,

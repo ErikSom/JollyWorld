@@ -19,6 +19,7 @@ class Character extends PrefabManager.basePrefab {
         this.collisionUpdates = [];
         this.attachedToVehicle = true;
         this.alive = true;
+        this.bleedTimer = -1;
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -55,6 +56,12 @@ class Character extends PrefabManager.basePrefab {
         }
         this.collisionUpdates = [];
         this.eyesTimer += game.editor.deltaTime;
+
+
+        if(this.bleedTimer>=0){
+            if(this.bleedTimer == 0) this.alive = false;
+            this.bleedTimer--;
+        }
 
         this.processJointDamage();
     }
@@ -131,8 +138,8 @@ class Character extends PrefabManager.basePrefab {
 
                 var targetBody = this.lookupObject[update.target];
                 if (targetBody) {
+                    if (targetBody == this.lookupObject['head'] || targetBody == this.lookupObject['body'] && this.bleedTimer < 0) this.bleedTimer = 0;
                     game.editor.deleteObjects([targetBody]);
-                    if (targetBody == this.lookupObject['head'] || targetBody == this.lookupObject['body']) this.alive = false;
                 }
 
                 break;
@@ -193,6 +200,7 @@ class Character extends PrefabManager.basePrefab {
         }
     }
     positionBody(direction) {
+        console.log(this.alive);
         const positions = {
             up: {
                 thigh_right: {
@@ -364,9 +372,15 @@ class Character extends PrefabManager.basePrefab {
             if (targetPosition.hasOwnProperty(body_part)) {
 
                 let body = this.lookupObject[body_part];
+                if(!body) continue;
                 let refBody = this.lookupObject[targetPosition[body_part].reference];
+                if(!refBody) continue;
                 let refJoint = this.lookupObject[body_part + '_joint'];
                 if (!refJoint) continue;
+
+                if(targetPosition[body_part].reference != 'body' && !this.lookupObject[targetPosition[body_part].reference + '_joint']) continue;
+
+
                 let desiredAngle = refBody.GetAngle() - targetPosition[body_part].angle * game.editor.DEG2RAD;
                 const positioningSpeed = 10.0;
                 let nextAngle = body.GetAngle() + body.GetAngularVelocity() / positioningSpeed;

@@ -17,7 +17,7 @@ let updateTicks = 0;
 let debugGraphics;
 let visibleCells = {};
 const settingsIndexCount = 2;
-let debug = true;
+let debug = false;
 let enabled = true;
 
 
