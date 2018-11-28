@@ -137,19 +137,19 @@ class Character extends PrefabManager.basePrefab {
 
                 break;
             case Character.GORE_SNAP:
-                var targetJoint = this.lookupObject[update.target + "_joint"];
+                const targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
-                    break;
+
                     if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
 
-                    var revoluteJointDef;
-                    var joint;
+                    let revoluteJointDef;
+                    let joint;
 
-                    var vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain",' + (game.editor.prefabCounter++) + ']]}'
+                    let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain",' + (game.editor.prefabCounter++) + ']]}'
 
-                    var vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
+                    let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
-                    var vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
+                    let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
 
                     revoluteJointDef = new Box2D.b2RevoluteJointDef;
                     revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
@@ -161,7 +161,7 @@ class Character extends PrefabManager.basePrefab {
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
-                    var ropeJointDef;
+                    let ropeJointDef;
 
                     ropeJointDef = new Box2D.b2RopeJointDef;
                     ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
@@ -180,9 +180,9 @@ class Character extends PrefabManager.basePrefab {
                     delete this.lookupObject[update.target + "_joint"];
 
                     //fix display positions:
-                    var swapBodies = vainBodies._bodies.concat().reverse();
-                    var tarSprite;
-                    var tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
+                    const swapBodies = vainBodies._bodies.concat().reverse();
+                    let tarSprite;
+                    const tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
                     for (var i = 0; i < swapBodies.length; i++) {
                         tarSprite = swapBodies[i].mySprite;
                         tarSprite.parent.removeChild(tarSprite);
@@ -193,7 +193,6 @@ class Character extends PrefabManager.basePrefab {
         }
     }
     positionBody(direction) {
-        console.log(this.alive);
         const positions = {
             up: {
                 thigh_right: {

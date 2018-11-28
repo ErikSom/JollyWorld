@@ -32,7 +32,7 @@
     "pixi-filters": "^2.6.1",
     "pixi-particles": "^3.0.0",
     "pixi-spine": "^1.5.13",
-    "pixi.js": "^4.8.1",
+    "pixi.js": "4.8.2",
     "stats.js": "^0.17.0",
     "style-loader": "^0.20.1",
     "url-loader": "^0.6.2",

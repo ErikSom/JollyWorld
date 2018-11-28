@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.9.2/libexec/bin/yarn.js upgrade pixi.js@v4.8.2
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.9.2/libexec/bin/yarn.js
 
 PATH: 
   /Users/eriksombroek/google-cloud-sdk/bin:/Users/eriksombroek/bin:/usr/local/bin:/Users/eriksombroek/.local/bin:/usr/local/share/npm/bin//usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin

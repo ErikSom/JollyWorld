@@ -510,9 +510,9 @@ var pixi_heaven;
             MultiTextureSpriteRenderer.prototype.onContextChange = function () {
                 var gl = this.renderer.gl;
                 this.genShader();
-                this.renderer.bindVao(null);
                 this.indexBuffer = GLBuffer.createIndexBuffer(gl, this.indices, gl.STATIC_DRAW);
                 for (var i = 0; i < this.vaoMax; i++) {
+                    this.renderer.bindVao(null);
                     var vertexBuffer = this.vertexBuffers[i] = GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
                     this.vaos[i] = this.createVao(vertexBuffer);
                     this.indexBuffers[i] = GLBuffer.createIndexBuffer(gl, null, gl.STREAM_DRAW);
@@ -585,6 +585,7 @@ var pixi_heaven;
                 var gl = renderer.gl;
                 if (this.vaoMax <= this.vertexCount) {
                     this.vaoMax++;
+                    renderer.bindVao(null);
                     var vertexBuffer = this.vertexBuffers[this.vertexCount] = GLBuffer.createVertexBuffer(gl, null, gl.STREAM_DRAW);
                     this.vaos[this.vertexCount] = this.createVao(vertexBuffer);
                     this.indexBuffers[this.vertexCount] = GLBuffer.createIndexBuffer(gl, null, gl.STREAM_DRAW);
@@ -2925,7 +2926,6 @@ var pixi_heaven;
 (function (pixi_heaven) {
     var webgl;
     (function (webgl) {
-        var MultiTextureSpriteRenderer = pixi_heaven.webgl.MultiTextureSpriteRenderer;
         var premultiplyBlendMode = PIXI.utils.premultiplyBlendMode;
         var tempArray = new Float32Array([0, 0, 0, 0]);
         var SpriteMaskedRenderer = (function (_super) {
@@ -3131,7 +3131,7 @@ var pixi_heaven;
                 this.shader = webgl.generateMultiTextureShader(this.shaderVert, this.shaderFrag, gl, this.MAX_TEXTURES);
             };
             return SpriteMaskedRenderer;
-        }(MultiTextureSpriteRenderer));
+        }(webgl.MultiTextureSpriteRenderer));
         PIXI.WebGLRenderer.registerPlugin('spriteMasked', SpriteMaskedRenderer);
     })(webgl = pixi_heaven.webgl || (pixi_heaven.webgl = {}));
 })(pixi_heaven || (pixi_heaven = {}));
