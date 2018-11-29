@@ -59,7 +59,10 @@ class Character extends PrefabManager.basePrefab {
 
 
         if(this.bleedTimer>=0){
-            if(this.bleedTimer == 0) this.alive = false;
+            if(this.bleedTimer == 0){
+                 this.alive = false;
+                 game.lose();
+            }
             this.bleedTimer--;
         }
 

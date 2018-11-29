@@ -10,6 +10,7 @@ let levelItemHolder;
 let levelItemElement;
 
 let mainMenu;
+let gameOver;
 
 function UIManager() {
 
@@ -36,12 +37,50 @@ function UIManager() {
             game.openEditor();
         });
         mainMenu.appendChild(button);
+
+        this.showGameOver();
     }
 
     this.hideMainMenu = function(){
         mainMenu.style.display = "none";
     }
 
+    this.showGameOver = function(){
+        if(!gameOver){
+            gameOver = document.createElement('div');
+            gameOver.setAttribute('id', 'gameOverScreen');
+            document.body.appendChild(gameOver);
+
+            let textGroup = document.createElement('div');
+            textGroup.setAttribute('class', 'textGroup');
+            gameOver.appendChild(textGroup);
+
+            let text = document.createElement('div');
+            text.setAttribute('class', 'gameOverText');
+            text.innerHTML = 'You are dead';
+            textGroup.appendChild(text);
+
+            text = document.createElement('div');
+            text.setAttribute('class', 'spaceRestartText');
+            text.innerHTML = 'Press space to restart';
+            textGroup.appendChild(text);
+
+            let buttonGroup = document.createElement('div');
+            buttonGroup.setAttribute('class', 'buttonGroup');
+            gameOver.appendChild(buttonGroup);
+
+            let button = document.createElement('div');
+            button.setAttribute('class', 'headerButton restart buttonOverlay dark');
+            button.innerHTML = "RESTART";
+            buttonGroup.appendChild(button);
+
+            button = document.createElement('div');
+            button.setAttribute('class', 'headerButton exit buttonOverlay dark');
+            button.innerHTML = "EXIT";
+            buttonGroup.appendChild(button);
+        }
+        gameOver.style.display = 'block';
+    }
 
 
 
@@ -62,7 +101,7 @@ function UIManager() {
 
 
 
-    
+
 
     // LEGACY STUFF, HAS TO BE DELETED AT SOME POINT BUT CAN BORROW CODE
 

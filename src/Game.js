@@ -82,6 +82,7 @@ function Game() {
 
     this.levelStartTime = 0;
     this.levelWon = false;
+    this.gameOver = false;
 
     this.init = function () {
 
@@ -119,7 +120,6 @@ function Game() {
         PIXI.loader.load(this.setup.bind(this));
 
         this.prepareGameFonts();
-        
 
         console.log(Settings);
 
@@ -406,14 +406,20 @@ function Game() {
         return false;
     }
     this.win = function(){
-        this.levelWon = true;
-        var ms = moment(Date.now()).diff(moment(this.levelStartTime));
-        var d = moment.duration(ms);
-        var s = Math.floor(d.asMinutes()) + moment.utc(ms).format(":ss:SSS");
+        if(!levelWon){
+            this.levelWon = true;
+            var ms = moment(Date.now()).diff(moment(this.levelStartTime));
+            var d = moment.duration(ms);
+            var s = Math.floor(d.asMinutes()) + moment.utc(ms).format(":ss:SSS");
 
-        alert(`You Won! Time:${s}!`)
-
-
+            alert(`You Won! Time:${s}!`)
+        }
+    }
+    this.lose = function(){
+        if(!gameOver){
+            ui.showGameOver();
+            this.gameOver = true;
+        }
     }
     this.loadUserLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
