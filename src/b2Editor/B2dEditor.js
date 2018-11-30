@@ -4955,6 +4955,7 @@ const _B2dEditor = function () {
 	}
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size) {
 		if(!size) size = 1;
+		// size = 1;
 		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
 
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);

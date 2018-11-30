@@ -109,6 +109,7 @@ function Game() {
             width: w,
             height: h
         });
+        console.log(this.app, w, h);
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
 
@@ -379,7 +380,8 @@ function Game() {
     }
     this.newLevel = function () {
         let data = {
-            json: '{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "Bike", 0]]}',
+            // json: '{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "Bike", 0]]}',
+            json:'{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "NoVehicle", 0],[0,3.2198462069382052,9.742479938873139,0,"","",0,"#999999","#000",1,true,true,[{"x":28.025340458012565,"y":-4.079428256018396},{"x":28.42333345859972,"y":3.0844457545504937},{"x":-28.75499429242236,"y":4.411089089841031},{"x":-27.693679624189933,"y":-3.416106588373129}],1,0,null,"",1],[0,0.6304543486278682,-21.60062163015157,0,"","",1,"#999999","#000",1,false,true,[{"x":0,"y":0},{"x":0,"y":0}],10,0,80.76766779274121,"",1]]}',
             title: '',
             description: '',
             background: '#FFFFFF',
@@ -406,7 +408,7 @@ function Game() {
         return false;
     }
     this.win = function(){
-        if(!levelWon){
+        if(!this.levelWon){
             this.levelWon = true;
             var ms = moment(Date.now()).diff(moment(this.levelStartTime));
             var d = moment.duration(ms);
@@ -416,7 +418,7 @@ function Game() {
         }
     }
     this.lose = function(){
-        if(!gameOver){
+        if(!this.gameOver){
             ui.showGameOver();
             this.gameOver = true;
         }

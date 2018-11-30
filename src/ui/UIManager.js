@@ -38,7 +38,7 @@ function UIManager() {
         });
         mainMenu.appendChild(button);
 
-        this.showGameOver();
+        //this.showGameOver();
     }
 
     this.hideMainMenu = function(){
