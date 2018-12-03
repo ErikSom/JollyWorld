@@ -1023,7 +1023,7 @@ const _B2dEditor = function () {
 				}else{
 					var jointEdge = b.GetJointList();
 					while (jointEdge) {
-						arr.push(jointEdge.joint);
+						if(jointEdge.joint.spriteData) arr.push(jointEdge.joint);
 						jointEdge = jointEdge.next;
 					}
 
@@ -3901,6 +3901,7 @@ const _B2dEditor = function () {
 		if (createdPrefabObject) createdPrefabObject.class = new PrefabManager.prefabLibrary[className].class(createdPrefabObject);
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
+		if(!data) return;
 		var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 		var arr = (group == "") ? [] : groupNoSpaces.split(",");
 		var subGroups = [];
