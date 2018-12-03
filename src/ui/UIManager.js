@@ -74,10 +74,18 @@ function UIManager() {
             button.innerHTML = "RESTART";
             buttonGroup.appendChild(button);
 
+            $(button).click(()=>{
+                game.resetWorld();
+            });
+
             button = document.createElement('div');
             button.setAttribute('class', 'headerButton exit buttonOverlay dark');
             button.innerHTML = "EXIT";
             buttonGroup.appendChild(button);
+
+            $(button).click(()=>{
+                game.openMainMenu();
+            });
         }
         gameOver.style.display = 'block';
     }

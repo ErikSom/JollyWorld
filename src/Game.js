@@ -162,10 +162,7 @@ function Game() {
 
         this.editor.contactCallBackListener = this.gameContactListener;
 
-        this.initLevel(levelsData.mainMenuLevel);
-        ui.buildMainMenu();
-
-        this.runWorld();
+        this.openMainMenu();
 
         this.canvas.addEventListener("keydown", this.onKeyDown.bind(this), true);
         this.canvas.addEventListener("keyup", this.onKeyUp.bind(this), true);
@@ -332,6 +329,13 @@ function Game() {
         }
         Key.onKeyup(e);
     }
+    this.openMainMenu = function(){
+        //if(this.run) this.stopWorld();
+        this.initLevel(levelsData.mainMenuLevel);
+        ui.buildMainMenu();
+        ui.hideGameOverMenu();
+        this.runWorld();
+    }
     this.runWorld = function () {
         this.editor.runWorld();
         this.run = true;
@@ -352,8 +356,10 @@ function Game() {
         this.editor.buildJSON(worldJSON);
     }
     this.resetWorld = function(){
-        this.stopTestingWorld();
-        if(this.gameState == this.GAMESTATE_EDITOR) this.testWorld();
+        if(this.gameState == this.GAMESTATE_EDITOR){
+            this.stopTestingWorld();
+            this.testWorld();
+        }
     }
     this.testWorldAndSaveData = function () {
         this.testWorld();
