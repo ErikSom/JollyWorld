@@ -199,10 +199,6 @@ class Character extends PrefabManager.basePrefab {
 
                     //carve bodies
 
-                    if(targetJoint.GetBodyA().myTexture.parent == null || targetJoint.GetBodyA().myTexture.parent == null){
-                        debugger;
-                    }
-
                     if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
                     if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
 

@@ -4968,7 +4968,6 @@ const _B2dEditor = function () {
 		if(!size) size = 1;
 		// size = 1;
 		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
-		debugger;
 
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
