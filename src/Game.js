@@ -63,7 +63,7 @@ function Game() {
     this.selectedBody
     this.mouseJoint;
     this.run = false;
-    this.play = false; // for play mode (not testing)
+    this.gameState = false;
 
     this.playerPrefabObject;
     this.character;
@@ -123,6 +123,7 @@ function Game() {
         this.prepareGameFonts();
 
         console.log(Settings);
+        this.gameState = this.GAMESTATE_MENU;
 
     };
 
@@ -223,7 +224,7 @@ function Game() {
         this.editor.onMouseMove(e);
     };
 
-    this.handleResize = function(e){
+    this.handleResize = function (e) {
         const w = $(window).width();
         const h = $(window).height();
 
@@ -234,7 +235,7 @@ function Game() {
         PIXICuller.renderArea.width = w;
         PIXICuller.renderArea.height = h;
 
-//        this.editor.resize();
+        //        this.editor.resize();
     }
 
     this.getBodyAtMouse = function () {
@@ -262,62 +263,66 @@ function Game() {
 
 
     this.inputUpdate = function () {
-        if(this.character.alive){
-        if (this.vehicle && this.character.attachedToVehicle) {
+        if (this.character.alive) {
+            if (this.vehicle && this.character.attachedToVehicle) {
 
-            if (Key.isDown(Key.W)) {
-                this.vehicle.accelerate(1);
-            };
-            if (Key.isDown(Key.S)) {
-                this.vehicle.accelerate(-1);
-            };
-            if (!Key.isDown(Key.W) && !Key.isDown(Key.S)) {
-                this.vehicle.stopAccelerate();
-            };
+                if (Key.isDown(Key.W)) {
+                    this.vehicle.accelerate(1);
+                };
+                if (Key.isDown(Key.S)) {
+                    this.vehicle.accelerate(-1);
+                };
+                if (!Key.isDown(Key.W) && !Key.isDown(Key.S)) {
+                    this.vehicle.stopAccelerate();
+                };
 
-            if (Key.isDown(Key.A)) {
-                this.vehicle.lean(-1);
+                if (Key.isDown(Key.A)) {
+                    this.vehicle.lean(-1);
+                }
+                if (Key.isDown(Key.D)) {
+                    this.vehicle.lean(1);
+                }
+                if (Key.isPressed(Key.Z)) {
+                    this.character.detachFromVehicle();
+                };
+            } else if (this.character && !this.character.attachedToVehicle) {
+                if (Key.isDown(Key.W)) {
+                    this.character.positionBody('up');
+                    if (Key.isDown(Key.A)) this.character.lean(-1);
+                    else if (Key.isDown(Key.D)) this.character.lean(1);
+                } else if (Key.isDown(Key.S)) {
+                    this.character.positionBody('down');
+                    if (Key.isDown(Key.A)) this.character.lean(-1);
+                    else if (Key.isDown(Key.D)) this.character.lean(1);
+                } else if (Key.isPressed(Key.A)) {
+                    this.character.positionBody('set-random');
+                } else if (Key.isDown(Key.A)) {
+                    this.character.positionBody('random');
+                } else if (Key.isDown(Key.D)) {
+                    this.character.positionBody('right');
+                }
             }
-            if (Key.isDown(Key.D)) {
-                this.vehicle.lean(1);
-            }
-            if (Key.isPressed(Key.Z)) {
-                this.character.detachFromVehicle();
-            };
-        }else if(this.character && !this.character.attachedToVehicle){
-            if (Key.isDown(Key.W)) {
-                this.character.positionBody('up');
-                if(Key.isDown(Key.A)) this.character.lean(-1);
-                else if(Key.isDown(Key.D)) this.character.lean(1);
-            }else if (Key.isDown(Key.S)) {
-                this.character.positionBody('down');
-                if(Key.isDown(Key.A)) this.character.lean(-1);
-                else if(Key.isDown(Key.D)) this.character.lean(1);
-            }else if(Key.isPressed(Key.A)){
-                this.character.positionBody('set-random');
-            }else if (Key.isDown(Key.A)) {
-                this.character.positionBody('random');
-            }else if (Key.isDown(Key.D)) {
-                this.character.positionBody('right');
-            }
-        }
         }
     }
 
     this.onKeyDown = function (e) {
-        if (e.keyCode == 82) { //r
-            this.stopWorld();
-            var worldJSON = JSON.parse(this.editor.worldJSON);
-            if (e.shiftKey) this.editor.breakPrefabs = true;
-            this.editor.buildJSON(worldJSON);
-
-        } else if (e.keyCode == 80) { //p
-            if (this.editor.editing) {
-                this.testWorld();
+        if (e.keyCode == 84) { //t
+            if (this.gameState == this.GAMESTATE_EDITOR) {
+                if (this.run) {
+                    if (e.shiftKey) this.editor.breakPrefabs = true; //TODO: REMOVE
+                    this.stopTestingWorld(e);
+                } else {
+                    this.testWorld();
+                }
+            }
+        }
+        if(e.keyCode == 32){ //space
+            if(this.gameOver && this.run){
+                this.resetWorld();
             }
         }
         Key.onKeydown(e);
-        if (!this.run) this.editor.onKeyDown(e);
+        if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
     }
     this.onKeyUp = function (e) {
         this.editor.onKeyUp(e);
@@ -327,7 +332,7 @@ function Game() {
         }
         Key.onKeyup(e);
     }
-    this.runWorld = function(){
+    this.runWorld = function () {
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
@@ -341,6 +346,15 @@ function Game() {
         this.stopAutoSave();
         this.levelStartTime = Date.now();
     }
+    this.stopTestingWorld = function(){
+        this.stopWorld();
+        var worldJSON = JSON.parse(this.editor.worldJSON);
+        this.editor.buildJSON(worldJSON);
+    }
+    this.resetWorld = function(){
+        this.stopTestingWorld();
+        if(this.gameState == this.GAMESTATE_EDITOR) this.testWorld();
+    }
     this.testWorldAndSaveData = function () {
         this.testWorld();
         SaveManager.saveTempEditorWorld(this.currentLevelData);
@@ -350,9 +364,12 @@ function Game() {
         this.editor.resetEditor();
         this.run = false;
         this.levelWon = false;
+        this.gameOver = false;
+        ui.hideGameOverMenu();
         this.doAutoSave();
     }
     this.openEditor = function () {
+        this.gameState = this.GAMESTATE_EDITOR;
         this.stopWorld();
         this.initLevel(SaveManager.getTempEditorWorld());
         this.doAutoSave();
@@ -381,7 +398,7 @@ function Game() {
     this.newLevel = function () {
         let data = {
             // json: '{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "Bike", 0]]}',
-            json:'{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "NoVehicle", 0],[0,3.2198462069382052,9.742479938873139,0,"","",0,"#999999","#000",1,true,true,[{"x":28.025340458012565,"y":-4.079428256018396},{"x":28.42333345859972,"y":3.0844457545504937},{"x":-28.75499429242236,"y":4.411089089841031},{"x":-27.693679624189933,"y":-3.416106588373129}],1,0,null,"",1],[0,0.6304543486278682,-21.60062163015157,0,"","",1,"#999999","#000",1,false,true,[{"x":0,"y":0},{"x":0,"y":0}],10,0,80.76766779274121,"",1]]}',
+            json: '{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "NoVehicle", 0],[0,3.2198462069382052,9.742479938873139,0,"","",0,"#999999","#000",1,true,true,[{"x":28.025340458012565,"y":-4.079428256018396},{"x":28.42333345859972,"y":3.0844457545504937},{"x":-28.75499429242236,"y":4.411089089841031},{"x":-27.693679624189933,"y":-3.416106588373129}],1,0,null,"",1],[0,0.6304543486278682,-21.60062163015157,0,"","",1,"#999999","#000",1,false,true,[{"x":0,"y":0},{"x":0,"y":0}],10,0,80.76766779274121,"",1]]}',
             title: '',
             description: '',
             background: '#FFFFFF',
@@ -407,8 +424,8 @@ function Game() {
         if (game.currentLevelData.json != game.editor.stringifyWorldJSON()) return true;
         return false;
     }
-    this.win = function(){
-        if(!this.levelWon){
+    this.win = function () {
+        if (!this.levelWon) {
             this.levelWon = true;
             var ms = moment(Date.now()).diff(moment(this.levelStartTime));
             var d = moment.duration(ms);
@@ -417,8 +434,8 @@ function Game() {
             alert(`You Won! Time:${s}!`)
         }
     }
-    this.lose = function(){
-        if(!this.gameOver){
+    this.lose = function () {
+        if (!this.gameOver) {
             ui.showGameOver();
             this.gameOver = true;
         }
@@ -613,10 +630,10 @@ function Game() {
         Key.update();
     };
 
-    this.prepareGameFonts = function(){
+    this.prepareGameFonts = function () {
         const container = document.createElement('div');
         document.body.appendChild(container);
-        for(let i = 0; i<Settings.availableFonts.length; i++){
+        for (let i = 0; i < Settings.availableFonts.length; i++) {
             const el = document.createElement('p');
             el.style.fontFamily = Settings.availableFonts[i];
             el.style.fontSize = "0px";
@@ -624,8 +641,16 @@ function Game() {
             el.innerHTML = '.';
             container.appendChild(el);
         }
-        setTimeout(()=>{container.remove()}, 5000);
+        // setTimeout(() => {
+        //     container.remove()
+        // }, 5000);
     }
+
+    this.GAMESTATE_MENU = 'menu';
+    this.GAMESTATE_EDITOR = 'editor';
+    this.GAMESTATE_NORMALPLAY = 'play';
 }
 export var game = new Game();
-setTimeout(()=>{game.init();}, 1); // guarantee all context is loaded and fix webpack order issue
+setTimeout(() => {
+    game.init();
+}, 1); // guarantee all context is loaded and fix webpack order issue

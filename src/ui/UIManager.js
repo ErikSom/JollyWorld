@@ -81,6 +81,11 @@ function UIManager() {
         }
         gameOver.style.display = 'block';
     }
+    this.hideGameOverMenu = function(){
+        if(gameOver && gameOver.style.display == 'block'){
+            gameOver.style.display = 'none';
+        }
+    }
 
 
 

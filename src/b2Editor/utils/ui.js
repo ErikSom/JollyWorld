@@ -102,6 +102,10 @@ export const showHeaderBar = function () {
     button.innerHTML = "TEST";
     headerBar.appendChild(button);
 
+    $(button).on('click', ()=> {
+        game.testWorld();
+    });
+
     let self = this;
 
     let saveButton = document.createElement('div');

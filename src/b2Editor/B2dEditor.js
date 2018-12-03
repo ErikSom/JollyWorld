@@ -1005,6 +1005,7 @@ const _B2dEditor = function () {
 					baseTexture: false
 				});
 				b.mySprite = null;
+
 				if (b.myJoints != undefined) {
 					var j;
 					var myJoint;
@@ -1019,6 +1020,13 @@ const _B2dEditor = function () {
 						}
 						if (!alreadySelected) arr.push(myJoint);
 					}
+				}else{
+					var jointEdge = b.GetJointList();
+					while (jointEdge) {
+						arr.push(jointEdge.joint);
+						jointEdge = jointEdge.next;
+					}
+
 				}
 				if (b.myTexture) {
 					var sprite = b.myTexture;
@@ -2241,7 +2249,7 @@ const _B2dEditor = function () {
 		} else if (e.keyCode == 83) { //s
 			this.stringifyWorldJSON();
 		} else if (e.keyCode == 84) { //t
-			this.selectTool(this.tool_CAMERA);
+			//this.selectTool(this.tool_CAMERA);
 		} else if (e.keyCode == 86) { // v
 			if (e.ctrlKey || e.metaKey) {
 				this.pasteSelection();
@@ -4938,7 +4946,7 @@ const _B2dEditor = function () {
 			graphics.drawRect(0, 0, drawGraphic.width, drawGraphic.height);
 
 			body.myMaskRT = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
-			game.app.renderer.render(graphics, body.myMaskRT, false);
+			game.app.renderer.render(graphics, body.myMaskRT, true);
 			game.app.renderer.render(drawGraphic, body.myMaskRT, false);
 			body.myMask = new PIXI.heaven.Sprite(body.myMaskRT);
 			body.myMask.renderable = false;
@@ -4951,12 +4959,16 @@ const _B2dEditor = function () {
 			body.myDecalSprite.pluginName = 'spriteMasked';
 
 			body.myTexture.addChild(body.myMask);
+
+			body.myTexture.originalSprite.pluginName = 'spriteMasked';
+			body.myTexture.originalSprite.maskSprite = body.myMask;
 		}
 	}
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size) {
 		if(!size) size = 1;
 		// size = 1;
 		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
+		debugger;
 
 		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 
@@ -4990,8 +5002,7 @@ const _B2dEditor = function () {
 
 			game.app.renderer.render(carveDecal, body.myMaskRT, false);
 
-			body.myTexture.originalSprite.pluginName = 'spriteMasked';
-			body.myTexture.originalSprite.maskSprite = body.myMask;
+
 		}
 	}
 	this.updateBodyShapes = function (body) {

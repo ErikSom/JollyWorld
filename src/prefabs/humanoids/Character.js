@@ -44,17 +44,19 @@ class Character extends PrefabManager.basePrefab {
 
         if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_CLOSE, true)) {
             if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
-            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
+            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName.replace("0000", "_Closed0000"));
         } else if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_OPEN, false)) {
             if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName);
             if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName);
             this.eyesTimer = -game.editor.deltaTime;
         }
 
-        for (var i = 0; i < this.collisionUpdates.length; i++) {
-            this.doCollisionUpdate(this.collisionUpdates[i]);
+        this.processJointDamage();
+
+        if(this.collisionUpdates.length>0){
+            this.doCollisionUpdate(this.collisionUpdates[0]);
+            this.collisionUpdates.shift();
         }
-        this.collisionUpdates = [];
         this.eyesTimer += game.editor.deltaTime;
 
 
@@ -66,10 +68,9 @@ class Character extends PrefabManager.basePrefab {
             this.bleedTimer--;
         }
 
-        this.processJointDamage();
     }
     processJointDamage() {
-        var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint', 'head_joint', 'belly_joint', 'arm_left_joint', , 'arm_right_joint'];
+        var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint', 'head_joint', 'belly_joint', 'arm_left_joint', 'arm_right_joint'];
         var maxForce = [1000000, 1000000, 14000000, 3000000, 800000, 800000];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
@@ -109,20 +110,21 @@ class Character extends PrefabManager.basePrefab {
 
                     var force = 0;
                     for (var j = 0; j < impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
+
                     if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {
                         if (body == self.lookupObject["head"]) {
-                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                                type: Character.GORE_SNAP,
-                                target: "eye_right"
-                            });
-                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                                type: Character.GORE_SNAP,
-                                target: "eye_left"
-                            });
+                            // if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                            //     type: Character.GORE_SNAP,
+                            //     target: "eye_right"
+                            // });
+                            // if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                            //     type: Character.GORE_SNAP,
+                            //     target: "eye_left"
+                            // });
                         }
                     }
 
-                    if (force > body.GetMass() * Settings.bashMaxForceMultiplier) {
+                    if (body.mySprite.data.refName != "" && force > body.GetMass() * Settings.bashMaxForceMultiplier) {
                         self.collisionUpdates.push({
                             type: Character.GORE_BASH,
                             target: body.mySprite.data.refName,
@@ -136,17 +138,32 @@ class Character extends PrefabManager.basePrefab {
     }
 
     doCollisionUpdate(update) {
+        var bodyParts = "";
+        this.collisionUpdates.map((col) => {
+            bodyParts += col.target +':'+col.type+'|';
+        })
         switch (update.type) {
             case Character.GORE_BASH:
 
                 var targetBody = this.lookupObject[update.target];
                 if (targetBody) {
                     if (targetBody == this.lookupObject['head'] || targetBody == this.lookupObject['body'] && this.bleedTimer < 0) this.bleedTimer = 0;
+
+
+                    for(var i=1; i<this.collisionUpdates.length; i++){
+                        if(this.collisionUpdates[i].target === update.target){
+                            this.collisionUpdates.splice(i, 1);
+                            i--;
+                        }
+                    }
+
                     game.editor.deleteObjects([targetBody]);
+
                 }
 
                 break;
             case Character.GORE_SNAP:
+
                 const targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
 
@@ -182,6 +199,10 @@ class Character extends PrefabManager.basePrefab {
 
                     //carve bodies
 
+                    if(targetJoint.GetBodyA().myTexture.parent == null || targetJoint.GetBodyA().myTexture.parent == null){
+                        debugger;
+                    }
+
                     if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
                     if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
 
@@ -203,7 +224,6 @@ class Character extends PrefabManager.basePrefab {
         }
     }
     positionBody(direction) {
-        console.log(this.alive);
         const positions = {
             up: {
                 thigh_right: {
