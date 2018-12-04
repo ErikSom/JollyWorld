@@ -1,0 +1,35 @@
+{"frames": {
+
+"pinImage":
+{
+	"frame": {"x":1,"y":1,"w":50,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
+	"sourceSize": {"w":50,"h":50}
+},
+"pinJoint":
+{
+	"frame": {"x":52,"y":1,"w":50,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
+	"sourceSize": {"w":50,"h":50}
+},
+"slidingJoint":
+{
+	"frame": {"x":1,"y":52,"w":50,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
+	"sourceSize": {"w":50,"h":50}
+}},
+"meta": {
+	"app": "Adobe Flash CS6",
+	"version": "12.0.2.529",
+	"image": "iconSet.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":128},
+	"scale": "1"
+}
+}
