@@ -133,7 +133,7 @@ const removeGraphicFromCells = function (graphic) {
     graphic._cullingCells = [];
 }
 const initGraphicForCulling = function (graphic) {
-    if(!graphic.transform._currentLocalID) return;
+    if(!graphic || !graphic.transform) return;
     graphic._cullingTransformID = graphic.transform._currentLocalID;
     const _pixiContainerUpdateSuper = graphic.updateTransform;
     graphic.updateTransform = function updateTransform() {

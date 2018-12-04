@@ -5,18 +5,22 @@ import {
     game
 } from '../Game';
 import $ from 'jquery';
+import * as dat from '../../libs/dat.gui';
+import * as uiHelper  from '../b2Editor/utils/uiHelper';
+
 
 let levelItemHolder;
 let levelItemElement;
 
 let mainMenu;
 let gameOver;
+let levelLoader;
 
 function UIManager() {
 
     var self = this;
 
-    this.buildMainMenu = function(){
+    this.buildMainMenu = function () {
         mainMenu = document.createElement('div');
         mainMenu.setAttribute('id', 'mainMenu')
         document.body.appendChild(mainMenu);
@@ -27,26 +31,30 @@ function UIManager() {
         button.innerHTML = 'Play';
         mainMenu.appendChild(button);
 
+        button.addEventListener("click", () => {
+            self.hideMainMenu();
+            this.showLevelLoader();
+        });
+
         button = document.createElement('div');
         button.setAttribute('id', 'editorButton')
         button.classList.add('menuButton');
         button.innerHTML = 'Editor';
 
-        button.addEventListener("click", ()=>{
+        button.addEventListener("click", () => {
             self.hideMainMenu();
             game.openEditor();
         });
         mainMenu.appendChild(button);
 
-        //this.showGameOver();
     }
 
-    this.hideMainMenu = function(){
+    this.hideMainMenu = function () {
         mainMenu.style.display = "none";
     }
 
-    this.showGameOver = function(){
-        if(!gameOver){
+    this.showGameOver = function () {
+        if (!gameOver) {
             gameOver = document.createElement('div');
             gameOver.setAttribute('id', 'gameOverScreen');
             document.body.appendChild(gameOver);
@@ -74,7 +82,7 @@ function UIManager() {
             button.innerHTML = "RESTART";
             buttonGroup.appendChild(button);
 
-            $(button).click(()=>{
+            $(button).click(() => {
                 game.resetWorld();
             });
 
@@ -83,15 +91,215 @@ function UIManager() {
             button.innerHTML = "EXIT";
             buttonGroup.appendChild(button);
 
-            $(button).click(()=>{
+            $(button).click(() => {
                 game.openMainMenu();
             });
         }
         gameOver.style.display = 'block';
     }
-    this.hideGameOverMenu = function(){
-        if(gameOver && gameOver.style.display == 'block'){
+    this.hideGameOverMenu = function () {
+        if (gameOver && gameOver.style.display == 'block') {
             gameOver.style.display = 'none';
+        }
+    }
+    this.showLevelLoader = function () {
+
+
+        if (!levelLoader) {
+            const loginGUIWidth = 400;
+
+            levelLoader = new dat.GUI({
+                autoPlace: false,
+                width: loginGUIWidth
+            });
+            levelLoader.domElement.setAttribute('id', 'levelLoader');
+
+            let folder = levelLoader.addFolder('Load Screen');
+            folder.domElement.classList.add('custom');
+            folder.domElement.style.textAlign = 'center';
+
+            folder.open();
+
+
+            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+
+            let span = document.createElement('span');
+            span.innerText = 'LOAD';
+            targetDomElement.appendChild(span);
+            span.style.fontSize = '20px';
+            span.style.marginTop = '20px';
+            span.style.display = 'inline-block';
+
+            let divWrapper = document.createElement('div');
+            divWrapper.style.padding = '0px 10px';
+
+            //fill here
+            var filterBar = document.createElement('div');
+            filterBar.setAttribute('class', 'filterBar');
+
+            var levelNameFilter = document.createElement('div');
+            levelNameFilter.setAttribute('class', 'levelNameFilter');
+            filterBar.appendChild(levelNameFilter);
+
+            var filterIcon = document.createElement('div');
+            filterIcon.setAttribute('class', 'filterIcon green arrow');
+            levelNameFilter.appendChild(filterIcon);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'filterTitle');
+            span.innerText = 'Title';
+            levelNameFilter.appendChild(span);
+
+            var levelDateFilter = document.createElement('div');
+            levelDateFilter.setAttribute('class', 'levelDateFilter');
+            filterBar.appendChild(levelDateFilter);
+
+            var filterIcon = document.createElement('div');
+            filterIcon.setAttribute('class', 'filterIcon green arrow');
+            levelDateFilter.appendChild(filterIcon);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'filterTitle');
+            span.innerText = 'Date';
+            levelDateFilter.appendChild(span);
+
+            var levelPlayFilter = document.createElement('div');
+            levelPlayFilter.setAttribute('class', 'levelPlayFilter');
+            filterBar.appendChild(levelPlayFilter);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'filterTitle');
+            span.innerText = 'Load';
+            levelPlayFilter.appendChild(span);
+
+
+            levelNameFilter.style.width = '60%';
+            levelDateFilter.style.width = '20%';
+            levelPlayFilter.style.width = '20%';
+
+
+
+            divWrapper.appendChild(filterBar);
+
+            //*********************************/
+            // Single item
+
+            var itemBar = document.createElement('div');
+            itemBar.setAttribute('class', 'listItem');
+
+            var levelNameDiv = document.createElement('div');
+            levelNameDiv.setAttribute('class', 'levelNameDiv');
+            itemBar.appendChild(levelNameDiv);
+
+            var thumb = document.createElement('div');
+            thumb.setAttribute('class', 'thumb');
+            levelNameDiv.appendChild(thumb);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'itemTitle');
+            span.innerText = 'Level Title';
+            uiHelper.clampDot('.itemTitle', 1, 14);
+            levelNameDiv.appendChild(span);
+
+            levelNameDiv.appendChild(document.createElement('br'));
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'itemDescription');
+            span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
+            levelNameDiv.appendChild(span);
+
+            uiHelper.clampDot('.itemDescription', 3, 14);
+
+            var levelDateDiv = document.createElement('div');
+            levelDateDiv.setAttribute('class', 'levelDateDiv');
+            itemBar.appendChild(levelDateDiv);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'itemDate');
+            span.innerText = '31-12-2020';
+            levelDateDiv.appendChild(span);
+
+            var levelLoadDiv = document.createElement('div');
+            levelLoadDiv.setAttribute('class', 'levelLoadDiv');
+            itemBar.appendChild(levelLoadDiv);
+
+            let button = document.createElement('div');
+            button.setAttribute('class', 'headerButton save buttonOverlay dark');
+            button.innerHTML = "LOAD";
+            levelLoadDiv.appendChild(button);
+            //*********************************/
+
+            let itemList = document.createElement('div');
+            itemList.setAttribute('class', 'itemList');
+            divWrapper.appendChild(itemList);
+
+            var self = this;
+
+
+            const buildLevelList = (levels) => {
+                for (let level_id in levels) {
+                    if (levels.hasOwnProperty(level_id)) {
+
+                        const level = levels[level_id];
+                        let $itemBar = $(itemBar).clone();
+                        $(itemList).append($itemBar);
+                        $itemBar.find('.itemTitle').text(level.title);
+                        $itemBar.find('.itemDescription').text(level.description);
+                        $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
+                        let loadButton = $itemBar.find('.headerButton.save');
+                        loadButton.on('click', () => {
+                            const doLevelLoad = () => {
+                                loadButton[0].style.backgroundColor = 'grey';
+                                loadButton[0].innerText = 'LOADING..';
+                                game.loadUserLevelData(levels[level_id]).then(() => {
+                                    loadButton[0].style.backgroundColor = '';
+                                    loadButton[0].innerText = 'LOAD';
+                                    self.hideEditorPanels();
+                                    self.setLevelSpecifics();
+                                }).catch((error) => {
+                                    loadButton[0].style.backgroundColor = '';
+                                    loadButton[0].innerText = 'LOAD';
+                                });
+                            }
+                            if (game.levelHasChanges()) {
+                                self.showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+                                    doLevelLoad();
+                                }).catch((error) => {});
+                            } else doLevelLoad();
+                        });
+                    }
+                }
+            }
+
+            firebaseManager.getUserLevels().then((levels) => {
+                buildLevelList(levels);
+            })
+
+
+            //
+
+            // end here
+
+            targetDomElement.appendChild(divWrapper);
+
+
+
+            targetDomElement.appendChild(document.createElement('br'));
+            targetDomElement.appendChild(document.createElement('br'));
+
+
+            customGUIContainer.appendChild(levelLoader.domElement);
+
+
+            registerDragWindow(levelLoader);
+
+        }
+        $(levelLoader.domElement).show();
+
+        if (saveScreen) {
+            levelLoader.domElement.style.top = saveScreen.domElement.style.top;
+            levelLoader.domElement.style.left = saveScreen.domElement.style.left;
         }
     }
 

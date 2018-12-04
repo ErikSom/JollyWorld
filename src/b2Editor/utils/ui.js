@@ -14,6 +14,8 @@ import {
 } from "../../Settings";
 import * as formatTimestamp from './formatTimestamp';
 
+import * as uiHelper from './uiHelper';
+
 const nanoid = require('nanoid');
 
 
@@ -1130,7 +1132,7 @@ export const showSaveScreen = function () {
         span.setAttribute('class', 'itemTitle');
         span.innerText = 'Level Title';
         levelNameDiv.appendChild(span);
-        clampDot('.itemTitle', 1, 14);
+        uiHelper.clampDot('.itemTitle', 1, 14);
 
         levelNameDiv.appendChild(document.createElement('br'));
 
@@ -1139,7 +1141,7 @@ export const showSaveScreen = function () {
         span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
         levelNameDiv.appendChild(span);
 
-        clampDot('.itemDescription', 3, 14);
+        uiHelper.clampDot('.itemDescription', 3, 14);
 
         var levelDateDiv = document.createElement('div');
         levelDateDiv.setAttribute('class', 'levelDateDiv');
@@ -1855,18 +1857,4 @@ export const registerDragWindow = function (_window) {
         }
         endDrag(event, _window);
     });
-}
-
-
-
-const clampDot = (target, lines = 1, lineHeight = 14) => {
-    if (!$(target)[0] || !$(target)[0].offsetHeight) {
-        setTimeout(() => {
-            clampDot(target, lines, lineHeight)
-        }, 10);
-        return;
-    }
-    while ($(target)[0].offsetHeight > (lineHeight * lines)) {
-        $(target)[0].innerText = $(target)[0].innerText.substr(0, $(target)[0].innerText.length - 6) + '...';
-    }
 }
