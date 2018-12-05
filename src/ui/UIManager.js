@@ -121,6 +121,12 @@ function UIManager() {
             folder.open();
 
 
+            const titleElement = $(levelLoader.domElement).find('.title');
+            titleElement.replaceWith(titleElement.clone());
+
+            $(levelLoader.domElement).find('.arrow').hide();
+
+
             var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
 
@@ -272,9 +278,9 @@ function UIManager() {
                 }
             }
 
-            firebaseManager.getUserLevels().then((levels) => {
-                buildLevelList(levels);
-            })
+            // firebaseManager.getUserLevels().then((levels) => {
+            //     buildLevelList(levels);
+            // })
 
 
             //
@@ -289,18 +295,12 @@ function UIManager() {
             targetDomElement.appendChild(document.createElement('br'));
 
 
-            customGUIContainer.appendChild(levelLoader.domElement);
-
-
-            registerDragWindow(levelLoader);
+            document.body.appendChild(levelLoader.domElement);
+            levelLoader.domElement.style.position = 'absolute';
 
         }
         $(levelLoader.domElement).show();
 
-        if (saveScreen) {
-            levelLoader.domElement.style.top = saveScreen.domElement.style.top;
-            levelLoader.domElement.style.left = saveScreen.domElement.style.left;
-        }
     }
 
 

@@ -4701,9 +4701,9 @@ pixi-spine@^1.5.13:
   dependencies:
     "@types/pixi.js" "^4.5.3"
 
-pixi.js@4.8.2:
-  version "4.8.2"
-  resolved "https://registry.yarnpkg.com/pixi.js/-/pixi.js-4.8.2.tgz#c9e6f5f3b6780d2236705a7539e4e5ca3d74151f"
+pixi.js@4.8.3:
+  version "4.8.3"
+  resolved "https://registry.yarnpkg.com/pixi.js/-/pixi.js-4.8.3.tgz#3f7b602386a49e74225bf8af111fb9d26e722392"
   dependencies:
     bit-twiddle "^1.0.2"
     earcut "^2.1.3"
