@@ -647,9 +647,9 @@ function Game() {
             el.innerHTML = '.';
             container.appendChild(el);
         }
-        // setTimeout(() => {
-        //     container.remove()
-        // }, 5000);
+        setTimeout(() => {
+            container.remove()
+        }, 5000);
     }
 
     this.GAMESTATE_MENU = 'menu';
