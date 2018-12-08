@@ -73,7 +73,7 @@ export const levelsData = {
             }, {
                 "x": 1249.640273221399,
                 "y": 31.342909684162837
-            }], null, null, null, null, "fence.png", 1],
+            }], null, null, null, null, "Fence.png", 1],
             [4, -10, 10, 0, {"playableCharacter":false, "selectedVehicle":"Stroller"}, "Stroller", 0],
             [6, 0, 612.2588716339162, 0, "", "", 7, "#999999", "#000", 1, null, [{
                 "x": -1249.640273221399,
@@ -87,7 +87,7 @@ export const levelsData = {
             }, {
                 "x": 1249.640273221399,
                 "y": 31.342909684162837
-            }], null, null, null, null, "fence.png", 1],
+            }], null, null, null, null, "Fence.png", 1],
             [1, 873.9770759086252, 619.2100729314091, 0, "", "", 8, "Bush20000", null, null, null, null, false, "#FFFFFF"],
             [1, -524.7015731954175, 611.1885534685905, 0, "", "", 9, "Bush40000", null, null, null, null, false, "#FFFFFF"]
         ]

@@ -16,6 +16,7 @@ export var LoadCoreAssets = function (loader){
         .add("PixelatedWater.jpg", "assets/images/textures/PixelatedWater.jpg")
         .add("PixelatedStone.jpg", "assets/images/textures/PixelatedStone.jpg")
         .add("PixelatedDirt.jpg", "assets/images/textures/PixelatedDirt.jpg")
+        .add("PixelatedGrass.jpg", "assets/images/textures/PixelatedGrass.jpg")
         .add("GoldenBlock.jpg", "assets/images/textures/GoldenBlock.jpg")
         .add("Brick0.jpg", "assets/images/textures/Brick0.jpg")
         .add("Brick1.jpg", "assets/images/textures/Brick1.jpg")
