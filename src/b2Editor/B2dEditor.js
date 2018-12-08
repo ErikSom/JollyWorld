@@ -4982,7 +4982,7 @@ const _B2dEditor = function () {
 		decal.scale.x = size;
 		decal.scale.y = size;
 
-		game.app.renderer.render(decal, body.myDecalSpriteRT, true);
+		game.app.renderer.render(decal, body.myDecalSpriteRT, false);
 
 		if (carving) {
 			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));

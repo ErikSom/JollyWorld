@@ -156,8 +156,7 @@ function Game() {
         this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
         this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
 
-        this.editor.tileLists = ["", "grass.jpg", "dirt.jpg", "fence.png"]
-
+        this.editor.tileLists = ["", "Dirt.jpg","Grass.jpg","Fence.png","YellowCat.jpg","RedWhiteBlock.jpg","PixelatedWater.jpg","PixelatedStone.jpg","PixelatedDirt.jpg","GoldenBlock.jpg","Brick0.jpg","Brick1.jpg","Brick2.jpg","WhiteBlock.jpg"];
         this.editor.init(this.myContainer, this.world, Settings.PTM);
 
         this.editor.contactCallBackListener = this.gameContactListener;

@@ -14,7 +14,7 @@ export const levelsData = {
             }, {
                 "x": 1249.640273221399,
                 "y": 199.8038280539747
-            }], null, null, null, null, "grass.jpg", 1],
+            }], null, null, null, null, "Grass.jpg", 1],
             [6, 0, 587.4742818417874, 0, "", "", 1, "#999999", "#000", 1, null, [{
                 "x": -1249.640273221399,
                 "y": 49.532856403841876
@@ -27,7 +27,7 @@ export const levelsData = {
             }, {
                 "x": 1249.640273221399,
                 "y": 49.532856403841876
-            }], null, null, null, null, "dirt.jpg", 1],
+            }], null, null, null, null, "Dirt.jpg", 1],
             [6, 0, 488.17999226569003, 0, "", "", 2, "#999999", "#000", 1, null, [{
                 "x": -1249.640273221399,
                 "y": 49.53285640384185
@@ -40,7 +40,7 @@ export const levelsData = {
             }, {
                 "x": 1249.640273221399,
                 "y": 49.53285640384185
-            }], null, null, null, null, "grass.jpg", 1],
+            }], null, null, null, null, "Grass.jpg", 1],
             [0, 0, 23.166666666666654, 0, "", "", 3, ["#999999"],
                 ["#000"],
                 [0, 1], true, true, [
