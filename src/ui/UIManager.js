@@ -106,7 +106,7 @@ function UIManager() {
 
 
         if (!levelLoader) {
-            const loginGUIWidth = 400;
+            const loginGUIWidth = 640;
 
             levelLoader = new dat.GUI({
                 autoPlace: false,
@@ -129,21 +129,15 @@ function UIManager() {
 
             var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
-
-            let span = document.createElement('span');
-            span.innerText = 'LOAD';
-            targetDomElement.appendChild(span);
-            span.style.fontSize = '20px';
-            span.style.marginTop = '20px';
-            span.style.display = 'inline-block';
-
             let divWrapper = document.createElement('div');
-            divWrapper.style.padding = '0px 10px';
+            divWrapper.style.padding = '0px 5px';
 
             //fill here
             var filterBar = document.createElement('div');
             filterBar.setAttribute('class', 'filterBar');
 
+
+            //Name Filter
             var levelNameFilter = document.createElement('div');
             levelNameFilter.setAttribute('class', 'levelNameFilter');
             filterBar.appendChild(levelNameFilter);
@@ -152,37 +146,83 @@ function UIManager() {
             filterIcon.setAttribute('class', 'filterIcon green arrow');
             levelNameFilter.appendChild(filterIcon);
 
-            span = document.createElement('span');
+            let span = document.createElement('span');
             span.setAttribute('class', 'filterTitle');
             span.innerText = 'Title';
             levelNameFilter.appendChild(span);
 
+            //Author Filter
+            var levelAuthorFilter = document.createElement('div');
+            levelAuthorFilter.setAttribute('class', 'levelAuthorFilter');
+            filterBar.appendChild(levelAuthorFilter);
+
+            var filterIcon = document.createElement('div');
+            filterIcon.setAttribute('class', 'filterIcon green arrow');
+            levelAuthorFilter.appendChild(filterIcon);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'filterTitle');
+            span.innerText = 'Author';
+            levelAuthorFilter.appendChild(span);
+
+            // Plays Filter
+            var levelPlaysFilter = document.createElement('div');
+            levelPlaysFilter.setAttribute('class', 'levelPlaysFilter');
+            filterBar.appendChild(levelPlaysFilter);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'filterTitle');
+            span.innerText = 'Plays';
+            levelPlaysFilter.appendChild(span);
+
+            // Ratings Filter
+            var levelRatingsFilter = document.createElement('div');
+            levelRatingsFilter.setAttribute('class', 'levelRatingsFilter');
+            filterBar.appendChild(levelRatingsFilter);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'filterTitle');
+            span.innerText = 'Rating';
+            levelRatingsFilter.appendChild(span);
+
+            // Date Filter
             var levelDateFilter = document.createElement('div');
             levelDateFilter.setAttribute('class', 'levelDateFilter');
             filterBar.appendChild(levelDateFilter);
 
-            var filterIcon = document.createElement('div');
-            filterIcon.setAttribute('class', 'filterIcon green arrow');
-            levelDateFilter.appendChild(filterIcon);
-
             span = document.createElement('span');
             span.setAttribute('class', 'filterTitle');
-            span.innerText = 'Date';
+            span.innerText = 'Created on';
             levelDateFilter.appendChild(span);
 
-            var levelPlayFilter = document.createElement('div');
-            levelPlayFilter.setAttribute('class', 'levelPlayFilter');
-            filterBar.appendChild(levelPlayFilter);
+            // Share
+            var levelShare = document.createElement('div');
+            levelShare.setAttribute('class', 'levelShare');
+            filterBar.appendChild(levelShare);
 
             span = document.createElement('span');
             span.setAttribute('class', 'filterTitle');
-            span.innerText = 'Load';
-            levelPlayFilter.appendChild(span);
+            span.innerText = 'Share';
+            levelShare.appendChild(span);
+
+            // Play
+            var levelPlay = document.createElement('div');
+            levelPlay.setAttribute('class', 'levelPlay');
+            filterBar.appendChild(levelPlay);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'filterTitle');
+            span.innerText = 'Play';
+            levelPlay.appendChild(span);
 
 
-            levelNameFilter.style.width = '60%';
-            levelDateFilter.style.width = '20%';
-            levelPlayFilter.style.width = '20%';
+            levelNameFilter.style.width = '30%';
+            levelAuthorFilter.style.width = '15%';
+            levelPlaysFilter.style.width = '10%';
+            levelRatingsFilter.style.width = '10%';
+            levelDateFilter.style.width = '13%';
+            levelShare.style.width = '7%';
+            levelPlay.style.width = '15%';
 
 
 

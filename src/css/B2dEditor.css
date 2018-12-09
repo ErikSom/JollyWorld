@@ -415,6 +415,7 @@ canvas {
     cursor: pointer;
 }
 .filterBar{
+    font-size: 10px;
     width: 100%;
     height: 30px;
     background-color: #1C1C1C;
@@ -423,13 +424,13 @@ canvas {
 .filterTitle{
     text-align: left;
     display: block;
-    margin-left: 25px;
+    margin-left: 20px;
     line-height: 30px;
 }
 .filterBar .arrow{
     float: left;
     display: block;
-    margin: 10px;
+    margin: 10px 5px;
 }
 .filterBar > div{
     display:inline-block;
@@ -441,6 +442,12 @@ canvas {
 .filterBar .levelPlayFilter > span{
     text-align: center;
     margin-left: 0px;
+}
+.filterBar .levelShare > .filterTitle{
+    margin-left: 9px;
+}
+.filterBar .levelPlay > .filterTitle{
+    margin-left: 38px;
 }
 .listItem{
     height: 70px;

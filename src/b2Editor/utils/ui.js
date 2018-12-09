@@ -1327,7 +1327,7 @@ export const showLoadScreen = function () {
         span = document.createElement('span');
         span.setAttribute('class', 'itemTitle');
         span.innerText = 'Level Title';
-        clampDot('.itemTitle', 1, 14);
+        uiHelper.clampDot('.itemTitle', 1, 14);
         levelNameDiv.appendChild(span);
 
         levelNameDiv.appendChild(document.createElement('br'));
@@ -1337,7 +1337,7 @@ export const showLoadScreen = function () {
         span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
         levelNameDiv.appendChild(span);
 
-        clampDot('.itemDescription', 3, 14);
+        uiHelper.clampDot('.itemDescription', 3, 14);
 
         var levelDateDiv = document.createElement('div');
         levelDateDiv.setAttribute('class', 'levelDateDiv');
