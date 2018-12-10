@@ -322,8 +322,7 @@ function UIManager() {
             itemBar.appendChild(levelShareDiv);
 
             let button = document.createElement('div');
-            button.setAttribute('class', 'headerButton save buttonOverlay dark');
-            button.innerHTML = "SHARE";
+            button.setAttribute('class', 'shareIcon');
             levelShareDiv.appendChild(button);
 
             // Level Play Button
@@ -333,9 +332,12 @@ function UIManager() {
             itemBar.appendChild(levelLoadDiv);
 
             button = document.createElement('div');
-            button.setAttribute('class', 'headerButton save buttonOverlay dark');
-            button.innerHTML = "PLAY";
+            button.setAttribute('class', 'menuButton');
             levelLoadDiv.appendChild(button);
+
+            let playButtonTriangle = document.createElement('div');
+            playButtonTriangle.setAttribute('class', 'playButtonTriangleIcon')
+            button.appendChild(playButtonTriangle)
             //*********************************/
 
             // Level Load
@@ -343,7 +345,7 @@ function UIManager() {
             itemList.setAttribute('class', 'itemList');
             divWrapper.appendChild(itemList);
 
-            var self = this;
+            let self = this;
 
             $(itemList).append(itemBar);
 

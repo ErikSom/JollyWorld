@@ -231,7 +231,6 @@ canvas {
     margin-right:auto;
     font-family: 'Lily Script One', cursive;
     text-shadow: 2px 2px black;
-
 }
 .menuButton::after {
     content: '';
@@ -447,7 +446,7 @@ canvas {
     margin-left: 9px;
 }
 .filterBar .levelPlay > .filterTitle{
-    margin-left: 38px;
+    margin-left: 30px;
 }
 .listItem{
     height: 70px;
@@ -586,6 +585,37 @@ canvas {
 }
 .listPlayModeItem .levelLoadDiv{
     width:13%;
+}
+.listPlayModeItem .levelLoadDiv .menuButton{
+    margin-top:10px;
+    width: 100%;
+    height: 40px;
+}
+.shareIcon{
+    width:30px;
+    height:40px;
+    background-image: url('../../build/assets/images/gui/Share_Icon.png');
+    background-size: contain;
+}
+.levelShareDiv .shareIcon{
+    margin-top: 6px;
+}
+.thumbsUpIcon{
+    width:50px;
+    height:50px;
+    background-image: url('../../build/assets/images/gui/Thumb_Icon.png');
+    background-size: contain;
+}
+.playButtonTriangleIcon{
+    width:25px;
+    height:25px;
+    background-image: url('../../build/assets/images/gui/PlayButton.png');
+    background-size: contain;
+    pointer-events: none;
+}
+.levelLoadDiv .playButtonTriangleIcon{
+    margin-left: 24px;
+    margin-top: 6px;
 }
 /**
  * ==============================================
