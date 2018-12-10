@@ -142,7 +142,7 @@ function UIManager() {
             levelNameFilter.setAttribute('class', 'levelNameFilter');
             filterBar.appendChild(levelNameFilter);
 
-            var filterIcon = document.createElement('div');
+            let filterIcon = document.createElement('div');
             filterIcon.setAttribute('class', 'filterIcon green arrow');
             levelNameFilter.appendChild(filterIcon);
 
@@ -156,7 +156,7 @@ function UIManager() {
             levelAuthorFilter.setAttribute('class', 'levelAuthorFilter');
             filterBar.appendChild(levelAuthorFilter);
 
-            var filterIcon = document.createElement('div');
+            filterIcon = document.createElement('div');
             filterIcon.setAttribute('class', 'filterIcon green arrow');
             levelAuthorFilter.appendChild(filterIcon);
 
@@ -170,6 +170,10 @@ function UIManager() {
             levelPlaysFilter.setAttribute('class', 'levelPlaysFilter');
             filterBar.appendChild(levelPlaysFilter);
 
+            filterIcon = document.createElement('div');
+            filterIcon.setAttribute('class', 'filterIcon green arrow');
+            levelPlaysFilter.appendChild(filterIcon);
+
             span = document.createElement('span');
             span.setAttribute('class', 'filterTitle');
             span.innerText = 'Plays';
@@ -180,6 +184,10 @@ function UIManager() {
             levelRatingsFilter.setAttribute('class', 'levelRatingsFilter');
             filterBar.appendChild(levelRatingsFilter);
 
+            filterIcon = document.createElement('div');
+            filterIcon.setAttribute('class', 'filterIcon green arrow');
+            levelRatingsFilter.appendChild(filterIcon);
+
             span = document.createElement('span');
             span.setAttribute('class', 'filterTitle');
             span.innerText = 'Rating';
@@ -189,6 +197,10 @@ function UIManager() {
             var levelDateFilter = document.createElement('div');
             levelDateFilter.setAttribute('class', 'levelDateFilter');
             filterBar.appendChild(levelDateFilter);
+
+            filterIcon = document.createElement('div');
+            filterIcon.setAttribute('class', 'filterIcon green arrow');
+            levelDateFilter.appendChild(filterIcon);
 
             span = document.createElement('span');
             span.setAttribute('class', 'filterTitle');
@@ -216,13 +228,13 @@ function UIManager() {
             levelPlay.appendChild(span);
 
 
-            levelNameFilter.style.width = '30%';
-            levelAuthorFilter.style.width = '15%';
+            levelNameFilter.style.width = '37%';
+            levelAuthorFilter.style.width = '12%';
             levelPlaysFilter.style.width = '10%';
-            levelRatingsFilter.style.width = '10%';
+            levelRatingsFilter.style.width = '8%';
             levelDateFilter.style.width = '13%';
             levelShare.style.width = '7%';
-            levelPlay.style.width = '15%';
+            levelPlay.style.width = '13%';
 
 
 
@@ -231,8 +243,10 @@ function UIManager() {
             //*********************************/
             // Single item
 
+
+            //Level Name
             var itemBar = document.createElement('div');
-            itemBar.setAttribute('class', 'listItem');
+            itemBar.setAttribute('class', 'listPlayModeItem');
 
             var levelNameDiv = document.createElement('div');
             levelNameDiv.setAttribute('class', 'levelNameDiv');
@@ -257,30 +271,81 @@ function UIManager() {
 
             uiHelper.clampDot('.itemDescription', 3, 14);
 
+            //Level Author
+
+            var levelAuthorDiv = document.createElement('div');
+            levelAuthorDiv.setAttribute('class', 'levelAuthorDiv');
+            itemBar.appendChild(levelAuthorDiv);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'itemDate');
+            span.innerText = 'Smerikinoooo';
+            levelAuthorDiv.appendChild(span);
+
+            //Level Plays
+
+            var levelPlaysDiv = document.createElement('div');
+            levelPlaysDiv.setAttribute('class', 'levelPlaysDiv');
+            itemBar.appendChild(levelPlaysDiv);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'itemDate');
+            span.innerText = '10000000';
+            levelPlaysDiv.appendChild(span);
+
+            //Level Ratings
+
+            var levelRatingsDiv = document.createElement('div');
+            levelRatingsDiv.setAttribute('class', 'levelRatingsDiv');
+            itemBar.appendChild(levelRatingsDiv);
+
+            span = document.createElement('span');
+            span.setAttribute('class', 'itemDate');
+            span.innerText = '88% upvote';
+            levelRatingsDiv.appendChild(span);
+
+            //Level Date
+
             var levelDateDiv = document.createElement('div');
             levelDateDiv.setAttribute('class', 'levelDateDiv');
             itemBar.appendChild(levelDateDiv);
 
             span = document.createElement('span');
             span.setAttribute('class', 'itemDate');
-            span.innerText = '31-12-2020';
+            span.innerText = '18-12-2019';
             levelDateDiv.appendChild(span);
+
+            // Level Share Button
+
+            var levelShareDiv = document.createElement('div');
+            levelShareDiv.setAttribute('class', 'levelShareDiv');
+            itemBar.appendChild(levelShareDiv);
+
+            let button = document.createElement('div');
+            button.setAttribute('class', 'headerButton save buttonOverlay dark');
+            button.innerHTML = "SHARE";
+            levelShareDiv.appendChild(button);
+
+            // Level Play Button
 
             var levelLoadDiv = document.createElement('div');
             levelLoadDiv.setAttribute('class', 'levelLoadDiv');
             itemBar.appendChild(levelLoadDiv);
 
-            let button = document.createElement('div');
+            button = document.createElement('div');
             button.setAttribute('class', 'headerButton save buttonOverlay dark');
-            button.innerHTML = "LOAD";
+            button.innerHTML = "PLAY";
             levelLoadDiv.appendChild(button);
             //*********************************/
 
+            // Level Load
             let itemList = document.createElement('div');
             itemList.setAttribute('class', 'itemList');
             divWrapper.appendChild(itemList);
 
             var self = this;
+
+            $(itemList).append(itemBar);
 
 
             const buildLevelList = (levels) => {
