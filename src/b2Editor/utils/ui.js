@@ -125,10 +125,6 @@ export const showHeaderBar = function () {
 
         if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
-        game.currentLevelData.title = $(title).val();
-        game.currentLevelData.description = $(description).val();
-        setLevelSpecifics();
-
         saveButton.style.backgroundColor = 'grey';
         saveButton.innerText = 'SAVING..';
 
@@ -813,6 +809,7 @@ export const showLevelEditScreen = function () {
         title.style.height = '30px';
         title.style.fontWeight = 'bold';
 
+
         span = document.createElement('span');
         span.innerText = 'Characters left:100';
         divWrapper.appendChild(span);
@@ -935,9 +932,11 @@ export const showLevelEditScreen = function () {
         saveAsButton.innerHTML = "SAVE AS";
         divWrapper.appendChild(saveAsButton);
 
+        var self = this;
         saveAsButton.addEventListener('click', ()=>{
+            console.log(self);
             if(!errorChecks()) return;
-            self.showSaveScreen().bind(self)
+            self.showSaveScreen.bind(self)();
         });
 
         let publishButton = document.createElement('div');
@@ -951,7 +950,6 @@ export const showLevelEditScreen = function () {
         deleteButton.style.float = 'right';
         divWrapper.appendChild(deleteButton);
 
-        let self = this;
         $(deleteButton).on('click', () => {
             self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 deleteButton.style.backgroundColor = 'grey';
@@ -987,8 +985,9 @@ export const showLevelEditScreen = function () {
     }
     levelEditScreen.domElement.style.display = "block";
     // set values
-    $(levelEditScreen).find('#levelEdit_title').text(game.currentLevelData.title);
-    $(levelEditScreen).find('#levelEdit_description').text(game.currentLevelData.description);
+
+    $(levelEditScreen.domElement).find('#levelEdit_title').val(game.currentLevelData.title);
+    $(levelEditScreen.domElement).find('#levelEdit_description').text(game.currentLevelData.description);
 }
 export const showSaveScreen = function () {
 
