@@ -317,6 +317,9 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
 
 				break
+			case this.tool_CAMERA:
+				ui.destroyEditorGUI();
+				break
 		}
 		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 		this.canvas.focus();
@@ -1581,23 +1584,24 @@ const _B2dEditor = function () {
 	this.editorTriggerObject = new function () {
 		this.shape = 0;
 	}
+	this.cameraShotCallBack;
 	this.takeCameraShot = function () {
 		//first clean up screen
 		this.debugGraphics.clear();
 		game.newDebugGraphics.clear();
-		var i;
+		let i;
 		for (i = 0; i < this.editorIcons.length; i++) {
 			this.editorIcons[i].visible = false;
 		}
 		game.app.render();
 		//
-		var imageData = this.canvas.toDataURL('image/jpeg', 1);
-		var image = new Image();
+		let imageData = this.canvas.toDataURL('image/jpeg', 1);
+		let image = new Image();
 		image.src = imageData;
-		var canvas = $("#canvas-helper")[0];
-		var context = canvas.getContext("2d");
-		var shotQuality = 0.8;
-		var self = this;
+		const canvas = document.createElement('canvas');
+		const context = canvas.getContext("2d");
+		const shotQuality = 0.8;
+		const self = this;
 		image.onload = function () {
 			//highRes;
 			var scale = 1;
@@ -1605,9 +1609,9 @@ const _B2dEditor = function () {
 			canvas.height = self.cameraSize.h * scale;
 			context.drawImage(image, self.mousePosPixel.x - self.cameraSize.w / 2, self.mousePosPixel.y - self.cameraSize.h / 2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
 			var highResThumb = canvas.toDataURL('image/jpeg', shotQuality);
-			/*var _image = new Image();
-			_image.src = highResThumb;
-			document.body.appendChild(_image);*/
+			// var _image = new Image();
+			// _image.src = highResThumb;
+			// document.body.appendChild(_image);
 
 			//lowRes
 			scale = 0.5;
@@ -1621,6 +1625,10 @@ const _B2dEditor = function () {
 
 			self.cameraShotData.highRes = highResThumb;
 			self.cameraShotData.lowRes = lowResThumb;
+
+			self.cameraShotCallBack();
+
+
 			console.log("Camera Shot Succesfull");
 		}
 		for (i = 0; i < this.editorIcons.length; i++) {
@@ -2248,8 +2256,6 @@ const _B2dEditor = function () {
 			} else this.selectTool(this.tool_JOINTS);
 		} else if (e.keyCode == 83) { //s
 			this.stringifyWorldJSON();
-		} else if (e.keyCode == 84) { //t
-			//this.selectTool(this.tool_CAMERA);
 		} else if (e.keyCode == 86) { // v
 			if (e.ctrlKey || e.metaKey) {
 				this.pasteSelection();

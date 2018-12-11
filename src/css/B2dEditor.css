@@ -393,12 +393,14 @@ canvas {
     height:67.5px;
     border: 1px solid black;
     margin:5px;
+    cursor: pointer;
 }
 #youtubeFeed{
     display: flex;
     justify-content: center;
     margin: unset;
 }
+
 #levelEditScreen .save, #levelEditScreen .publish, #levelEditScreen .saveas, #levelEditScreen .delete{
     float: left;
 }

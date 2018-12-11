@@ -783,8 +783,23 @@ export const showLevelEditScreen = function () {
         youtubeFeed.setAttribute('id', 'youtubeFeed');
         divWrapper.appendChild(youtubeFeed);
 
+        let thumbNail;
+        thumbNail = document.createElement('div');
+        thumbNail.setAttribute('id', 'levelThumbnail');
+        youtubeFeed.appendChild(thumbNail);
+
+        let thumbnailShotComplete = ()=>{
+            showLevelEditScreen();
+        }
+
+        $(thumbNail).click(()=>{
+            B2dEditor.cameraShotCallBack = thumbnailShotComplete;
+            B2dEditor.selectTool(B2dEditor.tool_CAMERA);
+            hideEditorPanels();
+        });
+
         let youtubeLink;
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             youtubeLink = document.createElement('div');
             youtubeLink.setAttribute('id', 'youtubeLink');
             youtubeFeed.appendChild(youtubeLink);
