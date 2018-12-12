@@ -269,6 +269,7 @@ function FireBaseManager() {
             var uploader = new this.uploadFiles(filesToUpload, details.uid,
                 function (urls) {
                     self.storeUserLevelData(urls, details).then((levelData) => {
+                        levelData.uid = details.ui;
                         resolve(levelData);
                     }).catch((error) => {
                         reject(error);
@@ -303,6 +304,7 @@ function FireBaseManager() {
         });
     }
     this.deleteUserLevelData = function (details) {
+        console.log(details);
         return new Promise((resolve, reject) => {
             var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
             levelRef.set(null, function (error) {

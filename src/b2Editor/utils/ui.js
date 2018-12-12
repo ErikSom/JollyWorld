@@ -1008,7 +1008,13 @@ export const showLevelEditScreen = function () {
     levelEditScreen.domElement.style.display = "block";
     // set values
 
-    if(game.currentLevelData.thumbLowResURL) $(levelEditScreen.domElement).find('#levelThumbnailImage')[0].src = firebaseManager.baseDownloadURL+game.currentLevelData.thumbLowResURL;
+    let thumbNailImage = $(levelEditScreen.domElement).find('#levelThumbnailImage')[0];
+    if(game.currentLevelData.thumbLowResURL){
+        thumbNailImage.src = firebaseManager.baseDownloadURL+game.currentLevelData.thumbLowResURL;
+        thumbNailImage.style.display = 'block';
+    } else{
+        thumbNailImage.style.display = 'none';
+    }
     $(levelEditScreen.domElement).find('#levelEdit_title').val(game.currentLevelData.title);
     $(levelEditScreen.domElement).find('#levelEdit_description').text(game.currentLevelData.description);
 }
@@ -1396,6 +1402,7 @@ export const showLoadScreen = function () {
                 if (levels.hasOwnProperty(level_id)) {
 
                     const level = levels[level_id];
+                    level.uid = level_id;
                     let $itemBar = $(itemBar).clone();
                     $(itemList).append($itemBar);
                     $itemBar.find('.itemTitle').text(level.title);
@@ -1408,7 +1415,7 @@ export const showLoadScreen = function () {
                         const doLevelLoad = () => {
                             loadButton[0].style.backgroundColor = 'grey';
                             loadButton[0].innerText = 'LOADING..';
-                            game.loadUserLevelData(levels[level_id]).then(() => {
+                            game.loadUserLevelData(level).then(() => {
                                 loadButton[0].style.backgroundColor = '';
                                 loadButton[0].innerText = 'LOAD';
                                 self.hideEditorPanels();
