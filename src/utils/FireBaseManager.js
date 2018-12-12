@@ -259,7 +259,7 @@ function FireBaseManager() {
                     datatype: "data_url"
                 })
                 filesToUpload.push({
-                    file: cameraShotData.highRes,
+                    file: cameraShotData.lowRes,
                     dir: "levels",
                     name: "thumb_lowRes.jpg",
                     datatype: "data_url"
@@ -268,8 +268,8 @@ function FireBaseManager() {
             var self = this;
             var uploader = new this.uploadFiles(filesToUpload, details.uid,
                 function (urls) {
-                    self.storeUserLevelData(urls, details).then(() => {
-                        resolve();
+                    self.storeUserLevelData(urls, details).then((levelData) => {
+                        resolve(levelData);
                     }).catch((error) => {
                         reject(error);
                     })
@@ -298,7 +298,7 @@ function FireBaseManager() {
             var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
             levelRef.set(levelObject, function (error) {
                 if (error) reject(error);
-                else resolve();
+                else resolve(levelObject);
             });
         });
     }

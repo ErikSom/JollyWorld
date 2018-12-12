@@ -228,7 +228,7 @@ export const showLoginScreen = function () {
         var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
 
         let email = document.createElement('input');
-        // email.value = '1@1.nl'; //PLACEHOLDER
+        email.value = '1@1.nl'; //PLACEHOLDER
         email.setAttribute('placeholder', 'Email');
         email.setAttribute('tabindex', '0');
         divWrapper.appendChild(email);
@@ -236,7 +236,7 @@ export const showLoginScreen = function () {
 
         let password = document.createElement('input');
         password.setAttribute('placeholder', 'Password');
-        // password.value = 'appelsap'; //PLACEHOLDER
+        password.value = 'appelsap'; //PLACEHOLDER
         password.setAttribute('tabindex', '0');
         password.setAttribute('type', 'password');
         divWrapper.appendChild(password);
@@ -788,14 +788,21 @@ export const showLevelEditScreen = function () {
         thumbNail.setAttribute('id', 'levelThumbnail');
         youtubeFeed.appendChild(thumbNail);
 
+        let thumbNailImage;
+        thumbNailImage = new Image();
+        thumbNailImage.setAttribute('id', 'levelThumbnailImage');
+        thumbNail.appendChild(thumbNailImage);
+
+
         let thumbnailShotComplete = ()=>{
-            showLevelEditScreen();
+            levelEditScreen.domElement.style.display = 'block';
+            thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
         }
 
         $(thumbNail).click(()=>{
             B2dEditor.cameraShotCallBack = thumbnailShotComplete;
             B2dEditor.selectTool(B2dEditor.tool_CAMERA);
-            hideEditorPanels();
+            levelEditScreen.domElement.style.display = 'none';
         });
 
         let youtubeLink;
@@ -1001,6 +1008,7 @@ export const showLevelEditScreen = function () {
     levelEditScreen.domElement.style.display = "block";
     // set values
 
+    if(game.currentLevelData.thumbLowResURL) $(levelEditScreen.domElement).find('#levelThumbnailImage')[0].src = firebaseManager.baseDownloadURL+game.currentLevelData.thumbLowResURL;
     $(levelEditScreen.domElement).find('#levelEdit_title').val(game.currentLevelData.title);
     $(levelEditScreen.domElement).find('#levelEdit_description').text(game.currentLevelData.description);
 }
@@ -1338,6 +1346,10 @@ export const showLoadScreen = function () {
         thumb.setAttribute('class', 'thumb');
         levelNameDiv.appendChild(thumb);
 
+        var thumbImage = new Image();
+        thumbImage.setAttribute('id', 'thumbImage');
+        thumb.appendChild(thumbImage);
+
         span = document.createElement('span');
         span.setAttribute('class', 'itemTitle');
         span.innerText = 'Level Title';
@@ -1389,6 +1401,8 @@ export const showLoadScreen = function () {
                     $itemBar.find('.itemTitle').text(level.title);
                     $itemBar.find('.itemDescription').text(level.description);
                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
+                    if(level.thumbLowResURL) $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+
                     let loadButton = $itemBar.find('.headerButton.save');
                     loadButton.on('click', () => {
                         const doLevelLoad = () => {

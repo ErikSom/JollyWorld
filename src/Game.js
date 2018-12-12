@@ -156,7 +156,7 @@ function Game() {
         this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
         this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
 
-        this.editor.tileLists = ["", "Dirt.jpg","Grass.jpg","Fence.png","YellowCat.jpg","RedWhiteBlock.jpg","PixelatedWater.jpg","PixelatedStone.jpg","PixelatedDirt.jpg","PixelatedGrass.jpg","GoldenBlock.jpg","Brick0.jpg","Brick1.jpg","Brick2.jpg","WhiteBlock.jpg"];
+        this.editor.tileLists = ["", "Dirt.jpg", "Grass.jpg", "Fence.png", "YellowCat.jpg", "RedWhiteBlock.jpg", "PixelatedWater.jpg", "PixelatedStone.jpg", "PixelatedDirt.jpg", "PixelatedGrass.jpg", "GoldenBlock.jpg", "Brick0.jpg", "Brick1.jpg", "Brick2.jpg", "WhiteBlock.jpg"];
         this.editor.init(this.myContainer, this.world, Settings.PTM);
 
         this.editor.contactCallBackListener = this.gameContactListener;
@@ -312,8 +312,8 @@ function Game() {
                 }
             }
         }
-        if(e.keyCode == 32){ //space
-            if(this.gameOver && this.run){
+        if (e.keyCode == 32) { //space
+            if (this.gameOver && this.run) {
                 this.resetWorld();
             }
         }
@@ -328,7 +328,7 @@ function Game() {
         }
         Key.onKeyup(e);
     }
-    this.openMainMenu = function(){
+    this.openMainMenu = function () {
         //if(this.run) this.stopWorld();
         this.initLevel(levelsData.mainMenuLevel);
         ui.buildMainMenu();
@@ -349,13 +349,13 @@ function Game() {
         this.stopAutoSave();
         this.levelStartTime = Date.now();
     }
-    this.stopTestingWorld = function(){
+    this.stopTestingWorld = function () {
         this.stopWorld();
         var worldJSON = JSON.parse(this.editor.worldJSON);
         this.editor.buildJSON(worldJSON);
     }
-    this.resetWorld = function(){
-        if(this.gameState == this.GAMESTATE_EDITOR){
+    this.resetWorld = function () {
+        if (this.gameState == this.GAMESTATE_EDITOR) {
             this.stopTestingWorld();
             this.testWorld();
         }
@@ -420,7 +420,16 @@ function Game() {
         return this.saveLevelData();
     }
     this.saveLevelData = function () {
-        return firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData);
+        return new Promise((resolve, reject) => {
+            firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then((levelData) => {
+                console.log('SAVED:', levelData);
+                this.currentLevelData = levelData;
+                SaveManager.saveTempEditorWorld(self.currentLevelData);
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
     }
     this.deleteLevelData = function () {
         return firebaseManager.deleteUserLevelData(game.currentLevelData);
