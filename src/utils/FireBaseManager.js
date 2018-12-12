@@ -290,6 +290,9 @@ function FireBaseManager() {
             if (urls.length > 1) {
                 levelObject["thumbHighResURL"] = urls[1];
                 levelObject["thumbLowResURL"] = urls[2];
+            }else{
+                levelObject["thumbHighResURL"] = details.thumbHighResURL;
+                levelObject["thumbLowResURL"] = details.thumbLowResURL;
             }
             levelObject["creationDate"] = details.creationDate;
             levelObject["description"] = details.description;

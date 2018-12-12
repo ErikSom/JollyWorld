@@ -417,6 +417,7 @@ function Game() {
     this.saveNewLevelData = function () {
         game.currentLevelData.uid = nanoid();
         game.currentLevelData.creationDate = Date.now();
+        console.log(game.currentLevelData);
         return this.saveLevelData();
     }
     this.saveLevelData = function () {

@@ -1156,6 +1156,10 @@ export const showSaveScreen = function () {
         thumb.setAttribute('class', 'thumb');
         levelNameDiv.appendChild(thumb);
 
+        var thumbImage = new Image();
+        thumbImage.setAttribute('id', 'thumbImage');
+        thumb.appendChild(thumbImage);
+
         span = document.createElement('span');
         span.setAttribute('class', 'itemTitle');
         span.innerText = 'Level Title';
@@ -1206,9 +1210,11 @@ export const showSaveScreen = function () {
                     $itemBar.find('.itemTitle').text(level.title);
                     $itemBar.find('.itemDescription').text(level.description);
                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
+                    if(level.thumbLowResURL) $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+
                     let saveButton = $itemBar.find('.headerButton.save');
                     saveButton.on('click', () => {
-                        self.showPrompt(`Are you sure you want to overwrite level ${levels[level_id].title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+                        self.showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                             game.currentLevelData.uid = level_id;
                             saveButton[0].style.backgroundColor = 'grey';
                             saveButton[0].innerText = 'SAVING..';
