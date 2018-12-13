@@ -104,7 +104,7 @@ export const showHeaderBar = function () {
     button.innerHTML = "TEST";
     headerBar.appendChild(button);
 
-    $(button).on('click', ()=> {
+    $(button).on('click', () => {
         game.testWorld();
     });
 
@@ -118,7 +118,7 @@ export const showHeaderBar = function () {
     $(saveButton).on('click', () => {
         //save locally first
 
-        if(game.currentLevelData.title == ''){
+        if (game.currentLevelData.title == '') {
             self.showLevelEditScreen();
             return;
         }
@@ -794,12 +794,12 @@ export const showLevelEditScreen = function () {
         thumbNail.appendChild(thumbNailImage);
 
 
-        let thumbnailShotComplete = ()=>{
+        let thumbnailShotComplete = () => {
             levelEditScreen.domElement.style.display = 'block';
             thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
         }
 
-        $(thumbNail).click(()=>{
+        $(thumbNail).click(() => {
             B2dEditor.cameraShotCallBack = thumbnailShotComplete;
             B2dEditor.selectTool(B2dEditor.tool_CAMERA);
             levelEditScreen.domElement.style.display = 'none';
@@ -908,7 +908,7 @@ export const showLevelEditScreen = function () {
             title.style.backgroundColor = textAreaDefaultColor;
             description.style.backgroundColor = textAreaDefaultColor;
 
-            if (title.value.length<3) {
+            if (title.value.length < 3) {
                 title.style.backgroundColor = textAreaErrorColor;
                 errorStack.push("Title must be at least 3 characters long");
             }
@@ -929,7 +929,7 @@ export const showLevelEditScreen = function () {
 
         $(saveButton).on('click', () => {
             //save locally first
-            if(!errorChecks()) return;
+            if (!errorChecks()) return;
             if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
             game.currentLevelData.title = $(title).val();
@@ -955,9 +955,9 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(saveAsButton);
 
         var self = this;
-        saveAsButton.addEventListener('click', ()=>{
+        saveAsButton.addEventListener('click', () => {
             console.log(self);
-            if(!errorChecks()) return;
+            if (!errorChecks()) return;
             self.showSaveScreen.bind(self)();
         });
 
@@ -1009,10 +1009,10 @@ export const showLevelEditScreen = function () {
     // set values
 
     let thumbNailImage = $(levelEditScreen.domElement).find('#levelThumbnailImage')[0];
-    if(game.currentLevelData.thumbLowResURL){
-        thumbNailImage.src = firebaseManager.baseDownloadURL+game.currentLevelData.thumbLowResURL;
+    if (game.currentLevelData.thumbLowResURL) {
+        thumbNailImage.src = firebaseManager.baseDownloadURL + game.currentLevelData.thumbLowResURL;
         thumbNailImage.style.display = 'block';
-    } else{
+    } else {
         thumbNailImage.style.display = 'none';
     }
     $(levelEditScreen.domElement).find('#levelEdit_title').val(game.currentLevelData.title);
@@ -1091,158 +1091,25 @@ export const showSaveScreen = function () {
 
         });
 
-        let divWrapper = document.createElement('div');
-        divWrapper.style.padding = '0px 10px';
-
-        //fill here
-        var filterBar = document.createElement('div');
-        filterBar.setAttribute('class', 'filterBar');
-
-        var levelNameFilter = document.createElement('div');
-        levelNameFilter.setAttribute('class', 'levelNameFilter');
-        filterBar.appendChild(levelNameFilter);
-
-        var filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelNameFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Title';
-        levelNameFilter.appendChild(span);
-
-        var levelDateFilter = document.createElement('div');
-        levelDateFilter.setAttribute('class', 'levelDateFilter');
-        filterBar.appendChild(levelDateFilter);
-
-        var filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelDateFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Date';
-        levelDateFilter.appendChild(span);
-
-        var levelPlayFilter = document.createElement('div');
-        levelPlayFilter.setAttribute('class', 'levelPlayFilter');
-        filterBar.appendChild(levelPlayFilter);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Save';
-        levelPlayFilter.appendChild(span);
-
-
-        levelNameFilter.style.width = '60%';
-        levelDateFilter.style.width = '20%';
-        levelPlayFilter.style.width = '20%';
-
-
-
-        divWrapper.appendChild(filterBar);
-
-        //*********************************/
-        // Single item
-
-        var itemBar = document.createElement('div');
-        itemBar.setAttribute('class', 'listItem');
-
-        var levelNameDiv = document.createElement('div');
-        levelNameDiv.setAttribute('class', 'levelNameDiv');
-        itemBar.appendChild(levelNameDiv);
-
-        var thumb = document.createElement('div');
-        thumb.setAttribute('class', 'thumb');
-        levelNameDiv.appendChild(thumb);
-
-        var thumbImage = new Image();
-        thumbImage.setAttribute('id', 'thumbImage');
-        thumb.appendChild(thumbImage);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemTitle');
-        span.innerText = 'Level Title';
-        levelNameDiv.appendChild(span);
-        uiHelper.clampDot('.itemTitle', 1, 14);
-
-        levelNameDiv.appendChild(document.createElement('br'));
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemDescription');
-        span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
-        levelNameDiv.appendChild(span);
-
-        uiHelper.clampDot('.itemDescription', 3, 14);
-
-        var levelDateDiv = document.createElement('div');
-        levelDateDiv.setAttribute('class', 'levelDateDiv');
-        itemBar.appendChild(levelDateDiv);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemDate');
-        span.innerText = '31-12-2020';
-        levelDateDiv.appendChild(span);
-
-        var levelSaveDiv = document.createElement('div');
-        levelSaveDiv.setAttribute('class', 'levelSaveDiv');
-        itemBar.appendChild(levelSaveDiv);
-
-        let button = document.createElement('div');
-        button.setAttribute('class', 'headerButton save buttonOverlay dark');
-        button.innerHTML = "SAVE";
-        levelSaveDiv.appendChild(button);
-        //*********************************/
-
-        let itemList = document.createElement('div');
-        itemList.setAttribute('class', 'itemList');
-        divWrapper.appendChild(itemList);
-
-
-        const buildLevelList = (levels) => {
-            for (let level_id in levels) {
-                if (levels.hasOwnProperty(level_id)) {
-
-                    const level = levels[level_id];
-                    console.log(level);
-                    let $itemBar = $(itemBar).clone();
-                    $(itemList).append($itemBar);
-                    $itemBar.find('.itemTitle').text(level.title);
-                    $itemBar.find('.itemDescription').text(level.description);
-                    $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
-                    if(level.thumbLowResURL) $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
-
-                    let saveButton = $itemBar.find('.headerButton.save');
-                    saveButton.on('click', () => {
-                        self.showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
-                            game.currentLevelData.uid = level_id;
-                            saveButton[0].style.backgroundColor = 'grey';
-                            saveButton[0].innerText = 'SAVING..';
-                            game.saveLevelData().then(() => {
-                                saveButton[0].style.backgroundColor = '';
-                                saveButton[0].innerText = 'SAVE';
-                                self.hideEditorPanels();
-                            }).catch((error) => {
-                                saveButton[0].style.backgroundColor = '';
-                                saveButton[0].innerText = 'SAVE';
-                            });
-                        }).catch((error) => {});
-                    });
-                }
-            }
+        const buttonFunction = (button, level) => {
+            self.showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+                game.currentLevelData.uid = level.uid;
+                button.style.backgroundColor = 'grey';
+                button.innerText = 'SAVING..';
+                game.saveLevelData().then(() => {
+                    button.style.backgroundColor = '';
+                    button.innerText = 'SAVE';
+                    self.hideEditorPanels();
+                }).catch((error) => {
+                    button.style.backgroundColor = '';
+                    button.innerText = 'SAVE';
+                });
+            }).catch((error) => {});
         }
 
-        firebaseManager.getUserLevels().then((levels) => {
-            buildLevelList(levels);
-        })
 
-
-        //
-
-        // end here
-
-        targetDomElement.appendChild(divWrapper);
-
+        var levelList = this.generateLevelList('SAVE', buttonFunction);
+        targetDomElement.appendChild(levelList);
 
 
         targetDomElement.appendChild(document.createElement('br'));
@@ -1261,6 +1128,142 @@ export const showSaveScreen = function () {
         saveScreen.domElement.style.top = loadScreen.domElement.style.top;
         saveScreen.domElement.style.left = loadScreen.domElement.style.left;
     }
+}
+export const generateLevelList = function (buttonName, buttonFunction) {
+    let divWrapper = document.createElement('div');
+    divWrapper.style.padding = '0px 10px';
+
+
+    //fill here
+    var filterBar = document.createElement('div');
+    filterBar.setAttribute('class', 'filterBar');
+
+    var levelNameFilter = document.createElement('div');
+    levelNameFilter.setAttribute('class', 'levelNameFilter');
+    filterBar.appendChild(levelNameFilter);
+
+    var filterIcon = document.createElement('div');
+    filterIcon.setAttribute('class', 'filterIcon green arrow');
+    levelNameFilter.appendChild(filterIcon);
+
+    let span = document.createElement('span');
+    span.setAttribute('class', 'filterTitle');
+    span.innerText = 'Title';
+    levelNameFilter.appendChild(span);
+
+    var levelDateFilter = document.createElement('div');
+    levelDateFilter.setAttribute('class', 'levelDateFilter');
+    filterBar.appendChild(levelDateFilter);
+
+    var filterIcon = document.createElement('div');
+    filterIcon.setAttribute('class', 'filterIcon green arrow');
+    levelDateFilter.appendChild(filterIcon);
+
+    span = document.createElement('span');
+    span.setAttribute('class', 'filterTitle');
+    span.innerText = 'Date';
+    levelDateFilter.appendChild(span);
+
+    var levelPlayFilter = document.createElement('div');
+    levelPlayFilter.setAttribute('class', 'levelPlayFilter');
+    filterBar.appendChild(levelPlayFilter);
+
+    span = document.createElement('span');
+    span.setAttribute('class', 'filterTitle');
+    span.innerText = 'Save';
+    levelPlayFilter.appendChild(span);
+
+
+    levelNameFilter.style.width = '60%';
+    levelDateFilter.style.width = '20%';
+    levelPlayFilter.style.width = '20%';
+
+
+
+    divWrapper.appendChild(filterBar);
+
+    //*********************************/
+    // Single item
+
+    var itemBar = document.createElement('div');
+    itemBar.setAttribute('class', 'listItem');
+
+    var levelNameDiv = document.createElement('div');
+    levelNameDiv.setAttribute('class', 'levelNameDiv');
+    itemBar.appendChild(levelNameDiv);
+
+    var thumb = document.createElement('div');
+    thumb.setAttribute('class', 'thumb');
+    levelNameDiv.appendChild(thumb);
+
+    var thumbImage = new Image();
+    thumbImage.setAttribute('id', 'thumbImage');
+    thumb.appendChild(thumbImage);
+
+    span = document.createElement('span');
+    span.setAttribute('class', 'itemTitle');
+    span.innerText = 'Level Title';
+    levelNameDiv.appendChild(span);
+    uiHelper.clampDot('.itemTitle', 1, 14);
+
+    levelNameDiv.appendChild(document.createElement('br'));
+
+    span = document.createElement('span');
+    span.setAttribute('class', 'itemDescription');
+    span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
+    levelNameDiv.appendChild(span);
+
+    uiHelper.clampDot('.itemDescription', 3, 14);
+
+    var levelDateDiv = document.createElement('div');
+    levelDateDiv.setAttribute('class', 'levelDateDiv');
+    itemBar.appendChild(levelDateDiv);
+
+    span = document.createElement('span');
+    span.setAttribute('class', 'itemDate');
+    span.innerText = '31-12-2020';
+    levelDateDiv.appendChild(span);
+
+    var levelSaveDiv = document.createElement('div');
+    levelSaveDiv.setAttribute('class', 'levelSaveDiv');
+    itemBar.appendChild(levelSaveDiv);
+
+    let button = document.createElement('div');
+    button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    button.innerHTML = buttonName;
+    levelSaveDiv.appendChild(button);
+    //*********************************/
+
+    let itemList = document.createElement('div');
+    itemList.setAttribute('class', 'itemList');
+    divWrapper.appendChild(itemList);
+
+    const buildLevelList = (levels) => {
+        for (let level_id in levels) {
+            if (levels.hasOwnProperty(level_id)) {
+
+                const level = levels[level_id];
+                level.uid = level_id;
+                let $itemBar = $(itemBar).clone();
+                $(itemList).append($itemBar);
+                $itemBar.find('.itemTitle').text(level.title);
+                $itemBar.find('.itemDescription').text(level.description);
+                $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
+                if (level.thumbLowResURL) $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+
+                let saveButton = $itemBar.find('.headerButton.save');
+                saveButton.on('click', () => {
+                    buttonFunction(saveButton[0], level);
+                });
+            }
+        }
+    }
+
+    firebaseManager.getUserLevels().then((levels) => {
+        buildLevelList(levels);
+    })
+
+    return divWrapper;
 }
 export const showLoadScreen = function () {
 
@@ -1293,165 +1296,31 @@ export const showLoadScreen = function () {
         span.style.marginTop = '20px';
         span.style.display = 'inline-block';
 
-        let divWrapper = document.createElement('div');
-        divWrapper.style.padding = '0px 10px';
+        const self = this;
 
-        //fill here
-        var filterBar = document.createElement('div');
-        filterBar.setAttribute('class', 'filterBar');
-
-        var levelNameFilter = document.createElement('div');
-        levelNameFilter.setAttribute('class', 'levelNameFilter');
-        filterBar.appendChild(levelNameFilter);
-
-        var filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelNameFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Title';
-        levelNameFilter.appendChild(span);
-
-        var levelDateFilter = document.createElement('div');
-        levelDateFilter.setAttribute('class', 'levelDateFilter');
-        filterBar.appendChild(levelDateFilter);
-
-        var filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelDateFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Date';
-        levelDateFilter.appendChild(span);
-
-        var levelPlayFilter = document.createElement('div');
-        levelPlayFilter.setAttribute('class', 'levelPlayFilter');
-        filterBar.appendChild(levelPlayFilter);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Load';
-        levelPlayFilter.appendChild(span);
-
-
-        levelNameFilter.style.width = '60%';
-        levelDateFilter.style.width = '20%';
-        levelPlayFilter.style.width = '20%';
-
-
-
-        divWrapper.appendChild(filterBar);
-
-        //*********************************/
-        // Single item
-
-        var itemBar = document.createElement('div');
-        itemBar.setAttribute('class', 'listItem');
-
-        var levelNameDiv = document.createElement('div');
-        levelNameDiv.setAttribute('class', 'levelNameDiv');
-        itemBar.appendChild(levelNameDiv);
-
-        var thumb = document.createElement('div');
-        thumb.setAttribute('class', 'thumb');
-        levelNameDiv.appendChild(thumb);
-
-        var thumbImage = new Image();
-        thumbImage.setAttribute('id', 'thumbImage');
-        thumb.appendChild(thumbImage);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemTitle');
-        span.innerText = 'Level Title';
-        uiHelper.clampDot('.itemTitle', 1, 14);
-        levelNameDiv.appendChild(span);
-
-        levelNameDiv.appendChild(document.createElement('br'));
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemDescription');
-        span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
-        levelNameDiv.appendChild(span);
-
-        uiHelper.clampDot('.itemDescription', 3, 14);
-
-        var levelDateDiv = document.createElement('div');
-        levelDateDiv.setAttribute('class', 'levelDateDiv');
-        itemBar.appendChild(levelDateDiv);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemDate');
-        span.innerText = '31-12-2020';
-        levelDateDiv.appendChild(span);
-
-        var levelLoadDiv = document.createElement('div');
-        levelLoadDiv.setAttribute('class', 'levelLoadDiv');
-        itemBar.appendChild(levelLoadDiv);
-
-        let button = document.createElement('div');
-        button.setAttribute('class', 'headerButton save buttonOverlay dark');
-        button.innerHTML = "LOAD";
-        levelLoadDiv.appendChild(button);
-        //*********************************/
-
-        let itemList = document.createElement('div');
-        itemList.setAttribute('class', 'itemList');
-        divWrapper.appendChild(itemList);
-
-        var self = this;
-
-
-        const buildLevelList = (levels) => {
-            for (let level_id in levels) {
-                if (levels.hasOwnProperty(level_id)) {
-
-                    const level = levels[level_id];
-                    level.uid = level_id;
-                    let $itemBar = $(itemBar).clone();
-                    $(itemList).append($itemBar);
-                    $itemBar.find('.itemTitle').text(level.title);
-                    $itemBar.find('.itemDescription').text(level.description);
-                    $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
-                    if(level.thumbLowResURL) $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
-
-                    let loadButton = $itemBar.find('.headerButton.save');
-                    loadButton.on('click', () => {
-                        const doLevelLoad = () => {
-                            loadButton[0].style.backgroundColor = 'grey';
-                            loadButton[0].innerText = 'LOADING..';
-                            game.loadUserLevelData(level).then(() => {
-                                loadButton[0].style.backgroundColor = '';
-                                loadButton[0].innerText = 'LOAD';
-                                self.hideEditorPanels();
-                                self.setLevelSpecifics();
-                            }).catch((error) => {
-                                loadButton[0].style.backgroundColor = '';
-                                loadButton[0].innerText = 'LOAD';
-                            });
-                        }
-                        if (game.levelHasChanges()) {
-                            self.showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
-                                doLevelLoad();
-                            }).catch((error) => {});
-                        } else doLevelLoad();
-                    });
-                }
+        const buttonFunction = (button, level)=>{
+            const doLevelLoad = () => {
+                button.style.backgroundColor = 'grey';
+                button.innerText = 'LOADING..';
+                game.loadUserLevelData(level).then(() => {
+                    button.style.backgroundColor = '';
+                    button.innerText = 'LOAD';
+                    self.hideEditorPanels();
+                    self.setLevelSpecifics();
+                }).catch((error) => {
+                    button.style.backgroundColor = '';
+                    button.innerText = 'LOAD';
+                });
             }
+            if (game.levelHasChanges()) {
+                self.showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+                    doLevelLoad();
+                }).catch((error) => {});
+            } else doLevelLoad();
         }
 
-        firebaseManager.getUserLevels().then((levels) => {
-            buildLevelList(levels);
-        })
-
-
-        //
-
-        // end here
-
-        targetDomElement.appendChild(divWrapper);
-
+        const levelList = this.generateLevelList('LOAD', buttonFunction);
+        targetDomElement.appendChild(levelList);
 
 
         targetDomElement.appendChild(document.createElement('br'));
@@ -1691,7 +1560,7 @@ export const showNotice = function (message) {
 
     return false;
 }
-export const showTextEditor = function(startValue, callBack){
+export const showTextEditor = function (startValue, callBack) {
     if (textEditor) $(textEditor.domElement).remove();
 
     const loginGUIWidth = 400;
