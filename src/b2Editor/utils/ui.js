@@ -74,6 +74,12 @@ export const hidePanel = function (panel) {
 export const setLevelSpecifics = function () {
     $('.editorHeader > span').text(game.currentLevelData.title);
 }
+export const setNewLevelData = function (){
+    if(levelEditScreen){
+        game.currentLevelData.title = $(levelEditScreen).find('#levelEdit_title').val();
+        game.currentLevelData.description = $(levelEditScreen).find('#levelEdit_description').val();
+    }
+}
 const handleLoginStatusChange = function (event) {
     if (headerBar) {
         if (firebaseManager.isLoggedIn()) {
@@ -972,8 +978,7 @@ export const showLevelEditScreen = function () {
             if (!errorChecks()) return;
             if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
-            game.currentLevelData.title = $(title).val();
-            game.currentLevelData.description = $(description).val();
+            setNewLevelData();
             setLevelSpecifics();
 
             saveButton.style.backgroundColor = 'grey';
@@ -1123,8 +1128,9 @@ export const showSaveScreen = function () {
                 button.innerText = 'SAVING..';
 
 
-                game.currentLevelData.title = $(levelEditScreen).find('#levelEdit_title').val();
-                game.currentLevelData.description = $(levelEditScreen).find('#levelEdit_description').val();
+                setNewLevelData();
+                setLevelSpecifics();
+                //TODO potentially more like background etc..
 
 
                 game.saveLevelData().then(() => {
