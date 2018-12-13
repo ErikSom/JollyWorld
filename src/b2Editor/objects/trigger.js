@@ -496,11 +496,27 @@ export const triggerRepeatType = {
     continuesOnContact: 2,
     onActivation: 3,
 }
-export const containsTargetType = function (targetType, body) {
-    switch (targetType) {
+export const containsTargetType = function (targetTrigger, body) {
+    switch (targetTrigger.data.targetType) {
         case triggerTargetType.mainCharacter:
             return body.mainCharacter;
-            break;
+        case triggerTargetType.anyCharacter:
+            return body.mainCharacter; //TODO
+        case triggerTargetType.anyButMainCharacter:
+            return !body.mainCharacter; //TODO
+        case triggerTargetType.groupName:
+            const groups = body.mySprite.data.groups.split(',');
+            var group = 'test';
+            return groups.includes(group); //TODO
+        case triggerTargetType.allObjects:
+            return true;
+        case triggerTargetType.attachedTargetsOnly:
+            for(let i = 0; i<targetTrigger.targets.length; i++){
+                let target = targetTrigger.targets[i];
+                if(target == body) return true;
+                else if(target.mySprite && target.mySprite.data.prefabInstanceName && target.mySprite.data.prefabInstanceName == body.mySprite.data.prefabInstanceName) return true;
+            }
+            return false;
     }
 }
 export class triggerCore {
@@ -537,7 +553,7 @@ export class triggerCore {
         this.contactListener.BeginContact = function (contact, target) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
-                if (containsTargetType(self.data.targetType, bodies[i])) {
+                if (containsTargetType(self, bodies[i])) {
                     if (!self.touchingObjects.includes(bodies[i])) self.touchingObjects.push(bodies[i]);
                     self.touchingTarget = true;
                     if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
@@ -554,7 +570,7 @@ export class triggerCore {
         this.contactListener.EndContact = function (contact, target) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
-                if (containsTargetType(self.data.targetType, bodies[i])) {
+                if (containsTargetType(self, bodies[i])) {
                     for (var j = 0; j < self.touchingObjects.length; j++) {
                         if (self.touchingObjects[j] == bodies[i]) {
                             self.touchingObjects.splice(j, 1);
