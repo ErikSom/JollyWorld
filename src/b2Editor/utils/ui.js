@@ -803,12 +803,13 @@ export const showLevelEditScreen = function () {
         let thumbnailShotComplete = () => {
             levelEditScreen.domElement.style.display = 'block';
             thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
+            thumbNailImage.style.display = 'block';
         }
 
         $(thumbNail).click(() => {
             B2dEditor.cameraShotCallBack = thumbnailShotComplete;
             B2dEditor.selectTool(B2dEditor.tool_CAMERA);
-            levelEditScreen.domElement.style.display = 'none';
+           levelEditScreen.domElement.style.display = 'none';
         });
 
         let youtubeLink;
