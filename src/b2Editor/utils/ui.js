@@ -966,6 +966,31 @@ export const showLevelEditScreen = function () {
         publishButton.innerHTML = "PUBLISH";
         divWrapper.appendChild(publishButton);
 
+
+        $(saveButton).on('click', () => {
+            //save locally first
+            if (!errorChecks()) return;
+            if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+
+            game.currentLevelData.title = $(title).val();
+            game.currentLevelData.description = $(description).val();
+            setLevelSpecifics();
+
+            saveButton.style.backgroundColor = 'grey';
+            saveButton.innerText = 'SAVING..';
+
+            //try to save online
+            game.saveLevelData().then(() => {
+                saveButton.style.backgroundColor = '';
+                saveButton.innerText = 'SAVE';
+            }).catch((error) => {
+                saveButton.style.backgroundColor = '';
+                saveButton.innerText = 'SAVE';
+            });
+        });
+
+
+
         let deleteButton = document.createElement('div');
         deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
         deleteButton.innerHTML = "DELETE";
@@ -1096,6 +1121,12 @@ export const showSaveScreen = function () {
                 game.currentLevelData.uid = level.uid;
                 button.style.backgroundColor = 'grey';
                 button.innerText = 'SAVING..';
+
+
+                game.currentLevelData.title = $(levelEditScreen).find('#levelEdit_title').val();
+                game.currentLevelData.description = $(levelEditScreen).find('#levelEdit_description').val();
+
+
                 game.saveLevelData().then(() => {
                     button.style.backgroundColor = '';
                     button.innerText = 'SAVE';
