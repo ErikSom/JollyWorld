@@ -51,6 +51,7 @@ export var Key = {
     Y: 89,
     Z: 90,
     COMMAND:91,
+    MOUSE:1000,
     isDown: function (keyCode) {
         if(keyCode instanceof Array){
             var i;
@@ -97,6 +98,12 @@ export var Key = {
             delete this._down[224];
             this._released[224] = true;
         }
+    },
+    onMouseDown: function(event) {
+        this.onKeydown({keyCode:Key.MOUSE});
+    },
+    onMouseUp: function(event) {
+        this.onKeyup({keyCode:Key.MOUSE});
     },
 
     update: function (){

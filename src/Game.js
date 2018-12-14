@@ -59,8 +59,7 @@ function Game() {
     this.world;
     this.worldJSON;
 
-    this.isMouseDown
-    this.selectedBody
+    this.selectedBody;
     this.mouseJoint;
     this.run = false;
     this.gameState = false;
@@ -188,7 +187,6 @@ function Game() {
 
     //mouse
     this.onMouseDown = function (e) {
-        this.isMouseDown = true;
         if (!this.mouseJoint && this.run) {
             var body = this.getBodyAtMouse();
             if (body) {
@@ -203,7 +201,7 @@ function Game() {
             }
 
         }
-
+        Key.onMouseDown();
         this.onMouseMove(e);
         this.editor.onMouseDown(e);
     };
@@ -211,9 +209,8 @@ function Game() {
 
 
     this.onMouseUp = function (e) {
-        this.isMouseDown = false;
+        Key.onMouseUp();
         this.editor.onMouseUp(e);
-
     };
 
     this.onMouseMove = function (e) {
@@ -620,7 +617,7 @@ function Game() {
 
     this.update = function () {
         if (this.mouseJoint) {
-            if (this.isMouseDown) {
+            if (Key.isDown(Key.MOUSE)) {
                 this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y));
             } else {
                 this.world.DestroyJoint(this.mouseJoint);

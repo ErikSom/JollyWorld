@@ -4,6 +4,7 @@ import {
 import * as ui from "../utils/ui";
 import * as Box2D from "../../../libs/Box2D";
 import { Settings } from "../../Settings";
+import { Key } from "../../../libs/Key";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -485,10 +486,9 @@ export const triggerTargetType = {
     mainCharacter: 0,
     anyCharacter: 1,
     anyButMainCharacter: 2,
-    groupName: 3,
-    allObjects: 4,
-    attachedTargetsOnly: 5,
-    click: 6,
+    allObjects: 3,
+    attachedTargetsOnly: 4,
+    click: 5,
 }
 export const triggerRepeatType = {
     once: 0,
@@ -503,11 +503,7 @@ export const containsTargetType = function (targetTrigger, body) {
         case triggerTargetType.anyCharacter:
             return body.mainCharacter; //TODO
         case triggerTargetType.anyButMainCharacter:
-            return !body.mainCharacter; //TODO
-        case triggerTargetType.groupName:
-            const groups = body.mySprite.data.groups.split(',');
-            var group = 'test';
-            return groups.includes(group); //TODO
+            return !body.mainCharacter;
         case triggerTargetType.allObjects:
             return true;
         case triggerTargetType.attachedTargetsOnly:
@@ -537,6 +533,17 @@ export class triggerCore {
         this.initContactListener();
     }
     update() {
+        if(this.data.targetType == triggerTargetType.click){
+            if(Key.isPressed(Key.MOUSE)){
+                console.log(this.data);
+                if(this.data.radius>0){
+                    const distx = B2dEditor.mousePosWorld.x-this.trigger.GetPosition().x;
+                    const disty = B2dEditor.mousePosWorld.y-this.trigger.GetPosition().y;
+                    const dist = Math.sqrt(distx * distx + disty * disty);
+                    console.log(dist);
+                }
+            }
+        }
         if (this.runTriggerOnce) {
             this.doTrigger();
             this.runTriggerOnce = false;
@@ -551,6 +558,7 @@ export class triggerCore {
         var self = this;
         this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
+            if(self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 if (containsTargetType(self, bodies[i])) {
@@ -568,6 +576,7 @@ export class triggerCore {
             }
         }
         this.contactListener.EndContact = function (contact, target) {
+            if(self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 if (containsTargetType(self, bodies[i])) {
