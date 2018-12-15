@@ -535,13 +535,15 @@ export class triggerCore {
     update() {
         if(this.data.targetType == triggerTargetType.click){
             if(Key.isPressed(Key.MOUSE)){
-                console.log(this.data);
-                if(this.data.radius>0){
-                    const distx = B2dEditor.mousePosWorld.x-this.trigger.GetPosition().x;
-                    const disty = B2dEditor.mousePosWorld.y-this.trigger.GetPosition().y;
-                    const dist = Math.sqrt(distx * distx + disty * disty);
-                    console.log(dist);
-                }
+                let fixture = this.trigger.GetFixtureList();
+				while (fixture != null) {
+					if(fixture.TestPoint(B2dEditor.mousePosWorld)){
+                        console.log("YEESSSS");
+                        this.doTrigger();
+                        break;
+                    }
+					fixture = fixture.GetNext();
+				}
             }
         }
         if (this.runTriggerOnce) {
