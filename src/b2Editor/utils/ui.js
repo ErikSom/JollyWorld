@@ -100,6 +100,59 @@ const handleLoginStatusChange = function (event) {
         });
     }
 }
+const checkLevelDataForErrors = function(){
+    const title = $(levelEditScreen.domElement).find('#levelEdit_title')[0];
+    const description = $(levelEditScreen.domElement).find('#levelEdit_description')[0];
+    const errorSpan = $(levelEditScreen.domElement).find('#levelEdit_errorText')[0];
+
+    var errorStack = [];
+    const textAreaDefaultColor = '#fff';
+    const textAreaErrorColor = '#e8764b';
+
+    title.style.backgroundColor = textAreaDefaultColor;
+    description.style.backgroundColor = textAreaDefaultColor;
+
+    if (title.value.length < 3) {
+        title.style.backgroundColor = textAreaErrorColor;
+        errorStack.push("Title must be at least 3 characters long");
+    }
+
+    errorSpan.innerText = '';
+    if (errorStack.length == 0) return true;
+    for (var i = 0; i < errorStack.length; i++) {
+        errorSpan.innerText += errorStack[i] + '\n';
+    }
+    return false;
+}
+const doSaveLevelData = function (saveButton) {
+    //save locally first
+
+    if(!levelEditScreen){
+         showLevelEditScreen();
+         levelEditScreen.domElement.style.display = 'none';
+    }
+    if (!checkLevelDataForErrors()){
+        showLevelEditScreen();
+        return;
+    }
+    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+
+    setNewLevelData();
+    setLevelSpecifics();
+
+    saveButton.style.backgroundColor = 'grey';
+    saveButton.innerText = 'SAVING..';
+
+    //try to save online
+    game.saveLevelData().then(() => {
+        saveButton.style.backgroundColor = '';
+        saveButton.innerText = 'SAVE';
+    }).catch((error) => {
+        console.log(error);
+        saveButton.style.backgroundColor = '';
+        saveButton.innerText = 'SAVE';
+    });
+}
 export const showHeaderBar = function () {
     headerBar = document.createElement('div');
     headerBar.setAttribute('class', 'editorHeader');
@@ -127,25 +180,7 @@ export const showHeaderBar = function () {
 
     $(saveButton).on('click', () => {
         //save locally first
-
-        if (game.currentLevelData.title == '') {
-            self.showLevelEditScreen();
-            return;
-        }
-
-        if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
-
-        saveButton.style.backgroundColor = 'grey';
-        saveButton.innerText = 'SAVING..';
-
-        //try to save online
-        game.saveLevelData().then(() => {
-            saveButton.style.backgroundColor = '';
-            saveButton.innerText = 'SAVE';
-        }).catch((error) => {
-            saveButton.style.backgroundColor = '';
-            saveButton.innerText = 'SAVE';
-        });
+        doSaveLevelData(saveButton);
     });
 
     button = document.createElement('div');
@@ -218,6 +253,13 @@ export const showLoginScreen = function () {
         folder.domElement.style.textAlign = 'center';
 
         folder.open();
+
+        const closeButton = document.createElement('div');
+        closeButton.setAttribute('class', 'closeWindowIcon');
+        folder.domElement.append(closeButton);
+        $(closeButton).click(() => {
+            hidePanel(loginScreen);
+        });
 
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
@@ -783,6 +825,13 @@ export const showLevelEditScreen = function () {
 
         folder.open();
 
+        const closeButton = document.createElement('div');
+        closeButton.setAttribute('class', 'closeWindowIcon');
+        folder.domElement.append(closeButton);
+        $(closeButton).click(() => {
+            hidePanel(levelEditScreen);
+        });
+
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
@@ -822,7 +871,6 @@ export const showLevelEditScreen = function () {
             youtubeLink.setAttribute('id', 'youtubeLink');
             youtubeFeed.appendChild(youtubeLink);
         }
-
 
 
         let span = document.createElement('span');
@@ -907,31 +955,10 @@ export const showLevelEditScreen = function () {
 
 
         let errorSpan = document.createElement('span');
+        errorSpan.setAttribute('id', 'levelEdit_errorText');
         errorSpan.innerText = '';
         errorSpan.style.color = '#ff4b00';
         divWrapper.appendChild(errorSpan);
-
-        const errorChecks = () => {
-            var errorStack = [];
-            const textAreaDefaultColor = '#fff';
-            const textAreaErrorColor = '#e8764b';
-
-            title.style.backgroundColor = textAreaDefaultColor;
-            description.style.backgroundColor = textAreaDefaultColor;
-
-            if (title.value.length < 3) {
-                title.style.backgroundColor = textAreaErrorColor;
-                errorStack.push("Title must be at least 3 characters long");
-            }
-
-            errorSpan.innerText = '';
-            if (errorStack.length == 0) return true;
-            for (var i = 0; i < errorStack.length; i++) {
-                errorSpan.innerText += errorStack[i] + '\n';
-            }
-            return false;
-        }
-
 
         let saveButton = document.createElement('div');
         saveButton.setAttribute('class', 'headerButton save buttonOverlay dark');
@@ -939,25 +966,7 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(saveButton);
 
         $(saveButton).on('click', () => {
-            //save locally first
-            if (!errorChecks()) return;
-            if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
-
-            setNewLevelData();
-            setLevelSpecifics();
-
-            saveButton.style.backgroundColor = 'grey';
-            saveButton.innerText = 'SAVING..';
-
-            //try to save online
-            game.saveLevelData().then(() => {
-                saveButton.style.backgroundColor = '';
-                saveButton.innerText = 'SAVE';
-            }).catch((error) => {
-                console.log(error);
-                saveButton.style.backgroundColor = '';
-                saveButton.innerText = 'SAVE';
-            });
+            doSaveLevelData(saveButton);
         });
 
         let saveAsButton = document.createElement('div');
@@ -968,7 +977,7 @@ export const showLevelEditScreen = function () {
         var self = this;
         saveAsButton.addEventListener('click', () => {
             console.log(self);
-            if (!errorChecks()) return;
+            if (!checkLevelDataForErrors()) return;
             self.showSaveScreen.bind(self)();
         });
 
@@ -1059,6 +1068,13 @@ export const showSaveScreen = function () {
         folder.domElement.style.textAlign = 'center';
 
         folder.open();
+
+        const closeButton = document.createElement('div');
+        closeButton.setAttribute('class', 'closeWindowIcon');
+        folder.domElement.append(closeButton);
+        $(closeButton).click(() => {
+            hidePanel(saveScreen);
+        });
 
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
@@ -1317,6 +1333,13 @@ export const showLoadScreen = function () {
 
         folder.open();
 
+        const closeButton = document.createElement('div');
+        closeButton.setAttribute('class', 'closeWindowIcon');
+        folder.domElement.append(closeButton);
+        $(closeButton).click(() => {
+            hidePanel(loadScreen);
+        });
+
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
@@ -1552,6 +1575,13 @@ export const showNotice = function (message) {
     folder.domElement.style.textAlign = 'center';
 
     folder.open();
+
+    const closeButton = document.createElement('div');
+    closeButton.setAttribute('class', 'closeWindowIcon');
+    folder.domElement.append(closeButton);
+    $(closeButton).click(() => {
+        $(notice.domElement).remove();
+    });
 
     var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
