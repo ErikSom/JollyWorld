@@ -78,8 +78,10 @@ export const setLevelSpecifics = function () {
 }
 export const setNewLevelData = function () {
     if (levelEditScreen) {
-        game.currentLevelData.title = $(levelEditScreen).find('#levelEdit_title').val();
-        game.currentLevelData.description = $(levelEditScreen).find('#levelEdit_description').val();
+        game.currentLevelData.title = $(levelEditScreen.domElement).find('#levelEdit_title').val();
+        console.log($(levelEditScreen.domElement).find('#levelEdit_title'));
+        game.currentLevelData.description = $(levelEditScreen.domElement).find('#levelEdit_description').text();
+        console.log($(levelEditScreen.domElement).find('#levelEdit_description'));
     }
 }
 const handleLoginStatusChange = function (event) {
@@ -941,8 +943,7 @@ export const showLevelEditScreen = function () {
             if (!errorChecks()) return;
             if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
-            game.currentLevelData.title = $(title).val();
-            game.currentLevelData.description = $(description).val();
+            setNewLevelData();
             setLevelSpecifics();
 
             saveButton.style.backgroundColor = 'grey';
@@ -953,6 +954,7 @@ export const showLevelEditScreen = function () {
                 saveButton.style.backgroundColor = '';
                 saveButton.innerText = 'SAVE';
             }).catch((error) => {
+                console.log(error);
                 saveButton.style.backgroundColor = '';
                 saveButton.innerText = 'SAVE';
             });
@@ -976,25 +978,12 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(publishButton);
 
 
-        $(saveButton).on('click', () => {
+        $(publishButton).on('click', () => {
             //save locally first
             if (!errorChecks()) return;
             if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
-            setNewLevelData();
-            setLevelSpecifics();
-
-            saveButton.style.backgroundColor = 'grey';
-            saveButton.innerText = 'SAVING..';
-
-            //try to save online
-            game.saveLevelData().then(() => {
-                saveButton.style.backgroundColor = '';
-                saveButton.innerText = 'SAVE';
-            }).catch((error) => {
-                saveButton.style.backgroundColor = '';
-                saveButton.innerText = 'SAVE';
-            });
+            console.log("PUBLISH LEVEL");
         });
 
 
