@@ -431,6 +431,20 @@ function Game() {
             });
         });
     }
+    this.publishLevelData = function () {
+        return new Promise((resolve, reject) => {
+            firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then((levelData) => {
+                console.log('SAVED:', levelData);
+                this.currentLevelData = levelData;
+                game.editor.cameraShotData.highRes = null;
+                game.editor.cameraShotData.lowRes = null;
+                SaveManager.saveTempEditorWorld(self.currentLevelData);
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
     this.deleteLevelData = function () {
         return firebaseManager.deleteUserLevelData(game.currentLevelData);
     }

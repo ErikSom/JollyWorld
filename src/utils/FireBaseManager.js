@@ -59,6 +59,7 @@ function FireBaseManager() {
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
             usernameRef.once('value').then(snapshot => {
                 self.userData = snapshot.val();
+                console.log("USER DATA",self.userData);
                 if (!self.userData) {
                     reject({
                         message: "Username is not set"
@@ -300,6 +301,29 @@ function FireBaseManager() {
             levelObject["background"] = details.background;
 
             var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
+            levelRef.set(levelObject, function (error) {
+                if (error) reject(error);
+                else resolve(levelObject);
+            });
+        });
+    }
+    this.publishLevelData = function (levelData) {
+        return new Promise((resolve, reject) => {
+            if (!this.userData) return reject({
+                message: "Userdata not loaded"
+            });
+            var levelObject = {};
+            levelObject["dataURL"] = details.dataURL;
+            levelObject["thumbHighResURL"] = details.thumbHighResURL;
+            levelObject["thumbLowResURL"] = details.thumbLowResURL;
+            levelObject["creationDate"] = details.creationDate;
+            levelObject["description"] = details.description;
+            levelObject["title"] = details.title;
+            levelObject["background"] = details.background;
+            levelObject["creator"] = this.userData.username;
+            levelObject["creatorID"] = firebase.auth().currentUser.uid;
+
+            var levelRef = firebase.database().ref(`/PublishedLevels/${details.uid}`);
             levelRef.set(levelObject, function (error) {
                 if (error) reject(error);
                 else resolve(levelObject);

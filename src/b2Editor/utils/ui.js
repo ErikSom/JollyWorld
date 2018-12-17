@@ -100,7 +100,7 @@ const handleLoginStatusChange = function (event) {
         });
     }
 }
-const checkLevelDataForErrors = function(){
+const checkLevelDataForErrors = function () {
     const title = $(levelEditScreen.domElement).find('#levelEdit_title')[0];
     const description = $(levelEditScreen.domElement).find('#levelEdit_description')[0];
     const errorSpan = $(levelEditScreen.domElement).find('#levelEdit_errorText')[0];
@@ -126,12 +126,11 @@ const checkLevelDataForErrors = function(){
 }
 const doSaveLevelData = function (saveButton) {
     //save locally first
-
-    if(!levelEditScreen){
-         showLevelEditScreen();
-         levelEditScreen.domElement.style.display = 'none';
+    if (!levelEditScreen) {
+        showLevelEditScreen();
+        levelEditScreen.domElement.style.display = 'none';
     }
-    if (!checkLevelDataForErrors()){
+    if (!checkLevelDataForErrors()) {
         showLevelEditScreen();
         return;
     }
@@ -152,6 +151,23 @@ const doSaveLevelData = function (saveButton) {
         saveButton.style.backgroundColor = '';
         saveButton.innerText = 'SAVE';
     });
+}
+const doPublishLevelData = function (publishButton) {
+    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+
+    self.showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+        publishButton.style.backgroundColor = 'grey';
+        publishButton.innerText = 'PUBLISHING..';
+        game.publishLevelData().then(() => {
+            publishButton.style.backgroundColor = '';
+            publishButton.innerText = 'PUBLISH';
+        }).catch((error) => {
+            console.log(error);
+            publishButton.style.backgroundColor = '';
+            publishButton.innerText = 'PUBLISH';
+        });
+    }).catch((error) => {});
+
 }
 export const showHeaderBar = function () {
     headerBar = document.createElement('div');
