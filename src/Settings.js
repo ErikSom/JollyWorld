@@ -33,6 +33,7 @@ export var Settings = {
         login_DefaultRePassword: 'Re-type Password',
         login_DefaultEmail: 'E-mail addres',
         save_notLoggedIn: 'You must be logged in to save levels in the cloud. Your current level is automatically saved to this PC.',
+        publish_notYetSaved: 'You first need to save the level before you can publish it.',
         load_notLoggedIn: 'You must be logged in to load levels from the cloud. Your current level is automatically loaded on the next boot.',
         unsavedChanges: 'You have unsaved changes to your level, are you sure you wish to proceed?',
         confirm:'Yes!',

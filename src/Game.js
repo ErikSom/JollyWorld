@@ -422,6 +422,7 @@ function Game() {
             firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then((levelData) => {
                 console.log('SAVED:', levelData);
                 this.currentLevelData = levelData;
+                game.currentLevelData.saved = true;
                 game.editor.cameraShotData.highRes = null;
                 game.editor.cameraShotData.lowRes = null;
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
@@ -474,6 +475,7 @@ function Game() {
             var self = this;
             $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
                 self.currentLevelData.json = JSON.stringify(data);
+                game.currentLevelData.saved = true;
                 self.initLevel(self.currentLevelData);
                 return resolve();
             }).fail(function (jqXHR, textStatus, errorThrown) {

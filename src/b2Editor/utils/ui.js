@@ -79,10 +79,18 @@ export const setLevelSpecifics = function () {
 export const setNewLevelData = function () {
     if (levelEditScreen) {
         game.currentLevelData.title = $(levelEditScreen.domElement).find('#levelEdit_title').val();
-        console.log($(levelEditScreen.domElement).find('#levelEdit_title'));
-        game.currentLevelData.description = $(levelEditScreen.domElement).find('#levelEdit_description').text();
-        console.log($(levelEditScreen.domElement).find('#levelEdit_description'));
+        game.currentLevelData.description = $(levelEditScreen.domElement).find('#levelEdit_description').val();
     }
+}
+const hasUnsavedChanges = function () {
+    if (game.levelHasChanges()) return true;
+    if (!levelEditScreen) return false;
+    else {
+        if (game.currentLevelData.title != $(levelEditScreen.domElement).find('#levelEdit_title').val()) return true;
+        if (game.currentLevelData.description != $(levelEditScreen.domElement).find('#levelEdit_description').val()) return true;
+
+    }
+    return false;
 }
 const handleLoginStatusChange = function (event) {
     if (headerBar) {
@@ -154,19 +162,32 @@ const doSaveLevelData = function (saveButton) {
 }
 const doPublishLevelData = function (publishButton) {
     if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+    if (!game.currentLevelData.saved) return showNotice(Settings.DEFAULT_TEXTS.publish_notYetSaved);
 
-    self.showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
-        publishButton.style.backgroundColor = 'grey';
-        publishButton.innerText = 'PUBLISHING..';
-        game.publishLevelData().then(() => {
-            publishButton.style.backgroundColor = '';
-            publishButton.innerText = 'PUBLISH';
+    const publishLevel = () => {
+        showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+            publishButton.style.backgroundColor = 'grey';
+            publishButton.innerText = '...';
+            console.log("Yeah publishing now..");
+            game.publishLevelData().then(() => {
+                publishButton.style.backgroundColor = '';
+                publishButton.innerText = 'PUBLISH';
+                console.log("PUBLISH SUCCESSSSSS");
+            }).catch((error) => {
+                console.log(error);
+                publishButton.style.backgroundColor = '';
+                publishButton.innerText = 'PUBLISH';
+            });
         }).catch((error) => {
             console.log(error);
-            publishButton.style.backgroundColor = '';
-            publishButton.innerText = 'PUBLISH';
         });
-    }).catch((error) => {});
+    }
+
+    if (hasUnsavedChanges()) {
+        showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+            publishLevel();
+        }).catch((error) => {});
+    } else publishLevel();
 
 }
 export const showHeaderBar = function () {
@@ -1004,11 +1025,7 @@ export const showLevelEditScreen = function () {
 
 
         $(publishButton).on('click', () => {
-            //save locally first
-            if (!errorChecks()) return;
-            if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
-
-            console.log("PUBLISH LEVEL");
+            doPublishLevelData(publishButton);
         });
 
 
@@ -1022,7 +1039,7 @@ export const showLevelEditScreen = function () {
         $(deleteButton).on('click', () => {
             self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 deleteButton.style.backgroundColor = 'grey';
-                deleteButton.innerText = 'DELETING..';
+                deleteButton.innerText = '...';
                 game.deleteLevelData().then(() => {
                     deleteButton.style.backgroundColor = '';
                     deleteButton.innerText = 'DELETE';
@@ -1063,7 +1080,7 @@ export const showLevelEditScreen = function () {
         thumbNailImage.style.display = 'none';
     }
     $(levelEditScreen.domElement).find('#levelEdit_title').val(game.currentLevelData.title);
-    $(levelEditScreen.domElement).find('#levelEdit_description').text(game.currentLevelData.description);
+    $(levelEditScreen.domElement).find('#levelEdit_description').val(game.currentLevelData.description);
 }
 export const showSaveScreen = function () {
 
@@ -1367,7 +1384,6 @@ export const showLoadScreen = function () {
         span.style.marginTop = '20px';
         span.style.display = 'inline-block';
 
-        const self = this;
 
         let divWrapper = document.createElement('div');
         divWrapper.setAttribute('id', 'levelList');
@@ -1388,6 +1404,8 @@ export const showLoadScreen = function () {
     //On every open screen
     $(loadScreen.domElement).show();
 
+    const self = this;
+
     const buttonFunction = (button, level) => {
         const doLevelLoad = () => {
             button.style.backgroundColor = 'grey';
@@ -1398,11 +1416,12 @@ export const showLoadScreen = function () {
                 self.hideEditorPanels();
                 self.setLevelSpecifics();
             }).catch((error) => {
+                console.log(error);
                 button.style.backgroundColor = '';
                 button.innerText = 'LOAD';
             });
         }
-        if (game.levelHasChanges()) {
+        if (hasUnsavedChanges()) {
             self.showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 doLevelLoad();
             }).catch((error) => {});
