@@ -1628,6 +1628,7 @@ const _B2dEditor = function () {
 
 			self.cameraShotCallBack();
 
+			self.selectTool(this.tool_SELECT);
 
 			console.log("Camera Shot Succesfull");
 		}
