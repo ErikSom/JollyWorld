@@ -302,6 +302,7 @@ function FireBaseManager() {
 
             var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
             levelRef.set(levelObject, function (error) {
+                levelObject.uid = details.uid;
                 if (error) reject(error);
                 else resolve(levelObject);
             });
@@ -325,6 +326,7 @@ function FireBaseManager() {
 
             var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
             levelRef.set(levelObject, function (error) {
+                levelObject.uid = levelData.uid;
                 if (error) reject(error);
                 else resolve(levelObject);
             });
