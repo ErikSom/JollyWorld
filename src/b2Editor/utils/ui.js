@@ -88,6 +88,7 @@ const hasUnsavedChanges = function () {
     else {
         if (game.currentLevelData.title != $(levelEditScreen.domElement).find('#levelEdit_title').val()) return true;
         if (game.currentLevelData.description != $(levelEditScreen.domElement).find('#levelEdit_description').val()) return true;
+        if(game.editor.cameraShotData != null) return true;
 
     }
     return false;
@@ -163,6 +164,8 @@ const doSaveLevelData = function (saveButton) {
 const doPublishLevelData = function (publishButton) {
     if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
     if (!game.currentLevelData.saved) return showNotice(Settings.DEFAULT_TEXTS.publish_notYetSaved);
+    if (!game.currentLevelData.thumbLowResURL) return showNotice(Settings.DEFAULT_TEXTS.publish_noThumbnail);
+    if (!game.currentLevelData.description) return showNotice(Settings.DEFAULT_TEXTS.publish_noDescription);
 
     const publishLevel = () => {
         showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {

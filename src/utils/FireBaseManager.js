@@ -292,8 +292,8 @@ function FireBaseManager() {
                 levelObject["thumbHighResURL"] = urls[1];
                 levelObject["thumbLowResURL"] = urls[2];
             }else{
-                levelObject["thumbHighResURL"] = details.thumbHighResURL;
-                levelObject["thumbLowResURL"] = details.thumbLowResURL;
+                if(details.thumbHighResURL) levelObject["thumbHighResURL"] = details.thumbHighResURL;
+                if(details.thumbLowResURL) levelObject["thumbLowResURL"] = details.thumbLowResURL;
             }
             levelObject["creationDate"] = details.creationDate;
             levelObject["description"] = details.description;
@@ -313,17 +313,17 @@ function FireBaseManager() {
                 message: "Userdata not loaded"
             });
             var levelObject = {};
-            levelObject["dataURL"] = details.dataURL;
-            levelObject["thumbHighResURL"] = details.thumbHighResURL;
-            levelObject["thumbLowResURL"] = details.thumbLowResURL;
-            levelObject["creationDate"] = details.creationDate;
-            levelObject["description"] = details.description;
-            levelObject["title"] = details.title;
-            levelObject["background"] = details.background;
+            levelObject["dataURL"] = levelData.dataURL;
+            levelObject["thumbHighResURL"] = levelData.thumbHighResURL;
+            levelObject["thumbLowResURL"] = levelData.thumbLowResURL;
+            levelObject["creationDate"] = levelData.creationDate;
+            levelObject["description"] = levelData.description;
+            levelObject["title"] = levelData.title;
+            levelObject["background"] = levelData.background;
             levelObject["creator"] = this.userData.username;
             levelObject["creatorID"] = firebase.auth().currentUser.uid;
 
-            var levelRef = firebase.database().ref(`/PublishedLevels/${details.uid}`);
+            var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
             levelRef.set(levelObject, function (error) {
                 if (error) reject(error);
                 else resolve(levelObject);
