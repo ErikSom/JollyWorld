@@ -1633,7 +1633,7 @@ const _B2dEditor = function () {
 			console.log("Camera Shot Succesfull");
 		}
 		for (i = 0; i < this.editorIcons.length; i++) {
-			this.editorIcons[i].visible = true;
+			if(!this.editorIcons[i].isPrefabJointGraphic) this.editorIcons[i].visible = true;
 		}
 	}
 
@@ -4777,7 +4777,10 @@ const _B2dEditor = function () {
 		jointGraphics.scale.y = 1.0 / this.container.scale.y;
 
 
-		if (tarObj.prefabInstanceName) jointGraphics.visible = false;
+		if (tarObj.prefabInstanceName){
+			 jointGraphics.visible = false;
+			 jointGraphics.isPrefabJointGraphic = true;
+		}
 
 		this.addObjectToLookupGroups(jointGraphics, jointGraphics.data);
 
