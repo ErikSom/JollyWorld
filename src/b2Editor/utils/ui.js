@@ -163,11 +163,14 @@ const doSaveLevelData = function (saveButton) {
 }
 const doPublishLevelData = function (publishButton) {
     if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
-    if (!game.currentLevelData.saved) return showNotice(Settings.DEFAULT_TEXTS.publish_notYetSaved);
-    if (!game.currentLevelData.thumbLowResURL) return showNotice(Settings.DEFAULT_TEXTS.publish_noThumbnail);
-    if (!game.currentLevelData.description) return showNotice(Settings.DEFAULT_TEXTS.publish_noDescription);
 
     const publishLevel = () => {
+
+        if (!game.currentLevelData.saved) return showNotice(Settings.DEFAULT_TEXTS.publish_notYetSaved);
+        if (!game.currentLevelData.thumbLowResURL) return showNotice(Settings.DEFAULT_TEXTS.publish_noThumbnail);
+        if (!game.currentLevelData.description) return showNotice(Settings.DEFAULT_TEXTS.publish_noDescription);
+
+
         showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
             publishButton.style.backgroundColor = 'grey';
             publishButton.innerText = '...';

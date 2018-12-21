@@ -377,6 +377,8 @@ function Game() {
         this.doAutoSave();
     }
     this.initLevel = function (data) {
+        console.log("Init level data:");
+        console.log(data);
         this.editor.resetEditor();
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
@@ -471,8 +473,9 @@ function Game() {
             var self = this;
             $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
                 self.currentLevelData.json = JSON.stringify(data);
-                game.currentLevelData.saved = true;
+                self.currentLevelData.saved = true;
                 self.initLevel(self.currentLevelData);
+                SaveManager.saveTempEditorWorld(self.currentLevelData);
                 return resolve();
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 return reject({
