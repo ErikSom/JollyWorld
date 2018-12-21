@@ -88,7 +88,7 @@ const hasUnsavedChanges = function () {
     else {
         if (game.currentLevelData.title != $(levelEditScreen.domElement).find('#levelEdit_title').val()) return true;
         if (game.currentLevelData.description != $(levelEditScreen.domElement).find('#levelEdit_description').val()) return true;
-        if(game.editor.cameraShotData != null) return true;
+        if(game.editor.cameraShotData.highRes != null) return true;
 
     }
     return false;
