@@ -1,0 +1,112 @@
+{
+    "rules": {
+      "Users": {
+          ".indexOn": "username",
+            ".write" : "auth != null",
+            ".read" : true,
+          "$uid": {
+              ".validate": "$uid == auth.uid",
+              "username" :{
+                    ".validate" : "!data.exists() && newData.val().length>2 && root.child('Usernames').child(newData.val().toLowerCase()).val() == auth.uid"
+              },
+              "creationDate" :{
+                    ".validate" : "!data.exists() && newData.isNumber()"
+              }
+            }
+      },
+      "Users_Private": {
+            ".write" : "auth != null",
+          "$uid": {
+                ".read" : "$uid === auth.uid",
+              ".validate": "$uid == auth.uid",
+              "levels" :{
+                      ".indexOn": "creationDate",
+                "$levelid":{
+                  "dataURL" :{
+                            ".validate" : "newData.exists()"
+                  },
+                  "thumbHighResURL" :{
+                      // ".validate" : "!data.exists() && newData.exists()"
+                  },
+                  "thumbLowResURL" :{
+                      //".validate" : "!data.exists() && newData.exists()"
+                  },
+                  "creationDate" :{
+                      ".validate" : "(!data.exists() && newData.isNumber()) || newData.val() === data.val()"
+                  },
+                  "description" :{
+                      ".validate" : "!newData.exists() || newData.val().length>3 && newData.val().length<500"
+                  },
+                  "title" :{
+                      ".validate" : "newData.exists() && newData.val().length>3 && newData.val().length<32"
+                  },
+                  "background" :{
+                      ".validate" : "newData.exists() && newData.val().length>3"
+                  },
+                }
+              },
+              "favorites" :{
+              }
+            }
+      },
+        "Usernames": {
+        ".write" : "auth != null",
+        ".read" : false,
+        "$username": {
+                  ".validate": "!data.exists() && newData.exists() && !root.child('Usernames').child(newData.val().toLowerCase()).exists()"
+        }
+      },
+      "PublishedLevelsVoters":{
+         "voters" :{
+            ".validate" : "newData.exists()",
+              "$uvoterid" :{
+                  ".validate" : "$uvoterid == auth.uid && newData.exists() && newData.val() > 0 && newData.val() <= 5"
+              },
+          },
+      },
+      "PublishedLevels": {
+          ".indexOn": "creationDate",
+            ".write" : "auth != null",
+            ".read" : true,
+          "$levelid": {
+              ".validate": "!root.child('PublishedLevels').child($levelid).exists()",
+              "dataURL" :{
+                    ".validate" : "newData.exists()"
+              },
+              "thumbHighResURL" :{
+                    ".validate" : "!data.exists() && newData.exists()"
+              },
+                "thumbLowResURL" :{
+                    ".validate" : "!data.exists() && newData.exists()"
+              },
+              "creationDate" :{
+                    ".validate" : "(!data.exists() && newData.isNumber()) || newData.val() === data.val()"
+              },
+              "creator" :{
+                    ".validate" : "newData.exists() && newData.val().length>=3"
+              },
+              "creatorID" :{
+                    ".validate" : "newData.exists() && newData.val() == auth.uid"
+              },
+              "description" :{
+                    ".validate" : "!newData.exists() || (newData.val().length>3 && newData.val().length<500)"
+              },
+              "title" :{
+                    ".validate" : "newData.exists() && newData.val().length>3 && newData.val().length<32"
+              },
+              "background" :{
+                    ".validate" : "newData.exists() && newData.val().length>3"
+              },
+                // "playCount" :{
+                // ".validate" : "!data.exists() && newData.exists() && newData.val() === 0"
+                // },
+                // "likes" :{
+                // ".validate" : "!data.exists() && newData.exists() && newData.val() === 0"
+                // },
+                // "disLikes":{
+                // ".validate" : "!data.exists() && newData.exists() && newData.val() === 0"
+                // }
+            }
+      },
+    }
+  }

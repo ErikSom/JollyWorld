@@ -313,6 +313,8 @@ function FireBaseManager() {
             if (!this.userData) return reject({
                 message: "Userdata not loaded"
             });
+
+            console.log(this.userData.username);
             var levelObject = {};
             levelObject["dataURL"] = levelData.dataURL;
             levelObject["thumbHighResURL"] = levelData.thumbHighResURL;
