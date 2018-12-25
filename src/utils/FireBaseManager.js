@@ -354,6 +354,16 @@ function FireBaseManager() {
             });
         })
     }
+    this.getPublishedLevels = function (filter) {
+        return new Promise((resolve, reject) => {
+            var levelsRef = firebase.database().ref(`/PublishedLevels/`);
+            levelsRef.once('value', function (snapshot) {
+                return resolve(snapshot.val());
+            }, function (error) {
+                return reject(error);
+            });
+        })
+    }
 
     //UTILS
     //SIMPLE CALLBACK SYSTEM
