@@ -7,6 +7,8 @@ import {
 import $ from 'jquery';
 import * as dat from '../../libs/dat.gui';
 import * as uiHelper  from '../b2Editor/utils/uiHelper';
+import * as formatTimestamp from '../b2Editor/utils/formatTimestamp';
+
 
 
 let levelItemHolder;
@@ -15,6 +17,8 @@ let levelItemElement;
 let mainMenu;
 let gameOver;
 let levelLoader;
+
+let filter = {by:"", range:""};
 
 function UIManager() {
 
@@ -146,10 +150,16 @@ function UIManager() {
 
         const levelListDiv = $(levelLoader.domElement).find('#levelList');
         levelListDiv.empty();
-        this.generateLevelList(levelListDiv[0]);
+        this.generateFilteredPublishLevelList(levelListDiv[0]);
+
+        $(levelLoader.domElement).css('left', '50%');
+        $(levelLoader.domElement).css('top', '50%');
+        $(levelLoader.domElement).css('transform', 'translate(-50%, -50%)');
 
     }
     this.generateFilteredPublishLevelList = function(divWrapper){
+        if(!filter) filter = {by:this.FILTER_BY_NEWEST, range:this.FILTER_RANGE_ANYTIME};
+
          //fill here
          var filterBar = document.createElement('div');
          filterBar.setAttribute('class', 'filterBar');
@@ -274,6 +284,10 @@ function UIManager() {
          thumb.setAttribute('class', 'thumb');
          levelNameDiv.appendChild(thumb);
 
+         var thumbImage = new Image();
+         thumbImage.setAttribute('id', 'thumbImage');
+         thumb.appendChild(thumbImage);
+
          span = document.createElement('span');
          span.setAttribute('class', 'itemTitle');
          span.innerText = 'Level Title';
@@ -296,8 +310,8 @@ function UIManager() {
          itemBar.appendChild(levelAuthorDiv);
 
          span = document.createElement('span');
-         span.setAttribute('class', 'itemDate');
-         span.innerText = 'Smerikinoooo';
+         span.setAttribute('class', 'itemAuthor');
+         span.innerText = '';
          levelAuthorDiv.appendChild(span);
 
          //Level Plays
@@ -307,8 +321,8 @@ function UIManager() {
          itemBar.appendChild(levelPlaysDiv);
 
          span = document.createElement('span');
-         span.setAttribute('class', 'itemDate');
-         span.innerText = '10000000';
+         span.setAttribute('class', 'itemPlays');
+         span.innerText = '';
          levelPlaysDiv.appendChild(span);
 
          //Level Ratings
@@ -318,7 +332,7 @@ function UIManager() {
          itemBar.appendChild(levelRatingsDiv);
 
          span = document.createElement('span');
-         span.setAttribute('class', 'itemDate');
+         span.setAttribute('class', 'itemRating');
          span.innerText = '88% upvote';
          levelRatingsDiv.appendChild(span);
 
@@ -365,9 +379,6 @@ function UIManager() {
 
          let self = this;
 
-         $(itemList).append(itemBar);
-
-
          const buildLevelList = (levels) => {
              for (let level_id in levels) {
                  if (levels.hasOwnProperty(level_id)) {
@@ -378,6 +389,9 @@ function UIManager() {
                      $itemBar.find('.itemTitle').text(level.title);
                      $itemBar.find('.itemDescription').text(level.description);
                      $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
+                     $itemBar.find('.itemAuthor').text(level.creator);
+                     $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+
                     //  let loadButton = $itemBar.find('.headerButton.save');
                     //  loadButton.on('click', () => {
                     //      const doLevelLoad = () => {
@@ -407,243 +421,15 @@ function UIManager() {
              buildLevelList(levels);
          })
     }
+    this.FILTER_BY_PLAYCOUNT = "PlayCount";
+    this.FILTER_BY_RATING = "Rating";
+    this.FILTER_BY_NEWEST = "Newest";
+    this.FILTER_BY_OLDEST = "Oldest";
+    this.FILTER_BY_FEATURED = "Featured";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // LEGACY STUFF, HAS TO BE DELETED AT SOME POINT BUT CAN BORROW CODE
-
-    this.showBox = function (name) {
-        self.showNothing();
-        $(name).css("display", "inline");
-    }
-
-    this.showNothing = function () {
-        $('.box').css("display", "none");
-        $(".ui.positive.message").addClass('hidden');
-        $(".ui.negative.message").addClass('hidden');
-        $('form').removeClass('loading');
-    }
-
-    this.displayLevels = function (levelSnapshot) {
-        levelItemHolder.empty();
-        var itemClone;
-        var level;
-        var i = 0;
-        var self = this;
-        for (var key in levelSnapshot) {
-            if (levelSnapshot.hasOwnProperty(key)) {
-
-                level = levelSnapshot[key];
-                itemClone = (i == 0) ? levelItemElement : levelItemElement.clone();
-                itemClone.find("#creator").html(level.name + "<br>by <a href=" + "www.google.com" + ">" + level.creator + "</a>");
-                if (level.thumbLowResURL) {
-                    itemClone.find("img").attr("src", firebaseManager.baseDownloadURL + level.thumbLowResURL);
-                }
-                console.log("Level:" + key);
-                console.log(levelSnapshot[key]);
-                itemClone.appendTo(levelItemHolder);
-
-                (key => {
-                    itemClone.find("#playButton").click(function () {
-                        $(this).parent().parent().parent().addClass('loading');
-                        console.log('loading key:' + key);
-                        console.log(levelSnapshot[key]);
-                        game.loadLevel(levelSnapshot[key]);
-                    })
-                })(key)
-                i++;
-            }
-        }
-    }
-    this.loggedIn = function () {
-        this.showNothing();
-        // $("#sidebar_loginout_btn").unbind("click");
-        $("#sidebar_loginout_btn").text("Signout");
-        $("#sidebar_loginout_btn").click(function () {
-            firebaseManager.signout();
-            console.log("menu loggedin");
-        });
-
-        $("#sidebar_loadlevel_btn").removeClass("disabled");
-        $("#sidebar_publishlevel_btn").removeClass("disabled");
-    }
-    this.signedOut = function () {
-        //$("#sidebar_loginout_btn").unbind("click");
-        $("#sidebar_loginout_btn").text("Login");
-        $("#sidebar_loginout_btn").click(function () {
-            ui.showBox('#login-box');
-            console.log("menu signedout!!");
-        });
-        $("#sidebar_loadlevel_btn").addClass("disabled");
-        $("#sidebar_publishlevel_btn").addClass("disabled");
-    }
-
-    this.init = function () {
-        console.log("init form!");
-        var formRules = {
-            on: 'blur',
-            fields: {
-                email: {
-                    identifier: 'email',
-                    rules: [{
-                            type: 'empty',
-                            prompt: 'Please enter your e-mail'
-                        },
-                        {
-                            type: 'email',
-                            prompt: 'Please enter a valid e-mail'
-                        }
-                    ],
-                },
-                password: {
-                    identifier: 'password',
-                    rules: [{
-                            type: 'empty',
-                            prompt: 'Please enter your password'
-                        },
-                        {
-                            type: 'length[6]',
-                            prompt: 'Your password must be at least 6 characters'
-                        }
-                    ]
-                },
-                name: {
-                    identifier: 'username',
-                    rules: [{
-                            type: 'empty',
-                            prompt: 'Please enter your name'
-                        },
-                        {
-                            type: 'length[3]',
-                            prompt: 'Your name must be at least 3 characters'
-                        }
-                    ]
-                },
-                level_title: {
-                    identifier: 'level_title',
-                    rules: [{
-                            type: 'empty',
-                            prompt: 'Please enter a level title'
-                        },
-                        {
-                            type: 'length[3]',
-                            prompt: 'Level title must be at least 3 characters'
-                        }
-                    ]
-                }
-            },
-            onSuccess: null
-        };
-
-        formRules.onSuccess = function () {
-            self.formSuccesFunction($(this));
-            return false;
-        }
-        $('.ui.form').form(formRules);
-
-        //SIDEBAR FUNCTIONALITY
-        $('#sidebar-btn').click(function () {
-            $('.ui.sidebar').sidebar('toggle');
-        });
-
-        $('#sidebar_loadlevel_btn').click(function () {
-            self.showBox("#loadlevel-box");
-            game.retreiveNextLevelList();
-        })
-        $('#sidebar_publishlevel_btn').click(function () {
-            self.showBox("#publishlevel-box");
-        })
-
-        levelItemHolder = $("#loadlevel-box .segments");
-        levelItemElement = $("#loadlevel-box .segment").clone();
-        levelItemHolder.empty();
-
-        this.signedOut();
-        firebaseManager.checkURLParameters();
-    }
-    this.formSuccesFunction = function ($form) {
-        $('form').addClass('loading');
-        var formName = $form.parent().attr('id');
-        switch (formName) {
-            case "login-box":
-                console.log("LOGIN PRESS");
-                $('form').addClass('loading');
-                firebaseManager.login($form.closest('.ui.form').form('get value', 'email'), $form.closest(
-                    '.ui.form').form('get value',
-                    'password'));
-                return false;
-                break;
-
-            case "register-box":
-                firebaseManager.createUser($form.closest('.ui.form').form('get value', 'email'), $form.closest(
-                    '.ui.form').form('get value',
-                    'password'));
-                break;
-
-            case "reset-box":
-                firebaseManager.requestResetPassword($form.closest('.ui.form').form('get value', 'email'));
-                break;
-
-            case "reset-box":
-                firebaseManager.resetPassword($form.closest('.ui.form').form('get value', 'password'));
-                break;
-
-            case "userdata-box":
-                var data = {
-                    username: $form.closest('.ui.form').form('get value', 'username'),
-                    creationDate: Date.now()
-                }
-                firebaseManager.checkUserData(data);
-                break;
-
-            case "signout-box":
-                console.log("SIGN OUT");
-                firebaseManager.signout();
-                break;
-            case "publishlevel-box":
-                console.log("PUBLISH LEVEL");
-                game.uploadLevelData({
-                    name: $form.closest('.ui.form').form('get value', 'level_title'),
-                    description: $form.closest('.ui.form').form('get value', 'level_description')
-                });
-                break;
-            default:
-                console.log("NO FUNCTION SET FOR: " + formName);
-                break;
-
-        }
-    }
-    this.levelPublishSuccess = function () {
-        $('form').removeClass('loading');
-        this.showNothing();
-    }
-    this.FILTER_SORTBY_PLAYCOUNT = "PlayCount";
-    this.FILTER_SORTBY_RATING = "Rating";
-    this.FILTER_SORTBY_NEWEST = "Newest";
-    this.FILTER_SORTBY_OLDEST = "Oldest";
-
-    this.FILTER_TIMERANGE_TODAY = "Today";
-    this.FILTER_TIMERANGE_THISWEEK = "ThisWeek";
-    this.FILTER_TIMERANGE_THISMONTH = "ThisMonth";
-    this.FILTER_TIMERANGE_ANYTIME = "Anytime";
+    this.FILTER_RANGE_TODAY = "Today";
+    this.FILTER_RANGE_THISWEEK = "ThisWeek";
+    this.FILTER_RANGE_THISMONTH = "ThisMonth";
+    this.FILTER_RANGE_ANYTIME = "Anytime";
 }
 export var ui = new UIManager();

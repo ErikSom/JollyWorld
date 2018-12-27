@@ -356,7 +356,7 @@ function FireBaseManager() {
     }
     this.getPublishedLevels = function (filter) {
         return new Promise((resolve, reject) => {
-            var levelsRef = firebase.database().ref(`/PublishedLevels/`);
+            var levelsRef = firebase.database().ref(`/PublishedLevels/`).limitToFirst(100);
             levelsRef.once('value', function (snapshot) {
                 return resolve(snapshot.val());
             }, function (error) {
