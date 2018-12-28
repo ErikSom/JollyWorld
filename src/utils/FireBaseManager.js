@@ -44,22 +44,46 @@ function FireBaseManager() {
     }
     this.claimUsername = function (username) {
         username = username.toLowerCase();
+        // return new Promise((resolve, reject) => {
+        //     firebase.database().ref('/Usernames/' + username).set(firebase.auth().currentUser.uid, function (error) {
+        //         if (error) return reject(error);
+        //         else return resolve();
+        //     });
+        // });
+
+        //Transaction to make sure a username is not claimed twice
         return new Promise((resolve, reject) => {
-            firebase.database().ref('/Usernames/' + username).set(firebase.auth().currentUser.uid, function (error) {
-                if (error) return reject(error);
-                else return resolve();
+            var usernameRef = firebase.database().ref('/Usernames/' + username);
+            usernameRef.transaction(function (currentData) {
+                if (currentData === null) return firebase.auth().currentUser.uid;
+                else return;
+            }, function (error, committed, snapshot) {
+                if (error) {
+                    console.log("claimUsername Error:", error);
+                    reject(error);
+                } else if (!committed) {
+                    console.log("claimUsername committed:", committed);
+                    reject(committed);
+                } else {
+                    console.log("claimUsername success:", snapshot.val());
+                    resolve();
+                }
+                console.log("Username data: ", snapshot.val());
             });
         });
+
     }
 
     this.getUserData = function () {
+        console.trace();
+
         var self = this;
         return new Promise((resolve, reject) => {
             if (this.userData) return resolve();
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
             usernameRef.once('value').then(snapshot => {
                 self.userData = snapshot.val();
-                console.log("USER DATA",self.userData);
+                console.log("USER DATA", self.userData);
                 if (!self.userData) {
                     reject({
                         message: "Username is not set"
@@ -71,6 +95,8 @@ function FireBaseManager() {
         });
     }
     this.storeUserData = function (data) {
+        console.log("Store userdata!");
+        console.trace();
         return new Promise((resolve, reject) => {
             var self = this;
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
@@ -87,7 +113,6 @@ function FireBaseManager() {
         return this.user != undefined;
     }
     this.onLogin = function () {
-        this.getUserData();
         this.dispatchEvent('login');
     }
     this.login = function (email, password) {
@@ -276,8 +301,7 @@ function FireBaseManager() {
                         reject(error);
                     })
                 },
-                function (progress) {
-                },
+                function (progress) {},
                 function (error) {
                     reject(error);
                 }
@@ -291,9 +315,9 @@ function FireBaseManager() {
             if (urls.length > 1) {
                 levelObject["thumbHighResURL"] = urls[1];
                 levelObject["thumbLowResURL"] = urls[2];
-            }else{
-                if(details.thumbHighResURL) levelObject["thumbHighResURL"] = details.thumbHighResURL;
-                if(details.thumbLowResURL) levelObject["thumbLowResURL"] = details.thumbLowResURL;
+            } else {
+                if (details.thumbHighResURL) levelObject["thumbHighResURL"] = details.thumbHighResURL;
+                if (details.thumbLowResURL) levelObject["thumbLowResURL"] = details.thumbLowResURL;
             }
             levelObject["creationDate"] = details.creationDate;
             levelObject["description"] = details.description;

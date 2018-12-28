@@ -820,7 +820,9 @@ export const showUsernameScreen = function () {
                     creationDate: Date.now(),
                 }
                 firebaseManager.claimUsername(username.value)
-                    .then(firebaseManager.storeUserData(userData))
+                    .then(() => {
+                        firebaseManager.storeUserData(userData)
+                    })
                     .then(() => {
                         hidePanel(usernameScreen);
                         $(dotShell).hide();
