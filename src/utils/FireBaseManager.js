@@ -59,24 +59,18 @@ function FireBaseManager() {
                 else return;
             }, function (error, committed, snapshot) {
                 if (error) {
-                    console.log("claimUsername Error:", error);
                     reject(error);
                 } else if (!committed) {
-                    console.log("claimUsername committed:", committed);
-                    reject(committed);
+                    reject({code:"USERNAME_TAKEN"});
                 } else {
-                    console.log("claimUsername success:", snapshot.val());
                     resolve();
                 }
-                console.log("Username data: ", snapshot.val());
             });
         });
 
     }
 
     this.getUserData = function () {
-        console.trace();
-
         var self = this;
         return new Promise((resolve, reject) => {
             if (this.userData) return resolve();
@@ -96,7 +90,6 @@ function FireBaseManager() {
     }
     this.storeUserData = function (data) {
         console.log("Store userdata!");
-        console.trace();
         return new Promise((resolve, reject) => {
             var self = this;
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);

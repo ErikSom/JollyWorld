@@ -828,9 +828,9 @@ export const showUsernameScreen = function () {
                         $(dotShell).hide();
                         button.innerHTML = oldText;
                     }).catch((error) => {
-                        console.log("Firebase responded with", error.code);
+                        console.log("Firebase responded with", error);
                         let errorMessage = error.message;
-                        if (error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
+                        if (error.code == 'USERNAME_TAKEN') errorMessage = 'Username already claimed by other email';
                         errorSpan.innerText = errorMessage;
                         $(dotShell).hide();
                         button.innerHTML = oldText;
