@@ -157,6 +157,9 @@ function UIManager() {
         $(levelLoader.domElement).css('transform', 'translate(-50%, -50%)');
 
     }
+    this.hideLevelLoader = function (){
+        $(levelLoader.domElement).hide();
+    }
     this.generateFilteredPublishLevelList = function(divWrapper){
         if(!filter) filter = {by:this.FILTER_BY_NEWEST, range:this.FILTER_RANGE_ANYTIME};
 
@@ -254,7 +257,6 @@ function UIManager() {
          span.setAttribute('class', 'filterTitle');
          span.innerText = 'Play';
          levelPlay.appendChild(span);
-
 
          levelNameFilter.style.width = '37%';
          levelAuthorFilter.style.width = '12%';
@@ -370,6 +372,14 @@ function UIManager() {
          let playButtonTriangle = document.createElement('div');
          playButtonTriangle.setAttribute('class', 'playButtonTriangleIcon')
          button.appendChild(playButtonTriangle)
+
+         var dotShell = document.createElement('div');
+         dotShell.setAttribute('class', 'dot-shell')
+         button.appendChild(dotShell);
+         var dots = document.createElement('div');
+         dots.setAttribute('class', 'dot-pulse')
+         dotShell.appendChild(dots);
+         $(dotShell).hide();
          //*********************************/
 
          // Level Load
@@ -391,6 +401,22 @@ function UIManager() {
                      $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
                      $itemBar.find('.itemAuthor').text(level.creator);
                      $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+
+                     $itemBar.find('.menuButton').click(()=>{
+                        $itemBar.find('.playButtonTriangleIcon').hide();
+                        $itemBar.find('.dot-shell').show();
+                        game.loadPublishedLevelData(level).then(() => {
+                            $itemBar.find('.playButtonTriangleIcon').show();
+                            $itemBar.find('.dot-shell').hide();
+                            game.runWorld();
+                            self.hideLevelLoader();
+                        }).catch((error) => {
+                            console.log(error);
+                            $itemBar.find('.playButtonTriangleIcon').show();
+                            $itemBar.find('.dot-shell').hide();
+                        });
+                     });
+
 
                     //  let loadButton = $itemBar.find('.headerButton.save');
                     //  loadButton.on('click', () => {

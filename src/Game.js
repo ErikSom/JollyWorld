@@ -256,7 +256,7 @@ function Game() {
 
 
     this.inputUpdate = function () {
-        if (this.character.alive) {
+        if (this.gameState != this.GAMESTATE_MENU && this.character.alive) {
             if (this.vehicle && this.character.attachedToVehicle) {
 
                 if (Key.isDown(Key.W)) {
@@ -331,12 +331,17 @@ function Game() {
         ui.buildMainMenu();
         ui.hideGameOverMenu();
         this.runWorld();
+        this.interactive = false;
+
     }
     this.runWorld = function () {
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
-        this.stopAutoSave();
+    }
+    this.playWorld = function () {
+        this.runWorld();
+        this.gameState = this.GAMESTATE_NORMALPLAY;
     }
     this.testWorld = function () {
         this.editor.stringifyWorldJSON();
@@ -476,6 +481,21 @@ function Game() {
                 self.currentLevelData.saved = true;
                 self.initLevel(self.currentLevelData);
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
+                return resolve();
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                return reject({
+                    message: textStatus
+                });
+            });
+        });
+    }
+    this.loadPublishedLevelData = function (levelData) {
+        return new Promise((resolve, reject) => {
+            game.currentLevelData = levelData;
+            var self = this;
+            $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
+                self.currentLevelData.json = JSON.stringify(data);
+                self.initLevel(self.currentLevelData);
                 return resolve();
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 return reject({
