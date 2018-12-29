@@ -394,13 +394,14 @@ function UIManager() {
                  if (levels.hasOwnProperty(level_id)) {
 
                      const level = levels[level_id];
+                     level.uid = level_id;
                      let $itemBar = $(itemBar).clone();
                      $(itemList).append($itemBar);
-                     $itemBar.find('.itemTitle').text(level.title);
-                     $itemBar.find('.itemDescription').text(level.description);
-                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
-                     $itemBar.find('.itemAuthor').text(level.creator);
-                     $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+                     $itemBar.find('.itemTitle').text(level.private.title);
+                     $itemBar.find('.itemDescription').text(level.private.description);
+                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.private.creationDate));
+                     $itemBar.find('.itemAuthor').text(level.private.creator);
+                     $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.private.thumbLowResURL;
 
                      $itemBar.find('.menuButton').click(()=>{
                         $itemBar.find('.playButtonTriangleIcon').hide();

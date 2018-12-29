@@ -288,7 +288,7 @@ function FireBaseManager() {
             var uploader = new this.uploadFiles(filesToUpload, details.uid,
                 function (urls) {
                     self.storeUserLevelData(urls, details).then((levelData) => {
-                        levelData.uid = details.ui;
+                        levelData.uid = details.uid;
                         resolve(levelData);
                     }).catch((error) => {
                         reject(error);
@@ -333,15 +333,20 @@ function FireBaseManager() {
 
             console.log(this.userData.username);
             var levelObject = {};
-            levelObject["dataURL"] = levelData.dataURL;
-            levelObject["thumbHighResURL"] = levelData.thumbHighResURL;
-            levelObject["thumbLowResURL"] = levelData.thumbLowResURL;
-            levelObject["creationDate"] = levelData.creationDate;
-            levelObject["description"] = levelData.description;
-            levelObject["title"] = levelData.title;
-            levelObject["background"] = levelData.background;
-            levelObject["creator"] = this.userData.username;
-            levelObject["creatorID"] = firebase.auth().currentUser.uid;
+            levelObject['private'] = {};
+            levelObject['private']["dataURL"] = levelData.dataURL;
+            levelObject['private']["thumbHighResURL"] = levelData.thumbHighResURL;
+            levelObject['private']["thumbLowResURL"] = levelData.thumbLowResURL;
+            levelObject['private']["creationDate"] = levelData.creationDate;
+            levelObject['private']["description"] = levelData.description;
+            levelObject['private']["title"] = levelData.title;
+            levelObject['private']["background"] = levelData.background;
+            levelObject['private']["creator"] = this.userData.username;
+            levelObject['private']["creatorID"] = firebase.auth().currentUser.uid;
+            levelObject['public'] = {};
+            levelObject['public']["playCount"] = 0;
+            levelObject['public']["firstMonth_playCount"] = 'unset';
+            levelObject['public']["firstWeek_playCount"] = 'unset';
 
             var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
             levelRef.set(levelObject, function (error) {
@@ -350,6 +355,34 @@ function FireBaseManager() {
                 else resolve(levelObject);
             });
         });
+    }
+    this.increasePlayCountPublishedLevel = function(levelData){
+        var playCountRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}/public/playCount`);
+        playCountRef.transaction(count => {
+            console.log(count);
+            if (count === null) {
+                return count = 0;
+            } else {
+                return count + 1;
+            }
+        });
+
+
+        // playCountRef.transaction(function (count) {
+        //     console.log('count', count);
+        //     if (count === null) return 1;
+        //     else return 1;
+        // }, function (error, committed, snapshot) {
+        //     console.log('snapshot', snapshot);
+        //     if (error) {
+        //         console.log(error);
+        //     } else if (!committed) {
+        //         console.log(committed, "wtf is going on");
+        //     } else {
+        //         console.log("Succes");
+        //     }
+        // });
+        
     }
     this.deleteUserLevelData = function (details) {
         console.log(details);

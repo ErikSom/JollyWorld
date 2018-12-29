@@ -491,13 +491,17 @@ function Game() {
     }
     this.loadPublishedLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
-            game.currentLevelData = levelData;
+            game.currentLevelData = levelData.private;
+            console.log(firebaseManager.baseDownloadURL + game.currentLevelData.dataURL);
             var self = this;
-            $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
+            $.getJSON(firebaseManager.baseDownloadURL + game.currentLevelData.dataURL, function (data) {
+                console.log('success');
                 self.currentLevelData.json = JSON.stringify(data);
                 self.initLevel(self.currentLevelData);
+                firebaseManager.increasePlayCountPublishedLevel(levelData);
                 return resolve();
             }).fail(function (jqXHR, textStatus, errorThrown) {
+                console.log('fail', errorThrown);
                 return reject({
                     message: textStatus
                 });
