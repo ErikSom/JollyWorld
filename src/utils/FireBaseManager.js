@@ -24,9 +24,17 @@ function FireBaseManager() {
         this.app = firebase.initializeApp(config);
         var self = this;
         firebase.auth().onAuthStateChanged(function (user) {
+            console.log("Auth changed!", user);
             if (user) {
                 self.user = user;
-                self.onLogin();
+                if(!user.isAnonymous) self.onLogin();
+            }else{
+                //no user, thus do anynomous login
+                // console.log("sign in anonymous");
+                // firebase.auth().signInAnonymously()
+                // .catch(function(error) {
+                // console.log(error);
+                // });
             }
         });
     }
@@ -103,7 +111,7 @@ function FireBaseManager() {
         });
     }
     this.isLoggedIn = function () {
-        return this.user != undefined;
+        return this.user != undefined && !this.user.isAnonymous;
     }
     this.onLogin = function () {
         this.dispatchEvent('login');
@@ -363,9 +371,10 @@ function FireBaseManager() {
             if (count === null) {
                 return count = 0;
             } else {
-                return count + 1;
+                return count+1;
             }
         });
+        
 
 
         // playCountRef.transaction(function (count) {
