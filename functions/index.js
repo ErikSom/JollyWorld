@@ -1,18 +1,20 @@
+const admin = require('firebase-admin');
 const functions = require('firebase-functions');
+
+admin.initializeApp();
 const moment = require('moment');
 const _ = require('lodash');
 
 
 exports.setRangedPopularity = functions.https.onCall((data, context) => {
     //Received 'levelid' from client
-    const levelRef = firebase.database().ref().child(`/PublishedLevels/${data.levelid}`);
+    const levelRef = admin.database().ref().child(`/PublishedLevels/${data.levelid}`);
     const creationDateRef = levelRef.child(`/private/creationDate`);
     const playCountRef = levelRef.child(`/public/playCount`);
     const updateRef = levelRef.child(`/public`);
 
     return creationDateRef.once('value').then(snapshot => {
         const creationDate = moment(snapshot.val());
-
         var now = moment();
 
         if(now.year() !== creationDate.year() || now.month() !== creationDate.month()) return;

@@ -1,10 +1,16 @@
 import {
     ui
 } from '../ui/UIManager';
-const firebase = require('firebase');
-import $ from 'jquery';
-const nanoid = require('nanoid');
+const firebase = require('firebase/app');
+require('firebase/functions');
+require('firebase/storage');
+require('firebase/auth');
+require('firebase/database');
 
+import $ from 'jquery';
+
+const moment = require('moment');
+const nanoid = require('nanoid');
 
 function FireBaseManager() {
     this.app;
@@ -31,10 +37,10 @@ function FireBaseManager() {
             }else{
                 //no user, thus do anynomous login
                 // console.log("sign in anonymous");
-                // firebase.auth().signInAnonymously()
-                // .catch(function(error) {
-                // console.log(error);
-                // });
+                firebase.auth().signInAnonymously()
+                .catch(function(error) {
+                console.log(error);
+                });
             }
         });
     }
@@ -52,13 +58,6 @@ function FireBaseManager() {
     }
     this.claimUsername = function (username) {
         username = username.toLowerCase();
-        // return new Promise((resolve, reject) => {
-        //     firebase.database().ref('/Usernames/' + username).set(firebase.auth().currentUser.uid, function (error) {
-        //         if (error) return reject(error);
-        //         else return resolve();
-        //     });
-        // });
-
         //Transaction to make sure a username is not claimed twice
         return new Promise((resolve, reject) => {
             var usernameRef = firebase.database().ref('/Usernames/' + username);
@@ -374,24 +373,15 @@ function FireBaseManager() {
                 return count+1;
             }
         });
-        
 
+        const now = moment();
+        const creationDate = moment(levelData.private.creationDate);
+        console.log(now.year(), creationDate.year(), now.month(), creationDate.month());
+        if(now.year() === creationDate.year() && now.month() == creationDate.month()){
+            console.log("Call Ranged Popularity");
+            this.call_setRangedPopularity(levelData.uid);
+        }
 
-        // playCountRef.transaction(function (count) {
-        //     console.log('count', count);
-        //     if (count === null) return 1;
-        //     else return 1;
-        // }, function (error, committed, snapshot) {
-        //     console.log('snapshot', snapshot);
-        //     if (error) {
-        //         console.log(error);
-        //     } else if (!committed) {
-        //         console.log(committed, "wtf is going on");
-        //     } else {
-        //         console.log("Succes");
-        //     }
-        // });
-        
     }
     this.deleteUserLevelData = function (details) {
         console.log(details);
@@ -422,6 +412,14 @@ function FireBaseManager() {
                 return reject(error);
             });
         })
+    }
+
+    //CLOUD FUNCTIONS
+    this.call_setRangedPopularity = function(levelid){
+        console.log("Call setRangedPopularity");
+        firebase.functions().httpsCallable('setRangedPopularity')({levelid:levelid}).then(function(result) {
+            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS");
+        });
     }
 
     //UTILS
