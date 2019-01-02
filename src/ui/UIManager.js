@@ -167,7 +167,7 @@ function UIManager() {
 
     this.showLevelBanner = function () {
         if (!levelBanner) {
-            const levelEditGUIWidth = 640;
+            const levelEditGUIWidth = 350;
             levelBanner = new dat.GUI({
                 autoPlace: false,
                 width: levelEditGUIWidth
@@ -190,18 +190,27 @@ function UIManager() {
 
             let creator = document.createElement('div');
             creator.setAttribute('id', 'levelbanner_creator');
-            creator.setAttribute('placeholder', 'Title');
+
+            let span = document.createElement('span');
+            span.innerText = 'By:';
+            creator.appendChild(span);
+
+            span = document.createElement('span');
+            span.innerText = 'Creator';
+            span.setAttribute('id', 'levelbanner_creatorSpan')
+            creator.appendChild(span);
+
             divWrapper.appendChild(creator);
 
 
             let thumbNail;
             thumbNail = document.createElement('div');
-            thumbNail.setAttribute('id', 'levelThumbnail');
+            thumbNail.setAttribute('id', 'levelbanner_levelThumbnail');
             divWrapper.appendChild(thumbNail);
 
             let thumbNailImage;
             thumbNailImage = new Image();
-            thumbNailImage.setAttribute('id', 'levelThumbnailImage');
+            thumbNailImage.setAttribute('id', 'levelbanner_levelThumbnailImage');
             thumbNail.appendChild(thumbNailImage);
 
 
@@ -211,15 +220,10 @@ function UIManager() {
             playButton.innerHTML = 'Play';
             divWrapper.appendChild(playButton);
 
-            let description = document.createElement('textarea');
-            description.setAttribute('id', 'levelEdit_description');
-            description.setAttribute('placeholder', 'Description');
+            let description = document.createElement('div');
+            description.setAttribute('id', 'levelbanner_description');
             divWrapper.appendChild(description);
-            description.style.height = '100px';
 
-
-            divWrapper.appendChild(document.createElement('br'));
-            divWrapper.appendChild(document.createElement('br'));
             targetDomElement.appendChild(divWrapper);
             document.body.appendChild(levelBanner.domElement);
             levelBanner.domElement.style.position = 'absolute';
@@ -229,15 +233,12 @@ function UIManager() {
         levelBanner.domElement.style.display = "block";
         // set values
 
-        // let thumbNailImage = $(levelBanner.domElement).find('#levelThumbnailImage')[0];
-        // if (game.currentLevelData.thumbLowResURL) {
-        //     thumbNailImage.src = firebaseManager.baseDownloadURL + game.currentLevelData.thumbLowResURL;
-        //     thumbNailImage.style.display = 'block';
-        // } else {
-        //     thumbNailImage.style.display = 'none';
-        // }
-        // $(levelBanner.domElement).find('#levelEdit_title').val(game.currentLevelData.title);
-        // $(levelBanner.domElement).find('#levelEdit_description').val(game.currentLevelData.description);
+        let thumbNailImage = $(levelBanner.domElement).find('#levelbanner_levelThumbnailImage')[0];
+        thumbNailImage.src = firebaseManager.baseDownloadURL + game.currentLevelData.thumbHighResURL;
+
+        $(levelBanner.domElement).find('#levelbanner_title').text(game.currentLevelData.title);
+        $(levelBanner.domElement).find('#levelbanner_creatorSpan').text(game.currentLevelData.creator);
+        $(levelBanner.domElement).find('#levelbanner_description').text(game.currentLevelData.description);
 
         $(levelBanner.domElement).css('left', '50%');
         $(levelBanner.domElement).css('top', '50%');
