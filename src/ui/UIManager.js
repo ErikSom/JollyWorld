@@ -220,6 +220,10 @@ function UIManager() {
             playButton.innerHTML = 'Play';
             divWrapper.appendChild(playButton);
 
+            $(playButton).click(()=>{
+               game.playWorld();
+            })
+
             let description = document.createElement('div');
             description.setAttribute('id', 'levelbanner_description');
             divWrapper.appendChild(description);
@@ -498,6 +502,7 @@ function UIManager() {
                             $itemBar.find('.playButtonTriangleIcon').show();
                             $itemBar.find('.dot-shell').hide();
                             self.showLevelBanner();
+                            game.editor.ui.hide();
                             self.hideLevelLoader();
                         }).catch((error) => {
                             console.log(error);
