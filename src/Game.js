@@ -309,6 +309,7 @@ function Game() {
                 }
             }
         }
+        console.log(this.gameOver, this.run);
         if (e.keyCode == 32) { //space
             if (this.gameOver && this.run) {
                 this.resetWorld();
@@ -355,25 +356,23 @@ function Game() {
         this.stopWorld();
         var worldJSON = JSON.parse(this.editor.worldJSON);
         this.editor.buildJSON(worldJSON);
+        this.doAutoSave();
     }
     this.resetWorld = function () {
+        this.resetGame();
         if (this.gameState == this.GAMESTATE_EDITOR) {
             this.stopTestingWorld();
             this.testWorld();
+        }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
+            this.initLevel(this.currentLevelData);
+            this.playWorld();
         }
-    }
-    this.testWorldAndSaveData = function () {
-        this.testWorld();
-        SaveManager.saveTempEditorWorld(this.currentLevelData);
-        this.stopAutoSave();
     }
     this.stopWorld = function () {
         this.editor.resetEditor();
         this.run = false;
-        this.levelWon = false;
-        this.gameOver = false;
+        this.resetGame();
         ui.hideGameOverMenu();
-        this.doAutoSave();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -384,10 +383,14 @@ function Game() {
     this.initLevel = function (data) {
         console.log("Init level data:");
         console.log(data);
-        this.editor.resetEditor();
+        this.stopWorld();
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
+    }
+    this.resetGame = function(){
+        this.levelWon = false;
+        this.gameOver = false;
     }
     // playWorld/testWorld/editoWorld
     this.autoSaveTimeOutID;

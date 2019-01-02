@@ -409,7 +409,7 @@ function UIManager() {
                         game.loadPublishedLevelData(level).then(() => {
                             $itemBar.find('.playButtonTriangleIcon').show();
                             $itemBar.find('.dot-shell').hide();
-                            game.runWorld();
+                            game.playWorld();
                             self.hideLevelLoader();
                         }).catch((error) => {
                             console.log(error);
