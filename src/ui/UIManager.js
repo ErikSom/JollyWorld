@@ -305,6 +305,30 @@ function UIManager() {
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
             upvoteButton.appendChild(thumbIcon);
 
+            let ratingText = document.createElement('div');
+            ratingText.setAttribute('class', 'ratingText')
+            ratingHolder.appendChild(ratingText);
+
+            span = document.createElement('span');
+            span.innerText = '88%';
+            span.setAttribute('id', 'pauseMenu_likesPercentSpan');
+            ratingText.appendChild(span);
+
+            span = document.createElement('span');
+            span.innerText = 'Likes';
+            span.setAttribute('id', 'pauseMenu_likesPercentTextSpan');
+            ratingText.appendChild(span);
+
+            span = document.createElement('span');
+            span.innerText = '999K';
+            span.setAttribute('id', 'pauseMenu_likesNumSpan');
+            ratingText.appendChild(span);
+
+            span = document.createElement('span');
+            span.innerText = 'Voters';
+            span.setAttribute('id', 'pauseMenu_likesNumTextSpan');
+            ratingText.appendChild(span);
+
             let downvoteButton = document.createElement('div');
             downvoteButton.setAttribute('class', 'startButton menuButton downvote')
             ratingHolder.appendChild(downvoteButton);

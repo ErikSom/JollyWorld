@@ -686,6 +686,16 @@ canvas {
 .ratingHolder .downvote .thumbsUpIcon{
     transform:scaleY(-1);
 }
+.ratingHolder .ratingText{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin: 5px;
+}
+.ratingText #pauseMenu_likesPercentSpan, .ratingText #pauseMenu_likesNumSpan{
+    color:#00FF00;
+}
 /**
  * ==============================================
  * Dot Pulse
