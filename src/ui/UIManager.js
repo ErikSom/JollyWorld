@@ -301,6 +301,10 @@ function UIManager() {
             upvoteButton.setAttribute('class', 'startButton menuButton upvote')
             ratingHolder.appendChild(upvoteButton);
 
+            $(upvoteButton).click(()=>{
+                firebaseManager.voteLevel(game.currentLevelData.uid, 1);
+            });
+
             let thumbIcon = document.createElement('div');
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
             upvoteButton.appendChild(thumbIcon);
@@ -332,6 +336,10 @@ function UIManager() {
             let downvoteButton = document.createElement('div');
             downvoteButton.setAttribute('class', 'startButton menuButton downvote')
             ratingHolder.appendChild(downvoteButton);
+
+            $(downvoteButton).click(()=>{
+                firebaseManager.voteLevel(game.currentLevelData.uid, -1);
+            });
 
             thumbIcon = document.createElement('div');
             thumbIcon.setAttribute('class', 'thumbsUpIcon');

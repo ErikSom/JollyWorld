@@ -366,6 +366,19 @@ function FireBaseManager() {
             });
         });
     }
+    this.voteLevel = function (levelid, vote) {
+        return new Promise((resolve, reject) => {
+            const data = vote;
+            var voteRef = firebase.database().ref(`/PublishedLevelsVoters/${levelid}/${this.app.auth().currentUser.uid}`);
+            voteRef.set(data, function (error) {
+                if (error) reject(error);
+                else{
+                    resolve();
+                    console.log("VOTE SUCCESFUL!");
+                } 
+            });
+        });
+    }
     this.increasePlayCountPublishedLevel = function(levelData){
         var playCountRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}/public/playCount`);
         playCountRef.transaction(count => {

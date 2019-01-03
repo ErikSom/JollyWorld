@@ -478,6 +478,7 @@ function Game() {
     this.loadUserLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData;
+            game.currentLevelData.uid = levelData.uid;
             var self = this;
             $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
                 self.currentLevelData.json = JSON.stringify(data);
@@ -495,6 +496,7 @@ function Game() {
     this.loadPublishedLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData.private;
+            game.currentLevelData.uid = levelData.uid;
             console.log(firebaseManager.baseDownloadURL + game.currentLevelData.dataURL);
             var self = this;
             $.getJSON(firebaseManager.baseDownloadURL + game.currentLevelData.dataURL, function (data) {

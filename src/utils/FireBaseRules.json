@@ -82,11 +82,11 @@
                   ".write": "auth != null",
                   ".read": true,
                   "$levelid": {
-                        ".validate": "!root.child('PublishedLevels').child($levelid).exists()",
+                        //".validate": "!root.child('PublishedLevels').child($levelid).exists()",
                         "private": {
                               ".validate": "root.child('Users_Private').child(auth.uid).child('Levels').child($levelid).exists()",
                               "dataURL": {
-                                    ".validate": "newData.exists()"
+                                    ".validate": "!data.exists() && newData.exists()"
                               },
                               "thumbHighResURL": {
                                     ".validate": "!data.exists() && newData.exists()"
@@ -95,13 +95,13 @@
                                     ".validate": "!data.exists() && newData.exists()"
                               },
                               "creationDate": {
-                                    ".validate": "(!data.exists() && newData.isNumber()) || newData.val() === data.val()"
+                                    ".validate": "!data.exists() && newData.exists() && newData.isNumber()"
                               },
                               "creator": {
-                                    ".validate": "newData.exists() && newData.val().length>=3"
+                                    ".validate": "!data.exists() && newData.exists() && newData.val().length>=3"
                               },
                               "creatorID": {
-                                    ".validate": "newData.exists() && newData.val() == auth.uid"
+                                    ".validate": "!data.exists() && newData.exists() && newData.val() == auth.uid"
                               },
                               "description": {
                                     ".validate": "!newData.exists() || (newData.val().length>3 && newData.val().length<500)"
