@@ -5,6 +5,23 @@ admin.initializeApp();
 const moment = require('moment');
 const _ = require('lodash');
 
+exports.handleVotes = functions.database.ref('PublishedLevelsVoters/{levelid}/').onWrite((change, context) => {
+    const snapshot = change.after;
+    const levelid = context.params.levelid;
+    const voteDataRef = admin.database().ref().child(`PublishedLevels/${levelid}/public/`);
+    if (snapshot.hasChildren()) {
+        let voteData = {};
+        voteData.voteNum = 0;
+        voteData.voteSum = 0;
+        voteData.voteMax = 0;
+        snapshot.forEach(function (item) {
+            voteData.voteNum++;
+            if(item.val() > 0 ) voteData.voteSum += item.val(); // only positive e,g, -100 5 > 5/105
+            voteData.voteMax += Math.abs(item.val());
+        });
+        return voteDataRef.update(voteData);
+    }
+});
 
 exports.setRangedPopularity = functions.https.onCall((data, context) => {
     //Received 'levelid' from client
@@ -17,7 +34,7 @@ exports.setRangedPopularity = functions.https.onCall((data, context) => {
         const creationDate = moment(snapshot.val());
         var now = moment();
 
-        if(now.year() !== creationDate.year() || now.month() !== creationDate.month()) return;
+        if (now.year() !== creationDate.year() || now.month() !== creationDate.month()) return;
 
         return playCountRef.once('value').then(snapshot => {
             let updateObject = {};
@@ -30,7 +47,7 @@ exports.setRangedPopularity = functions.https.onCall((data, context) => {
 
             updateObject.firstMonth_playCount = firstMonthValue;
 
-            if(now.isoWeek() === creationDate.isoWeek()){
+            if (now.isoWeek() === creationDate.isoWeek()) {
                 const paddedWeek = _.padStart(creationDate.isoWeek(), 2, '0');
                 const firstWeekValue = `${creationDate.year()}w${paddedWeek}_${paddedPlays}`; //e.g. 2018w03_0000001337
 
