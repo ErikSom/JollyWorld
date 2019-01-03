@@ -18,6 +18,7 @@ let mainMenu;
 let gameOver;
 let levelLoader;
 let levelBanner;
+let pauseMenu;
 
 let filter = {
     by: "",
@@ -34,8 +35,7 @@ function UIManager() {
         document.body.appendChild(mainMenu);
 
         let button = document.createElement('div');
-        button.setAttribute('id', 'startButton')
-        button.classList.add('menuButton');
+        button.setAttribute('class', 'startButton menuButton')
         button.innerHTML = 'Play';
         mainMenu.appendChild(button);
 
@@ -215,8 +215,7 @@ function UIManager() {
 
 
             let playButton = document.createElement('div');
-            playButton.setAttribute('id', 'startButton')
-            playButton.classList.add('menuButton');
+            playButton.setAttribute('class', 'startButton menuButton')
             playButton.innerHTML = 'Play';
             divWrapper.appendChild(playButton);
 
@@ -248,7 +247,122 @@ function UIManager() {
         $(levelBanner.domElement).css('top', '50%');
         $(levelBanner.domElement).css('transform', 'translate(-50%, -50%)');
 
+        this.showPauseMenu();
+
     }
+    this.hideLevelBanner = function () {
+        $(levelBanner.domElement).hide();
+    }
+
+    this.showPauseMenu = function () {
+        if (!pauseMenu) {
+            const levelEditGUIWidth = 350;
+            pauseMenu = new dat.GUI({
+                autoPlace: false,
+                width: levelEditGUIWidth
+            });
+            pauseMenu.domElement.setAttribute('id', 'pauseMenu');
+
+            let folder = pauseMenu.addFolder('Level Settings');
+            folder.domElement.classList.add('custom');
+
+            folder.open();
+
+            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+            let divWrapper = document.createElement('div');
+            divWrapper.style.padding = '20px';
+
+            let title = document.createElement('div');
+            title.setAttribute('id', 'pauseMenu_title');
+            divWrapper.appendChild(title);
+
+            let creator = document.createElement('div');
+            creator.setAttribute('id', 'pauseMenu_creator');
+
+            let span = document.createElement('span');
+            span.innerText = 'By:';
+            creator.appendChild(span);
+
+            span = document.createElement('span');
+            span.innerText = 'Creator';
+            span.setAttribute('id', 'pauseMenu_creatorSpan')
+            creator.appendChild(span);
+
+            divWrapper.appendChild(creator);
+
+            let ratingHolder = document.createElement('div');
+            ratingHolder.setAttribute('class', 'ratingHolder');
+            ratingHolder.setAttribute('id', 'pauseMenu_ratingHolder');
+            divWrapper.appendChild(ratingHolder);
+
+
+            let upvoteButton = document.createElement('div');
+            upvoteButton.setAttribute('class', 'startButton menuButton upvote')
+            ratingHolder.appendChild(upvoteButton);
+
+            let thumbIcon = document.createElement('div');
+            thumbIcon.setAttribute('class', 'thumbsUpIcon');
+            upvoteButton.appendChild(thumbIcon);
+
+            let downvoteButton = document.createElement('div');
+            downvoteButton.setAttribute('class', 'startButton menuButton downvote')
+            ratingHolder.appendChild(downvoteButton);
+
+            thumbIcon = document.createElement('div');
+            thumbIcon.setAttribute('class', 'thumbsUpIcon');
+            downvoteButton.appendChild(thumbIcon);
+
+
+            let restartButton = document.createElement('div');
+            restartButton.setAttribute('class', 'startButton menuButton')
+            restartButton.innerHTML = 'Restart';
+            divWrapper.appendChild(restartButton);
+
+            $(restartButton).click(()=>{
+               game.playWorld();
+            })
+
+            let exitButton = document.createElement('div');
+            exitButton.setAttribute('class', 'startButton menuButton')
+            exitButton.innerHTML = 'Exit to Menu';
+            divWrapper.appendChild(exitButton);
+
+            $(exitButton).click(()=>{
+               game.playWorld();
+            })
+
+            let resumeButton = document.createElement('div');
+            resumeButton.setAttribute('class', 'startButton menuButton')
+            resumeButton.innerHTML = 'Resume';
+            divWrapper.appendChild(resumeButton);
+
+            $(resumeButton).click(()=>{
+               game.playWorld();
+            })
+
+            targetDomElement.appendChild(divWrapper);
+            document.body.appendChild(pauseMenu.domElement);
+            pauseMenu.domElement.style.position = 'absolute';
+
+
+        }
+        pauseMenu.domElement.style.display = "block";
+        // set values
+
+
+        $(pauseMenu.domElement).find('#pauseMenu_title').text(game.currentLevelData.title);
+        $(pauseMenu.domElement).find('#pauseMenu_creatorSpan').text(game.currentLevelData.creator);
+
+        $(pauseMenu.domElement).css('left', '50%');
+        $(pauseMenu.domElement).css('top', '50%');
+        $(pauseMenu.domElement).css('transform', 'translate(-50%, -50%)');
+
+    }
+    this.hidePauseMenu = function () {
+        $(pauseMenu.domElement).hide();
+    }
+
     this.generateFilteredPublishLevelList = function (divWrapper) {
         if (!filter) filter = {
             by: this.FILTER_BY_NEWEST,
