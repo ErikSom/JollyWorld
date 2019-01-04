@@ -3,8 +3,8 @@
             "Users": {
                   ".indexOn": "username",
                   ".write": "auth != null",
-                  ".read": true,
                   "$uid": {
+                        ".read": true,
                         ".validate": "$uid == auth.uid",
                         "username": {
                               ".validate": "!data.exists() && newData.val().length>2 && root.child('Usernames').child(newData.val().toLowerCase()).val() == auth.uid"
@@ -62,8 +62,8 @@
             },
             "Usernames": {
                   ".write": "auth != null",
-                  ".read": "auth != null",
                   "$username": {
+                        ".read": "auth != null",
                         ".validate": "!data.exists() && newData.exists() && newData.isString() && newData.val().length < 20 && !root.child('Usernames').child(newData.val().toLowerCase()).exists()"
                   }
             },
@@ -80,8 +80,8 @@
             "PublishedLevels": {
                   ".indexOn": "private/creationDate",
                   ".write": "auth != null",
-                  ".read": true,
                   "$levelid": {
+                        ".read": true,
                         //".validate": "!root.child('PublishedLevels').child($levelid).exists()",
                         "private": {
                               ".validate": "root.child('Users_Private').child(auth.uid).child('Levels').child($levelid).exists()",
