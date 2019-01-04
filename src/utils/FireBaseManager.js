@@ -355,8 +355,7 @@ function FireBaseManager() {
             levelObject['public']["firstMonth_playCount"] = 'unset';
             levelObject['public']["firstWeek_playCount"] = 'unset';
             levelObject['public']["voteNum"] = 0;
-            levelObject['public']["voteSum"] = 0;
-            levelObject['public']["voteMax"] = 0;
+            levelObject['public']["voteAvg"] = 0;
 
             var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
             levelRef.set(levelObject, function (error) {

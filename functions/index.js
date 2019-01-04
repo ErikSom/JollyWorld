@@ -12,13 +12,19 @@ exports.handleVotes = functions.database.ref('PublishedLevelsVoters/{levelid}/')
     if (snapshot.hasChildren()) {
         let voteData = {};
         voteData.voteNum = 0;
-        voteData.voteSum = 0;
-        voteData.voteMax = 0;
+        voteData.voteAvg = 0;
+
+        let voteSum = 0;
+        let voteMax = 0;
         snapshot.forEach(function (item) {
             voteData.voteNum++;
-            if(item.val() > 0 ) voteData.voteSum += item.val(); // only positive e,g, -100 5 > 5/105
-            voteData.voteMax += Math.abs(item.val());
+            if(item.val() > 0 ) voteSum += item.val(); // only positive e,g, -100 5 > 5/105
+            voteMax += Math.abs(item.val());
         });
+
+        if(voteData.voteNum<10) voteData.voteAvg = 0.5; // require a minimum of 10 votes to get ranked
+        else voteData.voteAvg = voteSum/voteMax;
+
         return voteDataRef.update(voteData);
     }
 });
