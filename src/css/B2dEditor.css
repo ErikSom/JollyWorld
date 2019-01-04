@@ -61,18 +61,14 @@ canvas {
 }
 
 
-#uicontainer {
+#editor-ui-container {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     top:0;
     width:100%;
 }
-#ingamemenu{
-    z-index: 20;
-}
 
-#my-gui-container,
-#symanticui {
+#custom-gui  {
     z-index: 10;
     width: 100%;
     float: left;
@@ -85,6 +81,16 @@ canvas {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+#game-ui-container{
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    position: absolute;
+    pointer-events: none;
+}
+#game-ui-container > * {
+    pointer-events: all;
 }
 
 .toolgui.main{

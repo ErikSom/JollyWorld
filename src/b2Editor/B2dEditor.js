@@ -62,7 +62,7 @@ const _B2dEditor = function () {
 	this.assetLists = {};
 	this.tileLists = {};	// future this can be an opject with keys like bricks/green/etc.
 
-	this.customGUIContainer = document.getElementById('my-gui-container');
+	this.customGUIContainer = document.getElementById('custom-gui');
 
 	this.editorIcons = [];
 	this.triggerObjects = [];

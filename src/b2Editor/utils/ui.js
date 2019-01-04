@@ -34,18 +34,21 @@ let notice;
 let prompt;
 let textEditor;
 
-let uiContainer = document.getElementById('uicontainer');
-let customGUIContainer = document.getElementById('my-gui-container');
+let uiContainer = document.getElementById('editor-ui-container');
+let customGUIContainer = document.getElementById('custom-gui');
 let windowHideTime = 500;
 
 let levelList = undefined;
 
 export const hide = function () {
-    uiContainer.style.display = "none";
+    hideEditorPanels();
+    toolGUI.style.display = 'none';
+    headerBar.style.display = 'none';
     scrollBars.hide();
 }
 export const show = function () {
-    uiContainer.style.display = "block";
+    toolGUI.style.display = 'block';
+    headerBar.style.display = 'block';
     scrollBars.show();
 }
 

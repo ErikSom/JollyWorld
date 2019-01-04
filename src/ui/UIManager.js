@@ -9,7 +9,7 @@ import * as dat from '../../libs/dat.gui';
 import * as uiHelper from '../b2Editor/utils/uiHelper';
 import * as formatTimestamp from '../b2Editor/utils/formatTimestamp';
 
-
+let customGUIContainer = document.getElementById('game-ui-container');
 
 let levelItemHolder;
 let levelItemElement;
@@ -32,7 +32,7 @@ function UIManager() {
     this.buildMainMenu = function () {
         mainMenu = document.createElement('div');
         mainMenu.setAttribute('id', 'mainMenu')
-        document.body.appendChild(mainMenu);
+        customGUIContainer.appendChild(mainMenu);
 
         let button = document.createElement('div');
         button.setAttribute('class', 'startButton menuButton')
@@ -56,6 +56,12 @@ function UIManager() {
         mainMenu.appendChild(button);
 
     }
+    this.hide = function(){
+        customGUIContainer.style.display = 'none';
+    }
+    this.show = function(){
+        customGUIContainer.style.display = 'block';
+    }
 
     this.hideMainMenu = function () {
         mainMenu.style.display = "none";
@@ -65,7 +71,7 @@ function UIManager() {
         if (!gameOver) {
             gameOver = document.createElement('div');
             gameOver.setAttribute('id', 'gameOverScreen');
-            document.body.appendChild(gameOver);
+            customGUIContainer.appendChild(gameOver);
 
             let textGroup = document.createElement('div');
             textGroup.setAttribute('class', 'textGroup');
@@ -146,7 +152,7 @@ function UIManager() {
             targetDomElement.appendChild(document.createElement('br'));
 
 
-            document.body.appendChild(levelLoader.domElement);
+            customGUIContainer.appendChild(levelLoader.domElement);
             levelLoader.domElement.style.position = 'absolute';
 
         }
@@ -228,8 +234,10 @@ function UIManager() {
             divWrapper.appendChild(description);
 
             targetDomElement.appendChild(divWrapper);
-            document.body.appendChild(levelBanner.domElement);
+            customGUIContainer.appendChild(levelBanner.domElement);
             levelBanner.domElement.style.position = 'absolute';
+
+            game.editor.ui.registerDragWindow(levelBanner);
 
 
         }
@@ -304,6 +312,8 @@ function UIManager() {
             $(upvoteButton).click(()=>{
                 console.log('date:', game.currentLevelData.creationDate);
                 firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate);
+
+                game.editor.ui.showLoginScreen();
             });
 
             let thumbIcon = document.createElement('div');
@@ -375,7 +385,7 @@ function UIManager() {
             })
 
             targetDomElement.appendChild(divWrapper);
-            document.body.appendChild(pauseMenu.domElement);
+            customGUIContainer.appendChild(pauseMenu.domElement);
             pauseMenu.domElement.style.position = 'absolute';
 
 

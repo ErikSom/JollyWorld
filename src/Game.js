@@ -379,6 +379,7 @@ function Game() {
         this.stopWorld();
         this.initLevel(SaveManager.getTempEditorWorld());
         this.doAutoSave();
+        ui.hide();
     }
     this.initLevel = function (data) {
         console.log("Init level data:");
