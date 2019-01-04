@@ -355,7 +355,9 @@ function FireBaseManager() {
             levelObject['public']["firstMonth_playCount"] = 'unset';
             levelObject['public']["firstWeek_playCount"] = 'unset';
             levelObject['public']["voteNum"] = 0;
-            levelObject['public']["voteAvg"] = 0;
+            levelObject['public']["voteAvg"] = 0.5;
+            levelObject['public']["firstMonth_voteAvg"] = 'unset';
+            levelObject['public']["firstWeek_voteAvg"] = 'unset';
 
             var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
             levelRef.set(levelObject, function (error) {
@@ -365,13 +367,22 @@ function FireBaseManager() {
             });
         });
     }
-    this.voteLevel = function (levelid, vote) {
+    this.voteLevel = function (levelid, vote, _creationDate) {
         return new Promise((resolve, reject) => {
+            let self = this;
             const data = vote;
             var voteRef = firebase.database().ref(`/PublishedLevelsVoters/${levelid}/${this.app.auth().currentUser.uid}`);
             voteRef.set(data, function (error) {
                 if (error) reject(error);
                 else{
+
+                    const now = moment();
+                    const creationDate = moment(_creationDate);
+                    if(now.year() === creationDate.year() && now.month() == creationDate.month()){
+                        console.log("Call Ranged Votes");
+                        self.call_setRangedVotes(levelid);
+                    }
+
                     resolve();
                     console.log("VOTE SUCCESFUL!");
                 } 
@@ -433,7 +444,13 @@ function FireBaseManager() {
     this.call_setRangedPopularity = function(levelid){
         console.log("Call setRangedPopularity");
         firebase.functions().httpsCallable('setRangedPopularity')({levelid:levelid}).then(function(result) {
-            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS");
+            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
+        });
+    }
+    this.call_setRangedVotes = function(levelid){
+        console.log("Call setRangedVotes");
+        firebase.functions().httpsCallable('setRangedVotes')({levelid:levelid}).then(function(result) {
+            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
         });
     }
 

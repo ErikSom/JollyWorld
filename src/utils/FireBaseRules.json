@@ -73,7 +73,7 @@
                         ".validate": "root.child('PublishedLevels').child($levelid).exists()",
                         "$uvoterid": {
                               ".read": "$uvoterid === auth.uid",
-                              ".validate": "$uvoterid == auth.uid && newData.exists() && newData.isNumber() && (newData.val() >= -1 && newData.val() <= 1)"
+                              ".validate": "$uvoterid == auth.uid && root.child('Users').child(auth.uid).exists() && newData.exists() && newData.isNumber() && (newData.val() >= -1 && newData.val() <= 1)"
                         },
                   },
             },
@@ -129,11 +129,14 @@
                               "voteNum": {
                                     ".validate": "(!data.exists() && newData.exists() && newData.val() === 0)"
                               },
-                              "voteSum": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 0)"
+                              "voteAvg": {
+                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 0.5)"
                               },
-                              "voteMax": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 0)"
+                              "firstMonth_voteAvg": {
+                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 'unset')"
+                              },
+                              "firstWeek_voteAvg": {
+                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 'unset')"
                               },
                               "$other": {
                                     ".validate": false

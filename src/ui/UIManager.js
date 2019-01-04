@@ -302,7 +302,8 @@ function UIManager() {
             ratingHolder.appendChild(upvoteButton);
 
             $(upvoteButton).click(()=>{
-                firebaseManager.voteLevel(game.currentLevelData.uid, 1);
+                console.log('date:', game.currentLevelData.creationDate);
+                firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate);
             });
 
             let thumbIcon = document.createElement('div');
@@ -338,7 +339,7 @@ function UIManager() {
             ratingHolder.appendChild(downvoteButton);
 
             $(downvoteButton).click(()=>{
-                firebaseManager.voteLevel(game.currentLevelData.uid, -1);
+                firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate);
             });
 
             thumbIcon = document.createElement('div');

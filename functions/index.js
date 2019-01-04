@@ -29,6 +29,40 @@ exports.handleVotes = functions.database.ref('PublishedLevelsVoters/{levelid}/')
     }
 });
 
+exports.setRangedVotes = functions.https.onCall((data, context) => {
+   //Received 'levelid' from client
+   const levelRef = admin.database().ref().child(`/PublishedLevels/${data.levelid}`);
+   const creationDateRef = levelRef.child(`/private/creationDate`);
+   const voteAvgRef = levelRef.child(`/public/voteAvg`);
+   const updateRef = levelRef.child(`/public`);
+
+   return creationDateRef.once('value').then(snapshot => {
+       const creationDate = moment(snapshot.val());
+       var now = moment();
+
+       if (now.year() !== creationDate.year() || now.month() !== creationDate.month()) return;
+
+       return voteAvgRef.once('value').then(snapshot => {
+           let updateObject = {};
+
+           const voteAvg = snapshot.val();
+
+           const paddedMonth = _.padStart(creationDate.month(), 2, '0');
+           const firstMonthValue = `${creationDate.year()+paddedMonth}_${voteAvg}`; //e.g. 201804_0.8483
+
+           updateObject.firstMonth_voteAvg = firstMonthValue;
+
+           if (now.isoWeek() === creationDate.isoWeek()) {
+               const paddedWeek = _.padStart(creationDate.isoWeek(), 2, '0');
+               const firstWeekValue = `${creationDate.year()}w${paddedWeek}_${voteAvg}`; //e.g. 2018w03_0.8483
+
+               updateObject.firstWeek_voteAvg = firstWeekValue;
+           }
+           return updateRef.update(updateObject);
+       });
+   });
+});
+
 exports.setRangedPopularity = functions.https.onCall((data, context) => {
     //Received 'levelid' from client
     const levelRef = admin.database().ref().child(`/PublishedLevels/${data.levelid}`);
