@@ -80,8 +80,8 @@
             "PublishedLevels": {
                   ".indexOn": "private/creationDate",
                   ".write": "auth != null",
+                  ".read": "auth != null",
                   "$levelid": {
-                        ".read": true,
                         //".validate": "!root.child('PublishedLevels').child($levelid).exists()",
                         "private": {
                               ".validate": "root.child('Users_Private').child(auth.uid).child('Levels').child($levelid).exists()",
