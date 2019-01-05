@@ -226,6 +226,7 @@ function UIManager() {
             divWrapper.appendChild(playButton);
 
             $(playButton).click(()=>{
+               this.hideLevelBanner();
                game.playWorld();
             })
 
@@ -238,7 +239,6 @@ function UIManager() {
             levelBanner.domElement.style.position = 'absolute';
 
             game.editor.ui.registerDragWindow(levelBanner);
-
 
         }
         levelBanner.domElement.style.display = "block";
@@ -254,8 +254,6 @@ function UIManager() {
         $(levelBanner.domElement).css('left', '50%');
         $(levelBanner.domElement).css('top', '50%');
         $(levelBanner.domElement).css('transform', 'translate(-50%, -50%)');
-
-        this.showPauseMenu();
 
     }
     this.hideLevelBanner = function () {
@@ -363,7 +361,9 @@ function UIManager() {
             divWrapper.appendChild(restartButton);
 
             $(restartButton).click(()=>{
+               game.resetWorld();
                game.playWorld();
+               game.unpauseGame();
             })
 
             let exitButton = document.createElement('div');
@@ -372,7 +372,7 @@ function UIManager() {
             divWrapper.appendChild(exitButton);
 
             $(exitButton).click(()=>{
-               game.playWorld();
+               //game.playWorld();
             })
 
             let resumeButton = document.createElement('div');
@@ -381,7 +381,7 @@ function UIManager() {
             divWrapper.appendChild(resumeButton);
 
             $(resumeButton).click(()=>{
-               game.playWorld();
+               game.unpauseGame();
             })
 
             targetDomElement.appendChild(divWrapper);

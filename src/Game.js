@@ -62,6 +62,7 @@ function Game() {
     this.selectedBody;
     this.mouseJoint;
     this.run = false;
+    this.pause = false;
     this.gameState = false;
 
     this.playerPrefabObject;
@@ -108,7 +109,6 @@ function Game() {
             width: w,
             height: h
         });
-        console.log(this.app, w, h);
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
 
@@ -121,7 +121,6 @@ function Game() {
 
         this.prepareGameFonts();
 
-        console.log(Settings);
         this.gameState = this.GAMESTATE_MENU;
 
     };
@@ -296,6 +295,11 @@ function Game() {
                 }
             }
         }
+        if(this.gameState == this.GAMESTATE_NORMALPLAY){
+            if(Key.isPressed(Key.P) && this.run){
+                if(!this.pause) this.pauseGame();
+            }
+        }
     }
 
     this.onKeyDown = function (e) {
@@ -309,7 +313,7 @@ function Game() {
                 }
             }
         }
-        console.log(this.gameOver, this.run);
+
         if (e.keyCode == 32) { //space
             if (this.gameOver && this.run) {
                 this.resetWorld();
@@ -343,7 +347,9 @@ function Game() {
     this.playWorld = function () {
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
+        this.canvas.focus();
     }
+
     this.testWorld = function () {
         this.editor.stringifyWorldJSON();
         this.editor.testWorld();
@@ -388,6 +394,16 @@ function Game() {
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
+    }
+    this.pauseGame = function(){
+        this.pause = true;
+        this.run = false;
+        ui.showPauseMenu();
+    }
+    this.unpauseGame = function(){
+        this.pause = false;
+        this.run = true;
+        ui.hidePauseMenu();
     }
     this.resetGame = function(){
         this.levelWon = false;
