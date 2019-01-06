@@ -572,7 +572,7 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				});
 
-				if (ui.editorGUI.editData.colorFill instanceof Array) {
+				if (ui.editorGUI.editData.colorFill.length > 1) {
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
 					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 					controller.onChange(function (value) {
@@ -580,6 +580,17 @@ const _B2dEditor = function () {
 						this.targetValue = value;
 					}.bind(controller));
 				} else {
+					console.log("first here:",ui.editorGUI.editData);
+					ui.editorGUI.editData.colorFill = ui.editorGUI.editData.colorFill[0];
+					ui.editorGUI.editData.colorLine = ui.editorGUI.editData.colorLine[0];
+					ui.editorGUI.editData.lineWidth = ui.editorGUI.editData.lineWidth[0];
+					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
+					console.log(ui.editorGUI.editData.density);
+					ui.editorGUI.editData.density = ui.editorGUI.editData.density[0];
+					console.log(ui.editorGUI.editData.density);
+
+
+
 					controller = targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
@@ -600,6 +611,11 @@ const _B2dEditor = function () {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
+					controller = targetFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
 				}
 				targetFolder.add(ui.editorGUI.editData, "fixed").onChange(function (value) {
 					this.humanUpdate = true;
@@ -609,11 +625,6 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				controller = targetFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value
-				}.bind(controller));
 				controller = targetFolder.add(ui.editorGUI.editData, "collision", 0, 7).step(1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -1740,6 +1751,13 @@ const _B2dEditor = function () {
 
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
+
+
+					var bodyObject2 = this.createBodyFromEarcutResult(this.activeVertices);
+					if(bodyObject2) this.buildBodyFromObj(bodyObject2);
+
+
+
 					this.activeVertices = [];
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
@@ -2983,19 +3001,19 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.colorFill = controller.targetValue.toString();
+							body.mySprite.data.colorFill[0] = controller.targetValue.toString();
 							var fixture = body.GetFixtureList();
-							if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, {
+							if (body.mySprite.data.radius[0]) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius[0], {
 								x: 0,
 								y: 0
-							}, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							}, body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], 1);
+							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], 1);
 
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorFill = controller.targetValue.toString();
-							if (sprite.data.radius) this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, {
+							if (sprite.data.radius[0]) this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, {
 								x: 0,
 								y: 0
 							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
@@ -3005,13 +3023,13 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.colorLine = controller.targetValue.toString();
+							body.mySprite.data.colorLine[0] = controller.targetValue.toString();
 							var fixture = body.GetFixtureList();
-							if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, {
+							if (body.mySprite.data.radius[0]) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius[0], {
 								x: 0,
 								y: 0
-							}, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.transparancy);
+							}, body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.transparancy[0]);
+							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.transparancy[0]);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
@@ -3026,13 +3044,13 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.lineWidth = controller.targetValue;
+							body.mySprite.data.lineWidth[0] = controller.targetValue;
 							var fixture = body.GetFixtureList();
-							if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, {
+							if (body.mySprite.data.radius[0]) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius[0], {
 								x: 0,
 								y: 0
-							}, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, body.mySprite.data.transparancy);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine,  body.mySprite.data.lineWidth,  body.mySprite.data.transparancy);
+							}, body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.lineWidth[0], 1);
+							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0],  body.mySprite.data.lineWidth[0],  1);
 							this.updateTileSprite(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
@@ -3049,20 +3067,8 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							if(body.mySprite.data.transparancy instanceof Array){
-								body.mySprite.data.transparancy[0] = controller.targetValue;
-								body.mySprite.alpha = body.mySprite.data.transparancy[0];
-							}
-							else{
-								 body.mySprite.data.transparancy = controller.targetValue;
-								var fixture = body.GetFixtureList();
-								if (body.mySprite.data.radius) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius, {
-									x: 0,
-									y: 0
-								}, body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, controller.targetValue);
-								else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill, body.mySprite.data.colorLine, body.mySprite.data.lineWidth, controller.targetValue);
-								this.updateTileSprite(body);
-							}
+							body.mySprite.data.transparancy[0] = controller.targetValue;
+							body.mySprite.alpha = body.mySprite.data.transparancy[0];
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
@@ -3108,7 +3114,7 @@ const _B2dEditor = function () {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.density = controller.targetValue;
+							body.mySprite.data.density[0] = controller.targetValue;
 							var fixture = body.GetFixtureList();
 							fixture.SetDensity(controller.targetValue);
 							body.ResetMassData();
@@ -3581,7 +3587,6 @@ const _B2dEditor = function () {
 		bodyObject.x = centerPoint.x;
 		bodyObject.y = centerPoint.y;
 
-
 		//check winding order
 
 		var area = 0
@@ -3595,6 +3600,57 @@ const _B2dEditor = function () {
 		if (Math.abs(area * this.PTM) < this.minimumBodySurfaceArea) return false;
 
 		bodyObject.vertices = area < 0 ? verts.reverse() : verts;
+
+		return bodyObject;
+	}
+	this.createBodyFromEarcutResult = function (verts) {
+		var bodyObject = new this.bodyObject;
+
+		var vertsConversion = this.convertGlobalVertsToLocalVerts(verts);
+		verts = vertsConversion[0];
+		var centerPoint = vertsConversion[1];
+
+		bodyObject.x = centerPoint.x;
+		bodyObject.y = centerPoint.y;
+
+
+		//check winding order
+
+		var area = 0
+		for (var i = 0; i < verts.length; i++) {
+			var x1 = verts[i].x;
+			var y1 = verts[i].y;
+			var x2 = verts[(i + 1) % verts.length].x;
+			var y2 = verts[(i + 1) % verts.length].y;
+			area += (x1 * y2 - x2 * y1);
+		}
+		if (Math.abs(area * this.PTM) < this.minimumBodySurfaceArea) return false;
+
+
+		let pointsArr = [];
+		for(i = 0; i<verts.length; i++){
+			pointsArr.push(verts[i].x);
+			pointsArr.push(verts[i].y);
+		}
+
+
+		const earcutIndexes = PIXI.utils.earcut(pointsArr, [], 2);
+
+		console.log(earcutIndexes);
+
+		const earcutPoints = [];
+		for(i = 0; i<earcutIndexes.length; i++){
+			earcutPoints.push(verts[earcutIndexes[i]]);
+		}
+
+		let earcutTriangles = [];
+		while (earcutPoints.length) {
+			earcutTriangles.push(earcutPoints.splice(0, 3));
+		}
+
+		console.log(earcutTriangles);
+
+		bodyObject.vertices = earcutTriangles;
 		return bodyObject;
 	}
 	this.createGraphicObjectFromVerts = function (verts) {
@@ -3739,12 +3795,12 @@ const _B2dEditor = function () {
 		var graphicsCreated = [];
 		for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			body = this.selectedPhysicsBodies[i];
-			var verts = (body.mySprite.data.vertices[0] instanceof Array) ? body.mySprite.data.vertices : [body.mySprite.data.vertices];
-			var colorFill = (body.mySprite.data.colorFill instanceof Array) ? body.mySprite.data.colorFill : [body.mySprite.data.colorFill];
-			var colorLine = (body.mySprite.data.colorLine instanceof Array) ? body.mySprite.data.colorLine : [body.mySprite.data.colorLine];
-			var lineWidth = (body.mySprite.data.lineWidth instanceof Array) ? body.mySprite.data.lineWidth : [body.mySprite.data.lineWidth];
-			var transparancy = (body.mySprite.data.transparancy instanceof Array) ? body.mySprite.data.transparancy : [1, body.mySprite.data.transparancy];
-			var radius = (body.mySprite.data.radius instanceof Array) ? body.mySprite.data.radius : [body.mySprite.data.radius];
+			var verts = body.mySprite.data.vertices;
+			var colorFill = body.mySprite.data.colorFill;
+			var colorLine = body.mySprite.data.colorLine;
+			var lineWidth = body.mySprite.data.lineWidth;
+			var transparancy = body.mySprite.data.transparancy;
+			var radius = body.mySprite.data.radius;
 
 			this.updateObject(body.mySprite, body.mySprite.data);
 
@@ -3778,10 +3834,8 @@ const _B2dEditor = function () {
 			graphic.rotation = body.mySprite.data.rotation;
 
 			if (graphic) {
-				if(body.mySprite.data.transparancy instanceof Array){
-					graphic.alpha = body.mySprite.data.transparancy[0];
-					graphic.data.transparancy = body.mySprite.data.transparancy[0];
-				}
+				graphic.alpha = body.mySprite.data.transparancy[0];
+				graphic.data.transparancy = body.mySprite.data.transparancy[0];
 				graphic.parent.swapChildren(body.mySprite, graphic);
 				graphicsCreated.push(graphic);
 			}
@@ -4063,24 +4117,33 @@ const _B2dEditor = function () {
 		var graphic = new PIXI.Graphics();
 		body.originalGraphic = graphic;
 
-		//build fixtures
-		var fixtureArray = obj.vertices;
+
 		if (obj.vertices[0] instanceof Array == false) {
-			fixtureArray = [];
-			fixtureArray[0] = obj.vertices;
+			// A fix for backwards compatibility with old vertices system
+			obj.vertices = [obj.vertices];
+			obj.radius = [obj.radius];
+			obj.colorFill = [obj.colorFill];
+			obj.colorLine = [obj.colorLine];
+			obj.lineWidth = [obj.lineWidth];
+			obj.transparancy = [obj.transparancy];
+			obj.density = [obj.density];
 		}
-		var fixDef;
-		var fixture;
-		for (var i = 0; i < fixtureArray.length; i++) {
+		console.trace();
+		console.log(obj.density, "THIS IS BUILD BODY DENSITY!!");
+
+		//build fixtures
+		let fixDef;
+		let fixture;
+		for (var i = 0; i < obj.vertices.length; i++) {
 			fixDef = new b2FixtureDef;
-			fixDef.density = obj.density instanceof Array ? obj.density[i] : obj.density;
+			fixDef.density = obj.density[i];
 			fixDef.friction = 0.5;
 			fixDef.restitution = 0.2;
-			var radius = obj.radius instanceof Array ? obj.radius[i] : obj.radius;
+			const radius = obj.radius[i];
 			if (!radius) {
-				var vert;
-				var b2Vec2Arr = [];
-				var vertices = obj.vertices[0] instanceof Array ? obj.vertices[i] : obj.vertices;
+				let vert;
+				let b2Vec2Arr = [];
+				let vertices = obj.vertices[i];
 				for (var j = 0; j < vertices.length; j++) {
 					vert = vertices[j];
 					b2Vec2Arr.push(new b2Vec2(vert.x, vert.y));
@@ -4090,14 +4153,11 @@ const _B2dEditor = function () {
 				fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
 			} else {
 				fixDef.shape = new b2CircleShape;
-				if (obj.radius instanceof Array) {
-					fixDef.shape.SetLocalPosition(new b2Vec2(obj.vertices[i][0].x, obj.vertices[i][0].y));
-				} else fixDef.shape.SetLocalPosition(new b2Vec2(0, 0));
+				fixDef.shape.SetLocalPosition(new b2Vec2(obj.vertices[i][0].x, obj.vertices[i][0].y));
 				fixDef.shape.SetRadius(radius / this.PTM);
 			}
 			fixture = body.CreateFixture(fixDef);
 		}
-
 
 		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
 		body.SetAngle(obj.rotation);
@@ -4111,7 +4171,7 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
-		if(obj.transparancy instanceof Array) body.mySprite.alpha = obj.transparancy[0];
+		body.mySprite.alpha = obj.transparancy[0];
 
 
 		this.updateBodyShapes(body);
@@ -4215,8 +4275,7 @@ const _B2dEditor = function () {
 					}
 					shape.Set(oldVertices);
 
-					if (obj.mySprite.data.vertices[i] instanceof Array) oldVertices = obj.mySprite.data.vertices[i];
-					else oldVertices = obj.mySprite.data.vertices;
+					oldVertices = obj.mySprite.data.vertices[i];
 
 					for (let j = 0; j < oldVertices.length; j++) {
 						oldVertices[j].x = oldVertices[j].x * scaleX;
@@ -4356,7 +4415,7 @@ const _B2dEditor = function () {
 		this.updateSelection();
 	}
 	this.ungroupObjects = function () {
-		if (this.selectedPhysicsBodies.length == 1 && this.selectedPhysicsBodies[0].mySprite.data.vertices[0] instanceof Array) {
+		if (this.selectedPhysicsBodies.length == 1 && this.selectedPhysicsBodies[0].mySprite.data.vertices.length > 1) {
 			var myTexture = this.selectedPhysicsBodies[0].myTexture;
 			if (myTexture) {
 				this.removeTextureFromBody(this.selectedPhysicsBodies[0], myTexture);
@@ -4386,6 +4445,7 @@ const _B2dEditor = function () {
 		groupedBodyObject.lineWidth = [];
 		groupedBodyObject.transparancy = [1];
 		groupedBodyObject.radius = [];
+		groupedBodyObject.density = [];
 
 		var i;
 		for (i = 0; i < bodyObjects.length; i++) {
@@ -4398,96 +4458,47 @@ const _B2dEditor = function () {
 
 
 		for (i = 0; i < bodyObjects.length; i++) {
-			if ((bodyObjects[i].mySprite.data.vertices[0] instanceof Array) || (bodyObjects[i].mySprite.data.radius instanceof Array)) {
-				var vertices = [];
-				for (var j = 0; j < bodyObjects[i].mySprite.data.vertices.length; j++) {
-					var verts = [];
-					for (var k = 0; k < bodyObjects[i].mySprite.data.vertices[j].length; k++) {
-						var ox = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
-						var oy = bodyObjects[i].mySprite.data.y - bodyObjects[0].mySprite.data.y;
-
-						var a = bodyObjects[0].mySprite.data.rotation;
-						var atanO = Math.atan2(oy, ox);
-						var sqrtO = Math.sqrt(ox * ox + oy * oy);
-
-						ox = sqrtO * Math.cos(-a + atanO);
-						oy = sqrtO * Math.sin(-a + atanO);
-
-						var p = {
-							x: bodyObjects[i].mySprite.data.vertices[j][k].x,
-							y: bodyObjects[i].mySprite.data.vertices[j][k].y
-						};
-						var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation - a);
-						var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation - a);
-						var dx = p.x;
-						var dy = p.y;
-						p.x = (dx * cosAngle - dy * sinAngle);
-						p.y = (dx * sinAngle + dy * cosAngle);
-
-						verts.push({
-							x: p.x + ox,
-							y: p.y + oy
-						});
-					}
-
-					vertices.push(verts);
-				}
-				groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
-				groupedBodyObject.radius = groupedBodyObject.radius.concat(bodyObjects[i].mySprite.data.radius)
-				groupedBodyObject.colorFill = groupedBodyObject.colorFill.concat(bodyObjects[i].mySprite.data.colorFill);
-				groupedBodyObject.colorLine = groupedBodyObject.colorLine.concat(bodyObjects[i].mySprite.data.colorLine);
-				groupedBodyObject.lineWidth = groupedBodyObject.lineWidth.concat(bodyObjects[i].mySprite.data.lineWidth);
-				groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
-
-			} else {
+			var vertices = [];
+			for (var j = 0; j < bodyObjects[i].mySprite.data.vertices.length; j++) {
 				var verts = [];
-				var ox = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
-				var oy = bodyObjects[i].mySprite.data.y - bodyObjects[0].mySprite.data.y;
-				var a = bodyObjects[0].mySprite.data.rotation;
-				var atanO = Math.atan2(oy, ox);
-				var sqrtO = Math.sqrt(ox * ox + oy * oy);
+				for (var k = 0; k < bodyObjects[i].mySprite.data.vertices[j].length; k++) {
+					var ox = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
+					var oy = bodyObjects[i].mySprite.data.y - bodyObjects[0].mySprite.data.y;
 
-				ox = sqrtO * Math.cos(-a + atanO);
-				oy = sqrtO * Math.sin(-a + atanO);
-				if (i == 0) {
-					verts = bodyObjects[i].mySprite.data.vertices;
-				} else {
-					for (var j = 0; j < bodyObjects[i].mySprite.data.vertices.length; j++) {
-						var p = {
-							x: bodyObjects[i].mySprite.data.vertices[j].x,
-							y: bodyObjects[i].mySprite.data.vertices[j].y
-						};
-						var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation - a);
-						var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation - a);
-						var dx = p.x;
-						var dy = p.y;
-						p.x = (dx * cosAngle - dy * sinAngle);
-						p.y = (dx * sinAngle + dy * cosAngle);
+					var a = bodyObjects[0].mySprite.data.rotation;
+					var atanO = Math.atan2(oy, ox);
+					var sqrtO = Math.sqrt(ox * ox + oy * oy);
 
-						verts.push({
-							x: p.x + ox,
-							y: p.y + oy
-						});
-					}
+					ox = sqrtO * Math.cos(-a + atanO);
+					oy = sqrtO * Math.sin(-a + atanO);
+
+					var p = {
+						x: bodyObjects[i].mySprite.data.vertices[j][k].x,
+						y: bodyObjects[i].mySprite.data.vertices[j][k].y
+					};
+					var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation - a);
+					var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation - a);
+					var dx = p.x;
+					var dy = p.y;
+					p.x = (dx * cosAngle - dy * sinAngle);
+					p.y = (dx * sinAngle + dy * cosAngle);
+
+					verts.push({
+						x: p.x + ox,
+						y: p.y + oy
+					});
 				}
-				// TODO: Rotate arround groupedBodyObjectRotation
-				if (bodyObjects[i].mySprite.data.radius) {
-					var dx = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
-					var dy = bodyObjects[i].mySprite.data.y - bodyObjects[0].mySprite.data.y;
-					groupedBodyObject.vertices.push([{
-						x: ox,
-						y: oy
-					}]);
 
-				} else groupedBodyObject.vertices.push(verts);
-
-				groupedBodyObject.radius.push(bodyObjects[i].mySprite.data.radius);
-				groupedBodyObject.colorFill.push(bodyObjects[i].mySprite.data.colorFill);
-				groupedBodyObject.colorLine.push(bodyObjects[i].mySprite.data.colorLine);
-				groupedBodyObject.lineWidth.push(bodyObjects[i].mySprite.data.lineWidth);
-				groupedBodyObject.transparancy.push(bodyObjects[i].mySprite.data.transparancy);
-
+				vertices.push(verts);
 			}
+			groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
+			groupedBodyObject.radius = groupedBodyObject.radius.concat(bodyObjects[i].mySprite.data.radius)
+			groupedBodyObject.colorFill = groupedBodyObject.colorFill.concat(bodyObjects[i].mySprite.data.colorFill);
+			groupedBodyObject.colorLine = groupedBodyObject.colorLine.concat(bodyObjects[i].mySprite.data.colorLine);
+			groupedBodyObject.lineWidth = groupedBodyObject.lineWidth.concat(bodyObjects[i].mySprite.data.lineWidth);
+			groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
+			groupedBodyObject.density = groupedBodyObject.density.concat(bodyObjects[i].mySprite.data.density);
+
 		}
 
 		var groupedBody = this.buildBodyFromObj(groupedBodyObject);
@@ -4503,12 +4514,12 @@ const _B2dEditor = function () {
 
 		this.updateObject(bodyGroup.mySprite, bodyGroup.mySprite.data);
 
-		var verts = (bodyGroup.mySprite.data.vertices[0] instanceof Array) ? bodyGroup.mySprite.data.vertices : [bodyGroup.mySprite.data.vertices];
-		var colorFill = (bodyGroup.mySprite.data.colorFill instanceof Array) ? bodyGroup.mySprite.data.colorFill : [bodyGroup.mySprite.data.colorFill];
-		var colorLine = (bodyGroup.mySprite.data.colorLine instanceof Array) ? bodyGroup.mySprite.data.colorLine : [bodyGroup.mySprite.data.colorLine];
-		var lineWidth = (bodyGroup.mySprite.data.lineWidth instanceof Array) ? bodyGroup.mySprite.data.lineWidth : [bodyGroup.mySprite.data.lineWidth];
-		var transparancy = (bodyGroup.mySprite.data.transparancy instanceof Array) ? bodyGroup.mySprite.data.transparancy : [bodyGroup.mySprite.data.transparancy];
-		var radius = (bodyGroup.mySprite.data.radius instanceof Array) ? bodyGroup.mySprite.data.radius : [bodyGroup.mySprite.data.radius];
+		var verts = bodyGroup.mySprite.data.vertices;
+		var colorFill = bodyGroup.mySprite.data.colorFill;
+		var colorLine = bodyGroup.mySprite.data.colorLine;
+		var lineWidth = bodyGroup.mySprite.data.lineWidth;
+		var transparancy = bodyGroup.mySprite.data.transparancy;
+		var radius = bodyGroup.mySprite.data.radius;
 
 		for (var i = 0; i < verts.length; i++) {
 			var bodyObject = new this.bodyObject;
@@ -5016,6 +5027,9 @@ const _B2dEditor = function () {
 		}
 	}
 	this.updateBodyShapes = function (body) {
+
+		//change update body shapes with actual vertices
+
 		let fixtureArray = [];
 		let fixture = body.GetFixtureList();
 		while (fixture != null) {
@@ -5028,11 +5042,11 @@ const _B2dEditor = function () {
 
 			fixture = fixtureArray[i];
 
-			let radius = body.mySprite.data.radius instanceof Array ? body.mySprite.data.radius[i] : body.mySprite.data.radius;
-			let colorFill = body.mySprite.data.colorFill instanceof Array ? body.mySprite.data.colorFill[i] : body.mySprite.data.colorFill;
-			let colorLine = body.mySprite.data.colorLine instanceof Array ? body.mySprite.data.colorLine[i] : body.mySprite.data.colorLine;
-			let lineWidth = body.mySprite.data.lineWidth instanceof Array ? body.mySprite.data.lineWidth[i] : body.mySprite.data.lineWidth;
-			let transparancy = body.mySprite.data.transparancy instanceof Array ? body.mySprite.data.transparancy[i+1] : body.mySprite.data.transparancy;
+			let radius = body.mySprite.data.radius[i];
+			let colorFill = body.mySprite.data.colorFill[i];
+			let colorLine = body.mySprite.data.colorLine[i];
+			let lineWidth = body.mySprite.data.lineWidth[i];
+			let transparancy = body.mySprite.data.transparancy[i+1]; //TODO:what is this?
 
 			if(body.mySprite.data.type == this.object_TRIGGER){
 				//color trigger
