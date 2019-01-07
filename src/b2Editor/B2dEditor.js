@@ -2261,6 +2261,7 @@ const _B2dEditor = function () {
 
 				if ((this.selectedTextures.length == 1 && this.selectedPhysicsBodies.length == 0) || (this.selectedTextures.length == 0 && this.selectedPhysicsBodies.length == 1)) {
 					this.ungroupObjects();
+					console.log('UNGROUP');
 				} else {
 					this.groupObjects();
 				}
@@ -3779,7 +3780,27 @@ const _B2dEditor = function () {
 					body.mySprite.data.transparancy[0] = graphicContainer.data.transparancy;
 				}
 				bodiesCreated.push(body);
-				body.SetPosition(new b2Vec2(graphicContainer.x / this.PTM, graphicContainer.y / this.PTM));
+
+				var left = Number.POSITIVE_INFINITY;
+				var down = Number.POSITIVE_INFINITY;
+				var right = -Number.POSITIVE_INFINITY;
+				var up = -Number.POSITIVE_INFINITY;
+
+				for (k = 0; k < innerGraphics.length; k++) {
+					console.log(innerGraphics[k].x, innerGraphics[k].y);
+					if(innerGraphics[k].x < left) left = innerGraphics[k].x;
+					if(innerGraphics[k].y < down) down = innerGraphics[k].y;
+					if(innerGraphics[k].x > right) right = innerGraphics[k].x;
+					if(innerGraphics[k].y > up) up = innerGraphics[k].y;
+				}
+
+
+				var xOffset = (left-right)/this.PTM;
+				var yOffset = (down-up)/ this.PTM;
+
+				console.log(xOffset, yOffset);
+
+				body.SetPosition(new b2Vec2(graphicContainer.x / this.PTM +xOffset, graphicContainer.y / this.PTM+yOffset));
 				body.SetAngle(graphicContainer.rotation);
 
 			}
@@ -4380,6 +4401,20 @@ const _B2dEditor = function () {
 				}
 			}
 		}
+
+		if (this.selectedPhysicsBodies.length > 1) {
+			for(let i = 0; i<this.selectedPhysicsBodies.length; i++){
+				if(this.selectedPhysicsBodies[i].mySprite.data.vertices.length >1){
+					let bodies = this.ungroupBodyObjects(this.selectedPhysicsBodies[i]);
+					this.selectedPhysicsBodies.splice(i, 1);
+					this.selectedPhysicsBodies = this.selectedPhysicsBodies.concat(bodies);
+					i--;
+				}
+			}
+			combinedBodies = this.groupBodyObjects(this.selectedPhysicsBodies);
+		}
+
+
 		if (this.selectedTextures.length > 1) {
 			var graphicsToGroup = [];
 			for (var i = 0; i < this.selectedTextures.length; i++) {
@@ -4393,9 +4428,7 @@ const _B2dEditor = function () {
 		} else if (this.selectedTextures.length == 1) {
 			combinedGraphics = this.selectedTextures[0];
 		}
-		if (this.selectedPhysicsBodies.length > 1) {
-			combinedBodies = this.groupBodyObjects(this.selectedPhysicsBodies);
-		}
+
 
 		if (combinedGraphics && combinedBodies) {
 			//merge these two together yo
@@ -4415,7 +4448,7 @@ const _B2dEditor = function () {
 		this.updateSelection();
 	}
 	this.ungroupObjects = function () {
-		if (this.selectedPhysicsBodies.length == 1 && this.selectedPhysicsBodies[0].mySprite.data.vertices.length > 1) {
+		if (this.selectedPhysicsBodies.length == 1) {
 			var myTexture = this.selectedPhysicsBodies[0].myTexture;
 			if (myTexture) {
 				this.removeTextureFromBody(this.selectedPhysicsBodies[0], myTexture);
@@ -4447,48 +4480,53 @@ const _B2dEditor = function () {
 		groupedBodyObject.radius = [];
 		groupedBodyObject.density = [];
 
-		var i;
-		for (i = 0; i < bodyObjects.length; i++) {
-			this.updateObject(bodyObjects[i].mySprite, bodyObjects[i].mySprite.data);
-		}
-		groupedBodyObject.x = bodyObjects[0].mySprite.data.x;
-		groupedBodyObject.y = bodyObjects[0].mySprite.data.y;
-		groupedBodyObject.rotation = bodyObjects[0].mySprite.data.rotation;
+		// let bounds = {l:Number.POSITIVE_INFINITY, r:-Number.POSITIVE_INFINITY, u:-Number.POSITIVE_INFINITY, d:Number.POSITIVE_INFINITY};
+		let centerPoint = {x:0, y:0};
+		bodyObjects.map((body)=>{
+			this.updateObject(body.mySprite, body.mySprite.data);
+			centerPoint.x += body.GetPosition().x;
+			centerPoint.y += body.GetPosition().y;
+			// if(body.GetPosition().x < bounds.l) bounds.l = body.GetPosition().x;
+			// if(body.GetPosition().y < bounds.d) bounds.d = body.GetPosition().y;
+			// if(body.GetPosition().x > bounds.r) bounds.r = body.GetPosition().x;
+			// if(body.GetPosition().y > bounds.u) bounds.u = body.GetPosition().y;
+
+		});
+		centerPoint.x /= bodyObjects.length;
+		centerPoint.y /= bodyObjects.length;
+
+		//let centerOffset = {x:(bounds.l-bounds.r)/2, y:(bounds.d-bounds.u)/2};
+
+		groupedBodyObject.x = centerPoint.x;
+		groupedBodyObject.y = centerPoint.y;
+		groupedBodyObject.rotation = 0;
 		groupedBodyObject.tileTexture = bodyObjects[0].mySprite.data.tileTexture;
 
-
-		for (i = 0; i < bodyObjects.length; i++) {
+		for (let i = 0; i < bodyObjects.length; i++) {
 			var vertices = [];
 			for (var j = 0; j < bodyObjects[i].mySprite.data.vertices.length; j++) {
 				var verts = [];
 				for (var k = 0; k < bodyObjects[i].mySprite.data.vertices[j].length; k++) {
-					var ox = bodyObjects[i].mySprite.data.x - bodyObjects[0].mySprite.data.x;
-					var oy = bodyObjects[i].mySprite.data.y - bodyObjects[0].mySprite.data.y;
 
-					var a = bodyObjects[0].mySprite.data.rotation;
-					var atanO = Math.atan2(oy, ox);
-					var sqrtO = Math.sqrt(ox * ox + oy * oy);
-
-					ox = sqrtO * Math.cos(-a + atanO);
-					oy = sqrtO * Math.sin(-a + atanO);
+					const offsetCenterPoint = {x:bodyObjects[i].GetPosition().x-centerPoint.x, y:bodyObjects[i].GetPosition().y-centerPoint.y}
 
 					var p = {
 						x: bodyObjects[i].mySprite.data.vertices[j][k].x,
 						y: bodyObjects[i].mySprite.data.vertices[j][k].y
 					};
-					var cosAngle = Math.cos(bodyObjects[i].mySprite.data.rotation - a);
-					var sinAngle = Math.sin(bodyObjects[i].mySprite.data.rotation - a);
-					var dx = p.x;
-					var dy = p.y;
-					p.x = (dx * cosAngle - dy * sinAngle);
-					p.y = (dx * sinAngle + dy * cosAngle);
+
+					var pl = Math.sqrt(p.x*p.x + p.y*p.y);
+					var pa = Math.atan2(p.y, p.x);
+					var a = bodyObjects[i].GetAngle();
+					console.log(a, 'ANGLE', pa);
+					p.x = pl * Math.cos(a + pa);
+					p.y = pl * Math.sin(a + pa);
 
 					verts.push({
-						x: p.x + ox,
-						y: p.y + oy
+						x: p.x + offsetCenterPoint.x,
+						y: p.y + offsetCenterPoint.y,
 					});
 				}
-
 				vertices.push(verts);
 			}
 			groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
