@@ -5,12 +5,16 @@ import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
-import {editorSettings} from './utils/editorSettings';
+import {
+	editorSettings
+} from './utils/editorSettings';
 
 import {
 	game
 } from "../Game";
-import { Settings } from "../Settings";
+import {
+	Settings
+} from "../Settings";
 
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
@@ -60,7 +64,7 @@ const _B2dEditor = function () {
 	this.oldMousePosWorld;
 
 	this.assetLists = {};
-	this.tileLists = {};	// future this can be an opject with keys like bricks/green/etc.
+	this.tileLists = {}; // future this can be an opject with keys like bricks/green/etc.
 
 	this.customGUIContainer = document.getElementById('custom-gui');
 
@@ -199,14 +203,14 @@ const _B2dEditor = function () {
 			});
 		}
 	}
-	this.openTextEditor = function(){
+	this.openTextEditor = function () {
 		const self = this;
-		if(!self.selectedTextures[0].textSprite) return;
+		if (!self.selectedTextures[0].textSprite) return;
 		const startValue = self.selectedTextures[0].textSprite.text;
-		const callBack = (value) =>{
+		const callBack = (value) => {
 			for (let j = 0; j < self.selectedTextures.length; j++) {
 				let textContainer = self.selectedTextures[j];
-				if(textContainer.textSprite){
+				if (textContainer.textSprite) {
 					textContainer.data.text = value;
 					textContainer.textSprite.text = value;
 				}
@@ -567,7 +571,7 @@ const _B2dEditor = function () {
 		//Populate custom  fields
 		switch (currentCase) {
 			case case_JUST_BODIES:
-			targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
@@ -580,7 +584,7 @@ const _B2dEditor = function () {
 						this.targetValue = value;
 					}.bind(controller));
 				} else {
-					console.log("first here:",ui.editorGUI.editData);
+					console.log("first here:", ui.editorGUI.editData);
 					ui.editorGUI.editData.colorFill = ui.editorGUI.editData.colorFill[0];
 					ui.editorGUI.editData.colorLine = ui.editorGUI.editData.colorLine[0];
 					ui.editorGUI.editData.lineWidth = ui.editorGUI.editData.lineWidth[0];
@@ -631,19 +635,29 @@ const _B2dEditor = function () {
 					this.targetValue = value
 				}.bind(controller));
 
-				ui.editorGUI.editData.convertToGraphic = function () {};
-				var label = this.selectedTextures.length == 1 ? ">Convert to Graphic<" : ">Convert to Graphics<";
-				controller = targetFolder.add(ui.editorGUI.editData, "convertToGraphic").name(label);
-				ui.editorGUI.editData.convertToGraphic = (function (_c) {
-					return function () {
-						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
-							_c.name(">Click to Confirm<");
-						} else {
-							_c.name(label);
-							self.convertSelectedBodiesToGraphics();
-						}
+
+				let containsMergedBodies = false;
+				for (let i = 0; i < this.selectedPhysicsBodies.length; i++) {
+					if (this.selectedPhysicsBodies[i].mySprite.data.vertices.length > 1) {
+						containsMergedBodies = true;
+						break;
 					}
-				})(controller)
+				}
+				if (!containsMergedBodies) {
+					ui.editorGUI.editData.convertToGraphic = function () {};
+					var label = this.selectedPhysicsBodies.length == 1 ? ">Convert to Graphic<" : ">Convert to Graphics<";
+					controller = targetFolder.add(ui.editorGUI.editData, "convertToGraphic").name(label);
+					ui.editorGUI.editData.convertToGraphic = (function (_c) {
+						return function () {
+							if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
+								_c.name(">Click to Confirm<");
+							} else {
+								_c.name(label);
+								self.convertSelectedBodiesToGraphics();
+							}
+						}
+					})(controller);
+				}
 				break;
 			case case_JUST_TEXTURES:
 				controller = targetFolder.addColor(ui.editorGUI.editData, "tint");
@@ -699,19 +713,6 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				ui.editorGUI.editData.convertToBody = function () {};
-				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
-				controller = targetFolder.add(ui.editorGUI.editData, "convertToBody").name(label);
-				ui.editorGUI.editData.convertToBody = (function (_c) {
-					return function () {
-						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
-							_c.name(">Click to Confirm<");
-						} else {
-							_c.name(label);
-							self.convertSelectedGraphicsToBodies();
-						}
-					}
-				})(controller)
 				break;
 			case case_JUST_JOINTS:
 				this.addJointGUI(dataJoint, targetFolder);
@@ -913,7 +914,7 @@ const _B2dEditor = function () {
 
 	this.deleteObjects = function (arr) {
 		for (var i = 0; i < arr.length; i++) {
-			if(arr[i] instanceof Box2D.b2Joint){
+			if (arr[i] instanceof Box2D.b2Joint) {
 				let joint = arr[i];
 				if (joint.myTriggers != undefined) {
 					var j;
@@ -927,7 +928,7 @@ const _B2dEditor = function () {
 				this.world.DestroyJoint(joint);
 
 				//TODO: remove joints from lookup object???
-			}else if (arr[i] instanceof this.prefabObject) {
+			} else if (arr[i] instanceof this.prefabObject) {
 				if (arr[i].myTriggers != undefined) {
 					for (var j = 0; j < (arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++) {
 						trigger.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
@@ -1034,10 +1035,10 @@ const _B2dEditor = function () {
 						}
 						if (!alreadySelected) arr.push(myJoint);
 					}
-				}else{
+				} else {
 					var jointEdge = b.GetJointList();
 					while (jointEdge) {
-						if(jointEdge.joint.spriteData) arr.push(jointEdge.joint);
+						if (jointEdge.joint.spriteData) arr.push(jointEdge.joint);
 						jointEdge = jointEdge.next;
 					}
 
@@ -1051,7 +1052,7 @@ const _B2dEditor = function () {
 						baseTexture: false
 					});
 				}
-				if(b.connectedSpike){
+				if (b.connectedSpike) {
 					let tarIndex = b.connectedSpike.connectedBodies.indexOf(b);
 					b.connectedSpike.connectedBodies.splice(tarIndex);
 					b.connectedSpike.connectedJoints.splice(tarIndex);
@@ -1321,15 +1322,15 @@ const _B2dEditor = function () {
 		this.debugGraphics.moveTo(-crossSize + this.container.x, this.container.y);
 		this.debugGraphics.lineTo(crossSize + this.container.x, this.container.y);
 
-		this.debugGraphics.moveTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, -crossSize + this.container.y);
-		this.debugGraphics.lineTo(this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, crossSize + this.container.y);
-		this.debugGraphics.moveTo(-crossSize + this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
-		this.debugGraphics.lineTo(crossSize + this.container.x-editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
+		this.debugGraphics.moveTo(this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, -crossSize + this.container.y);
+		this.debugGraphics.lineTo(this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, crossSize + this.container.y);
+		this.debugGraphics.moveTo(-crossSize + this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
+		this.debugGraphics.lineTo(crossSize + this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
 
-		this.debugGraphics.moveTo(this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, -crossSize + this.container.y);
-		this.debugGraphics.lineTo(this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, crossSize + this.container.y);
-		this.debugGraphics.moveTo(-crossSize + this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
-		this.debugGraphics.lineTo(crossSize + this.container.x+editorSettings.worldSize.width/2*this.container.scale.x, this.container.y);
+		this.debugGraphics.moveTo(this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, -crossSize + this.container.y);
+		this.debugGraphics.lineTo(this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, crossSize + this.container.y);
+		this.debugGraphics.moveTo(-crossSize + this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
+		this.debugGraphics.lineTo(crossSize + this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
 
 
 		this.doEditorGUI();
@@ -1355,14 +1356,14 @@ const _B2dEditor = function () {
 				// body.mySprite.x = body.GetPosition().x * this.PTM;
 				// body.mySprite.y = body.GetPosition().y * this.PTM;
 				//if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
-					body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
+				body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
 
 			}
 			if (body.mySprite && body.mySprite.visible) {
 				body.mySprite.x = body.GetPosition().x * this.PTM;
 				body.mySprite.y = body.GetPosition().y * this.PTM;
 				//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
-					body.mySprite.rotation = body.GetAngle();
+				body.mySprite.rotation = body.GetAngle();
 			}
 			i++;
 			body = body.GetNext();
@@ -1523,7 +1524,7 @@ const _B2dEditor = function () {
 		this.triggerActions = [];
 		this.lockselection = false;
 	}
-	this.textObject = function(){
+	this.textObject = function () {
 		this.type = self.object_TEXT;
 		this.x = null;
 		this.y = null;
@@ -1644,7 +1645,7 @@ const _B2dEditor = function () {
 			console.log("Camera Shot Succesfull");
 		}
 		for (i = 0; i < this.editorIcons.length; i++) {
-			if(!this.editorIcons[i].isPrefabJointGraphic) this.editorIcons[i].visible = true;
+			if (!this.editorIcons[i].isPrefabJointGraphic) this.editorIcons[i].visible = true;
 		}
 	}
 
@@ -1754,7 +1755,7 @@ const _B2dEditor = function () {
 
 
 					var bodyObject2 = this.createBodyFromEarcutResult(this.activeVertices);
-					if(bodyObject2) this.buildBodyFromObj(bodyObject2);
+					if (bodyObject2) this.buildBodyFromObj(bodyObject2);
 
 
 
@@ -1816,12 +1817,12 @@ const _B2dEditor = function () {
 				]
 				var _trigger = this.buildTriggerFromObj(triggerObject);
 				_trigger.mySprite.triggerInitialized = true;
-			}else if (this.selectedTool == this.tool_TEXT) {
+			} else if (this.selectedTool == this.tool_TEXT) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 
 				var textObject = new this.textObject;
-				textObject.x = this.startSelectionPoint.x*this.PTM;
-				textObject.y = this.startSelectionPoint.y*this.PTM;
+				textObject.x = this.startSelectionPoint.x * this.PTM;
+				textObject.y = this.startSelectionPoint.y * this.PTM;
 				var _text = this.buildTextFromObj(textObject);
 			}
 
@@ -2091,7 +2092,7 @@ const _B2dEditor = function () {
 			objects = this.sortObjectsByIndex(objects);
 			for (var i = 0; i < objects.length; i++) {
 				var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
-				sprite = (objects[i].myTexture) ?  objects[i].myTexture : sprite;
+				sprite = (objects[i].myTexture) ? objects[i].myTexture : sprite;
 				var container = sprite.parent;
 				container.removeChild(sprite);
 				container.addChildAt(sprite, obj + i);
@@ -2564,15 +2565,30 @@ const _B2dEditor = function () {
 		var offset = (Date.now() % offsetInterval + 1) / offsetInterval;
 
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
-			if (this.selectedPhysicsBodies[i].mySprite.data.radius) {
-				this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
-			} else {
-				var polygons = [];
-				for (var j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) polygons.push({
-					x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].x * this.PTM) * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x,
-					y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j].y * this.PTM) * this.container.scale.y * this.selectedPhysicsBodies[i].mySprite.scale.y
-				});
-				this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+			for (let j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) {
+				if (this.selectedPhysicsBodies[i].mySprite.data.radius[j]) {
+					//console.log(this.selectedPhysicsBodies[i].mySprite.data);
+
+					let p = {x:this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].x*this.PTM, y:this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].y*this.PTM};
+					const cosAngle = Math.cos(this.selectedPhysicsBodies[i].mySprite.rotation);
+					const sinAngle = Math.sin(this.selectedPhysicsBodies[i].mySprite.rotation);
+					const dx = p.x;
+					const dy = p.y;
+					p.x = (dx * cosAngle - dy * sinAngle);
+					p.y = (dx * sinAngle + dy * cosAngle);
+
+
+					this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius[j] * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x, (this.selectedPhysicsBodies[i].mySprite.x +p.x)* this.container.scale.x + this.container.x, (this.selectedPhysicsBodies[i].mySprite.y+p.y) * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+				} else {
+					var polygons = [];
+					for (let k = 0; k < this.selectedPhysicsBodies[i].mySprite.data.vertices[j].length; k++) {
+						polygons.push({
+							x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j][k].x * this.PTM) * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x,
+							y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j][k].y * this.PTM) * this.container.scale.y * this.selectedPhysicsBodies[i].mySprite.scale.y
+						});
+					}
+					this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+				}
 			}
 		}
 
@@ -2773,7 +2789,7 @@ const _B2dEditor = function () {
 							if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 						} else {
 							//joint
-							for(let j = 0; j<this.selectedTextures.length; j++){
+							for (let j = 0; j < this.selectedTextures.length; j++) {
 								if (controller.targetValue == "Pin") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_PIN;
 								} else if (controller.targetValue == "Slide") {
@@ -2783,9 +2799,9 @@ const _B2dEditor = function () {
 								} else if (controller.targetValue == "Rope") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_ROPE;
 								}
-								if(this.selectedTextures[j].myTriggers){
+								if (this.selectedTextures[j].myTriggers) {
 									const triggerLength = this.selectedTextures[j].myTriggers.length;
-									for(let k = 0; k<triggerLength; k++){
+									for (let k = 0; k < triggerLength; k++) {
 										trigger.removeTargetFromTrigger(this.selectedTextures[j].myTriggers[0], this.selectedTextures[j]);
 									}
 								}
@@ -3051,7 +3067,7 @@ const _B2dEditor = function () {
 								x: 0,
 								y: 0
 							}, body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.lineWidth[0], 1);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0],  body.mySprite.data.lineWidth[0],  1);
+							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.lineWidth[0], 1);
 							this.updateTileSprite(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
@@ -3064,7 +3080,7 @@ const _B2dEditor = function () {
 							else this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
 							this.updateTileSprite(sprite);
 						}
-					}  else if (controller.property == "transparancy") {
+					} else if (controller.property == "transparancy") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -3074,9 +3090,9 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue.toString();
-							if(sprite.data.type == this.object_GRAPHICGROUP){
+							if (sprite.data.type == this.object_GRAPHICGROUP) {
 								sprite.alpha = sprite.data.transparancy;
-							}else{
+							} else {
 								if (sprite.data.radius) this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, {
 									x: 0,
 									y: 0
@@ -3188,35 +3204,35 @@ const _B2dEditor = function () {
 								trigger.updateTriggerGUI();
 							} else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
 						}
-					} else if(controller.property == "textColor"){
+					} else if (controller.property == "textColor") {
 						//Text Object
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							var textContainer = this.selectedTextures[j];
 							textContainer.data.textColor = controller.targetValue;
 							textContainer.textSprite.style.fill = textContainer.data.textColor;
 						}
-					}else if(controller.property == "fontSize"){
+					} else if (controller.property == "fontSize") {
 						//Text Object
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							var textContainer = this.selectedTextures[j];
 							textContainer.data.fontSize = controller.targetValue;
 							textContainer.textSprite.style.fontSize = textContainer.data.fontSize;
 						}
-					}else if(controller.property == "fontName"){
+					} else if (controller.property == "fontName") {
 						//Text Object
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							var textContainer = this.selectedTextures[j];
 							textContainer.data.fontName = controller.targetValue;
 							textContainer.textSprite.style.fontFamily = textContainer.data.fontName;
 						}
-					}else if(controller.property == "textAlign"){
+					} else if (controller.property == "textAlign") {
 						//Text Object
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							var textContainer = this.selectedTextures[j];
 							textContainer.data.textAlign = controller.targetValue;
 							textContainer.textSprite.style.align = textContainer.data.textAlign;
 						}
-					}else {
+					} else {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
@@ -3629,7 +3645,7 @@ const _B2dEditor = function () {
 
 
 		let pointsArr = [];
-		for(i = 0; i<verts.length; i++){
+		for (i = 0; i < verts.length; i++) {
 			pointsArr.push(verts[i].x);
 			pointsArr.push(verts[i].y);
 		}
@@ -3640,7 +3656,7 @@ const _B2dEditor = function () {
 		console.log(earcutIndexes);
 
 		const earcutPoints = [];
-		for(i = 0; i<earcutIndexes.length; i++){
+		for (i = 0; i < earcutIndexes.length; i++) {
 			earcutPoints.push(verts[earcutIndexes[i]]);
 		}
 
@@ -3775,7 +3791,7 @@ const _B2dEditor = function () {
 
 			if (body) {
 				body.mySprite.parent.swapChildren(graphicContainer, body.mySprite);
-				if(graphicContainer.data.type == this.object_GRAPHICGROUP){
+				if (graphicContainer.data.type == this.object_GRAPHICGROUP) {
 					body.mySprite.alpha = graphicContainer.data.transparancy;
 					body.mySprite.data.transparancy[0] = graphicContainer.data.transparancy;
 				}
@@ -3788,19 +3804,19 @@ const _B2dEditor = function () {
 
 				for (k = 0; k < innerGraphics.length; k++) {
 					console.log(innerGraphics[k].x, innerGraphics[k].y);
-					if(innerGraphics[k].x < left) left = innerGraphics[k].x;
-					if(innerGraphics[k].y < down) down = innerGraphics[k].y;
-					if(innerGraphics[k].x > right) right = innerGraphics[k].x;
-					if(innerGraphics[k].y > up) up = innerGraphics[k].y;
+					if (innerGraphics[k].x < left) left = innerGraphics[k].x;
+					if (innerGraphics[k].y < down) down = innerGraphics[k].y;
+					if (innerGraphics[k].x > right) right = innerGraphics[k].x;
+					if (innerGraphics[k].y > up) up = innerGraphics[k].y;
 				}
 
 
-				var xOffset = (left-right)/this.PTM;
-				var yOffset = (down-up)/ this.PTM;
+				var xOffset = (left - right) / this.PTM;
+				var yOffset = (down - up) / this.PTM;
 
 				console.log(xOffset, yOffset);
 
-				body.SetPosition(new b2Vec2(graphicContainer.x / this.PTM +xOffset, graphicContainer.y / this.PTM+yOffset));
+				body.SetPosition(new b2Vec2(graphicContainer.x / this.PTM + xOffset, graphicContainer.y / this.PTM + yOffset));
 				body.SetAngle(graphicContainer.rotation);
 
 			}
@@ -3838,7 +3854,7 @@ const _B2dEditor = function () {
 				graphicObject.colorFill = colorFill[j];
 				graphicObject.colorLine = colorLine[j];
 				graphicObject.lineWidth = lineWidth[j];
-				graphicObject.transparancy = transparancy[j+1];
+				graphicObject.transparancy = transparancy[j + 1];
 				graphicObject.radius = radius[j];
 
 				graphicObject.x += body.mySprite.data.x * this.PTM;
@@ -3983,7 +3999,7 @@ const _B2dEditor = function () {
 		if (createdPrefabObject) createdPrefabObject.class = new PrefabManager.prefabLibrary[className].class(createdPrefabObject);
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
-		if(!data) return;
+		if (!data) return;
 		var groupNoSpaces = data.groups.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 		var arr = (group == "") ? [] : groupNoSpaces.split(",");
 		var subGroups = [];
@@ -4403,8 +4419,8 @@ const _B2dEditor = function () {
 		}
 
 		if (this.selectedPhysicsBodies.length > 1) {
-			for(let i = 0; i<this.selectedPhysicsBodies.length; i++){
-				if(this.selectedPhysicsBodies[i].mySprite.data.vertices.length >1){
+			for (let i = 0; i < this.selectedPhysicsBodies.length; i++) {
+				if (this.selectedPhysicsBodies[i].mySprite.data.vertices.length > 1) {
 					let bodies = this.ungroupBodyObjects(this.selectedPhysicsBodies[i]);
 					this.selectedPhysicsBodies.splice(i, 1);
 					this.selectedPhysicsBodies = this.selectedPhysicsBodies.concat(bodies);
@@ -4481,8 +4497,11 @@ const _B2dEditor = function () {
 		groupedBodyObject.density = [];
 
 		// let bounds = {l:Number.POSITIVE_INFINITY, r:-Number.POSITIVE_INFINITY, u:-Number.POSITIVE_INFINITY, d:Number.POSITIVE_INFINITY};
-		let centerPoint = {x:0, y:0};
-		bodyObjects.map((body)=>{
+		let centerPoint = {
+			x: 0,
+			y: 0
+		};
+		bodyObjects.map((body) => {
 			this.updateObject(body.mySprite, body.mySprite.data);
 			centerPoint.x += body.GetPosition().x;
 			centerPoint.y += body.GetPosition().y;
@@ -4508,17 +4527,19 @@ const _B2dEditor = function () {
 				var verts = [];
 				for (var k = 0; k < bodyObjects[i].mySprite.data.vertices[j].length; k++) {
 
-					const offsetCenterPoint = {x:bodyObjects[i].GetPosition().x-centerPoint.x, y:bodyObjects[i].GetPosition().y-centerPoint.y}
+					const offsetCenterPoint = {
+						x: bodyObjects[i].GetPosition().x - centerPoint.x,
+						y: bodyObjects[i].GetPosition().y - centerPoint.y
+					}
 
 					var p = {
 						x: bodyObjects[i].mySprite.data.vertices[j][k].x,
 						y: bodyObjects[i].mySprite.data.vertices[j][k].y
 					};
 
-					var pl = Math.sqrt(p.x*p.x + p.y*p.y);
+					var pl = Math.sqrt(p.x * p.x + p.y * p.y);
 					var pa = Math.atan2(p.y, p.x);
 					var a = bodyObjects[i].GetAngle();
-					console.log(a, 'ANGLE', pa);
 					p.x = pl * Math.cos(a + pa);
 					p.y = pl * Math.sin(a + pa);
 
@@ -4599,7 +4620,7 @@ const _B2dEditor = function () {
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
-			bodyObject.transparancy = transparancy[i+1];
+			bodyObject.transparancy = transparancy[i + 1];
 			bodyObject.radius = radius[i];
 
 			var body = this.buildBodyFromObj(bodyObject);
@@ -4826,9 +4847,9 @@ const _B2dEditor = function () {
 		jointGraphics.scale.y = 1.0 / this.container.scale.y;
 
 
-		if (tarObj.prefabInstanceName){
-			 jointGraphics.visible = false;
-			 jointGraphics.isPrefabJointGraphic = true;
+		if (tarObj.prefabInstanceName) {
+			jointGraphics.visible = false;
+			jointGraphics.isPrefabJointGraphic = true;
 		}
 
 		this.addObjectToLookupGroups(jointGraphics, jointGraphics.data);
@@ -4920,7 +4941,7 @@ const _B2dEditor = function () {
 			joint = this.world.CreateJoint(ropeJointDef);
 		}
 		bodyA.myJoints = undefined;
-		if(bodyB) bodyB.myJoints = undefined;
+		if (bodyB) bodyB.myJoints = undefined;
 		return joint;
 	}
 
@@ -5025,7 +5046,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size) {
-		if(!size) size = 1;
+		if (!size) size = 1;
 		// size = 1;
 		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
 
@@ -5047,8 +5068,8 @@ const _B2dEditor = function () {
 			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 			carveDecal.pivot.set(carveDecal.width / 2, carveDecal.height / 2);
 
-			carveDecal.scale.x = size*0.6;
-			carveDecal.scale.y = size*0.6;
+			carveDecal.scale.x = size * 0.6;
+			carveDecal.scale.y = size * 0.6;
 
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;
@@ -5084,9 +5105,9 @@ const _B2dEditor = function () {
 			let colorFill = body.mySprite.data.colorFill[i];
 			let colorLine = body.mySprite.data.colorLine[i];
 			let lineWidth = body.mySprite.data.lineWidth[i];
-			let transparancy = body.mySprite.data.transparancy[i+1]; //TODO:what is this?
+			let transparancy = body.mySprite.data.transparancy[i + 1]; //TODO:what is this?
 
-			if(body.mySprite.data.type == this.object_TRIGGER){
+			if (body.mySprite.data.type == this.object_TRIGGER) {
 				//color trigger
 				colorFill = '#FFFFFF';
 				colorLine = '#FFFFFF';
@@ -5152,7 +5173,7 @@ const _B2dEditor = function () {
 
 		if (tileTexture && tileTexture != "") {
 
-			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]){
+			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) {
 				target.myTileSprite.alpha = targetSprite.data.transparancy;
 				let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
 				outlineFilter.padding = targetSprite.data.lineWidth;
@@ -5180,11 +5201,11 @@ const _B2dEditor = function () {
 
 				const indices = targetGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
 				let uvs = new Float32Array(vertices.length);
-				for (i = 0; i < vertices.length; i++){
-					 uvs[i] = vertices[i] * 2.0 / tex.width;
-					 if(i & 1){
-						 uvs[i] = vertices[i] * 2.0 / tex.width+0.5;
-					 }
+				for (i = 0; i < vertices.length; i++) {
+					uvs[i] = vertices[i] * 2.0 / tex.width;
+					if (i & 1) {
+						uvs[i] = vertices[i] * 2.0 / tex.width + 0.5;
+					}
 				}
 
 				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices, );
@@ -5395,7 +5416,7 @@ const _B2dEditor = function () {
 			arr[10] = obj.repeatType;
 			arr[11] = obj.triggerObjects;
 			arr[12] = obj.triggerActions;
-		}else if(arr[0] == this.object_TEXT){
+		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
 			arr[8] = obj.textColor;
@@ -5486,7 +5507,7 @@ const _B2dEditor = function () {
 			obj.repeatType = arr[10];
 			obj.triggerObjects = arr[11];
 			obj.triggerActions = arr[12];
-		}else if (arr[0] == this.object_TEXT) {
+		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];
 			obj.text = arr[7];
@@ -5562,7 +5583,7 @@ const _B2dEditor = function () {
 		var prefabOffset = 0;
 
 		if (json != null) {
-			if( typeof json == 'string') json = JSON.parse(json);
+			if (typeof json == 'string') json = JSON.parse(json);
 			//clone json to not destroy old references
 			var worldObjects = JSON.parse(JSON.stringify(json));
 
@@ -5633,7 +5654,7 @@ const _B2dEditor = function () {
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
-				}else if(obj.type == this.object_TEXT){
+				} else if (obj.type == this.object_TEXT) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex;
 					}
@@ -5769,7 +5790,7 @@ const _B2dEditor = function () {
 	this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
 		this.BubbleEvent("PostSolve", contact, impulse);
 	}
-	this.testWorld = function (){
+	this.testWorld = function () {
 		camera.storeCurrentPosition();
 		this.runWorld();
 	}
@@ -5836,8 +5857,8 @@ const _B2dEditor = function () {
 		this.editing = false;
 		ui.hide();
 	}
-	this.resize = function(){
-		this.canvas.width  = $(window).width();
+	this.resize = function () {
+		this.canvas.width = $(window).width();
 		this.canvas.height = $(window).height();
 	}
 
