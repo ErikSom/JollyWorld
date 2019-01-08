@@ -1409,7 +1409,7 @@ const _B2dEditor = function () {
 		}];
 		this.density = 1;
 		this.collision = 0;
-		this.radius;
+		this.radius = 0;
 		this.tileTexture = "";
 		this.lockselection = false;
 		this.lineWidth = 1.0;
@@ -1753,11 +1753,9 @@ const _B2dEditor = function () {
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
 
-
 					var bodyObject2 = this.createBodyFromEarcutResult(this.activeVertices);
-					if (bodyObject2) this.buildBodyFromObj(bodyObject2);
-
-
+					var bodytest;
+					if (bodyObject2) bodytest = this.buildBodyFromObj(bodyObject2);
 
 					this.activeVertices = [];
 				}
@@ -3630,9 +3628,6 @@ const _B2dEditor = function () {
 		bodyObject.x = centerPoint.x;
 		bodyObject.y = centerPoint.y;
 
-
-		//check winding order
-
 		var area = 0
 		for (var i = 0; i < verts.length; i++) {
 			var x1 = verts[i].x;
@@ -3650,10 +3645,7 @@ const _B2dEditor = function () {
 			pointsArr.push(verts[i].y);
 		}
 
-
 		const earcutIndexes = PIXI.utils.earcut(pointsArr, [], 2);
-
-		console.log(earcutIndexes);
 
 		const earcutPoints = [];
 		for (i = 0; i < earcutIndexes.length; i++) {
@@ -3665,9 +3657,14 @@ const _B2dEditor = function () {
 			earcutTriangles.push(earcutPoints.splice(0, 3));
 		}
 
-		console.log(earcutTriangles);
+		bodyObject.vertices = [earcutTriangles];
+		bodyObject.radius = [bodyObject.radius];
+		bodyObject.colorFill = [bodyObject.colorFill];
+		bodyObject.colorLine = [bodyObject.colorLine];
+		bodyObject.lineWidth = [bodyObject.lineWidth];
+		bodyObject.transparancy = [bodyObject.transparancy];
+		bodyObject.density = [bodyObject.density];
 
-		bodyObject.vertices = earcutTriangles;
 		return bodyObject;
 	}
 	this.createGraphicObjectFromVerts = function (verts) {
@@ -4165,35 +4162,39 @@ const _B2dEditor = function () {
 			obj.transparancy = [obj.transparancy];
 			obj.density = [obj.density];
 		}
-		console.trace();
-		console.log(obj.density, "THIS IS BUILD BODY DENSITY!!");
 
 		//build fixtures
 		let fixDef;
 		let fixture;
 		for (var i = 0; i < obj.vertices.length; i++) {
-			fixDef = new b2FixtureDef;
-			fixDef.density = obj.density[i];
-			fixDef.friction = 0.5;
-			fixDef.restitution = 0.2;
-			const radius = obj.radius[i];
-			if (!radius) {
-				let vert;
-				let b2Vec2Arr = [];
-				let vertices = obj.vertices[i];
-				for (var j = 0; j < vertices.length; j++) {
-					vert = vertices[j];
-					b2Vec2Arr.push(new b2Vec2(vert.x, vert.y));
-				}
+			let innerVertices;
+			if(obj.vertices[i][0] instanceof Array == false) innerVertices = [obj.vertices[i]];
+			else innerVertices = obj.vertices[i];
 
-				fixDef.shape = new b2PolygonShape;
-				fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
-			} else {
-				fixDef.shape = new b2CircleShape;
-				fixDef.shape.SetLocalPosition(new b2Vec2(obj.vertices[i][0].x, obj.vertices[i][0].y));
-				fixDef.shape.SetRadius(radius / this.PTM);
+			for (let j = 0; j<innerVertices.length; j++){
+				fixDef = new b2FixtureDef;
+				fixDef.density = obj.density[i];
+				fixDef.friction = 0.5;
+				fixDef.restitution = 0.2;
+				const radius = obj.radius[i];
+				if (!radius) {
+					let vert;
+					let b2Vec2Arr = [];
+					let vertices = innerVertices[j];
+					for (var k = 0; k < vertices.length; k++) {
+						vert = vertices[k];
+						b2Vec2Arr.push(new b2Vec2(vert.x, vert.y));
+					}
+
+					fixDef.shape = new b2PolygonShape;
+					fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
+				} else {
+					fixDef.shape = new b2CircleShape;
+					fixDef.shape.SetLocalPosition(new b2Vec2(innerVertices[j][0].x, innerVertices[j][0].y));
+					fixDef.shape.SetRadius(radius / this.PTM);
+				}
+				fixture = body.CreateFixture(fixDef);
 			}
-			fixture = body.CreateFixture(fixDef);
 		}
 
 		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
@@ -5089,17 +5090,7 @@ const _B2dEditor = function () {
 
 		//change update body shapes with actual vertices
 
-		let fixtureArray = [];
-		let fixture = body.GetFixtureList();
-		while (fixture != null) {
-			fixtureArray.push(fixture);
-			fixture = fixture.GetNext();
-		}
-		fixtureArray.reverse();
-
-		for (let i = 0; i < fixtureArray.length; i++) {
-
-			fixture = fixtureArray[i];
+		for (let i = 0; i < body.mySprite.data.vertices.length; i++) {
 
 			let radius = body.mySprite.data.radius[i];
 			let colorFill = body.mySprite.data.colorFill[i];
@@ -5115,8 +5106,18 @@ const _B2dEditor = function () {
 				transparancy = 0.2;
 			}
 
-			if (!radius) this.updatePolyShape(body.originalGraphic, fixture.GetShape(), colorFill, colorLine, lineWidth, transparancy, (i != 0));
-			else this.updateCircleShape(body.originalGraphic, radius, fixture.GetShape().GetLocalPosition(), colorFill, colorLine, lineWidth, transparancy, (i != 0));
+			let verts = [];
+			let innerVerts;
+			if(body.mySprite.data.vertices[i][0] instanceof Array == false) innerVerts = body.mySprite.data.vertices[i];
+			else{
+				 innerVerts = body.mySprite.data.vertices[i][0];
+			}
+			for(var j = 0; j<innerVerts.length; j++){
+				verts.push({x:innerVerts[j].x*this.PTM, y:innerVerts[j].y*this.PTM});
+			}
+
+			if (!radius) this.updatePolyGraphic(body.originalGraphic, verts, colorFill, colorLine, lineWidth, transparancy, (i != 0));
+			else this.updateCircleShape(body.originalGraphic, radius, innerVerts[0], colorFill, colorLine, lineWidth, transparancy, (i != 0));
 		}
 	}
 	this.updateGraphicShapes = function (graphic) {
