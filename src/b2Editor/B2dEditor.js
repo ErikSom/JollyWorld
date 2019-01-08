@@ -15,6 +15,7 @@ import {
 import {
 	Settings
 } from "../Settings";
+import { convexHull } from "./utils/convexhull";
 
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
@@ -3017,18 +3018,12 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.colorFill[0] = controller.targetValue.toString();
-							var fixture = body.GetFixtureList();
-							if (body.mySprite.data.radius[0]) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius[0], {
-								x: 0,
-								y: 0
-							}, body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], 1);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], 1);
-
+							this.updateBodyShapes(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorFill = controller.targetValue.toString();
-							if (sprite.data.radius[0]) this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, {
+							if (sprite.data.radius[0]) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
 								x: 0,
 								y: 0
 							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
@@ -3039,17 +3034,12 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.colorLine[0] = controller.targetValue.toString();
-							var fixture = body.GetFixtureList();
-							if (body.mySprite.data.radius[0]) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius[0], {
-								x: 0,
-								y: 0
-							}, body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.transparancy[0]);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.transparancy[0]);
+							this.updateBodyShapes(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorLine = controller.targetValue.toString();
-							if (sprite.data.radius) this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, {
+							if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
 								x: 0,
 								y: 0
 							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
@@ -3060,18 +3050,12 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.lineWidth[0] = controller.targetValue;
-							var fixture = body.GetFixtureList();
-							if (body.mySprite.data.radius[0]) this.updateCircleShape(body.originalGraphic, body.mySprite.data.radius[0], {
-								x: 0,
-								y: 0
-							}, body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.lineWidth[0], 1);
-							else this.updatePolyShape(body.originalGraphic, fixture.GetShape(), body.mySprite.data.colorFill[0], body.mySprite.data.colorLine[0], body.mySprite.data.lineWidth[0], 1);
-							this.updateTileSprite(body);
+							this.updateBodyShapes(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.lineWidth = controller.targetValue;
-							if (sprite.data.radius) this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, {
+							if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
 								x: 0,
 								y: 0
 							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
@@ -3091,7 +3075,7 @@ const _B2dEditor = function () {
 							if (sprite.data.type == this.object_GRAPHICGROUP) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
-								if (sprite.data.radius) this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, {
+								if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
 									x: 0,
 									y: 0
 								}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
@@ -4236,7 +4220,7 @@ const _B2dEditor = function () {
 		container.originalGraphic = originalGraphic;
 
 		if (!obj.radius) this.updatePolyGraphic(originalGraphic, obj.vertices, obj.colorFill, obj.colorLine, obj.lineWidth, obj.transparancy);
-		else this.updateCircleShape(originalGraphic, obj.radius, obj.vertices[0], obj.colorFill, obj.colorLine, obj.lineWidth, obj.transparancy);
+		else this.updateCircleGraphic(originalGraphic, obj.radius, obj.vertices[0], obj.colorFill, obj.colorLine, obj.lineWidth, obj.transparancy);
 
 		this.textures.addChild(container);
 
@@ -4389,7 +4373,7 @@ const _B2dEditor = function () {
 				}
 				if (sprite.data.radius) sprite.data.radius *= scaleX;
 				if (!sprite.data.radius) this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
-				else this.updateCircleShape(sprite.originalGraphic, sprite.data.radius, sprite.data.vertices[0], sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
+				else this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, sprite.data.vertices[0], sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
 				this.updateTileSprite(sprite, true);
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				sprite.width = sprite.width * scaleX;
@@ -5110,14 +5094,15 @@ const _B2dEditor = function () {
 			let innerVerts;
 			if(body.mySprite.data.vertices[i][0] instanceof Array == false) innerVerts = body.mySprite.data.vertices[i];
 			else{
-				 innerVerts = body.mySprite.data.vertices[i][0];
+				 innerVerts = body.mySprite.data.vertices[i].flat(2);
+				 innerVerts = convexHull(innerVerts);
 			}
 			for(var j = 0; j<innerVerts.length; j++){
 				verts.push({x:innerVerts[j].x*this.PTM, y:innerVerts[j].y*this.PTM});
 			}
 
 			if (!radius) this.updatePolyGraphic(body.originalGraphic, verts, colorFill, colorLine, lineWidth, transparancy, (i != 0));
-			else this.updateCircleShape(body.originalGraphic, radius, innerVerts[0], colorFill, colorLine, lineWidth, transparancy, (i != 0));
+			else this.updateCircleGraphic(body.originalGraphic, radius, innerVerts[0], colorFill, colorLine, lineWidth, transparancy, (i != 0));
 		}
 	}
 	this.updateGraphicShapes = function (graphic) {
@@ -5131,7 +5116,7 @@ const _B2dEditor = function () {
 				g = new PIXI.Container();
 				let inner_graphic = new PIXI.Graphics();
 				if (!gObj.radius) this.updatePolyGraphic(inner_graphic, gObj.vertices, gObj.colorFill, gObj.colorLine, gObj.lineWidth, gObj.transparancy, true);
-				else this.updateCircleShape(inner_graphic, gObj.radius, gObj.vertices[0], gObj.colorFill, gObj.colorLine, gObj.lineWidth, gObj.transparancy, true);
+				else this.updateCircleGraphic(inner_graphic, gObj.radius, gObj.vertices[0], gObj.colorFill, gObj.colorLine, gObj.lineWidth, gObj.transparancy, true);
 				g.data = gObj;
 				g.addChild(inner_graphic);
 				g.originalGraphic = inner_graphic;
@@ -5251,40 +5236,7 @@ const _B2dEditor = function () {
 
 		return graphic;
 	}
-	this.updatePolyShape = function (graphic, poly, colorFill, colorLine, lineWidth, transparancy, dontClear) {
-		var color;
-		color = colorFill.slice(1);
-		var colorFillHex = parseInt(color, 16);
-		color = colorLine.slice(1);
-		var colorLineHex = parseInt(color, 16);
-
-		if (!dontClear) graphic.clear();
-		graphic.boundsPadding = 0;
-
-		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
-		graphic.beginFill(colorFillHex, transparancy);
-
-		var count = poly.GetVertexCount();
-
-		var vertices = poly.GetVertices();
-
-		var startPoint = vertices[0];
-
-		graphic.moveTo(this.getPIXIPointFromWorldPoint(startPoint).x, this.getPIXIPointFromWorldPoint(startPoint).y);
-
-		var i;
-		var nextPoint;
-		for (i = 1; i < count; i++) {
-			nextPoint = vertices[i];
-			graphic.lineTo(this.getPIXIPointFromWorldPoint(nextPoint).x, this.getPIXIPointFromWorldPoint(nextPoint).y);
-		}
-		graphic.lineTo(this.getPIXIPointFromWorldPoint(startPoint).x, this.getPIXIPointFromWorldPoint(startPoint).y);
-		graphic.endFill();
-		graphic.originalGraphic = true;
-
-		return graphic;
-	}
-	this.updateCircleShape = function (graphic, radius, pos, colorFill, colorLine, lineWidth, transparancy, dontClear) {
+	this.updateCircleGraphic = function (graphic, radius, pos, colorFill, colorLine, lineWidth, transparancy, dontClear) {
 		var color;
 		color = colorFill.slice(1);
 		var colorFillHex = parseInt(color, 16);
