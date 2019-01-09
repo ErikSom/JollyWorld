@@ -4603,21 +4603,36 @@ const _B2dEditor = function () {
 			// graphicObject.x = (dx * cosAngle - dy * sinAngle);
 			// graphicObject.y = (dx * sinAngle + dy * cosAngle);
 
+			let innerVerts;
+
+			if (verts[i][0] instanceof Array == false) innerVerts = [verts[i]];
+			else innerVerts = verts[i];
+
+
 			var centerPoint = {
 				x: 0,
 				y: 0
 			};
-			for (var j = 0; j < verts[i].length; j++) {
-				centerPoint.x += verts[i][j].x;
-				centerPoint.y += verts[i][j].y;
+			for(var j = 0; j<innerVerts.length; j++){
+				for (var k = 0; k < innerVerts[j].length; k++) {
+					centerPoint.x += innerVerts[j][k].x;
+					centerPoint.y += innerVerts[j][k].y;
+				}
 			}
-			centerPoint.x = centerPoint.x / verts[i].length;
-			centerPoint.y = centerPoint.y / verts[i].length;
 
-			for (j = 0; j < verts[i].length; j++) {
-				verts[i][j].x -= centerPoint.x;
-				verts[i][j].y -= centerPoint.y;
+			const innerVertsFlatLength = innerVerts.flat(2).length;
+
+			centerPoint.x = centerPoint.x / innerVertsFlatLength;
+			centerPoint.y = centerPoint.y / innerVertsFlatLength;
+
+			for(var j = 0; j<innerVerts.length; j++){
+				for (var k = 0; k < innerVerts[j].length; k++) {
+					innerVerts[j][k].x -= centerPoint.x;
+					innerVerts[j][k].y -= centerPoint.y;
+				}
 			}
+
+			if(innerVerts.length == 1) innerVerts = innerVerts.flat(2);
 
 			var a = bodyGroup.mySprite.data.rotation;
 			var atanO = Math.atan2(centerPoint.y, centerPoint.x);
@@ -4629,7 +4644,7 @@ const _B2dEditor = function () {
 			bodyObject.x += bodyGroup.mySprite.x / this.PTM + centerPoint.x;
 			bodyObject.y += bodyGroup.mySprite.y / this.PTM + centerPoint.y;
 			bodyObject.rotation = bodyGroup.mySprite.rotation;
-			bodyObject.vertices = verts[i];
+			bodyObject.vertices = innerVerts;
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
