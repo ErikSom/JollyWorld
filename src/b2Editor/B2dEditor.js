@@ -15,7 +15,9 @@ import {
 import {
 	Settings
 } from "../Settings";
-import { convexHull } from "./utils/convexhull";
+import {
+	convexHull
+} from "./utils/convexhull";
 
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
@@ -2568,7 +2570,10 @@ const _B2dEditor = function () {
 				if (this.selectedPhysicsBodies[i].mySprite.data.radius[j]) {
 					//console.log(this.selectedPhysicsBodies[i].mySprite.data);
 
-					let p = {x:this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].x*this.PTM, y:this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].y*this.PTM};
+					let p = {
+						x: this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].x * this.PTM,
+						y: this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].y * this.PTM
+					};
 					const cosAngle = Math.cos(this.selectedPhysicsBodies[i].mySprite.rotation);
 					const sinAngle = Math.sin(this.selectedPhysicsBodies[i].mySprite.rotation);
 					const dx = p.x;
@@ -2577,14 +2582,20 @@ const _B2dEditor = function () {
 					p.y = (dx * sinAngle + dy * cosAngle);
 
 
-					this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius[j] * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x, (this.selectedPhysicsBodies[i].mySprite.x +p.x)* this.container.scale.x + this.container.x, (this.selectedPhysicsBodies[i].mySprite.y+p.y) * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius[j] * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x, (this.selectedPhysicsBodies[i].mySprite.x + p.x) * this.container.scale.x + this.container.x, (this.selectedPhysicsBodies[i].mySprite.y + p.y) * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 				} else {
 					var polygons = [];
-					for (let k = 0; k < this.selectedPhysicsBodies[i].mySprite.data.vertices[j].length; k++) {
+					let innerVertices;
+					if (this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0] instanceof Array == false) innerVertices = this.selectedPhysicsBodies[i].mySprite.data.vertices[j];
+					else innerVertices = this.selectedPhysicsBodies[i].cachedConvexHulls[j];
+
+					for (let k = 0; k < innerVertices.length; k++) {
 						polygons.push({
-							x: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j][k].x * this.PTM) * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x,
-							y: (this.selectedPhysicsBodies[i].mySprite.data.vertices[j][k].y * this.PTM) * this.container.scale.y * this.selectedPhysicsBodies[i].mySprite.scale.y
+							x: (innerVertices[k].x * this.PTM) * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x,
+							y: (innerVertices[k].y * this.PTM) * this.container.scale.y * this.selectedPhysicsBodies[i].mySprite.scale.y
 						});
+
+
 					}
 					this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 				}
@@ -4152,10 +4163,15 @@ const _B2dEditor = function () {
 		let fixture;
 		for (var i = 0; i < obj.vertices.length; i++) {
 			let innerVertices;
-			if(obj.vertices[i][0] instanceof Array == false) innerVertices = [obj.vertices[i]];
-			else innerVertices = obj.vertices[i];
+			if (obj.vertices[i][0] instanceof Array == false) innerVertices = [obj.vertices[i]];
+			else {
+				innerVertices = obj.vertices[i];
 
-			for (let j = 0; j<innerVertices.length; j++){
+				if (!body.cachedConvexHulls) body.cachedConvexHulls = [];
+				body.cachedConvexHulls[i] = convexHull(innerVertices.flat(2));
+			}
+
+			for (let j = 0; j < innerVertices.length; j++) {
 				fixDef = new b2FixtureDef;
 				fixDef.density = obj.density[i];
 				fixDef.friction = 0.5;
@@ -4510,29 +4526,41 @@ const _B2dEditor = function () {
 			var vertices = [];
 			for (var j = 0; j < bodyObjects[i].mySprite.data.vertices.length; j++) {
 				var verts = [];
-				for (var k = 0; k < bodyObjects[i].mySprite.data.vertices[j].length; k++) {
 
-					const offsetCenterPoint = {
-						x: bodyObjects[i].GetPosition().x - centerPoint.x,
-						y: bodyObjects[i].GetPosition().y - centerPoint.y
+				let innerVerts;
+
+				if (bodyObjects[i].mySprite.data.vertices[j][0] instanceof Array == false) innerVerts = [bodyObjects[i].mySprite.data.vertices[j]];
+				else innerVerts = bodyObjects[i].mySprite.data.vertices[j];
+
+				for (var k = 0; k < innerVerts.length; k++) {
+
+					verts[k] = [];
+
+					for (var l = 0; l < innerVerts[k].length; l++) {
+
+						const offsetCenterPoint = {
+							x: bodyObjects[i].GetPosition().x - centerPoint.x,
+							y: bodyObjects[i].GetPosition().y - centerPoint.y
+						}
+
+						var p = {
+							x: innerVerts[k][l].x,
+							y: innerVerts[k][l].y
+						};
+
+						var pl = Math.sqrt(p.x * p.x + p.y * p.y);
+						var pa = Math.atan2(p.y, p.x);
+						var a = bodyObjects[i].GetAngle();
+						p.x = pl * Math.cos(a + pa);
+						p.y = pl * Math.sin(a + pa);
+
+						verts[k].push({
+							x: p.x + offsetCenterPoint.x,
+							y: p.y + offsetCenterPoint.y,
+						});
 					}
-
-					var p = {
-						x: bodyObjects[i].mySprite.data.vertices[j][k].x,
-						y: bodyObjects[i].mySprite.data.vertices[j][k].y
-					};
-
-					var pl = Math.sqrt(p.x * p.x + p.y * p.y);
-					var pa = Math.atan2(p.y, p.x);
-					var a = bodyObjects[i].GetAngle();
-					p.x = pl * Math.cos(a + pa);
-					p.y = pl * Math.sin(a + pa);
-
-					verts.push({
-						x: p.x + offsetCenterPoint.x,
-						y: p.y + offsetCenterPoint.y,
-					});
 				}
+				if(innerVerts.length == 1) verts = verts.flat(2);
 				vertices.push(verts);
 			}
 			groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
@@ -5092,13 +5120,15 @@ const _B2dEditor = function () {
 
 			let verts = [];
 			let innerVerts;
-			if(body.mySprite.data.vertices[i][0] instanceof Array == false) innerVerts = body.mySprite.data.vertices[i];
-			else{
-				 innerVerts = body.mySprite.data.vertices[i].flat(2);
-				 innerVerts = convexHull(innerVerts);
+			if (body.mySprite.data.vertices[i][0] instanceof Array == false) innerVerts = body.mySprite.data.vertices[i];
+			else {
+				innerVerts = body.cachedConvexHulls[i];
 			}
-			for(var j = 0; j<innerVerts.length; j++){
-				verts.push({x:innerVerts[j].x*this.PTM, y:innerVerts[j].y*this.PTM});
+			for (var j = 0; j < innerVerts.length; j++) {
+				verts.push({
+					x: innerVerts[j].x * this.PTM,
+					y: innerVerts[j].y * this.PTM
+				});
 			}
 
 			if (!radius) this.updatePolyGraphic(body.originalGraphic, verts, colorFill, colorLine, lineWidth, transparancy, (i != 0));
