@@ -5,7 +5,9 @@ import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
-import {lineIntersect}  from './utils/extramath';
+import {
+	lineIntersect
+} from './utils/extramath';
 
 import {
 	editorSettings
@@ -1739,22 +1741,15 @@ const _B2dEditor = function () {
 
 			} else if (this.selectedTool == this.tool_POLYDRAWING) {
 				if (!this.closeDrawing) {
-					if (this.correctDrawVertice && this.activeVertices.length > 1) {
-						this.activeVertices[this.activeVertices.length - 1] = {
-							x: this.correctedDrawVerticePosition.x,
-							y: this.correctedDrawVerticePosition.y
-						};
-					} else {
+					if (!this.checkVerticeDrawingHasErrors()) {
 						this.activeVertices.push({
 							x: this.mousePosWorld.x,
 							y: this.mousePosWorld.y
 						});
 					}
 				} else {
-
 					var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
-
 					this.activeVertices = [];
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
@@ -3276,8 +3271,6 @@ const _B2dEditor = function () {
 		}
 	}
 
-	this.correctedDrawVerticePosition;
-	this.correctDrawVertice = false;
 	this.closeDrawing = false;
 	this.activeVertices = [];
 
@@ -3317,25 +3310,9 @@ const _B2dEditor = function () {
 					newVertice = firstVertice;
 				}
 
-				if(convex){
-					let shapeError = false;
-					for(i = 0; i<this.activeVertices.length-1; i++){
-						if (lineIntersect(this.activeVertices[i], this.activeVertices[i+1], newVertice, activeVertice)) {
-							shapeError = true;
-						}else{
-							const minimumAngleDif = 0.2;
-							previousVertice = this.activeVertices[this.activeVertices.length-2];
-							const activeSegmentAngle = Math.atan2(previousVertice.y-activeVertice.y, previousVertice.x-activeVertice.x);
-							const newSegmentAngle = Math.atan2(newVertice.y-activeVertice.y, newVertice.x-activeVertice.x);
-							const angleDif = activeSegmentAngle-newSegmentAngle;
-							const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif));
-							if(Math.abs(shortestDif) <minimumAngleDif) shapeError = true;
-
-						}
-					}
-					if(shapeError){
+				if (convex) {
+					if (this.checkVerticeDrawingHasErrors()) {
 						this.debugGraphics.lineStyle(1, this.verticesErrorLineColor, 1);
-						this.closeDrawing = true;
 					}
 				}
 
@@ -3371,6 +3348,29 @@ const _B2dEditor = function () {
 			}
 			this.debugGraphics.endFill();
 		}
+	}
+	this.checkVerticeDrawingHasErrors = function () {
+		const minimumAngleDif = 0.2;
+		const newVertice = {
+			x: this.mousePosWorld.x,
+			y: this.mousePosWorld.y
+		}
+		const activeVertice = this.activeVertices[this.activeVertices.length - 1];
+		let previousVertice;
+		for (let i = 0; i < this.activeVertices.length - 1; i++) {
+			if (lineIntersect(this.activeVertices[i], this.activeVertices[i + 1], newVertice, activeVertice)) {
+				return true
+			} else {
+				previousVertice = this.activeVertices[this.activeVertices.length - 2];
+				const activeSegmentAngle = Math.atan2(previousVertice.y - activeVertice.y, previousVertice.x - activeVertice.x);
+				const newSegmentAngle = Math.atan2(newVertice.y - activeVertice.y, newVertice.x - activeVertice.x);
+				const angleDif = activeSegmentAngle - newSegmentAngle;
+				const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif));
+				if (Math.abs(shortestDif) < minimumAngleDif) return true;
+
+			}
+		}
+		return false;
 	}
 	this.doGeometryDrawing = function () {
 		if (this.mouseDown && !this.spaceCameraDrag) {
@@ -3562,7 +3562,9 @@ const _B2dEditor = function () {
 		if (Math.abs(area * this.PTM) < this.minimumBodySurfaceArea) return false;
 
 
-		bodyObject.vertices = [[verts]];
+		bodyObject.vertices = [
+			[verts]
+		];
 		bodyObject.radius = [bodyObject.radius];
 		bodyObject.colorFill = [bodyObject.colorFill];
 		bodyObject.colorLine = [bodyObject.colorLine];
@@ -4546,7 +4548,7 @@ const _B2dEditor = function () {
 				x: 0,
 				y: 0
 			};
-			for(var j = 0; j<innerVerts.length; j++){
+			for (var j = 0; j < innerVerts.length; j++) {
 				for (var k = 0; k < innerVerts[j].length; k++) {
 					centerPoint.x += innerVerts[j][k].x;
 					centerPoint.y += innerVerts[j][k].y;
@@ -4558,7 +4560,7 @@ const _B2dEditor = function () {
 			centerPoint.x = centerPoint.x / innerVertsFlatLength;
 			centerPoint.y = centerPoint.y / innerVertsFlatLength;
 
-			for(var j = 0; j<innerVerts.length; j++){
+			for (var j = 0; j < innerVerts.length; j++) {
 				for (var k = 0; k < innerVerts[j].length; k++) {
 					innerVerts[j][k].x -= centerPoint.x;
 					innerVerts[j][k].y -= centerPoint.y;
