@@ -11,3 +11,9 @@ export const rotateVector = function (vector, degrees) {
     const ty = vector.y;
     return new b2Vec2(cos * tx - sin * ty, sin * tx + cos * ty);
 }
+export const lineIntersect = function (A, B, C, D) {
+    const ccw = function (A, B, C) {
+        return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x)
+    };
+    return ccw(A, C, D) != ccw(B, C, D) && ccw(A, B, C) != ccw(A, B, D)
+};

@@ -5,6 +5,8 @@ import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
+import {lineIntersect}  from './utils/extramath';
+
 import {
 	editorSettings
 } from './utils/editorSettings';
@@ -1753,12 +1755,8 @@ const _B2dEditor = function () {
 					}
 				} else {
 
-					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
+					var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
-
-					var bodyObject2 = this.createBodyFromEarcutResult(this.activeVertices);
-					var bodytest;
-					if (bodyObject2) bodytest = this.buildBodyFromObj(bodyObject2);
 
 					this.activeVertices = [];
 				}
@@ -3292,13 +3290,15 @@ const _B2dEditor = function () {
 	this.verticesDoneFillColor = 0x00FF00;
 	this.verticesBulletRadius = 5;
 
+	this.verticesErrorLineColor = 0xFF0000;
+
 	this.doVerticesDrawing = function (convex) {
 		this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 
-		var i = 0;
-		var newVertice;
-		var activeVertice;
-		var previousVertice;
+		let i = 0;
+		let newVertice;
+		let activeVertice;
+		let previousVertice;
 
 		this.closeDrawing = false;
 
@@ -3309,99 +3309,7 @@ const _B2dEditor = function () {
 			}
 			activeVertice = this.activeVertices[this.activeVertices.length - 1];
 
-			if (this.activeVertices.length > 1 && convex) {
-
-				previousVertice = this.activeVertices[this.activeVertices.length - 2];
-				// compare mouse base angle with mouse previous angle
-				var difference1 = {
-					x: newVertice.x - previousVertice.x,
-					y: newVertice.y - previousVertice.y
-				};
-				var angle1 = Math.atan2(difference1.y, difference1.x) * this.RAD2DEG;
-
-				var difference2 = {
-					x: activeVertice.x - previousVertice.x,
-					y: activeVertice.y - previousVertice.y
-				};
-				var angle2 = Math.atan2(difference2.y, difference2.x) * this.RAD2DEG;
-
-				var d = Math.abs(angle1 - angle2) % 360;
-				var r = d > 180 ? 360 - d : d;
-				var sign = (angle1 - angle2 >= 0 && angle1 - angle2 <= 180) || (angle1 - angle2 <= -180 && angle1 - angle2 >= -360) ? 1 : -1;
-
-				var angleDirection = r * sign;
-				//now we know the angle direction
-
-				// lets see now compared to our first vertice
-				var difference3 = {
-					x: newVertice.x - activeVertice.x,
-					y: newVertice.y - activeVertice.y
-				};
-				var angle3 = Math.atan2(difference3.y, difference3.x) * this.RAD2DEG;
-
-				var difference4 = {
-					x: this.activeVertices[0].x - activeVertice.x,
-					y: this.activeVertices[0].y - activeVertice.y
-				};
-				var angle4 = Math.atan2(difference4.y, difference4.x) * this.RAD2DEG;
-
-				d = Math.abs(angle3 - angle4) % 360;
-				r = d > 180 ? 360 - d : d;
-				sign = (angle3 - angle4 >= 0 && angle3 - angle4 <= 180) || (angle3 - angle4 <= -180 && angle3 - angle4 >= -360) ? 1 : -1;
-
-				var angleToBaseDirection = r * sign;
-
-				this.correctDrawVertice = false;
-				if (angleDirection >= 0) {
-
-					//angle going in wrong direction
-					this.debugGraphics.lineStyle(1, 0xFF0000, 1);
-
-					var hypLength = Math.sqrt(difference3.x * difference3.x + difference3.y * difference3.y);
-					var tarAdjucentLengthExtension = Math.cos((angle3 - angle2) * this.DEG2RAD) * hypLength;
-					var tarAdjucentLength = Math.sqrt(difference2.x * difference2.x + difference2.y * difference2.y) + tarAdjucentLengthExtension;
-
-					newVertice = {
-						x: previousVertice.x + tarAdjucentLength * Math.cos(angle2 * this.DEG2RAD),
-						y: previousVertice.y + tarAdjucentLength * Math.sin(angle2 * this.DEG2RAD)
-					};
-					this.correctedDrawVerticePosition = newVertice;
-					this.correctDrawVertice = true;
-
-				}
-				//calculate if we can still close
-				if (this.activeVertices.length > 2) {
-
-					if (angleDirection < 0 && angleToBaseDirection <= 0) {
-						this.debugGraphics.lineStyle(1, 0xFFFF00, 1);
-						this.closeDrawing = true;
-					}
-
-					var ccw = function (A, B, C) {
-						return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x)
-					};
-					var intersect = function (A, B, C, D) {
-						return ccw(A, C, D) != ccw(B, C, D) && ccw(A, B, C) != ccw(A, B, D)
-					};
-
-					var checkBaseSegmentNextVertice = this.activeVertices[1];
-					var checkBaseSegmentVertice = this.activeVertices[0];
-					var checkBaseAngle = Math.atan2(checkBaseSegmentNextVertice.y - checkBaseSegmentVertice.y, checkBaseSegmentNextVertice.x - checkBaseSegmentVertice.x);
-					var imaginaryDistance = 10000;
-					var imaginaryVerticeOnBaseSegment = {
-						x: checkBaseSegmentVertice.x - imaginaryDistance * Math.cos(checkBaseAngle),
-						y: checkBaseSegmentVertice.y - imaginaryDistance * Math.sin(checkBaseAngle)
-					};
-
-					//this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x, this.getPIXIPointFromWorldPoint(newVertice).y);
-					//this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).x, this.getPIXIPointFromWorldPoint(imaginaryVerticeOnBaseSegment).y);
-
-					if (intersect(checkBaseSegmentNextVertice, imaginaryVerticeOnBaseSegment, newVertice, activeVertice)) {
-						this.debugGraphics.lineStyle(1, 0xFF00FF, 1);
-						this.closeDrawing = true;
-					}
-				}
-			} else if (this.activeVertices.length > 1 && !convex) {
+			if (this.activeVertices.length > 1) {
 				var firstVertice = this.activeVertices[0];
 				var disX = newVertice.x - firstVertice.x;
 				var disY = newVertice.y - firstVertice.y;
@@ -3411,6 +3319,29 @@ const _B2dEditor = function () {
 					this.closeDrawing = true;
 					newVertice = firstVertice;
 				}
+
+				if(convex){
+					let shapeError = false;
+					for(i = 0; i<this.activeVertices.length-1; i++){
+						if (lineIntersect(this.activeVertices[i], this.activeVertices[i+1], newVertice, activeVertice)) {
+							shapeError = true;
+						}else{
+							const minimumAngleDif = 0.2;
+							previousVertice = this.activeVertices[this.activeVertices.length-2];
+							const activeSegmentAngle = Math.atan2(previousVertice.y-activeVertice.y, previousVertice.x-activeVertice.x);
+							const newSegmentAngle = Math.atan2(newVertice.y-activeVertice.y, newVertice.x-activeVertice.x);
+							const angleDif = activeSegmentAngle-newSegmentAngle;
+							const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif));
+							if(Math.abs(shortestDif) <minimumAngleDif) shapeError = true;
+
+						}
+					}
+					if(shapeError){
+						this.debugGraphics.lineStyle(1, this.verticesErrorLineColor, 1);
+						this.closeDrawing = true;
+					}
+				}
+
 			}
 			if (this.closeDrawing) this.debugGraphics.beginFill(this.verticesDoneFillColor, 0.5);
 			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
