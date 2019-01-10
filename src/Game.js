@@ -343,6 +343,7 @@ function Game() {
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
+
     }
     this.playWorld = function () {
         this.runWorld();
@@ -697,7 +698,7 @@ function Game() {
 
         this.editor.run();
         this.newDebugGraphics.clear();
-        if (this.editor.editorSettings.physicsDebug) {
+        if (this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug) {
             this.world.DrawDebugData();
         }
         this.app.render();
