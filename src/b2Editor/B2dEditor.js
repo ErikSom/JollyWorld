@@ -17,9 +17,6 @@ import {
 import {
 	Settings
 } from "../Settings";
-import {
-	convexHull
-} from "./utils/convexhull";
 
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
@@ -2585,7 +2582,7 @@ const _B2dEditor = function () {
 					var polygons = [];
 					let innerVertices;
 					if (this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0] instanceof Array == false) innerVertices = this.selectedPhysicsBodies[i].mySprite.data.vertices[j];
-					else innerVertices = this.selectedPhysicsBodies[i].cachedConvexHulls[j];
+					else innerVertices = this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0];
 
 					for (let k = 0; k < innerVertices.length; k++) {
 						polygons.push({
@@ -3565,25 +3562,7 @@ const _B2dEditor = function () {
 		if (Math.abs(area * this.PTM) < this.minimumBodySurfaceArea) return false;
 
 
-		let pointsArr = [];
-		for (i = 0; i < verts.length; i++) {
-			pointsArr.push(verts[i].x);
-			pointsArr.push(verts[i].y);
-		}
-
-		const earcutIndexes = PIXI.utils.earcut(pointsArr, [], 2);
-
-		const earcutPoints = [];
-		for (i = 0; i < earcutIndexes.length; i++) {
-			earcutPoints.push(verts[earcutIndexes[i]]);
-		}
-
-		let earcutTriangles = [];
-		while (earcutPoints.length) {
-			earcutTriangles.push(earcutPoints.splice(0, 3));
-		}
-
-		bodyObject.vertices = [earcutTriangles];
+		bodyObject.vertices = [[verts]];
 		bodyObject.radius = [bodyObject.radius];
 		bodyObject.colorFill = [bodyObject.colorFill];
 		bodyObject.colorLine = [bodyObject.colorLine];
@@ -4089,17 +4068,40 @@ const _B2dEditor = function () {
 			obj.density = [obj.density];
 		}
 
+		console.log
+
 		//build fixtures
 		let fixDef;
 		let fixture;
 		for (var i = 0; i < obj.vertices.length; i++) {
 			let innerVertices;
+
+			console.log(obj.vertices[i][0]);
+
 			if (obj.vertices[i][0] instanceof Array == false) innerVertices = [obj.vertices[i]];
 			else {
-				innerVertices = obj.vertices[i];
+				let j;
+				//lets build convex shapes
+				let pointsArr = [];
+				for (j = 0; j < obj.vertices[i][0].length; j++) {
+					pointsArr.push(obj.vertices[i][0][j].x);
+					pointsArr.push(obj.vertices[i][0][j].y);
+				}
 
-				if (!body.cachedConvexHulls) body.cachedConvexHulls = [];
-				body.cachedConvexHulls[i] = convexHull(innerVertices.flat(2));
+				const earcutIndexes = PIXI.utils.earcut(pointsArr, [], 2);
+
+				const earcutPoints = [];
+				for (j = 0; j < earcutIndexes.length; j++) {
+					earcutPoints.push(obj.vertices[i][0][earcutIndexes[j]]);
+				}
+
+				let earcutTriangles = [];
+				while (earcutPoints.length) {
+					earcutTriangles.push(earcutPoints.splice(0, 3));
+				}
+
+				//
+				innerVertices = earcutTriangles;
 			}
 
 			for (let j = 0; j < innerVertices.length; j++) {
@@ -4491,7 +4493,7 @@ const _B2dEditor = function () {
 						});
 					}
 				}
-				if(innerVerts.length == 1) verts = verts.flat(2);
+				if (bodyObjects[i].mySprite.data.vertices[j][0] instanceof Array == false) verts = verts.flat(2);
 				vertices.push(verts);
 			}
 			groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
@@ -4563,7 +4565,7 @@ const _B2dEditor = function () {
 				}
 			}
 
-			if(innerVerts.length == 1) innerVerts = innerVerts.flat(2);
+			if (verts[i][0] instanceof Array == false) innerVerts = innerVerts.flat(2);
 
 			var a = bodyGroup.mySprite.data.rotation;
 			var atanO = Math.atan2(centerPoint.y, centerPoint.x);
@@ -5068,7 +5070,7 @@ const _B2dEditor = function () {
 			let innerVerts;
 			if (body.mySprite.data.vertices[i][0] instanceof Array == false) innerVerts = body.mySprite.data.vertices[i];
 			else {
-				innerVerts = body.cachedConvexHulls[i];
+				innerVerts = body.mySprite.data.vertices[i][0];
 			}
 			for (var j = 0; j < innerVerts.length; j++) {
 				verts.push({
