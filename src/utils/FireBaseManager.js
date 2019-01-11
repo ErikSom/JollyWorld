@@ -215,15 +215,16 @@ function FireBaseManager() {
             if (errorCall) errorCall(error);
         }
         this.complete = function (task) {
-            var downloadURL = task.snapshot.downloadURL;
-            var token = downloadURL.split(firebaseManager.baseDownloadURL)[1];
-            self.tokens.push(token);
-            self.currentFileProgress = 0;
-            if (self.currentIndex == self.totalFiles) {
-                if (completeCall) completeCall(self.tokens);
-            } else {
-                self.uploadNext();
-            }
+            task.snapshot.ref.getDownloadURL().then((downloadURL) =>{
+                var token = downloadURL.split(firebaseManager.baseDownloadURL)[1];
+                self.tokens.push(token);
+                self.currentFileProgress = 0;
+                if (self.currentIndex == self.totalFiles) {
+                    if (completeCall) completeCall(self.tokens);
+                } else {
+                    self.uploadNext();
+                }
+            });
         }
 
         this.uploadFile = function (file, dir, name, datatype) {
