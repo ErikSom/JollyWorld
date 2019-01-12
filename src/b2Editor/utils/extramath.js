@@ -1,4 +1,6 @@
-import { b2Vec2 } from "../../../libs/Box2D";
+import {
+    b2Vec2
+} from "../../../libs/Box2D";
 import {
     game
 } from "../../Game";
@@ -17,3 +19,8 @@ export const lineIntersect = function (A, B, C, D) {
     };
     return ccw(A, C, D) != ccw(B, C, D) && ccw(A, B, C) != ccw(A, B, D)
 };
+export const flatten = function (arr) {
+    return [].concat.apply([], arr.map(function (element) {
+        return Array.isArray(element) ? flatten(element) : element;
+    }))
+}

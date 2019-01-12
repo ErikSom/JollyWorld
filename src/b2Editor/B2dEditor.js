@@ -6,7 +6,7 @@ import * as ui from "./utils/ui";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import {
-	lineIntersect
+	lineIntersect, flatten
 } from './utils/extramath';
 
 import {
@@ -4495,7 +4495,7 @@ const _B2dEditor = function () {
 						});
 					}
 				}
-				if (bodyObjects[i].mySprite.data.vertices[j][0] instanceof Array == false) verts = verts.flat(2);
+				if (bodyObjects[i].mySprite.data.vertices[j][0] instanceof Array == false) verts =  flatten(verts);
 				vertices.push(verts);
 			}
 			groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
@@ -4555,7 +4555,7 @@ const _B2dEditor = function () {
 				}
 			}
 
-			const innerVertsFlatLength = innerVerts.flat(2).length;
+			const innerVertsFlatLength = flatten(innerVerts).length;
 
 			centerPoint.x = centerPoint.x / innerVertsFlatLength;
 			centerPoint.y = centerPoint.y / innerVertsFlatLength;
@@ -4567,7 +4567,7 @@ const _B2dEditor = function () {
 				}
 			}
 
-			if (verts[i][0] instanceof Array == false) innerVerts = innerVerts.flat(2);
+			if (verts[i][0] instanceof Array == false) innerVerts = flatten(innerVerts);
 
 			var a = bodyGroup.mySprite.data.rotation;
 			var atanO = Math.atan2(centerPoint.y, centerPoint.x);
