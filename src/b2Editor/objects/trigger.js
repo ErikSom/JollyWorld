@@ -319,7 +319,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.targetValue = value
     });
     ui.editorGUI.editData.selectTarget = function () {};
-    var label = ">Add Target<";
+    var label = "Add Target";
     controller = _folder.add(ui.editorGUI.editData, "selectTarget").name(label);
     ui.editorGUI.editData.selectTarget = function () {
         B2dEditor.selectingTriggerTarget = true;
@@ -406,7 +406,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             ui.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
 
             ui.editorGUI.editData[`removeAction_${j}`] = function () {};
-            var label = `>Remove Action ${j+1}<`;
+            var label = `Remove Action ${j+1}`;
             let targetIndex = i;
             let targetAction = j;
             controller = actionFolder.add(ui.editorGUI.editData, `removeAction_${j}`).name(label);
@@ -420,7 +420,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             }
         }
         ui.editorGUI.editData[`addAction_${i}`] = function () {};
-        var label = `>Add Action<`;
+        var label = `Add Action`;
         let targetIndex = i;
         controller = actionsFolder.add(ui.editorGUI.editData, `addAction_${i}`).name(label);
         ui.editorGUI.editData[`addAction_${i}`] = function () {
@@ -432,7 +432,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         }
 
         ui.editorGUI.editData[`removeTarget_${i}`] = function () {};
-        var label = `>Remove Target ${i+1}<`;
+        var label = `Remove Target ${i+1}`;
         controller = actionsFolder.add(ui.editorGUI.editData, `removeTarget_${i}`).name(label);
         ui.editorGUI.editData[`removeTarget_${i}`] = function () {
             for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
