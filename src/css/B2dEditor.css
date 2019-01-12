@@ -134,6 +134,25 @@ canvas {
 .dg.custom > div, .dg.custom ul > span, .dg.custom textarea, .dg.custom input{
     width:100%;
 }
+body .dg .cr.function .property-name{
+    background-color: #999;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+    border-radius: 8px;
+    height: 23px;
+    color: black;
+    line-height: 23px;
+}
+body .dg .cr.function .property-name:hover{
+    background-color:#666;
+}
+body .dg .cr.function > div{
+    padding:5px;
+}
+body .dg .cr.function{
+    height:35px;
+}
 
 .scrollBar{
     position: absolute;

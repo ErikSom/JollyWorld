@@ -649,12 +649,12 @@ const _B2dEditor = function () {
 				}
 				if (!containsMergedBodies) {
 					ui.editorGUI.editData.convertToGraphic = function () {};
-					var label = this.selectedPhysicsBodies.length == 1 ? ">Convert to Graphic<" : ">Convert to Graphics<";
+					var label = this.selectedPhysicsBodies.length == 1 ? "Convert to Graphic" : "Convert to Graphics";
 					controller = targetFolder.add(ui.editorGUI.editData, "convertToGraphic").name(label);
 					ui.editorGUI.editData.convertToGraphic = (function (_c) {
 						return function () {
-							if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
-								_c.name(">Click to Confirm<");
+							if (_c.domElement.previousSibling.innerText != "Click to Confirm") {
+								_c.name("Click to Confirm");
 							} else {
 								_c.name(label);
 								self.convertSelectedBodiesToGraphics();
@@ -697,12 +697,12 @@ const _B2dEditor = function () {
 				}.bind(controller));
 
 				ui.editorGUI.editData.convertToBody = function () {};
-				var label = this.selectedTextures.length == 1 ? ">Convert to PhysicsBody<" : ">Convert to PhysicsBodies<";
+				var label = this.selectedTextures.length == 1 ? "Convert to PhysicsBody" : "Convert to PhysicsBodies";
 				controller = targetFolder.add(ui.editorGUI.editData, "convertToBody").name(label);
 				ui.editorGUI.editData.convertToBody = (function (_c) {
 					return function () {
-						if (_c.domElement.previousSibling.innerText != ">Click to Confirm<") {
-							_c.name(">Click to Confirm<");
+						if (_c.domElement.previousSibling.innerText != "Click to Confirm") {
+							_c.name("Click to Confirm");
 						} else {
 							_c.name(label);
 							self.convertSelectedGraphicsToBodies();
@@ -759,7 +759,7 @@ const _B2dEditor = function () {
 			case case_JUST_TEXTS:
 
 				ui.editorGUI.editData.openTextEditorCaller = function () {};
-				controller = targetFolder.add(ui.editorGUI.editData, "openTextEditorCaller").name(">Edit Text<");
+				controller = targetFolder.add(ui.editorGUI.editData, "openTextEditorCaller").name("Edit Text");
 				ui.editorGUI.editData.openTextEditorCaller = self.openTextEditor.bind(this);
 
 
