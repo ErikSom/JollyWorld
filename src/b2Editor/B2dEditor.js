@@ -4573,13 +4573,6 @@ const _B2dEditor = function () {
 		for (var i = 0; i < verts.length; i++) {
 			var bodyObject = new this.bodyObject;
 
-			// var cosAngle = Math.cos(graphicGroup.rotation);
-			// var sinAngle = Math.sin(graphicGroup.rotation);
-			// var dx = graphicObject.x;
-			// var dy = graphicObject.y;
-			// graphicObject.x = (dx * cosAngle - dy * sinAngle);
-			// graphicObject.y = (dx * sinAngle + dy * cosAngle);
-
 			let innerVerts;
 
 			if (verts[i][0] instanceof Array == false) innerVerts = [verts[i]];
@@ -4626,10 +4619,10 @@ const _B2dEditor = function () {
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
-			bodyObject.transparancy = transparancy[i];
+			bodyObject.transparancy = transparancy[i+1];
 			bodyObject.density = density[i];
 
-			if(innerVerts[0] instanceof Array == true){
+			if(innerVerts[0] instanceof Array == true){ // a fix for earcut bodies being ungrouped
 				bodyObject.colorFill = [bodyObject.colorFill];
 				bodyObject.colorLine = [bodyObject.colorLine];
 				bodyObject.lineWidth = [bodyObject.lineWidth];
