@@ -24,3 +24,22 @@ export const flatten = function (arr) {
         return Array.isArray(element) ? flatten(element) : element;
     }))
 }
+
+export const isConvex = function (arr) {
+    if (arr.length < 4)
+        return true;
+    let sign = false;
+    let n = arr.length;
+    for (let i = 0; i < n; i++) {
+        const dx1 = arr[(i + 2) % n].x - arr[(i + 1) % n].x;
+        const dy1 = arr[(i + 2) % n].y - arr[(i + 1) % n].y;
+        const dx2 = arr[i].x - arr[(i + 1) % n].x;
+        const dy2 = arr[i].y - arr[(i + 1) % n].y;
+        const zcrossproduct = dx1 * dy2 - dy1 * dx2;
+        if (i == 0)
+            sign = zcrossproduct > 0;
+        else if (sign != (zcrossproduct > 0))
+            return false;
+    }
+    return true;
+}

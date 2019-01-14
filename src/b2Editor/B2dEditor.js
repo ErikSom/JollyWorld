@@ -6,7 +6,9 @@ import * as ui from "./utils/ui";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import {
-	lineIntersect, flatten
+	lineIntersect,
+	flatten,
+	isConvex
 } from './utils/extramath';
 
 import {
@@ -785,6 +787,31 @@ const _B2dEditor = function () {
 				});
 				break;
 		}
+		if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
+			ui.editorGUI.editData.groupObjects = () => {
+				self.groupObjects();
+			};
+			controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
+		} else {
+			if (this.selectedPhysicsBodies.length == 1) {
+				if (this.selectedPhysicsBodies[0].mySprite.data.vertices.length > 1) {
+					ui.editorGUI.editData.ungroupObjects = () => {
+						self.ungroupObjects();
+					};
+					controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+				}
+			} else if(this.selectedTextures.length == 1){
+				if (this.selectedTextures[0].data.type ==  this.object_GRAPHICGROUP) {
+					ui.editorGUI.editData.ungroupObjects = () => {
+						self.ungroupObjects();
+					};
+					controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+				}
+			}
+
+		}
+
+
 		//TODO:Maybe add admin mode / pro mode for lockselection
 		if (ui.editorGUI.editData.lockselection == undefined) ui.editorGUI.editData.lockselection = false;
 		targetFolder.add(ui.editorGUI.editData, "lockselection").onChange(function (value) {
@@ -3662,7 +3689,10 @@ const _B2dEditor = function () {
 						y: 0
 					}];
 
-				} else bodyObject = this.createBodyObjectFromVerts(verts);
+				} else{
+					if(isConvex(verts))	bodyObject = this.createBodyObjectFromVerts(verts);
+					else bodyObject = this.createBodyFromEarcutResult(verts);
+				}
 
 				if (bodyObject) {
 					bodyObject.colorFill = graphic.colorFill;
@@ -3748,13 +3778,20 @@ const _B2dEditor = function () {
 			var graphics = [];
 
 			for (var j = 0; j < verts.length; j++) {
+
 				var graphicObject;
 				if (radius[j]) {
 					graphicObject = new this.graphicObject();
 					graphicObject.vertices = verts[j];
 				} else {
-					graphicObject = this.createGraphicObjectFromVerts(verts[j]);
+
+					let innerVerts;
+					if(verts[j][0] instanceof Array == false) innerVerts = verts[j];
+					else innerVerts = verts[j][0];
+
+					graphicObject = this.createGraphicObjectFromVerts(innerVerts);
 				}
+
 				graphicObject.colorFill = colorFill[j];
 				graphicObject.colorLine = colorLine[j];
 				graphicObject.lineWidth = lineWidth[j];
@@ -3769,6 +3806,8 @@ const _B2dEditor = function () {
 					graphics.push(graphic);
 				}
 			}
+
+			console.log(graphics);
 
 			if (graphics.length > 1) graphic = this.groupGraphicObjects(graphics);
 
@@ -4495,7 +4534,7 @@ const _B2dEditor = function () {
 						});
 					}
 				}
-				if (bodyObjects[i].mySprite.data.vertices[j][0] instanceof Array == false) verts =  flatten(verts);
+				if (bodyObjects[i].mySprite.data.vertices[j][0] instanceof Array == false) verts = flatten(verts);
 				vertices.push(verts);
 			}
 			groupedBodyObject.vertices = groupedBodyObject.vertices.concat(vertices);
