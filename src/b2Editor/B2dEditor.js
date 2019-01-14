@@ -581,7 +581,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-
+				console.log(ui.editorGUI.editData);
 				if (ui.editorGUI.editData.colorFill.length > 1) {
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
 					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
@@ -4086,6 +4086,9 @@ const _B2dEditor = function () {
 	}
 	this.buildBodyFromObj = function (obj) {
 
+
+		console.log(obj);
+
 		var bd = new b2BodyDef();
 		if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
 		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
@@ -4109,7 +4112,6 @@ const _B2dEditor = function () {
 			obj.density = [obj.density];
 		}
 
-		console.log
 
 		//build fixtures
 		let fixDef;
@@ -4566,6 +4568,7 @@ const _B2dEditor = function () {
 		var lineWidth = bodyGroup.mySprite.data.lineWidth;
 		var transparancy = bodyGroup.mySprite.data.transparancy;
 		var radius = bodyGroup.mySprite.data.radius;
+		var density = bodyGroup.mySprite.data.density;
 
 		for (var i = 0; i < verts.length; i++) {
 			var bodyObject = new this.bodyObject;
@@ -4608,6 +4611,7 @@ const _B2dEditor = function () {
 
 			if (verts[i][0] instanceof Array == false) innerVerts = flatten(innerVerts);
 
+
 			var a = bodyGroup.mySprite.data.rotation;
 			var atanO = Math.atan2(centerPoint.y, centerPoint.x);
 			var sqrtO = Math.sqrt(centerPoint.x * centerPoint.x + centerPoint.y * centerPoint.y);
@@ -4622,8 +4626,21 @@ const _B2dEditor = function () {
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
-			bodyObject.transparancy = transparancy[i + 1];
+			bodyObject.transparancy = transparancy[i];
+			bodyObject.density = density[i];
+
+			if(innerVerts[0] instanceof Array == true){
+				bodyObject.colorFill = [bodyObject.colorFill];
+				bodyObject.colorLine = [bodyObject.colorLine];
+				bodyObject.lineWidth = [bodyObject.lineWidth];
+				bodyObject.transparancy = [bodyObject.transparancy];
+				bodyObject.density = [bodyObject.density];
+			}
+
+
 			bodyObject.radius = radius[i];
+
+			debugger;
 
 			var body = this.buildBodyFromObj(bodyObject);
 
