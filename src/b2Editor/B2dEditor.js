@@ -4593,6 +4593,7 @@ const _B2dEditor = function () {
 			}
 
 			if (verts[i][0] instanceof Array == false) innerVerts = flatten(innerVerts);
+			else innerVerts = [innerVerts];
 
 
 			var a = bodyGroup.mySprite.data.rotation;
