@@ -64,7 +64,7 @@
                   ".write": "auth != null",
                   "$username": {
                         ".read": "auth != null",
-                        ".validate": "!data.exists() && newData.exists() && newData.isString() && newData.val().length < 20 && !root.child('Usernames').child(newData.val().toLowerCase()).exists()"
+                        ".validate": "!data.exists() && newData.exists() && newData.exists() && newData.isString() && $username.length < 20 && !root.child('Usernames').child(newData.val().toLowerCase()).exists()"
                   }
             },
             "PublishedLevelsVoters": {
