@@ -581,7 +581,6 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				console.log(ui.editorGUI.editData);
 				if (ui.editorGUI.editData.colorFill.length > 1) {
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
 					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
@@ -590,14 +589,11 @@ const _B2dEditor = function () {
 						this.targetValue = value;
 					}.bind(controller));
 				} else {
-					console.log("first here:", ui.editorGUI.editData);
 					ui.editorGUI.editData.colorFill = ui.editorGUI.editData.colorFill[0];
 					ui.editorGUI.editData.colorLine = ui.editorGUI.editData.colorLine[0];
 					ui.editorGUI.editData.lineWidth = ui.editorGUI.editData.lineWidth[0];
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
-					console.log(ui.editorGUI.editData.density);
 					ui.editorGUI.editData.density = ui.editorGUI.editData.density[0];
-					console.log(ui.editorGUI.editData.density);
 
 
 
@@ -2585,7 +2581,6 @@ const _B2dEditor = function () {
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			for (let j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) {
 				if (this.selectedPhysicsBodies[i].mySprite.data.radius[j]) {
-					//console.log(this.selectedPhysicsBodies[i].mySprite.data);
 
 					let p = {
 						x: this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].x * this.PTM,
@@ -2997,8 +2992,13 @@ const _B2dEditor = function () {
 							body.SetAngle(controller.targetValue * this.DEG2RAD);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
+
+	
 							sprite = this.selectedTextures[j];
+							console.log("START:", sprite.rotation);
+							console.log(controller.targetValue, this.DEG2RAD, controller.targetValue * this.DEG2RAD);
 							sprite.rotation = controller.targetValue * this.DEG2RAD;
+							console.log(sprite.rotation);
 						}
 					} else if (controller.property == "groups" && controller.targetValue != "-") {
 						//body & sprite
@@ -3281,7 +3281,7 @@ const _B2dEditor = function () {
 				} else {
 					ui.editorGUI.editData.x = syncObject.x;
 					ui.editorGUI.editData.y = syncObject.y;
-					ui.editorGUI.editData.rotation = syncObject.rotation;
+					ui.editorGUI.editData.rotation = syncObject.rotation * this.RAD2DEG;
 				}
 			}
 
@@ -3709,7 +3709,7 @@ const _B2dEditor = function () {
 					}
 					bodyObject.tileTexture = graphic.tileTexture;
 
-					bodyObject.rotation = graphic.rotation;
+					bodyObject.rotation = 0;
 					innerBodies.push(this.buildBodyFromObj(bodyObject));
 				}
 			}
@@ -3737,7 +3737,6 @@ const _B2dEditor = function () {
 				var up = -Number.POSITIVE_INFINITY;
 
 				for (k = 0; k < innerGraphics.length; k++) {
-					console.log(innerGraphics[k].x, innerGraphics[k].y);
 					if (innerGraphics[k].x < left) left = innerGraphics[k].x;
 					if (innerGraphics[k].y < down) down = innerGraphics[k].y;
 					if (innerGraphics[k].x > right) right = innerGraphics[k].x;
@@ -3747,8 +3746,6 @@ const _B2dEditor = function () {
 
 				var xOffset = (left - right) / this.PTM;
 				var yOffset = (down - up) / this.PTM;
-
-				console.log(xOffset, yOffset);
 
 				body.SetPosition(new b2Vec2(graphicContainer.x / this.PTM + xOffset, graphicContainer.y / this.PTM + yOffset));
 				body.SetAngle(graphicContainer.rotation);
@@ -3806,8 +3803,6 @@ const _B2dEditor = function () {
 					graphics.push(graphic);
 				}
 			}
-
-			console.log(graphics);
 
 			if (graphics.length > 1) graphic = this.groupGraphicObjects(graphics);
 
@@ -4086,9 +4081,6 @@ const _B2dEditor = function () {
 	}
 	this.buildBodyFromObj = function (obj) {
 
-
-		console.log(obj);
-
 		var bd = new b2BodyDef();
 		if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
 		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
@@ -4118,8 +4110,6 @@ const _B2dEditor = function () {
 		let fixture;
 		for (var i = 0; i < obj.vertices.length; i++) {
 			let innerVertices;
-
-			console.log(obj.vertices[i][0]);
 
 			if (obj.vertices[i][0] instanceof Array == false) innerVertices = [obj.vertices[i]];
 			else {
@@ -4632,8 +4622,6 @@ const _B2dEditor = function () {
 
 
 			bodyObject.radius = radius[i];
-
-			debugger;
 
 			var body = this.buildBodyFromObj(bodyObject);
 
