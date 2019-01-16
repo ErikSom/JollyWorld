@@ -56,7 +56,6 @@ export const initGui = function () {
     initGuiAssetSelection();
     createToolGUI();
     this.showHeaderBar();
-    B2dEditor.canvas.focus();
     scrollBars.update();
 
     firebaseManager.registerListener('login', handleLoginStatusChange);
@@ -1809,14 +1808,6 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
         })
     });
 }
-
-
-
-
-
-
-
-
 
 // WINDOW DRAGING
 

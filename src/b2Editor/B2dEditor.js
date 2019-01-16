@@ -332,7 +332,6 @@ const _B2dEditor = function () {
 				break
 		}
 		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
-		this.canvas.focus();
 	}
 
 	this.updateSelection = function () {
@@ -1425,7 +1424,7 @@ const _B2dEditor = function () {
 		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.transparancy = 1.0;
-		this.fixed = false;
+		this.fixed = true;
 		this.awake = true;
 		this.vertices = [{
 			x: 0,

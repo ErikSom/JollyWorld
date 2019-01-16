@@ -1311,6 +1311,7 @@ var ColorController = function (_Controller) {
     dom.bind(_this2.__input, 'keydown', function (e) {
       if (e.keyCode === 13) {
         onBlur.call(this);
+        this.blur();
       }
     });
     dom.bind(_this2.__input, 'blur', onBlur);
