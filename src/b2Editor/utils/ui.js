@@ -1822,6 +1822,7 @@ let startDragMouse = {
     y: 0
 };
 export const initDrag = function (event, _window) {
+    $(_window.domElement).find('.title').data('moved', false);
 
     $(document).on('mousemove', function (event) {
         doDrag(event, _window)
@@ -1834,16 +1835,14 @@ export const initDrag = function (event, _window) {
 }
 export const endDrag = function (event, _window) {
     $(document).off('mousemove');
-    $(_window.domElement).find('.title').data('moved', false);
-
 }
 export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
 
     if (Math.abs(difX) + Math.abs(difY) > 5 && !$(_window.domElement).find('.title').data('moved')) {
+       // $(_window.domElement).parent().append($(_window.domElement));
         $(_window.domElement).find('.title').data('moved', true);
-        $(_window.domElement).parent().append($(_window.domElement));
     }
 
     $(_window.domElement).css('left', startDragPos.x + difX);
@@ -1852,23 +1851,27 @@ export const doDrag = function (event, _window) {
 
 export const registerDragWindow = function (_window) {
     windows.push(_window);
-    var $titleBar = $(_window.domElement).find('.dg .title');
-    $(_window.domElement).css('position', 'absolute');
+    const domElement = $(_window.domElement);
+    var $titleBar = domElement.find('.dg .title');
+    domElement.css('position', 'absolute');
     $titleBar.on('mousedown', function (event) {
         initDrag(event, _window);
         event.stopPropagation();
     });
-    $(_window.domElement).on('mousedown', function (event) {
-        if ($(_window.domElement).parent().children().index(_window.domElement) !== $(_window.domElement).parent().children().length - 1) {
-            $(_window.domElement).parent().append($(_window.domElement));
+    domElement.on('mousedown', function (event) {
+        if (domElement.parent().children().index(_window.domElement) !== domElement.parent().children().length - 1) {
+            domElement.parent().append(domElement);
         }
     })
     $titleBar.on('mouseup', function (event) {
         endDrag(event, _window);
     });
     $(document).on('click', function (event) {
-        if ($(_window.domElement).find('.title').data('moved') == true) {
-            var tarFolder = _window.__folders[$(_window.domElement).find('.title')[0].innerText]
+        console.log(domElement.find('.title').data('moved'));
+        console.log(_window.domElement);
+
+        if (domElement.find('.title').data('moved') == true) {
+            var tarFolder = _window.__folders[domElement.find('.title')[0].innerText]
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
