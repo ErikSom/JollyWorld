@@ -1831,17 +1831,16 @@ export const initDrag = function (event, _window) {
     startDragMouse.y = event.pageY;
     startDragPos.x = parseInt($(_window.domElement).css('left'), 10) || 0;
     startDragPos.y = parseInt($(_window.domElement).css('top'), 10) || 0;
-
 }
 export const endDrag = function (event, _window) {
     $(document).off('mousemove');
+    setTimeout(()=>{$(_window.domElement).find('.title').data('moved', false);}, 0);
 }
 export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
 
     if (Math.abs(difX) + Math.abs(difY) > 5 && !$(_window.domElement).find('.title').data('moved')) {
-       // $(_window.domElement).parent().append($(_window.domElement));
         $(_window.domElement).find('.title').data('moved', true);
     }
 
@@ -1867,14 +1866,12 @@ export const registerDragWindow = function (_window) {
         endDrag(event, _window);
     });
     $(document).on('click', function (event) {
-        console.log(domElement.find('.title').data('moved'));
-        console.log(_window.domElement);
-
         if (domElement.find('.title').data('moved') == true) {
             var tarFolder = _window.__folders[domElement.find('.title')[0].innerText]
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
         endDrag(event, _window);
+        if(!_window.domElement.parentNode) $(document).off('click');
     });
 }
