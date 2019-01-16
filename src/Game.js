@@ -163,16 +163,15 @@ function Game() {
 
         document.body.addEventListener("keydown", this.onKeyDown.bind(this), true);
         document.body.addEventListener("keyup", this.onKeyUp.bind(this), true);
-        document.body.addEventListener("mousedown", this.onMouseDown.bind(this), true);
-        document.body.addEventListener("touchstart", this.onMouseDown.bind(this), true);
-        document.body.addEventListener("mouseup", this.onMouseUp.bind(this), true);
-        document.body.addEventListener("touchend", this.onMouseUp.bind(this), true);
-        document.body.addEventListener("mousemove", this.onMouseMove.bind(this), true);
-        document.body.addEventListener("touchmove", this.onMouseMove.bind(this), true);
+        this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this), true);
+        this.canvas.addEventListener("touchstart", this.onMouseDown.bind(this), true);
+        this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this), true);
+        this.canvas.addEventListener("touchend", this.onMouseUp.bind(this), true);
+        this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), true);
+        this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
         window.addEventListener('resize', this.handleResize.bind(this));
-
-
+        
         /*TODO
         1) Create proper pooler per available types
         */
@@ -303,7 +302,7 @@ function Game() {
     }
 
     this.onKeyDown = function (e) {
-        if(document.activeElement != document.body) return;
+        if(document.activeElement != document.body && document.activeElement != this.canvas) return;
         if (e.keyCode == 84) { //t
             if (this.gameState == this.GAMESTATE_EDITOR) {
                 if (this.run) {
@@ -324,7 +323,7 @@ function Game() {
         if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
     }
     this.onKeyUp = function (e) {
-        if(document.activeElement != document.body) return;
+        if(document.activeElement != document.body  && document.activeElement != this.canvas) return;
         this.editor.onKeyUp(e);
 
         if (e.keyCode == 87 || e.keyCode == 83 && this.run) {

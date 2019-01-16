@@ -984,6 +984,7 @@ var OptionController = function (_Controller) {
     dom.bind(_this2.__select, 'change', function () {
       var desiredValue = this.options[this.selectedIndex].value;
       _this.setValue(desiredValue);
+      this.blur();
     });
     _this2.domElement.appendChild(_this2.__select);
     return _this2;

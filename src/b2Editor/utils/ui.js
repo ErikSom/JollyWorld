@@ -45,6 +45,7 @@ export const hide = function () {
     toolGUI.style.display = 'none';
     headerBar.style.display = 'none';
     scrollBars.hide();
+    destroyEditorGUI();
 }
 export const show = function () {
     toolGUI.style.display = 'block';
