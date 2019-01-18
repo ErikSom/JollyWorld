@@ -22,9 +22,12 @@ import {
 	Settings
 } from "../Settings";
 
+
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
+const paper = require('paper/dist/paper-core');
+
 
 var b2Vec2 = Box2D.b2Vec2,
 	b2AABB = Box2D.b2AABB,
@@ -40,6 +43,7 @@ var b2Vec2 = Box2D.b2Vec2,
 	b2MouseJointDef = Box2D.b2MouseJointDef;
 
 const _B2dEditor = function () {
+
 	this.initialPTM;
 	this.PTM;
 	this.world;
@@ -795,8 +799,8 @@ const _B2dEditor = function () {
 					};
 					controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
 				}
-			} else if(this.selectedTextures.length == 1){
-				if (this.selectedTextures[0].data.type ==  this.object_GRAPHICGROUP) {
+			} else if (this.selectedTextures.length == 1) {
+				if (this.selectedTextures[0].data.type == this.object_GRAPHICGROUP) {
 					ui.editorGUI.editData.ungroupObjects = () => {
 						self.ungroupObjects();
 					};
@@ -1331,13 +1335,13 @@ const _B2dEditor = function () {
 			if (this.selectingTriggerTarget) this.doTriggerTargetSelection();
 			else this.doSelection();
 		} else if (this.selectedTool == this.tool_POLYDRAWING) {
-			this.doVerticesDrawing(true);
+			this.doVerticesLineDrawing(true);
 		} else if (this.selectedTool == this.tool_GEOMETRY) {
 			this.doGeometryDrawing();
 		} else if (this.selectedTool == this.tool_CAMERA) {
 			this.doCamera();
 		} else if (this.selectedTool == this.tool_PAINTBUCKET) {
-			this.doVerticesDrawing(false);
+			this.doVerticesDrawing();
 		}
 
 		// Draw 0,0 reference
@@ -1779,19 +1783,10 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_CAMERA) {
 				this.takeCameraShot();
 			} else if (this.selectedTool == this.tool_PAINTBUCKET) {
-				if (!this.closeDrawing) {
-					this.activeVertices.push({
-						x: this.mousePosWorld.x,
-						y: this.mousePosWorld.y
-					});
-				} else {
-					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
-					graphicObject.colorFill = ui.editorGUI.editData.colorFill;
-					graphicObject.colorLine = ui.editorGUI.editData.colorLine;
-					graphicObject.transparany = ui.editorGUI.editData.transparancy;
-					this.buildGraphicFromObj(graphicObject);
-					this.activeVertices = [];
-				}
+				this.activeVertices.push({
+					x: this.mousePosWorld.x,
+					y: this.mousePosWorld.y
+				});
 			} else if (this.selectedTool == this.tool_JOINTS) {
 				var joint = this.attachJointPlaceHolder();
 				if (joint) {
@@ -1864,6 +1859,11 @@ const _B2dEditor = function () {
 					} else if (this.mouseTransformType == this.mouseTransformType_Rotation) {
 						this.applyToSelectedObjects(this.TRANSFORM_ROTATE, move.x * this.PTM / 10);
 					}
+				} else if (this.selectedTool == this.tool_PAINTBUCKET) {
+					this.activeVertices.push({
+						x: this.mousePosWorld.x,
+						y: this.mousePosWorld.y
+					});
 				}
 			}
 		}
@@ -2257,6 +2257,20 @@ const _B2dEditor = function () {
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
 				}
+			} else if (this.selectedTool == this.tool_PAINTBUCKET) {
+
+				this.activeVertices.push({
+					x: this.mousePosWorld.x,
+					y: this.mousePosWorld.y
+				});
+
+				var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+				graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+				graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+				graphicObject.transparany = ui.editorGUI.editData.transparancy;
+				this.buildGraphicFromObj(graphicObject);
+				this.activeVertices = [];
+
 			}
 		}
 		this.mouseDown = false;
@@ -2992,7 +3006,7 @@ const _B2dEditor = function () {
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 
-	
+
 							sprite = this.selectedTextures[j];
 							console.log("START:", sprite.rotation);
 							console.log(controller.targetValue, this.DEG2RAD, controller.targetValue * this.DEG2RAD);
@@ -3300,15 +3314,16 @@ const _B2dEditor = function () {
 	this.closeDrawing = false;
 	this.activeVertices = [];
 
-	this.verticesLineColor = 0x000000;
-	this.verticesFillColor = 0x000000;
-	this.verticesFirstFillColor = 0xFFFF00;
-	this.verticesDoneFillColor = 0x00FF00;
-	this.verticesBulletRadius = 5;
+	this.verticesLineColor = 0x009DEC;
+	this.verticesFillColor = 0xFFFFFF;
+	this.verticesFirstFillColor = 0x004e64;
+	this.verticesDoneFillColor = 0x7AE582;
+	this.verticesBulletRadius = 3;
+	this.verticesBoxSize = 3;
 
 	this.verticesErrorLineColor = 0xFF0000;
 
-	this.doVerticesDrawing = function (convex) {
+	this.doVerticesLineDrawing = function (convex) {
 		this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 
 		let i = 0;
@@ -3334,37 +3349,27 @@ const _B2dEditor = function () {
 				if (dis <= graphicClosingMargin) {
 					this.closeDrawing = true;
 					newVertice = firstVertice;
-				}
-
-				if (convex) {
+				}else if (convex) {
 					if (this.checkVerticeDrawingHasErrors()) {
 						this.debugGraphics.lineStyle(1, this.verticesErrorLineColor, 1);
 					}
 				}
 
 			}
-			if (this.closeDrawing) this.debugGraphics.beginFill(this.verticesDoneFillColor, 0.5);
-			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
-
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
-			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
 
 			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
 			this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
+			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+
 			this.debugGraphics.endFill();
 		}
 		previousVertice = null;
 
 
 		for (i = 0; i < this.activeVertices.length; i++) {
-
-			if (i == 0) this.debugGraphics.beginFill(this.verticesFirstFillColor, 0.5);
-			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
-
 			activeVertice = this.activeVertices[i];
-
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
-			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
 
 			if (i > 0) previousVertice = this.activeVertices[i - 1];
 
@@ -3372,6 +3377,19 @@ const _B2dEditor = function () {
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.container.scale.y + this.container.y);
 			}
+
+		}
+		for (i = 0; i < this.activeVertices.length; i++) {
+
+			if (i == 0 && !this.closeDrawing) this.debugGraphics.beginFill(this.verticesFirstFillColor, 1.0);
+			else if(i == 0 && this.closeDrawing) this.debugGraphics.beginFill(this.verticesDoneFillColor, 1.0);
+			else this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
+
+			activeVertice = this.activeVertices[i];
+
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
+			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+
 			this.debugGraphics.endFill();
 		}
 	}
@@ -3397,6 +3415,34 @@ const _B2dEditor = function () {
 			}
 		}
 		return false;
+	}
+	this.doVerticesDrawing = function () {
+		this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
+
+		let i = 0;
+		let activeVertice;
+		let previousVertice;
+
+		for (i = 0; i < this.activeVertices.length; i++) {
+
+			if (i == 0) this.debugGraphics.beginFill(this.verticesFirstFillColor, 0.5);
+			else this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
+
+			activeVertice = this.activeVertices[i];
+
+			if (i > 0) previousVertice = this.activeVertices[i - 1];
+			
+			if (previousVertice) {
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.container.scale.y + this.container.y);
+			}
+
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
+			this.drawBox(this.debugGraphics, (this.getPIXIPointFromWorldPoint(activeVertice).x-this.verticesBoxSize/2) * this.container.scale.x + this.container.x, (this.getPIXIPointFromWorldPoint(activeVertice).y-this.verticesBoxSize/2) * this.container.scale.y + this.container.y, this.verticesBoxSize, this.verticesBoxSize, this.verticesLineColor, 1, 1, 0xFFFFFF, 1);
+
+			this.debugGraphics.endFill(); //fix
+
+		}
 	}
 	this.doGeometryDrawing = function () {
 		if (this.mouseDown && !this.spaceCameraDrag) {
@@ -3688,8 +3734,8 @@ const _B2dEditor = function () {
 						y: 0
 					}];
 
-				} else{
-					if(isConvex(verts))	bodyObject = this.createBodyObjectFromVerts(verts);
+				} else {
+					if (isConvex(verts)) bodyObject = this.createBodyObjectFromVerts(verts);
 					else bodyObject = this.createBodyFromEarcutResult(verts);
 				}
 
@@ -3782,7 +3828,7 @@ const _B2dEditor = function () {
 				} else {
 
 					let innerVerts;
-					if(verts[j][0] instanceof Array == false) innerVerts = verts[j];
+					if (verts[j][0] instanceof Array == false) innerVerts = verts[j];
 					else innerVerts = verts[j][0];
 
 					graphicObject = this.createGraphicObjectFromVerts(innerVerts);
@@ -4609,10 +4655,10 @@ const _B2dEditor = function () {
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
-			bodyObject.transparancy = transparancy[i+1];
+			bodyObject.transparancy = transparancy[i + 1];
 			bodyObject.density = density[i];
 
-			if(innerVerts[0] instanceof Array == true){ // a fix for earcut bodies being ungrouped
+			if (innerVerts[0] instanceof Array == true) { // a fix for earcut bodies being ungrouped
 				bodyObject.colorFill = [bodyObject.colorFill];
 				bodyObject.colorLine = [bodyObject.colorLine];
 				bodyObject.lineWidth = [bodyObject.lineWidth];
