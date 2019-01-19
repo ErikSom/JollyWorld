@@ -14,8 +14,9 @@ export const simplifyPath = function (vertices, smooth, zoom) {
         path.simplify(10);
     } else {
         let toleranceIncreaser = 0;
+        optimizedVertices = vertices;
         while(!optimizedVertices || optimizedVertices.length>editorSettings.pathSimplificationMaxVertices){
-            optimizedVertices = simpler(vertices, (editorSettings.pathSimplificationTolerance+toleranceIncreaser)/zoom, false);
+            optimizedVertices = simpler(optimizedVertices, (editorSettings.pathSimplificationTolerance+toleranceIncreaser)/zoom, false);
             toleranceIncreaser += editorSettings.pathSimplificationTolerance;
         }
         console.log(optimizedVertices.length, "LENGTG");

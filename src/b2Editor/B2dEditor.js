@@ -1772,6 +1772,7 @@ const _B2dEditor = function () {
 							x: this.mousePosWorld.x,
 							y: this.mousePosWorld.y
 						});
+						if(this.activeVertices.length>editorSettings.maxLineVertices) this.activeVertices.shift();
 					}
 				} else {
 					this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
@@ -1865,6 +1866,7 @@ const _B2dEditor = function () {
 						x: this.mousePosWorld.x,
 						y: this.mousePosWorld.y
 					});
+					if(this.activeVertices.length>editorSettings.maxVertices) this.activeVertices.shift();
 				}
 			}
 		}
