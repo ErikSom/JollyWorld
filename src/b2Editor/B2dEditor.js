@@ -1774,6 +1774,7 @@ const _B2dEditor = function () {
 						});
 					}
 				} else {
+					this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
 					var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
 					this.activeVertices = [];

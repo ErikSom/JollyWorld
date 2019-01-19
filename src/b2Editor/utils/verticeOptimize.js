@@ -13,7 +13,12 @@ export const simplifyPath = function (vertices, smooth, zoom) {
         });
         path.simplify(10);
     } else {
-        optimizedVertices = simpler(vertices, editorSettings.pathSimplificationTolerance/zoom, false);
+        let toleranceIncreaser = 0;
+        while(!optimizedVertices || optimizedVertices.length>editorSettings.pathSimplificationMaxVertices){
+            optimizedVertices = simpler(vertices, (editorSettings.pathSimplificationTolerance+toleranceIncreaser)/zoom, false);
+            toleranceIncreaser += editorSettings.pathSimplificationTolerance;
+        }
+        console.log(optimizedVertices.length, "LENGTG");
     }
     return optimizedVertices;
 }
