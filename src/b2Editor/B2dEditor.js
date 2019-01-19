@@ -3,6 +3,7 @@ import * as PrefabManager from "../prefabs/PrefabManager";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
+import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import {
@@ -26,7 +27,6 @@ import {
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
-const paper = require('paper/dist/paper-core');
 
 
 var b2Vec2 = Box2D.b2Vec2,
@@ -2264,6 +2264,8 @@ const _B2dEditor = function () {
 					y: this.mousePosWorld.y
 				});
 
+				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
+
 				var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 				graphicObject.colorFill = ui.editorGUI.editData.colorFill;
 				graphicObject.colorLine = ui.editorGUI.editData.colorLine;
@@ -3431,7 +3433,7 @@ const _B2dEditor = function () {
 			activeVertice = this.activeVertices[i];
 
 			if (i > 0) previousVertice = this.activeVertices[i - 1];
-			
+
 			if (previousVertice) {
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.container.scale.y + this.container.y);
