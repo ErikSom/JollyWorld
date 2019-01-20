@@ -3449,7 +3449,7 @@ const _B2dEditor = function () {
 			}
 
 			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
-			this.drawBox(this.debugGraphics, (this.getPIXIPointFromWorldPoint(activeVertice).x-this.verticesBoxSize/2) * this.container.scale.x + this.container.x, (this.getPIXIPointFromWorldPoint(activeVertice).y-this.verticesBoxSize/2) * this.container.scale.y + this.container.y, this.verticesBoxSize, this.verticesBoxSize, this.verticesLineColor, 1, 1, 0xFFFFFF, 1);
+			this.drawBox(this.debugGraphics, this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x -this.verticesBoxSize/2, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y -this.verticesBoxSize/2, this.verticesBoxSize, this.verticesBoxSize, this.verticesLineColor, 1, 1, 0xFFFFFF, 1);
 
 			this.debugGraphics.endFill(); //fix
 
