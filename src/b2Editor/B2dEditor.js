@@ -319,6 +319,7 @@ const _B2dEditor = function () {
 				ui.editorGUI.editData.transparancy = realVal;
 
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				targetFolder.add(ui.editorGUI.editData, "smoothen");
 				break
 			case this.tool_TRIGGER:
 				ui.editorGUI.editData = this.editorTriggerObject;
@@ -1607,6 +1608,7 @@ const _B2dEditor = function () {
 		this.colorLine = "#000";
 		this.lineWidth = 1;
 		this.transparancy = 1.0;
+		this.smoothen = true;
 	}
 	this.editorGeometryObject = new function () {
 		this.shape = 0;
@@ -2269,7 +2271,7 @@ const _B2dEditor = function () {
 					y: this.mousePosWorld.y
 				});
 
-				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, true, this.container.scale.x);
+				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, ui.editorGUI.editData.smoothen, this.container.scale.x);
 				if(this.activeVertices && this.activeVertices.length > 2){
 					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 					graphicObject.colorFill = ui.editorGUI.editData.colorFill;

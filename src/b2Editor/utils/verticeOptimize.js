@@ -25,9 +25,6 @@ export const simplifyPath = function (vertices, smooth, zoom) {
             toleranceIncreaser += editorSettings.pathSimplificationTolerance;
             iterations++;
         }
-
-        console.log("OLD:", vertices.length);
-        console.log("NEW:", optimizedVertices.length);
     } else {
         optimizedVertices = vertices;
         while((!optimizedVertices || optimizedVertices.length>editorSettings.pathSimplificationMaxVertices) && iterations < maxIterations){
@@ -36,7 +33,6 @@ export const simplifyPath = function (vertices, smooth, zoom) {
             iterations++;
         }
     }
-    console.log('Iterations:', iterations);
     if(optimizedVertices.length<3) optimizedVertices = vertices;
     if(optimizedVertices.length>100) optimizedVertices = null;
     return optimizedVertices;
