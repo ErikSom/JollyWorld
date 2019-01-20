@@ -2267,7 +2267,7 @@ const _B2dEditor = function () {
 					y: this.mousePosWorld.y
 				});
 
-				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
+				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, true, this.container.scale.x);
 
 				var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 				graphicObject.colorFill = ui.editorGUI.editData.colorFill;
@@ -3656,6 +3656,8 @@ const _B2dEditor = function () {
 		for (var i = 0; i < verts.length; i++) {
 			verts[i].x = verts[i].x * this.PTM;
 			verts[i].y = verts[i].y * this.PTM;
+			verts[i].point1 = (verts[i].point1 == undefined) ? undefined : {x:verts[i].point1.x*this.PTM, y:verts[i].point1.y*this.PTM};
+			verts[i].point2 = (verts[i].point2 == undefined) ? undefined : {x:verts[i].point2.x*this.PTM, y:verts[i].point2.y*this.PTM};
 		}
 		var lowX = 0;
 		var lowY = 0;
@@ -3667,6 +3669,8 @@ const _B2dEditor = function () {
 		for (var i = 0; i < verts.length; i++) {
 			verts[i].x += lowX;
 			verts[i].y += lowY;
+			verts[i].point1 = (verts[i].point1 == undefined) ? undefined : {x:verts[i].point1.x+lowX, y:verts[i].point1.y+lowY};
+			verts[i].point2 = (verts[i].point2 == undefined) ? undefined : {x:verts[i].point2.x+lowX, y:verts[i].point2.y+lowY};
 		}
 
 		var vertsConversion = this.convertGlobalVertsToLocalVerts(verts);
@@ -3701,7 +3705,9 @@ const _B2dEditor = function () {
 		for (i = 0; i < verts.length; i++) {
 			verts[i] = {
 				x: verts[i].x - centerPoint.x,
-				y: verts[i].y - centerPoint.y
+				y: verts[i].y - centerPoint.y,
+				point1:(verts[i].point1 == undefined) ? undefined : {x:verts[i].point1.x-centerPoint.x, y:verts[i].point1.y-centerPoint.y},
+				point2:(verts[i].point2 == undefined) ? undefined : {x:verts[i].point2.x-centerPoint.x, y:verts[i].point2.y-centerPoint.y},
 			};
 		}
 		return [verts, centerPoint];
@@ -5294,13 +5300,22 @@ const _B2dEditor = function () {
 		graphic.moveTo(startPoint.x, startPoint.y);
 
 		var i;
+		var currentPoint;
 		var nextPoint;
+		const curves = startPoint.point1 != undefined;
+
 		for (i = 1; i < count; i++) {
+			currentPoint = verts[i-1];
 			nextPoint = verts[i];
-			graphic.lineTo(nextPoint.x, nextPoint.y);
+			if(curves){
+				 graphic.bezierCurveTo(currentPoint.point1.x, currentPoint.point1.y, currentPoint.point2.x, currentPoint.point2.y, nextPoint.x, nextPoint.y);
+			}else graphic.lineTo(nextPoint.x, nextPoint.y);
 		}
-		graphic.lineTo(startPoint.x, startPoint.y);
+		if(curves) graphic.bezierCurveTo(nextPoint.point1.x, nextPoint.point1.y, nextPoint.point2.x, nextPoint.point2.y, startPoint.x, startPoint.y);
+		else graphic.lineTo(startPoint.x, startPoint.y);
+
 		graphic.endFill();
+
 
 		return graphic;
 	}
