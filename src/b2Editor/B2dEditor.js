@@ -1776,8 +1776,10 @@ const _B2dEditor = function () {
 					}
 				} else {
 					this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
-					var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
-					if (bodyObject) this.buildBodyFromObj(bodyObject);
+					if(this.activeVertices && this.activeVertices.length > 2){
+						var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
+						if (bodyObject) this.buildBodyFromObj(bodyObject);
+					}
 					this.activeVertices = [];
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
@@ -2268,12 +2270,13 @@ const _B2dEditor = function () {
 				});
 
 				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, true, this.container.scale.x);
-
-				var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
-				graphicObject.colorFill = ui.editorGUI.editData.colorFill;
-				graphicObject.colorLine = ui.editorGUI.editData.colorLine;
-				graphicObject.transparany = ui.editorGUI.editData.transparancy;
-				this.buildGraphicFromObj(graphicObject);
+				if(this.activeVertices && this.activeVertices.length > 2){
+					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+					graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+					graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+					graphicObject.transparany = ui.editorGUI.editData.transparancy;
+					this.buildGraphicFromObj(graphicObject);
+				}
 				this.activeVertices = [];
 
 			}
@@ -3346,18 +3349,21 @@ const _B2dEditor = function () {
 			activeVertice = this.activeVertices[this.activeVertices.length - 1];
 
 			if (this.activeVertices.length > 1) {
-				var firstVertice = this.activeVertices[0];
-				var disX = newVertice.x - firstVertice.x;
-				var disY = newVertice.y - firstVertice.y;
-				var dis = Math.sqrt(disX * disX + disY * disY);
+				let firstVertice = this.activeVertices[0];
+				let disX = newVertice.x - firstVertice.x;
+				let disY = newVertice.y - firstVertice.y;
+				let dis = Math.sqrt(disX * disX + disY * disY);
 				const graphicClosingMargin = 1 / this.container.scale.x;
-				if (dis <= graphicClosingMargin) {
-					this.closeDrawing = true;
-					newVertice = firstVertice;
-				}else if (convex) {
+				let hasErrors = false;
+				if (convex) {
 					if (this.checkVerticeDrawingHasErrors()) {
 						this.debugGraphics.lineStyle(1, this.verticesErrorLineColor, 1);
+						hasErrors = true;
 					}
+				}
+				if (dis <= graphicClosingMargin && !hasErrors) {
+					this.closeDrawing = true;
+					newVertice = firstVertice;
 				}
 
 			}
