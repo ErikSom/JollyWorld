@@ -87,6 +87,7 @@ export const init = function (_container) {
 
 const placeGraphicInCells = function (graphic) {
 
+    if(!graphic.transform) return;
     if(!enabled) return;
     if (graphic == debugGraphics) return;
     if (!graphic.visible) return;
