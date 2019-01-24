@@ -1835,6 +1835,13 @@ const _B2dEditor = function () {
 				var textObject = new this.textObject;
 				textObject.x = this.startSelectionPoint.x * this.PTM;
 				textObject.y = this.startSelectionPoint.y * this.PTM;
+				textObject.fontName = ui.editorGUI.editData.fontName;
+				textObject.fontSize = ui.editorGUI.editData.fontSize;
+				textObject.textColor = ui.editorGUI.editData.textColor;
+				textObject.textColor = ui.editorGUI.editData.textColor;
+				textObject.textAlign = ui.editorGUI.editData.textAlign;
+				textObject.transparancy = ui.editorGUI.editData.transparancy;
+
 				var _text = this.buildTextFromObj(textObject);
 			}
 
@@ -2249,18 +2256,34 @@ const _B2dEditor = function () {
 					this.storeUndoMovement();
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
+				let bodyObject;
 				if (ui.editorGUI.editData.shape == "Circle") {
 					var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
 					if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
-						var bodyObject = new this.bodyObject;
+						bodyObject = new this.bodyObject;
 						bodyObject.x = this.startSelectionPoint.x;
 						bodyObject.y = this.startSelectionPoint.y;
+
+
+						bodyObject.colorFill = ui.editorGUI.editData.colorFill;
+						bodyObject.colorLine = ui.editorGUI.editData.colorLine;
+						bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
+						bodyObject.transparancy = ui.editorGUI.editData.transparancy;
+
 						bodyObject.radius = radius;
 						this.buildBodyFromObj(bodyObject);
 					}
 				} else {
-					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
+					bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
+					bodyObject.colorFill = ui.editorGUI.editData.colorFill;
+					bodyObject.colorLine = ui.editorGUI.editData.colorLine;
+					bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
+					bodyObject.transparancy = ui.editorGUI.editData.transparancy;
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
+				}
+
+				if(ui.editorGUI.editData.isPhysicsObject){
+					//convert body to graphic
 				}
 			} else if (this.selectedTool == this.tool_ART) {
 

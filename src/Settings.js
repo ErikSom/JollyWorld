@@ -16,7 +16,7 @@ export var Settings = {
     characterLeanSpeed:2,
     /*EDITOR*/
     autoSaveInterval:5000,
-    availableFonts:["Lily Script One", "Karla","Squada One","Unlock","Arapey","Economica","Erica One","Trochut","Spinnaker"],
+    availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],
     /*CULLING SETTINGS*/
 
     /*LIMITS*/

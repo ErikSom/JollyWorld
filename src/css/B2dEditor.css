@@ -822,7 +822,7 @@ body .dg .cr.function{
     font-style: normal;
   }
   @font-face {
-    font-family: 'EricaOne';
+    font-family: 'Erica One';
     src: url('./fonts/EricaOne-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
@@ -834,7 +834,7 @@ body .dg .cr.function{
     font-style: normal;
   }
   @font-face {
-    font-family: 'LilyScriptOne';
+    font-family: 'Lily Script One';
     src: url('./fonts/LilyScriptOne-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
@@ -846,7 +846,7 @@ body .dg .cr.function{
     font-style: normal;
   }
   @font-face {
-    font-family: 'SquadaOne';
+    font-family: 'Squada One';
     src: url('./fonts/SquadaOne-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
