@@ -2275,15 +2275,18 @@ const _B2dEditor = function () {
 					}
 				} else {
 					bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
-					bodyObject.colorFill = ui.editorGUI.editData.colorFill;
-					bodyObject.colorLine = ui.editorGUI.editData.colorLine;
-					bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
-					bodyObject.transparancy = ui.editorGUI.editData.transparancy;
-					if (bodyObject) this.buildBodyFromObj(bodyObject);
+					if (bodyObject){
+						bodyObject.colorFill = ui.editorGUI.editData.colorFill;
+						bodyObject.colorLine = ui.editorGUI.editData.colorLine;
+						bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
+						bodyObject.transparancy = ui.editorGUI.editData.transparancy;
+						 this.buildBodyFromObj(bodyObject);
+					}
 				}
 
 				if(ui.editorGUI.editData.isPhysicsObject){
 					//convert body to graphic
+
 				}
 			} else if (this.selectedTool == this.tool_ART) {
 
@@ -3741,13 +3744,22 @@ const _B2dEditor = function () {
 		}
 		return [verts, centerPoint];
 	}
-	this.convertSelectedGraphicsToBodies = function () {
+	this.convertSelectedGraphicsToBodies = function(){
+		const bodiesCreated = this.convertGraphicsToBodies(this.selectedTextures);
+
+		console.log(bodiesCreated);
+		this.selectedPhysicsBodies = [];
+		this.deleteSelection();
+		this.selectedPhysicsBodies = bodiesCreated;
+		this.updateSelection();
+	}
+	this.convertGraphicsToBodies = function (arr) {
 		var graphic;
 		var bodiesCreated = [];
-		for (var i = 0; i < this.selectedTextures.length; i++) {
+		for (var i = 0; i < arr.length; i++) {
 			var innerGraphics = [];
 
-			var graphicContainer = this.selectedTextures[i];
+			var graphicContainer = arr[i];
 
 			if (graphicContainer.data.type == this.object_GRAPHIC) innerGraphics.push(graphicContainer.data);
 			else graphicContainer.data.graphicObjects.map(g => {
@@ -3837,17 +3849,20 @@ const _B2dEditor = function () {
 
 			}
 		}
-		this.selectedPhysicsBodies = [];
+		return bodiesCreated;
+	}
+	this.convertSelectedBodiesToGraphics = function(){
+		var graphicsCreated = this.convertBodiesToGraphics(this.selectedPhysicsBodies);
 		this.deleteSelection();
-		this.selectedPhysicsBodies = bodiesCreated;
+		this.selectedTextures = graphicsCreated;
 		this.updateSelection();
 	}
-	this.convertSelectedBodiesToGraphics = function () {
+	this.convertBodiesToGraphics = function (arr) {
 		var body;
 		var graphic;
 		var graphicsCreated = [];
-		for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-			body = this.selectedPhysicsBodies[i];
+		for (var i = 0; i < arr.length; i++) {
+			body = arr[i];
 			var verts = body.mySprite.data.vertices;
 			var colorFill = body.mySprite.data.colorFill;
 			var colorLine = body.mySprite.data.colorLine;
@@ -3901,9 +3916,7 @@ const _B2dEditor = function () {
 			}
 
 		}
-		this.deleteSelection();
-		this.selectedTextures = graphicsCreated;
-		this.updateSelection();
+		return graphicsCreated;
 	}
 
 	this.cameraOverlayGUIColor = "#000000";
