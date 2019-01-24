@@ -78,13 +78,11 @@
             xhr.onprogress = function (event) {
                 if (event.lengthComputable) {
                     var percentComplete = Math.round(event.loaded * 100 / event.total);
-                    console.log(percentComplete);
                 } else {
                     var total = xhr.getResponseHeader('content-length')
                     var encoding = xhr.getResponseHeader('content-encoding')
                     if (total && encoding && (encoding.indexOf('gzip') > -1)) {
-                        total *= 4
-                        console.log(Math.min(100, event.loaded / total * 100));
+                        total *= 4;
                     } else {
                         console.log('lengthComputable failed')
                     }

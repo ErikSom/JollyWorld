@@ -389,8 +389,6 @@ function Game() {
         ui.hide();
     }
     this.initLevel = function (data) {
-        console.log("Init level data:");
-        console.log(data);
         this.stopWorld();
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
@@ -441,13 +439,11 @@ function Game() {
     this.saveNewLevelData = function () {
         game.currentLevelData.uid = nanoid();
         game.currentLevelData.creationDate = Date.now();
-        console.log(game.currentLevelData);
         return this.saveLevelData();
     }
     this.saveLevelData = function () {
         return new Promise((resolve, reject) => {
             firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then((levelData) => {
-                console.log('SAVED:', levelData);
                 this.currentLevelData = levelData;
                 game.currentLevelData.saved = true;
                 game.editor.cameraShotData.highRes = null;
@@ -462,7 +458,6 @@ function Game() {
     this.publishLevelData = function () {
         return new Promise((resolve, reject) => {
             firebaseManager.publishLevelData(game.currentLevelData).then((levelData) => {
-                console.log('Published:', levelData);
                 resolve();
             }).catch((error) => {
                 reject(error);
@@ -514,10 +509,8 @@ function Game() {
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData.private;
             game.currentLevelData.uid = levelData.uid;
-            console.log(firebaseManager.baseDownloadURL + game.currentLevelData.dataURL);
             var self = this;
             $.getJSON(firebaseManager.baseDownloadURL + game.currentLevelData.dataURL, function (data) {
-                console.log('success');
                 self.currentLevelData.json = JSON.stringify(data);
                 self.initLevel(self.currentLevelData);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
@@ -538,7 +531,6 @@ function Game() {
                     this.playerPrefabObject = this.editor.activePrefabs[key];
 
                     this.character = this.editor.activePrefabs[this.playerPrefabObject.class.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
-                    console.log(this.playerPrefabObject.class.prefabObject.prefabName);
                     this.vehicle = this.editor.activePrefabs[this.playerPrefabObject.class.prefabObject.key].class;
                     this.cameraFocusObject = this.character.lookupObject.body;
 
