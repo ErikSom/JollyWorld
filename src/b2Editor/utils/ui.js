@@ -1487,7 +1487,7 @@ export const createEditorStyledGUI = function (name) {
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
 
-    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png', 'Icon_Zoom.png', 'Icon_PaintBucket.png', 'Icon_Trigger.png'];
+    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png'];
 
     var buttonElement;
     var imgElement;

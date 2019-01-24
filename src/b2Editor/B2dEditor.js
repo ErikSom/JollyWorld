@@ -299,9 +299,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "textAlign", alignments);
 
 				break
-			case this.tool_ZOOM:
-				break
-			case this.tool_PAINTBUCKET:
+			case this.tool_ART:
 				ui.editorGUI.editData = this.editorGraphicDrawingObject;
 
 				targetFolder = ui.editorGUI.addFolder('draw graphics');
@@ -1341,7 +1339,7 @@ const _B2dEditor = function () {
 			this.doGeometryDrawing();
 		} else if (this.selectedTool == this.tool_CAMERA) {
 			this.doCamera();
-		} else if (this.selectedTool == this.tool_PAINTBUCKET) {
+		} else if (this.selectedTool == this.tool_ART) {
 			this.doVerticesDrawing();
 		}
 
@@ -1788,7 +1786,7 @@ const _B2dEditor = function () {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 			} else if (this.selectedTool == this.tool_CAMERA) {
 				this.takeCameraShot();
-			} else if (this.selectedTool == this.tool_PAINTBUCKET) {
+			} else if (this.selectedTool == this.tool_ART) {
 				this.activeVertices.push({
 					x: this.mousePosWorld.x,
 					y: this.mousePosWorld.y
@@ -1865,7 +1863,7 @@ const _B2dEditor = function () {
 					} else if (this.mouseTransformType == this.mouseTransformType_Rotation) {
 						this.applyToSelectedObjects(this.TRANSFORM_ROTATE, move.x * this.PTM / 10);
 					}
-				} else if (this.selectedTool == this.tool_PAINTBUCKET) {
+				} else if (this.selectedTool == this.tool_ART) {
 					this.activeVertices.push({
 						x: this.mousePosWorld.x,
 						y: this.mousePosWorld.y
@@ -2264,7 +2262,7 @@ const _B2dEditor = function () {
 					var bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
 					if (bodyObject) this.buildBodyFromObj(bodyObject);
 				}
-			} else if (this.selectedTool == this.tool_PAINTBUCKET) {
+			} else if (this.selectedTool == this.tool_ART) {
 
 				this.activeVertices.push({
 					x: this.mousePosWorld.x,
@@ -6158,10 +6156,9 @@ const _B2dEditor = function () {
 	this.tool_JOINTS = 3;
 	this.tool_SPECIALS = 4;
 	this.tool_TEXT = 5;
-	this.tool_ZOOM = 6;
-	this.tool_PAINTBUCKET = 7;
-	this.tool_TRIGGER = 8;
-	this.tool_CAMERA = 9;
+	this.tool_ART = 6;
+	this.tool_TRIGGER = 7;
+	this.tool_CAMERA = 8;
 
 	this.minimumBodySurfaceArea = 0.3;
 }
