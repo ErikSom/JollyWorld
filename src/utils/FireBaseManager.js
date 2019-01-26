@@ -30,7 +30,6 @@ function FireBaseManager() {
         this.app = firebase.initializeApp(config);
         var self = this;
         firebase.auth().onAuthStateChanged(function (user) {
-            console.log("Auth changed!", user);
             if (user) {
                 self.user = user;
                 if(!user.isAnonymous) self.onLogin();
@@ -84,7 +83,6 @@ function FireBaseManager() {
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
             usernameRef.once('value').then(snapshot => {
                 self.userData = snapshot.val();
-                console.log("USER DATA", self.userData);
                 if (!self.userData) {
                     reject({
                         message: "Username is not set"
@@ -96,7 +94,6 @@ function FireBaseManager() {
         });
     }
     this.storeUserData = function (data) {
-        console.log("Store userdata!");
         return new Promise((resolve, reject) => {
             var self = this;
             var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
@@ -339,7 +336,6 @@ function FireBaseManager() {
                 message: "Userdata not loaded"
             });
 
-            console.log(this.userData.username);
             var levelObject = {};
             levelObject['private'] = {};
             levelObject['private']["dataURL"] = levelData.dataURL;
@@ -380,12 +376,10 @@ function FireBaseManager() {
                     const now = moment();
                     const creationDate = moment(_creationDate);
                     if(now.year() === creationDate.year() && now.month() == creationDate.month()){
-                        console.log("Call Ranged Votes");
                         self.call_setRangedVotes(levelid);
                     }
 
                     resolve();
-                    console.log("VOTE SUCCESFUL!");
                 } 
             });
         });
@@ -393,7 +387,6 @@ function FireBaseManager() {
     this.increasePlayCountPublishedLevel = function(levelData){
         var playCountRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}/public/playCount`);
         playCountRef.transaction(count => {
-            console.log(count);
             if (count === null) {
                 return count = 0;
             } else {
@@ -403,15 +396,12 @@ function FireBaseManager() {
 
         const now = moment();
         const creationDate = moment(levelData.private.creationDate);
-        console.log(now.year(), creationDate.year(), now.month(), creationDate.month());
         if(now.year() === creationDate.year() && now.month() == creationDate.month()){
-            console.log("Call Ranged Popularity");
             this.call_setRangedPopularity(levelData.uid);
         }
 
     }
     this.deleteUserLevelData = function (details) {
-        console.log(details);
         return new Promise((resolve, reject) => {
             var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
             levelRef.set(null, function (error) {
@@ -443,15 +433,13 @@ function FireBaseManager() {
 
     //CLOUD FUNCTIONS
     this.call_setRangedPopularity = function(levelid){
-        console.log("Call setRangedPopularity");
         firebase.functions().httpsCallable('setRangedPopularity')({levelid:levelid}).then(function(result) {
-            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
+            // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
         });
     }
     this.call_setRangedVotes = function(levelid){
-        console.log("Call setRangedVotes");
         firebase.functions().httpsCallable('setRangedVotes')({levelid:levelid}).then(function(result) {
-            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
+            // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
         });
     }
 

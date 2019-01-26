@@ -507,13 +507,8 @@ export const containsTargetType = function (targetTrigger, body) {
         case triggerTargetType.allObjects:
             return true;
         case triggerTargetType.attachedTargetsOnly:
-            console.log('attachedTargetsOnly');
             for(let i = 0; i<targetTrigger.targets.length; i++){
                 let target = targetTrigger.targets[i];
-                if(target.myBody ==  body){
-                    console.log("YES!!");
-                }
-
                 if(target.myBody == body) return true;
                 else if(target.mySprite && target.mySprite.data.prefabInstanceName && target.mySprite.data.prefabInstanceName == body.mySprite.data.prefabInstanceName) return true;
             }
