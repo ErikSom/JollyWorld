@@ -256,7 +256,7 @@ const _B2dEditor = function () {
 				targetFolder = ui.editorGUI.addFolder('draw shapes');
 				targetFolder.open();
 
-				var shapes = ["Circle", "Box", "Triangle"];
+				var shapes = ["Box", "Circle", "Triangle"];
 				ui.editorGUI.editData.shape = shapes[0];
 				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
 				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
