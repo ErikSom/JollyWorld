@@ -1294,7 +1294,7 @@ const _B2dEditor = function () {
 
 			for (i = startChildIndex; i < this.textures.children.length; i++) {
 				sprite = this.textures.getChildAt(i);
-				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP) {
+				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP && sprite.data.type != this.object_TEXT) {
 					var pos = sprite.myBody.GetPosition();
 					pos.x -= movX / this.PTM;
 					pos.y -= movY / this.PTM;
@@ -1318,6 +1318,9 @@ const _B2dEditor = function () {
 				this.activePrefabs[prefabKeys[i]].x -= movX;
 				this.activePrefabs[prefabKeys[i]].y -= movY;
 			}
+
+			console.log(this.selectedTextures);
+			console.log(this.selectedPhysicsBodies);
 
 
 			this.updateSelection();
