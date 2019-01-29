@@ -1198,7 +1198,7 @@ const _B2dEditor = function () {
 					copyArray.splice(i, 1);
 					i--;
 				}
-			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP) {
+			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT) {
 				for (j = 0; j < copyArray.length; j++) {
 					if (copyArray[j].ID == data.bodyID) {
 						data.bodyID = j;
@@ -2366,13 +2366,13 @@ const _B2dEditor = function () {
 			this.spaceDown = true;
 		} else if (e.keyCode == 18) { // alt
 			this.altDown = true;
-		} else if (e.keyCode == 187) { // +
+		} else if (e.keyCode == 187 || e.keyCode == 61 || e.keyCode == 107) { // +
 			//zoomin
 			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
 				y: this.mousePosWorld.y * this.PTM
 			}, true);
-		} else if (e.keyCode == 189) { // -
+		} else if (e.keyCode == 189 || e.keyCode == 109 || e.keyCode == 173) { // -
 			//zoomout
 			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
@@ -4172,6 +4172,11 @@ const _B2dEditor = function () {
 		container.rotation = obj.rotation;
 		container.data = obj;
 
+		if (container.data.bodyID != undefined) {
+			var body = this.textures.getChildAt(container.data.bodyID).myBody;
+			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		}
+
 		//handle groups and ref names
 		this.addObjectToLookupGroups(container, container.data);
 
@@ -4499,10 +4504,10 @@ const _B2dEditor = function () {
 		if (this.selectedTextures.length > 1) {
 			var graphicsToGroup = [];
 			for (var i = 0; i < this.selectedTextures.length; i++) {
-				if (this.selectedTextures[i].data instanceof this.graphicObject) {
-					graphicsToGroup.push(this.selectedTextures[i]);
-				} else if (this.selectedTextures[i].data instanceof this.graphicGroup) {
+				if (this.selectedTextures[i].data instanceof this.graphicGroup) {
 					graphicsToGroup = graphicsToGroup.concat(this.ungroupGraphicObjects(this.selectedTextures[i]));
+				}else{
+					graphicsToGroup.push(this.selectedTextures[i]);
 				}
 			}
 			combinedGraphics = this.groupGraphicObjects(graphicsToGroup);
@@ -4510,6 +4515,7 @@ const _B2dEditor = function () {
 			combinedGraphics = this.selectedTextures[0];
 		}
 
+		console.log(combinedGraphics);
 
 		if (combinedGraphics && combinedBodies) {
 			//merge these two together yo
@@ -5502,6 +5508,10 @@ const _B2dEditor = function () {
 			arr[10] = obj.fontSize;
 			arr[11] = obj.fontName;
 			arr[12] = obj.textAlign;
+			arr[13] = obj.bodyID;
+			arr[14] = obj.texturePositionOffsetLength;
+			arr[15] = obj.texturePositionOffsetAngle;
+			arr[16] = obj.textureAngleOffset;
 		}
 		return JSON.stringify(arr);
 	}
@@ -5594,6 +5604,10 @@ const _B2dEditor = function () {
 			obj.fontSize = arr[10];
 			obj.fontName = arr[11];
 			obj.textAlign = arr[12];
+			obj.bodyID = arr[13];
+			obj.texturePositionOffsetLength = arr[14];
+			obj.texturePositionOffsetAngle = arr[15];
+			obj.textureAngleOffset = arr[16];
 		}
 
 		obj.type = arr[0];
@@ -5621,7 +5635,6 @@ const _B2dEditor = function () {
 			data.y = sprite.y;
 			data.rotation = sprite.rotation;
 			if (data.bodyID != undefined) data.bodyID = sprite.myBody.mySprite.parent.getChildIndex(sprite.myBody.mySprite);
-
 		} else if (data.type == this.object_JOINT) {
 			data.bodyA_ID = sprite.bodies[0].mySprite.parent.getChildIndex(sprite.bodies[0].mySprite);
 			if (sprite.bodies.length > 1) data.bodyB_ID = sprite.bodies[1].mySprite.parent.getChildIndex(sprite.bodies[1].mySprite);
