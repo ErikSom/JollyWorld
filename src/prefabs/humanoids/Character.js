@@ -63,6 +63,7 @@ class Character extends PrefabManager.basePrefab {
         if(this.bleedTimer>=0){
             if(this.bleedTimer == 0){
                  this.alive = false;
+                 this.detachFromVehicle();
                  game.lose();
             }
             this.bleedTimer--;
@@ -138,17 +139,13 @@ class Character extends PrefabManager.basePrefab {
     }
 
     doCollisionUpdate(update) {
-        var bodyParts = "";
-        this.collisionUpdates.map((col) => {
-            bodyParts += col.target +':'+col.type+'|';
-        })
+        if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
+
         switch (update.type) {
             case Character.GORE_BASH:
 
                 var targetBody = this.lookupObject[update.target];
                 if (targetBody) {
-                    if (targetBody == this.lookupObject['head'] || targetBody == this.lookupObject['body'] && this.bleedTimer < 0) this.bleedTimer = 0;
-
 
                     for(var i=1; i<this.collisionUpdates.length; i++){
                         if(this.collisionUpdates[i].target === update.target){
@@ -458,7 +455,8 @@ class Character extends PrefabManager.basePrefab {
         }
 
     }
-    detachFromVehicle() {
+    detachFromVehicle(force) {
+        if(!force) force = 0;
         if (!this.attachedToVehicle) return;
 
         var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
@@ -484,11 +482,10 @@ class Character extends PrefabManager.basePrefab {
                 jointEdge = nextJoint;
             }
 
-            // Launch Character a little bit in the air
             var body = this.lookupObject["body"];
             var bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
             var dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
-            dirFore.SelfMul(Settings.detachForce);
+            dirFore.SelfMul(force);
             body.ApplyForce(dirFore, body.GetPosition());
             this.attachedToVehicle = false;
 

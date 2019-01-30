@@ -274,7 +274,7 @@ function Game() {
                     this.vehicle.lean(1);
                 }
                 if (Key.isPressed(Key.Z)) {
-                    this.character.detachFromVehicle();
+                    this.character.detachFromVehicle(Settings.detachForce);
                 };
             } else if (this.character && !this.character.attachedToVehicle) {
                 if (Key.isDown(Key.W)) {
