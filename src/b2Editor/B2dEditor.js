@@ -4035,7 +4035,10 @@ const _B2dEditor = function () {
 				}
 			}
 		}
-		if (createdPrefabObject) createdPrefabObject.class = new PrefabManager.prefabLibrary[className].class(createdPrefabObject);
+		if (createdPrefabObject){ 
+			createdPrefabObject.class = new PrefabManager.prefabLibrary[className].class(createdPrefabObject);
+			this.createdPrefabClasses.push(createdPrefabObject.class);
+		}
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
 		if (!data) return;
@@ -5048,12 +5051,14 @@ const _B2dEditor = function () {
 
 			joint = this.world.CreateJoint(ropeJointDef);
 		}
+		joint.data = jointPlaceHolder.data;
 		bodyA.myJoints = undefined;
 		if (bodyB) bodyB.myJoints = undefined;
 		return joint;
 	}
 
 	this.buildPrefabFromObj = function (obj) {
+		this.createdPrefabClasses = [];
 		if (this.breakPrefabs) return this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json));
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
@@ -5061,6 +5066,9 @@ const _B2dEditor = function () {
 		var createdBodies = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
 		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
+
+		obj.class.subPrefabClasses = this.createdPrefabClasses;
+		this.createdPrefabClasses.map((prefab)=>{ prefab.mainPrefabClass = obj.class});
 
 		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(createdBodies._bodies, createdBodies._textures, createdBodies._joints));
 

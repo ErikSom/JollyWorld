@@ -72,7 +72,7 @@ class Character extends PrefabManager.basePrefab {
     }
     processJointDamage() {
         var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint', 'head_joint', 'belly_joint', 'arm_left_joint', 'arm_right_joint'];
-        var maxForce = [1000000, 1000000, 14000000, 3000000, 800000, 800000];
+        var maxForce = [1000000, 1000000, 20000000, 5000000, 800000, 800000];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
@@ -114,14 +114,14 @@ class Character extends PrefabManager.basePrefab {
 
                     if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {
                         if (body == self.lookupObject["head"]) {
-                            // if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                            //     type: Character.GORE_SNAP,
-                            //     target: "eye_right"
-                            // });
-                            // if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                            //     type: Character.GORE_SNAP,
-                            //     target: "eye_left"
-                            // });
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Character.GORE_SNAP,
+                                target: "eye_right"
+                            });
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Character.GORE_SNAP,
+                                target: "eye_left"
+                            });
                         }
                     }
 
@@ -137,9 +137,27 @@ class Character extends PrefabManager.basePrefab {
             }
         }
     }
-
+    static connectedBodyRefs = {
+    }
+    static BODY_PARTS = {
+        HEAD:'head',
+        BODY:'body',
+        THIGH_LEFT:'thigh_left',
+        THIGH_RIGHT:'thigh_right',
+        LEG_LEFT:'leg_left',
+        LEG_RIGHT:'leg_right',
+        FEET_RIGHT:'feet_left',
+        FEET_RIGHT:'feet_right',
+        SHOULDER_LEFT:'shoulder_left',
+        SHOULDER_RIGHT:'shoulder_right',
+        ARM_LEFT:'arm_left',
+        ARM_RIGHT:'arm_right',
+        HAND_LEFT:'hand_left',
+        HAND_RIGHT:'hand_right',
+    }
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
+        if(update.target == 'thigh_left' || update.target == 'leg_left' || update.target == 'feet_left') 
 
         switch (update.type) {
             case Character.GORE_BASH:
@@ -467,6 +485,7 @@ class Character extends PrefabManager.basePrefab {
             while (jointEdge) {
                 var nextJoint = jointEdge.next;
                 var joint = jointEdge.joint;
+                console.log(joint);
                 if (joint.GetType() != 1) {
                     game.world.DestroyJoint(joint);
                 } else {

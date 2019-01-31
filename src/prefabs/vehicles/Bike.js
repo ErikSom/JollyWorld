@@ -9,6 +9,23 @@ class Bike extends BaseVehicle {
         super.update();
         this.desiredVehicleTorques = [100, 100];
         this.desiredVehicleSpeeds = [10, 10];
+        this.destroyConnectedJoints = {
+            head:['pedal_right_joint', 'pedal_left_joint', 'grip_right_joint', 'grip_left_joint', 'back_joint', 'neck_joint', 'sit_joint'],
+            body:['pedal_right_joint', 'pedal_left_joint', 'grip_right_joint', 'grip_left_joint', 'back_joint', 'neck_joint', 'sit_joint'],
+            thigh_left:['pedal_left_joint', {ifno:'pedal_right_joint', destroy:['sit_joint', 'back_joint']}],
+            thigh_right:['pedal_right_joint', {ifno:'pedal_left_joint', destroy:['sit_joint', 'back_joint']}],
+            leg_left:['pedal_left_joint', {ifno:'pedal_right_joint', destroy:['sit_joint', 'back_joint']}],
+            leg_right:['pedal_right_joint', {ifno:'pedal_left_joint', destroy:['sit_joint', 'back_joint']}],
+            feet_left:['pedal_left_joint', {ifno:'pedal_right_joint', destroy:['sit_joint', 'back_joint']}],
+            feet_right:['pedal_right_joint', {ifno:'pedal_left_joint', destroy:['sit_joint', 'back_joint']}],
+            shoulder_left:['grip_left_joint', {ifno:'grip_right_joint', destroy:['back_joint']}],
+            shoulder_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
+            arm_left:['grip_left_joint', {ifno:'grip_right_joint', destroy:['back_joint']}],
+            arm_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
+            hand_left:['grip_left_joint', {ifno:'grip_right_joint', destroy:['back_joint']}],
+            hand_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
+
+        }
     }
 }
 
