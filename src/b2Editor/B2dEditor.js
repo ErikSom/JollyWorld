@@ -901,13 +901,13 @@ const _B2dEditor = function () {
 		} else if (dataJoint.jointType == this.jointObject_TYPE_DISTANCE) {
 			folder = _folder.addFolder('spring');
 
-			controller = folder.add(ui.editorGUI.editData, "frequencyHz", 0, 180);
+			controller = folder.add(ui.editorGUI.editData, "frequencyHz", 0, 10).step(0.1);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			}.bind(controller));
 
-			controller = folder.add(ui.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.25);
+			controller = folder.add(ui.editorGUI.editData, "dampingRatio", 0.0, 1.0).step(0.1);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value

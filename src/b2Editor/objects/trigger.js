@@ -3,8 +3,12 @@ import {
 } from "../B2dEditor";
 import * as ui from "../utils/ui";
 import * as Box2D from "../../../libs/Box2D";
-import { Settings } from "../../Settings";
-import { Key } from "../../../libs/Key";
+import {
+    Settings
+} from "../../Settings";
+import {
+    Key
+} from "../../../libs/Key";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -17,11 +21,12 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 break;
             case B2dEditor.object_JOINT:
-                if(object.data.jointType == B2dEditor.jointObject_TYPE_PIN || object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE){
+                if (object.data.jointType == B2dEditor.jointObject_TYPE_PIN || object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE) {
                     actions.push("MotorEnabled", "LimitEnabled", "SetMotorSpeed", "SetMaxMotorTorque");
                 }
-                if(object.data.jointType == B2dEditor.jointObject_TYPE_PIN) actions.push("SetAngleLimits");
-                if(object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE) actions.push("SetDistanceLimits");
+                if (object.data.jointType == B2dEditor.jointObject_TYPE_PIN) actions.push("SetAngleLimits");
+                if (object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE) actions.push("SetDistanceLimits");
+                if (object.data.jointType == B2dEditor.jointObject_TYPE_DISTANCE) actions.push("SetSpring");
                 //slide joint: MotorEnabled, LimitEnabled, SetMotorSpeed, SetLimits, Destroy
                 break;
                 // B2dEditor.object_TEXTURE = 1;
@@ -112,8 +117,8 @@ export const doAction = function (actionData, targets) {
         case "SetMotorSpeed":
             targets.map(target => {
                 let targetMotorSpeed;
-                if (actionData.setAdd == "fixed") targetMotorSpeed =  actionData.speed;
-                else if (actionData.setAdd == "add") targetMotorSpeed = target.GetMotorSpeed()+actionData.speed;
+                if (actionData.setAdd == "fixed") targetMotorSpeed = actionData.speed;
+                else if (actionData.setAdd == "add") targetMotorSpeed = target.GetMotorSpeed() + actionData.speed;
                 targetMotorSpeed = Math.min(Settings.motorSpeedLimit, Math.max(-Settings.motorSpeedLimit, targetMotorSpeed));
                 target.SetMotorSpeed(targetMotorSpeed);
             });
@@ -121,10 +126,16 @@ export const doAction = function (actionData, targets) {
         case "SetMaxMotorTorque":
             targets.map(target => {
                 let targetMotorForce;
-                if (actionData.setAdd == "fixed") targetMotorForce =  actionData.force;
-                else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce()+actionData.force;
+                if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
+                else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce() + actionData.force;
                 targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
                 target.SetMaxMotorForce(targetMotorForce);
+            });
+            break;
+        case "SetSpring":
+            targets.map(target => {
+                target.SetFrequency(actionData.frequencyHz);
+                target.SetDampingRatio(actionData.dampingRatio);
             });
             break;
         case "Destroy":
@@ -252,7 +263,7 @@ export const actionDictionary = {
         },
     },
     /*******************/
-       actionObject_SetDistanceLimits: {
+    actionObject_SetDistanceLimits: {
         type: 'SetDistanceLimits',
         upperLimit: 0,
         lowerLimit: 0,
@@ -290,11 +301,30 @@ export const actionDictionary = {
         },
     },
     /*******************/
+    actionObject_SetSpring: {
+        type: 'SetSpring',
+        frequencyHz:0,
+        dampingRatio:0,
+    },
+    actionOptions_SetSpring: {
+        frequencyHz: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 10,
+            step: 0.1,
+        },
+        dampingRatio: {
+            type: guitype_MINMAX,
+            min: 0.0,
+            max: 1.0,
+            step: 0.1,
+        },
+    },
+    /*******************/
     actionObject_Destroy: {
         type: 'Destroy',
     },
-    actionOptions_Destroy: {
-    },
+    actionOptions_Destroy: {},
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -507,10 +537,10 @@ export const containsTargetType = function (targetTrigger, body) {
         case triggerTargetType.allObjects:
             return true;
         case triggerTargetType.attachedTargetsOnly:
-            for(let i = 0; i<targetTrigger.targets.length; i++){
+            for (let i = 0; i < targetTrigger.targets.length; i++) {
                 let target = targetTrigger.targets[i];
-                if(target.myBody == body) return true;
-                else if(target.mySprite && target.mySprite.data.prefabInstanceName && target.mySprite.data.prefabInstanceName == body.mySprite.data.prefabInstanceName) return true;
+                if (target.myBody == body) return true;
+                else if (target.mySprite && target.mySprite.data.prefabInstanceName && target.mySprite.data.prefabInstanceName == body.mySprite.data.prefabInstanceName) return true;
             }
             return false;
     }
@@ -533,17 +563,17 @@ export class triggerCore {
         this.initContactListener();
     }
     update() {
-        if(this.data.targetType == triggerTargetType.click){
-            if(Key.isPressed(Key.MOUSE)){
+        if (this.data.targetType == triggerTargetType.click) {
+            if (Key.isPressed(Key.MOUSE)) {
                 let fixture = this.trigger.GetFixtureList();
-				while (fixture != null) {
-					if(fixture.TestPoint(B2dEditor.mousePosWorld)){
+                while (fixture != null) {
+                    if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
                         console.log("YEESSSS");
                         this.doTrigger();
                         break;
                     }
-					fixture = fixture.GetNext();
-				}
+                    fixture = fixture.GetNext();
+                }
             }
         }
         if (this.runTriggerOnce) {
@@ -560,7 +590,7 @@ export class triggerCore {
         var self = this;
         this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
-            if(self.data.targetType == triggerTargetType.click) return;
+            if (self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 if (containsTargetType(self, bodies[i])) {
@@ -578,7 +608,7 @@ export class triggerCore {
             }
         }
         this.contactListener.EndContact = function (contact, target) {
-            if(self.data.targetType == triggerTargetType.click) return;
+            if (self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 if (containsTargetType(self, bodies[i])) {
@@ -623,8 +653,8 @@ export const addTargetToTrigger = function (_trigger, target) {
 }
 
 export const replaceTargetOnTrigger = function (_trigger, old, _new) {
-    for(let i = 0; i<_trigger.mySprite.targets.length; i++){
-        if(_trigger.mySprite.targets[i] == old) _trigger.mySprite.targets[i] = _new;
+    for (let i = 0; i < _trigger.mySprite.targets.length; i++) {
+        if (_trigger.mySprite.targets[i] == old) _trigger.mySprite.targets[i] = _new;
         old.myTriggers.filter(item => item !== _trigger);
         if (!_new.myTriggers) _new.myTriggers = [];
         _new.myTriggers.push(_trigger);
@@ -649,7 +679,7 @@ export const removeTargetFromTrigger = function (_trigger, target) {
     if (target.myTriggers.length == 0) target.myTriggers = undefined;
 
 
-    if(!target.data) return;
+    if (!target.data) return;
     if (target.data.prefabInstanceName) {
         for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
             if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
