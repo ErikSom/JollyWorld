@@ -951,6 +951,7 @@ const _B2dEditor = function () {
 					for (j = 0; j < (joint.myTriggers ? joint.myTriggers.length : 0); j++) {
 						myTrigger = joint.myTriggers[j];
 						trigger.removeTargetFromTrigger(myTrigger, joint);
+						j--;
 					}
 				}
 				this.removeObjectFromLookupGroups(joint, joint.spriteData);
@@ -1005,6 +1006,7 @@ const _B2dEditor = function () {
 					for (j = 0; j < (sprite.myTriggers ? sprite.myTriggers.length : 0); j++) {
 						myTrigger = sprite.myTriggers[j];
 						trigger.removeTargetFromTrigger(myTrigger, sprite);
+						j--;
 					}
 				}
 
@@ -1025,6 +1027,7 @@ const _B2dEditor = function () {
 					var myTrigger;
 					for (j = 0; j < b.mySprite.targets.length; j++) {
 						trigger.removeTargetFromTrigger(b, b.mySprite.targets[j]);
+						j--;
 					}
 					for (j = 0; j < this.triggerObjects.length; j++) {
 						if (this.triggerObjects[j] == b) {
@@ -1318,10 +1321,6 @@ const _B2dEditor = function () {
 				this.activePrefabs[prefabKeys[i]].x -= movX;
 				this.activePrefabs[prefabKeys[i]].y -= movY;
 			}
-
-			console.log(this.selectedTextures);
-			console.log(this.selectedPhysicsBodies);
-
 
 			this.updateSelection();
 		}
@@ -3045,10 +3044,7 @@ const _B2dEditor = function () {
 
 
 							sprite = this.selectedTextures[j];
-							console.log("START:", sprite.rotation);
-							console.log(controller.targetValue, this.DEG2RAD, controller.targetValue * this.DEG2RAD);
 							sprite.rotation = controller.targetValue * this.DEG2RAD;
-							console.log(sprite.rotation);
 						}
 					} else if (controller.property == "groups" && controller.targetValue != "-") {
 						//body & sprite
@@ -3750,7 +3746,6 @@ const _B2dEditor = function () {
 	this.convertSelectedGraphicsToBodies = function(){
 		const bodiesCreated = this.convertGraphicsToBodies(this.selectedTextures);
 
-		console.log(bodiesCreated);
 		this.selectedPhysicsBodies = [];
 		this.deleteSelection();
 		this.selectedPhysicsBodies = bodiesCreated;
@@ -4037,7 +4032,7 @@ const _B2dEditor = function () {
 		}
 		if (createdPrefabObject){ 
 			createdPrefabObject.class = new PrefabManager.prefabLibrary[className].class(createdPrefabObject);
-			this.createdPrefabClasses.push(createdPrefabObject.class);
+			this.createdSubPrefabClasses.push(createdPrefabObject.class);
 		}
 	}
 	this.removeObjectFromLookupGroups = function (obj, data) {
@@ -4520,8 +4515,6 @@ const _B2dEditor = function () {
 		} else if (this.selectedTextures.length == 1) {
 			combinedGraphics = this.selectedTextures[0];
 		}
-
-		console.log(combinedGraphics);
 
 		if (combinedGraphics && combinedBodies) {
 			//merge these two together yo
@@ -5058,7 +5051,7 @@ const _B2dEditor = function () {
 	}
 
 	this.buildPrefabFromObj = function (obj) {
-		this.createdPrefabClasses = [];
+		this.createdSubPrefabClasses = [];
 		if (this.breakPrefabs) return this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json));
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
@@ -5067,8 +5060,8 @@ const _B2dEditor = function () {
 		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
 
-		obj.class.subPrefabClasses = this.createdPrefabClasses;
-		this.createdPrefabClasses.map((prefab)=>{ prefab.mainPrefabClass = obj.class});
+		obj.class.subPrefabClasses = this.createdSubPrefabClasses;
+		this.createdSubPrefabClasses.map((prefab)=>{ prefab.mainPrefabClass = obj.class});
 
 		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(createdBodies._bodies, createdBodies._textures, createdBodies._joints));
 

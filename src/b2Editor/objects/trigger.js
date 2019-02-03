@@ -648,6 +648,7 @@ export const removeTargetFromTrigger = function (_trigger, target) {
     }
     if (target.myTriggers.length == 0) target.myTriggers = undefined;
 
+
     if(!target.data) return;
     if (target.data.prefabInstanceName) {
         for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
