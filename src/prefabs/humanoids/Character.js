@@ -53,18 +53,18 @@ class Character extends PrefabManager.basePrefab {
 
         this.processJointDamage();
 
-        if(this.collisionUpdates.length>0){
+        if (this.collisionUpdates.length > 0) {
             this.doCollisionUpdate(this.collisionUpdates[0]);
             this.collisionUpdates.shift();
         }
         this.eyesTimer += game.editor.deltaTime;
 
 
-        if(this.bleedTimer>=0){
-            if(this.bleedTimer == 0){
-                 this.alive = false;
-                 this.detachFromVehicle();
-                 game.lose();
+        if (this.bleedTimer >= 0) {
+            if (this.bleedTimer == 0) {
+                this.alive = false;
+                this.detachFromVehicle();
+                game.lose();
             }
             this.bleedTimer--;
         }
@@ -137,103 +137,122 @@ class Character extends PrefabManager.basePrefab {
             }
         }
     }
-    static connectedBodyRefs = {
-    }
+    static connectedBodyRefs = {}
     static BODY_PARTS = {
-        HEAD:'head',
-        BODY:'body',
-        THIGH_LEFT:'thigh_left',
-        THIGH_RIGHT:'thigh_right',
-        LEG_LEFT:'leg_left',
-        LEG_RIGHT:'leg_right',
-        FEET_RIGHT:'feet_left',
-        FEET_RIGHT:'feet_right',
-        SHOULDER_LEFT:'shoulder_left',
-        SHOULDER_RIGHT:'shoulder_right',
-        ARM_LEFT:'arm_left',
-        ARM_RIGHT:'arm_right',
-        HAND_LEFT:'hand_left',
-        HAND_RIGHT:'hand_right',
+        HEAD: 'head',
+        BODY: 'body',
+        THIGH_LEFT: 'thigh_left',
+        THIGH_RIGHT: 'thigh_right',
+        LEG_LEFT: 'leg_left',
+        LEG_RIGHT: 'leg_right',
+        FEET_RIGHT: 'feet_left',
+        FEET_RIGHT: 'feet_right',
+        SHOULDER_LEFT: 'shoulder_left',
+        SHOULDER_RIGHT: 'shoulder_right',
+        ARM_LEFT: 'arm_left',
+        ARM_RIGHT: 'arm_right',
+        HAND_LEFT: 'hand_left',
+        HAND_RIGHT: 'hand_right',
     }
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
-        if(update.target == 'thigh_left' || update.target == 'leg_left' || update.target == 'feet_left') 
+        console.log(update);
 
-        switch (update.type) {
-            case Character.GORE_BASH:
+            switch (update.type) {
+                case Character.GORE_BASH:
 
-                var targetBody = this.lookupObject[update.target];
-                if (targetBody) {
+                    var targetBody = this.lookupObject[update.target];
+                    if (targetBody) {
 
-                    for(var i=1; i<this.collisionUpdates.length; i++){
-                        if(this.collisionUpdates[i].target === update.target){
-                            this.collisionUpdates.splice(i, 1);
-                            i--;
+                        for (var i = 1; i < this.collisionUpdates.length; i++) {
+                            if (this.collisionUpdates[i].target === update.target) {
+                                this.collisionUpdates.splice(i, 1);
+                                i--;
+                            }
+                        }
+
+                        game.editor.deleteObjects([targetBody]);
+
+                    }
+
+                    break;
+                case Character.GORE_SNAP:
+
+                    const targetJoint = this.lookupObject[update.target + "_joint"];
+                    if (targetJoint) {
+
+                        if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
+
+                        let revoluteJointDef;
+                        let joint;
+
+                        let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain",' + (game.editor.prefabCounter++) + ']]}'
+
+                        let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
+
+                        let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
+
+                        revoluteJointDef = new Box2D.b2RevoluteJointDef;
+                        revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                        revoluteJointDef.collideConnected = false;
+                        joint = game.world.CreateJoint(revoluteJointDef);
+
+                        revoluteJointDef = new Box2D.b2RevoluteJointDef;
+                        revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                        revoluteJointDef.collideConnected = false;
+                        joint = game.world.CreateJoint(revoluteJointDef);
+
+                        let ropeJointDef;
+
+                        ropeJointDef = new Box2D.b2RopeJointDef;
+                        ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                        ropeJointDef.maxLength = vainSize;
+
+                        joint = game.world.CreateJoint(ropeJointDef);
+
+
+                        //carve bodies
+
+                        if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
+                        if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
+
+
+                        game.world.DestroyJoint(targetJoint);
+                        delete this.lookupObject[update.target + "_joint"];
+
+                        //fix display positions:
+                        const swapBodies = vainBodies._bodies.concat().reverse();
+                        let tarSprite;
+                        const tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
+                        for (var i = 0; i < swapBodies.length; i++) {
+                            tarSprite = swapBodies[i].mySprite;
+                            tarSprite.parent.removeChild(tarSprite);
+                            this.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
                         }
                     }
+                    break;
+            }
 
-                    game.editor.deleteObjects([targetBody]);
 
+        //Destroy connected joints
+        if(!this.mainPrefabClass.destroyConnectedJoints[update.target]) return;
+        this.mainPrefabClass.destroyConnectedJoints[update.target].map((targetJointName) => {
+            if (targetJointName instanceof String || typeof(targetJointName) === 'string') {
+                if (this.lookupObject[targetJointName]) {
+                    game.world.DestroyJoint(this.lookupObject[targetJointName]);
+                    delete this.lookupObject[targetJointName];
                 }
-
-                break;
-            case Character.GORE_SNAP:
-
-                const targetJoint = this.lookupObject[update.target + "_joint"];
-                if (targetJoint) {
-
-                    if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
-
-                    let revoluteJointDef;
-                    let joint;
-
-                    let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain",' + (game.editor.prefabCounter++) + ']]}'
-
-                    let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
-
-                    let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
-
-                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                    revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
-                    revoluteJointDef.collideConnected = false;
-                    joint = game.world.CreateJoint(revoluteJointDef);
-
-                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                    revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
-                    revoluteJointDef.collideConnected = false;
-                    joint = game.world.CreateJoint(revoluteJointDef);
-
-                    let ropeJointDef;
-
-                    ropeJointDef = new Box2D.b2RopeJointDef;
-                    ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
-                    ropeJointDef.maxLength = vainSize;
-
-                    joint = game.world.CreateJoint(ropeJointDef);
-
-
-                    //carve bodies
-
-                    if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
-                    if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal10000", true);
-
-
-                    game.world.DestroyJoint(targetJoint);
-                    delete this.lookupObject[update.target + "_joint"];
-
-                    //fix display positions:
-                    const swapBodies = vainBodies._bodies.concat().reverse();
-                    let tarSprite;
-                    const tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
-                    for (var i = 0; i < swapBodies.length; i++) {
-                        tarSprite = swapBodies[i].mySprite;
-                        tarSprite.parent.removeChild(tarSprite);
-                        this.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
+            } else if (!this.lookupObject[targetJointName.ifno]) {
+                targetJointName.destroy.map((connectedJointName) => {
+                    if (this.lookupObject[connectedJointName]) {
+                        game.world.DestroyJoint(this.lookupObject[connectedJointName]);
+                        delete this.lookupObject[connectedJointName];
                     }
-                }
-                break;
-        }
+                });
+            }
+        });
     }
+
     positionBody(direction) {
         const positions = {
             up: {
@@ -406,13 +425,13 @@ class Character extends PrefabManager.basePrefab {
             if (targetPosition.hasOwnProperty(body_part)) {
 
                 let body = this.lookupObject[body_part];
-                if(!body) continue;
+                if (!body) continue;
                 let refBody = this.lookupObject[targetPosition[body_part].reference];
-                if(!refBody) continue;
+                if (!refBody) continue;
                 let refJoint = this.lookupObject[body_part + '_joint'];
                 if (!refJoint) continue;
 
-                if(targetPosition[body_part].reference != 'body' && !this.lookupObject[targetPosition[body_part].reference + '_joint']) continue;
+                if (targetPosition[body_part].reference != 'body' && !this.lookupObject[targetPosition[body_part].reference + '_joint']) continue;
 
 
                 let desiredAngle = refBody.GetAngle() - targetPosition[body_part].angle * game.editor.DEG2RAD;
@@ -474,32 +493,40 @@ class Character extends PrefabManager.basePrefab {
 
     }
     detachFromVehicle(force) {
-        if(!force) force = 0;
+        if (!force) force = 0;
         if (!this.attachedToVehicle) return;
 
-        var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
+        this.mainPrefabClass.destroyConnectedJoints['head'].map((jointName) => {
+            if (this.lookupObject[jointName]) {
+                game.world.DestroyJoint(this.lookupObject[jointName]);
+                delete this.lookupObject[jointName];
+            }
+        });
+
+
+
+        //var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
         for (var i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
-            var jointEdge = body.GetJointList();
+            // var jointEdge = body.GetJointList();
 
-            while (jointEdge) {
-                var nextJoint = jointEdge.next;
-                var joint = jointEdge.joint;
-                console.log(joint);
-                if (joint.GetType() != 1) {
-                    game.world.DestroyJoint(joint);
-                } else {
-                    var bodies = [joint.GetBodyA(), joint.GetBodyB()];
-                    for (var j = 0; j < bodies.length; j++) {
-                        if (!bodies[j]) continue;
-                        if (bodies[j].mySprite.data.subPrefabInstanceName != compareClass) {
-                            game.world.DestroyJoint(joint);
-                            break;
-                        }
-                    }
-                }
-                jointEdge = nextJoint;
-            }
+            // while (jointEdge) {
+            //     var nextJoint = jointEdge.next;
+            //     var joint = jointEdge.joint;
+            //     if (joint.GetType() != 1) {
+            //         game.world.DestroyJoint(joint);
+            //     } else {
+            //         var bodies = [joint.GetBodyA(), joint.GetBodyB()];
+            //         for (var j = 0; j < bodies.length; j++) {
+            //             if (!bodies[j]) continue;
+            //             if (bodies[j].mySprite.data.subPrefabInstanceName != compareClass) {
+            //                 game.world.DestroyJoint(joint);
+            //                 break;
+            //             }
+            //         }
+            //     }
+            //     jointEdge = nextJoint;
+            // }
 
             var body = this.lookupObject["body"];
             var bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
