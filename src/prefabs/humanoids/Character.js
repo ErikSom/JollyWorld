@@ -14,6 +14,7 @@ class Character extends PrefabManager.basePrefab {
         super(target);
     }
     init() {
+        console.log(this);
         super.init();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
@@ -157,10 +158,10 @@ class Character extends PrefabManager.basePrefab {
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
         console.log(update);
-
+        console.log(this.lookupObject);
             switch (update.type) {
                 case Character.GORE_BASH:
-
+                    
                     var targetBody = this.lookupObject[update.target];
                     if (targetBody) {
 
