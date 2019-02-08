@@ -153,6 +153,7 @@ function Game() {
         this.editor.assetLists.nature = Object.keys(PIXI.loader.resources["Nature.json"].textures);
         this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
         this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
+        this.editor.assetLists.gore = Object.keys(PIXI.loader.resources["Characters_Gore.json"].textures);
 
         this.editor.tileLists = ["", "Dirt.jpg", "Grass.jpg", "Fence.png", "YellowCat.jpg", "RedWhiteBlock.jpg", "PixelatedWater.jpg", "PixelatedStone.jpg", "PixelatedDirt.jpg", "PixelatedGrass.jpg", "GoldenBlock.jpg", "Brick0.jpg", "Brick1.jpg", "Brick2.jpg", "WhiteBlock.jpg"];
         this.editor.init(this.myContainer, this.world, Settings.PTM);
@@ -329,7 +330,7 @@ function Game() {
         if (e.keyCode == 87 || e.keyCode == 83 && this.run) {
             this.vehicle.stopAccelerate();
         }
-        Key.onKeyup(e);
+        Key.onKeyUp(e);
     }
     this.openMainMenu = function () {
         //if(this.run) this.stopWorld();

@@ -1,5 +1,6 @@
 export var LoadCoreAssets = function (loader){
     loader.add("Characters_1.json", "assets/images/characters/Characters_1.json")
+        .add("Characters_Gore.json", "assets/images/characters/Characters_Gore.json")
         .add("Vehicles_1.json", "assets/images/vehicles/Vehicles_1.json")
         .add("assets/images/particles/Decals.json")
         .add("Movement.json", "assets/images/prefabs/Movement.json")

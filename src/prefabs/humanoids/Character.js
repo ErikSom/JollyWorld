@@ -161,7 +161,7 @@ class Character extends PrefabManager.basePrefab {
         console.log(this.lookupObject);
             switch (update.type) {
                 case Character.GORE_BASH:
-                    
+
                     var targetBody = this.lookupObject[update.target];
                     if (targetBody) {
 
@@ -171,6 +171,8 @@ class Character extends PrefabManager.basePrefab {
                                 i--;
                             }
                         }
+
+                        this.generateGoreParticles(update.target);
 
                         game.editor.deleteObjects([targetBody]);
 
@@ -251,6 +253,27 @@ class Character extends PrefabManager.basePrefab {
                     }
                 });
             }
+        });
+    }
+    generateGoreParticles(targetBodyPart){
+        const meatParticles = ["Gore_Meat", "Gore_Meat", "Gore_Meat","Gore_Meat"];
+        let extraParticles = [];
+        switch(targetBodyPart){
+            case 'head':
+                extraParticles.push('Gore_Brain');
+            break
+            case 'body':
+                extraParticles.push('Gore_LungRight', 'Gore_LungLeft', 'Gore_Stomach','Gore_Liver');
+            break;
+            case 'belly':
+                extraParticles.push('Gore_Intestine');
+            break;
+        }
+        let particlesToGenerate = meatParticles.concat(extraParticles);
+        const targetBody = this.lookupObject[targetBodyPart];
+        particlesToGenerate.map((particle)=>{
+            let gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM},${targetBody.GetPosition().y * Settings.PTM},0,{},"${particle}",${game.editor.prefabCounter++}]]}`;
+            let goreBodies = game.editor.buildJSON(JSON.parse(gorePrefab));
         });
     }
 

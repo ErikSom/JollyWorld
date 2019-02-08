@@ -87,7 +87,7 @@ export var Key = {
         }
     },
 
-    onKeyup: function (event) {
+    onKeyUp: function (event) {
         delete this._down[event.keyCode];
         this._released[event.keyCode] = true;
 
@@ -103,7 +103,7 @@ export var Key = {
         this.onKeydown({keyCode:Key.MOUSE});
     },
     onMouseUp: function(event) {
-        this.onKeyup({keyCode:Key.MOUSE});
+        this.onKeyUp({keyCode:Key.MOUSE});
     },
 
     update: function (){
