@@ -4284,6 +4284,10 @@ const _B2dEditor = function () {
 
 		this.updateBodyShapes(body);
 
+		body.mySprite.x = body.GetPosition().x * this.PTM;
+		body.mySprite.y = body.GetPosition().y * this.PTM;
+		body.mySprite.rotation = body.GetAngle();
+
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
 		this.setBodyCollision(body, obj.collision);

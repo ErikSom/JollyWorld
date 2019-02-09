@@ -256,24 +256,51 @@ class Character extends PrefabManager.basePrefab {
         });
     }
     generateGoreParticles(targetBodyPart){
-        const meatParticles = ["Gore_Meat", "Gore_Meat", "Gore_Meat","Gore_Meat"];
+        let meatParticles = ["Gore_Meat", "Gore_Meat", "Gore_Meat"];
         let extraParticles = [];
         switch(targetBodyPart){
             case 'head':
                 extraParticles.push('Gore_Brain');
+                meatParticles.push("Gore_Meat", "Gore_Meat");
             break
             case 'body':
                 extraParticles.push('Gore_LungRight', 'Gore_LungLeft', 'Gore_Stomach','Gore_Liver');
+                meatParticles.push("Gore_Meat", "Gore_Meat","Gore_Meat", "Gore_Meat");
             break;
             case 'belly':
                 extraParticles.push('Gore_Intestine');
             break;
+            case 'thigh_left':
+            case 'thigh_right':
+            case 'leg_left':
+            case 'leg_right':
+                meatParticles.push("Gore_Meat");
+            break;
+            case 'hand_left':
+            case 'hand_right':
+                meatParticles = ['Gore_Meat'];
+            break;
+            case 'feet_left':
+            case 'feet_right':
+                meatParticles = ['Gore_Meat', 'Gore_Meat'];
+            break;
         }
-        let particlesToGenerate = meatParticles.concat(extraParticles);
+        const goreParticleMaxSpeed = 50;
+        const particlesToGenerate = meatParticles.concat(extraParticles);
         const targetBody = this.lookupObject[targetBodyPart];
         particlesToGenerate.map((particle)=>{
-            let gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM},${targetBody.GetPosition().y * Settings.PTM},0,{},"${particle}",${game.editor.prefabCounter++}]]}`;
-            let goreBodies = game.editor.buildJSON(JSON.parse(gorePrefab));
+            const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM},${targetBody.GetPosition().y * Settings.PTM},0,{},"${particle}",${game.editor.prefabCounter++}]]}`;
+            const goreLookupObject = game.editor.buildJSON(JSON.parse(gorePrefab));
+            const impulse = new Box2D.b2Vec2((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
+            goreLookupObject._bodies.map((body)=>{
+                body.ApplyForce(impulse, targetBody.GetPosition());
+            });
+
+            if(particle == 'Gore_Meat'){
+                console.log(goreLookupObject._textures);
+                const ranId = Math.floor(Math.random()*4)+1;
+                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.fromFrame(particle+ranId+'0000');
+            }
         });
     }
 
@@ -553,10 +580,12 @@ class Character extends PrefabManager.basePrefab {
             // }
 
             var body = this.lookupObject["body"];
-            var bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
-            var dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
-            dirFore.SelfMul(force);
-            body.ApplyForce(dirFore, body.GetPosition());
+            if(body){
+                var bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
+                var dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+                dirFore.SelfMul(force);
+                body.ApplyForce(dirFore, body.GetPosition());
+            }
             this.attachedToVehicle = false;
 
         }
