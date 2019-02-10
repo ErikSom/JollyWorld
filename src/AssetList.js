@@ -27,6 +27,7 @@ export var LoadCoreAssets = function (loader){
         .add("blood-particles-data", "data/emitter_blood.json")
         .add("particle.png", "assets/images/particles/particle.png")
         .add("particle-grey.png", "assets/images/particles/particle-grey.png")
+        .add("gore-cloud.png", "assets/images/particles/gore-cloud.png")
         /*WORLD DATA*/
         .add("worldData", "data/worldData.json")
         .add("characterData1", "data/character1.json")

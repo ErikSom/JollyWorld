@@ -25,6 +25,8 @@ import {
 import {
     levelsData
 } from "./data/levelsData";
+import * as emitterData from "./data/emitterData";
+
 const moment = require('moment');
 
 import * as SaveManager from "./utils/SaveManager";
@@ -632,7 +634,7 @@ function Game() {
             case "blood":
                 emitter = new PIXI.particles.Emitter(
                     this.myContainer, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-grey.png')],
-                    PIXI.loader.resources[type + '-particles-data'].data
+                    emitterData[type]
                 );
                 break;
         }
