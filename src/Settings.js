@@ -3,6 +3,7 @@ export var Settings = {
     /*REFRESHRATE*/
     targetFPS,
     timeStep:1000 / targetFPS,
+    allowMouseMovement:true,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
     PTM:30,

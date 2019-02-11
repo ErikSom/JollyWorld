@@ -181,7 +181,7 @@ function Game() {
 
     //mouse
     this.onMouseDown = function (e) {
-        if (!this.mouseJoint && this.run) {
+        if (Settings.allowMouseMovement && !this.mouseJoint && this.run) {
             var body = this.getBodyAtMouse();
             if (body) {
                 var md = new b2MouseJointDef();
@@ -609,7 +609,7 @@ function Game() {
     }
 
     this.update = function () {
-        if (this.mouseJoint) {
+        if (Settings.allowMouseMovement && this.mouseJoint) {
             if (Key.isDown(Key.MOUSE)) {
                 this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y));
             } else {
