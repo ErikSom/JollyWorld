@@ -73,8 +73,8 @@ class Character extends PrefabManager.basePrefab {
 
     }
     processJointDamage() {
-        var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint', 'head_joint', 'belly_joint', 'arm_left_joint', 'arm_right_joint'];
-        var maxForce = [1000000, 1000000, 20000000, 5000000, 800000, 800000];
+        var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint','arm_left_joint', 'arm_right_joint'/*,'head_joint', 'belly_joint'*/ ];
+        var maxForce = [1000000, 1000000, 800000, 800000, /*,2000000000, 5000000*/];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
