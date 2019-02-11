@@ -6,6 +6,7 @@ import {
 import {
     Settings
 } from '../../Settings';
+import * as emitterManager from '../../utils/EmitterManager';
 
 class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -127,6 +128,7 @@ class Character extends PrefabManager.basePrefab {
                     }
 
                     if (body.mySprite.data.refName != "" && force > body.GetMass() * Settings.bashMaxForceMultiplier) {
+                        console.log(force);
                         self.collisionUpdates.push({
                             type: Character.GORE_BASH,
                             target: body.mySprite.data.refName,
@@ -158,7 +160,6 @@ class Character extends PrefabManager.basePrefab {
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
         console.log(update);
-        console.log(this.lookupObject);
             switch (update.type) {
                 case Character.GORE_BASH:
 
@@ -173,6 +174,7 @@ class Character extends PrefabManager.basePrefab {
                         }
 
                         this.generateGoreParticles(update.target);
+                        emitterManager.playOnceEmitter("gorecloud", null, targetBody.GetPosition());
 
                         let connectedJointEdge = targetBody.GetJointList();
                         while(connectedJointEdge){

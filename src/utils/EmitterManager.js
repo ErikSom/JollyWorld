@@ -16,27 +16,34 @@ export const init = function(){
   for (let i = 0; i < emitters.length; i++) emittersPool[emitters[i].type].push(emitters[i]);
 }
 export const playOnceEmitter = function (type, body, point, angle) {
+    if(!angle) angle = 0;
+    if(body && body.emitterCount && body.emitterCount >= Settings.emittersPerBody) return;
 
-   if (!body.emitterCount || body.emitterCount < Settings.emittersPerBody) {
-       let emitter = getEmitter(type, body);
-       emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
-       emitter.body = body;
-       if (!body.emitterCount) body.emitterCount = 0;
-       body.emitterCount++;
+    let emitter = getEmitter(type, body);
+    emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
 
-       function returnToPool() {
-           emitter.body.emitterCount--;
-           emitter.body = null;
-           emitter.lastUsed = Date.now();
-           emitter._completeCallback = null;
-           emittersPool[emitter.type].push(emitter);
+    if(body){
+        emitter.body = body;
+        if (!body.emitterCount) body.emitterCount = 0;
+        body.emitterCount++;
+    }
 
-       }
-       var angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
-       emitter.minStartRotation = angle - angleOffset;
-       emitter.maxStartRotation = angle + angleOffset;
-       emitter.playOnce(returnToPool);
-   }
+    function returnToPool() {
+        if(emitter.body){
+            emitter.body.emitterCount--;
+            emitter.body = null;
+        }
+        emitter.lastUsed = Date.now();
+        emitter._completeCallback = null;
+        emittersPool[emitter.type].push(emitter);
+
+    }
+    var angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
+    emitter.minStartRotation = angle - angleOffset;
+    emitter.maxStartRotation = angle + angleOffset;
+    emitter.playOnce(returnToPool);
+
+
 }
 export const getEmitter = function (type, body) {
    if (!emittersPool[type]) emittersPool[type] = [];
