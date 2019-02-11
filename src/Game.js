@@ -373,6 +373,7 @@ function Game() {
     }
     this.stopWorld = function () {
         this.editor.resetEditor();
+        emitterManager.reset();
         this.run = false;
         this.resetGame();
         ui.hideGameOverMenu();

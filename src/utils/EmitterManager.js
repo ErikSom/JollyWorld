@@ -3,7 +3,7 @@ import * as emitterData from "../data/emitterData";
 import { Settings } from "../Settings";
 
 let emitters = [];
-let emittersPool = [];
+let emittersPool = {};
 
 export const init = function(){
     /*TODO
@@ -13,7 +13,9 @@ export const init = function(){
    emitterPoolData.map((data)=>{
        for (let i = 0; i < data.poolSize; i++) getEmitter(data.type, null);
    })
-  for (let i = 0; i < emitters.length; i++) emittersPool[emitters[i].type].push(emitters[i]);
+  for (let i = 0; i < emitters.length; i++){
+       emittersPool[emitters[i].type].push(emitters[i]);
+  }
 }
 export const playOnceEmitter = function (type, body, point, angle) {
     if(!angle) angle = 0;
@@ -31,10 +33,10 @@ export const playOnceEmitter = function (type, body, point, angle) {
     function returnToPool() {
         if(emitter.body){
             emitter.body.emitterCount--;
-            emitter.body = null;
+            emitter.body = undefined;
         }
         emitter.lastUsed = Date.now();
-        emitter._completeCallback = null;
+        emitter._completeCallback = undefined;
         emittersPool[emitter.type].push(emitter);
 
     }
@@ -81,4 +83,13 @@ export const update = function () {
            }
        } else emitter.update(Settings.timeStep * 0.001);
    }
+}
+export const reset = function (){
+    emittersPool = {};
+    for (let i = 0; i < emitters.length; i++){
+        emitters[i].body = undefined;
+        emitters[i].cleanup();
+        if(!emittersPool[emitters[i].type]) emittersPool[emitters[i].type] = [];
+        emittersPool[emitters[i].type].push(emitters[i]);
+    }
 }
