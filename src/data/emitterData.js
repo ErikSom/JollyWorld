@@ -104,5 +104,6 @@ export const gorecloud = JSON.parse(`{
 		"x": 0,
 		"y": 0,
 		"r": 0
-	}
+    },
+    "emit":false
 }`);

@@ -1,6 +1,7 @@
 import * as PrefabManager from '../PrefabManager';
 import * as Box2D from '../../../libs/Box2D';
-import * as drawing from '../../b2Editor/utils/drawing';
+import * as emitterManager from '../../utils/EmitterManager';
+
 
 import {
     game
@@ -88,7 +89,7 @@ export class SharpObject extends PrefabManager.basePrefab {
                         game.editor.addDecalToBody(body, callback.m_point, "Decal10000", true, 0.5);
                         game.editor.addDecalToBody(sharpBody, callback.m_point, "Decal10000", false, 1.3);
 
-                        game.playOnceEmitter("blood", body, callback.m_point, extentAngle);
+                        emitterManager.playOnceEmitter("blood", body, callback.m_point, extentAngle);
                     }
                 }
 

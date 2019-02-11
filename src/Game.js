@@ -25,7 +25,7 @@ import {
 import {
     levelsData
 } from "./data/levelsData";
-import * as emitterData from "./data/emitterData";
+import * as emitterManager from './utils/EmitterManager';
 
 const moment = require('moment');
 
@@ -76,9 +76,6 @@ function Game() {
     this.cameraFocusObject;
 
     this.stats;
-
-    this.emitters = [];
-    this.emittersPool = {};
 
     this.currentLevelData;
 
@@ -174,16 +171,12 @@ function Game() {
         this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
         window.addEventListener('resize', this.handleResize.bind(this));
-        
-        /*TODO
-        1) Create proper pooler per available types
-        */
-        for (var i = 0; i < Settings.emitterPool; i++) this.getEmitter('blood', null);
-        for (var i = 0; i < Settings.emitterPool; i++) this.emittersPool[this.emitters[i].type].push(this.emitters[i]);
+
+        emitterManager.init();
+
 
         PIXICuller.init(this.editor.textures);
     }
-
 
 
     //mouse
@@ -596,68 +589,11 @@ function Game() {
                     contact.GetWorldManifold(worldManifold);
                     var worldCollisionPoint = worldManifold.points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
-                    self.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+                    emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
                 }
             }
         }
     }
-    this.playOnceEmitter = function (type, body, point, angle) {
-
-        if (!body.emitterCount || body.emitterCount < Settings.emittersPerBody) {
-            let emitter = this.getEmitter(type, body);
-            emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
-            emitter.body = body;
-            if (!body.emitterCount) body.emitterCount = 0;
-            body.emitterCount++;
-            var self = this;
-
-            function returnToPool() {
-                emitter.body.emitterCount--;
-                emitter.body = null;
-                emitter.lastUsed = Date.now();
-                emitter._completeCallback = null;
-                self.emittersPool[emitter.type].push(emitter);
-
-            }
-            var angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
-            emitter.minStartRotation = angle - angleOffset;
-            emitter.maxStartRotation = angle + angleOffset;
-            emitter.playOnce(returnToPool);
-        }
-    }
-    this.getEmitter = function (type, body) {
-        if (!this.emittersPool[type]) this.emittersPool[type] = [];
-        if (this.emittersPool[type].length > 0) return this.emittersPool[type].shift();
-
-        var emitter;
-        switch (type) {
-            case "blood":
-                emitter = new PIXI.particles.Emitter(
-                    this.myContainer, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-grey.png')],
-                    emitterData[type]
-                );
-                break;
-        }
-        emitter.type = type;
-        this.emitters.push(emitter);
-        return emitter;
-    }
-    this.updateEmitters = function () {
-        for (var i = 0; i < this.emitters.length; i++) {
-            var emitter = this.emitters[i];
-            if (!emitter.body && this.emittersPool[emitter.type] > Settings.emitterPool) {
-                if (Date.now() - emitter.lastUsed > Settings.emitterMaxPoolTime) {
-                    for (var j = 0; j < this.emittersPool[emitter.type].length; j++)
-                        if (this.emittersPool[emitter.type][j] == emitter) this.emittersPool[emitter.type].splice(j, 1);
-                    emitter.destroy();
-                    this.emitters.splice(i, 1);
-                    i--;
-                }
-            } else emitter.update(Settings.timeStep * 0.001);
-        }
-    }
-
-
 
     let then, now;
     this.render = (newtime) => {
@@ -687,7 +623,7 @@ function Game() {
             this.stats.end();
             this.world.ClearForces();
             this.camera();
-            this.updateEmitters();
+            emitterManager.update();
         }
 
         this.editor.run();
