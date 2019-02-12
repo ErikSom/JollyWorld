@@ -289,6 +289,12 @@ function Game() {
                     this.character.positionBody('right');
                 }
             }
+
+            if(this.character.attachedGun){
+                if(Key.isPressed(Key.MOUSE)){
+                    this.character.attachedGun.shoot();
+                }
+            }
         }
         if(this.gameState == this.GAMESTATE_NORMALPLAY){
             if(Key.isPressed(Key.P) && this.run){
@@ -629,7 +635,7 @@ function Game() {
 
         this.editor.run();
         this.newDebugGraphics.clear();
-        if (this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug && !this.run) {
+        if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug && !this.run) || Settings.debugMode ) {
             this.world.DrawDebugData();
         }
         this.app.render();
