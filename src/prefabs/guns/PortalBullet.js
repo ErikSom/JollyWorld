@@ -8,31 +8,17 @@ class PortalBullet extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
     }
-    init(){
-        // let bd = new Box2D.b2BodyDef();
-        // bd.type = Box2D.b2BodyType.b2_dynamicBody;
-        // bd.angularDamping = 0.9;
-
-        // const body = game.world.CreateBody(bd);
-
-        // let fixDef = new Box2D.b2FixtureDef;
-        // fixDef.friction = 0.5;
-        // fixDef.restitution = 0.2;
-        // const radius = 10;
-
-        // fixDef.shape = new Box2D.b2CircleShape;
-        // fixDef.shape.SetLocalPosition(new Box2D.b2Vec2(0, 0));
-        // fixDef.shape.SetRadius(radius / game.editor.PTM);
-
-        // let fixture = body.CreateFixture(fixDef);
-
-
-        // var mySprite = {data:{}};
-        // body.mySprite = mySprite;
-        // return body;
+    initContactListener() {
+        super.initContactListener();
+        const self = this;
+        this.contactListener.PostSolve = function (contact, impulse) {
+            const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            const target = (bodies[0] === self.lookupObject['bullet']) ? bodies[1] : bodies[0];
+            console.log("hit target:", tagret);
+        }
     }
 }
 PrefabManager.prefabLibrary.PortalBullet = {
-    json: '{"objects":[[0,0.003154367820629632,-0.07136374712007679,0,"","part1",0,"#890808","#630606",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,2,null,""],[0,-0.048945224052909055,-0.21267429024827236,-0.7679448708775056,"","part2",1,"#890808","#6b0909",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,2,null,""],[0,-0.05108297945339905,-0.22011994128041493,2.4260076602721177,"","part3",2,"#890808","#600303",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,2,null,""],[0,0.003347876330606313,-0.06824396020197912,0,"","part4",3,"#890808","#660505",1,false,true,[{"x":0.028477641735626946,"y":-0.09142821820385016},{"x":0.02248234873865229,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":0.08843057170536373},{"x":-0.025479995237137842,"y":-0.08543292520687551}],10,2,null,""],[2,0.2604863299759831,-4.6079468327877935,0,"","part1_joint",4,1,0,0,false,false,1,10,false,0,0,0,0,0,0],[2,-3.3082859975393926,-8.384121948799184,0,"","part2_joint",5,2,1,0,false,false,1,10,false,0,0,0,0,0,0],[2,0.2729742921443762,-4.3639657228591675,0,"","part3_joint",6,2,3,0,false,false,1,10,false,0,0,0,0,0,0]]}',
-    class: Vain,
+    json: '{"objects":[[0,0,0,0,"","bullet",0,["#18d5ff"],["#000"],[1],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[14.273075971261724],"",[1]]]}',
+    class: PortalBullet,
 }

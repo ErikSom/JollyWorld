@@ -7,7 +7,7 @@ import {
     Settings
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
-import { PortalGun } from '../../weapons/PortalGun';
+import { PortalGun } from '../../prefabs/guns/PortalGun';
 
 class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -23,7 +23,12 @@ class Character extends PrefabManager.basePrefab {
         this.attachedToVehicle = true;
         this.alive = true;
         this.bleedTimer = -1;
-        this.attachedGun = new PortalGun(this);
+        /*TEMP*/
+        const portalGunPrefab = '{"objects":[[4,' + 0 * Settings.PTM + ',' + 0 * Settings.PTM + ',0,{},"PortalGun",' + (game.editor.prefabCounter++) + ']]}'
+        const portalGunBodies = game.editor.buildJSON(JSON.parse(portalGunPrefab));
+        const portalGun = game.editor.activePrefabs[portalGunBodies._bodies[0].mySprite.data.prefabInstanceName].class;
+        this.attachedGun = portalGun;
+        /*****/
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
