@@ -18,27 +18,4 @@ export class PortalGun{
         bullet.ApplyForce(dirFore, bullet.GetPosition());
 
     }
-    createBullet(){
-        let bd = new Box2D.b2BodyDef();
-		bd.type = Box2D.b2BodyType.b2_dynamicBody;
-		bd.angularDamping = 0.9;
-
-		const body = game.world.CreateBody(bd);
-
-        let fixDef = new Box2D.b2FixtureDef;
-        fixDef.friction = 0.5;
-        fixDef.restitution = 0.2;
-        const radius = 10;
-
-        fixDef.shape = new Box2D.b2CircleShape;
-        fixDef.shape.SetLocalPosition(new Box2D.b2Vec2(0, 0));
-        fixDef.shape.SetRadius(radius / game.editor.PTM);
-
-        let fixture = body.CreateFixture(fixDef);
-
-
-        var mySprite = {data:{}};
-        body.mySprite = mySprite;
-        return body;
-    }
 }
