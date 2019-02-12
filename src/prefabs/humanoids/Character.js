@@ -111,8 +111,23 @@ class Character extends PrefabManager.basePrefab {
 
                 if ((bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
 
+
+                    // Should the body break?
+                        // var count:int = contact.GetManifold().m_pointCount;
+                        
+                        // var maxImpulse:Number = 0.0;
+                        // for (var i:int = 0; i < count; i++)
+                        // {
+                        //     maxImpulse = b2Math.Max(maxImpulse, impulse.normalImpulses[i]);
+                        // }
+                        // if (maxImpulse > 50)
+                        // {
+                        //     test.m_break = true;
+                        // }
+                    const count = contact.GetManifold().pointCount;
+
                     var force = 0;
-                    for (var j = 0; j < impulse.normalImpulses.length; j++) force = Math.max(force, impulse.normalImpulses[j]);
+                    for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
 
                     if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {
                         if (body == self.lookupObject["head"]) {
@@ -126,9 +141,8 @@ class Character extends PrefabManager.basePrefab {
                             });
                         }
                     }
-
                     if (body.mySprite.data.refName != "" && force > body.GetMass() * Settings.bashMaxForceMultiplier) {
-                        console.log(force);
+                        console.log(body.mySprite.data.refName, force, body.GetMass() * Settings.bashMaxForceMultiplier);
                         self.collisionUpdates.push({
                             type: Character.GORE_BASH,
                             target: body.mySprite.data.refName,

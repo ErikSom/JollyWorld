@@ -10,7 +10,7 @@ export var Settings = {
     /*GORE*/
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
-    bashMaxForceMultiplier:100,
+    bashMaxForceMultiplier:200,
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,
