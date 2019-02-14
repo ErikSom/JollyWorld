@@ -69,3 +69,4 @@ importAll(require.context('./vehicles', true, /\.js$/));
 importAll(require.context('./weapons', true, /\.js$/));
 importAll(require.context('./movement', true, /\.js$/));
 importAll(require.context('./level', true, /\.js$/));
+importAll(require.context('./guns', true, /\.js$/));

@@ -5061,18 +5061,26 @@ const _B2dEditor = function () {
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
 		this.activePrefabs[key] = obj;
-		var createdBodies = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
+		var prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
 		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
 
 		obj.class.subPrefabClasses = this.createdSubPrefabClasses;
 		this.createdSubPrefabClasses.map((prefab)=>{ prefab.mainPrefabClass = obj.class});
 
-		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(createdBodies._bodies, createdBodies._textures, createdBodies._joints));
+		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
 
-		return createdBodies;
+		return prefabLookupObject;
 	}
-
+	this.buildRuntimePrefab = function(prefabName, x, y, rotation){
+		const prefabJSON = `{"objects":[[4,${x},${y},${(rotation || 0)},{},"${prefabName}",${(game.editor.prefabCounter++)}]]}`
+		const prefab = this.buildJSON(JSON.parse(prefabJSON));
+		this.retrieveClassFromPrefabLookup(prefab).init();
+		return prefab;
+	}
+	this.retrieveClassFromPrefabLookup = function(prefabLookup){
+		return this.activePrefabs[prefabLookup._bodies[0].mySprite.data.prefabInstanceName].class;
+	}
 
 	this.anchorTextureToBody = function () {
 		var bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);

@@ -3,6 +3,8 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import * as Box2D from "../../../libs/Box2D";
+
 
 
 class PortalGun extends PrefabManager.basePrefab {
@@ -13,12 +15,16 @@ class PortalGun extends PrefabManager.basePrefab {
         this.characterReference = characterReference;
     }
     shoot(){
-        var characterWeapon = this.characterReference.lookupObject.head;
-        const bulletPrefab = '{"objects":[[4,' + characterWeapon.GetPosition().x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain",' + (game.editor.prefabCounter++) + ']]}'
-        const bullet = game.editor.buildJSON(JSON.parse(bulletPrefab));
+        const characterWeapon = this.lookupObject.gun;
+        const weaponAngle = characterWeapon.GetAngle()-90*game.editor.RAD2DEG;
+        const bodyAngleVector = new Box2D.b2Vec2(Math.cos(weaponAngle), Math.sin(weaponAngle));
+        const gunLength = 2;
+        let gunExtent = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+        gunExtent.SelfMul(gunLength);
+        const bulletSpawnPosition = new Box2D.b2Vec2(characterWeapon.GetPosition().x+gunExtent.x, characterWeapon.GetPosition().y+gunExtent.y);
+        const bullet = game.editor.buildRuntimePrefab("PortalBullet", bulletSpawnPosition.x * Settings.PTM, bulletSpawnPosition.y * Settings.PTM);
 
         const bulletForce = 1000;
-        const bodyAngleVector = new Box2D.b2Vec2(Math.cos(characterWeapon.GetAngle()), Math.sin(characterWeapon.GetAngle()));
         let dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
         dirFore.SelfMul(bulletForce);
         bullet._bodies[0].ApplyForce(dirFore, characterWeapon.GetPosition());
