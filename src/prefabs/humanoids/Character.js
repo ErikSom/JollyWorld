@@ -23,10 +23,17 @@ class Character extends PrefabManager.basePrefab {
         this.alive = true;
         this.bleedTimer = -1;
         /*TEMP*/
-        const portalGunPrefab = '{"objects":[[4,' + 0 * Settings.PTM + ',' + 0 * Settings.PTM + ',0,{},"PortalGun",' + (game.editor.prefabCounter++) + ']]}'
-        const portalGunBodies = game.editor.buildJSON(JSON.parse(portalGunPrefab));
-        const portalGun = game.editor.activePrefabs[portalGunBodies._bodies[0].mySprite.data.prefabInstanceName].class;
+        // const portalGunPrefab = '{"objects":[[4,' + 0 * Settings.PTM + ',' + 0 * Settings.PTM + ',0,{},"PortalGun",' + (game.editor.prefabCounter++) + ']]}'
+        // const portalGunBodies = game.editor.buildJSON(JSON.parse(portalGunPrefab));
+        // const portalGun = game.editor.activePrefabs[portalGunBodies._bodies[0].mySprite.data.prefabInstanceName].class;
+        // portalGun.setOwner(this);
+        const portalGunBodies = game.editor.buildRuntimePrefab("PortalGun", 0 * Settings.PTM, 0 * Settings.PTM);
+        const portalGun = game.editor.retrieveClassFromPrefabLookup(portalGunBodies);
         portalGun.setOwner(this);
+
+
+
+
         this.attachedGun = portalGun;
         /*****/
         var i;

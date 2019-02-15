@@ -31,7 +31,7 @@ class PortalBullet extends PrefabManager.basePrefab {
     update(){
         super.update();
         if(this.destroyMe){
-            this.portalGun.spawnPortal(this.destroyMe.x, this.destroyMe.y, this.destroyMe.a);
+            this.portalGun.spawnPortal(this.destroyMe.x, this.destroyMe.y, this.destroyMe.a*game.editor.RAD2DEG);
             game.editor.deleteObjects([this.prefabObject]);
         }
     }

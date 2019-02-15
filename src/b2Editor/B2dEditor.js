@@ -1366,6 +1366,25 @@ const _B2dEditor = function () {
 
 		this.doEditorGUI();
 	}
+	this.updateBodyPosition = function(body){
+		if (body.myTexture) {
+
+			var angle = body.GetAngle() - body.myTexture.data.texturePositionOffsetAngle;
+			body.myTexture.x = body.GetPosition().x * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
+			body.myTexture.y = body.GetPosition().y * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
+			// body.mySprite.x = body.GetPosition().x * this.PTM;
+			// body.mySprite.y = body.GetPosition().y * this.PTM;
+			//if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
+			body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
+
+		}
+		if (body.mySprite && body.mySprite.visible) {
+			body.mySprite.x = body.GetPosition().x * this.PTM;
+			body.mySprite.y = body.GetPosition().y * this.PTM;
+			//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
+			body.mySprite.rotation = body.GetAngle();
+		}
+	}
 	this.run = function () {
 		//update textures
 		if (this.editing) {
@@ -1378,24 +1397,7 @@ const _B2dEditor = function () {
 		var body = this.world.GetBodyList();
 		var i = 0
 		while (body) {
-
-			if (body.myTexture) {
-
-				var angle = body.GetAngle() - body.myTexture.data.texturePositionOffsetAngle;
-				body.myTexture.x = body.GetPosition().x * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
-				body.myTexture.y = body.GetPosition().y * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
-				// body.mySprite.x = body.GetPosition().x * this.PTM;
-				// body.mySprite.y = body.GetPosition().y * this.PTM;
-				//if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
-				body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
-
-			}
-			if (body.mySprite && body.mySprite.visible) {
-				body.mySprite.x = body.GetPosition().x * this.PTM;
-				body.mySprite.y = body.GetPosition().y * this.PTM;
-				//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
-				body.mySprite.rotation = body.GetAngle();
-			}
+			this.updateBodyPosition(body);
 			i++;
 			body = body.GetNext();
 		}
@@ -2004,6 +2006,7 @@ const _B2dEditor = function () {
 						}
 
 					}
+					this.updateBodyPosition(body);
 				} else {
 					sprite = objects[i];
 					if (transformType == this.TRANSFORM_MOVE) {
