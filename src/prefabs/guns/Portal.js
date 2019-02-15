@@ -12,13 +12,13 @@ class Portal extends PrefabManager.basePrefab {
         super.initContactListener();
         const self = this;
         this.contactListener.PostSolve = function (contact, impulse) {
-            const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            const target = (bodies[0] === self.lookupObject['bullet']) ? bodies[1] : bodies[0];
-            console.log("hit target:", tagret);
+            // const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            // const target = (bodies[0] === self.lookupObject['bullet']) ? bodies[1] : bodies[0];
+            // console.log("hit target:", tagret);
         }
     }
     update(){
-        
+
     }
 }
 PrefabManager.prefabLibrary.Portal = {

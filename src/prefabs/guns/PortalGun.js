@@ -23,11 +23,17 @@ class PortalGun extends PrefabManager.basePrefab {
         gunExtent.SelfMul(gunLength);
         const bulletSpawnPosition = new Box2D.b2Vec2(characterWeapon.GetPosition().x+gunExtent.x, characterWeapon.GetPosition().y+gunExtent.y);
         const bullet = game.editor.buildRuntimePrefab("PortalBullet", bulletSpawnPosition.x * Settings.PTM, bulletSpawnPosition.y * Settings.PTM);
+        game.editor.retrieveClassFromPrefabLookup(bullet).setOwner(this);
 
         const bulletForce = 1000;
         let dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
         dirFore.SelfMul(bulletForce);
         bullet._bodies[0].ApplyForce(dirFore, characterWeapon.GetPosition());
+    }
+    spawnPortal(x, y, angle){
+        console.log(x, y, angle);
+        const portal = game.editor.buildRuntimePrefab("Portal", x, y, angle);
+        //game.editor.retrieveClassFromPrefabLookup(portal).setOwner(this);
     }
 }
 PrefabManager.prefabLibrary.PortalGun = {

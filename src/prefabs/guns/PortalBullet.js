@@ -3,6 +3,8 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
+import * as Box2D from "../../../libs/Box2D";
+
 
 class PortalBullet extends PrefabManager.basePrefab {
     constructor(target) {
@@ -10,27 +12,31 @@ class PortalBullet extends PrefabManager.basePrefab {
     }
     init(){
         super.init();
+        this.portalGun = undefined;
         this.destroyMe = false;
     }
+    setOwner(owner){
+        console.log("SET OWNER!!!", owner);
+        this.portalGun = owner; 
+    }
     initContactListener() {
-        console.log("init contact listener");
         super.initContactListener();
         const self = this;
         this.contactListener.PostSolve = function (contact, impulse) {
-            // const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            // const target = (bodies[0] === self.lookupObject['bullet']) ? bodies[1] : bodies[0];
-            self.destroyMe = true;
+            var worldManifold = new Box2D.b2WorldManifold();
+            contact.GetWorldManifold(worldManifold);
+            self.destroyMe = {x:worldManifold.points[0].x*game.editor.PTM, y:worldManifold.points[0].y*game.editor.PTM, a:Math.atan2(worldManifold.normal.y, worldManifold.normal.x)};
         }
     }
     update(){
         super.update();
         if(this.destroyMe){
-            console.log("DESTROY ME!");
-             game.editor.deleteObjects([this.prefabObject]);
+            this.portalGun.spawnPortal(this.destroyMe.x, this.destroyMe.y, this.destroyMe.a);
+            game.editor.deleteObjects([this.prefabObject]);
         }
     }
 }
 PrefabManager.prefabLibrary.PortalBullet = {
-    json: '{"objects":[[0,0,0,0,"","bullet",0,["#18d5ff"],["#000"],[1],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[14.273075971261724],"",[1]]]}',
+    json: '{"objects":[[0,0,0,0,"","bullet",0,["#18d5ff"],["#000"],[1],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],5,[14.273075971261724],"",[1]]]}',
     class: PortalBullet,
 }
