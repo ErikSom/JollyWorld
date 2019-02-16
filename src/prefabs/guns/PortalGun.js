@@ -48,6 +48,8 @@ class PortalGun extends PrefabManager.basePrefab {
             portalToDelete.destroy();
         }else if(this.activePortals.length == 2) portal.setColor(this.colorB);
         else portal.setColor(this.colorA);
+
+        if(this.activePortals.length == 2) this.activePortals[0].linkPortal(this.activePortals[1]);
         //game.editor.retrieveClassFromPrefabLookup(portal).setOwner(this);
     }
 }

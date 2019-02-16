@@ -570,7 +570,17 @@ function Game() {
 
     var self = this;
     this.gameContactListener = new Box2D.b2ContactListener();
-    this.gameContactListener.BeginContact = function (contact) {}
+    this.gameContactListener.BeginContact = function (contact) {
+        // ignore collisions with objects that are being teleported
+        const currentTime = Date.now();
+        let target = contact.GetFixtureA().GetBody();
+        if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) contact.SetEnabled(false);
+        else if(target.ignoreCollisionsTime) target.ignoreCollisionsTime = undefined;
+
+        target = contact.GetFixtureB().GetBody();
+        if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) contact.SetEnabled(false);
+        else if(target.ignoreCollisionsTime) target.ignoreCollisionsTime = undefined;
+    }
     this.gameContactListener.EndContact = function (contact) {}
     this.gameContactListener.PreSolve = function (contact, oldManifold) {}
     this.gameContactListener.PostSolve = function (contact, impulse) {

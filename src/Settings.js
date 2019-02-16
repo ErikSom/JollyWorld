@@ -25,6 +25,9 @@ export var Settings = {
     motorForceLimit:10000,
     slideJointDistanceLimit:5000,
 
+    /*TELEPORTS*/
+    timeBetweenTeleports:2000,
+
     /*TEXT*/
     DEFAULT_TEXTS:{
         levelEditScreen_DefaultTitleText: 'Fill in Title',

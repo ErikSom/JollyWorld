@@ -3,6 +3,9 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
+import * as Box2D from "../../../libs/Box2D";
+import { Settings } from '../../Settings';
+
 
 class Portal extends PrefabManager.basePrefab {
     constructor(target) {
@@ -10,21 +13,49 @@ class Portal extends PrefabManager.basePrefab {
     }
     init(){
         super.init();
+        this.connectedPortal;
+        this.incomingObjects = [];
     }
     initContactListener() {
         super.initContactListener();
         const self = this;
+        this.color.contactListener.BeginContact = function(contact){
+            if(!this.connectedPortal) return;
+            const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            const target = (bodies[0] === self.lookupObject['holder']) ? bodies[1] : bodies[0];
+            if(target.GetType() == Box2D.b2BodyType.b2_staticBody) return;
+
+            contact.SetEnabled(false);
+
+            let currentTime = Date.now();
+            if(target.ignoreCollisionsTime && currentTime<target.ignoreCollisionsTime) return;
+
+            let offsetPosition = target.GetPosition().Clone();
+            offsetPosition.SelfSub(self.lookupObject['holder'].GetPosition());
+            const offsetAngle = self.lookupObject['holder'].GetAngle()-target.GetAngle();
+
+            target.ignoreCollisionsTime = currentTime+Settings.timeBetweenTeleports;
+
+            var teleportData = {target, offsetPosition, offsetAngle, linearVelocity:target.GetLinearVelocity(), angularVelocity:target.GetAngularVelocity()};
+            this.connectedPortal.teleport(teleportData);
+        }
         this.contactListener.PostSolve = function (contact, impulse) {
             // const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             // const target = (bodies[0] === self.lookupObject['bullet']) ? bodies[1] : bodies[0];
             // console.log("hit target:", tagret);
         }
     }
+    teleport(teleportData){
+
+    }
     setColor(color){
-        console.log(color);
         this.color = color;
         this.lookupObject.portal.mySprite.data.colorFill[0] = color;
         game.editor.updateBodyShapes(this.lookupObject.portal);
+    }
+    linkPortal(portal){
+        this.connectedPortal = portal;
+        portal.connectedPortal = this;
     }
     update(){
 
