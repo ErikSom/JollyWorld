@@ -27,9 +27,15 @@ class Character extends PrefabManager.basePrefab {
         // const portalGunBodies = game.editor.buildJSON(JSON.parse(portalGunPrefab));
         // const portalGun = game.editor.activePrefabs[portalGunBodies._bodies[0].mySprite.data.prefabInstanceName].class;
         // portalGun.setOwner(this);
-        const portalGunBodies = game.editor.buildRuntimePrefab("PortalGun", 0 * Settings.PTM, 0 * Settings.PTM);
+        const gunPosition = this.lookupObject.shoulder_left.GetPosition();
+        const portalGunBodies = game.editor.buildRuntimePrefab("PortalGun", gunPosition.x * Settings.PTM, gunPosition.y * Settings.PTM);
         const portalGun = game.editor.retrieveClassFromPrefabLookup(portalGunBodies);
         portalGun.setOwner(this);
+        let revoluteJointDef = new Box2D.b2RevoluteJointDef;
+        console.log(portalGunBodies.holder);
+        revoluteJointDef.Initialize(portalGun.lookupObject.holder, this.lookupObject.shoulder_left, gunPosition);
+        revoluteJointDef.collideConnected = false;
+        let joint = game.world.CreateJoint(revoluteJointDef);
 
 
 
