@@ -36,7 +36,6 @@ class PortalGun extends PrefabManager.basePrefab {
         bullet._bodies[0].ApplyForce(dirFore, characterWeapon.GetPosition());
     }
     spawnPortal(x, y, angle){
-        console.log(x, y, angle);
         const portalBodies = game.editor.buildRuntimePrefab("Portal", x, y, angle);
         const portal = game.editor.retrieveClassFromPrefabLookup(portalBodies);
 

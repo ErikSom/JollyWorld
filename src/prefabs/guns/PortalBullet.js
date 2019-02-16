@@ -16,7 +16,6 @@ class PortalBullet extends PrefabManager.basePrefab {
         this.destroyMe = false;
     }
     setOwner(owner){
-        console.log("SET OWNER!!!", owner);
         this.portalGun = owner; 
     }
     initContactListener() {

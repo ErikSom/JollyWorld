@@ -1,43 +1,62 @@
-
 import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
 import * as Box2D from "../../../libs/Box2D";
-import { Settings } from '../../Settings';
+import {
+    Settings
+} from '../../Settings';
 
 
 class Portal extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
     }
-    init(){
+    init() {
         super.init();
+        this.color;
         this.connectedPortal;
-        this.incomingObjects = [];
+        this.preparingForTeleport = [];
+        this.teleportingObjects = [];
     }
     initContactListener() {
         super.initContactListener();
         const self = this;
-        this.color.contactListener.BeginContact = function(contact){
-            if(!this.connectedPortal) return;
+        this.contactListener.BeginContact = function (contact) {
+            if (!self.connectedPortal) return;
             const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            const target = (bodies[0] === self.lookupObject['holder']) ? bodies[1] : bodies[0];
-            if(target.GetType() == Box2D.b2BodyType.b2_staticBody) return;
+            const target = (bodies[0] === self.lookupObject['portal']) ? bodies[1] : bodies[0];
+            console.log("BEGIN CONTACT!", target);
+            if (target.GetType() == Box2D.b2BodyType.b2_staticBody) return;
+            console.log("BEGIN CONTACT2!");
 
             contact.SetEnabled(false);
 
             let currentTime = Date.now();
-            if(target.ignoreCollisionsTime && currentTime<target.ignoreCollisionsTime) return;
+            if (target.ignoreCollisionsTime && currentTime < target.ignoreCollisionsTime) return;
+            console.log("BEGIN CONTACT3!");
+
 
             let offsetPosition = target.GetPosition().Clone();
-            offsetPosition.SelfSub(self.lookupObject['holder'].GetPosition());
-            const offsetAngle = self.lookupObject['holder'].GetAngle()-target.GetAngle();
+            offsetPosition.SelfSub(self.lookupObject['portal'].GetPosition());
+            const offsetAngle = self.lookupObject['portal'].GetAngle() - target.GetAngle();
 
-            target.ignoreCollisionsTime = currentTime+Settings.timeBetweenTeleports;
+            target.ignoreCollisionsTime = currentTime + Settings.timeBetweenTeleports;
 
-            var teleportData = {target, offsetPosition, offsetAngle, linearVelocity:target.GetLinearVelocity(), angularVelocity:target.GetAngularVelocity()};
-            this.connectedPortal.teleport(teleportData);
+            var teleportData = {
+                target,
+                position: target.GetPosition(),
+                angle: target.GetAngle(),
+                offsetPosition,
+                offsetAngle,
+                linearVelocity: target.GetLinearVelocity(),
+                angularVelocity: target.GetAngularVelocity()
+            };
+
+            //find all neighbours
+
+            self.preparingForTeleport.push(teleportData);
+            //Disable Bodies that are going to be teleported
         }
         this.contactListener.PostSolve = function (contact, impulse) {
             // const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
@@ -45,22 +64,31 @@ class Portal extends PrefabManager.basePrefab {
             // console.log("hit target:", tagret);
         }
     }
-    teleport(teleportData){
-
+    teleport(teleportData) {
+        this.teleportingObjects.push(teleportData);
     }
-    setColor(color){
+    setColor(color) {
         this.color = color;
         this.lookupObject.portal.mySprite.data.colorFill[0] = color;
         game.editor.updateBodyShapes(this.lookupObject.portal);
     }
-    linkPortal(portal){
+    linkPortal(portal) {
+        console.log("Linking, park");
         this.connectedPortal = portal;
         portal.connectedPortal = this;
     }
-    update(){
-
+    update() {
+        if (this.preparingForTeleport.length > 0) {
+            this.preparingForTeleport.map((teleportData) => {
+                teleportData.target.SetPosition(teleportData.position);
+                teleportData.target.SetAngle(teleportData.angle);
+                teleportData.target.SetActive(false);
+                this.connectedPortal.teleport(teleportData);
+            });
+            this.preparingForTeleport = [];
+        }
     }
-    destroy(){
+    destroy() {
         game.editor.deleteObjects([this.prefabObject]);
     }
 }
