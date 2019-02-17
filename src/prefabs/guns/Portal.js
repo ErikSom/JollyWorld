@@ -18,6 +18,7 @@ class Portal extends PrefabManager.basePrefab {
         this.connectedPortal;
         this.preparingForTeleport = [];
         this.teleportingObjects = [];
+        this.jointsToDestroy = [];
     }
     initContactListener() {
         super.initContactListener();
@@ -33,38 +34,44 @@ class Portal extends PrefabManager.basePrefab {
             contact.SetEnabled(false);
 
             let currentTime = Date.now();
-            if (target.ignoreCollisionsTime && currentTime < target.ignoreCollisionsTime) return;
-            console.log("BEGIN CONTACT3!", currentTime, target.ignoreCollisionsTime);
-
-
-            let offsetPosition = target.GetPosition().Clone();
-            offsetPosition.SelfSub(self.lookupObject['portal'].GetPosition());
-            let offsetPositionLength = offsetPosition.Length();
-            let offsetPositionAngle = Math.atan2(offsetPosition.y, offsetPosition.x)-self.lookupObject['portal'].GetAngle();
-            const offsetAngle = target.GetAngle()-self.lookupObject['portal'].GetAngle();
-            target.ignoreCollisionsTime = currentTime + Settings.timeBetweenTeleports;
-
-
-            const linearVelocityAngle = Math.atan2(target.GetLinearVelocity().y, target.GetLinearVelocity().x)-self.lookupObject['portal'].GetAngle();
-            const linearVelocityLength = target.GetLinearVelocity().Length();
-
-            console.log(linearVelocityAngle, linearVelocityLength);
-
-            var teleportData = {
-                target,
-                position: target.GetPosition(),
-                angle: target.GetAngle(),
-                offsetPositionLength,
-                offsetPositionAngle,
-                offsetAngle,
-                linearVelocityAngle,
-                linearVelocityLength,
-                angularVelocity: target.GetAngularVelocity()
-            };
 
             //find all neighbours
+            const targets = self.findConnectedBodies(target);
+            let teleportDatas = [];
 
-            self.preparingForTeleport.push([teleportData]);
+            targets.map((target) => {
+
+                if (target.ignoreCollisionsTime && currentTime < target.ignoreCollisionsTime) return;
+                console.log("BEGIN CONTACT3!", currentTime, target.ignoreCollisionsTime);
+
+                let offsetPosition = target.GetPosition().Clone();
+                offsetPosition.SelfSub(self.lookupObject['portal'].GetPosition());
+                let offsetPositionLength = offsetPosition.Length();
+                let offsetPositionAngle = Math.atan2(offsetPosition.y, offsetPosition.x) - self.lookupObject['portal'].GetAngle();
+                const offsetAngle = target.GetAngle() - self.lookupObject['portal'].GetAngle();
+                target.ignoreCollisionsTime = currentTime + Settings.timeBetweenTeleports;
+
+
+                const linearVelocityAngle = Math.atan2(target.GetLinearVelocity().y, target.GetLinearVelocity().x) - self.lookupObject['portal'].GetAngle();
+                const linearVelocityLength = target.GetLinearVelocity().Length();
+
+                console.log(linearVelocityAngle, linearVelocityLength);
+
+                var teleportData = {
+                    target,
+                    position: target.GetPosition(),
+                    angle: target.GetAngle(),
+                    offsetPositionLength,
+                    offsetPositionAngle,
+                    offsetAngle,
+                    linearVelocityAngle,
+                    linearVelocityLength,
+                    angularVelocity: target.GetAngularVelocity()
+                };
+                teleportDatas.push(teleportData);
+            });
+
+            self.preparingForTeleport.push(teleportDatas);
             //Disable Bodies that are going to be teleported
         }
         this.contactListener.PostSolve = function (contact, impulse) {
@@ -80,14 +87,14 @@ class Portal extends PrefabManager.basePrefab {
             var animValues = {
                 tint: teleportData.target.mySprite.tint,
                 tintPercentage: 0.0,
-                opacity:1.0,
+                opacity: 1.0,
             }
             teleportData.target.mySprite.convertToHeaven();
             anime({
                 targets: animValues,
                 tint: 0x000000,
                 tintPercentage: 1.0,
-                opacity:0.0,
+                opacity: 0.0,
                 duration: 150,
                 direction: 'alternate',
                 easing: 'linear',
@@ -100,17 +107,17 @@ class Portal extends PrefabManager.basePrefab {
                     // teleportData.target.mySprite.color.dark[2] = teleportData.target.mySprite.color.light[2] * animValues.tintPercentage;
                     // teleportData.target.mySprite.color.invalidate();
                 },
-                complete: function(){
+                complete: function () {
                     const newPosition = self.lookupObject['portal'].GetPosition().Clone();
-                    const angle = self.lookupObject['portal'].GetAngle()+teleportData.offsetPositionAngle;
-                    const offsetPosition = new Box2D.b2Vec2(teleportData.offsetPositionLength*Math.cos(angle), teleportData.offsetPositionLength*Math.sin(angle));
+                    const angle = self.lookupObject['portal'].GetAngle() + teleportData.offsetPositionAngle;
+                    const offsetPosition = new Box2D.b2Vec2(teleportData.offsetPositionLength * Math.cos(angle), teleportData.offsetPositionLength * Math.sin(angle));
                     newPosition.SelfAdd(offsetPosition);
                     teleportData.target.SetPosition(newPosition);
-                    teleportData.target.SetAngle(self.lookupObject['portal'].GetAngle()+teleportData.offsetAngle);
+                    teleportData.target.SetAngle(self.lookupObject['portal'].GetAngle() + teleportData.offsetAngle);
 
 
                     //translate linear velocity:
-                    const translatedAngle = self.lookupObject['portal'].GetAngle()-teleportData.linearVelocityAngle;
+                    const translatedAngle = self.lookupObject['portal'].GetAngle() - teleportData.linearVelocityAngle;
                     const translatedVelocity = new Box2D.b2Vec2(-teleportData.linearVelocityLength * Math.cos(translatedAngle), -teleportData.linearVelocityLength * Math.sin(translatedAngle));
                     teleportData.target.SetLinearVelocity(translatedVelocity);
 
@@ -120,6 +127,30 @@ class Portal extends PrefabManager.basePrefab {
                 }
             });
         });
+    }
+    findConnectedBodies(target) {
+
+        let targetsFound = [target];
+        const self = this;
+
+        const crawlJoints = function (_target) {
+            var jointEdge = _target.GetJointList();
+            while (jointEdge) {
+                let targetBody = (jointEdge.joint.GetBodyA() == _target) ? jointEdge.joint.GetBodyB() : jointEdge.joint.GetBodyA();
+                if (targetBody.GetType() == Box2D.b2BodyType.b2_staticBody) {
+                    targetBody = undefined;
+                    self.jointsToDestroy.push(jointEdge.joint);
+                }
+                if (targetBody && !targetsFound.includes(targetBody)) {
+                    targetsFound.push(targetBody);
+                    crawlJoints(targetBody);
+                }
+                jointEdge = jointEdge.next;
+            }
+        }
+        crawlJoints(target);
+
+        return targetsFound;
     }
 
     setColor(color) {
@@ -143,6 +174,12 @@ class Portal extends PrefabManager.basePrefab {
                 this.connectedPortal.teleport(teleportDatas);
             });
             this.preparingForTeleport = [];
+        }
+        if (this.jointsToDestroy.length > 0) {
+            this.jointsToDestroy.map((joint) => {
+                game.world.DestroyJoint(joint);
+            });
+            this.jointsToDestroy = [];
         }
     }
     destroy() {
