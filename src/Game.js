@@ -291,7 +291,7 @@ function Game() {
             }
 
             if(this.character.attachedGun){
-                if(Key.isPressed(Key.MOUSE)){
+                if(Key.isPressed(Key.SPACE)){
                     this.character.attachedGun.shoot();
                 }
             }
@@ -550,12 +550,11 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
-        var targetZoom = 0.8;
 
         var currentZoom = this.editor.container.scale.x;
 
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
-        this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
+        this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (Settings.cameraZoom - currentZoom) * zoomEase);
 
         cameraTargetPosition.x -= this.canvas.width / 2.0 / this.editor.container.scale.x;
         cameraTargetPosition.y -= this.canvas.height / 2.0 / this.editor.container.scale.y;
@@ -575,11 +574,11 @@ function Game() {
         const currentTime = Date.now();
         let target = contact.GetFixtureA().GetBody();
         if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) contact.SetEnabled(false);
-        else if(target.ignoreCollisionsTime) target.ignoreCollisionsTime = undefined;
+        else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
 
         target = contact.GetFixtureB().GetBody();
         if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) contact.SetEnabled(false);
-        else if(target.ignoreCollisionsTime) target.ignoreCollisionsTime = undefined;
+        else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
     }
     this.gameContactListener.EndContact = function (contact) {}
     this.gameContactListener.PreSolve = function (contact, oldManifold) {}

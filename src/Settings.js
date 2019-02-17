@@ -5,6 +5,7 @@ export var Settings = {
     timeStep:1000 / targetFPS,
     allowMouseMovement:true,
     debugMode:true,
+    cameraZoom:0.1,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
     PTM:30,
@@ -26,7 +27,7 @@ export var Settings = {
     slideJointDistanceLimit:5000,
 
     /*TELEPORTS*/
-    timeBetweenTeleports:2000,
+    timeBetweenTeleports:400,
 
     /*TEXT*/
     DEFAULT_TEXTS:{

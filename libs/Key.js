@@ -52,6 +52,7 @@ export var Key = {
     Z: 90,
     COMMAND:91,
     MOUSE:1000,
+    SPACE:32,
     isDown: function (keyCode) {
         if(keyCode instanceof Array){
             var i;
