@@ -1927,7 +1927,7 @@ const _B2dEditor = function () {
 		}
 	}
 
-	this.applyToObjects = function (transformType, obj, objects) {
+	this.applyToObjects = function (transformType, obj, objects, forceGroupRotation) {
 		var i;
 		var body;
 		var sprite;
@@ -1952,7 +1952,7 @@ const _B2dEditor = function () {
 						data = sprite.data;
 					}
 					if (!data) continue;
-					group = (this.altDown) ? "__altDownGroup" : data.prefabInstanceName;
+					group = (this.altDown || forceGroupRotation) ? "__altDownGroup" : data.prefabInstanceName;
 					if (group) {
 						if (centerPoints[group] == undefined) centerPoints[group] = {
 							x: 0,
@@ -1989,7 +1989,7 @@ const _B2dEditor = function () {
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						//split between per object / group rotation
 
-						group = (this.altDown) ? "__altDownGroup" : body.mySprite.data.prefabInstanceName;
+						group = (this.altDown || forceGroupRotation) ? "__altDownGroup" : body.mySprite.data.prefabInstanceName;
 
 						var oldAngle = body.GetAngle();
 						var rAngle = obj * this.DEG2RAD;

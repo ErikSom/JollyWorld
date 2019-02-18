@@ -51,11 +51,17 @@ class Portal extends PrefabManager.basePrefab {
                 const offsetAngle = target.GetAngle() - self.lookupObject['portal'].GetAngle();
                 target.ignoreCollisionsTime = currentTime + Settings.timeBetweenTeleports;
 
+                const translatedAngle = 180;
+
+
+                console.log("Rotate:", translatedAngle*game.editor.RAD2DEG, "degrees");
+
+
 
                 const linearVelocityAngle = Math.atan2(target.GetLinearVelocity().y, target.GetLinearVelocity().x) - self.lookupObject['portal'].GetAngle();
                 const linearVelocityLength = target.GetLinearVelocity().Length();
 
-                console.log(linearVelocityAngle, linearVelocityLength);
+                console.log(translatedAngle);
 
                 var teleportData = {
                     target,
@@ -64,6 +70,7 @@ class Portal extends PrefabManager.basePrefab {
                     offsetPositionLength,
                     offsetPositionAngle,
                     offsetAngle,
+                    translatedAngle,
                     linearVelocityAngle,
                     linearVelocityLength,
                     angularVelocity: target.GetAngularVelocity()
@@ -83,6 +90,7 @@ class Portal extends PrefabManager.basePrefab {
     teleport(teleportDatas) {
         this.teleportingObjects.push(teleportDatas);
         const self = this;
+        let teleportedBodies = [];
         teleportDatas.map((teleportData) => {
             var animValues = {
                 tint: teleportData.target.mySprite.tint,
@@ -122,8 +130,18 @@ class Portal extends PrefabManager.basePrefab {
                     teleportData.target.SetLinearVelocity(translatedVelocity);
 
 
+                    //rotate group
+                    console.log("COMPLETE!!");
+
+
                     teleportData.target.SetAngularVelocity(teleportData.angularVelocity);
                     teleportData.target.SetActive(true);
+
+                    teleportedBodies.push(teleportData.target);
+                    if(teleportedBodies.length == teleportDatas.length){
+                        game.editor.applyToObjects(game.editor.TRANSFORM_ROTATE, teleportData.translatedAngle, teleportedBodies);
+                        teleportedBodies = undefined;
+                    }
                 }
             });
         });
