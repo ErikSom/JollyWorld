@@ -27,7 +27,7 @@ export var Settings = {
     slideJointDistanceLimit:5000,
 
     /*TELEPORTS*/
-    timeBetweenTeleports:400,
+    timeBetweenTeleports:5000,
 
     /*TEXT*/
     DEFAULT_TEXTS:{

@@ -27,9 +27,7 @@ class Portal extends PrefabManager.basePrefab {
             if (!self.connectedPortal) return;
             const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             const target = (bodies[0] === self.lookupObject['portal']) ? bodies[1] : bodies[0];
-            console.log("BEGIN CONTACT!", target);
             if (target.GetType() == Box2D.b2BodyType.b2_staticBody) return;
-            console.log("BEGIN CONTACT2!");
 
             contact.SetEnabled(false);
 
@@ -37,12 +35,17 @@ class Portal extends PrefabManager.basePrefab {
 
             //find all neighbours
             const targets = self.findConnectedBodies(target);
+
+
+            if(!self.isMajorityInsidePortalRange(targets)) return;
+
+
+
             let teleportDatas = [];
 
             targets.map((target) => {
 
                 if (target.ignoreCollisionsTime && currentTime < target.ignoreCollisionsTime) return;
-                console.log("BEGIN CONTACT3!", currentTime, target.ignoreCollisionsTime);
 
                 let offsetPosition = target.GetPosition().Clone();
                 offsetPosition.SelfSub(self.lookupObject['portal'].GetPosition());
@@ -51,17 +54,8 @@ class Portal extends PrefabManager.basePrefab {
                 const offsetAngle = target.GetAngle() - self.lookupObject['portal'].GetAngle();
                 target.ignoreCollisionsTime = currentTime + Settings.timeBetweenTeleports;
 
-                const translatedAngle = 180;
-
-
-                console.log("Rotate:", translatedAngle*game.editor.RAD2DEG, "degrees");
-
-
-
                 const linearVelocityAngle = Math.atan2(target.GetLinearVelocity().y, target.GetLinearVelocity().x) - self.lookupObject['portal'].GetAngle();
                 const linearVelocityLength = target.GetLinearVelocity().Length();
-
-                console.log(translatedAngle);
 
                 var teleportData = {
                     target,
@@ -70,7 +64,6 @@ class Portal extends PrefabManager.basePrefab {
                     offsetPositionLength,
                     offsetPositionAngle,
                     offsetAngle,
-                    translatedAngle,
                     linearVelocityAngle,
                     linearVelocityLength,
                     angularVelocity: target.GetAngularVelocity()
@@ -107,6 +100,7 @@ class Portal extends PrefabManager.basePrefab {
                 direction: 'alternate',
                 easing: 'linear',
                 update: function () {
+                    console.log("UPDATE!!");
                     //console.log(animValues.tint, animValues.tintPercentage, teleportData.target.mySprite);
                     teleportData.target.mySprite.alpha = animValues.opacity;
                     // teleportData.target.mySprite.tint = animValues.tint;
@@ -123,29 +117,27 @@ class Portal extends PrefabManager.basePrefab {
                     teleportData.target.SetPosition(newPosition);
                     teleportData.target.SetAngle(self.lookupObject['portal'].GetAngle() + teleportData.offsetAngle);
 
-
                     //translate linear velocity:
                     const translatedAngle = self.lookupObject['portal'].GetAngle() - teleportData.linearVelocityAngle;
                     const translatedVelocity = new Box2D.b2Vec2(-teleportData.linearVelocityLength * Math.cos(translatedAngle), -teleportData.linearVelocityLength * Math.sin(translatedAngle));
                     teleportData.target.SetLinearVelocity(translatedVelocity);
-
-
-                    //rotate group
-                    console.log("COMPLETE!!");
-
 
                     teleportData.target.SetAngularVelocity(teleportData.angularVelocity);
                     teleportData.target.SetActive(true);
 
                     teleportedBodies.push(teleportData.target);
                     if(teleportedBodies.length == teleportDatas.length){
-                        game.editor.applyToObjects(game.editor.TRANSFORM_ROTATE, teleportData.translatedAngle, teleportedBodies);
+                        game.editor.applyToObjects(game.editor.TRANSFORM_ROTATE, 180, teleportedBodies);
                         teleportedBodies = undefined;
                     }
+
                 }
             });
         });
     }
+
+
+
     findConnectedBodies(target) {
 
         let targetsFound = [target];
@@ -169,6 +161,47 @@ class Portal extends PrefabManager.basePrefab {
         crawlJoints(target);
 
         return targetsFound;
+    }
+    isMajorityInsidePortalRange(targets) {
+        let targetsInsideRange = [];
+
+        const tolerance = 0.7;
+
+        const portalAngleVector = new Box2D.b2Vec2(Math.cos(this.lookupObject['portal'].GetAngle()), Math.sin(this.lookupObject['portal'].GetAngle()));
+        const rayEndOffset = portalAngleVector.SelfMul(10.0);
+        const self = this;
+
+        this.rayCastCallback  = function () {
+            this.m_hit = false;
+        };
+        this.rayCastCallback.prototype.ReportFixture = function (fixture, point, normal, fraction) {
+            console.log("IS PORTAL!?", fixture.GetBody() !== self.lookupObject['portal']);
+            if(fixture.GetBody() !== self.lookupObject['portal']) return -1;
+            this.m_hit = true;
+            this.m_point = point.Clone();
+            this.m_normal = normal;
+            this.m_fixture = fixture;
+            return fraction;
+        }
+
+        targets.map((target)=>{
+            const rayStart = target.GetPosition();
+            let rayEnd = target.GetPosition().Clone();
+            rayEnd.SelfSub(rayEndOffset);
+            let callback = new this.rayCastCallback();
+            console.log(rayStart, rayEnd);
+            target.GetWorld().RayCast(callback, rayStart, rayEnd);
+            console.log(callback);
+            if (callback.m_hit) {
+                targetsInsideRange.push(target);
+            }
+        });
+
+        let minimumAmmountOfObjects = (targets.length == 1) ? 1 : Math.floor(targets.length*tolerance);
+
+        console.log(targetsInsideRange.length, minimumAmmountOfObjects);
+        return (targetsInsideRange.length >= minimumAmmountOfObjects);
+
     }
 
     setColor(color) {
