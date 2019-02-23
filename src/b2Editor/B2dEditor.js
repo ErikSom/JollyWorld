@@ -2934,6 +2934,7 @@ const _B2dEditor = function () {
 							sprite = this.selectedTextures[j];
 							centerPoint.x += sprite.x;
 							centerPoint.y += sprite.y;
+
 						}
 						centerPoint.x /= (this.selectedPhysicsBodies.length + this.selectedTextures.length);
 						centerPoint.y /= (this.selectedPhysicsBodies.length + this.selectedTextures.length);
@@ -4120,6 +4121,9 @@ const _B2dEditor = function () {
 		container.rotation = obj.rotation;
 		container.data = obj;
 
+		container.width = container.width * obj.scaleX;
+		container.height = container.height * obj.scaleY;
+
 		var color = obj.tint;
 		color = color.slice(1);
 		container.originalSprite.tint = parseInt(color, 16);
@@ -4471,6 +4475,9 @@ const _B2dEditor = function () {
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				sprite.width = sprite.width * scaleX;
 				sprite.height = sprite.height * scaleY;
+
+				sprite.data.scaleX = sprite.scale.x;
+				sprite.data.scaleY = sprite.scale.y;
 
 				var xL = sprite.data.texturePositionOffsetLength * Math.cos(sprite.data.texturePositionOffsetAngle) * scaleX;
 				var yL = sprite.data.texturePositionOffsetLength * Math.sin(sprite.data.texturePositionOffsetAngle) * scaleY;
@@ -5471,6 +5478,8 @@ const _B2dEditor = function () {
 			arr[11] = obj.textureAngleOffset;
 			arr[12] = obj.isCarvable;
 			arr[13] = obj.tint;
+			arr[14] = obj.scaleX;
+			arr[15] = obj.scaleY;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.bodyA_ID;
@@ -5561,6 +5570,8 @@ const _B2dEditor = function () {
 			obj.textureAngleOffset = arr[11];
 			obj.isCarvable = arr[12];
 			obj.tint = arr[13] || '#FFFFFF';
+			obj.scaleX = arr[14] || 1;
+			obj.scaleY = arr[15] || 1;
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.ID = arr[6];
