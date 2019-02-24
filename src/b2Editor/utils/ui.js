@@ -1584,6 +1584,7 @@ export const initGuiAssetSelection = function () {
                     data.x = (x) / B2dEditor.container.scale.x - B2dEditor.container.x / B2dEditor.container.scale.x;
                     data.y = (y) / B2dEditor.container.scale.y - B2dEditor.container.y / B2dEditor.container.scale.x;
                 }
+                data.scaleX = data.scaleY = 1;
                 data.textureName = $(this).attr('textureName');
                 var texture = B2dEditor.buildTextureFromObj(data);
 

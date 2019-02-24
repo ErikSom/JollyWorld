@@ -66,7 +66,7 @@
 },
 "Morty_Feet0000":
 {
-	"frame": {"x":118,"y":559,"w":66,"h":21},
+	"frame": {"x":300,"y":543,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -312,6 +312,14 @@
 	"spriteSourceSize": {"x":2,"y":2,"w":21,"h":20},
 	"sourceSize": {"w":21,"h":20}
 },
+"Rick_EyeBrow0000":
+{
+	"frame": {"x":276,"y":276,"w":29,"h":9},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":9},
+	"sourceSize": {"w":29,"h":9}
+},
 "Rick_Eye_Closed0000":
 {
 	"frame": {"x":68,"y":226,"w":19,"h":21},
@@ -346,7 +354,7 @@
 },
 "Rick_Feet0000":
 {
-	"frame": {"x":300,"y":543,"w":66,"h":21},
+	"frame": {"x":368,"y":558,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -354,7 +362,7 @@
 },
 "Rick_Feet0001":
 {
-	"frame": {"x":368,"y":558,"w":66,"h":21},
+	"frame": {"x":436,"y":558,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -362,7 +370,7 @@
 },
 "Rick_Feet0002":
 {
-	"frame": {"x":436,"y":558,"w":66,"h":21},
+	"frame": {"x":50,"y":559,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -370,7 +378,7 @@
 },
 "Rick_Feet0003":
 {
-	"frame": {"x":50,"y":559,"w":66,"h":21},
+	"frame": {"x":118,"y":559,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
