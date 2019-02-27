@@ -21,12 +21,12 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 break;
             case B2dEditor.object_JOINT:
-                if (object.data.jointType == B2dEditor.jointObject_TYPE_PIN || object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE) {
+                if (object.data.jointType == B2dEditor.jointObject_TYPE_PIN || object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE || object.data.jointType == B2dEditor.jointObject_TYPE_WHEEL) {
                     actions.push("MotorEnabled", "LimitEnabled", "SetMotorSpeed", "SetMaxMotorTorque");
                 }
                 if (object.data.jointType == B2dEditor.jointObject_TYPE_PIN) actions.push("SetAngleLimits");
                 if (object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE) actions.push("SetDistanceLimits");
-                if (object.data.jointType == B2dEditor.jointObject_TYPE_DISTANCE) actions.push("SetSpring");
+                if (object.data.jointType == B2dEditor.jointObject_TYPE_DISTANCE || object.data.jointType == B2dEditor.jointObject_TYPE_WHEEL) actions.push("SetSpring");
                 //slide joint: MotorEnabled, LimitEnabled, SetMotorSpeed, SetLimits, Destroy
                 break;
                 // B2dEditor.object_TEXTURE = 1;

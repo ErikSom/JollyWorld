@@ -147,6 +147,7 @@ function Game() {
 
         this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
         this.editor.assetLists.rnm_characters = Object.keys(PIXI.loader.resources["RickAndMorty.json"].textures);
+        this.editor.assetLists.rnm_vehicles = Object.keys(PIXI.loader.resources["RickAndMorty_Vehicles.json"].textures);
         this.editor.assetLists.vehicles = Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures);
         this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
         this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);

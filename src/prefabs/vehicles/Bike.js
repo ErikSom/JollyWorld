@@ -4,10 +4,6 @@ import { BaseVehicle } from './BaseVehicle';
 class Bike extends BaseVehicle {
     constructor(target) {
         super(target);
-    }
-    update() {
-        super.update();
-        this.desiredVehicleTorques = [100, 100];
         this.desiredVehicleSpeeds = [10, 10];
         this.destroyConnectedJoints = {
             head:['pedal_right_joint', 'pedal_left_joint', 'grip_right_joint', 'grip_left_joint', 'back_joint', 'neck_joint', 'sit_joint'],
@@ -24,8 +20,11 @@ class Bike extends BaseVehicle {
             arm_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
             hand_left:['grip_left_joint', {ifno:'grip_right_joint', destroy:['back_joint']}],
             hand_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
-
         }
+    }
+    update() {
+        super.update();
+        this.desiredVehicleTorques = [100, 100];
     }
 }
 
