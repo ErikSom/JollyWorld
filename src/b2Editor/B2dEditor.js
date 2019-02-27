@@ -3339,13 +3339,8 @@ const _B2dEditor = function () {
 				} else if(ui.editorGUI.editData.type == this.object_PREFAB){
 					ui.editorGUI.editData.x = syncObject.x;
 					ui.editorGUI.editData.y = syncObject.y;
-					console.log(syncObject.rotation, this.RAD2DEG);
-					ui.editorGUI.editData.rotation = syncObject.rotation;
-				}else {
-					ui.editorGUI.editData.x = syncObject.x;
-					ui.editorGUI.editData.y = syncObject.y;
-					console.log(syncObject.rotation, this.RAD2DEG);
-					ui.editorGUI.editData.rotation = syncObject.rotation * this.RAD2DEG;;
+					if(ui.editorGUI.editData.type == this.object_PREFAB) ui.editorGUI.editData.rotation = syncObject.rotation;
+					else ui.editorGUI.editData.rotation = syncObject.rotation * this.RAD2DEG;
 				}
 			}
 
@@ -5123,7 +5118,7 @@ const _B2dEditor = function () {
 			prefab.mainPrefabClass = obj.class
 		});
 
-		this.applyToObjects(this.TRANSFORM_ROTATE*this.RAD2DEG, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
+		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
 
 		return prefabLookupObject;
 	}
