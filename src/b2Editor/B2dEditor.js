@@ -2132,7 +2132,8 @@ const _B2dEditor = function () {
 			objects = this.sortObjectsByIndex(objects);
 			for (var i = 0; i < objects.length; i++) {
 				var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
-				sprite = (objects[i].myTexture) ? objects[i].myTexture : sprite;
+				//sprite = (objects[i].myTexture) ? objects[i].myTexture : sprite;
+				if(objects[i].myTexture) objects.splice(i+1, 0, objects[i].myTexture);
 				var container = sprite.parent;
 				container.removeChild(sprite);
 				container.addChildAt(sprite, obj + i);
@@ -4133,6 +4134,7 @@ const _B2dEditor = function () {
 	}
 
 	this.buildTextureFromObj = function (obj) {
+		console.log(obj);
 
 		var container;
 		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(obj.textureName));
@@ -4158,6 +4160,7 @@ const _B2dEditor = function () {
 		container.originalSprite.tint = parseInt(color, 16);
 
 		if (container.data.bodyID != undefined) {
+			console.log(container.data.bodyID, this.textures.getChildAt(container.data.bodyID));
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
 			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
@@ -4315,7 +4318,7 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
-		body.mySprite.alpha = obj.transparancy[0];
+		//body.mySprite.alpha = obj.transparancy[0];
 
 
 		this.updateBodyShapes(body);
@@ -4363,6 +4366,7 @@ const _B2dEditor = function () {
 
 	}
 	this.buildGraphicGroupFromObj = function (obj) {
+		console.log(obj);
 		var graphic = new PIXI.Container();
 		graphic.data = obj;
 		graphic.x = obj.x;
@@ -4373,6 +4377,7 @@ const _B2dEditor = function () {
 		this.textures.addChild(graphic);
 
 		if (graphic.data.bodyID != undefined) {
+			console.log(graphic.data.bodyID, this.textures, this.textures.getChildAt(graphic.data.bodyID));
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
 			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
@@ -5477,9 +5482,9 @@ const _B2dEditor = function () {
 			}
 		}
 		this.worldJSON += ']}';
-		//console.log("********************** World Data **********************");
-		//console.log(this.worldJSON);
-		//console.log("********************************************************");
+		console.log("********************** World Data **********************");
+		console.log(this.worldJSON);
+		console.log("********************************************************");
 		return this.worldJSON;
 	}
 
@@ -5735,7 +5740,6 @@ const _B2dEditor = function () {
 	}
 
 	this.buildJSON = function (json, prefabInstanceName) {
-
 		//console.log(json);
 
 		var createdObjects = new this.lookupObject();
@@ -6284,3 +6288,5 @@ const _B2dEditor = function () {
 	this.minimumBodySurfaceArea = 0.3;
 }
 export const B2dEditor = new _B2dEditor();
+
+window.editor = B2dEditor;

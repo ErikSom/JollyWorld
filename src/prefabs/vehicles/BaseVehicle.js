@@ -177,5 +177,5 @@ BaseVehicle.settings = Object.assign({}, BaseVehicle.settings, {
     "selectedVehicle": "Bike"
 });
 BaseVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
-    "selectedVehicle": ["Bike", "Stroller", "HorseVehicle", "NoVehicle"]
+    "selectedVehicle": ["Bike", "Stroller", "HorseVehicle", "NoVehicle", "Rick"]
 });

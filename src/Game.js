@@ -398,7 +398,7 @@ function Game() {
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
-        this.editor.buildJSON(PIXI.loader.resources["characterData1"].data);
+        //this.editor.buildJSON(PIXI.loader.resources["characterData1"].data);
     }
     this.pauseGame = function(){
         this.pause = true;
