@@ -873,7 +873,7 @@ const _B2dEditor = function () {
 				this.targetValue = value
 			}.bind(controller));
 
-			if (!dataJoint.jointType == this.jointObject_TYPE_WHEEL) {
+			if (dataJoint.jointType !== this.jointObject_TYPE_WHEEL) {
 
 				folder = _folder.addFolder('enable limits');
 				folder.add(ui.editorGUI.editData, "enableLimit").onChange(function (value) {
