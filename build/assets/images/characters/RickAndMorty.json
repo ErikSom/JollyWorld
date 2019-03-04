@@ -18,7 +18,7 @@
 },
 "Morty_Belly0000":
 {
-	"frame": {"x":45,"y":522,"w":58,"h":38},
+	"frame": {"x":164,"y":501,"w":58,"h":38},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":58,"h":38},
@@ -26,7 +26,7 @@
 },
 "Morty_Belly_Flesh0000":
 {
-	"frame": {"x":164,"y":501,"w":58,"h":38},
+	"frame": {"x":45,"y":522,"w":58,"h":38},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":58,"h":38},
@@ -34,7 +34,7 @@
 },
 "Morty_Core0000":
 {
-	"frame": {"x":90,"y":180,"w":64,"h":80},
+	"frame": {"x":426,"y":176,"w":64,"h":80},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":80},
@@ -42,7 +42,7 @@
 },
 "Morty_Core_Flesh0000":
 {
-	"frame": {"x":426,"y":176,"w":64,"h":80},
+	"frame": {"x":90,"y":180,"w":64,"h":80},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":80},
@@ -82,7 +82,7 @@
 },
 "Morty_Hand0000":
 {
-	"frame": {"x":483,"y":409,"w":19,"h":17},
+	"frame": {"x":154,"y":400,"w":19,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":17},
@@ -90,7 +90,7 @@
 },
 "Morty_Hand_Flesh0000":
 {
-	"frame": {"x":154,"y":400,"w":19,"h":17},
+	"frame": {"x":483,"y":409,"w":19,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":17},

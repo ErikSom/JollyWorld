@@ -4318,7 +4318,7 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
-		//body.mySprite.alpha = obj.transparancy[0];
+		body.mySprite.alpha = obj.transparancy[0];
 
 
 		this.updateBodyShapes(body);
@@ -5482,9 +5482,9 @@ const _B2dEditor = function () {
 			}
 		}
 		this.worldJSON += ']}';
-		console.log("********************** World Data **********************");
-		console.log(this.worldJSON);
-		console.log("********************************************************");
+		// console.log("********************** World Data **********************");
+		// console.log(this.worldJSON);
+		// console.log("********************************************************");
 		return this.worldJSON;
 	}
 
