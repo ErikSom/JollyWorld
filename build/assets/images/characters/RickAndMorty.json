@@ -2,7 +2,7 @@
 
 "Morty_Arm0000":
 {
-	"frame": {"x":73,"y":293,"w":9,"h":31},
+	"frame": {"x":499,"y":2,"w":9,"h":31},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":31},
@@ -10,7 +10,7 @@
 },
 "Morty_Arm_Flesh0000":
 {
-	"frame": {"x":365,"y":372,"w":9,"h":30},
+	"frame": {"x":499,"y":35,"w":9,"h":30},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":30},
@@ -18,7 +18,7 @@
 },
 "Morty_Belly0000":
 {
-	"frame": {"x":338,"y":175,"w":58,"h":38},
+	"frame": {"x":45,"y":522,"w":58,"h":38},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":58,"h":38},
@@ -26,7 +26,7 @@
 },
 "Morty_Belly_Flesh0000":
 {
-	"frame": {"x":217,"y":451,"w":58,"h":38},
+	"frame": {"x":164,"y":501,"w":58,"h":38},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":58,"h":38},
@@ -42,7 +42,7 @@
 },
 "Morty_Core_Flesh0000":
 {
-	"frame": {"x":338,"y":226,"w":64,"h":80},
+	"frame": {"x":426,"y":176,"w":64,"h":80},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":80},
@@ -50,7 +50,7 @@
 },
 "Morty_Eye0000":
 {
-	"frame": {"x":159,"y":541,"w":19,"h":20},
+	"frame": {"x":482,"y":258,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":20},
@@ -58,7 +58,7 @@
 },
 "Morty_Eye_Closed0000":
 {
-	"frame": {"x":180,"y":548,"w":19,"h":20},
+	"frame": {"x":482,"y":280,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":20},
@@ -66,7 +66,7 @@
 },
 "Morty_Feet0000":
 {
-	"frame": {"x":78,"y":351,"w":66,"h":21},
+	"frame": {"x":90,"y":262,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -74,7 +74,7 @@
 },
 "Morty_Feet_Flesh0000":
 {
-	"frame": {"x":45,"y":407,"w":31,"h":11},
+	"frame": {"x":473,"y":396,"w":31,"h":11},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":31,"h":11},
@@ -82,7 +82,7 @@
 },
 "Morty_Hand0000":
 {
-	"frame": {"x":281,"y":426,"w":19,"h":17},
+	"frame": {"x":483,"y":409,"w":19,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":17},
@@ -90,7 +90,7 @@
 },
 "Morty_Hand_Flesh0000":
 {
-	"frame": {"x":243,"y":560,"w":19,"h":17},
+	"frame": {"x":154,"y":400,"w":19,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":17},
@@ -98,7 +98,7 @@
 },
 "Morty_Head_Flesh0000":
 {
-	"frame": {"x":314,"y":308,"w":69,"h":62},
+	"frame": {"x":2,"y":293,"w":69,"h":62},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":62},
@@ -106,7 +106,7 @@
 },
 "Morty_Head_Idle0000":
 {
-	"frame": {"x":2,"y":293,"w":69,"h":62},
+	"frame": {"x":402,"y":347,"w":69,"h":62},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":62},
@@ -114,7 +114,7 @@
 },
 "Morty_Leg0000":
 {
-	"frame": {"x":490,"y":116,"w":12,"h":42},
+	"frame": {"x":482,"y":116,"w":12,"h":42},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":42},
@@ -122,7 +122,7 @@
 },
 "Morty_Leg_Flesh0000":
 {
-	"frame": {"x":490,"y":160,"w":12,"h":42},
+	"frame": {"x":496,"y":116,"w":12,"h":42},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":42},
@@ -130,7 +130,7 @@
 },
 "Morty_Shoulder0000":
 {
-	"frame": {"x":490,"y":2,"w":15,"h":36},
+	"frame": {"x":482,"y":2,"w":15,"h":36},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":36},
@@ -138,7 +138,7 @@
 },
 "Morty_ShoulderLeft0000":
 {
-	"frame": {"x":490,"y":78,"w":15,"h":36},
+	"frame": {"x":482,"y":78,"w":15,"h":36},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":36},
@@ -146,7 +146,7 @@
 },
 "Morty_ShoulderLeft_Flesh0000":
 {
-	"frame": {"x":490,"y":40,"w":15,"h":36},
+	"frame": {"x":482,"y":40,"w":15,"h":36},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":36},
@@ -154,7 +154,7 @@
 },
 "Morty_Shoulder_Flesh0000":
 {
-	"frame": {"x":490,"y":40,"w":15,"h":36},
+	"frame": {"x":482,"y":40,"w":15,"h":36},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":36},
@@ -162,7 +162,7 @@
 },
 "Morty_Thigh0000":
 {
-	"frame": {"x":281,"y":377,"w":30,"h":47},
+	"frame": {"x":473,"y":347,"w":30,"h":47},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":47},
@@ -170,7 +170,7 @@
 },
 "Morty_Thigh_Flesh0000":
 {
-	"frame": {"x":184,"y":499,"w":30,"h":47},
+	"frame": {"x":121,"y":450,"w":30,"h":47},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":47},
@@ -178,7 +178,7 @@
 },
 "Rick_Arm0000":
 {
-	"frame": {"x":324,"y":446,"w":36,"h":57},
+	"frame": {"x":471,"y":485,"w":36,"h":57},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":57},
@@ -186,7 +186,7 @@
 },
 "Rick_Arm0001":
 {
-	"frame": {"x":2,"y":479,"w":36,"h":57},
+	"frame": {"x":299,"y":523,"w":36,"h":57},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":57},
@@ -194,7 +194,7 @@
 },
 "Rick_Arm0002":
 {
-	"frame": {"x":362,"y":488,"w":36,"h":57},
+	"frame": {"x":2,"y":530,"w":36,"h":57},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":57},
@@ -202,7 +202,7 @@
 },
 "Rick_Arm0003":
 {
-	"frame": {"x":400,"y":488,"w":36,"h":57},
+	"frame": {"x":164,"y":541,"w":36,"h":57},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":57},
@@ -210,7 +210,7 @@
 },
 "Rick_Arm_Flesh0000":
 {
-	"frame": {"x":217,"y":491,"w":36,"h":57},
+	"frame": {"x":202,"y":541,"w":36,"h":57},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":57},
@@ -218,7 +218,7 @@
 },
 "Rick_Belly0000":
 {
-	"frame": {"x":2,"y":357,"w":74,"h":48},
+	"frame": {"x":178,"y":377,"w":74,"h":48},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":1,"w":74,"h":49},
@@ -226,7 +226,7 @@
 },
 "Rick_Belly0001":
 {
-	"frame": {"x":385,"y":366,"w":74,"h":48},
+	"frame": {"x":254,"y":377,"w":74,"h":48},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":1,"w":74,"h":49},
@@ -234,7 +234,7 @@
 },
 "Rick_Belly0002":
 {
-	"frame": {"x":385,"y":315,"w":74,"h":49},
+	"frame": {"x":2,"y":357,"w":74,"h":49},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":74,"h":49},
@@ -242,7 +242,7 @@
 },
 "Rick_Belly0003":
 {
-	"frame": {"x":78,"y":377,"w":74,"h":48},
+	"frame": {"x":78,"y":400,"w":74,"h":48},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":1,"w":74,"h":49},
@@ -250,7 +250,7 @@
 },
 "Rick_Belly_Flesh0000":
 {
-	"frame": {"x":154,"y":377,"w":74,"h":48},
+	"frame": {"x":2,"y":408,"w":74,"h":48},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":74,"h":48},
@@ -290,15 +290,23 @@
 },
 "Rick_Core_Flesh0000":
 {
-	"frame": {"x":322,"y":2,"w":78,"h":171},
+	"frame": {"x":322,"y":2,"w":78,"h":172},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":171},
-	"sourceSize": {"w":78,"h":171}
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":172},
+	"sourceSize": {"w":78,"h":172}
+},
+"Rick_Core_Flesh0001":
+{
+	"frame": {"x":402,"y":2,"w":78,"h":172},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":172},
+	"sourceSize": {"w":78,"h":172}
 },
 "Rick_Eye0000":
 {
-	"frame": {"x":201,"y":550,"w":19,"h":20},
+	"frame": {"x":402,"y":288,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
@@ -306,7 +314,7 @@
 },
 "Rick_Eye0001":
 {
-	"frame": {"x":201,"y":550,"w":19,"h":20},
+	"frame": {"x":402,"y":288,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
@@ -314,7 +322,7 @@
 },
 "Rick_Eye0002":
 {
-	"frame": {"x":490,"y":204,"w":18,"h":14},
+	"frame": {"x":482,"y":160,"w":18,"h":14},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":3,"w":21,"h":20},
@@ -322,7 +330,7 @@
 },
 "Rick_Eye0003":
 {
-	"frame": {"x":314,"y":288,"w":19,"h":18},
+	"frame": {"x":482,"y":324,"w":19,"h":18},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":21,"h":20},
@@ -330,7 +338,7 @@
 },
 "Rick_EyeBrow0000":
 {
-	"frame": {"x":338,"y":215,"w":29,"h":9},
+	"frame": {"x":299,"y":427,"w":29,"h":9},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":9},
@@ -338,39 +346,39 @@
 },
 "Rick_Eye_Closed0000":
 {
-	"frame": {"x":255,"y":491,"w":19,"h":21},
+	"frame": {"x":482,"y":302,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":0,"w":20,"h":21},
-	"sourceSize": {"w":20,"h":21}
+	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
+	"sourceSize": {"w":21,"h":20}
 },
 "Rick_Eye_Closed0001":
 {
-	"frame": {"x":138,"y":541,"w":19,"h":21},
+	"frame": {"x":402,"y":310,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":0,"w":20,"h":21},
-	"sourceSize": {"w":20,"h":21}
+	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
+	"sourceSize": {"w":21,"h":20}
 },
 "Rick_Eye_Closed0002":
 {
-	"frame": {"x":419,"y":547,"w":17,"h":14},
+	"frame": {"x":492,"y":176,"w":18,"h":14},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":0,"y":4,"w":20,"h":21},
-	"sourceSize": {"w":20,"h":21}
+	"spriteSourceSize": {"x":0,"y":3,"w":21,"h":20},
+	"sourceSize": {"w":21,"h":20}
 },
 "Rick_Eye_Closed0003":
 {
-	"frame": {"x":222,"y":550,"w":19,"h":19},
+	"frame": {"x":381,"y":377,"w":19,"h":18},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":2,"w":20,"h":21},
-	"sourceSize": {"w":20,"h":21}
+	"spriteSourceSize": {"x":2,"y":2,"w":21,"h":20},
+	"sourceSize": {"w":21,"h":20}
 },
 "Rick_Feet0000":
 {
-	"frame": {"x":438,"y":520,"w":66,"h":21},
+	"frame": {"x":88,"y":573,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -378,7 +386,7 @@
 },
 "Rick_Feet0001":
 {
-	"frame": {"x":2,"y":541,"w":66,"h":21},
+	"frame": {"x":88,"y":596,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -386,7 +394,7 @@
 },
 "Rick_Feet0002":
 {
-	"frame": {"x":70,"y":541,"w":66,"h":21},
+	"frame": {"x":288,"y":599,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -394,7 +402,7 @@
 },
 "Rick_Feet0003":
 {
-	"frame": {"x":438,"y":543,"w":66,"h":21},
+	"frame": {"x":356,"y":599,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -402,7 +410,7 @@
 },
 "Rick_Feet_Flesh0000":
 {
-	"frame": {"x":351,"y":547,"w":66,"h":21},
+	"frame": {"x":424,"y":599,"w":66,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":21},
@@ -410,7 +418,7 @@
 },
 "Rick_Hand0000":
 {
-	"frame": {"x":40,"y":499,"w":46,"h":40},
+	"frame": {"x":337,"y":557,"w":46,"h":40},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":40},
@@ -418,7 +426,7 @@
 },
 "Rick_Hand0001":
 {
-	"frame": {"x":88,"y":499,"w":46,"h":40},
+	"frame": {"x":385,"y":557,"w":46,"h":40},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":40},
@@ -426,7 +434,7 @@
 },
 "Rick_Hand0002":
 {
-	"frame": {"x":136,"y":499,"w":46,"h":40},
+	"frame": {"x":433,"y":557,"w":46,"h":40},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":40},
@@ -434,7 +442,7 @@
 },
 "Rick_Hand0003":
 {
-	"frame": {"x":255,"y":518,"w":46,"h":40},
+	"frame": {"x":40,"y":562,"w":46,"h":40},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":40},
@@ -442,7 +450,7 @@
 },
 "Rick_Hand_Flesh0000":
 {
-	"frame": {"x":303,"y":518,"w":46,"h":40},
+	"frame": {"x":240,"y":571,"w":46,"h":40},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":40},
@@ -450,7 +458,7 @@
 },
 "Rick_Head_Flesh0000":
 {
-	"frame": {"x":402,"y":2,"w":86,"h":110},
+	"frame": {"x":162,"y":176,"w":86,"h":110},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":110},
@@ -458,7 +466,7 @@
 },
 "Rick_Head_Idle0000":
 {
-	"frame": {"x":402,"y":114,"w":86,"h":110},
+	"frame": {"x":250,"y":176,"w":86,"h":110},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":110},
@@ -466,7 +474,7 @@
 },
 "Rick_Head_Idle0001":
 {
-	"frame": {"x":162,"y":176,"w":86,"h":110},
+	"frame": {"x":338,"y":176,"w":86,"h":110},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":110},
@@ -474,7 +482,7 @@
 },
 "Rick_Head_Idle0002":
 {
-	"frame": {"x":250,"y":176,"w":86,"h":110},
+	"frame": {"x":2,"y":181,"w":86,"h":110},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":110},
@@ -482,7 +490,7 @@
 },
 "Rick_Head_Idle0003":
 {
-	"frame": {"x":2,"y":181,"w":86,"h":110},
+	"frame": {"x":90,"y":288,"w":86,"h":110},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":110},
@@ -490,7 +498,7 @@
 },
 "Rick_Leg0000":
 {
-	"frame": {"x":461,"y":226,"w":49,"h":72},
+	"frame": {"x":330,"y":377,"w":49,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":72},
@@ -498,7 +506,7 @@
 },
 "Rick_Leg0001":
 {
-	"frame": {"x":461,"y":300,"w":49,"h":72},
+	"frame": {"x":381,"y":411,"w":49,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":72},
@@ -506,7 +514,7 @@
 },
 "Rick_Leg0002":
 {
-	"frame": {"x":314,"y":372,"w":49,"h":72},
+	"frame": {"x":432,"y":411,"w":49,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":72},
@@ -514,7 +522,7 @@
 },
 "Rick_Leg0003":
 {
-	"frame": {"x":461,"y":374,"w":49,"h":72},
+	"frame": {"x":154,"y":427,"w":49,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":72},
@@ -522,7 +530,7 @@
 },
 "Rick_Leg_Flesh0000":
 {
-	"frame": {"x":230,"y":377,"w":49,"h":72},
+	"frame": {"x":205,"y":427,"w":49,"h":72},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":72},
@@ -530,7 +538,7 @@
 },
 "Rick_Shoulder0000":
 {
-	"frame": {"x":2,"y":407,"w":41,"h":70},
+	"frame": {"x":256,"y":427,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -538,7 +546,7 @@
 },
 "Rick_Shoulder0001":
 {
-	"frame": {"x":365,"y":416,"w":41,"h":70},
+	"frame": {"x":78,"y":450,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -546,7 +554,7 @@
 },
 "Rick_Shoulder0002":
 {
-	"frame": {"x":408,"y":416,"w":41,"h":70},
+	"frame": {"x":299,"y":451,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -554,7 +562,7 @@
 },
 "Rick_Shoulder0003":
 {
-	"frame": {"x":45,"y":427,"w":41,"h":70},
+	"frame": {"x":2,"y":458,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -562,7 +570,7 @@
 },
 "Rick_ShoulderLeft0000":
 {
-	"frame": {"x":131,"y":427,"w":41,"h":70},
+	"frame": {"x":385,"y":485,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -570,7 +578,7 @@
 },
 "Rick_ShoulderLeft0001":
 {
-	"frame": {"x":174,"y":427,"w":41,"h":70},
+	"frame": {"x":428,"y":485,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -578,7 +586,7 @@
 },
 "Rick_ShoulderLeft0002":
 {
-	"frame": {"x":281,"y":446,"w":41,"h":70},
+	"frame": {"x":256,"y":499,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -586,7 +594,7 @@
 },
 "Rick_ShoulderLeft0003":
 {
-	"frame": {"x":451,"y":448,"w":41,"h":70},
+	"frame": {"x":121,"y":501,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -594,7 +602,7 @@
 },
 "Rick_ShoulderLeft_Flesh0000":
 {
-	"frame": {"x":88,"y":427,"w":41,"h":70},
+	"frame": {"x":342,"y":485,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -602,7 +610,7 @@
 },
 "Rick_Shoulder_Flesh0000":
 {
-	"frame": {"x":88,"y":427,"w":41,"h":70},
+	"frame": {"x":342,"y":485,"w":41,"h":70},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":70},
@@ -610,7 +618,7 @@
 },
 "Rick_Thigh0000":
 {
-	"frame": {"x":404,"y":226,"w":54,"h":87},
+	"frame": {"x":426,"y":258,"w":54,"h":87},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":87},
@@ -618,7 +626,7 @@
 },
 "Rick_Thigh0001":
 {
-	"frame": {"x":90,"y":262,"w":54,"h":87},
+	"frame": {"x":178,"y":288,"w":54,"h":87},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":87},
@@ -626,7 +634,7 @@
 },
 "Rick_Thigh0002":
 {
-	"frame": {"x":146,"y":288,"w":54,"h":87},
+	"frame": {"x":234,"y":288,"w":54,"h":87},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":87},
@@ -634,7 +642,7 @@
 },
 "Rick_Thigh0003":
 {
-	"frame": {"x":202,"y":288,"w":54,"h":87},
+	"frame": {"x":290,"y":288,"w":54,"h":87},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":87},
@@ -642,7 +650,7 @@
 },
 "Rick_Thigh_Flesh0000":
 {
-	"frame": {"x":258,"y":288,"w":54,"h":87},
+	"frame": {"x":346,"y":288,"w":54,"h":87},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":87},
