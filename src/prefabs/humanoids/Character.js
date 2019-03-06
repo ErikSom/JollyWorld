@@ -52,8 +52,9 @@ class Character extends PrefabManager.basePrefab {
 
                 var texture = body.myTexture;
                 //fix gore for Skin2, Skin3 etc
+                var frameNumIndex = texture.data.textureName.indexOf('00');
+                var fleshName = texture.data.textureName.substr(0, frameNumIndex);
 
-                var fleshName = texture.data.textureName.split('0000')[0];
                 if (fleshName.indexOf('Head') > 0) fleshName = fleshName.substr(0, fleshName.indexOf('_')) + "_Head";
 
                 var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(fleshName + "_Flesh0000"));
