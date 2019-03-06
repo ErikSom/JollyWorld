@@ -2135,8 +2135,12 @@ const _B2dEditor = function () {
 				//sprite = (objects[i].myTexture) ? objects[i].myTexture : sprite;
 				if(objects[i].myTexture) objects.splice(i+1, 0, objects[i].myTexture);
 				var container = sprite.parent;
+				console.log("Swapping sprite:");
+				console.log(sprite.parent.getChildIndex(sprite));
+				console.log(sprite);
+				var targetIndex = Math.min(obj + i, sprite.parent.children.length-1);
 				container.removeChild(sprite);
-				container.addChildAt(sprite, obj + i);
+				container.addChildAt(sprite, targetIndex);
 			}
 		}
 		//update all objects
