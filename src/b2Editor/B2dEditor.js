@@ -2135,12 +2135,12 @@ const _B2dEditor = function () {
 				//sprite = (objects[i].myTexture) ? objects[i].myTexture : sprite;
 				if(objects[i].myTexture) objects.splice(i+1, 0, objects[i].myTexture);
 				var container = sprite.parent;
-				console.log("Swapping sprite:");
-				console.log(sprite.parent.getChildIndex(sprite));
-				console.log(sprite);
 				var targetIndex = Math.min(obj + i, sprite.parent.children.length-1);
 				container.removeChild(sprite);
 				container.addChildAt(sprite, targetIndex);
+
+				//TODO FIX THIS MESS, very likely due to mytexture being pushed in, setting the i to a higher number and results in an index > children
+				//Temp fix with Math.min()
 			}
 		}
 		//update all objects
@@ -4138,7 +4138,6 @@ const _B2dEditor = function () {
 	}
 
 	this.buildTextureFromObj = function (obj) {
-		console.log(obj);
 
 		var container;
 		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(obj.textureName));
@@ -4164,7 +4163,6 @@ const _B2dEditor = function () {
 		container.originalSprite.tint = parseInt(color, 16);
 
 		if (container.data.bodyID != undefined) {
-			console.log(container.data.bodyID, this.textures.getChildAt(container.data.bodyID));
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
 			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
@@ -4370,7 +4368,6 @@ const _B2dEditor = function () {
 
 	}
 	this.buildGraphicGroupFromObj = function (obj) {
-		console.log(obj);
 		var graphic = new PIXI.Container();
 		graphic.data = obj;
 		graphic.x = obj.x;
@@ -4381,7 +4378,6 @@ const _B2dEditor = function () {
 		this.textures.addChild(graphic);
 
 		if (graphic.data.bodyID != undefined) {
-			console.log(graphic.data.bodyID, this.textures, this.textures.getChildAt(graphic.data.bodyID));
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
 			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
@@ -5103,6 +5099,10 @@ const _B2dEditor = function () {
 			wheelJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
 			wheelJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
 			wheelJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
+			wheelJointDef.maxMotorForce = jointPlaceHolder.maxMotorTorque;
+			wheelJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
+			wheelJointDef.enableMotor = jointPlaceHolder.enableMotor;
+
 
 			joint = this.world.CreateJoint(wheelJointDef);
 		}

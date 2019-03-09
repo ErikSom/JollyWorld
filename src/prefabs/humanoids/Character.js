@@ -14,6 +14,7 @@ class Character extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
     }
+
     init() {
         console.log(this);
         super.init();
@@ -22,26 +23,19 @@ class Character extends PrefabManager.basePrefab {
         this.attachedToVehicle = true;
         this.alive = true;
         this.bleedTimer = -1;
-        /*TEMP*/
-        // const portalGunPrefab = '{"objects":[[4,' + 0 * Settings.PTM + ',' + 0 * Settings.PTM + ',0,{},"PortalGun",' + (game.editor.prefabCounter++) + ']]}'
-        // const portalGunBodies = game.editor.buildJSON(JSON.parse(portalGunPrefab));
-        // const portalGun = game.editor.activePrefabs[portalGunBodies._bodies[0].mySprite.data.prefabInstanceName].class;
+
+        //** TEMP PORTAL GUN */
+        // const gunPosition = this.lookupObject.shoulder_left.GetPosition();
+        // const portalGunBodies = game.editor.buildRuntimePrefab("PortalGun", gunPosition.x * Settings.PTM, gunPosition.y * Settings.PTM);
+        // const portalGun = game.editor.retrieveClassFromPrefabLookup(portalGunBodies);
         // portalGun.setOwner(this);
-        const gunPosition = this.lookupObject.shoulder_left.GetPosition();
-        const portalGunBodies = game.editor.buildRuntimePrefab("PortalGun", gunPosition.x * Settings.PTM, gunPosition.y * Settings.PTM);
-        const portalGun = game.editor.retrieveClassFromPrefabLookup(portalGunBodies);
-        portalGun.setOwner(this);
-        let revoluteJointDef = new Box2D.b2RevoluteJointDef;
-        console.log(portalGunBodies.holder);
-        revoluteJointDef.Initialize(portalGun.lookupObject.holder, this.lookupObject.shoulder_left, gunPosition);
-        revoluteJointDef.collideConnected = false;
-        let joint = game.world.CreateJoint(revoluteJointDef);
-
-
-
-
-        this.attachedGun = portalGun;
+        // let revoluteJointDef = new Box2D.b2RevoluteJointDef;
+        // revoluteJointDef.Initialize(portalGun.lookupObject.holder, this.lookupObject.shoulder_left, gunPosition);
+        // revoluteJointDef.collideConnected = false;
+        // let joint = game.world.CreateJoint(revoluteJointDef);
+        //this.attachedGun = portalGun;
         /*****/
+
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];

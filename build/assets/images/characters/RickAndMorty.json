@@ -34,7 +34,7 @@
 },
 "Morty_Core0000":
 {
-	"frame": {"x":426,"y":176,"w":64,"h":80},
+	"frame": {"x":90,"y":180,"w":64,"h":80},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":80},
@@ -42,7 +42,7 @@
 },
 "Morty_Core_Flesh0000":
 {
-	"frame": {"x":90,"y":180,"w":64,"h":80},
+	"frame": {"x":426,"y":176,"w":64,"h":80},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":80},
@@ -50,19 +50,19 @@
 },
 "Morty_Eye0000":
 {
-	"frame": {"x":482,"y":258,"w":19,"h":20},
+	"frame": {"x":482,"y":302,"w":19,"h":19},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":20},
-	"sourceSize": {"w":19,"h":20}
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":19},
+	"sourceSize": {"w":19,"h":19}
 },
 "Morty_Eye_Closed0000":
 {
-	"frame": {"x":482,"y":280,"w":19,"h":20},
+	"frame": {"x":402,"y":310,"w":19,"h":19},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":20},
-	"sourceSize": {"w":19,"h":20}
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":19},
+	"sourceSize": {"w":19,"h":19}
 },
 "Morty_Feet0000":
 {
@@ -306,7 +306,7 @@
 },
 "Rick_Eye0000":
 {
-	"frame": {"x":402,"y":288,"w":19,"h":20},
+	"frame": {"x":482,"y":258,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
@@ -314,7 +314,7 @@
 },
 "Rick_Eye0001":
 {
-	"frame": {"x":402,"y":288,"w":19,"h":20},
+	"frame": {"x":482,"y":258,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
@@ -330,7 +330,7 @@
 },
 "Rick_Eye0003":
 {
-	"frame": {"x":482,"y":324,"w":19,"h":18},
+	"frame": {"x":482,"y":323,"w":19,"h":18},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":21,"h":20},
@@ -346,7 +346,7 @@
 },
 "Rick_Eye_Closed0000":
 {
-	"frame": {"x":482,"y":302,"w":19,"h":20},
+	"frame": {"x":482,"y":280,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
@@ -354,7 +354,7 @@
 },
 "Rick_Eye_Closed0001":
 {
-	"frame": {"x":402,"y":310,"w":19,"h":20},
+	"frame": {"x":402,"y":288,"w":19,"h":20},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":0,"w":21,"h":20},
