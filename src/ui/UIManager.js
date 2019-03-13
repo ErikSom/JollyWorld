@@ -160,7 +160,7 @@ function UIManager() {
 
             let filterButton = document.createElement('div');
             filterButton.setAttribute('class', 'headerButton filterButton save buttonOverlay dark');
-            filterButton.innerHTML = `<span>Filter by:</span><span style='color:#00FF00';margin-left:5px>Featured</span>`;
+            filterButton.innerHTML = `<span>Filter by:</span><span style='color:#00FF00;margin-left:5px'>Featured</span>`;
             targetDomElement.appendChild(filterButton);
 
 
