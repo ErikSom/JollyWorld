@@ -274,8 +274,16 @@ body .dg .cr.function{
   }
 .menuButton:hover::after {opacity:1;}
 
-#editorButton, #acceptButton{
+#editorButton, #acceptButton, .backButton{
     background-color: #51A328;
+}
+.backButton{
+    height: 40px;
+    line-height: 40px;
+    width: 120px;
+    font-size: 24px;
+    float: left;
+    margin-left: 20px;
 }
 
 #gameOverScreen{
@@ -405,6 +413,15 @@ body .dg .cr.function{
     font-weight: bolder;
     cursor: pointer;
     line-height: 30px;
+}
+.filterButton{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin: 20px;
+    width: 140px;
 }
 .logoSmall{
     background-image:url('../../build/assets/images/gui/Logo_Small.png');

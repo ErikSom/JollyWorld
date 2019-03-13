@@ -148,8 +148,20 @@ function UIManager() {
 
             targetDomElement.appendChild(divWrapper);
 
-            targetDomElement.appendChild(document.createElement('br'));
-            targetDomElement.appendChild(document.createElement('br'));
+            let backButton = document.createElement('div');
+            backButton.setAttribute('class', 'backButton menuButton')
+            backButton.innerHTML = 'Back';
+            targetDomElement.appendChild(backButton);
+
+            $(backButton).click(()=>{
+              console.log("GO BACK!");
+            })
+
+
+            let filterButton = document.createElement('div');
+            filterButton.setAttribute('class', 'headerButton filterButton save buttonOverlay dark');
+            filterButton.innerHTML = `<span>Filter by:</span><span style='color:#00FF00';margin-left:5px>Featured</span>`;
+            targetDomElement.appendChild(filterButton);
 
 
             customGUIContainer.appendChild(levelLoader.domElement);
