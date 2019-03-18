@@ -19,6 +19,7 @@ let gameOver;
 let levelLoader;
 let levelBanner;
 let pauseMenu;
+let filterMenu;
 
 let filter = {
     by: "",
@@ -163,6 +164,10 @@ function UIManager() {
             filterButton.innerHTML = `<span>Filter by:</span><span style='color:#00FF00;margin-left:5px'>Featured</span>`;
             targetDomElement.appendChild(filterButton);
 
+            $(filterButton).click(()=>{
+                this.showFilterMenu();
+            })
+
 
             customGUIContainer.appendChild(levelLoader.domElement);
             levelLoader.domElement.style.position = 'absolute';
@@ -181,6 +186,114 @@ function UIManager() {
     }
     this.hideLevelLoader = function () {
         $(levelLoader.domElement).hide();
+    }
+    this.showFilterMenu = function () {
+        if (!filterMenu) {
+            const levelEditGUIWidth = 350;
+            filterMenu = new dat.GUI({
+                autoPlace: false,
+                width: levelEditGUIWidth
+            });
+            filterMenu.domElement.setAttribute('id', 'filterMenu');
+
+            let folder = filterMenu.addFolder('Filter Menu');
+            folder.domElement.classList.add('custom');
+
+            folder.open();
+
+            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+            let divWrapper = document.createElement('div');
+            divWrapper.style.padding = '20px';
+            divWrapper.style.display = 'flex';
+            divWrapper.style.flexDirection = 'column';
+
+            let span = document.createElement('span');
+            span.innerText = 'Date range:';
+            divWrapper.appendChild(span);
+
+            let select = document.createElement('select');
+
+            let option = document.createElement('option');
+            option.innerText = 'Today';
+            select.appendChild(option);
+
+            option = document.createElement('option');
+            option.innerText = 'This week';
+            select.appendChild(option);
+
+            option = document.createElement('option');
+            option.innerText = 'This month';
+            select.appendChild(option);
+
+            option = document.createElement('option');
+            option.innerText = 'Anytime';
+            select.appendChild(option);
+
+            select.setAttribute('id', 'filter_uploadedselect')
+            divWrapper.appendChild(select);
+
+
+            divWrapper.appendChild(document.createElement('br'));
+
+
+            span = document.createElement('span');
+            span.innerText = 'Sort by:';
+            divWrapper.appendChild(span);
+
+            let newestButton = document.createElement('div');
+            newestButton.setAttribute('class', 'sortByButton menuButton')
+            newestButton.innerHTML = 'Newest';
+            divWrapper.appendChild(newestButton);
+
+            $(newestButton).click(()=>{
+              console.log("GO BACK!");
+            })
+
+            let oldestButton = document.createElement('div');
+            oldestButton.setAttribute('class', 'sortByButton menuButton')
+            oldestButton.innerHTML = 'Oldest';
+            divWrapper.appendChild(oldestButton);
+
+            $(oldestButton).click(()=>{
+              console.log("GO BACK!");
+            })
+
+            let mostPlayed = document.createElement('div');
+            mostPlayed.setAttribute('class', 'sortByButton menuButton')
+            mostPlayed.innerHTML = 'Most played';
+            divWrapper.appendChild(mostPlayed);
+
+            $(mostPlayed).click(()=>{
+              console.log("GO BACK!");
+            })
+
+            let bestButton = document.createElement('div');
+            bestButton.setAttribute('class', 'sortByButton menuButton')
+            bestButton.innerHTML = 'Best';
+            divWrapper.appendChild(bestButton);
+
+            $(bestButton).click(()=>{
+              console.log("GO BACK!");
+            })
+
+
+            targetDomElement.appendChild(divWrapper);
+            customGUIContainer.appendChild(filterMenu.domElement);
+            filterMenu.domElement.style.position = 'absolute';
+
+
+        }
+        filterMenu.domElement.style.display = "block";
+        // set values
+
+        $(filterMenu.domElement).css('left', '50%');
+        $(filterMenu.domElement).css('top', '50%');
+        $(filterMenu.domElement).css('transform', 'translate(-50%, -50%)');
+
+    }
+    this.hideFilterMenu = function () {
+        $(filterMenu.domElement).hide();
     }
 
     this.showLevelBanner = function () {

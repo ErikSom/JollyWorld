@@ -285,6 +285,9 @@ body .dg .cr.function{
     float: left;
     margin-left: 20px;
 }
+.sortByButton{
+    margin:10px auto;
+}
 
 #gameOverScreen{
     display: block;
@@ -422,6 +425,7 @@ body .dg .cr.function{
     padding: 5px;
     margin: 20px;
     width: 140px;
+    float:right;
 }
 .logoSmall{
     background-image:url('../../build/assets/images/gui/Logo_Small.png');
