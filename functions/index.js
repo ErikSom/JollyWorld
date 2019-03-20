@@ -1,5 +1,7 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
+const {Storage} = require('@google-cloud/storage');
+
 
 admin.initializeApp();
 const moment = require('moment');
@@ -96,4 +98,44 @@ exports.setRangedPopularity = functions.https.onCall((data, context) => {
             return updateRef.update(updateObject);
         });
     });
+});
+
+exports.publishLevel = functions.https.onCall((data, context) => {
+    //Received 'levelid' from client
+    const storage = new Storage();
+    const targetBucket = 'jolly-ad424.appspot.com';
+    const files = ['levelData.json', 'thumb_highRes.jpg', 'thumb_lowRes.jpg'];
+    let copyPromises = [];
+
+    files.map((file)=>{
+        console.log('Copying files for :', data.levelid);
+        const srcFilename = `/levels/${data.levelid}/${file}`;
+        const destFilename = `/publishedLevels/${data.levelid}/${file}`;
+        copyPromises.push(storage.
+        bucket(targetBucket)
+        .file(srcFilename)
+        .copy(storage.bucket(targetBucket).file(destFilename)));
+    })
+    Promise.all(copyPromises).then(()=>{
+        console.log('Copying success');
+
+        let makePublicPromises = [];
+        files.map((file)=>{
+            const destFilename = `/publishedLevels/${data.levelid}/${file}`;
+            makePublicPromises.push(storage.
+            bucket(targetBucket)
+            .file(destFilename)
+            .makePublic());
+        });
+        return Promise.all(makePublicPromises).then(()=>{
+                return '';
+        }).catch((error)=>{
+            console.log('publicPromise', error)
+            return error;
+        });
+
+    }).catch((error)=>{
+        console.log('copyPromise', error)
+        return error;
+    })
 });
