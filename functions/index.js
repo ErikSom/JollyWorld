@@ -108,7 +108,6 @@ exports.publishLevel = functions.https.onCall((data, context) => {
     let copyPromises = [];
 
     files.map((file)=>{
-        console.log('Copying files for :', data.levelid);
         const srcFilename = `/levels/${data.levelid}/${file}`;
         const destFilename = `/publishedLevels/${data.levelid}/${file}`;
         copyPromises.push(storage.
@@ -117,8 +116,6 @@ exports.publishLevel = functions.https.onCall((data, context) => {
         .copy(storage.bucket(targetBucket).file(destFilename)));
     })
     Promise.all(copyPromises).then(()=>{
-        console.log('Copying success');
-
         let makePublicPromises = [];
         files.map((file)=>{
             const destFilename = `/publishedLevels/${data.levelid}/${file}`;
@@ -128,14 +125,12 @@ exports.publishLevel = functions.https.onCall((data, context) => {
             .makePublic());
         });
         return Promise.all(makePublicPromises).then(()=>{
-                return '';
+                return true;
         }).catch((error)=>{
-            console.log('publicPromise', error)
             return error;
         });
 
     }).catch((error)=>{
-        console.log('copyPromise', error)
         return error;
     })
 });

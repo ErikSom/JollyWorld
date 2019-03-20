@@ -516,7 +516,7 @@ function Game() {
             game.currentLevelData = levelData.private;
             game.currentLevelData.uid = levelData.uid;
             var self = this;
-            $.getJSON(firebaseManager.baseDownloadURL + game.currentLevelData.dataURL, function (data) {
+            $.getJSON(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.uid}/levelData.json`, function (data) {
                 self.currentLevelData.json = JSON.stringify(data);
                 self.initLevel(self.currentLevelData);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);

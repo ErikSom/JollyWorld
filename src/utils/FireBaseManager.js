@@ -17,6 +17,10 @@ function FireBaseManager() {
     this.user;
     this.userData;
     this.baseDownloadURL = "https://firebasestorage.googleapis.com/v0/b/jolly-ad424.appspot.com/o/";
+    this.basePublicURL = "https://storage.googleapis.com/jolly-ad424.appspot.com/";
+
+
+    
 
     this.init = function () {
         var config = {
@@ -334,42 +338,39 @@ function FireBaseManager() {
         return new Promise((resolve, reject) => {
 
             // reupload to publish storage section
-
-
-            firebase.functions().httpsCallable('publishLevel')({levelid:levelData.uid}).then(function(result) {
-                console.log("Publish success!!!", result)
-            });
-
-
             if (!this.userData) return reject({
                 message: "Userdata not loaded"
             });
 
-            var levelObject = {};
-            levelObject['private'] = {};
-            levelObject['private']["dataURL"] = levelData.dataURL;
-            levelObject['private']["thumbHighResURL"] = levelData.thumbHighResURL;
-            levelObject['private']["thumbLowResURL"] = levelData.thumbLowResURL;
-            levelObject['private']["creationDate"] = levelData.creationDate;
-            levelObject['private']["description"] = levelData.description;
-            levelObject['private']["title"] = levelData.title;
-            levelObject['private']["background"] = levelData.background;
-            levelObject['private']["creator"] = this.userData.username;
-            levelObject['private']["creatorID"] = firebase.auth().currentUser.uid;
-            levelObject['public'] = {};
-            levelObject['public']["playCount"] = 0;
-            levelObject['public']["firstMonth_playCount"] = 'unset';
-            levelObject['public']["firstWeek_playCount"] = 'unset';
-            levelObject['public']["voteNum"] = 0;
-            levelObject['public']["voteAvg"] = 0.5;
-            levelObject['public']["firstMonth_voteAvg"] = 'unset';
-            levelObject['public']["firstWeek_voteAvg"] = 'unset';
+            var self = this;
 
-            var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
-            levelRef.set(levelObject, function (error) {
-                levelObject.uid = levelData.uid;
-                if (error) reject(error);
-                else resolve(levelObject);
+            firebase.functions().httpsCallable('publishLevel')({levelid:levelData.uid}).then(function(result) {
+                console.log("Copy files success - !!!", result);
+
+                var levelObject = {};
+                levelObject['private'] = {};
+                levelObject['private']["creationDate"] = levelData.creationDate;
+                levelObject['private']["description"] = levelData.description;
+                levelObject['private']["title"] = levelData.title;
+                levelObject['private']["background"] = levelData.background;
+                levelObject['private']["creator"] = self.userData.username;
+                levelObject['private']["creatorID"] = firebase.auth().currentUser.uid;
+                levelObject['public'] = {};
+                levelObject['public']["playCount"] = 0;
+                levelObject['public']["firstMonth_playCount"] = 'unset';
+                levelObject['public']["firstWeek_playCount"] = 'unset';
+                levelObject['public']["voteNum"] = 0;
+                levelObject['public']["voteAvg"] = 0.5;
+                levelObject['public']["firstMonth_voteAvg"] = 'unset';
+                levelObject['public']["firstWeek_voteAvg"] = 'unset';
+
+                var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
+                levelRef.set(levelObject, function (error) {
+                    levelObject.uid = levelData.uid;
+                    if (error) reject(error);
+                    else resolve(levelObject);
+                });
+
             });
         });
     }

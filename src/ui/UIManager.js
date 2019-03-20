@@ -370,7 +370,7 @@ function UIManager() {
         // set values
 
         let thumbNailImage = $(levelBanner.domElement).find('#levelbanner_levelThumbnailImage')[0];
-        thumbNailImage.src = firebaseManager.baseDownloadURL + game.currentLevelData.thumbHighResURL;
+        thumbNailImage.src = `${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.uid}/thumb_highRes.jpg`;
 
         $(levelBanner.domElement).find('#levelbanner_title').text(game.currentLevelData.title);
         $(levelBanner.domElement).find('#levelbanner_creatorSpan').text(game.currentLevelData.creator);
@@ -775,7 +775,7 @@ function UIManager() {
                     $itemBar.find('.itemDescription').text(level.private.description);
                     $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.private.creationDate));
                     $itemBar.find('.itemAuthor').text(level.private.creator);
-                    $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.private.thumbLowResURL;
+                    $itemBar.find('#thumbImage')[0].src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
 
                     $itemBar.find('.menuButton').click(() => {
                         $itemBar.find('.playButtonTriangleIcon').hide();

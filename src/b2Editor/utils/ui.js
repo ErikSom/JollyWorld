@@ -86,6 +86,13 @@ export const setNewLevelData = function () {
     }
 }
 const hasUnsavedChanges = function () {
+
+    console.log('Game has level changes', game.levelHasChanges());
+    console.log('Title different?', game.currentLevelData.title != $(levelEditScreen.domElement).find('#levelEdit_title').val(), game.currentLevelData.title, $(levelEditScreen.domElement).find('#levelEdit_title').val());
+    console.log('Description different?', game.currentLevelData.description != $(levelEditScreen.domElement).find('#levelEdit_description').val(), game.currentLevelData.description, $(levelEditScreen.domElement).find('#levelEdit_description').val());
+    console.log('game editor camerashotdata', game.editor.cameraShotData.highRes);
+
+
     if (game.levelHasChanges()) return true;
     if (!levelEditScreen) return false;
     else {
