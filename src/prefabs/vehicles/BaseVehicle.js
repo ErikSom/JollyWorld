@@ -12,6 +12,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 
     constructor(target) {
         super(target);
+        this.destroyConnectedJoints = {};
     }
 
     init() {

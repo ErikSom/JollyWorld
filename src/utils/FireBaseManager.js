@@ -332,6 +332,15 @@ function FireBaseManager() {
     }
     this.publishLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
+
+            // reupload to publish storage section
+
+
+            firebase.functions().httpsCallable('publishLevel')({levelid:levelData.uid}).then(function(result) {
+                console.log("Publish success!!!", result)
+            });
+
+
             if (!this.userData) return reject({
                 message: "Userdata not loaded"
             });
