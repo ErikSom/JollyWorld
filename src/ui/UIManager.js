@@ -22,8 +22,8 @@ let pauseMenu;
 let filterMenu;
 
 let filter = {
-    by: "",
-    range: ""
+    by: '',
+    range: ''
 };
 
 function UIManager() {
@@ -175,9 +175,8 @@ function UIManager() {
         }
         $(levelLoader.domElement).show();
 
-        const levelListDiv = $(levelLoader.domElement).find('#levelList');
-        levelListDiv.empty();
-        this.generateFilteredPublishLevelList(levelListDiv[0]);
+
+        this.generateFilteredPublishLevelList();
 
         $(levelLoader.domElement).css('left', '50%');
         $(levelLoader.domElement).css('top', '50%');
@@ -215,23 +214,31 @@ function UIManager() {
             let select = document.createElement('select');
 
             let option = document.createElement('option');
-            option.innerText = 'Today';
+            option.innerText = self.FILTER_RANGE_TODAY;
             select.appendChild(option);
 
             option = document.createElement('option');
-            option.innerText = 'This week';
+            option.innerText = self.FILTER_RANGE_THISWEEK;
             select.appendChild(option);
 
             option = document.createElement('option');
-            option.innerText = 'This month';
+            option.innerText = self.FILTER_RANGE_THISMONTH;
             select.appendChild(option);
 
             option = document.createElement('option');
-            option.innerText = 'Anytime';
+            option.innerText = self.FILTER_RANGE_ANYTIME;
             select.appendChild(option);
 
-            select.setAttribute('id', 'filter_uploadedselect')
+            select.setAttribute('id', 'filter_uploadedselect');
             divWrapper.appendChild(select);
+
+
+
+            select.addEventListener("change", ()=>{
+                filter.range = select.value;
+                console.log(select.value);
+            })
+            select.value = filter.range;
 
 
             divWrapper.appendChild(document.createElement('br'));
@@ -247,7 +254,9 @@ function UIManager() {
             divWrapper.appendChild(newestButton);
 
             $(newestButton).click(()=>{
-              console.log("GO BACK!");
+                filter.by = self.FILTER_BY_NEWEST;
+                self.hideFilterMenu();
+                self.generateFilteredPublishLevelList();
             })
 
             let oldestButton = document.createElement('div');
@@ -256,7 +265,9 @@ function UIManager() {
             divWrapper.appendChild(oldestButton);
 
             $(oldestButton).click(()=>{
-              console.log("GO BACK!");
+                filter.by = self.FILTER_BY_OLDEST;
+                self.hideFilterMenu();
+                self.generateFilteredPublishLevelList();
             })
 
             let mostPlayed = document.createElement('div');
@@ -265,7 +276,9 @@ function UIManager() {
             divWrapper.appendChild(mostPlayed);
 
             $(mostPlayed).click(()=>{
-              console.log("GO BACK!");
+                filter.by = self.FILTER_BY_PLAYCOUNT;
+                self.hideFilterMenu();
+                self.generateFilteredPublishLevelList();
             })
 
             let bestButton = document.createElement('div');
@@ -274,7 +287,9 @@ function UIManager() {
             divWrapper.appendChild(bestButton);
 
             $(bestButton).click(()=>{
-              console.log("GO BACK!");
+                filter.by = self.FILTER_BY_RATING;
+                self.hideFilterMenu();
+                self.generateFilteredPublishLevelList();
             })
 
 
@@ -531,9 +546,16 @@ function UIManager() {
         $(pauseMenu.domElement).hide();
     }
 
-    this.generateFilteredPublishLevelList = function (divWrapper) {
-        if (!filter) filter = {
-            by: this.FILTER_BY_NEWEST,
+    this.generateFilteredPublishLevelList = function () {
+        const levelListDiv = $(levelLoader.domElement).find('#levelList');
+        levelListDiv.empty();
+        var divWrapper = levelListDiv[0];
+
+        if(!divWrapper) return;
+
+
+        if (!filter.by) filter = {
+            by: this.FILTER_BY_FEATURED,
             range: this.FILTER_RANGE_ANYTIME
         };
 
@@ -793,32 +815,9 @@ function UIManager() {
                         });
                     });
 
-
-                    //  let loadButton = $itemBar.find('.headerButton.save');
-                    //  loadButton.on('click', () => {
-                    //      const doLevelLoad = () => {
-                    //          loadButton[0].style.backgroundColor = 'grey';
-                    //          loadButton[0].innerText = 'LOADING..';
-                    //          game.loadUserLevelData(levels[level_id]).then(() => {
-                    //              loadButton[0].style.backgroundColor = '';
-                    //              loadButton[0].innerText = 'LOAD';
-                    //              self.hideEditorPanels();
-                    //              self.setLevelSpecifics();
-                    //          }).catch((error) => {
-                    //              loadButton[0].style.backgroundColor = '';
-                    //              loadButton[0].innerText = 'LOAD';
-                    //          });
-                    //      }
-                    //      if (game.levelHasChanges()) {
-                    //          self.showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
-                    //              doLevelLoad();
-                    //          }).catch((error) => {});
-                    //      } else doLevelLoad();
-                    //  });
                 }
             }
         }
-        var filter = "tet";
         firebaseManager.getPublishedLevels(filter).then((levels) => {
             buildLevelList(levels);
         })
@@ -830,8 +829,8 @@ function UIManager() {
     this.FILTER_BY_FEATURED = "Featured";
 
     this.FILTER_RANGE_TODAY = "Today";
-    this.FILTER_RANGE_THISWEEK = "ThisWeek";
-    this.FILTER_RANGE_THISMONTH = "ThisMonth";
+    this.FILTER_RANGE_THISWEEK = "This Week";
+    this.FILTER_RANGE_THISMONTH = "This Month";
     this.FILTER_RANGE_ANYTIME = "Anytime";
 }
 export var ui = new UIManager();
