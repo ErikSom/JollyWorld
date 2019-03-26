@@ -8,6 +8,13 @@ require('firebase/auth');
 require('firebase/database');
 
 import $ from 'jquery';
+import {
+    game
+} from '../Game';
+import {
+    Settings
+} from '../Settings';
+
 
 const moment = require('moment');
 const nanoid = require('nanoid');
@@ -20,7 +27,7 @@ function FireBaseManager() {
     this.basePublicURL = "https://storage.googleapis.com/jolly-ad424.appspot.com/";
 
 
-    
+
 
     this.init = function () {
         var config = {
@@ -36,14 +43,14 @@ function FireBaseManager() {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 self.user = user;
-                if(!user.isAnonymous) self.onLogin();
-            }else{
+                if (!user.isAnonymous) self.onLogin();
+            } else {
                 //no user, thus do anynomous login
                 // console.log("sign in anonymous");
                 firebase.auth().signInAnonymously()
-                .catch(function(error) {
-                console.log(error);
-                });
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             }
         });
     }
@@ -71,7 +78,9 @@ function FireBaseManager() {
                 if (error) {
                     reject(error);
                 } else if (!committed) {
-                    reject({code:"USERNAME_TAKEN"});
+                    reject({
+                        code: "USERNAME_TAKEN"
+                    });
                 } else {
                     resolve();
                 }
@@ -216,7 +225,7 @@ function FireBaseManager() {
             if (errorCall) errorCall(error);
         }
         this.complete = function (task) {
-            task.snapshot.ref.getDownloadURL().then((downloadURL) =>{
+            task.snapshot.ref.getDownloadURL().then((downloadURL) => {
                 var token = downloadURL.split(firebaseManager.baseDownloadURL)[1];
                 self.tokens.push(token);
                 self.currentFileProgress = 0;
@@ -344,7 +353,9 @@ function FireBaseManager() {
 
             var self = this;
 
-            firebase.functions().httpsCallable('publishLevel')({levelid:levelData.uid}).then(function(result) {
+            firebase.functions().httpsCallable('publishLevel')({
+                levelid: levelData.uid
+            }).then(function (result) {
                 console.log("Copy files success - !!!", result);
 
                 var levelObject = {};
@@ -359,10 +370,12 @@ function FireBaseManager() {
                 levelObject['public']["playCount"] = 0;
                 levelObject['public']["firstMonth_playCount"] = 'unset';
                 levelObject['public']["firstWeek_playCount"] = 'unset';
+                levelObject['public']["firstDay_playCount"] = 'unset';
                 levelObject['public']["voteNum"] = 0;
                 levelObject['public']["voteAvg"] = 0.5;
                 levelObject['public']["firstMonth_voteAvg"] = 'unset';
                 levelObject['public']["firstWeek_voteAvg"] = 'unset';
+                levelObject['public']["firstDay_voteAvg"] = 'unset';
 
                 var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
                 levelRef.set(levelObject, function (error) {
@@ -381,32 +394,32 @@ function FireBaseManager() {
             var voteRef = firebase.database().ref(`/PublishedLevelsVoters/${levelid}/${this.app.auth().currentUser.uid}`);
             voteRef.set(data, function (error) {
                 if (error) reject(error);
-                else{
+                else {
 
                     const now = moment();
                     const creationDate = moment(_creationDate);
-                    if(now.year() === creationDate.year() && now.month() == creationDate.month()){
+                    if (now.year() === creationDate.year() && now.month() == creationDate.month()) {
                         self.call_setRangedVotes(levelid);
                     }
 
                     resolve();
-                } 
+                }
             });
         });
     }
-    this.increasePlayCountPublishedLevel = function(levelData){
+    this.increasePlayCountPublishedLevel = function (levelData) {
         var playCountRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}/public/playCount`);
         playCountRef.transaction(count => {
             if (count === null) {
                 return count = 0;
             } else {
-                return count+1;
+                return count + 1;
             }
         });
 
         const now = moment();
         const creationDate = moment(levelData.private.creationDate);
-        if(now.year() === creationDate.year() && now.month() == creationDate.month()){
+        if (now.year() === creationDate.year() && now.month() == creationDate.month()) {
             this.call_setRangedPopularity(levelData.uid);
         }
 
@@ -431,8 +444,124 @@ function FireBaseManager() {
         })
     }
     this.getPublishedLevels = function (filter) {
+
+        var now = moment();
+        let prefixedRangeValue = now.year();
+        let paddedMonth, paddedWeek, paddedDay;
+
+        switch (filter.range) {
+            case game.ui.FILTER_RANGE_THISMONTH:
+                //e.g. 201804_0.8483
+                paddedMonth = now.month().padStart('0', 2);
+                prefixedRangeValue += paddedMonth;
+                break;
+            case game.ui.FILTER_RANGE_THISWEEK:
+                ///e.g. 2018w03_0.8483
+                paddedWeek = now.isoWeek().padStart('0', 2);
+                prefixedRangeValue += 'w' + paddedWeek;
+
+                break;
+            case game.ui.FILTER_RANGE_TODAY:
+                //e.g. 2018w03d3_0.8483
+                paddedWeek = now.isoWeek().padStart('0', 2);
+                paddedDay = now.isoWeekday();
+                prefixedRangeValue += 'w' + paddedWeek + 'd' + paddedDay;
+                break;
+        }
+
         return new Promise((resolve, reject) => {
-            var levelsRef = firebase.database().ref(`/PublishedLevels/`).limitToFirst(100);
+            let levelsRef;
+            switch (filter.by) {
+                case game.ui.FILTER_BY_FEATURED:
+                    break;
+                case game.ui.FILTER_BY_NEWEST:
+                case game.ui.FILTER_BY_OLDEST:
+                    const date = new Date();
+                    date.setHours(0), date.setMinutes(0), date.setSeconds(0);
+                    let firstDay;
+                    let lastDay;
+                    if (filter.by === game.ui.FILTER_RANGE_ANYTIME) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`)
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_THISMONTH) {
+
+                        firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+
+                        lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('creationDate').startAt(firstDay).endAt(lastDay)
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_THISWEEK) {
+
+                        firstDay = new Date(date);
+                        let day = firstDay.getDay() || 7;
+                        if (day !== 1) firstDay.setHours(-24 * (day - 1));
+
+                        lastDay = new Date(firstDay);
+                        lastDay.setHours(24 * 7);
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('creationDate').startAt(firstDay).endAt(lastDay)
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_TODAY) {
+
+                        firstDay = new Date(date);
+
+                        lastDay = new Date(firstDay);
+                        lastDay.setHours(24);
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('creationDate').startAt(firstDay).endAt(lastDay)
+                    }
+                    if(filter.by == game.ui.FILTER_BY_NEWEST) levelsRef.limitToFirst(Settings.levelsPerRequest);
+                    else levelsRef.limitToLast(Settings.levelsPerRequest);
+                    break;
+                case game.ui.FILTER_BY_PLAYCOUNT:
+
+                    if (filter.by === game.ui.FILTER_RANGE_ANYTIME) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('playCount').limitToFirst(Settings.levelsPerRequest);
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_THISMONTH) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('firstMonth_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_THISWEEK) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('firstWeek_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_TODAY) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('firstDay_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
+
+                    }
+
+                    break;
+                case game.ui.FILTER_BY_RATING:
+
+                    if (filter.by === game.ui.FILTER_RANGE_ANYTIME) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('voteAvg').limitToFirst(Settings.levelsPerRequest);
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_THISMONTH) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('firstMonth_voteAvg').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_THISWEEK) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('firstWeek_voteAvg').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
+
+                    } else if (filter.by === game.ui.FILTER_RANGE_TODAY) {
+
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('firstDay_voteAvg').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
+
+                    }
+
+                    break;
+            }
+
+
+
+            levelsRef = firebase.database().ref(`/PublishedLevels/`).limitToFirst(100);
             levelsRef.once('value', function (snapshot) {
                 return resolve(snapshot.val());
             }, function (error) {
@@ -442,13 +571,17 @@ function FireBaseManager() {
     }
 
     //CLOUD FUNCTIONS
-    this.call_setRangedPopularity = function(levelid){
-        firebase.functions().httpsCallable('setRangedPopularity')({levelid:levelid}).then(function(result) {
+    this.call_setRangedPopularity = function (levelid) {
+        firebase.functions().httpsCallable('setRangedPopularity')({
+            levelid: levelid
+        }).then(function (result) {
             // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
         });
     }
-    this.call_setRangedVotes = function(levelid){
-        firebase.functions().httpsCallable('setRangedVotes')({levelid:levelid}).then(function(result) {
+    this.call_setRangedVotes = function (levelid) {
+        firebase.functions().httpsCallable('setRangedVotes')({
+            levelid: levelid
+        }).then(function (result) {
             // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
         });
     }

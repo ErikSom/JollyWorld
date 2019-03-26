@@ -59,6 +59,15 @@ exports.setRangedVotes = functions.https.onCall((data, context) => {
                const firstWeekValue = `${creationDate.year()}w${paddedWeek}_${voteAvg}`; //e.g. 2018w03_0.8483
 
                updateObject.firstWeek_voteAvg = firstWeekValue;
+
+
+               if (now.isoWeekday() === creationDate.isoWeekday()) {
+                    const day = creationDate.isoWeekday();
+                    const firstDayValue = `${creationDate.year()}w${paddedWeek}d${day}_${voteAvg}`; //e.g. 2018w03d3_0.8483
+    
+                    updateObject.firstDay_voteAvg = firstDayValue;
+                }
+
            }
            return updateRef.update(updateObject);
        });
@@ -94,6 +103,17 @@ exports.setRangedPopularity = functions.https.onCall((data, context) => {
                 const firstWeekValue = `${creationDate.year()}w${paddedWeek}_${paddedPlays}`; //e.g. 2018w03_0000001337
 
                 updateObject.firstWeek_playCount = firstWeekValue;
+
+
+                if(now.isoWeekday() === creationDate.isoWeekday()){
+                    const day = creationDate.isoWeekday();
+                    const firstDayValue = `${creationDate.year()}w${paddedWeek}d${day}_${paddedPlays}`; //e.g. 2018w03d3_0000001337
+    
+                    updateObject.firstDay_playCount = firstDayValue;
+
+                }
+
+
             }
             return updateRef.update(updateObject);
         });

@@ -83,6 +83,8 @@ function Game() {
     this.levelWon = false;
     this.gameOver = false;
 
+    this.ui = ui;
+
     this.init = function () {
 
         this.stats = new Stats();

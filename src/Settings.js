@@ -25,6 +25,10 @@ export var Settings = {
     motorSpeedLimit:20,
     motorForceLimit:10000,
     slideJointDistanceLimit:5000,
+    
+
+    //FIREBASE
+    levelsPerRequest:100,
 
     /*TELEPORTS*/
     timeBetweenTeleports:5000,
