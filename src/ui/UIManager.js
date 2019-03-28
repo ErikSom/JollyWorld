@@ -786,37 +786,36 @@ function UIManager() {
         let self = this;
 
         const buildLevelList = (levels) => {
-            for (let level_id in levels) {
-                if (levels.hasOwnProperty(level_id)) {
+            levels.forEach((level_child) =>{
+                console.log(level_child);
+                const level_id = level_child.key;
+                const level = level_child.val();
+                level.uid = level_id;
+                let $itemBar = $(itemBar).clone();
+                $(itemList).append($itemBar);
+                $itemBar.find('.itemTitle').text(level.private.title);
+                $itemBar.find('.itemDescription').text(level.private.description);
+                $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.private.creationDate));
+                $itemBar.find('.itemAuthor').text(level.private.creator);
+                $itemBar.find('#thumbImage')[0].src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
 
-                    const level = levels[level_id];
-                    level.uid = level_id;
-                    let $itemBar = $(itemBar).clone();
-                    $(itemList).append($itemBar);
-                    $itemBar.find('.itemTitle').text(level.private.title);
-                    $itemBar.find('.itemDescription').text(level.private.description);
-                    $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.private.creationDate));
-                    $itemBar.find('.itemAuthor').text(level.private.creator);
-                    $itemBar.find('#thumbImage')[0].src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
-
-                    $itemBar.find('.menuButton').click(() => {
-                        $itemBar.find('.playButtonTriangleIcon').hide();
-                        $itemBar.find('.dot-shell').show();
-                        game.loadPublishedLevelData(level).then(() => {
-                            $itemBar.find('.playButtonTriangleIcon').show();
-                            $itemBar.find('.dot-shell').hide();
-                            self.showLevelBanner();
-                            game.editor.ui.hide();
-                            self.hideLevelLoader();
-                        }).catch((error) => {
-                            console.log(error);
-                            $itemBar.find('.playButtonTriangleIcon').show();
-                            $itemBar.find('.dot-shell').hide();
-                        });
+                $itemBar.find('.menuButton').click(() => {
+                    $itemBar.find('.playButtonTriangleIcon').hide();
+                    $itemBar.find('.dot-shell').show();
+                    game.loadPublishedLevelData(level).then(() => {
+                        $itemBar.find('.playButtonTriangleIcon').show();
+                        $itemBar.find('.dot-shell').hide();
+                        self.showLevelBanner();
+                        game.editor.ui.hide();
+                        self.hideLevelLoader();
+                    }).catch((error) => {
+                        console.log(error);
+                        $itemBar.find('.playButtonTriangleIcon').show();
+                        $itemBar.find('.dot-shell').hide();
                     });
+                });
 
-                }
-            }
+            });
         }
         firebaseManager.getPublishedLevels(filter).then((levels) => {
             buildLevelList(levels);
