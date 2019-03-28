@@ -786,7 +786,7 @@ function UIManager() {
         let self = this;
 
         const buildLevelList = (levels) => {
-            levels.forEach((level_child) =>{
+            levels.map((level_child) =>{
                 console.log(level_child);
                 const level_id = level_child.key;
                 const level = level_child.val();
