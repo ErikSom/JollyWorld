@@ -258,6 +258,11 @@ export const showHeaderBar = function () {
     button.setAttribute('class', 'headerButton exit buttonOverlay dark');
     button.innerHTML = "EXIT";
     headerBar.appendChild(button);
+    button.addEventListener('click', ()=>{
+
+        game.openMainMenu();
+
+    })
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton load buttonOverlay dark');

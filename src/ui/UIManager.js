@@ -30,31 +30,35 @@ function UIManager() {
 
     var self = this;
 
-    this.buildMainMenu = function () {
-        mainMenu = document.createElement('div');
-        mainMenu.setAttribute('id', 'mainMenu')
-        customGUIContainer.appendChild(mainMenu);
+    this.showMainMenu = function () {
+        if(!mainMenu){
+            mainMenu = document.createElement('div');
+            mainMenu.setAttribute('id', 'mainMenu')
+            customGUIContainer.appendChild(mainMenu);
 
-        let button = document.createElement('div');
-        button.setAttribute('class', 'startButton menuButton')
-        button.innerHTML = 'Play';
-        mainMenu.appendChild(button);
+            let button = document.createElement('div');
+            button.setAttribute('class', 'startButton menuButton')
+            button.innerHTML = 'Play';
+            mainMenu.appendChild(button);
 
-        button.addEventListener("click", () => {
-            self.hideMainMenu();
-            this.showLevelLoader();
-        });
+            button.addEventListener("click", () => {
+                self.hideMainMenu();
+                this.showLevelLoader();
+            });
 
-        button = document.createElement('div');
-        button.setAttribute('id', 'editorButton')
-        button.classList.add('menuButton');
-        button.innerHTML = 'Editor';
+            button = document.createElement('div');
+            button.setAttribute('id', 'editorButton')
+            button.classList.add('menuButton');
+            button.innerHTML = 'Editor';
 
-        button.addEventListener("click", () => {
-            self.hideMainMenu();
-            game.openEditor();
-        });
-        mainMenu.appendChild(button);
+            button.addEventListener("click", () => {
+                self.hideMainMenu();
+                game.openEditor();
+            });
+            mainMenu.appendChild(button);
+        }
+        mainMenu.style.display = 'block';
+        this.show();
 
     }
     this.hide = function(){
@@ -156,6 +160,9 @@ function UIManager() {
 
             $(backButton).click(()=>{
               console.log("GO BACK!");
+                self.hideLevelLoader();
+                self.showMainMenu();
+
             })
 
 

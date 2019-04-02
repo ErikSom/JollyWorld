@@ -92,6 +92,7 @@ function Game() {
         document.body.appendChild(this.stats.dom);
         this.stats.dom.style.left = 'unset';
         this.stats.dom.style.right = '80px';
+        this.stats.dom.style.top = '80px';
 
         this.canvas = document.getElementById("canvas");
 
@@ -340,7 +341,7 @@ function Game() {
     this.openMainMenu = function () {
         //if(this.run) this.stopWorld();
         this.initLevel(levelsData.mainMenuLevel);
-        ui.buildMainMenu();
+        ui.showMainMenu();
         ui.hideGameOverMenu();
         this.runWorld();
         this.interactive = false;
