@@ -9,6 +9,8 @@ import * as dat from '../../libs/dat.gui';
 import * as uiHelper from '../b2Editor/utils/uiHelper';
 import * as formatTimestamp from '../b2Editor/utils/formatTimestamp';
 
+import tooltipster from 'tooltipster';
+
 let customGUIContainer = document.getElementById('game-ui-container');
 
 let levelItemHolder;
@@ -794,9 +796,10 @@ function UIManager() {
 
         const buildLevelList = (levels) => {
             levels.map((level_child) =>{
-                console.log(level_child);
                 const level_id = level_child.key;
                 const level = level_child.val();
+                console.log(level);
+
                 level.uid = level_id;
                 let $itemBar = $(itemBar).clone();
                 $(itemList).append($itemBar);
@@ -804,6 +807,20 @@ function UIManager() {
                 $itemBar.find('.itemDescription').text(level.private.description);
                 $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.private.creationDate));
                 $itemBar.find('.itemAuthor').text(level.private.creator);
+                if(level.public.voteNum<10){
+                     $itemBar.find('.itemRating').text('??');
+                     $itemBar.find('.itemRating')[0].setAttribute('title', 'Needs at least 10 votes');
+
+                     $itemBar.find('.itemRating').tooltipster({
+                        animation: 'fade',
+                        delay: 200,
+                     });
+
+                }
+                else $itemBar.find('.itemRating').text(level.public.voteAvg);
+
+                $itemBar.find('.itemPlays').text(level.public.playCount);
+
                 $itemBar.find('#thumbImage')[0].src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
 
                 $itemBar.find('.menuButton').click(() => {

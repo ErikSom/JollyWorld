@@ -624,7 +624,7 @@ body .dg .cr.function{
     font-size: 12px;
     color: #00FF00;
     height: 14px;
-    white-space: nowrap;
+    white-space: normal;
 }
 .listPlayModeItem .levelAuthorDiv{
     width:12%;
