@@ -521,7 +521,8 @@ function UIManager() {
             divWrapper.appendChild(exitButton);
 
             $(exitButton).click(()=>{
-               //game.playWorld();
+                game.unpauseGame();
+                game.openMainMenu();
             })
 
             let resumeButton = document.createElement('div');
