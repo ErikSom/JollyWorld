@@ -1,23 +1,3 @@
-html,
-body,
-div,
-canvas {
-    margin: 0;
-    padding: 0;
-    display: block;
-}
-html{
-    box-sizing:border-box;
-}
-
-body {
-    background-color: #DADADA;
-    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    overflow:hidden;
-}
-*, *:before, *:after {
-    box-sizing: inherit;
-}
 .dg .closed div:not(.arrow):not(.title), .dg .closed ul div, .dg .closed span, .dg .closed br, .dg .closed textarea, .dg .closed ul div>*{
     height: 0 !important;
     overflow: hidden !important;
@@ -236,6 +216,10 @@ body .dg .cr.function{
     position:absolute;
     top:50%;left:50%;
     transform: translate(-50%, -50%);
+}
+
+#mainMenuLogo{
+    width:400px;
 }
 .menuButton{
     font-size: 30px;
@@ -795,6 +779,7 @@ body .dg .cr.function{
     animation-delay: .5s;
     left:-5px;
   }
+
   
   @keyframes dotPulseBefore {
     0% {

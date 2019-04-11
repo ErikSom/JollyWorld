@@ -54,7 +54,6 @@ export const show = function () {
 }
 
 export const initGui = function () {
-    initGuiAssetSelection();
     createToolGUI();
     this.showHeaderBar();
     scrollBars.update();
@@ -1036,7 +1035,6 @@ export const showLevelEditScreen = function () {
 
         var self = this;
         saveAsButton.addEventListener('click', () => {
-            console.log(self);
             if (!checkLevelDataForErrors()) return;
             self.showSaveScreen.bind(self)();
         });
@@ -1812,12 +1810,10 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     return new Promise((resolve, reject) => {
         yes_button.addEventListener('click', () => {
             $(prompt.domElement).remove();
-            console.log("positive prompt");
             return resolve();
         })
         no_button.addEventListener('click', () => {
             $(prompt.domElement).remove();
-            console.log("negative prompt");
             return reject();
         })
     });

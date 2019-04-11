@@ -155,7 +155,6 @@ function FireBaseManager() {
             $('form').removeClass('loading');
             $(".ui.negative.message").addClass('hidden');
             $(".ui.positive.message").removeClass('hidden');
-            console.log("great succes :D");
         }).catch(function (error) {
             // An error happened.
             $('form').removeClass('loading');
@@ -175,11 +174,8 @@ function FireBaseManager() {
             ui.showBox('#reset-box')
             this.app.auth().verifyPasswordResetCode(this.actionCode).then(function (email) {
                 var accountEmail = email;
-                console.log(accountEmail);
-                console.log("check:" + $(".ui.message:visible > p"));
                 $(".ui.message:visible>p").text("Resetting password for " + accountEmail);
             }).catch(function (error) {
-                console.log($(".ui.negative.message:visible"))
                 $(".ui.negative.message").removeClass('hidden');
                 $(".ui.negative.message > p").text(error.message);
             });
@@ -187,11 +183,9 @@ function FireBaseManager() {
     }
     this.resetPassword = function (newpassword) {
         $('form').addClass('loading');
-        console.log(this.actionCode)
         this.app.auth().confirmPasswordReset(this.actionCode, newpassword).then(function (resp) {
             // navigate back to login url.split('?')[0]
             $('form').removeClass('loading');
-            console.log("BIG SUCCES, password reset succesful");
             $(".ui.positive.message").removeClass('hidden');
         }).catch(function (error) {
             $('form').removeClass('loading');
@@ -472,7 +466,6 @@ function FireBaseManager() {
         return new Promise((resolve, reject) => {
             let levelsRef;
 
-            console.log(filter.by, game.ui.FILTER_BY_NEWEST);
             switch (filter.by) {
                 case game.ui.FILTER_BY_FEATURED:
                     levelsRef = firebase.database().ref(`/PublishedLevels/`)
@@ -486,7 +479,6 @@ function FireBaseManager() {
                     if (filter.range === game.ui.FILTER_RANGE_ANYTIME) {
 
                         levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate')
-                        console.log("Anytime Creation date sorting");
 
                     } else if (filter.range === game.ui.FILTER_RANGE_THISMONTH) {
 
@@ -517,7 +509,6 @@ function FireBaseManager() {
                         levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime())
                     }
 
-                    console.log(filter.by, game.ui.FILTER_RANGE_ANYTIME);
                     if(filter.by == game.ui.FILTER_BY_NEWEST) levelsRef.limitToFirst(Settings.levelsPerRequest);
                     else levelsRef.limitToLast(Settings.levelsPerRequest);
                     break;
@@ -528,7 +519,6 @@ function FireBaseManager() {
                         levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/playCount').limitToFirst(Settings.levelsPerRequest);
 
                     } else if (filter.range === game.ui.FILTER_RANGE_THISMONTH) {
-                        console.log(prefixedRangeValue, 'prefixed value');
 
                         levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstMonth_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
 
@@ -536,7 +526,6 @@ function FireBaseManager() {
                         levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstWeek_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
 
                     } else if (filter.range === game.ui.FILTER_RANGE_TODAY) {
-                        console.log(prefixedRangeValue);
 
                         levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstDay_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
 

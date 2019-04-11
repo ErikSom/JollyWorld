@@ -255,7 +255,7 @@ function Game() {
 
 
     this.inputUpdate = function () {
-        if (this.gameState != this.GAMESTATE_MENU && this.character.alive) {
+        if (this.gameState != this.GAMESTATE_MENU && this.character.alive && !this.pause && !this.levelWon) {
             if (this.vehicle && this.character.attachedToVehicle) {
 
                 if (Key.isDown(Key.W)) {
@@ -483,15 +483,24 @@ function Game() {
     this.win = function () {
         if (!this.levelWon) {
             this.levelWon = true;
-            var ms = moment(Date.now()).diff(moment(this.levelStartTime));
-            var d = moment.duration(ms);
-            var s = Math.floor(d.asMinutes()) + moment.utc(ms).format(":ss:SSS");
 
-            alert(`You Won! Time:${s}!`)
+            if(this.gameState == this.GAMESTATE_EDITOR){
+                ui.show();
+                ui.showWinScreen(s, true);
+
+            }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
+        
+                var ms = moment(Date.now()).diff(moment(this.levelStartTime));
+                var d = moment.duration(ms);
+                var s = Math.floor(d.asMinutes()) + moment.utc(ms).format(":ss:SSS");
+
+                ui.showWinScreen(s, false);
+            }
+
         }
     }
     this.lose = function () {
-        if (!this.gameOver) {
+        if (!this.gameOver && !this.levelWon) {
             ui.showGameOver();
             this.gameOver = true;
         }

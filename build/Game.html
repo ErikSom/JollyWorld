@@ -2,18 +2,8 @@
 <html>
 
 <head>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121901447-2"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-121901447-2');
-    </script>
+    <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-121901447-2");</script>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8" />
@@ -22,23 +12,95 @@
     <title>JollyWorld</title>
     <meta name="description" content="..." />
 
+    <style>
+        html,
+        body,
+        div,
+        canvas {
+            margin: 0;
+            padding: 0;
+            display: block;
+        }
+        html{
+            box-sizing:border-box;
+        }
 
-    <!-- <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-functions.js"></script> -->
-    <!-- <script>
-        var config = {
-            apiKey: "AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0",
-            authDomain: "jolly-ad424.firebaseapp.com",
-            databaseURL: "https://jolly-ad424.firebaseio.com",
-            projectId: "jolly-ad424",
-            storageBucket: "jolly-ad424.appspot.com",
-            messagingSenderId: "186951023"
-        };
-        firebase.initializeApp(config);
-    </script> -->
+        body {
+            background-color: #3d7d1e;
+            font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            overflow:hidden;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        #preloader{
+            background: #3d7d1e;
+            z-index: 999;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        #preloader .preloaderBar{
+            width:200px;
+            height:20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid white;
+        }
+        .preloaderBar{
+            background:#545454;
+            position: absolute;
+            border-radius: 10px;
+        }
+        .preloaderBar div{
+            width:100%;
+            height:100%;
+            border-radius: 10px;
+        }
+        .preloaderBar .preloaderFill{
+            background-image: -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, rgba(0, 0, 0, .2)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, rgba(0, 0, 0, .2)), color-stop(.75, rgba(0, 0, 0, .2)), color-stop(.75, transparent), to(transparent) );
+            animation: move 2s linear infinite;
+            -webkit-animation: move 2s linear infinite;
+			-moz-animation: move 2s linear infinite;
+            position:absolute;
+            background-size: 50px 50px;
+            background-color: #d70201;
+            width: 50%;
+        }
+        .preloaderBar .innerBorder{
+            position: absolute;
+            border: 2px solid black;
+        }
+        @keyframes move{
+            0% {
+		       background-position: 0 0;
+		    }
+		    100% {
+		       background-position: 50px 50px;
+		    }
+        }
+        @-webkit-keyframes move {
+		    0% {
+		       background-position: 0 0;
+		    }
+		    100% {
+		       background-position: 50px 50px;
+		    }
+		}
+
+		@-moz-keyframes move {
+		    0% {
+		       background-position: 0 0;
+		    }
+		    100% {
+		       background-position: 50px 50px;
+		    }
+		}
+
+
+    </style>
+
 </head>
 
 <body>
@@ -46,6 +108,14 @@
         <div id="custom-gui"></div>
     </div>
     <div id="game-ui-container"></div>
+
+
+    <div id="preloader">
+        <div class="preloaderBar">
+            <div class="preloaderFill"></div>
+            <div class="innerBorder"></div>
+        </div>
+    </div>
 
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
 

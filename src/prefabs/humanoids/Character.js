@@ -16,7 +16,6 @@ class Character extends PrefabManager.basePrefab {
     }
 
     init() {
-        console.log(this);
         super.init();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
@@ -157,7 +156,6 @@ class Character extends PrefabManager.basePrefab {
                         }
                     }
                     if (body.mySprite.data.refName != "" && force > body.GetMass() * Settings.bashMaxForceMultiplier) {
-                        console.log(body.mySprite.data.refName, force, body.GetMass() * Settings.bashMaxForceMultiplier);
                         self.collisionUpdates.push({
                             type: Character.GORE_BASH,
                             target: body.mySprite.data.refName,
@@ -188,7 +186,6 @@ class Character extends PrefabManager.basePrefab {
     }
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
-        console.log(update);
             switch (update.type) {
                 case Character.GORE_BASH:
 
@@ -336,7 +333,6 @@ class Character extends PrefabManager.basePrefab {
             });
 
             if(particle == 'Gore_Meat'){
-                console.log(goreLookupObject._textures);
                 const ranId = Math.floor(Math.random()*4)+1;
                 goreLookupObject._textures[0].children[0].texture = PIXI.Texture.fromFrame(particle+ranId+'0000');
             }

@@ -568,7 +568,6 @@ export class triggerCore {
                 let fixture = this.trigger.GetFixtureList();
                 while (fixture != null) {
                     if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
-                        console.log("YEESSSS");
                         this.doTrigger();
                         break;
                     }

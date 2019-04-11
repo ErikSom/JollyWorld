@@ -61,7 +61,6 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 }
             }
         }
-        console.log(this.engines.length, this.wheels.length, "check this");
         if (this.lookupObject.frame) this.lookupObject.frame.SetAngularDamping(0.8);
         this.stopAccelerateWheels();
     }

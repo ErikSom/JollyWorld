@@ -100,7 +100,6 @@ class Portal extends PrefabManager.basePrefab {
                 direction: 'alternate',
                 easing: 'linear',
                 update: function () {
-                    console.log("UPDATE!!");
                     //console.log(animValues.tint, animValues.tintPercentage, teleportData.target.mySprite);
                     teleportData.target.mySprite.alpha = animValues.opacity;
                     // teleportData.target.mySprite.tint = animValues.tint;
@@ -175,7 +174,6 @@ class Portal extends PrefabManager.basePrefab {
             this.m_hit = false;
         };
         this.rayCastCallback.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-            console.log("IS PORTAL!?", fixture.GetBody() !== self.lookupObject['portal']);
             if(fixture.GetBody() !== self.lookupObject['portal']) return -1;
             this.m_hit = true;
             this.m_point = point.Clone();
@@ -189,9 +187,7 @@ class Portal extends PrefabManager.basePrefab {
             let rayEnd = target.GetPosition().Clone();
             rayEnd.SelfSub(rayEndOffset);
             let callback = new this.rayCastCallback();
-            console.log(rayStart, rayEnd);
             target.GetWorld().RayCast(callback, rayStart, rayEnd);
-            console.log(callback);
             if (callback.m_hit) {
                 targetsInsideRange.push(target);
             }
@@ -199,7 +195,6 @@ class Portal extends PrefabManager.basePrefab {
 
         let minimumAmmountOfObjects = (targets.length == 1) ? 1 : Math.floor(targets.length*tolerance);
 
-        console.log(targetsInsideRange.length, minimumAmmountOfObjects);
         return (targetsInsideRange.length >= minimumAmmountOfObjects);
 
     }
@@ -210,7 +205,6 @@ class Portal extends PrefabManager.basePrefab {
         game.editor.updateBodyShapes(this.lookupObject.portal);
     }
     linkPortal(portal) {
-        console.log("Linking, park");
         this.connectedPortal = portal;
         portal.connectedPortal = this;
     }

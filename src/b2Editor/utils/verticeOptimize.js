@@ -5,9 +5,9 @@ const simpler = require('simplify-js');
 
 paper.setup();
 export const simplifyPath = function (vertices, smooth, zoom) {
-    if(!smooth) console.log("Straight optimize path..");
-    else console.log("Bezier Curve optimize path..");
-    console.log("Starting num vertices:", vertices.length);
+    // if(!smooth) console.log("Straight optimize path..");
+    // else console.log("Bezier Curve optimize path..");
+    // console.log("Starting num vertices:", vertices.length);
     let optimizedVertices;
     let toleranceIncreaser = 0;
     const maxIterations = 500;
@@ -38,6 +38,6 @@ export const simplifyPath = function (vertices, smooth, zoom) {
     }
     if(optimizedVertices.length<3) optimizedVertices = vertices;
     if(optimizedVertices.length>100) optimizedVertices = null;
-    console.log("Optimized num vertices:", optimizedVertices.length);
+    // console.log("Optimized num vertices:", optimizedVertices.length);
     return optimizedVertices;
 }
