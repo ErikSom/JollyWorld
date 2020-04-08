@@ -6,6 +6,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 module.exports = {
 	devtool: isProduction ? 'source-map' : 'eval-source-map',
 	entry: ['./src/bootstrap.js'],
+	stats: 'verbose',
 	output: {
 		path: path.resolve(__dirname, 'build'),
 		filename: 'awesome-game.js',

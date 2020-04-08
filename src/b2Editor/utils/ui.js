@@ -1678,8 +1678,8 @@ export const showNotice = function (message) {
 
     customGUIContainer.appendChild(notice.domElement);
 
-    $(notice.domElement).css('left', $(window).width() / 2 - $(notice.domElement).width() / 2);
-    $(notice.domElement).css('top', $(window).height() / 2 - $(notice.domElement).height() / 2);
+    $(notice.domElement).css('left', window.innerWidth / 2 - $(notice.domElement).width() / 2);
+    $(notice.domElement).css('top', window.innerHeight / 2 - $(notice.domElement).height() / 2);
 
 
     registerDragWindow(notice);
@@ -1737,8 +1737,8 @@ export const showTextEditor = function (startValue, callBack) {
 
     customGUIContainer.appendChild(textEditor.domElement);
 
-    $(textEditor.domElement).css('left', $(window).width() / 2 - $(textEditor.domElement).width() / 2);
-    $(textEditor.domElement).css('top', $(window).height() / 2 - $(textEditor.domElement).height() / 2);
+    $(textEditor.domElement).css('left', window.innerWidth / 2 - $(textEditor.domElement).width() / 2);
+    $(textEditor.domElement).css('top', window.innerHeight / 2 - $(textEditor.domElement).height() / 2);
 
 
     registerDragWindow(textEditor);
@@ -1801,8 +1801,8 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     customGUIContainer.appendChild(prompt.domElement);
 
-    $(prompt.domElement).css('left', $(window).width() / 2 - $(prompt.domElement).width() / 2);
-    $(prompt.domElement).css('top', $(window).height() / 2 - $(prompt.domElement).height() / 2);
+    $(prompt.domElement).css('left', window.innerWidth / 2 - $(prompt.domElement).width() / 2);
+    $(prompt.domElement).css('top', window.innerHeight / 2 - $(prompt.domElement).height() / 2);
 
 
     registerDragWindow(prompt);

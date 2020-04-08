@@ -9,7 +9,6 @@ import {
     getPIXIDebugDraw
 } from "../libs/debugdraw";
 const PIXI = require('pixi.js');
-import $ from 'jquery';
 import {
     ui
 } from "./ui/UIManager";
@@ -96,8 +95,8 @@ function Game() {
 
         this.canvas = document.getElementById("canvas");
 
-        var w = $(window).width();
-        var h = $(window).height();
+        var w = window.innerWidth;
+        var h = window.innerHeight;
 
         this.canvas.width = w;
         this.canvas.height = h;
@@ -217,8 +216,8 @@ function Game() {
     };
 
     this.handleResize = function (e) {
-        const w = $(window).width();
-        const h = $(window).height();
+        const w = window.innerWidth;
+        const h = window.innerHeight;
 
         this.canvas.width = w;
         this.canvas.height = h;
@@ -510,17 +509,20 @@ function Game() {
             game.currentLevelData = levelData;
             game.currentLevelData.uid = levelData.uid;
             var self = this;
-            $.getJSON(firebaseManager.baseDownloadURL + levelData.dataURL, function (data) {
+
+            fetch(firebaseManager.baseDownloadURL + levelData.dataURL)
+            .then(response => response.json())
+            .then(data => {
                 self.currentLevelData.json = JSON.stringify(data);
                 self.currentLevelData.saved = true;
                 self.initLevel(self.currentLevelData);
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
                 return resolve();
-            }).fail(function (jqXHR, textStatus, errorThrown) {
+            }).catch((err)=>{
                 return reject({
-                    message: textStatus
+                    message: err
                 });
-            });
+            })
         });
     }
     this.loadPublishedLevelData = function (levelData) {
@@ -528,15 +530,17 @@ function Game() {
             game.currentLevelData = levelData.private;
             game.currentLevelData.uid = levelData.uid;
             var self = this;
-            $.getJSON(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.uid}/levelData.json`, function (data) {
+           fetch(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.uid}/levelData.json`)
+           .then(response => response.json())
+           .then((data) =>{
                 self.currentLevelData.json = JSON.stringify(data);
                 self.initLevel(self.currentLevelData);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
                 return resolve();
-            }).fail(function (jqXHR, textStatus, errorThrown) {
+            }).catch((err) => {
                 console.log('fail', errorThrown);
                 return reject({
-                    message: textStatus
+                    message: err
                 });
             });
         });

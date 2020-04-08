@@ -179,6 +179,7 @@ const _B2dEditor = function () {
 		this.spawnTexture = function () {};
 		folder.open();
 		$(folder.domElement).parent().parent().parent().hover(function () {
+			console.log("HOVER");
 			$(this).addClass('hover');
 		})
 		for (var i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup].length; i++) {
@@ -6028,8 +6029,8 @@ const _B2dEditor = function () {
 		ui.hide();
 	}
 	this.resize = function () {
-		this.canvas.width = $(window).width();
-		this.canvas.height = $(window).height();
+		this.canvas.width = window.innerWidth;
+		this.canvas.height = window.innerHeight;
 	}
 
 	this.getWorldPointFromPixelPoint = function (pixelPoint) {

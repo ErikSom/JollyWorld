@@ -120,20 +120,28 @@
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
 
     <script>
-        function loadJS(url, onDone, onError) {
-            if (!onDone) onDone = function () {};
+        var preloaderFill = document.getElementsByClassName('preloaderFill')[0];
+
+        function loadJS(url, onError) {
+            var setProgress = function(percent){
+                preloaderFill.style.width = (percent*100).toFixed(2)+'%';
+            }
             if (!onError) onError = function () {};
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200 || xhr.status == 0) {
                         try {
-                            eval(xhr.responseText);
+                            setProgress(1);
+                            setTimeout(function(){
+                                eval(xhr.responseText);
+                                var preloader = document.getElementById('preloader');
+                                if(preloader)preloader.parentNode.removeChild(preloader);
+                            }, 100);
                         } catch (e) {
                             onError(e);
                             return;
                         }
-                        onDone();
                     } else {
                         onError(xhr.status);
                     }
@@ -146,8 +154,9 @@
                 onError(e);
             }
             xhr.onprogress = function (event) {
+                var percentComplete = 0;
                 if (event.lengthComputable) {
-                    var percentComplete = Math.round(event.loaded * 100 / event.total);
+                    percentComplete = event.loaded / event.total;
                 } else {
                     var total = xhr.getResponseHeader('content-length')
                     var encoding = xhr.getResponseHeader('content-encoding')
@@ -156,12 +165,12 @@
                     } else {
                         console.log('lengthComputable failed')
                     }
+                    percentComplete = event.loaded / total;
                 }
+                setProgress(percentComplete);
             }
         }
-        loadJS('awesome-game.js', function () {
-            console.log('JS Loaded')
-        });
+        loadJS('awesome-game.js');
     </script>
 
 </body>

@@ -33,8 +33,8 @@ export const resetToStoredPosition = function(){
         B2dEditor.container.scale.x = storedZoom;
         B2dEditor.container.scale.y = storedZoom;
     }else{
-        storedCameraPosition.x = $(window).width()/2;
-        storedCameraPosition.y = $(window).height()/2;
+        storedCameraPosition.x = window.innerWidth/2;
+        storedCameraPosition.y = window.innerHeight/2;
     }
     set(storedCameraPosition);
 }
