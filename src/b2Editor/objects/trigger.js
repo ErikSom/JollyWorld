@@ -482,8 +482,8 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 export const triggerGUIState = {};
 export const updateTriggerGUI = function () {
     //save folder status
-
-    var targetFolder = ui.editorGUI.__folders[$(ui.editorGUI.domElement).find('.title')[0].innerText]
+    const title = ui.editorGUI.domElement.querySelector('.title');
+    var targetFolder = ui.editorGUI.__folders[title.innerText];
 
 
     let folder;
@@ -499,7 +499,7 @@ export const updateTriggerGUI = function () {
     B2dEditor.updateSelection();
 
 
-    targetFolder = ui.editorGUI.__folders[$(ui.editorGUI.domElement).find('.title')[0].innerText]
+    targetFolder = ui.editorGUI.__folders[title.innerText]
 
     //restore folder status
     for (var propt in targetFolder.__folders) {

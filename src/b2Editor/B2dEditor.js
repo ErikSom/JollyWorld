@@ -178,40 +178,44 @@ const _B2dEditor = function () {
 		folder.add(self, "assetSelectedTexture", PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
 		this.spawnTexture = function () {};
 		folder.open();
-		$(folder.domElement).parent().parent().parent().hover(function () {
-			console.log("HOVER");
-			$(this).addClass('hover');
-		})
-		for (var i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup].length; i++) {
-			var prefabName = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup][i];
+		for (let i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup].length; i++) {
+			const prefabName = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup][i];
 
 			let image = this.renderPrefabToImage(prefabName);
-			var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
-			guiFunction.find('img').attr('src', image.src);
-			guiFunction.find('img').attr('title', prefabName);
-			$(folder.domElement).append(guiFunction);
-			guiFunction.css('height', '100px');
-			guiFunction.find('img').css('display', 'block');
-			guiFunction.find('img').css('margin', 'auto');
-			guiFunction.attr('prefabName', prefabName);
+			const guiFunction = document.createElement('li');
+			guiFunction.innerHTML = '<div><img src=""></img><div class="c"><div class="button"></div></div></div>';
+			guiFunction.classList.add('cr', 'function');
 
-			guiFunction.on('click dragend', function (e) {
-				var guiAsset = $(this).parent().parent().parent().parent();
-				var rect = guiAsset[0].getBoundingClientRect();
-				var x = Math.max(e.pageX, rect.right + 200);
-				var y = e.pageY;
+			const guiFunctionImg = guiFunction.querySelector('img');
 
-				var data = new self.prefabObject;
+			guiFunctionImg.setAttribute('src', image.src);
+			guiFunctionImg.setAttribute('title', prefabName);
+			folder.domElement.appendChild(guiFunction);
+			guiFunction.style.height = '100px';
+			guiFunctionImg.style.display = 'block';
+			guiFunctionImg.style.margin = 'auto';
+			guiFunction.setAttribute('prefabName', prefabName);
+
+			const clickFunction = (e) =>{
+				console.log(guiFunction)
+				const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
+				const rect = guiAsset.getBoundingClientRect();
+				const x = Math.max(e.pageX, rect.right + 200);
+				const y = e.pageY;
+
+				const data = new self.prefabObject;
 				data.instanceID = self.prefabCounter;
 
 				data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
 				data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
 
-				data.prefabName = $(this).attr('prefabName');
+				data.prefabName = guiFunction.getAttribute('prefabName');
 				data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
-				var newPrefab = self.buildPrefabFromObj(data);
+				self.buildPrefabFromObj(data);
+			}
 
-			});
+			guiFunction.addEventListener('click', clickFunction);
+			guiFunction.addEventListener('dragend', clickFunction);
 		}
 	}
 	this.openTextEditor = function () {
@@ -238,9 +242,9 @@ const _B2dEditor = function () {
 		this.selectedPrefabs = [];
 		this.activeVertices = [];
 
-		var $buttons = $('.toolgui .button');
-		$buttons.css("background-color", '');
-		$($buttons[i]).css("background-color", '#4F4F4F');
+		const buttons = document.querySelectorAll('.toolgui .button');
+		buttons.forEach(button => { button.style.backgroundColor = '' });
+		buttons[i].style.backgroundColor = '#4F4F4F';
 
 		ui.destroyEditorGUI();
 		ui.buildEditorGUI();
@@ -2647,37 +2651,41 @@ const _B2dEditor = function () {
 		var offset = (Date.now() % offsetInterval + 1) / offsetInterval;
 
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
-			for (let j = 0; j < this.selectedPhysicsBodies[i].mySprite.data.vertices.length; j++) {
-				if (this.selectedPhysicsBodies[i].mySprite.data.radius[j]) {
+			const selectedPhysicsBody = this.selectedPhysicsBodies[i];
+			const data = selectedPhysicsBody.mySprite.data;
+			if(data.type === this.object_TRIGGER) continue;
+
+			for (let j = 0; j < data.vertices.length; j++) {
+				if (data.radius[j]) {
 
 					let p = {
-						x: this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].x * this.PTM,
-						y: this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0].y * this.PTM
+						x: data.vertices[j][0].x * this.PTM,
+						y: data.vertices[j][0].y * this.PTM
 					};
-					const cosAngle = Math.cos(this.selectedPhysicsBodies[i].mySprite.rotation);
-					const sinAngle = Math.sin(this.selectedPhysicsBodies[i].mySprite.rotation);
+					const cosAngle = Math.cos(selectedPhysicsBody.mySprite.rotation);
+					const sinAngle = Math.sin(selectedPhysicsBody.mySprite.rotation);
 					const dx = p.x;
 					const dy = p.y;
 					p.x = (dx * cosAngle - dy * sinAngle);
 					p.y = (dx * sinAngle + dy * cosAngle);
 
 
-					this.debugGraphics.drawDashedCircle(this.selectedPhysicsBodies[i].mySprite.data.radius[j] * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x, (this.selectedPhysicsBodies[i].mySprite.x + p.x) * this.container.scale.x + this.container.x, (this.selectedPhysicsBodies[i].mySprite.y + p.y) * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedCircle(data.radius[j] * this.container.scale.x * selectedPhysicsBody.mySprite.scale.x, (selectedPhysicsBody.mySprite.x + p.x) * this.container.scale.x + this.container.x, (selectedPhysicsBody.mySprite.y + p.y) * this.container.scale.y + this.container.y, selectedPhysicsBody.mySprite.rotation, 20, 10, offset);
 				} else {
 					var polygons = [];
 					let innerVertices;
-					if (this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0] instanceof Array == false) innerVertices = this.selectedPhysicsBodies[i].mySprite.data.vertices[j];
-					else innerVertices = this.selectedPhysicsBodies[i].mySprite.data.vertices[j][0];
+					if (data.vertices[j][0] instanceof Array == false) innerVertices = data.vertices[j];
+					else innerVertices = data.vertices[j][0];
 
 					for (let k = 0; k < innerVertices.length; k++) {
 						polygons.push({
-							x: (innerVertices[k].x * this.PTM) * this.container.scale.x * this.selectedPhysicsBodies[i].mySprite.scale.x,
-							y: (innerVertices[k].y * this.PTM) * this.container.scale.y * this.selectedPhysicsBodies[i].mySprite.scale.y
+							x: (innerVertices[k].x * this.PTM) * this.container.scale.x * selectedPhysicsBody.mySprite.scale.x,
+							y: (innerVertices[k].y * this.PTM) * this.container.scale.y * selectedPhysicsBody.mySprite.scale.y
 						});
 
 
 					}
-					this.debugGraphics.drawDashedPolygon(polygons, this.selectedPhysicsBodies[i].mySprite.x * this.container.scale.x + this.container.x, this.selectedPhysicsBodies[i].mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedPolygon(polygons, selectedPhysicsBody.mySprite.x * this.container.scale.x + this.container.x, selectedPhysicsBody.mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 				}
 			}
 		}

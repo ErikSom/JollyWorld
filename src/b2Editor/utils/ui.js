@@ -1562,9 +1562,6 @@ export const initGuiAssetSelection = function () {
         folder.add(assetSelection, "assetSelectedTexture", B2dEditor.assetLists[assetSelection.assetSelectedGroup]).onChange(function (value) {}).name("Select");
 
         folder.open();
-        $(folder.domElement).parent().parent().parent().hover(function () {
-            $(this).addClass('hover');
-        })
 
         for (var i = 0; i < B2dEditor.assetLists[assetSelection.assetSelectedGroup].length; i++) {
             var textureName = B2dEditor.assetLists[assetSelection.assetSelectedGroup][i];
