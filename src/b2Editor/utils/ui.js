@@ -44,13 +44,13 @@ export const hide = function () {
     hideEditorPanels();
     toolGUI.style.display = 'none';
     headerBar.style.display = 'none';
-    scrollBars.hide();
+    scrollBars.classList.add('hidden');;
     destroyEditorGUI();
 }
 export const show = function () {
     toolGUI.style.display = 'block';
     headerBar.style.display = 'block';
-    scrollBars.show();
+    scrollBars.classList.remove('hidden');
 }
 
 export const initGui = function () {
@@ -73,30 +73,23 @@ export const hideEditorPanels = function () {
     hidePanel(prompt);
 }
 export const hidePanel = function (panel) {
-    if (panel) $(panel.domElement).hide(windowHideTime);
+    if (panel) panel.domElement.classList.add('fadedHide');
 }
 export const setLevelSpecifics = function () {
-    $('.editorHeader > span').text(game.currentLevelData.title);
+    document.querySelectorAll('.editorHeader > span').forEach(span => span.text = game.currentLevelData.title);
 }
 export const setNewLevelData = function () {
     if (levelEditScreen) {
-        game.currentLevelData.title = $(levelEditScreen.domElement).find('#levelEdit_title').val();
-        game.currentLevelData.description = $(levelEditScreen.domElement).find('#levelEdit_description').val();
+        game.currentLevelData.title = levelEditScreen.domElement.querySelector('#levelEdit_title').value;
+        game.currentLevelData.description = levelEditScreen.domElement.querySelector('#levelEdit_description').value;
     }
 }
 const hasUnsavedChanges = function () {
-
-    //console.log('Game has level changes', game.levelHasChanges());
-    //console.log('Title different?', game.currentLevelData.title != $(levelEditScreen.domElement).find('#levelEdit_title').val(), game.currentLevelData.title, $(levelEditScreen.domElement).find('#levelEdit_title').val());
-    //console.log('Description different?', game.currentLevelData.description != $(levelEditScreen.domElement).find('#levelEdit_description').val(), game.currentLevelData.description, $(levelEditScreen.domElement).find('#levelEdit_description').val());
-    //console.log('game editor camerashotdata', game.editor.cameraShotData.highRes);
-
-
     if (game.levelHasChanges()) return true;
     if (!levelEditScreen) return false;
     else {
-        if (game.currentLevelData.title != $(levelEditScreen.domElement).find('#levelEdit_title').val()) return true;
-        if (game.currentLevelData.description != $(levelEditScreen.domElement).find('#levelEdit_description').val()) return true;
+        if (game.currentLevelData.title != levelEditScreen.domElement.querySelector('#levelEdit_title').value) return true;
+        if (game.currentLevelData.description != levelEditScreen.domElement.querySelector('#levelEdit_description').value) return true;
         if(game.editor.cameraShotData.highRes != null) return true;
 
     }
@@ -105,11 +98,11 @@ const hasUnsavedChanges = function () {
 const handleLoginStatusChange = function (event) {
     if (headerBar) {
         if (firebaseManager.isLoggedIn()) {
-            $(headerBar).find('#loginButton').hide();
-            $(headerBar).find('#profileButton').show();
+            headerBar.querySelector('#loginButton').style.visibility = 'hidden';
+            headerBar.querySelector('#profileButton').style.visibility = 'visible';
         } else {
-            $(headerBar).find('#loginButton').show();
-            $(headerBar).find('#profileButton').hide();
+            headerBar.querySelector('#loginButton').style.visibility = 'visible';
+            headerBar.querySelector('#profileButton').style.visibility = 'hidden';
         }
     }
     if ((event && event.type == 'login') || firebaseManager.isLoggedIn()) {
@@ -119,9 +112,9 @@ const handleLoginStatusChange = function (event) {
     }
 }
 const checkLevelDataForErrors = function () {
-    const title = $(levelEditScreen.domElement).find('#levelEdit_title')[0];
-    const description = $(levelEditScreen.domElement).find('#levelEdit_description')[0];
-    const errorSpan = $(levelEditScreen.domElement).find('#levelEdit_errorText')[0];
+    const title = levelEditScreen.domElement.querySelector('#levelEdit_title');
+    const description = levelEditScreen.domElement.querySelector('#levelEdit_description');
+    const errorSpan = levelEditScreen.domElement.querySelector('#levelEdit_errorText');
 
     var errorStack = [];
     const textAreaDefaultColor = '#fff';
@@ -219,7 +212,7 @@ export const showHeaderBar = function () {
     button.innerHTML = "TEST";
     headerBar.appendChild(button);
 
-    $(button).on('click', () => {
+    button.addEventListener('click', () => {
         game.testWorld();
     });
 
@@ -230,7 +223,7 @@ export const showHeaderBar = function () {
     saveButton.innerHTML = "SAVE";
     headerBar.appendChild(saveButton);
 
-    $(saveButton).on('click', () => {
+    saveButton.addEventListener('click', () => {
         //save locally first
         doSaveLevelData(saveButton);
     });
@@ -314,7 +307,7 @@ export const showLoginScreen = function () {
         const closeButton = document.createElement('div');
         closeButton.setAttribute('class', 'closeWindowIcon');
         folder.domElement.append(closeButton);
-        $(closeButton).click(() => {
+        closeButton.addEventListener('click', () => {
             hidePanel(loginScreen);
         });
 
@@ -402,11 +395,17 @@ export const showLoginScreen = function () {
             return f;
         }
 
-        $(email).on('input selectionchange propertychange', func(email));
-        $(email).blur(errorChecks);
+        const emailFunction = func(email);
+        email.addEventListener('input', emailFunction);
+        email.addEventListener('selectionchange', emailFunction);
+        email.addEventListener('propertychange', emailFunction);
+        email.addEventListener('blur', errorChecks);
 
-        $(password).on('input selectionchange propertychange', func(password));
-        $(password).blur(errorChecks);
+        const passwordFunction = func(password);
+        password.addEventListener('input', passwordFunction);
+        password.addEventListener('selectionchange', passwordFunction);
+        password.addEventListener('propertychange', passwordFunction);
+        password.addEventListener('blur', errorChecks);
 
         targetDomElement.appendChild(divWrapper);
 
@@ -418,8 +417,8 @@ export const showLoginScreen = function () {
         span.innerText = 'Sign Up!';
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
-        $(span).on('click', () => {
-            $(loginScreen.domElement).toggle();
+        span.addEventListener('click', () => {
+            loginScreen.domElement.classList.toggle('hidden');
             showRegisterScreen();
         });
 
@@ -430,9 +429,9 @@ export const showLoginScreen = function () {
         button.innerHTML = 'Login!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
-        $(button).keypress(function (e) {
+        button.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
-                $(button).click();
+                button.click();
         });
 
         var dotShell = document.createElement('div');
@@ -441,26 +440,26 @@ export const showLoginScreen = function () {
         var dots = document.createElement('div');
         dots.setAttribute('class', 'dot-pulse')
         dotShell.appendChild(dots);
-        $(dotShell).hide();
+        dotShell.classList.add('hidden');;
 
 
-        $(button).on('click', () => {
+        button.addEventListener('click', () => {
             if (errorChecks(true)) {
                 let oldText = button.innerHTML;
                 button.innerHTML = '';
                 button.appendChild(dotShell);
-                $(dotShell).show();
+                dotShell.classList.remove('hidden');
                 firebaseManager.login(email.value, password.value).then(() => {
                     console.log("Succesfully logged in!!");
                     hidePanel(loginScreen);
                     button.innerHTML = oldText;
-                    $(dotShell).hide();
+                    dotShell.classList.add('hidden');;
 
                 }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     errorSpan.innerText = error.message;
                     button.innerHTML = oldText;
-                    $(dotShell).hide();
+                    dotShell.classList.add('hidden');;
                 });
             }
         });
@@ -480,7 +479,7 @@ export const showLoginScreen = function () {
         registerDragWindow(loginScreen);
 
     }
-    $(loginScreen.domElement).show();
+    loginScreen.domElement.classList.remove('hidden');
 
     if (registerScreen) {
         loginScreen.domElement.style.top = registerScreen.domElement.style.top;
@@ -600,15 +599,23 @@ export const showRegisterScreen = function () {
         }
 
 
-        $(password).on('input selectionchange propertychange', func(password));
-        $(password).blur(errorChecks);
+        const passwordFunction = func(password);
+        password.addEventListener('input', passwordFunction);
+        password.addEventListener('selectionchange', passwordFunction);
+        password.addEventListener('propertychange', passwordFunction);
+        password.addEventListener('blur', errorChecks);
 
-        $(repassword).on('input selectionchange propertychange', func(repassword));
-        $(repassword).blur(errorChecks);
+        const repasswordFunction = func(repassword);
+        repassword.addEventListener('input', repasswordFunction);
+        repassword.addEventListener('selectionchange', repasswordFunction);
+        repassword.addEventListener('propertychange', repasswordFunction);
+        repassword.addEventListener('blur', errorChecks);
 
-        $(email).on('input selectionchange propertychange', func(email));
-        $(email).blur(errorChecks);
-
+        const emailFunction = func(email);
+        email.addEventListener('input', emailFunction);
+        email.addEventListener('selectionchange', emailFunction);
+        email.addEventListener('propertychange', emailFunction);
+        email.addEventListener('blur', errorChecks);
 
         targetDomElement.appendChild(divWrapper);
 
@@ -629,9 +636,9 @@ export const showRegisterScreen = function () {
         button.innerHTML = 'Accept!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
-        $(button).keypress(function (e) {
+        button.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
-                $(button).click();
+                button.click();
         });
 
         var dotShell = document.createElement('div');
@@ -640,26 +647,26 @@ export const showRegisterScreen = function () {
         var dots = document.createElement('div');
         dots.setAttribute('class', 'dot-pulse')
         dotShell.appendChild(dots);
-        $(dotShell).hide();
+        dotShell.classList.add('hidden');;
 
 
-        $(button).on('click', () => {
+        button.addEventListener('click', () => {
             if (errorChecks(true)) {
-                $(dotShell).show();
+                dotShell.classList.remove('hidden');
                 let oldText = button.innerHTML;
                 button.innerHTML = '';
                 button.appendChild(dotShell);
                 firebaseManager.registerUser(email.value, password.value).then(() => {
                     console.log("Succesfully registered!!");
                     hidePanel(registerScreen);
-                    $(dotShell).hide();
+                    dotShell.classList.add('hidden');;
                     button.innerHTML = oldText;
                 }).catch((error) => {
                     console.log("Firebase responded with", error.code);
                     let errorMessage = error.message;
                     if (error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
                     errorSpan.innerText = errorMessage;
-                    $(dotShell).hide();
+                    dotShell.classList.add('hidden');;
                     button.innerHTML = oldText;
                 });
             }
@@ -674,8 +681,8 @@ export const showRegisterScreen = function () {
         span.innerText = 'Log In!';
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
-        $(span).on('click', () => {
-            $(registerScreen.domElement).hide();
+        span.addEventListener('click', () => {
+            registerScreen.domElement.classList.add('hidden');
             showLoginScreen();
         });
 
@@ -794,9 +801,14 @@ export const showUsernameScreen = function () {
             return f;
         };
 
-        $(username).on('input selectionchange propertychange', func(username));
-        $(username).focus(focus(username, Settings.DEFAULT_TEXTS.login_DefaultUsername));
-        $(username).blur(blur(username, Settings.DEFAULT_TEXTS.login_DefaultUsername));
+
+        const usernameFunction = func(username);
+        username.addEventListener('input', usernameFunction);
+        username.addEventListener('selectionchange', usernameFunction);
+        username.addEventListener('propertychange', usernameFunction);
+
+        username.onfocus = focus(username, Settings.DEFAULT_TEXTS.login_DefaultUsername);
+        username.onblur = blur(username, Settings.DEFAULT_TEXTS.login_DefaultUsername);
 
         targetDomElement.appendChild(divWrapper);
 
@@ -808,9 +820,9 @@ export const showUsernameScreen = function () {
         button.innerHTML = 'Accept!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
-        $(button).keypress(function (e) {
+        button.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
-                $(button).click();
+                button.click();
         });
 
         var dotShell = document.createElement('div');
@@ -819,12 +831,12 @@ export const showUsernameScreen = function () {
         var dots = document.createElement('div');
         dots.setAttribute('class', 'dot-pulse')
         dotShell.appendChild(dots);
-        $(dotShell).hide();
+        dotShell.classList.add('hidden');;
 
 
-        $(button).on('click', () => {
+        button.addEventListener('click', () => {
             if (errorChecks(true)) {
-                $(dotShell).show();
+                dotShell.classList.remove('hidden');
                 let oldText = button.innerHTML;
                 button.innerHTML = '';
                 button.appendChild(dotShell);
@@ -839,14 +851,14 @@ export const showUsernameScreen = function () {
                     })
                     .then(() => {
                         hidePanel(usernameScreen);
-                        $(dotShell).hide();
+                        dotShell.classList.add('hidden');;
                         button.innerHTML = oldText;
                     }).catch((error) => {
                         console.log("Firebase responded with", error);
                         let errorMessage = error.message;
                         if (error.code == 'USERNAME_TAKEN') errorMessage = 'Username already claimed by other email';
                         errorSpan.innerText = errorMessage;
-                        $(dotShell).hide();
+                        dotShell.classList.add('hidden');;
                         button.innerHTML = oldText;
                     });
             }
@@ -887,7 +899,7 @@ export const showLevelEditScreen = function () {
         const closeButton = document.createElement('div');
         closeButton.setAttribute('class', 'closeWindowIcon');
         folder.domElement.append(closeButton);
-        $(closeButton).click(() => {
+        closeButton.addEventListener('click', () => {
             hidePanel(levelEditScreen);
         });
 
@@ -918,7 +930,7 @@ export const showLevelEditScreen = function () {
             thumbNailImage.style.display = 'block';
         }
 
-        $(thumbNail).click(() => {
+        thumbNail.addEventListener('click', () => {
             B2dEditor.cameraShotCallBack = thumbnailShotComplete;
             B2dEditor.selectTool(B2dEditor.tool_CAMERA);
             levelEditScreen.domElement.style.display = 'none';
@@ -966,7 +978,10 @@ export const showLevelEditScreen = function () {
             f();
             return f;
         }
-        $(title).on('input selectionchange propertychange', func(title, span));
+        const titleFunction = func(title, span);
+        title.addEventListener('input', titleFunction);
+        title.addEventListener('selectionchange', titleFunction);
+        title.addEventListener('propertychange', titleFunction);
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));
@@ -995,7 +1010,10 @@ export const showLevelEditScreen = function () {
             f();
             return f;
         }
-        $(description).on('input selectionchange propertychange', func(description, span));
+        const descriptionFunction = func(description, span);
+        description.addEventListener('input', descriptionFunction);
+        description.addEventListener('selectionchange', descriptionFunction);
+        description.addEventListener('propertychange', descriptionFunction);
 
         divWrapper.appendChild(document.createElement('br'));
         divWrapper.appendChild(document.createElement('br'));
@@ -1024,7 +1042,7 @@ export const showLevelEditScreen = function () {
         saveButton.innerHTML = "SAVE";
         divWrapper.appendChild(saveButton);
 
-        $(saveButton).on('click', () => {
+        saveButton.addEventListener('click', () => {
             doSaveLevelData(saveButton);
         });
 
@@ -1045,7 +1063,7 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(publishButton);
 
 
-        $(publishButton).on('click', () => {
+        publishButton.addEventListener('click', () => {
             doPublishLevelData(publishButton);
         });
 
@@ -1057,7 +1075,7 @@ export const showLevelEditScreen = function () {
         deleteButton.style.float = 'right';
         divWrapper.appendChild(deleteButton);
 
-        $(deleteButton).on('click', () => {
+        deleteButton.addEventListener('click', () => {
             self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 deleteButton.style.backgroundColor = 'grey';
                 deleteButton.innerText = '...';
@@ -1093,15 +1111,15 @@ export const showLevelEditScreen = function () {
     levelEditScreen.domElement.style.display = "block";
     // set values
 
-    let thumbNailImage = $(levelEditScreen.domElement).find('#levelThumbnailImage')[0];
+    let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
     if (game.currentLevelData.thumbLowResURL) {
         thumbNailImage.src = firebaseManager.baseDownloadURL + game.currentLevelData.thumbLowResURL;
         thumbNailImage.style.display = 'block';
     } else {
         thumbNailImage.style.display = 'none';
     }
-    $(levelEditScreen.domElement).find('#levelEdit_title').val(game.currentLevelData.title);
-    $(levelEditScreen.domElement).find('#levelEdit_description').val(game.currentLevelData.description);
+    levelEditScreen.domElement.querySelector('#levelEdit_title').value = game.currentLevelData.title;
+    levelEditScreen.domElement.querySelector('#levelEdit_description').value = game.currentLevelData.description;
 }
 export const showSaveScreen = function () {
 
@@ -1126,7 +1144,7 @@ export const showSaveScreen = function () {
         const closeButton = document.createElement('div');
         closeButton.setAttribute('class', 'closeWindowIcon');
         folder.domElement.append(closeButton);
-        $(closeButton).click(() => {
+        closeButton.addEventListener('click', () => {
             hidePanel(saveScreen);
         });
 
@@ -1149,9 +1167,9 @@ export const showSaveScreen = function () {
         new_button.innerHTML = 'New!';
         targetDomElement.appendChild(new_button);
         new_button.style.margin = '10px auto';
-        $(new_button).keypress(function (e) {
+        new_button.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
-                $(new_button).click();
+                new_button.click();
         });
 
         var dotShell = document.createElement('div');
@@ -1160,24 +1178,24 @@ export const showSaveScreen = function () {
         var dots = document.createElement('div');
         dots.setAttribute('class', 'dot-pulse')
         dotShell.appendChild(dots);
-        $(dotShell).hide();
+        dotShell.classList.add('hidden');;
 
         let self = this;
 
-        $(new_button).on('click', () => {
+        new_button.addEventListener('click', () => {
             let oldText = new_button.innerHTML;
             new_button.innerHTML = '';
             new_button.appendChild(dotShell);
-            $(dotShell).show();
+            dotShell.classList.remove('hidden');
 
             game.saveNewLevelData().then(() => {
                 new_button.innerHTML = oldText;
-                $(dotShell).hide();
+                dotShell.classList.add('hidden');;
                 console.log("Uploading level was a success!!");
                 self.hideEditorPanels();
             }).catch((error) => {
                 new_button.innerHTML = oldText;
-                $(dotShell).hide();
+                dotShell.classList.add('hidden');;
                 console.log("Uploading error:", error.message);
             })
 
@@ -1200,7 +1218,7 @@ export const showSaveScreen = function () {
 
     }
     // On every opn do:
-    $(saveScreen.domElement).show();
+    saveScreen.domElement.classList.remove('hidden');
 
     const buttonFunction = (button, level) => {
         self.showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
@@ -1224,9 +1242,9 @@ export const showSaveScreen = function () {
             });
         }).catch((error) => {});
     }
-    const levelListDiv = $(saveScreen.domElement).find('#levelList');
-    levelListDiv.empty();
-    this.generateLevelList(levelListDiv[0], 'SAVE', buttonFunction);
+    const levelListDiv = saveScreen.domElement.querySelector('#levelList');
+    while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
+    this.generateLevelList(levelListDiv, 'SAVE', buttonFunction);
 
     if (loadScreen) {
         saveScreen.domElement.style.top = loadScreen.domElement.style.top;
@@ -1345,16 +1363,16 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
 
                 const level = levels[level_id];
                 level.uid = level_id;
-                let $itemBar = $(itemBar).clone();
-                $(itemList).append($itemBar);
-                $itemBar.find('.itemTitle').text(level.title);
-                $itemBar.find('.itemDescription').text(level.description);
-                $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.creationDate));
-                if (level.thumbLowResURL) $itemBar.find('#thumbImage')[0].src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+                const itemBar = itemBar.cloneNode(true);
+                itemList.appendChild(itemBar);
+                itemBar.querySelector('.itemTitle').text = level.title;
+                itemBar.querySelector('.itemDescription').text = level.description;
+                itemBar.querySelector('.itemDate').text = formatTimestamp.formatDMY(level.creationDate);
+                if (level.thumbLowResURL) itemBar.querySelector('#thumbImage').src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
 
-                let saveButton = $itemBar.find('.headerButton.save');
-                saveButton.on('click', () => {
-                    buttonFunction(saveButton[0], level);
+                let saveButton = itemBar.querySelector('.headerButton.save');
+                saveButton.addEventListener('click', () => {
+                    buttonFunction(saveButton, level);
                 });
             }
         }
@@ -1390,7 +1408,7 @@ export const showLoadScreen = function () {
         const closeButton = document.createElement('div');
         closeButton.setAttribute('class', 'closeWindowIcon');
         folder.domElement.append(closeButton);
-        $(closeButton).click(() => {
+        closeButton.addEventListener('click', () => {
             hidePanel(loadScreen);
         });
 
@@ -1423,7 +1441,7 @@ export const showLoadScreen = function () {
 
     }
     //On every open screen
-    $(loadScreen.domElement).show();
+    loadScreen.domElement.classList.remove('hidden');
 
     const self = this;
 
@@ -1449,9 +1467,10 @@ export const showLoadScreen = function () {
         } else doLevelLoad();
     }
 
-    const levelListDiv = $(loadScreen.domElement).find('#levelList');
-    levelListDiv.empty();
-    this.generateLevelList(levelListDiv[0], 'LOAD', buttonFunction);
+    const levelListDiv = loadScreen.domElement.querySelector('#levelList');
+    while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
+
+    this.generateLevelList(levelListDiv, 'LOAD', buttonFunction);
 
     if (saveScreen) {
         loadScreen.domElement.style.top = saveScreen.domElement.style.top;
@@ -1516,15 +1535,15 @@ export const createToolGUI = function () {
                 B2dEditor.selectTool(_i)
             }
         };
-        $(buttonElement).on('click', clickFunction(i));
+        buttonElement.addEventListener('click', clickFunction(i));
     }
     uiContainer.appendChild(toolGUI);
-    var $buttons = $('.toolgui .img');
-    for (var i = 0; i < $buttons.length; i++) {
-        $($buttons[i]).css('background-image', 'url(assets/images/gui/' + icons[i] + ')');
+    const buttons = document.querySelectorAll('.toolgui .img');
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].style.backgroundImage = `url(assets/images/gui/${icons[i]})`;
     }
-
-    $(toolGUI).find('.dg').remove();
+    const dgEls = document.querySelectorAll('.dg');
+    dgEls.forEach(dgEl => dgEl.parentNode.removeChild(dgEl));
 }
 
 let assetSelection = {
@@ -1567,23 +1586,26 @@ export const initGuiAssetSelection = function () {
             var textureName = B2dEditor.assetLists[assetSelection.assetSelectedGroup][i];
             var texture = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
             let image = game.app.renderer.plugins.extract.image(texture);
-            var guiFunction = $($.parseHTML(`<li class="cr function"><div><img src=""></img><div class="c"><div class="button"></div></div></div></li>`));
-            guiFunction.find('img').attr('src', image.src);
-            guiFunction.find('img').attr('title', textureName);
-            //guiFunction.find('img').attr('draggable', false);
-            $(targetDomElement).append(guiFunction);
-            guiFunction.css('height', texture.height);
-            guiFunction.find('img').css('display', 'block');
-            guiFunction.find('img').css('margin', 'auto');
-            guiFunction.attr('textureName', textureName);
+            const guiFunction = document.createElement('li');
+            guiFunction.classList.add('cr', 'function');
+            guiFunction.innerHTML = `<div><img src=""></img><div class="c"><div class="button"></div></div></div>`;
 
-            guiFunction.on('click dragend', function (e) {
-                var guiAsset = $(this).parent().parent().parent().parent();
-                var rect = guiAsset[0].getBoundingClientRect();
-                var x = Math.max(e.pageX, rect.right + image.width / 2);
-                var y = e.pageY;
+            guiFunction.querySelector('img').setAttribute('src', image.src);
+            guiFunction.querySelector('img').setAttribute('title', textureName);
+            //guiFunction.querySelector('img').setAttribute('draggable', false);
+            targetDomElement.appendChild(guiFunction);
+            guiFunction.style.height = `${texture.height}px`;
+            guiFunction.querySelector('img').css('display', 'block');
+            guiFunction.querySelector('img').css('margin', 'auto');
+            guiFunction.setAttribute('textureName', textureName);
 
-                var data = new B2dEditor.textureObject;
+            const clickFunction = (e) => {
+                const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
+                const rect = guiAsset.getBoundingClientRect();
+                const x = Math.max(e.pageX, rect.right + image.width / 2);
+                const y = e.pageY;
+
+                const data = new B2dEditor.textureObject;
                 if (x == e.pageX) {
                     data.x = (x - image.width / 2) / B2dEditor.container.scale.x - B2dEditor.container.x / B2dEditor.container.scale.x;
                     data.y = (y + image.height / 2) / B2dEditor.container.scale.y - B2dEditor.container.y / B2dEditor.container.scale.x;
@@ -1592,29 +1614,30 @@ export const initGuiAssetSelection = function () {
                     data.y = (y) / B2dEditor.container.scale.y - B2dEditor.container.y / B2dEditor.container.scale.x;
                 }
                 data.scaleX = data.scaleY = 1;
-                data.textureName = $(this).attr('textureName');
-                var texture = B2dEditor.buildTextureFromObj(data);
+                data.textureName = guiFunction.getAttribute('textureName');
+                B2dEditor.buildTextureFromObj(data);
 
-            });
+            };
+            guiFunction.addEventListener('click', clickFunction);
+            guiFunction.addEventListener('dragend', clickFunction);
         }
         registerDragWindow(assetGUI);
-        $(assetGUI.domElement).css('left', assetGUIPos.x);
-        $(assetGUI.domElement).css('top', assetGUIPos.y);
+        assetGUI.domElement.style.left = `${assetGUIPos.x}px`;
+        assetGUI.domElement.style.top = `${assetGUIPos.y}px`;
     }
 }
 export const removeGuiAssetSelection = function () {
     if (assetGUI != undefined) {
         assetGUIPos = {
-            x: parseInt($(assetGUI.domElement).css('left'), 10),
-            y: parseInt($(assetGUI.domElement).css('top'), 10)
+            x: parseInt(assetGUI.domElement.style.display.left, 10),
+            y: parseInt(assetGUI.domElement.style.display.top, 10)
         };
         customGUIContainer.removeChild(assetGUI.domElement);
         assetGUI = undefined;
     }
 }
 export const showNotice = function (message) {
-    if (notice) $(notice.domElement).remove();
-
+    if (notice) notice.domElement.parentNode.removeChild(notice.domElement);
 
     const loginGUIWidth = 400;
 
@@ -1633,8 +1656,8 @@ export const showNotice = function (message) {
     const closeButton = document.createElement('div');
     closeButton.setAttribute('class', 'closeWindowIcon');
     folder.domElement.append(closeButton);
-    $(closeButton).click(() => {
-        $(notice.domElement).remove();
+    closeButton.addEventListener('click', () => {
+        notice.domElement.parentNode.removeChild(notice.domElement);
     });
 
     var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
@@ -1664,7 +1687,7 @@ export const showNotice = function (message) {
     divWrapper.appendChild(button);
 
     button.addEventListener('click', () => {
-        $(notice.domElement).remove();
+        notice.domElement.parentNode.removeChild(notice.domElement);
     })
 
     targetDomElement.appendChild(divWrapper);
@@ -1675,8 +1698,11 @@ export const showNotice = function (message) {
 
     customGUIContainer.appendChild(notice.domElement);
 
-    $(notice.domElement).css('left', window.innerWidth / 2 - $(notice.domElement).width() / 2);
-    $(notice.domElement).css('top', window.innerHeight / 2 - $(notice.domElement).height() / 2);
+
+    const computedWidth = parseFloat(getComputedStyle(notice.domElement, null).width.replace("px", ""));
+    const computedHeight = parseFloat(getComputedStyle(notice.domElement, null).height.replace("px", ""));
+    notice.domElementstyle.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    notice.domElementstyle.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
 
     registerDragWindow(notice);
@@ -1684,7 +1710,7 @@ export const showNotice = function (message) {
     return false;
 }
 export const showTextEditor = function (startValue, callBack) {
-    if (textEditor) $(textEditor.domElement).remove();
+    if (textEditor) textEditor.parentNode.removeChild(textEditor);
 
     const loginGUIWidth = 400;
 
@@ -1723,7 +1749,7 @@ export const showTextEditor = function (startValue, callBack) {
 
     button.addEventListener('click', () => {
         callBack(textarea.value);
-        $(textEditor.domElement).remove();
+        textEditor.parentNode.removeChild(textEditor);
     })
 
     targetDomElement.appendChild(divWrapper);
@@ -1734,16 +1760,17 @@ export const showTextEditor = function (startValue, callBack) {
 
     customGUIContainer.appendChild(textEditor.domElement);
 
-    $(textEditor.domElement).css('left', window.innerWidth / 2 - $(textEditor.domElement).width() / 2);
-    $(textEditor.domElement).css('top', window.innerHeight / 2 - $(textEditor.domElement).height() / 2);
-
+    const computedWidth = parseFloat(getComputedStyle(textEditor.domElement, null).width.replace("px", ""));
+    const computedHeight = parseFloat(getComputedStyle(textEditor.domElement, null).height.replace("px", ""));
+    textEditor.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    textEditor.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
     registerDragWindow(textEditor);
 
     return false;
 }
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
-    if (prompt) $(prompt.domElement).remove();
+    if (prompt) prompt.parentNode.removeChild(prompt);
 
     const loginGUIWidth = 400;
 
@@ -1798,19 +1825,20 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     customGUIContainer.appendChild(prompt.domElement);
 
-    $(prompt.domElement).css('left', window.innerWidth / 2 - $(prompt.domElement).width() / 2);
-    $(prompt.domElement).css('top', window.innerHeight / 2 - $(prompt.domElement).height() / 2);
-
+    const computedWidth = parseFloat(getComputedStyle(prompt.domElement, null).width.replace("px", ""));
+    const computedHeight = parseFloat(getComputedStyle(prompt.domElement, null).height.replace("px", ""));
+    prompt.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    prompt.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
     registerDragWindow(prompt);
 
     return new Promise((resolve, reject) => {
         yes_button.addEventListener('click', () => {
-            $(prompt.domElement).remove();
+            prompt.parentNode.removeChild(prompt);
             return resolve();
         })
         no_button.addEventListener('click', () => {
-            $(prompt.domElement).remove();
+            prompt.parentNode.removeChild(prompt);
             return reject();
         })
     });
@@ -1828,56 +1856,64 @@ let startDragMouse = {
     y: 0
 };
 export const initDrag = function (event, _window) {
-    $(_window.domElement).find('.title').data('moved', false);
-
-    $(document).on('mousemove', function (event) {
+    _window.domElement.querySelector('.title').removeAttribute('moved');
+    _window.mouseMoveFunction = (event) => {
         doDrag(event, _window)
-    });
+    };
+    document.addEventListener('mousemove', _window.mouseMoveFunction);
     startDragMouse.x = event.pageX;
     startDragMouse.y = event.pageY;
-    startDragPos.x = parseInt($(_window.domElement).css('left'), 10) || 0;
-    startDragPos.y = parseInt($(_window.domElement).css('top'), 10) || 0;
+
+
+    const computedLeft = parseFloat(getComputedStyle(_window.domElement, null).left.replace("px", ""));
+    const computedTop = parseFloat(getComputedStyle(_window.domElement, null).top.replace("px", ""));
+
+    startDragPos.x = parseInt(computedLeft, 10) || 0;
+    startDragPos.y = parseInt(computedTop, 10) || 0;
 }
 export const endDrag = function (event, _window) {
-    $(document).off('mousemove');
-    setTimeout(()=>{$(_window.domElement).find('.title').data('moved', false);}, 0);
+    document.removeEventListener('mousemove', _window.mouseMoveFunction);
+    setTimeout(()=>{_window.domElement.querySelector('.title').removeAttribute('moved');}, 0);
 }
 export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
 
-    if (Math.abs(difX) + Math.abs(difY) > 5 && !$(_window.domElement).find('.title').data('moved')) {
-        $(_window.domElement).find('.title').data('moved', true);
+    if (Math.abs(difX) + Math.abs(difY) > 5 && !_window.domElement.querySelector('.title').getAttribute('moved')) {
+        _window.domElement.querySelector('.title').setAttribute('moved', '');
     }
 
-    $(_window.domElement).css('left', startDragPos.x + difX);
-    $(_window.domElement).css('top', startDragPos.y + difY);
+    _window.domElement.style.left = `${startDragPos.x + difX}px`;
+    _window.domElement.style.top = `${startDragPos.y + difY}px`;
 }
 
-export const registerDragWindow = function (_window) {
+export const registerDragWindow = (_window) => {
     windows.push(_window);
-    const domElement = $(_window.domElement);
-    var $titleBar = domElement.find('.dg .title');
-    domElement.css('position', 'absolute');
-    $titleBar.on('mousedown', function (event) {
+    const domElement = _window.domElement;
+    var titleBar = domElement.querySelector('.dg .title');
+    domElement.style.position = 'absolute';
+    titleBar.addEventListener('mousedown', (event) => {
         initDrag(event, _window);
         event.stopPropagation();
     });
-    domElement.on('mousedown', function (event) {
-        if (domElement.parent().children().index(_window.domElement) !== domElement.parent().children().length - 1) {
-            domElement.parent().append(domElement);
+    domElement.addEventListener('mousedown', (event) => {
+        if ([...domElement.parentNode.children].indexOf(_window.domElement) !== domElement.parentNode.children.length - 1) {
+            domElement.parentNode.appendChild(domElement);
         }
     })
-    $titleBar.on('mouseup', function (event) {
+    titleBar.addEventListener('mouseup', (event) => {
         endDrag(event, _window);
     });
-    $(document).on('click', function (event) {
-        if (domElement.find('.title').data('moved') == true) {
-            var tarFolder = _window.__folders[domElement.find('.title')[0].innerText]
+
+    const clickFunction = (event) => {
+        if (domElement.querySelector('.title').getAttribute('moved')) {
+            var tarFolder = _window.__folders[domElement.querySelector('.title').innerText]
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
         endDrag(event, _window);
-        if(!_window.domElement.parentNode) $(document).off('click');
-    });
+        if(!_window.domElement.parentNode) document.removeEventListener('click', clickFunction);
+    }
+
+    document.addEventListener('click', clickFunction);
 }
