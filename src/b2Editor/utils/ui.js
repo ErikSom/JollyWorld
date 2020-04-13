@@ -44,13 +44,13 @@ export const hide = function () {
     hideEditorPanels();
     toolGUI.style.display = 'none';
     headerBar.style.display = 'none';
-    scrollBars.classList.add('hidden');;
+    scrollBars.hide();
     destroyEditorGUI();
 }
 export const show = function () {
     toolGUI.style.display = 'block';
     headerBar.style.display = 'block';
-    scrollBars.classList.remove('hidden');
+    scrollBars.show();
 }
 
 export const initGui = function () {

@@ -4,7 +4,6 @@ import {
 import {
     game
 } from '../Game';
-import $ from 'jquery';
 import * as dat from '../../libs/dat.gui';
 import * as uiHelper from '../b2Editor/utils/uiHelper';
 import * as formatTimestamp from '../b2Editor/utils/formatTimestamp';
@@ -12,9 +11,6 @@ import * as formatTimestamp from '../b2Editor/utils/formatTimestamp';
 import anime from 'animejs/lib/anime.es';
 
 const PIXI = require('pixi.js');
-
-
-import tooltipster from 'tooltipster';
 
 let customGUIContainer = document.getElementById('game-ui-container');
 
@@ -40,7 +36,7 @@ function UIManager() {
     var self = this;
 
     this.showMainMenu = function () {
-        if(!mainMenu){
+        if (!mainMenu) {
             mainMenu = document.createElement('div');
 
             // logo = PIXI.loader.resources['Logo'].data;
@@ -88,53 +84,61 @@ function UIManager() {
         this.show();
 
     }
-    this.doLogoAnimation = function(baseDelay){
-        if(!baseDelay) baseDelay = 0;
+    this.doLogoAnimation = function (baseDelay) {
+        if (!baseDelay) baseDelay = 0;
 
         var whiteOutlinePaths = logo.querySelectorAll('#WhiteOutline path');
         var blackOutlinePaths = logo.querySelectorAll('#BlackOutline path');
         var frontFacePaths = logo.querySelectorAll('#ColorMask path');
         var backBlackPaths = logo.querySelectorAll('#BlackMask path');
 
-        
+
 
         var ease = 'easeOutQuad'
         const frontFaceAnim = anime({
-        targets: frontFacePaths,
-        strokeDashoffset: [anime.setDashoffset, 0],
-        easing: ease,
-        duration: 2000,
-        delay: (el, i) => { return i +baseDelay}
+            targets: frontFacePaths,
+            strokeDashoffset: [anime.setDashoffset, 0],
+            easing: ease,
+            duration: 2000,
+            delay: (el, i) => {
+                return i + baseDelay
+            }
         });
         const backBlackAnim = anime({
-        targets: backBlackPaths,
-        strokeDashoffset: [anime.setDashoffset, 0],
-        easing: ease,
-        duration: 2000,
-        delay: (el, i) => { return i + 200 +baseDelay}
+            targets: backBlackPaths,
+            strokeDashoffset: [anime.setDashoffset, 0],
+            easing: ease,
+            duration: 2000,
+            delay: (el, i) => {
+                return i + 200 + baseDelay
+            }
         });
         const blackOutlineAnim = anime({
-        targets: blackOutlinePaths,
-        // direction: 'alternate',
-        strokeDashoffset: [anime.setDashoffset, 0],
-        easing: 'easeInOutSine',
-        duration: 400,
-        delay: (el, i) => { return i * 250 + 400 +baseDelay}
+            targets: blackOutlinePaths,
+            // direction: 'alternate',
+            strokeDashoffset: [anime.setDashoffset, 0],
+            easing: 'easeInOutSine',
+            duration: 400,
+            delay: (el, i) => {
+                return i * 250 + 400 + baseDelay
+            }
         });
         const whiteOutlineAnim = anime({
-        targets: whiteOutlinePaths,
-        // direction: 'alternate',
-        strokeDashoffset: [anime.setDashoffset, 0],
-        easing: ease,
-        duration: 800,
-        delay: (el, i) => { return i * 350 + 400 +baseDelay}
+            targets: whiteOutlinePaths,
+            // direction: 'alternate',
+            strokeDashoffset: [anime.setDashoffset, 0],
+            easing: ease,
+            duration: 800,
+            delay: (el, i) => {
+                return i * 350 + 400 + baseDelay
+            }
         });
 
     }
-    this.hide = function(){
+    this.hide = function () {
         customGUIContainer.style.display = 'none';
     }
-    this.show = function(){
+    this.show = function () {
         customGUIContainer.style.display = 'block';
     }
 
@@ -171,7 +175,7 @@ function UIManager() {
             button.innerHTML = "RESTART";
             buttonGroup.appendChild(button);
 
-            $(button).click(() => {
+            button.addEventListener('click', () => {
                 game.resetWorld();
             });
 
@@ -180,7 +184,7 @@ function UIManager() {
             button.innerHTML = "EXIT";
             buttonGroup.appendChild(button);
 
-            $(button).click(() => {
+            button.addEventListener('click', () => {
                 game.openMainMenu();
             });
         }
@@ -209,10 +213,10 @@ function UIManager() {
             folder.open();
 
 
-            const titleElement = $(levelLoader.domElement).find('.title');
+            const titleElement = levelLoader.domElement.querySelector('.title');
             titleElement.replaceWith(titleElement.clone());
 
-            $(levelLoader.domElement).find('.arrow').hide();
+            levelLoader.domElement.querySelector('.arrow').style.visibility = 'hidden';
 
 
             var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
@@ -228,8 +232,8 @@ function UIManager() {
             backButton.innerHTML = 'Back';
             targetDomElement.appendChild(backButton);
 
-            $(backButton).click(()=>{
-              console.log("GO BACK!");
+            backButton.addEventListener('click', () => {
+                console.log("GO BACK!");
                 self.hideLevelLoader();
                 self.showMainMenu();
 
@@ -241,7 +245,7 @@ function UIManager() {
             filterButton.innerHTML = `<span>Filter by:</span><span style='color:#00FF00;margin-left:5px'>Featured</span>`;
             targetDomElement.appendChild(filterButton);
 
-            $(filterButton).click(()=>{
+            filterButton.addEventListener('click', () => {
                 this.showFilterMenu();
             })
 
@@ -250,18 +254,18 @@ function UIManager() {
             levelLoader.domElement.style.position = 'absolute';
 
         }
-        $(levelLoader.domElement).show();
+        levelLoader.domElement.style.visibility = 'visible';
 
 
         this.generateFilteredPublishLevelList();
 
-        $(levelLoader.domElement).css('left', '50%');
-        $(levelLoader.domElement).css('top', '50%');
-        $(levelLoader.domElement).css('transform', 'translate(-50%, -50%)');
+        levelLoader.domElement.style.left = '50%';
+        levelLoader.domElement.style.top = '50%';
+        levelLoader.domElement.style.transform = 'translate(-50%, -50%)';
 
     }
     this.hideLevelLoader = function () {
-        $(levelLoader.domElement).hide();
+        levelLoader.domElement.style.visibility = 'hidden';
     }
     this.showFilterMenu = function () {
         if (!filterMenu) {
@@ -311,7 +315,7 @@ function UIManager() {
 
 
 
-            select.addEventListener("change", ()=>{
+            select.addEventListener("change", () => {
                 filter.range = select.value;
             })
             select.value = filter.range;
@@ -329,7 +333,7 @@ function UIManager() {
             newestButton.innerHTML = 'Newest';
             divWrapper.appendChild(newestButton);
 
-            $(newestButton).click(()=>{
+            newestButton.addEventListener('click', () => {
                 filter.by = self.FILTER_BY_NEWEST;
                 self.hideFilterMenu();
                 self.generateFilteredPublishLevelList();
@@ -340,7 +344,7 @@ function UIManager() {
             oldestButton.innerHTML = 'Oldest';
             divWrapper.appendChild(oldestButton);
 
-            $(oldestButton).click(()=>{
+            oldestButton.addEventListener('click', () => {
                 filter.by = self.FILTER_BY_OLDEST;
                 self.hideFilterMenu();
                 self.generateFilteredPublishLevelList();
@@ -351,7 +355,7 @@ function UIManager() {
             mostPlayed.innerHTML = 'Most played';
             divWrapper.appendChild(mostPlayed);
 
-            $(mostPlayed).click(()=>{
+            mostPlayed.addEventListener('click', () => {
                 filter.by = self.FILTER_BY_PLAYCOUNT;
                 self.hideFilterMenu();
                 self.generateFilteredPublishLevelList();
@@ -362,7 +366,7 @@ function UIManager() {
             bestButton.innerHTML = 'Best';
             divWrapper.appendChild(bestButton);
 
-            $(bestButton).click(()=>{
+            bestButton.addEventListener('click', () => {
                 filter.by = self.FILTER_BY_RATING;
                 self.hideFilterMenu();
                 self.generateFilteredPublishLevelList();
@@ -378,13 +382,13 @@ function UIManager() {
         filterMenu.domElement.style.display = "block";
         // set values
 
-        $(filterMenu.domElement).css('left', '50%');
-        $(filterMenu.domElement).css('top', '50%');
-        $(filterMenu.domElement).css('transform', 'translate(-50%, -50%)');
+        filterMenu.domElement.style.left = '50%';
+        filterMenu.domElement.style.top = '50%';
+        filterMenu.domElement.style.transform = 'translate(-50%, -50%)';
 
     }
     this.hideFilterMenu = function () {
-        $(filterMenu.domElement).hide();
+        filterMenu.domElement.style.visibility = 'hidden';
     }
 
     this.showLevelBanner = function () {
@@ -441,9 +445,9 @@ function UIManager() {
             playButton.innerHTML = 'Play';
             divWrapper.appendChild(playButton);
 
-            $(playButton).click(()=>{
-               this.hideLevelBanner();
-               game.playWorld();
+            playButton.addEventListener('click', () => {
+                this.hideLevelBanner();
+                game.playWorld();
             })
 
             let description = document.createElement('div');
@@ -460,20 +464,20 @@ function UIManager() {
         levelBanner.domElement.style.display = "block";
         // set values
 
-        let thumbNailImage = $(levelBanner.domElement).find('#levelbanner_levelThumbnailImage')[0];
+        let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
         thumbNailImage.src = `${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.uid}/thumb_highRes.jpg`;
 
-        $(levelBanner.domElement).find('#levelbanner_title').text(game.currentLevelData.title);
-        $(levelBanner.domElement).find('#levelbanner_creatorSpan').text(game.currentLevelData.creator);
-        $(levelBanner.domElement).find('#levelbanner_description').text(game.currentLevelData.description);
+        levelBanner.domElement.querySelector('#levelbanner_title').innerText = game.currentLevelData.title;
+        levelBanner.domElement.querySelector('#levelbanner_creatorSpan').innerText = game.currentLevelData.creator;
+        levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;
 
-        $(levelBanner.domElement).css('left', '50%');
-        $(levelBanner.domElement).css('top', '50%');
-        $(levelBanner.domElement).css('transform', 'translate(-50%, -50%)');
+        levelBanner.domElement.style.left = '50%';
+        levelBanner.domElement.style.top = '50%';
+        levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
 
     }
     this.hideLevelBanner = function () {
-        $(levelBanner.domElement).hide();
+        levelBanner.domElement.style.visibility = 'hidden';
     }
 
     this.showPauseMenu = function () {
@@ -523,7 +527,7 @@ function UIManager() {
             upvoteButton.setAttribute('class', 'startButton menuButton upvote')
             ratingHolder.appendChild(upvoteButton);
 
-            $(upvoteButton).click(()=>{
+            upvoteButton.addEventListener('click', () => {
                 firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate);
 
                 game.editor.ui.showLoginScreen();
@@ -561,7 +565,7 @@ function UIManager() {
             downvoteButton.setAttribute('class', 'startButton menuButton downvote')
             ratingHolder.appendChild(downvoteButton);
 
-            $(downvoteButton).click(()=>{
+            downvoteButton.addEventListener('click', () => {
                 firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate);
             });
 
@@ -575,10 +579,10 @@ function UIManager() {
             restartButton.innerHTML = 'Restart';
             divWrapper.appendChild(restartButton);
 
-            $(restartButton).click(()=>{
-               game.resetWorld();
-               game.playWorld();
-               game.unpauseGame();
+            restartButton.addEventListener('click', () => {
+                game.resetWorld();
+                game.playWorld();
+                game.unpauseGame();
             })
 
             let exitButton = document.createElement('div');
@@ -586,7 +590,7 @@ function UIManager() {
             exitButton.innerHTML = 'Exit to Menu';
             divWrapper.appendChild(exitButton);
 
-            $(exitButton).click(()=>{
+            exitButton.addEventListener('click', () => {
                 game.unpauseGame();
                 game.openMainMenu();
             })
@@ -596,8 +600,8 @@ function UIManager() {
             resumeButton.innerHTML = 'Resume';
             divWrapper.appendChild(resumeButton);
 
-            $(resumeButton).click(()=>{
-               game.unpauseGame();
+            resumeButton.addEventListener('click', () => {
+                game.unpauseGame();
             })
 
             targetDomElement.appendChild(divWrapper);
@@ -610,16 +614,16 @@ function UIManager() {
         // set values
 
 
-        $(pauseMenu.domElement).find('#pauseMenu_title').text(game.currentLevelData.title);
-        $(pauseMenu.domElement).find('#pauseMenu_creatorSpan').text(game.currentLevelData.creator);
+        pauseMenu.domElement.querySelector('#pauseMenu_title').innerText = game.currentLevelData.title;
+        pauseMenu.domElement.querySelector('#pauseMenu_creatorSpan').innerText = game.currentLevelData.creator;
 
-        $(pauseMenu.domElement).css('left', '50%');
-        $(pauseMenu.domElement).css('top', '50%');
-        $(pauseMenu.domElement).css('transform', 'translate(-50%, -50%)');
+        pauseMenu.domElement.style.left = '50%';
+        pauseMenu.domElement.style.top = '50%';
+        pauseMenu.domElement.style.transform = 'translate(-50%, -50%)';
 
     }
     this.hidePauseMenu = function () {
-        $(pauseMenu.domElement).hide();
+        pauseMenu.domElement.style.visibility = 'hidden';
     }
 
     this.showWinScreen = function (time) {
@@ -671,7 +675,7 @@ function UIManager() {
             upvoteButton.setAttribute('class', 'startButton menuButton upvote')
             ratingHolder.appendChild(upvoteButton);
 
-            $(upvoteButton).click(()=>{
+            upvoteButton.addEventListener('click', () => {
                 firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate);
 
                 game.editor.ui.showLoginScreen();
@@ -709,7 +713,7 @@ function UIManager() {
             downvoteButton.setAttribute('class', 'startButton menuButton downvote')
             ratingHolder.appendChild(downvoteButton);
 
-            $(downvoteButton).click(()=>{
+            downvoteButton.addEventListener('click', () => {
                 firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate);
             });
 
@@ -723,10 +727,10 @@ function UIManager() {
             restartButton.innerHTML = 'Restart';
             divWrapperNormal.appendChild(restartButton);
 
-            $(restartButton).click(()=>{
-               game.resetWorld();
-               game.playWorld();
-               game.unpauseGame();
+            restartButton.addEventListener('click', () => {
+                game.resetWorld();
+                game.playWorld();
+                game.unpauseGame();
             })
 
             let exitButton = document.createElement('div');
@@ -734,7 +738,7 @@ function UIManager() {
             exitButton.innerHTML = 'Exit to Menu';
             divWrapperNormal.appendChild(exitButton);
 
-            $(exitButton).click(()=>{
+            exitButton.addEventListener('click', () => {
                 game.unpauseGame();
                 game.openMainMenu();
             })
@@ -744,8 +748,8 @@ function UIManager() {
             resumeButton.innerHTML = 'Resume';
             divWrapperNormal.appendChild(resumeButton);
 
-            $(resumeButton).click(()=>{
-               game.unpauseGame();
+            resumeButton.addEventListener('click', () => {
+                game.unpauseGame();
             })
 
             targetDomElement.appendChild(divWrapperNormal);
@@ -762,7 +766,7 @@ function UIManager() {
             exitTest.innerHTML = 'Exit Test';
             divWrapperEditor.appendChild(exitTest);
 
-            $(exitTest).click(()=>{
+            exitTest.addEventListener('click', () => {
                 game.stopTestingWorld();
                 this.hideWinScreen();
             })
@@ -779,36 +783,36 @@ function UIManager() {
         // set values
 
 
-        if(game.gameState == game.GAMESTATE_EDITOR){
-            $(winScreen.domElement).find('#divWrapperNormal').hide();
-            $(winScreen.domElement).find('#divWrapperEditor').show();
-        }else{
-            $(winScreen.domElement).find('#divWrapperNormal').show();
-            $(winScreen.domElement).find('#divWrapperEditor').hide();
+        if (game.gameState == game.GAMESTATE_EDITOR) {
+            winScreen.domElement.querySelector('#divWrapperNormal').style.visibility = 'hidden';
+            winScreen.domElement.querySelector('#divWrapperEditor').style.visibility = 'visible';
+        } else {
+            winScreen.domElement.querySelector('#divWrapperNormal').style.visibility = 'visible';
+            winScreen.domElement.querySelector('#divWrapperEditor').style.visibility = 'hidden';
         }
 
 
-        $(winScreen.domElement).find('#winScreen_title').text(game.currentLevelData.title);
-        $(winScreen.domElement).find('#winScreen_creatorSpan').text(game.currentLevelData.creator);
+        winScreen.domElement.querySelector('#winScreen_title').innerText = game.currentLevelData.title;
+        winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = game.currentLevelData.creator;
 
-        $(winScreen.domElement).css('left', '50%');
-        $(winScreen.domElement).css('top', '50%');
-        $(winScreen.domElement).css('transform', 'translate(-50%, -50%)');
+        winScreen.domElement.css('left', '50%');
+        winScreen.domElement.css('top', '50%');
+        winScreen.domElement.css('transform', 'translate(-50%, -50%)');
 
     }
     this.hideWinScreen = function () {
-        $(winScreen.domElement).hide();
+        winScreen.domElement.style.visibility = 'hidden';
     }
 
 
 
 
     this.generateFilteredPublishLevelList = function () {
-        const levelListDiv = $(levelLoader.domElement).find('#levelList');
-        levelListDiv.empty();
-        var divWrapper = levelListDiv[0];
+        const levelListDiv = levelLoader.domElement.querySelector('#levelList');
+        while (levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
 
-        if(!divWrapper) return;
+        const divWrapper = levelListDiv;
+        if (!divWrapper) return;
 
 
         if (!filter.by) filter = {
@@ -1032,7 +1036,7 @@ function UIManager() {
         var dots = document.createElement('div');
         dots.setAttribute('class', 'dot-pulse')
         dotShell.appendChild(dots);
-        $(dotShell).hide();
+        dotShell.style.visibility = 'hidden';
         //*********************************/
 
         // Level Load
@@ -1043,46 +1047,45 @@ function UIManager() {
         let self = this;
 
         const buildLevelList = (levels) => {
-            levels.map((level_child) =>{
+            levels.map((level_child) => {
                 const level_id = level_child.key;
                 const level = level_child.val();
 
                 level.uid = level_id;
-                let $itemBar = $(itemBar).clone();
-                $(itemList).append($itemBar);
-                $itemBar.find('.itemTitle').text(level.private.title);
-                $itemBar.find('.itemDescription').text(level.private.description);
-                $itemBar.find('.itemDate').text(formatTimestamp.formatDMY(level.private.creationDate));
-                $itemBar.find('.itemAuthor').text(level.private.creator);
-                if(level.public.voteNum<10){
-                     $itemBar.find('.itemRating').text('??');
-                     $itemBar.find('.itemRating')[0].setAttribute('title', 'Needs at least 10 votes');
+                let itemBar = itemBar.cloneNode(true)
+                itemList.appendChild(itemBar);
+                itemBar.querySelector('.itemTitle').innerText = level.private.title;
+                itemBar.querySelector('.itemDescription').innerText = level.private.description;
+                itemBar.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.private.creationDate);
+                itemBar.querySelector('.itemAuthor').innerText = level.private.creator;
+                if (level.public.voteNum < 10) {
+                    itemBar.querySelector('.itemRating').innerText = '??';
+                    // itemBar.querySelector('.itemRating').setAttribute('title', 'Needs at least 10 votes');
 
-                     $itemBar.find('.itemRating').tooltipster({
-                        animation: 'fade',
-                        delay: 200,
-                     });
+                    // itemBar.querySelector('.itemRating').tooltipster({
+                    //     animation: 'fade',
+                    //     delay: 200,
+                    // });
 
-                }
-                else $itemBar.find('.itemRating').text(level.public.voteAvg);
+                } else itemBar.querySelector('.itemRating').innerText = level.public.voteAvg;
 
-                $itemBar.find('.itemPlays').text(level.public.playCount);
+                itemBar.querySelector('.itemPlays').innerText = level.public.playCount;
 
-                $itemBar.find('#thumbImage')[0].src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
+                itemBar.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
 
-                $itemBar.find('.menuButton').click(() => {
-                    $itemBar.find('.playButtonTriangleIcon').hide();
-                    $itemBar.find('.dot-shell').show();
+                itemBar.querySelector('.menuButton').addEventListener('click', () => {
+                    itemBar.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
+                    itemBar.querySelector('.dot-shell').style.visibility = 'visible';
                     game.loadPublishedLevelData(level).then(() => {
-                        $itemBar.find('.playButtonTriangleIcon').show();
-                        $itemBar.find('.dot-shell').hide();
+                        itemBar.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
+                        itemBar.querySelector('.dot-shell').style.visibility = 'hidden';
                         self.showLevelBanner();
-                        game.editor.ui.hide();
+                        game.editor.ui.style.visibility = 'hidden';
                         self.hideLevelLoader();
                     }).catch((error) => {
                         console.log(error);
-                        $itemBar.find('.playButtonTriangleIcon').show();
-                        $itemBar.find('.dot-shell').hide();
+                        itemBar.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
+                        itemBar.querySelector('.dot-shell').style.visibility = 'hidden';
                     });
                 });
 

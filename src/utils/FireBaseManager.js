@@ -7,7 +7,6 @@ require('firebase/storage');
 require('firebase/auth');
 require('firebase/database');
 
-import $ from 'jquery';
 import {
     game
 } from '../Game';
@@ -152,15 +151,15 @@ function FireBaseManager() {
         console.log("reset password for:" + email);
         this.app.auth().sendPasswordResetEmail(email).then(function () {
             // Email sent.
-            $('form').removeClass('loading');
-            $(".ui.negative.message").addClass('hidden');
-            $(".ui.positive.message").removeClass('hidden');
+            document.querySelector('form').classList.remove('loading');
+            document.querySelector(".ui.negative.message").classList.add('hidden');
+            document.querySelector(".ui.positive.message").classList.remove('hidden');
         }).catch(function (error) {
             // An error happened.
-            $('form').removeClass('loading');
-            $(".ui.positive.message").addClass('hidden');
-            $(".ui.negative.message").removeClass('hidden');
-            $(".ui.negative.message:visible > p").text(error.message);
+            document.querySelector('form').classList.remove('loading');
+            document.querySelector(".ui.positive.message").classList.add('hidden');
+            document.querySelector(".ui.negative.message").classList.remove('hidden');
+            document.querySelector(".ui.negative.message:visible > p").innerText = error.message;
         });
     }
     this.checkURLParameters = function () {
@@ -174,23 +173,23 @@ function FireBaseManager() {
             ui.showBox('#reset-box')
             this.app.auth().verifyPasswordResetCode(this.actionCode).then(function (email) {
                 var accountEmail = email;
-                $(".ui.message:visible>p").text("Resetting password for " + accountEmail);
+                document.querySelector(".ui.message:visible>p").innerText = "Resetting password for " + accountEmail;
             }).catch(function (error) {
-                $(".ui.negative.message").removeClass('hidden');
-                $(".ui.negative.message > p").text(error.message);
+                document.querySelector(".ui.negative.message").classList.remove('hidden');
+                document.querySelector(".ui.negative.message > p").innerText = error.message;
             });
         }
     }
     this.resetPassword = function (newpassword) {
-        $('form').addClass('loading');
+        document.querySelector('form').classList.add('loading');
         this.app.auth().confirmPasswordReset(this.actionCode, newpassword).then(function (resp) {
             // navigate back to login url.split('?')[0]
-            $('form').removeClass('loading');
-            $(".ui.positive.message").removeClass('hidden');
+            document.querySelector('form').classList.remove('loading');
+            document.querySelector(".ui.positive.message").classList.remove('hidden');
         }).catch(function (error) {
-            $('form').removeClass('loading');
-            $(".ui.negative.message").removeClass('hidden');
-            $(".ui.negative.message > p").text(error.message);
+            document.querySelector('form').classList.remove('loading');
+            document.querySelector(".ui.negative.message").classList.remove('hidden');
+            document.querySelector(".ui.negative.message > p").innerText = error.message;
         });
     }
 

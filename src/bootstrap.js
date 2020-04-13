@@ -8,4 +8,3 @@ import 'Game.js'
 
 import 'css/B2dEditor.css'
 import 'css/dat-gui-light-theme.css'
-import 'css/tooltipster.main.min.css'
