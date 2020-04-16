@@ -214,7 +214,7 @@ function UIManager() {
 
 
             const titleElement = levelLoader.domElement.querySelector('.title');
-            titleElement.replaceWith(titleElement.clone());
+            titleElement.replaceWith(titleElement.cloneNode(true));
 
             levelLoader.domElement.querySelector('.arrow').style.visibility = 'hidden';
 
@@ -254,7 +254,7 @@ function UIManager() {
             levelLoader.domElement.style.position = 'absolute';
 
         }
-        levelLoader.domElement.style.visibility = 'visible';
+        levelLoader.domElement.style.display = 'unset';
 
 
         this.generateFilteredPublishLevelList();
@@ -265,7 +265,8 @@ function UIManager() {
 
     }
     this.hideLevelLoader = function () {
-        levelLoader.domElement.style.visibility = 'hidden';
+        console.log("HIDE LEVEL LOADER!");
+        levelLoader.domElement.style.display = 'none';
     }
     this.showFilterMenu = function () {
         if (!filterMenu) {
@@ -795,9 +796,9 @@ function UIManager() {
         winScreen.domElement.querySelector('#winScreen_title').innerText = game.currentLevelData.title;
         winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = game.currentLevelData.creator;
 
-        winScreen.domElement.css('left', '50%');
-        winScreen.domElement.css('top', '50%');
-        winScreen.domElement.css('transform', 'translate(-50%, -50%)');
+        winScreen.domElement.style.left = '50%';
+        winScreen.domElement.style.top = '50%';
+        winScreen.domElement.style.transform = 'translate(-50%, -50%)';
 
     }
     this.hideWinScreen = function () {
@@ -1052,40 +1053,40 @@ function UIManager() {
                 const level = level_child.val();
 
                 level.uid = level_id;
-                let itemBar = itemBar.cloneNode(true)
-                itemList.appendChild(itemBar);
-                itemBar.querySelector('.itemTitle').innerText = level.private.title;
-                itemBar.querySelector('.itemDescription').innerText = level.private.description;
-                itemBar.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.private.creationDate);
-                itemBar.querySelector('.itemAuthor').innerText = level.private.creator;
+                let itemBarClone = itemBar.cloneNode(true)
+                itemList.appendChild(itemBarClone);
+                itemBarClone.querySelector('.itemTitle').innerText = level.private.title;
+                itemBarClone.querySelector('.itemDescription').innerText = level.private.description;
+                itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.private.creationDate);
+                itemBarClone.querySelector('.itemAuthor').innerText = level.private.creator;
                 if (level.public.voteNum < 10) {
-                    itemBar.querySelector('.itemRating').innerText = '??';
-                    // itemBar.querySelector('.itemRating').setAttribute('title', 'Needs at least 10 votes');
+                    itemBarClone.querySelector('.itemRating').innerText = '??';
+                    // itemBarClone.querySelector('.itemRating').setAttribute('title', 'Needs at least 10 votes');
 
-                    // itemBar.querySelector('.itemRating').tooltipster({
+                    // itemBarClone.querySelector('.itemRating').tooltipster({
                     //     animation: 'fade',
                     //     delay: 200,
                     // });
 
-                } else itemBar.querySelector('.itemRating').innerText = level.public.voteAvg;
+                } else itemBarClone.querySelector('.itemRating').innerText = level.public.voteAvg;
 
-                itemBar.querySelector('.itemPlays').innerText = level.public.playCount;
+                itemBarClone.querySelector('.itemPlays').innerText = level.public.playCount;
 
-                itemBar.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
+                itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
 
-                itemBar.querySelector('.menuButton').addEventListener('click', () => {
-                    itemBar.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
-                    itemBar.querySelector('.dot-shell').style.visibility = 'visible';
+                itemBarClone.querySelector('.menuButton').addEventListener('click', () => {
+                    itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
+                    itemBarClone.querySelector('.dot-shell').style.visibility = 'visible';
                     game.loadPublishedLevelData(level).then(() => {
-                        itemBar.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
-                        itemBar.querySelector('.dot-shell').style.visibility = 'hidden';
+                        itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
+                        itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
                         self.showLevelBanner();
-                        game.editor.ui.style.visibility = 'hidden';
+                        game.editor.ui.hide();
                         self.hideLevelLoader();
                     }).catch((error) => {
                         console.log(error);
-                        itemBar.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
-                        itemBar.querySelector('.dot-shell').style.visibility = 'hidden';
+                        itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
+                        itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
                     });
                 });
 

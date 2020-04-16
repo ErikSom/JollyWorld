@@ -28,6 +28,8 @@ import * as emitterManager from './utils/EmitterManager';
 
 const moment = require('moment');
 
+window.moment = moment;
+
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 

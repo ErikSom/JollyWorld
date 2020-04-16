@@ -1879,7 +1879,7 @@ export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
     var difY = event.pageY - startDragMouse.y;
 
-    if (Math.abs(difX) + Math.abs(difY) > 5 && !_window.domElement.querySelector('.title').getAttribute('moved')) {
+    if (Math.abs(difX) + Math.abs(difY) > 5 && !_window.domElement.querySelector('.title').getAttribute('moved') !== null) {
         _window.domElement.querySelector('.title').setAttribute('moved', '');
     }
 
@@ -1906,7 +1906,10 @@ export const registerDragWindow = (_window) => {
     });
 
     const clickFunction = (event) => {
-        if (domElement.querySelector('.title').getAttribute('moved')) {
+        console.log("YES CLICKED", domElement.querySelector('.title').getAttribute('moved'));
+
+        if (domElement.querySelector('.title').getAttribute('moved') !== null) {
+            console.log("YES MOVED");
             var tarFolder = _window.__folders[domElement.querySelector('.title').innerText]
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();

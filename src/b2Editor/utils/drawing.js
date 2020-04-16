@@ -32,8 +32,8 @@ export const drawDebugTriggerHelpers = function(){
             if(body.mySprite.targets){
                 var myPos = body.GetPosition();
                 myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
-                for(var i = 0; i<body.mySprite.targets.length; i++){
-                    var target = body.mySprite.targets[i];
+                for(var j = 0; j<body.mySprite.targets.length; j++){
+                    var target = body.mySprite.targets[j];
                     var tarPos;
                     var tarPrefab;
                     if(target.mySprite){
@@ -49,7 +49,7 @@ export const drawDebugTriggerHelpers = function(){
                             tarPos = new b2Vec2(target.x, target.y);
                         }
                     }
-                    drawLine(myPos, tarPos, {color: "0x000", label:i+1, labelPosition:0.5, labelColor:"0x999"});
+                    drawLine(myPos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
                 };
             }
         }
