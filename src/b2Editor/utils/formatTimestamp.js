@@ -1,4 +1,4 @@
-const moment = require('moment');
 export const formatDMY = (timestamp)=> {
-    return moment.utc(timestamp).format("MM/DD/YYYY");
+    const date = new Date(timestamp);
+    return `${date.getUTCMonth() + 1}-${date.getUTCDate()}-${date.getUTCFullYear()}`;
 }

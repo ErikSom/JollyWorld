@@ -24,12 +24,8 @@ import {
 import {
     levelsData
 } from "./data/levelsData";
+
 import * as emitterManager from './utils/EmitterManager';
-
-const moment = require('moment');
-
-window.moment = moment;
-
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 
@@ -490,11 +486,8 @@ function Game() {
                 ui.showWinScreen(s, true);
 
             }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
-        
-                var ms = moment(Date.now()).diff(moment(this.levelStartTime));
-                var d = moment.duration(ms);
-                var s = Math.floor(d.asMinutes()) + moment.utc(ms).format(":ss:SSS");
-
+                const d = Date.now() - this.levelStartTime;
+                const s = new Date(d).toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
                 ui.showWinScreen(s, false);
             }
 

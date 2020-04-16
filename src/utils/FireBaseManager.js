@@ -15,7 +15,6 @@ import {
 } from '../Settings';
 
 
-const moment = require('moment');
 const nanoid = require('nanoid');
 
 function FireBaseManager() {
@@ -389,9 +388,9 @@ function FireBaseManager() {
                 if (error) reject(error);
                 else {
 
-                    const now = moment();
-                    const creationDate = moment(_creationDate);
-                    if (now.year() === creationDate.year() && now.month() == creationDate.month()) {
+                    const now = new Date()
+                    const creationDate = new Date(_creationDate);
+                    if (now.getFullYear() === creationDate.getFullYear() && now.getMonth() == creationDate.getMonth()) {
                         self.call_setRangedVotes(levelid);
                     }
 
@@ -410,9 +409,9 @@ function FireBaseManager() {
             }
         });
 
-        const now = moment();
-        const creationDate = moment(levelData.private.creationDate);
-        if (now.year() === creationDate.year() && now.month() == creationDate.month()) {
+        const now = new Date();
+        const creationDate = new Date(levelData.private.creationDate);
+        if (now.getFullYear() === creationDate.getFullYear() && now.getMonth() == creationDate.getMonth()) {
             this.call_setRangedPopularity(levelData.uid);
         }
 
@@ -438,26 +437,26 @@ function FireBaseManager() {
     }
     this.getPublishedLevels = function (filter) {
 
-        var now = moment();
-        let prefixedRangeValue = now.year();
+        var now = new Date();
+        let prefixedRangeValue = now.getFullYear();
         let paddedMonth, paddedWeek, paddedDay;
 
         switch (filter.range) {
             case game.ui.FILTER_RANGE_THISMONTH:
                 //e.g. 201804_0.8483
-                paddedMonth = now.month().toString().padStart(2, '0');
+                paddedMonth = now.getMonth().toString().padStart(2, '0');
                 prefixedRangeValue += paddedMonth;
                 break;
             case game.ui.FILTER_RANGE_THISWEEK:
                 ///e.g. 2018w03_0.8483
-                paddedWeek = now.isoWeek().toString().padStart(2, '0');
+                paddedWeek = now.getWeek().toString().padStart(2, '0');
                 prefixedRangeValue += 'w' + paddedWeek;
 
                 break;
             case game.ui.FILTER_RANGE_TODAY:
                 //e.g. 2018w03d3_0.8483
-                paddedWeek = now.isoWeek().toString().padStart(2, '0');
-                paddedDay = now.isoWeekday();
+                paddedWeek = now.getWeek().toString().padStart(2, '0');
+                paddedDay = now.getDay();
                 prefixedRangeValue += 'w' + paddedWeek + 'd' + paddedDay;
                 break;
         }

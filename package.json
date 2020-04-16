@@ -26,7 +26,6 @@
     "firebase": "^5.7.2",
     "firebase-tools": "^3.17.4",
     "http-server": "^0.11.1",
-    "moment": "^2.22.2",
     "nanoid": "^1.2.3",
     "npm-run-all": "^4.1.2",
     "paper": "^0.12.0",
