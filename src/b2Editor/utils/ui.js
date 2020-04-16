@@ -1701,8 +1701,8 @@ export const showNotice = function (message) {
 
     const computedWidth = parseFloat(getComputedStyle(notice.domElement, null).width.replace("px", ""));
     const computedHeight = parseFloat(getComputedStyle(notice.domElement, null).height.replace("px", ""));
-    notice.domElementstyle.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
-    notice.domElementstyle.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
+    notice.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    notice.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
 
     registerDragWindow(notice);
