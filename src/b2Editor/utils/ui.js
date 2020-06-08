@@ -429,10 +429,10 @@ export const showLoginScreen = function () {
         button.innerHTML = 'Login!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
-        button.addEventListener('keydown', (e) => {
+        [email, password, button].forEach(el => el.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
                 button.click();
-        });
+        }));
 
         var dotShell = document.createElement('div');
         dotShell.setAttribute('class', 'dot-shell')
@@ -633,10 +633,10 @@ export const showRegisterScreen = function () {
         button.innerHTML = 'Accept!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
-        button.addEventListener('keydown', (e) => {
+        [email, password, repassword, button].forEach(el => el.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
                 button.click();
-        });
+        }));
 
         var dotShell = document.createElement('div');
         dotShell.setAttribute('class', 'dot-shell')
