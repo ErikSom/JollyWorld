@@ -242,9 +242,9 @@ const _B2dEditor = function () {
 		this.selectedPrefabs = [];
 		this.activeVertices = [];
 
-		const buttons = document.querySelectorAll('.toolgui .button');
+		const buttons = document.querySelectorAll('.toolgui.button');
 		buttons.forEach(button => { button.style.backgroundColor = '' });
-		buttons[i].style.backgroundColor = '#4F4F4F';
+		if(buttons[i]) buttons[i].style.backgroundColor = '#4F4F4F';
 
 		ui.destroyEditorGUI();
 		ui.buildEditorGUI();
@@ -1689,7 +1689,7 @@ const _B2dEditor = function () {
 
 			self.cameraShotCallBack();
 
-			self.selectTool(this.tool_SELECT);
+			self.selectTool(self.tool_SELECT);
 
 			console.log("Camera Shot Succesfull");
 		}

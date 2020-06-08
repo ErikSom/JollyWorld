@@ -17,6 +17,7 @@ export const getTempEditorWorld = function(){
     if(!tempWorld){
         tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.mainMenuLevel);
         tempWorld.uid = nanoid();
+        tempWorld.creationDate = Date.now();
     }
     return tempWorld;
 }

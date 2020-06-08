@@ -785,6 +785,7 @@ body .dg .cr.function{
   .fadedHide {
     transition: opacity ease 1s;
     opacity:0;
+    pointer-events: none;
   }
   @keyframes dotPulseBefore {
     0% {

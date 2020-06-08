@@ -503,9 +503,7 @@ export const showRegisterScreen = function () {
 
         folder.open();
 
-
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
 
         let span = document.createElement('span');
         span.innerText = 'SIGN UP';
@@ -513,7 +511,6 @@ export const showRegisterScreen = function () {
         span.style.fontSize = '20px';
         span.style.marginTop = '20px';
         span.style.display = 'inline-block';
-
 
         let divWrapper = document.createElement('div');
         divWrapper.style.padding = '0px 20px';
@@ -812,7 +809,6 @@ export const showUsernameScreen = function () {
 
         targetDomElement.appendChild(divWrapper);
 
-
         let button = document.createElement('div');
         button.setAttribute('id', 'acceptButton')
         button.setAttribute('tabindex', '0');
@@ -820,10 +816,10 @@ export const showUsernameScreen = function () {
         button.innerHTML = 'Accept!';
         targetDomElement.appendChild(button);
         button.style.margin = '10px auto';
-        button.addEventListener('keydown', (e) => {
+        [username, button].forEach(el => el.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
                 button.click();
-        });
+        }));
 
         var dotShell = document.createElement('div');
         dotShell.setAttribute('class', 'dot-shell')
@@ -1770,7 +1766,7 @@ export const showTextEditor = function (startValue, callBack) {
     return false;
 }
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
-    if (prompt) prompt.parentNode.removeChild(prompt);
+    if (prompt) prompt.domElement.parentNode.removeChild(prompt.domElement);
 
     const loginGUIWidth = 400;
 
@@ -1834,11 +1830,11 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     return new Promise((resolve, reject) => {
         yes_button.addEventListener('click', () => {
-            prompt.parentNode.removeChild(prompt);
+            prompt.domElement.parentNode.removeChild(prompt.domElement);
             return resolve();
         })
         no_button.addEventListener('click', () => {
-            prompt.parentNode.removeChild(prompt);
+            prompt.domElement.parentNode.removeChild(prompt.domElement);
             return reject();
         })
     });
