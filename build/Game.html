@@ -159,15 +159,14 @@
                     percentComplete = event.loaded / event.total;
                 } else {
                     var total = xhr.getResponseHeader('content-length')
-                    var encoding = xhr.getResponseHeader('content-encoding')
-                    if (total && encoding && (encoding.indexOf('gzip') > -1)) {
+                    if (total) {
                         total *= 4;
                     } else {
                         console.log('lengthComputable failed')
                     }
                     percentComplete = event.loaded / total;
                 }
-                setProgress(percentComplete);
+                setProgress(Math.min(1.0, Math.percentComplete));
             }
         }
         loadJS('awesome-game.js');
