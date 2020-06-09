@@ -174,6 +174,7 @@ const _B2dEditor = function () {
 			ui.destroyEditorGUI();
 			ui.buildEditorGUI();
 			self.showPrefabList();
+			ui.registerDragWindow(ui.editorGUI);
 		});
 		folder.add(self, "assetSelectedTexture", PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
 		this.spawnTexture = function () {};
