@@ -72,8 +72,11 @@ export const hideEditorPanels = function () {
     hidePanel(notice);
     hidePanel(prompt);
 }
-export const hidePanel = function (panel) {
+export const hidePanel = panel => {
     if (panel) panel.domElement.classList.add('fadedHide');
+}
+export const showPanel = panel => {
+    if(panel) panel.domElement.classList.remove('fadedHide');
 }
 export const setLevelSpecifics = function () {
     document.querySelectorAll('.editorHeader > span').forEach(span => span.text = game.currentLevelData.title);
@@ -1107,6 +1110,8 @@ export const showLevelEditScreen = function () {
     levelEditScreen.domElement.style.display = "block";
     // set values
 
+    showPanel(levelEditScreen);
+
     let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
     if (game.currentLevelData.thumbLowResURL) {
         thumbNailImage.src = firebaseManager.baseDownloadURL + game.currentLevelData.thumbLowResURL;
@@ -1359,14 +1364,14 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
 
                 const level = levels[level_id];
                 level.uid = level_id;
-                const itemBar = itemBar.cloneNode(true);
-                itemList.appendChild(itemBar);
-                itemBar.querySelector('.itemTitle').text = level.title;
-                itemBar.querySelector('.itemDescription').text = level.description;
-                itemBar.querySelector('.itemDate').text = formatTimestamp.formatDMY(level.creationDate);
-                if (level.thumbLowResURL) itemBar.querySelector('#thumbImage').src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+                const itemBarClone = itemBar.cloneNode(true);
+                itemList.appendChild(itemBarClone);
+                itemBarClone.querySelector('.itemTitle').text = level.title;
+                itemBarClone.querySelector('.itemDescription').text = level.description;
+                itemBarClone.querySelector('.itemDate').text = formatTimestamp.formatDMY(level.creationDate);
+                if (level.thumbLowResURL) itemBarClone.querySelector('#thumbImage').src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
 
-                let saveButton = itemBar.querySelector('.headerButton.save');
+                let saveButton = itemBarClone.querySelector('.headerButton.save');
                 saveButton.addEventListener('click', () => {
                     buttonFunction(saveButton, level);
                 });
@@ -1462,6 +1467,8 @@ export const showLoadScreen = function () {
             }).catch((error) => {});
         } else doLevelLoad();
     }
+
+    showPanel(loadScreen);
 
     const levelListDiv = loadScreen.domElement.querySelector('#levelList');
     while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
