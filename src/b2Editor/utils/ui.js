@@ -1713,7 +1713,7 @@ export const showNotice = function (message) {
     return false;
 }
 export const showTextEditor = function (startValue, callBack) {
-    if (textEditor) textEditor.parentNode.removeChild(textEditor);
+    if (textEditor) textEditor.domElement.parentNode.removeChild(textEditor.domElement);
 
     const loginGUIWidth = 400;
 
@@ -1752,7 +1752,7 @@ export const showTextEditor = function (startValue, callBack) {
 
     button.addEventListener('click', () => {
         callBack(textarea.value);
-        textEditor.parentNode.removeChild(textEditor);
+        textEditor.domElement.parentNode.removeChild(textEditor.domElement);
     })
 
     targetDomElement.appendChild(divWrapper);
