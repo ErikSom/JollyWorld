@@ -1909,10 +1909,7 @@ export const registerDragWindow = (_window) => {
     });
 
     const clickFunction = (event) => {
-        console.log("YES CLICKED", domElement.querySelector('.title').getAttribute('moved'));
-
         if (domElement.querySelector('.title').getAttribute('moved') !== null) {
-            console.log("YES MOVED");
             var tarFolder = _window.__folders[domElement.querySelector('.title').innerText]
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();

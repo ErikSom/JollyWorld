@@ -233,7 +233,6 @@ function UIManager() {
             targetDomElement.appendChild(backButton);
 
             backButton.addEventListener('click', () => {
-                console.log("GO BACK!");
                 self.hideLevelLoader();
                 self.showMainMenu();
 
@@ -265,7 +264,6 @@ function UIManager() {
 
     }
     this.hideLevelLoader = function () {
-        console.log("HIDE LEVEL LOADER!");
         levelLoader.domElement.style.display = 'none';
     }
     this.showFilterMenu = function () {
@@ -380,7 +378,7 @@ function UIManager() {
 
 
         }
-        filterMenu.domElement.style.display = "block";
+        filterMenu.domElement.style.visibility = 'visible';
         // set values
 
         filterMenu.domElement.style.left = '50%';
@@ -462,7 +460,7 @@ function UIManager() {
             game.editor.ui.registerDragWindow(levelBanner);
 
         }
-        levelBanner.domElement.style.display = "block";
+        levelBanner.domElement.style.visibility = 'visible';
         // set values
 
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
@@ -478,6 +476,7 @@ function UIManager() {
 
     }
     this.hideLevelBanner = function () {
+        console.log("Hide level banner");
         levelBanner.domElement.style.visibility = 'hidden';
     }
 
@@ -611,7 +610,7 @@ function UIManager() {
 
 
         }
-        pauseMenu.domElement.style.display = "block";
+        pauseMenu.domElement.style.visibility = 'visible';
         // set values
 
 
@@ -780,7 +779,7 @@ function UIManager() {
 
 
         }
-        winScreen.domElement.style.display = "block";
+        winScreen.domElement.style.visibility = 'visible';
         // set values
 
 
@@ -1075,6 +1074,8 @@ function UIManager() {
                 itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
 
                 itemBarClone.querySelector('.menuButton').addEventListener('click', () => {
+                    if(game.gameState != game.GAMESTATE_MENU) return;
+                    game.gameState = game.GAMESTATE_LOADINGDATA;
                     itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
                     itemBarClone.querySelector('.dot-shell').style.visibility = 'visible';
                     game.loadPublishedLevelData(level).then(() => {
@@ -1083,8 +1084,11 @@ function UIManager() {
                         self.showLevelBanner();
                         game.editor.ui.hide();
                         self.hideLevelLoader();
+                        game.gameState = game.GAMESTATE_PREVIEW;
+                        console.log("SHOW STATE", game.editor.editing);
                     }).catch((error) => {
                         console.log(error);
+                        game.gameState = game.GAMESTATE_MENU;
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
                     });

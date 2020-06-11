@@ -1403,7 +1403,7 @@ const _B2dEditor = function () {
 	}
 	this.run = function () {
 		//update textures
-		if (this.editing) {
+		if (this.editing && game.gameState == game.GAMESTATE_EDITOR) {
 			this.doEditor();
 		}
 

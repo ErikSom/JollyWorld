@@ -22,6 +22,7 @@ class Character extends PrefabManager.basePrefab {
         this.attachedToVehicle = true;
         this.alive = true;
         this.bleedTimer = -1;
+        this.life = 300;
 
         //** TEMP PORTAL GUN */
         // const gunPosition = this.lookupObject.shoulder_left.GetPosition();
@@ -58,7 +59,7 @@ class Character extends PrefabManager.basePrefab {
     update() {
         super.update();
 
-        if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_CLOSE, true)) {
+        if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_CLOSE, true) || !this.alive) {
             if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
             if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName.replace("0000", "_Closed0000"));
         } else if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_OPEN, false)) {
@@ -78,13 +79,20 @@ class Character extends PrefabManager.basePrefab {
 
         if (this.bleedTimer >= 0) {
             if (this.bleedTimer == 0) {
-                this.alive = false;
-                this.detachFromVehicle();
-                game.lose();
+                this.die();
             }
             this.bleedTimer--;
         }
-
+        if(this.life<=0 && this.bleedTimer<0){
+            this.bleedTimer = 0;
+        }
+    }
+    die(){
+        if(this.alive){
+            this.alive = false;
+            this.detachFromVehicle();
+            game.lose();
+        }
     }
     processJointDamage() {
         var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint','arm_left_joint', 'arm_right_joint'/*,'head_joint', 'belly_joint'*/ ];
@@ -142,6 +150,13 @@ class Character extends PrefabManager.basePrefab {
 
                     var force = 0;
                     for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+
+                    const minForceForDamage = 10.0;
+                    const forceToDamageDivider = 10.0;
+                    if(force>minForceForDamage){
+                        self.life -= minForceForDamage/forceToDamageDivider;
+                        console.log("LIFE:", self.life)
+                    }
 
                     if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {
                         if (body == self.lookupObject["head"]) {

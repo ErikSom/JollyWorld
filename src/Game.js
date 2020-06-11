@@ -178,6 +178,8 @@ function Game() {
 
 
         PIXICuller.init(this.editor.textures);
+
+        console.log("INIT EDITING?", this.editor.editing)
     }
 
 
@@ -199,7 +201,7 @@ function Game() {
         }
         Key.onMouseDown();
         this.onMouseMove(e);
-        this.editor.onMouseDown(e);
+        if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onMouseDown(e);
     };
 
 
@@ -342,7 +344,8 @@ function Game() {
         ui.hideGameOverMenu();
         this.runWorld();
         this.interactive = false;
-
+        this.gameState = this.GAMESTATE_MENU;
+        this.editor.editing = false;
     }
     this.runWorld = function () {
         this.editor.runWorld();
@@ -353,6 +356,7 @@ function Game() {
     this.playWorld = function () {
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
+        console.log("PLAY WORLD", this.editor.editing);
     }
 
     this.testWorld = function () {
@@ -391,6 +395,7 @@ function Game() {
         this.stopWorld();
         this.initLevel(SaveManager.getTempEditorWorld());
         this.doAutoSave();
+        this.editor.editing = true;
         ui.hide();
     }
     this.initLevel = function (data) {
@@ -655,8 +660,8 @@ function Game() {
             this.camera();
             emitterManager.update();
         }
-
         this.editor.run();
+    
         this.newDebugGraphics.clear();
         if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug && !this.run) || Settings.debugMode ) {
             this.world.DrawDebugData();
@@ -685,6 +690,8 @@ function Game() {
     this.GAMESTATE_MENU = 'menu';
     this.GAMESTATE_EDITOR = 'editor';
     this.GAMESTATE_NORMALPLAY = 'play';
+    this.GAMESTATE_PREVIEW = 'preview';
+    this.GAMESTATE_LOADINGDATA = 'loadingdata';
 }
 export var game = new Game();
 setTimeout(() => {
