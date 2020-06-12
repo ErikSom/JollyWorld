@@ -581,7 +581,6 @@ function UIManager() {
 
             restartButton.addEventListener('click', () => {
                 game.resetWorld();
-                game.playWorld();
                 game.unpauseGame();
             })
 
@@ -729,7 +728,6 @@ function UIManager() {
 
             restartButton.addEventListener('click', () => {
                 game.resetWorld();
-                game.playWorld();
                 game.unpauseGame();
             })
 
