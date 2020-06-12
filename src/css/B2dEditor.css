@@ -730,6 +730,14 @@ body .dg .cr.function{
 .ratingText #pauseMenu_likesPercentSpan, .ratingText #pauseMenu_likesNumSpan{
     color:#00FF00;
 }
+#winScreen_time{
+    font-family: 'Lily Script One', cursive;
+    text-align: center;
+    font-size: 20px;
+    margin-top: 20px;
+    display: block;
+}
+
 /**
  * ==============================================
  * Dot Pulse

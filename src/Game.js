@@ -25,6 +25,8 @@ import {
     levelsData
 } from "./data/levelsData";
 
+import { dateDiff } from "./b2Editor/utils/formatTimestamp";
+
 import * as emitterManager from './utils/EmitterManager';
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
@@ -485,15 +487,14 @@ function Game() {
     this.win = function () {
         if (!this.levelWon) {
             this.levelWon = true;
-
+            const d = dateDiff(Date.now(), this.levelStartTime);
+            console.log(d);
+            const s = `${d.hh}:${d.mm}:${d.ss}:${d.ms}`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();
-                ui.showWinScreen(s, true);
-
-            }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
-                const d = Date.now() - this.levelStartTime;
-                const s = new Date(d).toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
-                ui.showWinScreen(s, false);
+                ui.showWinScreen(s);
+            }else if(this.gameState == this.GAMESTATE_NORMALPLAY){;
+                ui.showWinScreen(s);
             }
 
         }

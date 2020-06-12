@@ -721,6 +721,12 @@ function UIManager() {
             downvoteButton.appendChild(thumbIcon);
 
 
+            let timeSpan = document.createElement('span');
+            timeSpan.innerText = time;
+            timeSpan.setAttribute('id', 'winScreen_time');
+            divWrapperNormal.appendChild(timeSpan);
+
+
             let restartButton = document.createElement('div');
             restartButton.setAttribute('class', 'startButton menuButton')
             restartButton.innerHTML = 'Restart';
@@ -758,6 +764,7 @@ function UIManager() {
 
             divWrapperEditor.style.padding = '20px';
 
+            divWrapperEditor.appendChild(timeSpan);
 
             let exitTest = document.createElement('div');
             exitTest.setAttribute('class', 'startButton menuButton')
@@ -782,14 +789,15 @@ function UIManager() {
 
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
-            winScreen.domElement.querySelector('#divWrapperNormal').style.visibility = 'hidden';
-            winScreen.domElement.querySelector('#divWrapperEditor').style.visibility = 'visible';
+            winScreen.domElement.querySelector('#divWrapperNormal').style.display = 'none';
+            winScreen.domElement.querySelector('#divWrapperEditor').style.display = 'block';
         } else {
-            winScreen.domElement.querySelector('#divWrapperNormal').style.visibility = 'visible';
-            winScreen.domElement.querySelector('#divWrapperEditor').style.visibility = 'hidden';
+            winScreen.domElement.querySelector('#divWrapperNormal').style.display = 'block';
+            winScreen.domElement.querySelector('#divWrapperEditor').style.display = 'none';
         }
 
 
+        winScreen.domElement.querySelector('#winScreen_time').innerText = time;
         winScreen.domElement.querySelector('#winScreen_title').innerText = game.currentLevelData.title;
         winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = game.currentLevelData.creator;
 
