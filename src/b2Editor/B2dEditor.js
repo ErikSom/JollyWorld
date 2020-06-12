@@ -3298,8 +3298,18 @@ const _B2dEditor = function () {
 						//Text Object
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							var textContainer = this.selectedTextures[j];
+							console.log(textContainer.pivot.x ,textContainer.pivot.y);
+
 							textContainer.data.fontSize = controller.targetValue;
 							textContainer.textSprite.style.fontSize = textContainer.data.fontSize;
+							textContainer.pivot.x = -textContainer.textSprite.width/2;
+							textContainer.pivot.y = -textContainer.textSprite.height/2;
+							textContainer.updateTransform();
+							textContainer.textSprite.x = -textContainer.textSprite.width;
+							textContainer.textSprite.y = -textContainer.textSprite.height;
+							console.log(textContainer);
+
+							// size 43 / width: 360/ x:
 						}
 					} else if (controller.property == "fontName") {
 						//Text Object
@@ -3332,18 +3342,17 @@ const _B2dEditor = function () {
 			}
 			// DO SYNCING
 			var syncObject;
-
-			if (ui.editorGUI.editData.type == this.object_BODY) {
+			if (ui.editorGUI.editData.type == this.object_BODY || ui.editorGUI.editData.type == this.object_TRIGGER) {
 				syncObject = this.selectedPhysicsBodies[0];
-			} else if (ui.editorGUI.editData.type == this.object_TEXTURE || ui.editorGUI.editData.type == this.object_JOINT || ui.editorGUI.editData.type == this.object_GRAPHIC) {
-				syncObject = this.selectedTextures[0];
-			} else if (ui.editorGUI.editData.type == this.object_PREFAB) {
+			}  else if (ui.editorGUI.editData.type == this.object_PREFAB) {
 				var key = Object.keys(this.selectedPrefabs)[0];
 				syncObject = this.activePrefabs[key];
 			} else if (ui.editorGUI.editData.type == this.object_MULTIPLE) {
 				if (this.selectedTextures.length > 0) syncObject = this.selectedTextures[0];
 				else if (this.selectedPhysicsBodies.length > 0) syncObject = this.selectedPhysicsBodies[0];
 				else syncObject = this.activePrefabs[key];
+			}else {
+				syncObject = this.selectedTextures[0];
 			}
 			if (syncObject) {
 				if (syncObject.mySprite) {
@@ -3351,11 +3360,16 @@ const _B2dEditor = function () {
 					ui.editorGUI.editData.x = pos.x * this.PTM;
 					ui.editorGUI.editData.y = pos.y * this.PTM;
 					ui.editorGUI.editData.rotation = syncObject.GetAngle() * this.RAD2DEG;
-				} else if(ui.editorGUI.editData.type == this.object_PREFAB){
+				} else {
 					ui.editorGUI.editData.x = syncObject.x;
 					ui.editorGUI.editData.y = syncObject.y;
 					if(ui.editorGUI.editData.type == this.object_PREFAB) ui.editorGUI.editData.rotation = syncObject.rotation;
 					else ui.editorGUI.editData.rotation = syncObject.rotation * this.RAD2DEG;
+
+					if(ui.editorGUI.editData.type == this.object_TEXT){
+						ui.editorGUI.editData.width = syncObject.width;
+						ui.editorGUI.editData.height = syncObject.height;
+					}
 				}
 			}
 

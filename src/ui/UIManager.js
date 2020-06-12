@@ -777,16 +777,11 @@ function UIManager() {
             })
 
             targetDomElement.appendChild(divWrapperEditor);
-
-
             customGUIContainer.appendChild(winScreen.domElement);
             winScreen.domElement.style.position = 'absolute';
-
-
         }
         winScreen.domElement.style.visibility = 'visible';
         // set values
-
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             winScreen.domElement.querySelector('#divWrapperNormal').style.display = 'none';
@@ -795,7 +790,6 @@ function UIManager() {
             winScreen.domElement.querySelector('#divWrapperNormal').style.display = 'block';
             winScreen.domElement.querySelector('#divWrapperEditor').style.display = 'none';
         }
-
 
         winScreen.domElement.querySelector('#winScreen_time').innerText = time;
         winScreen.domElement.querySelector('#winScreen_title').innerText = game.currentLevelData.title;
