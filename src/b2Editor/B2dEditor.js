@@ -4216,15 +4216,7 @@ const _B2dEditor = function () {
 	}
 	this.buildTextFromObj = function (obj) {
 		let container;
-		let text = new PIXI.Text();
-		let style = new PIXI.TextStyle();
-		style.fontFamily = obj.fontName;
-		style.fontSize = obj.fontSize;
-		style.fill = obj.textColor;
-		style.align = obj.textAlign;
-
-		text.text = obj.text;
-		text.style = style;
+		let text = this.buildTextGraphicFromObj(obj);
 
 		container = new PIXI.Container();
 		container.pivot.set(text.width / 2, text.height / 2);
@@ -4248,6 +4240,18 @@ const _B2dEditor = function () {
 		this.addObjectToLookupGroups(container, container.data);
 
 		return container;
+	}
+	this.buildTextGraphicFromObj = function (obj) {
+		let text = new PIXI.Text();
+		let style = new PIXI.TextStyle();
+		style.fontFamily = obj.fontName;
+		style.fontSize = obj.fontSize;
+		style.fill = obj.textColor;
+		style.align = obj.textAlign;
+
+		text.text = obj.text;
+		text.style = style;
+		return text;
 	}
 	this.buildBodyFromObj = function (obj) {
 
@@ -4863,13 +4867,13 @@ const _B2dEditor = function () {
 
 		this.updateObject(graphicGroup, graphicGroup.data);
 
-		for (var i = 0; i < graphicGroup.data.graphicObjects.length; i++) {
-			var graphicObject = this.parseArrObject(JSON.parse(graphicGroup.data.graphicObjects[i]));
+		for (let i = 0; i < graphicGroup.data.graphicObjects.length; i++) {
+			const graphicObject = this.parseArrObject(JSON.parse(graphicGroup.data.graphicObjects[i]));
 
-			var cosAngle = Math.cos(graphicGroup.rotation);
-			var sinAngle = Math.sin(graphicGroup.rotation);
-			var dx = graphicObject.x;
-			var dy = graphicObject.y;
+			const cosAngle = Math.cos(graphicGroup.rotation);
+			const sinAngle = Math.sin(graphicGroup.rotation);
+			const dx = graphicObject.x;
+			const dy = graphicObject.y;
 			graphicObject.x = (dx * cosAngle - dy * sinAngle);
 			graphicObject.y = (dx * sinAngle + dy * cosAngle);
 
@@ -4877,9 +4881,16 @@ const _B2dEditor = function () {
 			graphicObject.y += graphicGroup.y;
 			graphicObject.rotation = graphicGroup.rotation + graphicObject.rotation;
 
-			var graphic = this.buildGraphicFromObj(graphicObject);
+			let graphic;
+			if(graphicObject.type == this.object_GRAPHIC){
+				graphic = this.buildGraphicFromObj(graphicObject);
+			}else if(graphicObject.type == this.object_TEXTURE){
+				graphic = this.buildTextureFromObj(graphicObject);
+			}else if(graphicObject.type == this.object_TEXT){
+				graphic = this.buildTextFromObj(graphicObject);
+			}
 
-			var container = graphic.parent;
+			const container = graphic.parent;
 			container.removeChild(graphic);
 			container.addChildAt(graphic, graphicGroup.data.ID + i);
 
@@ -5347,6 +5358,9 @@ const _B2dEditor = function () {
 				g.data = null;
 			} else if (gObj instanceof this.textureObject) {
 				g = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(gObj.textureName));
+				g.pivot.set(g.width / 2, g.height / 2);
+			}else if(gObj instanceof this.textObject) {
+				g = this.buildTextGraphicFromObj(gObj);
 				g.pivot.set(g.width / 2, g.height / 2);
 			}
 			graphic.addChild(g);
