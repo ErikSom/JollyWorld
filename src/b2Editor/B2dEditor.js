@@ -3124,7 +3124,8 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorFill = controller.targetValue.toString();
-							if (sprite.data.radius[0]) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
+							console.log(sprite.data.radius);
+							if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
 								x: 0,
 								y: 0
 							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
