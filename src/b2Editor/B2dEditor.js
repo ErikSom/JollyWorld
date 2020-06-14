@@ -2357,8 +2357,6 @@ const _B2dEditor = function () {
 			}
 		} else if (e.keyCode == 77) { //m
 			this.selectTool(this.tool_SELECT);
-		} else if (e.keyCode == 81) { //q
-			this.anchorTextureToBody();
 		} else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
 				this.selectedTextures.push(this.attachJointPlaceHolder());
@@ -5178,40 +5176,6 @@ const _B2dEditor = function () {
 		return this.activePrefabs[prefabLookup._bodies[0].mySprite.data.prefabInstanceName].class;
 	}
 
-	this.anchorTextureToBody = function () {
-		var bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);
-		var textures = this.queryWorldForGraphics(this.mousePosWorld, this.mousePosWorld, true, 1);
-
-		if (bodies.length > 0 && textures.length > 0) {
-			// lets mold these fuckers to eachother
-
-			var body = bodies[0];
-			var texture = textures[0];
-
-
-			if (!body.myTexture && !texture.myBody) {
-				var dif = new b2Vec2(texture.x - body.GetPosition().x * this.PTM, texture.y - body.GetPosition().y * this.PTM);
-				var angleOffset = body.GetAngle() - Math.atan2(dif.y, dif.x);
-				var angle = body.GetAngle() - texture.rotation;
-
-
-				if (body.mySprite.parent.getChildIndex(body.mySprite) > texture.parent.getChildIndex(texture)) {
-					body.mySprite.parent.swapChildren(body.mySprite, texture);
-				}
-
-				this.updateObject(body.mySprite, body.mySprite.data);
-				this.updateObject(texture, texture.data);
-
-				this.setTextureToBody(body, texture, dif.Length(), angleOffset, angle);
-
-			} else if (body.myTexture && texture.myBody) {
-				if (body.myTexture == texture) {
-					this.removeTextureFromBody(body, texture);
-				}
-			}
-
-		}
-	}
 	this.setTextureToBody = function (body, texture, positionOffsetLength, positionOffsetAngle, offsetRotation) {
 		body.myTexture = texture;
 		texture.data.bodyID = body.mySprite.data.ID;

@@ -1598,8 +1598,8 @@ export const initGuiAssetSelection = function () {
             //guiFunction.querySelector('img').setAttribute('draggable', false);
             targetDomElement.appendChild(guiFunction);
             guiFunction.style.height = `${texture.height}px`;
-            guiFunction.querySelector('img').css('display', 'block');
-            guiFunction.querySelector('img').css('margin', 'auto');
+            guiFunction.querySelector('img').style.display = 'block';
+            guiFunction.querySelector('img').style.margin = 'auto';
             guiFunction.setAttribute('textureName', textureName);
 
             const clickFunction = (e) => {
