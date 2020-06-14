@@ -198,7 +198,6 @@ const _B2dEditor = function () {
 			guiFunction.setAttribute('prefabName', prefabName);
 
 			const clickFunction = (e) =>{
-				console.log(guiFunction)
 				const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
 				const rect = guiAsset.getBoundingClientRect();
 				const x = Math.max(e.pageX, rect.right + 200);
@@ -804,7 +803,6 @@ const _B2dEditor = function () {
 			};
 			controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
 		} else {
-			console.log(this.selectedPhysicsBodies[0], "<----")
 			if (this.selectedPhysicsBodies.length == 1) {
 				if (this.selectedPhysicsBodies[0].myTexture) {
 					ui.editorGUI.editData.ungroupObjects = () => {
@@ -2350,7 +2348,6 @@ const _B2dEditor = function () {
 
 				if ((this.selectedTextures.length == 1 && this.selectedPhysicsBodies.length == 0) || (this.selectedTextures.length == 0 && this.selectedPhysicsBodies.length == 1)) {
 					this.ungroupObjects();
-					console.log('UNGROUP');
 				} else {
 					this.groupObjects();
 				}
@@ -3123,7 +3120,6 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorFill = controller.targetValue.toString();
-							console.log(sprite.data.radius);
 							if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
 								x: 0,
 								y: 0
@@ -3298,7 +3294,6 @@ const _B2dEditor = function () {
 						//Text Object
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							var textContainer = this.selectedTextures[j];
-							console.log(textContainer.pivot.x ,textContainer.pivot.y);
 
 							textContainer.data.fontSize = controller.targetValue;
 							textContainer.textSprite.style.fontSize = textContainer.data.fontSize;
@@ -3307,7 +3302,6 @@ const _B2dEditor = function () {
 							textContainer.updateTransform();
 							textContainer.textSprite.x = -textContainer.textSprite.width;
 							textContainer.textSprite.y = -textContainer.textSprite.height;
-							console.log(textContainer);
 
 							// size 43 / width: 360/ x:
 						}
@@ -4277,7 +4271,6 @@ const _B2dEditor = function () {
 			obj.density = [obj.density];
 		}
 
-
 		//build fixtures
 		let fixDef;
 		let fixture;
@@ -4468,7 +4461,7 @@ const _B2dEditor = function () {
 
 				} else if (shape instanceof Box2D.b2CircleShape) {
 					shape.SetRadius(shape.GetRadius() * scaleX);
-					body.mySprite.data.radius *= scaleX;
+					body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
 				}
 				fixture.DestroyProxies();
 				fixture.CreateProxies(body.m_xf);
