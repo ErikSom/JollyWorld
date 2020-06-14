@@ -1754,6 +1754,7 @@ export const showTextEditor = function (startValue, callBack) {
     button.addEventListener('click', () => {
         callBack(textarea.value);
         textEditor.domElement.parentNode.removeChild(textEditor.domElement);
+        textEditor = null;
     })
 
     targetDomElement.appendChild(divWrapper);
