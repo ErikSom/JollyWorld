@@ -592,8 +592,9 @@ export class triggerCore {
             if (self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
-                if (containsTargetType(self, bodies[i])) {
-                    if (!self.touchingObjects.includes(bodies[i])) self.touchingObjects.push(bodies[i]);
+                const body = bodies[i];
+                if (body != self.trigger && containsTargetType(self, body)) {
+                    if (!self.touchingObjects.includes(body)) self.touchingObjects.push(body);
                     self.touchingTarget = true;
                     if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
                         if (self.touchingObjects.length == 1) {
@@ -610,9 +611,10 @@ export class triggerCore {
             if (self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
-                if (containsTargetType(self, bodies[i])) {
+                const body = bodies[i];
+                if (body != self.trigger && containsTargetType(self, body)) {
                     for (var j = 0; j < self.touchingObjects.length; j++) {
-                        if (self.touchingObjects[j] == bodies[i]) {
+                        if (self.touchingObjects[j] == body) {
                             self.touchingObjects.splice(j, 1);
                             break;
                         }
