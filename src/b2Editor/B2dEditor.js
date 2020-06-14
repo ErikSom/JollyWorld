@@ -653,14 +653,14 @@ const _B2dEditor = function () {
 				}.bind(controller));
 
 
-				let containsMergedBodies = false;
+				let bodyIsGroup = false;
 				for (let i = 0; i < this.selectedPhysicsBodies.length; i++) {
-					if (this.selectedPhysicsBodies[i].mySprite.data.vertices.length > 1) {
-						containsMergedBodies = true;
+					if (this.selectedPhysicsBodies[i].mySprite.data.vertices.length > 1 || this.selectedPhysicsBodies[i].myTexture) {
+						bodyIsGroup = true;
 						break;
 					}
 				}
-				if (!containsMergedBodies) {
+				if (!bodyIsGroup) {
 					ui.editorGUI.editData.convertToGraphic = function () {};
 					var label = this.selectedPhysicsBodies.length == 1 ? "Convert to Graphic" : "Convert to Graphics";
 					controller = targetFolder.add(ui.editorGUI.editData, "convertToGraphic").name(label);
