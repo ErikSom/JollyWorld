@@ -1772,7 +1772,7 @@ export const showTextEditor = function (startValue, callBack) {
 
     return false;
 }
-const removePrompt = (prompt)=>{
+const removePrompt = ()=>{
     prompt.domElement.parentNode.removeChild(prompt.domElement);
     prompt = null;
 }
