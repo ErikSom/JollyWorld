@@ -1772,8 +1772,12 @@ export const showTextEditor = function (startValue, callBack) {
 
     return false;
 }
+const removePrompt = (prompt)=>{
+    prompt.domElement.parentNode.removeChild(prompt.domElement);
+    prompt = null;
+}
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
-    if (prompt) prompt.domElement.parentNode.removeChild(prompt.domElement);
+    if (prompt) removePrompt();
 
     const loginGUIWidth = 400;
 
@@ -1835,13 +1839,16 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     registerDragWindow(prompt);
 
+
+
+
     return new Promise((resolve, reject) => {
         yes_button.addEventListener('click', () => {
-            prompt.domElement.parentNode.removeChild(prompt.domElement);
+            removePrompt();
             return resolve();
         })
         no_button.addEventListener('click', () => {
-            prompt.domElement.parentNode.removeChild(prompt.domElement);
+            removePrompt();
             return reject();
         })
     });
