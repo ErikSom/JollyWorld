@@ -804,8 +804,9 @@ const _B2dEditor = function () {
 			};
 			controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
 		} else {
+			console.log(this.selectedPhysicsBodies[0], "<----")
 			if (this.selectedPhysicsBodies.length == 1) {
-				if (this.selectedPhysicsBodies[0].mySprite.data.vertices.length > 1) {
+				if (this.selectedPhysicsBodies[0].myTexture) {
 					ui.editorGUI.editData.ungroupObjects = () => {
 						self.ungroupObjects();
 					};
@@ -4619,7 +4620,7 @@ const _B2dEditor = function () {
 					this.ungroupGraphicObjects(myTexture);
 				}
 			}
-			this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
+			if(this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
 		}
 		if (this.selectedTextures.length == 1 && this.selectedTextures[0].data.type == this.object_GRAPHICGROUP) {
 			this.ungroupGraphicObjects(this.selectedTextures[0]);
