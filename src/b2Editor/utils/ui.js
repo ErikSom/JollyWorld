@@ -1366,9 +1366,10 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 level.uid = level_id;
                 const itemBarClone = itemBar.cloneNode(true);
                 itemList.appendChild(itemBarClone);
-                itemBarClone.querySelector('.itemTitle').text = level.title;
-                itemBarClone.querySelector('.itemDescription').text = level.description;
-                itemBarClone.querySelector('.itemDate').text = formatTimestamp.formatDMY(level.creationDate);
+
+                itemBarClone.querySelector('.itemTitle').innerText = level.title;
+                itemBarClone.querySelector('.itemDescription').innerText = level.description;
+                itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.creationDate);
                 if (level.thumbLowResURL) itemBarClone.querySelector('#thumbImage').src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
 
                 let saveButton = itemBarClone.querySelector('.headerButton.save');
