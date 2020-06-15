@@ -4,12 +4,13 @@ import { Settings } from "../Settings";
 
 let emitters = [];
 let emittersPool = {};
+let globalBody = {emitterCount:0};
 
 export const init = function(){
     /*TODO
    1) Create proper pooler per available types
    */
-   const emitterPoolData = [{type:'blood', poolSize:30}, {type:'gorecloud', poolSize:15}];
+   const emitterPoolData = [{type:'blood', poolSize:30}, {type:'gorecloud', poolSize:15}, {type:'explosion_layer1', poolSize:10}, {type:'explosion_layer2', poolSize:10}];
    emitterPoolData.map((data)=>{
        for (let i = 0; i < data.poolSize; i++) getEmitter(data.type, null);
    })
@@ -19,7 +20,10 @@ export const init = function(){
 }
 export const playOnceEmitter = function (type, body, point, angle) {
     if(!angle) angle = 0;
-    if(body && body.emitterCount && body.emitterCount >= Settings.emittersPerBody) return;
+    if(!body) body = globalBody;
+
+    const maxEmitters = body === globalBody ? 10 : Settings.emittersPerBody;
+    if(body && body.emitterCount && body.emitterCount >= maxEmitters) return;
 
     let emitter = getEmitter(type, body);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
@@ -65,6 +69,13 @@ export const getEmitter = function (type, body) {
                emitterData[type]
            );
        break;
+       case "explosion_layer1":
+        case "explosion_layer2":
+        emitter = new PIXI.particles.Emitter(
+            game.myEffectsContainer, [PIXI.Texture.fromImage('smoke.png')],
+            emitterData[type]
+        );
+         break;
    }
    emitter.type = type;
    emitters.push(emitter);

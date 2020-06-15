@@ -26,10 +26,10 @@ export var LoadCoreAssets = function (loader){
         .add("Brick2.jpg", "assets/images/textures/Brick2.jpg")
         .add("WhiteBlock.jpg", "assets/images/textures/WhiteBlock.jpg")
         /*PARTICLE DATA*/
-        .add("blood-particles-data", "data/emitter_blood.json")
         .add("particle.png", "assets/images/particles/particle.png")
         .add("particle-grey.png", "assets/images/particles/particle-grey.png")
         .add("gore-cloud.png", "assets/images/particles/gore-cloud.png")
+        .add("smoke.png", "assets/images/particles/smoke.png")
         /*MISC*/
         .add("Logo", "assets/images/gui/Logo.svg")
         /*WORLD DATA*/

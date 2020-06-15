@@ -54,6 +54,7 @@ function Game() {
     this.app;
     this.stage;
     this.myContainer;
+    this.myEffectsContainer;
     this.newDebugGraphic;
     this.canvas;
     this.renderer;
@@ -138,6 +139,10 @@ function Game() {
         this.myContainer = new PIXI.Graphics();
         this.stage.addChild(this.myContainer);
 
+        //container
+        this.myEffectsContainer = new PIXI.Graphics();
+        this.stage.addChild(this.myEffectsContainer);
+
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
@@ -199,8 +204,14 @@ function Game() {
                 this.mouseJoint = this.world.CreateJoint(md);
                 body.SetAwake(true);
             }
-
         }
+        const pos = new Box2D.b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y)
+        emitterManager.playOnceEmitter("explosion_layer1", null, pos, 0);
+        emitterManager.playOnceEmitter("explosion_layer2", null, pos, 0);
+
+
+
+
         Key.onMouseDown();
         this.onMouseMove(e);
         if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onMouseDown(e);
@@ -584,6 +595,11 @@ function Game() {
 
         this.editor.container.x += (-cameraTargetPosition.x - this.editor.container.x) * panEase;
         this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
+
+        this.myEffectsContainer.scale.x = this.editor.container.scale.x;
+        this.myEffectsContainer.scale.y = this.editor.container.scale.y;
+        this.myEffectsContainer.x = this.editor.container.x;
+        this.myEffectsContainer.y = this.editor.container.y;
 
     }
 
