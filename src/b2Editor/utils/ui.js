@@ -1051,7 +1051,7 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(saveAsButton);
 
         var self = this;
-        saveAsButton.addEventListener('click', () => {
+        saveAsButton.addEventListener('click', function(){
             if (!checkLevelDataForErrors()) return;
             self.showSaveScreen.bind(self)();
         });
