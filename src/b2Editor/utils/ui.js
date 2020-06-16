@@ -78,7 +78,11 @@ export const hidePanel = panel => {
 export const showPanel = panel => {
     if(panel){
         panel.domElement.classList.remove('fadedHide');
-        panel.domElement.parentNode.appendChild(panel.domElement);
+        setTimeout(()=>{
+            if(!panel) return;
+            panel.domElement.parentNode.appendChild(panel.domElement);
+            panel.domElement.focus();
+        }, 1);
     }
 }
 export const setLevelSpecifics = function () {
@@ -1912,22 +1916,26 @@ export const registerDragWindow = (_window) => {
 
 
     const setHighestWindow = ()=>{
-        if ([...domElement.parentNode.children].indexOf(_window.domElement) !== domElement.parentNode.children.length - 1) {
-            domElement.parentNode.appendChild(domElement);
-        }
+        setTimeout(()=>{
+            if(!domElement || !domElement.parentNode) return;
+            if ([...domElement.parentNode.children].indexOf(_window.domElement) !== domElement.parentNode.children.length - 1) {
+                domElement.parentNode.appendChild(domElement);
+            }
+        }, 0);
     }
 
 
     titleBar.addEventListener('mousedown', (event) => {
         initDrag(event, _window);
         event.stopPropagation();
-        setHighestWindow();
     });
-    domElement.addEventListener('mousedown', (event) => {
+
+    domElement.addEventListener('mouseup', (event) => {
         setHighestWindow();
     })
     titleBar.addEventListener('mouseup', (event) => {
         endDrag(event, _window);
+        setHighestWindow();
     });
 
     const clickFunction = (event) => {
