@@ -29,7 +29,14 @@ export var LoadCoreAssets = function (loader){
         .add("particle.png", "assets/images/particles/particle.png")
         .add("particle-grey.png", "assets/images/particles/particle-grey.png")
         .add("gore-cloud.png", "assets/images/particles/gore-cloud.png")
-        .add("smoke.png", "assets/images/particles/smoke.png")
+        .add("Fire_1.png", "assets/images/particles/Fire_1.png")
+        .add("Fire_2.png", "assets/images/particles/Fire_2.png")
+        .add("Fire_3.png", "assets/images/particles/Fire_3.png")
+        .add("Fire_4.png", "assets/images/particles/Fire_4.png")
+        .add("Smoke_1.png", "assets/images/particles/Smoke_1.png")
+        .add("Smoke_2.png", "assets/images/particles/Smoke_2.png")
+        .add("Smoke_3.png", "assets/images/particles/Smoke_3.png")
+        .add("Smoke_4.png", "assets/images/particles/Smoke_4.png")
         /*MISC*/
         .add("Logo", "assets/images/gui/Logo.svg")
         /*WORLD DATA*/
