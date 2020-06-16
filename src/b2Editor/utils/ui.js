@@ -76,7 +76,10 @@ export const hidePanel = panel => {
     if (panel) panel.domElement.classList.add('fadedHide');
 }
 export const showPanel = panel => {
-    if(panel) panel.domElement.classList.remove('fadedHide');
+    if(panel){
+        panel.domElement.classList.remove('fadedHide');
+        panel.domElement.parentNode.appendChild(panel.domElement);
+    }
 }
 export const setLevelSpecifics = function () {
     document.querySelectorAll('.editorHeader > span').forEach(span => span.text = game.currentLevelData.title);
@@ -1219,7 +1222,7 @@ export const showSaveScreen = function () {
 
     }
     // On every opn do:
-    saveScreen.domElement.classList.remove('hidden');
+    showPanel(saveScreen);
 
     const buttonFunction = (button, level) => {
         self.showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
@@ -1900,18 +1903,28 @@ export const doDrag = function (event, _window) {
 }
 
 export const registerDragWindow = (_window) => {
+
+
     windows.push(_window);
     const domElement = _window.domElement;
     var titleBar = domElement.querySelector('.dg .title');
     domElement.style.position = 'absolute';
-    titleBar.addEventListener('mousedown', (event) => {
-        initDrag(event, _window);
-        event.stopPropagation();
-    });
-    domElement.addEventListener('mousedown', (event) => {
+
+
+    const setHighestWindow = ()=>{
         if ([...domElement.parentNode.children].indexOf(_window.domElement) !== domElement.parentNode.children.length - 1) {
             domElement.parentNode.appendChild(domElement);
         }
+    }
+
+
+    titleBar.addEventListener('mousedown', (event) => {
+        initDrag(event, _window);
+        event.stopPropagation();
+        setHighestWindow();
+    });
+    domElement.addEventListener('mousedown', (event) => {
+        setHighestWindow();
     })
     titleBar.addEventListener('mouseup', (event) => {
         endDrag(event, _window);
