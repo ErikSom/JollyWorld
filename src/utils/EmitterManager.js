@@ -22,7 +22,7 @@ export const playOnceEmitter = function (type, body, point, angle) {
     if(!angle) angle = 0;
     if(!body) body = globalBody;
 
-    const maxEmitters = body === globalBody ? 10 : Settings.emittersPerBody;
+    const maxEmitters = body === globalBody ? 30 : Settings.emittersPerBody;
     if(body && body.emitterCount && body.emitterCount >= maxEmitters) return;
 
     let emitter = getEmitter(type, body);

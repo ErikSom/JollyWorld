@@ -1,0 +1,82 @@
+import * as PrefabManager from '../PrefabManager';
+import * as Box2D from '../../../libs/Box2D';
+
+import {
+    game
+} from "../../Game";
+
+import {
+    Settings
+} from "../../Settings";
+
+export class Explosive extends PrefabManager.basePrefab {
+    constructor(target) {
+        super(target);
+    }
+    init() {
+		this.explosiveRadius = 100;
+		this.explosivePower = 2000;
+		this.explodeTimer = 0;
+		this.explodeDelay = 3000;
+		this.explosiveRays = 20;
+		this.explodeTarget = null;
+		// this.clipWalls = false;
+		// this.exploded = false;
+
+        super.init();
+	}
+	explode(){
+		let rayStartPosition = this.explodeTarget.GetPosition();
+		let angleInc = (Math.PI*2)/this.explosiveRays;
+		const radius = this.explosiveRadius/Settings.PTM;
+
+		for(let i = 0; i<this.explosiveRays; i++){
+			const angle = angleInc*i;
+			const cosA = Math.cos(angle);
+			const sinA = Math.sin(angle);
+			const extentX = radius*cosA;
+			const extentY = radius*sinA;
+			let rayEndPosition = new Box2D.b2Vec2(rayStartPosition.x + extentX, rayStartPosition.y + extentY);
+
+			var callback = new Explosive.RaycastCallbackExplosive();
+			this.explodeTarget.GetWorld().RayCast(callback, rayStartPosition, rayEndPosition);
+			if (callback.m_hit) {
+				const power = (1-callback.m_fraction)*this.explosivePower;
+				const force = new Box2D.b2Vec2(power*cosA, power*sinA);
+				const body = callback.m_fixture.GetBody();
+				if(body != this.explodeTarget){
+					body.ApplyForce(force, callback.m_point);
+				}
+			}
+		}
+	}
+    update(){
+        super.update();
+		if (PrefabManager.timerReady(this.explodeTimer, this.explodeDelay, true)) {
+            this.explode();
+		}
+		this.explodeTimer += game.editor.deltaTime;
+    }
+    initContactListener() {
+        super.initContactListener();
+        var self = this;
+        this.contactListener.BeginContact = function (contact) {
+        }
+        this.contactListener.EndContact = function (contact) {
+        }
+    }
+}
+
+Explosive.RaycastCallbackExplosive = function () {
+	this.m_hit = false;
+}
+Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture, point, normal, fraction) {
+	if (fixture.GetType() == Box2D.b2BodyType.b2_staticBody) return -1;
+	if (fixture.IsSensor()) return -1;
+	this.m_hit = true;
+	this.m_point = point.Clone();
+	this.m_normal = normal;
+	this.m_fixture = fixture;
+	this.m_fraction = fraction;
+	return fraction;
+};

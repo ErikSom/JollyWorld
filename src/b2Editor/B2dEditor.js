@@ -5230,7 +5230,7 @@ const _B2dEditor = function () {
 		let decal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
 		decal.pivot.set(decal.width / 2, decal.height / 2);
 
-		var localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
+		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
 		decal.x = localPosition.x;
 		decal.y = localPosition.y;
 
