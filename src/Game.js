@@ -640,7 +640,7 @@ function Game() {
                     var worldManifold = new Box2D.b2WorldManifold();
                     contact.GetWorldManifold(worldManifold);
                     var worldCollisionPoint = worldManifold.points[0];
-                    self.editor.addDecalToBody(body, worldCollisionPoint, "Decal10000", true);
+                    self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
                     emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
                 }
             }
