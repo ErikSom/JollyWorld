@@ -51,7 +51,8 @@ class Character extends PrefabManager.basePrefab {
 
                 if (fleshName.indexOf('Head') > 0) fleshName = fleshName.substr(0, fleshName.indexOf('_')) + "_Head";
 
-                var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(fleshName + "_Flesh0000"));
+                var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(fleshName + "_Flesh0000"));
+                texture.myFlesh = sprite;
                 texture.addChildAt(sprite, 0);
             }
         }

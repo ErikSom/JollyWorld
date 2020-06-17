@@ -205,13 +205,6 @@ function Game() {
                 body.SetAwake(true);
             }
         }
-        const pos = new Box2D.b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y)
-        emitterManager.playOnceEmitter("explosion_layer1", null, pos, 0);
-        emitterManager.playOnceEmitter("explosion_layer2", null, pos, 0);
-
-
-
-
         Key.onMouseDown();
         this.onMouseMove(e);
         if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onMouseDown(e);

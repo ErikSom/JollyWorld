@@ -14,8 +14,8 @@ export class Explosive extends PrefabManager.basePrefab {
         super(target);
     }
     init() {
-		this.explosiveRadius = 100;
-		this.explosivePower = 2000;
+		this.explosiveRadius = 250;
+		this.explosivePower = 3000;
 		this.explodeTimer = 0;
 		this.explodeDelay = 3000;
 		this.explosiveRays = 20;
@@ -46,6 +46,14 @@ export class Explosive extends PrefabManager.basePrefab {
 				const body = callback.m_fixture.GetBody();
 				if(body != this.explodeTarget){
 					body.ApplyForce(force, callback.m_point);
+
+					if(body.isFlesh){
+						const powerRate = power/this.explosivePower;
+						self.editor.addDecalToBody(body, callback.m_point, "skorch.png", true, powerRate*1.5, angle, {burn:powerRate*.4});
+					}
+
+
+
 				}
 			}
 		}
@@ -71,7 +79,11 @@ Explosive.RaycastCallbackExplosive = function () {
 	this.m_hit = false;
 }
 Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-	if (fixture.GetType() == Box2D.b2BodyType.b2_staticBody) return -1;
+	if(fixture.GetBody() && fixture.GetBody().isFlesh){
+		 if(fixture.GetBody().myTexture.data.textureName.indexOf('head') >= 0){
+			 console.log(fixture.GetType(), Box2D.b2BodyType.b2_staticBody, fixture.IsSensor(), "<----");
+		 };
+	}
 	if (fixture.IsSensor()) return -1;
 	this.m_hit = true;
 	this.m_point = point.Clone();

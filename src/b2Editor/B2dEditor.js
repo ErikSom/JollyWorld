@@ -5220,8 +5220,9 @@ const _B2dEditor = function () {
 			body.myTexture.originalSprite.maskSprite = body.myMask;
 		}
 	}
-	this.addDecalToBody = function (body, worldPosition, textureName, carving, size) {
+	this.addDecalToBody = function (body, worldPosition, textureName, carving, size, rotation, optional) {
 		if (!size) size = 1;
+		if(!rotation) rotation = 0;
 		// size = 1;
 		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
 
@@ -5233,11 +5234,29 @@ const _B2dEditor = function () {
 		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
 		decal.x = localPosition.x;
 		decal.y = localPosition.y;
+		decal.rotation = rotation;
 
 		decal.scale.x = size;
 		decal.scale.y = size;
 
 		game.app.renderer.render(decal, body.myDecalSpriteRT, false);
+
+		if(optional){
+			if(optional.burn){
+				if(body.isFlesh){
+					const targetFlesh = body.myTexture.myFlesh;
+					if(targetFlesh.burn === undefined) targetFlesh.burn = 0.0;
+					targetFlesh.burn += Math.min(1.0, optional.burn);
+
+
+					const burnRate = 0.7*(1-targetFlesh.burn);
+					targetFlesh.color.setLight(0.3+burnRate, 0.3+burnRate, 0.3+burnRate);
+					targetFlesh.color.invalidate();
+
+
+				}
+			}
+		}
 
 		if (carving) {
 			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
@@ -5248,6 +5267,7 @@ const _B2dEditor = function () {
 
 			carveDecal.y = decal.y;
 			carveDecal.x = decal.x;
+			carveDecal.rotation = rotation;
 
 			carveDecal.tint = 0x000000;
 			carveDecal.color.dark[0] = carveDecal.color.light[0];
