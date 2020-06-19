@@ -49,7 +49,7 @@ export class Explosive extends PrefabManager.basePrefab {
 
 					if(body.isFlesh){
 						const powerRate = power/this.explosivePower;
-						self.editor.addDecalToBody(body, callback.m_point, "skorch.png", true, powerRate*1.5, angle, {burn:powerRate*.4});
+						self.editor.addDecalToBody(body, callback.m_point, "skorch.png", true, powerRate*2.5, angle, {burn:powerRate*.6});
 					}
 
 
