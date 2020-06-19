@@ -1699,6 +1699,7 @@ export const showNotice = function (message) {
 
     button.addEventListener('click', () => {
         notice.domElement.parentNode.removeChild(notice.domElement);
+        notice = null;
     })
 
     targetDomElement.appendChild(divWrapper);
