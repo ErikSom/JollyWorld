@@ -1,6 +1,5 @@
 import { editorSettings } from './editorSettings';
-
-const paper = require('paper/dist/paper-core');
+import paper from '../../../libs/paper-core.js'
 const simpler = require('simplify-js');
 
 paper.setup();

@@ -25,7 +25,7 @@ class Grenade extends Explosive {
 }
 
 PrefabManager.prefabLibrary.Grenade = {
-    json: '{"objects":[[0,0,0,0,"grenade","grenadeBody",0,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[12.573646401946284],"",[1]],[1,-4.370894525720985,-3.7464810220467655,0,"grenade","grenadeTexture",1,"Grenade0000",0,5.756808056860525,2.4329663814620957,0,false,"#FFFFFF",1,1]]}',
+    json: '{"objects":[[0,0,0,0,"grenade","grenadeBody",0,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[12.573646401946284],"",[1]],[1,-4.370894525720985,-3.7464810220467655,0,"grenade","grenadeTexture",1,"Grenade_off0000",0,5.756808056860525,2.4329663814620957,0,false,"#FFFFFF",1,1]]}',
     class: Grenade,
     library: PrefabManager.LIBRARY_WEAPON  ,
 }

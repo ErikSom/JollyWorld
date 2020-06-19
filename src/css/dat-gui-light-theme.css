@@ -65,13 +65,13 @@ body .dg li.save-row .button {
 body .dg li.title {
     margin-left:0px;
     background-color: #4F4F4F;
-    background-image: url(../../build/assets/images/gui/DragableBar_Pattern.png);
+    background-image: url(../../static/assets/images/gui/DragableBar_Pattern.png);
     background-size: contain;
 }
 
 .dg .closed li.title{
     background-color: #4F4F4F;
-    background-image: url(../../build/assets/images/gui/DragableBar_Pattern.png);
+    background-image: url(../../static/assets/images/gui/DragableBar_Pattern.png);
     background-size: contain;
 }
 

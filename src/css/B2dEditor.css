@@ -96,7 +96,7 @@ canvas {
 .toolgui.button.menu{
     position: absolute;
     margin:0px;
-    background-image: url('../../build/assets/images/gui/Icon_Menu.png');
+    background-image: url('../../static/assets/images/gui/Icon_Menu.png');
     background-size: contain;
 }
 .toolgui .dg  li.title{
@@ -155,7 +155,7 @@ body .dg .cr.function{
 .dragBar{
     position:absolute;
     background-color: #666666;
-    background-image: url(../../build/assets/images/gui/DragableBar_Pattern.png);
+    background-image: url(../../static/assets/images/gui/DragableBar_Pattern.png);
     background-size: contain;
     border: 1px solid black;
     pointer-events: none;
@@ -327,7 +327,7 @@ body .dg .cr.function{
     font-size: 11px;
 }
 .editorHeader .profile{
-    background-image:url('../../build/assets/images/gui/Profile_Button.png');
+    background-image:url('../../static/assets/images/gui/Profile_Button.png');
     background-size:contain;
 }
 
@@ -366,7 +366,7 @@ body .dg .cr.function{
 }
 
 .editorHeader .headerIcon{
-    background-image: url('../../build/assets/images/gui/Icon_EditLevel.png');
+    background-image: url('../../static/assets/images/gui/Icon_EditLevel.png');
     background-size: contain;
     width: 30px;
     height: 30px;
@@ -412,7 +412,7 @@ body .dg .cr.function{
     float:right;
 }
 .logoSmall{
-    background-image:url('../../build/assets/images/gui/Logo_Small.png');
+    background-image:url('../../static/assets/images/gui/Logo_Small.png');
     width:calc(235px*0.4);
     height:calc(73px*0.4);
     background-size: contain;
@@ -642,7 +642,7 @@ body .dg .cr.function{
 .shareIcon{
     width:30px;
     height:40px;
-    background-image: url('../../build/assets/images/gui/Share_Icon.png');
+    background-image: url('../../static/assets/images/gui/Share_Icon.png');
     background-size: contain;
 }
 .levelShareDiv .shareIcon{
@@ -651,13 +651,13 @@ body .dg .cr.function{
 .thumbsUpIcon{
     width:40px;
     height:38px;
-    background-image: url('../../build/assets/images/gui/Thumb_Icon.png');
+    background-image: url('../../static/assets/images/gui/Thumb_Icon.png');
     background-size: contain;
 }
 .playButtonTriangleIcon{
     width:25px;
     height:25px;
-    background-image: url('../../build/assets/images/gui/PlayButton.png');
+    background-image: url('../../static/assets/images/gui/PlayButton.png');
     background-size: contain;
     pointer-events: none;
 }
@@ -668,7 +668,7 @@ body .dg .cr.function{
 .closeWindowIcon{
     width:25px;
     height:25px;
-    background-image: url('../../build/assets/images/gui/CloseButton.png');
+    background-image: url('../../static/assets/images/gui/CloseButton.png');
     background-size: contain;
     cursor: pointer;
     position: absolute;

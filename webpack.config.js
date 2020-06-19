@@ -1,5 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -7,6 +9,7 @@ module.exports = {
 	devtool: isProduction ? 'source-map' : 'eval-source-map',
 	entry: ['./src/bootstrap.js'],
 	// stats: 'verbose',
+	mode: isProduction ? 'production' : 'development',
 	output: {
 		path: path.resolve(__dirname, 'build'),
 		filename: 'awesome-game.js',
@@ -22,7 +25,15 @@ module.exports = {
 			},
 			{
 				test: /\.(woff2|woff|ttf|png|svg|eot)$/,
-				loader:"url-loader"
+				use: [
+					{
+					  loader: 'url-loader',
+					  options: {
+						limit: 8192,
+						esModule: false,
+					  },
+					},
+				  ],
 			},
 			{
 				test:/\.css$/,
@@ -35,6 +46,10 @@ module.exports = {
 			}
 		]
 	},
+	optimization: {
+		minimize: true,
+		minimizer: [new TerserPlugin()],
+	},
 
 
 	resolve: {
@@ -44,12 +59,10 @@ module.exports = {
 		],
 	},
 	plugins: [
-        new webpack.optimize.UglifyJsPlugin(),
-		// new webpack.ProvidePlugin({
-		// 	Box2D: 'Box2D'
-        //   }),
-          new webpack.ProvidePlugin({
-			Key: 'Key'
+		new CopyPlugin({
+			patterns: [
+			  { from: 'static', to: '' },
+			],
 		  }),
 	]
 };

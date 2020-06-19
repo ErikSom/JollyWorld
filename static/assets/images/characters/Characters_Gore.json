@@ -1,0 +1,91 @@
+﻿{"frames": {
+
+"Gore_Brain0000":
+{
+	"frame": {"x":65,"y":2,"w":44,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":30},
+	"sourceSize": {"w":44,"h":30}
+},
+"Gore_Intestine0000":
+{
+	"frame": {"x":111,"y":2,"w":12,"h":40},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":40},
+	"sourceSize": {"w":12,"h":40}
+},
+"Gore_Liver0000":
+{
+	"frame": {"x":65,"y":62,"w":45,"h":19},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":45,"h":19},
+	"sourceSize": {"w":45,"h":19}
+},
+"Gore_LungLeft0000":
+{
+	"frame": {"x":2,"y":2,"w":30,"h":60},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":60},
+	"sourceSize": {"w":30,"h":60}
+},
+"Gore_LungRight0000":
+{
+	"frame": {"x":34,"y":2,"w":29,"h":59},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":59},
+	"sourceSize": {"w":29,"h":59}
+},
+"Gore_Meat10000":
+{
+	"frame": {"x":2,"y":64,"w":18,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":15},
+	"sourceSize": {"w":18,"h":15}
+},
+"Gore_Meat20000":
+{
+	"frame": {"x":2,"y":81,"w":19,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":19,"h":13},
+	"sourceSize": {"w":19,"h":13}
+},
+"Gore_Meat30000":
+{
+	"frame": {"x":110,"y":44,"w":13,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":13},
+	"sourceSize": {"w":13,"h":13}
+},
+"Gore_Meat40000":
+{
+	"frame": {"x":34,"y":63,"w":13,"h":21},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":21},
+	"sourceSize": {"w":13,"h":21}
+},
+"Gore_Stomach0000":
+{
+	"frame": {"x":65,"y":34,"w":43,"h":26},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":26},
+	"sourceSize": {"w":43,"h":26}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "19.1.0.349",
+	"image": "Characters_Gore.png",
+	"format": "RGBA8888",
+	"size": {"w":128,"h":128},
+	"scale": "1"
+}
+}
