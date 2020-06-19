@@ -55,7 +55,7 @@ export const show = function () {
 
 export const initGui = function () {
     createToolGUI();
-    this.showHeaderBar();
+    showHeaderBar();
     scrollBars.update();
 
     firebaseManager.registerListener('login', handleLoginStatusChange);
@@ -270,7 +270,7 @@ export const showHeaderBar = function () {
     button.setAttribute('class', 'headerButton load buttonOverlay dark');
     button.innerHTML = "LOAD";
     headerBar.appendChild(button);
-    button.addEventListener('click', self.showLoadScreen.bind(self));
+    button.addEventListener('click', showLoadScreen);
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton new buttonOverlay dark');
@@ -286,7 +286,7 @@ export const showHeaderBar = function () {
     button = document.createElement('div');
     button.setAttribute('class', 'headerIcon edit buttonOverlay dark');
     headerBar.appendChild(button);
-    button.addEventListener('click', self.showLevelEditScreen.bind(self));
+    button.addEventListener('click', showLevelEditScreen);
 
 
     let levelName = document.createElement('span');
@@ -1057,10 +1057,9 @@ export const showLevelEditScreen = function () {
         saveAsButton.innerHTML = "SAVE AS";
         divWrapper.appendChild(saveAsButton);
 
-        var self = this;
-        saveAsButton.addEventListener('click', function(){
+        saveAsButton.addEventListener('click', ()=>{
             if (!checkLevelDataForErrors()) return;
-            self.showSaveScreen.bind(self)();
+            showSaveScreen.bind(this)();
         });
 
         let publishButton = document.createElement('div');
@@ -1082,7 +1081,7 @@ export const showLevelEditScreen = function () {
         divWrapper.appendChild(deleteButton);
 
         deleteButton.addEventListener('click', () => {
-            self.showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+            showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 deleteButton.style.backgroundColor = 'grey';
                 deleteButton.innerText = '...';
                 game.deleteLevelData().then(() => {
@@ -1188,7 +1187,6 @@ export const showSaveScreen = function () {
         dotShell.appendChild(dots);
         dotShell.classList.add('hidden');;
 
-        let self = this;
 
         new_button.addEventListener('click', () => {
             let oldText = new_button.innerHTML;
@@ -1200,7 +1198,7 @@ export const showSaveScreen = function () {
                 new_button.innerHTML = oldText;
                 dotShell.classList.add('hidden');;
                 console.log("Uploading level was a success!!");
-                self.hideEditorPanels();
+                hideEditorPanels();
             }).catch((error) => {
                 new_button.innerHTML = oldText;
                 dotShell.classList.add('hidden');;
@@ -1229,7 +1227,7 @@ export const showSaveScreen = function () {
     showPanel(saveScreen);
 
     const buttonFunction = (button, level) => {
-        self.showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+        showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
             game.currentLevelData.uid = level.uid;
             button.style.backgroundColor = 'grey';
             button.innerText = 'SAVING..';
@@ -1243,7 +1241,7 @@ export const showSaveScreen = function () {
             game.saveLevelData().then(() => {
                 button.style.backgroundColor = '';
                 button.innerText = 'SAVE';
-                self.hideEditorPanels();
+                hideEditorPanels();
             }).catch((error) => {
                 button.style.backgroundColor = '';
                 button.innerText = 'SAVE';
@@ -1252,7 +1250,7 @@ export const showSaveScreen = function () {
     }
     const levelListDiv = saveScreen.domElement.querySelector('#levelList');
     while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
-    this.generateLevelList(levelListDiv, 'SAVE', buttonFunction);
+    generateLevelList(levelListDiv, 'SAVE', buttonFunction);
 
     if (loadScreen) {
         saveScreen.domElement.style.top = loadScreen.domElement.style.top;
@@ -1461,8 +1459,8 @@ export const showLoadScreen = function () {
             game.loadUserLevelData(level).then(() => {
                 button.style.backgroundColor = '';
                 button.innerText = 'LOAD';
-                self.hideEditorPanels();
-                self.setLevelSpecifics();
+                hideEditorPanels();
+                setLevelSpecifics();
             }).catch((error) => {
                 console.log(error);
                 button.style.backgroundColor = '';
@@ -1470,7 +1468,7 @@ export const showLoadScreen = function () {
             });
         }
         if (hasUnsavedChanges()) {
-            self.showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+            showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 doLevelLoad();
             }).catch((error) => {});
         } else doLevelLoad();
@@ -1481,7 +1479,7 @@ export const showLoadScreen = function () {
     const levelListDiv = loadScreen.domElement.querySelector('#levelList');
     while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
 
-    this.generateLevelList(levelListDiv, 'LOAD', buttonFunction);
+    generateLevelList(levelListDiv, 'LOAD', buttonFunction);
 
     if (saveScreen) {
         loadScreen.domElement.style.top = saveScreen.domElement.style.top;
