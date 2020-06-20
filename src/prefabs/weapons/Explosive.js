@@ -17,7 +17,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		this.explosiveRadius = 250;
 		this.explosivePower = 3000;
 		this.explodeTimer = 0;
-		this.explodeDelay = 3000;
+		this.explodeDelay = this.prefabObject.settings.delay*1000;
 		this.explosiveRays = 20;
 		this.explodeTarget = null;
 		// this.clipWalls = false;
@@ -64,6 +64,13 @@ export class Explosive extends PrefabManager.basePrefab {
             this.explode();
 		}
 		this.explodeTimer += game.editor.deltaTime;
+	}
+	set(property, value) {
+        switch (property) {
+            default:
+                this.prefabObject.settings[property] = value;
+                break;
+        }
     }
     initContactListener() {
         super.initContactListener();
@@ -72,8 +79,29 @@ export class Explosive extends PrefabManager.basePrefab {
         }
         this.contactListener.EndContact = function (contact) {
         }
-    }
+	}
+	setActive(bool){
+		// override me
+	}
 }
+Explosive.settings = Object.assign({}, Explosive.settings, {
+    "delay": 3,
+	"force": 2500,
+	"active": false
+});
+Explosive.settingsOptions = Object.assign({}, Explosive.settingsOptions, {
+    "delay": {
+        min: 0.0,
+        max: 10.0,
+        step: 0.1
+    },
+    "force": {
+        min: 100,
+        max: 10000,
+        step: 100
+	},
+	"active": false,
+});
 
 Explosive.RaycastCallbackExplosive = function () {
 	this.m_hit = false;

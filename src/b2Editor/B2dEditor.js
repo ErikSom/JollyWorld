@@ -681,6 +681,11 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				break;
 			case case_JUST_GRAPHICS:
 				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
@@ -742,17 +747,17 @@ const _B2dEditor = function () {
 
 
 				for (var key in prefabClassOptions) {
-					if (prefabClassOptions.hasOwnProperty(key)) {
+					if (prefabClassOptions.hasOwnProperty(key) && prefabClassOptions[key] !== undefined) {
 						var argument;
 						ui.editorGUI.editData[key] = prefabObjectSettings[key];
-						if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
+						if (prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
 							targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
 							});
 						} else {
-							if (prefabClassOptions[key] && prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
+							if (prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
 							else argument = null;
 							targetFolder.add(ui.editorGUI.editData, key, argument).onChange(function (value) {
 								this.humanUpdate = true;
@@ -1478,6 +1483,7 @@ const _B2dEditor = function () {
 		this.textureAngleOffset = null;
 		this.isCarvable = false;
 		this.tint = '#FFFFFF';
+		this.transparancy = 1.0;
 		this.lockselection = false;
 	}
 	this.graphicGroup = function () {
@@ -3169,7 +3175,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue.toString();
-							if (sprite.data.type == this.object_GRAPHICGROUP) {
+							if ([this.object_GRAPHICGROUP, this.object_TEXTURE].includes(sprite.data.type)) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
 								if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
@@ -4172,6 +4178,7 @@ const _B2dEditor = function () {
 		container.y = obj.y;
 		container.rotation = obj.rotation;
 		container.data = obj;
+		container.alpha = obj.transparancy;
 
 		container.width = container.width * obj.scaleX;
 		container.height = container.height * obj.scaleY;
@@ -5345,6 +5352,7 @@ const _B2dEditor = function () {
 			g.x = gObj.x;
 			g.y = gObj.y;
 			g.rotation = gObj.rotation;
+			g.alpha = gObj.transparancy;
 		}
 	}
 	this.updateTileSprite = function (target, forceNew = false) {
@@ -5533,7 +5541,7 @@ const _B2dEditor = function () {
 			arr[14] = obj.collision;
 			arr[15] = obj.radius;
 			arr[16] = obj.tileTexture;
-			arr[17] = obj.lineWidth || 1.0;
+			arr[17] = obj.lineWidth !== undefined ? obj.lineWidth : 1.0;
 
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
@@ -5546,6 +5554,7 @@ const _B2dEditor = function () {
 			arr[13] = obj.tint;
 			arr[14] = obj.scaleX;
 			arr[15] = obj.scaleY;
+			arr[16] = obj.transparancy;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.bodyA_ID;
@@ -5578,7 +5587,7 @@ const _B2dEditor = function () {
 			arr[14] = obj.texturePositionOffsetAngle;
 			arr[15] = obj.textureAngleOffset;
 			arr[16] = obj.tileTexture || "";
-			arr[17] = obj.lineWidth || 1.0;
+			arr[17] = obj.lineWidth !== undefined ? obj.lineWidth : 1.0;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -5586,7 +5595,7 @@ const _B2dEditor = function () {
 			arr[9] = obj.texturePositionOffsetLength;
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
-			arr[12] = obj.transparancy || 1.0;
+			arr[12] = obj.transparancy !== undefined ? obj.transparancy : 1.0;
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -5625,7 +5634,7 @@ const _B2dEditor = function () {
 			obj.collision = arr[14];
 			obj.radius = arr[15];
 			obj.tileTexture = arr[16] || "";
-			obj.lineWidth = arr[17] || 1.0;
+			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
@@ -5635,9 +5644,10 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
 			obj.isCarvable = arr[12];
-			obj.tint = arr[13] || '#FFFFFF';
+			obj.tint = arr[13] !== undefined ? arr[13] : '#FFFFFF';
 			obj.scaleX = arr[14] || 1;
 			obj.scaleY = arr[15] || 1;
+			obj.transparancy = arr[16] !== undefined ? arr[16] : 1;
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.ID = arr[6];
@@ -5653,8 +5663,8 @@ const _B2dEditor = function () {
 			obj.lowerAngle = arr[16];
 			obj.dampingRatio = arr[17];
 			obj.frequencyHz = arr[18];
-			obj.upperLimit = arr[19] || obj.upperLimit;
-			obj.lowerLimit = arr[20] || obj.lowerLimit;
+			obj.upperLimit = arr[19] !== undefined ? arr[19] : obj.upperLimit;
+			obj.lowerLimit = arr[20] !== undefined ? arr[20] : obj.lowerLimit;
 		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
 			obj.settings = arr[4];
@@ -5673,7 +5683,7 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetAngle = arr[14];
 			obj.textureAngleOffset = arr[15];
 			obj.tileTexture = arr[16] || "";
-			obj.lineWidth = arr[17] || 1.0;
+			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
@@ -5682,7 +5692,7 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[9];
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
-			obj.transparancy = arr[12] || 1;
+			obj.transparancy = arr[12] !== undefined ? arr[12] : 1;
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];

@@ -11,6 +11,8 @@ class Grenade extends Explosive {
         super(target);
     }
     init() {
+		console.log("INIT");
+		this.setActive(this.prefabObject.settings.active);
         super.init();
 	}
 	explode(){
@@ -22,10 +24,18 @@ class Grenade extends Explosive {
 		emitterManager.playOnceEmitter("explosion_layer2", null, pos, 0);
 		game.editor.deleteObjects([this.explodeTarget]);
 	}
+	setActive(active){
+		console.log(this.lookupObject);
+		// NOT IN LOOKUP YET
+		// const grenadeOn = this.lookupObject['grenadeTextureOn'];
+		// const grenadeOff = this.lookupObject['grenadeTextureOff'];
+		// grenadeOn.alpha = +active;
+		// grenadeOff.alpha = +!active;
+	}
 }
 
 PrefabManager.prefabLibrary.Grenade = {
-    json: '{"objects":[[0,0,0,0,"grenade","grenadeBody",0,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[12.573646401946284],"",[1]],[1,-4.370894525720985,-3.7464810220467655,0,"grenade","grenadeTexture",1,"Grenade_off0000",0,5.756808056860525,2.4329663814620957,0,false,"#FFFFFF",1,1]]}',
+    json: JSON.stringify({"objects":[[0,0,0,0,"grenade","grenadeBody",0,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[12.573646401946284],"",[1]],[7,-3.613874338525329,-5.931917085039969,0,"","",1,["[1,2.4921098783996563,1.8900606024845317,0,\"grenade\",\"grenadeTextureOff\",69,\"Grenade_off0000\",null,null,null,null,false,\"#FFFFFF\",1,1]","[1,-2.4921098783996563,-1.8900606024845317,0,\"grenade\",\"grenadeTextureOn\",70,\"Grenade_on 0000\",null,null,null,null,false,\"#FFFFFF\",1,1,0]"],0,6.946058453428172,2.1179715828892522,0,1]]}),
     class: Grenade,
-    library: PrefabManager.LIBRARY_WEAPON  ,
+    library: PrefabManager.LIBRARY_WEAPON,
 }

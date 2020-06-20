@@ -95,7 +95,7 @@ export const getEmitter = function (type, body) {
             break;
         case "explosion_layer2":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Fire_1.png'), PIXI.Texture.fromImage('Fire_2.png'), PIXI.Texture.fromImage('Fire_3.png'), PIXI.Texture.fromImage('Fire_4.png')],
+                game.myEffectsContainer, [PIXI.Texture.fromImage('Fire_1.png'), PIXI.Texture.fromImage('Fire_2.png'), PIXI.Texture.fromImage('Fire_3.png')],
                 emitterData[type]
             );
             break;
