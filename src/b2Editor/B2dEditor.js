@@ -5157,6 +5157,8 @@ const _B2dEditor = function () {
 		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
 
+		if(obj.settings) Object.keys(obj.settings).forEach(key=>obj.class.set(key, obj.settings[key]));
+
 		obj.class.subPrefabClasses = this.createdSubPrefabClasses;
 		this.createdSubPrefabClasses.map((prefab) => {
 			prefab.mainPrefabClass = obj.class

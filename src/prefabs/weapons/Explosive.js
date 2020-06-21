@@ -15,11 +15,12 @@ export class Explosive extends PrefabManager.basePrefab {
     }
     init() {
 		this.explosiveRadius = 250;
-		this.explosivePower = 3000;
+		this.explosivePower = this.prefabObject.settings.force;
 		this.explodeTimer = 0;
 		this.explodeDelay = this.prefabObject.settings.delay*1000;
 		this.explosiveRays = 20;
 		this.explodeTarget = null;
+		this.active = this.prefabObject.settings.active;
 		// this.clipWalls = false;
 		// this.exploded = false;
 
@@ -59,14 +60,18 @@ export class Explosive extends PrefabManager.basePrefab {
 		}
 	}
     update(){
-        super.update();
-		if (PrefabManager.timerReady(this.explodeTimer, this.explodeDelay, true)) {
-            this.explode();
+		super.update();
+		if(this.active){
+			if (PrefabManager.timerReady(this.explodeTimer, this.explodeDelay, true)) {
+				this.explode();
+			}
+			this.explodeTimer += game.editor.deltaTime;
 		}
-		this.explodeTimer += game.editor.deltaTime;
 	}
 	set(property, value) {
         switch (property) {
+			case 'active':
+				this.explodeTimer = 0;
             default:
                 this.prefabObject.settings[property] = value;
                 break;

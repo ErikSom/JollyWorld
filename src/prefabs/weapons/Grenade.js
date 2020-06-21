@@ -11,7 +11,6 @@ class Grenade extends Explosive {
         super(target);
     }
     init() {
-		console.log("INIT");
 		this.setActive(this.prefabObject.settings.active);
         super.init();
 	}

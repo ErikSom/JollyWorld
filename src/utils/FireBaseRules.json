@@ -1,151 +1,157 @@
 {
       "rules": {
-            "Users": {
-                  ".indexOn": "username",
-                  ".write": "auth != null",
-                  "$uid": {
-                        ".read": true,
-                        ".validate": "$uid == auth.uid",
-                        "username": {
-                              ".validate": "!data.exists() && newData.val().length>2 && root.child('Usernames').child(newData.val().toLowerCase()).val() == auth.uid"
-                        },
-                        "creationDate": {
-                              ".validate": "!data.exists() && newData.isNumber()"
-                        },
-                        "$other": {
+        "Users": {
+            ".indexOn": "username",
+              ".write" : "auth != null",
+            "$uid": {
+                ".read" : true,
+                ".validate": "$uid == auth.uid",
+                "username" :{
+                        ".validate" : "!data.exists() && newData.val().length>2 && root.child('Usernames').child(newData.val().toLowerCase()).val() == auth.uid"
+                },
+                "creationDate" :{
+                        ".validate" : "!data.exists() && newData.isNumber()"
+                },
+                "$other": {
                               ".validate": false
-                        }
-                  }
-            },
-            "Users_Private": {
-                  ".write": "auth != null",
-                  "$uid": {
-                        ".read": "$uid === auth.uid",
-                        ".validate": "$uid == auth.uid",
-                        "Levels": {
+                                 }
+                }
+        },
+        "Users_Private": {
+              ".write" : "auth != null",
+            "$uid": {
+                    ".read" : "$uid === auth.uid",
+                ".validate": "$uid == auth.uid",
+                "Levels" :{
                               ".indexOn": "creationDate",
-                              "$levelid": {
-                                    ".validate": "(!data.exists() && !root.child('PublishedLevels').child($levelid).exists()) || data.exists()",
-                                    "dataURL": {
-                                          ".validate": "newData.exists()"
-                                    },
-                                    "thumbHighResURL": {
-                                          // ".validate" : "!data.exists() && newData.exists()"
-                                    },
-                                    "thumbLowResURL": {
-                                          //".validate" : "!data.exists() && newData.exists()"
-                                    },
-                                    "creationDate": {
-                                          ".validate": "(!data.exists() && newData.isNumber()) || newData.val() === data.val()"
-                                    },
-                                    "description": {
-                                          ".validate": "!newData.exists() || newData.val().length>3 && newData.val().length<500"
-                                    },
-                                    "title": {
-                                          ".validate": "newData.exists() && newData.val().length>3 && newData.val().length<32"
-                                    },
-                                    "background": {
-                                          ".validate": "newData.exists() && newData.val().length>3"
-                                    },
-                                    "$other": {
-                                          ".validate": false
-                                    }
-                              }
-                        },
-                        "favorites": {
-                              ".validate": "!newData.exists()",
-                        },
-                        "$other": {
-                              ".validate": false
-                        }
+                  "$levelid":{
+                    ".validate" : "(!data.exists() && !root.child('PublishedLevels').child($levelid).exists()) || data.exists()",
+                    "dataURL" :{
+                                    ".validate" : "newData.exists()"
+                    },
+                    "thumbHighResURL" :{
+                        // ".validate" : "!data.exists() && newData.exists()"
+                    },
+                    "thumbLowResURL" :{
+                        //".validate" : "!data.exists() && newData.exists()"
+                    },
+                    "creationDate" :{
+                        ".validate" : "(!data.exists() && newData.isNumber()) || newData.val() === data.val()"
+                    },
+                    "description" :{
+                        ".validate" : "!newData.exists() || newData.val().length<500"
+                    },
+                    "title" :{
+                        ".validate" : "newData.exists() && newData.val().length>=3 && newData.val().length<=32"
+                    },
+                    "background" :{
+                        ".validate" : "newData.exists() && newData.val().length>=3"
+                    },
+                    "$other": {
+                                                ".validate": false
+                                             }
                   }
-            },
+                },
+                "favorites" :{
+                  ".validate" : "!newData.exists()",
+                },
+                "$other": {
+                  ".validate": false
+                         }
+                }
+        },
             "Usernames": {
-                  ".write": "auth != null",
-                  "$username": {
-                        ".read": "auth != null",
-                        ".validate": "!data.exists() && newData.exists() && newData.exists() && newData.isString() && $username.length < 20 && !root.child('Usernames').child(newData.val().toLowerCase()).exists()"
-                  }
+          ".write" : "auth != null",
+          "$username": {
+            ".read" : "auth != null",
+                            ".validate": "!data.exists() && newData.exists() && newData.exists() && newData.isString() && $username.length <= 20 && !root.child('Usernames').child(newData.val().toLowerCase()).exists()"
+          }
+        },
+        "PublishedLevelsVoters":{
+          ".write" : "auth != null",
+           "$levelid" :{
+              ".validate" : "root.child('PublishedLevels').child($levelid).exists()",
+                "$uvoterid" :{
+                  ".read" : "$uvoterid === auth.uid",
+                  ".validate" : "$uvoterid == auth.uid && root.child('Users').child(auth.uid).exists() && newData.exists() && newData.isNumber() && (newData.val() >= -1 && newData.val() <= 1)"
+                },
             },
-            "PublishedLevelsVoters": {
-                  ".write": "auth != null",
-                  "$levelid": {
-                        ".validate": "root.child('PublishedLevels').child($levelid).exists()",
-                        "$uvoterid": {
-                              ".read": "$uvoterid === auth.uid",
-                              ".validate": "$uvoterid == auth.uid && root.child('Users').child(auth.uid).exists() && newData.exists() && newData.isNumber() && (newData.val() >= -1 && newData.val() <= 1)"
-                        },
-                  },
-            },
-            "PublishedLevels": {
-                  ".indexOn": "private/creationDate",
-                  ".write": "auth != null",
-                  ".read": "auth != null",
-                  "$levelid": {
-                        //".validate": "!root.child('PublishedLevels').child($levelid).exists()",
-                        "private": {
-                              ".validate": "root.child('Users_Private').child(auth.uid).child('Levels').child($levelid).exists()",
-                              "dataURL": {
-                                    ".validate": "!data.exists() && newData.exists()"
-                              },
-                              "thumbHighResURL": {
-                                    ".validate": "!data.exists() && newData.exists()"
-                              },
-                              "thumbLowResURL": {
-                                    ".validate": "!data.exists() && newData.exists()"
-                              },
-                              "creationDate": {
-                                    ".validate": "!data.exists() && newData.exists() && newData.isNumber()"
-                              },
-                              "creator": {
-                                    ".validate": "!data.exists() && newData.exists() && newData.val().length>=3"
-                              },
-                              "creatorID": {
-                                    ".validate": "!data.exists() && newData.exists() && newData.val() == auth.uid"
-                              },
-                              "description": {
-                                    ".validate": "!newData.exists() || (newData.val().length>3 && newData.val().length<500)"
-                              },
-                              "title": {
-                                    ".validate": "newData.exists() && newData.val().length>3 && newData.val().length<32"
-                              },
-                              "background": {
-                                    ".validate": "newData.exists() && newData.val().length>3"
-                              },
-                              "$other": {
-                                    ".validate": false
-                              }
-                        },
-                        "public": {
-                              "playCount": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 0) || (newData.exists() && newData.val() === data.val()+1)"
-                              },
-                              "firstMonth_playCount": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 'unset')"
-                              },
-                              "firstWeek_playCount": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 'unset')"
-                              },
-                              "voteNum": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 0)"
-                              },
-                              "voteAvg": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 0.5)"
-                              },
-                              "firstMonth_voteAvg": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 'unset')"
-                              },
-                              "firstWeek_voteAvg": {
-                                    ".validate": "(!data.exists() && newData.exists() && newData.val() === 'unset')"
-                              },
-                              "$other": {
-                                    ".validate": false
-                              }
-                        },
-                        "$other": {
-                              ".validate": false
-                        }
-                  }
-            },
+        },
+        "PublishedLevels": {
+            ".indexOn": "private/creationDate",
+              ".write" : "auth != null",
+              ".read" : "auth != null",
+            "$levelid": {
+                //".validate": "!root.child('PublishedLevels').child($levelid).exists()",
+                "private" :{
+                  ".validate": "root.child('Users_Private').child(auth.uid).child('Levels').child($levelid).exists()",
+                  // "dataURL" :{
+                  //     ".validate" : "!data.exists() && newData.exists()"
+                  // },
+                  // "thumbHighResURL" :{
+                  //    ".validate" : "!data.exists() && newData.exists()"
+                  // },
+                  // "thumbLowResURL" :{
+                  //     ".validate" : "!data.exists() && newData.exists()"
+                  // },
+                               "creationDate" :{
+                               ".validate" : "!data.exists() && newData.exists() && newData.isNumber()"
+                               },
+                               "creator" :{
+                               ".validate" : "!data.exists() && newData.exists() && newData.val().length>=3"
+                               },
+                               "creatorID" :{
+                               ".validate" : "!data.exists() && newData.exists() && newData.val() == auth.uid"
+                               },
+                               "description" :{
+                               ".validate" : "!newData.exists() || (newData.val().length>=3 && newData.val().length<=500)"
+                               },
+                               "title" :{
+                               ".validate" : "newData.exists() && newData.val().length>=3 && newData.val().length<=32"
+                               },
+                               "background" :{
+                               ".validate" : "newData.exists() && newData.val().length>=3"
+                               },
+                               "$other": {
+                               ".validate": false
+                               }
+                },
+                "public" :{
+                               "playCount" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 0) || (newData.exists() && newData.val() === data.val()+1)"
+                               },
+                               "firstMonth_playCount" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 'unset')"
+                               },
+                               "firstWeek_playCount" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 'unset')"
+                               },
+                      "firstDay_playCount" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 'unset')"
+                               },
+                               "voteNum" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 0)"
+                               },
+                               "voteAvg" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 0.5)"
+                               },
+                               "firstMonth_voteAvg" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 'unset')"
+                               },
+                               "firstWeek_voteAvg" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 'unset')"
+                               },
+                  "firstDay_voteAvg" :{
+                               ".validate" : "(!data.exists() && newData.exists() && newData.val() === 'unset')"
+                               },
+                               "$other": {
+                               ".validate": false
+                               }
+                },
+                         "$other": {
+                         ".validate": false
+                         }
+                }
+        },
       }
-}
+    }

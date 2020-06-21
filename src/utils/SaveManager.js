@@ -23,14 +23,13 @@ export const getTempEditorWorld = function(){
 }
 
 const saveData = function(key, value){
-
     if(window.localStorage){
-        window.localStorage[key] = JSON.stringify(value);
+        window.localStorage.setItem(key, JSON.stringify(value));
         return value;
     }
     console.alert("Browser does not support saving of data");
 }
 const loadData = function(key){
-    if(window.localStorage && window.localStorage[key]) return JSON.parse(window.localStorage[key]);
+    if(window.localStorage && window.localStorage.getItem(key)) return JSON.parse(window.localStorage.getItem(key));
     return undefined;
 }
