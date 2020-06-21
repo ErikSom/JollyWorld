@@ -27,15 +27,25 @@ class Grenade extends Explosive {
 	setActive(active){
 		console.log(this.lookupObject);
 		// NOT IN LOOKUP YET
-		// const grenadeOn = this.lookupObject['grenadeTextureOn'];
-		// const grenadeOff = this.lookupObject['grenadeTextureOff'];
-		// grenadeOn.alpha = +active;
-		// grenadeOff.alpha = +!active;
+		const grenadeTexture = this.lookupObject['grenadeTexture'];
+		if(active){
+			grenadeTexture.originalSprite.texture = PIXI.Texture.fromFrame(grenadeTexture.data.textureName.replace("off", "on"));
+		}else{
+			grenadeTexture.originalSprite.texture = PIXI.Texture.fromFrame(grenadeTexture.data.textureName.replace("on", "off"));
+		}
 	}
+	set(property, value) {
+		super.set(property, value);
+        switch (property) {
+            case 'active':
+                this.setActive(value);
+                break;
+        }
+    }
 }
 
 PrefabManager.prefabLibrary.Grenade = {
-    json: JSON.stringify({"objects":[[0,0,0,0,"grenade","grenadeBody",0,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[12.573646401946284],"",[1]],[7,-3.613874338525329,-5.931917085039969,0,"","",1,["[1,2.4921098783996563,1.8900606024845317,0,\"grenade\",\"grenadeTextureOff\",69,\"Grenade_off0000\",null,null,null,null,false,\"#FFFFFF\",1,1]","[1,-2.4921098783996563,-1.8900606024845317,0,\"grenade\",\"grenadeTextureOn\",70,\"Grenade_on 0000\",null,null,null,null,false,\"#FFFFFF\",1,1,0]"],0,6.946058453428172,2.1179715828892522,0,1]]}),
+    json: '{"objects":[[0,0,0.00535623816714359,0,"grenade","grenadeBody",0,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[12],"",[1]],[1,-4.238888270312005,-5.835413907232784,0,"grenade","grenadeTexture",1,"Grenade_off0000",0,7.343119336967593,2.186165349948268,0,false,"#FFFFFF",1,1,1]]}',
     class: Grenade,
     library: PrefabManager.LIBRARY_WEAPON,
 }
