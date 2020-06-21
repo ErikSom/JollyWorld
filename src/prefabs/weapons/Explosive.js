@@ -14,6 +14,7 @@ export class Explosive extends PrefabManager.basePrefab {
         super(target);
     }
     init() {
+		this.isExplosive = true;
 		this.explosiveRadius = 250;
 		this.explosivePower = this.prefabObject.settings.force;
 		this.explodeTimer = 0;
@@ -21,12 +22,15 @@ export class Explosive extends PrefabManager.basePrefab {
 		this.explosiveRays = 20;
 		this.explodeTarget = null;
 		this.active = this.prefabObject.settings.active;
+		this.exploded = false;
 		// this.clipWalls = false;
 		// this.exploded = false;
 
         super.init();
 	}
 	explode(){
+		if(this.exploded) return;
+		this.exploded = true;
 		let rayStartPosition = this.explodeTarget.GetPosition();
 		let angleInc = (Math.PI*2)/this.explosiveRays;
 		const radius = this.explosiveRadius/Settings.PTM;
@@ -47,12 +51,18 @@ export class Explosive extends PrefabManager.basePrefab {
 				const body = callback.m_fixture.GetBody();
 				if(body != this.explodeTarget){
 					body.ApplyForce(force, callback.m_point);
+					const powerRate = power/this.explosivePower;
 
 					if(body.isFlesh){
-						const powerRate = power/this.explosivePower;
 						self.editor.addDecalToBody(body, callback.m_point, "skorch.png", true, powerRate*2.5, angle, {burn:powerRate*.6});
 					}
 
+					if (powerRate > .2 && body.mySprite && body.mySprite.data.prefabInstanceName) {
+						const tarPrefab = game.editor.activePrefabs[body.mySprite.data.prefabInstanceName].class;
+						if(tarPrefab.isExplosive){
+							tarPrefab.explode();
+						}
+					}
 
 
 				}
