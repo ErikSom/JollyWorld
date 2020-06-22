@@ -22,6 +22,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		this.explosiveRays = 20;
 		this.explodeTarget = null;
 		this.active = this.prefabObject.settings.active;
+		this.activateOn = this.prefabObject.settings.activateOn;
 		this.exploded = false;
 		// this.clipWalls = false;
 		// this.exploded = false;
@@ -93,16 +94,51 @@ export class Explosive extends PrefabManager.basePrefab {
         this.contactListener.BeginContact = function (contact) {
         }
         this.contactListener.EndContact = function (contact) {
-        }
+		}
+		this.contactListener.PostSolve = function (contact, impulse) {
+			if(!self.active && self.activateOn !== activateOnTypes.none){
+				var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+				var body;
+				for (var i = 0; i < bodies.length; i++) {
+					body = bodies[i];
+
+					if(self.activateOn == activateOnTypes.impact){
+						const count = contact.GetManifold().pointCount;
+						let force = 0;
+						for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+						if(force > 8){
+							self.set('active', true);
+						}
+					}else if(self.activateOn == activateOnTypes.mainCharacter){
+						if(body.mainCharacter){
+							self.set('active', true);
+						}
+					}else if(self.activateOn == activateOnTypes.anyCharacter){
+						if(body.mainCharacter){
+							self.set('active', true);
+						}
+					}
+
+				}
+			}
+		}
 	}
 	setActive(bool){
+		this.active = bool;
 		// override me
 	}
+}
+const activateOnTypes = {
+	none:"None",
+	impact:"Impact",
+	mainCharacter:"Main Character",
+	anyCharacter:"Any Character"
 }
 Explosive.settings = Object.assign({}, Explosive.settings, {
     "delay": 3,
 	"force": 2500,
-	"active": false
+	"active": false,
+	"activateOn": "None",
 });
 Explosive.settingsOptions = Object.assign({}, Explosive.settingsOptions, {
     "delay": {
@@ -116,6 +152,7 @@ Explosive.settingsOptions = Object.assign({}, Explosive.settingsOptions, {
         step: 100
 	},
 	"active": false,
+	"activateOn":Object.values(activateOnTypes),
 });
 
 Explosive.RaycastCallbackExplosive = function () {

@@ -6031,7 +6031,7 @@ const _B2dEditor = function () {
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
 			} else if (sprite.data.type == this.object_TEXTURE) {
-				if (sprite.myBody == undefined) this.addObjectToLookupGroups(sprite, sprite.data);
+				this.addObjectToLookupGroups(sprite, sprite.data);
 			}
 		}
 		for (i = 0; i < spritesToDestroy.length; i++) {

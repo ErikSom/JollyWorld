@@ -27,8 +27,7 @@ class Grenade extends Explosive {
 		game.editor.deleteObjects([this.explodeTarget]);
 	}
 	setActive(active){
-		console.log(this.lookupObject);
-		// NOT IN LOOKUP YET
+		super.setActive(active);
 		const grenadeTexture = this.lookupObject['grenadeTexture'];
 		if(active){
 			grenadeTexture.originalSprite.texture = PIXI.Texture.fromFrame(grenadeTexture.data.textureName.replace("off", "on"));
