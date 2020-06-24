@@ -27,13 +27,13 @@
               "$levelid":{
                 ".validate" : "(!data.exists() && !root.child('PublishedLevels').child($levelid).exists()) || data.exists()",
                 "dataURL" :{
-              			".validate" : "newData.exists()"
+              			".validate" : "newData.exists() && newData.isString()"
                 },
                 "thumbHighResURL" :{
-                    // ".validate" : "!data.exists() && newData.exists()"
+                    ".validate" : "newData.exists() && newData.isString()"
                 },
                 "thumbLowResURL" :{
-                    //".validate" : "!data.exists() && newData.exists()"
+                    ".validate" : "newData.exists() && newData.isString()"
                 },
                 "creationDate" :{
                     ".validate" : "(!data.exists() && newData.isNumber()) || newData.val() === data.val()"

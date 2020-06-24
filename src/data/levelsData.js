@@ -90,7 +90,8 @@ export const levelsData = {
             }], null, null, null, null, "Fence.png", 1],
             [1, 873.9770759086252, 619.2100729314091, 0, "", "", 8, "Bush20000", null, null, null, null, false, "#FFFFFF"],
             [1, -524.7015731954175, 611.1885534685905, 0, "", "", 9, "Bush40000", null, null, null, null, false, "#FFFFFF"]
-        ]
+        ],
+        "settings":[10, 0, 10]
     }`,
     title:'Main Menu Level',
     description:'This level is used in the main menu and might help you better understand the editor',
