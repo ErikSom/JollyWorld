@@ -1525,7 +1525,7 @@ export const createEditorStyledGUI = function (name) {
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
 
-    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png'];
+    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
 
     var buttonElement;
     var imgElement;
@@ -1783,6 +1783,20 @@ export const showTextEditor = function (startValue, callBack) {
 const removePrompt = ()=>{
     prompt.domElement.parentNode.removeChild(prompt.domElement);
     prompt = null;
+}
+export const fetchControllersFromGUI = function(gui){
+    let controllers = [].concat(gui.__controllers);
+    for (var propt in gui.__folders) {
+        controllers = controllers.concat(gui.__folders[propt].__controllers);
+        for (var _propt in gui.__folders[propt].__folders) {
+            //folders in folders
+            controllers = controllers.concat(gui.__folders[propt].__folders[_propt].__controllers);
+            for (var __propt in gui.__folders[propt].__folders[_propt].__folders) {
+                //folders in folders in folders..
+                controllers = controllers.concat(gui.__folders[propt].__folders[_propt].__folders[__propt].__controllers);
+            }
+        }
+    }
 }
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
     if (prompt) removePrompt();

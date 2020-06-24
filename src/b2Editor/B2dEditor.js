@@ -335,6 +335,22 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
 
 				break
+			case this.tool_SETTINGS:
+				ui.editorGUI.editData = this.editorSettingsObject;
+
+				targetFolder = ui.editorGUI.addFolder('game settings');
+				targetFolder.open();
+
+				const onChange = key=> val=>{
+					editorSettings[key] = val;
+				}
+
+				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(onChange('physicsDebug'));
+				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
+				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
+
+				this.editorSettingsObject.type = self.object_SETTINGS;
+				break
 			case this.tool_CAMERA:
 				ui.destroyEditorGUI();
 				break
@@ -1624,6 +1640,12 @@ const _B2dEditor = function () {
 		this.prefabName;
 		this.instanceID;
 	}
+	this.editorSettingsObject = new function () {
+		this.type = self.object_SETTINGS;
+		this.physicsDebug = false;
+		this.gravityX = 0;
+		this.gravityY = 10;
+	}
 	this.editorJointObject = new this.jointObject();
 
 	this.editorGraphicDrawingObject = new function () {
@@ -2839,34 +2861,21 @@ const _B2dEditor = function () {
 			}
 		}
 	}
-
+	this.fetchControllers
 	this.doEditorGUI = function () {
 		if (ui.editorGUI != undefined && ui.editorGUI.editData) {
-			var controller;
-			var controllers = [];
-			var body;
-			var sprite;
-			var j;
-			controllers = controllers.concat(ui.editorGUI.__controllers);
-
-			for (var propt in ui.editorGUI.__folders) {
-				controllers = controllers.concat(ui.editorGUI.__folders[propt].__controllers);
-				for (var _propt in ui.editorGUI.__folders[propt].__folders) {
-					//folders in folders
-					controllers = controllers.concat(ui.editorGUI.__folders[propt].__folders[_propt].__controllers);
-					for (var __propt in ui.editorGUI.__folders[propt].__folders[_propt].__folders) {
-						//folders in folders in folders..
-						controllers = controllers.concat(ui.editorGUI.__folders[propt].__folders[_propt].__folders[__propt].__controllers);
-					}
-				}
-			}
-
-			var i;
+			let controller;
+			let controllers = ui.fetchControllersFromGUI(ui.editorGUI);
+			let body;
+			let sprite;
+			let j;
+			let i;
 			for (i in controllers) {
 				controller = controllers[i]
 
 				if (controller.humanUpdate) {
 					controller.humanUpdate = false;
+
 					if (controller.property == "typeName") {
 						if (this.selectedTool == this.tool_JOINTS) {
 							var oldData = ui.editorGUI.editData;
@@ -3325,7 +3334,8 @@ const _B2dEditor = function () {
 							textContainer.data.textAlign = controller.targetValue;
 							textContainer.textSprite.style.align = textContainer.data.textAlign;
 						}
-					} else {
+					} /* PREFAB SETTINGS */
+					else {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						var prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
@@ -5512,7 +5522,13 @@ const _B2dEditor = function () {
 				this.worldJSON += this.stringifyObject(sprite.data);
 			}
 		}
-		this.worldJSON += ']}';
+		this.worldJSON += '],'
+		this.worldJSON += '"settings":';
+		Object.keys(this.editorSettingsObject).forEach(key => this.editorSettingsObject[key] = editorSettings[key]);
+		this.editorSettingsObject.type = this.object_SETTINGS;
+		this.worldJSON += this.stringifyObject(this.editorSettingsObject);
+		this.worldJSON += '}';
+
 		// console.log("********************** World Data **********************");
 		// console.log(this.worldJSON);
 		// console.log("********************************************************");
@@ -5618,6 +5634,12 @@ const _B2dEditor = function () {
 			arr[14] = obj.texturePositionOffsetLength;
 			arr[15] = obj.texturePositionOffsetAngle;
 			arr[16] = obj.textureAngleOffset;
+		}else if(arr[0] == this.object_SETTINGS){
+			arr = [];
+			arr[0] = obj.type;
+			arr[1] = obj.gravityX;
+			arr[2] = obj.gravityY;
+			console.log("SETTIMGS OBJECT");
 		}
 		return JSON.stringify(arr);
 	}
@@ -5717,6 +5739,11 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[14];
 			obj.texturePositionOffsetAngle = arr[15];
 			obj.textureAngleOffset = arr[16];
+		}else if (arr[0] == this.object_SETTINGS){
+			obj = this.editorSettingsObject;
+			obj.gravityX = arr[1];
+			obj.gravityY = arr[2];
+			return obj;
 		}
 
 		obj.type = arr[0];
@@ -5860,6 +5887,10 @@ const _B2dEditor = function () {
 					worldObject = this.buildTextFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}
+			}
+			if(worldObjects.settings){
+				worldObjects.settings = this.parseArrObject(worldObjects.settings);
+				Object.keys(worldObjects.settings).forEach(key=> editorSettings[key] = worldObjects.settings[key])
 			}
 		}
 
@@ -6055,6 +6086,8 @@ const _B2dEditor = function () {
 		}
 		this.editing = false;
 		ui.hide();
+
+		game.world.SetGravity(new b2Vec2(editorSettings.gravityX, editorSettings.gravityY));
 	}
 	this.resize = function () {
 		this.canvas.width = window.innerWidth;
@@ -6287,6 +6320,8 @@ const _B2dEditor = function () {
 	this.object_GRAPHICGROUP = 7;
 	this.object_TRIGGER = 8;
 	this.object_TEXT = 9;
+	this.object_SETTINGS = 10;
+
 
 	this.jointObject_TYPE_PIN = 0;
 	this.jointObject_TYPE_SLIDE = 1;
@@ -6316,7 +6351,8 @@ const _B2dEditor = function () {
 	this.tool_TEXT = 5;
 	this.tool_ART = 6;
 	this.tool_TRIGGER = 7;
-	this.tool_CAMERA = 8;
+	this.tool_SETTINGS = 8;
+	this.tool_CAMERA = 9;
 
 	this.minimumBodySurfaceArea = 0.3;
 }

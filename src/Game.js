@@ -185,8 +185,6 @@ function Game() {
 
 
         PIXICuller.init(this.editor.textures);
-
-        console.log("INIT EDITING?", this.editor.editing)
     }
 
 
@@ -671,9 +669,9 @@ function Game() {
             emitterManager.update();
         }
         this.editor.run();
-    
+
         this.newDebugGraphics.clear();
-        if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug && !this.run) || Settings.debugMode ) {
+        if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug || !this.run)) {
             this.world.DrawDebugData();
         }
         this.app.render();
