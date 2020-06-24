@@ -38,14 +38,7 @@ function FireBaseManager() {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 self.user = user;
-                if (!user.isAnonymous) self.onLogin();
-            } else {
-                //no user, thus do anynomous login
-                // console.log("sign in anonymous");
-                // firebase.auth().signInAnonymously()
-                //     .catch(function (error) {
-                //         console.log(error);
-                //     });
+                self.onLogin();
             }
         });
     }
@@ -120,7 +113,7 @@ function FireBaseManager() {
         });
     }
     this.isLoggedIn = function () {
-        return this.user != undefined && !this.user.isAnonymous;
+        return this.user != undefined;
     }
     this.onLogin = function () {
         this.dispatchEvent('login');
