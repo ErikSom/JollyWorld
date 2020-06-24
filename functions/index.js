@@ -122,14 +122,19 @@ exports.setRangedPopularity = functions.https.onCall((data, context) => {
 
 exports.publishLevel = functions.https.onCall((data, context) => {
     //Received 'levelid' from client
+
+
+    //TODO: Check if files already exist and check if it is allowed to update
+
+
     const storage = new Storage();
     const targetBucket = 'jolly-ad424.appspot.com';
     const files = ['levelData.json', 'thumb_highRes.jpg', 'thumb_lowRes.jpg'];
     let copyPromises = [];
 
     files.map((file)=>{
-        const srcFilename = `/levels/${data.levelid}/${file}`;
-        const destFilename = `/publishedLevels/${data.levelid}/${file}`;
+        const srcFilename = `/levels/${data.creatorid}/${data.levelid}/${file}`;
+        const destFilename = `/publishedLevels/${data.creatorid}/${data.levelid}/${file}`;
         copyPromises.push(storage.
         bucket(targetBucket)
         .file(srcFilename)
@@ -138,7 +143,7 @@ exports.publishLevel = functions.https.onCall((data, context) => {
     Promise.all(copyPromises).then(()=>{
         let makePublicPromises = [];
         files.map((file)=>{
-            const destFilename = `/publishedLevels/${data.levelid}/${file}`;
+            const destFilename = `/publishedLevels/${data.creatorid}/${data.levelid}/${file}`;
             makePublicPromises.push(storage.
             bucket(targetBucket)
             .file(destFilename)

@@ -513,7 +513,7 @@ function Game() {
             game.currentLevelData.uid = levelData.uid;
             var self = this;
 
-            fetch(firebaseManager.baseDownloadURL + levelData.dataURL)
+            fetch(`${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${levelData.uid}%2FlevelData.json?${levelData.dataURL}`)
             .then(response => response.json())
             .then(data => {
                 self.currentLevelData.json = JSON.stringify(data);
@@ -533,7 +533,7 @@ function Game() {
             game.currentLevelData = levelData.private;
             game.currentLevelData.uid = levelData.uid;
             var self = this;
-           fetch(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.uid}/levelData.json`)
+           fetch(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.uid}/levelData.json`)
            .then(response => response.json())
            .then((data) =>{
                 self.currentLevelData.json = JSON.stringify(data);

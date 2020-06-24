@@ -1120,7 +1120,7 @@ export const showLevelEditScreen = function () {
 
     let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
     if (game.currentLevelData.thumbLowResURL) {
-        thumbNailImage.src = firebaseManager.baseDownloadURL + game.currentLevelData.thumbLowResURL;
+        thumbNailImage.src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${game.currentLevelData.uid}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
         thumbNailImage.style.display = 'block';
     } else {
         thumbNailImage.style.display = 'none';
@@ -1375,7 +1375,8 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 itemBarClone.querySelector('.itemTitle').innerText = level.title;
                 itemBarClone.querySelector('.itemDescription').innerText = level.description;
                 itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.creationDate);
-                if (level.thumbLowResURL) itemBarClone.querySelector('#thumbImage').src = firebaseManager.baseDownloadURL + level.thumbLowResURL;
+                // using %2F because '/' does not work for private urls
+                if (level.thumbLowResURL) itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${level.uid}%2Fthumb_lowRes.jpg?${level.thumbLowResURL}`;
 
                 let saveButton = itemBarClone.querySelector('.headerButton.save');
                 saveButton.addEventListener('click', () => {

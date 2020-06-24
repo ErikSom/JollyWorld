@@ -469,7 +469,7 @@ function UIManager() {
         // set values
 
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
-        thumbNailImage.src = `${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.uid}/thumb_highRes.jpg`;
+        thumbNailImage.src = `${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.uid}/thumb_highRes.jpg`;
 
         levelBanner.domElement.querySelector('#levelbanner_title').innerText = game.currentLevelData.title;
         levelBanner.domElement.querySelector('#levelbanner_creatorSpan').innerText = game.currentLevelData.creator;
@@ -1076,7 +1076,7 @@ function UIManager() {
 
                 itemBarClone.querySelector('.itemPlays').innerText = level.public.playCount;
 
-                itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level_id}/thumb_lowRes.jpg`;
+                itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level.private.creatorID}/${level_id}/thumb_lowRes.jpg`;
 
                 itemBarClone.querySelector('.menuButton').addEventListener('click', () => {
                     if(game.gameState != game.GAMESTATE_MENU) return;

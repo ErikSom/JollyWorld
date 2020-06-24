@@ -24,9 +24,6 @@ function FireBaseManager() {
     this.baseDownloadURL = "https://firebasestorage.googleapis.com/v0/b/jolly-ad424.appspot.com/o/";
     this.basePublicURL = "https://storage.googleapis.com/jolly-ad424.appspot.com/";
 
-
-
-
     this.init = function () {
         var config = {
             apiKey: "AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0",
@@ -52,6 +49,9 @@ function FireBaseManager() {
             }
         });
     }
+    this.getUserID = function(){
+        return firebase.auth().currentUser.uid;
+    }
 
     this.registerUser = function (email, password) {
         return new Promise((resolve, reject) => {
@@ -67,10 +67,11 @@ function FireBaseManager() {
     this.claimUsername = function (username) {
         username = username.toLowerCase();
         //Transaction to make sure a username is not claimed twice
+
         return new Promise((resolve, reject) => {
             var usernameRef = firebase.database().ref('/Usernames/' + username);
             usernameRef.transaction(function (currentData) {
-                if (currentData === null) return firebase.auth().currentUser.uid;
+                if (currentData === null) return firebaseManager.getUserID();
                 else return;
             }, function (error, committed, snapshot) {
                 if (error) {
@@ -91,7 +92,8 @@ function FireBaseManager() {
         var self = this;
         return new Promise((resolve, reject) => {
             if (this.userData) return resolve();
-            var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
+            console.log(self.getus)
+            var usernameRef = firebase.database().ref('/Users/' + firebaseManager.getUserID());
             usernameRef.once('value').then(snapshot => {
                 self.userData = snapshot.val();
                 if (!self.userData) {
@@ -107,7 +109,7 @@ function FireBaseManager() {
     this.storeUserData = function (data) {
         return new Promise((resolve, reject) => {
             var self = this;
-            var usernameRef = firebase.database().ref('/Users/' + firebase.auth().currentUser.uid);
+            var usernameRef = firebase.database().ref('/Users/' + firebaseManager.getUserID());
             usernameRef.set(data, function (error) {
                 if (error) reject(error);
                 else {
@@ -230,8 +232,9 @@ function FireBaseManager() {
         }
 
         this.uploadFile = function (file, dir, name, datatype) {
-            var storageRef = firebase.storage().ref(dir + "/" + self.uploadUUID + "/" + name);
-            var task;
+            const storageRef = firebase.storage().ref(`${dir}/${firebaseManager.getUserID()}/${self.uploadUUID}/${name}`);
+
+            let task;
             if (typeof file === 'string') {
                 if (datatype && datatype == "data_url") {
                     task = storageRef.putString(file, datatype);
@@ -313,7 +316,11 @@ function FireBaseManager() {
     }
     this.storeUserLevelData = function (urls, details) {
         return new Promise((resolve, reject) => {
-            var levelObject = {};
+            const levelObject = {};
+
+            urls = urls.map(url => url.split('?')[1]);
+            //strip known info
+
             levelObject["dataURL"] = urls[0];
             if (urls.length > 1) {
                 levelObject["thumbHighResURL"] = urls[1];
@@ -327,7 +334,7 @@ function FireBaseManager() {
             levelObject["title"] = details.title;
             levelObject["background"] = details.background;
 
-            var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
+            const levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
             levelRef.set(levelObject, function (error) {
                 levelObject.uid = details.uid;
                 if (error) reject(error);
@@ -346,7 +353,8 @@ function FireBaseManager() {
             var self = this;
 
             firebase.functions().httpsCallable('publishLevel')({
-                levelid: levelData.uid
+                levelid: levelData.uid,
+                creatorid: firebaseManager.getUserID()
             }).then(function (result) {
                 console.log("Copy files success - !!!", result);
 
@@ -357,7 +365,7 @@ function FireBaseManager() {
                 levelObject['private']["title"] = levelData.title;
                 levelObject['private']["background"] = levelData.background;
                 levelObject['private']["creator"] = self.userData.username;
-                levelObject['private']["creatorID"] = firebase.auth().currentUser.uid;
+                levelObject['private']["creatorID"] = firebaseManager.getUserID();
                 levelObject['public'] = {};
                 levelObject['public']["playCount"] = 0;
                 levelObject['public']["firstMonth_playCount"] = 'unset';
