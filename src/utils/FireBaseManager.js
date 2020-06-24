@@ -356,34 +356,39 @@ function FireBaseManager() {
                 levelid: levelData.uid,
                 creatorid: firebaseManager.getUserID()
             }).then(function (result) {
-                console.log("Copy files success - !!!", result);
+                if(result.data === "success"){
 
-                var levelObject = {};
-                levelObject['private'] = {};
-                levelObject['private']["creationDate"] = levelData.creationDate;
-                levelObject['private']["description"] = levelData.description;
-                levelObject['private']["title"] = levelData.title;
-                levelObject['private']["background"] = levelData.background;
-                levelObject['private']["creator"] = self.userData.username;
-                levelObject['private']["creatorID"] = firebaseManager.getUserID();
-                levelObject['public'] = {};
-                levelObject['public']["playCount"] = 0;
-                levelObject['public']["firstMonth_playCount"] = 'unset';
-                levelObject['public']["firstWeek_playCount"] = 'unset';
-                levelObject['public']["firstDay_playCount"] = 'unset';
-                levelObject['public']["voteNum"] = 0;
-                levelObject['public']["voteAvg"] = 0.5;
-                levelObject['public']["firstMonth_voteAvg"] = 'unset';
-                levelObject['public']["firstWeek_voteAvg"] = 'unset';
-                levelObject['public']["firstDay_voteAvg"] = 'unset';
+                    var levelObject = {};
+                    levelObject['private'] = {};
+                    levelObject['private']["creationDate"] = levelData.creationDate;
+                    levelObject['private']["description"] = levelData.description;
+                    levelObject['private']["title"] = levelData.title;
+                    levelObject['private']["background"] = levelData.background;
+                    levelObject['private']["creator"] = self.userData.username;
+                    levelObject['private']["creatorID"] = firebaseManager.getUserID();
+                    levelObject['public'] = {};
+                    levelObject['public']["playCount"] = 0;
+                    levelObject['public']["firstMonth_playCount"] = 'unset';
+                    levelObject['public']["firstWeek_playCount"] = 'unset';
+                    levelObject['public']["firstDay_playCount"] = 'unset';
+                    levelObject['public']["voteNum"] = 0;
+                    levelObject['public']["voteAvg"] = 0.5;
+                    levelObject['public']["firstMonth_voteAvg"] = 'unset';
+                    levelObject['public']["firstWeek_voteAvg"] = 'unset';
+                    levelObject['public']["firstDay_voteAvg"] = 'unset';
 
-                var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
-                levelRef.set(levelObject, function (error) {
-                    levelObject.uid = levelData.uid;
-                    if (error) reject(error);
-                    else resolve(levelObject);
-                });
+                    var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
+                    levelRef.set(levelObject, function (error) {
+                        levelObject.uid = levelData.uid;
+                        if (error) reject(error);
+                        else resolve(levelObject);
+                    });
+                }else{
+                    reject(result.data);
+                }
 
+            }).catch(error=>{
+                reject(error);
             });
         });
     }

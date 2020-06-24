@@ -123,9 +123,8 @@ exports.setRangedPopularity = functions.https.onCall((data, context) => {
 exports.publishLevel = functions.https.onCall((data, context) => {
     //Received 'levelid' from client
 
-
     //TODO: Check if files already exist and check if it is allowed to update
-
+    if(context.auth.uid !== data.creatorid)  throw new functions.https.HttpsError('permission-denied', 'You are only allowed to publish your own levels');
 
     const storage = new Storage();
     const targetBucket = 'jolly-ad424.appspot.com';
@@ -140,22 +139,24 @@ exports.publishLevel = functions.https.onCall((data, context) => {
         .file(srcFilename)
         .copy(storage.bucket(targetBucket).file(destFilename)));
     })
-    Promise.all(copyPromises).then(()=>{
-        let makePublicPromises = [];
-        files.map((file)=>{
-            const destFilename = `/publishedLevels/${data.creatorid}/${data.levelid}/${file}`;
-            makePublicPromises.push(storage.
-            bucket(targetBucket)
-            .file(destFilename)
-            .makePublic());
-        });
-        return Promise.all(makePublicPromises).then(()=>{
-                return true;
-        }).catch((error)=>{
-            return error;
-        });
+    return new Promise((resolve, reject) => {
+        Promise.all(copyPromises).then(()=>{
+            let makePublicPromises = [];
+            files.map((file)=>{
+                const destFilename = `/publishedLevels/${data.creatorid}/${data.levelid}/${file}`;
+                makePublicPromises.push(storage.
+                bucket(targetBucket)
+                .file(destFilename)
+                .makePublic());
+            });
+            return Promise.all(makePublicPromises).then(()=>{
+                    return resolve("success");
+            }).catch((error)=>{
+                throw new functions.https.HttpsError('promise-error', error);
+            });
 
-    }).catch((error)=>{
-        return error;
-    })
+        }).catch(error=>{
+            throw new functions.https.HttpsError('promise-error', error);
+        })
+    });
 });
