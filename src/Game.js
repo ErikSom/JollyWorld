@@ -440,7 +440,7 @@ function Game() {
     }
     this.newLevel = function () {
         let data = {
-            json: '{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "Bike", 0]]}',
+            json: '{"objects":[[4,0,0,0,{"playableCharacter":false,"selectedVehicle":"Bike"},"Bike",0]],"settings":[10,0,10]}',
             title: '',
             description: '',
             crossPromos: [],
