@@ -94,7 +94,6 @@ export const levelsData = {
     }`,
     title:'Main Menu Level',
     description:'This level is used in the main menu and might help you better understand the editor',
-    background:'#FFFFFF',
     crossPromo:[],
     }
 

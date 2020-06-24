@@ -42,10 +42,10 @@ function FireBaseManager() {
             } else {
                 //no user, thus do anynomous login
                 // console.log("sign in anonymous");
-                firebase.auth().signInAnonymously()
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+                // firebase.auth().signInAnonymously()
+                //     .catch(function (error) {
+                //         console.log(error);
+                //     });
             }
         });
     }
@@ -332,7 +332,6 @@ function FireBaseManager() {
             levelObject["creationDate"] = details.creationDate;
             levelObject["description"] = details.description;
             levelObject["title"] = details.title;
-            levelObject["background"] = details.background;
 
             const levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
             levelRef.set(levelObject, function (error) {
@@ -363,7 +362,6 @@ function FireBaseManager() {
                     levelObject['private']["creationDate"] = levelData.creationDate;
                     levelObject['private']["description"] = levelData.description;
                     levelObject['private']["title"] = levelData.title;
-                    levelObject['private']["background"] = levelData.background;
                     levelObject['private']["creator"] = self.userData.username;
                     levelObject['private']["creatorID"] = firebaseManager.getUserID();
                     levelObject['public'] = {};

@@ -443,7 +443,6 @@ function Game() {
             json: '{"objects":[[4, 0, 0, 0, {"playableCharacter":false, "selectedVehicle":"Bike"}, "Bike", 0]]}',
             title: '',
             description: '',
-            background: '#FFFFFF',
             crossPromos: [],
             creationDate: Date.now(),
             uid: nanoid(),
