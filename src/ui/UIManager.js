@@ -79,6 +79,11 @@ function UIManager() {
             mainMenu.appendChild(button);
 
 
+            const span = document.createElement('span');
+            span.setAttribute('id', 'versionNumber')
+            span.innerText = __VERSION__;
+            mainMenu.appendChild(span);
+            setTimeout(()=>{span.style.opacity = 1}, 1800);
         }
         mainMenu.style.display = 'block';
         this.show();

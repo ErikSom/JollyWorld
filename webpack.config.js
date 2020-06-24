@@ -64,5 +64,8 @@ module.exports = {
 			  { from: 'static', to: '' },
 			],
 		  }),
+		  new webpack.DefinePlugin({
+			__VERSION__: JSON.stringify(require("./package.json").version),
+		 })
 	]
 };
