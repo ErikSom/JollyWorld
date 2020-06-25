@@ -1798,6 +1798,7 @@ export const fetchControllersFromGUI = function(gui){
             }
         }
     }
+    return controllers;
 }
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
     if (prompt) removePrompt();
