@@ -978,9 +978,34 @@ const _B2dEditor = function () {
 	}
 
 	this.deleteObjects = function (arr) {
-		for (var i = 0; i < arr.length; i++) {
-			if (arr[i] instanceof Box2D.b2Joint) {
-				let joint = arr[i];
+
+		let i, obj;
+		const toBeDeletedPrefabs = [];
+
+		for(let i = 0; i<arr.length; i++){
+			//First collect all the attached prefabs
+			obj = arr[i];
+			let prefabToPush = null;
+			if(obj instanceof this.prefabObject){
+				toBeDeletedPrefabs.push(prefabToPush);
+			}else if(obj.data && obj.data.prefabInstanceName){
+				prefabToPush = this.activePrefabs[obj.data.prefabInstanceName];
+			}else if(obj.mySprite && obj.mySprite.data && obj.mySprite.data.prefabInstanceName){
+				prefabToPush = this.activePrefabs[obj.mySprite.data.prefabInstanceName];
+			}
+			if(prefabToPush){
+				arr.splice(i, 1);
+				i--;
+				if(!toBeDeletedPrefabs.includes(prefabToPush)){
+					toBeDeletedPrefabs.push(prefabToPush);
+					arr.push(prefabToPush);
+				}
+			}
+		}
+		for (i = 0; i < arr.length; i++) {
+			obj = arr[i];
+			if (obj instanceof Box2D.b2Joint) {
+				let joint = obj;
 				if (joint.myTriggers != undefined) {
 					var j;
 					var myTrigger;
@@ -994,17 +1019,17 @@ const _B2dEditor = function () {
 				this.world.DestroyJoint(joint);
 
 				//TODO: remove joints from lookup object???
-			} else if (arr[i] instanceof this.prefabObject) {
-				if (arr[i].myTriggers != undefined) {
-					for (var j = 0; j < (arr[i].myTriggers ? arr[i].myTriggers.length : 0); j++) {
-						trigger.removeTargetFromTrigger(arr[i].myTriggers[j], arr[i]);
+			} else if (obj instanceof this.prefabObject) {
+				if (obj.myTriggers != undefined) {
+					for (var j = 0; j < (obj.myTriggers ? obj.myTriggers.length : 0); j++) {
+						trigger.removeTargetFromTrigger(obj.myTriggers[j], obj);
 					}
 				}
-				arr = arr.concat(this.lookupGroups[arr[i].key]._bodies, this.lookupGroups[arr[i].key]._textures, this.lookupGroups[arr[i].key]._joints);
-				delete this.activePrefabs[arr[i].key];
-			} else if (arr[i].data) {
+				arr = arr.concat(this.lookupGroups[obj.key]._bodies, this.lookupGroups[obj.key]._textures, this.lookupGroups[obj.key]._joints);
+				delete this.activePrefabs[obj.key];
+			} else if (obj.data) {
 				//graphic object
-				var sprite = arr[i];
+				var sprite = obj;
 				this.removeObjectFromLookupGroups(sprite, sprite.data);
 				if (sprite.data && sprite.data.type == this.object_JOINT) {
 					var j;
@@ -1053,8 +1078,8 @@ const _B2dEditor = function () {
 					texture: false,
 					baseTexture: false
 				});
-			} else if (arr[i].mySprite.data) {
-				var b = arr[i];
+			} else if (obj.mySprite.data) {
+				var b = obj;
 				this.removeObjectFromLookupGroups(b, b.mySprite.data);
 
 				if (b.mySprite.data && b.mySprite.data.type == this.object_TRIGGER) {
@@ -1132,12 +1157,11 @@ const _B2dEditor = function () {
 	this.deleteSelection = function () {
 		var toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
-			if (this.selectedPrefabs.hasOwnProperty(key)) {
+				if (this.selectedPrefabs.hasOwnProperty(key)) {
 				toBeDeletedPrefabs.push(this.activePrefabs[key]);
 			}
 		}
-
-		this.deleteObjects([].concat(this.selectedPhysicsBodies, this.selectedTextures, toBeDeletedPrefabs));
+        this.deleteObjects([].concat(this.selectedPhysicsBodies, this.selectedTextures, toBeDeletedPrefabs));
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.selectedPrefabs = {};
