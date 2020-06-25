@@ -1019,12 +1019,9 @@ const _B2dEditor = function () {
 				this.world.DestroyJoint(joint);
 
 				//TODO: remove joints from lookup object???
+
+
 			} else if (obj instanceof this.prefabObject) {
-				if (obj.myTriggers != undefined) {
-					for (var j = 0; j < (obj.myTriggers ? obj.myTriggers.length : 0); j++) {
-						trigger.removeTargetFromTrigger(obj.myTriggers[j], obj);
-					}
-				}
 				arr = arr.concat(this.lookupGroups[obj.key]._bodies, this.lookupGroups[obj.key]._textures, this.lookupGroups[obj.key]._joints);
 				delete this.activePrefabs[obj.key];
 			} else if (obj.data) {
@@ -1060,12 +1057,9 @@ const _B2dEditor = function () {
 						}
 					}
 				}
-
 				if (sprite.myTriggers != undefined) {
-					var j;
-					var myTrigger;
-					for (j = 0; j < (sprite.myTriggers ? sprite.myTriggers.length : 0); j++) {
-						myTrigger = sprite.myTriggers[j];
+					for (let j = 0; j < sprite.myTriggers.length; j++) {
+						let myTrigger = sprite.myTriggers[j];
 						trigger.removeTargetFromTrigger(myTrigger, sprite);
 						j--;
 					}
@@ -5663,7 +5657,6 @@ const _B2dEditor = function () {
 			arr[0] = obj.type;
 			arr[1] = obj.gravityX;
 			arr[2] = obj.gravityY;
-			console.log("SETTIMGS OBJECT");
 		}
 		return JSON.stringify(arr);
 	}

@@ -640,6 +640,8 @@ export class triggerCore {
     }
 }
 export const addTargetToTrigger = function (_trigger, target) {
+    if(target.data.type === B2dEditor.object_TEXTURE && target.myBody) target = target.myBody.mySprite;
+
     if (_trigger.mySprite == target) return;
     if (_trigger.mySprite.targets.includes(target)) return;
     if (target.data.prefabInstanceName) {
@@ -649,6 +651,7 @@ export const addTargetToTrigger = function (_trigger, target) {
 
     _trigger.mySprite.targets.push(target);
     if (_trigger.mySprite.data.triggerActions.length < _trigger.mySprite.targets.length) _trigger.mySprite.data.triggerActions.push([getAction(getActionsForObject(target)[0])]);
+
     if (!target.myTriggers) target.myTriggers = [];
     target.myTriggers.push(_trigger);
 }
