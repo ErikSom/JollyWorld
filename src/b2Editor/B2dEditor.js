@@ -2359,6 +2359,15 @@ const _B2dEditor = function () {
 		}
 		this.mouseDown = false;
 	}
+	this.onMouseWheel = function(e){
+		if(this.editing){
+			const zoom = e.deltaY>0;
+			camera.zoom({
+				x: this.mousePosWorld.x * this.PTM,
+				y: this.mousePosWorld.y * this.PTM
+			}, zoom);
+		}
+    }
 	this.onKeyDown = function (e) {
 		if (e.keyCode == 68) { //d
 			this.selectTool(this.tool_POLYDRAWING);

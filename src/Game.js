@@ -179,6 +179,7 @@ function Game() {
         this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), true);
         this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
+        window.addEventListener('wheel', this.onMouseWheel.bind(this), true);
         window.addEventListener('resize', this.handleResize.bind(this));
 
         emitterManager.init();
@@ -208,12 +209,14 @@ function Game() {
         if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onMouseDown(e);
     };
 
-
-
     this.onMouseUp = function (e) {
         Key.onMouseUp();
         this.editor.onMouseUp(e);
     };
+
+    this.onMouseWheel = function(e){
+        this.editor.onMouseWheel(e);
+    }
 
     this.onMouseMove = function (e) {
         this.editor.onMouseMove(e);
