@@ -980,28 +980,7 @@ const _B2dEditor = function () {
 	this.deleteObjects = function (arr) {
 
 		let i, obj;
-		const toBeDeletedPrefabs = [];
 
-		for(let i = 0; i<arr.length; i++){
-			//First collect all the attached prefabs
-			obj = arr[i];
-			let prefabToPush = null;
-			if(obj instanceof this.prefabObject){
-				toBeDeletedPrefabs.push(prefabToPush);
-			}else if(obj.data && obj.data.prefabInstanceName){
-				prefabToPush = this.activePrefabs[obj.data.prefabInstanceName];
-			}else if(obj.mySprite && obj.mySprite.data && obj.mySprite.data.prefabInstanceName){
-				prefabToPush = this.activePrefabs[obj.mySprite.data.prefabInstanceName];
-			}
-			if(prefabToPush){
-				arr.splice(i, 1);
-				i--;
-				if(!toBeDeletedPrefabs.includes(prefabToPush)){
-					toBeDeletedPrefabs.push(prefabToPush);
-					arr.push(prefabToPush);
-				}
-			}
-		}
 		for (i = 0; i < arr.length; i++) {
 			obj = arr[i];
 			if (obj instanceof Box2D.b2Joint) {
