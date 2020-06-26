@@ -20,14 +20,12 @@ class Grenade extends Explosive {
 		this.explodeTarget = this.lookupObject['grenadeBody'];
 		super.explode();
 
-
 		const pos = this.explodeTarget.GetPosition();
 		emitterManager.playOnceEmitter("explosion_layer1", null, pos, 0);
 		emitterManager.playOnceEmitter("explosion_layer2", null, pos, 0);
 		game.editor.deleteObjects([this.explodeTarget]);
 	}
 	setActive(active){
-		console.log("SET ACTIVE?");
 		super.setActive(active);
 		const grenadeTexture = this.lookupObject['grenadeTexture'];
 		if(active){
@@ -37,7 +35,6 @@ class Grenade extends Explosive {
 		}
 	}
 	set(property, value) {
-		console.log("SETTING?", property, value)
 		super.set(property, value);
         switch (property) {
             case 'active':

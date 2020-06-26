@@ -11,10 +11,10 @@ import {
 
 export class Explosive extends PrefabManager.basePrefab {
     constructor(target) {
-        super(target);
+		super(target);
+		this.isExplosive = true;
     }
     init() {
-		this.isExplosive = true;
 		this.explosiveRadius = 250;
 		this.explosivePower = this.prefabObject.settings.force;
 		this.explodeTimer = 0;

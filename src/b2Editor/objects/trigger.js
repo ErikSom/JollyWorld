@@ -13,8 +13,12 @@ import {
 export const getActionsForObject = function (object) {
     var actions = [];
     if (object.data.prefabInstanceName != undefined) {
-        //detect if prefab
         actions.push("Impulse") //, "SetAwake");
+        const prefab = B2dEditor.activePrefabs[object.data.prefabInstanceName];
+        if(prefab.class.isExplosive){
+            actions.push("SetActive");
+            actions.push("Explode");
+        }
     } else {
         switch (object.data.type) {
             case B2dEditor.object_BODY:
@@ -53,14 +57,13 @@ export const getAction = function (action) {
 export const getActionOptions = function (action) {
     return actionDictionary[`actionOptions_${action}`];
 }
-export const doAction = function (actionData, targets) {
-    if (!(targets instanceof Array)) targets = [targets];
+export const doAction = function (actionData, target) {
 
-    var bodies;
+    let bodies;
+    const prefab = target.data ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
 
     switch (actionData.type) {
         case "Impulse":
-            targets.map(target => {
                 if (target.data.prefabInstanceName) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
                 } else bodies = [target.myBody];
@@ -70,10 +73,8 @@ export const doAction = function (actionData, targets) {
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
                     body.ApplyTorque(actionData.rotationForce, true)
                 });
-            });
             break;
         case "SetPosition":
-            targets.map(target => {
                 var objects;
                 var targetPos;
 
@@ -92,54 +93,45 @@ export const doAction = function (actionData, targets) {
                 else targetPos = new Box2D.b2Vec2(actionData.X, actionData.Y);
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
-            });
             break;
         case "MotorEnabled":
-            targets.map(target => {
-                target.EnableMotor(actionData.enabled);
-            });
+            target.EnableMotor(actionData.enabled);
             break;
         case "LimitEnabled":
-            targets.map(target => {
-                target.EnableLimit(actionData.enabled);
-            });
+            target.EnableLimit(actionData.enabled);
             break;
         case "SetAngleLimits":
-            targets.map(target => {
-                target.SetLimits(actionData.lowerAngle, actionData.upperAngle);
-            });
+            target.SetLimits(actionData.lowerAngle, actionData.upperAngle);
             break;
         case "SetDistanceLimits":
-            targets.map(target => {
-                target.SetLimits(actionData.lowerLimit, actionData.upperLimit);
-            });
+            target.SetLimits(actionData.lowerLimit, actionData.upperLimit);
             break;
         case "SetMotorSpeed":
-            targets.map(target => {
-                let targetMotorSpeed;
-                if (actionData.setAdd == "fixed") targetMotorSpeed = actionData.speed;
-                else if (actionData.setAdd == "add") targetMotorSpeed = target.GetMotorSpeed() + actionData.speed;
-                targetMotorSpeed = Math.min(Settings.motorSpeedLimit, Math.max(-Settings.motorSpeedLimit, targetMotorSpeed));
-                target.SetMotorSpeed(targetMotorSpeed);
-            });
+            let targetMotorSpeed;
+            if (actionData.setAdd == "fixed") targetMotorSpeed = actionData.speed;
+            else if (actionData.setAdd == "add") targetMotorSpeed = target.GetMotorSpeed() + actionData.speed;
+            targetMotorSpeed = Math.min(Settings.motorSpeedLimit, Math.max(-Settings.motorSpeedLimit, targetMotorSpeed));
+            target.SetMotorSpeed(targetMotorSpeed);
             break;
         case "SetMaxMotorTorque":
-            targets.map(target => {
-                let targetMotorForce;
-                if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
-                else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce() + actionData.force;
-                targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
-                target.SetMaxMotorForce(targetMotorForce);
-            });
+            let targetMotorForce;
+            if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
+            else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce() + actionData.force;
+            targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
+            target.SetMaxMotorForce(targetMotorForce);
             break;
         case "SetSpring":
-            targets.map(target => {
-                target.SetFrequency(actionData.frequencyHz);
-                target.SetDampingRatio(actionData.dampingRatio);
-            });
+            target.SetFrequency(actionData.frequencyHz);
+            target.SetDampingRatio(actionData.dampingRatio);
             break;
         case "Destroy":
-            B2dEditor.deleteObjects(targets);
+            B2dEditor.deleteObjects([target]);
+            break;
+        case "SetActive":
+            prefab.class.set('active', actionData.active);
+            break;
+        case "Explode":
+            prefab.class.explode();
             break;
 
     }
@@ -325,6 +317,22 @@ export const actionDictionary = {
         type: 'Destroy',
     },
     actionOptions_Destroy: {},
+    /*******************/
+    actionObject_SetActive: {
+        type: 'SetActive',
+        active: true,
+    },
+    actionOptions_SetActive: {
+        active: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
+    actionObject_Explode: {
+        type: 'Explode',
+    },
+    actionOptions_Explode: {},
+    /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
