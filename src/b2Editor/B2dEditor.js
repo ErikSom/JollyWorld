@@ -5403,7 +5403,7 @@ const _B2dEditor = function () {
 			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) {
 				target.myTileSprite.alpha = targetSprite.data.transparancy;
 				let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
-				outlineFilter.padding = targetSprite.data.lineWidth;
+				outlineFilter.padding = targetSprite.data.lineWidth+2; // added 2 to fix line flickering
 				targetSprite.filters = [outlineFilter]
 				targetGraphic.alpha = 0;
 				return;
@@ -5442,7 +5442,7 @@ const _B2dEditor = function () {
 
 			target.myTileSprite.texture = tex;
 			let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
-			outlineFilter.padding = targetSprite.data.lineWidth;
+			outlineFilter.padding = targetSprite.data.lineWidth+2; // added 2 to fix line flickering
 			targetSprite.filters = [outlineFilter];
 			targetGraphic.alpha = 0;
 		}
