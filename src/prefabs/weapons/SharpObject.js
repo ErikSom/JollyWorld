@@ -3,9 +3,12 @@ import * as Box2D from '../../../libs/Box2D';
 import * as emitterManager from '../../utils/EmitterManager';
 
 
+
+
 import {
     game
 } from "../../Game";
+import { drawLine } from '../../b2Editor/utils/drawing';
 
 export class SharpObject extends PrefabManager.basePrefab {
     constructor(target) {
@@ -14,8 +17,11 @@ export class SharpObject extends PrefabManager.basePrefab {
     init() {
         this.extent = 4.50;
         this.width = 2.25;
+        this.offsetWidth = this.width;
         this.spread = 0.75;
+        this.twoSided = false;
         this.resistance = 600.0;
+        this.angleCorrection = 0;
         this.bodiesToStick = [];
         this.bodiesToSeperate = [];
         this.connectedBodies = [];
@@ -35,18 +41,52 @@ export class SharpObject extends PrefabManager.basePrefab {
             return fraction;
         };
     }
+    debugDraw(){
+		game.editor.debugGraphics.clear();
+
+        const sharpBody = this.lookupObject['sharpBody'];
+
+        const sharpBodyAngle = sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
+        // attach decals
+        var basePosition = sharpBody.GetPosition();
+
+        var startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
+        var startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
+
+        const numSpreadParts = Math.floor((this.width*2)/this.spread)+1;
+
+        const spreadAngle = sharpBodyAngle;
+        const bladeAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
+
+        const sides = this.twoSided ? [0, 180] : [0];
+        sides.forEach(side =>{
+            const sideBladeAngle = bladeAngle+side*game.editor.DEG2RAD;
+            for(let j = 0; j<numSpreadParts; j++){
+                const totalSpread = this.spread*j;
+                let bladePosition = new Box2D.b2Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
+                let bladeEndPosition = new Box2D.b2Vec2(bladePosition.x + this.extent * Math.cos(sideBladeAngle),bladePosition.y + this.extent * Math.sin(sideBladeAngle));
+                drawLine(game.editor.getPIXIPointFromWorldPoint(bladePosition), game.editor.getPIXIPointFromWorldPoint(bladeEndPosition));
+            }
+        })
+
+    }
+
+
     update(){
         super.update();
+
+        // this.debugDraw();
 
         if(this.bodiesToStick.length>0){
             const sharpBody = this.lookupObject['sharpBody'];
 
-            for(var i = 0; i<this.bodiesToStick.length; i++){
+            for(let i = 0; i<this.bodiesToStick.length; i++){
+                const sharpBodyAngle = sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
 
                 if(this.bodiesToSeperate.includes(this.bodiesToStick[i].body)) return;
-                var prismaticJointDef = new Box2D.b2PrismaticJointDef;
-                const axisRotation = sharpBody.GetAngle() + 90 * game.editor.DEG2RAD;
-                var axis = new Box2D.b2Vec2(Math.cos(axisRotation), Math.sin(axisRotation));
+                const prismaticJointDef = new Box2D.b2PrismaticJointDef;
+                const axisRotation = sharpBodyAngle + 90 * game.editor.DEG2RAD;
+                const axis = new Box2D.b2Vec2(Math.cos(axisRotation), Math.sin(axisRotation));
                 prismaticJointDef.Initialize(this.bodiesToStick[i].body, sharpBody, sharpBody.GetPosition(), axis);
                 prismaticJointDef.collideConnected = true;
                 // prismaticJointDef.referenceAngle = 0.0;
@@ -61,37 +101,40 @@ export class SharpObject extends PrefabManager.basePrefab {
                 this.bodiesToStick[i].body.ResetMassData();
                 this.bodiesToStick[i].body.connectedSpike = this;
 
+
                 // attach decals
-                var basePosition = sharpBody.GetPosition();
-                var extentAngle = sharpBody.GetAngle()-90*game.editor.DEG2RAD;
-                var extentPosition = new Box2D.b2Vec2(basePosition.x+this.extent*Math.cos(extentAngle), basePosition.y+this.extent*Math.sin(extentAngle));
-                extentPosition = basePosition;
+                const basePosition = sharpBody.GetPosition();
+                const extentAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
 
-                var startAngle = sharpBody.GetAngle()+180*game.editor.DEG2RAD;
-                var startPosition = new Box2D.b2Vec2(extentPosition.x+this.width*Math.cos(startAngle), extentPosition.y+this.width*Math.sin(startAngle));
-
+                const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
+                const startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
 
                 const numSpreadParts = Math.floor((this.width*2)/this.spread)+1;
 
-                const spreadAngle = sharpBody.GetAngle();
-                const bladeAngle = sharpBody.GetAngle()-90*game.editor.DEG2RAD;
+                const spreadAngle = sharpBodyAngle;
+                const bladeAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
 
 
-                for(var j = 0; j<numSpreadParts; j++){
-                    const totalSpread = this.spread*j;
-                    let bladePosition = new Box2D.b2Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
-                    let bladeEndPosition = new Box2D.b2Vec2(bladePosition.x + this.extent * Math.cos(bladeAngle),bladePosition.y + this.extent * Math.sin(bladeAngle));
 
-                    var callback = new this.RaycastCallbackSpike();
-                    sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
-                    if (callback.m_hit) {
-                        var body = callback.m_fixture.GetBody();
-                        game.editor.addDecalToBody(body, callback.m_point, "Decal.png", true, 0.5);
-                        game.editor.addDecalToBody(sharpBody, callback.m_point, "Decal.png", false, 1.3);
+                const sides = this.twoSided ? [0, 180] : [0];
+                sides.forEach(side =>{
+                    const sideBladeAngle = bladeAngle+side*game.editor.DEG2RAD;
+                    for(let j = 0; j<numSpreadParts; j++){
+                        const totalSpread = this.spread*j;
+                        let bladePosition = new Box2D.b2Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
+                        let bladeEndPosition = new Box2D.b2Vec2(bladePosition.x + this.extent * Math.cos(sideBladeAngle),bladePosition.y + this.extent * Math.sin(sideBladeAngle));
 
-                        emitterManager.playOnceEmitter("blood", body, callback.m_point, extentAngle);
+                        const callback = new this.RaycastCallbackSpike();
+                        sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
+                        if (callback.m_hit) {
+                            const body = callback.m_fixture.GetBody();
+                            game.editor.addDecalToBody(body, callback.m_point, "Decal.png", true, 0.5);
+                            game.editor.addDecalToBody(sharpBody, callback.m_point, "Decal.png", false, 1.3);
+
+                            emitterManager.playOnceEmitter("blood", body, callback.m_point, extentAngle);
+                        }
                     }
-                }
+                });
 
                 let joint = game.world.CreateJoint(prismaticJointDef);
                 this.connectedBodies.push(this.bodiesToStick[i].body);
