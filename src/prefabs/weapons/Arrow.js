@@ -11,7 +11,8 @@ class Arrow extends PrefabManager.basePrefab {
 		this.dragConstant = 0.2;
     }
     init() {
-        this.arrowBody = this.lookupObject['arrowBody'];
+		this.arrowBody = this.lookupObject['arrowBody'];
+		this.arrowBody.SetBullet(true);
 		super.init();
 		this.pointingVec = new Box2D.b2Vec2( 1, 0 );
 		this.tailVec = new Box2D.b2Vec2( -1.4, 0 );
@@ -40,6 +41,7 @@ class Arrow extends PrefabManager.basePrefab {
 			this.arrowBody.ApplyForce( flightDirection.SelfMul(-dragForceMagnitude), arrowTailPosition );
 
 			if(this.bodyToStick){
+				this.arrowBody.SetBullet(false);
 				this.arrowBody.GetWorldPoint( new Box2D.b2Vec2(0.6, 0), this.vec );
 				const worldCoordsAnchorPoint = this.vec;
 				const weldJointDef = new Box2D.b2WeldJointDef();
