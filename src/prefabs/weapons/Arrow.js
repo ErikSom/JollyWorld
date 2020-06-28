@@ -55,8 +55,6 @@ class Arrow extends PrefabManager.basePrefab {
 				weldJointDef.referenceAngle = weldJointDef.bodyB.GetAngle()-weldJointDef.bodyA.GetAngle();
 				game.world.CreateJoint(weldJointDef);
 
-				console.log(this.arrowBody.GetFixtureList());
-
 				let fixture = this.arrowBody.GetFixtureList();
 				while(fixture){
 					fixture.SetSensor(true);

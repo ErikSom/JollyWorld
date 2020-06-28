@@ -5905,14 +5905,16 @@ const _B2dEditor = function () {
 		}
 
 		//Fix trigger object targets
-		for (var i = 0; i < this.triggerObjects.length; i++) {
-			var _trigger = this.triggerObjects[i];
-			if (_trigger.mySprite.triggerInitialized) continue;
-			for (var j = 0; j < _trigger.mySprite.data.triggerObjects.length; j++) {
-				var targetObject = this.textures.getChildAt(_trigger.mySprite.data.triggerObjects[j]);
-				trigger.addTargetToTrigger(_trigger, targetObject);
+		if(!prefabInstanceName){
+			for (var i = 0; i < this.triggerObjects.length; i++) {
+				var _trigger = this.triggerObjects[i];
+				if (_trigger.mySprite.triggerInitialized) continue;
+				for (var j = 0; j < _trigger.mySprite.data.triggerObjects.length; j++) {
+					var targetObject = this.textures.getChildAt(_trigger.mySprite.data.triggerObjects[j]);
+					trigger.addTargetToTrigger(_trigger, targetObject);
+				}
+				_trigger.mySprite.triggerInitialized = true;
 			}
-			_trigger.mySprite.triggerInitialized = true;
 		}
 
 
