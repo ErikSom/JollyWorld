@@ -1040,6 +1040,7 @@ const _B2dEditor = function () {
 					for (let j = 0; j < sprite.myTriggers.length; j++) {
 						let myTrigger = sprite.myTriggers[j];
 						trigger.removeTargetFromTrigger(myTrigger, sprite);
+						if(!sprite.myTriggers) break;
 						j--;
 					}
 				}

@@ -125,7 +125,8 @@ export const doAction = function (actionData, target) {
             target.SetDampingRatio(actionData.dampingRatio);
             break;
         case "Destroy":
-            B2dEditor.deleteObjects([target]);
+            const toDestroy = target.myBody || target;
+            B2dEditor.deleteObjects([toDestroy]);
             break;
         case "SetActive":
             prefab.class.set('active', actionData.active);
@@ -643,6 +644,9 @@ export class triggerCore {
             for (var j = 0; j < triggerLength; j++) {
                 actionData = this.data.triggerActions[i][j];
                 doAction(actionData, targetObject);
+                if(!targetObject.parent){
+                    i--;
+                }
             }
         }
     }
