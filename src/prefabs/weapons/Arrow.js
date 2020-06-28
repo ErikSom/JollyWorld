@@ -1,6 +1,9 @@
 import * as PrefabManager from '../PrefabManager'
 import * as Box2D from '../../../libs/Box2D';
 
+import {
+    game
+} from "../../Game";
 
 class Arrow extends PrefabManager.basePrefab {
     constructor(target) {
@@ -13,23 +16,114 @@ class Arrow extends PrefabManager.basePrefab {
 		this.pointingVec = new Box2D.b2Vec2( 1, 0 );
 		this.tailVec = new Box2D.b2Vec2( -1.4, 0 );
 		this.vec = new Box2D.b2Vec2();
+		this.sticking = false;
+		this.bodyToStick = null;
+		this.stickImpulse = 8.0;
+		this.impactOffsetLength = 1.6;
+		this.maxImpactToCollisionOffset = 2.0;
 	}
 	update(){
-		this.arrowBody.GetWorldVector(this.pointingVec, this.vec);
-		const pointingDirection = this.vec;
-		const flightDirection = this.arrowBody.GetLinearVelocity().Clone();
-		const flightSpeed = flightDirection.Normalize();
+		if(!this.sticking){
+			this.arrowBody.GetWorldVector(this.pointingVec, this.vec);
+			const pointingDirection = this.vec;
+			const flightDirection = this.arrowBody.GetLinearVelocity().Clone();
+			const flightSpeed = flightDirection.Normalize();
 
 
-		const dot = Box2D.b2Vec2.DotVV( flightDirection, pointingDirection );
+			const dot = Box2D.b2Vec2.DotVV( flightDirection, pointingDirection );
 
-		const dragForceMagnitude = (1 - Math.abs(dot)) * flightSpeed * flightSpeed * this.dragConstant * this.arrowBody.GetMass();
+			const dragForceMagnitude = (1 - Math.abs(dot)) * flightSpeed * flightSpeed * this.dragConstant * this.arrowBody.GetMass();
 
-		this.arrowBody.GetWorldPoint( this.tailVec, this.vec );
-		const arrowTailPosition = this.vec;
+			this.arrowBody.GetWorldPoint( this.tailVec, this.vec );
+			const arrowTailPosition = this.vec;
 
-		this.arrowBody.ApplyForce( flightDirection.SelfMul(-dragForceMagnitude), arrowTailPosition );
+			this.arrowBody.ApplyForce( flightDirection.SelfMul(-dragForceMagnitude), arrowTailPosition );
+
+			if(this.bodyToStick){
+				this.arrowBody.GetWorldPoint( new Box2D.b2Vec2(0.6, 0), this.vec );
+				const worldCoordsAnchorPoint = this.vec;
+				const weldJointDef = new Box2D.b2WeldJointDef();
+
+				this.arrowBody.SetPosition(this.worldCollisionPoint);
+				this.arrowBody.SetAngle(this.impactAngle);
+
+				weldJointDef.bodyA = this.bodyToStick;
+				weldJointDef.bodyB = this.arrowBody;
+				weldJointDef.bodyA.GetLocalPoint( worldCoordsAnchorPoint, weldJointDef.localAnchorA);
+				weldJointDef.bodyB.GetLocalPoint( worldCoordsAnchorPoint, weldJointDef.localAnchorB);
+				weldJointDef.collideConnected = false;
+				weldJointDef.referenceAngle = weldJointDef.bodyB.GetAngle()-weldJointDef.bodyA.GetAngle();
+				game.world.CreateJoint(weldJointDef);
+
+				console.log(this.arrowBody.GetFixtureList());
+
+				let fixture = this.arrowBody.GetFixtureList();
+				while(fixture){
+					fixture.SetSensor(true);
+					fixture = fixture.GetNext();
+				}
+
+				this.sticking = true;
+
+			}
+
+		}
 	}
+	initContactListener() {
+        super.initContactListener();
+        var self = this;
+        this.contactListener.BeginContact = function (contact) {
+        }
+        this.contactListener.EndContact = function (contact) {
+		}
+		this.contactListener.PreSolve = function(){
+			self.impactAngle = self.arrowBody.GetAngle();
+		}
+		this.contactListener.PostSolve = function (contact, impulse) {
+			if(!self.sticking){
+				const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+				let body;
+				for (let i = 0; i < bodies.length; i++) {
+					body = bodies[i];
+					if(body == self.arrowBody || !body.isFlesh) continue;
+					if(impulse.normalImpulses[0] > self.stickImpulse && !self.bodyToStick){
+						const worldManifold = new Box2D.b2WorldManifold();
+						contact.GetWorldManifold(worldManifold);
+						self.collisionImpulse = impulse.normalImpulses[0];
+						self.bodyToStick = body;
+						const offsetLength = self.impactOffsetLength - Math.min(impulse.normalImpulses[0] / 10, self.maxImpactToCollisionOffset);
+
+						const offset = self.vec;
+						offset.x = offsetLength*Math.cos(self.impactAngle);
+						offset.y = offsetLength*Math.sin(self.impactAngle);
+
+						self.worldCollisionPoint = worldManifold.points[0].SelfSub(offset);
+						self.arrowBody.lockPositionForOneFrame = self.worldCollisionPoint;
+
+						let graphics = new PIXI.Graphics();
+						graphics.beginFill(0x000000);
+						graphics.drawRect(0, 0, self.arrowBody.myTexture.width, self.arrowBody.myTexture.height);
+						graphics.beginFill(0xFFFFFF);
+						const worldOffsetLength = (offsetLength-self.impactOffsetLength)*game.editor.PTM;
+						const halfHeight = self.arrowBody.myTexture.height/2;
+						graphics.drawRect(0, 0, self.arrowBody.myTexture.width+worldOffsetLength-halfHeight, self.arrowBody.myTexture.height);
+						graphics.drawCircle(self.arrowBody.myTexture.width+worldOffsetLength-halfHeight, halfHeight,halfHeight);
+
+						self.arrowBody.myMaskRT = PIXI.RenderTexture.create(self.arrowBody.myTexture.width, self.arrowBody.myTexture.height, 1);
+						game.app.renderer.render(graphics, self.arrowBody.myMaskRT, true);
+						self.arrowBody.myMask = new PIXI.heaven.Sprite(self.arrowBody.myMaskRT);
+						self.arrowBody.myMask.renderable = false;
+
+						self.arrowBody.myTexture.addChild(self.arrowBody.myMask);
+
+						self.arrowBody.myTexture.originalSprite.pluginName = 'spriteMasked';
+						self.arrowBody.myTexture.originalSprite.maskSprite = self.arrowBody.myMask;
+
+					}
+				}
+			}
+		}
+    }
 }
 
 PrefabManager.prefabLibrary.Arrow = {

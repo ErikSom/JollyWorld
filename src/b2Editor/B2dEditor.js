@@ -1430,6 +1430,11 @@ const _B2dEditor = function () {
 		var body = this.world.GetBodyList();
 		var i = 0
 		while (body) {
+			if(body.lockPositionForOneFrame){
+				// fixes PostSolve displacements (e.g. Arrow)
+				body.SetPosition(body.lockPositionForOneFrame);
+				body.lockPositionForOneFrame = undefined;
+			}
 			this.updateBodyPosition(body);
 			i++;
 			body = body.GetNext();
