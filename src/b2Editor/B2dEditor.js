@@ -1948,7 +1948,10 @@ const _B2dEditor = function () {
 					this.activePrefabs[key].x += obj.x;
 					this.activePrefabs[key].y += obj.y;
 				} else if (transformType == this.TRANSFORM_ROTATE) {
-					this.activePrefabs[key].rotation += obj;
+					const prefab = this.activePrefabs[key];
+					prefab.rotation += obj;
+					while(prefab.rotation<-360) prefab.rotation += 360;
+					while(prefab.rotation>360) prefab.rotation -= 360;
 				}
 			}
 		}
@@ -1974,17 +1977,17 @@ const _B2dEditor = function () {
 	}
 
 	this.applyToObjects = function (transformType, obj, objects, forceGroupRotation) {
-		var i;
-		var body;
-		var sprite;
+		let i;
+		let body;
+		let sprite;
 
 		//TODO: fix body
 
 		if (transformType == this.TRANSFORM_MOVE || transformType == this.TRANSFORM_ROTATE) {
 
-			var centerPoints = {};
-			var data;
-			var group;
+			const centerPoints = {};
+			let data;
+			let group;
 			//prepare centerpoints for rotation
 			if (transformType == this.TRANSFORM_ROTATE) {
 				for (i = 0; i < objects.length; i++) {
@@ -2023,6 +2026,7 @@ const _B2dEditor = function () {
 				}
 			}
 
+			const rAngle = obj * this.DEG2RAD;
 
 			for (i = 0; i < objects.length; i++) {
 
@@ -2030,24 +2034,28 @@ const _B2dEditor = function () {
 
 					body = objects[i];
 					if (transformType == this.TRANSFORM_MOVE) {
-						var oldPosition = body.GetPosition();
+						const oldPosition = body.GetPosition();
 						body.SetPosition(new b2Vec2(oldPosition.x + obj.x / this.PTM, oldPosition.y + obj.y / this.PTM));
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						//split between per object / group rotation
 
 						group = (this.altDown || forceGroupRotation) ? "__altDownGroup" : body.mySprite.data.prefabInstanceName;
 
-						var oldAngle = body.GetAngle();
-						var rAngle = obj * this.DEG2RAD;
-						body.SetAngle(oldAngle + rAngle);
+						const oldAngle = body.GetAngle();
+
+						let newAngle = oldAngle + rAngle;
+						const pi2 = Math.PI*2;
+						while(newAngle<-pi2) newAngle += pi2;
+						while(newAngle>pi2) newAngle -= pi2;
+						body.SetAngle(newAngle);
 
 						if (group) {
-							var difX = (body.GetPosition().x * this.PTM) - centerPoints[group].x;
-							var difY = (body.GetPosition().y * this.PTM) - centerPoints[group].y;
-							var distanceToCenter = Math.sqrt(difX * difX + difY * difY);
-							var angleToCenter = Math.atan2(difY, difX);
-							var newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter + rAngle);
-							var newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter + rAngle);
+							const difX = (body.GetPosition().x * this.PTM) - centerPoints[group].x;
+							const difY = (body.GetPosition().y * this.PTM) - centerPoints[group].y;
+							const distanceToCenter = Math.sqrt(difX * difX + difY * difY);
+							const angleToCenter = Math.atan2(difY, difX);
+							const newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter + rAngle);
+							const newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter + rAngle);
 							body.SetPosition(new b2Vec2(newX / this.PTM, newY / this.PTM));
 						}
 
@@ -2060,14 +2068,17 @@ const _B2dEditor = function () {
 						sprite.y += obj.y;
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						sprite.rotation += obj * this.DEG2RAD;
+						const pi2 = Math.PI*2;
+						while(sprite.rotation<-pi2) sprite.rotation += pi2;
+						while(sprite.rotation>pi2) sprite.rotation -= pi2;
 
 						if (group) {
-							var difX = sprite.x - centerPoints[group].x;
-							var difY = sprite.y - centerPoints[group].y;
-							var distanceToCenter = Math.sqrt(difX * difX + difY * difY);
-							var angleToCenter = Math.atan2(difY, difX);
-							var newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter + rAngle);
-							var newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter + rAngle);
+							const difX = sprite.x - centerPoints[group].x;
+							const difY = sprite.y - centerPoints[group].y;
+							const distanceToCenter = Math.sqrt(difX * difX + difY * difY);
+							const angleToCenter = Math.atan2(difY, difX);
+							const newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter + rAngle);
+							const newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter + rAngle);
 							sprite.x = newX;
 							sprite.y = newY;
 						}
@@ -2077,9 +2088,9 @@ const _B2dEditor = function () {
 
 			}
 		} else if (transformType == this.TRANSFORM_DEPTH) {
-			var tarDepthIndexes = [];
-			var depthArray = [];
-			var jointArray = []
+			let tarDepthIndexes = [];
+			let depthArray = [];
+			let jointArray = []
 
 			for (i = 0; i < objects.length; i++) {
 
@@ -2116,8 +2127,8 @@ const _B2dEditor = function () {
 				tarDepthIndexes = tarDepthIndexes.reverse();
 			}
 
-			var neighbour;
-			var child;
+			let neighbour;
+			let child;
 
 			//while depthArray[i]+1 difference == 1 && [i] != d, check next depthArray, if distance > 1, swapChildren
 
@@ -2153,8 +2164,8 @@ const _B2dEditor = function () {
 
 			// post process joints to make sure they are always on top
 			for (i = 0; i < jointArray.length; i++) {
-				var joint = jointArray[i];
-				var jointIndex = joint.parent.getChildIndex(joint);
+				const joint = jointArray[i];
+				const jointIndex = joint.parent.getChildIndex(joint);
 				joint.bodies.map(body => {
 					if (body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite) > jointIndex) {
 						joint.parent.swapChildren(joint, body.mySprite);
@@ -2166,12 +2177,12 @@ const _B2dEditor = function () {
 			}
 		} else if (transformType == this.TRANSFORM_FORCEDEPTH) {
 			objects = this.sortObjectsByIndex(objects);
-			for (var i = 0; i < objects.length; i++) {
-				var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
+			for (i = 0; i < objects.length; i++) {
+				sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
 				//sprite = (objects[i].myTexture) ? objects[i].myTexture : sprite;
 				if(objects[i].myTexture) objects.splice(i+1, 0, objects[i].myTexture);
-				var container = sprite.parent;
-				var targetIndex = Math.min(obj + i, sprite.parent.children.length-1);
+				const container = sprite.parent;
+				const targetIndex = Math.min(obj + i, sprite.parent.children.length-1);
 				container.removeChild(sprite);
 				container.addChildAt(sprite, targetIndex);
 
