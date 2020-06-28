@@ -81,6 +81,9 @@ export class SharpObject extends PrefabManager.basePrefab {
             const sharpBody = this.lookupObject['sharpBody'];
 
             for(let i = 0; i<this.bodiesToStick.length; i++){
+
+                if(!this.bodiesToStick[i].body.mySprite) continue;
+
                 const sharpBodyAngle = sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
 
                 if(this.bodiesToSeperate.includes(this.bodiesToStick[i].body)) return;
