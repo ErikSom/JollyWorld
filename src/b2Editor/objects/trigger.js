@@ -644,7 +644,7 @@ export class triggerCore {
             for (var j = 0; j < triggerLength; j++) {
                 actionData = this.data.triggerActions[i][j];
                 doAction(actionData, targetObject);
-                if(!targetObject.parent){
+                if(targetObject.destroyed){
                     i--;
                 }
             }

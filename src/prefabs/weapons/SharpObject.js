@@ -178,7 +178,7 @@ export class SharpObject extends PrefabManager.basePrefab {
 
             let otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
 
-            if(otherBody.connectedSpike || otherBody.mySprite.data.collision == 2 || otherBody.GetType() != Box2D.b2BodyType.b2_dynamicBody) return;
+            if(!otherBody.mySprite || otherBody.connectedSpike || otherBody.mySprite.data.collision == 2 || otherBody.GetType() != Box2D.b2BodyType.b2_dynamicBody) return;
             const allowedBodyParts = ['head', 'body'];
             if(otherBody.isFlesh && !allowedBodyParts.includes(otherBody.mySprite.data.refName)) return;
             self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
@@ -188,7 +188,7 @@ export class SharpObject extends PrefabManager.basePrefab {
             let sharpBody = self.lookupObject['sharpBody'];
             if(bodies[0] != sharpBody && bodies[1] != sharpBody) return;
             let otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
-            if(!otherBody.connectedSpike) return;
+            if(!otherBody.mySprite || !otherBody.connectedSpike) return;
             self.bodiesToSeperate.push({body:otherBody});
         }
     }
