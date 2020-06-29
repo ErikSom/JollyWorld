@@ -353,17 +353,16 @@ function Game() {
         this.interactive = false;
         this.gameState = this.GAMESTATE_MENU;
         this.editor.editing = false;
+        this.stopAutoSave();
     }
     this.runWorld = function () {
         this.editor.runWorld();
         this.run = true;
         this.findPlayableCharacter();
-
     }
     this.playWorld = function () {
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
-        console.log("PLAY WORLD", this.editor.editing);
     }
 
     this.testWorld = function () {
