@@ -1194,6 +1194,9 @@ export const showSaveScreen = function () {
             new_button.appendChild(dotShell);
             dotShell.classList.remove('hidden');
 
+
+            setNewLevelData()
+
             game.saveNewLevelData().then(() => {
                 new_button.innerHTML = oldText;
                 dotShell.classList.add('hidden');;
@@ -1329,7 +1332,6 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
     span.setAttribute('class', 'itemTitle');
     span.innerText = 'Level Title';
     levelNameDiv.appendChild(span);
-    uiHelper.clampDot('.itemTitle', 1, 14);
 
     levelNameDiv.appendChild(document.createElement('br'));
 
@@ -1337,8 +1339,6 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
     span.setAttribute('class', 'itemDescription');
     span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
     levelNameDiv.appendChild(span);
-
-    uiHelper.clampDot('.itemDescription', 3, 14);
 
     var levelDateDiv = document.createElement('div');
     levelDateDiv.setAttribute('class', 'levelDateDiv');
@@ -1372,8 +1372,15 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 const itemBarClone = itemBar.cloneNode(true);
                 itemList.appendChild(itemBarClone);
 
-                itemBarClone.querySelector('.itemTitle').innerText = level.title;
-                itemBarClone.querySelector('.itemDescription').innerText = level.description;
+                const itemTitle = itemBarClone.querySelector('.itemTitle');
+                const itemDescription = itemBarClone.querySelector('.itemDescription');
+
+                itemTitle.innerText = level.title;
+                uiHelper.clampDot(itemTitle, 1, 14);
+
+                itemDescription.innerText = level.description;
+                uiHelper.clampDot(itemDescription, 3, 14);
+
                 itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.creationDate);
                 // using %2F because '/' does not work for private urls
                 if (level.thumbLowResURL) itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${level.uid}%2Fthumb_lowRes.jpg?${level.thumbLowResURL}`;

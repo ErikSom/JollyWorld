@@ -455,6 +455,11 @@ function Game() {
     this.saveNewLevelData = function () {
         game.currentLevelData.uid = nanoid();
         game.currentLevelData.creationDate = Date.now();
+
+        game.currentLevelData.thumbHighResURL = undefined;
+        game.currentLevelData.thumbLowResURL = undefined;
+
+
         return this.saveLevelData();
     }
     this.saveLevelData = function () {

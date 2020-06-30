@@ -955,7 +955,6 @@ function UIManager() {
         span = document.createElement('span');
         span.setAttribute('class', 'itemTitle');
         span.innerText = 'Level Title';
-        uiHelper.clampDot('.itemTitle', 1, 14);
         levelNameDiv.appendChild(span);
 
         levelNameDiv.appendChild(document.createElement('br'));
@@ -965,7 +964,6 @@ function UIManager() {
         span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
         levelNameDiv.appendChild(span);
 
-        uiHelper.clampDot('.itemDescription', 3, 14);
 
         //Level Author
 
@@ -1059,8 +1057,15 @@ function UIManager() {
                 level.uid = level_id;
                 let itemBarClone = itemBar.cloneNode(true)
                 itemList.appendChild(itemBarClone);
-                itemBarClone.querySelector('.itemTitle').innerText = level.private.title;
-                itemBarClone.querySelector('.itemDescription').innerText = level.private.description;
+
+                const itemTitle = itemBarClone.querySelector('.itemTitle')
+                itemTitle.innerText = level.private.title;
+                uiHelper.clampDot(itemTitle, 1, 14);
+
+                const itemDescription = itemBarClone.querySelector('.itemDescription');
+                itemDescription.innerText = level.private.description;
+                uiHelper.clampDot(itemDescription, 3, 12);
+
                 itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.private.creationDate);
                 itemBarClone.querySelector('.itemAuthor').innerText = level.private.creator;
                 if (level.public.voteNum < 10) {
