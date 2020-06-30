@@ -43,6 +43,7 @@ export class SharpObject extends PrefabManager.basePrefab {
 		filterData.maskBits = game.editor.MASKBIT_FIXED;
         fixture.SetFilterData(filterData);
         fixture.SetDensity(0.001);
+        this.sharpBody.ResetMassData();
         newFixture.SetSensor(true);
         //
 

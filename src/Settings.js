@@ -22,7 +22,7 @@ export var Settings = {
 
     /*LIMITS*/
     motorSpeedLimit:20,
-    motorForceLimit:10000,
+    motorForceLimit:50000,
     slideJointDistanceLimit:5000,
     
 
