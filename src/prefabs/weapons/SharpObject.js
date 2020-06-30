@@ -24,6 +24,29 @@ export class SharpObject extends PrefabManager.basePrefab {
         this.connectedBodies = [];
         this.connectedJoints = [];
         super.init();
+        this.sharpBody = this.lookupObject['sharpBody'];
+
+        let fixture = this.sharpBody.GetFixtureList();
+
+        //Prepare sharp object to collide with fixed objects but not dynamic objects
+		const fixDef = new Box2D.b2FixtureDef;
+		fixDef.density = fixture.GetDensity();
+		fixDef.friction = fixture.GetFriction();
+		fixDef.restitution = fixture.GetRestitution();
+
+		const shape = fixture.GetShape();
+		fixDef.shape = shape.Clone();
+
+		const newFixture = this.sharpBody.CreateFixture(fixDef);
+
+		const filterData = fixture.GetFilterData();
+		filterData.maskBits = game.editor.MASKBIT_FIXED;
+        fixture.SetFilterData(filterData);
+        fixture.SetDensity(0.001);
+        newFixture.SetSensor(true);
+        //
+
+
 
         this.RaycastCallbackSpike = function () {
             this.m_hit = false;
@@ -41,11 +64,10 @@ export class SharpObject extends PrefabManager.basePrefab {
     debugDraw(){
 		game.editor.debugGraphics.clear();
 
-        const sharpBody = this.lookupObject['sharpBody'];
 
-        const sharpBodyAngle = sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
+        const sharpBodyAngle = this.sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
         // attach decals
-        var basePosition = sharpBody.GetPosition();
+        var basePosition = this.sharpBody.GetPosition();
 
         var startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
         var startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
@@ -75,19 +97,20 @@ export class SharpObject extends PrefabManager.basePrefab {
         // this.debugDraw();
 
         if(this.bodiesToStick.length>0){
-            const sharpBody = this.lookupObject['sharpBody'];
+            const sharpBody = this.sharpBody;
+
 
             for(let i = 0; i<this.bodiesToStick.length; i++){
 
                 if(!this.bodiesToStick[i].body.mySprite) continue;
 
-                const sharpBodyAngle = sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
+                const sharpBodyAngle = this.sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
 
                 if(this.bodiesToSeperate.includes(this.bodiesToStick[i].body)) return;
                 const prismaticJointDef = new Box2D.b2PrismaticJointDef;
                 const axisRotation = sharpBodyAngle + 90 * game.editor.DEG2RAD;
                 const axis = new Box2D.b2Vec2(Math.cos(axisRotation), Math.sin(axisRotation));
-                prismaticJointDef.Initialize(this.bodiesToStick[i].body, sharpBody, sharpBody.GetPosition(), axis);
+                prismaticJointDef.Initialize(this.bodiesToStick[i].body, sharpBody, this.sharpBody.GetPosition(), axis);
                 prismaticJointDef.collideConnected = true;
                 // prismaticJointDef.referenceAngle = 0.0;
                 prismaticJointDef.maxMotorForce = this.resistance;
@@ -103,7 +126,7 @@ export class SharpObject extends PrefabManager.basePrefab {
 
 
                 // attach decals
-                const basePosition = sharpBody.GetPosition();
+                const basePosition = this.sharpBody.GetPosition();
                 const extentAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
 
                 const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
@@ -125,7 +148,7 @@ export class SharpObject extends PrefabManager.basePrefab {
                         let bladeEndPosition = new Box2D.b2Vec2(bladePosition.x + this.extent * Math.cos(sideBladeAngle),bladePosition.y + this.extent * Math.sin(sideBladeAngle));
 
                         const callback = new this.RaycastCallbackSpike();
-                        sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
+                        this.sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
                         if (callback.m_hit) {
                             const body = callback.m_fixture.GetBody();
                             game.editor.addDecalToBody(body, callback.m_point, "Decal.png", true, 0.5);
@@ -142,7 +165,7 @@ export class SharpObject extends PrefabManager.basePrefab {
             }
 
             var lowestDepth = game.editor.getLowestChildIndex(this.connectedBodies);
-            if(lowestDepth < this.lookupObject['sharpBody'].myTexture.parent.getChildIndex(this.lookupObject['sharpBody'].myTexture)){
+            if(lowestDepth < this.sharpBody.myTexture.parent.getChildIndex(this.sharpBody.myTexture)){
                 game.editor.applyToObjects(game.editor.TRANSFORM_FORCEDEPTH, lowestDepth, [].concat(this.lookupObject._bodies, this.lookupObject._textures, this.lookupObject._joints));
             };
 
@@ -168,10 +191,15 @@ export class SharpObject extends PrefabManager.basePrefab {
         var self = this;
         this.contactListener.BeginContact = function (contact) {
             let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            const sharpBody = self.lookupObject['sharpBody'];
+            const sharpBody = self.sharpBody;
+
+            
             const sharpFixture = (bodies[0] == sharpBody) ? contact.GetFixtureA() : contact.GetFixtureB();
             if(!sharpFixture.IsSensor()) return;
             if(bodies[0] != sharpBody && bodies[1] != sharpBody) return;
+
+            
+
 
             let worldManifold = new Box2D.b2WorldManifold();
             contact.GetWorldManifold(worldManifold);
@@ -185,7 +213,7 @@ export class SharpObject extends PrefabManager.basePrefab {
         }
         this.contactListener.EndContact = function (contact) {
             let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            let sharpBody = self.lookupObject['sharpBody'];
+            let sharpBody = self.sharpBody;
             if(bodies[0] != sharpBody && bodies[1] != sharpBody) return;
             let otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
             if(!otherBody.mySprite || !otherBody.connectedSpike) return;

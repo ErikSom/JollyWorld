@@ -1,15 +1,18 @@
 import * as PrefabManager from '../PrefabManager'
 import { SharpObject } from './SharpObject';
+import * as Box2D from '../../../libs/Box2D';
+
+import {
+    game
+} from "../../Game";
 
 class Axe extends SharpObject {
     constructor(target) {
         super(target);
     }
     init() {
-        let fixture = this.lookupObject['sharpBody'].GetFixtureList();
-        fixture.SetSensor(true);
 		super.init();
-		
+
 		this.extent = 1.8;
 		this.width = 1.6;
         this.spread = 0.6;
