@@ -194,13 +194,9 @@ export class SharpObject extends PrefabManager.basePrefab {
             let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             const sharpBody = self.sharpBody;
 
-            
             const sharpFixture = (bodies[0] == sharpBody) ? contact.GetFixtureA() : contact.GetFixtureB();
             if(!sharpFixture.IsSensor()) return;
-            if(bodies[0] != sharpBody && bodies[1] != sharpBody) return;
-
-            
-
+            if(sharpFixture.GetBody() != sharpBody) return;
 
             let worldManifold = new Box2D.b2WorldManifold();
             contact.GetWorldManifold(worldManifold);
