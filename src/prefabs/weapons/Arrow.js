@@ -22,9 +22,22 @@ class Arrow extends PrefabManager.basePrefab {
 		this.stickImpulse = 8.0;
 		this.impactOffsetLength = 1.6;
 		this.maxImpactToCollisionOffset = 2.0;
+		this.setAwake(this.prefabObject.settings.awake);
 	}
+	set(property, value){
+		switch (property) {
+            case 'awake':
+				this.setAwake(value);
+			default:
+				this.prefabObject.settings[property] = value;
+				break;
+        }
+	}
+	setAwake(bool){
+        this.lookupObject._bodies.forEach(body=> body.SetAwake(bool));
+    }
 	update(){
-		if(!this.sticking){
+		if(!this.sticking && this.arrowBody.IsAwake()){
 			this.arrowBody.GetWorldVector(this.pointingVec, this.vec);
 			const pointingDirection = this.vec;
 			const flightDirection = this.arrowBody.GetLinearVelocity().Clone();
@@ -125,6 +138,12 @@ class Arrow extends PrefabManager.basePrefab {
 		}
     }
 }
+Arrow.settings = Object.assign({}, Arrow.settings, {
+    "awake": true,
+});
+Arrow.settingsOptions = Object.assign({}, Arrow.settingsOptions, {
+	"awake": true,
+});
 
 PrefabManager.prefabLibrary.Arrow = {
     json: '{"objects":[[0,1.059544631412833,-0.007327434648982022,0,"arrow","arrowBody",0,["#999999"],["#000"],[0],false,true,[[[{"x":-3.6805252363811514,"y":1.734723475976807e-18},{"x":1.141176985178861,"y":-0.12237822897360437},{"x":1.39817126602343,"y":0.012237822897360438},{"x":1.141176985178861,"y":0.11014040607624395}]]],[1],0,[0],"",[1]],[1,2.961862192593653,0.7029452529312912,0,"arrow","arrowTexture",1,"Arrow0000",0,28.839243423167698,-3.109590225253805,0,false,"#FFFFFF",1,1,1]]}',

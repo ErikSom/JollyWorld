@@ -3245,6 +3245,12 @@ const _B2dEditor = function () {
 							body.mySprite.data.awake = controller.targetValue;
 							body.SetAwake(false);
 						}
+						// prefab
+						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
+						const prefabKeys = Object.keys(this.selectedPrefabs);
+						if (prefabKeys.length > 0) {
+							this.activePrefabs[prefabKeys[0]].class.set(controller.property, controller.targetValue);
+						}
 					} else if (controller.property == "density") {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
@@ -3354,14 +3360,14 @@ const _B2dEditor = function () {
 					} else if (controller.property == "textAlign") {
 						//Text Object
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							var textContainer = this.selectedTextures[j];
+							const textContainer = this.selectedTextures[j];
 							textContainer.data.textAlign = controller.targetValue;
 							textContainer.textSprite.style.align = textContainer.data.textAlign;
 						}
 					} /* PREFAB SETTINGS */
 					else {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
-						var prefabKeys = Object.keys(this.selectedPrefabs);
+						const prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
 							this.activePrefabs[prefabKeys[0]].class.set(controller.property, controller.targetValue);
 						}
