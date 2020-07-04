@@ -23,7 +23,7 @@ class Grenade extends Explosive {
 		const pos = this.explodeTarget.GetPosition();
 		emitterManager.playOnceEmitter("explosion_layer1", null, pos, 0);
 		emitterManager.playOnceEmitter("explosion_layer2", null, pos, 0);
-		game.editor.deleteObjects([this.explodeTarget]);
+		this.destroy();
 	}
 	setActive(active){
 		super.setActive(active);

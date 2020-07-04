@@ -23,6 +23,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		this.explodeTarget = null;
 		this.active = this.prefabObject.settings.active;
 		this.activateOn = this.prefabObject.settings.activateOn;
+		this.impactForExplosion = 8;
 		this.exploded = false;
 		// this.clipWalls = false;
 		// this.exploded = false;
@@ -73,6 +74,7 @@ export class Explosive extends PrefabManager.basePrefab {
     update(){
 		super.update();
 		if(this.active){
+			console.log("ACTIVE", this.explodeTimer, this.explodeDelay)
 			if (PrefabManager.timerReady(this.explodeTimer, this.explodeDelay, true)) {
 				this.explode();
 			}
@@ -96,24 +98,23 @@ export class Explosive extends PrefabManager.basePrefab {
         this.contactListener.EndContact = function (contact) {
 		}
 		this.contactListener.PostSolve = function (contact, impulse) {
-			if(!self.active && self.activateOn !== activateOnTypes.none){
+			if(!self.active && self.activateOn !== Explosive.activateOnTypes.none){
 				var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 				var body;
 				for (var i = 0; i < bodies.length; i++) {
 					body = bodies[i];
-
-					if(self.activateOn == activateOnTypes.impact){
+					if(self.activateOn == Explosive.activateOnTypes.impact){
 						const count = contact.GetManifold().pointCount;
 						let force = 0;
 						for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
-						if(force > 8){
+						if(force > self.impactForExplosion){
 							self.set('active', true);
 						}
-					}else if(self.activateOn == activateOnTypes.mainCharacter){
+					}else if(self.activateOn == Explosive.activateOnTypes.mainCharacter){
 						if(body.mainCharacter){
 							self.set('active', true);
 						}
-					}else if(self.activateOn == activateOnTypes.anyCharacter){
+					}else if(self.activateOn == Explosive.activateOnTypes.anyCharacter){
 						if(body.mainCharacter){
 							self.set('active', true);
 						}
@@ -128,7 +129,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		// override me
 	}
 }
-const activateOnTypes = {
+Explosive.activateOnTypes = {
 	none:"None",
 	impact:"Impact",
 	mainCharacter:"Main Character",
@@ -152,7 +153,7 @@ Explosive.settingsOptions = Object.assign({}, Explosive.settingsOptions, {
         step: 100
 	},
 	"active": false,
-	"activateOn":Object.values(activateOnTypes),
+	"activateOn":Object.values(Explosive.activateOnTypes),
 });
 
 Explosive.RaycastCallbackExplosive = function () {

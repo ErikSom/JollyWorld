@@ -12,6 +12,7 @@ export var Settings = {
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
     bashMaxForceMultiplier:200,
+    physicsParticleLifeTime:2000,
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,

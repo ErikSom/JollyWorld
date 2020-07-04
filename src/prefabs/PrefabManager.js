@@ -25,6 +25,9 @@ export class basePrefab {
         this.contactListener.PreSolve = function (contact, oldManifold) {}
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
+    destroy(){
+        game.editor.deleteObjects([this.prefabObject]);
+    }
 }
 
 
