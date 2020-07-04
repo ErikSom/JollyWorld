@@ -9,7 +9,7 @@ import { Settings } from '../../Settings';
 class PhysicsParticle extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
-        this.lifeTime = Settings.physicsParticleLifeTime;
+        this.lifeTime = Settings.physicsParticleLifeTime + Math.round(Settings.physicsParticleLifeTimeRandomOffset*Math.random());
         this.lifeTimer = 0;
         this.particleSize = 0
         this.texture = 'Gore_Meat1';

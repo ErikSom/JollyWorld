@@ -31,7 +31,7 @@ class ExplosiveBarrel extends Explosive {
 		emitterManager.playOnceEmitter("explosion_layer2", null, pos, 0);
 
 
-		PhysicsParticleEmitter.emit(['Gore_Meat1', 'Gore_Meat2', 'Gore_Meat3', 'Gore_Meat4'], pos, 20, 30, 20, false);
+		PhysicsParticleEmitter.emit(['Gore_Meat1', 'Gore_Meat2', 'Gore_Meat3', 'Gore_Meat4'], pos, 50, 5, 20, false);
 
 		this.destroy();
 	}
