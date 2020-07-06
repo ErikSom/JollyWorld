@@ -13,6 +13,7 @@ export class basePrefab {
         this.contactListener;
     }
     init() {
+        console.log(this.prefabObject.prefabName + "_" + this.prefabObject.instanceID);
         this.lookupObject = game.editor.lookupGroups[this.prefabObject.prefabName + "_" + this.prefabObject.instanceID];
         this.initContactListener();
     }

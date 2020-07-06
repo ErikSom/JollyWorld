@@ -28,6 +28,12 @@ export const init = function () {
     }, {
         type: 'explosion_layer2',
         poolSize: 10
+    },{
+        type: 'explosion2_layer1',
+        poolSize: 10
+    }, {
+        type: 'explosion2_layer2',
+        poolSize: 10
     }];
     emitterPoolData.map((data) => {
         for (let i = 0; i < data.poolSize; i++) getEmitter(data.type, null);
@@ -99,6 +105,22 @@ export const getEmitter = function (type, body) {
                 emitterData[type]
             );
             break;
+        case "explosion2_layer1":
+            emitter = new PIXI.particles.Emitter(
+                game.myEffectsContainer, [PIXI.Texture.fromImage('Smoke_Fire_10000'), PIXI.Texture.fromImage('Smoke_Fire_20000'), PIXI.Texture.fromImage('Smoke_Fire_30000'), PIXI.Texture.fromImage('Smoke_Fire_40000')],
+                emitterData['explosion_layer1']
+            );
+            emitter.minimumSpeedMultiplier = 6;
+            emitter.frequency = 0.0005;
+        break;
+        case "explosion2_layer2":
+            emitter = new PIXI.particles.Emitter(
+                game.myEffectsContainer, [PIXI.Texture.fromImage('Fire_Fire_10000'), PIXI.Texture.fromImage('Fire_Fire_20000'), PIXI.Texture.fromImage('Fire_Fire_30000')],
+                emitterData['explosion_layer2']
+            );
+            emitter.minimumSpeedMultiplier = 9;
+            emitter.frequency = 0.0005;
+         break;
     }
     emitter.type = type;
     emitters.push(emitter);

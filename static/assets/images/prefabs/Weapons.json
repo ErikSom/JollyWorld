@@ -2,7 +2,7 @@
 
 "Arrow0000":
 {
-	"frame": {"x":2,"y":257,"w":166,"h":21},
+	"frame": {"x":780,"y":336,"w":166,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":21},
@@ -26,7 +26,7 @@
 },
 "C4_off0000":
 {
-	"frame": {"x":586,"y":281,"w":34,"h":53},
+	"frame": {"x":978,"y":324,"w":34,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":53},
@@ -34,7 +34,7 @@
 },
 "C4_on0000":
 {
-	"frame": {"x":978,"y":324,"w":34,"h":53},
+	"frame": {"x":780,"y":359,"w":34,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":53},
@@ -50,7 +50,7 @@
 },
 "Cannon_Ball0000":
 {
-	"frame": {"x":673,"y":336,"w":34,"h":34},
+	"frame": {"x":109,"y":257,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -90,7 +90,7 @@
 },
 "Grenade_on0000":
 {
-	"frame": {"x":231,"y":248,"w":44,"h":52},
+	"frame": {"x":256,"y":248,"w":44,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":52},
@@ -176,6 +176,14 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":87,"h":148},
 	"sourceSize": {"w":87,"h":148}
 },
+"Tank_Flamable_off0000":
+{
+	"frame": {"x":149,"y":248,"w":105,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":46},
+	"sourceSize": {"w":105,"h":46}
+},
 "Tank_Poison0000":
 {
 	"frame": {"x":717,"y":111,"w":88,"h":148},
@@ -183,6 +191,14 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":148},
 	"sourceSize": {"w":88,"h":148}
+},
+"Tank_Poison_off0000":
+{
+	"frame": {"x":673,"y":336,"w":105,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":46},
+	"sourceSize": {"w":105,"h":46}
 },
 "Tank_Radioactive0000":
 {
@@ -192,9 +208,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":148},
 	"sourceSize": {"w":88,"h":148}
 },
+"Tank_Radioactive_off0000":
+{
+	"frame": {"x":2,"y":257,"w":105,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":46},
+	"sourceSize": {"w":105,"h":46}
+},
 "TireBuster0000":
 {
-	"frame": {"x":170,"y":248,"w":59,"h":53},
+	"frame": {"x":586,"y":281,"w":59,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":59,"h":53},
