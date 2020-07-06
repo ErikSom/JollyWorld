@@ -74,7 +74,6 @@ export class Explosive extends PrefabManager.basePrefab {
     update(){
 		super.update();
 		if(this.active){
-			console.log("ACTIVE", this.explodeTimer, this.explodeDelay)
 			if (PrefabManager.timerReady(this.explodeTimer, this.explodeDelay, true)) {
 				this.explode();
 			}

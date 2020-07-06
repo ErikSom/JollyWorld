@@ -2,7 +2,7 @@
 
 "Arrow0000":
 {
-	"frame": {"x":780,"y":336,"w":166,"h":21},
+	"frame": {"x":2,"y":277,"w":166,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":21},
@@ -18,7 +18,7 @@
 },
 "BananaPeel0000":
 {
-	"frame": {"x":586,"y":336,"w":85,"h":60},
+	"frame": {"x":336,"y":216,"w":85,"h":60},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":85,"h":60},
@@ -26,7 +26,7 @@
 },
 "C4_off0000":
 {
-	"frame": {"x":978,"y":324,"w":34,"h":53},
+	"frame": {"x":979,"y":410,"w":34,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":53},
@@ -34,7 +34,7 @@
 },
 "C4_on0000":
 {
-	"frame": {"x":780,"y":359,"w":34,"h":53},
+	"frame": {"x":887,"y":428,"w":34,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":53},
@@ -42,7 +42,7 @@
 },
 "Cannon0000":
 {
-	"frame": {"x":717,"y":2,"w":241,"h":107},
+	"frame": {"x":171,"y":107,"w":241,"h":107},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":241,"h":107},
@@ -50,7 +50,7 @@
 },
 "Cannon_Ball0000":
 {
-	"frame": {"x":109,"y":257,"w":34,"h":34},
+	"frame": {"x":761,"y":334,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -74,7 +74,7 @@
 },
 "CrossBow0000":
 {
-	"frame": {"x":302,"y":244,"w":124,"h":60},
+	"frame": {"x":761,"y":374,"w":124,"h":60},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":124,"h":60},
@@ -82,7 +82,7 @@
 },
 "Grenade_off0000":
 {
-	"frame": {"x":657,"y":172,"w":44,"h":52},
+	"frame": {"x":887,"y":374,"w":44,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":52},
@@ -90,7 +90,7 @@
 },
 "Grenade_on0000":
 {
-	"frame": {"x":256,"y":248,"w":44,"h":52},
+	"frame": {"x":933,"y":410,"w":44,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":52},
@@ -98,7 +98,7 @@
 },
 "HommingBomb_Drone_off0000":
 {
-	"frame": {"x":657,"y":261,"w":145,"h":73},
+	"frame": {"x":467,"y":367,"w":145,"h":73},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":73},
@@ -106,7 +106,7 @@
 },
 "HommingBomb_Drone_on0000":
 {
-	"frame": {"x":804,"y":261,"w":145,"h":73},
+	"frame": {"x":614,"y":367,"w":145,"h":73},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":73},
@@ -114,7 +114,7 @@
 },
 "IceBlock0000":
 {
-	"frame": {"x":2,"y":107,"w":145,"h":148},
+	"frame": {"x":813,"y":224,"w":145,"h":148},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":148},
@@ -122,7 +122,7 @@
 },
 "Katana0000":
 {
-	"frame": {"x":951,"y":261,"w":25,"h":178},
+	"frame": {"x":984,"y":175,"w":25,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":178},
@@ -130,7 +130,7 @@
 },
 "Saw0000":
 {
-	"frame": {"x":548,"y":2,"w":167,"h":168},
+	"frame": {"x":2,"y":107,"w":167,"h":168},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":167,"h":168},
@@ -138,7 +138,7 @@
 },
 "Spike0000":
 {
-	"frame": {"x":986,"y":2,"w":22,"h":320},
+	"frame": {"x":960,"y":2,"w":22,"h":320},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":22,"h":320},
@@ -146,7 +146,7 @@
 },
 "SpikeBall0000":
 {
-	"frame": {"x":302,"y":107,"w":137,"h":135},
+	"frame": {"x":2,"y":363,"w":137,"h":135},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":137,"h":135},
@@ -154,7 +154,7 @@
 },
 "Spikes0000":
 {
-	"frame": {"x":149,"y":107,"w":151,"h":139},
+	"frame": {"x":548,"y":226,"w":151,"h":139},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":151,"h":139},
@@ -162,7 +162,7 @@
 },
 "Sword0000":
 {
-	"frame": {"x":548,"y":281,"w":36,"h":171},
+	"frame": {"x":984,"y":2,"w":36,"h":171},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":171},
@@ -170,55 +170,55 @@
 },
 "Tank_Flamable0000":
 {
-	"frame": {"x":897,"y":111,"w":87,"h":148},
+	"frame": {"x":813,"y":2,"w":130,"h":220},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":87,"h":148},
-	"sourceSize": {"w":87,"h":148}
+	"spriteSourceSize": {"x":0,"y":0,"w":130,"h":220},
+	"sourceSize": {"w":130,"h":220}
 },
 "Tank_Flamable_off0000":
 {
-	"frame": {"x":149,"y":248,"w":105,"h":46},
+	"frame": {"x":141,"y":363,"w":163,"h":70},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":46},
-	"sourceSize": {"w":105,"h":46}
+	"spriteSourceSize": {"x":0,"y":0,"w":163,"h":70},
+	"sourceSize": {"w":163,"h":70}
 },
 "Tank_Poison0000":
 {
-	"frame": {"x":717,"y":111,"w":88,"h":148},
+	"frame": {"x":681,"y":2,"w":130,"h":221},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":148},
-	"sourceSize": {"w":88,"h":148}
+	"spriteSourceSize": {"x":0,"y":0,"w":130,"h":221},
+	"sourceSize": {"w":130,"h":221}
 },
 "Tank_Poison_off0000":
 {
-	"frame": {"x":673,"y":336,"w":105,"h":46},
+	"frame": {"x":306,"y":363,"w":159,"h":68},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":46},
-	"sourceSize": {"w":105,"h":46}
+	"spriteSourceSize": {"x":0,"y":0,"w":159,"h":68},
+	"sourceSize": {"w":159,"h":68}
 },
 "Tank_Radioactive0000":
 {
-	"frame": {"x":807,"y":111,"w":88,"h":148},
+	"frame": {"x":548,"y":2,"w":131,"h":222},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":148},
-	"sourceSize": {"w":88,"h":148}
+	"spriteSourceSize": {"x":0,"y":0,"w":131,"h":222},
+	"sourceSize": {"w":131,"h":222}
 },
 "Tank_Radioactive_off0000":
 {
-	"frame": {"x":2,"y":257,"w":105,"h":46},
+	"frame": {"x":171,"y":216,"w":163,"h":70},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":46},
-	"sourceSize": {"w":105,"h":46}
+	"spriteSourceSize": {"x":0,"y":0,"w":163,"h":70},
+	"sourceSize": {"w":163,"h":70}
 },
 "TireBuster0000":
 {
-	"frame": {"x":586,"y":281,"w":59,"h":53},
+	"frame": {"x":960,"y":355,"w":59,"h":53},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":59,"h":53},
@@ -226,7 +226,7 @@
 },
 "WoodWheel0000":
 {
-	"frame": {"x":548,"y":172,"w":107,"h":107},
+	"frame": {"x":701,"y":225,"w":107,"h":107},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":107},

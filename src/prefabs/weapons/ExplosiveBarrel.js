@@ -15,17 +15,16 @@ class ExplosiveBarrel extends Explosive {
         super(target);
     }
     init() {
-		this.explosiveRadius = 500;
+		this.explosiveRadius = 600;
 		super.init();
 		this.activateOn = Explosive.activateOnTypes.impact;
 		this.explodeDelay = 0;
-		this.impactForExplosion = 10;
+		this.impactForExplosion = 270;
 	}
 	explode(){
 		if(this.exploded) return;
 
 		this.explodeTarget = this.lookupObject['explosiveBody'];
-		console.log(this.explodeTarget);
 		super.explode();
 
 		const pos = this.explodeTarget.GetPosition();
@@ -36,8 +35,8 @@ class ExplosiveBarrel extends Explosive {
 		const prefabData = PrefabBuilder.generatePrefab(pos, 'ExplosiveBarrelBottom', true);
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
-		const force = 600;
-		const offset = 0.3;
+		const force = 1500;
+		const offset = 0.5;
 		const impulse = new Box2D.b2Vec2((Math.random()*(force*2)-force), (Math.random()*(force*2)-force));
 		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x+(Math.random()*(offset*2)-offset), body.GetPosition().y+(Math.random()*(offset*2)-offset)));
 
@@ -55,7 +54,7 @@ class ExplosiveBarrel extends Explosive {
     }
 }
 
-ExplosiveBarrel.settings = Object.assign({}, Explosive.settings, {force:4000});
+ExplosiveBarrel.settings = Object.assign({}, Explosive.settings, {force:6000});
 delete ExplosiveBarrel.settings.active;
 delete ExplosiveBarrel.settings.delay;
 delete ExplosiveBarrel.settings.activateOn;
@@ -68,12 +67,12 @@ delete ExplosiveBarrel.settingsOptions.activateOn;
 
 
 PrefabManager.prefabLibrary.ExplosiveBarrel = {
-    json: '{"objects":[[0,1.6467278115847779,0.031292622821183384,0,"explosiveBarrel","explosiveBody",0,["#999999"],["#000"],[0],false,true,[[{"x":-1.3738015474247371,"y":2.2674508315008426},{"x":-1.3738015474247371,"y":-2.2674508315008426},{"x":1.3738015474247371,"y":-2.2674508315008426},{"x":1.3738015474247371,"y":2.2674508315008426}]],[1],0,[0],"",[1]],[1,49.401834347543314,-2.436966500939559,0,"explosiveBarrel","texture",1,"Tank_Flamable0000",0,3.3757451855750604,1.570796326794903,0,false,"#FFFFFF",1,1,1]]}',
+    json: '{"objects":[[0,-0.04601924674682996,-0.22858055065911953,0,"explosiveBarrel","explosiveBody",0,["#999999"],["#000"],[0],false,true,[[{"x":-2.0574512567209604,"y":3.3417201940372285},{"x":-2.0574512567209604,"y":-3.3417201940372285},{"x":2.0574512567209604,"y":-3.3417201940372285},{"x":2.0574512567209604,"y":3.3417201940372285}]],[1],0,[0],"",[1]],[1,-0.4077612717285123,-13.253638034478469,0,"explosiveBarrel","explosiveTexture",1,"Tank_Flamable0000",0,6.469777499209521,1.4198607371241059,0,false,"#FFFFFF",1,1,1]]}',
     class: ExplosiveBarrel,
     library: PrefabManager.LIBRARY_WEAPON,
 }
 
 PrefabManager.prefabLibrary.ExplosiveBarrelBottom = {
-	json: '{"objects":[[0,0.04568688856363534,0.040160286306099885,0,"explosiveTankBottom","body",0,["#999999"],["#000"],[0],false,true,[[{"x":-1.2919186325354817,"y":0.41674794597918763},{"x":-1.2919186325354817,"y":-0.41674794597918763},{"x":1.2919186325354817,"y":-0.41674794597918763},{"x":1.2919186325354817,"y":0.41674794597918763}]],[1],0,[0],"",[1]],[1,0.25324551287077846,-6.0299732901532765,0,"explosiveTankBottom","texture",1,"Tank_Flamable_off0000",0,7.320557681473389,1.7240286121158557,0,false,"#FFFFFF",1,1,1]]}',
+	json: '{"objects":[[0,-0.04159315440056843,0.058112796535037564,0,"explosiveTankBottom","body",0,["#999999"],["#000"],[0],false,true,[[{"x":-2.0588611428281127,"y":0.6654904704090869},{"x":-2.0588611428281127,"y":-0.6654904704090869},{"x":2.0588611428281127,"y":-0.6654904704090869},{"x":2.0588611428281127,"y":0.6654904704090869}]],[1],0,[0],"",[1]],[1,-1.9292498990856641,-9.977508723075704,0,"explosiveTankBottom","texture",1,"Tank_Flamable_off0000",0,11.740685885846592,1.6288711684514927,0,false,"#FFFFFF",1,1,1]]}',
 	class: PrefabManager.basePrefab,
 }
