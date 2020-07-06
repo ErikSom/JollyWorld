@@ -6,7 +6,6 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 	for(let i = 0; i<amount; i++){
 		const prefabData = PrefabBuilder.generatePrefab(worldPosition, 'PhysicsParticle', false);
 		const { lookupObject, prefabClass } = prefabData;
-		console.log(prefabData);
 		if(!randomTexture){
 			prefabClass.texture = textures[i%textures.length];
 		}else{

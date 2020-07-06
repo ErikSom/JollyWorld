@@ -22,6 +22,7 @@ import {
 import {
 	Settings
 } from "../Settings";
+import nanoid from "nanoid";
 
 
 const camera = require("./utils/camera");
@@ -204,7 +205,6 @@ const _B2dEditor = function () {
 				const y = e.pageY;
 
 				const data = new self.prefabObject;
-				data.instanceID = self.prefabCounter;
 
 				data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
 				data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
@@ -1274,7 +1274,6 @@ const _B2dEditor = function () {
 			x: 0,
 			y: 0
 		};
-		var copiedPrefabCount = 0;
 		for (i = 0; i < copyArray.length; i++) {
 			if (i != 0) copyJSON += ',';
 			data = copyArray[i].data;
@@ -1287,10 +1286,6 @@ const _B2dEditor = function () {
 			} else {
 				this.copyCenterPoint.x += data.x;
 				this.copyCenterPoint.y += data.y;
-
-				if (data.type == this.object_PREFAB) {
-					data.instanceID = copiedPrefabCount++;
-				}
 			}
 
 		}
@@ -5194,7 +5189,6 @@ const _B2dEditor = function () {
 		obj.key = key;
 		this.activePrefabs[key] = obj;
 		var prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
-		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
 
 		if(obj.settings) Object.keys(obj.settings).forEach(key=>obj.class.set(key, obj.settings[key]));
@@ -5207,15 +5201,6 @@ const _B2dEditor = function () {
 		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
 
 		return prefabLookupObject;
-	}
-	this.buildRuntimePrefab = function (prefabName, x, y, rotation) {
-		const prefabJSON = `{"objects":[[4,${x},${y},${(rotation || 0)},{},"${prefabName}",${(game.editor.prefabCounter++)}]]}`
-		const prefab = this.buildJSON(JSON.parse(prefabJSON));
-		this.retrieveClassFromPrefabLookup(prefab).init();
-		return prefab;
-	}
-	this.retrieveClassFromPrefabLookup = function (prefabLookup) {
-		return this.activePrefabs[prefabLookup._bodies[0].mySprite.data.prefabInstanceName].class;
 	}
 
 	this.setTextureToBody = function (body, texture, positionOffsetLength, positionOffsetAngle, offsetRotation) {
@@ -5622,7 +5607,6 @@ const _B2dEditor = function () {
 		} else if (obj.type == this.object_PREFAB) {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
-			arr[6] = obj.instanceID
 		} else if (obj.type == this.object_GRAPHIC) {
 			arr[6] = obj.ID;
 			arr[7] = obj.colorFill;
@@ -5722,7 +5706,6 @@ const _B2dEditor = function () {
 			obj = new this.prefabObject();
 			obj.settings = arr[4];
 			obj.prefabName = arr[5];
-			obj.instanceID = arr[6];
 		} else if (arr[0] == this.object_GRAPHIC) {
 			obj = new this.graphicObject();
 			obj.ID = arr[6];
@@ -5834,7 +5817,6 @@ const _B2dEditor = function () {
 		var createdObjects = new this.lookupObject();
 
 		var startChildIndex = this.textures.children.length;
-		var startPrefabIDIndex = this.prefabCounter;
 		var prefabOffset = 0;
 
 		if (json != null) {
@@ -5882,7 +5864,7 @@ const _B2dEditor = function () {
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
 					var prefabStartChildIndex = this.textures.children.length;
-					obj.instanceID += startPrefabIDIndex;
+					obj.instanceID = this.prefabCounter++;
 					var prefabObjects = this.buildPrefabFromObj(obj);
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
