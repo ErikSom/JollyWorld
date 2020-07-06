@@ -3,14 +3,21 @@ import * as Box2D from '../../libs/Box2D';
 import { Settings } from '../Settings';
 
 let physicsParticlesSpawned = 0;
+let queue = [];
 export const update = ()=>{
 	physicsParticlesSpawned = 0;
+	while(queue.length>0 && physicsParticlesSpawned<Settings.maxPhysicsParticlesPerTick){
+		const item = queue.shift();
+		const {textures, worldPosition, amount, size, force, randomTexture, tints} = item;
+		emit(textures, worldPosition, amount, size, force, randomTexture, tints)
+	}
 }
 export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[]) => {
-	if(physicsParticlesSpawned > Settings.maxPhysicsParticlesPerTick) return;
-
+	if(physicsParticlesSpawned > Settings.maxPhysicsParticlesPerTick){
+		queue.push({textures, worldPosition, amount, size, force, randomTexture, tints});
+		return;
+	}
 	for(let i = 0; i<amount; i++){
-		if(physicsParticlesSpawned > Settings.maxPhysicsParticlesPerTick) break;
 		const prefabData = PrefabBuilder.generatePrefab(worldPosition, 'PhysicsParticle', false);
 		const { lookupObject, prefabClass } = prefabData;
 		if(!randomTexture){
