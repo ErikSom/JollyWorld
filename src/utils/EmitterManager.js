@@ -52,21 +52,18 @@ export const playOnceEmitter = function (type, body, point, angle) {
     let emitter = getEmitter(type, body);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
 
-    if (body) {
-        emitter.body = body;
-        if (!body.emitterCount) body.emitterCount = 0;
-        body.emitterCount++;
-    }
+    emitter.body = body;
+    if (!body.emitterCount) body.emitterCount = 0;
+    body.emitterCount++;
 
     function returnToPool() {
-        if (emitter.body) {
+        if(emitter.body){
             emitter.body.emitterCount--;
             emitter.body = undefined;
+            emitter.lastUsed = Date.now();
+            emitter._completeCallback = undefined;
+            emittersPool[emitter.type].push(emitter);
         }
-        emitter.lastUsed = Date.now();
-        emitter._completeCallback = undefined;
-        emittersPool[emitter.type].push(emitter);
-
     }
     var angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
     emitter.minStartRotation = angle - angleOffset;
@@ -75,7 +72,7 @@ export const playOnceEmitter = function (type, body, point, angle) {
 
 
 }
-export const getEmitter = function (type, body) {
+export const getEmitter = function (type) {
     if (!emittersPool[type]) emittersPool[type] = [];
     if (emittersPool[type].length > 0) return emittersPool[type].shift();
 
@@ -142,9 +139,10 @@ export const update = function () {
 }
 export const reset = function () {
     emittersPool = {};
+    globalBody.emitterCount = 0;
     for (let i = 0; i < emitters.length; i++) {
-        emitters[i].body = undefined;
         emitters[i].cleanup();
+        emitters[i].body = undefined;
         if (!emittersPool[emitters[i].type]) emittersPool[emitters[i].type] = [];
         emittersPool[emitters[i].type].push(emitters[i]);
     }

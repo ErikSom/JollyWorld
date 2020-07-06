@@ -25,7 +25,6 @@ class ExplosiveBarrel extends Explosive {
 		if(this.exploded) return;
 
 		this.explodeTarget = this.lookupObject['explosiveBody'];
-		console.log(this.explodeTarget);
 		super.explode();
 
 		const pos = this.explodeTarget.GetPosition();

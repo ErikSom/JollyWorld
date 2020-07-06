@@ -1,9 +1,16 @@
 import * as PrefabBuilder from './PrefabBuilder';
 import * as Box2D from '../../libs/Box2D';
+import { Settings } from '../Settings';
 
+let physicsParticlesSpawned = 0;
+export const update = ()=>{
+	physicsParticlesSpawned = 0;
+}
 export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[]) => {
+	if(physicsParticlesSpawned > Settings.maxPhysicsParticlesPerTick) return;
 
 	for(let i = 0; i<amount; i++){
+		if(physicsParticlesSpawned > Settings.maxPhysicsParticlesPerTick) break;
 		const prefabData = PrefabBuilder.generatePrefab(worldPosition, 'PhysicsParticle', false);
 		const { lookupObject, prefabClass } = prefabData;
 		if(!randomTexture){
@@ -27,5 +34,6 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		body.myTexture.pivot.x = texture.width/2;
 		body.myTexture.pivot.y = texture.height/2;
 		texture.x = texture.y = 0;
+		physicsParticlesSpawned++;
 	}
 }

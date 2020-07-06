@@ -28,6 +28,7 @@ import {
 import { dateDiff } from "./b2Editor/utils/formatTimestamp";
 
 import * as emitterManager from './utils/EmitterManager';
+import * as PhysicsParticleEmitter from './utils/PhysicsParticleEmitter';
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 
@@ -673,6 +674,7 @@ function Game() {
             this.world.ClearForces();
             this.camera();
             emitterManager.update();
+            PhysicsParticleEmitter.update();
         }
         this.editor.run();
 

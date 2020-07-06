@@ -14,6 +14,7 @@ export var Settings = {
     bashMaxForceMultiplier:200,
     physicsParticleLifeTime:2000,
     physicsParticleLifeTimeRandomOffset:1000,
+    maxPhysicsParticlesPerTick:50,
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,

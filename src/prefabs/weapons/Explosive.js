@@ -62,7 +62,9 @@ export class Explosive extends PrefabManager.basePrefab {
 					if (powerRate > .2 && body.mySprite && body.mySprite.data.prefabInstanceName) {
 						const tarPrefab = game.editor.activePrefabs[body.mySprite.data.prefabInstanceName].class;
 						if(tarPrefab.isExplosive){
-							tarPrefab.explode();
+							// tarPrefab.explode();
+							tarPrefab.active = true;
+							tarPrefab.exlodeTimer = tarPrefab.explodeDelay-Math.random()*500;
 						}
 					}
 
@@ -74,7 +76,6 @@ export class Explosive extends PrefabManager.basePrefab {
     update(){
 		super.update();
 		if(this.active){
-			console.log("ACTIVE", this.explodeTimer, this.explodeDelay)
 			if (PrefabManager.timerReady(this.explodeTimer, this.explodeDelay, true)) {
 				this.explode();
 			}
