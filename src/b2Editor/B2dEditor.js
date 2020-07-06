@@ -1191,6 +1191,7 @@ const _B2dEditor = function () {
 			if (!PrefabManager.prefabLibrary[this.activePrefabs[prefabKeys[i]].prefabName].class.forceUnique) {
 				this.updateObject(null, this.activePrefabs[prefabKeys[i]]);
 				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(this.activePrefabs[prefabKeys[i]])));
+				cloneObject.ID = this.activePrefabs[prefabKeys[i]].ID;
 				copyArray.push({
 					ID: cloneObject.ID,
 					data: cloneObject
@@ -1254,7 +1255,11 @@ const _B2dEditor = function () {
 				for (j = 0; j < data.triggerObjects.length; j++) {
 					var foundBody = -1;
 					for (k = 0; k < copyArray.length; k++) {
+
+						console.log(data.triggerObjects[j], copyArray[k]);
+
 						if (data.triggerObjects[j] == copyArray[k].ID) {
+							console.log(foundBody);	
 							foundBody = k;
 							break;
 						}
@@ -5802,10 +5807,14 @@ const _B2dEditor = function () {
 		}
 
 		if (!sprite && data.type == this.object_PREFAB) {
-			var prefabGroup = this.lookupGroups[data.key];
-			var bodyIndex = (prefabGroup._bodies.length > 0) ? prefabGroup._bodies[0].mySprite.parent.getChildIndex(prefabGroup._bodies[0].mySprite) : Number.POSITIVE_INFINITY;
-			var spriteIndex = (prefabGroup._textures.length > 0) ? prefabGroup._textures[0].parent.getChildIndex(prefabGroup._textures[0]) : Number.POSITIVE_INFINITY;
-			var jointIndex = (prefabGroup._joints.length > 0) ? prefabGroup._joints[0].parent.getChildIndex(prefabGroup._joints[0]) : Number.POSITIVE_INFINITY;
+			const prefabGroup = this.lookupGroups[data.key];
+			const bodyIndex = (prefabGroup._bodies.length > 0) ? prefabGroup._bodies[0].mySprite.parent.getChildIndex(prefabGroup._bodies[0].mySprite) : Number.POSITIVE_INFINITY;
+			const spriteIndex = (prefabGroup._textures.length > 0) ? prefabGroup._textures[0].parent.getChildIndex(prefabGroup._textures[0]) : Number.POSITIVE_INFINITY;
+			const jointIndex = (prefabGroup._joints.length > 0) ? prefabGroup._joints[0].parent.getChildIndex(prefabGroup._joints[0]) : Number.POSITIVE_INFINITY;
+			
+
+			console.log(prefabGroup, bodyIndex, spriteIndex, jointIndex)
+			
 			//to do add body, sprite and joint and compare childIndexes...
 			data.ID = Math.min(bodyIndex, spriteIndex, jointIndex);
 		} else data.ID = sprite.parent.getChildIndex(sprite);
