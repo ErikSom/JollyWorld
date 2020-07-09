@@ -30,6 +30,9 @@ import { dateDiff } from "./b2Editor/utils/formatTimestamp";
 import * as emitterManager from './utils/EmitterManager';
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
+import * as EffectsComposer from './utils/EffectsComposer';
+
+
 
 const nanoid = require('nanoid');
 const particles = require('pixi-particles');
@@ -125,6 +128,8 @@ function Game() {
 
         this.gameState = this.GAMESTATE_MENU;
 
+        EffectsComposer.init(this.stage)
+
     };
 
     this.setup = function () {
@@ -191,6 +196,10 @@ function Game() {
 
     //mouse
     this.onMouseDown = function (e) {
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:500, follow:this.editor.container, x:this.editor.mousePosPixel.x, y:this.editor.mousePosPixel.y});
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake);
+
+
         if (Settings.allowMouseMovement && !this.mouseJoint && this.run) {
             var body = this.getBodyAtMouse();
             if (body) {
@@ -657,6 +666,12 @@ function Game() {
     }
 
     this.update = function () {
+
+
+        // this.shockFilter.center.x = this.editor.mousePosPixel.x;
+        // this.shockFilter.center.y = this.editor.mousePosPixel.y;
+
+
         if (Settings.allowMouseMovement && this.mouseJoint) {
             if (Key.isDown(Key.MOUSE)) {
                 this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y));
@@ -674,6 +689,8 @@ function Game() {
             this.camera();
             emitterManager.update();
         }
+        EffectsComposer.update();
+
         this.editor.run();
 
         this.newDebugGraphics.clear();
