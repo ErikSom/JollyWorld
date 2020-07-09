@@ -14,6 +14,7 @@ export class SharpObject extends PrefabManager.basePrefab {
     init() {
         this.extent = 4.50;
         this.width = 2.25;
+        this.maxEntryAngle = 30;
         this.offsetWidth = this.width;
         this.spread = 0.75;
         this.twoSided = false;
@@ -44,7 +45,7 @@ export class SharpObject extends PrefabManager.basePrefab {
         fixture.SetFilterData(filterData);
         fixture.SetDensity(0.001);
         this.sharpBody.ResetMassData();
-        newFixture.SetSensor(true);
+        newFixture.FakeSensor = true;
         //
 
 
@@ -191,11 +192,15 @@ export class SharpObject extends PrefabManager.basePrefab {
         super.initContactListener();
         var self = this;
         this.contactListener.BeginContact = function (contact) {
+
             let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             const sharpBody = self.sharpBody;
 
             const sharpFixture = (bodies[0] == sharpBody) ? contact.GetFixtureA() : contact.GetFixtureB();
-            if(!sharpFixture.IsSensor()) return;
+            if(!sharpFixture.FakeSensor) return;
+
+            contact.SetEnabled(false);
+
             if(sharpFixture.GetBody() != sharpBody) return;
 
             let worldManifold = new Box2D.b2WorldManifold();
@@ -206,7 +211,20 @@ export class SharpObject extends PrefabManager.basePrefab {
             if(!otherBody.mySprite || otherBody.connectedSpike || otherBody.mySprite.data.collision == 2 || otherBody.GetType() != Box2D.b2BodyType.b2_dynamicBody) return;
             const allowedBodyParts = ['head', 'body'];
             if(otherBody.isFlesh && !allowedBodyParts.includes(otherBody.mySprite.data.refName)) return;
-            self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
+
+
+
+            const contactPoint = worldManifold.points[0];
+
+            const diff = sharpBody.GetPosition().Clone().SelfSub(contactPoint);
+            const angle = Math.atan2(diff.y, diff.x) - Math.PI/2;
+
+            const angleDif = sharpBody.GetAngle() - angle;
+            const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif)) * game.editor.RAD2DEG;
+
+            if(Math.abs(shortestDif) < this.maxEntryAngle){
+                self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
+            }
         }
         this.contactListener.EndContact = function (contact) {
             let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
@@ -215,6 +233,13 @@ export class SharpObject extends PrefabManager.basePrefab {
             let otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
             if(!otherBody.mySprite || !otherBody.connectedSpike) return;
             self.bodiesToSeperate.push({body:otherBody});
+        }
+        this.contactListener.PreSolve = function(contact){
+            let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            let sharpBody = self.sharpBody;
+            const sharpFixture = (bodies[0] == sharpBody) ? contact.GetFixtureA() : contact.GetFixtureB();
+            if(!sharpFixture.FakeSensor) return;
+            contact.SetEnabled(false);
         }
     }
 }
