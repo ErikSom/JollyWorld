@@ -222,7 +222,7 @@ export class SharpObject extends PrefabManager.basePrefab {
             const angleDif = sharpBody.GetAngle() - angle;
             const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif)) * game.editor.RAD2DEG;
 
-            if(Math.abs(shortestDif) < this.maxEntryAngle){
+            if(Math.abs(shortestDif) < self.maxEntryAngle){
                 self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
             }
         }
