@@ -1,5 +1,9 @@
 const PIXIFILTERS = require('pixi-filters')
 
+import {
+    game
+} from "../Game"
+
 let currentEffects = [];
 let pixiFilters = [];
 let effectTarget = null;
@@ -18,6 +22,7 @@ export const addEffect = (type, props) =>{
 	let effect = null;
 	switch(type){
 		case effectTypes.shockWave:
+			props.follow = game.editor.container
 			const shockFilter = new PIXIFILTERS.ShockwaveFilter([props.x, props.y], {
 				amplitude: 20,
 				wavelength: 351,
@@ -27,7 +32,7 @@ export const addEffect = (type, props) =>{
 			effect = new PixiEffect(shockFilter, type, {...props, startTime:Date.now(), maxLife:600, stageX:effectTarget.x, stageY:effectTarget.y})
 		break;
 		case effectTypes.screenShake:
-			effect = new ScreenShakeEffect(20, 500, 60);
+			effect = new ScreenShakeEffect(props.amplitude, 500, 60);
 		break
 	}
 	if(effect) currentEffects.push(effect);

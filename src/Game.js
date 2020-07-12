@@ -196,9 +196,6 @@ function Game() {
 
     //mouse
     this.onMouseDown = function (e) {
-        EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:500, follow:this.editor.container, x:this.editor.mousePosPixel.x, y:this.editor.mousePosPixel.y});
-        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake);
-
 
         if (Settings.allowMouseMovement && !this.mouseJoint && this.run) {
             var body = this.getBodyAtMouse();

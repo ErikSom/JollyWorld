@@ -1,5 +1,6 @@
 import * as PrefabManager from '../PrefabManager';
 import * as Box2D from '../../../libs/Box2D';
+import * as EffectsComposer from '../../utils/EffectsComposer';
 
 import {
     game
@@ -70,6 +71,11 @@ export class Explosive extends PrefabManager.basePrefab {
 				}
 			}
 		}
+		EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:this.explosiveRadius, x:this.explodeTarget.GetPosition().x*Settings.PTM, y:this.explodeTarget.GetPosition().y*Settings.PTM});
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.explosivePower/200});
+
+
+
 	}
     update(){
 		super.update();

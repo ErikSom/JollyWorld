@@ -96,7 +96,7 @@ export class SharpObject extends PrefabManager.basePrefab {
     update(){
         super.update();
 
-        // this.debugDraw();
+        this.debugDraw();
 
         if(this.bodiesToStick.length>0){
             const sharpBody = this.sharpBody;
