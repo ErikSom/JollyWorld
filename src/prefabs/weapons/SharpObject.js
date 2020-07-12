@@ -217,7 +217,7 @@ export class SharpObject extends PrefabManager.basePrefab {
             const contactPoint = worldManifold.points[0];
 
             const diff = sharpBody.GetPosition().Clone().SelfSub(contactPoint);
-            const angle = Math.atan2(diff.y, diff.x) - Math.PI/2;
+            const angle = Math.atan2(diff.y, diff.x) - game.editor.PI2;
 
             const angleDif = sharpBody.GetAngle() - angle;
             const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif)) * game.editor.RAD2DEG;

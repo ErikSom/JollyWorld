@@ -1,0 +1,87 @@
+import * as PrefabManager from '../PrefabManager'
+import * as PrefabBuilder from '../../utils/PrefabBuilder'
+import * as Box2D from '../../../libs/Box2D';
+
+import {
+    game
+} from "../../Game";
+
+class CrossBow extends PrefabManager.basePrefab {
+    constructor(target) {
+        super(target);
+    }
+    init() {
+		this.loaded = true;
+		this.reloadTime = this.prefabObject.settings.reloadTime*1000;
+		this.reloadTimer = 0;
+		this.shootTime = this.prefabObject.settings.shootTime*1000;
+		this.shootTimer = 0;
+		this.crossbowBody = this.lookupObject["body"];
+		this.crossbowBody.isCrossBow = true;
+		this.arrowSprite = this.crossbowBody.myTexture.children[1];
+
+		this.reload();
+		super.init();
+	}
+	update() {
+		super.update();
+		if(!this.loaded){
+			if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
+				this.reload();
+			}
+			this.reloadTimer += game.editor.deltaTime;
+		}else{
+			if (PrefabManager.timerReady(this.shootTimer, this.shootTime, true)) {
+				this.shoot();
+			}
+			this.shootTimer += game.editor.deltaTime;
+		}
+	}
+	shoot() {
+
+		const pos = this.crossbowBody.GetPosition();
+		const angle = this.crossbowBody.GetAngle();
+		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'Arrow', true);
+
+
+		const { lookupObject } = prefabData;
+		const body = lookupObject._bodies[0];
+		const force = 1500;
+		const impulse = new Box2D.b2Vec2(force*Math.cos(angle), force*Math.sin(angle));
+		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x, body.GetPosition().y));
+
+
+
+		this.arrowSprite.alpha = 0;
+		this.reloadTimer = 0;
+		this.loaded = false;
+	}
+	reload() {
+		this.arrowSprite.alpha = 1.0;
+		this.shootTimer = 0;
+		this.loaded = true;
+	}
+}
+
+CrossBow.settings = Object.assign({}, CrossBow.settings, {
+    "reloadTime": 2,
+    "shootTime": 1,
+});
+CrossBow.settingsOptions = Object.assign({}, CrossBow.settingsOptions, {
+    "reloadTime": {
+        min: 0.0,
+        max: 10.0,
+        step: 0.1
+	},
+	"shootTime": {
+        min: 0.0,
+        max: 10.0,
+        step: 0.1
+    },
+});
+
+PrefabManager.prefabLibrary.CrossBow = {
+    json: JSON.stringify({"objects":[[0,-0.31998250510481513,0.40624253613936456,0,"crossbow","body",0,["#999999"],["#000"],[0],false,true,[[[{"x":-1.6325716862607298,"y":-0.5263482485758638},{"x":-1.5879659024831143,"y":0.7226136971973722},{"x":-1.2162510376696511,"y":0.7226136971973722},{"x":2.1143141510589776,"y":-0.28845073509524743},{"x":2.322474475354517,"y":-0.6304284107236334}]]],[1],0,[0],"",[1]],[7,1.1123679734323186,-0.7917361187589407,0,"","",1,["[1,-1.3630054032315568,6.029656491528054,0,\"crossbow\",\"bowTexture\",70,\"CrossBow0000\",null,null,null,null,false,\"#FFFFFF\",1,1,1]","[1,1.3630054032315577,-6.029656491528054,0,\"crossbow\",\"arrowTexture\",71,\"Arrow0000\",null,null,null,null,false,\"#FFFFFF\",1,1,1]"],0,16.828497881048452,0.8808056877633276,0,1]]}),
+    class: CrossBow,
+    library: PrefabManager.LIBRARY_WEAPON  ,
+}

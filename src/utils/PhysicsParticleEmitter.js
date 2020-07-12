@@ -4,7 +4,7 @@ import * as Box2D from '../../libs/Box2D';
 export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[]) => {
 
 	for(let i = 0; i<amount; i++){
-		const prefabData = PrefabBuilder.generatePrefab(worldPosition, 'PhysicsParticle', false);
+		const prefabData = PrefabBuilder.generatePrefab(worldPosition, 0, 'PhysicsParticle', false);
 		const { lookupObject, prefabClass } = prefabData;
 		if(!randomTexture){
 			prefabClass.texture = textures[i%textures.length];

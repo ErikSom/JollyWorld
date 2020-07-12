@@ -16,7 +16,9 @@ export class basePrefab {
         this.lookupObject = game.editor.lookupGroups[this.prefabObject.prefabName + "_" + this.prefabObject.instanceID];
         this.initContactListener();
     }
-    set(property, value) {}
+    set(property, value) {
+        this.prefabObject.settings[property] = value;
+    }
     update() {}
     initContactListener() {
         this.contactListener = new Box2D.b2ContactListener();
@@ -27,6 +29,7 @@ export class basePrefab {
     }
     destroy(){
         game.editor.deleteObjects([this.prefabObject]);
+        this.destroyed = true;
     }
 }
 

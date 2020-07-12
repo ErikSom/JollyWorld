@@ -13,6 +13,8 @@ class Arrow extends PrefabManager.basePrefab {
     init() {
 		this.arrowBody = this.lookupObject['arrowBody'];
 		this.arrowBody.SetBullet(true);
+		this.arrowBody.isArrow = true;
+
 		super.init();
 		this.pointingVec = new Box2D.b2Vec2( 1, 0 );
 		this.tailVec = new Box2D.b2Vec2( -1.4, 0 );
@@ -86,10 +88,20 @@ class Arrow extends PrefabManager.basePrefab {
         super.initContactListener();
         var self = this;
         this.contactListener.BeginContact = function (contact) {
+			let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+			if((bodies[0].isArrow || bodies[0].isCrossBow) && (bodies[1].isArrow || bodies[1].isCrossBow)){
+				contact.SetEnabled(false);
+				return;
+			}
         }
         this.contactListener.EndContact = function (contact) {
 		}
-		this.contactListener.PreSolve = function(){
+		this.contactListener.PreSolve = function(contact){
+			let bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+			if((bodies[0].isArrow || bodies[0].isCrossBow) && (bodies[1].isArrow || bodies[1].isCrossBow)){
+				contact.SetEnabled(false);
+				return;
+			}
 			self.impactAngle = self.arrowBody.GetAngle();
 		}
 		this.contactListener.PostSolve = function (contact, impulse) {

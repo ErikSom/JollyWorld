@@ -4230,6 +4230,7 @@ const _B2dEditor = function () {
 		if (container.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
 			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+			this.updateBodyPosition(body);
 		}
 		//handle groups and ref names
 		this.addObjectToLookupGroups(container, container.data);
@@ -5205,6 +5206,9 @@ const _B2dEditor = function () {
 		});
 
 		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
+		prefabLookupObject._bodies.forEach(body =>{
+			this.updateBodyPosition(body);
+		});
 
 		return prefabLookupObject;
 	}
@@ -5224,6 +5228,8 @@ const _B2dEditor = function () {
 		texture.data.texturePositionOffsetLength = positionOffsetLength;
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
+
+
 		//body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
@@ -6366,6 +6372,7 @@ const _B2dEditor = function () {
 
 	this.DEG2RAD = 0.017453292519943296;
 	this.RAD2DEG = 57.29577951308232;
+	this.PI2 = Math.PI*0.5;
 
 	this.MASKBIT_NORMAL = 0x0001;
 	this.MASKBIT_FIXED = 0x0002;
