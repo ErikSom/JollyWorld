@@ -2,23 +2,31 @@ import * as PrefabManager from '../PrefabManager'
 import * as PrefabBuilder from '../../utils/PrefabBuilder'
 import * as Box2D from '../../../libs/Box2D';
 
+import { drawCircle } from '../../b2Editor/utils/drawing';
+
+
 import {
     game
 } from "../../Game";
+import { Settings } from '../../Settings';
 
 class CrossBow extends PrefabManager.basePrefab {
     constructor(target) {
-        super(target);
+		super(target);
+		this.isCrossBow = true;
     }
     init() {
 		this.loaded = true;
 		this.reloadTime = this.prefabObject.settings.reloadTime*1000;
 		this.reloadTimer = 0;
-		this.shootTime = this.prefabObject.settings.shootTime*1000;
+		this.shootDelay = this.prefabObject.settings.shootDelay*1000;
 		this.shootTimer = 0;
+		this.shootForce = this.prefabObject.settings.shootForce;
 		this.crossbowBody = this.lookupObject["body"];
 		this.crossbowBody.isCrossBow = true;
 		this.arrowSprite = this.crossbowBody.myTexture.children[1];
+		this.autoShoot = this.prefabObject.settings.autoShoot;
+		this.shouldShoot = false;
 
 		this.reload();
 		super.init();
@@ -30,31 +38,40 @@ class CrossBow extends PrefabManager.basePrefab {
 				this.reload();
 			}
 			this.reloadTimer += game.editor.deltaTime;
-		}else{
-			if (PrefabManager.timerReady(this.shootTimer, this.shootTime, true)) {
+		}else if(this.autoShoot || this.shouldShoot){
+			if (PrefabManager.timerReady(this.shootTimer, this.shootDelay, true)) {
 				this.shoot();
 			}
 			this.shootTimer += game.editor.deltaTime;
 		}
 	}
+	setShouldShoot() {
+		this.shouldShoot = true;
+	}
 	shoot() {
 
 		const pos = this.crossbowBody.GetPosition();
 		const angle = this.crossbowBody.GetAngle();
+		const offsetLength = 0.6;
+		const angleOffset = game.editor.PI2;
+		pos.x -= offsetLength*Math.cos(angle+angleOffset);
+		pos.y -= offsetLength*Math.sin(angle+angleOffset);
+
+		game.editor.debugGraphics.clear();
+		drawCircle(game.editor.getPIXIPointFromWorldPoint(pos), 3);
+
 		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'Arrow', true);
 
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
-		const force = 1500;
-		const impulse = new Box2D.b2Vec2(force*Math.cos(angle), force*Math.sin(angle));
+		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x, body.GetPosition().y));
-
-
 
 		this.arrowSprite.alpha = 0;
 		this.reloadTimer = 0;
 		this.loaded = false;
+		this.shouldShoot = false;
 	}
 	reload() {
 		this.arrowSprite.alpha = 1.0;
@@ -65,7 +82,9 @@ class CrossBow extends PrefabManager.basePrefab {
 
 CrossBow.settings = Object.assign({}, CrossBow.settings, {
     "reloadTime": 2,
-    "shootTime": 1,
+    "shootDelay": 1,
+	"shootForce": 1500,
+	"autoShoot": false,
 });
 CrossBow.settingsOptions = Object.assign({}, CrossBow.settingsOptions, {
     "reloadTime": {
@@ -73,11 +92,17 @@ CrossBow.settingsOptions = Object.assign({}, CrossBow.settingsOptions, {
         max: 10.0,
         step: 0.1
 	},
-	"shootTime": {
+	"shootDelay": {
         min: 0.0,
         max: 10.0,
         step: 0.1
-    },
+	},
+	"shootForce": {
+        min: 0.0,
+        max: 5000.0,
+        step: 1.0
+	},
+	"autoShoot":false
 });
 
 PrefabManager.prefabLibrary.CrossBow = {

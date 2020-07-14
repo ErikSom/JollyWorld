@@ -241,7 +241,7 @@ class Character extends PrefabManager.basePrefab {
                         let revoluteJointDef;
                         let joint;
 
-                        let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain",' + (game.editor.prefabCounter++) + ']]}'
+                        let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain"]]}'
 
                         let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
@@ -341,7 +341,7 @@ class Character extends PrefabManager.basePrefab {
         const particlesToGenerate = meatParticles.concat(extraParticles);
         const targetBody = this.lookupObject[targetBodyPart];
         particlesToGenerate.map((particle)=>{
-            const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM},${targetBody.GetPosition().y * Settings.PTM},0,{},"${particle}",${game.editor.prefabCounter++}]]}`;
+            const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM},${targetBody.GetPosition().y * Settings.PTM},0,{},"${particle}"]]}`;
             const goreLookupObject = game.editor.buildJSON(JSON.parse(gorePrefab));
             const impulse = new Box2D.b2Vec2((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
             goreLookupObject._bodies.map((body)=>{

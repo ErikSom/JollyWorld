@@ -204,7 +204,6 @@ const _B2dEditor = function () {
 				const y = e.pageY;
 
 				const data = new self.prefabObject;
-				data.instanceID = self.prefabCounter;
 
 				data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
 				data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
@@ -1188,11 +1187,21 @@ const _B2dEditor = function () {
 		}
 		var prefabKeys = Object.keys(this.selectedPrefabs);
 		for (i = 0; i < prefabKeys.length; i++) {
-			if (!PrefabManager.prefabLibrary[this.activePrefabs[prefabKeys[i]].prefabName].class.forceUnique) {
-				this.updateObject(null, this.activePrefabs[prefabKeys[i]]);
-				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(this.activePrefabs[prefabKeys[i]])));
+			const prefab = this.activePrefabs[prefabKeys[i]];
+			if (!PrefabManager.prefabLibrary[prefab.prefabName].class.forceUnique) {
+				this.updateObject(null, prefab);
+
+				// count children
+				const lookupObject = prefab.class.lookupObject
+				let childCount = lookupObject._bodies.length+lookupObject._textures.length+lookupObject._joints.length;
+				lookupObject._bodies.forEach(body=>{
+					if(body.myTexture) childCount++;
+				})
+
+				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(prefab)));
 				copyArray.push({
-					ID: cloneObject.ID,
+					ID: prefab.ID,
+					childCount,
 					data: cloneObject
 				});
 			}
@@ -1247,17 +1256,20 @@ const _B2dEditor = function () {
 		}
 
 		//fix copied triggerObjects
-		var k;
+		let k;
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
 			if (data.type == this.object_TRIGGER) {
 				for (j = 0; j < data.triggerObjects.length; j++) {
 					var foundBody = -1;
+					let realIndex = 0;
 					for (k = 0; k < copyArray.length; k++) {
 						if (data.triggerObjects[j] == copyArray[k].ID) {
-							foundBody = k;
+							// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
+							foundBody = realIndex;
 							break;
 						}
+						realIndex += copyArray[k].childCount || 1;
 					}
 					if (foundBody >= 0) data.triggerObjects[j] = foundBody;
 					else {
@@ -1274,7 +1286,6 @@ const _B2dEditor = function () {
 			x: 0,
 			y: 0
 		};
-		var copiedPrefabCount = 0;
 		for (i = 0; i < copyArray.length; i++) {
 			if (i != 0) copyJSON += ',';
 			data = copyArray[i].data;
@@ -1287,10 +1298,6 @@ const _B2dEditor = function () {
 			} else {
 				this.copyCenterPoint.x += data.x;
 				this.copyCenterPoint.y += data.y;
-
-				if (data.type == this.object_PREFAB) {
-					data.instanceID = copiedPrefabCount++;
-				}
 			}
 
 		}
@@ -1642,7 +1649,6 @@ const _B2dEditor = function () {
 		this.type = self.object_PREFAB;
 		this.settings;
 		this.prefabName;
-		this.instanceID;
 	}
 	this.editorSettingsObject = new function () {
 		this.type = self.object_SETTINGS;
@@ -2009,7 +2015,11 @@ const _B2dEditor = function () {
 							y: 0,
 							n: 0
 						};
-						if (body || (!this.editing && data.type == this.jointObject)) {
+						if(data.prefabInstanceName){
+							const prefab = this.activePrefabs[data.prefabInstanceName];
+							centerPoints[group].x += prefab.x;
+							centerPoints[group].y += prefab.y;
+						}else if (body || (!this.editing && data.type == this.jointObject)) {
 							centerPoints[group].x += body.GetPosition().x * this.PTM;
 							centerPoints[group].y += body.GetPosition().y * this.PTM;
 						} else {
@@ -2045,9 +2055,8 @@ const _B2dEditor = function () {
 						const oldAngle = body.GetAngle();
 
 						let newAngle = oldAngle + rAngle;
-						const pi2 = Math.PI*2;
-						while(newAngle<-pi2) newAngle += pi2;
-						while(newAngle>pi2) newAngle -= pi2;
+						while(newAngle<-this.PI2) newAngle += this.PI2;
+						while(newAngle>this.PI2) newAngle -= this.PI2;
 						body.SetAngle(newAngle);
 
 						if (group) {
@@ -2069,9 +2078,8 @@ const _B2dEditor = function () {
 						sprite.y += obj.y;
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						sprite.rotation += obj * this.DEG2RAD;
-						const pi2 = Math.PI*2;
-						while(sprite.rotation<-pi2) sprite.rotation += pi2;
-						while(sprite.rotation>pi2) sprite.rotation -= pi2;
+						while(sprite.rotation<-this.PI2) sprite.rotation += this.PI2;
+						while(sprite.rotation>this.PI2) sprite.rotation -= this.PI2;
 
 						if (group) {
 							const difX = sprite.x - centerPoints[group].x;
@@ -5191,11 +5199,13 @@ const _B2dEditor = function () {
 	this.buildPrefabFromObj = function (obj) {
 		this.createdSubPrefabClasses = [];
 		if (this.breakPrefabs) return this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json));
+		if(obj.instanceID !== -1) obj.instanceID = this.prefabCounter++;
+
 		var key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
 		this.activePrefabs[key] = obj;
 		var prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
-		if (obj.instanceID >= this.prefabCounter) this.prefabCounter = obj.instanceID + 1;
+
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
 
 		if(obj.settings) Object.keys(obj.settings).forEach(key=>obj.class.set(key, obj.settings[key]));
@@ -5212,15 +5222,15 @@ const _B2dEditor = function () {
 
 		return prefabLookupObject;
 	}
-	this.buildRuntimePrefab = function (prefabName, x, y, rotation) {
-		const prefabJSON = `{"objects":[[4,${x},${y},${(rotation || 0)},{},"${prefabName}",${(game.editor.prefabCounter++)}]]}`
-		const prefab = this.buildJSON(JSON.parse(prefabJSON));
-		this.retrieveClassFromPrefabLookup(prefab).init();
-		return prefab;
-	}
-	this.retrieveClassFromPrefabLookup = function (prefabLookup) {
-		return this.activePrefabs[prefabLookup._bodies[0].mySprite.data.prefabInstanceName].class;
-	}
+	// this.buildRuntimePrefab = function (prefabName, x, y, rotation) {
+	// 	const prefabJSON = `{"objects":[[4,${x},${y},${(rotation || 0)},{},"${prefabName}",${(game.editor.prefabCounter++)}]]}`
+	// 	const prefab = this.buildJSON(JSON.parse(prefabJSON));
+	// 	this.retrieveClassFromPrefabLookup(prefab).init();
+	// 	return prefab;
+	// }
+	// this.retrieveClassFromPrefabLookup = function (prefabLookup) {
+	// 	return this.activePrefabs[prefabLookup._bodies[0].mySprite.data.prefabInstanceName].class;
+	// }
 
 	this.setTextureToBody = function (body, texture, positionOffsetLength, positionOffsetAngle, offsetRotation) {
 		body.myTexture = texture;
@@ -5628,7 +5638,6 @@ const _B2dEditor = function () {
 		} else if (obj.type == this.object_PREFAB) {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
-			arr[6] = obj.instanceID
 		} else if (obj.type == this.object_GRAPHIC) {
 			arr[6] = obj.ID;
 			arr[7] = obj.colorFill;
@@ -5728,7 +5737,6 @@ const _B2dEditor = function () {
 			obj = new this.prefabObject();
 			obj.settings = arr[4];
 			obj.prefabName = arr[5];
-			obj.instanceID = arr[6];
 		} else if (arr[0] == this.object_GRAPHIC) {
 			obj = new this.graphicObject();
 			obj.ID = arr[6];
@@ -5840,7 +5848,6 @@ const _B2dEditor = function () {
 		var createdObjects = new this.lookupObject();
 
 		var startChildIndex = this.textures.children.length;
-		var startPrefabIDIndex = this.prefabCounter;
 		var prefabOffset = 0;
 
 		if (json != null) {
@@ -5888,7 +5895,6 @@ const _B2dEditor = function () {
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
 					var prefabStartChildIndex = this.textures.children.length;
-					obj.instanceID += startPrefabIDIndex;
 					var prefabObjects = this.buildPrefabFromObj(obj);
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;

@@ -9,6 +9,9 @@ import {
 import {
     Key
 } from "../../../libs/Key";
+import {
+    game
+} from "../../Game";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -18,6 +21,9 @@ export const getActionsForObject = function (object) {
         if(prefab.class.isExplosive){
             actions.push("SetActive");
             actions.push("Explode");
+        }
+        if(prefab.class.isCrossBow){
+            actions.push("Shoot");
         }
     } else {
         switch (object.data.type) {
@@ -133,6 +139,9 @@ export const doAction = function (actionData, target) {
             break;
         case "Explode":
             prefab.class.explode();
+            break;
+        case "Shoot":
+            prefab.class.setShouldShoot();
             break;
 
     }
@@ -333,6 +342,11 @@ export const actionDictionary = {
         type: 'Explode',
     },
     actionOptions_Explode: {},
+    /*******************/
+    actionObject_Shoot: {
+        type: 'Shoot',
+    },
+    actionOptions_Shoot: {},
     /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
@@ -652,6 +666,13 @@ export class triggerCore {
     }
 }
 export const addTargetToTrigger = function (_trigger, target) {
+
+    if(target.data.prefabInstanceName){
+        const prefab = game.editor.activePrefabs[target.data.prefabInstanceName]
+        game.editor.updateObject(null, prefab);
+        target = game.editor.textures.getChildAt(prefab.ID);
+    }
+
     if(target.data.type === B2dEditor.object_TEXTURE && target.myBody) target = target.myBody.mySprite;
 
     if (_trigger.mySprite == target) return;
