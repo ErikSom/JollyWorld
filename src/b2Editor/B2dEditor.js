@@ -1218,23 +1218,30 @@ const _B2dEditor = function () {
 			if (data.type == this.object_JOINT) {
 				//searching object A
 				var foundBodyA = false;
+				let realIndex = 0;
+
 				for (j = 0; j < copyArray.length; j++) {
 
 					if (copyArray[j].ID == data.bodyA_ID) {
 						foundBodyA = true;
-						data.bodyA_ID = j;
+						data.bodyA_ID = realIndex;
 						break;
 					}
+					realIndex += copyArray[j].childCount || 1;
+
 				}
 				var foundBodyB = false;
+				realIndex = 0;
 				if (data.bodyB_ID != undefined) {
 					for (j = 0; j < copyArray.length; j++) {
 
 						if (copyArray[j].ID == data.bodyB_ID) {
 							foundBodyB = true;
-							data.bodyB_ID = j;
+							data.bodyB_ID = realIndex;
 							break;
 						}
+						realIndex += copyArray[j].childCount || 1;
+
 					}
 
 				} else {
@@ -1246,11 +1253,13 @@ const _B2dEditor = function () {
 					i--;
 				}
 			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT) {
+				let realIndex = 0;
 				for (j = 0; j < copyArray.length; j++) {
 					if (copyArray[j].ID == data.bodyID) {
-						data.bodyID = j;
+						data.bodyID = realIndex;
 						break;
 					}
+					realIndex += copyArray[j].childCount || 1;
 				}
 			}
 		}
