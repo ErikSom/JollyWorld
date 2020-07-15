@@ -2064,8 +2064,9 @@ const _B2dEditor = function () {
 						const oldAngle = body.GetAngle();
 
 						let newAngle = oldAngle + rAngle;
-						while(newAngle<-this.PI2) newAngle += this.PI2;
-						while(newAngle>this.PI2) newAngle -= this.PI2;
+						const pi_double = Math.PI*2;
+						while(newAngle<-pi_double) newAngle += pi_double;
+						while(newAngle>pi_double) newAngle -= pi_double;
 						body.SetAngle(newAngle);
 
 						if (group) {
@@ -2087,8 +2088,9 @@ const _B2dEditor = function () {
 						sprite.y += obj.y;
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						sprite.rotation += obj * this.DEG2RAD;
-						while(sprite.rotation<-this.PI2) sprite.rotation += this.PI2;
-						while(sprite.rotation>this.PI2) sprite.rotation -= this.PI2;
+						const pi_double = Math.PI*2;
+						while(sprite.rotation<-pi_double) sprite.rotation += pi_double;
+						while(sprite.rotation>pi_double) sprite.rotation -= pi_double;
 
 						if (group) {
 							const difX = sprite.x - centerPoints[group].x;
