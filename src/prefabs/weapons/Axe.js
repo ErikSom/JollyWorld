@@ -13,11 +13,12 @@ class Axe extends SharpObject {
     init() {
 		super.init();
 
-		this.extent = 1.8;
+		this.extent = 2.0;
 		this.width = 1.6;
         this.spread = 0.6;
 		this.angleCorrection = -90;
-		this.offsetWidth = 0.2;
+        this.offsetWidth = 0.2;
+        this.maxEntryAngle = 50;
         this.twoSided = true;
     }
 }
