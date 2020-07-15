@@ -8,7 +8,7 @@ class Spear extends SharpObject {
     init() {
 		super.init();
 
-		this.extent = 3.0;
+		this.extent = 5.0;
 		this.width = 0.2;
         this.spread = 0.2;
 		this.offsetWidth = 0.2;

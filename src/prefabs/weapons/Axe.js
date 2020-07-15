@@ -18,7 +18,7 @@ class Axe extends SharpObject {
         this.spread = 0.6;
 		this.angleCorrection = -90;
 		this.offsetWidth = 0.2;
-		this.twoSided = true;
+        this.twoSided = true;
     }
 }
 

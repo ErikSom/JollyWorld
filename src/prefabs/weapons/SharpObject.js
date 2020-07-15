@@ -96,11 +96,10 @@ export class SharpObject extends PrefabManager.basePrefab {
     update(){
         super.update();
 
-        this.debugDraw();
+        // this.debugDraw();
 
         if(this.bodiesToStick.length>0){
             const sharpBody = this.sharpBody;
-
 
             for(let i = 0; i<this.bodiesToStick.length; i++){
 
@@ -114,23 +113,16 @@ export class SharpObject extends PrefabManager.basePrefab {
                 const axis = new Box2D.b2Vec2(Math.cos(axisRotation), Math.sin(axisRotation));
                 prismaticJointDef.Initialize(this.bodiesToStick[i].body, sharpBody, this.sharpBody.GetPosition(), axis);
                 prismaticJointDef.collideConnected = true;
-                // prismaticJointDef.referenceAngle = 0.0;
                 prismaticJointDef.maxMotorForce = this.resistance;
                 prismaticJointDef.motorSpeed = 0;
                 prismaticJointDef.enableMotor = true;
-                let fixture = this.bodiesToStick[i].body.GetFixtureList();
-                // while (fixture != null) {
-                //     fixture.SetDensity(0.001);
-                //     fixture = fixture.GetNext();
-                // }
+
                 this.bodiesToStick[i].body.ResetMassData();
                 this.bodiesToStick[i].body.connectedSpike = this;
-
 
                 // attach decals
                 const basePosition = this.sharpBody.GetPosition();
                 const extentAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
-
                 const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
                 const startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
 
@@ -138,8 +130,6 @@ export class SharpObject extends PrefabManager.basePrefab {
 
                 const spreadAngle = sharpBodyAngle;
                 const bladeAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
-
-
 
                 const sides = this.twoSided ? [0, 180] : [0];
                 sides.forEach(side =>{
@@ -188,6 +178,26 @@ export class SharpObject extends PrefabManager.basePrefab {
             this.bodiesToSeperate = [];
         }
     }
+    isContactAngleValid(contactPoint){
+        const basePosition = this.sharpBody.GetPosition();
+        const sharpBodyAngle = this.sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
+        const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
+        const startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
+        const bladePosition = new Box2D.b2Vec2(startPosition.x + this.width*Math.cos(sharpBodyAngle), startPosition.y + this.width*Math.sin(sharpBodyAngle));
+
+        const diff = bladePosition.Clone().SelfSub(contactPoint);
+        const angle = Math.atan2(diff.y, diff.x) - game.editor.PI2;
+
+        const angleDif = sharpBodyAngle - angle;
+        const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif)) * game.editor.RAD2DEG;
+        const otherSideAngleDif = (sharpBodyAngle+Math.PI) - angle;
+        const otherShortestDif = Math.atan2(Math.sin(otherSideAngleDif), Math.cos(otherSideAngleDif)) * game.editor.RAD2DEG;
+
+        if((Math.abs(shortestDif) < this.maxEntryAngle) || (this.twoSided && Math.abs(otherShortestDif) < this.maxEntryAngle)){
+            return true;
+        }
+        return false;
+    }
     initContactListener() {
         super.initContactListener();
         var self = this;
@@ -212,17 +222,9 @@ export class SharpObject extends PrefabManager.basePrefab {
             const allowedBodyParts = ['head', 'body'];
             if(otherBody.isFlesh && !allowedBodyParts.includes(otherBody.mySprite.data.refName)) return;
 
-
-
             const contactPoint = worldManifold.points[0];
 
-            const diff = sharpBody.GetPosition().Clone().SelfSub(contactPoint);
-            const angle = Math.atan2(diff.y, diff.x) - game.editor.PI2;
-
-            const angleDif = sharpBody.GetAngle() - angle;
-            const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif)) * game.editor.RAD2DEG;
-
-            if(Math.abs(shortestDif) < self.maxEntryAngle){
+            if(self.isContactAngleValid(contactPoint)){
                 self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
             }
         }
