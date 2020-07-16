@@ -57,11 +57,7 @@ class CrossBow extends PrefabManager.basePrefab {
 		pos.x -= offsetLength*Math.cos(angle+angleOffset);
 		pos.y -= offsetLength*Math.sin(angle+angleOffset);
 
-		game.editor.debugGraphics.clear();
-		drawCircle(game.editor.getPIXIPointFromWorldPoint(pos), 3);
-
 		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'Arrow', true);
-
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];

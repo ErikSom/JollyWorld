@@ -3915,7 +3915,7 @@ const _B2dEditor = function () {
 					bodyObject.colorLine = graphic.colorLine;
 					bodyObject.lineWidth = graphic.lineWidth;
 					bodyObject.transparancy = graphic.transparancy;
-					bodyObject.radius = graphic.radius;
+					bodyObject.radius = graphic.radius || 0;
 					bodyObject.x = graphic.x / this.PTM;
 					bodyObject.y = graphic.y / this.PTM;
 
