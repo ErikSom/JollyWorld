@@ -595,7 +595,6 @@ function Game() {
         cameraTargetPosition.x *= this.editor.container.scale.x;
         cameraTargetPosition.y *= this.editor.container.scale.y;
 
-
         this.editor.container.x += (-cameraTargetPosition.x - this.editor.container.x) * panEase;
         this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
 

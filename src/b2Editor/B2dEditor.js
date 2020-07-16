@@ -54,6 +54,7 @@ const _B2dEditor = function () {
 	this.contactCallBackListener;
 
 	this.activePrefabs = {};
+	this.parallaxObject = [];
 	this.prefabCounter = 0; //to ensure uniquenesss
 
 	this.container = null;
@@ -118,7 +119,6 @@ const _B2dEditor = function () {
 	}
 
 	this.selectingTriggerTarget = false;
-
 
 	//COLORS
 	this.selectionBoxColor = "0x5294AE";
@@ -701,6 +701,22 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
 				break;
 			case case_JUST_GRAPHICS:
 				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
@@ -1469,7 +1485,29 @@ const _B2dEditor = function () {
 			for (i = 0; i < this.triggerObjects.length; i++) {
 				this.triggerObjects[i].class.update();
 			}
+			this.handleParallax();
 		}
+	}
+
+	this.handleParallax = function(){
+		this.parallaxObject.forEach(sprite=>{
+			if(sprite.data.parallax){
+				sprite.x = -(this.container.x-window.innerWidth/2)/this.container.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.x
+				sprite.y = -(this.container.y-window.innerHeight/2)/this.container.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.y
+			}
+			if(sprite.data.repeatTeleportX){
+
+				while(sprite.x+(this.container.x-window.innerWidth/2)/this.container.scale.x > sprite.data.repeatTeleportX) sprite.x-=sprite.data.repeatTeleportX*2
+				while(sprite.x+(this.container.x-window.innerWidth/2)/this.container.scale.x <-sprite.data.repeatTeleportX) sprite.x+=sprite.data.repeatTeleportX*2
+
+				// while(sprite.x-sprite.parallaxStartPosition.x<-sprite.data.repeatTeleportX) sprite.x+=sprite.data.repeatTeleportX;
+				// while(sprite.x-sprite.parallaxStartPosition.x>sprite.data.repeatTeleportX) sprite.x-=sprite.data.repeatTeleportX;
+			}
+			// if(sprite.data.repeatTeleportY){
+			// 	while(sprite.y<-sprite.data.repeatTeleportY) sprite.y += sprite.data.repeatTeleportY;
+			// 	while(sprite.y>sprite.data.repeatTeleportY) sprite.y -= sprite.data.repeatTeleportY;
+			// }
+		});
 	}
 
 
@@ -1521,6 +1559,9 @@ const _B2dEditor = function () {
 		this.tint = '#FFFFFF';
 		this.transparancy = 1.0;
 		this.lockselection = false;
+		this.parallax = 1.0;
+		this.repeatTeleportX = 0;
+		this.repeatTeleportY = 0;
 	}
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
@@ -1538,6 +1579,9 @@ const _B2dEditor = function () {
 		this.transparancy = 1;
 		this.tileTexture = '';
 		this.lockselection = false;
+		this.parallax = 1.0;
+		this.repeatTeleportX = 0;
+		this.repeatTeleportY = 0;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -1565,6 +1609,9 @@ const _B2dEditor = function () {
 		this.tileTexture = "";
 		this.lockselection = false;
 		this.lineWidth = 1.0;
+		this.parallax = 1.0;
+		this.repeatTeleportX = 0;
+		this.repeatTeleportY = 0;
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -1629,6 +1676,9 @@ const _B2dEditor = function () {
 		this.fontName = "Arial";
 		this.textAlign = 'left';
 		this.lockselection = false;
+		this.parallax = 1.0;
+		this.repeatTeleportX = 0;
+		this.repeatTeleportY = 0;
 	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
@@ -3383,7 +3433,13 @@ const _B2dEditor = function () {
 							textContainer.data.textAlign = controller.targetValue;
 							textContainer.textSprite.style.align = textContainer.data.textAlign;
 						}
-					} /* PREFAB SETTINGS */
+					} else if(controller.property == "parallax" || controller.property == "repeatTeleportX" || controller.property == "repeatTeleportY"){
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							const textContainer = this.selectedTextures[j];
+							textContainer.data[controller.property] = controller.targetValue;
+						}
+					}
+						/* PREFAB SETTINGS */
 					else {
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						const prefabKeys = Object.keys(this.selectedPrefabs);
@@ -5630,6 +5686,10 @@ const _B2dEditor = function () {
 			arr[14] = obj.scaleX;
 			arr[15] = obj.scaleY;
 			arr[16] = obj.transparancy;
+			arr[17] = obj.parallax;
+			arr[18] = obj.repeatTeleportX;
+			arr[19] = obj.repeatTeleportY;
+			
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.bodyA_ID;
@@ -5662,6 +5722,9 @@ const _B2dEditor = function () {
 			arr[15] = obj.textureAngleOffset;
 			arr[16] = obj.tileTexture || "";
 			arr[17] = obj.lineWidth !== undefined ? obj.lineWidth : 1.0;
+			arr[18] = obj.parallax;
+			arr[19] = obj.repeatTeleportX;
+			arr[20] = obj.repeatTeleportY;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -5670,6 +5733,9 @@ const _B2dEditor = function () {
 			arr[10] = obj.texturePositionOffsetAngle;
 			arr[11] = obj.textureAngleOffset;
 			arr[12] = obj.transparancy !== undefined ? obj.transparancy : 1.0;
+			arr[13] = obj.parallax;
+			arr[14] = obj.repeatTeleportX;
+			arr[15] = obj.repeatTeleportY;
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -5727,6 +5793,9 @@ const _B2dEditor = function () {
 			obj.scaleX = arr[14] || 1;
 			obj.scaleY = arr[15] || 1;
 			obj.transparancy = arr[16] !== undefined ? arr[16] : 1;
+			obj.parallax = arr[17] !== undefined ? arr[17] : 0;
+			obj.repeatTeleportX = arr[18] !== undefined ? arr[18] : 0;
+			obj.repeatTeleportY = arr[19] !== undefined ? arr[19] : 0;
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.ID = arr[6];
@@ -5762,6 +5831,9 @@ const _B2dEditor = function () {
 			obj.textureAngleOffset = arr[15];
 			obj.tileTexture = arr[16] || "";
 			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
+			obj.parallax = arr[18] !== undefined ? arr[18] : 0;
+			obj.repeatTeleportX = arr[19] !== undefined ? arr[19] : 0;
+			obj.repeatTeleportY = arr[20] !== undefined ? arr[20] : 0;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
@@ -5771,6 +5843,9 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetAngle = arr[10];
 			obj.textureAngleOffset = arr[11];
 			obj.transparancy = arr[12] !== undefined ? arr[12] : 1;
+			obj.parallax = arr[13] !== undefined ? arr[13] : 0;
+			obj.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
+			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
@@ -6022,6 +6097,7 @@ const _B2dEditor = function () {
 		}
 		this.activePrefabs = {};
 		this.lookupGroups = {};
+		this.parallaxObject = [];
 
 		//reset gui
 		ui.destroyEditorGUI();
@@ -6118,6 +6194,11 @@ const _B2dEditor = function () {
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);
 			}
+			if(!sprite.myBody && (sprite.data.parallax || sprite.data.repeatTeleportX || sprite.data.repeatTeleportY)){
+				sprite.parallaxStartPosition = sprite.position.clone();
+				this.parallaxObject.push(sprite);
+			}
+
 		}
 		for (i = 0; i < spritesToDestroy.length; i++) {
 			sprite = spritesToDestroy[i];
