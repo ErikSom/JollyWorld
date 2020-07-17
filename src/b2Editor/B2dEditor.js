@@ -743,6 +743,21 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 
 				ui.editorGUI.editData.convertToBody = function () {};
 				var label = this.selectedTextures.length == 1 ? "Convert to PhysicsBody" : "Convert to PhysicsBodies";
@@ -761,6 +776,21 @@ const _B2dEditor = function () {
 				break;
 			case case_JUST_GRAPHICGROUPS:
 				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1496,17 +1526,13 @@ const _B2dEditor = function () {
 				sprite.y = -(this.container.y-window.innerHeight/2)/this.container.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.y
 			}
 			if(sprite.data.repeatTeleportX){
-
 				while(sprite.x+(this.container.x-window.innerWidth/2)/this.container.scale.x > sprite.data.repeatTeleportX) sprite.x-=sprite.data.repeatTeleportX*2
 				while(sprite.x+(this.container.x-window.innerWidth/2)/this.container.scale.x <-sprite.data.repeatTeleportX) sprite.x+=sprite.data.repeatTeleportX*2
-
-				// while(sprite.x-sprite.parallaxStartPosition.x<-sprite.data.repeatTeleportX) sprite.x+=sprite.data.repeatTeleportX;
-				// while(sprite.x-sprite.parallaxStartPosition.x>sprite.data.repeatTeleportX) sprite.x-=sprite.data.repeatTeleportX;
 			}
-			// if(sprite.data.repeatTeleportY){
-			// 	while(sprite.y<-sprite.data.repeatTeleportY) sprite.y += sprite.data.repeatTeleportY;
-			// 	while(sprite.y>sprite.data.repeatTeleportY) sprite.y -= sprite.data.repeatTeleportY;
-			// }
+			if(sprite.data.repeatTeleportY){
+				while(sprite.y+(this.container.y-window.innerWidth/2)/this.container.scale.y > sprite.data.repeatTeleportY) sprite.y-=sprite.data.repeatTeleportY*2
+				while(sprite.y+(this.container.y-window.innerWidth/2)/this.container.scale.y <-sprite.data.repeatTeleportY) sprite.y+=sprite.data.repeatTeleportY*2
+			}
 		});
 	}
 
