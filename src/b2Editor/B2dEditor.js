@@ -861,6 +861,21 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				break;
 		}
 		if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
@@ -1585,7 +1600,7 @@ const _B2dEditor = function () {
 		this.tint = '#FFFFFF';
 		this.transparancy = 1.0;
 		this.lockselection = false;
-		this.parallax = 1.0;
+		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
 	}
@@ -1605,7 +1620,7 @@ const _B2dEditor = function () {
 		this.transparancy = 1;
 		this.tileTexture = '';
 		this.lockselection = false;
-		this.parallax = 1.0;
+		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
 	}
@@ -1635,7 +1650,7 @@ const _B2dEditor = function () {
 		this.tileTexture = "";
 		this.lockselection = false;
 		this.lineWidth = 1.0;
-		this.parallax = 1.0;
+		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
 	}
@@ -1702,7 +1717,7 @@ const _B2dEditor = function () {
 		this.fontName = "Arial";
 		this.textAlign = 'left';
 		this.lockselection = false;
-		this.parallax = 1.0;
+		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
 	}
@@ -5894,6 +5909,9 @@ const _B2dEditor = function () {
 			obj.texturePositionOffsetLength = arr[14];
 			obj.texturePositionOffsetAngle = arr[15];
 			obj.textureAngleOffset = arr[16];
+			obj.parallax = arr[17] !== undefined ? arr[17] : 0;
+			obj.repeatTeleportX = arr[18] !== undefined ? arr[18] : 0;
+			obj.repeatTeleportY = arr[19] !== undefined ? arr[19] : 0;
 		}else if (arr[0] == this.object_SETTINGS){
 			obj = this.editorSettingsObject;
 			obj.gravityX = arr[1];
