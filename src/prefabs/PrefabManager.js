@@ -39,6 +39,7 @@ export const LIBRARY_ADMIN = "admin";
 export const LIBRARY_MOVEMENT = "movement";
 export const LIBRARY_WEAPON = "weapon";
 export const LIBRARY_LEVEL = "level";
+export const LIBRARY_BLUEPRINTS = "blueprints";
 
 export var prefabLibrary = {
     libraryKeys: [],
@@ -48,13 +49,15 @@ export const getLibraryKeys = function() {
     if(prefabLibrary.libraryKeys.length>0) return prefabLibrary.libraryKeys;
     for (let key in prefabLibrary) {
         if (prefabLibrary.hasOwnProperty(key)) {
-            if (prefabLibrary[key].library) {
-                if (!prefabLibrary.libraryDictionary[prefabLibrary[key].library]) prefabLibrary.libraryDictionary[prefabLibrary[key].library] = [];
-                prefabLibrary.libraryDictionary[prefabLibrary[key].library].push(key);
+            const libraryKey = prefabLibrary[key].library
+            if (libraryKey) {
+                if (!prefabLibrary.libraryDictionary[libraryKey]) prefabLibrary.libraryDictionary[libraryKey] = [];
+                prefabLibrary.libraryDictionary[libraryKey].push(key);
             }
         }
     }
-    prefabLibrary.libraryKeys = Object.keys(prefabLibrary.libraryDictionary);
+    prefabLibrary.libraryKeys = Object.keys(prefabLibrary.libraryDictionary).filter(key => ![LIBRARY_ADMIN, LIBRARY_BLUEPRINTS].includes(key));
+
     return prefabLibrary.libraryKeys;
 }
 

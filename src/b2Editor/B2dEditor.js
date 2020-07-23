@@ -158,27 +158,25 @@ const _B2dEditor = function () {
 
 
 	this.showPrefabList = function () {
-		var prefabPages = PrefabManager.getLibraryKeys();
-		if (this.admin) prefabPages.push("admin");
+		const prefabPages = PrefabManager.getLibraryKeys();
 
-
-		let targetFolder = ui.editorGUI.addFolder('Prefab Selection');
+		let targetFolder = ui.editorGUI.addFolder('Special Objects');
 		targetFolder.open();
 
 
+		// Prefabs
 		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
-		this.assetSelectedTexture = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup][0];
-		var folder = targetFolder.addFolder('Prefabs');
-		var self = this;
+		let folder = targetFolder.addFolder('Prefabs');
+		let self = this;
 		folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
 			ui.destroyEditorGUI();
 			ui.buildEditorGUI();
 			self.showPrefabList();
 			ui.registerDragWindow(ui.editorGUI);
 		});
-		folder.add(self, "assetSelectedTexture", PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup]).onChange(function (value) {}).name("Select");
-		this.spawnTexture = function () {};
-		folder.open();
+
+		let innerFolder = folder.domElement.querySelector('ul');
+
 		for (let i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup].length; i++) {
 			const prefabName = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup][i];
 
@@ -188,11 +186,31 @@ const _B2dEditor = function () {
 			guiFunction.classList.add('cr', 'function');
 
 			const guiFunctionImg = guiFunction.querySelector('img');
-
-			guiFunctionImg.setAttribute('src', image.src);
+			guiFunctionImg.src = image.src;
 			guiFunctionImg.setAttribute('title', prefabName);
-			folder.domElement.appendChild(guiFunction);
-			guiFunction.style.height = '100px';
+
+			const maxImageHeight = 90;
+			const maxImageWidth = 174;
+
+			let functionHeight = 100;
+
+			guiFunctionImg.onload = () => {
+				if(guiFunctionImg.width>guiFunctionImg.height){
+					if(guiFunctionImg.width>maxImageWidth){
+						guiFunctionImg.style.width = `${maxImageWidth}px`;
+					}
+					functionHeight = guiFunctionImg.height+10;
+				}else{
+					if(guiFunctionImg.height>maxImageHeight){
+						guiFunctionImg.style.height = `${maxImageHeight}px`;
+					}else{
+						functionHeight = guiFunctionImg.height+10;
+					}
+				}
+				guiFunction.style.height = `${functionHeight}px`;
+			}
+
+			innerFolder.appendChild(guiFunction);
 			guiFunctionImg.style.display = 'block';
 			guiFunctionImg.style.margin = 'auto';
 			guiFunction.setAttribute('prefabName', prefabName);
@@ -211,6 +229,82 @@ const _B2dEditor = function () {
 				data.prefabName = guiFunction.getAttribute('prefabName');
 				data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
 				self.buildPrefabFromObj(data);
+			}
+
+			guiFunction.addEventListener('click', clickFunction);
+			guiFunction.addEventListener('dragend', clickFunction);
+		}
+
+		// BluePrints
+		folder = targetFolder.addFolder('Blueprints');
+
+		innerFolder = folder.domElement.querySelector('ul');
+
+		for (let i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS].length; i++) {
+			const prefabName = PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS][i];
+
+			let image = this.renderPrefabToImage(prefabName);
+			const guiFunction = document.createElement('li');
+			guiFunction.innerHTML = '<div><img src=""></img><div class="c"><div class="button"></div></div></div>';
+			guiFunction.classList.add('cr', 'function');
+
+			const guiFunctionImg = guiFunction.querySelector('img');
+			guiFunctionImg.src = image.src;
+			guiFunctionImg.setAttribute('title', prefabName);
+
+			const maxImageHeight = 90;
+			const maxImageWidth = 174;
+
+			let functionHeight = 100;
+
+			guiFunctionImg.onload = () => {
+				if(guiFunctionImg.width>guiFunctionImg.height){
+					if(guiFunctionImg.width>maxImageWidth){
+						guiFunctionImg.style.width = `${maxImageWidth}px`;
+					}
+					functionHeight = guiFunctionImg.height+10;
+				}else{
+					if(guiFunctionImg.height>maxImageHeight){
+						guiFunctionImg.style.height = `${maxImageHeight}px`;
+					}else{
+						functionHeight = guiFunctionImg.height+10;
+					}
+				}
+				guiFunction.style.height = `${functionHeight}px`;
+			}
+
+			innerFolder.appendChild(guiFunction);
+			guiFunctionImg.style.display = 'block';
+			guiFunctionImg.style.margin = 'auto';
+			guiFunction.setAttribute('prefabName', prefabName);
+
+			const clickFunction = (e) =>{
+				const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
+				const rect = guiAsset.getBoundingClientRect();
+				const domx = Math.max(e.pageX, rect.right + 200);
+				const domy = e.pageY;
+
+				const x = domx / self.container.scale.x - self.container.x / self.container.scale.x;
+				const y = domy / self.container.scale.y - self.container.y / self.container.scale.x;
+
+				const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[prefabName].json));
+
+				const buildPrefabs = [];
+				let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
+
+				for(let j = 0; j<allObjects.length; j++){
+					const object = allObjects[j];
+					const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
+					if(prefabInstanceName){
+						const targetPrefab = this.activePrefabs[prefabInstanceName];
+						if(!buildPrefabs.includes(targetPrefab)){
+							buildPrefabs.push(targetPrefab);
+							targetPrefab.x += x;
+							targetPrefab.y += y;
+						}
+					}
+				}
+				this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
 			}
 
 			guiFunction.addEventListener('click', clickFunction);
@@ -5974,7 +6068,6 @@ const _B2dEditor = function () {
 
 	this.buildJSON = function (json, prefabInstanceName) {
 		//console.log(json);
-
 		var createdObjects = new this.lookupObject();
 
 		var startChildIndex = this.textures.children.length;
