@@ -163,153 +163,105 @@ const _B2dEditor = function () {
 		let targetFolder = ui.editorGUI.addFolder('Special Objects');
 		targetFolder.open();
 
+		['Prefabs', 'Blueprints'].forEach(folderName=>{
+			if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
+			let folder = targetFolder.addFolder(folderName);
+			let self = this;
 
-		// Prefabs
-		if (this.assetSelectedGroup == "" || !prefabPages.includes(this.assetSelectedGroup)) this.assetSelectedGroup = prefabPages[0];
-		let folder = targetFolder.addFolder('Prefabs');
-		let self = this;
-		folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
-			ui.destroyEditorGUI();
-			ui.buildEditorGUI();
-			self.showPrefabList();
-			ui.registerDragWindow(ui.editorGUI);
-		});
+			if(folderName === 'Prefabs'){
+				folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
+					ui.destroyEditorGUI();
+					ui.buildEditorGUI();
+					self.showPrefabList();
+					ui.registerDragWindow(ui.editorGUI);
+				});
+			}
 
-		let innerFolder = folder.domElement.querySelector('ul');
+			let innerFolder = folder.domElement.querySelector('ul');
 
-		for (let i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup].length; i++) {
-			const prefabName = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup][i];
+			let targetLibrary;
 
-			let image = this.renderPrefabToImage(prefabName);
-			const guiFunction = document.createElement('li');
-			guiFunction.innerHTML = '<div><img src=""></img><div class="c"><div class="button"></div></div></div>';
-			guiFunction.classList.add('cr', 'function');
+			if(folderName === 'Prefabs') targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[this.assetSelectedGroup];
+			else if(folderName === 'Blueprints') targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS];
 
-			const guiFunctionImg = guiFunction.querySelector('img');
-			guiFunctionImg.src = image.src;
-			guiFunctionImg.setAttribute('title', prefabName);
+			for (let i = 0; i < targetLibrary.length; i++) {
+				const prefabName = targetLibrary[i];
 
-			const maxImageHeight = 90;
-			const maxImageWidth = 174;
+				let image = this.renderPrefabToImage(prefabName);
+				const guiFunction = document.createElement('li');
+				guiFunction.innerHTML = '<div><img src=""></img><div class="c"><div class="button"></div></div></div>';
+				guiFunction.classList.add('cr', 'function');
 
-			let functionHeight = 100;
+				const guiFunctionImg = guiFunction.querySelector('img');
+				guiFunctionImg.src = image.src;
+				guiFunctionImg.setAttribute('title', prefabName);
 
-			guiFunctionImg.onload = () => {
-				if(guiFunctionImg.width>guiFunctionImg.height){
-					if(guiFunctionImg.width>maxImageWidth){
-						guiFunctionImg.style.width = `${maxImageWidth}px`;
-					}
-					functionHeight = guiFunctionImg.height+10;
-				}else{
-					if(guiFunctionImg.height>maxImageHeight){
-						guiFunctionImg.style.height = `${maxImageHeight}px`;
+				const maxImageHeight = 90;
+				const maxImageWidth = 174;
+
+				let functionHeight = 100;
+
+				guiFunctionImg.onload = () => {
+					if(guiFunctionImg.width>guiFunctionImg.height){
+						if(guiFunctionImg.width>maxImageWidth){
+							guiFunctionImg.style.width = `${maxImageWidth}px`;
+						}
+						const scaleFactor = parseFloat(guiFunctionImg.style.width)/guiFunctionImg.width;
+						functionHeight = guiFunctionImg.height*scaleFactor+10;
 					}else{
-						functionHeight = guiFunctionImg.height+10;
-					}
-				}
-				guiFunction.style.height = `${functionHeight}px`;
-			}
-
-			innerFolder.appendChild(guiFunction);
-			guiFunctionImg.style.display = 'block';
-			guiFunctionImg.style.margin = 'auto';
-			guiFunction.setAttribute('prefabName', prefabName);
-
-			const clickFunction = (e) =>{
-				const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
-				const rect = guiAsset.getBoundingClientRect();
-				const x = Math.max(e.pageX, rect.right + 200);
-				const y = e.pageY;
-
-				const data = new self.prefabObject;
-
-				data.x = (x) / self.container.scale.x - self.container.x / self.container.scale.x;
-				data.y = (y) / self.container.scale.y - self.container.y / self.container.scale.x;
-
-				data.prefabName = guiFunction.getAttribute('prefabName');
-				data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
-				self.buildPrefabFromObj(data);
-			}
-
-			guiFunction.addEventListener('click', clickFunction);
-			guiFunction.addEventListener('dragend', clickFunction);
-		}
-
-		// BluePrints
-		folder = targetFolder.addFolder('Blueprints');
-
-		innerFolder = folder.domElement.querySelector('ul');
-
-		for (let i = 0; i < PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS].length; i++) {
-			const prefabName = PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS][i];
-
-			let image = this.renderPrefabToImage(prefabName);
-			const guiFunction = document.createElement('li');
-			guiFunction.innerHTML = '<div><img src=""></img><div class="c"><div class="button"></div></div></div>';
-			guiFunction.classList.add('cr', 'function');
-
-			const guiFunctionImg = guiFunction.querySelector('img');
-			guiFunctionImg.src = image.src;
-			guiFunctionImg.setAttribute('title', prefabName);
-
-			const maxImageHeight = 90;
-			const maxImageWidth = 174;
-
-			let functionHeight = 100;
-
-			guiFunctionImg.onload = () => {
-				if(guiFunctionImg.width>guiFunctionImg.height){
-					if(guiFunctionImg.width>maxImageWidth){
-						guiFunctionImg.style.width = `${maxImageWidth}px`;
-					}
-					functionHeight = guiFunctionImg.height+10;
-				}else{
-					if(guiFunctionImg.height>maxImageHeight){
-						guiFunctionImg.style.height = `${maxImageHeight}px`;
-					}else{
-						functionHeight = guiFunctionImg.height+10;
-					}
-				}
-				guiFunction.style.height = `${functionHeight}px`;
-			}
-
-			innerFolder.appendChild(guiFunction);
-			guiFunctionImg.style.display = 'block';
-			guiFunctionImg.style.margin = 'auto';
-			guiFunction.setAttribute('prefabName', prefabName);
-
-			const clickFunction = (e) =>{
-				const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
-				const rect = guiAsset.getBoundingClientRect();
-				const domx = Math.max(e.pageX, rect.right + 200);
-				const domy = e.pageY;
-
-				const x = domx / self.container.scale.x - self.container.x / self.container.scale.x;
-				const y = domy / self.container.scale.y - self.container.y / self.container.scale.x;
-
-				const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[prefabName].json));
-
-				const buildPrefabs = [];
-				let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
-
-				for(let j = 0; j<allObjects.length; j++){
-					const object = allObjects[j];
-					const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
-					if(prefabInstanceName){
-						const targetPrefab = this.activePrefabs[prefabInstanceName];
-						if(!buildPrefabs.includes(targetPrefab)){
-							buildPrefabs.push(targetPrefab);
-							targetPrefab.x += x;
-							targetPrefab.y += y;
+						if(guiFunctionImg.height>maxImageHeight){
+							guiFunctionImg.style.height = `${maxImageHeight}px`;
+						}else{
+							functionHeight = guiFunctionImg.height+10;
 						}
 					}
+					guiFunction.style.height = `${functionHeight}px`;
 				}
-				this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
-			}
 
-			guiFunction.addEventListener('click', clickFunction);
-			guiFunction.addEventListener('dragend', clickFunction);
-		}
+				innerFolder.appendChild(guiFunction);
+				guiFunctionImg.style.display = 'block';
+				guiFunctionImg.style.margin = 'auto';
+				guiFunction.setAttribute('prefabName', prefabName);
+
+				const clickFunction = (e) =>{
+					const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
+					const rect = guiAsset.getBoundingClientRect();
+					const domx = Math.max(e.pageX, rect.right + 200);
+					const domy = e.pageY;
+
+					const x = domx / self.container.scale.x - self.container.x / self.container.scale.x;
+					const y = domy / self.container.scale.y - self.container.y / self.container.scale.x;
+
+					if(folderName === 'Prefabs'){
+						const data = new self.prefabObject;
+						data.x = x;
+						data.y = y;
+						data.prefabName = guiFunction.getAttribute('prefabName');
+						data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
+						self.buildPrefabFromObj(data);
+					}else if(folderName === 'Blueprints'){
+						const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[prefabName].json));
+						const buildPrefabs = [];
+						let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
+						for(let j = 0; j<allObjects.length; j++){
+							const object = allObjects[j];
+							const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
+							if(prefabInstanceName){
+								const targetPrefab = this.activePrefabs[prefabInstanceName];
+								if(!buildPrefabs.includes(targetPrefab)){
+									buildPrefabs.push(targetPrefab);
+									targetPrefab.x += x;
+									targetPrefab.y += y;
+								}
+							}
+						}
+						this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
+					}
+				}
+				guiFunction.addEventListener('click', clickFunction);
+				guiFunction.addEventListener('dragend', clickFunction);
+			}
+		});
 	}
 	this.openTextEditor = function () {
 		const self = this;
@@ -4379,7 +4331,7 @@ const _B2dEditor = function () {
 		for (i = 0; i < arr.length; i++) {
 			group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 			if (this.lookupGroups[group] != undefined) {
-				var tarArray;
+				let tarArray = [];
 				if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group]._textures;
 				else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group]._bodies;
 				else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group]._joints;
@@ -6387,7 +6339,12 @@ const _B2dEditor = function () {
 		var image = game.app.renderer.plugins.extract.image(newContainer);
 		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
 		var prefabObject = this.activePrefabs[sprite.data.prefabInstanceName];
-		var instanceName = sprite.data.prefabInstanceName;
+
+
+		// a hack to delete blueprint triggers
+		const prefabTriggersCreated = objects.filter(obj=> obj.mySprite && obj.mySprite.data.type == this.object_TRIGGER);
+		if(prefabTriggersCreated) this.deleteObjects(prefabTriggersCreated);
+
 		this.deleteObjects([prefabObject]);
 
 		return image;
