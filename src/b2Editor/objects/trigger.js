@@ -351,6 +351,7 @@ export const actionDictionary = {
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
+    
     targetTypes.map(key => {
         if (triggerTargetType[key] == dataJoint.targetType) {
             ui.editorGUI.editData.targetTypeDropDown = key;
@@ -360,17 +361,18 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.humanUpdate = true;
         this.targetValue = value
     });
-
-    var repeatTypes = Object.keys(triggerRepeatType);
-    repeatTypes.map(key => {
-        if (triggerRepeatType[key] == dataJoint.repeatType) {
-            ui.editorGUI.editData.repeatTypeDropDown = key;
-        }
-    })
-    _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).onChange(function (value) {
-        this.humanUpdate = true;
-        this.targetValue = value
-    });
+    if(![triggerTargetType.click].includes(dataJoint.targetType)){
+        var repeatTypes = Object.keys(triggerRepeatType);
+        repeatTypes.map(key => {
+            if (triggerRepeatType[key] == dataJoint.repeatType) {
+                ui.editorGUI.editData.repeatTypeDropDown = key;
+            }
+        })
+        _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).onChange(function (value) {
+            this.humanUpdate = true;
+            this.targetValue = value
+        });
+    }
     ui.editorGUI.editData.selectTarget = function () {};
     var label = "Add Target";
     controller = _folder.add(ui.editorGUI.editData, "selectTarget").name(label);
