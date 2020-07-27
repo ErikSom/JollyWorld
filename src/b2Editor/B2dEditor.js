@@ -29,6 +29,19 @@ const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
 
 
+/* add animation object 
+
+select a group of graphics / texts / textures / texturegroups
+turn into frames based on depth
+select FPS
+works like any other image
+
+ability to turn back into group of images
+
+*/
+
+
+
 var b2Vec2 = Box2D.b2Vec2,
 	b2AABB = Box2D.b2AABB,
 	b2BodyDef = Box2D.b2BodyDef,
@@ -3469,6 +3482,7 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.targetType = trigger.triggerTargetType[controller.targetValue];
 						}
+						trigger.updateTriggerGUI();
 					} else if (controller.property == "repeatTypeDropDown") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
