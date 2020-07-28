@@ -5,7 +5,7 @@ import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
 import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
-import * as dat from "../../libs/dat.gui";
+
 import {
 	lineIntersect,
 	flatten,
@@ -433,6 +433,8 @@ const _B2dEditor = function () {
 		var case_JUST_TRIGGERS = 7;
 		var case_JUST_GRAPHICGROUPS = 8;
 		var case_JUST_TEXTS = 9;
+		var case_JUST_ANIMATIONGROUPS = 10;
+
 
 		var currentCase = case_NOTHING;
 		var prefabKeys = Object.keys(this.selectedPrefabs);
@@ -462,6 +464,7 @@ const _B2dEditor = function () {
 			var _selectedTextures = [];
 			var _selectedGraphics = [];
 			var _selectedGraphicGroups = [];
+			var _selectedAnimationGroups = [];
 			var _selectedPinJoints = [];
 			var _selectedSlideJoints = [];
 			var _selectedDistanceJoints = [];
@@ -488,13 +491,15 @@ const _B2dEditor = function () {
 					_selectedGraphics.push(_texture);
 				} else if (_texture.data && _texture.data.type == this.object_GRAPHICGROUP) {
 					_selectedGraphicGroups.push(_texture);
-				} else if (_texture.data && _texture.data.type == this.object_TEXT) {
+				} else if (_texture.data && _texture.data.type == this.object_ANIMATIONGROUP) {
+					_selectedAnimationGroups.push(_texture);
+				}else if (_texture.data && _texture.data.type == this.object_TEXT) {
 					_selectedTexts.push(_texture);
 				} else {
 					_selectedTextures.push(_texture);
 				}
 			}
-			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedGraphicGroups.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0);
+			var editingMultipleObjects = (_selectedTextures.length > 0 ? 1 : 0) + (_selectedGraphics.length > 0 ? 1 : 0) + (_selectedGraphicGroups.length > 0 ? 1 : 0) + (_selectedAnimationGroups.length > 0 ? 1 : 0) + (_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0);
 			if (editingMultipleObjects > 1) {
 				currentCase = case_MULTIPLE;
 			} else if (_selectedTextures.length > 0) {
@@ -503,7 +508,9 @@ const _B2dEditor = function () {
 				currentCase = case_JUST_GRAPHICS;
 			} else if (_selectedGraphicGroups.length > 0) {
 				currentCase = case_JUST_GRAPHICGROUPS;
-			} else if (_selectedTexts.length > 0) {
+			} else if (_selectedAnimationGroups.length > 0) {
+				currentCase = case_JUST_ANIMATIONGROUPS;
+			}else if (_selectedTexts.length > 0) {
 				currentCase = case_JUST_TEXTS;
 			} else {
 				currentCase = case_JUST_JOINTS;
@@ -546,6 +553,12 @@ const _B2dEditor = function () {
 				ui.editorGUI.editData = new this.graphicGroup;
 				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple graphicGroups');
 				else targetFolder = ui.editorGUI.addFolder('graphicGroup');
+				break;
+			case case_JUST_ANIMATIONGROUPS:
+				dataJoint = _selectedAnimationGroups[0].data;
+				ui.editorGUI.editData = new this.animationGroup;
+				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple animations');
+				else targetFolder = ui.editorGUI.addFolder('animation');
 				break;
 			case case_JUST_JOINTS:
 				var selectedType = ""
@@ -855,6 +868,28 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 				break;
+			case case_JUST_ANIMATIONGROUPS:
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				break;
 			case case_JUST_JOINTS:
 				this.addJointGUI(dataJoint, targetFolder);
 				break;
@@ -937,11 +972,22 @@ const _B2dEditor = function () {
 				}.bind(controller));
 				break;
 		}
+
+		const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
+		const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
+
 		if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
-			ui.editorGUI.editData.groupObjects = () => {
-				self.groupObjects();
-			};
-			controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
+			
+			let canGroup = true;
+			if(hasAnimation && hasOthers) canGroup = false; // we cant group when we have mixed animations and other graphics
+			if(canGroup && hasAnimation && this.selectedTextures.length > 1) canGroup = false; // we cant group multiple animations
+
+			if(canGroup){
+				ui.editorGUI.editData.groupObjects = () => {
+					self.groupObjects();
+				};
+				controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
+			}
 		} else {
 			if (this.selectedPhysicsBodies.length == 1) {
 				if (this.selectedPhysicsBodies[0].myTexture) {
@@ -958,7 +1004,14 @@ const _B2dEditor = function () {
 					controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
 				}
 			}
-
+		}
+		if(this.selectedPhysicsBodies.length === 0 && this.selectedTextures.length > 1){
+			if(!hasAnimation){
+				ui.editorGUI.editData.animateObjects = () => {
+					self.createAnimationGroup();
+				};
+				controller = targetFolder.add(ui.editorGUI.editData, "animateObjects").name('Create Animation');
+			}
 		}
 
 
@@ -1665,6 +1718,26 @@ const _B2dEditor = function () {
 	}
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
+		this.x = null;
+		this.y = null;
+		this.rotation = 0;
+		this.groups = "";
+		this.refName = "";
+		this.ID = 0;
+		this.graphicObjects = [];
+		this.bodyID = null;
+		this.texturePositionOffsetLength = null;
+		this.texturePositionOffsetAngle = null;
+		this.textureAngleOffset = null;
+		this.transparancy = 1;
+		this.tileTexture = '';
+		this.lockselection = false;
+		this.parallax = 0.0;
+		this.repeatTeleportX = 0;
+		this.repeatTeleportY = 0;
+	}
+	this.animationGroup = function () {
+		this.type = self.object_ANIMATIONGROUP;
 		this.x = null;
 		this.y = null;
 		this.rotation = 0;
@@ -4632,6 +4705,26 @@ const _B2dEditor = function () {
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
+	this.buildAnimationGroupFromObject = function (obj) {
+		var graphic = new PIXI.Container();
+		graphic.data = obj;
+		graphic.x = obj.x;
+		graphic.y = obj.y;
+		graphic.rotation = obj.rotation;
+
+		this.updateGraphicShapes(graphic);
+		this.textures.addChild(graphic);
+
+		if (graphic.data.bodyID != undefined) {
+			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
+			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		}
+
+		graphic.alpha = obj.transparancy;
+
+		this.addObjectToLookupGroups(graphic, graphic.data);
+		return graphic;
+	}
 	this.setScale = function (obj, scaleX, scaleY) {
 
 		//do we include a circle?
@@ -5116,6 +5209,61 @@ const _B2dEditor = function () {
 
 		return graphicObjects;
 	}
+	this.createAnimationGroup = function(){
+
+		var graphicGroup = new this.animationGroup();
+
+		//sort by childIndex
+		var graphic;
+		var i;
+		var centerPoint = {
+			x: 0,
+			y: 0
+		}
+		
+		const graphicObjects = [];
+		for(i = 0; i<this.selectedTextures.length; i++){
+			graphicObjects.push(this.selectedTextures[i]);
+		}
+
+		for (i = 0; i < graphicObjects.length; i++) {
+			graphic = graphicObjects[i];
+			this.updateObject(graphic, graphic.data);
+			centerPoint.x += graphic.x;
+			centerPoint.y += graphic.y;
+		}
+		centerPoint.x = centerPoint.x / graphicObjects.length;
+		centerPoint.y = centerPoint.y / graphicObjects.length;
+
+		graphicGroup.x = centerPoint.x;
+		graphicGroup.y = centerPoint.y;
+
+		graphicObjects.sort(function (a, b) {
+			return a.data.ID - b.data.ID;
+		});
+
+		for (i = 0; i < graphicObjects.length; i++) {
+			graphicObjects[i].data.x -= centerPoint.x;
+			graphicObjects[i].data.y -= centerPoint.y;
+			graphicGroup.graphicObjects.push(this.stringifyObject(graphicObjects[i].data));
+			this.deleteObjects([graphicObjects[i]]);
+		}
+
+		var graphic = this.buildGraphicGroupFromObj(graphicGroup);
+
+		var container = graphic.parent;
+		container.removeChild(graphic);
+		container.addChildAt(graphic, graphicObjects[0].data.ID);
+
+
+		this.selectedTextures = [];
+		this.updateSelection();
+
+
+		return graphic;
+
+
+	}
 
 
 	this.setBodyCollision = function (body, collision) {
@@ -5573,6 +5721,12 @@ const _B2dEditor = function () {
 			}else if(gObj instanceof this.textObject) {
 				g = this.buildTextGraphicFromObj(gObj);
 				g.pivot.set(g.width / 2, g.height / 2);
+			}else if (gObj instanceof this.graphicGroup) {
+				g = new PIXI.Container();
+				var graphic = new PIXI.Container();
+				g.data = gObj;
+				const groupGraphic = this.updateGraphicShapes(g);
+				g.data = null;
 			}
 			graphic.addChild(g);
 			g.x = gObj.x;
@@ -5862,7 +6016,18 @@ const _B2dEditor = function () {
 			arr[0] = obj.type;
 			arr[1] = obj.gravityX;
 			arr[2] = obj.gravityY;
-		}
+		}else if (arr[0] == this.object_ANIMATIONGROUP) {
+			arr[6] = obj.ID;
+			arr[7] = obj.graphicObjects;
+			arr[8] = obj.bodyID;
+			arr[9] = obj.texturePositionOffsetLength;
+			arr[10] = obj.texturePositionOffsetAngle;
+			arr[11] = obj.textureAngleOffset;
+			arr[12] = obj.transparancy !== undefined ? obj.transparancy : 1.0;
+			arr[13] = obj.parallax;
+			arr[14] = obj.repeatTeleportX;
+			arr[15] = obj.repeatTeleportY;
+		} 
 		return JSON.stringify(arr);
 	}
 	this.parseArrObject = function (arr) {
@@ -5977,6 +6142,18 @@ const _B2dEditor = function () {
 			obj.gravityX = arr[1];
 			obj.gravityY = arr[2];
 			return obj;
+		}else if (arr[0] == this.object_ANIMATIONGROUP) {
+			obj = new this.animationGroup();
+			obj.ID = arr[6];
+			obj.graphicObjects = arr[7];
+			obj.bodyID = arr[8];
+			obj.texturePositionOffsetLength = arr[9];
+			obj.texturePositionOffsetAngle = arr[10];
+			obj.textureAngleOffset = arr[11];
+			obj.transparancy = arr[12] !== undefined ? arr[12] : 1;
+			obj.parallax = arr[13] !== undefined ? arr[13] : 0;
+			obj.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
+			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
 		}
 
 		obj.type = arr[0];
@@ -5999,7 +6176,7 @@ const _B2dEditor = function () {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
-		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT) {
+		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT || data.type == this.object_ANIMATIONGROUP) {
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation;
@@ -6104,7 +6281,13 @@ const _B2dEditor = function () {
 					}
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
-				} else if (obj.type == this.object_TRIGGER) {
+				}else if (obj.type == this.object_ANIMATIONGROUP) {
+					if (obj.bodyID != undefined) {
+						obj.bodyID += startChildIndex;
+					}
+					worldObject = this.buildAnimationGroupFromObject(obj);
+					createdObjects._textures.push(worldObject);
+				}  else if (obj.type == this.object_TRIGGER) {
 					for (var j = 0; j < obj.triggerObjects.length; j++) {
 						obj.triggerObjects[j] += startChildIndex;
 					}
@@ -6564,6 +6747,7 @@ const _B2dEditor = function () {
 	this.object_TRIGGER = 8;
 	this.object_TEXT = 9;
 	this.object_SETTINGS = 10;
+	this.object_ANIMATIONGROUP = 11;
 
 
 	this.jointObject_TYPE_PIN = 0;
