@@ -1002,6 +1002,11 @@ const _B2dEditor = function () {
 						self.ungroupObjects();
 					};
 					controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+				}else if (this.selectedTextures[0].data.type == this.object_ANIMATIONGROUP) {
+					ui.editorGUI.editData.breakAnimation = () => {
+						self.ungroupObjects();
+					};
+					controller = targetFolder.add(ui.editorGUI.editData, "breakAnimation").name('Break Animation');
 				}
 			}
 		}
@@ -4930,7 +4935,7 @@ const _B2dEditor = function () {
 			}
 			if(this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
 		}
-		if (this.selectedTextures.length == 1 && this.selectedTextures[0].data.type == this.object_GRAPHICGROUP) {
+		if (this.selectedTextures.length == 1 && [this.object_GRAPHICGROUP, this.object_ANIMATIONGROUP].includes(this.selectedTextures[0].data.type)) {
 			this.ungroupGraphicObjects(this.selectedTextures[0]);
 		}
 		this.selectedTextures = [];
@@ -5197,6 +5202,8 @@ const _B2dEditor = function () {
 				graphic = this.buildTextureFromObj(graphicObject);
 			}else if(graphicObject.type == this.object_TEXT){
 				graphic = this.buildTextFromObj(graphicObject);
+			}else if(graphicObject.type == this.object_GRAPHICGROUP){
+				graphic = this.buildGraphicGroupFromObj(graphicObject);
 			}
 
 			const container = graphic.parent;
@@ -5723,9 +5730,8 @@ const _B2dEditor = function () {
 				g.pivot.set(g.width / 2, g.height / 2);
 			}else if (gObj instanceof this.graphicGroup) {
 				g = new PIXI.Container();
-				var graphic = new PIXI.Container();
 				g.data = gObj;
-				const groupGraphic = this.updateGraphicShapes(g);
+				this.updateGraphicShapes(g);
 				g.data = null;
 			}
 			graphic.addChild(g);
