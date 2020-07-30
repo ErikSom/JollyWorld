@@ -16,8 +16,6 @@ export const simplifyPath = function (vertices, smooth, zoom) {
         while((!optimizedVertices || optimizedVertices.length>editorSettings.pathSimplificationMaxVertices) && iterations < maxIterations){
             optimizedVertices = [];
             let path = new paper.Path({});
-
-            console.log(vertices);
             vertices.map((v) => {
                 path.add(new paper.Point(v.x*precision, v.y*precision));
             });
@@ -30,9 +28,9 @@ export const simplifyPath = function (vertices, smooth, zoom) {
             iterations++;
         }
     } else {
-        optimizedVertices = vertices;
         while((!optimizedVertices || optimizedVertices.length>editorSettings.pathSimplificationMaxVertices) && iterations < maxIterations){
-            optimizedVertices = simpler(optimizedVertices, (editorSettings.pathSimplificationTolerance+toleranceIncreaser)/zoom, false);
+            optimizedVertices = vertices.map(v=>({x:v.x*precision, y:v.y*precision}));
+            optimizedVertices = simpler(optimizedVertices, (editorSettings.pathSimplificationTolerance+toleranceIncreaser), false).map(v=>({x:v.x/precision, y:v.y/precision}));
             toleranceIncreaser += editorSettings.pathSimplificationTolerance;
             iterations++;
         }

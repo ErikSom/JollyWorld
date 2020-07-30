@@ -1,6 +1,6 @@
 export const editorSettings = {
     worldSize:{width:50000.0, height:50000.0},
-    pathSimplificationTolerance:1,
+    pathSimplificationTolerance:2.0,
     pathSmoothTolerance:2.5,
     pathSimplificationMaxVertices:100,
     maxLineVertices:100,
