@@ -68,6 +68,7 @@ const _B2dEditor = function () {
 
 	this.activePrefabs = {};
 	this.parallaxObject = [];
+	this.animationGroups = [];
 	this.prefabCounter = 0; //to ensure uniquenesss
 
 	this.container = null;
@@ -642,7 +643,7 @@ const _B2dEditor = function () {
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
 		});
-		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS) {
+		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS && currentCase != case_JUST_ANIMATIONGROUPS) {
 
 			var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
 			var currentSize = {
@@ -885,6 +886,16 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "fps", 1, 60).step(1.0);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "playing");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1430,7 +1441,7 @@ const _B2dEditor = function () {
 					copyArray.splice(i, 1);
 					i--;
 				}
-			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT) {
+			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT || data.type == this.object_ANIMATIONGROUP) {
 				let realIndex = 0;
 				for (j = 0; j < copyArray.length; j++) {
 					if (copyArray[j].ID == data.bodyID) {
@@ -1526,7 +1537,7 @@ const _B2dEditor = function () {
 
 			for (i = startChildIndex; i < this.textures.children.length; i++) {
 				sprite = this.textures.getChildAt(i);
-				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP && sprite.data.type != this.object_TEXT) {
+				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP && sprite.data.type != this.object_TEXT && sprite.data.type != this.object_ANIMATIONGROUP) {
 					var pos = sprite.myBody.GetPosition();
 					pos.x -= movX / this.PTM;
 					pos.y -= movY / this.PTM;
@@ -1648,6 +1659,11 @@ const _B2dEditor = function () {
 				this.triggerObjects[i].class.update();
 			}
 			this.handleParallax();
+			//handle animations
+			this.animationGroups.forEach(animationGroup=>{
+				if(animationGroup.playing) animationGroup.updateAnimation(this.deltaTime);
+			})
+
 		}
 	}
 
@@ -1760,6 +1776,8 @@ const _B2dEditor = function () {
 		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
+		this.fps = 12;
+		this.playing = true;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -3455,7 +3473,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue.toString();
-							if ([this.object_GRAPHICGROUP, this.object_TEXTURE].includes(sprite.data.type)) {
+							if ([this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP].includes(sprite.data.type)) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
 								if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
@@ -3616,6 +3634,12 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							const textContainer = this.selectedTextures[j];
 							textContainer.data[controller.property] = controller.targetValue;
+						}
+					}else if(controller.property == "fps" || controller.property == "playing"){
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							const animationGraphic = this.selectedTextures[j];
+							animationGraphic.data[controller.property] = controller.targetValue;
+							this.initAnimation(animationGraphic);
 						}
 					}
 						/* PREFAB SETTINGS */
@@ -4727,8 +4751,43 @@ const _B2dEditor = function () {
 
 		graphic.alpha = obj.transparancy;
 
+		this.initAnimation(graphic);
+
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
+	}
+	this.initAnimation = function(container){
+		container.frameTime = 1000/container.data.fps;
+		container.playing = container.data.playing;
+		if(!container.isAnimation){
+			container.isAnimation = true;
+			container.totalFrames = container.children.length;
+			for(let i = 1; i<container.totalFrames; i++){
+				container.children[i].visible = false;
+			}
+			container.currentFrameTime = 0;
+			container.currentFrame = 1;
+			container.updateAnimation = delta=>{
+				container.currentFrameTime+=delta;
+				while(container.currentFrameTime>=container.frameTime){
+					container.currentFrameTime -= container.frameTime;
+					container.nextFrame();
+				}
+			}
+			container.setFrame = index=>{
+				if(index>container.totalFrames) index = 1;
+				if(index<1) index = container.totalFrames;
+				container.children[container.currentFrame-1].visible = false;
+				container.children[index-1].visible = true;
+				container.currentFrame = index;
+			}
+			container.nextFrame = ()=>{
+				container.setFrame(container.currentFrame+1);
+			}
+			container.prevFrame = ()=>{
+				container.setFrame(container.currentFrame-1);
+			}
+		}
 	}
 	this.setScale = function (obj, scaleX, scaleY) {
 
@@ -5266,6 +5325,7 @@ const _B2dEditor = function () {
 		this.selectedTextures = [];
 		this.updateSelection();
 
+		this.initAnimation(graphic);
 
 		return graphic;
 
@@ -6033,6 +6093,8 @@ const _B2dEditor = function () {
 			arr[13] = obj.parallax;
 			arr[14] = obj.repeatTeleportX;
 			arr[15] = obj.repeatTeleportY;
+			arr[16] = obj.fps;
+			arr[17] = obj.playing;
 		} 
 		return JSON.stringify(arr);
 	}
@@ -6160,6 +6222,8 @@ const _B2dEditor = function () {
 			obj.parallax = arr[13] !== undefined ? arr[13] : 0;
 			obj.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
 			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
+			obj.fps = arr[16] !== undefined ? arr[16] : 12;
+			obj.playing = arr[17] !== undefined ? arr[17] : true;
 		}
 
 		obj.type = arr[0];
@@ -6390,6 +6454,7 @@ const _B2dEditor = function () {
 		this.activePrefabs = {};
 		this.lookupGroups = {};
 		this.parallaxObject = [];
+		this.animationGroups = [];
 
 		//reset gui
 		ui.destroyEditorGUI();
@@ -6489,6 +6554,9 @@ const _B2dEditor = function () {
 			if(!sprite.myBody && (sprite.data.parallax || sprite.data.repeatTeleportX || sprite.data.repeatTeleportY)){
 				sprite.parallaxStartPosition = sprite.position.clone();
 				this.parallaxObject.push(sprite);
+			}
+			if(sprite.data.type === this.object_ANIMATIONGROUP){
+				this.animationGroups.push(sprite);
 			}
 
 		}
