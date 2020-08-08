@@ -31,12 +31,15 @@ export class basePrefab {
         game.editor.deleteObjects([this.prefabObject]);
         this.destroyed = true;
     }
+    reset(){
+    }
 }
 
 
 
 export const LIBRARY_ADMIN = "admin";
 export const LIBRARY_MOVEMENT = "movement";
+export const LIBRARY_DECORATION = "decoration";
 export const LIBRARY_WEAPON = "weapon";
 export const LIBRARY_LEVEL = "level";
 export const LIBRARY_BLUEPRINTS = "blueprints";
@@ -82,3 +85,4 @@ importAll(require.context('./movement', true, /\.js$/));
 importAll(require.context('./level', true, /\.js$/));
 importAll(require.context('./guns', true, /\.js$/));
 importAll(require.context('./blueprints', true, /\.js$/));
+importAll(require.context('./decoration', true, /\.js$/));

@@ -643,7 +643,7 @@ const _B2dEditor = function () {
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
 		});
-		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS && currentCase != case_JUST_ANIMATIONGROUPS) {
+		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS && currentCase != case_JUST_ANIMATIONGROUPS && currentCase != case_JUST_PREFABS) {
 
 			var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
 			var currentSize = {
@@ -1623,6 +1623,7 @@ const _B2dEditor = function () {
 			body.mySprite.y = body.GetPosition().y * this.PTM;
 			//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
 			body.mySprite.rotation = body.GetAngle();
+			if(body.myTileSprite && body.myTileSprite.updateMeshVerticeRotation) body.myTileSprite.updateMeshVerticeRotation();
 		}
 	}
 	this.run = function () {
@@ -2324,7 +2325,6 @@ const _B2dEditor = function () {
 							const newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter + rAngle);
 							body.SetPosition(new b2Vec2(newX / this.PTM, newY / this.PTM));
 						}
-
 					}
 					this.updateBodyPosition(body);
 				} else {
@@ -2348,6 +2348,7 @@ const _B2dEditor = function () {
 							sprite.x = newX;
 							sprite.y = newY;
 						}
+
 					}
 
 				}
@@ -5863,11 +5864,48 @@ const _B2dEditor = function () {
 					}
 				}
 
-				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices, );
+				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
-			}
 
+				mesh.fixTextureRotation = true;
+				mesh.fixTextureRotationOffset = 0;
+				console.log(mesh, "<------------ Mesh");
+
+				if(mesh.fixTextureRotation){
+					// find center vertice
+					mesh.cachedSpriteRotation = 0;
+					mesh.verticesClone = Float32Array.from(mesh.vertices);
+					mesh.fixedTextureRotationOffset = Math.PI/2;
+					mesh.updateMeshVerticeRotation = ()=>{
+						if(mesh.cachedSpriteRotation != targetSprite.rotation){
+							console.log("Update mesh..");
+							for(let i = 0; i<vertices.length; i+=2){
+								let x = mesh.verticesClone[i];
+								let y = mesh.verticesClone[i+1];
+								let l = Math.sqrt(x*x+y*y);
+								let a = Math.atan2(y, x);
+								a += targetSprite.rotation;
+								a += mesh.fixedTextureRotationOffset;
+								mesh.vertices[i] = l*Math.cos(a);
+								mesh.vertices[i+1] = l*Math.sin(a);
+							}
+							const uvs = new Float32Array(mesh.vertices.length);
+							for (i = 0; i < mesh.vertices.length; i++) {
+								uvs[i] = mesh.vertices[i] * 2.0 / tex.width;
+								if (i & 1) {
+									uvs[i] = mesh.vertices[i] * 2.0 / tex.width + 0.5;
+								}
+							}
+							mesh.uvs = uvs;
+							mesh.rotation = -targetSprite.rotation+mesh.fixedTextureRotationOffset;
+							mesh.cachedSpriteRotation = targetSprite.rotation
+							mesh.dirty++;
+						}
+					}
+					mesh.updateMeshVerticeRotation();
+				}
+			}
 			target.myTileSprite.texture = tex;
 			let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
 			outlineFilter.padding = targetSprite.data.lineWidth+2; // added 2 to fix line flickering
@@ -6451,6 +6489,11 @@ const _B2dEditor = function () {
 			});
 			i--;
 		}
+
+		Object.keys(this.activePrefabs).forEach(prefab =>{
+			this.activePrefabs[prefab].class.reset();
+		})
+
 		this.activePrefabs = {};
 		this.lookupGroups = {};
 		this.parallaxObject = [];

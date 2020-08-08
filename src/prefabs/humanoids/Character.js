@@ -7,6 +7,7 @@ import {
     Settings
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
+import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
 
 class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -123,6 +124,11 @@ class Character extends PrefabManager.basePrefab {
     static GORE_BASH = 0;
     static GORE_SNAP = 1;
 
+    dealDamage(damage){
+        self.life -= damage;
+        globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage})
+    }
+
     initContactListener() {
         super.initContactListener();
         var self = this;
@@ -137,7 +143,7 @@ class Character extends PrefabManager.basePrefab {
 
                     // Should the body break?
                         // var count:int = contact.GetManifold().m_pointCount;
-                        
+
                         // var maxImpulse:Number = 0.0;
                         // for (var i:int = 0; i < count; i++)
                         // {
@@ -155,8 +161,7 @@ class Character extends PrefabManager.basePrefab {
                     const minForceForDamage = 10.0;
                     const forceToDamageDivider = 10.0;
                     if(force>minForceForDamage){
-                        self.life -= minForceForDamage/forceToDamageDivider;
-                        console.log("LIFE:", self.life)
+                        self.dealDamage(minForceForDamage/forceToDamageDivider)
                     }
 
                     if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {
