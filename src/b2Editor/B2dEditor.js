@@ -170,7 +170,7 @@ const _B2dEditor = function () {
 
 
 
-
+	this.prefabListGuiState = {};
 	this.showPrefabList = function () {
 		const prefabPages = PrefabManager.getLibraryKeys();
 
@@ -184,9 +184,18 @@ const _B2dEditor = function () {
 
 			if(folderName === 'Prefabs'){
 				folder.add(self, "assetSelectedGroup", prefabPages).onChange(function (value) {
+
+					let folder;
+					for (var propt in targetFolder.__folders) {
+						folder = targetFolder.__folders[propt];
+						self.prefabListGuiState[propt] = folder.closed;
+					}
+
 					ui.destroyEditorGUI();
 					ui.buildEditorGUI();
+
 					self.showPrefabList();
+
 					ui.registerDragWindow(ui.editorGUI);
 				});
 			}
@@ -276,6 +285,10 @@ const _B2dEditor = function () {
 				guiFunction.addEventListener('dragend', clickFunction);
 			}
 		});
+		for (let propt in targetFolder.__folders) {
+			let folder = targetFolder.__folders[propt];
+			folder.closed = self.prefabListGuiState[propt] === undefined ? true : self.prefabListGuiState[propt];
+		}
 	}
 	this.openTextEditor = function () {
 		const self = this;
@@ -918,17 +931,19 @@ const _B2dEditor = function () {
 						ui.editorGUI.editData[key] = prefabObjectSettings[key];
 						if (prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
-							targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step).onChange(function (value) {
+							controller = targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step)
+							controller.onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
-							});
+							}.bind(controller));
 						} else {
 							if (prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
 							else argument = null;
-							targetFolder.add(ui.editorGUI.editData, key, argument).onChange(function (value) {
+							controller = targetFolder.add(ui.editorGUI.editData, key, argument);
+							controller.onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
-							});
+							}.bind(controller));
 						}
 					}
 				}
@@ -3161,11 +3176,9 @@ const _B2dEditor = function () {
 			let j;
 			let i;
 			for (i in controllers) {
-				controller = controllers[i]
-
+				controller = controllers[i];
 				if (controller.humanUpdate) {
 					controller.humanUpdate = false;
-
 					if (controller.property == "typeName") {
 						if (this.selectedTool == this.tool_JOINTS) {
 							var oldData = ui.editorGUI.editData;
@@ -3437,6 +3450,7 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.colorLine[0] = controller.targetValue.toString();
 							this.updateBodyShapes(body);
+							this.updateTileSprite(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
@@ -3453,6 +3467,7 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.lineWidth[0] = controller.targetValue;
 							this.updateBodyShapes(body);
+							this.updateTileSprite(body);
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
@@ -3645,6 +3660,7 @@ const _B2dEditor = function () {
 					}
 						/* PREFAB SETTINGS */
 					else {
+						console.log("Dafuq...", controller.property, controller.targetValue)
 						//Its not part of the standard list, so probably a custom list. Lets check which prefab is connected and try to set somthing there
 						const prefabKeys = Object.keys(this.selectedPrefabs);
 						if (prefabKeys.length > 0) {
@@ -5830,9 +5846,12 @@ const _B2dEditor = function () {
 		if (tileTexture && tileTexture != "") {
 
 			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) {
+
+
+				const color = parseInt([].concat(targetSprite.data.colorLine)[0].slice(1), 16);
 				target.myTileSprite.alpha = targetSprite.data.transparancy;
-				let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
-				outlineFilter.padding = targetSprite.data.lineWidth+2; // added 2 to fix line flickering
+				let outlineFilter = new PIXIFILTERS.OutlineFilter([].concat(targetSprite.data.lineWidth)[0], color, 0.1);
+				outlineFilter.padding = [].concat(targetSprite.data.lineWidth)[0]+2; // added 2 to fix line flickering
 				targetSprite.filters = [outlineFilter]
 				targetGraphic.alpha = 0;
 				return;
@@ -5869,17 +5888,17 @@ const _B2dEditor = function () {
 				target.myTileSprite = mesh;
 
 				mesh.fixTextureRotation = true;
-				mesh.fixTextureRotationOffset = 0;
-				console.log(mesh, "<------------ Mesh");
 
 				if(mesh.fixTextureRotation){
 					// find center vertice
 					mesh.cachedSpriteRotation = 0;
 					mesh.verticesClone = Float32Array.from(mesh.vertices);
-					mesh.fixedTextureRotationOffset = Math.PI/2;
-					mesh.updateMeshVerticeRotation = ()=>{
-						if(mesh.cachedSpriteRotation != targetSprite.rotation){
-							console.log("Update mesh..");
+					// mesh.fixedTextureRotationOffset = Math.PI/2;
+					mesh.updateMeshVerticeRotation = force=>{
+						console.log("Called.. 1");
+						if(mesh.cachedSpriteRotation != targetSprite.rotation || force){
+							console.log("Called.. 2");
+
 							for(let i = 0; i<vertices.length; i+=2){
 								let x = mesh.verticesClone[i];
 								let y = mesh.verticesClone[i+1];
@@ -5898,7 +5917,7 @@ const _B2dEditor = function () {
 								}
 							}
 							mesh.uvs = uvs;
-							mesh.rotation = -targetSprite.rotation+mesh.fixedTextureRotationOffset;
+							mesh.rotation = -targetSprite.rotation-mesh.fixedTextureRotationOffset;
 							mesh.cachedSpriteRotation = targetSprite.rotation
 							mesh.dirty++;
 						}
@@ -5906,9 +5925,11 @@ const _B2dEditor = function () {
 					mesh.updateMeshVerticeRotation();
 				}
 			}
+
 			target.myTileSprite.texture = tex;
-			let outlineFilter = new PIXIFILTERS.OutlineFilter(targetSprite.data.lineWidth, targetSprite.data.colorLine, 0.1);
-			outlineFilter.padding = targetSprite.data.lineWidth+2; // added 2 to fix line flickering
+			const color = parseInt([].concat(targetSprite.data.colorLine)[0].slice(1), 16);
+			let outlineFilter = new PIXIFILTERS.OutlineFilter([].concat(targetSprite.data.lineWidth)[0], color, 0.1);
+			outlineFilter.padding = [].concat(targetSprite.data.lineWidth)[0]+2; // added 2 to fix line flickering
 			targetSprite.filters = [outlineFilter];
 			targetGraphic.alpha = 0;
 		}
