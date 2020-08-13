@@ -12,13 +12,7 @@ class ForceField extends PrefabManager.basePrefab {
 		this.forceField = this.lookupObject['forcefield_body'];
 		this.forceField.myTileSprite.fixTextureRotation = true;
 
-		this.forceField.myTileSprite.fixTextureRotation = true;
-
-		this.baseSize = 200;
-		this.width = this.prefabObject.settings.width;
-		this.height = this.prefabObject.settings.height;
-		this.setWidthHeight(this.width, this.height);
-
+		this.width = this.height = 200;
 
 		this.fieldBodies = [];
     }
@@ -39,6 +33,9 @@ class ForceField extends PrefabManager.basePrefab {
 	setDisableGravity(disabled){
 		if(disabled) this.forceField.myTileSprite.tint = 0x00d8ff;
 		else this.forceField.myTileSprite.tint = 0xffd200;
+	}
+	setVisible(visible){
+		this.forceField.myTileSprite.visible = visible;
 	}
 
 	setWidthHeight(width, height){
@@ -135,6 +132,9 @@ class ForceField extends PrefabManager.basePrefab {
 			case 'height':
 				this.setWidthHeight(this.width, value);
 			break
+			case 'visible':
+				this.setVisible(value);
+			break
         }
 	}
 	initContactListener() {
@@ -184,6 +184,7 @@ ForceField.settings = Object.assign({}, ForceField.settings, {
 	"damping": 1.0,
 	"width": 200,
 	"height": 200,
+	"visible": true,
 });
 ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 	"disableGravity": true,
@@ -211,7 +212,8 @@ ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 		min:10.0,
 		max:1000.0,
 		step:1.0
-	}
+	},
+	"visible": true
 });
 
 

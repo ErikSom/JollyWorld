@@ -4846,26 +4846,29 @@ const _B2dEditor = function () {
 					}
 					shape.Set(oldVertices);
 
-					oldVertices = obj.mySprite.data.vertices[i];
+					if(data.type === this.object_TRIGGER){
+						obj.mySprite.data.vertices = oldVertices.map(vertice =>({x:vertice.x, y:vertice.y}));
+					}
 
+					oldVertices = obj.mySprite.data.vertices[i];
 					for (let j = 0; j < oldVertices.length; j++) {
 						oldVertices[j].x = oldVertices[j].x * scaleX;
 						oldVertices[j].y = oldVertices[j].y * scaleY;
 					}
 
-					// if(obj.mySprite.data.vertices[i] instanceof Array)  obj.mySprite.data.vertices[i] = oldVertices;
-					// else obj.mySprite.data.vertices = oldVertices;
-
 				} else if (shape instanceof Box2D.b2CircleShape) {
 					shape.SetRadius(shape.GetRadius() * scaleX);
-					body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
+					if(Array.isArray(body.mySprite.data.radius)) body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
+					else body.mySprite.data.radius = body.mySprite.data.radius* scaleX;
 				}
 				fixture.DestroyProxies();
 				fixture.CreateProxies(body.m_xf);
 
 			};
-			this.updateBodyShapes(body);
-			this.updateTileSprite(body, true);
+			if(data.type !== this.object_TRIGGER){
+				this.updateBodyShapes(body);
+				this.updateTileSprite(body, true);
+			}
 
 			if (body.myTexture) this.setScale(body.myTexture, scaleX, scaleY);
 
