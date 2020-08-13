@@ -1283,7 +1283,7 @@ const _B2dEditor = function () {
 						trigger.removeTargetFromTrigger(myTrigger, b.mySprite);
 					}
 				}
-
+				b.mySprite.destroyed = true;
 				b.mySprite.parent.removeChild(b.mySprite);
 				b.mySprite.destroy({
 					children: true,
