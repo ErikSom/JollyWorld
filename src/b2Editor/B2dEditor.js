@@ -3244,9 +3244,8 @@ const _B2dEditor = function () {
 						});
 						this.storeUndoMovement();
 
-					} else if (controller.property == "width" || controller.property == "height") {
+					} else if ((controller.property == "width" || controller.property == "height") && this.selectedPhysicsBodies.length+this.selectedTextures.length>0) {
 						//bodies & sprites & ??prefabs
-
 						var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
 						var currentSize = {
 							width: aabb.GetExtents().x * 2 * this.PTM,
@@ -5895,10 +5894,7 @@ const _B2dEditor = function () {
 					mesh.verticesClone = Float32Array.from(mesh.vertices);
 					// mesh.fixedTextureRotationOffset = Math.PI/2;
 					mesh.updateMeshVerticeRotation = force=>{
-						console.log("Called.. 1");
 						if(mesh.cachedSpriteRotation != targetSprite.rotation || force){
-							console.log("Called.. 2");
-
 							for(let i = 0; i<vertices.length; i+=2){
 								let x = mesh.verticesClone[i];
 								let y = mesh.verticesClone[i+1];
