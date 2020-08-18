@@ -5889,8 +5889,6 @@ const _B2dEditor = function () {
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
 
-				mesh.fixTextureRotation = true;
-
 				if(mesh.fixTextureRotation){
 					// find center vertice
 					mesh.cachedSpriteRotation = 0;
