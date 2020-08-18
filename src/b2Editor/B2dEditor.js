@@ -1077,18 +1077,7 @@ const _B2dEditor = function () {
 				this.targetValue = value;
 			});
 
-			var lowerLimit = 0;
-			var higherLimit = 0;
-
-			if (dataJoint.jointType == this.jointObject_TYPE_PIN) {
-				lowerLimit = 0;
-				higherLimit = Settings.motorForceLimit;
-			} else {
-				lowerLimit = 0;
-				higherLimit = 1000;
-			}
-
-			controller = folder.add(ui.editorGUI.editData, "maxMotorTorque", lowerLimit, higherLimit);
+			controller = folder.add(ui.editorGUI.editData, "maxMotorTorque", 0, Settings.motorForceLimit);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
@@ -1096,7 +1085,7 @@ const _B2dEditor = function () {
 
 			if (dataJoint.jointType == this.jointObject_TYPE_SLIDE) controller.name("maxMotorForce");
 
-			controller = folder.add(ui.editorGUI.editData, "motorSpeed", -20, 20);
+			controller = folder.add(ui.editorGUI.editData, "motorSpeed", -Settings.motorSpeedLimit, Settings.motorSpeedLimit);
 			controller.onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value
@@ -1638,7 +1627,7 @@ const _B2dEditor = function () {
 			body.mySprite.y = body.GetPosition().y * this.PTM;
 			//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
 			body.mySprite.rotation = body.GetAngle();
-			if(body.myTileSprite && body.myTileSprite.updateMeshVerticeRotation) body.myTileSprite.updateMeshVerticeRotation();
+			if(body.myTileSprite && body.myTileSprite.fixTextureRotation) body.myTileSprite.updateMeshVerticeRotation();
 		}
 	}
 	this.run = function () {
@@ -5889,37 +5878,34 @@ const _B2dEditor = function () {
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
 
-				if(mesh.fixTextureRotation){
-					// find center vertice
-					mesh.cachedSpriteRotation = 0;
-					mesh.verticesClone = Float32Array.from(mesh.vertices);
-					// mesh.fixedTextureRotationOffset = Math.PI/2;
-					mesh.updateMeshVerticeRotation = force=>{
-						if(mesh.cachedSpriteRotation != targetSprite.rotation || force){
-							for(let i = 0; i<vertices.length; i+=2){
-								let x = mesh.verticesClone[i];
-								let y = mesh.verticesClone[i+1];
-								let l = Math.sqrt(x*x+y*y);
-								let a = Math.atan2(y, x);
-								a += targetSprite.rotation;
-								a += mesh.fixedTextureRotationOffset;
-								mesh.vertices[i] = l*Math.cos(a);
-								mesh.vertices[i+1] = l*Math.sin(a);
-							}
-							const uvs = new Float32Array(mesh.vertices.length);
-							for (i = 0; i < mesh.vertices.length; i++) {
-								uvs[i] = mesh.vertices[i] * 2.0 / tex.width;
-								if (i & 1) {
-									uvs[i] = mesh.vertices[i] * 2.0 / tex.width + 0.5;
-								}
-							}
-							mesh.uvs = uvs;
-							mesh.rotation = -targetSprite.rotation-mesh.fixedTextureRotationOffset;
-							mesh.cachedSpriteRotation = targetSprite.rotation
-							mesh.dirty++;
+				// find center vertice
+				mesh.cachedSpriteRotation = 0;
+				mesh.verticesClone = Float32Array.from(mesh.vertices);
+				// mesh.fixedTextureRotationOffset = Math.PI/2;
+				mesh.updateMeshVerticeRotation = force=>{
+					if(mesh.cachedSpriteRotation != targetSprite.rotation || force){
+						for(let i = 0; i<vertices.length; i+=2){
+							let x = mesh.verticesClone[i];
+							let y = mesh.verticesClone[i+1];
+							let l = Math.sqrt(x*x+y*y);
+							let a = Math.atan2(y, x);
+							a += targetSprite.rotation;
+							a += mesh.fixedTextureRotationOffset;
+							mesh.vertices[i] = l*Math.cos(a);
+							mesh.vertices[i+1] = l*Math.sin(a);
 						}
+						const uvs = new Float32Array(mesh.vertices.length);
+						for (i = 0; i < mesh.vertices.length; i++) {
+							uvs[i] = mesh.vertices[i] * 2.0 / tex.width;
+							if (i & 1) {
+								uvs[i] = mesh.vertices[i] * 2.0 / tex.width + 0.5;
+							}
+						}
+						mesh.uvs = uvs;
+						mesh.rotation = -targetSprite.rotation-mesh.fixedTextureRotationOffset;
+						mesh.cachedSpriteRotation = targetSprite.rotation
+						mesh.dirty++;
 					}
-					mesh.updateMeshVerticeRotation();
 				}
 			}
 

@@ -1499,7 +1499,7 @@ let editorGUIPos = {
     y: 0
 };
 export const buildEditorGUI = function () {
-    const editorGUIWidth = 200;
+    const editorGUIWidth = 270;
     editorGUI = new dat.GUI({
         autoPlace: false,
         width: editorGUIWidth

@@ -187,6 +187,16 @@ ForceField.settings = Object.assign({}, ForceField.settings, {
 	"visible": true,
 });
 ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
+	"width":{
+		min:10.0,
+		max:3000.0,
+		step:1.0
+	},
+	"height":{
+		min:10.0,
+		max:3000.0,
+		step:1.0
+	},
 	"disableGravity": true,
 	"direction": {
         min: 0.0,
@@ -202,16 +212,6 @@ ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 		min:0.0,
 		max:20.0,
 		step:0.01
-	},
-	"width":{
-		min:10.0,
-		max:1000.0,
-		step:1.0
-	},
-	"height":{
-		min:10.0,
-		max:1000.0,
-		step:1.0
 	},
 	"visible": true
 });

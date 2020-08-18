@@ -23,10 +23,9 @@ export var Settings = {
     /*CULLING SETTINGS*/
 
     /*LIMITS*/
-    motorSpeedLimit:20,
+    motorSpeedLimit:100,
     motorForceLimit:50000,
     slideJointDistanceLimit:5000,
-    
 
     //FIREBASE
     levelsPerRequest:100,
