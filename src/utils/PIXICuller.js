@@ -103,8 +103,12 @@ const placeGraphicInCells = function (graphic) {
          return;
     }
 
-    const startX = Math.floor((graphic.x - graphic._cullingWidthExtent) / cellSize.x);
-    const startY = Math.floor((graphic.y - graphic._cullingHeightExtent) / cellSize.y);
+    var cx = graphic._cachedBounds.x + graphic._cachedBounds.width/2;
+    var cy = graphic._cachedBounds.y + graphic._cachedBounds.height/2;
+    const center = graphic.localTransform.apply(new PIXI.Point(cx, cy));
+
+    const startX = Math.floor((center.x - graphic._cullingWidthExtent) / cellSize.x);
+    const startY = Math.floor((center.y - graphic._cullingHeightExtent) / cellSize.y);
 
     for (let i = 0; i < graphic._cullingXTiles; i++) {
         for (let j = 0; j < graphic._cullingYTiles; j++) {
@@ -152,20 +156,17 @@ const initGraphicForCulling = function (graphic) {
 }
 export const getSizeInfoForGraphic = function (graphic) {
     const bounds = graphic.getLocalBounds();
-    graphic._cullingWidthExtent = bounds.width / 2;
-    graphic._cullingHeightExtent = bounds.height / 2;
-    graphic._cullingXTiles = Math.ceil(bounds.width / cellSize.x);
-    graphic._cullingYTiles = Math.ceil(bounds.height / cellSize.y);
+    graphic._cachedBounds = bounds;
+
+    // fix to allow rotation
+    const maxLength = Math.sqrt(bounds.width*bounds.width+bounds.height*bounds.height);
+    graphic._cullingWidthExtent = maxLength / 2;
+    graphic._cullingHeightExtent = maxLength / 2;
+
+    graphic._cullingXTiles = Math.ceil(maxLength / cellSize.x);
+    graphic._cullingYTiles = Math.ceil(maxLength / cellSize.y);
     graphic._cullingSizeDirty = false;
 
-    //fix to allow rotation
-    if(graphic._cullingWidthExtent > graphic._cullingHeightExtent){
-        graphic._cullingHeightExtent = graphic._cullingWidthExtent;
-        graphic._cullingYTiles = graphic._cullingXTiles;
-    }else{
-        graphic._cullingWidthExtent = graphic._cullingHeightExtent;
-        graphic._cullingXTiles = graphic._cullingYTiles;
-    }
 }
 
 const updateVisibleCells = function () {
