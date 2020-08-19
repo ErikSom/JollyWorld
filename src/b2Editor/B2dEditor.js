@@ -4857,6 +4857,10 @@ const _B2dEditor = function () {
 			if(data.type !== this.object_TRIGGER){
 				this.updateBodyShapes(body);
 				this.updateTileSprite(body, true);
+				// needed to update the culling engine
+				body.mySprite._cullingSizeDirty = true;
+				body.mySprite.position.x++;
+				body.mySprite.position.x--;
 			}
 
 			if (body.myTexture) this.setScale(body.myTexture, scaleX, scaleY);
@@ -4906,7 +4910,7 @@ const _B2dEditor = function () {
 					sprite.data.graphicObjects[j] = this.stringifyObject(gObj);
 				}
 				this.updateGraphicShapes(sprite);
-
+				// needed to update the culling engine
 			} else if (sprite.data.type == this.object_GRAPHIC) {
 				for (let j = 0; j < sprite.data.vertices.length; j++) {
 					sprite.data.vertices[j].x *= scaleX;
@@ -4928,6 +4932,10 @@ const _B2dEditor = function () {
 				sprite.data.texturePositionOffsetLength = Math.sqrt(xL * xL + yL * yL);
 
 			}
+			//update culling shape
+			sprite._cullingSizeDirty = true;
+			sprite.x++;
+			sprite.x--;
 
 		}
 

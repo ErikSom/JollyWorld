@@ -96,7 +96,6 @@ const placeGraphicInCells = function (graphic) {
     } else {
         initGraphicForCulling(graphic);
     }
-
     if (graphic._cullingSizeDirty){
          getSizeInfoForGraphic(graphic);
          //"getSizeInfoForGraphic" calls "updateTransform" which calls recursive "place"  so its ok , but this is a bit hacky
