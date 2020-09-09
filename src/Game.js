@@ -85,6 +85,7 @@ function Game() {
     this.levelStartTime = 0;
     this.levelWon = false;
     this.gameOver = false;
+    this.checkPointData = null;
 
     this.ui = ui;
 
@@ -385,7 +386,8 @@ function Game() {
         this.editor.buildJSON(worldJSON);
         this.doAutoSave();
     }
-    this.resetWorld = function () {
+    this.resetWorld = function (doCheckpoint) {
+        const checkPointData = this.checkPointData;
         this.resetGame();
         if (this.gameState == this.GAMESTATE_EDITOR) {
             this.stopTestingWorld();
@@ -393,6 +395,27 @@ function Game() {
         }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
             this.initLevel(this.currentLevelData);
             this.playWorld();
+
+            if(doCheckpoint && checkPointData){
+                const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
+                const allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints);
+
+                const positionDiff = {x:checkPointData.x*this.editor.PTM-this.playerPrefabObject.x, y:checkPointData.y*this.editor.PTM-this.playerPrefabObject.y, }
+
+                const perpendularAngle = checkPointData.rotation - Math.PI/2;
+                const checkPointOffset = 200;
+                positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
+                positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
+
+                this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
+                this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
+
+                prefabLookupObject._bodies.forEach(body =>{
+                    this.editor.updateBodyPosition(body);
+                });
+                this.checkPointData = checkPointData;
+            }
+
         }
     }
     this.stopWorld = function () {
@@ -430,6 +453,7 @@ function Game() {
     this.resetGame = function(){
         this.levelWon = false;
         this.gameOver = false;
+        this.checkPointData = null;
     }
     // playWorld/testWorld/editoWorld
     this.autoSaveTimeOutID;
@@ -497,6 +521,16 @@ function Game() {
     this.levelHasChanges = function () {
         if (game.currentLevelData.json != game.editor.stringifyWorldJSON()) return true;
         return false;
+    }
+    this.checkpoint = function (object) {
+        if(!this.checkPointData || this.checkPointData.object !== object){
+            this.checkPointData = {
+                x:object.GetPosition().x,
+                y:object.GetPosition().y,
+                rotation:object.GetAngle(),
+                object
+            }
+        }
     }
     this.win = function () {
         if (!this.levelWon) {

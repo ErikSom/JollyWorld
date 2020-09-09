@@ -579,6 +579,16 @@ function UIManager() {
             downvoteButton.appendChild(thumbIcon);
 
 
+            let checkPointButton = document.createElement('div');
+            checkPointButton.setAttribute('class', 'startButton menuButton')
+            checkPointButton.innerHTML = 'Checkpoint';
+            divWrapper.appendChild(checkPointButton);
+
+            checkPointButton.addEventListener('click', () => {
+                game.resetWorld(true);
+                game.unpauseGame();
+            })
+
             let restartButton = document.createElement('div');
             restartButton.setAttribute('class', 'startButton menuButton')
             restartButton.innerHTML = 'Restart';
@@ -739,7 +749,7 @@ function UIManager() {
 
             restartButton.addEventListener('click', () => {
                 game.resetWorld();
-                game.unpauseGame();
+                this.hideWinScreen();
             })
 
             let exitButton = document.createElement('div');
@@ -748,17 +758,8 @@ function UIManager() {
             divWrapperNormal.appendChild(exitButton);
 
             exitButton.addEventListener('click', () => {
-                game.unpauseGame();
+                this.hideWinScreen();
                 game.openMainMenu();
-            })
-
-            let resumeButton = document.createElement('div');
-            resumeButton.setAttribute('class', 'startButton menuButton')
-            resumeButton.innerHTML = 'Resume';
-            divWrapperNormal.appendChild(resumeButton);
-
-            resumeButton.addEventListener('click', () => {
-                game.unpauseGame();
             })
 
             targetDomElement.appendChild(divWrapperNormal);
