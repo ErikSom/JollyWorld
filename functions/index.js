@@ -64,7 +64,6 @@ exports.setRangedVotes = functions.https.onCall((data, context) => {
                if (now.isoWeekday() === creationDate.isoWeekday()) {
                     const day = creationDate.isoWeekday();
                     const firstDayValue = `${creationDate.year()}w${paddedWeek}d${day}_${voteAvg}`; //e.g. 2018w03d3_0.8483
-    
                     updateObject.firstDay_voteAvg = firstDayValue;
                 }
 

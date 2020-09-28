@@ -1,6 +1,8 @@
 import {
     firebaseManager
 } from '../utils/FireBaseManager';
+import * as FireBaseCache from '../utils/FireBaseCacheManager'
+
 import {
     game
 } from '../Game';
@@ -10,12 +12,7 @@ import * as formatTimestamp from '../b2Editor/utils/formatTimestamp';
 
 import anime from 'animejs/lib/anime.es';
 
-const PIXI = require('pixi.js');
-
 let customGUIContainer = document.getElementById('game-ui-container');
-
-let levelItemHolder;
-let levelItemElement;
 
 let mainMenu;
 let gameOver;
@@ -532,11 +529,7 @@ function UIManager() {
             upvoteButton.setAttribute('class', 'startButton menuButton upvote')
             ratingHolder.appendChild(upvoteButton);
 
-            upvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate);
 
-                game.editor.ui.showLoginScreen();
-            });
 
             let thumbIcon = document.createElement('div');
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
@@ -570,9 +563,17 @@ function UIManager() {
             downvoteButton.setAttribute('class', 'startButton menuButton downvote')
             ratingHolder.appendChild(downvoteButton);
 
-            downvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate);
+            upvoteButton.addEventListener('click', () => {
+                firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate).then(()=>{
+                    shouldShowVoteButton(upvoteButton, downvoteButton)
+                });
             });
+            downvoteButton.addEventListener('click', () => {
+                firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate).then(()=>{
+                    shouldShowVoteButton(upvoteButton, downvoteButton)
+                });
+            });
+            shouldShowVoteButton(upvoteButton, downvoteButton);
 
             thumbIcon = document.createElement('div');
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
@@ -689,11 +690,7 @@ function UIManager() {
             upvoteButton.setAttribute('class', 'startButton menuButton upvote')
             ratingHolder.appendChild(upvoteButton);
 
-            upvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate);
 
-                game.editor.ui.showLoginScreen();
-            });
 
             let thumbIcon = document.createElement('div');
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
@@ -727,9 +724,18 @@ function UIManager() {
             downvoteButton.setAttribute('class', 'startButton menuButton downvote')
             ratingHolder.appendChild(downvoteButton);
 
-            downvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate);
+            upvoteButton.addEventListener('click', () => {
+                firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate).then(()=>{
+                    shouldShowVoteButton(upvoteButton, downvoteButton)
+                });
             });
+
+            downvoteButton.addEventListener('click', () => {
+                firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate).then(()=>{
+                    shouldShowVoteButton(upvoteButton, downvoteButton)
+                });
+            });
+            shouldShowVoteButton(upvoteButton, downvoteButton);
 
             thumbIcon = document.createElement('div');
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
@@ -1123,3 +1129,18 @@ function UIManager() {
     this.FILTER_RANGE_ANYTIME = "Anytime";
 }
 export var ui = new UIManager();
+
+
+const shouldShowVoteButton = (up, down)=>{
+    const vote = FireBaseCache.voteDataCache[game.currentLevelData.uid];
+    console.log("VOTE??", vote, up, down)
+    if(vote){
+        if(vote > 0){
+            up.style.filter = '';
+            down.style.filter = 'brightness(0.3)';
+        }else {
+            up.style.filter = 'brightness(0.3)';
+            down.style.filter = '';
+        }
+    }
+}

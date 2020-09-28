@@ -7,6 +7,9 @@ require('firebase/storage');
 require('firebase/auth');
 require('firebase/database');
 
+
+import * as FireBaseCache from './FireBaseCacheManager'
+
 import {
     game
 } from '../Game';
@@ -384,21 +387,31 @@ function FireBaseManager() {
         });
     }
     this.voteLevel = function (levelid, vote, _creationDate) {
-        return new Promise((resolve, reject) => {
-            let self = this;
-            const data = vote;
-            var voteRef = firebase.database().ref(`/PublishedLevelsVoters/${levelid}/${this.app.auth().currentUser.uid}`);
-            voteRef.set(data, function (error) {
-                if (error) reject(error);
-                else {
 
+        return new Promise(resolve => {
+
+            if(!this.isLoggedIn()){
+                game.editor.ui.showLoginScreen();
+                return resolve(false);
+            }
+            const self = this;
+            const data = vote;
+            const voteRef = firebase.database().ref(`/PublishedLevelsVoters/${levelid}/${this.app.auth().currentUser.uid}`);
+            voteRef.set(data, function (error) {
+                if (error){
+                    resolve(false);
+                    console.log('Vote error:', error);
+                }
+                else {
                     const now = new Date()
                     const creationDate = new Date(_creationDate);
                     if (now.getFullYear() === creationDate.getFullYear() && now.getMonth() == creationDate.getMonth()) {
                         self.call_setRangedVotes(levelid);
-                    }
 
-                    resolve();
+                        FireBaseCache.voteDataCache[levelid] = vote;
+                        FireBaseCache.save();
+                        resolve(true);
+                    }
                 }
             });
         });
@@ -576,14 +589,14 @@ function FireBaseManager() {
         firebase.functions().httpsCallable('setRangedPopularity')({
             levelid: levelid
         }).then(function (result) {
-            // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
+            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
         });
     }
     this.call_setRangedVotes = function (levelid) {
         firebase.functions().httpsCallable('setRangedVotes')({
             levelid: levelid
         }).then(function (result) {
-            // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
+            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
         });
     }
 

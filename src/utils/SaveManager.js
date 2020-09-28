@@ -3,8 +3,10 @@ import {
 } from "../data/levelsData";
 const nanoid = require('nanoid');
 
+const saveKeyPrefix = 'JollyWorld';
 export const SAVEKEYS = {
     tempEditorWorld:"tempEditorWorld",
+    levelsVoted:"levelsVoted",
 }
 export const saveLevel = function(){
 
@@ -22,14 +24,22 @@ export const getTempEditorWorld = function(){
     return tempWorld;
 }
 
-const saveData = function(key, value){
-    if(window.localStorage){
+export const saveData = function(key, value){
+    key = saveKeyPrefix+'_'+key;
+    try{
         window.localStorage.setItem(key, JSON.stringify(value));
         return value;
+    }catch(err){
+        console.warn("Saving not working", err);
     }
-    console.alert("Browser does not support saving of data");
 }
-const loadData = function(key){
-    if(window.localStorage && window.localStorage.getItem(key)) return JSON.parse(window.localStorage.getItem(key));
-    return undefined;
+
+export const loadData = function(key){
+    key = saveKeyPrefix+'_'+key;
+    try{
+        const data = window.localStorage.getItem(key);
+        return data ? JSON.parse(data) : undefined;
+    }catch(err){
+        console.warn("Saving not working", err);
+    }
 }
