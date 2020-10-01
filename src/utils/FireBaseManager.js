@@ -387,7 +387,6 @@ function FireBaseManager() {
         });
     }
     this.voteLevel = function (levelid, vote, _creationDate) {
-
         return new Promise(resolve => {
 
             if(!this.isLoggedIn()){
@@ -398,21 +397,22 @@ function FireBaseManager() {
             const data = vote;
             const voteRef = firebase.database().ref(`/PublishedLevelsVoters/${levelid}/${this.app.auth().currentUser.uid}`);
             voteRef.set(data, function (error) {
+
                 if (error){
-                    resolve(false);
                     console.log('Vote error:', error);
-                }
-                else {
+                } else {
+
+                    FireBaseCache.voteDataCache[levelid] = vote;
+                    FireBaseCache.save();
+
                     const now = new Date()
                     const creationDate = new Date(_creationDate);
                     if (now.getFullYear() === creationDate.getFullYear() && now.getMonth() == creationDate.getMonth()) {
                         self.call_setRangedVotes(levelid);
-
-                        FireBaseCache.voteDataCache[levelid] = vote;
-                        FireBaseCache.save();
-                        resolve(true);
                     }
                 }
+                resolve();
+
             });
         });
     }

@@ -428,7 +428,7 @@ export const showLoginScreen = function () {
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
         span.addEventListener('click', () => {
-            loginScreen.domElement.classList.toggle('hidden');
+            hidePanel(loginScreen);
             showRegisterScreen();
         });
 
@@ -489,7 +489,8 @@ export const showLoginScreen = function () {
         registerDragWindow(loginScreen);
 
     }
-    loginScreen.domElement.classList.remove('hidden');
+
+    showPanel(loginScreen);
 
     if (registerScreen) {
         loginScreen.domElement.style.top = registerScreen.domElement.style.top;
@@ -689,7 +690,7 @@ export const showRegisterScreen = function () {
         targetDomElement.appendChild(span);
         span.setAttribute('class', 'text_button');
         span.addEventListener('click', () => {
-            registerScreen.domElement.classList.add('hidden');
+            hidePanel(registerScreen);
             showLoginScreen();
         });
 
@@ -701,9 +702,10 @@ export const showRegisterScreen = function () {
         registerDragWindow(registerScreen);
 
     }
-    registerScreen.domElement.style.display = "block";
 
-    if (loginScreen) {
+    showPanel(registerScreen);
+
+    if (registerScreen) {
         registerScreen.domElement.style.top = loginScreen.domElement.style.top;
         registerScreen.domElement.style.left = loginScreen.domElement.style.left;
     }
@@ -880,7 +882,7 @@ export const showUsernameScreen = function () {
         registerDragWindow(usernameScreen);
 
     }
-    usernameScreen.domElement.style.display = "block";
+    showPanel(usernameScreen);
     if (loginScreen) {
         usernameScreen.domElement.style.top = loginScreen.domElement.style.top;
         usernameScreen.domElement.style.left = loginScreen.domElement.style.left;
@@ -1456,7 +1458,8 @@ export const showLoadScreen = function () {
 
     }
     //On every open screen
-    loadScreen.domElement.classList.remove('hidden');
+
+    showPanel(loadScreen);
 
     const self = this;
 

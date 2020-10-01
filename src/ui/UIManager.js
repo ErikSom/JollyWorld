@@ -1075,6 +1075,7 @@ function UIManager() {
 
                 itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.private.creationDate);
                 itemBarClone.querySelector('.itemAuthor').innerText = level.private.creator;
+                console.log(level.public.voteNum > 10, level.public.voteNum);
                 if (level.public.voteNum < 10) {
                     itemBarClone.querySelector('.itemRating').innerText = '??';
                     // itemBarClone.querySelector('.itemRating').setAttribute('title', 'Needs at least 10 votes');
