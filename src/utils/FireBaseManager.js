@@ -483,7 +483,7 @@ function FireBaseManager() {
 
             switch (filter.by) {
                 case game.ui.FILTER_BY_FEATURED:
-                    levelsRef = firebase.database().ref(`/PublishedLevels/`)
+                    levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/featured').equalTo(true);
                     break;
                 case game.ui.FILTER_BY_NEWEST:
                 case game.ui.FILTER_BY_OLDEST:
@@ -493,7 +493,7 @@ function FireBaseManager() {
                     let lastDay;
                     if (filter.range === game.ui.FILTER_RANGE_ANYTIME) {
 
-                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate')
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate');
 
                     } else if (filter.range === game.ui.FILTER_RANGE_THISMONTH) {
 
@@ -501,7 +501,7 @@ function FireBaseManager() {
 
                         lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime())
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime());
 
                     } else if (filter.range === game.ui.FILTER_RANGE_THISWEEK) {
 
@@ -512,7 +512,7 @@ function FireBaseManager() {
                         lastDay = new Date(firstDay);
                         lastDay.setHours(24 * 7);
 
-                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime())
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime());
 
                     } else if (filter.range === game.ui.FILTER_RANGE_TODAY) {
 
@@ -521,7 +521,7 @@ function FireBaseManager() {
                         lastDay = new Date(firstDay);
                         lastDay.setHours(24);
 
-                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime())
+                        levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime());
                     }
 
                     if(filter.by == game.ui.FILTER_BY_NEWEST) levelsRef.limitToFirst(Settings.levelsPerRequest);

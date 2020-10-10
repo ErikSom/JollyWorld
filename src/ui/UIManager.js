@@ -199,6 +199,11 @@ function UIManager() {
     }
     this.showLevelLoader = function () {
 
+        filter = {
+            by: this.FILTER_BY_FEATURED,
+            range: this.FILTER_RANGE_ANYTIME
+        };
+
         if (!levelLoader) {
             const loginGUIWidth = 640;
 
@@ -241,9 +246,13 @@ function UIManager() {
             })
 
 
-            let filterButton = document.createElement('div');
+            const filterButton = document.createElement('div');
             filterButton.setAttribute('class', 'headerButton filterButton save buttonOverlay dark');
-            filterButton.innerHTML = `<span>Filter by:</span><span style='color:#00FF00;margin-left:5px'>Featured</span>`;
+
+            this.setFilterButtonText = () => {
+                filterButton.innerHTML = `<span>Filter by:</span><span style='color:#00FF00;margin-left:5px'>${filter.by}</span>`;
+            }
+
             targetDomElement.appendChild(filterButton);
 
             filterButton.addEventListener('click', () => {
@@ -826,11 +835,7 @@ function UIManager() {
         const divWrapper = levelListDiv;
         if (!divWrapper) return;
 
-
-        if (!filter.by) filter = {
-            by: this.FILTER_BY_FEATURED,
-            range: this.FILTER_RANGE_ANYTIME
-        };
+        this.setFilterButtonText();
 
         //fill here
         var filterBar = document.createElement('div');
@@ -1085,7 +1090,7 @@ function UIManager() {
                     //     delay: 200,
                     // });
 
-                } else itemBarClone.querySelector('.itemRating').innerText = level.public.voteAvg;
+                } else itemBarClone.querySelector('.itemRating').innerText = Math.round(level.public.voteAvg*100)+'%';
 
                 itemBarClone.querySelector('.itemPlays').innerText = level.public.playCount;
 
