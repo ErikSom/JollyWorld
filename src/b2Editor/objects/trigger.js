@@ -161,8 +161,8 @@ export const actionDictionary = {
     actionOptions_Impulse: {
         impulseForce: {
             type: guitype_MINMAX,
-            min: -100,
-            max: 100,
+            min: -1000,
+            max: 1000,
             value: 0,
             step: 1,
         },
@@ -175,8 +175,8 @@ export const actionDictionary = {
         },
         rotationForce: {
             type: guitype_MINMAX,
-            min: -100,
-            max: 100,
+            min: -1000,
+            max: 1000,
             value: 0,
             step: 1
         },

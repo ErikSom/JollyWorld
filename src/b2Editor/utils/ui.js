@@ -1028,9 +1028,13 @@ export const showLevelEditScreen = function () {
 
 
         var levelOptions = {
-            backgroundColor: '#FFFFFF'
+            backgroundColor: game.editor.editorSettings.backgroundColor
         };
-        var item = folder.addColor(levelOptions, "backgroundColor");
+        console.log(game.editor.editorSettings);
+        var item = folder.addColor(levelOptions, "backgroundColor").onChange(value=>{
+            game.editor.editorSettings.backgroundColor = value;
+            game.app.renderer.backgroundColor = value;
+        });
         divWrapper.appendChild(item.domElement.parentNode.parentNode);
         item.domElement.parentNode.parentNode.style.padding = '0px';
 

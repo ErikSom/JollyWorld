@@ -1915,6 +1915,7 @@ const _B2dEditor = function () {
 		this.physicsDebug = false;
 		this.gravityX = 0;
 		this.gravityY = 10;
+		this.backgroundColor = 0xD4D4D4;
 	}
 	this.editorJointObject = new this.jointObject();
 
@@ -5627,9 +5628,21 @@ const _B2dEditor = function () {
 	// 	this.retrieveClassFromPrefabLookup(prefab).init();
 	// 	return prefab;
 	// }
-	// this.retrieveClassFromPrefabLookup = function (prefabLookup) {
-	// 	return this.activePrefabs[prefabLookup._bodies[0].mySprite.data.prefabInstanceName].class;
-	// }
+	this.retrieveClassFromPrefabLookup = function (prefabLookup) {
+		return this.retrieveClassFromBody(prefabLookup._bodies[0]);
+	}
+	this.retrieveClassFromBody = function(body){
+		if(this.activePrefabs[body.mySprite.data.prefabInstanceName]){
+			return this.activePrefabs[body.mySprite.data.prefabInstanceName].class
+		}
+		return null;
+	}
+	this.retrieveSubClassFromBody = function (body) {
+		if(this.activePrefabs[body.mySprite.data.subPrefabInstanceName]){
+			return this.activePrefabs[body.mySprite.data.subPrefabInstanceName].class
+		}
+		return null;
+	}
 
 	this.setTextureToBody = function (body, texture, positionOffsetLength, positionOffsetAngle, offsetRotation) {
 		body.myTexture = texture;
@@ -6013,9 +6026,9 @@ const _B2dEditor = function () {
 		this.worldJSON += this.stringifyObject(this.editorSettingsObject);
 		this.worldJSON += '}';
 
-		// console.log("********************** World Data **********************");
-		// console.log(this.worldJSON);
-		// console.log("********************************************************");
+		console.log("********************** World Data **********************");
+		console.log(this.worldJSON);
+		console.log("********************************************************");
 		return this.worldJSON;
 	}
 
@@ -6259,6 +6272,7 @@ const _B2dEditor = function () {
 			obj = this.editorSettingsObject;
 			obj.gravityX = arr[1];
 			obj.gravityY = arr[2];
+			obj.backgroundColor = arr[3] || 0xD4D4D4;
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();
@@ -6423,7 +6437,10 @@ const _B2dEditor = function () {
 			}
 			if(worldObjects.settings){
 				worldObjects.settings = this.parseArrObject(worldObjects.settings);
-				Object.keys(worldObjects.settings).forEach(key=> editorSettings[key] = worldObjects.settings[key])
+				Object.keys(worldObjects.settings).forEach(key=> {
+					if(key === 'backgroundColor') game.app.renderer.backgroundColor = worldObjects.settings[key];
+					editorSettings[key] = worldObjects.settings[key]
+				})
 			}
 		}
 

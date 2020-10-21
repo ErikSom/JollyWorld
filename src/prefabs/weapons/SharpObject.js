@@ -224,7 +224,17 @@ export class SharpObject extends PrefabManager.basePrefab {
 
             const contactPoint = worldManifold.points[0];
 
+
             if(self.isContactAngleValid(contactPoint)){
+
+                const bodyClass = game.editor.retrieveSubClassFromBody(otherBody);
+                if(bodyClass && bodyClass.dealDamage){
+                    let damage = Math.abs(otherBody.GetLinearVelocity().Length() - sharpBody.GetLinearVelocity().Length())*2+10;
+                    if(otherBody.mySprite.data.refName === 'head') damage *= 2;
+                    console.log(damage);
+                    bodyClass.dealDamage(damage);
+                }
+
                 self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
             }
         }

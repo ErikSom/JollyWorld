@@ -125,7 +125,7 @@ class Character extends PrefabManager.basePrefab {
     static GORE_SNAP = 1;
 
     dealDamage(damage){
-        self.life -= damage;
+        this.life -= damage;
         globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage})
     }
 

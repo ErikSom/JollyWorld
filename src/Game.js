@@ -116,6 +116,7 @@ function Game() {
             width: w,
             height: h
         });
+        console.log(this.app);
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
 
@@ -549,7 +550,7 @@ function Game() {
         }
     }
     this.lose = function () {
-        if (!this.gameOver && !this.levelWon) {
+        if (!this.gameOver && !this.levelWon && this.gameState === this.GAMESTATE_NORMALPLAY) {
             ui.showGameOver();
             this.gameOver = true;
         }
@@ -621,7 +622,6 @@ function Game() {
         var zoomEase = 0.1;
 
         var currentZoom = this.editor.container.scale.x;
-
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (Settings.cameraZoom - currentZoom) * zoomEase);
 
@@ -679,6 +679,11 @@ function Game() {
                     var worldCollisionPoint = worldManifold.points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
                     emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+
+                    const bodyClass = self.editor.retrieveSubClassFromBody(body);
+                    if(bodyClass && bodyClass.dealDamage){
+                        bodyClass.dealDamage(velocitySum);
+                    }
                 }
             }
         }
