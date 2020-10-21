@@ -155,14 +155,11 @@ function Game() {
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
         this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
-        this.myContainer.addChild(this.newDebugGraphics);
         this.world.SetDebugDraw(this.myDebugDraw);
 
         this.render();
 
         this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
-        this.editor.assetLists.rnm_characters = Object.keys(PIXI.loader.resources["RickAndMorty.json"].textures);
-        this.editor.assetLists.rnm_vehicles = Object.keys(PIXI.loader.resources["RickAndMorty_Vehicles.json"].textures);
         this.editor.assetLists.vehicles = Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures);
         this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
         this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);
@@ -173,6 +170,7 @@ function Game() {
 
         this.editor.tileLists = ["", "Dirt.jpg", "Grass.jpg", "Fence.png", "YellowCat.jpg", "RedWhiteBlock.jpg", "PixelatedWater.jpg", "PixelatedStone.jpg", "PixelatedDirt.jpg", "PixelatedGrass.jpg", "GoldenBlock.jpg", "Brick0.jpg", "Brick1.jpg", "Brick2.jpg", "WhiteBlock.jpg"];
         this.editor.init(this.myContainer, this.world, Settings.PTM);
+        this.myContainer.addChild(this.newDebugGraphics);
 
         this.editor.contactCallBackListener = this.gameContactListener;
 
