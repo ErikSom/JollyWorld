@@ -161,8 +161,6 @@ function Game() {
         this.render();
 
         this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
-        this.editor.assetLists.rnm_characters = Object.keys(PIXI.loader.resources["RickAndMorty.json"].textures);
-        this.editor.assetLists.rnm_vehicles = Object.keys(PIXI.loader.resources["RickAndMorty_Vehicles.json"].textures);
         this.editor.assetLists.vehicles = Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures);
         this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
         this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);
@@ -682,7 +680,8 @@ function Game() {
 
                     const bodyClass = self.editor.retrieveSubClassFromBody(body);
                     if(bodyClass && bodyClass.dealDamage){
-                        bodyClass.dealDamage(velocitySum);
+                        const velocityToDamageDivider = 50;
+                        bodyClass.dealDamage(velocitySum/velocityToDamageDivider);
                     }
                 }
             }
