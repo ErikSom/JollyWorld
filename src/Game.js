@@ -197,6 +197,7 @@ function Game() {
 
     //mouse
     this.onMouseDown = function (e) {
+        this.fixTouchEvent(e);
 
         if (Settings.allowMouseMovement && !this.mouseJoint && this.run) {
             var body = this.getBodyAtMouse();
@@ -217,6 +218,7 @@ function Game() {
     };
 
     this.onMouseUp = function (e) {
+        this.fixTouchEvent(e);
         Key.onMouseUp();
         this.editor.onMouseUp(e);
     };
@@ -226,8 +228,16 @@ function Game() {
     }
 
     this.onMouseMove = function (e) {
+        this.fixTouchEvent(e);
         this.editor.onMouseMove(e);
     };
+    this.fixTouchEvent = e => {
+        if(e.changedTouches){
+            const touch = e.changedTouches[0];
+            e.clientX = touch.clientX;
+            e.clientY = touch.clientY;
+        }
+    }
 
     this.handleResize = function (e) {
         const w = window.innerWidth;
