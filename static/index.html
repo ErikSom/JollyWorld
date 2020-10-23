@@ -126,6 +126,7 @@
             var setProgress = function(percent){
                 preloaderFill.style.width = (percent*100).toFixed(2)+'%';
             }
+            setProgress(0);
             if (!onError) onError = function () {};
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -158,11 +159,10 @@
                 if (event.lengthComputable) {
                     percentComplete = event.loaded / event.total;
                 } else {
-                    var total = 550000;
+                    var total = 550000*4;
                     percentComplete = event.loaded / total;
-                    console.log(percentComplete);
                 }
-                setProgress(Math.min(1.0, Math.percentComplete));
+                setProgress(Math.min(1.0, percentComplete));
             }
         }
         loadJS('awesome-game.js');
