@@ -86,7 +86,7 @@ export const showPanel = panel => {
     }
 }
 export const setLevelSpecifics = function () {
-    document.querySelectorAll('.editorHeader > span').forEach(span => span.text = game.currentLevelData.title);
+    headerbarLevelName.innerHTML = game.currentLevelData.title;
 }
 export const setNewLevelData = function () {
     if (levelEditScreen) {
@@ -208,6 +208,7 @@ const doPublishLevelData = function (publishButton) {
     } else publishLevel();
 
 }
+let headerbarLevelName;
 export const showHeaderBar = function () {
     headerBar = document.createElement('div');
     headerBar.setAttribute('class', 'editorHeader');
@@ -289,11 +290,10 @@ export const showHeaderBar = function () {
     button.addEventListener('click', showLevelEditScreen);
 
 
-    let levelName = document.createElement('span');
-    levelName.innerHTML = "TEST 123";
+    headerbarLevelName = document.createElement('span');
+    headerbarLevelName.innerHTML = "";
     button.setAttribute('id', 'levelName');
-    headerBar.appendChild(levelName);
-
+    headerBar.appendChild(headerbarLevelName);
 
     handleLoginStatusChange();
 }

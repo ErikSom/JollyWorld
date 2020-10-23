@@ -5,6 +5,7 @@ import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
 import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
+import * as dat from "../../libs/dat.gui";
 
 import {
 	lineIntersect,
@@ -27,20 +28,6 @@ import {
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
-
-
-/* add animation object 
-
-select a group of graphics / texts / textures / texturegroups
-turn into frames based on depth
-select FPS
-works like any other image
-
-ability to turn back into group of images
-
-*/
-
-
 
 var b2Vec2 = Box2D.b2Vec2,
 	b2AABB = Box2D.b2AABB,
@@ -97,6 +84,7 @@ const _B2dEditor = function () {
 	this.triggerObjects = [];
 
 	this.worldJSON;
+	this.lastValidWorldJSON;
 
 	this.copiedJSON = '';
 	this.copyCenterPoint = {
@@ -116,10 +104,6 @@ const _B2dEditor = function () {
 
 	this.undoList = [];
 	this.undoIndex = 0;
-	this.undoing = false;
-	this.undoTransformXY = {};
-	this.undoTransformRot = 0;
-	this.undoTransformDepthHigh = false;
 
 	this.editorSettings = editorSettings;
 	this.camera = camera;
@@ -167,8 +151,6 @@ const _B2dEditor = function () {
 		ui.initGui();
 		this.selectTool(this.tool_SELECT);
 	}
-
-
 
 	this.prefabListGuiState = {};
 	this.showPrefabList = function () {
@@ -1895,13 +1877,6 @@ const _B2dEditor = function () {
 		this._joints = [];
 	}
 
-	this.undoObjectMovement = function () {
-		this.type = self.object_UNDO_MOVEMENT;
-		this.transformType;
-		this.transform;
-		this.objects = [];
-	}
-
 	this.prefabObject = function () {
 		this.x = 0;
 		this.y = 0;
@@ -2016,12 +1991,6 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_SELECT) {
 
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-				this.storeUndoMovement();
-				this.undoTransformXY = {
-					x: 0.0,
-					y: 0.0
-				};
-				this.undoTransformRot = 0.0;
 
 				var aabb = new b2AABB;
 				aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
@@ -2231,17 +2200,6 @@ const _B2dEditor = function () {
 		//	this.applyToObjects(transformType, obj, bodies);
 		//	this.applyToObjects(transformType, obj, textures);
 		//}//
-
-		if (transformType == this.TRANSFORM_MOVE) {
-			this.undoTransformXY = {
-				x: this.undoTransformXY.x + obj.x,
-				y: this.undoTransformXY.y + obj.y
-			};
-		} else if (transformType == this.TRANSFORM_ROTATE) {
-			this.undoTransformRot += obj;
-		} else if (transformType == this.TRANSFORM_DEPTH) {
-			this.undoTransformDepthHigh = obj;
-		}
 	}
 
 	this.applyToObjects = function (transformType, obj, objects, forceGroupRotation) {
@@ -2497,60 +2455,31 @@ const _B2dEditor = function () {
 	this.TRANSFORM_UPDATE = "update";
 
 	this.storeUndoMovement = function () {
-		if (this.undoTransformRot != 0 || this.undoTransformXY.x != 0 || this.undoTransformXY.y != 0) {
-			var undoObject = new this.undoObjectMovement();
-			if (this.undoTransformRot != 0) {
-				undoObject.transformType = this.TRANSFORM_ROTATE;
-				undoObject.transform = this.undoTransformRot;
-			} else {
-				undoObject.transformType = this.TRANSFORM_MOVE;
-				undoObject.transform = this.undoTransformXY;
-			}
-			undoObject.objects = this.selectedPhysicsBodies.concat(this.selectedTextures);
-			this.registerUndo(undoObject);
+		this.stringifyWorldJSON();
+		if(this.lastValidWorldJSON === this.worldJSON) return;
+
+		this.undoList.push(this.lastValidWorldJSON);
+		this.lastValidWorldJSON = this.worldJSON;
+
+		while(this.undoIndex<0){
+			this.undoList.pop();
+			this.undoIndex++;
 		}
+		if(this.undoList.length>50) this.undoList.shift();
 	}
+	this.storeUndoMovementDebounced =  dat.Common.debounce(()=>{this.storeUndoMovement()}, 100);
 
-	this.registerUndo = function (obj) {
-		if (!this.undoing) {
-			this.undoList = this.undoList.slice(0, this.undoIndex + 1);
-			this.undoList.push(obj);
-			this.undoIndex = this.undoList.length - 1;
-			this.undoTransformXY = {
-				x: 0.0,
-				y: 0.0
-			};
-			this.undoTransformRot = 0.0;
+	this.undoMove = function (undo) {
+		if(undo && this.undoList.length === -this.undoIndex) return;
+		else if(!undo && this.undoIndex === 0) return;
 
-			var i;
-			for (i = 0; i < this.undoList.length; i++) {}
+		const targetIndex = this.undoList.length-1+this.undoIndex;
+		const json = this.undoList[targetIndex];
+		this.resetEditor();
+		this.buildJSON(json);
 
-		}
-	}
-	this.undoMove = function (backward) {
-		if ((backward && this.undoIndex >= 0) || (!backward && this.undoIndex < this.undoList.length - 1)) {
-			var obj = this.undoList[this.undoIndex];
-			if (obj.type == this.object_UNDO_MOVEMENT) {
-				var transform = {};
-
-				if (backward) {
-					if (obj.transformType == this.TRANSFORM_MOVE) {
-						transform.x = -obj.transform.x;
-						transform.y = -obj.transform.y;
-					} else if (obj.transformType == this.TRANSFORM_ROTATE) {
-						transform = -obj.transform;
-					}
-				} else {
-					transform = obj.transform;
-				}
-
-				this.applyToObjects(obj.transformType, transform, obj.objects);
-
-
-			}
-			if (backward) this.undoIndex--;
-			else this.undoIndex++;
-		}
+		if(undo) this.undoIndex--;
+		else this.undoIndex++;
 	}
 
 	this.updateMousePosition = function (e) {
@@ -2591,8 +2520,6 @@ const _B2dEditor = function () {
 
 					this.filterSelectionForPrefabs();
 					this.updateSelection();
-				} else {
-					this.storeUndoMovement();
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
 				let bodyObject;
@@ -2645,6 +2572,7 @@ const _B2dEditor = function () {
 				this.activeVertices = [];
 
 			}
+			this.storeUndoMovementDebounced();
 		}
 		this.mouseDown = false;
 	}
@@ -2692,7 +2620,7 @@ const _B2dEditor = function () {
 				this.cutSelection();
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? 10 : 1);
-				this.storeUndoMovement();
+				this.storeUndoMovementDebounced();
 			}
 
 		} else if (e.keyCode == 90) { // z
@@ -2700,7 +2628,7 @@ const _B2dEditor = function () {
 				this.undoMove(true);
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
-				this.storeUndoMovement();
+				this.storeUndoMovementDebounced();
 			}
 		} else if (e.keyCode == 46) { //delete
 			this.deleteSelection();
@@ -2733,39 +2661,39 @@ const _B2dEditor = function () {
 		} else if (e.keyCode == 38) { // up arrow
 			if (e.ctrlKey || e.metaKey) {
 				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, true);
-				this.storeUndoMovement();
+				this.storeUndoMovementDebounced();
 
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 					x: 0,
 					y: this.shiftDown ? -10 : -1
 				});
-				this.storeUndoMovement();
+				this.storeUndoMovementDebounced();
 			}
 		} else if (e.keyCode == 40) { // down arrow
 			if (e.ctrlKey || e.metaKey) {
 				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, false);
-				this.storeUndoMovement();
+				this.storeUndoMovementDebounced();
 
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 					x: 0,
 					y: this.shiftDown ? 10 : 1
 				});
-				this.storeUndoMovement();
+				this.storeUndoMovementDebounced();
 			}
 		} else if (e.keyCode == 37) { // left arrow
 			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 				x: this.shiftDown ? -10 : -1,
 				y: 0
 			});
-			this.storeUndoMovement();
+			this.storeUndoMovementDebounced();
 		} else if (e.keyCode == 39) { // right arrow
 			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 				x: this.shiftDown ? 10 : 1,
 				y: 0
 			});
-			this.storeUndoMovement();
+			this.storeUndoMovementDebounced();
 		}
 	}
 	this.onKeyUp = function (e) {
@@ -3223,7 +3151,7 @@ const _B2dEditor = function () {
 							x: controller.targetValue,
 							y: 0
 						});
-						this.storeUndoMovement();
+						this.storeUndoMovementDebounced();
 
 					} else if (controller.property == "y") {
 						//bodies & sprites & prefabs
@@ -3232,7 +3160,7 @@ const _B2dEditor = function () {
 							x: 0,
 							y: controller.targetValue
 						});
-						this.storeUndoMovement();
+						this.storeUndoMovementDebounced();
 
 					} else if ((controller.property == "width" || controller.property == "height") && this.selectedPhysicsBodies.length+this.selectedTextures.length>0) {
 						//bodies & sprites & ??prefabs
@@ -3373,7 +3301,7 @@ const _B2dEditor = function () {
 					} else if (controller.property == "rotation") {
 
 						this.applyToSelectedObjects(this.TRANSFORM_ROTATE, controller.targetValue);
-						this.storeUndoMovement();
+						this.storeUndoMovementDebounced();
 
 
 					} else if (controller.property == "groups" && controller.targetValue != "-") {
@@ -6026,9 +5954,9 @@ const _B2dEditor = function () {
 		this.worldJSON += this.stringifyObject(this.editorSettingsObject);
 		this.worldJSON += '}';
 
-		console.log("********************** World Data **********************");
-		console.log(this.worldJSON);
-		console.log("********************************************************");
+		// console.log("********************** World Data **********************");
+		// console.log(this.worldJSON);
+		// console.log("********************************************************");
 		return this.worldJSON;
 	}
 
@@ -6350,8 +6278,13 @@ const _B2dEditor = function () {
 		var startChildIndex = this.textures.children.length;
 		var prefabOffset = 0;
 
+		let jsonString = null;
+
 		if (json != null) {
-			if (typeof json == 'string') json = JSON.parse(json);
+			if (typeof json == 'string'){
+				jsonString = json;
+				json = JSON.parse(json);
+			}
 			//clone json to not destroy old references
 			var worldObjects = JSON.parse(JSON.stringify(json));
 
@@ -6441,6 +6374,7 @@ const _B2dEditor = function () {
 					if(key === 'backgroundColor') game.app.renderer.backgroundColor = worldObjects.settings[key];
 					editorSettings[key] = worldObjects.settings[key]
 				})
+				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);
 			}
 		}
 
@@ -6885,7 +6819,6 @@ const _B2dEditor = function () {
 	this.object_BODY = 0;
 	this.object_TEXTURE = 1;
 	this.object_JOINT = 2;
-	this.object_UNDO_MOVEMENT = 3;
 	this.object_PREFAB = 4;
 	this.object_MULTIPLE = 5;
 	this.object_GRAPHIC = 6;
