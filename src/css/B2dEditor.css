@@ -1,3 +1,10 @@
+
+html, body{
+    margin: 0;
+    padding: 0;
+    height : 100%;
+    width: 100%;
+}
 .dg .closed div:not(.arrow):not(.title), .dg .closed ul div, .dg .closed span, .dg .closed br, .dg .closed textarea, .dg .closed ul div>*{
     height: 0 !important;
     overflow: hidden !important;
@@ -685,10 +692,10 @@ body .dg .cr.function{
     max-width:20px;
     width:20px;
     height: 20px;
-    -webkit-filter:brightness(100%);
+    filter:brightness(100%);
 }
 .closeWindowIcon:hover{
-    -webkit-filter:brightness(70%);
+    filter:brightness(70%);
 }
 
 #levelBanner #levelbanner_levelThumbnail{
@@ -802,6 +809,22 @@ body .dg .cr.function{
     transition: opacity ease 1s;
     opacity:0;
     pointer-events: none;
+  }
+  .discordButton{
+    width:200px;
+    height:64px;
+    background-color: transparent;
+    position: absolute;
+    left:20px;
+    bottom:20px;
+  }
+  .normalButton {
+    cursor: pointer;
+    filter:brightness(100%);
+    border:none;
+  }
+  .normalButton:hover{
+    filter:brightness(70%);
   }
   @keyframes dotPulseBefore {
     0% {

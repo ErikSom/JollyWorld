@@ -15,6 +15,7 @@ import anime from 'animejs/lib/anime.es';
 let customGUIContainer = document.getElementById('game-ui-container');
 
 let mainMenu;
+let discordButton;
 let gameOver;
 let levelLoader;
 let levelBanner;
@@ -81,7 +82,17 @@ function UIManager() {
             span.innerText = __VERSION__;
             mainMenu.appendChild(span);
             setTimeout(()=>{span.style.opacity = 1}, 1800);
+
+            discordButton = document.createElement('button');
+            discordButton.classList.add('normalButton','discordButton');
+            discordButton.style.backgroundImage = 'url(./assets/images/misc/discord.png)';
+            discordButton.onclick = ()=>{
+                window.open("https://discord.gg/erYWbxd", "_blank");
+            }
+            customGUIContainer.appendChild(discordButton);
+
         }
+        discordButton.style.display = 'block';
         mainMenu.style.display = 'block';
         this.show();
 
@@ -145,6 +156,7 @@ function UIManager() {
     }
 
     this.hideMainMenu = function () {
+        discordButton.style.display = 'none';
         mainMenu.style.display = "none";
     }
 
