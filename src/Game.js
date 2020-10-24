@@ -618,6 +618,7 @@ function Game() {
                 self.currentLevelData.json = JSON.stringify(data);
                 self.initLevel(self.currentLevelData);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
+                ui.hideMainMenu();
                 ui.showLevelBanner();
                 this.editor.ui.hide();
                 game.gameState = game.GAMESTATE_PREVIEW;

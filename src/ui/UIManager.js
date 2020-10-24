@@ -88,6 +88,7 @@ function UIManager() {
         }
         discordButton.style.display = 'block';
         mainMenu.style.display = 'block';
+        this.disableMainMenu(false);
         this.show();
 
     }
