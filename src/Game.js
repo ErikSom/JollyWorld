@@ -26,7 +26,7 @@ import {
     levelsData
 } from "./data/levelsData";
 
-import { dateDiff } from "./b2Editor/utils/formatTimestamp";
+import { dateDiff } from "./b2Editor/utils/formatString";
 
 import * as emitterManager from './utils/EmitterManager';
 import * as SaveManager from "./utils/SaveManager";
@@ -585,9 +585,11 @@ function Game() {
         });
     }
     this.loadPublishedLevelData = function (levelData) {
+        console.log(levelData);
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData.private;
             game.currentLevelData.uid = levelData.uid;
+            game.currentLevelData.public = levelData.public;
             var self = this;
            fetch(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.uid}/levelData.json`)
            .then(response => response.json())

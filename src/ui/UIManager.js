@@ -8,8 +8,7 @@ import {
 } from '../Game';
 import * as dat from '../../libs/dat.gui';
 import * as uiHelper from '../b2Editor/utils/uiHelper';
-import * as formatTimestamp from '../b2Editor/utils/formatTimestamp';
-
+import * as format from '../b2Editor/utils/formatString';
 import anime from 'animejs/lib/anime.es';
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -561,8 +560,8 @@ function UIManager() {
             ratingHolder.appendChild(ratingText);
 
             span = document.createElement('span');
-            span.innerText = '88%';
-            span.setAttribute('id', 'pauseMenu_likesPercentSpan');
+            span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
+            span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
             span = document.createElement('span');
@@ -571,8 +570,8 @@ function UIManager() {
             ratingText.appendChild(span);
 
             span = document.createElement('span');
-            span.innerText = '999K';
-            span.setAttribute('id', 'pauseMenu_likesNumSpan');
+            span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
+            span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
             span = document.createElement('span');
@@ -722,8 +721,8 @@ function UIManager() {
             ratingHolder.appendChild(ratingText);
 
             span = document.createElement('span');
-            span.innerText = '88%';
-            span.setAttribute('id', 'winScreen_likesPercentSpan');
+            span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
+            span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
             span = document.createElement('span');
@@ -732,8 +731,8 @@ function UIManager() {
             ratingText.appendChild(span);
 
             span = document.createElement('span');
-            span.innerText = '999K';
-            span.setAttribute('id', 'winScreen_likesNumSpan');
+            span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
+            span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
             span = document.createElement('span');
@@ -1090,21 +1089,12 @@ function UIManager() {
                 itemDescription.innerText = level.private.description;
                 uiHelper.clampDot(itemDescription, 3, 12);
 
-                itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.private.creationDate);
+                itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.private.creationDate);
                 itemBarClone.querySelector('.itemAuthor').innerText = level.private.creator;
-                console.log(level.public.voteNum > 10, level.public.voteNum);
-                if (level.public.voteNum < 10) {
-                    itemBarClone.querySelector('.itemRating').innerText = '??';
-                    // itemBarClone.querySelector('.itemRating').setAttribute('title', 'Needs at least 10 votes');
 
-                    // itemBarClone.querySelector('.itemRating').tooltipster({
-                    //     animation: 'fade',
-                    //     delay: 200,
-                    // });
+                itemBarClone.querySelector('.itemRating').innerText = level.public.voteNum < 10 ? '??' : Math.round(level.public.voteAvg*100)+'%';
 
-                } else itemBarClone.querySelector('.itemRating').innerText = Math.round(level.public.voteAvg*100)+'%';
-
-                itemBarClone.querySelector('.itemPlays').innerText = level.public.playCount;
+                itemBarClone.querySelector('.itemPlays').innerText = format.formatNumber(level.public.playCount);
 
                 itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level.private.creatorID}/${level_id}/thumb_lowRes.jpg`;
 

@@ -12,7 +12,7 @@ import {
 import {
     Settings
 } from "../../Settings";
-import * as formatTimestamp from './formatTimestamp';
+import * as format from './formatString';
 
 import * as uiHelper from './uiHelper';
 
@@ -1387,7 +1387,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 itemDescription.innerText = level.description;
                 uiHelper.clampDot(itemDescription, 3, 14);
 
-                itemBarClone.querySelector('.itemDate').innerText = formatTimestamp.formatDMY(level.creationDate);
+                itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.creationDate);
                 // using %2F because '/' does not work for private urls
                 if (level.thumbLowResURL) itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${level.uid}%2Fthumb_lowRes.jpg?${level.thumbLowResURL}`;
 

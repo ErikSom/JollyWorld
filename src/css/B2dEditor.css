@@ -742,7 +742,7 @@ body .dg .cr.function{
     text-align: center;
     margin: 5px;
 }
-.ratingText #pauseMenu_likesPercentSpan, .ratingText #pauseMenu_likesNumSpan{
+.ratingText .greenSpan{
     color:#00FF00;
 }
 #winScreen_time{
