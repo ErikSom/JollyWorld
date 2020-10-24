@@ -36,11 +36,6 @@ function UIManager() {
         if (!mainMenu) {
             mainMenu = document.createElement('div');
 
-            // logo = PIXI.loader.resources['Logo'].data;
-            // logo.setAttribute('id', 'mainMenuLogo');
-            // mainMenu.appendChild(logo);
-
-
             logo = document.createElement('div');
             logo.setAttribute('id', 'mainMenuLogo');
             logo.innerHTML = `
@@ -95,6 +90,10 @@ function UIManager() {
         mainMenu.style.display = 'block';
         this.show();
 
+    }
+    this.disableMainMenu = disable=> {
+        if(disable) mainMenu.classList.add('disable');
+        else mainMenu.classList.remove('disable');
     }
     this.doLogoAnimation = function (baseDelay) {
         if (!baseDelay) baseDelay = 0;
@@ -495,6 +494,8 @@ function UIManager() {
         levelBanner.domElement.style.left = '50%';
         levelBanner.domElement.style.top = '50%';
         levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
+
+        window.location.hash = `${game.currentLevelData.uid}/`
 
     }
     this.hideLevelBanner = function () {
@@ -1106,14 +1107,8 @@ function UIManager() {
                     game.loadPublishedLevelData(level).then(() => {
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
-                        self.showLevelBanner();
-                        game.editor.ui.hide();
                         self.hideLevelLoader();
-                        game.gameState = game.GAMESTATE_PREVIEW;
-                        console.log("SHOW STATE", game.editor.editing);
                     }).catch((error) => {
-                        console.log(error);
-                        game.gameState = game.GAMESTATE_MENU;
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
                     });

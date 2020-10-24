@@ -583,20 +583,29 @@ function FireBaseManager() {
             });
         })
     }
+    this.getPublishedLevelInfo = id =>{
+        return new Promise((resolve, reject) => {
+            firebase.database().ref(`/PublishedLevels/${id}`).once('value', function (snapshot) {
+                resolve(snapshot);
+            },function (error) {
+                reject(error);
+            })
+        });
+    }
 
     //CLOUD FUNCTIONS
     this.call_setRangedPopularity = function (levelid) {
         firebase.functions().httpsCallable('setRangedPopularity')({
             levelid: levelid
         }).then(function (result) {
-            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
+            // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, POPULARITY");
         });
     }
     this.call_setRangedVotes = function (levelid) {
         firebase.functions().httpsCallable('setRangedVotes')({
             levelid: levelid
         }).then(function (result) {
-            console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
+            // console.log("GREAT SUCCESS WITH CLOUD FUNCTIONSSSSS, VOTES");
         });
     }
 

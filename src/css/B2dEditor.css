@@ -273,6 +273,11 @@ body .dg .cr.function{
   }
 .menuButton:hover::after {opacity:1;}
 
+#mainMenu.disable > .menuButton {
+    pointer-events: none;
+    filter:grayscale(1);
+}
+
 #editorButton, #acceptButton, .backButton{
     background-color: #51A328;
 }

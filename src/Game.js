@@ -174,7 +174,23 @@ function Game() {
 
         this.editor.contactCallBackListener = this.gameContactListener;
 
+
+        const uidHash = location.hash.split('/')[0].substr(1);
+
+
         this.openMainMenu();
+
+        if(uidHash && uidHash.length===21){
+            ui.disableMainMenu(true);
+            firebaseManager.getPublishedLevelInfo(uidHash).then(snapshot => {
+                const levelData = snapshot.val();
+                levelData.uid = uidHash;
+                this.loadPublishedLevelData(levelData);
+            }).catch(err =>{
+                location.hash = '';
+                ui.disableMainMenu(false);
+            });
+        }
 
         document.body.addEventListener("keydown", this.onKeyDown.bind(this), true);
         document.body.addEventListener("keyup", this.onKeyUp.bind(this), true);
@@ -187,6 +203,12 @@ function Game() {
 
         window.addEventListener('wheel', this.onMouseWheel.bind(this), true);
         window.addEventListener('resize', this.handleResize.bind(this));
+        window.addEventListener('hashchange', ()=>{
+            const uid = location.hash.split('/')[0].substr(1);
+            if(uid.length === 21  && this.currentLevelData && uid !== this.currentLevelData.uid){
+                location.reload();
+            }
+        })
 
         emitterManager.init();
 
@@ -585,7 +607,6 @@ function Game() {
         });
     }
     this.loadPublishedLevelData = function (levelData) {
-        console.log(levelData);
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData.private;
             game.currentLevelData.uid = levelData.uid;
@@ -597,9 +618,13 @@ function Game() {
                 self.currentLevelData.json = JSON.stringify(data);
                 self.initLevel(self.currentLevelData);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
+                ui.showLevelBanner();
+                this.editor.ui.hide();
+                game.gameState = game.GAMESTATE_PREVIEW;
                 return resolve();
             }).catch((err) => {
-                console.log('fail', errorThrown);
+                console.log('fail', err);
+                game.gameState = game.GAMESTATE_MENU;
                 return reject({
                     message: err
                 });
