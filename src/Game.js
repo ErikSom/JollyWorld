@@ -198,6 +198,17 @@ function Game() {
         this.canvas.addEventListener("touchstart", this.onMouseDown.bind(this), true);
         this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this), true);
         this.canvas.addEventListener("touchend", this.onMouseUp.bind(this), true);
+
+
+        document.addEventListener("mouseup", ()=>{
+            if(this.editor.editing) this.editor.storeUndoMovementDebounced();
+        }, true);
+
+        document.addEventListener("touchend", ()=>{
+            if(this.editor.editing) this.editor.storeUndoMovementDebounced();
+        }, true);
+
+
         this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), true);
         this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
 
@@ -373,6 +384,7 @@ function Game() {
         }
         Key.onKeydown(e);
         if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
+        e.preventDefault();
     }
     this.onKeyUp = function (e) {
         if(document.activeElement != document.body  && document.activeElement != this.canvas) return;
@@ -382,6 +394,7 @@ function Game() {
             this.vehicle.stopAccelerate();
         }
         Key.onKeyUp(e);
+        e.preventDefault();
     }
     this.openMainMenu = function () {
         //if(this.run) this.stopWorld();

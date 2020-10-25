@@ -2458,6 +2458,11 @@ const _B2dEditor = function () {
 		this.stringifyWorldJSON();
 		if(this.lastValidWorldJSON === this.worldJSON) return;
 
+		this.undoList.pop()
+
+		//[current, //old1]
+		//[current, //old, //old1]
+
 		this.undoList.push(this.lastValidWorldJSON);
 		this.lastValidWorldJSON = this.worldJSON;
 
@@ -2465,21 +2470,27 @@ const _B2dEditor = function () {
 			this.undoList.pop();
 			this.undoIndex++;
 		}
+
+		this.undoList.push(this.worldJSON);
+
 		if(this.undoList.length>50) this.undoList.shift();
 	}
 	this.storeUndoMovementDebounced =  dat.Common.debounce(()=>{this.storeUndoMovement()}, 100);
 
 	this.undoMove = function (undo) {
-		if(undo && this.undoList.length === -this.undoIndex) return;
-		else if(!undo && this.undoIndex === 0) return;
+
+		if(!undo && this.undoIndex === 0) return;
+		if(!undo && this.undoIndex<0) this.undoIndex++;
+
+		if(undo && this.undoList.length-1 === -this.undoIndex) return;
+		if(undo) this.undoIndex--;
 
 		const targetIndex = this.undoList.length-1+this.undoIndex;
 		const json = this.undoList[targetIndex];
+
 		this.resetEditor();
 		this.buildJSON(json);
 
-		if(undo) this.undoIndex--;
-		else this.undoIndex++;
 	}
 
 	this.updateMousePosition = function (e) {
@@ -2620,17 +2631,19 @@ const _B2dEditor = function () {
 				this.cutSelection();
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? 10 : 1);
-				this.storeUndoMovementDebounced();
 			}
 
-		} else if (e.keyCode == 90) { // z
+		} else if (e.keyCode == 89) { // y
+			if (e.ctrlKey || e.metaKey) {
+				this.undoMove(false);
+			}
+		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
 				this.undoMove(true);
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
-				this.storeUndoMovementDebounced();
 			}
-		} else if (e.keyCode == 46) { //delete
+		} else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
 			this.deleteSelection();
 		} else if (e.keyCode == 16) { //shift
 			this.shiftDown = true;
@@ -2661,40 +2674,33 @@ const _B2dEditor = function () {
 		} else if (e.keyCode == 38) { // up arrow
 			if (e.ctrlKey || e.metaKey) {
 				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, true);
-				this.storeUndoMovementDebounced();
-
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 					x: 0,
 					y: this.shiftDown ? -10 : -1
 				});
-				this.storeUndoMovementDebounced();
 			}
 		} else if (e.keyCode == 40) { // down arrow
 			if (e.ctrlKey || e.metaKey) {
 				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, false);
-				this.storeUndoMovementDebounced();
-
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 					x: 0,
 					y: this.shiftDown ? 10 : 1
 				});
-				this.storeUndoMovementDebounced();
 			}
 		} else if (e.keyCode == 37) { // left arrow
 			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 				x: this.shiftDown ? -10 : -1,
 				y: 0
 			});
-			this.storeUndoMovementDebounced();
 		} else if (e.keyCode == 39) { // right arrow
 			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 				x: this.shiftDown ? 10 : 1,
 				y: 0
 			});
-			this.storeUndoMovementDebounced();
 		}
+		this.storeUndoMovementDebounced();
 	}
 	this.onKeyUp = function (e) {
 
@@ -3151,8 +3157,7 @@ const _B2dEditor = function () {
 							x: controller.targetValue,
 							y: 0
 						});
-						this.storeUndoMovementDebounced();
-
+						
 					} else if (controller.property == "y") {
 						//bodies & sprites & prefabs
 
@@ -3160,7 +3165,6 @@ const _B2dEditor = function () {
 							x: 0,
 							y: controller.targetValue
 						});
-						this.storeUndoMovementDebounced();
 
 					} else if ((controller.property == "width" || controller.property == "height") && this.selectedPhysicsBodies.length+this.selectedTextures.length>0) {
 						//bodies & sprites & ??prefabs
@@ -3301,7 +3305,6 @@ const _B2dEditor = function () {
 					} else if (controller.property == "rotation") {
 
 						this.applyToSelectedObjects(this.TRANSFORM_ROTATE, controller.targetValue);
-						this.storeUndoMovementDebounced();
 
 
 					} else if (controller.property == "groups" && controller.targetValue != "-") {
@@ -3585,7 +3588,6 @@ const _B2dEditor = function () {
 						}
 
 					}
-
 				}
 				if (controller.__input !== document.activeElement &&
 					(controller.domElement.children[0].children && controller.domElement.children[0].children[0] !== document.activeElement)) {
