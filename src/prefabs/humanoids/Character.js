@@ -57,13 +57,35 @@ class Character extends PrefabManager.basePrefab {
                 texture.addChildAt(sprite, 0);
             }
         }
+        this.setSkin(1);
+    }
+    setSkin(skin){
+        const targetFrame = String(skin).padStart(4, '0');
+        for (let i = 0; i < this.lookupObject._bodies.length; i++) {
+            const body = this.lookupObject._bodies[i];
+
+            let targetTextureName = body.myTexture.data.textureName.substr(0, body.myTexture.data.textureName.length-4);
+            let targetTexture = targetTextureName+targetFrame;
+
+
+            body.myTexture.data.textureName = targetTexture;
+            body.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetTexture);
+        }
     }
     update() {
         super.update();
 
         if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_CLOSE, true) || !this.alive) {
-            if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName.replace("0000", "_Closed0000"));
-            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName.replace("0000", "_Closed0000"));
+            if (this.lookupObject.eye_left){
+                const textureIndex = this.lookupObject.eye_left.myTexture.data.textureName.substr(this.lookupObject.eye_left.myTexture.data.textureName.length-4);
+                const baseTextureName = this.lookupObject.eye_left.myTexture.data.textureName.split(textureIndex)[0];
+                this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(`${baseTextureName}_Closed${textureIndex}`);
+            }
+            if (this.lookupObject.eye_right){
+                const textureIndex = this.lookupObject.eye_right.myTexture.data.textureName.substr(this.lookupObject.eye_right.myTexture.data.textureName.length-4);
+                const baseTextureName = this.lookupObject.eye_right.myTexture.data.textureName.split(textureIndex)[0];
+                this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(`${baseTextureName}_Closed${textureIndex}`);
+            }
         } else if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_OPEN, false)) {
             if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName);
             if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName);
