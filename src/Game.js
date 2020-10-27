@@ -731,7 +731,8 @@ function Game() {
 
                     const bodyClass = self.editor.retrieveSubClassFromBody(body);
                     if(bodyClass && bodyClass.dealDamage){
-                        bodyClass.dealDamage(velocitySum);
+                        const slidingDamageScalar = 50;
+                        bodyClass.dealDamage(velocitySum/slidingDamageScalar);
                     }
                 }
             }

@@ -57,7 +57,6 @@ class Character extends PrefabManager.basePrefab {
                 texture.addChildAt(sprite, 0);
             }
         }
-        this.setSkin(1);
     }
     setSkin(skin){
         const targetFrame = String(skin).padStart(4, '0');
@@ -148,7 +147,7 @@ class Character extends PrefabManager.basePrefab {
 
     dealDamage(damage){
         this.life -= damage;
-        globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage})
+        globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage});
     }
 
     initContactListener() {
@@ -159,6 +158,8 @@ class Character extends PrefabManager.basePrefab {
             var body;
             for (var i = 0; i < bodies.length; i++) {
                 body = bodies[i];
+
+                if(body.GetMass()===0) continue;
 
                 if ((bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
 
@@ -177,13 +178,14 @@ class Character extends PrefabManager.basePrefab {
                         // }
                     const count = contact.GetManifold().pointCount;
 
-                    var force = 0;
-                    for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+                    let force = 0;
+                    for (let j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
 
                     const minForceForDamage = 10.0;
-                    const forceToDamageDivider = 10.0;
-                    if(force>minForceForDamage){
-                        self.dealDamage(minForceForDamage/forceToDamageDivider)
+                    const forceToDamageDivider = 50.0;
+
+                    if(force> body.GetMass() * minForceForDamage){
+                        self.dealDamage(force/forceToDamageDivider)
                     }
 
                     if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {

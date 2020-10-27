@@ -13,15 +13,20 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
         this.destroyConnectedJoints = {};
+        this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
     }
 
     init() {
+
         super.init();
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
             body.mySprite.data.prefabID = this.prefabObject.instanceID;
         }
+
+        this.character.life = this.prefabObject.settings.life;
+
         this.initContactListener();
 
         this.leanSpeed = 0.2;
@@ -89,6 +94,9 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                     game.editor.updateSelection();
                 }
                 break;
+            default:
+                this.prefabObject.settings[property] = value;
+            break;
         }
     }
 
@@ -175,8 +183,14 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
 }
 BaseVehicle.settings = Object.assign({}, BaseVehicle.settings, {
+    "life": 300,
     "selectedVehicle": "Bike"
 });
 BaseVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
+    "life": {
+        min: 1.0,
+        max: 10000.0,
+        step: 1.0
+	},
     "selectedVehicle": ["Bike", "Stroller", "HorseVehicle", "NoVehicle"]
 });

@@ -911,6 +911,9 @@ const _B2dEditor = function () {
 					if (prefabClassOptions.hasOwnProperty(key) && prefabClassOptions[key] !== undefined) {
 						var argument;
 						ui.editorGUI.editData[key] = prefabObjectSettings[key];
+
+						if(ui.editorGUI.editData[key] === undefined) ui.editorGUI.editData[key] = prefabClassSettings[key];
+
 						if (prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
 							controller = targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step)
@@ -2455,6 +2458,8 @@ const _B2dEditor = function () {
 	this.TRANSFORM_UPDATE = "update";
 
 	this.storeUndoMovement = function () {
+		if(!this.editing) return;
+
 		this.stringifyWorldJSON();
 		if(this.lastValidWorldJSON === this.worldJSON) return;
 

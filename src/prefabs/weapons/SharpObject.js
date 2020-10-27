@@ -229,9 +229,8 @@ export class SharpObject extends PrefabManager.basePrefab {
 
                 const bodyClass = game.editor.retrieveSubClassFromBody(otherBody);
                 if(bodyClass && bodyClass.dealDamage){
-                    let damage = Math.abs(otherBody.GetLinearVelocity().Length() - sharpBody.GetLinearVelocity().Length())*2+10;
+                    let damage = Math.abs(otherBody.GetLinearVelocity().Length() - sharpBody.GetLinearVelocity().Length())+10;
                     if(otherBody.mySprite.data.refName === 'head') damage *= 2;
-                    console.log(damage);
                     bodyClass.dealDamage(damage);
                 }
 
