@@ -94,6 +94,7 @@ export const setNewLevelData = function () {
         game.currentLevelData.description = levelEditScreen.domElement.querySelector('#levelEdit_description').value;
     }
 }
+
 const hasUnsavedChanges = function () {
     if (game.levelHasChanges()) return true;
     if (!levelEditScreen) return false;
@@ -444,14 +445,8 @@ export const showLoginScreen = function () {
                 button.click();
         }));
 
-        var dotShell = document.createElement('div');
-        dotShell.setAttribute('class', 'dot-shell')
+        const dotShell = uiHelper.buildDotShell(true);
         button.appendChild(dotShell);
-        var dots = document.createElement('div');
-        dots.setAttribute('class', 'dot-pulse')
-        dotShell.appendChild(dots);
-        dotShell.classList.add('hidden');;
-
 
         button.addEventListener('click', () => {
             if (errorChecks(true)) {
@@ -649,14 +644,8 @@ export const showRegisterScreen = function () {
                 button.click();
         }));
 
-        var dotShell = document.createElement('div');
-        dotShell.setAttribute('class', 'dot-shell')
+        const dotShell = uiHelper.buildDotShell(true);
         button.appendChild(dotShell);
-        var dots = document.createElement('div');
-        dots.setAttribute('class', 'dot-pulse')
-        dotShell.appendChild(dots);
-        dotShell.classList.add('hidden');;
-
 
         button.addEventListener('click', () => {
             if (errorChecks(true)) {
@@ -833,14 +822,8 @@ export const showUsernameScreen = function () {
                 button.click();
         }));
 
-        var dotShell = document.createElement('div');
-        dotShell.setAttribute('class', 'dot-shell')
+        const dotShell = uiHelper.buildDotShell(true);
         button.appendChild(dotShell);
-        var dots = document.createElement('div');
-        dots.setAttribute('class', 'dot-pulse')
-        dotShell.appendChild(dots);
-        dotShell.classList.add('hidden');;
-
 
         button.addEventListener('click', () => {
             if (errorChecks(true)) {
@@ -1185,14 +1168,8 @@ export const showSaveScreen = function () {
                 new_button.click();
         });
 
-        var dotShell = document.createElement('div');
-        dotShell.setAttribute('class', 'dot-shell')
-        new_button.appendChild(dotShell);
-        var dots = document.createElement('div');
-        dots.setAttribute('class', 'dot-pulse')
-        dotShell.appendChild(dots);
-        dotShell.classList.add('hidden');;
-
+        const dotShell = uiHelper.buildDotShell(true);
+        button.appendChild(dotShell);
 
         new_button.addEventListener('click', () => {
             let oldText = new_button.innerHTML;

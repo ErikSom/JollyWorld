@@ -10,3 +10,12 @@ export const clampDot = (target, lines = 1, lineHeight = 14) => {
         target.innerText = target.innerText.substr(0, target.innerText.length - 6) + '...';
     }
 }
+export const buildDotShell = hidden=>{
+    var dotShell = document.createElement('div');
+    dotShell.setAttribute('class', 'dot-shell')
+    var dots = document.createElement('div');
+    dots.setAttribute('class', 'dot-pulse')
+    dotShell.appendChild(dots);
+    if(hidden) dotShell.classList.add('hidden');
+    return dotShell;
+}

@@ -270,7 +270,6 @@ function UIManager() {
                 this.showFilterMenu();
             })
 
-
             customGUIContainer.appendChild(levelLoader.domElement);
             levelLoader.domElement.style.position = 'absolute';
 
@@ -1058,13 +1057,8 @@ function UIManager() {
         playButtonTriangle.setAttribute('class', 'playButtonTriangleIcon')
         button.appendChild(playButtonTriangle)
 
-        var dotShell = document.createElement('div');
-        dotShell.setAttribute('class', 'dot-shell')
+        const dotShell = uiHelper.buildDotShell(true);
         button.appendChild(dotShell);
-        var dots = document.createElement('div');
-        dots.setAttribute('class', 'dot-pulse')
-        dotShell.appendChild(dots);
-        dotShell.style.visibility = 'hidden';
         //*********************************/
 
         // Level Load
@@ -1072,9 +1066,13 @@ function UIManager() {
         itemList.setAttribute('class', 'itemList');
         divWrapper.appendChild(itemList);
 
+        const itemListDotShell = uiHelper.buildDotShell(false);
+        itemList.appendChild(itemListDotShell);
+
         let self = this;
 
         const buildLevelList = (levels) => {
+            itemListDotShell.style.visibility = 'hidden';
             levels.map((level_child) => {
                 const level_id = level_child.key;
                 const level = level_child.val();
