@@ -25,7 +25,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             body.mySprite.data.prefabID = this.prefabObject.instanceID;
         }
 
+        console.log(this.prefabObject.settings);
         this.character.life = this.prefabObject.settings.life;
+
+        console.log(this.character.life, this.character);
 
         this.initContactListener();
 

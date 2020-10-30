@@ -952,6 +952,12 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
 				controller = targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100).step(1.0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -3413,8 +3419,8 @@ const _B2dEditor = function () {
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							sprite.data.transparancy = controller.targetValue.toString();
-							if ([this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP].includes(sprite.data.type)) {
+							sprite.data.transparancy = controller.targetValue;
+							if ([this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP, this.object_TEXT].includes(sprite.data.type)) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
 								if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
@@ -4490,6 +4496,8 @@ const _B2dEditor = function () {
 		container.y = obj.y;
 		container.rotation = obj.rotation;
 		container.data = obj;
+
+		container.alpha = obj.transparancy;
 
 		if (container.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;

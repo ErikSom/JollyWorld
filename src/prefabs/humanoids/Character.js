@@ -14,6 +14,7 @@ class Character extends PrefabManager.basePrefab {
     static TIME_EYES_OPEN = 3100;
     constructor(target) {
         super(target);
+        this.life = 300;
     }
 
     init() {
@@ -23,7 +24,6 @@ class Character extends PrefabManager.basePrefab {
         this.attachedToVehicle = true;
         this.alive = true;
         this.bleedTimer = -1;
-        this.life = 300;
 
         //** TEMP PORTAL GUN */
         // const gunPosition = this.lookupObject.shoulder_left.GetPosition();
@@ -146,6 +146,7 @@ class Character extends PrefabManager.basePrefab {
     static GORE_SNAP = 1;
 
     dealDamage(damage){
+        console.log("DAMAGE:", damage, "LIFE:", this.life);
         this.life -= damage;
         globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage});
     }
