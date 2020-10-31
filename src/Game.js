@@ -333,6 +333,9 @@ function Game() {
                 if (Key.isPressed(Key.Z)) {
                     this.character.detachFromVehicle(Settings.detachForce);
                 };
+                if (Key.isPressed(Key.SPACE)) {
+                    if(this.character.hat) this.character.hat.activate();
+                };
             } else if (this.character && !this.character.attachedToVehicle) {
                 if (Key.isDown(Key.W)) {
                     this.character.positionBody('up');

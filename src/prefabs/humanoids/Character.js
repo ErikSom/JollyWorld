@@ -8,6 +8,7 @@ import {
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
+import { RopeHat } from '../hats/ropeHat';
 
 class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -15,6 +16,7 @@ class Character extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
         this.life = 300;
+        this.hat = undefined;
     }
 
     init() {
@@ -24,6 +26,8 @@ class Character extends PrefabManager.basePrefab {
         this.attachedToVehicle = true;
         this.alive = true;
         this.bleedTimer = -1;
+
+        this.hat = new RopeHat(this, this.lookupObject.head);
 
         //** TEMP PORTAL GUN */
         // const gunPosition = this.lookupObject.shoulder_left.GetPosition();
@@ -146,7 +150,6 @@ class Character extends PrefabManager.basePrefab {
     static GORE_SNAP = 1;
 
     dealDamage(damage){
-        console.log("DAMAGE:", damage, "LIFE:", this.life);
         this.life -= damage;
         globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage});
     }
