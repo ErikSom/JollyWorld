@@ -27,7 +27,7 @@ class Character extends PrefabManager.basePrefab {
         this.alive = true;
         this.bleedTimer = -1;
 
-        this.hat = new RopeHat(this, this.lookupObject.head);
+        this.hat = new RopeHat(this, this.lookupObject.head, this.lookupObject.body);
 
         //** TEMP PORTAL GUN */
         // const gunPosition = this.lookupObject.shoulder_left.GetPosition();
@@ -77,6 +77,7 @@ class Character extends PrefabManager.basePrefab {
     }
     update() {
         super.update();
+        if(this.hat) this.hat.update();
 
         if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_CLOSE, true) || !this.alive) {
             if (this.lookupObject.eye_left){

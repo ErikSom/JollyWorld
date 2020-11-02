@@ -314,51 +314,57 @@ function Game() {
         if (this.gameState != this.GAMESTATE_MENU && this.character.alive && !this.pause && !this.levelWon) {
             if (this.vehicle && this.character.attachedToVehicle) {
 
-                if (Key.isDown(Key.W)) {
+                if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
                     this.vehicle.accelerate(1);
                 };
-                if (Key.isDown(Key.S)) {
+                if (Key.isDown(Key.S) || Key.isDown(Key.DOWN)) {
                     this.vehicle.accelerate(-1);
                 };
-                if (!Key.isDown(Key.W) && !Key.isDown(Key.S)) {
+                if (!Key.isDown(Key.W) && !Key.isDown(Key.S) &&  !Key.isDown(Key.UP) &&  !Key.isDown(Key.DOWN)) {
                     this.vehicle.stopAccelerate();
                 };
 
-                if (Key.isDown(Key.A)) {
+                if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
                     this.vehicle.lean(-1);
                 }
-                if (Key.isDown(Key.D)) {
+                if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.vehicle.lean(1);
                 }
                 if (Key.isPressed(Key.Z)) {
                     this.character.detachFromVehicle(Settings.detachForce);
                 };
-                if (Key.isPressed(Key.SPACE)) {
-                    if(this.character.hat) this.character.hat.activate();
-                };
+
             } else if (this.character && !this.character.attachedToVehicle) {
-                if (Key.isDown(Key.W)) {
+                if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
                     this.character.positionBody('up');
-                    if (Key.isDown(Key.A)) this.character.lean(-1);
-                    else if (Key.isDown(Key.D)) this.character.lean(1);
-                } else if (Key.isDown(Key.S)) {
+                    if (Key.isDown(Key.A)  || Key.isDown(Key.LEFT)) this.character.lean(-1);
+                    else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) this.character.lean(1);
+                } else if (Key.isDown(Key.S) || Key.isDown(Key.DOWN)) {
                     this.character.positionBody('down');
-                    if (Key.isDown(Key.A)) this.character.lean(-1);
-                    else if (Key.isDown(Key.D)) this.character.lean(1);
-                } else if (Key.isPressed(Key.A)) {
+                    if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) this.character.lean(-1);
+                    else if (Key.isDown(Key.D)  || Key.isDown(Key.RIGHT)) this.character.lean(1);
+                } else if (Key.isPressed(Key.A) || Key.isDown(Key.LEFT)) {
                     this.character.positionBody('set-random');
-                } else if (Key.isDown(Key.A)) {
+                } else if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
                     this.character.positionBody('random');
-                } else if (Key.isDown(Key.D)) {
+                } else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.character.positionBody('right');
                 }
             }
 
-            if(this.character.attachedGun){
-                if(Key.isPressed(Key.SPACE)){
-                    this.character.attachedGun.shoot();
+            if(this.character.hat){
+                if (Key.isPressed(Key.SPACE)) {
+                    this.character.hat.activate();
+                };
+                if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
+                    this.character.hat.lean(-1);
+                }else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
+                    this.character.hat.lean(1);
+                }else {
+                    this.character.hat.lean(0);
                 }
             }
+
         }
         if(this.gameState == this.GAMESTATE_NORMALPLAY){
             if(Key.isPressed(Key.P) && this.run){
