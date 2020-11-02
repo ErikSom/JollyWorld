@@ -47,6 +47,8 @@ export class RopeHat extends Hat{
 
 		const bd = new Box2D.b2BodyDef();
 		bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		bd.angularDamping = 0.85;
+		bd.linearDamping = 0.85;
 		this.ropeEnd = this.head.GetWorld().CreateBody(bd);
 		this.ropeEnd.SetBullet(true);
 
@@ -61,8 +63,6 @@ export class RopeHat extends Hat{
 		const revoluteJointDef = new Box2D.b2RevoluteJointDef;
 		revoluteJointDef.Initialize(collision.m_fixture.GetBody(), this.ropeEnd, farthestPoint);
 		revoluteJointDef.collideConnected = false;
-		revoluteJointDef.maxMotorTorque = 10000;
-		revoluteJointDef.enableMotor = false;
 
 		this.revoluteJoint = this.head.GetWorld().CreateJoint(revoluteJointDef);
 
@@ -133,7 +133,7 @@ export class RopeHat extends Hat{
 
 		// rope collider
 		let fixDef = new Box2D.b2FixtureDef;
-		fixDef.density = 50;
+		fixDef.density = 100;
 		fixDef.isSensor = true;
 		fixDef.shape = new Box2D.b2CircleShape;
 		fixDef.shape.SetRadius(0.1);
@@ -158,15 +158,14 @@ export class RopeHat extends Hat{
 	lean(dir){
 		if(!this.revoluteJoint) return;
 		if(dir !== 0){
-			this.revoluteJoint.SetMotorSpeed(dir*1);
-			this.revoluteJoint.EnableMotor(true);
+			this.body.ApplyForce(new Box2D.b2Vec2(dir*50, 0), this.body.GetPosition(), true);
 		}else{
-			this.revoluteJoint.EnableMotor(false);
 		}
+		console.log(this.revoluteJoint.m_motorSpeed, this.revoluteJoint.m_enableMotor)
 	}
 	update(){
 		if(this.ropeActive){
-			this.updateRopeFixture();
+			// this.updateRopeFixture();
 		}
 	}
 
