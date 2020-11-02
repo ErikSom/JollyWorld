@@ -360,8 +360,6 @@ function Game() {
                     this.character.hat.lean(-1);
                 }else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.character.hat.lean(1);
-                }else {
-                    this.character.hat.lean(0);
                 }
             }
 

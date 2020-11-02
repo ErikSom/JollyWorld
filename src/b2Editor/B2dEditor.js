@@ -6514,6 +6514,11 @@ const _B2dEditor = function () {
 				if (secondParam) body.class.contactListener[name](contact, secondParam);
 				else body.class.contactListener[name](contact);
 			}
+
+			if(body.contactListener){
+				if (secondParam) body.contactListener[name](contact, secondParam);
+				else body.contactListener[name](contact);
+			}
 		}
 	}
 	this.B2dEditorContactListener.BeginContact = function (contact) {

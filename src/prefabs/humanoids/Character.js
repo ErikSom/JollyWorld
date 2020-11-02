@@ -160,6 +160,7 @@ class Character extends PrefabManager.basePrefab {
         var self = this;
         this.contactListener.PostSolve = function (contact, impulse) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+            if(!bodies[0].mySprite || !bodies[1].mySprite) return;
             var body;
             for (var i = 0; i < bodies.length; i++) {
                 body = bodies[i];

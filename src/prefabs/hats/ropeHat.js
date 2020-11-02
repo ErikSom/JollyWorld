@@ -35,7 +35,6 @@ export class RopeHat extends Hat{
 		let callback = new this.rayCastCallback();
 		this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
 		if (callback.m_hit) {
-			console.log("HITTTTT");
 			drawCircle(game.editor.getPIXIPointFromWorldPoint(callback.m_point,), 3);
 			this.attachRope(callback);
 		}else{
@@ -52,17 +51,34 @@ export class RopeHat extends Hat{
 		this.ropeEnd = this.head.GetWorld().CreateBody(bd);
 		this.ropeEnd.SetBullet(true);
 
+		this.ropeEnd.contactListener = new Box2D.b2ContactListener();
+        this.ropeEnd.contactListener.PreSolve = contact => {
+			contact.SetEnabled(false);
+			const bodyA = contact.GetFixtureA().GetBody();
+			const bodyB = contact.GetFixtureA().GetBody();
+			const targetBody = bodyA === this.ropeEnd ? bodyB : bodyA;
+			if(targetBody.GetType() !== Box2D.b2BodyType.b2_staticBody) return;
+			const worldManifold = new Box2D.b2WorldManifold();
+			contact.GetWorldManifold(worldManifold);
+			const worldCollisionPoint = worldManifold.points[0];
+			drawCircle(game.editor.getPIXIPointFromWorldPoint(worldCollisionPoint,), 3, {color:0x00FF00});
+		}
+
 		const farthestPoint = this.findFarthestPointFromBody(0.5, collision.m_point, collision.m_fixture.GetBody());
 		if(farthestPoint === null) return;
 
 		this.ropeEnd.SetPosition(farthestPoint);
+
+		const diff = this.head.GetPosition().Clone().SelfSub(this.ropeEnd.GetPosition());
+		const angle = Math.atan2(diff.y, diff.x)-90*game.editor.DEG2RAD;
+		this.ropeEnd.SetAngle(angle);
 
 		//build fixtures
 		this.updateRopeFixture();
 
 		const revoluteJointDef = new Box2D.b2RevoluteJointDef;
 		revoluteJointDef.Initialize(collision.m_fixture.GetBody(), this.ropeEnd, farthestPoint);
-		revoluteJointDef.collideConnected = false;
+		revoluteJointDef.collideConnected = true;
 
 		this.revoluteJoint = this.head.GetWorld().CreateJoint(revoluteJointDef);
 
@@ -72,11 +88,6 @@ export class RopeHat extends Hat{
 		ropeJointDef.dampingRatio = 1.0;
 		this.ropeHeadJoint = this.head.GetWorld().CreateJoint(ropeJointDef);
 
-
-		// ropeJointDef = new Box2D.b2RopeJointDef();
-		// ropeJointDef.Initialize(this.body, this.ropeEnd, new Box2D.b2Vec2(), new Box2D.b2Vec2());
-		// this.ropeBodyJoint = this.head.GetWorld().CreateJoint(ropeJointDef);
-
 		const prismaticJointDef = new Box2D.b2PrismaticJointDef();
 		const axis = new Box2D.b2Vec2(Math.cos(this.head.GetAngle()+90 * game.editor.DEG2RAD), Math.sin(this.head.GetAngle()+90 * game.editor.DEG2RAD));
 		prismaticJointDef.Initialize(this.head, this.ropeEnd, farthestPoint, axis);
@@ -84,7 +95,6 @@ export class RopeHat extends Hat{
 		prismaticJointDef.enableMotor = false;
 		this.pulleyJoint = this.head.GetWorld().CreateJoint(prismaticJointDef);
 
-		console.log(this.pulleyJoint, this.revoluteJoint, this.ropeHeadJoint);
 	}
 	findFarthestPointFromBody(radius, point, body){
 		const steps = 16;
@@ -134,14 +144,12 @@ export class RopeHat extends Hat{
 		// rope collider
 		let fixDef = new Box2D.b2FixtureDef;
 		fixDef.density = 100;
-		fixDef.isSensor = true;
 		fixDef.shape = new Box2D.b2CircleShape;
 		fixDef.shape.SetRadius(0.1);
 		this.ropeEnd.CreateFixture(fixDef);
 
 		fixDef = new Box2D.b2FixtureDef;
 		fixDef.density = 0.1;
-		fixDef.isSensor = true;
 
 		const thickness = 0.1;
 
@@ -157,11 +165,7 @@ export class RopeHat extends Hat{
 	}
 	lean(dir){
 		if(!this.revoluteJoint) return;
-		if(dir !== 0){
-			this.body.ApplyForce(new Box2D.b2Vec2(dir*50, 0), this.body.GetPosition(), true);
-		}else{
-		}
-		console.log(this.revoluteJoint.m_motorSpeed, this.revoluteJoint.m_enableMotor)
+		this.body.ApplyForce(new Box2D.b2Vec2(dir*50, 0), this.body.GetPosition(), true);
 	}
 	update(){
 		if(this.ropeActive){
