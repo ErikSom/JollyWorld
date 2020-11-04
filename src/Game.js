@@ -716,6 +716,8 @@ function Game() {
         var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         var body;
 
+        if(!bodies[0].mySprite || !bodies[1].mySprite) return;
+
         for (var i = 0; i < bodies.length; i++) {
             body = bodies[i];
             if (body.isFlesh && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {

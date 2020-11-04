@@ -27,6 +27,7 @@ export class RopeHat extends Hat {
 		this.bendRopeLength = 0;
 		this.ropePoints = [];
 		this.bendPoint = null;
+		this.bendSpeed = null;
 		this.bendBody = null;
 	}
 	activate() {
@@ -55,7 +56,7 @@ export class RopeHat extends Hat {
 		bd.angularDamping = 0.85;
 		bd.linearDamping = 0.85;
 
-		const farthestPoint = precise ? point : this.findFarthestPointFromBody(0.2, point, body);
+		const farthestPoint = precise ? point : this.findFarthestPointFromBody(0.3, point, body);
 		if (farthestPoint === null) return;
 
 		const diff = this.head.GetPosition().Clone().SelfSub(farthestPoint);
@@ -69,8 +70,8 @@ export class RopeHat extends Hat {
 
 		this.ropeEnd.contactListener = new Box2D.b2ContactListener();
 		this.ropeEnd.contactListener.PreSolve = contact => {
-			if (this.bendBody || !this.revoluteJoint.GetJointSpeed()) return;
 			contact.SetEnabled(false);
+			if (this.bendBody || Math.abs(this.revoluteJoint.GetJointSpeed())<0.01) return;
 			const bodyA = contact.GetFixtureA().GetBody();
 			const bodyB = contact.GetFixtureA().GetBody();
 			const targetBody = bodyA === this.ropeEnd ? bodyB : bodyA;
@@ -83,6 +84,7 @@ export class RopeHat extends Hat {
 			});
 			this.bendPoint = worldCollisionPoint;
 			this.bendBody = targetBody;
+			this.bendSpeed = this.revoluteJoint.GetJointSpeed();
 		}
 
 
@@ -108,6 +110,8 @@ export class RopeHat extends Hat {
 		prismaticJointDef.enableMotor = false;
 		this.pulleyJoint = this.head.GetWorld().CreateJoint(prismaticJointDef);
 
+		console.log(this.revoluteJoint, this.pulleyJoint);
+
 	}
 	releaseRope() {
 		if (this.ropeEnd) {
@@ -116,8 +120,36 @@ export class RopeHat extends Hat {
 		}
 	}
 	bendRope(point, body) {
-		console.log("BEND RFOPE!!");
-		const bendLength = this.ropeEnd.GetPosition().Clone().SelfSub(point).Length();
+		console.log("BEND ROPE!!", this.bendSpeed);
+
+		const diff = this.head.GetPosition().Clone().SelfSub(point);
+		let angle = Math.atan2(diff.y, diff.x);
+		if(this.bendSpeed > 0){
+			console.log("DECREASING");
+			angle -=  45 * game.editor.DEG2RAD;
+		}else{
+			console.log("INCREASING");
+			angle +=  45 * game.editor.DEG2RAD;
+		}
+		debugger;
+
+		// left and straight
+		// 		x-------------
+		//    	v
+		//	   <
+
+		const offsetPoint = point.Clone();
+		const offsetLength = 0.5;
+		const offset = new Box2D.b2Vec2(offsetLength*Math.cos(angle), offsetLength*Math.sin(angle));
+		offsetPoint.SelfAdd(offset);
+
+		drawCircle(game.editor.getPIXIPointFromWorldPoint(offsetPoint), 3, {
+			color: 0x00FFFF
+		});
+		debugger;
+
+
+		const bendLength = this.ropeEnd.GetPosition().Clone().SelfSub(offsetPoint).Length();
 		this.bendRopeLength += bendLength;
 
 		this.ropePoints.push({
@@ -129,12 +161,11 @@ export class RopeHat extends Hat {
 
 		this.releaseRope();
 
-		this.attachRope(point, body);
+		this.attachRope(offsetPoint, body, true);
 
 		this.bendBody = this.bendPoint = null;
 	}
 	unBendRope() {
-		console.log("UNBEND!!!");
 		const bendData = this.ropePoints.pop();
 		this.bendRopeLength -= bendData.bendLength;
 
@@ -170,7 +201,6 @@ export class RopeHat extends Hat {
 			const y = radius * Math.sin(rot);
 			const rayStart = new Box2D.b2Vec2(point.x + x, point.y + y);
 			const radiusEdge = radius*1.1;
-			console.log(dir, radiusEdge);
 			const rayEnd = new Box2D.b2Vec2(point.x - dir.x * radiusEdge, point.y - dir.y * radiusEdge);
 
 			this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
@@ -203,7 +233,7 @@ export class RopeHat extends Hat {
 		fixDef = new Box2D.b2FixtureDef;
 		fixDef.density = 0.1;
 
-		const thickness = 0.1;
+		const thickness = 0.05;
 
 		const b2Vec2Arr = [];
 		b2Vec2Arr.push(new Box2D.b2Vec2(-thickness, 0));
@@ -237,16 +267,14 @@ export class RopeHat extends Hat {
 				const y1 = this.ropeEnd.GetPosition().y;
 				const x = this.head.GetPosition().x;
 				const y = this.head.GetPosition().y;
+
 				if (currentSpeed < 0 && savedSpeed > 0) {
-					console.log("Should unbend1?", ((x2 - x1) * (x - y1) - (y2 - y1) * (y - x1)));
-					if (((x2 - x1) * (x - y1) - (y2 - y1) * (y - x1)) > 0) {
-						//this.unBendRope();
-						//console.log("UNBEND 1", ((x2 - x1) * (x - y1) - (y2 - y1) * (y - x1)));
+					if (((x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)) > 0) {
+						this.unBendRope();
 					}
 				} else if (currentSpeed > 0 && savedSpeed < 0) {
-					console.log("Should unbend2?", ((x2 - x1) * (x - y1) - (y2 - y1) * (y - x1)));
-					if (((x2 - x1) * (x - y1) - (y2 - y1) * (y - x1)) < 0) {
-						//this.unBendRope();
+					if (((x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)) < 0) {
+						this.unBendRope();
 					}
 				}
 			}
