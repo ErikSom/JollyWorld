@@ -5,7 +5,6 @@ export default class Hat {
 		this.body = body;
 	}
 	attach(){
-
 	}
 	activate(){
 	}
@@ -13,6 +12,8 @@ export default class Hat {
 	}
 	destroy(){
 	}
-	lean(){
+	lean(dir){
+	}
+	accelerate(dir){
 	}
 }

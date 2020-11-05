@@ -356,6 +356,13 @@ function Game() {
                 if (Key.isPressed(Key.SPACE)) {
                     this.character.hat.activate();
                 };
+                if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
+                    this.character.hat.accelerate(-1);
+                }else if (Key.isDown(Key.S) || Key.isDown(Key.DOWN)) {
+                    this.character.hat.accelerate(1);
+                }else{
+                    this.character.hat.accelerate(0);
+                }
                 if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
                     this.character.hat.lean(-1);
                 }else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {

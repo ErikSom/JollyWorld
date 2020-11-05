@@ -32,7 +32,12 @@ export class RopeHat extends Hat {
 	}
 	activate() {
 		game.editor.editorSettings.physicsDebug = true // REMOVE ME
-		if (this.ropeFired) return;
+		if (this.ropeFired){
+			this.ropeFired = false;
+			this.releaseRope();
+			return;
+		}
+
 		this.ropeFired = true;
 		const rayStart = this.head.GetPosition();
 		const angle = this.head.GetAngle() - Math.PI / 2;
@@ -71,17 +76,14 @@ export class RopeHat extends Hat {
 		this.ropeEnd.contactListener = new Box2D.b2ContactListener();
 		this.ropeEnd.contactListener.PreSolve = contact => {
 			contact.SetEnabled(false);
-			if (this.bendBody || Math.abs(this.revoluteJoint.GetJointSpeed())<0.01) return;
+			if (this.bendBody || !this.revoluteJoint || Math.abs(this.revoluteJoint.GetJointSpeed())<0.01) return;
 			const bodyA = contact.GetFixtureA().GetBody();
-			const bodyB = contact.GetFixtureA().GetBody();
+			const bodyB = contact.GetFixtureB().GetBody();
 			const targetBody = bodyA === this.ropeEnd ? bodyB : bodyA;
 			if (targetBody.GetType() !== Box2D.b2BodyType.b2_staticBody) return;
 			const worldManifold = new Box2D.b2WorldManifold();
 			contact.GetWorldManifold(worldManifold);
 			const worldCollisionPoint = worldManifold.points[0];
-			drawCircle(game.editor.getPIXIPointFromWorldPoint(worldCollisionPoint, ), 3, {
-				color: 0x00FF00
-			});
 			this.bendPoint = worldCollisionPoint;
 			this.bendBody = targetBody;
 			this.bendSpeed = this.revoluteJoint.GetJointSpeed();
@@ -97,11 +99,7 @@ export class RopeHat extends Hat {
 
 		this.revoluteJoint = this.head.GetWorld().CreateJoint(revoluteJointDef);
 
-		let ropeJointDef = new Box2D.b2DistanceJointDef();
-		ropeJointDef.Initialize(this.head, this.ropeEnd, this.head.GetPosition(), this.ropeEnd.GetPosition());
-		ropeJointDef.frequencyHz = 60;
-		ropeJointDef.dampingRatio = 1.0;
-		this.ropeHeadJoint = this.head.GetWorld().CreateJoint(ropeJointDef);
+		this.setDistanceJointEnabled(true);
 
 		const prismaticJointDef = new Box2D.b2PrismaticJointDef();
 		const axis = new Box2D.b2Vec2(Math.cos(this.head.GetAngle() + 90 * game.editor.DEG2RAD), Math.sin(this.head.GetAngle() + 90 * game.editor.DEG2RAD));
@@ -113,41 +111,41 @@ export class RopeHat extends Hat {
 		console.log(this.revoluteJoint, this.pulleyJoint);
 
 	}
+
+	setDistanceJointEnabled(enabled){
+		if(this.ropeHeadJoint){
+			this.head.GetWorld().DestroyJoint(this.ropeHeadJoint);
+		}
+		if(enabled){
+			const distanceJointDef = new Box2D.b2DistanceJointDef();
+			distanceJointDef.Initialize(this.head, this.ropeEnd, this.head.GetPosition(), this.ropeEnd.GetPosition());
+			distanceJointDef.frequencyHz = 60;
+			distanceJointDef.dampingRatio = 1.0;
+			this.ropeHeadJoint = this.head.GetWorld().CreateJoint(distanceJointDef);
+		}
+	}
+
 	releaseRope() {
 		if (this.ropeEnd) {
 			this.head.GetWorld().DestroyBody(this.ropeEnd);
 			this.revoluteJoint = this.pulleyJoint = null;
+			this.ropeActive = false
+			this.bendBody = this.bendPoint = null;
 		}
 	}
 	bendRope(point, body) {
-		console.log("BEND ROPE!!", this.bendSpeed);
-
 		const diff = this.head.GetPosition().Clone().SelfSub(point);
 		let angle = Math.atan2(diff.y, diff.x);
 		if(this.bendSpeed > 0){
-			console.log("DECREASING");
 			angle -=  45 * game.editor.DEG2RAD;
 		}else{
-			console.log("INCREASING");
 			angle +=  45 * game.editor.DEG2RAD;
 		}
-		debugger;
-
-		// left and straight
-		// 		x-------------
-		//    	v
-		//	   <
 
 		const offsetPoint = point.Clone();
 		const offsetLength = 0.5;
 		const offset = new Box2D.b2Vec2(offsetLength*Math.cos(angle), offsetLength*Math.sin(angle));
 		offsetPoint.SelfAdd(offset);
-
-		drawCircle(game.editor.getPIXIPointFromWorldPoint(offsetPoint), 3, {
-			color: 0x00FFFF
-		});
-		debugger;
-
 
 		const bendLength = this.ropeEnd.GetPosition().Clone().SelfSub(offsetPoint).Length();
 		this.bendRopeLength += bendLength;
@@ -163,7 +161,7 @@ export class RopeHat extends Hat {
 
 		this.attachRope(offsetPoint, body, true);
 
-		this.bendBody = this.bendPoint = null;
+		
 	}
 	unBendRope() {
 		const bendData = this.ropePoints.pop();
@@ -247,8 +245,29 @@ export class RopeHat extends Hat {
 	}
 	lean(dir) {
 		if (!this.revoluteJoint) return;
-		this.body.ApplyForce(new Box2D.b2Vec2(dir * 50, 0), this.body.GetPosition(), true);
+
+		const angle = this.body.GetAngle();
+		const force = 50 * dir;
+		const xForce = force * Math.cos(angle);
+		const yForce = force * Math.sin(angle);
+
+		const drawPos = this.body.GetPosition().Clone().SelfAdd(new Box2D.b2Vec2(xForce/force, yForce/force));
+
+		this.body.ApplyForce(new Box2D.b2Vec2(xForce, yForce), this.body.GetPosition(), true);
 	}
+	accelerate(dir) {
+		if (!this.pulleyJoint) return;
+		if(dir === 0){
+			this.pulleyJoint.EnableMotor(false);
+			this.setDistanceJointEnabled(true);
+			return;
+		}
+		this.setDistanceJointEnabled(false);
+
+		const speed = 5;
+		this.pulleyJoint.EnableMotor(true);
+		this.pulleyJoint.SetMotorSpeed(speed*-dir);
+    }
 	update() {
 		if (this.ropeActive) {
 			this.updateRopeFixture();
