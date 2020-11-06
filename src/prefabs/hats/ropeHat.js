@@ -29,6 +29,43 @@ export class RopeHat extends Hat {
 		this.bendPoint = null;
 		this.bendSpeed = null;
 		this.bendBody = null;
+		this.hatBody = null;
+		this.attach();
+	}
+	attach(){
+		const bd = new Box2D.b2BodyDef();
+		bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		bd.angularDamping = 0.85;
+		bd.linearDamping = 0.85;
+		bd.position = this.head.GetPosition();
+		bd.angle = this.head.GetAngle();
+		this.hatBody = this.head.GetWorld().CreateBody(bd);
+
+		const fixDef = new Box2D.b2FixtureDef;
+		fixDef.density = 0.1;
+		fixDef.shape = new Box2D.b2CircleShape;
+		fixDef.shape.SetRadius(1.0);
+		this.hatBody.CreateFixture(fixDef);
+
+		this.hatWeldJoint = new Box2D.b2WeldJointDef();
+		this.hatWeldJoint.Initialize(this.hatBody, this.head, this.hatBody.GetPosition());
+		this.hatWeldJoint.frequencyHz = 60;
+		this.hatWeldJoint.dampingRatio = 1.0;
+		this.hatWeldJoint.collideConnected = false;
+
+		this.head.GetWorld().CreateJoint(this.hatWeldJoint);
+
+		const textureObject = new game.editor.textureObject();
+		textureObject.x = this.hatBody.GetPosition().x*game.editor.PTM;
+		textureObject.y = this.hatBody.GetPosition().y*game.editor.PTM;
+		textureObject.rotation = this.hatBody.GetAngle();
+		textureObject.textureName = "RopeHelmet0000";
+		textureObject.texturePositionOffsetLength = 45;
+		textureObject.texturePositionOffsetAngle = Math.PI/2;
+		textureObject.textureAngleOffset = 0;
+
+		const texture = game.editor.buildTextureFromObj(textureObject);
+		this.hatBody.myTexture = texture;
 	}
 	activate() {
 		game.editor.editorSettings.physicsDebug = true // REMOVE ME
