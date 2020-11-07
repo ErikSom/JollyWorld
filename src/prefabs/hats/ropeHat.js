@@ -30,6 +30,7 @@ export class RopeHat extends Hat {
 		this.bendSpeed = null;
 		this.bendBody = null;
 		this.hatBody = null;
+		this.tilingSprites = [];
 		this.attach();
 	}
 	attach(){
@@ -72,6 +73,10 @@ export class RopeHat extends Hat {
 		if (this.ropeFired){
 			this.ropeFired = false;
 			this.releaseRope();
+			this.clearTilingRope();
+			this.ropePoints = [];
+			this.anchorTexture.parent.removeChild(this.anchorTexture);
+			this.anchorTexture = null;
 			return;
 		}
 
@@ -85,6 +90,9 @@ export class RopeHat extends Hat {
 		let callback = new this.rayCastCallback();
 		this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
 		if (callback.m_hit) {
+			this.anchorTexture = new PIXI.heaven.Sprite(PIXI.Texture.fromImage("RopePartAndHook0000"));
+			this.anchorTexture.pivot.set(this.anchorTexture.width/2, this.anchorTexture.height / 2);
+			this.hatBody.myTexture.parent.addChildAt(this.anchorTexture, this.hatBody.myTexture.parent.getChildIndex(this.hatBody.myTexture));
 			this.attachRope(callback.m_point, callback.m_fixture.GetBody());
 		} else {
 			this.ropeFired = false;
@@ -126,7 +134,6 @@ export class RopeHat extends Hat {
 			this.bendSpeed = this.revoluteJoint.GetJointSpeed();
 		}
 
-
 		//build fixtures
 		this.updateRopeFixture();
 
@@ -144,9 +151,6 @@ export class RopeHat extends Hat {
 		prismaticJointDef.maxMotorForce = 20000;
 		prismaticJointDef.enableMotor = false;
 		this.pulleyJoint = this.head.GetWorld().CreateJoint(prismaticJointDef);
-
-		console.log(this.revoluteJoint, this.pulleyJoint);
-
 	}
 
 	setDistanceJointEnabled(enabled){
@@ -198,7 +202,6 @@ export class RopeHat extends Hat {
 
 		this.attachRope(offsetPoint, body, true);
 
-		
 	}
 	unBendRope() {
 		const bendData = this.ropePoints.pop();
@@ -240,14 +243,63 @@ export class RopeHat extends Hat {
 
 			this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
 			if (callback.m_fraction > maxLength) {
-				console.log(callback.m_fraction);
 				maxLength = callback.m_fraction;
 				farthestPoint = rayStart;
 			}
 		}
 		return farthestPoint;
 	}
+	clearTilingRope(){
+		if(this.tilingSprites.length){
+			this.tilingSprites.forEach(tileSprite=>tileSprite.parent.removeChild(tileSprite));
+			this.tilingSprites.length = 0;
+		}
+	}
 	updateRopeFixture() {
+		this.clearTilingRope();
+
+		const tilingPoints = [];
+		this.ropePoints.forEach(rope=>tilingPoints.push(rope.point));
+		tilingPoints.push(this.ropeEnd.GetPosition());
+
+
+		const gunStartPosition = this.head.GetPosition().Clone();
+		const gunAngle = this.hatBody.GetAngle()+90*game.editor.DEG2RAD;
+		const gunlength = 3.5;
+		gunStartPosition.x -= gunlength * Math.cos(gunAngle);
+		gunStartPosition.y -= gunlength * Math.sin(gunAngle);
+
+		tilingPoints.push(gunStartPosition);
+
+
+		for(let i = 1; i<tilingPoints.length; i++){
+			const point = tilingPoints[i];
+			const previousPoint = tilingPoints[i-1];
+			const diff = point.Clone().SelfSub(previousPoint);
+
+			const tilingSprite = new PIXI.extras.TilingSprite(
+				PIXI.Texture.fromImage("rope.png"),
+				4,
+				diff.Length()*game.editor.PTM,
+			);
+			tilingSprite.x = point.x*game.editor.PTM;
+			tilingSprite.y = point.y*game.editor.PTM;
+
+			const angle = Math.atan2(diff.y, diff.x);
+			tilingSprite.rotation = angle + 90 * game.editor.DEG2RAD;
+
+
+			if(i === 1){
+				this.anchorTexture.x = previousPoint.x*game.editor.PTM;
+				this.anchorTexture.y = previousPoint.y*game.editor.PTM;
+				this.anchorTexture.rotation = angle+Math.PI;
+			}
+
+			this.anchorTexture.parent.addChildAt(tilingSprite, this.anchorTexture.parent.getChildIndex(this.anchorTexture));
+			this.tilingSprites.push(tilingSprite);
+
+		}
+
 
 		let fixture = this.ropeEnd.GetFixtureList();
 		while (fixture) {

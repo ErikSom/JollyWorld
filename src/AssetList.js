@@ -23,6 +23,7 @@ export var LoadCoreAssets = function (loader){
         .add("Brick2.jpg", "assets/images/textures/Brick2.jpg")
         .add("WhiteBlock.jpg", "assets/images/textures/WhiteBlock.jpg")
         .add("TileArrow.jpg", "assets/images/textures/TileArrow.jpg")
+        .add("rope.png", "assets/images/misc/rope.png")
         /*PARTICLE DATA*/
         .add("assets/images/particles/particles.json")
         /*MISC*/

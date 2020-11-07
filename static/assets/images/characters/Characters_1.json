@@ -586,7 +586,7 @@
 },
 "Normal_Head_Expression0000":
 {
-	"frame": {"x":881,"y":206,"w":96,"h":96},
+	"frame": {"x":590,"y":111,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -602,7 +602,7 @@
 },
 "Normal_Head_Fast20000":
 {
-	"frame": {"x":98,"y":112,"w":96,"h":96},
+	"frame": {"x":1,"y":112,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -610,7 +610,7 @@
 },
 "Normal_Head_Flesh0000":
 {
-	"frame": {"x":590,"y":111,"w":96,"h":96},
+	"frame": {"x":98,"y":112,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -618,7 +618,7 @@
 },
 "Normal_Head_Hurt10000":
 {
-	"frame": {"x":486,"y":208,"w":96,"h":96},
+	"frame": {"x":195,"y":112,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -626,7 +626,7 @@
 },
 "Normal_Head_Hurt20000":
 {
-	"frame": {"x":1,"y":112,"w":96,"h":96},
+	"frame": {"x":292,"y":112,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -634,7 +634,7 @@
 },
 "Normal_Head_Idle0000":
 {
-	"frame": {"x":195,"y":112,"w":96,"h":96},
+	"frame": {"x":389,"y":112,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -642,7 +642,7 @@
 },
 "Normal_Head_Idle0001":
 {
-	"frame": {"x":292,"y":112,"w":96,"h":96},
+	"frame": {"x":784,"y":160,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -650,7 +650,7 @@
 },
 "Normal_Head_Idle0002":
 {
-	"frame": {"x":389,"y":112,"w":96,"h":96},
+	"frame": {"x":881,"y":206,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -658,7 +658,7 @@
 },
 "Normal_Head_Idle0003":
 {
-	"frame": {"x":784,"y":160,"w":96,"h":96},
+	"frame": {"x":486,"y":208,"w":96,"h":96},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -818,11 +818,11 @@
 },
 "RopePart0000":
 {
-	"frame": {"x":728,"y":368,"w":27,"h":8},
+	"frame": {"x":1,"y":339,"w":34,"h":6},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":8},
-	"sourceSize": {"w":27,"h":8}
+	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":6},
+	"sourceSize": {"w":34,"h":6}
 },
 "RopePartAndHook0000":
 {
