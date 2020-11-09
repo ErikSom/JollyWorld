@@ -561,7 +561,7 @@ function UIManager() {
             ratingHolder.appendChild(ratingText);
 
             span = document.createElement('span');
-            span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
+            if(game.currentLevelData.public) span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -571,7 +571,7 @@ function UIManager() {
             ratingText.appendChild(span);
 
             span = document.createElement('span');
-            span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
+            if(game.currentLevelData.public) span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -722,7 +722,7 @@ function UIManager() {
             ratingHolder.appendChild(ratingText);
 
             span = document.createElement('span');
-            span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
+            if(game.currentLevelData.public) span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -732,7 +732,7 @@ function UIManager() {
             ratingText.appendChild(span);
 
             span = document.createElement('span');
-            span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
+            if(game.currentLevelData.public) span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
