@@ -2501,6 +2501,8 @@ const _B2dEditor = function () {
 		const targetIndex = this.undoList.length-1+this.undoIndex;
 		const json = this.undoList[targetIndex];
 
+		camera.storeCurrentPosition();
+
 		this.resetEditor();
 		this.buildJSON(json);
 
@@ -6635,6 +6637,7 @@ const _B2dEditor = function () {
 			sprite.parent.removeChild(sprite);
 			newContainer.addChild(sprite);
 		}
+		console.log(game.app.renderer.plugins.extract);
 		var image = game.app.renderer.plugins.extract.image(newContainer);
 		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
 		var prefabObject = this.activePrefabs[sprite.data.prefabInstanceName];

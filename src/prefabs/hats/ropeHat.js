@@ -66,10 +66,12 @@ export class RopeHat extends Hat {
 		textureObject.textureAngleOffset = 0;
 
 		const texture = game.editor.buildTextureFromObj(textureObject);
+
+		texture.parent.addChildAt(texture, texture.parent.getChildIndex(this.head.myTexture)+1);
+
 		this.hatBody.myTexture = texture;
 	}
 	activate() {
-		game.editor.editorSettings.physicsDebug = true // REMOVE ME
 		if (this.ropeFired){
 			this.ropeFired = false;
 			this.releaseRope();

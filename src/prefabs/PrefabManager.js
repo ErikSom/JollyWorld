@@ -28,6 +28,7 @@ export class basePrefab {
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
     destroy(){
+        if(this.destroyed) return;
         game.editor.deleteObjects([this.prefabObject]);
         this.destroyed = true;
     }

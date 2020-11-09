@@ -26,9 +26,6 @@ class Character extends PrefabManager.basePrefab {
         this.attachedToVehicle = true;
         this.alive = true;
         this.bleedTimer = -1;
-
-        this.hat = new RopeHat(this, this.lookupObject.head, this.lookupObject.body);
-
         //** TEMP PORTAL GUN */
         // const gunPosition = this.lookupObject.shoulder_left.GetPosition();
         // const portalGunBodies = game.editor.buildRuntimePrefab("PortalGun", gunPosition.x * Settings.PTM, gunPosition.y * Settings.PTM);
@@ -74,6 +71,10 @@ class Character extends PrefabManager.basePrefab {
             body.myTexture.data.textureName = targetTexture;
             body.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetTexture);
         }
+    }
+    setHat(hatClass){
+        if(this.hat) this.hat.destroy();
+        this.hat = new hatClass(this, this.lookupObject.head, this.lookupObject.body);
     }
     update() {
         super.update();
