@@ -89,6 +89,7 @@ export var Key = {
     },
 
     onKeyUp: function (event) {
+
         delete this._down[event.keyCode];
         this._released[event.keyCode] = true;
 
@@ -98,6 +99,11 @@ export var Key = {
             this._released[93] = true;
             delete this._down[224];
             this._released[224] = true;
+        }
+        if(event.keyCode === 93){
+            this._down = {};
+            this._pressed =  {};
+            this._released =  {};
         }
     },
     onMouseDown: function(event) {
