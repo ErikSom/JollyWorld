@@ -2428,6 +2428,52 @@ const _B2dEditor = function () {
 				//TODO FIX THIS MESS, very likely due to mytexture being pushed in, setting the i to a higher number and results in an index > children
 				//Temp fix with Math.min()
 			}
+		} else if(transformType == this.TRANSFORM_SCALE){
+			const {scaleX, scaleY} = obj;
+
+			let centerPoint = {
+				x: 0,
+				y: 0
+			};
+
+			for (i = 0; i < objects.length; i++) {
+				if(objects[i].mySprite != undefined){
+					let body = objects[i];
+					centerPoint.x += body.GetPosition().x * this.PTM;
+					centerPoint.y += body.GetPosition().y * this.PTM;
+				}else{
+					let sprite = objects[i];
+					centerPoint.x += sprite.x;
+					centerPoint.y += sprite.y;
+	
+				}
+			}
+
+			centerPoint.x /= objects.length;
+			centerPoint.y /= objects.length;
+
+			for (i = 0; i < objects.length; i++) {
+				if(objects[i].mySprite != undefined){
+					let body = objects[i];
+
+					var xDif = body.GetPosition().x * this.PTM - centerPoint.x;
+					var yDif = body.GetPosition().y * this.PTM - centerPoint.y;
+
+					this.setScale(body, scaleX, scaleY);
+
+					body.SetPosition(new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM))
+				}else{
+					let sprite = objects[i];
+
+					var xDif = sprite.x - centerPoint.x;
+					var yDif = sprite.y - centerPoint.y;
+
+					sprite.x = centerPoint.x + xDif * scaleX;
+					sprite.y = centerPoint.y + yDif * scaleY;
+
+					this.setScale(sprite, scaleX, scaleY);
+				}
+			}
 		}
 		//update all objects
 		if (this.editing) {
@@ -2462,6 +2508,7 @@ const _B2dEditor = function () {
 	this.TRANSFORM_DEPTH = "depth";
 	this.TRANSFORM_FORCEDEPTH = "forcedepth";
 	this.TRANSFORM_UPDATE = "update";
+	this.TRANSFORM_SCALE = "scale";
 
 	this.storeUndoMovement = function () {
 		if(!this.editing) return;
@@ -2610,9 +2657,10 @@ const _B2dEditor = function () {
 		}
     }
 	this.onKeyDown = function (e) {
-		if (e.keyCode == 68) { //d
+		if (e.keyCode == 80) { //p
 			this.selectTool(this.tool_POLYDRAWING);
-		} else if (e.keyCode == 67) { //c
+		}
+		if (e.keyCode == 67) { //c
 			if (e.ctrlKey || e.metaKey) {
 				this.copySelection();
 			} else {
@@ -2633,8 +2681,6 @@ const _B2dEditor = function () {
 			if (e.ctrlKey || e.metaKey) {
 				this.selectedTextures.push(this.attachJointPlaceHolder());
 			} else this.selectTool(this.tool_JOINTS);
-		} else if (e.keyCode == 83) { //s
-			this.stringifyWorldJSON();
 		} else if (e.keyCode == 86) { // v
 			if (e.ctrlKey || e.metaKey) {
 				this.pasteSelection();
@@ -2660,7 +2706,44 @@ const _B2dEditor = function () {
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
-		} else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
+		}else if (e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) { // W A S D
+
+			const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+			const currentSize = {
+				width: aabb.GetExtents().x * 2 * this.PTM,
+				height: aabb.GetExtents().y * 2 * this.PTM
+			}
+
+			let xInc = 0;
+			let yInc = 0;
+			if(e.keyCode === 65){
+				xInc = 1;
+			}else if(e.keyCode === 68){
+				xInc = -1;
+			}
+
+			if(e.keyCode === 87){
+				yInc = 1;
+			}else if(e.keyCode === 83){
+				yInc = -1;
+			}
+
+			if(this.shiftDown){
+				xInc *= 10;
+				yInc *= 10;
+			}
+
+			let targetWidth = Math.max(1, currentSize.width+xInc);
+			let targetHeight = Math.max(1, currentSize.height+yInc);
+
+			const scaleX = targetWidth / currentSize.width;
+			const scaleY = targetHeight / currentSize.height;
+
+			this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
+
+			this.updateSelection()
+
+		}else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
 			if(e.keyCode == 8 && this.selectedTool == this.tool_POLYDRAWING){
 				this.activeVertices.pop();
 			}
@@ -3200,50 +3283,10 @@ const _B2dEditor = function () {
 						if (controller.property == "width") targetWidth = controller.targetValue;
 						else targetHeight = controller.targetValue;
 
-						let scaleX = targetWidth / currentSize.width;
-						let scaleY = targetHeight / currentSize.height;
+						const scaleX = targetWidth / currentSize.width;
+						const scaleY = targetHeight / currentSize.height;
 
-
-						let centerPoint = {
-							x: 0,
-							y: 0
-						};
-
-						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-							body = this.selectedPhysicsBodies[j];
-							centerPoint.x += body.GetPosition().x * this.PTM;
-							centerPoint.y += body.GetPosition().y * this.PTM;
-						}
-						for (j = 0; j < this.selectedTextures.length; j++) {
-							sprite = this.selectedTextures[j];
-							centerPoint.x += sprite.x;
-							centerPoint.y += sprite.y;
-
-						}
-						centerPoint.x /= (this.selectedPhysicsBodies.length + this.selectedTextures.length);
-						centerPoint.y /= (this.selectedPhysicsBodies.length + this.selectedTextures.length);
-
-						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-							body = this.selectedPhysicsBodies[j];
-
-							var xDif = body.GetPosition().x * this.PTM - centerPoint.x;
-							var yDif = body.GetPosition().y * this.PTM - centerPoint.y;
-
-							this.setScale(body, scaleX, scaleY);
-
-							body.SetPosition(new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM))
-						}
-						for (j = 0; j < this.selectedTextures.length; j++) {
-							sprite = this.selectedTextures[j];
-
-							var xDif = sprite.x - centerPoint.x;
-							var yDif = sprite.y - centerPoint.y;
-
-							sprite.x = centerPoint.x + xDif * scaleX;
-							sprite.y = centerPoint.y + yDif * scaleY;
-
-							this.setScale(sprite, scaleX, scaleY);
-						}
+						this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
 
 					} else if (controller.property == "collideConnected") {
 						//joint
@@ -4772,7 +4815,7 @@ const _B2dEditor = function () {
 		if (obj.mySprite) data = obj.mySprite.data;
 		else data = obj.data;
 
-		if (Math.round(scaleX * 100) / 100 == 1 && Math.round(scaleY * 100) / 100 == 1) return;
+		// if (Math.round(scaleX * 100) / 100 == 1 && Math.round(scaleY * 100) / 100 == 1) return;
 
 		if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
 
