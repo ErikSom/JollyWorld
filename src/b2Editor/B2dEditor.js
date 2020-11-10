@@ -4809,13 +4809,6 @@ const _B2dEditor = function () {
 					if(data.type === this.object_TRIGGER){
 						obj.mySprite.data.vertices = oldVertices.map(vertice =>({x:vertice.x, y:vertice.y}));
 					}
-
-					oldVertices = obj.mySprite.data.vertices[i];
-					for (let j = 0; j < oldVertices.length; j++) {
-						oldVertices[j].x = oldVertices[j].x * scaleX;
-						oldVertices[j].y = oldVertices[j].y * scaleY;
-					}
-
 				} else if (shape instanceof Box2D.b2CircleShape) {
 					shape.SetRadius(shape.GetRadius() * scaleX);
 					if(Array.isArray(body.mySprite.data.radius)) body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
@@ -4825,6 +4818,13 @@ const _B2dEditor = function () {
 				fixture.CreateProxies(body.m_xf);
 
 			};
+
+			let dataVertices = obj.mySprite.data.vertices.flat(10);
+			for(let i = 0; i<dataVertices.length; i++){
+				dataVertices[i].x = dataVertices[i].x * scaleX;
+				dataVertices[i].y = dataVertices[i].y * scaleY;
+			}
+
 			if(data.type !== this.object_TRIGGER){
 				this.updateBodyShapes(body);
 				this.updateTileSprite(body, true);
