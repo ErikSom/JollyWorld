@@ -100,7 +100,7 @@ export var Key = {
             delete this._down[224];
             this._released[224] = true;
         }
-        if(event.keyCode === 93){
+        if([93, 91, 224].includes(event.keyCode)){
             this._down = {};
             this._pressed =  {};
             this._released =  {};

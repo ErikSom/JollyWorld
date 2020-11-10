@@ -2066,10 +2066,8 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_POLYDRAWING) {
 				if (!this.closeDrawing) {
 					if (!this.checkVerticeDrawingHasErrors()) {
-						this.activeVertices.push({
-							x: this.mousePosWorld.x,
-							y: this.mousePosWorld.y
-						});
+						const newVertice = this.getCurrentMouseVertice();
+						this.activeVertices.push(newVertice);
 						if (this.activeVertices.length > editorSettings.maxLineVertices) this.activeVertices.shift();
 					}
 				} else {
@@ -2654,11 +2652,18 @@ const _B2dEditor = function () {
 			}
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
-				this.undoMove(true);
+				if(this.selectedTool == this.tool_POLYDRAWING){
+					this.activeVertices.pop();
+				}else{
+					this.undoMove(true);
+				}
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
 		} else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
+			if(e.keyCode == 8 && this.selectedTool == this.tool_POLYDRAWING){
+				this.activeVertices.pop();
+			}
 			this.deleteSelection();
 		} else if (e.keyCode == 16) { //shift
 			this.shiftDown = true;
@@ -3680,10 +3685,7 @@ const _B2dEditor = function () {
 		this.closeDrawing = false;
 
 		if (this.activeVertices.length > 0) {
-			newVertice = {
-				x: this.mousePosWorld.x,
-				y: this.mousePosWorld.y
-			}
+			newVertice = this.getCurrentMouseVertice();
 			activeVertice = this.activeVertices[this.activeVertices.length - 1];
 
 			if (this.activeVertices.length > 1) {
@@ -3744,10 +3746,7 @@ const _B2dEditor = function () {
 	}
 	this.checkVerticeDrawingHasErrors = function () {
 		const minimumAngleDif = 0.2;
-		const newVertice = {
-			x: this.mousePosWorld.x,
-			y: this.mousePosWorld.y
-		}
+		const newVertice = this.getCurrentMouseVertice();
 		const activeVertice = this.activeVertices[this.activeVertices.length - 1];
 		let previousVertice;
 		for (let i = 0; i < this.activeVertices.length - 1; i++) {
@@ -3764,6 +3763,30 @@ const _B2dEditor = function () {
 			}
 		}
 		return false;
+	}
+	this.getCurrentMouseVertice = function(){
+		const newVertice = {
+			x: this.mousePosWorld.x,
+			y: this.mousePosWorld.y
+		}
+
+		if(this.activeVertices.length>0 && this.shiftDown){
+			const previousVertice = this.activeVertices[this.activeVertices.length-1];
+
+			const dx = newVertice.x-previousVertice.x;
+			const dy = newVertice.y-previousVertice.y;
+			const l = Math.sqrt(dx*dx+dy*dy);
+			let a = Math.atan2(dy, dx);
+
+			const angleStep = 15*this.DEG2RAD;
+
+			a = Math.floor(a/angleStep)*angleStep;
+
+			newVertice.x = previousVertice.x + l*Math.cos(a);
+			newVertice.y = previousVertice.y + l*Math.sin(a);
+		}
+
+		return newVertice;
 	}
 	this.doVerticesDrawing = function () {
 		this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
