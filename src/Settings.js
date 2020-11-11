@@ -20,6 +20,7 @@ export var Settings = {
     /*EDITOR*/
     autoSaveInterval:5000,
     availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],
+    doubleClickTime:300,
     /*CULLING SETTINGS*/
 
     /*LIMITS*/

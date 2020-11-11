@@ -94,6 +94,7 @@ const _B2dEditor = function () {
 	this.ui = ui;
 
 	this.mouseDown = false;
+	this.doubleClickTime = 0;
 	this.shiftDown = false;
 	this.spaceDown = false;
 	this.spaceCameraDrag = false;
@@ -307,6 +308,7 @@ const _B2dEditor = function () {
 
 		switch (i) {
 			case this.tool_SELECT:
+			case this.tool_VERTICEEDITING:
 				ui.destroyEditorGUI();
 				break
 			case this.tool_GEOMETRY:
@@ -1578,6 +1580,8 @@ const _B2dEditor = function () {
 			this.doCamera();
 		} else if (this.selectedTool == this.tool_ART) {
 			this.doVerticesDrawing();
+		} else if (this.selectedTool == this.tool_VERTICEEDITING) {
+			this.doVerticesDrawing();
 		}
 
 		// Draw 0,0 reference
@@ -2008,7 +2012,11 @@ const _B2dEditor = function () {
 				aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
 
 
-				if (!this.selectedBoundingBox.Contains(aabb) || this.shiftDown) {
+				const clickInsideSelection = this.selectedBoundingBox.Contains(aabb);
+
+
+
+				if (!clickInsideSelection || this.shiftDown) {
 					//reset selectionie
 					var oldSelectedPhysicsBodies = [];
 					var oldSelectedTextures = [];
@@ -2061,7 +2069,29 @@ const _B2dEditor = function () {
 					}
 
 					this.updateSelection();
+				}else if(clickInsideSelection && Date.now() < this.doubleClickTime){
+
+					if(this.selectedTextures.length + this.selectedPhysicsBodies.length === 1){
+						if(this.selectedTextures.length > 0){
+							// editing sprite
+							const targetSprite = this.selectedTextures[0];
+							if(targetSprite.data.type === this.object_GRAPHIC){
+								this.selectTool(this.tool_VERTICEEDITING);
+							}
+						}else{
+							// const targetSprite = this.selectedPhysicsBodies[0].mySprite;
+							// if(targetSprite.data.type === this.object_GRAPHIC && targetSprite.data.vertices.length > 1){
+							// 	this.selectTool(this.tool_VERTICEEDITING);
+							// }
+							// editing body
+						}
+
+
+					}
+
 				}
+
+				this.doubleClickTime = Date.now()+Settings.doubleClickTime;
 
 			} else if (this.selectedTool == this.tool_POLYDRAWING) {
 				if (!this.closeDrawing) {
@@ -2874,6 +2904,73 @@ const _B2dEditor = function () {
 			if (Boolean(graphic.data.lockselection) != this.altDown) {
 				queryGraphics.splice(i, 1);
 				i--;
+			}
+		}
+
+		
+		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
+			for(let i = 0; i<queryGraphics.length; i++){
+
+				const graphic = queryGraphics[i];
+				console.log(graphic);
+				const pixels = game.app.renderer.plugins.extract.pixels(graphic);
+				const localPosition = graphic.toLocal(lowerBoundPixi, graphic.parent);
+
+				const oldRotation = graphic.rotation;
+				graphic.rotation = 0;
+				const bounds = graphic.getBounds();
+
+				const posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+				const posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+				const spriteRect = new PIXI.Rectangle(posX, posY, bounds.width / this.container.scale.x, bounds.height / this.container.scale.y);
+				const centerX = spriteRect.x + spriteRect.width/2;
+				const centerY = spriteRect.y + spriteRect.height/2;
+
+				const anchorDiffX = graphic.x - centerX;
+				const anchorDiffY = graphic.y - centerY;
+
+				graphic.rotation = oldRotation;
+
+				localPosition.x += graphic.width/2+anchorDiffX;
+				localPosition.y += graphic.height/2+anchorDiffY;
+
+				if(localPosition.x<0 || localPosition.y<0 || localPosition.x>graphic.width || localPosition.y>graphic.height){
+					queryGraphics.splice(i, 1);
+					i--;
+					continue;
+				}
+
+				const x = Math.round(localPosition.x)*4;
+				const y = Math.round(Math.round(localPosition.y)*Math.floor(graphic.width)*4);
+
+				// const r = pixels[x+y];
+				// const g = pixels[x+y+1];
+				// const b = pixels[x+y+2];
+				const a = pixels[x+y+3];
+
+				console.log(a, "DAFUQ IS A???", localPosition.x, localPosition.y);
+
+
+				const canvas = document.createElement('canvas');
+				canvas.width = graphic.width;
+				canvas.height = graphic.height;
+				const ctx = canvas.getContext('2d');
+
+				const imageData = ctx.getImageData(0,0, canvas.width, canvas.height);
+				imageData.data.set(pixels);
+
+
+				ctx.putImageData(imageData, 0, 0);
+				document.body.appendChild(canvas);
+				canvas.style.zIndex = Date.now();
+
+
+
+				if(a<10){
+					queryGraphics.splice(i, 1);
+					i--;
+				}
+
 			}
 		}
 
@@ -6951,6 +7048,7 @@ const _B2dEditor = function () {
 	this.tool_TRIGGER = 7;
 	this.tool_SETTINGS = 8;
 	this.tool_CAMERA = 9;
+	this.tool_VERTICEEDITING = 10;
 
 	this.minimumBodySurfaceArea = 0.3;
 }
