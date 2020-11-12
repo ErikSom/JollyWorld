@@ -2850,16 +2850,17 @@ const _B2dEditor = function () {
 
 	this.queryPhysicsBodies = [];
 	this.queryWorldForBodies = function (lowerBound, upperBound) {
-		var aabb = new b2AABB();
+		this.queryPhysicsAABB = new b2AABB();
 
-		aabb.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
-		aabb.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
+		this.queryPhysicsAABB.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
+		this.queryPhysicsAABB.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
 
 		this.queryPhysicsBodies = [];
-		this.world.QueryAABB(this.getBodyCB, aabb);
+		this.world.QueryAABB(this.getBodyCB, this.queryPhysicsAABB);
 		var body;
 		for (var i = 0; i < this.queryPhysicsBodies.length; i++) {
 			body = this.queryPhysicsBodies[i];
+			console.log(body, 'BODY!!');
 			if (Boolean(body.mySprite.data.lockselection) != this.altDown) {
 				this.queryPhysicsBodies.splice(i, 1);
 				i--;
@@ -2912,7 +2913,6 @@ const _B2dEditor = function () {
 			for(let i = 0; i<queryGraphics.length; i++){
 
 				const graphic = queryGraphics[i];
-				console.log(graphic);
 				const pixels = game.app.renderer.plugins.extract.pixels(graphic);
 				const localPosition = graphic.toLocal(lowerBoundPixi, graphic.parent);
 
@@ -2931,14 +2931,19 @@ const _B2dEditor = function () {
 
 				graphic.rotation = oldRotation;
 
-				localPosition.x += graphic.width/2+anchorDiffX;
-				localPosition.y += graphic.height/2+anchorDiffY;
+				if(graphic.data.type !== this.object_TEXT){ // fix for bug with text object
+					localPosition.x += graphic.width/2+anchorDiffX;
+					localPosition.y += graphic.height/2+anchorDiffY;
+				}
 
 				if(localPosition.x<0 || localPosition.y<0 || localPosition.x>graphic.width || localPosition.y>graphic.height){
 					queryGraphics.splice(i, 1);
 					i--;
 					continue;
 				}
+
+				if(graphic.data.type === this.object_TEXT) continue; // we dont want pixel detection on text
+
 
 				const x = Math.round(localPosition.x)*4;
 				const y = Math.round(Math.round(localPosition.y)*Math.floor(graphic.width)*4);
@@ -2948,21 +2953,18 @@ const _B2dEditor = function () {
 				// const b = pixels[x+y+2];
 				const a = pixels[x+y+3];
 
-				console.log(a, "DAFUQ IS A???", localPosition.x, localPosition.y);
+				// const canvas = document.createElement('canvas');
+				// canvas.width = graphic.width;
+				// canvas.height = graphic.height;
+				// const ctx = canvas.getContext('2d');
+
+				// const imageData = ctx.getImageData(0,0, canvas.width, canvas.height);
+				// imageData.data.set(pixels);
 
 
-				const canvas = document.createElement('canvas');
-				canvas.width = graphic.width;
-				canvas.height = graphic.height;
-				const ctx = canvas.getContext('2d');
-
-				const imageData = ctx.getImageData(0,0, canvas.width, canvas.height);
-				imageData.data.set(pixels);
-
-
-				ctx.putImageData(imageData, 0, 0);
-				document.body.appendChild(canvas);
-				canvas.style.zIndex = Date.now();
+				// ctx.putImageData(imageData, 0, 0);
+				// document.body.appendChild(canvas);
+				// canvas.style.zIndex = Date.now();
 
 
 
@@ -2998,15 +3000,23 @@ const _B2dEditor = function () {
 
 	this.getBodyCB = new function () {
 		this.ReportFixture = function (fixture) {
-			var isIncluded = false;
-			for (var i = 0; i < self.queryPhysicsBodies.length; i++) {
+			let isIncluded = false;
+			for (let i = 0; i < self.queryPhysicsBodies.length; i++) {
 				if (self.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
 			}
-			if (!isIncluded) self.queryPhysicsBodies.push(fixture.GetBody());
+			if (!isIncluded){
+
+
+				const maxClickDistance = 0.1;
+				const isClick = Math.abs(self.queryPhysicsAABB.lowerBound.x-self.queryPhysicsAABB.upperBound.x)<maxClickDistance || Math.abs(self.queryPhysicsAABB.lowerBound.y-self.queryPhysicsAABB.upperBound.y)<maxClickDistance
+
+				if (!isClick || fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.queryPhysicsAABB.lowerBound)) {
+					self.queryPhysicsBodies.push(fixture.GetBody());
+                }
+			}
 			return true;
 		}
 	};
-
 
 
 	this.computeSelectionAABB = function () {
