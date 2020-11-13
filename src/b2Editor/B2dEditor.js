@@ -2018,9 +2018,9 @@ const _B2dEditor = function () {
 
 				if (!clickInsideSelection || this.shiftDown) {
 					//reset selectionie
-					var oldSelectedPhysicsBodies = [];
-					var oldSelectedTextures = [];
-					var oldSelectedPrefabs = {};
+					let oldSelectedPhysicsBodies = [];
+					let oldSelectedTextures = [];
+					let oldSelectedPrefabs = {};
 
 					if (this.shiftDown) {
 						oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
@@ -2032,8 +2032,8 @@ const _B2dEditor = function () {
 					this.selectedPhysicsBodies = [];
 					this.selectedTextures = [];
 
-					var i;
-					var highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
+					let i;
+					let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
 					if (highestObject) {
 						if (highestObject.data.prefabInstanceName) {
 							this.selectedPrefabs[highestObject.data.prefabInstanceName] = true;
@@ -2049,7 +2049,7 @@ const _B2dEditor = function () {
 					//
 					if (this.shiftDown) {
 						//push old selection
-						var i;
+						let i;
 						for (i = 0; i < oldSelectedPhysicsBodies.length; i++) {
 							if (oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]) {
 								this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
@@ -2615,7 +2615,18 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, true, 0);
+					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, 0);
+
+					for(let i = 0; i<this.selectedTextures.length; i++){
+						const texture = this.selectedTextures[i];
+						if(texture.myBody){
+							if(!this.selectedPhysicsBodies.includes(texture.myBody)){
+								this.selectedPhysicsBodies.push(texture.myBody);
+							}
+							this.selectedTextures.splice(i, 1);
+							i--;
+						}
+					}
 
 					this.applyToSelectedObjects(this.TRANSFORM_UPDATE);
 
@@ -2869,38 +2880,35 @@ const _B2dEditor = function () {
 
 		return this.queryPhysicsBodies;
 	}
-	this.queryWorldForGraphics = function (lowerBound, upperBound, onlyTextures, limitResult) {
-		var aabb = new b2AABB();
+	this.queryWorldForGraphics = function (lowerBound, upperBound, limitResult) {
+		const aabb = new b2AABB();
 
 		aabb.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
 		aabb.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
-		var lowerBoundPixi = this.getPIXIPointFromWorldPoint(aabb.lowerBound);
-		var upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.upperBound);
+		const lowerBoundPixi = this.getPIXIPointFromWorldPoint(aabb.lowerBound);
+		const upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.upperBound);
 		//QueryTextures
 
-		var queryGraphics = [];
-		var i;
+		let queryGraphics = [];
+		let i;
 		for (i = this.textures.children.length - 1; i >= 0; i--) {
-			var sprite = this.textures.getChildAt(i);
-
-			if (!onlyTextures || !sprite.myBody) {
-				var spriteBounds = sprite.getBounds();
-				var posX = spriteBounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-				var posY = spriteBounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
-				var spriteRect = new PIXI.Rectangle(posX, posY, spriteBounds.width / this.container.scale.x, spriteBounds.height / this.container.scale.y);
-				var selectionRect = new PIXI.Rectangle(lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x - lowerBoundPixi.x, upperBoundPixi.y - lowerBoundPixi.y);
-				if (!(((spriteRect.y + spriteRect.height) < selectionRect.y) ||
-						(spriteRect.y > (selectionRect.y + selectionRect.height)) ||
-						((spriteRect.x + spriteRect.width) < selectionRect.x) ||
-						(spriteRect.x > (selectionRect.x + selectionRect.width)))) {
-					queryGraphics.push(sprite);
-					if (queryGraphics.length == limitResult && limitResult != 0) break;
-				}
-			} else {}
+			const sprite = this.textures.getChildAt(i);
+			const spriteBounds = sprite.getBounds();
+			const posX = spriteBounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+			const posY = spriteBounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+			const spriteRect = new PIXI.Rectangle(posX, posY, spriteBounds.width / this.container.scale.x, spriteBounds.height / this.container.scale.y);
+			const selectionRect = new PIXI.Rectangle(lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x - lowerBoundPixi.x, upperBoundPixi.y - lowerBoundPixi.y);
+			if (!(((spriteRect.y + spriteRect.height) < selectionRect.y) ||
+					(spriteRect.y > (selectionRect.y + selectionRect.height)) ||
+					((spriteRect.x + spriteRect.width) < selectionRect.x) ||
+					(spriteRect.x > (selectionRect.x + selectionRect.width)))) {
+				queryGraphics.push(sprite);
+				if (queryGraphics.length == limitResult && limitResult != 0) break;
+			}
 		}
 
-		var graphic;
-		for (var i = 0; i < queryGraphics.length; i++) {
+		let graphic;
+		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
 			if (Boolean(graphic.data.lockselection) != this.altDown) {
 				queryGraphics.splice(i, 1);
@@ -3036,56 +3044,48 @@ const _B2dEditor = function () {
 		return this.computeObjectsAABB(computeBodies, computeTextures);
 	}
 	this.computeObjectsAABB = function (computeBodies, computeTextures, origin = false) {
-		var aabb = new b2AABB;
+		const aabb = new b2AABB;
 		aabb.lowerBound = new b2Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
 		aabb.upperBound = new b2Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
-		var i;
-		var j;
-		var body;
-		var fixture;
-
 		let oldRot;
 
-		if (computeBodies) {
-			for (i = 0; i < computeBodies.length; i++) {
-				body = computeBodies[i];
+		const allElements = [...computeBodies, ...computeTextures];
+
+		allElements.forEach(element => {
+			let body, sprite;
+
+			if(element.mySprite){
+				body = element;
+				sprite = body.myTexture;
+			}else{
+				sprite = element;
+				body = element.myBody;
+			}
+
+			if(body){
 				oldRot = body.GetAngle();
 				if (origin) body.SetAngle(0);
-				fixture = body.GetFixtureList();
+				let fixture = body.GetFixtureList();
 				while (fixture != null) {
 					aabb.Combine1(fixture.GetAABB(0));
 					fixture = fixture.GetNext();
 				}
 				if (origin) body.SetAngle(oldRot);
 			}
-		}
-		if (computeTextures) {
-			for (i = 0; i < computeTextures.length; i++) {
-				var sprite = computeTextures[i];
-
-				if (sprite.myBody) {
-					oldRot = sprite.myBody.GetAngle();
-					if (origin) sprite.myBody.SetAngle(0);
-					fixture = sprite.myBody.GetFixtureList();
-					while (fixture != null) {
-						aabb.Combine1(fixture.GetAABB(0));
-						fixture = fixture.GetNext();
-					}
-					if (origin) sprite.myBody.SetAngle(oldRot);
-				} else {
-					oldRot = sprite.rotation;
-					if (origin) sprite.rotation = 0;
-					var bounds = sprite.getBounds();
-					var spriteAABB = new b2AABB;
-					var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-					var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
-					spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
-					spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
-					aabb.Combine1(spriteAABB);
-					if (origin) sprite.rotation = oldRot;
-				}
+			if(sprite){
+				oldRot = sprite.rotation;
+				if (origin) sprite.rotation = 0;
+				var bounds = sprite.getBounds();
+				var spriteAABB = new b2AABB;
+				var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+				var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
+				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
+				aabb.Combine1(spriteAABB);
+				if (origin) sprite.rotation = oldRot;
 			}
-		}
+		})
+
 		return aabb;
 	}
 
@@ -4060,9 +4060,11 @@ const _B2dEditor = function () {
 		}
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
-		var i;
-		var body;
-		var selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
+		let i;
+		let body;
+		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
+		const selectedTextures = this.queryWorldForGraphics(lowerBound, upperBound, 1);
+
 		if (selectedPhysicsBodies.length > 0) {
 
 			var fixture;
@@ -4084,7 +4086,17 @@ const _B2dEditor = function () {
 				}
 			}
 		}
-		var selectedTextures = this.queryWorldForGraphics(lowerBound, upperBound, true, 1);
+
+		for(let i = 0; i<selectedTextures.length; i++){
+			const texture = selectedTextures[i];
+			if(texture.myBody){
+				if(!this.selectedPhysicsBodies.includes(texture.myBody)){
+					selectedPhysicsBodies.push(texture.myBody);
+				}
+				selectedTextures.splice(i, 1);
+				i--;
+			}
+		}
 
 		//limit selection to highest indexed child
 

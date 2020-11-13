@@ -176,7 +176,7 @@ function UIManager() {
 
             text = document.createElement('div');
             text.setAttribute('class', 'spaceRestartText');
-            text.innerHTML = 'Press space to restart';
+            text.innerHTML = 'Press space to retry';
             textGroup.appendChild(text);
 
             let buttonGroup = document.createElement('div');
@@ -184,6 +184,15 @@ function UIManager() {
             gameOver.appendChild(buttonGroup);
 
             let button = document.createElement('div');
+            button.setAttribute('class', 'headerButton checkpoint buttonOverlay dark');
+            button.innerHTML = "CHECKPOINT";
+            buttonGroup.appendChild(button);
+
+            button.addEventListener('click', () => {
+                game.resetWorld(true);
+            });
+
+            button = document.createElement('div');
             button.setAttribute('class', 'headerButton restart buttonOverlay dark');
             button.innerHTML = "RESTART";
             buttonGroup.appendChild(button);

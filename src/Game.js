@@ -372,7 +372,7 @@ function Game() {
 
         }
         if(this.gameState == this.GAMESTATE_NORMALPLAY){
-            if(Key.isPressed(Key.P) && this.run){
+            if((Key.isPressed(Key.P) || Key.isPressed(Key.R) || Key.isPressed(Key.ESCAPE) || Key.isPressed(Key.TAB)) && this.run){
                 if(!this.pause) this.pauseGame();
             }
         }
@@ -393,7 +393,7 @@ function Game() {
 
         if (e.keyCode == 32) { //space
             if (this.gameOver && this.run) {
-                this.resetWorld();
+                this.resetWorld(true);
             }
         }
         Key.onKeydown(e);

@@ -297,7 +297,7 @@ body .dg .cr.function{
     display: block;
     background-color: #ff0000bd;
     width: 100%;
-    height: 100px;
+    height: 120px;
     z-index: 100;
     position: absolute;
     top: 50%;
@@ -320,7 +320,16 @@ body .dg .cr.function{
     position: relative;
     top: 50%;
     transform: translateY(-50%);
+    margin-right: 40px;
 }
+#gameOverScreen .headerButton{
+    padding: 0px 10px;
+    width:unset;
+}
+#gameOverScreen .checkpoint{
+    background-color: #51A328;
+}
+
 #gameOverScreen .restart{
     background-color:#E0B300;
 }
