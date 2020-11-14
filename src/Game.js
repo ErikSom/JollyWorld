@@ -192,27 +192,30 @@ function Game() {
             });
         }
 
-        document.body.addEventListener("keydown", this.onKeyDown.bind(this), true);
-        document.body.addEventListener("keyup", this.onKeyUp.bind(this), true);
-        this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this), true);
-        this.canvas.addEventListener("touchstart", this.onMouseDown.bind(this), true);
-        this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this), true);
-        this.canvas.addEventListener("touchend", this.onMouseUp.bind(this), true);
+        document.body.addEventListener("keydown", this.onKeyDown.bind(this), {passive:false});
+        document.body.addEventListener("keyup", this.onKeyUp.bind(this), {passive:false});
+        this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this), {passive:false});
+        this.canvas.addEventListener("touchstart", this.onMouseDown.bind(this), {passive:false});
+        this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this), {passive:false});
+        this.canvas.addEventListener("touchend", this.onMouseUp.bind(this), {passive:false});
 
 
         document.addEventListener("mouseup", ()=>{
             if(this.editor.editing) this.editor.storeUndoMovementDebounced();
-        }, true);
+        }, {passive:false});
 
         document.addEventListener("touchend", ()=>{
             if(this.editor.editing) this.editor.storeUndoMovementDebounced();
-        }, true);
+        }, {passive:false});
 
 
-        this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), true);
-        this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), true);
+        this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), {passive:false});
+        this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), {passive:false});
 
-        window.addEventListener('wheel', this.onMouseWheel.bind(this), true);
+        document.addEventListener("mousemove", this.onDocumentMouseMove.bind(this), {passive:false});
+        document.addEventListener("touchmove", this.onDocumentMouseMove.bind(this), {passive:false});
+
+        window.addEventListener('wheel', this.onMouseWheel.bind(this), {passive:false});
         window.addEventListener('resize', this.handleResize.bind(this));
         window.addEventListener('hashchange', ()=>{
             const uid = location.hash.split('/')[0].substr(1);
@@ -263,6 +266,10 @@ function Game() {
     this.onMouseMove = function (e) {
         this.fixTouchEvent(e);
         this.editor.onMouseMove(e);
+    };
+    this.onDocumentMouseMove = function (e) {
+        this.fixTouchEvent(e);
+        this.editor.onDocumentMouseMove(e);
     };
     this.fixTouchEvent = e => {
         if(e.changedTouches){

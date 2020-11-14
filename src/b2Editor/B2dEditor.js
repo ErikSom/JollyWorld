@@ -72,6 +72,7 @@ const _B2dEditor = function () {
 
 	this.canvas;
 	this.mousePosPixel;
+	this.mouseDocumentPosPixel;
 	this.mousePosWorld;
 	this.oldMousePosWorld;
 
@@ -145,6 +146,7 @@ const _B2dEditor = function () {
 		this.container.parent.addChild(this.debugGraphics);
 
 		this.mousePosPixel = new b2Vec2(0, 0);
+		this.mouseDocumentPosPixel = new b2Vec2(0, 0);
 		this.mousePosWorld = new b2Vec2(0, 0);
 
 		this.canvas = document.getElementById("canvas");
@@ -290,6 +292,8 @@ const _B2dEditor = function () {
 		ui.showTextEditor(startValue, callBack);
 	}
 	this.selectTool = function (i) {
+		if(this.selectedTool === i) return;
+		this.deselectTool(this.selectedTool);
 		this.selectedTool = i;
 
 		this.selectedTextures = [];
@@ -308,8 +312,19 @@ const _B2dEditor = function () {
 
 		switch (i) {
 			case this.tool_SELECT:
+				ui.destroyEditorGUI();
+				break;
 			case this.tool_VERTICEEDITING:
 				ui.destroyEditorGUI();
+
+				this.verticeEditingBlackOverlay = new PIXI.Graphics();
+				this.verticeEditingBlackOverlay.beginFill(0x000000);
+				this.verticeEditingBlackOverlay.drawRect(-editorSettings.worldSize.width/2, -editorSettings.worldSize.height/2, editorSettings.worldSize.width, editorSettings.worldSize.height);
+				this.verticeEditingBlackOverlay.alpha = 0.3;
+				this.verticeEditingSprite.addChildAt(this.verticeEditingBlackOverlay, 0);
+				// this.verticeEditingSprite.parent.addChild(this.verticeEditingBlackOverlay);
+				this.verticeEditingSprite.oldIndex = this.verticeEditingSprite.parent.getChildIndex(this.verticeEditingSprite);
+				this.verticeEditingSprite.parent.addChild(this.verticeEditingSprite);
 				break
 			case this.tool_GEOMETRY:
 				ui.editorGUI.editData = this.editorGeometryObject;
@@ -412,6 +427,17 @@ const _B2dEditor = function () {
 				break
 		}
 		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
+	}
+	this.deselectTool = function(i){
+		switch (i) {
+			case this.tool_VERTICEEDITING:
+				this.verticeEditingBlackOverlay.parent.removeChild(this.verticeEditingBlackOverlay);
+				delete this.verticeEditingBlackOverlay;
+				this.verticeEditingSprite.parent.addChildAt(this.verticeEditingSprite, this.verticeEditingSprite.oldIndex);
+				delete this.verticeEditingSprite.oldIndex;
+				delete this.verticeEditingSprite;
+			break;
+		}
 	}
 
 	this.updateSelection = function () {
@@ -1581,7 +1607,7 @@ const _B2dEditor = function () {
 		} else if (this.selectedTool == this.tool_ART) {
 			this.doVerticesDrawing();
 		} else if (this.selectedTool == this.tool_VERTICEEDITING) {
-			this.doVerticesDrawing();
+			this.doVerticeEditing();
 		}
 
 		// Draw 0,0 reference
@@ -2076,6 +2102,7 @@ const _B2dEditor = function () {
 							// editing sprite
 							const targetSprite = this.selectedTextures[0];
 							if(targetSprite.data.type === this.object_GRAPHIC){
+								this.verticeEditingSprite = targetSprite;
 								this.selectTool(this.tool_VERTICEEDITING);
 							}
 						}else{
@@ -2085,13 +2112,10 @@ const _B2dEditor = function () {
 							// }
 							// editing body
 						}
-
-
+						this.doubleClickTime = 0;
 					}
 
 				}
-
-				this.doubleClickTime = Date.now()+Settings.doubleClickTime;
 
 			} else if (this.selectedTool == this.tool_POLYDRAWING) {
 				if (!this.closeDrawing) {
@@ -2206,6 +2230,10 @@ const _B2dEditor = function () {
 			}
 		}
 		this.oldMousePosWorld = this.mousePosWorld;
+	}
+	this.onDocumentMouseMove = function(e){
+		this.mouseDocumentPosPixel.x = e.clientX;
+		this.mouseDocumentPosPixel.y = e.clientY;
 	}
 
 	this.applyToSelectedObjects = function (transformType, obj) {
@@ -2584,18 +2612,6 @@ const _B2dEditor = function () {
 	}
 
 	this.updateMousePosition = function (e) {
-		var clientX, clientY;
-		if (e.clientX) {
-			clientX = e.clientX;
-			clientY = e.clientY;
-		} else if (e.changedTouches && e.changedTouches.length > 0) {
-			var touch = e.changedTouches[e.changedTouches.length - 1];
-			clientX = touch.clientX;
-			clientY = touch.clientY;
-		} else {
-			return;
-		}
-
 		var rect = this.canvas.getBoundingClientRect();
 
 		this.mousePosPixel.x = e.clientX - rect.left;
@@ -2683,19 +2699,46 @@ const _B2dEditor = function () {
 				}
 				this.activeVertices = [];
 
+			}else if(this.selectedTool === this.tool_VERTICEEDITING){
+				if(Date.now() < this.doubleClickTime){
+					this.selectTool(this.tool_SELECT);
+				}
 			}
 			this.storeUndoMovementDebounced();
 		}
 		this.mouseDown = false;
+		this.doubleClickTime = Date.now()+Settings.doubleClickTime;
+
 	}
 	this.onMouseWheel = function(e){
-		if(this.editing){
+
+
+		// detect mouse on ui
+		let uiScroll = false;
+		if(ui.editorGUI && ui.editorGUI.domElement){
+			if(!ui.editorGUI.cachedBounds){
+				ui.editorGUI.cachedBounds = ui.editorGUI.domElement.getBoundingClientRect();
+			}
+
+			if(this.mouseDocumentPosPixel.x > ui.editorGUI.cachedBounds.x && this.mouseDocumentPosPixel.x < ui.editorGUI.cachedBounds.x+ui.editorGUI.cachedBounds.width 
+				&& this.mouseDocumentPosPixel.y > ui.editorGUI.cachedBounds.y && this.mouseDocumentPosPixel.y < ui.editorGUI.cachedBounds.y+ui.editorGUI.cachedBounds.height ){
+					ui.editorGUI.domElement.scrollBy(e.deltaX, e.deltaY);
+					uiScroll = true;
+				}
+
+		}
+
+
+		if(this.editing && !uiScroll){
 			const zoom = e.deltaY>0;
 			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
 				y: this.mousePosWorld.y * this.PTM
 			}, zoom);
 		}
+
+        e.preventDefault();
+
     }
 	this.onKeyDown = function (e) {
 		if (e.keyCode == 80) { //p
@@ -3965,6 +4008,9 @@ const _B2dEditor = function () {
 			this.debugGraphics.endFill(); //fix
 
 		}
+	}
+	this.doVerticeEditing = function () {
+
 	}
 	this.doGeometryDrawing = function () {
 		if (this.mouseDown && !this.spaceCameraDrag) {
@@ -6932,6 +6978,8 @@ const _B2dEditor = function () {
 			for (var i = 0; i < this.graphicsData.length; i++) {
 				var data = this.graphicsData[i];
 				var type = data.type;
+				var shape = data.shape;
+
 				if (type === PIXI.SHAPES.RECT || type === PIXI.SHAPES.RREC) {
 					x = shape.x - lineWidth / 2;
 					y = shape.y - lineWidth / 2;
@@ -6967,7 +7015,6 @@ const _B2dEditor = function () {
 					maxY = y + h > maxY ? y + h : maxY;
 				} else if (type === PIXI.SHAPES.POLY) {
 					var lineWidth = data.lineWidth;
-					var shape = data.shape;
 					var points = shape.points;
 
 					for (var j = 0; j + 2 < points.length; j += 2) {
