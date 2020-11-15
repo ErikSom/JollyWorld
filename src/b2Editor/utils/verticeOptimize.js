@@ -21,6 +21,7 @@ export const simplifyPath = function (vertices, smooth, zoom) {
             });
             path.closed = true;
             path.simplify(editorSettings.pathSmoothTolerance+toleranceIncreaser);
+            console.log(path);
             path.segments.map((p)=>{
                 optimizedVertices.push({x:p.point.x/precision, y:p.point.y/precision, point1:{x:p.curve.points[1].x/precision, y:p.curve.points[1].y/precision}, point2:{x:p.curve.points[2].x/precision, y:p.curve.points[2].y/precision}})
             });
