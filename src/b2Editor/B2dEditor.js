@@ -434,6 +434,7 @@ const _B2dEditor = function () {
 				this.verticeEditingBlackOverlay.parent.removeChild(this.verticeEditingBlackOverlay);
 				delete this.verticeEditingBlackOverlay;
 				this.verticeEditingSprite.parent.addChildAt(this.verticeEditingSprite, this.verticeEditingSprite.oldIndex);
+				delete this.verticeEditingSprite.selectedVertice;
 				delete this.verticeEditingSprite.oldIndex;
 				delete this.verticeEditingSprite;
 			break;
@@ -2193,6 +2194,21 @@ const _B2dEditor = function () {
 				textObject.transparancy = ui.editorGUI.editData.transparancy;
 
 				var _text = this.buildTextFromObj(textObject);
+			} else if(this.selectedTool === this.tool_VERTICEEDITING){
+				delete this.verticeEditingSprite.selectedVertice;
+				console.log(this.verticeEditingSprite.data);
+				this.verticeEditingSprite.data.vertices.forEach((vertice, index) => {
+
+					const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
+
+					const difX = (vertice.x+this.verticeEditingSprite.x)-mousePixiPos.x;
+					const difY = (vertice.y+this.verticeEditingSprite.y)-mousePixiPos.y;
+
+					const minDistance = 5;
+					if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
+						this.verticeEditingSprite.selectedVertice = index;
+					}
+				});
 			}
 
 		}
@@ -2226,6 +2242,29 @@ const _B2dEditor = function () {
 						y: this.mousePosWorld.y
 					});
 					if (this.activeVertices.length > editorSettings.maxVertices) this.activeVertices.shift();
+				}else if(this.selectedTool === this.tool_VERTICEEDITING){
+					if(this.verticeEditingSprite.selectedVertice){
+						const difX = (this.mousePosWorld.x-this.oldMousePosWorld.x)*this.PTM;
+						const difY = (this.mousePosWorld.y-this.oldMousePosWorld.y)*this.PTM;
+
+						this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice].x += difX;
+						this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice].y += difY;
+
+						console.log(this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice]);
+
+						if(this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice].point1){
+							this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice].point1.x += difX;
+							this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice].point1.y += difY;
+							this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice].point2.x += difX;
+							this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice].point2.y += difY;
+						}
+
+						if (this.verticeEditingSprite.data.radius) this.updateCircleGraphic(this.verticeEditingSprite.originalGraphic, this.verticeEditingSprite.data.radius, {
+							x: 0,
+							y: 0
+						}, this.verticeEditingSprite.data.colorFill, this.verticeEditingSprite.data.colorLine, this.verticeEditingSprite.data.transparancy);
+						else this.updatePolyGraphic(this.verticeEditingSprite.originalGraphic, this.verticeEditingSprite.data.vertices, this.verticeEditingSprite.data.colorFill, this.verticeEditingSprite.data.colorLine, this.verticeEditingSprite.data.transparancy);
+					}
 				}
 			}
 		}
@@ -4011,6 +4050,28 @@ const _B2dEditor = function () {
 	}
 	this.doVerticeEditing = function () {
 
+		this.verticeEditingSprite.data.vertices.forEach((vertice, index) => {
+			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
+			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
+
+			const verticeBoxSize = 10;
+
+
+			const vl = Math.sqrt(vertice.x*vertice.x + vertice.y*vertice.y);
+			const va = this.verticeEditingSprite.rotation + Math.atan2(vertice.y, vertice.x);
+
+			const vx = vl*Math.cos(va);
+			const vy = vl*Math.sin(va);
+
+			const verticeX = this.container.x + (this.verticeEditingSprite.x + vx) * this.container.scale.x - verticeBoxSize/2;
+			const verticeY = this.container.y + (this.verticeEditingSprite.y + vy) * this.container.scale.y - verticeBoxSize/2;
+
+
+			if(index === this.verticeEditingSprite.selectedVertice) this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
+
+			this.debugGraphics.drawRect(verticeX, verticeY, verticeBoxSize, verticeBoxSize);
+		})
+
 	}
 	this.doGeometryDrawing = function () {
 		if (this.mouseDown && !this.spaceCameraDrag) {
@@ -5031,6 +5092,14 @@ const _B2dEditor = function () {
 			for(let i = 0; i<dataVertices.length; i++){
 				dataVertices[i].x = dataVertices[i].x * scaleX;
 				dataVertices[i].y = dataVertices[i].y * scaleY;
+
+				if(dataVertices[i].point1){
+					dataVertices[i].point1.x = dataVertices[i].point1.x * scaleX;
+					dataVertices[i].point1.y = dataVertices[i].point1.y * scaleY;
+					dataVertices[i].point2.x = dataVertices[i].point2.x * scaleX;
+					dataVertices[i].point2.y = dataVertices[i].point2.y * scaleY;
+				}
+
 			}
 
 			if(data.type !== this.object_TRIGGER){
@@ -5079,6 +5148,13 @@ const _B2dEditor = function () {
 						for (var k = 0; k < gObj.vertices.length; k++) {
 							gObj.vertices[k].x *= scaleX;
 							gObj.vertices[k].y *= scaleY;
+
+							if(gObj.vertices[k].point1){
+								gObj.vertices[k].point1.x *= scaleX;
+								gObj.vertices[k].point1.y *= scaleY;
+								gObj.vertices[k].point2.x *= scaleX;
+								gObj.vertices[k].point2.y *= scaleY;
+							}
 						}
 					}
 					const xDif = gObj.x - centerPoint.x;
@@ -5094,6 +5170,13 @@ const _B2dEditor = function () {
 				for (let j = 0; j < sprite.data.vertices.length; j++) {
 					sprite.data.vertices[j].x *= scaleX;
 					sprite.data.vertices[j].y *= scaleY;
+
+					if(sprite.data.vertices[j].point1){
+						sprite.data.vertices[j].point1.x *= scaleX;
+						sprite.data.vertices[j].point1.y *= scaleY;
+						sprite.data.vertices[j].point2.x *= scaleX;
+						sprite.data.vertices[j].point2.y *= scaleY;
+					}
 				}
 				if (sprite.data.radius) sprite.data.radius *= scaleX;
 				if (!sprite.data.radius) this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
