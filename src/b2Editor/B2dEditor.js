@@ -2203,8 +2203,12 @@ const _B2dEditor = function () {
 					let previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice-1];
 					if(this.verticeEditingSprite.selectedVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
 
+					const points = [];
 
-					[vertice.point1, previousVertice.point2].forEach( point => {
+					if(vertice.point1) points.push(vertice.point1);
+					if(previousVertice.point2) points.push(previousVertice.point2);
+
+					points.forEach( point => {
 						const vpl = Math.sqrt(point.x*point.x + point.y*point.y);
 						const vpa = this.verticeEditingSprite.rotation + Math.atan2(point.y, point.x);
 						const vpx = vpl*Math.cos(vpa);
@@ -2289,6 +2293,8 @@ const _B2dEditor = function () {
 							if(vertice.point1){
 								vertice.point1.x += movX;
 								vertice.point1.y += movY;
+							}
+							if(previousVertice.point2){
 								previousVertice.point2.x += movX;
 								previousVertice.point2.y += movY;
 							}
@@ -2304,21 +2310,26 @@ const _B2dEditor = function () {
 							pA.x += movX;
 							pA.y += movY;
 
-							const pADX = vertice.x-pA.x;
-							const pADY = vertice.y-pA.y;
-							const pAA = Math.atan2(pADY, pADX);
-							const pBDX = vertice.x-pB.x;
-							const pBDY = vertice.y-pB.y;
-							const pBL = Math.sqrt(pBDX * pBDX + pBDY*pBDY);
-							pB.x = vertice.x + pBL*Math.cos(pAA);
-							pB.y = vertice.y + pBL*Math.sin(pAA);
-						}
+							if(pB){
+								const pADX = vertice.x-pA.x;
+								const pADY = vertice.y-pA.y;
+								const pAA = Math.atan2(pADY, pADX);
+								const pBDX = vertice.x-pB.x;
+								const pBDY = vertice.y-pB.y;
+								const pBL = Math.sqrt(pBDX * pBDX + pBDY*pBDY);
+								pB.x = vertice.x + pBL*Math.cos(pAA);
+								pB.y = vertice.y + pBL*Math.sin(pAA);
+							}
 
-						if (this.verticeEditingSprite.data.radius) this.updateCircleGraphic(this.verticeEditingSprite.originalGraphic, this.verticeEditingSprite.data.radius, {
-							x: 0,
-							y: 0
-						}, this.verticeEditingSprite.data.colorFill, this.verticeEditingSprite.data.colorLine, this.verticeEditingSprite.data.transparancy);
-						else this.updatePolyGraphic(this.verticeEditingSprite.originalGraphic, this.verticeEditingSprite.data.vertices, this.verticeEditingSprite.data.colorFill, this.verticeEditingSprite.data.colorLine, this.verticeEditingSprite.data.transparancy);
+							const nextVerticeIndex = this.verticeEditingSprite.selectedVertice === this.verticeEditingSprite.data.vertices.length -1 ? 0 : this.verticeEditingSprite.selectedVertice+1;
+							const nextVertice = this.verticeEditingSprite.data.vertices[nextVerticeIndex];
+							if(Math.abs(vertice.point1.x-vertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point1.y-vertice.y) < Settings.handleClosestDistance && Math.abs(vertice.point2.x-nextVertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point2.y-nextVertice.y) < Settings.handleClosestDistance){
+								delete vertice.point1;
+								delete vertice.point2;
+								delete this.verticeEditingSprite.selectedVerticePoint;
+							}
+						}
+						this.updateGraphicShapes(this.verticeEditingSprite);
 					}
 				}
 			}
@@ -2795,7 +2806,36 @@ const _B2dEditor = function () {
 
 			}else if(this.selectedTool === this.tool_VERTICEEDITING){
 				if(Date.now() < this.doubleClickTime){
-					this.selectTool(this.tool_SELECT);
+
+					if(this.verticeEditingSprite.selectedVertice >= 0){
+
+						const vertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice];
+
+						const angle = Math.atan2(vertice.y, vertice.x) - Math.PI/2
+
+						const defaultDistance = Settings.handleClosestDistance*4;
+						if(!vertice.point1 || (Math.abs(vertice.x-vertice.point1.x < Settings.handleClosestDistance) && Math.abs(vertice.y-vertice.point1.y < Settings.handleClosestDistance))){
+							vertice.point1 = {x:vertice.x+defaultDistance*Math.cos(angle), y:vertice.y+defaultDistance*Math.sin(angle)}
+							if(!vertice.point2){
+								vertice.point2 = {x:vertice.x, y:vertice.y}
+							}
+						}
+
+						let previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice-1];
+						if(this.verticeEditingSprite.selectedVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
+
+						if(!previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x < Settings.handleClosestDistance) && Math.abs(vertice.y-previousVertice.point2.y < Settings.handleClosestDistance))){
+							previousVertice.point2 = {x:vertice.x-defaultDistance*Math.cos(angle), y:vertice.y-defaultDistance*Math.sin(angle)}
+							if(!previousVertice.point1){
+								previousVertice.point1 = {x:previousVertice.x, y:previousVertice.y}
+							}
+						}
+
+						this.updateGraphicShapes(this.verticeEditingSprite);
+
+					}else{
+						this.selectTool(this.tool_SELECT);
+					}
 				}
 			}
 			this.storeUndoMovementDebounced();
@@ -2980,6 +3020,25 @@ const _B2dEditor = function () {
 				x: this.shiftDown ? 10 : 1,
 				y: 0
 			});
+		} else if (e.keyCode == 13) { // enter
+			if(this.selectedTool === this.tool_VERTICEEDITING){
+				if(this.verticeEditingSprite && this.verticeEditingSprite.selectedVertice >= 0){
+
+					const vertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice];
+					const nextVerticeIndex = this.verticeEditingSprite.selectedVertice === this.verticeEditingSprite.data.vertices.length -1 ? 0 : this.verticeEditingSprite.selectedVertice+1;
+					const nextVertice = this.verticeEditingSprite.data.vertices[nextVerticeIndex];
+
+					const dX = nextVertice.x - vertice.x;
+					const dY = nextVertice.y - vertice.y;
+
+					const x = vertice.x - dX / 2;
+					const y = vertice.y - dY / 2;
+
+					this.verticeEditingSprite.data.vertices.splice(this.verticeEditingSprite.selectedVertice, 0, {x, y});
+
+					this.updateGraphicShapes(this.verticeEditingSprite);
+				}
+			}
 		}
 		this.storeUndoMovementDebounced();
 	}
@@ -3664,11 +3723,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorFill = controller.targetValue.toString();
-							if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
-								x: 0,
-								y: 0
-							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
-							else this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+							this.updateGraphicShapes(sprite);
 						}
 					} else if (controller.property == "colorLine") {
 						//body & sprite
@@ -3681,11 +3736,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.colorLine = controller.targetValue.toString();
-							if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
-								x: 0,
-								y: 0
-							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
-							else this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.transparancy);
+							this.updateGraphicShapes(sprite);
 						}
 					} else if (controller.property == "lineWidth") {
 						//body & sprite
@@ -3698,11 +3749,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.lineWidth = controller.targetValue;
-							if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
-								x: 0,
-								y: 0
-							}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
-							else this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
+							this.updateGraphicShapes(sprite);
 							this.updateTileSprite(sprite);
 						}
 					} else if (controller.property == "transparancy") {
@@ -3718,11 +3765,7 @@ const _B2dEditor = function () {
 							if ([this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP, this.object_TEXT].includes(sprite.data.type)) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
-								if (sprite.data.radius) this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, {
-									x: 0,
-									y: 0
-								}, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
-								else this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
+								this.updateGraphicShapes(sprite);
 								this.updateTileSprite(sprite);
 							}
 						}
@@ -4127,27 +4170,32 @@ const _B2dEditor = function () {
 
 
 				if(vertice.point1){
-					const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
-					const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
-					const vp1x = vp1l*Math.cos(vp1a);
-					const vp1y = vp1l*Math.sin(vp1a);
-					const verticeP1X = this.container.x + (this.verticeEditingSprite.x + vp1x) * this.container.scale.x;
-					const verticeP1Y = this.container.y + (this.verticeEditingSprite.y + vp1y) * this.container.scale.y;
-	
-					this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, verticeBoxSize/2);
-	
+
+					if(Math.abs(vertice.x-vertice.point1.x) > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) > Settings.handleClosestDistance){
+						const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
+						const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
+						const vp1x = vp1l*Math.cos(vp1a);
+						const vp1y = vp1l*Math.sin(vp1a);
+						const verticeP1X = this.container.x + (this.verticeEditingSprite.x + vp1x) * this.container.scale.x;
+						const verticeP1Y = this.container.y + (this.verticeEditingSprite.y + vp1y) * this.container.scale.y;
+		
+						this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, verticeBoxSize/2);
+					}
 	
 					let previousVertice = this.verticeEditingSprite.data.vertices[index-1];
 					if(index === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
-
-					const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
-					const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
-					const vp2x = vp2l*Math.cos(vp2a);
-					const vp2y = vp2l*Math.sin(vp2a);
-					const verticeP2X = this.container.x + (this.verticeEditingSprite.x + vp2x) * this.container.scale.x;
-					const verticeP2Y = this.container.y + (this.verticeEditingSprite.y + vp2y) * this.container.scale.y;
-	
-					this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, verticeBoxSize/2);
+					if(previousVertice.point2){
+						if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
+							const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
+							const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
+							const vp2x = vp2l*Math.cos(vp2a);
+							const vp2y = vp2l*Math.sin(vp2a);
+							const verticeP2X = this.container.x + (this.verticeEditingSprite.x + vp2x) * this.container.scale.x;
+							const verticeP2Y = this.container.y + (this.verticeEditingSprite.y + vp2y) * this.container.scale.y;
+			
+							this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, verticeBoxSize/2);
+						}
+					}
 				}
 
 			}
@@ -5049,7 +5097,7 @@ const _B2dEditor = function () {
 		graphic.y = obj.y;
 		graphic.rotation = obj.rotation;
 
-		this.updateGraphicShapes(graphic);
+		this.updateGraphicGroupShapes(graphic);
 		this.textures.addChild(graphic);
 
 		if (graphic.data.bodyID != undefined) {
@@ -5069,7 +5117,7 @@ const _B2dEditor = function () {
 		graphic.y = obj.y;
 		graphic.rotation = obj.rotation;
 
-		this.updateGraphicShapes(graphic);
+		this.updateGraphicGroupShapes(graphic);
 		this.textures.addChild(graphic);
 
 		if (graphic.data.bodyID != undefined) {
@@ -5247,7 +5295,7 @@ const _B2dEditor = function () {
 
 					sprite.data.graphicObjects[j] = this.stringifyObject(gObj);
 				}
-				this.updateGraphicShapes(sprite);
+				this.updateGraphicGroupShapes(sprite);
 				// needed to update the culling engine
 			} else if (sprite.data.type == this.object_GRAPHIC) {
 				for (let j = 0; j < sprite.data.vertices.length; j++) {
@@ -6138,7 +6186,7 @@ const _B2dEditor = function () {
 			else this.updateCircleGraphic(body.originalGraphic, radius, innerVerts[0], colorFill, colorLine, lineWidth, transparancy, (i != 0));
 		}
 	}
-	this.updateGraphicShapes = function (graphic) {
+	this.updateGraphicGroupShapes = function (graphic) {
 		while (graphic.children.length > 0) graphic.removeChild(graphic.getChildAt(0));
 
 		let g;
@@ -6164,7 +6212,7 @@ const _B2dEditor = function () {
 			}else if (gObj instanceof this.graphicGroup) {
 				g = new PIXI.Container();
 				g.data = gObj;
-				this.updateGraphicShapes(g);
+				this.updateGraphicGroupShapes(g);
 				g.data = null;
 			}
 			graphic.addChild(g);
@@ -6173,6 +6221,14 @@ const _B2dEditor = function () {
 			g.rotation = gObj.rotation;
 			g.alpha = gObj.transparancy;
 		}
+	}
+	this.updateGraphicShapes = function(target){
+		if (target.data.radius) this.updateCircleGraphic(target.originalGraphic, target.data.radius, {
+			x: 0,
+			y: 0
+		}, target.data.colorFill, target.data.colorLine, target.data.transparancy);
+		else this.updatePolyGraphic(target.originalGraphic, target.data.vertices, target.data.colorFill, target.data.colorLine, target.data.transparancy);
+
 	}
 	this.updateTileSprite = function (target, forceNew = false) {
 
@@ -6284,11 +6340,11 @@ const _B2dEditor = function () {
 	}
 
 	this.updatePolyGraphic = function (graphic, verts, colorFill, colorLine, lineWidth, transparancy, dontClear) {
-		var color;
+		let color;
 		color = colorFill.slice(1);
-		var colorFillHex = parseInt(color, 16);
+		let colorFillHex = parseInt(color, 16);
 		color = colorLine.slice(1);
-		var colorLineHex = parseInt(color, 16);
+		let colorLineHex = parseInt(color, 16);
 
 		if (!dontClear) graphic.clear();
 		graphic.boundsPadding = 0;
@@ -6296,25 +6352,32 @@ const _B2dEditor = function () {
 		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
 		graphic.beginFill(colorFillHex, transparancy);
 
-		var count = verts.length;
-		var startPoint = verts[0];
+		const count = verts.length;
+		const startPoint = verts[0];
 
 		graphic.moveTo(startPoint.x, startPoint.y);
 
-		var i;
-		var currentPoint;
-		var nextPoint;
-		const curves = startPoint.point1 != undefined;
+		let i;
+		let currentPoint;
+		let nextPoint;
 
 		for (i = 1; i < count; i++) {
 			currentPoint = verts[i - 1];
 			nextPoint = verts[i];
-			if (curves) {
+
+			if(!currentPoint.point1){
+				graphic.bezierCurveTo(currentPoint.x, currentPoint.y, nextPoint.x, nextPoint.y, nextPoint.x, nextPoint.y);
+			}else{
 				graphic.bezierCurveTo(currentPoint.point1.x, currentPoint.point1.y, currentPoint.point2.x, currentPoint.point2.y, nextPoint.x, nextPoint.y);
-			} else graphic.lineTo(nextPoint.x, nextPoint.y);
+			}
+
 		}
-		if (curves) graphic.bezierCurveTo(nextPoint.point1.x, nextPoint.point1.y, nextPoint.point2.x, nextPoint.point2.y, startPoint.x, startPoint.y);
-		else graphic.lineTo(startPoint.x, startPoint.y);
+
+		if(!currentPoint.point1){
+			graphic.bezierCurveTo(nextPoint.x, nextPoint.y, startPoint.x, startPoint.y, startPoint.x, startPoint.y);
+		}else{
+			graphic.bezierCurveTo(nextPoint.point1.x, nextPoint.point1.y, nextPoint.point2.x, nextPoint.point2.y, startPoint.x, startPoint.y);
+		}
 
 		graphic.endFill();
 

@@ -21,6 +21,7 @@ export var Settings = {
     autoSaveInterval:5000,
     availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],
     doubleClickTime:300,
+    handleClosestDistance:5,
     /*CULLING SETTINGS*/
 
     /*LIMITS*/
