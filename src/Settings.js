@@ -22,6 +22,7 @@ export var Settings = {
     availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],
     doubleClickTime:300,
     handleClosestDistance:5,
+    verticeBoxSize:10,
     /*CULLING SETTINGS*/
 
     /*LIMITS*/

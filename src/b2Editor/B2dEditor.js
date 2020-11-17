@@ -10,7 +10,10 @@ import * as dat from "../../libs/dat.gui";
 import {
 	lineIntersect,
 	flatten,
-	isConvex
+	isConvex,
+	linePointDistance,
+	distanceFromCurve,
+	nearestPointOnCurve
 } from './utils/extramath';
 
 import {
@@ -2241,6 +2244,12 @@ const _B2dEditor = function () {
 						}
 					});
 				}
+
+				if(!this.verticeEditingSprite.selectedVertice){
+					// find closest point on path
+
+				}
+
 			}
 
 		}
@@ -2330,6 +2339,32 @@ const _B2dEditor = function () {
 							}
 						}
 						this.updateGraphicShapes(this.verticeEditingSprite);
+					}
+				}
+			}else if(!this.mouseDown){
+				if(this.selectedTool === this.tool_VERTICEEDITING){
+					const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
+
+					const localPosition = this.verticeEditingSprite.toLocal(mousePixiPos, this.verticeEditingSprite.parent);
+
+					const {point, distance} = this.getClosestPointDataToVertices(localPosition, this.verticeEditingSprite.data.vertices);
+
+					delete this.verticeEditingSprite.highlightVertice;
+
+					if(distance >= 0 && distance < Settings.handleClosestDistance){
+
+						let toClose = false;
+						this.verticeEditingSprite.data.vertices.forEach(vertice => {
+							const verticeX = this.container.x + (this.verticeEditingSprite.x + vertice.x) * this.container.scale.x;
+							const verticeY = this.container.y + (this.verticeEditingSprite.y + vertice.y) * this.container.scale.y;
+							const highlightX = this.container.x + (this.verticeEditingSprite.x + point.x) * this.container.scale.x;
+							const highlightY = this.container.y + (this.verticeEditingSprite.y + point.y) * this.container.scale.y;
+							if(Math.abs(highlightX-verticeX) < Settings.handleClosestDistance*2 && Math.abs(highlightY-verticeY) < Settings.handleClosestDistance*2){
+								toClose = true;
+							}
+						});
+
+						if(!toClose) this.verticeEditingSprite.highlightVertice = point;
 					}
 				}
 			}
@@ -3997,6 +4032,7 @@ const _B2dEditor = function () {
 	this.verticesFillColor = 0xFFFFFF;
 	this.verticesFirstFillColor = 0x004e64;
 	this.verticesDoneFillColor = 0x7AE582;
+	this.verticesAddFillColor = 0x00FF00;
 	this.verticesBulletRadius = 3;
 	this.verticesBoxSize = 3;
 
@@ -4150,17 +4186,14 @@ const _B2dEditor = function () {
 			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
-			const verticeBoxSize = 10;
-
-
 			const vl = Math.sqrt(vertice.x*vertice.x + vertice.y*vertice.y);
 			const va = this.verticeEditingSprite.rotation + Math.atan2(vertice.y, vertice.x);
 
 			const vx = vl*Math.cos(va);
 			const vy = vl*Math.sin(va);
 
-			const verticeX = this.container.x + (this.verticeEditingSprite.x + vx) * this.container.scale.x - verticeBoxSize/2;
-			const verticeY = this.container.y + (this.verticeEditingSprite.y + vy) * this.container.scale.y - verticeBoxSize/2;
+			const verticeX = this.container.x + (this.verticeEditingSprite.x + vx) * this.container.scale.x - Settings.verticeBoxSize/2;
+			const verticeY = this.container.y + (this.verticeEditingSprite.y + vy) * this.container.scale.y - Settings.verticeBoxSize/2;
 
 
 			if(index === this.verticeEditingSprite.selectedVertice){
@@ -4179,7 +4212,7 @@ const _B2dEditor = function () {
 						const verticeP1X = this.container.x + (this.verticeEditingSprite.x + vp1x) * this.container.scale.x;
 						const verticeP1Y = this.container.y + (this.verticeEditingSprite.y + vp1y) * this.container.scale.y;
 		
-						this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, verticeBoxSize/2);
+						this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, Settings.verticeBoxSize/2);
 					}
 	
 					let previousVertice = this.verticeEditingSprite.data.vertices[index-1];
@@ -4193,17 +4226,60 @@ const _B2dEditor = function () {
 							const verticeP2X = this.container.x + (this.verticeEditingSprite.x + vp2x) * this.container.scale.x;
 							const verticeP2Y = this.container.y + (this.verticeEditingSprite.y + vp2y) * this.container.scale.y;
 			
-							this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, verticeBoxSize/2);
+							this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
 						}
 					}
 				}
 
 			}
 
-			this.debugGraphics.drawRect(verticeX, verticeY, verticeBoxSize, verticeBoxSize);
+			this.debugGraphics.drawRect(verticeX, verticeY, Settings.verticeBoxSize, Settings.verticeBoxSize);
 		})
 
+		if(this.verticeEditingSprite.highlightVertice){
+			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
+			this.debugGraphics.beginFill(this.verticesAddFillColor, 0.5);
+
+			const vl = Math.sqrt(this.verticeEditingSprite.highlightVertice.x*this.verticeEditingSprite.highlightVertice.x + this.verticeEditingSprite.highlightVertice.y*this.verticeEditingSprite.highlightVertice.y);
+			const va = this.verticeEditingSprite.rotation + Math.atan2(this.verticeEditingSprite.highlightVertice.y, this.verticeEditingSprite.highlightVertice.x);
+
+			const vx = vl*Math.cos(va);
+			const vy = vl*Math.sin(va);
+
+			const verticeX = this.container.x + (this.verticeEditingSprite.x + vx) * this.container.scale.x - Settings.verticeBoxSize/2;
+			const verticeY = this.container.y + (this.verticeEditingSprite.y + vy) * this.container.scale.y - Settings.verticeBoxSize/2;
+
+			this.debugGraphics.drawRect(verticeX, verticeY, Settings.verticeBoxSize, Settings.verticeBoxSize);
+		}
 	}
+	this.getClosestPointDataToVertices = function (point, vertices, minDistanceFromVertice) {
+		let closestDistance = Number.POSITIVE_INFINITY;
+		let closestPoint = null;
+		vertices.forEach((vertice, index) => {
+			let nextVertice = index === vertices.length-1 ? vertices[0] : vertices[index+1];
+			if(vertice.point1){
+				// point on curve
+				const curve = [vertice, vertice.point1, vertice.point2, nextVertice];
+				const distance = distanceFromCurve(point, curve).distance;
+				if(distance<closestDistance){
+					closestDistance = distance;
+					const curvePointInfo = nearestPointOnCurve(point, curve);
+					closestPoint = curvePointInfo.point;
+				}
+			}else{
+				const pointData = linePointDistance(point.x, point.y, vertice.x, vertice.y, nextVertice.x, nextVertice.y);
+				if(pointData.distance< closestDistance){
+					closestDistance = pointData.distance;
+					closestPoint = {x:pointData.x, y:pointData.y};
+				}
+			}
+		});
+
+
+
+		return {point:closestPoint, distance:closestDistance};
+	}
+
 	this.doGeometryDrawing = function () {
 		if (this.mouseDown && !this.spaceCameraDrag) {
 			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
@@ -6373,7 +6449,7 @@ const _B2dEditor = function () {
 
 		}
 
-		if(!currentPoint.point1){
+		if(!nextPoint.point1){
 			graphic.bezierCurveTo(nextPoint.x, nextPoint.y, startPoint.x, startPoint.y, startPoint.x, startPoint.y);
 		}else{
 			graphic.bezierCurveTo(nextPoint.point1.x, nextPoint.point1.y, nextPoint.point2.x, nextPoint.point2.y, startPoint.x, startPoint.y);
