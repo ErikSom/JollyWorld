@@ -2245,9 +2245,10 @@ const _B2dEditor = function () {
 					});
 				}
 
-				if(!this.verticeEditingSprite.selectedVertice){
-					// find closest point on path
-
+				if(!this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.highlightVertice){
+					// add a new vertice
+					this.verticeEditingSprite.data.vertices.splice(this.verticeEditingSprite.highlightVerticeIndex+1, 0, this.verticeEditingSprite.highlightVertice);
+					this.updateGraphicShapes(this.verticeEditingSprite);
 				}
 
 			}
@@ -2347,9 +2348,10 @@ const _B2dEditor = function () {
 
 					const localPosition = this.verticeEditingSprite.toLocal(mousePixiPos, this.verticeEditingSprite.parent);
 
-					const {point, distance} = this.getClosestPointDataToVertices(localPosition, this.verticeEditingSprite.data.vertices);
+					const {point, distance, index} = this.getClosestPointDataToVertices(localPosition, this.verticeEditingSprite.data.vertices);
 
 					delete this.verticeEditingSprite.highlightVertice;
+					delete this.verticeEditingSprite.highlightVerticeIndex;
 
 					if(distance >= 0 && distance < Settings.handleClosestDistance){
 
@@ -2364,7 +2366,11 @@ const _B2dEditor = function () {
 							}
 						});
 
-						if(!toClose) this.verticeEditingSprite.highlightVertice = point;
+						if(!toClose){
+							this.verticeEditingSprite.highlightVertice = point;
+							this.verticeEditingSprite.highlightVerticeIndex = index;
+
+						}
 					}
 				}
 			}
@@ -3000,6 +3006,14 @@ const _B2dEditor = function () {
 			if(e.keyCode == 8 && this.selectedTool == this.tool_POLYDRAWING){
 				this.activeVertices.pop();
 			}
+			if(this.selectedTool === this.tool_VERTICEEDITING && this.verticeEditingSprite.selectedVertice>=0){
+				if(this.verticeEditingSprite.data.vertices.length>2){
+					// delete vertice
+					this.verticeEditingSprite.data.vertices.splice(this.verticeEditingSprite.selectedVertice, 1);
+					this.updateGraphicShapes(this.verticeEditingSprite);
+					if(this.verticeEditingSprite.selectedVertice===this.verticeEditingSprite.data.vertices.length)this.verticeEditingSprite.selectedVertice--;
+				}
+			}
 			this.deleteSelection();
 		} else if (e.keyCode == 16) { //shift
 			this.shiftDown = true;
@@ -3055,25 +3069,6 @@ const _B2dEditor = function () {
 				x: this.shiftDown ? 10 : 1,
 				y: 0
 			});
-		} else if (e.keyCode == 13) { // enter
-			if(this.selectedTool === this.tool_VERTICEEDITING){
-				if(this.verticeEditingSprite && this.verticeEditingSprite.selectedVertice >= 0){
-
-					const vertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice];
-					const nextVerticeIndex = this.verticeEditingSprite.selectedVertice === this.verticeEditingSprite.data.vertices.length -1 ? 0 : this.verticeEditingSprite.selectedVertice+1;
-					const nextVertice = this.verticeEditingSprite.data.vertices[nextVerticeIndex];
-
-					const dX = nextVertice.x - vertice.x;
-					const dY = nextVertice.y - vertice.y;
-
-					const x = vertice.x - dX / 2;
-					const y = vertice.y - dY / 2;
-
-					this.verticeEditingSprite.data.vertices.splice(this.verticeEditingSprite.selectedVertice, 0, {x, y});
-
-					this.updateGraphicShapes(this.verticeEditingSprite);
-				}
-			}
 		}
 		this.storeUndoMovementDebounced();
 	}
@@ -3151,7 +3146,12 @@ const _B2dEditor = function () {
 			for(let i = 0; i<queryGraphics.length; i++){
 
 				const graphic = queryGraphics[i];
-				const pixels = game.app.renderer.plugins.extract.pixels(graphic);
+				let pixels;
+				try{
+					pixels = game.app.renderer.plugins.extract.pixels(graphic);
+				}catch(err){
+					continue;
+				}
 				const localPosition = graphic.toLocal(lowerBoundPixi, graphic.parent);
 
 				const oldRotation = graphic.rotation;
@@ -4186,6 +4186,12 @@ const _B2dEditor = function () {
 			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
+
+
+
+
+
+
 			const vl = Math.sqrt(vertice.x*vertice.x + vertice.y*vertice.y);
 			const va = this.verticeEditingSprite.rotation + Math.atan2(vertice.y, vertice.x);
 
@@ -4211,6 +4217,10 @@ const _B2dEditor = function () {
 						const vp1y = vp1l*Math.sin(vp1a);
 						const verticeP1X = this.container.x + (this.verticeEditingSprite.x + vp1x) * this.container.scale.x;
 						const verticeP1Y = this.container.y + (this.verticeEditingSprite.y + vp1y) * this.container.scale.y;
+
+
+						this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
+						this.debugGraphics.lineTo(verticeP1X, verticeP1Y);
 		
 						this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, Settings.verticeBoxSize/2);
 					}
@@ -4225,6 +4235,9 @@ const _B2dEditor = function () {
 							const vp2y = vp2l*Math.sin(vp2a);
 							const verticeP2X = this.container.x + (this.verticeEditingSprite.x + vp2x) * this.container.scale.x;
 							const verticeP2Y = this.container.y + (this.verticeEditingSprite.y + vp2y) * this.container.scale.y;
+
+							this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
+							this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
 			
 							this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
 						}
@@ -4252,9 +4265,10 @@ const _B2dEditor = function () {
 			this.debugGraphics.drawRect(verticeX, verticeY, Settings.verticeBoxSize, Settings.verticeBoxSize);
 		}
 	}
-	this.getClosestPointDataToVertices = function (point, vertices, minDistanceFromVertice) {
+	this.getClosestPointDataToVertices = function (point, vertices) {
 		let closestDistance = Number.POSITIVE_INFINITY;
 		let closestPoint = null;
+		let closestIndex = null;
 		vertices.forEach((vertice, index) => {
 			let nextVertice = index === vertices.length-1 ? vertices[0] : vertices[index+1];
 			if(vertice.point1){
@@ -4265,19 +4279,21 @@ const _B2dEditor = function () {
 					closestDistance = distance;
 					const curvePointInfo = nearestPointOnCurve(point, curve);
 					closestPoint = curvePointInfo.point;
+					closestIndex = index;
 				}
 			}else{
 				const pointData = linePointDistance(point.x, point.y, vertice.x, vertice.y, nextVertice.x, nextVertice.y);
 				if(pointData.distance< closestDistance){
 					closestDistance = pointData.distance;
 					closestPoint = {x:pointData.x, y:pointData.y};
+					closestIndex = index;
 				}
 			}
 		});
 
 
 
-		return {point:closestPoint, distance:closestDistance};
+		return {point:closestPoint, distance:closestDistance, index:closestIndex};
 	}
 
 	this.doGeometryDrawing = function () {
