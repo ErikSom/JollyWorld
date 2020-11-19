@@ -116,9 +116,12 @@ function Game() {
             width: w,
             height: h
         });
-        console.log(this.app);
+
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
+        this.app.renderer.plugins.interaction.removeEvents();
+        PIXI.ticker.shared.stop();
+        this.stage.interactiveChildren=false;
 
         LoadCoreAssets(PIXI.loader);
 

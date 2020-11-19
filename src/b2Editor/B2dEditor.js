@@ -2317,11 +2317,10 @@ const _B2dEditor = function () {
 
 						const spriteData = this.verticeEditingSprite.data;
 						let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
-				
+
 						if(spriteData.type === this.object_BODY){
 							if(Array.isArray(vertices[0])) vertices = vertices[0]
 						}
-
 
 						const vertice = vertices[this.verticeEditingSprite.selectedVertice];
 						let previousVertice = vertices[this.verticeEditingSprite.selectedVertice-1];
@@ -3204,71 +3203,65 @@ const _B2dEditor = function () {
 		
 		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
 			for(let i = 0; i<queryGraphics.length; i++){
-
 				const graphic = queryGraphics[i];
-				let pixels;
-				try{
-					pixels = game.app.renderer.plugins.extract.pixels(graphic);
-				}catch(err){
-					continue;
-				}
-				const localPosition = graphic.toLocal(lowerBoundPixi, graphic.parent);
+				if(graphic.data.type === this.object_TEXTURE){
+					// pixel perfect detection
+					let pixels;
+					try{
+						pixels = game.app.renderer.plugins.extract.pixels(graphic);
+					}catch(err){
+						continue;
+					}
+					const localPosition = graphic.toLocal(lowerBoundPixi, graphic.parent);
 
-				const oldRotation = graphic.rotation;
-				graphic.rotation = 0;
-				const bounds = graphic.getBounds();
+					const oldRotation = graphic.rotation;
+					graphic.rotation = 0;
+					const bounds = graphic.getBounds();
 
-				const posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-				const posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
-				const spriteRect = new PIXI.Rectangle(posX, posY, bounds.width / this.container.scale.x, bounds.height / this.container.scale.y);
-				const centerX = spriteRect.x + spriteRect.width/2;
-				const centerY = spriteRect.y + spriteRect.height/2;
+					const posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
+					const posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+					const spriteRect = new PIXI.Rectangle(posX, posY, bounds.width / this.container.scale.x, bounds.height / this.container.scale.y);
+					const centerX = spriteRect.x + spriteRect.width/2;
+					const centerY = spriteRect.y + spriteRect.height/2;
 
-				const anchorDiffX = graphic.x - centerX;
-				const anchorDiffY = graphic.y - centerY;
+					const anchorDiffX = graphic.x - centerX;
+					const anchorDiffY = graphic.y - centerY;
 
-				graphic.rotation = oldRotation;
+					graphic.rotation = oldRotation;
 
-				if(graphic.data.type !== this.object_TEXT){ // fix for bug with text object
-					localPosition.x += graphic.width/2+anchorDiffX;
-					localPosition.y += graphic.height/2+anchorDiffY;
-				}
+					if(graphic.data.type !== this.object_TEXT){ // fix for bug with text object
+						localPosition.x += graphic.width/2+anchorDiffX;
+						localPosition.y += graphic.height/2+anchorDiffY;
+					}
 
-				if(localPosition.x<0 || localPosition.y<0 || localPosition.x>graphic.width || localPosition.y>graphic.height){
-					queryGraphics.splice(i, 1);
-					i--;
-					continue;
-				}
+					if(localPosition.x<0 || localPosition.y<0 || localPosition.x>graphic.width || localPosition.y>graphic.height){
+						queryGraphics.splice(i, 1);
+						i--;
+						continue;
+					}
 
-				if(graphic.data.type === this.object_TEXT) continue; // we dont want pixel detection on text
+					if(graphic.data.type === this.object_TEXT) continue; // we dont want pixel detection on text
 
+					const x = Math.round(localPosition.x)*4;
+					const y = Math.round(Math.round(localPosition.y)*Math.floor(graphic.width)*4);
+					const a = pixels[x+y+3];
 
-				const x = Math.round(localPosition.x)*4;
-				const y = Math.round(Math.round(localPosition.y)*Math.floor(graphic.width)*4);
-
-				// const r = pixels[x+y];
-				// const g = pixels[x+y+1];
-				// const b = pixels[x+y+2];
-				const a = pixels[x+y+3];
-
-				// const canvas = document.createElement('canvas');
-				// canvas.width = graphic.width;
-				// canvas.height = graphic.height;
-				// const ctx = canvas.getContext('2d');
-
-				// const imageData = ctx.getImageData(0,0, canvas.width, canvas.height);
-				// imageData.data.set(pixels);
-
-
-				// ctx.putImageData(imageData, 0, 0);
-				// document.body.appendChild(canvas);
-				// canvas.style.zIndex = Date.now();
-
-
-
-				if(a<10){
-					queryGraphics.splice(i, 1);
-					i--;
+					if(a<10){
+						queryGraphics.splice(i, 1);
+						i--;
+					}
+				}else{
+					const screenPosition = this.container.toGlobal(lowerBoundPixi);
+					let containsPoint = false;
+					graphic.children.forEach(child=>{
+						if(child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
+							containsPoint = true;
+						}
+					})
+					if(!containsPoint){
+						queryGraphics.splice(i, 1);
+						i--;
+					}
 				}
 
 			}
