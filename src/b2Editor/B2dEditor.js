@@ -1612,6 +1612,7 @@ const _B2dEditor = function () {
 			this.doVerticesDrawing();
 		} else if (this.selectedTool == this.tool_VERTICEEDITING) {
 			this.doVerticeEditing();
+			if(this.verticeEditingSprite.selectedVertice === undefined && this.verticeEditingSprite.selectedVerticePoint === undefined) this.doSelection();
 		}
 
 		// Draw 0,0 reference
@@ -2196,43 +2197,55 @@ const _B2dEditor = function () {
 
 				var _text = this.buildTextFromObj(textObject);
 			} else if(this.selectedTool === this.tool_VERTICEEDITING){
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+
 				delete this.verticeEditingSprite.selectedVerticePoint;
 				const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
 
-				if(this.verticeEditingSprite.selectedVertice >= 0 && this.verticeEditingSprite.data.type !== this.object_BODY){
-					const vertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice];
-					let previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice-1];
-					if(this.verticeEditingSprite.selectedVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
+				if(this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.data.type !== this.object_BODY){
 
-					const points = [];
+					this.verticeEditingSprite.selectedVertice.forEach(verticeIndex => {
+						const vertice = this.verticeEditingSprite.data.vertices[verticeIndex];
+						let previousVertice = this.verticeEditingSprite.data.vertices[verticeIndex-1];
+						if(verticeIndex === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
 
-					if(vertice.point1) points.push(vertice.point1);
-					if(previousVertice.point2) points.push(previousVertice.point2);
+						const points = [];
 
-					points.forEach( point => {
-						const vpl = Math.sqrt(point.x*point.x + point.y*point.y);
-						const vpa = this.verticeEditingSprite.rotation + Math.atan2(point.y, point.x);
-						const vpx = vpl*Math.cos(vpa);
-						const vpy = vpl*Math.sin(vpa);
-						const verticePX = this.verticeEditingSprite.x + vpx;
-						const verticePY = this.verticeEditingSprite.y + vpy;
-						const difX = verticePX-mousePixiPos.x;
-						const difY = verticePY-mousePixiPos.y;
-						const minDistance = 5;
-						if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
-							this.verticeEditingSprite.selectedVerticePoint = point;
-						}
-					})
+						if(vertice.point1) points.push(vertice.point1);
+						if(previousVertice.point2) points.push(previousVertice.point2);
+
+						points.forEach( point => {
+
+							const ignore = Math.abs(vertice.x-point.x) * this.container.scale.x <= Settings.handleClosestDistance && Math.abs(vertice.y-point.y) * this.container.scale.x <= Settings.handleClosestDistance;
+							if(!ignore){
+								const vpl = Math.sqrt(point.x*point.x + point.y*point.y);
+								const vpa = this.verticeEditingSprite.rotation + Math.atan2(point.y, point.x);
+								const vpx = vpl*Math.cos(vpa);
+								const vpy = vpl*Math.sin(vpa);
+								const verticePX = this.verticeEditingSprite.x + vpx;
+								const verticePY = this.verticeEditingSprite.y + vpy;
+								const difX = verticePX-mousePixiPos.x;
+								const difY = verticePY-mousePixiPos.y;
+								const minDistance = 5;
+								if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
+									this.verticeEditingSprite.selectedVerticePointIndex = verticeIndex;
+									this.verticeEditingSprite.selectedVerticePoint = point;
+								}
+							}
+						})
+					});
 				}
 
 				if(!this.verticeEditingSprite.selectedVerticePoint){
-					delete this.verticeEditingSprite.selectedVertice;
+					// delete this.verticeEditingSprite.selectedVertice;
 
 					const spriteData = this.verticeEditingSprite.data;
 					let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
 					if(spriteData.type === this.object_BODY){
 						vertices = vertices.flat(2).map(point=> ({x:point.x*Settings.PTM, y:point.y*Settings.PTM}));
 					}
+
+					let clickVerticeIndex = -1;
 
 					vertices.forEach((vertice, index) => {
 						const vl = Math.sqrt(vertice.x*vertice.x + vertice.y*vertice.y);
@@ -2245,9 +2258,28 @@ const _B2dEditor = function () {
 						const difY = verticeY-mousePixiPos.y;
 						const minDistance = 5;
 						if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
-							this.verticeEditingSprite.selectedVertice = index;
+							clickVerticeIndex = index;
 						}
 					});
+
+					if(clickVerticeIndex === -1){
+						delete this.verticeEditingSprite.selectedVertice;
+					}else{
+						if(this.verticeEditingSprite.selectedVertice){
+							if(!this.verticeEditingSprite.selectedVertice.includes(clickVerticeIndex)){
+								if(this.shiftDown){
+									this.verticeEditingSprite.selectedVertice.push(clickVerticeIndex);
+								}else{
+									this.verticeEditingSprite.selectedVertice = [clickVerticeIndex];
+								}
+							}else if(this.ctrlDown){
+								// included
+								this.verticeEditingSprite.selectedVertice = this.verticeEditingSprite.selectedVertice.filter( index => index !== clickVerticeIndex );
+							}
+						}else{
+							this.verticeEditingSprite.selectedVertice = [clickVerticeIndex];
+						}
+					}
 				}
 
 				if(!this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.highlightVertice){
@@ -2307,7 +2339,7 @@ const _B2dEditor = function () {
 					});
 					if (this.activeVertices.length > editorSettings.maxVertices) this.activeVertices.shift();
 				}else if(this.selectedTool === this.tool_VERTICEEDITING){
-					if(this.verticeEditingSprite.selectedVertice >= 0){
+					if(this.verticeEditingSprite.selectedVertice){
 						const difX = (this.mousePosWorld.x-this.oldMousePosWorld.x)*this.PTM;
 						const difY = (this.mousePosWorld.y-this.oldMousePosWorld.y)*this.PTM;
 						const dA = Math.atan2(difY, difX)-this.verticeEditingSprite.rotation;
@@ -2322,28 +2354,10 @@ const _B2dEditor = function () {
 							if(Array.isArray(vertices[0])) vertices = vertices[0]
 						}
 
-						const vertice = vertices[this.verticeEditingSprite.selectedVertice];
-						let previousVertice = vertices[this.verticeEditingSprite.selectedVertice-1];
-						if(this.verticeEditingSprite.selectedVertice === 0) previousVertice = vertices[vertices.length-1];
-
-						if(!this.verticeEditingSprite.selectedVerticePoint){
-							if(spriteData.type === this.object_BODY){
-								vertice.x += movX / Settings.PTM;
-								vertice.y += movY / Settings.PTM;
-							}else{
-								vertice.x += movX;
-								vertice.y += movY;
-							}
-
-							if(vertice.point1){
-								vertice.point1.x += movX;
-								vertice.point1.y += movY;
-							}
-							if(previousVertice.point2){
-								previousVertice.point2.x += movX;
-								previousVertice.point2.y += movY;
-							}
-						}else{
+						if(this.verticeEditingSprite.selectedVerticePoint){
+							const vertice = vertices[this.verticeEditingSprite.selectedVerticePointIndex];
+							let previousVertice = vertices[this.verticeEditingSprite.selectedVerticePointIndex-1];
+							if(this.verticeEditingSprite.selectedVerticePointIndex === 0) previousVertice = vertices[vertices.length-1];
 							let pA, pB;
 							if(this.verticeEditingSprite.selectedVerticePoint === vertice.point1){
 								pA = vertice.point1;
@@ -2366,14 +2380,40 @@ const _B2dEditor = function () {
 								pB.y = vertice.y + pBL*Math.sin(pAA);
 							}
 
-							const nextVerticeIndex = this.verticeEditingSprite.selectedVertice === this.verticeEditingSprite.data.vertices.length -1 ? 0 : this.verticeEditingSprite.selectedVertice+1;
+							const nextVerticeIndex = this.verticeEditingSprite.selectedVerticePointIndex === this.verticeEditingSprite.data.vertices.length -1 ? 0 : this.verticeEditingSprite.selectedVerticePointIndex+1;
 							const nextVertice = this.verticeEditingSprite.data.vertices[nextVerticeIndex];
 							if(Math.abs(vertice.point1.x-vertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point1.y-vertice.y) < Settings.handleClosestDistance && Math.abs(vertice.point2.x-nextVertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point2.y-nextVertice.y) < Settings.handleClosestDistance){
 								delete vertice.point1;
 								delete vertice.point2;
 								delete this.verticeEditingSprite.selectedVerticePoint;
+								delete this.verticeEditingSprite.selectedVerticePointIndex;
 							}
+						}else{
+
+							this.verticeEditingSprite.selectedVertice.forEach(verticeIndex=> {
+								const vertice = vertices[verticeIndex];
+								let previousVertice = vertices[verticeIndex-1];
+								if(verticeIndex === 0) previousVertice = vertices[vertices.length-1];
+
+								if(spriteData.type === this.object_BODY){
+									vertice.x += movX / Settings.PTM;
+									vertice.y += movY / Settings.PTM;
+								}else{
+									vertice.x += movX;
+									vertice.y += movY;
+								}
+
+								if(vertice.point1){
+									vertice.point1.x += movX;
+									vertice.point1.y += movY;
+								}
+								if(previousVertice.point2){
+									previousVertice.point2.x += movX;
+									previousVertice.point2.y += movY;
+								}
+							});
 						}
+						
 						if(spriteData.type === this.object_BODY){
 							this.updateBodyFixtures(this.verticeEditingSprite.myBody);
 							this.updateBodyShapes(this.verticeEditingSprite.myBody);
@@ -2391,27 +2431,39 @@ const _B2dEditor = function () {
 
 					const spriteData = this.verticeEditingSprite.data;
 					let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
-			
+
 					if(spriteData.type === this.object_BODY){
 						vertices = vertices.flat(2).map(point=> ({x:point.x*Settings.PTM, y:point.y*Settings.PTM}));
 					}
-
 
 					const {point, distance, index} = this.getClosestPointDataToVertices(localPosition, vertices);
 
 					delete this.verticeEditingSprite.highlightVertice;
 					delete this.verticeEditingSprite.highlightVerticeIndex;
 
-					if(distance >= 0 && distance < Settings.handleClosestDistance){
+					if(distance >= 0 && distance * this.container.scale.x < Settings.handleClosestDistance){
 
 						let toClose = false;
-						vertices.forEach(vertice => {
+						vertices.forEach((vertice, verticeIndex) => {
 							const verticeX = this.container.x + (this.verticeEditingSprite.x + vertice.x) * this.container.scale.x;
 							const verticeY = this.container.y + (this.verticeEditingSprite.y + vertice.y) * this.container.scale.y;
 							const highlightX = this.container.x + (this.verticeEditingSprite.x + point.x) * this.container.scale.x;
 							const highlightY = this.container.y + (this.verticeEditingSprite.y + point.y) * this.container.scale.y;
 							if(Math.abs(highlightX-verticeX) < Settings.handleClosestDistance*2 && Math.abs(highlightY-verticeY) < Settings.handleClosestDistance*2){
 								toClose = true;
+							}
+							if(this.verticeEditingSprite.selectedVertice !== undefined && this.verticeEditingSprite.selectedVertice.includes(verticeIndex)){
+								[vertice.point1, vertice.point2].forEach(dragPoint=>{
+									if(dragPoint){
+										const verticeX = this.container.x + (this.verticeEditingSprite.x + dragPoint.x) * this.container.scale.x;
+										const verticeY = this.container.y + (this.verticeEditingSprite.y + dragPoint.y) * this.container.scale.y;
+										const highlightX = this.container.x + (this.verticeEditingSprite.x + point.x) * this.container.scale.x;
+										const highlightY = this.container.y + (this.verticeEditingSprite.y + point.y) * this.container.scale.y;
+										if(Math.abs(highlightX-verticeX) < Settings.handleClosestDistance*2 && Math.abs(highlightY-verticeY) < Settings.handleClosestDistance*2){
+											toClose = true;
+										}
+									}
+								})
 							}
 						});
 
@@ -2897,34 +2949,89 @@ const _B2dEditor = function () {
 			}else if(this.selectedTool === this.tool_VERTICEEDITING){
 				if(Date.now() < this.doubleClickTime){
 
-					if(this.verticeEditingSprite.selectedVertice >= 0){
+					if(this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.data.type !== this.object_BODY){
+						const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
 
-						const vertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice];
-
-						const angle = Math.atan2(vertice.y, vertice.x) - Math.PI/2
-
-						const defaultDistance = Settings.handleClosestDistance*4;
-						if(!vertice.point1 || (Math.abs(vertice.x-vertice.point1.x < Settings.handleClosestDistance) && Math.abs(vertice.y-vertice.point1.y < Settings.handleClosestDistance))){
-							vertice.point1 = {x:vertice.x+defaultDistance*Math.cos(angle), y:vertice.y+defaultDistance*Math.sin(angle)}
-							if(!vertice.point2){
-								vertice.point2 = {x:vertice.x, y:vertice.y}
+						let mouseVertice = -1;
+						this.verticeEditingSprite.selectedVertice.forEach(verticeIndex => {
+							const vertice = this.verticeEditingSprite.data.vertices[verticeIndex];
+							const vl = Math.sqrt(vertice.x*vertice.x + vertice.y*vertice.y);
+							const va = this.verticeEditingSprite.rotation + Math.atan2(vertice.y, vertice.x);
+							const vx = vl*Math.cos(va);
+							const vy = vl*Math.sin(va);
+							const verticeX = this.verticeEditingSprite.x + vx;
+							const verticeY = this.verticeEditingSprite.y + vy;
+							const difX = verticeX-mousePixiPos.x;
+							const difY = verticeY-mousePixiPos.y;
+							const minDistance = Settings.handleClosestDistance;
+							if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
+								mouseVertice = verticeIndex;
 							}
-						}
+		
+						})
 
-						let previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.selectedVertice-1];
-						if(this.verticeEditingSprite.selectedVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
+						if(mouseVertice>=0){
+							const vertice = this.verticeEditingSprite.data.vertices[mouseVertice];
+							const angle = Math.atan2(vertice.y, vertice.x) - Math.PI/2
 
-						if(!previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x < Settings.handleClosestDistance) && Math.abs(vertice.y-previousVertice.point2.y < Settings.handleClosestDistance))){
-							previousVertice.point2 = {x:vertice.x-defaultDistance*Math.cos(angle), y:vertice.y-defaultDistance*Math.sin(angle)}
-							if(!previousVertice.point1){
-								previousVertice.point1 = {x:previousVertice.x, y:previousVertice.y}
+							const defaultDistance = Settings.handleClosestDistance*4;
+							if(!vertice.point1 || (Math.abs(vertice.x-vertice.point1.x < Settings.handleClosestDistance) && Math.abs(vertice.y-vertice.point1.y < Settings.handleClosestDistance))){
+								vertice.point1 = {x:vertice.x+defaultDistance*Math.cos(angle), y:vertice.y+defaultDistance*Math.sin(angle)}
+								if(!vertice.point2){
+									vertice.point2 = {x:vertice.x, y:vertice.y}
+								}
 							}
-						}
 
-						this.updateGraphicShapes(this.verticeEditingSprite);
+							let previousVertice = this.verticeEditingSprite.data.vertices[mouseVertice-1];
+							if(mouseVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
+
+							if(!previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x < Settings.handleClosestDistance) && Math.abs(vertice.y-previousVertice.point2.y < Settings.handleClosestDistance))){
+								previousVertice.point2 = {x:vertice.x-defaultDistance*Math.cos(angle), y:vertice.y-defaultDistance*Math.sin(angle)}
+								if(!previousVertice.point1){
+									previousVertice.point1 = {x:previousVertice.x, y:previousVertice.y}
+								}
+							}
+
+							this.updateGraphicShapes(this.verticeEditingSprite);
+						}
 
 					}else{
 						this.selectTool(this.tool_SELECT);
+					}
+				}else{
+					if(this.verticeEditingSprite.selectedVertice === undefined){
+
+						const mousePixiStartPos = this.getPIXIPointFromWorldPoint(this.startSelectionPoint);
+						const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
+
+						const leftBound = mousePixiPos.x < mousePixiStartPos.x ? mousePixiPos.x : mousePixiStartPos.x;
+						const rightBound = mousePixiPos.x < mousePixiStartPos.x ? mousePixiStartPos.x : mousePixiPos.x;
+
+						const upBound = mousePixiPos.y < mousePixiStartPos.y ? mousePixiPos.y : mousePixiStartPos.y;
+						const bottomBound = mousePixiPos.y < mousePixiStartPos.y ? mousePixiStartPos.y : mousePixiPos.y;
+
+						const spriteData = this.verticeEditingSprite.data;
+						let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+						if(spriteData.type === this.object_BODY){
+							vertices = vertices.flat(2).map(point=> ({x:point.x*Settings.PTM, y:point.y*Settings.PTM}));
+						}
+
+						this.verticeEditingSprite.selectedVertice = [];
+
+						vertices.forEach((vertice, index) => {
+							const vl = Math.sqrt(vertice.x*vertice.x + vertice.y*vertice.y);
+							const va = this.verticeEditingSprite.rotation + Math.atan2(vertice.y, vertice.x);
+							const vx = vl*Math.cos(va);
+							const vy = vl*Math.sin(va);
+							const verticeX = this.verticeEditingSprite.x + vx;
+							const verticeY = this.verticeEditingSprite.y + vy;
+							if(verticeX > leftBound && verticeX < rightBound && verticeY > upBound && verticeY < bottomBound){
+								this.verticeEditingSprite.selectedVertice.push(index);
+							}
+						});
+
+						if(this.verticeEditingSprite.selectedVertice.length === 0) delete this.verticeEditingSprite.selectedVertice;
+
 					}
 				}
 			}
@@ -3055,27 +3162,42 @@ const _B2dEditor = function () {
 			if(e.keyCode == 8 && this.selectedTool == this.tool_POLYDRAWING){
 				this.activeVertices.pop();
 			}
-			if(this.selectedTool === this.tool_VERTICEEDITING && this.verticeEditingSprite.selectedVertice>=0){
+			if(this.selectedTool === this.tool_VERTICEEDITING && this.verticeEditingSprite.selectedVertice){
 
 				const spriteData = this.verticeEditingSprite.data;
 				let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
 				if(Array.isArray(vertices[0])) vertices = vertices[0];
 
-				if((spriteData.type === this.object_BODY && vertices.length>3) || (spriteData.type !== this.object_BODY && vertices.length>2)){
-					// delete vertice
-					vertices.splice(this.verticeEditingSprite.selectedVertice, 1);
-					if(spriteData.type === this.object_BODY){
-						this.updateBodyFixtures(this.verticeEditingSprite.myBody);
-						this.updateBodyShapes(this.verticeEditingSprite.myBody);
-					}else{
-						this.updateGraphicShapes(this.verticeEditingSprite);
+				const verticesToDelete = this.verticeEditingSprite.selectedVertice.map(verticeIndex => vertices[verticeIndex]);
+
+				for(let i = 0; i< vertices.length; i++){
+					if((spriteData.type === this.object_BODY && vertices.length>3) || (spriteData.type !== this.object_BODY && vertices.length>2)){
+						// delete vertice
+						const vertice = vertices[i];
+						if(verticesToDelete.includes(vertice)){
+							vertices.splice(i, 1);
+							i--;
+						}
 					}
-					if(this.verticeEditingSprite.selectedVertice===vertices.length)this.verticeEditingSprite.selectedVertice--;
+				}
+				if(spriteData.type === this.object_BODY){
+					this.updateBodyFixtures(this.verticeEditingSprite.myBody);
+					this.updateBodyShapes(this.verticeEditingSprite.myBody);
+				}else{
+					this.updateGraphicShapes(this.verticeEditingSprite);
+				}
+				if(this.verticeEditingSprite.selectedVertice.length > 1){
+					delete this.verticeEditingSprite.selectedVertice;
+				}else{
+					if(this.verticeEditingSprite.selectedVertice[0] === vertices.length) this.verticeEditingSprite.selectedVertice[0] = this.verticeEditingSprite.selectedVertice[0]-1;
 				}
 			}
 			this.deleteSelection();
-		} else if (e.keyCode == 16) { //shift
+		} else if (e.keyCode == 16) { // ctrl
 			this.shiftDown = true;
+			//this.mouseTransformType = this.mouseTransformType_Rotation;
+		}else if (e.keyCode == 17) { // ctrl
+			this.ctrlDown = true;
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = true;
@@ -3100,42 +3222,79 @@ const _B2dEditor = function () {
 				ui.removeGuiAssetSelection();
 			}
 			e.preventDefault();
-		} else if (e.keyCode == 38) { // up arrow
-			if (e.ctrlKey || e.metaKey) {
-				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, true);
-			} else {
-				this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-					x: 0,
-					y: this.shiftDown ? -10 : -1
-				});
+		} if(e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40){ // left up right down
+			let movX = 0;
+			let movY = 0;
+
+			if(e.keyCode == 38) movY = -1;
+			if(e.keyCode == 40) movY = 1;
+			if(e.keyCode == 37) movX = -1;
+			if(e.keyCode == 39) movX = 1;
+
+			if(this.shiftDown){
+				movX *= 10;
+				movY *= 10;
 			}
-		} else if (e.keyCode == 40) { // down arrow
-			if (e.ctrlKey || e.metaKey) {
-				this.applyToSelectedObjects(this.TRANSFORM_DEPTH, false);
-			} else {
+			if(this.selectedTool === this.tool_SELECT){
 				this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-					x: 0,
-					y: this.shiftDown ? 10 : 1
+					x: movX,
+					y: movY
 				});
+			}else if (this.selectedTool === this.tool_VERTICEEDITING){
+		
+				const dA = Math.atan2(movY, movX)-this.verticeEditingSprite.rotation;
+				const dL = Math.sqrt(movX*movX+movY*movY);
+				const aMovX = dL*Math.cos(dA);
+				const aMovY = dL*Math.sin(dA);
+
+				const spriteData = this.verticeEditingSprite.data;
+				let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+
+				if(spriteData.type === this.object_BODY){
+					if(Array.isArray(vertices[0])) vertices = vertices[0]
+				}
+
+				this.verticeEditingSprite.selectedVertice.forEach(verticeIndex=> {
+					const vertice = vertices[verticeIndex];
+					let previousVertice = vertices[verticeIndex-1];
+					if(verticeIndex === 0) previousVertice = vertices[vertices.length-1];
+
+					if(spriteData.type === this.object_BODY){
+						vertice.x += aMovX / Settings.PTM;
+						vertice.y += aMovY / Settings.PTM;
+					}else{
+						vertice.x += aMovX;
+						vertice.y += aMovY;
+					}
+
+					if(vertice.point1){
+						vertice.point1.x += aMovX;
+						vertice.point1.y += aMovY;
+					}
+					if(previousVertice.point2){
+						previousVertice.point2.x += aMovX;
+						previousVertice.point2.y += aMovY;
+					}
+				});
+
+				if(spriteData.type === this.object_BODY){
+					this.updateBodyFixtures(this.verticeEditingSprite.myBody);
+					this.updateBodyShapes(this.verticeEditingSprite.myBody);
+				}else{
+					this.updateGraphicShapes(this.verticeEditingSprite);
+				}
 			}
-		} else if (e.keyCode == 37) { // left arrow
-			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-				x: this.shiftDown ? -10 : -1,
-				y: 0
-			});
-		} else if (e.keyCode == 39) { // right arrow
-			this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-				x: this.shiftDown ? 10 : 1,
-				y: 0
-			});
+
 		}
 		this.storeUndoMovementDebounced();
 	}
 	this.onKeyUp = function (e) {
 
-		if (e.keyCode == 16) { //shift
+		if (e.keyCode == 16) { // ctrl
 			this.shiftDown = false;
 			this.mouseTransformType = this.mouseTransformType_Movement;
+		}if (e.keyCode == 17) { // ctrl
+			this.ctrlDown = false;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = false;
 		} else if (e.keyCode == 18) {
@@ -4255,46 +4414,45 @@ const _B2dEditor = function () {
 			const verticeX = this.container.x + (this.verticeEditingSprite.x + vx) * this.container.scale.x - Settings.verticeBoxSize/2;
 			const verticeY = this.container.y + (this.verticeEditingSprite.y + vy) * this.container.scale.y - Settings.verticeBoxSize/2;
 
+			if(this.verticeEditingSprite.selectedVertice){
+				if(this.verticeEditingSprite.selectedVertice.includes(index)){
+					this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
 
-			if(index === this.verticeEditingSprite.selectedVertice){
+					if(vertice.point1){
 
-				this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
+						if(Math.abs(vertice.x-vertice.point1.x) * this.container.scale.x  > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) * this.container.scale.x > Settings.handleClosestDistance){
+							const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
+							const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
+							const vp1x = vp1l*Math.cos(vp1a);
+							const vp1y = vp1l*Math.sin(vp1a);
+							const verticeP1X = this.container.x + (this.verticeEditingSprite.x + vp1x) * this.container.scale.x;
+							const verticeP1Y = this.container.y + (this.verticeEditingSprite.y + vp1y) * this.container.scale.y;
 
-				if(vertice.point1){
-
-					if(Math.abs(vertice.x-vertice.point1.x) > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) > Settings.handleClosestDistance){
-						const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
-						const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
-						const vp1x = vp1l*Math.cos(vp1a);
-						const vp1y = vp1l*Math.sin(vp1a);
-						const verticeP1X = this.container.x + (this.verticeEditingSprite.x + vp1x) * this.container.scale.x;
-						const verticeP1Y = this.container.y + (this.verticeEditingSprite.y + vp1y) * this.container.scale.y;
-
-
-						this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
-						this.debugGraphics.lineTo(verticeP1X, verticeP1Y);
-
-						this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, Settings.verticeBoxSize/2);
-					}
-
-					let previousVertice = vertices[index-1];
-					if(index === 0) previousVertice = vertices[vertices.length-1];
-					if(previousVertice.point2){
-						if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
-							const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
-							const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
-							const vp2x = vp2l*Math.cos(vp2a);
-							const vp2y = vp2l*Math.sin(vp2a);
-							const verticeP2X = this.container.x + (this.verticeEditingSprite.x + vp2x) * this.container.scale.x;
-							const verticeP2Y = this.container.y + (this.verticeEditingSprite.y + vp2y) * this.container.scale.y;
 
 							this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
-							this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
-							this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
+							this.debugGraphics.lineTo(verticeP1X, verticeP1Y);
+
+							this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, Settings.verticeBoxSize/2);
+						}
+
+						let previousVertice = vertices[index-1];
+						if(index === 0) previousVertice = vertices[vertices.length-1];
+						if(previousVertice.point2){
+							if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
+								const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
+								const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
+								const vp2x = vp2l*Math.cos(vp2a);
+								const vp2y = vp2l*Math.sin(vp2a);
+								const verticeP2X = this.container.x + (this.verticeEditingSprite.x + vp2x) * this.container.scale.x;
+								const verticeP2Y = this.container.y + (this.verticeEditingSprite.y + vp2y) * this.container.scale.y;
+
+								this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
+								this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
+								this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
+							}
 						}
 					}
 				}
-
 			}
 
 			this.debugGraphics.drawRect(verticeX, verticeY, Settings.verticeBoxSize, Settings.verticeBoxSize);
