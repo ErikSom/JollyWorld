@@ -34,7 +34,6 @@ import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
 
 
-
 const nanoid = require('nanoid');
 const particles = require('pixi-particles');
 const Stats = require('stats.js');
@@ -254,12 +253,6 @@ function Game() {
         Key.onMouseDown();
         this.onMouseMove(e);
         if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onMouseDown(e);
-
-        const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.editor.mousePosWorld);
-        EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:20*10, point:pixiPoint});
-        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:100/200});
-
-
     };
 
     this.onMouseUp = function (e) {
