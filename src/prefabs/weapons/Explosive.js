@@ -44,7 +44,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		getBodies.clean();
 		this.explodeTarget.GetWorld().QueryAABB(getBodies, aabb);
 
-		getBodies.bodies.forEach(body=>{
+		[...getBodies.bodies].forEach(body=>{
 
 			rayCallback.m_hit = false;
 			this.explodeTarget.GetWorld().RayCast(rayCallback, rayStartPosition, body.GetPosition());
@@ -70,7 +70,10 @@ export class Explosive extends PrefabManager.basePrefab {
 					}
 
 					if (powerRate > .2 && body.mySprite && body.mySprite.data.prefabInstanceName) {
+
+
 						const tarPrefab = game.editor.activePrefabs[body.mySprite.data.prefabInstanceName].class;
+
 						if(tarPrefab.isExplosive){
 							tarPrefab.explode();
 						}
