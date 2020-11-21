@@ -22,8 +22,9 @@ export const addEffect = (type, props) =>{
 	let effect = null;
 	switch(type){
 		case effectTypes.shockWave:
-			props.follow = game.editor.container
-			const shockFilter = new PIXIFILTERS.ShockwaveFilter([props.x, props.y], {
+			props.follow = game.editor.container;
+			props.point = game.editor.container.toGlobal(props.point);
+			const shockFilter = new PIXIFILTERS.ShockwaveFilter([props.point.x, props.point.y], {
 				amplitude: 20,
 				wavelength: 351,
 				brightness: 1,
@@ -41,6 +42,7 @@ export const removeEffect = effect =>{
 	for(let i = 0; i<currentEffects.length; i++){
 		if(currentEffects[i] === effect){
 			currentEffects.splice(i, 1);
+			effect.remove(effect.filter);
 			break;
 		}
 	}
@@ -83,12 +85,13 @@ class PixiEffect extends BaseEffect{
 					this.oldFollowX = this.props.follow.x;
 					this.oldFollowY = this.props.follow.y;
 				}
-				this.props.x -= this.oldFollowX-this.props.follow.x;
-				this.props.y -= this.oldFollowY-this.props.follow.y;
+				this.props.point.x -= this.oldFollowX-this.props.follow.x;
+				this.props.point.y -= this.oldFollowY-this.props.follow.y;
 				this.oldFollowX = this.props.follow.x;
 				this.oldFollowY = this.props.follow.y;
-				this.filter.center.x = this.props.x;
-				this.filter.center.y = this.props.y;
+
+				this.filter.center.x = this.props.point.x;
+				this.filter.center.y = this.props.point.y;
 				const scale = this.props.follow.scale.x;
 				this.filter.radius = this.props.radius*scale;
 				this.filter.wavelength = 351*scale;

@@ -2038,6 +2038,7 @@ const _B2dEditor = function () {
 
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 
+
 				var aabb = new b2AABB;
 				aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
 				aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);

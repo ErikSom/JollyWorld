@@ -34,30 +34,39 @@ export class Explosive extends PrefabManager.basePrefab {
 	explode(){
 		if(this.exploded) return;
 		this.exploded = true;
-		let rayStartPosition = this.explodeTarget.GetPosition();
-		let angleInc = (Math.PI*2)/this.explosiveRays;
+
+		const aabb = new Box2D.b2AABB();
+		const rayStartPosition = this.explodeTarget.GetPosition();
 		const radius = this.explosiveRadius/Settings.PTM;
+		aabb.lowerBound.Set(rayStartPosition.x-radius, rayStartPosition.y-radius);
+		aabb.upperBound.Set(rayStartPosition.x+radius, rayStartPosition.y+radius);
 
-		for(let i = 0; i<this.explosiveRays; i++){
-			const angle = angleInc*i;
-			const cosA = Math.cos(angle);
-			const sinA = Math.sin(angle);
-			const extentX = radius*cosA;
-			const extentY = radius*sinA;
-			let rayEndPosition = new Box2D.b2Vec2(rayStartPosition.x + extentX, rayStartPosition.y + extentY);
+		getBodies.clean();
+		this.explodeTarget.GetWorld().QueryAABB(getBodies, aabb);
 
-			var callback = new Explosive.RaycastCallbackExplosive();
-			this.explodeTarget.GetWorld().RayCast(callback, rayStartPosition, rayEndPosition);
-			if (callback.m_hit) {
-				const power = (1-callback.m_fraction)*this.explosivePower;
-				const force = new Box2D.b2Vec2(power*cosA, power*sinA);
-				const body = callback.m_fixture.GetBody();
-				if(body != this.explodeTarget){
-					body.ApplyForce(force, callback.m_point);
+		getBodies.bodies.forEach(body=>{
+
+			rayCallback.m_hit = false;
+			this.explodeTarget.GetWorld().RayCast(rayCallback, rayStartPosition, body.GetPosition());
+
+			if (!rayCallback.m_hit) {
+
+				rayCallback.target = body;
+				this.explodeTarget.GetWorld().RayCast(rayCallback, rayStartPosition, body.GetPosition());
+
+				const diff = rayStartPosition.Clone().SelfSub(body.GetPosition());
+				diff.SelfNormalize();
+
+				const power = (1-rayCallback.m_fraction)*this.explosivePower*5;
+				const force = new Box2D.b2Vec2(power*-diff.x, power*-diff.y);
+
+				if(rayCallback.m_point){
+
+					body.ApplyForce(force, rayCallback.m_point);
 					const powerRate = power/this.explosivePower;
 
 					if(body.isFlesh){
-						self.editor.addDecalToBody(body, callback.m_point, "skorch.png", true, powerRate*2.5, angle, {burn:powerRate*.6});
+						self.editor.addDecalToBody(body, rayCallback.m_point, "skorch.png", true, powerRate*5, Math.atan2(diff.y, diff.x), {burn:powerRate*.6});
 					}
 
 					if (powerRate > .2 && body.mySprite && body.mySprite.data.prefabInstanceName) {
@@ -65,16 +74,23 @@ export class Explosive extends PrefabManager.basePrefab {
 						if(tarPrefab.isExplosive){
 							tarPrefab.explode();
 						}
+
+						const bodyClass = game.editor.retrieveSubClassFromBody(body);
+						if(bodyClass && bodyClass.dealDamage){
+							const slidingPowerScalar = 50;
+							bodyClass.dealDamage(power/slidingPowerScalar);
+						}
+
 					}
-
-
 				}
+
 			}
-		}
-		EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:this.explosiveRadius, x:this.explodeTarget.GetPosition().x*Settings.PTM, y:this.explodeTarget.GetPosition().y*Settings.PTM});
+
+		})
+
+        const pixiPoint = game.editor.getPIXIPointFromWorldPoint(rayStartPosition);
+		EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:this.explosiveRadius*10, point:pixiPoint});
         EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.explosivePower/200});
-
-
 
 	}
     update(){
@@ -162,19 +178,33 @@ Explosive.settingsOptions = Object.assign({}, Explosive.settingsOptions, {
 });
 
 Explosive.RaycastCallbackExplosive = function () {
+	this.target = null;
+	this.m_fraction = 0;
+	this.m_point = null;
 	this.m_hit = false;
 }
-Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-	if(fixture.GetBody() && fixture.GetBody().isFlesh){
-		 if(fixture.GetBody().myTexture.data.textureName.indexOf('head') >= 0){
-			 console.log(fixture.GetType(), Box2D.b2BodyType.b2_staticBody, fixture.IsSensor(), "<----");
-		 };
+Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture,	point, normal, fraction) {
+	const body = fixture.GetBody();
+	if(!this.target){
+		if(body.GetType() !== Box2D.b2BodyType.b2_staticBody) return -1;
+		if (fixture.IsSensor()) return -1;
+	}else{
+		if(body !== this.target) return -1;
+		this.target = null;
 	}
-	if (fixture.IsSensor()) return -1;
 	this.m_hit = true;
-	this.m_point = point.Clone();
-	this.m_normal = normal;
-	this.m_fixture = fixture;
+	this.m_point = point;
 	this.m_fraction = fraction;
-	return fraction;
 };
+
+const getBodies = new function () {
+	this.bodies = [];
+	this.ReportFixture = function(fixture){
+		this.bodies.push(fixture.GetBody());
+		return true;
+	};
+	this.clean = function(){
+		this.bodies.length = 0;
+	}
+};
+const rayCallback = new Explosive.RaycastCallbackExplosive();

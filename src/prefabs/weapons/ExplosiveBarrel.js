@@ -15,8 +15,8 @@ class ExplosiveBarrel extends Explosive {
         super(target);
     }
     init() {
-		this.explosiveRadius = 600;
 		super.init();
+		this.explosiveRadius = 600;
 		this.activateOn = Explosive.activateOnTypes.impact;
 		this.explodeDelay = 0;
 		this.impactForExplosion = 270;

@@ -119,9 +119,9 @@ function Game() {
 
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
-        this.app.renderer.plugins.interaction.removeEvents();
-        PIXI.ticker.shared.stop();
-        this.stage.interactiveChildren=false;
+        // this.app.renderer.plugins.interaction.removeEvents();
+        // PIXI.ticker.shared.stop();
+        // this.stage.interactiveChildren=false;
 
         LoadCoreAssets(PIXI.loader);
 
@@ -254,6 +254,12 @@ function Game() {
         Key.onMouseDown();
         this.onMouseMove(e);
         if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onMouseDown(e);
+
+        const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.editor.mousePosWorld);
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:20*10, point:pixiPoint});
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:100/200});
+
+
     };
 
     this.onMouseUp = function (e) {
@@ -541,7 +547,7 @@ function Game() {
     }
     this.newLevel = function () {
         let data = {
-            json: '{"objects":[[4,0,0,0,{"playableCharacter":false,"selectedVehicle":"Bike"},"Bike",0]],"settings":[10,0,10]}',
+            json: '{"objects":[[4,0,0,0,{"playableCharacter":false,"selectedVehicle":"Bike","life":300},"Bike",0]],"settings":[10,0,10]}',
             title: '',
             description: '',
             crossPromos: [],
