@@ -6274,7 +6274,7 @@ const _B2dEditor = function () {
 		return null;
 	}
 	this.retrieveSubClassFromBody = function (body) {
-		if(this.activePrefabs[body.mySprite.data.subPrefabInstanceName]){
+		if(body.mySprite && this.activePrefabs[body.mySprite.data.subPrefabInstanceName]){
 			return this.activePrefabs[body.mySprite.data.subPrefabInstanceName].class
 		}
 		return null;
