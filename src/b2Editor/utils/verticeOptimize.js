@@ -83,8 +83,8 @@ export const combineShapes = sprites => {
 
 
                 let localVertice = vertice;
-                let localPoint1 = vertice.point1 || new paper.Point(0, 0);
-                let localPoint2 = previousVertice.point2 || new paper.Point(0, 0);
+                let localPoint1 = vertice.point1;
+                let localPoint2 = previousVertice.point2;
 
                 if(i > 0){
                     // let globalPos = sprite.toGlobal(localVertice);
