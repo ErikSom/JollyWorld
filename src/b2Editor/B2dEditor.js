@@ -873,24 +873,26 @@ const _B2dEditor = function () {
 					}
 				})(controller)
 
-				ui.editorGUI.editData.merge = function () {};
-				const label = "Merge Graphics";
-				controller = targetFolder.add(ui.editorGUI.editData, "merge").name(label);
-				ui.editorGUI.editData.merge = (function (_c) {
-					return function () {
-						const combinedVerticesData = verticeOptimize.combineShapes(self.selectedTextures);
+				if(this.selectedTextures.length>1){
+					ui.editorGUI.editData.merge = function () {};
+					const label = "Merge Graphics";
+					controller = targetFolder.add(ui.editorGUI.editData, "merge").name(label);
+					ui.editorGUI.editData.merge = (function (_c) {
+						return function () {
+							const combinedVerticesData = verticeOptimize.combineShapes(self.selectedTextures);
 
-						const objectsToDelete = combinedVerticesData.merged.map(i=>self.selectedTextures[i]);
-						self.selectedTextures = self.selectedTextures.filter((texture, i) => !combinedVerticesData.merged.includes(i));
-						self.deleteObjects(objectsToDelete);
+							const objectsToDelete = combinedVerticesData.merged.map(i=>self.selectedTextures[i]);
+							self.selectedTextures = self.selectedTextures.filter((texture, i) => !combinedVerticesData.merged.includes(i));
+							self.deleteObjects(objectsToDelete);
 
-						if(combinedVerticesData.merged.length>0){
-							const combinedSprite = self.selectedTextures[0];
-							combinedSprite.data.vertices = combinedVerticesData.vertices;
-							self.updateGraphicShapes(combinedSprite);
+							if(combinedVerticesData.merged.length>0){
+								const combinedSprite = self.selectedTextures[0];
+								combinedSprite.data.vertices = combinedVerticesData.vertices;
+								self.updateGraphicShapes(combinedSprite);
+							}
 						}
-					}
-				})(controller)
+					})(controller)
+				}
 
 				break;
 			case case_JUST_GRAPHICGROUPS:
@@ -2100,12 +2102,12 @@ const _B2dEditor = function () {
 						let i;
 						for (i = 0; i < oldSelectedPhysicsBodies.length; i++) {
 							if (oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]) {
-								this.selectedPhysicsBodies.push(oldSelectedPhysicsBodies[i]);
+								this.selectedPhysicsBodies.unshift(oldSelectedPhysicsBodies[i]);
 							}
 						}
 						for (i = 0; i < oldSelectedTextures.length; i++) {
 							if (oldSelectedTextures[i] != this.selectedTextures[0]) {
-								this.selectedTextures.push(oldSelectedTextures[i]);
+								this.selectedTextures.unshift(oldSelectedTextures[i]);
 							}
 						}
 						for (var key in oldSelectedPrefabs) {

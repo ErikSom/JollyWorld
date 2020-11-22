@@ -68,11 +68,11 @@ export const combineShapes = sprites => {
 
     const succesfullyMerged = [];
 
+    const referenceSprite = sprites[0];
+
     sprites.forEach((sprite, i) => {
         let path = new paper.Path();
         let vertices = [...sprite.data.vertices];
-        let offsetX = i === 0 ? 0 : sprite.x-sprites[0].x;
-        let offsetY = i === 0 ? 0 : sprite.y-sprites[0].y;
 
         vertices.reverse();
         vertices.forEach((vertice, j) => {
@@ -80,22 +80,42 @@ export const combineShapes = sprites => {
             if (vertices.length > 1) {
                 let previousVertice = vertices[j + 1];
                 if (j === vertices.length - 1) previousVertice = vertices[0];
-                const pos = new paper.Point(vertice.x+offsetX, vertice.y+offsetY);
+
+
+                let localVertice = vertice;
+                let localPoint1 = vertice.point1 || new paper.Point(0, 0);
+                let localPoint2 = previousVertice.point2 || new paper.Point(0, 0);
+
+                if(i > 0){
+                    // let globalPos = sprite.toGlobal(localVertice);
+                    localVertice = referenceSprite.toLocal(localVertice, sprite);
+
+                    if(localPoint1){
+                        // globalPos = sprite.toGlobal(localPoint1);
+                        localPoint1 = referenceSprite.toLocal(localPoint1, sprite);
+                    }
+                    if(localPoint2){
+                        // globalPos = sprite.toGlobal(localPoint2);
+                        localPoint2 = referenceSprite.toLocal(localPoint2, sprite);
+                    }
+                }
+
+                const pos = new paper.Point(localVertice.x, localVertice.y);
 
                 let p1 = new paper.Point(0, 0);
-                if(vertice.point1){
-                    p1 = new paper.Point(vertice.point1.x - vertice.x, vertice.point1.y - vertice.y);
+                if(localPoint1){
+                    p1 = new paper.Point(localPoint1.x - localVertice.x, localPoint1.y - localVertice.y);
                 }
                 let p2 = new paper.Point(0, 0);
-                if(previousVertice.point2){
-                    p2 = new paper.Point(previousVertice.point2.x - vertice.x, previousVertice.point2.y - vertice.y);
+                if(localPoint2){
+                    p2 = new paper.Point(localPoint2.x - localVertice.x, localPoint2.y - localVertice.y);
                 }
 
                 const segment = new paper.Segment(pos, p1, p2);
                 path.segments.push(segment)
                 path.closePath();
             } else {
-                path = new paper.Path.Circle(new paper.Point(vertice.x+offsetX, vertice.y+offsetY), sprite.radius);
+                path = new paper.Path.Circle(new paper.Point(localVertice.x, localVertice.y), sprite.radius);
             }
         });
 
