@@ -13,6 +13,7 @@ class PhysicsParticle extends PrefabManager.basePrefab {
         this.lifeTimer = 0;
         this.particleSize = 0
         this.texture = 'Gore_Meat1';
+        this.isParticle = true;
     }
     init() {
         super.init();

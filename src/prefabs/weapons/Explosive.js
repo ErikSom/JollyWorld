@@ -203,7 +203,14 @@ Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture,	
 const getBodies = new function () {
 	this.bodies = [];
 	this.ReportFixture = function(fixture){
-		this.bodies.push(fixture.GetBody());
+		const body = fixture.GetBody();
+		const bodyClass = game.editor.retrieveClassFromBody(body);
+		let ignore = false;
+		if(bodyClass){
+			if(bodyClass.isExplosive && bodyClass.exploded) ignore = true;
+			if(bodyClass.isParticle) ignore = true;
+		}
+		if(!ignore) this.bodies.push(body);
 		return true;
 	};
 	this.clean = function(){

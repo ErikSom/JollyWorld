@@ -873,6 +873,25 @@ const _B2dEditor = function () {
 					}
 				})(controller)
 
+				ui.editorGUI.editData.merge = function () {};
+				const label = "Merge Graphics";
+				controller = targetFolder.add(ui.editorGUI.editData, "merge").name(label);
+				ui.editorGUI.editData.merge = (function (_c) {
+					return function () {
+						const combinedVerticesData = verticeOptimize.combineShapes(self.selectedTextures);
+
+						const objectsToDelete = combinedVerticesData.merged.map(i=>self.selectedTextures[i]);
+						self.selectedTextures = self.selectedTextures.filter((texture, i) => !combinedVerticesData.merged.includes(i));
+						self.deleteObjects(objectsToDelete);
+
+						if(combinedVerticesData.merged.length>0){
+							const combinedSprite = self.selectedTextures[0];
+							combinedSprite.data.vertices = combinedVerticesData.vertices;
+							self.updateGraphicShapes(combinedSprite);
+						}
+					}
+				})(controller)
+
 				break;
 			case case_JUST_GRAPHICGROUPS:
 				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
@@ -2097,6 +2116,8 @@ const _B2dEditor = function () {
 
 					}
 
+					console.log('SELECTED GRAPHICS', this.selectedTextures[0]);
+
 					this.updateSelection();
 				}else if(clickInsideSelection && Date.now() < this.doubleClickTime){
 
@@ -3194,11 +3215,13 @@ const _B2dEditor = function () {
 				}
 			}
 			this.deleteSelection();
-		} else if (e.keyCode == 16) { // ctrl
+		} else if (e.keyCode == 16) { // shift
 			this.shiftDown = true;
+			e.preventDefault();
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
 		}else if (e.keyCode == 17) { // ctrl
 			this.ctrlDown = true;
+			e.preventDefault();
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = true;
@@ -3237,10 +3260,14 @@ const _B2dEditor = function () {
 				movY *= 10;
 			}
 			if(this.selectedTool === this.tool_SELECT){
-				this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
-					x: movX,
-					y: movY
-				});
+				if ((e.ctrlKey || e.metaKey) && (e.keyCode === 38 || e.keyCode === 40)) {
+					this.applyToSelectedObjects(this.TRANSFORM_DEPTH, e.keyCode === 38);
+				}else{
+					this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
+						x: movX,
+						y: movY
+					});
+				}
 			}else if (this.selectedTool === this.tool_VERTICEEDITING){
 		
 				const dA = Math.atan2(movY, movX)-this.verticeEditingSprite.rotation;
@@ -6268,7 +6295,7 @@ const _B2dEditor = function () {
 		return this.retrieveClassFromBody(prefabLookup._bodies[0]);
 	}
 	this.retrieveClassFromBody = function(body){
-		if(this.activePrefabs[body.mySprite.data.prefabInstanceName]){
+		if(body.mySprite && this.activePrefabs[body.mySprite.data.prefabInstanceName]){
 			return this.activePrefabs[body.mySprite.data.prefabInstanceName].class
 		}
 		return null;
