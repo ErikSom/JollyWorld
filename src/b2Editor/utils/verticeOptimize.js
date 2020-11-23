@@ -77,48 +77,46 @@ export const combineShapes = sprites => {
         vertices.reverse();
         vertices.forEach((vertice, j) => {
 
-            if (vertices.length > 1) {
-                let previousVertice = vertices[j + 1];
-                if (j === vertices.length - 1) previousVertice = vertices[0];
+            let previousVertice = vertices[j + 1];
+            if (j === vertices.length - 1) previousVertice = vertices[0];
 
 
-                let localVertice = vertice;
-                let localPoint1 = vertice.point1;
-                let localPoint2 = previousVertice.point2;
+            let localVertice = vertice;
+            let localPoint1 = vertice.point1;
+            let localPoint2 = previousVertice.point2;
 
-                if(i > 0){
-                    // let globalPos = sprite.toGlobal(localVertice);
-                    localVertice = referenceSprite.toLocal(localVertice, sprite);
+            if(i > 0){
+                // let globalPos = sprite.toGlobal(localVertice);
+                localVertice = referenceSprite.toLocal(localVertice, sprite);
 
-                    if(localPoint1){
-                        // globalPos = sprite.toGlobal(localPoint1);
-                        localPoint1 = referenceSprite.toLocal(localPoint1, sprite);
-                    }
-                    if(localPoint2){
-                        // globalPos = sprite.toGlobal(localPoint2);
-                        localPoint2 = referenceSprite.toLocal(localPoint2, sprite);
-                    }
-                }
-
-                const pos = new paper.Point(localVertice.x, localVertice.y);
-
-                let p1 = new paper.Point(0, 0);
                 if(localPoint1){
-                    p1 = new paper.Point(localPoint1.x - localVertice.x, localPoint1.y - localVertice.y);
+                    // globalPos = sprite.toGlobal(localPoint1);
+                    localPoint1 = referenceSprite.toLocal(localPoint1, sprite);
                 }
-                let p2 = new paper.Point(0, 0);
                 if(localPoint2){
-                    p2 = new paper.Point(localPoint2.x - localVertice.x, localPoint2.y - localVertice.y);
+                    // globalPos = sprite.toGlobal(localPoint2);
+                    localPoint2 = referenceSprite.toLocal(localPoint2, sprite);
                 }
+            }
 
+            const pos = new paper.Point(localVertice.x, localVertice.y);
+
+            let p1 = new paper.Point(0, 0);
+            if(localPoint1){
+                p1 = new paper.Point(localPoint1.x - localVertice.x, localPoint1.y - localVertice.y);
+            }
+            let p2 = new paper.Point(0, 0);
+            if(localPoint2){
+                p2 = new paper.Point(localPoint2.x - localVertice.x, localPoint2.y - localVertice.y);
+            }
+            if(sprite.data.radius){
+                if(j === 0) path = new paper.Path.Circle(new paper.Point(localVertice.x, localVertice.y), sprite.data.radius);
+            }else{
                 const segment = new paper.Segment(pos, p1, p2);
                 path.segments.push(segment)
                 path.closePath();
-            } else {
-                path = new paper.Path.Circle(new paper.Point(localVertice.x, localVertice.y), sprite.radius);
             }
         });
-
 
         if (i === 0) combinedPath = path;
         else {

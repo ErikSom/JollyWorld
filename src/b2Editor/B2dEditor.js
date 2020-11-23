@@ -888,6 +888,7 @@ const _B2dEditor = function () {
 							if(combinedVerticesData.merged.length>0){
 								const combinedSprite = self.selectedTextures[0];
 								combinedSprite.data.vertices = combinedVerticesData.vertices;
+								delete combinedSprite.data.radius;
 								self.updateGraphicShapes(combinedSprite);
 							}
 						}
@@ -1080,6 +1081,19 @@ const _B2dEditor = function () {
 				}
 			}
 		}
+
+		if(currentCase == case_JUST_GRAPHICS || currentCase == case_JUST_BODIES || currentCase == case_JUST_GRAPHICGROUPS){
+			ui.editorGUI.editData.mirrorX = () => {
+				self.applyToSelectedObjects(this.TRANSFORM_MIRROR, true);
+			};
+			controller = targetFolder.add(ui.editorGUI.editData, "mirrorX").name('Mirror X');
+
+			ui.editorGUI.editData.mirrorY = () => {
+				self.applyToSelectedObjects(this.TRANSFORM_MIRROR, false);
+			};
+			controller = targetFolder.add(ui.editorGUI.editData, "mirrorY").name('Mirror Y');
+		}
+
 		if(this.selectedPhysicsBodies.length === 0 && this.selectedTextures.length > 1){
 			if(!hasAnimation){
 				ui.editorGUI.editData.animateObjects = () => {
@@ -2761,7 +2775,7 @@ const _B2dEditor = function () {
 				//TODO FIX THIS MESS, very likely due to mytexture being pushed in, setting the i to a higher number and results in an index > children
 				//Temp fix with Math.min()
 			}
-		} else if(transformType == this.TRANSFORM_SCALE){
+		} else if(transformType === this.TRANSFORM_SCALE){
 			const {scaleX, scaleY} = obj;
 
 			let centerPoint = {
@@ -2807,6 +2821,63 @@ const _B2dEditor = function () {
 					this.setScale(sprite, scaleX, scaleY);
 				}
 			}
+		}else if(transformType === this.TRANSFORM_MIRROR){
+			let vertices = null;
+
+			for (i = 0; i < objects.length; i++) {
+				let object = objects[i];
+
+				let data = null;
+				if (object.mySprite != undefined) {
+					data = object.mySprite.data;
+
+					if(object.myTexture){
+
+						let x = 1*Math.cos(object.myTexture.data.texturePositionOffsetAngle);
+						let y = 1*Math.sin(object.myTexture.data.texturePositionOffsetAngle);
+						if(obj) x *= -1;
+						else y *= -1;
+						object.myTexture.data.texturePositionOffsetAngle = Math.atan2(y, x);
+
+						if([this.object_GRAPHICGROUP, this.object_GRAPHIC].includes(object.myTexture.data.type)) objects.push(object.myTexture);
+					}
+				} else {
+					data = object.data;
+				}
+
+				if([this.object_GRAPHIC, this.object_BODY].includes(data.type)){
+
+					vertices = data.vertices.flat(4);
+
+					vertices.forEach(vertice => {
+						if(obj) vertice.x *= -1;
+						else vertice.y *= -1;
+					})
+
+					if (object.mySprite != undefined) {
+						this.updateBodyFixtures(object);
+						this.updateBodyShapes(object)
+					}else{
+						this.updateGraphicShapes(object);
+					}
+				}
+
+				if([this.object_GRAPHICGROUP].includes(data.type)){
+					data.graphicObjects = data.graphicObjects.map(graphicObjectString=>{
+						const graphicObject = this.parseArrObject(JSON.parse(graphicObjectString));
+						graphicObject.vertices.forEach(vertice=>{
+							if(obj) vertice.x *= -1;
+							else vertice.y *= -1;
+						})
+						if(obj) graphicObject.x *= -1;
+						else graphicObject.y *= -1;
+						return this.stringifyObject(graphicObject);
+					})
+					this.updateGraphicGroupShapes(object);
+				}
+
+			}
+
 		}
 		//update all objects
 		if (this.editing) {
@@ -2842,6 +2913,7 @@ const _B2dEditor = function () {
 	this.TRANSFORM_FORCEDEPTH = "forcedepth";
 	this.TRANSFORM_UPDATE = "update";
 	this.TRANSFORM_SCALE = "scale";
+	this.TRANSFORM_MIRROR = "mirror";
 
 	this.storeUndoMovement = function () {
 		if(!this.editing) return;
@@ -2925,36 +2997,63 @@ const _B2dEditor = function () {
 					this.updateSelection();
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
-				let bodyObject;
-				if (ui.editorGUI.editData.shape == "Circle") {
-					var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
-					if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
-						bodyObject = new this.bodyObject;
-						bodyObject.x = this.startSelectionPoint.x;
-						bodyObject.y = this.startSelectionPoint.y;
+				if(ui.editorGUI.editData.isPhysicsObject){
+					let bodyObject;
+					if (ui.editorGUI.editData.shape == "Circle") {
+						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
+						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
+							bodyObject = new this.bodyObject;
+							bodyObject.x = this.startSelectionPoint.x;
+							bodyObject.y = this.startSelectionPoint.y;
 
 
-						bodyObject.colorFill = ui.editorGUI.editData.colorFill;
-						bodyObject.colorLine = ui.editorGUI.editData.colorLine;
-						bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
-						bodyObject.transparancy = ui.editorGUI.editData.transparancy;
+							bodyObject.colorFill = ui.editorGUI.editData.colorFill;
+							bodyObject.colorLine = ui.editorGUI.editData.colorLine;
+							bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
+							bodyObject.transparancy = ui.editorGUI.editData.transparancy;
 
-						bodyObject.radius = radius;
-						this.buildBodyFromObj(bodyObject);
+							bodyObject.radius = radius;
+							this.buildBodyFromObj(bodyObject);
+						}
+					} else {
+						bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
+						if (bodyObject) {
+							bodyObject.colorFill = ui.editorGUI.editData.colorFill;
+							bodyObject.colorLine = ui.editorGUI.editData.colorLine;
+							bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
+							bodyObject.transparancy = ui.editorGUI.editData.transparancy;
+							this.buildBodyFromObj(bodyObject);
+						}
 					}
-				} else {
-					bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
-					if (bodyObject) {
-						bodyObject.colorFill = ui.editorGUI.editData.colorFill;
-						bodyObject.colorLine = ui.editorGUI.editData.colorLine;
-						bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
-						bodyObject.transparancy = ui.editorGUI.editData.transparancy;
-						this.buildBodyFromObj(bodyObject);
-					}
-				}
+				}else{
+					let graphicObject;
+					if (ui.editorGUI.editData.shape == "Circle") {
+						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
+						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
+							graphicObject = new this.graphicObject;
+							graphicObject.x = this.startSelectionPoint.x*Settings.PTM;
+							graphicObject.y = this.startSelectionPoint.y*Settings.PTM;
 
-				if (ui.editorGUI.editData.isPhysicsObject) {
-					//convert body to graphic
+
+							graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+							graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+							graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
+							graphicObject.transparancy = ui.editorGUI.editData.transparancy;
+
+							graphicObject.radius = radius;
+							this.buildGraphicFromObj(graphicObject);
+						}
+					}else{
+						// this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
+						graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+						if (graphicObject) {
+							graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+							graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+							graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
+							graphicObject.transparancy = ui.editorGUI.editData.transparancy;
+							this.buildGraphicFromObj(graphicObject);
+						}
+					}
 
 				}
 			} else if (this.selectedTool == this.tool_ART) {
@@ -3447,8 +3546,13 @@ const _B2dEditor = function () {
 					const screenPosition = this.container.toGlobal(lowerBoundPixi);
 					let containsPoint = false;
 					graphic.children.forEach(child=>{
-						if(child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
+						if(child.containsPoint && child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
 							containsPoint = true;
+						}else{
+							let innerChild = child.children[0];
+							if(innerChild && innerChild.containsPoint && innerChild.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
+								containsPoint = true;
+							}
 						}
 					})
 					if(!containsPoint){
