@@ -139,6 +139,7 @@ function Game() {
 
     this.setup = function () {
 
+
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
         );
@@ -230,6 +231,29 @@ function Game() {
 
 
         PIXICuller.init(this.editor.textures);
+
+        // SITELOCK
+        (function checkInit() {
+            const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA=='];
+            // localhost, .poki.com, .poki-gdn.com
+        
+            let allowed = false;
+            const liveHost = window.location.hostname;
+        
+            for (let i = 0; i < hosts.length; i++) {
+                const host = atob(hosts[i]);
+                if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
+                    allowed = true;
+                    break;
+                }
+            }
+            if (!allowed) {
+                const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
+                const url = atob(targetURL);
+                window.location.href = url;
+                window.top.location !== window.location && (window.top.location = window.location);
+            }
+        }());
     }
 
 
