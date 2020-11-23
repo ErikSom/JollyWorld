@@ -12,6 +12,7 @@ import {
 import {
     game
 } from "../../Game";
+import { editorSettings } from "../utils/editorSettings";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -195,14 +196,14 @@ export const actionDictionary = {
         },
         X: {
             type: guitype_MINMAX,
-            min: -1000,
-            max: 1000,
+            min: -editorSettings.worldSize.width,
+            max: editorSettings.worldSize.width,
             step: 0.1,
         },
         Y: {
             type: guitype_MINMAX,
-            min: -1000,
-            max: 1000,
+            min: -editorSettings.worldSize.width,
+            max: editorSettings.worldSize.width,
             step: 0.1
         },
     },
