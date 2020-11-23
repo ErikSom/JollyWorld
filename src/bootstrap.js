@@ -17,3 +17,4 @@ import 'Game.js'
 
 import 'css/B2dEditor.css'
 import 'css/dat-gui-light-theme.css'
+import 'css/tooltip.css'

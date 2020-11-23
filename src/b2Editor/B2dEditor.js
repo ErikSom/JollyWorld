@@ -2337,7 +2337,6 @@ const _B2dEditor = function () {
 	}
 	this.onMouseMove = function (evt) {
 		this.updateMousePosition(evt);
-
 		if (this.oldMousePosWorld == null) this.oldMousePosWorld = this.mousePosWorld;
 
 		if (this.editing) {
@@ -2503,6 +2502,11 @@ const _B2dEditor = function () {
 		this.oldMousePosWorld = this.mousePosWorld;
 	}
 	this.onDocumentMouseMove = function(e){
+
+
+		// TODO, TOOLTIP: console.log('check:', document.elementsFromPoint(e.pageX, e.pageY));
+
+
 		this.mouseDocumentPosPixel.x = e.clientX;
 		this.mouseDocumentPosPixel.y = e.clientY;
 	}
@@ -3859,8 +3863,8 @@ const _B2dEditor = function () {
 						let targetWidth = currentSize.width;
 						let targetHeight = currentSize.height;
 
-						if (controller.property == "width") targetWidth = controller.targetValue;
-						else targetHeight = controller.targetValue;
+						if (controller.property == "width") targetWidth = Math.max(1, Math.abs(controller.targetValue));
+						else targetHeight = Math.max(1, Math.abs(controller.targetValue));
 
 						const scaleX = targetWidth / currentSize.width;
 						const scaleY = targetHeight / currentSize.height;
@@ -6572,6 +6576,7 @@ const _B2dEditor = function () {
 			y: 0
 		}, target.data.colorFill, target.data.colorLine, target.data.transparancy);
 		else this.updatePolyGraphic(target.originalGraphic, target.data.vertices, target.data.colorFill, target.data.colorLine, target.data.transparancy);
+		if (target.data.tileTexture != "") this.updateTileSprite(target, true);
 
 	}
 	this.updateTileSprite = function (target, forceNew = false) {

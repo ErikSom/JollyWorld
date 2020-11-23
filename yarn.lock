@@ -8377,11 +8377,6 @@ toidentifier@1.0.0:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
 
-tooltipster@^4.2.6:
-  version "4.2.8"
-  resolved "https://registry.yarnpkg.com/tooltipster/-/tooltipster-4.2.8.tgz#ad1970dd71ad853034e64e3fdd1745f7f3485071"
-  integrity sha512-Znmbt5UMzaiFCRlVaRtfRZYQqxrmNlj1+3xX/aT0OiA3xkQZhXYGbLJmZPigx0YiReYZpO7Lm2XKbUxXsiU/pg==
-
 tough-cookie@~2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.5.0.tgz#cd9fb2a0aa1d5a12b473bd9fb96fa3dcff65ade2"

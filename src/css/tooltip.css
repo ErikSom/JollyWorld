@@ -1,0 +1,11 @@
+.tooltip::after{
+    content: '';
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 50px;
+    left: 0;
+    background-color: black;
+    z-index: 9999;
+    transform: translate(0, -100%);
+}
