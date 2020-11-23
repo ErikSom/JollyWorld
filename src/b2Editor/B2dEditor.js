@@ -2852,6 +2852,15 @@ const _B2dEditor = function () {
 					vertices.forEach(vertice => {
 						if(obj) vertice.x *= -1;
 						else vertice.y *= -1;
+
+						if(vertice.point1){
+							if(obj) vertice.point1.x *= -1;
+							else vertice.point1.y *= -1;
+						}
+						if(vertice.point2){
+							if(obj) vertice.point2.x *= -1;
+							else vertice.point2.y *= -1;
+						}
 					})
 
 					if (object.mySprite != undefined) {
@@ -2868,6 +2877,15 @@ const _B2dEditor = function () {
 						graphicObject.vertices.forEach(vertice=>{
 							if(obj) vertice.x *= -1;
 							else vertice.y *= -1;
+
+							if(vertice.point1){
+								if(obj) vertice.point1.x *= -1;
+								else vertice.point1.y *= -1;
+							}
+							if(vertice.point2){
+								if(obj) vertice.point2.x *= -1;
+								else vertice.point2.y *= -1;
+							}
 						})
 						if(obj) graphicObject.x *= -1;
 						else graphicObject.y *= -1;
