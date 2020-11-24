@@ -2080,13 +2080,13 @@ const _B2dEditor = function () {
 
 				const clickInsideSelection = this.selectedBoundingBox.Contains(aabb);
 
-				if (!clickInsideSelection || this.shiftDown) {
+				if (!clickInsideSelection || this.shiftDown || this.ctrlDown) {
 					//reset selectionie
 					let oldSelectedPhysicsBodies = [];
 					let oldSelectedTextures = [];
 					let oldSelectedPrefabs = {};
 
-					if (this.shiftDown) {
+					if (this.shiftDown || this.ctrlDown) {
 						oldSelectedPhysicsBodies = this.selectedPhysicsBodies;
 						oldSelectedTextures = this.selectedTextures;
 						oldSelectedPrefabs = JSON.parse(JSON.stringify(this.selectedPrefabs));
@@ -2129,11 +2129,13 @@ const _B2dEditor = function () {
 								this.selectedPrefabs[key] = true;
 							}
 						}
-
+					}else if(this.ctrlDown){
+						// filter selected object
+						this.selectedPhysicsBodies = oldSelectedPhysicsBodies.filter(body=>!this.selectedPhysicsBodies.includes(body));
+						this.selectedTextures = oldSelectedTextures.filter(texture=>!this.selectedTextures.includes(texture));
+						Object.keys(this.selectedPrefabs).forEach(key=>delete oldSelectedPrefabs[key]);
+						this.selectedPrefabs = oldSelectedPrefabs;
 					}
-
-					console.log('SELECTED GRAPHICS', this.selectedTextures[0]);
-
 					this.updateSelection();
 				}else if(clickInsideSelection && Date.now() < this.doubleClickTime){
 
@@ -3342,7 +3344,7 @@ const _B2dEditor = function () {
 			this.shiftDown = true;
 			e.preventDefault();
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
-		}else if (e.keyCode == 17) { // ctrl
+		}else if ([17, 93, 91, 224].includes(e.keyCode)) { // ctrl, meta keys
 			this.ctrlDown = true;
 			e.preventDefault();
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
@@ -3444,7 +3446,7 @@ const _B2dEditor = function () {
 		if (e.keyCode == 16) { // ctrl
 			this.shiftDown = false;
 			this.mouseTransformType = this.mouseTransformType_Movement;
-		}if (e.keyCode == 17) { // ctrl
+		}if ([17, 93, 91, 224].includes(e.keyCode)) { // ctrl, meta keys
 			this.ctrlDown = false;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = false;
