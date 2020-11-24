@@ -6272,11 +6272,11 @@ const _B2dEditor = function () {
 		}
 
 		var jointGraphics;
-		if(obj.jointType === this.jointObject_TYPE_PIN) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('pinJoint'));
-		if(obj.jointType === this.jointObject_TYPE_DISTANCE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('distanceJoint'));
-		if(obj.jointType === this.jointObject_TYPE_SLIDE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('slidingJoint'));
-		if(obj.jointType === this.jointObject_TYPE_ROPE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('ropeJoint'));
-		if(obj.jointType === this.jointObject_TYPE_WHEEL) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('wheelJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_PIN) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('pinJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_DISTANCE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('distanceJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_SLIDE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('slidingJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_ROPE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('ropeJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_WHEEL) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('wheelJoint'));
 
 		this.textures.addChild(jointGraphics);
 
