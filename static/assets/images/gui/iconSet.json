@@ -1,6 +1,38 @@
-{"frames": {
+﻿{"frames": {
 
-"pinImage":
+"distanceJoint":
+{
+	"frame": {"x":1,"y":103,"w":50,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
+	"sourceSize": {"w":50,"h":50}
+},
+"layerDown":
+{
+	"frame": {"x":52,"y":36,"w":34,"h":34},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
+	"sourceSize": {"w":34,"h":34}
+},
+"layerUp":
+{
+	"frame": {"x":52,"y":71,"w":34,"h":34},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
+	"sourceSize": {"w":34,"h":34}
+},
+"mirrorIcon":
+{
+	"frame": {"x":52,"y":1,"w":34,"h":34},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
+	"sourceSize": {"w":34,"h":34}
+},
+"pinJoint":
 {
 	"frame": {"x":1,"y":1,"w":50,"h":50},
 	"rotated": false,
@@ -8,9 +40,9 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
 	"sourceSize": {"w":50,"h":50}
 },
-"pinJoint":
+"ropeJoint":
 {
-	"frame": {"x":52,"y":1,"w":50,"h":50},
+	"frame": {"x":1,"y":154,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -23,13 +55,21 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
 	"sourceSize": {"w":50,"h":50}
+},
+"wheelJoint":
+{
+	"frame": {"x":1,"y":205,"w":50,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
+	"sourceSize": {"w":50,"h":50}
 }},
 "meta": {
-	"app": "Adobe Flash CS6",
-	"version": "12.0.2.529",
+	"app": "Adobe Animate",
+	"version": "20.0.3.25487",
 	"image": "iconSet.png",
-	"format": "RGBA8888",
-	"size": {"w":128,"h":128},
+	"format": "RGB8",
+	"size": {"w":128,"h":256},
 	"scale": "1"
 }
 }

@@ -3517,6 +3517,7 @@ const _B2dEditor = function () {
 			for(let i = 0; i<queryGraphics.length; i++){
 				const graphic = queryGraphics[i];
 				if(graphic.data.type === this.object_TEXTURE){
+					console.log("IS THIS A TEXTURE?!");
 					// pixel perfect detection
 					let pixels;
 					try{
@@ -3562,7 +3563,7 @@ const _B2dEditor = function () {
 						queryGraphics.splice(i, 1);
 						i--;
 					}
-				}else{
+				}else if(graphic.data.type !== this.object_JOINT){
 					const screenPosition = this.container.toGlobal(lowerBoundPixi);
 					let containsPoint = false;
 					graphic.children.forEach(child=>{
@@ -3754,6 +3755,7 @@ const _B2dEditor = function () {
 			}
 		}
 
+		this.drawTransformGui();
 		this.drawDebugJointHelpers();
 		drawing.drawDebugTriggerHelpers();
 	}
@@ -3900,6 +3902,17 @@ const _B2dEditor = function () {
 			}
 		}
 	}
+
+	this.drawTransformGui = function () {
+		if(!this.transformGUI){
+			this.transformGUI = new PIXI.Container();
+			this.transformGUI.layerUp = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('layerUp'));
+			this.transformGUI.addChild(this.transformGUI.layerUp);
+		}
+		// this.debugGraphics.addChild(this.transformGUI);
+		// console.log(this.transformGUI);
+	}
+
 	this.fetchControllers
 	this.doEditorGUI = function () {
 		if (ui.editorGUI != undefined && ui.editorGUI.editData) {
@@ -3941,15 +3954,21 @@ const _B2dEditor = function () {
 							for (let j = 0; j < this.selectedTextures.length; j++) {
 								if (controller.targetValue == "Pin") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_PIN;
+									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('pinJoint');
 								} else if (controller.targetValue == "Slide") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_SLIDE;
+									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('slidingJoint');
 								} else if (controller.targetValue == "Distance") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_DISTANCE;
+									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('distanceJoint');
 								} else if (controller.targetValue == "Rope") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_ROPE;
+									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('ropeJoint');
 								} else if (controller.targetValue == "Wheel") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_WHEEL;
+									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('wheelJoint');
 								}
+
 								if (this.selectedTextures[j].myTriggers) {
 									const triggerLength = this.selectedTextures[j].myTriggers.length;
 									for (let k = 0; k < triggerLength; k++) {
@@ -6252,7 +6271,13 @@ const _B2dEditor = function () {
 			tarObj.y = this.mousePosWorld.y * this.PTM;
 		}
 
-		var jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('pinJoint'));
+		var jointGraphics;
+		if(obj.jointType === this.jointObject_TYPE_PIN) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('pinJoint'));
+		if(obj.jointType === this.jointObject_TYPE_DISTANCE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('distanceJoint'));
+		if(obj.jointType === this.jointObject_TYPE_SLIDE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('slidingJoint'));
+		if(obj.jointType === this.jointObject_TYPE_ROPE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('ropeJoint'));
+		if(obj.jointType === this.jointObject_TYPE_WHEEL) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('wheelJoint'));
+
 		this.textures.addChild(jointGraphics);
 
 		jointGraphics.pivot.set(jointGraphics.width / 2, jointGraphics.height / 2);
