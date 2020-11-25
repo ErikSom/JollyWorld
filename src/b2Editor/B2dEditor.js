@@ -1633,11 +1633,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.doEditor = function () {
-		this.debugGraphics.clear();
-		while (this.debugGraphics.children.length > 0) {
-			var child = this.debugGraphics.getChildAt(0);
-			this.debugGraphics.removeChild(child);
-		}
+		this.clearDebugGraphics();
 
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
 			if (this.selectingTriggerTarget) this.doTriggerTargetSelection();
@@ -1675,6 +1671,13 @@ const _B2dEditor = function () {
 
 
 		this.doEditorGUI();
+	}
+	this.clearDebugGraphics = function(){
+		this.debugGraphics.clear();
+		while (this.debugGraphics.children.length > 0) {
+			var child = this.debugGraphics.getChildAt(0);
+			this.debugGraphics.removeChild(child);
+		}
 	}
 	this.updateBodyPosition = function (body) {
 		if (body.myTexture) {
@@ -7571,7 +7574,7 @@ const _B2dEditor = function () {
 
 	this.runWorld = function () {
 		this.editorIcons = [];
-		this.debugGraphics.clear();
+		this.clearDebugGraphics();
 		this.editing = false;
 
 		var spritesToDestroy = [];
