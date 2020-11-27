@@ -110,7 +110,7 @@ export const doAction = function (actionData, target) {
                     targetRotation = target.rotation;
                 } else if (target.myBody) {
                     objects = [target.myBody];
-                    targetRotation = target.GetAngle();
+                    targetRotation = target.myBody.GetAngle();
                 } else {
                     objects = [target];
                     targetRotation = target.rotation;
@@ -241,7 +241,7 @@ export const actionDictionary = {
         },
         rotation: {
             type: guitype_MINMAX,
-            min: 0,
+            min: -360,
             max: 360,
             step: 0.1,
         },
