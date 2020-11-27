@@ -4078,8 +4078,8 @@ const _B2dEditor = function () {
 						let targetWidth = currentSize.width;
 						let targetHeight = currentSize.height;
 
-						if (controller.property == "width") targetWidth = Math.max(1, Math.abs(controller.targetValue));
-						else targetHeight = Math.max(1, Math.abs(controller.targetValue));
+						if (controller.property == "width") targetWidth = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.width);
+						else targetHeight = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.height);
 
 						const scaleX = targetWidth / currentSize.width;
 						const scaleY = targetHeight / currentSize.height;
