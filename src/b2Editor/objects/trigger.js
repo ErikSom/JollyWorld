@@ -101,6 +101,27 @@ export const doAction = function (actionData, target) {
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
             break;
+        case "SetRotation":
+                let objects;
+                let targetRotation;
+
+                if (target.data.prefabInstanceName) {
+                    objects = [].concat(B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies, B2dEditor.lookupGroups[target.data.prefabInstanceName]._textures);
+                    targetRotation = target.rotation;
+                } else if (target.myBody) {
+                    objects = [target.myBody];
+                    targetRotation = target.GetAngle();
+                } else {
+                    objects = [target];
+                    targetRotation = target.rotation;
+                }
+                targetRotation *= game.editor.RAD2DEG;
+
+                if (actionData.setAdd == "fixed") targetRotation = actionData.rotation-targetRotation;
+                else targetRotation = actionData.rotation;
+
+                B2dEditor.applyToObjects(B2dEditor.TRANSFORM_ROTATE, targetRotation, objects);
+            break;
         case "MotorEnabled":
             target.EnableMotor(actionData.enabled);
             break;
@@ -205,6 +226,24 @@ export const actionDictionary = {
             min: -editorSettings.worldSize.width,
             max: editorSettings.worldSize.width,
             step: 0.1
+        },
+    },
+    /*******************/
+    actionObject_SetRotation: {
+        type: 'SetRotation',
+        setAdd: 'fixed',
+        rotation: 0,
+    },
+    actionOptions_SetRotation: {
+        setAdd: {
+            type: guitype_LIST,
+            items: ['fixed', 'add'],
+        },
+        rotation: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 360,
+            step: 0.1,
         },
     },
     /*******************/
