@@ -295,7 +295,7 @@ function Game() {
     };
     this.onDocumentMouseMove = function (e) {
         this.fixTouchEvent(e);
-        this.editor.onDocumentMouseMove(e);
+        if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onDocumentMouseMove(e);
     };
     this.fixTouchEvent = e => {
         if(e.changedTouches){

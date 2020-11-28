@@ -76,6 +76,7 @@ const _B2dEditor = function () {
 	this.canvas;
 	this.mousePosPixel;
 	this.mouseDocumentPosPixel;
+	this.mouseDocumentPosPixel;
 	this.mousePosWorld;
 	this.oldMousePosWorld;
 
@@ -2539,32 +2540,148 @@ const _B2dEditor = function () {
 		this.oldMousePosWorld = this.mousePosWorld;
 	}
 	this.onDocumentMouseMove = function(e){
-
-
+		if(!this.editing) return;
 		// TODO, TOOLTIP: console.log('check:', document.elementsFromPoint(e.pageX, e.pageY));
 
+		const movementSpeedX = Math.abs(this.mouseDocumentPosPixel.x-e.clientX);
+		const movementSpeedY = Math.abs(this.mouseDocumentPosPixel.y-e.clientY);
+
+		if(movementSpeedX+movementSpeedY <=3){
+			// TODO DEBOUNCE THIS
+			this.checkForTooltip();
+
+		}
 
 		this.mouseDocumentPosPixel.x = e.clientX;
 		this.mouseDocumentPosPixel.y = e.clientY;
 	}
-	this.clickOnTransformGUI = function(){
-		const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
-		const screenPosition = this.container.toGlobal(mousePixiPos);
-		let clickedChild = undefined;
-		this.transformGUI.children.forEach(child=>{
-			if(child.visible && child.containsPoint && child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))) clickedChild = child;
-		});
 
-		if(clickedChild === this.transformGUI.layerUp){
-			this.applyToSelectedObjects(this.TRANSFORM_DEPTH, true);
-		} else if(clickedChild === this.transformGUI.layerDown){
-			this.applyToSelectedObjects(this.TRANSFORM_DEPTH, false);
-		} else if(clickedChild === this.transformGUI.mirrorX){
-			self.applyToSelectedObjects(this.TRANSFORM_MIRROR, true);
-		} else if(clickedChild === this.transformGUI.mirrorY){
-			self.applyToSelectedObjects(this.TRANSFORM_MIRROR, false);
+	this.checkForTooltip = function(){
+		const elementsUnderMouse = document.elementsFromPoint(this.mouseDocumentPosPixel.x, this.mouseDocumentPosPixel.y);
+		this.showToolTip(false);
+
+		let dataTooltip = undefined;
+		for(let i = 0; i<elementsUnderMouse.length; i++){
+			const element = elementsUnderMouse[i];
+			dataTooltip = element.getAttribute('data-tt');
+			if(dataTooltip){
+				this.showToolTip(dataTooltip, true);
+				break;
+			}
 		}
 
+		if(!dataTooltip){
+			const transformGUIElement = this.collidingWithTransformGui();
+			if(transformGUIElement){
+				if([this.transformGUI.layerUp, this.transformGUI.layerDown].includes(transformGUIElement)){
+
+					const prefabKeys = Object.keys(this.selectedPrefabs);
+
+					let index = '';
+					if(prefabKeys.length + this.selectedTextures.length + this.selectedPhysicsBodies.length === 1){
+						let sprite = null;
+						if(this.selectedTextures.length>0){
+							sprite = this.selectedTextures[0];
+						} else if(this.selectedPhysicsBodies.length>0){
+							const body = this.selectedPhysicsBodies[0];
+							sprite = body.mySprite;
+							if(body.myTexture) sprite = body.myTexture;
+						}else {
+							const lookup = this.lookupGroups[prefabKeys[0]];
+							if(lookup._bodies.length>0){
+								const body = lookup._bodies[0];
+								sprite = body.mySprite;
+							}else if(lookup._textures.length>0){
+								sprite = lookup._textures[0];
+							}
+						}
+						if(sprite) index =  `(${sprite.parent.getChildIndex(sprite)})`;
+					}
+
+					if(transformGUIElement === this.transformGUI.layerUp){
+						this.showToolTip(`layer up ${index}`, true);
+					}else{
+						this.showToolTip(`layer down ${index}`, true);
+					}
+				} else if(transformGUIElement === this.transformGUI.mirrorX){
+					this.showToolTip('mirror horizontal', true);
+				} else if(transformGUIElement === this.transformGUI.mirrorY){
+					this.showToolTip('mirror vertical', true);
+				}
+			}
+		}
+	}
+
+	this.showToolTip = function(reference, show){
+		if(!this.toolTip){
+			const domElement = document.createElement('div');
+			domElement.classList.add('tooltip');
+			const title = document.createElement('span');
+			domElement.appendChild(title);
+			document.body.appendChild(domElement);
+			this.toolTip = {domElement, title};
+		}
+
+		if(!this.toolTip.bounds){
+			this.toolTip.bounds = this.toolTip.domElement.getBoundingClientRect();
+		}
+
+		if(reference && this.toolTip.reference != reference){
+			this.toolTip.bounds = undefined;
+			this.toolTip.reference = reference;
+			this.toolTip.title.innerText = reference;
+		}
+
+		if(this.toolTip.bounds){
+
+			const yShift = -20;
+
+			let offsetLeft = this.mouseDocumentPosPixel.x - this.toolTip.bounds.width/2;
+			let offsetRight = this.mouseDocumentPosPixel.x + this.toolTip.bounds.width/2;
+			let offsetTop = this.mouseDocumentPosPixel.y - yShift - this.toolTip.bounds.height/2;
+
+			if(offsetLeft>0) offsetLeft = 0;
+			if(offsetRight<window.innerWidth) offsetRight = 0;
+			if(offsetTop>0) offsetTop = 0;
+
+			const offsetX = offsetLeft+offsetRight;
+			const offsetY = offsetTop-yShift;
+
+			this.toolTip.domElement.style.left = (this.mouseDocumentPosPixel.x-offsetX)+'px';
+			this.toolTip.domElement.style.top = (this.mouseDocumentPosPixel.y-offsetY)+'px';
+		}
+
+		if(!show){
+			this.toolTip.domElement.style.display = 'none';
+		} else {
+			this.toolTip.domElement.style.display = 'block';
+		}
+	}
+
+	this.collidingWithTransformGui = function(){
+		if(!this.transformGUI) return;
+		const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
+		const screenPosition = this.container.toGlobal(mousePixiPos);
+		let collidingChild = undefined;
+		this.transformGUI.children.forEach(child=>{
+			if(child.visible && child.containsPoint && child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))) collidingChild = child;
+		});
+		if(collidingChild){
+			game.canvas.style.cursor = 'pointer';
+		}else{
+			game.canvas.style.cursor = 'unset';
+		}
+		return collidingChild;
+	}
+
+	this.clickOnTransformGUI = function(){
+		const clickedChild =  this.collidingWithTransformGui();
+		if([this.transformGUI.layerUp, this.transformGUI.layerDown].includes(clickedChild)){
+			this.applyToSelectedObjects(this.TRANSFORM_DEPTH, clickedChild===this.transformGUI.layerUp);
+			this.checkForTooltip();
+		} else if([this.transformGUI.mirrorX, this.transformGUI.mirrorY].includes(clickedChild)){
+			this.applyToSelectedObjects(this.TRANSFORM_MIRROR, clickedChild===this.transformGUI.mirrorX);
+		}
 		return clickedChild;
 	}
 

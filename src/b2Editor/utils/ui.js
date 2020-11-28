@@ -1501,12 +1501,13 @@ export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
 
     const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
-
+    const toolReferences = ['select', 'geometry', 'polydrawing', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings'];
     var buttonElement;
     var imgElement;
     for (var i = 0; i < icons.length; i++) {
         buttonElement = document.createElement("table");
         buttonElement.setAttribute('class', 'toolgui button');
+        buttonElement.setAttribute('data-tt', toolReferences[i]);
         var row = document.createElement("tr");
         buttonElement.appendChild(row);
         imgElement = document.createElement('td');
