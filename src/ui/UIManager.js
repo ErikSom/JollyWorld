@@ -933,7 +933,7 @@ function UIManager() {
             divWrapper.appendChild(socialMediaPlaceHolder);
 
             this.setSocialMediaHTML = (html, url) =>{
-                inputURL.value = url;
+                inputURL.value = decodeURIComponent(url);
                 socialMediaPlaceHolder.innerHTML = html;
             }
 
@@ -961,8 +961,8 @@ function UIManager() {
 
         socialShareScreen.domElement.style.visibility = 'visible';
 
-        const url = encodeURI('https://jollyworld.netlify.app/#'+level.uid);
-        const body = encodeURI('Check out this level in JollyWorld! ' + level.private.description);
+        const url = encodeURIComponent('https://jollyworld.netlify.app/#'+level.uid);
+        const body = encodeURIComponent('Check out this level in JollyWorld! ' + level.private.description);
 
         const socialHTML =`
             <a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=${url}" target="_blank" rel="noopener" aria-label="Share on Facebook">
