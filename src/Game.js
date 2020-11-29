@@ -286,7 +286,8 @@ function Game() {
     };
 
     this.onMouseWheel = function(e){
-        this.editor.onMouseWheel(e);
+        if(this.gameState == this.GAMESTATE_EDITOR) this.editor.onMouseWheel(e);
+        if(e.target === this.canvas) e.preventDefault(); // no zooming on the canvas
     }
 
     this.onMouseMove = function (e) {
