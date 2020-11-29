@@ -8772,6 +8772,11 @@ wcwidth@^1.0.1:
   dependencies:
     defaults "^1.0.3"
 
+web-social-share@^6.4.1:
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/web-social-share/-/web-social-share-6.4.1.tgz#d110c402385a39217cc87bb19744e5efd782d981"
+  integrity sha512-5U0dr+5IcnUC7Fudrfp2m5OwwUzL9b8JDxxyaVrozFUMeQ/NBZ+SO1quSFcVnYdoc2iN0dUP4MbdSJQ+P6rb+g==
+
 webpack-cli@^3.3.12:
   version "3.3.12"
   resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.3.12.tgz#94e9ada081453cd0aa609c99e500012fd3ad2d4a"
