@@ -60,13 +60,14 @@
         }
         .preloaderBar .preloaderFill{
             background-image: -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, rgba(0, 0, 0, .2)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, rgba(0, 0, 0, .2)), color-stop(.75, rgba(0, 0, 0, .2)), color-stop(.75, transparent), to(transparent) );
+            background-image: -moz-linear-gradient( -45deg, rgba(0, 0, 0, .2) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .2) 75%, transparent 75%, transparent );
             animation: move 2s linear infinite;
             -webkit-animation: move 2s linear infinite;
 			-moz-animation: move 2s linear infinite;
             position:absolute;
             background-size: 50px 50px;
             background-color: #d70201;
-            width: 50%;
+            width: 0%;
         }
         .preloaderBar .innerBorder{
             position: absolute;
@@ -124,7 +125,8 @@
 
         function loadJS(url, onError) {
             var setProgress = function(percent){
-                preloaderFill.style.width = (percent*100).toFixed(2)+'%';
+                var sp = 7;
+                preloaderFill.style.width = (sp+percent*(100-sp)).toFixed(2)+'%';
             }
             setProgress(0);
             if (!onError) onError = function () {};
