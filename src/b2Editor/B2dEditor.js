@@ -3416,6 +3416,11 @@ const _B2dEditor = function () {
 			if (e.ctrlKey || e.metaKey) {
 				this.undoMove(false);
 			}
+		} else if(e.keyCode === 27){ // esc
+			this.selectedPrefabs = {};
+			this.selectedTextures.length = 0;
+			this.selectedPhysicsBodies.length = 0;
+			this.updateSelection();
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
 				if(this.selectedTool == this.tool_POLYDRAWING){

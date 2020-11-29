@@ -739,6 +739,11 @@ body .dg .cr.function{
 #levelBanner #levelbanner_creatorSpan{
     color:#00FF00;
 }
+#levelBanner .backButton{
+    float:unset;
+    width:120px;
+    margin: 0px auto;
+}
 .ratingHolder {
     display: flex;
     justify-content: center;

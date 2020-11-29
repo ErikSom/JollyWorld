@@ -220,12 +220,13 @@ function UIManager() {
     }
     this.showLevelLoader = function () {
 
-        filter = {
-            by: this.FILTER_BY_FEATURED,
-            range: this.FILTER_RANGE_ANYTIME
-        };
-
         if (!levelLoader) {
+
+            filter = {
+                by: this.FILTER_BY_FEATURED,
+                range: this.FILTER_RANGE_ANYTIME
+            };
+
             const loginGUIWidth = 640;
 
             levelLoader = new dat.GUI({
@@ -279,6 +280,8 @@ function UIManager() {
 
             customGUIContainer.appendChild(levelLoader.domElement);
             levelLoader.domElement.style.position = 'absolute';
+
+            this.hasLevelLoader = true;
 
         }
         levelLoader.domElement.style.display = 'unset';
@@ -448,7 +451,7 @@ function UIManager() {
             });
             levelBanner.domElement.setAttribute('id', 'levelBanner');
 
-            let folder = levelBanner.addFolder('Level Settings');
+            let folder = levelBanner.addFolder('Level Info');
             folder.domElement.classList.add('custom');
 
             folder.open();
@@ -487,6 +490,9 @@ function UIManager() {
             thumbNailImage.setAttribute('id', 'levelbanner_levelThumbnailImage');
             thumbNail.appendChild(thumbNailImage);
 
+            let description = document.createElement('div');
+            description.setAttribute('id', 'levelbanner_description');
+            divWrapper.appendChild(description);
 
             let playButton = document.createElement('div');
             playButton.setAttribute('class', 'startButton menuButton')
@@ -498,9 +504,15 @@ function UIManager() {
                 game.playWorld();
             })
 
-            let description = document.createElement('div');
-            description.setAttribute('id', 'levelbanner_description');
-            divWrapper.appendChild(description);
+            let backButton = document.createElement('div');
+            backButton.setAttribute('class', 'backButton menuButton')
+            backButton.innerHTML = 'Back';
+            divWrapper.appendChild(backButton);
+
+            backButton.addEventListener('click', () => {
+                this.hideLevelBanner();
+                game.openMainMenu(true);
+            })
 
             targetDomElement.appendChild(divWrapper);
             customGUIContainer.appendChild(levelBanner.domElement);
@@ -527,7 +539,6 @@ function UIManager() {
 
     }
     this.hideLevelBanner = function () {
-        console.log("Hide level banner");
         levelBanner.domElement.style.visibility = 'hidden';
     }
 
@@ -1231,16 +1242,14 @@ function UIManager() {
         const buildLevelList = (levelsData) => {
 
             const levels = levelsData.map(level=>level.val());
+            levelsData.forEach((level, index)=>levels[index].uid=level.key);
 
-            // sort levels
-
-            const levelKeys = levelsData.map(level=>level.key);
+            // sort levels on creationDate
+            levels.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? 1 : -1);
 
             itemListDotShell.style.visibility = 'hidden';
-            levels.forEach((level, index) => {
-                const level_id = levelKeys[index];
+            levels.forEach(level => {
 
-                level.uid = level_id;
                 let itemBarClone = itemBar.cloneNode(true)
                 itemList.appendChild(itemBarClone);
 
@@ -1259,7 +1268,7 @@ function UIManager() {
 
                 itemBarClone.querySelector('.itemPlays').innerText = format.formatNumber(level.public.playCount);
 
-                itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level.private.creatorID}/${level_id}/thumb_lowRes.jpg`;
+                itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level.private.creatorID}/${level.uid}/thumb_lowRes.jpg`;
 
                 itemBarClone.querySelector('.levelShareDiv').addEventListener('click', () => {
                     this.showSocialShare(level);

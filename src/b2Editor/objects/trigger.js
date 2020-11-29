@@ -53,7 +53,7 @@ export const getActionsForObject = function (object) {
         }
     }
     if (object.data.type != B2dEditor.object_JOINT) {
-        actions.push("SetPosition", "SetRotation")
+        actions.push("SetPosition", "SetRotation", "SetVisibility")
     }
     actions.push("Destroy");
     return actions;
@@ -64,6 +64,7 @@ export const getAction = function (action) {
 export const getActionOptions = function (action) {
     return actionDictionary[`actionOptions_${action}`];
 }
+
 export const doAction = function (actionData, target) {
 
     let bodies;
@@ -121,6 +122,13 @@ export const doAction = function (actionData, target) {
                 else targetRotation = actionData.rotation;
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_ROTATE, targetRotation, objects);
+            break;
+        case "SetVisibility":
+            if (target.myBody) {
+                if(target.myBody.myTexture) target.myBody.myTexture.visible = actionData.setVisible;
+            }
+            target.visible = actionData.setVisible;
+            if(actionData.toggle) actionData.setVisible = !actionData.setVisible;
             break;
         case "MotorEnabled":
             target.EnableMotor(actionData.enabled);
@@ -244,6 +252,20 @@ export const actionDictionary = {
             min: -360,
             max: 360,
             step: 0.1,
+        },
+    },
+    /*******************/
+    actionObject_SetVisibility: {
+        type: 'SetVisibility',
+        toggle: false,
+        setVisible: true,
+    },
+    actionOptions_SetVisibility: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setVisible: {
+            type: guitype_BOOL,
         },
     },
     /*******************/

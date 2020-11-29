@@ -443,7 +443,7 @@ function Game() {
         Key.onKeyUp(e);
         e.preventDefault();
     }
-    this.openMainMenu = function () {
+    this.openMainMenu = function (showLevelList) {
         //if(this.run) this.stopWorld();
         this.initLevel(levelsData.mainMenuLevel);
         ui.showMainMenu();
@@ -453,6 +453,11 @@ function Game() {
         this.gameState = this.GAMESTATE_MENU;
         this.editor.editing = false;
         this.stopAutoSave();
+
+        if(showLevelList && ui.hasLevelLoader){
+            ui.hideMainMenu();
+            ui.showLevelLoader();
+        }
     }
     this.runWorld = function () {
         this.editor.runWorld();
