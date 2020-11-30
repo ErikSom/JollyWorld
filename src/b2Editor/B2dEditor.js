@@ -121,6 +121,7 @@ const _B2dEditor = function () {
 		highRes: null,
 		lowRes: null
 	}
+	this.playerHistory = [];
 
 	this.selectingTriggerTarget = false;
 
@@ -423,6 +424,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
+				targetFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
 
 				targetFolder.addColor(ui.editorGUI.editData, "backgroundColor").onChange(val=>{
 					this.editorSettingsObject.backgroundColor = val;
@@ -1652,6 +1654,8 @@ const _B2dEditor = function () {
 			if(this.verticeEditingSprite.selectedVertice === undefined && this.verticeEditingSprite.selectedVerticePoint === undefined) this.doSelection();
 		}
 
+		if(this.editorSettingsObject.showPlayerHistory) this.drawPlayerHistory();
+
 		// Draw 0,0 reference
 		this.debugGraphics.lineStyle(3, "0x00FF00", 1);
 		const crossSize = 100;
@@ -1702,12 +1706,30 @@ const _B2dEditor = function () {
 	}
 	this.run = function () {
 		//update textures
-		if (this.editing && game.gameState == game.GAMESTATE_EDITOR) {
-			this.doEditor();
-		}
+
 
 		this.deltaTime = Date.now() - this.currentTime;
 		this.currentTime = Date.now();
+
+		if (game.gameState == game.GAMESTATE_EDITOR) {
+			if(this.editing){
+				this.doEditor();
+			} else{
+				this.recordPlayerHistoryTime -= this.deltaTime;
+				if(this.editorSettingsObject.showPlayerHistory && game.character && (this.recordPlayerHistoryTime<0 || this.playerHistory.length == 0)){
+					const recordPerSecond = 4;
+					const maxRecordTime = 30;
+					const frame = [];
+					const lookup = game.character.lookupObject
+					const color = '0x'+Math.floor(Math.random()*16777215).toString(16);
+					if(lookup.body) frame[0] = [color, lookup.body.GetPosition().x, lookup.body.GetPosition().y, lookup.body.GetAngle()];
+					if(lookup.head) frame[1] = [color, lookup.head.GetPosition().x, lookup.head.GetPosition().y];
+					this.playerHistory.push(frame);
+					if(this.playerHistory.length>maxRecordTime*recordPerSecond) this.playerHistory.shift();
+					this.recordPlayerHistoryTime = 1000/recordPerSecond;
+				}
+			}
+		}
 
 		var body = this.world.GetBodyList();
 		var i = 0
@@ -1990,6 +2012,7 @@ const _B2dEditor = function () {
 		this.physicsDebug = false;
 		this.gravityX = 0;
 		this.gravityY = 10;
+		this.showPlayerHistory = false;
 		this.backgroundColor = 0xD4D4D4;
 	}
 	this.editorJointObject = new this.jointObject();
@@ -3916,10 +3939,33 @@ const _B2dEditor = function () {
 				}
 			}
 		}
-
 		this.drawTransformGui();
 		this.drawDebugJointHelpers();
 		drawing.drawDebugTriggerHelpers();
+	}
+	this.drawPlayerHistory = function(){
+		this.playerHistory.forEach(frame => {
+			frame.forEach((part, i) => {
+				if(part){
+					const graphic = new PIXI.Graphics();
+
+					let [color, x, y, angle] = part;
+					graphic.lineStyle(1, color, 1);
+
+					const size = 32*this.container.scale.x;
+					if(i == 0) graphic.drawRect(-size/2, -size*4/2, size, size*4);
+					else graphic.drawCircle(0, 0, 30*this.container.scale.x);
+
+					x = this.container.x + x*Settings.PTM * this.container.scale.x;
+					y = this.container.y + y*Settings.PTM * this.container.scale.y;
+					graphic.x = x;
+					graphic.y = y;
+					if(angle) graphic.rotation = angle;
+
+					this.debugGraphics.addChild(graphic);
+				}
+			});
+		})
 	}
 	this.drawDebugJointHelpers = function () {
 		//JOINTS draw upper and lower limits
@@ -7691,6 +7737,7 @@ const _B2dEditor = function () {
 	}
 	this.testWorld = function () {
 		camera.storeCurrentPosition();
+		this.playerHistory.length = 0;
 		this.runWorld();
 	}
 
