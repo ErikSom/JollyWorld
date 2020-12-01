@@ -62,7 +62,7 @@ const _B2dEditor = function () {
 	this.prefabCounter = 0; //to ensure uniquenesss
 
 	this.container = null;
-	this.selectedTool = 0;
+	this.selectedTool = -1;
 	this.admin = true; // for future to dissalow certain changes like naming
 	this.breakPrefabs = false;
 
@@ -297,6 +297,8 @@ const _B2dEditor = function () {
 		ui.showTextEditor(startValue, callBack);
 	}
 	this.selectTool = function (i) {
+		if (game.gameState == game.GAMESTATE_EDITOR) ui.showHelp(i);
+
 		if(this.selectedTool === i) return;
 		this.deselectTool(this.selectedTool);
 		this.selectedTool = i;
@@ -435,6 +437,7 @@ const _B2dEditor = function () {
 				ui.destroyEditorGUI();
 				break
 		}
+
 		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 	}
 	this.deselectTool = function(i){
@@ -2564,7 +2567,6 @@ const _B2dEditor = function () {
 	}
 	this.onDocumentMouseMove = function(e){
 		if(!this.editing) return;
-		// TODO, TOOLTIP: console.log('check:', document.elementsFromPoint(e.pageX, e.pageY));
 
 		const movementSpeedX = Math.abs(this.mouseDocumentPosPixel.x-e.clientX);
 		const movementSpeedY = Math.abs(this.mouseDocumentPosPixel.y-e.clientY);

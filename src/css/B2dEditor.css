@@ -892,6 +892,10 @@ body .dg .cr.function{
     background-color:#bebebe
   }
 
+  #helpScreen .textWrapper{
+      margin:5px;
+  }
+
 
   @keyframes dotPulseBefore {
     0% {

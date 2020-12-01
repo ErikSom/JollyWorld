@@ -94,9 +94,8 @@ function Game() {
         this.stats = new Stats();
         this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
         document.body.appendChild(this.stats.dom);
-        this.stats.dom.style.left = 'unset';
-        this.stats.dom.style.right = '80px';
-        this.stats.dom.style.top = '80px';
+        this.stats.dom.style.left = '0px';
+        this.stats.dom.style.top = '400px';
 
         this.canvas = document.getElementById("canvas");
 

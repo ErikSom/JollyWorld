@@ -16,6 +16,8 @@ import * as format from './formatString';
 
 import * as uiHelper from './uiHelper';
 
+import * as texts from '../utils/texts'
+
 const nanoid = require('nanoid');
 
 
@@ -33,6 +35,7 @@ let loadScreen;
 let notice;
 let prompt;
 let textEditor;
+let helpScreen;
 
 let uiContainer = document.getElementById('editor-ui-container');
 let customGUIContainer = document.getElementById('custom-gui');
@@ -71,6 +74,8 @@ export const hideEditorPanels = function () {
     hidePanel(loadScreen);
     hidePanel(notice);
     hidePanel(prompt);
+    hideTextEditor();
+    hideShowHelp();
 }
 export const hidePanel = panel => {
     if (panel) panel.domElement.classList.add('fadedHide');
@@ -1497,11 +1502,12 @@ export const createEditorStyledGUI = function (name) {
     element.appendChild(header);
     return element;
 }
+const toolReferences = ['select', 'geometry', 'polydrawing', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings'];
+
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
 
     const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
-    const toolReferences = ['select', 'geometry', 'polydrawing', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings'];
     var buttonElement;
     var imgElement;
     for (var i = 0; i < icons.length; i++) {
@@ -1696,7 +1702,7 @@ export const showNotice = function (message) {
     return false;
 }
 export const showTextEditor = function (startValue, callBack) {
-    if (textEditor) textEditor.domElement.parentNode.removeChild(textEditor.domElement);
+    hideTextEditor();
 
     const loginGUIWidth = 400;
 
@@ -1735,8 +1741,7 @@ export const showTextEditor = function (startValue, callBack) {
 
     button.addEventListener('click', () => {
         callBack(textarea.value);
-        textEditor.domElement.parentNode.removeChild(textEditor.domElement);
-        textEditor = null;
+        hideTextEditor();
     })
 
     targetDomElement.appendChild(divWrapper);
@@ -1755,6 +1760,12 @@ export const showTextEditor = function (startValue, callBack) {
     registerDragWindow(textEditor);
 
     return false;
+}
+const hideTextEditor = ()=>{
+    if(textEditor){
+        textEditor.domElement.parentNode.removeChild(textEditor.domElement);
+        textEditor = null;
+    }
 }
 const removePrompt = ()=>{
     prompt.domElement.parentNode.removeChild(prompt.domElement);
@@ -1822,12 +1833,9 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     no_button.innerHTML = negativePrompt;
     divWrapper.appendChild(no_button);
 
-
     targetDomElement.appendChild(divWrapper);
 
-
     targetDomElement.appendChild(document.createElement('br'));
-
 
     customGUIContainer.appendChild(prompt.domElement);
 
@@ -1837,9 +1845,6 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     prompt.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
     registerDragWindow(prompt);
-
-
-
 
     return new Promise((resolve, reject) => {
         yes_button.addEventListener('click', () => {
@@ -1851,6 +1856,57 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
             return reject();
         })
     });
+}
+export const showHelp = function(i){
+    hideShowHelp();
+
+    const loginGUIWidth = 350;
+
+    helpScreen = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+    helpScreen.domElement.setAttribute('id', 'helpScreen');
+
+    const toolName = toolReferences[i];
+    let targetFolder = helpScreen.addFolder(`${toolName} help`);
+    targetFolder.domElement.classList.add('custom');
+    targetFolder.open();
+    const mainFolderDomElement = targetFolder.domElement.getElementsByTagName('ul')[0];
+
+    const textWrapper = document.createElement('div');
+    textWrapper.classList.add('textWrapper');
+
+    let textarea = document.createElement('span');
+    textarea.innerHTML = texts.HELP[toolName];
+    textWrapper.appendChild(textarea);
+
+    mainFolderDomElement.appendChild(textWrapper);
+
+    // Close button
+    let button = document.createElement('div');
+    button.setAttribute('class', 'headerButton save buttonOverlay dark');
+    button.style.margin = 'auto';
+    button.innerHTML = "Close";
+    button.addEventListener('click', () => {
+        hideShowHelp();
+    })
+
+    mainFolderDomElement.appendChild(button);
+    customGUIContainer.appendChild(helpScreen.domElement);
+
+    helpScreen.domElement.style.right = '20px';
+    helpScreen.domElement.style.top = '50px';
+
+    registerDragWindow(helpScreen);
+
+    return false;
+}
+const hideShowHelp = ()=>{
+    if(helpScreen){
+        helpScreen.domElement.parentNode.removeChild(helpScreen.domElement);
+        helpScreen = null;
+    }
 }
 
 // WINDOW DRAGING
