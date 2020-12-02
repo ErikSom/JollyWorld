@@ -35,7 +35,7 @@ let loadScreen;
 let notice;
 let prompt;
 let textEditor;
-let helpScreen;
+export let helpScreen;
 
 let uiContainer = document.getElementById('editor-ui-container');
 let customGUIContainer = document.getElementById('custom-gui');
@@ -72,10 +72,10 @@ export const hideEditorPanels = function () {
     hidePanel(registerScreen);
     hidePanel(saveScreen);
     hidePanel(loadScreen);
-    hidePanel(notice);
-    hidePanel(prompt);
-    hideTextEditor();
-    hideShowHelp();
+    removeNotice();
+    removePrompt();
+    removeTextEditor();
+    removeShowHelp();
 }
 export const hidePanel = panel => {
     if (panel) panel.domElement.classList.add('fadedHide');
@@ -1502,7 +1502,7 @@ export const createEditorStyledGUI = function (name) {
     element.appendChild(header);
     return element;
 }
-const toolReferences = ['select', 'geometry', 'polydrawing', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings'];
+const toolReferences = ['select', 'geometry', 'polydrawing', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings', 'camera', 'vertice editing'];
 
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
@@ -1628,7 +1628,7 @@ export const removeGuiAssetSelection = function () {
     }
 }
 export const showNotice = function (message) {
-    if (notice) notice.domElement.parentNode.removeChild(notice.domElement);
+    removeNotice();
 
     const loginGUIWidth = 400;
 
@@ -1648,7 +1648,7 @@ export const showNotice = function (message) {
     closeButton.setAttribute('class', 'closeWindowIcon');
     folder.domElement.append(closeButton);
     closeButton.addEventListener('click', () => {
-        notice.domElement.parentNode.removeChild(notice.domElement);
+        removeNotice();
     });
 
     var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
@@ -1678,12 +1678,10 @@ export const showNotice = function (message) {
     divWrapper.appendChild(button);
 
     button.addEventListener('click', () => {
-        notice.domElement.parentNode.removeChild(notice.domElement);
-        notice = null;
+        removeNotice();
     })
 
     targetDomElement.appendChild(divWrapper);
-
 
     targetDomElement.appendChild(document.createElement('br'));
 
@@ -1701,8 +1699,14 @@ export const showNotice = function (message) {
 
     return false;
 }
+const removeNotice = ()=>{
+    if(notice){
+        notice.domElement.parentNode.removeChild(notice.domElement);
+        notice = null;
+    }
+}
 export const showTextEditor = function (startValue, callBack) {
-    hideTextEditor();
+    removeTextEditor();
 
     const loginGUIWidth = 400;
 
@@ -1741,7 +1745,7 @@ export const showTextEditor = function (startValue, callBack) {
 
     button.addEventListener('click', () => {
         callBack(textarea.value);
-        hideTextEditor();
+        removeTextEditor();
     })
 
     targetDomElement.appendChild(divWrapper);
@@ -1761,15 +1765,17 @@ export const showTextEditor = function (startValue, callBack) {
 
     return false;
 }
-const hideTextEditor = ()=>{
+const removeTextEditor = ()=>{
     if(textEditor){
         textEditor.domElement.parentNode.removeChild(textEditor.domElement);
         textEditor = null;
     }
 }
 const removePrompt = ()=>{
-    prompt.domElement.parentNode.removeChild(prompt.domElement);
-    prompt = null;
+    if(prompt){
+        prompt.domElement.parentNode.removeChild(prompt.domElement);
+        prompt = null;
+    }
 }
 export const fetchControllersFromGUI = function(gui){
     let controllers = [].concat(gui.__controllers);
@@ -1787,7 +1793,7 @@ export const fetchControllersFromGUI = function(gui){
     return controllers;
 }
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
-    if (prompt) removePrompt();
+    removePrompt();
 
     const loginGUIWidth = 400;
 
@@ -1858,9 +1864,9 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     });
 }
 export const showHelp = function(i){
-    hideShowHelp();
+    removeShowHelp();
 
-    const loginGUIWidth = 350;
+    const loginGUIWidth = 320;
 
     helpScreen = new dat.GUI({
         autoPlace: false,
@@ -1870,29 +1876,25 @@ export const showHelp = function(i){
 
     const toolName = toolReferences[i];
     let targetFolder = helpScreen.addFolder(`${toolName} help`);
-    targetFolder.domElement.classList.add('custom');
     targetFolder.open();
     const mainFolderDomElement = targetFolder.domElement.getElementsByTagName('ul')[0];
+
+    const closeButton = document.createElement('div');
+    closeButton.setAttribute('class', 'closeWindowIcon');
+    targetFolder.domElement.append(closeButton);
+    closeButton.addEventListener('click', () => {
+        removeShowHelp();
+    });
 
     const textWrapper = document.createElement('div');
     textWrapper.classList.add('textWrapper');
 
-    let textarea = document.createElement('span');
+    let textarea = document.createElement('div');
     textarea.innerHTML = texts.HELP[toolName];
     textWrapper.appendChild(textarea);
 
     mainFolderDomElement.appendChild(textWrapper);
 
-    // Close button
-    let button = document.createElement('div');
-    button.setAttribute('class', 'headerButton save buttonOverlay dark');
-    button.style.margin = 'auto';
-    button.innerHTML = "Close";
-    button.addEventListener('click', () => {
-        hideShowHelp();
-    })
-
-    mainFolderDomElement.appendChild(button);
     customGUIContainer.appendChild(helpScreen.domElement);
 
     helpScreen.domElement.style.right = '20px';
@@ -1902,7 +1904,7 @@ export const showHelp = function(i){
 
     return false;
 }
-const hideShowHelp = ()=>{
+const removeShowHelp = ()=>{
     if(helpScreen){
         helpScreen.domElement.parentNode.removeChild(helpScreen.domElement);
         helpScreen = null;

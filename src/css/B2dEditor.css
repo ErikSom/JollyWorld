@@ -1,44 +1,55 @@
-
-html, body{
+html,
+body {
     margin: 0;
     padding: 0;
-    height : 100%;
+    height: 100%;
     width: 100%;
 }
-.dg .closed div:not(.arrow):not(.title), .dg .closed ul div, .dg .closed span, .dg .closed br, .dg .closed textarea, .dg .closed ul div>*{
+
+.dg .closed div:not(.arrow):not(.title),
+.dg .closed ul div,
+.dg .closed span,
+.dg .closed br,
+.dg .closed textarea,
+.dg .closed ul div>* {
     height: 0 !important;
     overflow: hidden !important;
     border: 0 !important;
-    display:none !important;
+    display: none !important;
 }
+
 body>.grid {
     height: 100%;
     width: 100%;
-    position:absolute;
+    position: absolute;
 }
 
 .column {
     max-width: 350px;
-    z-index:20;
-}
-.fixedmaxwidth{
-    max-width: 500px !important;
-    padding:0px !important;
-}
-.fixedmaxwidth .column{
-    padding-left:0.5em !important;
-    padding-right:0.5em !important;
-}
-.fixedmaxwidth .segment{
-    padding-left:0.1em !important;
-    padding-right:0.1em !important;
+    z-index: 20;
 }
 
-.sidebar{
-    z-index:20;
+.fixedmaxwidth {
+    max-width: 500px !important;
+    padding: 0px !important;
 }
+
+.fixedmaxwidth .column {
+    padding-left: 0.5em !important;
+    padding-right: 0.5em !important;
+}
+
+.fixedmaxwidth .segment {
+    padding-left: 0.1em !important;
+    padding-right: 0.1em !important;
+}
+
+.sidebar {
+    z-index: 20;
+}
+
 .margintopfix {
-    margin-top:10px !important;
+    margin-top: 10px !important;
 }
 
 canvas {
@@ -51,17 +62,17 @@ canvas {
 #editor-ui-container {
     position: absolute;
     z-index: 2;
-    top:0;
-    width:100%;
+    top: 0;
+    width: 100%;
 }
 
-#custom-gui  {
+#custom-gui {
     z-index: 10;
     width: 100%;
     float: left;
     margin: 10px;
-    position:absolute;
-    top:0;
+    position: absolute;
+    top: 0;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -69,18 +80,20 @@ canvas {
     -ms-user-select: none;
     user-select: none;
 }
-#game-ui-container{
+
+#game-ui-container {
     width: 100%;
     height: 100%;
     z-index: 1;
     position: absolute;
     pointer-events: none;
 }
-#game-ui-container > * {
+
+#game-ui-container>* {
     pointer-events: all;
 }
 
-.toolgui.main{
+.toolgui.main {
     background-color: #666666;
     border-radius: 5px;
     border: 1px solid black;
@@ -89,39 +102,49 @@ canvas {
     width: 30px;
     position: absolute;
 }
-.toolgui.button{
-    width:30px;
-    height:30px;
+
+.toolgui.button {
+    width: 30px;
+    height: 30px;
     background-color: #999999;
     border: 1px solid black;
     border-radius: 5px;
     cursor: pointer;
 }
-.toolgui.button:hover{
-    background-color:#bebebe
+
+.toolgui.button:hover {
+    background-color: #bebebe
 }
-.toolgui.button.menu{
+
+.toolgui.button.menu {
     position: absolute;
-    margin:0px;
+    margin: 0px;
     background-image: url('../../static/assets/images/gui/Icon_Menu.png');
     background-size: contain;
 }
-.toolgui .dg  li.title{
+
+.toolgui .dg li.title {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
-.toolgui .img{
-    width:100%;
-    height:100%;
-    background-position:center center;
+
+.toolgui .img {
+    width: 100%;
+    height: 100%;
+    background-position: center center;
     background-repeat: no-repeat;
-    background-size:contain;
-    background-color:transparent;
+    background-size: contain;
+    background-color: transparent;
 }
-.dg.custom > div, .dg.custom ul > span, .dg.custom textarea, .dg.custom input{
-    width:100%;
+
+.dg.custom>div,
+.dg.custom ul>span,
+.dg.custom textarea,
+.dg.custom input {
+    width: 100%;
 }
-body .dg .cr.function .property-name{
+
+body .dg .cr.function .property-name {
     background-color: #999;
     position: relative;
     left: 50%;
@@ -131,51 +154,60 @@ body .dg .cr.function .property-name{
     color: black;
     line-height: 23px;
 }
-body .dg .cr.function .property-name:hover{
-    background-color:#666;
-}
-body .dg .cr.function > div{
-    padding:5px;
-}
-body .dg .cr.function{
-    height:35px;
+
+body .dg .cr.function .property-name:hover {
+    background-color: #666;
 }
 
-.scrollBar{
+body .dg .cr.function>div {
+    padding: 5px;
+}
+
+body .dg .cr.function {
+    height: 35px;
+}
+
+.scrollBar {
     position: absolute;
-    bottom:0px;
-    background-color: #999999;;
+    bottom: 0px;
+    background-color: #999999;
+    ;
     border: 1px solid black;
     cursor: pointer;
 }
-.horizontal.scrollBar{
-    left:10%;
-    width:80%;
-    height:20px;
+
+.horizontal.scrollBar {
+    left: 10%;
+    width: 80%;
+    height: 20px;
 }
-.vertical.scrollBar{
-    top:10%;
-    right:0%;
-    height:80%;
-    width:20px;
+
+.vertical.scrollBar {
+    top: 10%;
+    right: 0%;
+    height: 80%;
+    width: 20px;
 }
-.dragBar{
-    position:absolute;
+
+.dragBar {
+    position: absolute;
     background-color: #666666;
     background-image: url(../../static/assets/images/gui/DragableBar_Pattern.png);
     background-size: contain;
     border: 1px solid black;
     pointer-events: none;
 }
-.horizontal .dragBar{
-    width:10%;
-    height:100%;
-    transform:translateX(-50%);
+
+.horizontal .dragBar {
+    width: 10%;
+    height: 100%;
+    transform: translateX(-50%);
 }
-.vertical .dragBar{
-    width:100%;
-    height:10%;
-    transform:translateY(-50%);
+
+.vertical .dragBar {
+    width: 100%;
+    height: 10%;
+    transform: translateY(-50%);
 }
 
 
@@ -192,8 +224,9 @@ body .dg .cr.function{
     position: absolute;
     margin-top: 10px;
     margin-left: 3px;
-    pointer-events:none;
+    pointer-events: none;
 }
+
 .closed .arrow {
     border-top: 5px solid transparent;
     border-bottom: 5px solid transparent;
@@ -201,6 +234,7 @@ body .dg .cr.function{
     margin-top: 8px;
     margin-left: 5px;
 }
+
 .green.arrow {
     width: 0;
     height: 0;
@@ -211,6 +245,7 @@ body .dg .cr.function{
     margin-top: 10px;
     margin-left: 3px;
 }
+
 .closed .green.arrow {
     border-top: 5px solid transparent;
     border-bottom: 5px solid transparent;
@@ -219,24 +254,27 @@ body .dg .cr.function{
     margin-left: 5px;
 }
 
-#mainMenu{
-    position:absolute;
-    top:50%;left:50%;
+#mainMenu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
 }
-#versionNumber{
+
+#versionNumber {
     position: absolute;
-    top:85px;
+    top: 85px;
     right: 8px;
     font-size: 12px;
-    opacity:0;
+    opacity: 0;
     transition: opacity 0.5s;
 }
 
-#mainMenuLogo{
-    width:400px;
+#mainMenuLogo {
+    width: 400px;
 }
-.menuButton{
+
+.menuButton {
     font-size: 30px;
     color: white;
     margin: 20px;
@@ -251,11 +289,12 @@ body .dg .cr.function{
     user-select: none;
     position: relative;
     cursor: pointer;
-    margin-left:auto;
-    margin-right:auto;
+    margin-left: auto;
+    margin-right: auto;
     font-family: 'Lily Script One', cursive;
     text-shadow: 2px 2px black;
 }
+
 .menuButton::after {
     content: '';
     position: absolute;
@@ -270,18 +309,25 @@ body .dg .cr.function{
     display: block;
     opacity: 0;
     transition: opacity 0.1s;
-  }
-.menuButton:hover::after {opacity:1;}
-
-#mainMenu.disable > .menuButton {
-    pointer-events: none;
-    filter:grayscale(1);
 }
 
-#editorButton, #acceptButton, .backButton{
+.menuButton:hover::after {
+    opacity: 1;
+}
+
+#mainMenu.disable>.menuButton {
+    pointer-events: none;
+    filter: grayscale(1);
+}
+
+#editorButton,
+#acceptButton,
+.backButton {
     background-color: #51A328;
 }
-.backButton, .moreLevels{
+
+.backButton,
+.moreLevels {
     height: 40px;
     line-height: 40px;
     width: unset;
@@ -290,11 +336,12 @@ body .dg .cr.function{
     float: left;
     margin-left: 20px;
 }
-.sortByButton{
-    margin:10px auto;
+
+.sortByButton {
+    margin: 10px auto;
 }
 
-#gameOverScreen{
+#gameOverScreen {
     display: block;
     background-color: #ff0000bd;
     width: 100%;
@@ -304,42 +351,47 @@ body .dg .cr.function{
     top: 50%;
     transform: translateY(-50%);
 }
-#gameOverScreen .gameOverText{
+
+#gameOverScreen .gameOverText {
     float: left;
     font-size: 50px;
     font-family: 'Lily Script One', cursive;
     text-shadow: 2px 2px black;
     color: white;
 }
-#gameOverScreen .textGroup{
-    float:left;
+
+#gameOverScreen .textGroup {
+    float: left;
     margin-left: 20px;
 }
-#gameOverScreen .buttonGroup{
-    float:right;
-    font-size:11px;
+
+#gameOverScreen .buttonGroup {
+    float: right;
+    font-size: 11px;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
     margin-right: 40px;
 }
-#gameOverScreen .headerButton{
+
+#gameOverScreen .headerButton {
     padding: 0px 10px;
-    width:unset;
+    width: unset;
 }
-#gameOverScreen .checkpoint{
+
+#gameOverScreen .checkpoint {
     background-color: #51A328;
 }
 
-#gameOverScreen .restart{
-    background-color:#E0B300;
+#gameOverScreen .restart {
+    background-color: #E0B300;
 }
 
 
 
 /* HEADER BAR */
 
-.editorHeader{
+.editorHeader {
     height: 40px;
     width: 100%;
     position: absolute;
@@ -349,22 +401,26 @@ body .dg .cr.function{
     margin: -10px;
     min-width: 640px;
 }
-.editorHeader div, .editorHeader span{
+
+.editorHeader div,
+.editorHeader span {
     float: left;
     margin: 3px;
     line-height: 30px;
     margin-top: 5px;
     font-size: 11px;
 }
-.editorHeader .profile{
-    background-image:url('../../static/assets/images/gui/Profile_Button.png');
-    background-size:contain;
+
+.editorHeader .profile {
+    background-image: url('../../static/assets/images/gui/Profile_Button.png');
+    background-size: contain;
 }
 
 
 .buttonOverlay:hover {
     color: #ffffff;
 }
+
 .buttonOverlay:hover:before {
     content: '';
     position: absolute;
@@ -374,28 +430,37 @@ body .dg .cr.function{
     height: 100%;
     background: rgba(255, 255, 255, 0.3);
 }
+
 .buttonOverlay.dark:hover:before {
     background: rgba(0, 0, 0, 0.2);
 }
 
 
 
-.editorHeader span, .editorHeader .new, .editorHeader .load, .editorHeader .exit, .editorHeader .headerIcon{
-    float:right;
-}
-.editorHeader .publish, .editorHeader .exit, #levelEditScreen .publish{
-    background-color:#FF3300;
-}
-
-.editorHeader .save, #levelEditScreen .save{
-    background-color:#51A328;
+.editorHeader span,
+.editorHeader .new,
+.editorHeader .load,
+.editorHeader .exit,
+.editorHeader .headerIcon {
+    float: right;
 }
 
-.editorHeader .test{
-    background-color:#E0B300;
+.editorHeader .publish,
+.editorHeader .exit,
+#levelEditScreen .publish {
+    background-color: #FF3300;
 }
 
-.editorHeader .headerIcon{
+.editorHeader .save,
+#levelEditScreen .save {
+    background-color: #51A328;
+}
+
+.editorHeader .test {
+    background-color: #E0B300;
+}
+
+.editorHeader .headerIcon {
     background-image: url('../../static/assets/images/gui/Icon_EditLevel.png');
     background-size: contain;
     width: 30px;
@@ -403,12 +468,13 @@ body .dg .cr.function{
     margin-top: 5px;
     position: relative;
     background-color: #999999;
-    border-radius:2px;
+    border-radius: 2px;
     border: black solid 1px;
     cursor: pointer;
 
 }
-.editorHeader span{
+
+.editorHeader span {
     color: white;
     width: 100px;
     height: 30px;
@@ -417,21 +483,23 @@ body .dg .cr.function{
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.headerButton{
+
+.headerButton {
     width: 60px;
     height: 30px;
     margin: 5px;
     text-align: center;
     background-color: #999999;
     position: relative;
-    border-radius:2px;
+    border-radius: 2px;
     border: black solid 1px;
-    color:white;
+    color: white;
     font-weight: bolder;
     cursor: pointer;
     line-height: 30px;
 }
-.filterButton{
+
+.filterButton {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -439,38 +507,48 @@ body .dg .cr.function{
     padding: 5px;
     margin: 20px;
     width: 140px;
-    float:right;
+    float: right;
 }
-.logoSmall{
-    background-image:url('../../static/assets/images/gui/Logo_Small.png');
-    width:calc(235px*0.4);
-    height:calc(73px*0.4);
+
+.logoSmall {
+    background-image: url('../../static/assets/images/gui/Logo_Small.png');
+    width: calc(235px*0.4);
+    height: calc(73px*0.4);
     background-size: contain;
     margin-top: 8px !important;
 }
-#levelEditScreen #levelThumbnail, #levelEditScreen #youtubeLink {
-    width:90px;
-    height:67.5px;
+
+#levelEditScreen #levelThumbnail,
+#levelEditScreen #youtubeLink {
+    width: 90px;
+    height: 67.5px;
     border: 1px solid black;
-    margin:5px;
+    margin: 5px;
     cursor: pointer;
 }
-#levelEditScreen #levelThumbnailImage{
-    width:100%;
-    height:100%;
+
+#levelEditScreen #levelThumbnailImage {
+    width: 100%;
+    height: 100%;
 }
-#youtubeFeed{
+
+#youtubeFeed {
     display: flex;
     justify-content: center;
     margin: unset;
 }
 
-#levelEditScreen .save, #levelEditScreen .publish, #levelEditScreen .saveas, #levelEditScreen .delete{
+#levelEditScreen .save,
+#levelEditScreen .publish,
+#levelEditScreen .saveas,
+#levelEditScreen .delete {
     float: left;
 }
-#levelEditScreen .saveas{
-    background-color:#FF6600;
+
+#levelEditScreen .saveas {
+    background-color: #FF6600;
 }
+
 .text_button:hover {
     color: #04bd04;
 }
@@ -479,87 +557,109 @@ body .dg .cr.function{
     color: #00FF00;
     cursor: pointer;
 }
-.filterBar{
+
+.filterBar {
     font-size: 10px;
     width: 100%;
     height: 30px;
     background-color: #1C1C1C;
 }
 
-.filterTitle{
+.filterTitle {
     text-align: left;
     display: block;
     margin-left: 20px;
     line-height: 30px;
 }
-.filterBar .arrow{
+
+.filterBar .arrow {
     float: left;
     display: block;
     margin: 10px 5px;
 }
-.filterBar > div{
-    display:inline-block;
-    float:left;
+
+.filterBar>div {
+    display: inline-block;
+    float: left;
 }
-.filterBar .levelNameFilter, .filterBar .levelDateFilter{
+
+.filterBar .levelNameFilter,
+.filterBar .levelDateFilter {
     cursor: pointer;
 }
-.filterBar .levelPlayFilter > span{
+
+.filterBar .levelPlayFilter>span {
     text-align: center;
     margin-left: 0px;
 }
-.filterBar .levelShare > .filterTitle{
+
+.filterBar .levelShare>.filterTitle {
     margin-left: 9px;
 }
-.filterBar .levelPlay > .filterTitle{
+
+.filterBar .levelPlay>.filterTitle {
     margin-left: 30px;
 }
-.listItem{
+
+.listItem {
     height: 70px;
     background-color: #4F4F4F;
     width: 100%;
-    display:flex;
+    display: flex;
 }
 
-.listItem .levelNameDiv, .levelDateDiv, .levelSaveDiv, .levelLoadDiv{
+.listItem .levelNameDiv,
+.levelDateDiv,
+.levelSaveDiv,
+.levelLoadDiv {
     height: 100%;
-    padding:5px;
-    text-align:center;
+    padding: 5px;
+    text-align: center;
     text-align: left;
-    display:inline-block;
+    display: inline-block;
 }
-.listItem .levelNameDiv{
+
+.listItem .levelNameDiv {
     width: 60%;
 }
-.listItem .levelDateDiv{
+
+.listItem .levelDateDiv {
     width: 20%;
     line-height: 60px;
 }
-.listItem .levelSaveDiv, .listItem .levelLoadDiv{
+
+.listItem .levelSaveDiv,
+.listItem .levelLoadDiv {
     width: 20%;
 }
-.listItem .levelSaveDiv .headerButton, .listItem .levelLoadDiv .headerButton{
+
+.listItem .levelSaveDiv .headerButton,
+.listItem .levelLoadDiv .headerButton {
     margin: auto auto;
     margin-top: 14px;
-    background-color:#FF6600;
+    background-color: #FF6600;
 }
-.listItem .levelDateDiv span{
+
+.listItem .levelDateDiv span {
     display: inline-block;
     vertical-align: middle;
     line-height: 1em;
 }
-.listItem .itemTitle{
+
+.listItem .itemTitle {
     margin-top: 5px;
     font-size: 12px;
     color: #00FF00;
     height: 14px;
     white-space: nowrap;
 }
-.listItem .itemDescription{
+
+.listItem .itemDescription {
     margin-top: 0px;
     font-size: 10px;
 }
-.listItem .levelNameDiv > span{
+
+.listItem .levelNameDiv>span {
     width: 60%;
     overflow-wrap: break-word;
     overflow: hidden;
@@ -567,215 +667,264 @@ body .dg .cr.function{
     text-overflow: ellipsis;
 }
 
-.listItem .thumb{
+.listItem .thumb {
     width: 80px;
     height: 60px;
     border: 1px solid black;
     float: left;
-    margin-right:5px
+    margin-right: 5px
 }
-.listItem #thumbImage{
+
+.listItem #thumbImage {
     width: 100%;
     height: 100%;
 }
 
-.itemList_ScrollOverlay{
+.itemList_ScrollOverlay {
     position: absolute;
     height: 245px;
     width: 378px;
     pointer-events: none;
     z-index: 2;
-    background: -moz-linear-gradient(top, rgba(79,79,79,0) 0%, rgba(79,79,79,0) 75%, rgba(79,79,79,1) 95%, rgba(79,79,79,1) 100%);
-    background: -webkit-linear-gradient(top, rgba(79,79,79,0) 0%,rgba(79,79,79,0) 75%,rgba(79,79,79,1) 95%,rgba(79,79,79,1) 100%);
-    background: linear-gradient(to bottom, rgba(79,79,79,0) 0%,rgba(79,79,79,0) 75%,rgba(79,79,79,1) 95%,rgba(79,79,79,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#004f4f4f', endColorstr='#4f4f4f',GradientType=0 );
+    background: -moz-linear-gradient(top, rgba(79, 79, 79, 0) 0%, rgba(79, 79, 79, 0) 75%, rgba(79, 79, 79, 1) 95%, rgba(79, 79, 79, 1) 100%);
+    background: -webkit-linear-gradient(top, rgba(79, 79, 79, 0) 0%, rgba(79, 79, 79, 0) 75%, rgba(79, 79, 79, 1) 95%, rgba(79, 79, 79, 1) 100%);
+    background: linear-gradient(to bottom, rgba(79, 79, 79, 0) 0%, rgba(79, 79, 79, 0) 75%, rgba(79, 79, 79, 1) 95%, rgba(79, 79, 79, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#004f4f4f', endColorstr='#4f4f4f', GradientType=0);
 }
-.itemList{
+
+.itemList {
     min-height: 200px;
     max-height: 60vh;
     overflow: auto;
 }
-.itemList > div:nth-child(even){
-    background-color:#6b6b6b
+
+.itemList>div:nth-child(even) {
+    background-color: #6b6b6b
 }
-#prompt .headerButton{
-    display:inline-block;
+
+#prompt .headerButton {
+    display: inline-block;
     margin: 0 10px;
 }
 
-.listPlayModeItem{
+.listPlayModeItem {
     background-color: #4F4F4F;
     width: 100%;
-    display:flex;
-    font-size:10px;
+    display: flex;
+    font-size: 10px;
 }
 
-.listPlayModeItem .levelNameDiv, .levelAuthorDiv, .levelPlaysDiv, .levelRatingsDiv, .levelDateDiv, .levelShareDiv, .levelLoadDiv{
+.listPlayModeItem .levelNameDiv,
+.levelAuthorDiv,
+.levelPlaysDiv,
+.levelRatingsDiv,
+.levelDateDiv,
+.levelShareDiv,
+.levelLoadDiv {
     height: 100%;
-    padding:5px;
-    text-align:center;
+    padding: 5px;
+    text-align: center;
     text-align: left;
-    display:inline-block;
+    display: inline-block;
 }
-.listPlayModeItem .levelPlaysDiv span, .listPlayModeItem .levelRatingsDiv span, .listPlayModeItem .levelDateDiv span{
+
+.listPlayModeItem .levelPlaysDiv span,
+.listPlayModeItem .levelRatingsDiv span,
+.listPlayModeItem .levelDateDiv span {
     text-align: center;
     width: 100%;
     display: inline-block;
 }
-.listPlayModeItem .thumb{
+
+.listPlayModeItem .thumb {
     width: 80px;
     height: 60px;
     border: 1px solid black;
     float: left;
-    margin-right:5px;
+    margin-right: 5px;
     background-color: #1C1C1C
 }
-.listPlayModeItem #thumbImage{
+
+.listPlayModeItem #thumbImage {
     width: 100%;
     height: 100%;
 }
-.listPlayModeItem .levelNameDiv{
-    width:37%;
+
+.listPlayModeItem .levelNameDiv {
+    width: 37%;
 }
-.listPlayModeItem .itemTitle{
+
+.listPlayModeItem .itemTitle {
     margin-top: 5px;
     font-size: 12px;
     color: #00FF00;
     height: 14px;
     white-space: normal;
 }
-.listPlayModeItem .levelAuthorDiv{
-    width:12%;
+
+.listPlayModeItem .levelAuthorDiv {
+    width: 12%;
 }
-.listPlayModeItem .levelAuthorDiv span{
+
+.listPlayModeItem .levelAuthorDiv span {
     font-size: 10px;
     color: #00FF00;
     height: 12px;
     white-space: nowrap;
 }
-.listPlayModeItem .levelPlaysDiv{
-    width:10%;
+
+.listPlayModeItem .levelPlaysDiv {
+    width: 10%;
 }
-.listPlayModeItem .levelRatingsDiv{
-    width:8%;
+
+.listPlayModeItem .levelRatingsDiv {
+    width: 8%;
 }
-.listPlayModeItem .levelDateDiv{
-    width:13%;
+
+.listPlayModeItem .levelDateDiv {
+    width: 13%;
 }
-.listPlayModeItem .levelShareDiv{
-    width:7%;
+
+.listPlayModeItem .levelShareDiv {
+    width: 7%;
 }
-.listPlayModeItem .levelLoadDiv{
-    width:13%;
+
+.listPlayModeItem .levelLoadDiv {
+    width: 13%;
 }
-.listPlayModeItem .levelLoadDiv .menuButton{
+
+.listPlayModeItem .levelLoadDiv .menuButton {
     margin: 10px 0px;
     width: 100%;
     height: 40px;
 }
-.shareIcon{
-    width:30px;
-    height:40px;
+
+.shareIcon {
+    width: 30px;
+    height: 40px;
     background-image: url('../../static/assets/images/gui/Share_Icon.png');
     background-size: contain;
 }
-.levelShareDiv .shareIcon{
+
+.levelShareDiv .shareIcon {
     margin-top: 6px;
 }
+
 .levelShareDiv {
-    cursor:pointer;
+    cursor: pointer;
 }
+
 .levelShareDiv:hover {
-    filter:brightness(0.5);
+    filter: brightness(0.5);
 }
-.thumbsUpIcon{
-    width:40px;
-    height:38px;
+
+.thumbsUpIcon {
+    width: 40px;
+    height: 38px;
     background-image: url('../../static/assets/images/gui/Thumb_Icon.png');
     background-size: contain;
 }
-.playButtonTriangleIcon{
-    width:25px;
-    height:25px;
+
+.playButtonTriangleIcon {
+    width: 25px;
+    height: 25px;
     background-image: url('../../static/assets/images/gui/PlayButton.png');
     background-size: contain;
     pointer-events: none;
 }
-.levelLoadDiv .playButtonTriangleIcon{
+
+.levelLoadDiv .playButtonTriangleIcon {
     margin-left: 24px;
     margin-top: 6px;
 }
-.closeWindowIcon{
-    width:25px;
-    height:25px;
+
+.closeWindowIcon {
+    width: 25px;
+    height: 25px;
     background-image: url('../../static/assets/images/gui/CloseButton.png');
     background-size: contain;
     cursor: pointer;
     position: absolute;
     top: 3px;
     right: 2px;
-    max-width:20px;
-    width:20px;
+    max-width: 20px;
+    width: 20px;
     height: 20px;
-    filter:brightness(100%);
-}
-.closeWindowIcon:hover{
-    filter:brightness(70%);
+    filter: brightness(100%);
 }
 
-#levelBanner #levelbanner_levelThumbnail{
+.closeWindowIcon:hover {
+    filter: brightness(70%);
+}
+
+#levelBanner #levelbanner_levelThumbnail {
     width: 160px;
     height: 120px;
     margin: auto;
     margin-top: 10px;
 }
-#levelbanner_levelThumbnail #levelbanner_levelThumbnailImage{
-    width:100%;
-    height:100%;
+
+#levelbanner_levelThumbnail #levelbanner_levelThumbnailImage {
+    width: 100%;
+    height: 100%;
 }
-#levelBanner #levelbanner_title, #levelBanner #levelbanner_creator, #levelBanner #levelbanner_description{
+
+#levelBanner #levelbanner_title,
+#levelBanner #levelbanner_creator,
+#levelBanner #levelbanner_description {
     text-align: center;
 }
-#levelBanner #levelbanner_creatorSpan{
-    color:#00FF00;
+
+#levelBanner #levelbanner_creatorSpan {
+    color: #00FF00;
 }
-#levelBanner .backButton{
-    float:unset;
-    width:120px;
+
+#levelBanner .backButton {
+    float: unset;
+    width: 120px;
     margin: 0px auto;
 }
+
 .ratingHolder {
     display: flex;
     justify-content: center;
 }
-.ratingHolder .startButton{
+
+.ratingHolder .startButton {
     width: 70px;
     margin: 5px;
 }
-.ratingHolder .upvote{
-    background-color:green;
+
+.ratingHolder .upvote {
+    background-color: green;
 }
-.ratingHolder .downvote{
-    background-color:red;
+
+.ratingHolder .downvote {
+    background-color: red;
 }
-.ratingHolder .thumbsUpIcon{
+
+.ratingHolder .thumbsUpIcon {
     margin: auto;
     margin-top: 8px;
 }
-.ratingHolder .downvote .thumbsUpIcon{
-    transform:scaleY(-1);
+
+.ratingHolder .downvote .thumbsUpIcon {
+    transform: scaleY(-1);
 }
-.ratingHolder .ratingText{
+
+.ratingHolder .ratingText {
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
     margin: 5px;
 }
-.ratingText .greenSpan{
-    color:#00FF00;
+
+.ratingText .greenSpan {
+    color: #00FF00;
 }
-#winScreen_time{
+
+#winScreen_time {
     font-family: 'Lily Script One', cursive;
     text-align: center;
     font-size: 20px;
@@ -788,12 +937,13 @@ body .dg .cr.function{
  * Dot Pulse
  * ==============================================
  */
- .dot-shell{
+.dot-shell {
     position: absolute;
     left: 50%;
     top: 50%;
- }
- .dot-pulse {
+}
+
+.dot-pulse {
     position: relative;
     left: -9999px;
     width: 5px;
@@ -804,10 +954,11 @@ body .dg .cr.function{
     box-shadow: 9999px 0 0 -5px #fff;
     animation: dotPulse 1.5s infinite linear;
     animation-delay: .25s;
-    display:flex;
-  }
-  
-  .dot-pulse::before, .dot-pulse::after {
+    display: flex;
+}
+
+.dot-pulse::before,
+.dot-pulse::after {
     content: '';
     display: inline-block;
     position: absolute;
@@ -817,169 +968,208 @@ body .dg .cr.function{
     border-radius: 5px;
     background-color: #fff;
     color: #fff;
-  }
-  
-  .dot-pulse::before {
+}
+
+.dot-pulse::before {
     box-shadow: 9984px 0 0 -5px #fff;
     animation: dotPulseBefore 1.5s infinite linear;
     animation-delay: 0s;
-    right:-5px;
-  }
-  
-  .dot-pulse::after {
+    right: -5px;
+}
+
+.dot-pulse::after {
     box-shadow: 10014px 0 0 -5px #fff;
     animation: dotPulseAfter 1.5s infinite linear;
     animation-delay: .5s;
-    left:-5px;
-  }
-  .hidden{
-      visibility: hidden;
-  }
-  .fadedHide {
+    left: -5px;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.fadedHide {
     transition: opacity ease 1s;
-    opacity:0;
+    opacity: 0;
     pointer-events: none;
-  }
-  .discordButton{
-    width:200px;
-    height:64px;
+}
+
+.discordButton {
+    width: 200px;
+    height: 64px;
     background-color: transparent;
     position: absolute;
-    left:20px;
-    bottom:20px;
-  }
-  .normalButton {
-    cursor: pointer;
-    filter:brightness(100%);
-    border:none;
-  }
-  .normalButton:hover{
-    filter:brightness(70%);
-  }
+    left: 20px;
+    bottom: 20px;
+}
 
-  #socialShareEmbed{
+.normalButton {
+    cursor: pointer;
+    filter: brightness(100%);
+    border: none;
+}
+
+.normalButton:hover {
+    filter: brightness(70%);
+}
+
+#socialShareEmbed {
     background: #0000005e;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 5px;
     margin: 5px 0px;
-  }
-  #socialShareEmbed button{
-    width:30px;
-    height:30px;
+}
+
+#socialShareEmbed button {
+    width: 30px;
+    height: 30px;
     background-color: #999999;
     border-radius: 5px;
     margin: 0px 5px;
-    outline:none;
-    border:none;
-  }
-  #socialShareEmbed input{
+    outline: none;
+    border: none;
+}
+
+#socialShareEmbed input {
     background: none;
     border: none;
     color: white;
     font-size: 14px;
     font: inherit;
-  }
-  #socialShareEmbed button > div {
+}
+
+#socialShareEmbed button>div {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 115.77 122.88'%3E%3Cpath d='M89.62 13.96v7.73h12.2v.02c3.85.01 7.34 1.57 9.86 4.1 2.5 2.51 4.06 5.98 4.07 9.82h.02v73.3h-.02c-.01 3.84-1.57 7.33-4.1 9.86-2.51 2.5-5.98 4.06-9.82 4.07v.02H40.1v-.02c-3.84-.01-7.34-1.57-9.86-4.1-2.5-2.51-4.06-5.98-4.07-9.82h-.02V92.51h-12.2v-.02c-3.84-.01-7.34-1.57-9.86-4.1-2.5-2.51-4.06-5.98-4.07-9.82H0V13.95h.02c.01-3.85 1.58-7.34 4.1-9.86C6.63 1.59 10.1.03 13.94.02V0H75.67v.02c3.85.01 7.34 1.57 9.86 4.1 2.5 2.51 4.06 5.98 4.07 9.82h.02v.02zm-10.58 7.73v-7.75h.02c0-.91-.39-1.75-1.01-2.37-.61-.61-1.46-1-2.37-1v.02H13.95v-.02c-.91 0-1.75.39-2.37 1.01-.61.61-1 1.46-1 2.37h.02v64.62h-.02c0 .91.39 1.75 1.01 2.37.61.61 1.46 1 2.37 1v-.02h12.2V35.64h.02c.01-3.85 1.58-7.34 4.1-9.86 2.51-2.5 5.98-4.06 9.82-4.07v-.02H79.04zm26.14 87.23V35.63h.02c0-.91-.39-1.75-1.01-2.37-.61-.61-1.46-1-2.37-1v.02H40.09v-.02c-.91 0-1.75.39-2.37 1.01-.61.61-1 1.46-1 2.37h.02v73.3h-.02c0 .91.39 1.75 1.01 2.37.61.61 1.46 1 2.37 1v-.02H101.83v.02c.91 0 1.75-.39 2.37-1.01.61-.61 1-1.46 1-2.37h-.02v-.01z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/svg%3E");
     width: 16px;
     height: 17px;
     background-size: cover;
     margin-left: 1px;
-  }
-  #socialShareEmbed button:hover{
-    background-color:#bebebe
-  }
+}
 
-  #helpScreen .textWrapper{
-      margin:5px;
-  }
+#socialShareEmbed button:hover {
+    background-color: #bebebe
+}
+
+#helpScreen .textWrapper {
+    margin: 5px;
+    max-height: 300px;
+}
+.textWrapper em{
+    color: #e0b300;
+}
+
+#helpScreen .textWrapper>div {
+    font-weight: 100;
+}
+
+.textWrapper li {
+    line-height: inherit !important;
+    list-style: inside;
+    height: unset !important;
+    padding: unset !important;
+    margin: unset !important;
+}
 
 
-  @keyframes dotPulseBefore {
+@keyframes dotPulseBefore {
     0% {
-      box-shadow: 9984px 0 0 -5px #fff;
+        box-shadow: 9984px 0 0 -5px #fff;
     }
+
     30% {
-      box-shadow: 9984px 0 0 2px #fff;
+        box-shadow: 9984px 0 0 2px #fff;
     }
+
     60%,
     100% {
-      box-shadow: 9984px 0 0 -5px #fff;
+        box-shadow: 9984px 0 0 -5px #fff;
     }
-  }
+}
 
-  @keyframes dotPulse {
+@keyframes dotPulse {
     0% {
-      box-shadow: 9999px 0 0 -5px #fff;
+        box-shadow: 9999px 0 0 -5px #fff;
     }
+
     30% {
-      box-shadow: 9999px 0 0 2px #fff;
+        box-shadow: 9999px 0 0 2px #fff;
     }
+
     60%,
     100% {
-      box-shadow: 9999px 0 0 -5px #fff;
+        box-shadow: 9999px 0 0 -5px #fff;
     }
-  }
+}
 
-  @keyframes dotPulseAfter {
+@keyframes dotPulseAfter {
     0% {
-      box-shadow: 10014px 0 0 -5px #fff;
+        box-shadow: 10014px 0 0 -5px #fff;
     }
+
     30% {
-      box-shadow: 10014px 0 0 2px #fff;
+        box-shadow: 10014px 0 0 2px #fff;
     }
+
     60%,
     100% {
-      box-shadow: 10014px 0 0 -5px #fff;
+        box-shadow: 10014px 0 0 -5px #fff;
     }
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Arapey';
     src: url('./fonts/Arapey-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Economica';
     src: url('./fonts/Economica-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Erica One';
     src: url('./fonts/EricaOne-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Karla';
     src: url('./fonts/Karla-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Lily Script One';
     src: url('./fonts/LilyScriptOne-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Spinnaker';
     src: url('./fonts/Spinnaker-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Squada One';
     src: url('./fonts/SquadaOne-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Trochut';
     src: url('./fonts/Trochut-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
+}

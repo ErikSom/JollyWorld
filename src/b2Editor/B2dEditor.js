@@ -3373,21 +3373,22 @@ const _B2dEditor = function () {
 	}
 	this.onMouseWheel = function(e){
 
-
-		// detect mouse on ui
+		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen]
+		// detect mouse on gui
 		let uiScroll = false;
-		if(ui.editorGUI && ui.editorGUI.domElement){
-			if(!ui.editorGUI.cachedBounds){
-				ui.editorGUI.cachedBounds = ui.editorGUI.domElement.getBoundingClientRect();
-			}
-
-			if(this.mouseDocumentPosPixel.x > ui.editorGUI.cachedBounds.x && this.mouseDocumentPosPixel.x < ui.editorGUI.cachedBounds.x+ui.editorGUI.cachedBounds.width 
-				&& this.mouseDocumentPosPixel.y > ui.editorGUI.cachedBounds.y && this.mouseDocumentPosPixel.y < ui.editorGUI.cachedBounds.y+ui.editorGUI.cachedBounds.height ){
-					ui.editorGUI.domElement.scrollBy(e.deltaX, e.deltaY);
-					uiScroll = true;
+		guiToHaveMouseWheel.forEach( gui => {
+			if(gui && gui.domElement){
+				if(!gui.cachedBounds){
+					gui.cachedBounds = gui.domElement.getBoundingClientRect();
 				}
 
-		}
+				if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
+					&& this.mouseDocumentPosPixel.y > gui.cachedBounds.y && this.mouseDocumentPosPixel.y < gui.cachedBounds.y+gui.cachedBounds.height ){
+						gui.domElement.scrollBy(e.deltaX, e.deltaY);
+						uiScroll = true;
+					}
+			}
+		});
 
 
 		if(this.editing && !uiScroll){
