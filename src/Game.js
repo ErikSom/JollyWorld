@@ -117,9 +117,9 @@ function Game() {
 
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
-        // this.app.renderer.plugins.interaction.removeEvents();
-        // PIXI.ticker.shared.stop();
-        // this.stage.interactiveChildren=false;
+        this.app.renderer.plugins.interaction.removeEvents();
+        PIXI.ticker.shared.stop();
+        this.stage.interactiveChildren=false;
 
         LoadCoreAssets(PIXI.loader);
 
