@@ -19,5 +19,5 @@ export const HELP = {
 	trigger: 'text trigger',
 	settings: 'text settings',
 	camera: 'text camera',
-	verticeediting: 'text vertic eediting'
+	"vertice editing": 'text vertic editing'
 }
