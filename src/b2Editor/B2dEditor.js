@@ -422,16 +422,15 @@ const _B2dEditor = function () {
 				const onChange = key=> val=>{
 					this.editorSettingsObject[key] = val;
 				}
-
+				targetFolder.addColor(ui.editorGUI.editData, "backgroundColor").onChange(val=>{
+					this.editorSettingsObject.backgroundColor = val;
+					game.app.renderer.backgroundColor = val;
+				});
 				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
 
-				targetFolder.addColor(ui.editorGUI.editData, "backgroundColor").onChange(val=>{
-					this.editorSettingsObject.backgroundColor = val;
-					game.app.renderer.backgroundColor = val;
-				});
 				break
 			case this.tool_CAMERA:
 				ui.destroyEditorGUI();
