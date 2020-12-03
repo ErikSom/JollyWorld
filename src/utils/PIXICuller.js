@@ -244,6 +244,7 @@ const drawAllCells = function () {
         debugGraphics.drawRect(tileX * cellSize.x, tileY * cellSize.y, cellSize.x, cellSize.y);
     });
 }
+
 export const update = function () {
     if(!enabled) return;
     if (debug) {

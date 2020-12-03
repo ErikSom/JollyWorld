@@ -782,12 +782,13 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				controller = targetFolder.add(ui.editorGUI.editData, "collision", 0, 7).step(1);
-				controller.onChange(function (value) {
+				// is Character is an admin feature
+				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"/*, "Is character"*/];
+				ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
+				targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
 					this.humanUpdate = true;
-					this.targetValue = value
-				}.bind(controller));
-
+					this.targetValue = collisionTypes.indexOf(value);
+				});
 
 				let bodyIsGroup = false;
 				for (let i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -4476,7 +4477,7 @@ const _B2dEditor = function () {
 							fixture.SetDensity(controller.targetValue);
 							body.ResetMassData();
 						}
-					} else if (controller.property == "collision") {
+					} else if (controller.property == "collisionTypes") {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -6427,7 +6428,7 @@ const _B2dEditor = function () {
 		6) collides only with characters
 		- set mask to CUSTOM_MASKBIT, FIXED_MASKBIT, NORMAL_MASKBIT
 
-		7) does not collide with character
+		7) sets objects to be an character
 		-
 
 		all bits:
