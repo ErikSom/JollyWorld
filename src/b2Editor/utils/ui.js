@@ -888,7 +888,7 @@ export const showLevelEditScreen = function () {
         });
         levelEditScreen.domElement.setAttribute('id', 'levelEditScreen');
 
-        let folder = levelEditScreen.addFolder('Level Settings');
+        let folder = levelEditScreen.addFolder('Publish Settings');
         folder.domElement.classList.add('custom');
 
         folder.open();
@@ -1098,11 +1098,13 @@ export const showLevelEditScreen = function () {
         thumbNailImage.src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${game.currentLevelData.uid}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
         thumbNailImage.style.display = 'block';
         clickToAdd.style.display = 'none';
-        console.log("DAFUQQQQQ1");
+    }else if (B2dEditor.cameraShotData.lowRes) {
+        thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
+        thumbNailImage.style.display = 'block';
+        clickToAdd.style.display = 'none';
     } else {
         thumbNailImage.style.display = 'none';
         clickToAdd.style.display = 'block';
-        console.log("DAFUQQQQQ2");
     }
     levelEditScreen.domElement.querySelector('#levelEdit_title').value = game.currentLevelData.title;
     levelEditScreen.domElement.querySelector('#levelEdit_description').value = game.currentLevelData.description;
@@ -1699,6 +1701,8 @@ export const showNotice = function (message) {
 
     registerDragWindow(notice);
 
+    setHighestWindow(notice.domElement);
+
     return false;
 }
 const removeNotice = ()=>{
@@ -1853,6 +1857,7 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     prompt.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
     registerDragWindow(prompt);
+    
 
     return new Promise((resolve, reject) => {
         yes_button.addEventListener('click', () => {
@@ -1959,6 +1964,14 @@ export const doDrag = function (event, _window) {
     _window.domElement.style.top = `${startDragPos.y + difY}px`;
 }
 
+const setHighestWindow = domElement => {
+    setTimeout(()=>{
+        if(!domElement || !domElement.parentNode) return;
+        if ([...domElement.parentNode.children].indexOf(domElement) !== domElement.parentNode.children.length - 1) {
+            domElement.parentNode.appendChild(domElement);
+        }
+    }, 0);
+}
 export const registerDragWindow = (_window) => {
 
 
@@ -1967,28 +1980,17 @@ export const registerDragWindow = (_window) => {
     var titleBar = domElement.querySelector('.dg .title');
     domElement.style.position = 'absolute';
 
-
-    const setHighestWindow = ()=>{
-        setTimeout(()=>{
-            if(!domElement || !domElement.parentNode) return;
-            if ([...domElement.parentNode.children].indexOf(_window.domElement) !== domElement.parentNode.children.length - 1) {
-                domElement.parentNode.appendChild(domElement);
-            }
-        }, 0);
-    }
-
-
     titleBar.addEventListener('mousedown', (event) => {
         initDrag(event, _window);
         event.stopPropagation();
     });
 
     domElement.addEventListener('mouseup', (event) => {
-        setHighestWindow();
+        setHighestWindow(domElement);
     })
     titleBar.addEventListener('mouseup', (event) => {
         endDrag(event, _window);
-        setHighestWindow();
+        setHighestWindow(domElement);
     });
 
     const clickFunction = (event) => {
