@@ -906,6 +906,10 @@ export const showLevelEditScreen = function () {
         let divWrapper = document.createElement('div');
         divWrapper.style.padding = '20px';
 
+        let span = document.createElement('span');
+        span.innerText = 'Thumbnail';
+        divWrapper.appendChild(span);
+
         let youtubeFeed = document.createElement('div');
         youtubeFeed.setAttribute('id', 'youtubeFeed');
         divWrapper.appendChild(youtubeFeed);
@@ -915,16 +919,23 @@ export const showLevelEditScreen = function () {
         thumbNail.setAttribute('id', 'levelThumbnail');
         youtubeFeed.appendChild(thumbNail);
 
+        let clickToAddSpan = document.createElement('span');
+        clickToAddSpan.classList.add('clickToAdd');
+        clickToAddSpan.innerText = 'click to add';
+        clickToAddSpan.style.margin = 'auto';
+        clickToAddSpan.style.color = 'gray';
+        thumbNail.appendChild(clickToAddSpan);
+
         let thumbNailImage;
         thumbNailImage = new Image();
         thumbNailImage.setAttribute('id', 'levelThumbnailImage');
         thumbNail.appendChild(thumbNailImage);
 
-
         let thumbnailShotComplete = () => {
             levelEditScreen.domElement.style.display = 'block';
             thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
             thumbNailImage.style.display = 'block';
+            clickToAddSpan.style.display = 'none';
         }
 
         thumbNail.addEventListener('click', () => {
@@ -933,22 +944,7 @@ export const showLevelEditScreen = function () {
             levelEditScreen.domElement.style.display = 'none';
         });
 
-        let youtubeLink;
-        for (let i = 0; i < 2; i++) {
-            youtubeLink = document.createElement('div');
-            youtubeLink.setAttribute('id', 'youtubeLink');
-            youtubeFeed.appendChild(youtubeLink);
-        }
-
-
-        let span = document.createElement('span');
-        span.innerText = 'Add YouTube links';
-        divWrapper.appendChild(span);
-
-
         divWrapper.appendChild(document.createElement('br'));
-        divWrapper.appendChild(document.createElement('br'));
-
 
         let title = document.createElement('input');
         title.setAttribute('id', 'levelEdit_title');
@@ -1097,11 +1093,16 @@ export const showLevelEditScreen = function () {
     showPanel(levelEditScreen);
 
     let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
+    let clickToAdd = levelEditScreen.domElement.querySelector('.clickToAdd');
     if (game.currentLevelData.thumbLowResURL) {
         thumbNailImage.src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${game.currentLevelData.uid}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
         thumbNailImage.style.display = 'block';
+        clickToAdd.style.display = 'none';
+        console.log("DAFUQQQQQ1");
     } else {
         thumbNailImage.style.display = 'none';
+        clickToAdd.style.display = 'block';
+        console.log("DAFUQQQQQ2");
     }
     levelEditScreen.domElement.querySelector('#levelEdit_title').value = game.currentLevelData.title;
     levelEditScreen.domElement.querySelector('#levelEdit_description').value = game.currentLevelData.description;

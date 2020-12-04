@@ -518,13 +518,13 @@ body .dg .cr.function {
     margin-top: 8px !important;
 }
 
-#levelEditScreen #levelThumbnail,
-#levelEditScreen #youtubeLink {
+#levelEditScreen #levelThumbnail{
     width: 90px;
     height: 67.5px;
     border: 1px solid black;
-    margin: 5px;
     cursor: pointer;
+    display: flex;
+    background: black;
 }
 
 #levelEditScreen #levelThumbnailImage {
@@ -534,7 +534,7 @@ body .dg .cr.function {
 
 #youtubeFeed {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     margin: unset;
 }
 

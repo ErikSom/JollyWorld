@@ -2073,7 +2073,7 @@ const _B2dEditor = function () {
 		image.src = imageData;
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext("2d");
-		const shotQuality = 0.8;
+		const shotQuality = 1.0;
 		const self = this;
 		image.onload = function () {
 			//highRes;

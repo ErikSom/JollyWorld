@@ -584,12 +584,9 @@ function UIManager() {
             ratingHolder.setAttribute('id', 'pauseMenu_ratingHolder');
             divWrapper.appendChild(ratingHolder);
 
-
             let upvoteButton = document.createElement('div');
             upvoteButton.setAttribute('class', 'startButton menuButton upvote')
             ratingHolder.appendChild(upvoteButton);
-
-
 
             let thumbIcon = document.createElement('div');
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
