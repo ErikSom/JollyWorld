@@ -419,7 +419,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             ui.editorGUI.editData.targetTypeDropDown = key;
         }
     })
-    _folder.add(ui.editorGUI.editData, "targetTypeDropDown", targetTypes).label('target').onChange(function (value) {
+    _folder.add(ui.editorGUI.editData, "targetTypeDropDown", targetTypes).name('target').onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
     });
@@ -430,7 +430,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
                 ui.editorGUI.editData.repeatTypeDropDown = key;
             }
         })
-        _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).label('repeat').onChange(function (value) {
+        _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).name('repeat').onChange(function (value) {
             this.humanUpdate = true;
             this.targetValue = value
         });

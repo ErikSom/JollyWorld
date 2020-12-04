@@ -338,7 +338,11 @@ body .dg .cr.function {
 }
 
 .sortByButton {
-    margin: 10px auto;
+    margin: 10px;
+    width: 140px;
+    height: 40px;
+    line-height: 34px;
+    font-size: 20px;
 }
 
 #gameOverScreen {
@@ -694,7 +698,7 @@ body .dg .cr.function {
 
 .itemList {
     min-height: 200px;
-    max-height: 60vh;
+    max-height: 50vh;
     overflow: auto;
 }
 
@@ -1030,6 +1034,7 @@ body .dg .cr.function {
     margin: 0px 5px;
     outline: none;
     border: none;
+    cursor: pointer;
 }
 
 #socialShareEmbed input {
@@ -1054,7 +1059,9 @@ body .dg .cr.function {
 
 #helpScreen .textWrapper {
     margin: 5px;
-    max-height: 300px;
+}
+#helpScreen .textWrapper p{
+    margin: 8px 0px;
 }
 .textWrapper em{
     color: #e0b300;

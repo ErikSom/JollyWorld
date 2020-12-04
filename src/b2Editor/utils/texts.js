@@ -20,7 +20,7 @@ export const HELP = {
 	<strong>Everything but characters</strong><em><strong><br /></strong></em>Will collide with everything but characters<br /><strong>Nothing<br /></strong>The object will collide with nothing. Useful for adding counter balance to vehicles.<br /><strong>Everything but similar</strong><em><strong><br /></strong></em>The object will collide with all objects, except for objects that also have this value<br /><strong>Only similar</strong><em><strong><br /></strong></em>The object will only collide with objects that also have this value<br /><strong>Only fixed objects</strong><em><strong><br /></strong></em>The object will only collide with objects that are don't move and are set to fixed<br /><strong>Only characters</strong><em><strong><br /></strong></em>The object will only collide with characters</li>
 	</ul>
 	<p><strong>Controls:</strong></p>
-	<p><em><strong>ARROWS &amp; Mouse Drag</strong></em> - Moves the object(s)<br /><em><strong>WASD</strong></em> - Grow or shrink the object(s)<br /><strong><em>Z &amp; X</em> </strong>- Rotate objects (hold ALT for rotating multiple objects around center)<br /><em><strong>DELETE &amp; BACKSPACE</strong></em> - Destroy object(s)<br /><em><strong>T</strong></em> - Start / Stop testing level<br /><em><strong>CTRL + Z</strong></em> - Undo last action<strong></strong><em><strong><br />CTRL + G</strong></em> - Group / Ungroup objects<br /><em><strong>CTRL + J</strong></em> - Place Joint (With 2 objects selected it will connect those 2 objects with the joint, one object selected will be pinned to the background)<br /><em><strong>CTRL + UP/DOWN</strong></em> - Move object a layer up or down<br /><em><strong>SHIFT</strong></em> - Holding shift will speed up rotating, scaling and moving with the keyboard<br /><strong>SPACE</strong> - Hold space to drag the camera by dragging the mouse, double tap space to reset the camera to the player<br /><strong>+- </strong>- You can zoom the screen by pressing plus or minus<br /><strong>Mouse Wheel - </strong>zooms the screen</p>
+	<p><em><strong>ARROWS &amp; Mouse Drag</strong></em> - Moves the object(s)<br /><em><strong>WASD</strong></em> - Grow or shrink the object(s)<br /><strong><em>Z &amp; X</em> </strong>- Rotate objects (hold ALT for rotating multiple objects around center)<br /><em><strong>DELETE &amp; BACKSPACE</strong></em> - Destroy object(s)<br /><em><strong>T</strong></em> - Start / Stop testing level<br /><em><strong>CTRL + Z</strong></em> - Undo last action<strong></strong><em><strong><br />CTRL + G</strong></em> - Group / Ungroup objects<br /><em><strong>CTRL + J</strong></em> - Place Joint (With 2 objects selected it will connect those 2 objects with the joint, one object selected will be pinned to the background)<br /><em><strong>CTRL + UP/DOWN</strong></em> - Move object a layer up or down<br /><em><strong>SHIFT</strong></em> - Holding shift will speed up rotating, scaling and moving with the keyboard<br /><em><strong>SPACE</strong></em> - Hold space to drag the camera by dragging the mouse, double tap space to reset the camera to the player<br /><em><strong>+- </strong></em>- You can zoom the screen by pressing plus or minus<br /><strong><em>Mouse Wheel </em></strong>- zooms the screen<br /><b><i>1-9 - </i></b><i>select the editor tools ( 1 is select tool, 2 geometry tool, etc.)</i></p>
 	​​`,
 	geometry: `<p>The geometry tool is used to draw primitive objects. You can draw Squares, Triangles or Circles. Hold the mouse and drag to draw.<br /><em><strong>isPhysicsObject</strong></em> is used switch between drawing <em><strong>Graphics</strong></em> or <em><strong>Bodies</strong></em>. Graphics are not affected by gravity and will not collide in the physics world, but bodies will.</p>
 	<p><strong>Tips:</strong></p>
@@ -116,12 +116,12 @@ export const HELP = {
 	"vertice editing": `<p>Here you can change the vertices of your object that defines its shape.<br />You can add new vertices by click between 2 vertices on the line. Graphic object can use Bezier Curves, this is a powerful tool to build shapes with round edges and allows you to build any shape you can imagine.</p>
 	<p><strong>Controls:</strong></p>
 	<ul>
-	<li><strong>Mouse Click - </strong>click any vertice to select it, or drag a square and select multiple</li>
-	<li><strong>Mouse Drag - </strong>moves the vertices if selected</li>
-	<li><strong>Double Click vertice </strong>- when editing a graphics object, double clicking the vertice will enable bezier curves</li>
-	<li><strong>Double Click no vertice</strong>&nbsp;- this will exit vertice editing</li>
-	<li><strong>BACKSPACE &amp; DELETE</strong> - remove a vertice</li>
-	<li><strong>ARROWS - </strong>moves the selected vertices</li>
+	<li><em><strong>Mouse Click</strong></em> - click any vertice to select it, or drag a square and select multiple</li>
+	<li><em><strong>Mouse Drag</strong></em> - moves the vertices if selected</li>
+	<li><em><strong>Double Click vertice </strong></em>- when editing a graphics object, double clicking the vertice will enable bezier curves</li>
+	<li><em><strong>Double Click no vertice</strong></em>&nbsp;- this will exit vertice editing</li>
+	<li><em><strong>BACKSPACE &amp; DELETE</strong> </em>- remove a vertice</li>
+	<li><em><strong>ARROWS</strong></em> - moves the selected vertices</li>
 	</ul>
 	<p><strong>Tips:</strong></p>
 	<ul>
