@@ -3451,7 +3451,9 @@ const _B2dEditor = function () {
 					this.groupObjects();
 				}
 			}
-		} else if (e.keyCode == 77) { //m
+		}else if (e.key >= 1 && e.key<=9) { // 1-9
+			this.selectTool(e.key-1);
+		}else if (e.keyCode == 77) { //m
 			this.selectTool(this.tool_SELECT);
 		} else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
@@ -3477,6 +3479,11 @@ const _B2dEditor = function () {
 			this.selectedTextures.length = 0;
 			this.selectedPhysicsBodies.length = 0;
 			this.updateSelection();
+
+			if([this.tool_VERTICEEDITING, this.tool_CAMERA].includes(this.selectedTool)){
+				this.selectTool(this.tool_SELECT);
+			}
+
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
 				if(this.selectedTool == this.tool_POLYDRAWING){
@@ -7715,6 +7722,7 @@ const _B2dEditor = function () {
 		this.parallaxObject = [];
 		this.animationGroups = [];
 
+		this.clearDebugGraphics();
 		//reset gui
 		ui.destroyEditorGUI();
 		ui.show();
@@ -7780,6 +7788,13 @@ const _B2dEditor = function () {
 	this.runWorld = function () {
 		this.editorIcons = [];
 		this.clearDebugGraphics();
+
+		if (game.gameState == game.GAMESTATE_EDITOR){
+			const exitText = new PIXI.Text('Press T or ESC to exit test',{fontFamily : 'Arial', fontSize: 15, fill : 0xE0B300});
+			exitText.x = exitText.y = 10;
+			this.debugGraphics.addChild(exitText);
+		}
+
 		this.editing = false;
 
 		var spritesToDestroy = [];
@@ -7848,6 +7863,9 @@ const _B2dEditor = function () {
 		ui.hide();
 
 		game.world.SetGravity(new b2Vec2(this.editorSettingsObject.gravityX, this.editorSettingsObject.gravityY));
+
+
+
 	}
 	this.resize = function () {
 		this.canvas.width = window.innerWidth;

@@ -413,12 +413,12 @@ function Game() {
 
     this.onKeyDown = function (e) {
         if(document.activeElement != document.body && document.activeElement != this.canvas) return;
-        if (e.keyCode == 84) { //t
-            if (this.gameState == this.GAMESTATE_EDITOR) {
+        if (this.gameState == this.GAMESTATE_EDITOR) {
+            if (e.keyCode == 84 || e.keyCode == 27) { // t esc enter
                 if (this.run) {
                     if (e.shiftKey) this.editor.breakPrefabs = true; //TODO: REMOVE
                     this.stopTestingWorld(e);
-                } else {
+                } else if(e.keyCode !== 27){
                     this.testWorld();
                 }
             }
@@ -448,9 +448,9 @@ function Game() {
         this.initLevel(levelsData.mainMenuLevel);
         ui.showMainMenu();
         ui.hideGameOverMenu();
+        this.gameState = this.GAMESTATE_MENU;
         this.runWorld();
         this.interactive = false;
-        this.gameState = this.GAMESTATE_MENU;
         this.editor.editing = false;
         this.stopAutoSave();
 

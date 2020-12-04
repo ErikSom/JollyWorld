@@ -296,10 +296,12 @@ function UIManager() {
     }
     this.hideLevelLoader = function () {
         levelLoader.domElement.style.display = 'none';
+        this.hideFilterMenu();
+        this.hideSocialShareMenu();
     }
     this.showFilterMenu = function () {
         if (!filterMenu) {
-            const levelEditGUIWidth = 350;
+            const levelEditGUIWidth = 200;
             filterMenu = new dat.GUI({
                 autoPlace: false,
                 width: levelEditGUIWidth
@@ -310,6 +312,13 @@ function UIManager() {
             folder.domElement.classList.add('custom');
 
             folder.open();
+
+            const closeButton = document.createElement('div');
+            closeButton.setAttribute('class', 'closeWindowIcon');
+            folder.domElement.append(closeButton);
+            closeButton.addEventListener('click', () => {
+                self.hideFilterMenu();
+            });
 
             var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
@@ -413,17 +422,6 @@ function UIManager() {
                 self.generateFilteredPublishLevelList();
             })
 
-
-            let backButton = document.createElement('div');
-            backButton.setAttribute('class', 'backButton menuButton')
-            backButton.innerHTML = 'Back';
-            divWrapper.appendChild(backButton);
-
-            backButton.addEventListener('click', () => {
-                self.hideFilterMenu();
-            })
-
-
             targetDomElement.appendChild(divWrapper);
             customGUIContainer.appendChild(filterMenu.domElement);
             filterMenu.domElement.style.position = 'absolute';
@@ -439,7 +437,9 @@ function UIManager() {
 
     }
     this.hideFilterMenu = function () {
-        filterMenu.domElement.style.visibility = 'hidden';
+        if(filterMenu){
+            filterMenu.domElement.style.visibility = 'hidden';
+        }
     }
 
     this.showLevelBanner = function () {
@@ -888,6 +888,13 @@ function UIManager() {
 
             folder.open();
 
+            const closeButton = document.createElement('div');
+            closeButton.setAttribute('class', 'closeWindowIcon');
+            folder.domElement.append(closeButton);
+            closeButton.addEventListener('click', () => {
+                self.hideSocialShareMenu();
+            });
+
             const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
             const divWrapper = document.createElement('div');
@@ -912,9 +919,14 @@ function UIManager() {
             embedDiv.appendChild(copyButton);
 
             copyButton.addEventListener('click', ()=> {
+                const copyText = '(copied) ';
+                if(inputURL.value.startsWith(copyText)){
+                    inputURL.value = inputURL.value.substr(copyText.length);
+                }
                 inputURL.select();
                 inputURL.setSelectionRange(0, 99999);
                 document.execCommand("copy");
+                inputURL.value = copyText+inputURL.value;
             })
 
 
@@ -933,17 +945,6 @@ function UIManager() {
                 inputURL.value = decodeURIComponent(url);
                 socialMediaPlaceHolder.innerHTML = html;
             }
-
-
-            let backButton = document.createElement('div');
-            backButton.setAttribute('class', 'backButton menuButton')
-            backButton.innerHTML = 'Back';
-            divWrapper.appendChild(backButton);
-
-            backButton.addEventListener('click', () => {
-                self.hideSocialShareMenu();
-            })
-
 
             targetDomElement.appendChild(divWrapper);
             customGUIContainer.appendChild(socialShareScreen.domElement);
@@ -1001,7 +1002,9 @@ function UIManager() {
     }
 
     this.hideSocialShareMenu = function(){
-        socialShareScreen.domElement.style.visibility = 'hidden';
+        if(socialShareScreen){
+            socialShareScreen.domElement.style.visibility = 'hidden';
+        }
     }
 
 
