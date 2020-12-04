@@ -42,6 +42,7 @@ let customGUIContainer = document.getElementById('custom-gui');
 let windowHideTime = 500;
 
 let levelList = undefined;
+export let helpClosed = [];
 
 export const hide = function () {
     hideEditorPanels();
@@ -1866,6 +1867,8 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 export const showHelp = function(i){
     removeShowHelp();
 
+    if(helpClosed[i]) return;
+
     const loginGUIWidth = 320;
 
     helpScreen = new dat.GUI({
@@ -1883,6 +1886,7 @@ export const showHelp = function(i){
     closeButton.setAttribute('class', 'closeWindowIcon');
     targetFolder.domElement.append(closeButton);
     closeButton.addEventListener('click', () => {
+        helpClosed[i] = true;
         removeShowHelp();
     });
 

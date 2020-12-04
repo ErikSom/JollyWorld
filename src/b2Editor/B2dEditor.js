@@ -103,6 +103,8 @@ const _B2dEditor = function () {
 	this.shiftDown = false;
 	this.spaceDown = false;
 	this.spaceCameraDrag = false;
+	this.spaceDownTime = 0;
+	this.doubleSpaceTime = 0;
 	this.altDown = false;
 	this.editing = true;
 
@@ -430,6 +432,16 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
+
+				ui.editorGUI.editData.resetHelp = ()=>{
+					ui.helpClosed.length = 0;
+				}
+				targetFolder.add(ui.editorGUI.editData, "resetHelp").name('reset help');
+
+				ui.editorGUI.editData.findPlayer = ()=>{
+					this.findPlayer();
+				}
+				targetFolder.add(ui.editorGUI.editData, "findPlayer").name('find player');
 
 				break
 			case this.tool_CAMERA:
@@ -2097,6 +2109,24 @@ const _B2dEditor = function () {
 			if (!this.editorIcons[i].isPrefabJointGraphic) this.editorIcons[i].visible = true;
 		}
 	}
+	this.findPlayer = function(){
+		for (let key in this.activePrefabs) {
+            if (this.activePrefabs.hasOwnProperty(key)) {
+                if (this.activePrefabs[key].class.constructor.playableCharacter) {
+
+					let cameraTargetX = this.activePrefabs[key].x;
+					let cameraTargetY = this.activePrefabs[key].y;
+					cameraTargetX -= game.canvas.width / 2.0 / this.container.scale.x;
+					cameraTargetY -= game.canvas.height / 2.0 / this.container.scale.y;
+					cameraTargetX *= this.container.scale.x;
+					cameraTargetY *= this.container.scale.y;
+
+					camera.set({x:-cameraTargetX, y:-cameraTargetY});
+					scrollBars.update();
+                }
+            }
+        }
+	}
 
 	this.onMouseDown = function (evt) {
 		if (this.editing) {
@@ -3538,7 +3568,9 @@ const _B2dEditor = function () {
 			e.preventDefault();
 			//this.mouseTransformType = this.mouseTransformType_Rotation;
 		} else if (e.keyCode == 32) { //space
+			if(!this.spaceDown) this.spaceDownTime = Date.now()+Settings.doubleClickTime;
 			this.spaceDown = true;
+			if(Date.now() < this.doubleSpaceTime) this.findPlayer();
 		} else if (e.keyCode == 18) { // alt
 			this.altDown = true;
 		} else if (e.keyCode == 187 || e.keyCode == 61 || e.keyCode == 107) { // +
@@ -3639,6 +3671,7 @@ const _B2dEditor = function () {
 			this.ctrlDown = false;
 		} else if (e.keyCode == 32) { //space
 			this.spaceDown = false;
+			if(Date.now() < this.spaceDownTime) this.doubleSpaceTime = Date.now()+Settings.doubleClickTime;
 		} else if (e.keyCode == 18) {
 			this.altDown = false;
 		}
