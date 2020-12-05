@@ -17,6 +17,8 @@ export var Settings = {
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,
+    availableVehicles:['Bike', 'NoVehicle'],
+    vehicleLayers:{'Bike':68, 'NoVehicle':50}, // we need the layers if we want to be able to switch vehicles, so we can correct the level
     /*EDITOR*/
     autoSaveInterval:5000,
     availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],

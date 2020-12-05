@@ -7533,12 +7533,13 @@ const _B2dEditor = function () {
 
 	this.buildJSON = function (json, prefabInstanceName) {
 		//console.log(json);
-		var createdObjects = new this.lookupObject();
+		let createdObjects = new this.lookupObject();
 
-		var startChildIndex = this.textures.children.length;
-		var prefabOffset = 0;
+		let startChildIndex = this.textures.children.length;
+		let prefabOffset = 0;
 
 		let jsonString = null;
+		let vehicleOffset = 0;
 
 		if (json != null) {
 			if (typeof json == 'string'){
@@ -7546,19 +7547,19 @@ const _B2dEditor = function () {
 				json = JSON.parse(json);
 			}
 			//clone json to not destroy old references
-			var worldObjects = JSON.parse(JSON.stringify(json));
+			let worldObjects = JSON.parse(JSON.stringify(json));
 
-			var i;
-			var obj;
-			var worldObject;
+			let i;
+			let obj;
+			let worldObject;
 			for (i = 0; i < worldObjects.objects.length; i++) {
 				obj = this.parseArrObject(worldObjects.objects[i]);
 
 				if (prefabInstanceName) {
 					obj.prefabInstanceName = prefabInstanceName;
 
-					var offsetX = this.activePrefabs[prefabInstanceName].x;
-					var offsetY = this.activePrefabs[prefabInstanceName].y;
+					let offsetX = this.activePrefabs[prefabInstanceName].x;
+					let offsetY = this.activePrefabs[prefabInstanceName].y;
 
 					if (obj.type == this.object_BODY) {
 						offsetX /= this.PTM;
@@ -7587,14 +7588,26 @@ const _B2dEditor = function () {
 					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
-					var prefabStartChildIndex = this.textures.children.length;
-					var prefabObjects = this.buildPrefabFromObj(obj);
+					debugger;
+					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
+						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
+						obj.prefabName = Settings.availableVehicles[game.selectedVehicle];
+						obj.settings.selectedVehicle = obj.prefabName;
+						// we get the difference between the old vehicleOffset and the new one
+						vehicleOffset -= Settings.vehicleLayers[obj.prefabName];
+					}
+					// prefaboffset = 68
+					const prefabStartChildIndex = this.textures.children.length; // 75
+					const prefabObjects = this.buildPrefabFromObj(obj);
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
 						createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
 						createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 						createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
-						prefabOffset = this.textures.children.length - prefabOffset;
+						prefabOffset = this.textures.children.length - prefabOffset; // 90 - 68 = 22;
+						if(obj.settings.selectedVehicle){
+							console.log("PREFABOFFSET:", this.textures.children.length-prefabStartChildIndex);
+						}
 					}
 				} else if (obj.type == this.object_GRAPHIC) {
 					if (obj.bodyID != undefined) {

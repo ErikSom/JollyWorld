@@ -86,6 +86,8 @@ function Game() {
     this.levelWon = false;
     this.gameOver = false;
     this.checkPointData = null;
+    this.selectedCharacter = 0;
+    // this.selectedVehicle = 1;
 
     this.ui = ui;
 
@@ -416,7 +418,7 @@ function Game() {
         if (this.gameState == this.GAMESTATE_EDITOR) {
             if (e.keyCode == 84 || e.keyCode == 27) { // t esc enter
                 if (this.run) {
-                    if (e.shiftKey) this.editor.breakPrefabs = true; //TODO: REMOVE
+                    if (e.shiftKey && e.ctrlKey) this.editor.breakPrefabs = true; //TODO: REMOVE
                     this.stopTestingWorld(e);
                 } else if(e.keyCode !== 27){
                     this.testWorld();
@@ -569,7 +571,7 @@ function Game() {
     }
     this.newLevel = function () {
         let data = {
-            json: '{"objects":[[4,0,0,0,{"playableCharacter":false,"selectedVehicle":"Bike","life":300},"Bike",0]],"settings":[10,0,10]}',
+            json: '{"objects":[[4,0,0,0,{"selectedVehicle":"Bike","life":300},"Bike",0]],"settings":[10,0,10]}',
             title: '',
             description: '',
             crossPromos: [],

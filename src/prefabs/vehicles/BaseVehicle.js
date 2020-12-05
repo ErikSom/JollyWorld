@@ -4,6 +4,7 @@ import * as extramath from '../../b2Editor/utils/extramath';
 import {
     game
 } from "../../Game";
+import { Settings } from '../../Settings';
 
 
 export class BaseVehicle extends PrefabManager.basePrefab {
@@ -190,5 +191,5 @@ BaseVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
         max: 10000.0,
         step: 1.0
 	},
-    "selectedVehicle": ["Bike", "Stroller", "HorseVehicle", "NoVehicle"]
+    "selectedVehicle": Settings.availableVehicles
 });
