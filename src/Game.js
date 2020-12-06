@@ -33,6 +33,8 @@ import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
 
+import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
+
 
 const nanoid = require('nanoid');
 const particles = require('pixi-particles');
@@ -88,6 +90,9 @@ function Game() {
     this.checkPointData = null;
 
     this.ui = ui;
+
+    // path pixi for camera support
+    PathRenderTarget();
 
     this.init = function () {
 
@@ -146,11 +151,11 @@ function Game() {
         this.m_groundBody = this.world.CreateBody(bodyDef);
 
         //container
-        this.myContainer = new PIXI.Graphics();
+        this.myContainer = new PIXI.Container();
         this.stage.addChild(this.myContainer);
 
         //container
-        this.myEffectsContainer = new PIXI.Graphics();
+        this.myEffectsContainer = new PIXI.Container();
         this.stage.addChild(this.myEffectsContainer);
 
         //Debug Draw
