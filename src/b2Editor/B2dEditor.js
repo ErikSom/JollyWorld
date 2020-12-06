@@ -127,17 +127,18 @@ const _B2dEditor = function () {
 
 	this.selectingTriggerTarget = false;
 
+	this.cameraHolder;
+
 	//COLORS
 	this.selectionBoxColor = "0x5294AE";
 	this.jointLineColor = "0x888888";
-
 
 	this.load = function (loader) {
 		loader.add("assets/images/gui/iconSet.json");
 	}
 
-	this.init = function (_container, _world, _PTM) {
-
+	this.init = function (_root, _container, _world, _PTM) {
+		this.root = _root;
 		this.container = _container;
 		this.world = _world;
 		this.initialPTM = _PTM;
@@ -150,7 +151,7 @@ const _B2dEditor = function () {
 
 		//Editor Draw
 		this.debugGraphics = new PIXI.Graphics();
-		this.container.parent.addChild(this.debugGraphics);
+		this.root.addChild(this.debugGraphics);
 
 		this.mousePosPixel = new b2Vec2(0, 0);
 		this.mouseDocumentPosPixel = new b2Vec2(0, 0);
@@ -160,6 +161,12 @@ const _B2dEditor = function () {
 
 		ui.initGui();
 		this.selectTool(this.tool_SELECT);
+
+		Object.defineProperty(this, 'cameraHolder', {
+			get: () => {
+			 	return this.container.camera || this.container;
+			}
+		});
 	}
 
 	this.prefabListGuiState = {};
@@ -244,8 +251,8 @@ const _B2dEditor = function () {
 					const domx = Math.max(e.pageX, rect.right + 200);
 					const domy = e.pageY;
 
-					const x = domx / self.container.scale.x - self.container.x / self.container.scale.x;
-					const y = domy / self.container.scale.y - self.container.y / self.container.scale.x;
+					const x = domx / self.camera.scale.x - self.camera.x / self.camera.scale.x;
+					const y = domy / self.camera.scale.y - self.camera.y / self.camera.scale.x;
 
 					if(folderName === 'Prefabs'){
 						const data = new self.prefabObject;
@@ -1671,23 +1678,24 @@ const _B2dEditor = function () {
 
 		if(this.editorSettingsObject.showPlayerHistory) this.drawPlayerHistory();
 
+		const camera = this.cameraHolder;
 		// Draw 0,0 reference
 		this.debugGraphics.lineStyle(3, "0x00FF00", 1);
 		const crossSize = 100;
-		this.debugGraphics.moveTo(this.container.x, -crossSize + this.container.y);
-		this.debugGraphics.lineTo(this.container.x, crossSize + this.container.y);
-		this.debugGraphics.moveTo(-crossSize + this.container.x, this.container.y);
-		this.debugGraphics.lineTo(crossSize + this.container.x, this.container.y);
+		this.debugGraphics.moveTo(camera.x, -crossSize + camera.y);
+		this.debugGraphics.lineTo(camera.x, crossSize + camera.y);
+		this.debugGraphics.moveTo(-crossSize + camera.x, camera.y);
+		this.debugGraphics.lineTo(crossSize + camera.x, camera.y);
 
-		this.debugGraphics.moveTo(this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, -crossSize + this.container.y);
-		this.debugGraphics.lineTo(this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, crossSize + this.container.y);
-		this.debugGraphics.moveTo(-crossSize + this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
-		this.debugGraphics.lineTo(crossSize + this.container.x - editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
+		this.debugGraphics.moveTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
+		this.debugGraphics.lineTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
+		this.debugGraphics.moveTo(-crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+		this.debugGraphics.lineTo(crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
 
-		this.debugGraphics.moveTo(this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, -crossSize + this.container.y);
-		this.debugGraphics.lineTo(this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, crossSize + this.container.y);
-		this.debugGraphics.moveTo(-crossSize + this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
-		this.debugGraphics.lineTo(crossSize + this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
+		this.debugGraphics.moveTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
+		this.debugGraphics.lineTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
+		this.debugGraphics.moveTo(-crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+		this.debugGraphics.lineTo(crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
 
 
 		this.doEditorGUI();
@@ -1780,18 +1788,21 @@ const _B2dEditor = function () {
 	}
 
 	this.handleParallax = function(){
+		return;
+		const camera = this.cameraHolder;
+
 		this.parallaxObject.forEach(sprite=>{
 			if(sprite.data.parallax){
-				sprite.x = -(this.container.x-window.innerWidth/2)/this.container.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.x
-				sprite.y = -(this.container.y-window.innerHeight/2)/this.container.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.y
+				sprite.x = -(camera.x-window.innerWidth/2)/camera.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.x
+				sprite.y = -(camera.y-window.innerHeight/2)/camera.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.y
 			}
 			if(sprite.data.repeatTeleportX){
-				while(sprite.x+(this.container.x-window.innerWidth/2)/this.container.scale.x > sprite.data.repeatTeleportX) sprite.x-=sprite.data.repeatTeleportX*2
-				while(sprite.x+(this.container.x-window.innerWidth/2)/this.container.scale.x <-sprite.data.repeatTeleportX) sprite.x+=sprite.data.repeatTeleportX*2
+				while(sprite.x+(camera.x-window.innerWidth/2)/camera.scale.x > sprite.data.repeatTeleportX) sprite.x-=sprite.data.repeatTeleportX*2
+				while(sprite.x+(camera.x-window.innerWidth/2)/camera.scale.x <-sprite.data.repeatTeleportX) sprite.x+=sprite.data.repeatTeleportX*2
 			}
 			if(sprite.data.repeatTeleportY){
-				while(sprite.y+(this.container.y-window.innerWidth/2)/this.container.scale.y > sprite.data.repeatTeleportY) sprite.y-=sprite.data.repeatTeleportY*2
-				while(sprite.y+(this.container.y-window.innerWidth/2)/this.container.scale.y <-sprite.data.repeatTeleportY) sprite.y+=sprite.data.repeatTeleportY*2
+				while(sprite.y+(camera.y-window.innerWidth/2)/camera.scale.y > sprite.data.repeatTeleportY) sprite.y-=sprite.data.repeatTeleportY*2
+				while(sprite.y+(camera.y-window.innerWidth/2)/camera.scale.y <-sprite.data.repeatTeleportY) sprite.y+=sprite.data.repeatTeleportY*2
 			}
 		});
 	}
@@ -2110,16 +2121,18 @@ const _B2dEditor = function () {
 		}
 	}
 	this.findPlayer = function(){
+		const camera = this.cameraHolder;
+
 		for (let key in this.activePrefabs) {
             if (this.activePrefabs.hasOwnProperty(key)) {
                 if (this.activePrefabs[key].class.constructor.playableCharacter) {
 
 					let cameraTargetX = this.activePrefabs[key].x;
 					let cameraTargetY = this.activePrefabs[key].y;
-					cameraTargetX -= game.canvas.width / 2.0 / this.container.scale.x;
-					cameraTargetY -= game.canvas.height / 2.0 / this.container.scale.y;
-					cameraTargetX *= this.container.scale.x;
-					cameraTargetY *= this.container.scale.y;
+					cameraTargetX -= game.canvas.width / 2.0 / camera.scale.x;
+					cameraTargetY -= game.canvas.height / 2.0 / camera.scale.y;
+					cameraTargetX *= camera.scale.x;
+					cameraTargetY *= camera.scale.y;
 
 					camera.set({x:-cameraTargetX, y:-cameraTargetY});
 					scrollBars.update();
@@ -2246,7 +2259,7 @@ const _B2dEditor = function () {
 						if (this.activeVertices.length > editorSettings.maxLineVertices) this.activeVertices.shift();
 					}
 				} else {
-					this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
+					this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
 					if (this.activeVertices && this.activeVertices.length > 2) {
 						var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
 						if (bodyObject) this.buildBodyFromObj(bodyObject);
@@ -2334,7 +2347,7 @@ const _B2dEditor = function () {
 
 						points.forEach( point => {
 
-							const ignore = Math.abs(vertice.x-point.x) * this.container.scale.x <= Settings.handleClosestDistance && Math.abs(vertice.y-point.y) * this.container.scale.x <= Settings.handleClosestDistance;
+							const ignore = Math.abs(vertice.x-point.x) * this.cameraHolder.scale.x <= Settings.handleClosestDistance && Math.abs(vertice.y-point.y) * this.cameraHolder.scale.x <= Settings.handleClosestDistance;
 							if(!ignore){
 								const vpl = Math.sqrt(point.x*point.x + point.y*point.y);
 								const vpa = this.verticeEditingSprite.rotation + Math.atan2(point.y, point.x);
@@ -2437,7 +2450,7 @@ const _B2dEditor = function () {
 			if (this.mouseDown) {
 				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
 				if (this.spaceCameraDrag) {
-					move.SelfMul(this.container.scale.x);
+					move.SelfMul(this.cameraHolder.scale.x);
 					camera.pan(move);
 					scrollBars.update();
 				} else if (this.selectedTool == this.tool_SELECT) {
@@ -2558,24 +2571,24 @@ const _B2dEditor = function () {
 					delete this.verticeEditingSprite.highlightVertice;
 					delete this.verticeEditingSprite.highlightVerticeIndex;
 
-					if(distance >= 0 && distance * this.container.scale.x < Settings.handleClosestDistance){
+					if(distance >= 0 && distance * this.cameraHolder.scale.x < Settings.handleClosestDistance){
 
 						let toClose = false;
 						vertices.forEach((vertice, verticeIndex) => {
-							const verticeX = this.container.x + (this.verticeEditingSprite.x + vertice.x) * this.container.scale.x;
-							const verticeY = this.container.y + (this.verticeEditingSprite.y + vertice.y) * this.container.scale.y;
-							const highlightX = this.container.x + (this.verticeEditingSprite.x + point.x) * this.container.scale.x;
-							const highlightY = this.container.y + (this.verticeEditingSprite.y + point.y) * this.container.scale.y;
+							const verticeX = this.cameraHolder.x + (this.verticeEditingSprite.x + vertice.x) * this.cameraHolder.scale.x;
+							const verticeY = this.cameraHolder.y + (this.verticeEditingSprite.y + vertice.y) * this.cameraHolder.scale.y;
+							const highlightX = this.cameraHolder.x + (this.verticeEditingSprite.x + point.x) * this.cameraHolder.scale.x;
+							const highlightY = this.cameraHolder.y + (this.verticeEditingSprite.y + point.y) * this.cameraHolder.scale.y;
 							if(Math.abs(highlightX-verticeX) < Settings.handleClosestDistance*2 && Math.abs(highlightY-verticeY) < Settings.handleClosestDistance*2){
 								toClose = true;
 							}
 							if(this.verticeEditingSprite.selectedVertice !== undefined && this.verticeEditingSprite.selectedVertice.includes(verticeIndex)){
 								[vertice.point1, vertice.point2].forEach(dragPoint=>{
 									if(dragPoint){
-										const verticeX = this.container.x + (this.verticeEditingSprite.x + dragPoint.x) * this.container.scale.x;
-										const verticeY = this.container.y + (this.verticeEditingSprite.y + dragPoint.y) * this.container.scale.y;
-										const highlightX = this.container.x + (this.verticeEditingSprite.x + point.x) * this.container.scale.x;
-										const highlightY = this.container.y + (this.verticeEditingSprite.y + point.y) * this.container.scale.y;
+										const verticeX = this.cameraHolder.x + (this.verticeEditingSprite.x + dragPoint.x) * this.cameraHolder.scale.x;
+										const verticeY = this.cameraHolder.y + (this.verticeEditingSprite.y + dragPoint.y) * this.cameraHolder.scale.y;
+										const highlightX = this.cameraHolder.x + (this.verticeEditingSprite.x + point.x) * this.cameraHolder.scale.x;
+										const highlightY = this.cameraHolder.y + (this.verticeEditingSprite.y + point.y) * this.cameraHolder.scale.y;
 										if(Math.abs(highlightX-verticeX) < Settings.handleClosestDistance*2 && Math.abs(highlightY-verticeY) < Settings.handleClosestDistance*2){
 											toClose = true;
 										}
@@ -2716,7 +2729,7 @@ const _B2dEditor = function () {
 	this.collidingWithTransformGui = function(){
 		if(!this.transformGUI) return;
 		const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
-		const screenPosition = this.container.toGlobal(mousePixiPos);
+		const screenPosition = this.cameraHolder.toGlobal(mousePixiPos);
 		let collidingChild = undefined;
 		this.transformGUI.children.forEach(child=>{
 			if(child.visible && child.containsPoint && child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))) collidingChild = child;
@@ -3233,7 +3246,7 @@ const _B2dEditor = function () {
 				if(ui.editorGUI.editData.isPhysicsObject){
 					let bodyObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
-						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
+						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.cameraHolder.scale.x * this.PTM;
 						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
 							bodyObject = new this.bodyObject;
 							bodyObject.x = this.startSelectionPoint.x;
@@ -3261,7 +3274,7 @@ const _B2dEditor = function () {
 				}else{
 					let graphicObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
-						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.container.scale.x * this.PTM;
+						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.cameraHolder.scale.x * this.PTM;
 						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
 							graphicObject = new this.graphicObject;
 							graphicObject.x = this.startSelectionPoint.x*Settings.PTM;
@@ -3277,7 +3290,7 @@ const _B2dEditor = function () {
 							this.buildGraphicFromObj(graphicObject);
 						}
 					}else{
-						// this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.container.scale.x);
+						// this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
 						graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 						if (graphicObject) {
 							graphicObject.colorFill = ui.editorGUI.editData.colorFill;
@@ -3296,7 +3309,7 @@ const _B2dEditor = function () {
 					y: this.mousePosWorld.y
 				});
 
-				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, ui.editorGUI.editData.smoothen, this.container.scale.x);
+				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, ui.editorGUI.editData.smoothen, this.cameraHolder.scale.x);
 				if (this.activeVertices && this.activeVertices.length > 2) {
 					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 					graphicObject.colorFill = ui.editorGUI.editData.colorFill;
@@ -3719,9 +3732,9 @@ const _B2dEditor = function () {
 		for (i = this.textures.children.length - 1; i >= 0; i--) {
 			const sprite = this.textures.getChildAt(i);
 			const spriteBounds = sprite.getBounds();
-			const posX = spriteBounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-			const posY = spriteBounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
-			const spriteRect = new PIXI.Rectangle(posX, posY, spriteBounds.width / this.container.scale.x, spriteBounds.height / this.container.scale.y);
+			const posX = spriteBounds.x / this.cameraHolder.scale.x - this.cameraHolder.x / this.cameraHolder.scale.x;
+			const posY = spriteBounds.y / this.cameraHolder.scale.y - this.cameraHolder.y / this.cameraHolder.scale.y;
+			const spriteRect = new PIXI.Rectangle(posX, posY, spriteBounds.width / this.cameraHolder.scale.x, spriteBounds.height / this.cameraHolder.scale.y);
 			const selectionRect = new PIXI.Rectangle(lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x - lowerBoundPixi.x, upperBoundPixi.y - lowerBoundPixi.y);
 			if (!(((spriteRect.y + spriteRect.height) < selectionRect.y) ||
 					(spriteRect.y > (selectionRect.y + selectionRect.height)) ||
@@ -3759,9 +3772,9 @@ const _B2dEditor = function () {
 					graphic.rotation = 0;
 					const bounds = graphic.getBounds();
 
-					const posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-					const posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
-					const spriteRect = new PIXI.Rectangle(posX, posY, bounds.width / this.container.scale.x, bounds.height / this.container.scale.y);
+					const posX = bounds.x / this.cameraHolder.scale.x - this.cameraHolder.x / this.cameraHolder.scale.x;
+					const posY = bounds.y / this.cameraHolder.scale.y - this.cameraHolder.y / this.cameraHolder.scale.y;
+					const spriteRect = new PIXI.Rectangle(posX, posY, bounds.width / this.cameraHolder.scale.x, bounds.height / this.cameraHolder.scale.y);
 					const centerX = spriteRect.x + spriteRect.width/2;
 					const centerY = spriteRect.y + spriteRect.height/2;
 
@@ -3792,7 +3805,7 @@ const _B2dEditor = function () {
 						i--;
 					}
 				}else if(graphic.data.type !== this.object_JOINT){
-					const screenPosition = this.container.toGlobal(lowerBoundPixi);
+					const screenPosition = this.cameraHolder.toGlobal(lowerBoundPixi);
 					let containsPoint = false;
 					graphic.children.forEach(child=>{
 						if(child.containsPoint && child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
@@ -3906,10 +3919,10 @@ const _B2dEditor = function () {
 				if (origin) sprite.rotation = 0;
 				var bounds = sprite.getBounds();
 				var spriteAABB = new b2AABB;
-				var posX = bounds.x / this.container.scale.x - this.container.x / this.container.scale.x;
-				var posY = bounds.y / this.container.scale.y - this.container.y / this.container.scale.y;
+				var posX = bounds.x / this.cameraHolder.scale.x - this.cameraHolder.x / this.cameraHolder.scale.x;
+				var posY = bounds.y / this.cameraHolder.scale.y - this.cameraHolder.y / this.cameraHolder.scale.y;
 				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.container.scale.x) / this.PTM, (posY + bounds.height / this.container.scale.y) / this.PTM);
+				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.cameraHolder.scale.x) / this.PTM, (posY + bounds.height / this.cameraHolder.scale.y) / this.PTM);
 				aabb.Combine1(spriteAABB);
 				if (origin) sprite.rotation = oldRot;
 			}
@@ -3930,12 +3943,12 @@ const _B2dEditor = function () {
 			var upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.upperBound);
 
 			//Showing selection
-			this.drawBox(this.debugGraphics, this.container.x + lowerBoundPixi.x * this.container.scale.x, this.container.y + lowerBoundPixi.y * this.container.scale.y, (upperBoundPixi.x - lowerBoundPixi.x) * this.container.scale.y, (upperBoundPixi.y - lowerBoundPixi.y) * this.container.scale.x, this.selectionBoxColor);
+			this.drawBox(this.debugGraphics, this.cameraHolder.x + lowerBoundPixi.x * this.cameraHolder.scale.x, this.cameraHolder.y + lowerBoundPixi.y * this.cameraHolder.scale.y, (upperBoundPixi.x - lowerBoundPixi.x) * this.cameraHolder.scale.y, (upperBoundPixi.y - lowerBoundPixi.y) * this.cameraHolder.scale.x, this.selectionBoxColor);
 		} else {
 			aabb = new b2AABB;
 
 			//Making selection
-			if (this.mouseDown && !this.spaceCameraDrag && this.startSelectionPoint) this.drawBox(this.debugGraphics, this.container.x + this.startSelectionPoint.x * this.PTM * this.container.scale.x, this.container.y + this.startSelectionPoint.y * this.PTM * this.container.scale.y, (this.mousePosWorld.x * this.PTM - this.startSelectionPoint.x * this.PTM) * this.container.scale.x, (this.mousePosWorld.y * this.PTM - this.startSelectionPoint.y * this.PTM) * this.container.scale.y, "#000000");
+			if (this.mouseDown && !this.spaceCameraDrag && this.startSelectionPoint) this.drawBox(this.debugGraphics, this.cameraHolder.x + this.startSelectionPoint.x * this.PTM * this.cameraHolder.scale.x, this.cameraHolder.y + this.startSelectionPoint.y * this.PTM * this.cameraHolder.scale.y, (this.mousePosWorld.x * this.PTM - this.startSelectionPoint.x * this.PTM) * this.cameraHolder.scale.x, (this.mousePosWorld.y * this.PTM - this.startSelectionPoint.y * this.PTM) * this.cameraHolder.scale.y, "#000000");
 		}
 		this.selectedBoundingBox = aabb;
 
@@ -3963,7 +3976,7 @@ const _B2dEditor = function () {
 					p.y = (dx * sinAngle + dy * cosAngle);
 
 
-					this.debugGraphics.drawDashedCircle(data.radius[j] * this.container.scale.x * selectedPhysicsBody.mySprite.scale.x, (selectedPhysicsBody.mySprite.x + p.x) * this.container.scale.x + this.container.x, (selectedPhysicsBody.mySprite.y + p.y) * this.container.scale.y + this.container.y, selectedPhysicsBody.mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedCircle(data.radius[j] * this.cameraHolder.scale.x * selectedPhysicsBody.mySprite.scale.x, (selectedPhysicsBody.mySprite.x + p.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (selectedPhysicsBody.mySprite.y + p.y) * this.cameraHolder.scale.y + this.cameraHolder.y, selectedPhysicsBody.mySprite.rotation, 20, 10, offset);
 				} else {
 					var polygons = [];
 					let innerVertices;
@@ -3972,13 +3985,13 @@ const _B2dEditor = function () {
 
 					for (let k = 0; k < innerVertices.length; k++) {
 						polygons.push({
-							x: (innerVertices[k].x * this.PTM) * this.container.scale.x * selectedPhysicsBody.mySprite.scale.x,
-							y: (innerVertices[k].y * this.PTM) * this.container.scale.y * selectedPhysicsBody.mySprite.scale.y
+							x: (innerVertices[k].x * this.PTM) * this.cameraHolder.scale.x * selectedPhysicsBody.mySprite.scale.x,
+							y: (innerVertices[k].y * this.PTM) * this.cameraHolder.scale.y * selectedPhysicsBody.mySprite.scale.y
 						});
 
 
 					}
-					this.debugGraphics.drawDashedPolygon(polygons, selectedPhysicsBody.mySprite.x * this.container.scale.x + this.container.x, selectedPhysicsBody.mySprite.y * this.container.scale.y + this.container.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedPolygon(polygons, selectedPhysicsBody.mySprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, selectedPhysicsBody.mySprite.y * this.cameraHolder.scale.y + this.cameraHolder.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 				}
 			}
 		}
@@ -3995,12 +4008,12 @@ const _B2dEditor = function () {
 					let [color, x, y, angle] = part;
 					graphic.lineStyle(1, color, 1);
 
-					const size = 32*this.container.scale.x;
+					const size = 32*this.cameraHolder.scale.x;
 					if(i == 0) graphic.drawRect(-size/2, -size*4/2, size, size*4);
-					else graphic.drawCircle(0, 0, 30*this.container.scale.x);
+					else graphic.drawCircle(0, 0, 30*this.cameraHolder.scale.x);
 
-					x = this.container.x + x*Settings.PTM * this.container.scale.x;
-					y = this.container.y + y*Settings.PTM * this.container.scale.y;
+					x = this.cameraHolder.x + x*Settings.PTM * this.cameraHolder.scale.x;
+					y = this.cameraHolder.y + y*Settings.PTM * this.cameraHolder.scale.y;
 					graphic.x = x;
 					graphic.y = y;
 					if(angle) graphic.rotation = angle;
@@ -4028,22 +4041,22 @@ const _B2dEditor = function () {
 						tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
 
 						this.debugGraphics.lineStyle(1, "0x707070", 1);
-						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-						this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(sprite.rotation));
+						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+						this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(sprite.rotation));
 
 
 						this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-						this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(upAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(upAngle));
+						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+						this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(upAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(upAngle));
 
 						this.debugGraphics.lineStyle(1, "0xFF3300", 1);
-						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-						this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(lowAngle));
+						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+						this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(lowAngle));
 
 						this.debugGraphics.lineStyle(1, "0x000000", 0);
 						this.debugGraphics.beginFill("0xFF9900", 0.3);
-						this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-						this.debugGraphics.arc(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y, lineLength, upAngle, lowAngle, false);
+						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+						this.debugGraphics.arc(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y, lineLength, upAngle, lowAngle, false);
 						this.debugGraphics.endFill();
 
 						//FOR OBJECT B
@@ -4055,21 +4068,21 @@ const _B2dEditor = function () {
 							tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
 
 							this.debugGraphics.lineStyle(1, "0x707070", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(sprite.rotation));
+							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(sprite.rotation));
 
 							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(upAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(upAngle));
+							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(upAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(upAngle));
 
 							this.debugGraphics.lineStyle(1, "0x8105BB", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.container.scale.y + this.container.y + lineLength * Math.sin(lowAngle));
+							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(lowAngle));
 
 							this.debugGraphics.lineStyle(1, "0x000000", 0);
 							this.debugGraphics.beginFill("0xC554FA", 0.3);
-							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-							this.debugGraphics.arc(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y, lineLength, lowAngle, upAngle, false);
+							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.arc(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y, lineLength, lowAngle, upAngle, false);
 							this.debugGraphics.endFill();
 						}
 					}
@@ -4104,36 +4117,36 @@ const _B2dEditor = function () {
 							};
 
 							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-							this.debugGraphics.moveTo((tarSprite.x + lowerLengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y + lowerLengthVec.y) * this.container.scale.y + this.container.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.moveTo((tarSprite.x + lowerLengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y + lowerLengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
 
 							drawArrow(tarSprite.x + lowerLengthVec.x, tarSprite.y + lowerLengthVec.y, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 							var arrowPosition = 0.2;
 							if (sprite.data.lowerLimit < -300) drawArrow(tarSprite.x + lowerLengthVec.x * arrowPosition, tarSprite.y + lowerLengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 
 							this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-							this.debugGraphics.moveTo((tarSprite.x + upperLengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y + upperLengthVec.y) * this.container.scale.y + this.container.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.moveTo((tarSprite.x + upperLengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y + upperLengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
 
 							drawArrow(tarSprite.x + upperLengthVec.x, tarSprite.y + upperLengthVec.y, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 							var arrowPosition = 0.2;
 							if (sprite.data.upperLimit > 300) drawArrow(tarSprite.x + upperLengthVec.x * arrowPosition, tarSprite.y + upperLengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 
 						} else {
-							const length = 5000 / this.container.scale.x;
+							const length = 5000 / this.cameraHolder.scale.x;
 							var lengthVec = {
 								x: length * Math.cos(sprite.rotation + 270 * this.DEG2RAD),
 								y: length * Math.sin(sprite.rotation + 270 * this.DEG2RAD)
 							};
 							var arrowPosition = 0.03;
 							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-							this.debugGraphics.moveTo((tarSprite.x - lengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y - lengthVec.y) * this.container.scale.y + this.container.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+							this.debugGraphics.moveTo((tarSprite.x - lengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y - lengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
 							drawArrow(tarSprite.x - lengthVec.x * arrowPosition, tarSprite.y - lengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 
 							this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
-							this.debugGraphics.lineTo((tarSprite.x + lengthVec.x) * this.container.scale.x + this.container.x, (tarSprite.y + lengthVec.y) * this.container.scale.y + this.container.y);
+							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineTo((tarSprite.x + lengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y + lengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
 							drawArrow(tarSprite.x + lengthVec.x * arrowPosition, tarSprite.y + lengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
 						}
 					});
@@ -4141,13 +4154,13 @@ const _B2dEditor = function () {
 				// draw joint lines
 				this.debugGraphics.lineStyle(1, this.jointLineColor, 1);
 				tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
-				this.debugGraphics.moveTo(sprite.x * this.container.scale.x + this.container.x, sprite.y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+				this.debugGraphics.moveTo(sprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, sprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
 
 				if (sprite.data.bodyB_ID != undefined) {
 					tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
-					this.debugGraphics.moveTo(sprite.x * this.container.scale.x + this.container.x, sprite.y * this.container.scale.y + this.container.y);
-					this.debugGraphics.lineTo(tarSprite.x * this.container.scale.x + this.container.x, tarSprite.y * this.container.scale.y + this.container.y);
+					this.debugGraphics.moveTo(sprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, sprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+					this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
 				}
 
 			}
@@ -4192,8 +4205,8 @@ const _B2dEditor = function () {
 		const upperBoundPixi = this.getPIXIPointFromWorldPoint(this.selectedBoundingBox.upperBound);
 
 		const borderOffset = 100;
-		this.transformGUI.x = Math.max(borderOffset+iconHeight*4, Math.min(window.innerWidth-borderOffset, upperBoundPixi.x* this.container.scale.x + this.container.x))+iconHeight/2;
-		this.transformGUI.y = Math.max(borderOffset, Math.min(window.innerHeight-borderOffset, upperBoundPixi.y* this.container.scale.x + this.container.y))-iconHeight/2;
+		this.transformGUI.x = Math.max(borderOffset+iconHeight*4, Math.min(window.innerWidth-borderOffset, upperBoundPixi.x* this.cameraHolder.scale.x + this.cameraHolder.x))+iconHeight/2;
+		this.transformGUI.y = Math.max(borderOffset, Math.min(window.innerHeight-borderOffset, upperBoundPixi.y* this.cameraHolder.scale.x + this.cameraHolder.y))-iconHeight/2;
 	}
 
 	this.fetchControllers
@@ -4729,7 +4742,7 @@ const _B2dEditor = function () {
 				let disX = newVertice.x - firstVertice.x;
 				let disY = newVertice.y - firstVertice.y;
 				let dis = Math.sqrt(disX * disX + disY * disY);
-				const graphicClosingMargin = 1 / this.container.scale.x;
+				const graphicClosingMargin = 1 / this.cameraHolder.scale.x;
 				let hasErrors = false;
 				if (convex) {
 					if (this.checkVerticeDrawingHasErrors()) {
@@ -4745,10 +4758,10 @@ const _B2dEditor = function () {
 			}
 			this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
 
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
-			this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y);
-			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(newVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.container.scale.y + this.container.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+			this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(newVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
 
 			this.debugGraphics.endFill();
 		}
@@ -4761,8 +4774,8 @@ const _B2dEditor = function () {
 			if (i > 0) previousVertice = this.activeVertices[i - 1];
 
 			if (previousVertice) {
-				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
 			}
 
 		}
@@ -4774,8 +4787,8 @@ const _B2dEditor = function () {
 
 			activeVertice = this.activeVertices[i];
 
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
-			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
 
 			this.debugGraphics.endFill();
 		}
@@ -4841,12 +4854,12 @@ const _B2dEditor = function () {
 			if (i > 0) previousVertice = this.activeVertices[i - 1];
 
 			if (previousVertice) {
-				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
 			}
 
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y);
-			this.drawBox(this.debugGraphics, this.getPIXIPointFromWorldPoint(activeVertice).x * this.container.scale.x + this.container.x - this.verticesBoxSize / 2, this.getPIXIPointFromWorldPoint(activeVertice).y * this.container.scale.y + this.container.y - this.verticesBoxSize / 2, this.verticesBoxSize, this.verticesBoxSize, this.verticesLineColor, 1, 1, 0xFFFFFF, 1);
+			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+			this.drawBox(this.debugGraphics, this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x - this.verticesBoxSize / 2, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y - this.verticesBoxSize / 2, this.verticesBoxSize, this.verticesBoxSize, this.verticesLineColor, 1, 1, 0xFFFFFF, 1);
 
 			this.debugGraphics.endFill(); //fix
 
@@ -4871,8 +4884,8 @@ const _B2dEditor = function () {
 			const vx = vl*Math.cos(va);
 			const vy = vl*Math.sin(va);
 
-			const verticeX = this.container.x + (this.verticeEditingSprite.x + vx) * this.container.scale.x - Settings.verticeBoxSize/2;
-			const verticeY = this.container.y + (this.verticeEditingSprite.y + vy) * this.container.scale.y - Settings.verticeBoxSize/2;
+			const verticeX = this.cameraHolder.x + (this.verticeEditingSprite.x + vx) * this.cameraHolder.scale.x - Settings.verticeBoxSize/2;
+			const verticeY = this.cameraHolder.y + (this.verticeEditingSprite.y + vy) * this.cameraHolder.scale.y - Settings.verticeBoxSize/2;
 
 			if(this.verticeEditingSprite.selectedVertice){
 				if(this.verticeEditingSprite.selectedVertice.includes(index)){
@@ -4880,13 +4893,13 @@ const _B2dEditor = function () {
 
 					if(vertice.point1){
 
-						if(Math.abs(vertice.x-vertice.point1.x) * this.container.scale.x  > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) * this.container.scale.x > Settings.handleClosestDistance){
+						if(Math.abs(vertice.x-vertice.point1.x) * this.cameraHolder.scale.x  > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) * this.cameraHolder.scale.x > Settings.handleClosestDistance){
 							const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
 							const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
 							const vp1x = vp1l*Math.cos(vp1a);
 							const vp1y = vp1l*Math.sin(vp1a);
-							const verticeP1X = this.container.x + (this.verticeEditingSprite.x + vp1x) * this.container.scale.x;
-							const verticeP1Y = this.container.y + (this.verticeEditingSprite.y + vp1y) * this.container.scale.y;
+							const verticeP1X = this.cameraHolder.x + (this.verticeEditingSprite.x + vp1x) * this.cameraHolder.scale.x;
+							const verticeP1Y = this.cameraHolder.y + (this.verticeEditingSprite.y + vp1y) * this.cameraHolder.scale.y;
 
 
 							this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
@@ -4903,8 +4916,8 @@ const _B2dEditor = function () {
 								const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
 								const vp2x = vp2l*Math.cos(vp2a);
 								const vp2y = vp2l*Math.sin(vp2a);
-								const verticeP2X = this.container.x + (this.verticeEditingSprite.x + vp2x) * this.container.scale.x;
-								const verticeP2Y = this.container.y + (this.verticeEditingSprite.y + vp2y) * this.container.scale.y;
+								const verticeP2X = this.cameraHolder.x + (this.verticeEditingSprite.x + vp2x) * this.cameraHolder.scale.x;
+								const verticeP2Y = this.cameraHolder.y + (this.verticeEditingSprite.y + vp2y) * this.cameraHolder.scale.y;
 
 								this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
 								this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
@@ -4928,8 +4941,8 @@ const _B2dEditor = function () {
 			const vx = vl*Math.cos(va);
 			const vy = vl*Math.sin(va);
 
-			const verticeX = this.container.x + (this.verticeEditingSprite.x + vx) * this.container.scale.x - Settings.verticeBoxSize/2;
-			const verticeY = this.container.y + (this.verticeEditingSprite.y + vy) * this.container.scale.y - Settings.verticeBoxSize/2;
+			const verticeX = this.cameraHolder.x + (this.verticeEditingSprite.x + vx) * this.cameraHolder.scale.x - Settings.verticeBoxSize/2;
+			const verticeY = this.cameraHolder.y + (this.verticeEditingSprite.y + vy) * this.cameraHolder.scale.y - Settings.verticeBoxSize/2;
 
 			this.debugGraphics.drawRect(verticeX, verticeY, Settings.verticeBoxSize, Settings.verticeBoxSize);
 		}
@@ -4972,8 +4985,8 @@ const _B2dEditor = function () {
 
 			if (ui.editorGUI.editData.shape == "Circle") {
 				var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
-				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.container.scale.y + this.container.y, radius, 0, 2 * Math.PI, false);
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.cameraHolder.scale.x + this.cameraHolder.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.cameraHolder.scale.y + this.cameraHolder.y, radius, 0, 2 * Math.PI, false);
 			} else if (ui.editorGUI.editData.shape == "Box") {
 				this.activeVertices = [];
 				this.activeVertices.push({
@@ -4995,11 +5008,11 @@ const _B2dEditor = function () {
 
 				if (this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
 
-				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[3]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[3]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[3]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[3]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
 			} else if (ui.editorGUI.editData.shape == "Triangle") {
 				this.activeVertices = [];
 				var difX = this.mousePosWorld.x - this.startSelectionPoint.x;
@@ -5018,10 +5031,10 @@ const _B2dEditor = function () {
 
 				if (this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
 
-				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.container.scale.y + this.container.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.container.scale.x + this.container.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.container.scale.y + this.container.y);
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[2]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[2]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
 			}
 			this.debugGraphics.endFill();
 		}
@@ -6581,8 +6594,8 @@ const _B2dEditor = function () {
 		jointGraphics.y = tarObj.y;
 		jointGraphics.rotation = tarObj.rotation;
 
-		jointGraphics.scale.x = 1.0 / this.container.scale.x;
-		jointGraphics.scale.y = 1.0 / this.container.scale.y;
+		jointGraphics.scale.x = 1.0 / this.cameraHolder.scale.x;
+		jointGraphics.scale.y = 1.0 / this.cameraHolder.scale.y;
 
 
 		if (tarObj.prefabInstanceName) {
@@ -7873,7 +7886,7 @@ const _B2dEditor = function () {
 	}
 
 	this.getWorldPointFromPixelPoint = function (pixelPoint) {
-		return new b2Vec2(((pixelPoint.x - this.container.x) / this.container.scale.x) / this.PTM, ((pixelPoint.y - this.container.y) / this.container.scale.y) / this.PTM);
+		return new b2Vec2(((pixelPoint.x - this.cameraHolder.x) / this.cameraHolder.scale.x) / this.PTM, ((pixelPoint.y - this.cameraHolder.y) / this.cameraHolder.scale.y) / this.PTM);
 	}
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);

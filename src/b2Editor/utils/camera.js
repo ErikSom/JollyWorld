@@ -11,27 +11,35 @@ let storedCameraPosition = {
 }
 let storedZoom = undefined;
 
-export const pan = function(move){
-    B2dEditor.container.x += move.x * Settings.PTM;
-    B2dEditor.container.y += move.y * Settings.PTM;
-    B2dEditor.mousePosWorld.x -= move.x / B2dEditor.container.scale.x;
-    B2dEditor.mousePosWorld.y -= move.y / B2dEditor.container.scale.y;
+export const pan = function(move){    
+    const camera = B2dEditor.container.camera || B2dEditor.container;
+
+    camera.x += move.x * Settings.PTM;
+    camera.y += move.y * Settings.PTM;
+    B2dEditor.mousePosWorld.x -= move.x / camera.scale.x;
+    B2dEditor.mousePosWorld.y -= move.y / camera.scale.y;
     constrainCameraPosition();
 }
 export const set = function(pos){
-    B2dEditor.container.x = pos.x;
-    B2dEditor.container.y = pos.y;
+    const camera = B2dEditor.container.camera || B2dEditor.container;
+
+    camera.x = pos.x;
+    camera.y = pos.y;
     constrainCameraPosition();
 }
 export const storeCurrentPosition = function(){
-    storedCameraPosition = {x:B2dEditor.container.x, y:B2dEditor.container.y};
-    storedZoom = B2dEditor.container.scale.x;
+    const camera = B2dEditor.container.camera || B2dEditor.container;
+
+    storedCameraPosition = {x:camera.x, y:camera.y};
+    storedZoom = camera.scale.x;
 }
 
-export const resetToStoredPosition = function(){
+export const resetToStoredPosition = function(){    
+    const camera = B2dEditor.container.camera || B2dEditor.container;
+
     if(storedZoom){
-        B2dEditor.container.scale.x = storedZoom;
-        B2dEditor.container.scale.y = storedZoom;
+        camera.scale.x = storedZoom;
+        camera.scale.y = storedZoom;
     }else{
         storedCameraPosition.x = window.innerWidth/2;
         storedCameraPosition.y = window.innerHeight/2;
@@ -43,9 +51,14 @@ export const zoom = function (pos, isZoomIn) {
 
     var direction = isZoomIn ? 1 : -1;
     var factor = (1 + direction * 0.1);
-    setZoom(pos, B2dEditor.container.scale.x * factor);
+    
+    const camera = B2dEditor.container.camera || B2dEditor.container;
+
+    setZoom(pos, camera.scale.x * factor);
 }
 export const setZoom = function (pos, scale) {
+    const camera = B2dEditor.container.camera || B2dEditor.container;
+
     scale = Math.min(10, Math.max(0.1, scale));
     var worldPos = {
         x: (pos.x),
@@ -56,13 +69,15 @@ export const setZoom = function (pos, scale) {
         y: scale
     };
     var newScreenPos = {
-        x: (worldPos.x) * newScale.x + B2dEditor.container.x,
-        y: (worldPos.y) * newScale.y + B2dEditor.container.y
+        x: (worldPos.x) * newScale.x + camera.x,
+        y: (worldPos.y) * newScale.y + camera.y
     };
-    B2dEditor.container.x -= (newScreenPos.x - (pos.x * B2dEditor.container.scale.x + B2dEditor.container.x));
-    B2dEditor.container.y -= (newScreenPos.y - (pos.y * B2dEditor.container.scale.y + B2dEditor.container.y));
-    B2dEditor.container.scale.x = newScale.x;
-    B2dEditor.container.scale.y = newScale.y;
+
+
+    camera.x -= (newScreenPos.x - (pos.x * camera.scale.x + camera.x));
+    camera.y -= (newScreenPos.y - (pos.y * camera.scale.y + camera.y));
+    camera.scale.x = newScale.x;
+    camera.scale.y = newScale.y;
 
     var i;
     for (i = 0; i < B2dEditor.editorIcons.length; i++) {
@@ -81,25 +96,28 @@ export const setZoom = function (pos, scale) {
     constrainCameraPosition();
     scrollBars.update();
 }
-export const constrainCameraPosition = function(){
-    let difX = (-B2dEditor.container.x) + (editorSettings.worldSize.width/2*B2dEditor.container.scale.x)
+
+export const constrainCameraPosition = function(){    
+    const camera = B2dEditor.container.camera || B2dEditor.container;
+
+    let difX = (-camera.x) + (editorSettings.worldSize.width/2*camera.scale.x)
     if(difX>0) {
-        difX = (editorSettings.worldSize.width/2*B2dEditor.container.scale.x-scrollBars.screenWidth) + (B2dEditor.container.x);
+        difX = (editorSettings.worldSize.width/2*camera.scale.x-scrollBars.screenWidth) + (camera.x);
         if(difX>0){
             difX = 0;
         }
     }else difX *= -1;
 
-    let difY = (-B2dEditor.container.y) + (editorSettings.worldSize.height/2*B2dEditor.container.scale.y)
+    let difY = (-camera.y) + (editorSettings.worldSize.height/2*camera.scale.y)
     if(difY>0) {
-        difY = (editorSettings.worldSize.height/2*B2dEditor.container.scale.y-scrollBars.screenHeight) + (B2dEditor.container.y);
+        difY = (editorSettings.worldSize.height/2*camera.scale.y-scrollBars.screenHeight) + (camera.y);
         if(difY>0){
             difY = 0;
         }
     }else difY *= -1;
 
-    B2dEditor.container.x -= difX;
-    B2dEditor.container.y -= difY;
-    B2dEditor.mousePosWorld.x += difX / Settings.PTM / B2dEditor.container.scale.x;
-    B2dEditor.mousePosWorld.y += difY / Settings.PTM / B2dEditor.container.scale.y;
+    camera.x -= difX;
+    camera.y -= difY;
+    B2dEditor.mousePosWorld.x += difX / Settings.PTM / camera.scale.x;
+    B2dEditor.mousePosWorld.y += difY / Settings.PTM / camera.scale.y;
 }

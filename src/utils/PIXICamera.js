@@ -1,5 +1,7 @@
 import * as PIXI from 'pixi.js';
 
+const tmpMatrix = new PIXI.Matrix();
+
 export function PathRenderTarget() {
     const proto = (PIXI.RenderTarget).prototype;
 
@@ -112,7 +114,7 @@ export class Camera extends PIXI.DisplayObject {
 	 * @type {PIXI.Matrix}
 	 */
 	get invertedMatrix() {
-		tmpMatrix.copyFrom(this.listen.transform.worldTransform);
+		this.listen.transform.worldTransform.copy(tmpMatrix);
 		tmpMatrix.invert();
 		return tmpMatrix;
 	}

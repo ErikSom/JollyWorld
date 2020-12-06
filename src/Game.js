@@ -59,6 +59,7 @@ function Game() {
     this.app;
     this.stage;
     this.myContainer;
+    this.levelCamera;
     this.myEffectsContainer;
     this.newDebugGraphic;
     this.canvas;
@@ -152,7 +153,22 @@ function Game() {
 
         //container
         this.myContainer = new PIXI.Container();
-        this.stage.addChild(this.myContainer);
+
+        this.levelCamera = new PIXICamera(this.myContainer);
+//        this.levelCamera.disable();
+        
+        this.myContainer.camera = this.levelCamera;
+
+        // inser rela camera to container, and now container broke transformation =)
+        // render order:
+        // stage (noraml update) 
+        //   => levelCamera_init_viewport 
+        //        => levelContaner (matix is shift it) 
+        //                => levelCamer_restore_viewport (normalUpdate)
+        this.stage.addChild(this.levelCamera);
+
+        //this.myContainer.addChild(this.levelContainer);
+
 
         //container
         this.myEffectsContainer = new PIXI.Container();
@@ -176,7 +192,7 @@ function Game() {
         this.editor.assetLists.gore = Object.keys(PIXI.loader.resources["Characters_Gore.json"].textures);
 
         this.editor.tileLists = ["", "Dirt.jpg", "Grass.jpg", "Fence.png", "YellowCat.jpg", "RedWhiteBlock.jpg", "PixelatedWater.jpg", "PixelatedStone.jpg", "PixelatedDirt.jpg", "PixelatedGrass.jpg", "GoldenBlock.jpg", "Brick0.jpg", "Brick1.jpg", "Brick2.jpg", "WhiteBlock.jpg"];
-        this.editor.init(this.myContainer, this.world, Settings.PTM);
+        this.editor.init(this.stage, this.myContainer, this.world, Settings.PTM);
         this.myContainer.addChild(this.newDebugGraphics);
 
         this.editor.contactCallBackListener = this.gameContactListener;
@@ -258,6 +274,8 @@ function Game() {
                 window.top.location !== window.location && (window.top.location = window.location);
             }
         }());
+
+        //this.myContainer.updateTransform = function() {};
     }
 
 
@@ -726,23 +744,24 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
+        const camera = this.editor.container.camera || this.editor.container;
 
-        var currentZoom = this.editor.container.scale.x;
+        var currentZoom = camera.scale.x;
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (Settings.cameraZoom - currentZoom) * zoomEase);
 
-        cameraTargetPosition.x -= this.canvas.width / 2.0 / this.editor.container.scale.x;
-        cameraTargetPosition.y -= this.canvas.height / 2.0 / this.editor.container.scale.y;
-        cameraTargetPosition.x *= this.editor.container.scale.x;
-        cameraTargetPosition.y *= this.editor.container.scale.y;
+        cameraTargetPosition.x -= this.canvas.width / 2.0 / camera.scale.x;
+        cameraTargetPosition.y -= this.canvas.height / 2.0 / camera.scale.y;
+        cameraTargetPosition.x *= camera.scale.x;
+        cameraTargetPosition.y *= camera.scale.y;
 
-        this.editor.container.x += (-cameraTargetPosition.x - this.editor.container.x) * panEase;
-        this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
+        camera.x += (-cameraTargetPosition.x - camera.x) * panEase;
+        camera.y += (-cameraTargetPosition.y - camera.y) * panEase;
 
-        this.myEffectsContainer.scale.x = this.editor.container.scale.x;
-        this.myEffectsContainer.scale.y = this.editor.container.scale.y;
-        this.myEffectsContainer.x = this.editor.container.x;
-        this.myEffectsContainer.y = this.editor.container.y;
+        this.myEffectsContainer.scale.x = camera.scale.x;
+        this.myEffectsContainer.scale.y = camera.scale.y;
+        this.myEffectsContainer.x = camera.x;
+        this.myEffectsContainer.y = camera.y;
 
     }
 
