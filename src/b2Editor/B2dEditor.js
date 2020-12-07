@@ -1403,8 +1403,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.deleteSelection = function () {
-		debugger;
-		var toBeDeletedPrefabs = []
+		const toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key) && (!this.activePrefabs[key].class.constructor.playableCharacter || Settings.admin)) {
 				toBeDeletedPrefabs.push(this.activePrefabs[key]);
@@ -3746,6 +3745,7 @@ const _B2dEditor = function () {
 		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
 			for(let i = 0; i<queryGraphics.length; i++){
 				const graphic = queryGraphics[i];
+				debugger;
 				if(graphic.data.type === this.object_TEXTURE){
 					// pixel perfect detection
 					let pixels;
@@ -3772,8 +3772,8 @@ const _B2dEditor = function () {
 					graphic.rotation = oldRotation;
 
 					if(graphic.data.type !== this.object_TEXT){ // fix for bug with text object
-						localPosition.x += graphic.width/2+anchorDiffX;
-						localPosition.y += graphic.height/2+anchorDiffY;
+						localPosition.x += anchorDiffX;
+						localPosition.y += anchorDiffY;
 					}
 
 					if(localPosition.x<0 || localPosition.y<0 || localPosition.x>graphic.width || localPosition.y>graphic.height){
@@ -4535,6 +4535,7 @@ const _B2dEditor = function () {
 							if (body.mySprite.data.lockselection) body.mySprite.alpha /= 2;
 							else body.mySprite.alpha = body.mySprite.data.alpha || 1;
 							if (body.myTexture) {
+								body.myTexture.data.lockselection = controller.targetValue;
 								if (body.mySprite.data.lockselection) body.myTexture.alpha /= 2;
 								else body.myTexture.alpha = body.myTexture.data.alpha || 1;
 							}
