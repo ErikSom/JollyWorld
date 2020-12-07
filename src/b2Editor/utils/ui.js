@@ -128,7 +128,7 @@ const handleLoginStatusChange = function (event) {
         });
     }
 }
-const checkLevelDataForErrors = function () {
+const checkLevelDataForErrors = async function () {
     const title = levelEditScreen.domElement.querySelector('#levelEdit_title');
     const description = levelEditScreen.domElement.querySelector('#levelEdit_description');
     const errorSpan = levelEditScreen.domElement.querySelector('#levelEdit_errorText');
@@ -145,21 +145,51 @@ const checkLevelDataForErrors = function () {
         errorStack.push("Title must be at least 3 characters long");
     }
 
+
+    // youtube ids
+    const youtubeIds = levelEditScreen.domElement.querySelectorAll('.levelEdit_youtubeLink');
+    const values = Array.from(new Set([...youtubeIds].map(el=>el.value).filter(el=>el.length>0))); // deduplicate and filter empty
+
+    [...youtubeIds].forEach((el, index)=> el.value = values[index] || '');
+    for(let i = 0; i<youtubeIds.length; i++){
+        const idElement = youtubeIds[i];
+        idElement.style.backgroundColor = textAreaDefaultColor;
+        if(idElement.value.length>0){
+            if(idElement.value.length !== 11){
+                idElement.style.backgroundColor = textAreaErrorColor;
+                errorStack.push(`YouTube ID ${i+1} must be 11 characters`)
+            }else{
+                const API_KEY = 'AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0'
+                const response = await fetch (`https://www.googleapis.com/youtube/v3/videos?id=${idElement.value}&key=${API_KEY}
+                &part=status`)
+                const json = await response.json();
+                if(!json.items || json.items.length === 0){
+                    errorStack.push(`YouTube ID ${i+1} is invalid`);
+                }else if(!json.items[0].status || !json.items[0].status.embeddable){
+                    errorStack.push(`YouTube ID ${i+1} is not embeddable`);
+                }
+            }
+        }
+    }
+
     errorSpan.innerText = '';
+    errorSpan.style.display = (errorStack.length === 0) ? 'none' : 'block'
     if (errorStack.length == 0) return true;
     for (var i = 0; i < errorStack.length; i++) {
         errorSpan.innerText += errorStack[i] + '\n';
     }
+
+
     return false;
 }
-const doSaveLevelData = function (saveButton) {
+const doSaveLevelData = async function (saveButton) {
     //save locally first
     if (!levelEditScreen) {
         showLevelEditScreen();
         levelEditScreen.domElement.style.display = 'none';
     }
-    if (!checkLevelDataForErrors()) {
-        showLevelEditScreen();
+    if (!await checkLevelDataForErrors()) {
+        showLevelEditScreen(true);
         return;
     }
     if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
@@ -241,9 +271,9 @@ export const showHeaderBar = function () {
     saveButton.innerHTML = "SAVE";
     headerBar.appendChild(saveButton);
 
-    saveButton.addEventListener('click', () => {
+    saveButton.addEventListener('click', async () => {
         //save locally first
-        doSaveLevelData(saveButton);
+        await doSaveLevelData(saveButton);
     });
 
     button = document.createElement('div');
@@ -878,7 +908,7 @@ export const showUsernameScreen = function () {
     }
 }
 
-export const showLevelEditScreen = function () {
+export const showLevelEditScreen = function (dontReplace) {
     if (!levelEditScreen) {
         const levelEditGUIWidth = 350;
 
@@ -893,6 +923,7 @@ export const showLevelEditScreen = function () {
 
         folder.open();
 
+
         const closeButton = document.createElement('div');
         closeButton.setAttribute('class', 'closeWindowIcon');
         folder.domElement.append(closeButton);
@@ -904,7 +935,7 @@ export const showLevelEditScreen = function () {
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
         let divWrapper = document.createElement('div');
-        divWrapper.style.padding = '20px';
+        divWrapper.style.padding = '10px';
 
         let span = document.createElement('span');
         span.innerText = 'Thumbnail';
@@ -990,8 +1021,6 @@ export const showLevelEditScreen = function () {
         span.innerText = 'Characters left:300';
         divWrapper.appendChild(span);
 
-
-
         func = (textarea, span) => {
             let _text = textarea;
             let _span = span;
@@ -1008,38 +1037,61 @@ export const showLevelEditScreen = function () {
         description.addEventListener('selectionchange', descriptionFunction);
         description.addEventListener('propertychange', descriptionFunction);
 
-        divWrapper.appendChild(document.createElement('br'));
-        divWrapper.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(divWrapper);
+
+
+        // Youtube Folder
+        const youtubeLinks = folder.addFolder('Link YouTube videos');
+        const youtubeDomElement = youtubeLinks.domElement.getElementsByTagName('ul')[0];
+
+        let youtubeDivWrapper = document.createElement('div');
+        youtubeDivWrapper.style.padding = '10px';
+
+        for(let i = 0; i<3; i++){
+            let youtubeLink = document.createElement('input');
+            youtubeLink.classList.add('levelEdit_youtubeLink');
+            youtubeLink.setAttribute('placeholder', `YouTube Video ID #${i+1}`);
+            youtubeLink.style.height = '30px';
+            youtubeLink.style.fontSize = '14px';
+            youtubeLink.style.fontWeight = 'bold';
+            youtubeDivWrapper.appendChild(youtubeLink);
+        }
+
+        ///^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/
+
+        youtubeDomElement.appendChild(youtubeDivWrapper);
 
         let errorSpan = document.createElement('span');
         errorSpan.setAttribute('id', 'levelEdit_errorText');
         errorSpan.innerText = '';
         errorSpan.style.color = '#ff4b00';
-        divWrapper.appendChild(errorSpan);
+        errorSpan.style.padding = '10px';
+        errorSpan.style.display = 'none';
+        targetDomElement.appendChild(errorSpan);
 
         let saveButton = document.createElement('div');
         saveButton.setAttribute('class', 'headerButton save buttonOverlay dark');
         saveButton.innerHTML = "SAVE";
-        divWrapper.appendChild(saveButton);
+        targetDomElement.appendChild(saveButton);
 
-        saveButton.addEventListener('click', () => {
-            doSaveLevelData(saveButton);
+        saveButton.addEventListener('click', async () => {
+            await doSaveLevelData(saveButton);
         });
 
         let saveAsButton = document.createElement('div');
         saveAsButton.setAttribute('class', 'headerButton saveas buttonOverlay dark');
         saveAsButton.innerHTML = "SAVE AS";
-        divWrapper.appendChild(saveAsButton);
+        targetDomElement.appendChild(saveAsButton);
 
-        saveAsButton.addEventListener('click', ()=>{
-            if (!checkLevelDataForErrors()) return;
+        saveAsButton.addEventListener('click', async ()=>{
+            if (!await checkLevelDataForErrors()) return;
             showSaveScreen.bind(this)();
         });
 
         let publishButton = document.createElement('div');
         publishButton.setAttribute('class', 'headerButton publish buttonOverlay dark');
         publishButton.innerHTML = "PUBLISH";
-        divWrapper.appendChild(publishButton);
+        targetDomElement.appendChild(publishButton);
 
 
         publishButton.addEventListener('click', () => {
@@ -1052,7 +1104,7 @@ export const showLevelEditScreen = function () {
         deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
         deleteButton.innerHTML = "DELETE";
         deleteButton.style.float = 'right';
-        divWrapper.appendChild(deleteButton);
+        targetDomElement.appendChild(deleteButton);
 
         deleteButton.addEventListener('click', () => {
             showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
@@ -1074,15 +1126,15 @@ export const showLevelEditScreen = function () {
             }).catch((error) => {});
         });
 
-        divWrapper.appendChild(document.createElement('br'));
-        divWrapper.appendChild(document.createElement('br'));
-
-
-        targetDomElement.appendChild(divWrapper);
-
+        targetDomElement.appendChild(document.createElement('br'));
+        targetDomElement.appendChild(document.createElement('br'));
 
         customGUIContainer.appendChild(levelEditScreen.domElement);
 
+        const computedWidth = parseFloat(getComputedStyle(levelEditScreen.domElement, null).width.replace("px", ""));
+        const computedHeight = parseFloat(getComputedStyle(levelEditScreen.domElement, null).height.replace("px", ""));
+        levelEditScreen.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+        levelEditScreen.domElement.style.top = '50px';
 
         registerDragWindow(levelEditScreen);
 
@@ -1092,22 +1144,25 @@ export const showLevelEditScreen = function () {
 
     showPanel(levelEditScreen);
 
-    let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
-    let clickToAdd = levelEditScreen.domElement.querySelector('.clickToAdd');
-    if (game.currentLevelData.thumbLowResURL) {
-        thumbNailImage.src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${game.currentLevelData.uid}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
-        thumbNailImage.style.display = 'block';
-        clickToAdd.style.display = 'none';
-    }else if (B2dEditor.cameraShotData.lowRes) {
-        thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
-        thumbNailImage.style.display = 'block';
-        clickToAdd.style.display = 'none';
-    } else {
-        thumbNailImage.style.display = 'none';
-        clickToAdd.style.display = 'block';
+    console.log("DONT REPLACE:", dontReplace);
+    if(dontReplace !== true){
+        let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
+        let clickToAdd = levelEditScreen.domElement.querySelector('.clickToAdd');
+        if (game.currentLevelData.thumbLowResURL) {
+            thumbNailImage.src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${game.currentLevelData.uid}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
+            thumbNailImage.style.display = 'block';
+            clickToAdd.style.display = 'none';
+        }else if (B2dEditor.cameraShotData.lowRes) {
+            thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
+            thumbNailImage.style.display = 'block';
+            clickToAdd.style.display = 'none';
+        } else {
+            thumbNailImage.style.display = 'none';
+            clickToAdd.style.display = 'block';
+        }
+        levelEditScreen.domElement.querySelector('#levelEdit_title').value = game.currentLevelData.title;
+        levelEditScreen.domElement.querySelector('#levelEdit_description').value = game.currentLevelData.description;
     }
-    levelEditScreen.domElement.querySelector('#levelEdit_title').value = game.currentLevelData.title;
-    levelEditScreen.domElement.querySelector('#levelEdit_description').value = game.currentLevelData.description;
 }
 export const showSaveScreen = function () {
 
@@ -1857,7 +1912,8 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
     prompt.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
     registerDragWindow(prompt);
-    
+
+    setHighestWindow(prompt.domElement);
 
     return new Promise((resolve, reject) => {
         yes_button.addEventListener('click', () => {

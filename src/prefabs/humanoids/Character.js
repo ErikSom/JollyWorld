@@ -550,14 +550,14 @@ class Character extends PrefabManager.basePrefab {
                 }
             },
         }
-        if (direction == 'set-random') {
-            const randomPoses = ['up', 'down', 'right'];
-            this.randomPose = randomPoses[Math.floor(Math.random() * randomPoses.length)];
-            return;
-        }
+        // if (direction == 'set-random') {
+        //     const randomPoses = ['up', 'down', 'right'];
+        //     this.randomPose = randomPoses[Math.floor(Math.random() * randomPoses.length)];
+        //     return;
+        // }
 
-        let targetPosition = positions[direction];
-        if (direction == 'random') targetPosition = positions[this.randomPose];
+        // let targetPosition = positions[direction];
+        // if (direction == 'random') targetPosition = positions[this.randomPose];
 
         for (let body_part in targetPosition) {
             if (targetPosition.hasOwnProperty(body_part)) {

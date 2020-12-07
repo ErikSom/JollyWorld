@@ -4549,7 +4549,6 @@ const _B2dEditor = function () {
 							if (this.selectedPrefabs.hasOwnProperty(key)) {
 								var lookup = this.lookupGroups[key];
 								var allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
-								var sprite;
 								for (j = 0; j < allObjects.length; j++) {
 									if (allObjects[j].mySprite) sprite = allObjects[j].mySprite;
 									else sprite = allObjects[j];
@@ -4683,7 +4682,6 @@ const _B2dEditor = function () {
 			}
 
 			//new sync for mouse movements
-			var i;
 			for (i in controllers) {
 				controller = controllers[i];
 				if (controller.property == "x") {
@@ -7569,73 +7567,72 @@ const _B2dEditor = function () {
 					obj.x += offsetX;
 					obj.y += offsetY;
 				}
-				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
+				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset - vehicleOffset;
 
 				if (obj.type == this.object_BODY) {
 					worldObject = this.buildBodyFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXTURE) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildTextureFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_JOINT) {
-					obj.bodyA_ID += startChildIndex;
-					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
+					obj.bodyA_ID += startChildIndex - vehicleOffset;
+					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex - vehicleOffset;
 
 					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
 					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
-					debugger;
 					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
 						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
 						obj.prefabName = Settings.availableVehicles[game.selectedVehicle];
 						obj.settings.selectedVehicle = obj.prefabName;
 						// we get the difference between the old vehicleOffset and the new one
 						vehicleOffset -= Settings.vehicleLayers[obj.prefabName];
+						console.log("VEHICLE OFFSET!!", vehicleOffset);
 					}
-					// prefaboffset = 68
-					const prefabStartChildIndex = this.textures.children.length; // 75
+					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
 						createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
 						createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 						createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
-						prefabOffset = this.textures.children.length - prefabOffset; // 90 - 68 = 22;
+						prefabOffset = this.textures.children.length - prefabOffset;
 						if(obj.settings.selectedVehicle){
 							console.log("PREFABOFFSET:", this.textures.children.length-prefabStartChildIndex);
 						}
 					}
 				} else if (obj.type == this.object_GRAPHIC) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildGraphicFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_GRAPHICGROUP) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}else if (obj.type == this.object_ANIMATIONGROUP) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
 					for (var j = 0; j < obj.triggerObjects.length; j++) {
-						obj.triggerObjects[j] += startChildIndex;
+						obj.triggerObjects[j] += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXT) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildTextFromObj(obj);
 					createdObjects._textures.push(worldObject);

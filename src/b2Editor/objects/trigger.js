@@ -69,6 +69,7 @@ export const doAction = function (actionData, target) {
 
     let bodies;
     const prefab = target.data ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
+    let objects;
 
     switch (actionData.type) {
         case "Impulse":
@@ -83,7 +84,6 @@ export const doAction = function (actionData, target) {
                 });
             break;
         case "SetPosition":
-                var objects;
                 var targetPos;
 
                 if (target.data.prefabInstanceName) {
@@ -103,7 +103,6 @@ export const doAction = function (actionData, target) {
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
             break;
         case "SetRotation":
-                let objects;
                 let targetRotation;
 
                 if (target.data.prefabInstanceName) {
