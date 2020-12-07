@@ -87,7 +87,7 @@ function Game() {
     this.gameOver = false;
     this.checkPointData = null;
     this.selectedCharacter = 0;
-    // this.selectedVehicle = 1;
+    this.selectedVehicle = 0;
 
     this.ui = ui;
 
@@ -378,10 +378,8 @@ function Game() {
                     this.character.positionBody('down');
                     if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) this.character.lean(-1);
                     else if (Key.isDown(Key.D)  || Key.isDown(Key.RIGHT)) this.character.lean(1);
-                } else if (Key.isPressed(Key.A) || Key.isDown(Key.LEFT)) {
-                    this.character.positionBody('set-random');
                 } else if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
-                    this.character.positionBody('random');
+                    this.character.positionBody('right');
                 } else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.character.positionBody('right');
                 }
