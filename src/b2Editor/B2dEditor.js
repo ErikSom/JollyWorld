@@ -63,7 +63,6 @@ const _B2dEditor = function () {
 
 	this.container = null;
 	this.selectedTool = -1;
-	this.admin = true; // for future to dissalow certain changes like naming
 	this.breakPrefabs = false;
 
 	this.selectedPhysicsBodies = [];
@@ -795,7 +794,8 @@ const _B2dEditor = function () {
 					this.targetValue = value
 				});
 				// is Character is an admin feature
-				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"/*, "Is character"*/];
+				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
+				if(Settings.admin) collisionTypes.push("Is character");
 				ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
 				targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
 					this.humanUpdate = true;
@@ -1406,7 +1406,7 @@ const _B2dEditor = function () {
 		debugger;
 		var toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
-			if (this.selectedPrefabs.hasOwnProperty(key) && !this.activePrefabs[key].class.constructor.playableCharacter) {
+			if (this.selectedPrefabs.hasOwnProperty(key) && (!this.activePrefabs[key].class.constructor.playableCharacter || Settings.admin)) {
 				toBeDeletedPrefabs.push(this.activePrefabs[key]);
 			}
 		}
