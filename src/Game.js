@@ -849,7 +849,7 @@ function Game() {
         this.editor.run();
 
         this.newDebugGraphics.clear();
-        if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug || !this.run)) {
+        if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug)) {
             this.world.DrawDebugData();
         }
         this.app.render();
