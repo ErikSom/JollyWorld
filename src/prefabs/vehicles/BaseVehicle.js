@@ -81,7 +81,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                     let newObjects = game.editor.buildJSON(JSON.parse(vehiclePrefab));
                     game.editor.applyToObjects(game.editor.TRANSFORM_FORCEDEPTH, vehicleDepth, [].concat(newObjects._bodies, newObjects._textures, newObjects._joints));
 
-                    game.editor.deleteSelection();
+                    game.editor.deleteSelection(true);
 
                     let instanceName;
                     if (newObjects._bodies.length > 0) instanceName = newObjects._bodies[0].mySprite.data.prefabInstanceName;

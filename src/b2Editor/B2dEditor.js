@@ -1402,10 +1402,10 @@ const _B2dEditor = function () {
 			}
 		}
 	}
-	this.deleteSelection = function () {
+	this.deleteSelection = function (force) {
 		const toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
-			if (this.selectedPrefabs.hasOwnProperty(key) && (!this.activePrefabs[key].class.constructor.playableCharacter || Settings.admin)) {
+			if (this.selectedPrefabs.hasOwnProperty(key) && (!this.activePrefabs[key].class.constructor.playableCharacter || (Settings.admin || force))) {
 				toBeDeletedPrefabs.push(this.activePrefabs[key]);
 			}
 		}
