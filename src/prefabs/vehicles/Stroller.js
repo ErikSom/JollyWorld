@@ -10,7 +10,6 @@ import {
 class Stroller extends BaseVehicle {
     constructor(target) {
         super(target);
-        this.character.setSkin(2);
     }
     update() {
         super.update();

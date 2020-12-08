@@ -374,11 +374,11 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
 
-				var fonts = Settings.availableFonts;
+				const fonts = Settings.availableFonts;
 				ui.editorGUI.editData.fontName = fonts[0];
 				targetFolder.add(ui.editorGUI.editData, "fontName", fonts);
 
-				var alignments = ["left", "center", "right"];
+				const alignments = ["left", "center", "right"];
 				ui.editorGUI.editData.textAlign = alignments[0];
 				targetFolder.add(ui.editorGUI.editData, "textAlign", alignments);
 
@@ -2741,14 +2741,14 @@ const _B2dEditor = function () {
 	}
 
 	this.applyToSelectedObjects = function (transformType, obj) {
-		var allObjects = this.selectedPhysicsBodies.concat(this.selectedTextures);
-		var bodies = this.selectedPhysicsBodies;
-		var textures = this.selectedTextures;
+		let allObjects = this.selectedPhysicsBodies.concat(this.selectedTextures);
+		let bodies = this.selectedPhysicsBodies;
+		let textures = this.selectedTextures;
 
-		var key;
+		let key;
 		for (key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
-				var lookup = this.lookupGroups[key];
+				let lookup = this.lookupGroups[key];
 				allObjects = allObjects.concat(lookup._bodies, lookup._textures, lookup._joints);
 				bodies = bodies.concat(lookup._bodies);
 				textures = textures.concat(lookup._textures, lookup._joints);
@@ -3745,7 +3745,6 @@ const _B2dEditor = function () {
 		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
 			for(let i = 0; i<queryGraphics.length; i++){
 				const graphic = queryGraphics[i];
-				debugger;
 				if(graphic.data.type === this.object_TEXTURE){
 					// pixel perfect detection
 					let pixels;
@@ -7590,7 +7589,7 @@ const _B2dEditor = function () {
 				} else if (obj.type == this.object_PREFAB) {
 					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
 						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
-						obj.prefabName = Settings.availableVehicles[game.selectedVehicle];
+						obj.prefabName = Settings.availableVehicles[game.selectedVehicle-1];
 						obj.settings.selectedVehicle = obj.prefabName;
 						// we get the difference between the old vehicleOffset and the new one
 						vehicleOffset -= Settings.vehicleLayers[obj.prefabName];

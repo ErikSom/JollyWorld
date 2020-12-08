@@ -681,12 +681,8 @@ function Game() {
            .then(response => response.json())
            .then((data) =>{
                 self.currentLevelData.json = JSON.stringify(data);
-                self.initLevel(self.currentLevelData);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
-                ui.hideMainMenu();
-                ui.showLevelBanner();
-                this.editor.ui.hide();
-                game.gameState = game.GAMESTATE_PREVIEW;
+                this.previewLevel();
                 return resolve();
             }).catch((err) => {
                 console.log('fail', err);
@@ -696,6 +692,25 @@ function Game() {
                 });
             });
         });
+    }
+    this.previewLevel = function(){
+        self.initLevel(self.currentLevelData);
+        ui.hideMainMenu();
+        ui.showLevelBanner();
+        this.editor.ui.hide();
+        this.resetGame();
+
+        for (var key in this.editor.activePrefabs) {
+            if (this.editor.activePrefabs.hasOwnProperty(key)) {
+                if (this.editor.activePrefabs[key].class.constructor.playableCharacter) {
+                    const lookup = editor.lookupGroups[key];
+                    const allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
+                    this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, {x:-100000, y:-100000}, allObjects)
+                }
+            }
+        }
+
+        game.gameState = game.GAMESTATE_PREVIEW;
     }
 
     this.findPlayableCharacter = function () {
