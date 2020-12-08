@@ -1096,7 +1096,7 @@ const _B2dEditor = function () {
 			}
 		} else {
 			if (this.selectedPhysicsBodies.length == 1) {
-				if (this.selectedPhysicsBodies[0].myTexture) {
+				if (this.selectedPhysicsBodies[0].myTexture || this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) {
 					ui.editorGUI.editData.ungroupObjects = () => {
 						self.ungroupObjects();
 					};

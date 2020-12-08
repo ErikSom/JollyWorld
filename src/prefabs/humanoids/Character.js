@@ -556,7 +556,7 @@ class Character extends PrefabManager.basePrefab {
         //     return;
         // }
 
-        // let targetPosition = positions[direction];
+        let targetPosition = positions[direction];
         // if (direction == 'random') targetPosition = positions[this.randomPose];
 
         for (let body_part in targetPosition) {
