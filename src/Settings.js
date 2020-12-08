@@ -1,10 +1,10 @@
 const targetFPS = 60;
 export var Settings = {
     /*REFRESHRATE*/
-    admin:true,
+    admin:false,
     targetFPS,
     timeStep:1000 / targetFPS,
-    allowMouseMovement:true,
+    allowMouseMovement:false,
     cameraZoom:0.8,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
