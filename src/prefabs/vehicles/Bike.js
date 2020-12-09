@@ -24,7 +24,7 @@ class Bike extends BaseVehicle {
     init() {
         super.init();
         this.desiredVehicleTorques = [100, 100];
-        this.desiredVehicleSpeeds = [10, 10];
+        this.desiredVehicleSpeeds = [20, 20];
     }
     update() {
         super.update();

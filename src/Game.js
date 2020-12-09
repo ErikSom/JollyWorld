@@ -780,7 +780,7 @@ function Game() {
 
         for (var i = 0; i < bodies.length; i++) {
             body = bodies[i];
-            if (body.isFlesh && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
+            if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
 
                 var force = 0;
                 for (var j = 0; j < impulse.normalImpulses.length; j++)

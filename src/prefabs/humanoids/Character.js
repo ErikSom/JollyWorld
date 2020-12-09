@@ -10,7 +10,7 @@ import * as emitterManager from '../../utils/EmitterManager';
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
 import { RopeHat } from '../hats/ropeHat';
 
-class Character extends PrefabManager.basePrefab {
+export class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
     static TIME_EYES_OPEN = 3100;
     constructor(target) {
@@ -227,7 +227,7 @@ class Character extends PrefabManager.basePrefab {
         THIGH_RIGHT: 'thigh_right',
         LEG_LEFT: 'leg_left',
         LEG_RIGHT: 'leg_right',
-        FEET_RIGHT: 'feet_left',
+        FEET_LEFT: 'feet_left',
         FEET_RIGHT: 'feet_right',
         SHOULDER_LEFT: 'shoulder_left',
         SHOULDER_RIGHT: 'shoulder_right',
@@ -302,11 +302,25 @@ class Character extends PrefabManager.basePrefab {
                         joint = game.world.CreateJoint(ropeJointDef);
 
 
+                        [targetJoint.GetBodyA(), targetJoint.GetBodyB()].forEach(body => {
+                            if([this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT]].includes(body)){
+                                this.lookupObject[Character.BODY_PARTS.ARM_LEFT].snapped = true;
+                                this.lookupObject[Character.BODY_PARTS.HAND_LEFT].snapped = true;
+                            } else if([this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT]].includes(body)){
+                                this.lookupObject[Character.BODY_PARTS.ARM_RIGHT].snapped = true;
+                                this.lookupObject[Character.BODY_PARTS.HAND_RIGHT].snapped = true;
+                            } else if([this.lookupObject[Character.BODY_PARTS.THIGH_LEFT]].includes(body)){
+                                this.lookupObject[Character.BODY_PARTS.LEG_LEFT].snapped = true;
+                                this.lookupObject[Character.BODY_PARTS.FEET_LEFT].snapped = true;
+                            } else if([this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT]].includes(body)){
+                                this.lookupObject[Character.BODY_PARTS.LEG_RIGHT].snapped = true;
+                                this.lookupObject[Character.BODY_PARTS.FEET_RIGHT].snapped = true;
+                            }
+                        })
                         //carve bodies
 
                         if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
                         if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-
 
                         game.world.DestroyJoint(targetJoint);
                         delete this.lookupObject[update.target + "_joint"];
