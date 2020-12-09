@@ -4532,18 +4532,18 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.lockselection = controller.targetValue;
 							if (body.mySprite.data.lockselection) body.mySprite.alpha /= 2;
-							else body.mySprite.alpha = body.mySprite.data.alpha || 1;
+							else body.mySprite.alpha = body.mySprite.data.transparancy || 1;
 							if (body.myTexture) {
 								body.myTexture.data.lockselection = controller.targetValue;
 								if (body.mySprite.data.lockselection) body.myTexture.alpha /= 2;
-								else body.myTexture.alpha = body.myTexture.data.alpha || 1;
+								else body.myTexture.alpha = body.myTexture.data.transparancy || 1;
 							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.lockselection = controller.targetValue;
 							if (sprite.data.lockselection) sprite.alpha /= 2;
-							else sprite.alpha = sprite.data.alpha || 1;
+							else sprite.alpha = sprite.data.transparancy || 1;
 						}
 						var key;
 						for (key in this.selectedPrefabs) {
@@ -4555,11 +4555,11 @@ const _B2dEditor = function () {
 									else sprite = allObjects[j];
 									sprite.data.lockselection = controller.targetValue;
 									if (sprite.data.lockselection) sprite.alpha /= 2;
-									else sprite.alpha = sprite.data.alpha || 1;
+									else sprite.alpha = sprite.data.transparancy || 1;
 
 									if (sprite.myBody && sprite.myBody.myTexture) {
 										if (sprite.data.lockselection) sprite.myBody.myTexture.alpha /= 2;
-										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.alpha || 1;
+										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.transparancy || 1;
 									}
 								}
 							}
