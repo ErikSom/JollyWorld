@@ -4,7 +4,7 @@ export var Settings = {
     admin:(window.location.search.indexOf('editorAdmin=true')>=0),
     targetFPS,
     timeStep:1000 / targetFPS,
-    allowMouseMovement:false,
+    allowMouseMovement:true,
     cameraZoom:0.8,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
@@ -12,7 +12,7 @@ export var Settings = {
     /*GORE*/
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
-    bashMaxForceMultiplier:200,
+    bashForce:2000,
     physicsParticleLifeTime:2000,
     physicsParticleLifeTimeRandomOffset:1000,
     /*CHARACTER*/

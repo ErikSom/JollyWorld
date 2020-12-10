@@ -160,61 +160,69 @@ export class Character extends PrefabManager.basePrefab {
         super.initContactListener();
         var self = this;
         this.contactListener.PostSolve = function (contact, impulse) {
-            var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            if(!bodies[0].mySprite || !bodies[1].mySprite) return;
-            var body;
-            for (var i = 0; i < bodies.length; i++) {
-                body = bodies[i];
 
-                if(body.GetMass()===0) continue;
+            if(!contact.GetFixtureA().GetBody().mySprite || !contact.GetFixtureB().GetBody().mySprite) return;
 
-                if ((bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
+            let characterBody;
+            let otherBody;
 
+            if(game.editor.retrieveSubClassFromBody(contact.GetFixtureA().GetBody()) === self){
+                characterBody = contact.GetFixtureA().GetBody();
+                otherBody = contact.GetFixtureB().GetBody();
+            }else{
+                characterBody = contact.GetFixtureB().GetBody();
+                otherBody = contact.GetFixtureA().GetBody();
+            }
 
-                    // Should the body break?
-                        // var count:int = contact.GetManifold().m_pointCount;
+            if(otherBody.GetMass()===0) return;
 
-                        // var maxImpulse:Number = 0.0;
-                        // for (var i:int = 0; i < count; i++)
-                        // {
-                        //     maxImpulse = b2Math.Max(maxImpulse, impulse.normalImpulses[i]);
-                        // }
-                        // if (maxImpulse > 50)
-                        // {
-                        //     test.m_break = true;
-                        // }
-                    const count = contact.GetManifold().pointCount;
+            if ((otherBody.mySprite.data.prefabID != characterBody.mySprite.data.prefabID || otherBody.mySprite.data.prefabID == undefined)) {
 
-                    let force = 0;
-                    for (let j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+                const count = contact.GetManifold().pointCount;
 
-                    const minForceForDamage = 10.0;
-                    const forceToDamageDivider = 50.0;
+                let force = 0;
+                for (let j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
 
-                    if(force> body.GetMass() * minForceForDamage){
-                        self.dealDamage(force/forceToDamageDivider)
-                    }
+                const minForceForDamage = 10.0;
+                const forceToDamageDivider = 50.0;
 
-                    if (force > body.GetMass() * Settings.bashMaxForceMultiplier / 3) {
-                        if (body == self.lookupObject["head"]) {
-                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                                type: Character.GORE_SNAP,
-                                target: "eye_right"
-                            });
-                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                                type: Character.GORE_SNAP,
-                                target: "eye_left"
-                            });
-                        }
-                    }
-                    if (body.mySprite.data.refName != "" && force > body.GetMass() * Settings.bashMaxForceMultiplier) {
-                        self.collisionUpdates.push({
-                            type: Character.GORE_BASH,
-                            target: body.mySprite.data.refName,
+                if(force> characterBody.GetMass() * minForceForDamage){
+                    self.dealDamage(force/forceToDamageDivider)
+                }
+
+                let forceDamage = 0;
+
+                const charOtherBodyDiff = characterBody.GetPosition().Clone().SelfSub(otherBody.GetPosition());
+                const dotProductChar = characterBody.GetLinearVelocity().Dot(charOtherBodyDiff)*-1;
+
+                const otherBodyCharDiff = otherBody.GetPosition().Clone().SelfSub(characterBody.GetPosition());
+                const dotProductOther = otherBody.GetLinearVelocity().Dot(otherBodyCharDiff)*-1;
+
+                if(dotProductChar>0){
+                    forceDamage += characterBody.GetLinearVelocity().LengthSquared() * characterBody.GetMass();
+                }
+                if(dotProductOther>0){
+                    forceDamage += otherBody.GetLinearVelocity().LengthSquared() * otherBody.GetMass();
+                }
+
+                if (forceDamage > Settings.bashForce / 2) {
+                    if (characterBody == self.lookupObject["head"]) {
+                        if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                            type: Character.GORE_SNAP,
+                            target: "eye_right"
                         });
-                        break;
+                        if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                            type: Character.GORE_SNAP,
+                            target: "eye_left"
+                        });
                     }
+                }
 
+                if (characterBody.mySprite.data.refName != "" && forceDamage > Settings.bashForce) {
+                    self.collisionUpdates.push({
+                        type: Character.GORE_BASH,
+                        target: characterBody.mySprite.data.refName,
+                    });
                 }
             }
         }
@@ -262,6 +270,34 @@ export class Character extends PrefabManager.basePrefab {
                             connectedJointEdge = connectedJointEdge.next;
                         }
 
+                        // Fix bash damaage & also set snapped for objects that got detached from the player
+                        if(this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.ARM_LEFT]) this.lookupObject[Character.BODY_PARTS.ARM_LEFT].snapped = true;
+                            if(this.lookupObject[Character.BODY_PARTS.HAND_LEFT]) this.lookupObject[Character.BODY_PARTS.HAND_LEFT].snapped = true;
+                        } else if(this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.ARM_RIGHT]) this.lookupObject[Character.BODY_PARTS.ARM_RIGHT].snapped = true;
+                            if(this.lookupObject[Character.BODY_PARTS.HAND_RIGHT]) this.lookupObject[Character.BODY_PARTS.HAND_RIGHT].snapped = true;
+                        } else if(this.lookupObject[Character.BODY_PARTS.THIGH_LEFT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.LEG_LEFT]) this.lookupObject[Character.BODY_PARTS.LEG_LEFT].snapped = true;
+                            if(this.lookupObject[Character.BODY_PARTS.FEET_LEFT]) this.lookupObject[Character.BODY_PARTS.FEET_LEFT].snapped = true;
+                        } else if(this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.LEG_RIGHT]) this.lookupObject[Character.BODY_PARTS.LEG_RIGHT].snapped = true;
+                            if(this.lookupObject[Character.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Character.BODY_PARTS.FEET_RIGHT].snapped = true;
+                        } else if(this.lookupObject[Character.BODY_PARTS.ARM_LEFT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.HAND_LEFT]) this.lookupObject[Character.BODY_PARTS.HAND_LEFT].snapped = true;
+                        } else if(this.lookupObject[Character.BODY_PARTS.ARM_RIGHT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.HAND_RIGHT]) this.lookupObject[Character.BODY_PARTS.HAND_RIGHT].snapped = true;
+                        } else if(this.lookupObject[Character.BODY_PARTS.LEG_LEFT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.FEET_LEFT]) this.lookupObject[Character.BODY_PARTS.FEET_LEFT].snapped = true;
+                        } else if(this.lookupObject[Character.BODY_PARTS.LEG_RIGHT] === targetBody){
+                            if(this.lookupObject[Character.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Character.BODY_PARTS.FEET_RIGHT].snapped = true;
+                        }
+
+                        this.dealDamage(30);
+                        if([this.lookupObject[Character.BODY_PARTS.HEAD], this.lookupObject[Character.BODY_PARTS.BODY]].includes(targetBody)){
+                            this.dealDamage(1000);
+                        }
+
                         game.editor.deleteObjects([targetBody]);
 
                     }
@@ -301,20 +337,19 @@ export class Character extends PrefabManager.basePrefab {
 
                         joint = game.world.CreateJoint(ropeJointDef);
 
-
                         [targetJoint.GetBodyA(), targetJoint.GetBodyB()].forEach(body => {
-                            if([this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT]].includes(body)){
-                                this.lookupObject[Character.BODY_PARTS.ARM_LEFT].snapped = true;
-                                this.lookupObject[Character.BODY_PARTS.HAND_LEFT].snapped = true;
-                            } else if([this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT]].includes(body)){
-                                this.lookupObject[Character.BODY_PARTS.ARM_RIGHT].snapped = true;
-                                this.lookupObject[Character.BODY_PARTS.HAND_RIGHT].snapped = true;
-                            } else if([this.lookupObject[Character.BODY_PARTS.THIGH_LEFT]].includes(body)){
-                                this.lookupObject[Character.BODY_PARTS.LEG_LEFT].snapped = true;
-                                this.lookupObject[Character.BODY_PARTS.FEET_LEFT].snapped = true;
-                            } else if([this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT]].includes(body)){
-                                this.lookupObject[Character.BODY_PARTS.LEG_RIGHT].snapped = true;
-                                this.lookupObject[Character.BODY_PARTS.FEET_RIGHT].snapped = true;
+                            if(this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT] === body){
+                                if(this.lookupObject[Character.BODY_PARTS.ARM_LEFT])this.lookupObject[Character.BODY_PARTS.ARM_LEFT].snapped = true;
+                                if(this.lookupObject[Character.BODY_PARTS.HAND_LEFT])this.lookupObject[Character.BODY_PARTS.HAND_LEFT].snapped = true;
+                            } else if(this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT] === body){
+                                if(this.lookupObject[Character.BODY_PARTS.ARM_RIGHT])this.lookupObject[Character.BODY_PARTS.ARM_RIGHT].snapped = true;
+                                if(this.lookupObject[Character.BODY_PARTS.HAND_RIGHT])this.lookupObject[Character.BODY_PARTS.HAND_RIGHT].snapped = true;
+                            } else if(this.lookupObject[Character.BODY_PARTS.THIGH_LEFT] === body){
+                                if(this.lookupObject[Character.BODY_PARTS.LEG_LEFT])this.lookupObject[Character.BODY_PARTS.LEG_LEFT].snapped = true;
+                                if(this.lookupObject[Character.BODY_PARTS.FEET_LEFT])this.lookupObject[Character.BODY_PARTS.FEET_LEFT].snapped = true;
+                            } else if(this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT] === body){
+                                if(this.lookupObject[Character.BODY_PARTS.LEG_RIGHT])this.lookupObject[Character.BODY_PARTS.LEG_RIGHT].snapped = true;
+                                if(this.lookupObject[Character.BODY_PARTS.FEET_RIGHT])this.lookupObject[Character.BODY_PARTS.FEET_RIGHT].snapped = true;
                             }
                         })
                         //carve bodies
