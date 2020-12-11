@@ -7048,6 +7048,11 @@ const _B2dEditor = function () {
 				targetGraphic.alpha = 0;
 				return;
 			}
+			if(!PIXI.loader.resources[tileTexture]){
+				// legacy tile texture fix
+				tileTexture = tileTexture.split('.')[0];
+				if(!PIXI.utils.BaseTextureCache[tileTexture]) tileTexture = 'Dirt';
+			}
 
 			let tex = PIXI.Texture.fromImage(tileTexture);
 			tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;

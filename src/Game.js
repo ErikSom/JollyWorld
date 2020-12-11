@@ -9,7 +9,7 @@ import {
 import {
     getPIXIDebugDraw
 } from "../libs/debugdraw";
-const PIXI = require('pixi.js');
+import * as PIXI from 'pixi.js'
 import {
     ui
 } from "./ui/UIManager";
@@ -17,7 +17,7 @@ import {
     firebaseManager
 } from "./utils/FireBaseManager";
 import {
-    LoadCoreAssets
+    LoadCoreAssets, ExtractTextureAssets
 } from "./AssetList";
 import {
     Settings
@@ -128,7 +128,12 @@ function Game() {
         this.editor = B2dEditor;
         this.editor.load(PIXI.loader);
 
-        PIXI.loader.load(this.setup.bind(this));
+        PIXI.loader.load(
+            async ()=> {
+                await ExtractTextureAssets();
+                this.setup();
+            }
+        );
 
         this.prepareGameFonts();
 
@@ -139,7 +144,6 @@ function Game() {
     };
 
     this.setup = function () {
-
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
@@ -172,7 +176,7 @@ function Game() {
         this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
         this.editor.assetLists.gore = Object.keys(PIXI.loader.resources["Characters_Gore.json"].textures);
 
-        this.editor.tileLists = ["", "Dirt.jpg", "Grass.jpg", "Fence.png", "YellowCat.jpg", "RedWhiteBlock.jpg", "PixelatedWater.jpg", "PixelatedStone.jpg", "PixelatedDirt.jpg", "PixelatedGrass.jpg", "GoldenBlock.jpg", "Brick0.jpg", "Brick1.jpg", "Brick2.jpg", "WhiteBlock.jpg"];
+        this.editor.tileLists = Settings.textureNames;
         this.editor.init(this.myContainer, this.world, Settings.PTM);
         this.myContainer.addChild(this.newDebugGraphics);
 
