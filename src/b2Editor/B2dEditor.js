@@ -1689,6 +1689,7 @@ const _B2dEditor = function () {
 		this.debugGraphics.moveTo(-crossSize + this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
 		this.debugGraphics.lineTo(crossSize + this.container.x + editorSettings.worldSize.width / 2 * this.container.scale.x, this.container.y);
 
+		trigger.drawEditorTriggers();
 
 		this.doEditorGUI();
 	}
@@ -7943,6 +7944,7 @@ const _B2dEditor = function () {
 		}
 	}
 	PIXI.Graphics.prototype.drawDashedPolygon = function (polygons, x, y, rotation, dash, gap, offsetPercentage) {
+		offsetPercentage = 1-offsetPercentage;
 		var i;
 		var p1;
 		var p2;
