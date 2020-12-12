@@ -24,6 +24,8 @@ export class RopeHat extends Hat {
 		this.ropeFired = false;
 		this.ropeActive = false;
 		this.pulleyJoint = null;
+		this.pulleyFrameJoint = null;
+		this.frameJoint = null;
 		this.bendRopeLength = 0;
 		this.ropePoints = [];
 		this.bendPoint = null;
@@ -147,31 +149,59 @@ export class RopeHat extends Hat {
 
 		this.setDistanceJointEnabled(true);
 
-		const prismaticJointDef = new Box2D.b2PrismaticJointDef();
+		let prismaticJointDef = new Box2D.b2PrismaticJointDef();
 		const axis = new Box2D.b2Vec2(Math.cos(this.head.GetAngle() + 90 * game.editor.DEG2RAD), Math.sin(this.head.GetAngle() + 90 * game.editor.DEG2RAD));
 		prismaticJointDef.Initialize(this.head, this.ropeEnd, farthestPoint, axis);
 		prismaticJointDef.maxMotorForce = 20000;
 		prismaticJointDef.enableMotor = false;
 		this.pulleyJoint = this.head.GetWorld().CreateJoint(prismaticJointDef);
+
+		if(this.character.attachedToVehicle){
+			const frame = this.character.mainPrefabClass.lookupObject['frame'];
+			if(frame){
+				prismaticJointDef = new Box2D.b2PrismaticJointDef();
+				prismaticJointDef.Initialize(frame, this.ropeEnd, farthestPoint, axis);
+				prismaticJointDef.maxMotorForce = 20000;
+				prismaticJointDef.enableMotor = false;
+				this.pulleyFrameJoint = frame.GetWorld().CreateJoint(prismaticJointDef);
+			}
+		}
+
 	}
 
 	setDistanceJointEnabled(enabled){
 		if(this.ropeHeadJoint){
 			this.head.GetWorld().DestroyJoint(this.ropeHeadJoint);
 		}
+		if(this.frameJoint){
+			this.head.GetWorld().DestroyJoint(this.frameJoint);
+		}
 		if(enabled){
-			const distanceJointDef = new Box2D.b2DistanceJointDef();
+			let distanceJointDef = new Box2D.b2DistanceJointDef();
 			distanceJointDef.Initialize(this.head, this.ropeEnd, this.head.GetPosition(), this.ropeEnd.GetPosition());
 			distanceJointDef.frequencyHz = 60;
 			distanceJointDef.dampingRatio = 1.0;
 			this.ropeHeadJoint = this.head.GetWorld().CreateJoint(distanceJointDef);
+
+			if(this.character.attachedToVehicle){
+				const frame = this.character.mainPrefabClass.lookupObject['frame'];
+				if(frame){
+					let ropeJointDef = new Box2D.b2RopeJointDef();
+					ropeJointDef.Initialize(frame, this.ropeEnd, frame.GetPosition(), this.ropeEnd.GetPosition());
+					const xd = frame.GetPosition().x - this.ropeEnd.GetPosition().x;
+					const yd = frame.GetPosition().y - this.ropeEnd.GetPosition().y;
+					ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
+
+					this.frameJoint = frame.GetWorld().CreateJoint(ropeJointDef);
+				}
+			}
 		}
 	}
 
 	releaseRope() {
 		if (this.ropeEnd) {
 			this.head.GetWorld().DestroyBody(this.ropeEnd);
-			this.revoluteJoint = this.pulleyJoint = null;
+			this.revoluteJoint = this.pulleyJoint = this.pulleyFrameJoint = null;
 			this.ropeActive = false
 			this.bendBody = this.bendPoint = null;
 		}
@@ -350,6 +380,7 @@ export class RopeHat extends Hat {
 		if (!this.pulleyJoint) return;
 		if(dir === 0){
 			this.pulleyJoint.EnableMotor(false);
+			this.pulleyFrameJoint.EnableMotor(false);
 			this.setDistanceJointEnabled(true);
 			return;
 		}
@@ -358,6 +389,8 @@ export class RopeHat extends Hat {
 		const speed = 5;
 		this.pulleyJoint.EnableMotor(true);
 		this.pulleyJoint.SetMotorSpeed(speed*-dir);
+		this.pulleyFrameJoint.EnableMotor(true);
+		this.pulleyFrameJoint.SetMotorSpeed(speed*-dir);
     }
 	update() {
 		if (this.ropeActive) {
