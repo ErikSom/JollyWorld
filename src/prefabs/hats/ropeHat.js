@@ -2,14 +2,14 @@ import Hat from './hat'
 import {
 	game
 } from "../../Game";
-import {
-	drawCircle
-} from '../../b2Editor/utils/drawing'
 import * as Box2D from '../../../libs/Box2D'
 
 export class RopeHat extends Hat {
 	constructor(character, head, body) {
 		super(character, head, body);
+		this.texture = 'RopeHelmet0000';
+		this.hatOffsetLength = 45;
+		this.hatOffsetAngle = Math.PI/2;
 		this.rayCastCallback = function () {
 			this.m_hit = false;
 		};
@@ -31,47 +31,8 @@ export class RopeHat extends Hat {
 		this.bendPoint = null;
 		this.bendSpeed = null;
 		this.bendBody = null;
-		this.hatBody = null;
 		this.tilingSprites = [];
 		this.attach();
-	}
-	attach(){
-		const bd = new Box2D.b2BodyDef();
-		bd.type = Box2D.b2BodyType.b2_dynamicBody;
-		bd.angularDamping = 0.85;
-		bd.linearDamping = 0.85;
-		bd.position = this.head.GetPosition();
-		bd.angle = this.head.GetAngle();
-		this.hatBody = this.head.GetWorld().CreateBody(bd);
-
-		const fixDef = new Box2D.b2FixtureDef;
-		fixDef.density = 0.1;
-		fixDef.shape = new Box2D.b2CircleShape;
-		fixDef.shape.SetRadius(1.0);
-		this.hatBody.CreateFixture(fixDef);
-
-		this.hatWeldJoint = new Box2D.b2WeldJointDef();
-		this.hatWeldJoint.Initialize(this.hatBody, this.head, this.hatBody.GetPosition());
-		this.hatWeldJoint.frequencyHz = 60;
-		this.hatWeldJoint.dampingRatio = 1.0;
-		this.hatWeldJoint.collideConnected = false;
-
-		this.head.GetWorld().CreateJoint(this.hatWeldJoint);
-
-		const textureObject = new game.editor.textureObject();
-		textureObject.x = this.hatBody.GetPosition().x*game.editor.PTM;
-		textureObject.y = this.hatBody.GetPosition().y*game.editor.PTM;
-		textureObject.rotation = this.hatBody.GetAngle();
-		textureObject.textureName = "RopeHelmet0000";
-		textureObject.texturePositionOffsetLength = 45;
-		textureObject.texturePositionOffsetAngle = Math.PI/2;
-		textureObject.textureAngleOffset = 0;
-
-		const texture = game.editor.buildTextureFromObj(textureObject);
-
-		texture.parent.addChildAt(texture, texture.parent.getChildIndex(this.head.myTexture)+1);
-
-		this.hatBody.myTexture = texture;
 	}
 	activate() {
 		if (this.ropeFired){
@@ -166,7 +127,6 @@ export class RopeHat extends Hat {
 				this.pulleyFrameJoint = frame.GetWorld().CreateJoint(prismaticJointDef);
 			}
 		}
-
 	}
 
 	setDistanceJointEnabled(enabled){
@@ -201,6 +161,8 @@ export class RopeHat extends Hat {
 	releaseRope() {
 		if (this.ropeEnd) {
 			this.head.GetWorld().DestroyBody(this.ropeEnd);
+			if(this.pulleyJoint) this.head.GetWorld().DestroyJoint(this.pulleyJoint);
+			if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
 			this.revoluteJoint = this.pulleyJoint = this.pulleyFrameJoint = null;
 			this.ropeActive = false
 			this.bendBody = this.bendPoint = null;
@@ -380,7 +342,7 @@ export class RopeHat extends Hat {
 		if (!this.pulleyJoint) return;
 		if(dir === 0){
 			this.pulleyJoint.EnableMotor(false);
-			this.pulleyFrameJoint.EnableMotor(false);
+			if(this.pulleyFrameJoint) this.pulleyFrameJoint.EnableMotor(false);
 			this.setDistanceJointEnabled(true);
 			return;
 		}
@@ -389,9 +351,18 @@ export class RopeHat extends Hat {
 		const speed = 5;
 		this.pulleyJoint.EnableMotor(true);
 		this.pulleyJoint.SetMotorSpeed(speed*-dir);
-		this.pulleyFrameJoint.EnableMotor(true);
-		this.pulleyFrameJoint.SetMotorSpeed(speed*-dir);
-    }
+		if(this.pulleyFrameJoint){
+			this.pulleyFrameJoint.EnableMotor(true);
+			this.pulleyFrameJoint.SetMotorSpeed(speed*-dir);
+		}
+	}
+
+	detachFromVehicle(){
+		if(this.frameJoint)	this.head.GetWorld().DestroyJoint(this.frameJoint);
+		if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
+		this.frameJoint = this.pulleyJoint = null;
+	}
+
 	update() {
 		if (this.ropeActive) {
 			this.updateRopeFixture();

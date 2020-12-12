@@ -73,7 +73,7 @@ export class Character extends PrefabManager.basePrefab {
         }
     }
     setHat(hatClass){
-        if(this.hat) this.hat.destroy();
+        if(this.hat) this.hat.detach();
         this.hat = new hatClass(this, this.lookupObject.head, this.lookupObject.body);
     }
     update() {
@@ -690,7 +690,7 @@ export class Character extends PrefabManager.basePrefab {
             }
         });
 
-
+        if(this.hat) this.hat.detachFromVehicle();
 
         //var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
         for (var i = 0; i < this.lookupObject._bodies.length; i++) {
