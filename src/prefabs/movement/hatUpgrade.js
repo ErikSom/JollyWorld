@@ -31,7 +31,7 @@ class HatUpgrade extends PrefabManager.basePrefab {
     }
     init() {
         super.init();
-		this.setHatType(this.prefabObject.settings.hatType);
+		this.setHatType(this.prefabObject.settings.hatType || HAT_TYPES.ROPE);
     }
     update() {
         super.update();
@@ -79,7 +79,7 @@ HatUpgrade.settingsOptions = Object.assign({}, HatUpgrade.settingsOptions, {
 
 
 PrefabManager.prefabLibrary.HatUpgrade = {
-    json: '{"objects":[[0,0,0,0,"hatUpgrade","hatBody",0,["#999999"],["#000"],[0],true,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],2,[63.579923817390195],"",[1]],[1,0,0,0,"hatUpgrade","hatTexture",1,"DirtBikeHelmet0000",0,0,0,0,false,"#FFFFFF",1,1,1,0,0,0]]}',
+    json: '{"objects":[[0,0,0,0,"hatUpgrade","hatBody",0,["#999999"],["#000"],[0],true,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],2,[63.579923817390195],"",[1]],[1,0,0,0,"hatUpgrade","hatTexture",1,"RopeHelmet0000",0,0,0,0,false,"#FFFFFF",1,1,1,0,0,0]]}',
     class: HatUpgrade,
     library: PrefabManager.LIBRARY_MOVEMENT
 }
