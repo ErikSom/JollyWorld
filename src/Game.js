@@ -29,6 +29,7 @@ import {
 import { dateDiff } from "./b2Editor/utils/formatString";
 
 import * as emitterManager from './utils/EmitterManager';
+import * as PhysicsParticleEmitter from './utils/PhysicsParticleEmitter';
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
@@ -233,7 +234,7 @@ function Game() {
         })
 
         emitterManager.init();
-
+        PhysicsParticleEmitter.init();
 
         PIXICuller.init(this.editor.textures);
 
@@ -525,6 +526,7 @@ function Game() {
         this.run = false;
         this.resetGame();
         ui.hideGameOverMenu();
+        PhysicsParticleEmitter.update(true);
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -830,6 +832,7 @@ function Game() {
         // this.shockFilter.center.x = this.editor.mousePosPixel.x;
         // this.shockFilter.center.y = this.editor.mousePosPixel.y;
 
+        this.stats.begin();
 
         if (Settings.allowMouseMovement && this.mouseJoint) {
             if (Key.isDown(Key.MOUSE)) {
@@ -841,12 +844,12 @@ function Game() {
         }
         if (this.run) {
             this.inputUpdate();
-            this.stats.begin();
             this.world.Step(Settings.physicsTimeStep, 4, 3);
-            this.stats.end();
             this.world.ClearForces();
             this.camera();
             emitterManager.update();
+            PhysicsParticleEmitter.update();
+            
         }
         EffectsComposer.update();
 
@@ -859,6 +862,8 @@ function Game() {
         this.app.render();
         PIXICuller.update();
         Key.update();
+
+        this.stats.end();
     };
 
     this.prepareGameFonts = function () {

@@ -1,31 +1,98 @@
 import * as PrefabBuilder from './PrefabBuilder';
 import * as Box2D from '../../libs/Box2D';
+import {
+	game
+} from "../Game";
+import { Settings } from '../Settings';
+
+const poolSize = 200;
+const spritePool = [];
+const activeParticles = [];
+
+const bodyDef = new Box2D.b2BodyDef();
+bodyDef.type = Box2D.b2BodyType.b2_dynamicBody;
+bodyDef.angularDamping = 0.9;
+
+const fixDef = new Box2D.b2FixtureDef;
+fixDef.density = 0.1;
+fixDef.friction = 0.5;
+fixDef.restitution = 0.2;
+fixDef.shape = new Box2D.b2CircleShape;
+
+const impulse = new Box2D.b2Vec2();
+
+export const init = ()=> {
+	fixDef.filter.categoryBits = game.editor.MASKBIT_EVERYTHING_BUT_US;
+	fixDef.filter.maskBits = game.editor.MASKBIT_NORMAL | game.editor.MASKBIT_FIXED | game.editor.MASKBIT_CHARACTER; //game.editor.MASKBIT_EVERYTHING_BUT_US | game.editor.MASKBIT_ONLY_US;
+	for(let i = 0; i<poolSize; i++){
+		const sprite = new PIXI.Sprite(PIXI.Texture.fromFrame('Gore_Meat10000'));
+		sprite.data = {};
+		spritePool.push(sprite);
+	}
+}
 
 export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[]) => {
-
+	let force2 = force*2;
+	size = size / Settings.PTM;
 	for(let i = 0; i<amount; i++){
-		const prefabData = PrefabBuilder.generatePrefab(worldPosition, 0, 'PhysicsParticle', false);
-		const { lookupObject, prefabClass } = prefabData;
-		if(!randomTexture){
-			prefabClass.texture = textures[i%textures.length];
+
+		let sprite, body;
+		if(spritePool.length>0){
+			body = game.editor.world.CreateBody(bodyDef);
+			fixDef.shape.SetRadius(size);
+			body.CreateFixture(fixDef);
+
+			sprite = spritePool.pop();
+			sprite.myBody = body;
+			body.mySprite = sprite;
+
+			game.myEffectsContainer.addChild(sprite);
+			activeParticles.push(sprite);
 		}else{
-			prefabClass.texture = textures[Math.round(Math.random()*textures.length)];
+			// we grab a random active particle
+			const randomSpriteIndex = Math.floor(Math.random()*activeParticles.length);
+			sprite = activeParticles[randomSpriteIndex];
+			body = sprite.myBody;
+			body.GetFixtureList().GetShape().SetRadius(size);
 		}
 
-		const body = lookupObject._bodies[0];
-		const impulse = new Box2D.b2Vec2((Math.random()*(force*2)-force), (Math.random()*(force*2)-force));
-		body.ApplyForce(impulse, body.GetPosition());
+		if(!randomTexture){
+			sprite.texture = PIXI.Texture.fromFrame(textures[i%textures.length]+'0000');
+		}else{
+			sprite.texture = PIXI.Texture.fromFrame(textures[Math.round(Math.random()*textures.length)]+'0000');
+		}
 
+		sprite.lifeTime = Settings.physicsParticleLifeTime + Math.round(Settings.physicsParticleLifeTimeRandomOffset*Math.random());
+		sprite.lifeDate = Date.now();
 
-		prefabClass.particleSize = size;
-		prefabClass.init();
+		sprite.pivot.x = sprite.width/2;
+		sprite.pivot.y = sprite.height/2;
 
-		const texture = body.myTexture.originalSprite;
+		body.SetPosition(worldPosition)
+		sprite.x = worldPosition.x*Settings.PTM;
+		sprite.y = worldPosition.y*Settings.PTM;
+
+		impulse.Set(Math.random()*force2-force, Math.random()*force2-force)
+		body.SetLinearVelocity(impulse)
+
 		if(tints.length>0){
-			texture.tint = tints[Math.round(Math.random()*tints.length)];
+			sprite.tint = tints[Math.round(Math.random()*tints.length)];
 		}
-		body.myTexture.pivot.x = texture.width/2;
-		body.myTexture.pivot.y = texture.height/2;
-		texture.x = texture.y = 0;
+	}
+}
+
+export const update = clean => {
+	for(let i = 0; i<activeParticles.length; i++){
+		const sprite = activeParticles[i];
+		if(Date.now() - sprite.lifeDate > sprite.lifeTime || clean){
+			game.editor.world.DestroyBody(sprite.myBody);
+			delete sprite.myBody;
+
+			sprite.parent.removeChild(sprite);
+			activeParticles.splice(i, 1);
+			spritePool.push(sprite);
+
+			i--;
+		}
 	}
 }
