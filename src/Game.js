@@ -373,6 +373,9 @@ function Game() {
                 if (Key.isPressed(Key.Z)) {
                     this.character.detachFromVehicle(Settings.detachForce);
                 };
+                if(Key.isPressed(Key.SPACE)){
+                    this.editor.mirrorPrefab(this.vehicle, 'frame');
+                }
 
             } else if (this.character && !this.character.attachedToVehicle) {
                 if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
@@ -387,6 +390,10 @@ function Game() {
                     this.character.positionBody('right');
                 } else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.character.positionBody('right');
+                }
+
+                if(Key.isPressed(Key.SPACE)){
+                    this.editor.mirrorPrefab(this.character, 'body');
                 }
             }
 
@@ -844,11 +851,12 @@ function Game() {
         }
         if (this.run) {
             this.inputUpdate();
-            this.world.Step(Settings.physicsTimeStep, 4, 3);
+            if(this.run){this.world.Step(Settings.physicsTimeStep, 4, 3);
             this.world.ClearForces();
             this.camera();
             emitterManager.update();
             PhysicsParticleEmitter.update();
+            }
             
         }
         EffectsComposer.update();

@@ -3201,10 +3201,6 @@ const _B2dEditor = function () {
 		this.mousePosWorld = this.getWorldPointFromPixelPoint(this.mousePosPixel);
 	}
 
-
-
-
-
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
 			if (this.spaceCameraDrag) {
@@ -5868,6 +5864,7 @@ const _B2dEditor = function () {
 			}
 		}
 	}
+
 	this.setScale = function (obj, scaleX, scaleY) {
 
 		//do we include a circle?
@@ -6034,7 +6031,96 @@ const _B2dEditor = function () {
 			sprite.x--;
 
 		}
+	}
 
+ 	this.mirrorPrefab = function(prefabClass, centerObjectName){
+		// lookupObject._joints
+		const objects = [].concat(prefabClass.lookupObject._bodies, prefabClass.lookupObject._textures)
+		const centerObject = prefabClass.lookupObject[centerObjectName];
+		const flippedJoints = [];
+		objects.forEach(object =>{
+			if (object.mySprite){
+				// body
+				let fixture = object.GetFixtureList();
+				while(fixture){
+					const shape = fixture.GetShape();
+					if(shape instanceof Box2D.b2PolygonShape){
+						let vertices = shape.GetVertices();
+						for (let i = 0; i < vertices.length; i++) {
+							vertices[i].x *= -1;
+
+						}
+						vertices.reverse();
+						shape.Set(vertices);
+					}else{
+						const position = shape.GetLocalPosition();
+						// position.x *- 1;
+						shape.SetLocalPosition(position);
+					}
+
+					fixture = fixture.GetNext();
+				}
+
+				const objectAngle = object.GetAngle();
+				const reflectedAngle = - objectAngle;
+				object.SetAngle(reflectedAngle);
+
+				if(object != centerObject){
+					const cdx = object.GetPosition().x-centerObject.GetPosition().x;
+					const cdy = object.GetPosition().y-centerObject.GetPosition().y;
+					const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
+					const reflectedcda =  -(Math.atan2(cdy, cdx)+Math.PI/2) - Math.PI/2;
+
+					const nx = centerObject.GetPosition().x+cdl*Math.cos(reflectedcda)
+					const ny = centerObject.GetPosition().y+cdl*Math.sin(reflectedcda);
+
+					const position = object.GetPosition();
+					position.x = nx;
+					position.y = ny;
+
+					object.SetPosition(position);
+				}
+
+				if(object.myTexture){
+					object.myTexture.scale.x *= -1;
+					console.log(object.myTexture.data)
+					object.myTexture.data.texturePositionOffsetAngle = -(object.myTexture.data.texturePositionOffsetAngle+Math.PI/2) - Math.PI/2;
+				}
+
+				let jointEdge = object.GetJointList();
+				while (jointEdge) {
+					const joint = jointEdge.joint;
+					if(!flippedJoints.includes(joint)){
+
+						if(joint.m_localAnchorA !== undefined) joint.m_localAnchorA.x *= -1;
+						if(joint.m_localAnchorB !== undefined) joint.m_localAnchorB.x *= -1;
+						if(joint.m_localCenterA !== undefined) joint.m_localCenterA.x *= -1;
+						if(joint.m_localCenterB !== undefined) joint.m_localCenterB.x *= -1;
+
+						if(object.mySprite.data.refName === 'head' && joint.m_bodyB.mySprite.data.refName === 'body'){
+							console.log('before:', joint.m_lowerAngle, joint.m_upperAngle);
+						}
+
+						const oldLower = joint.m_lowerAngle;
+						joint.m_lowerAngle = -joint.m_upperAngle;
+						joint.m_upperAngle = -oldLower;
+
+						if(object.mySprite.data.refName === 'head' && joint.m_bodyB.mySprite.data.refName === 'body'){
+							console.log('after:', joint.m_lowerAngle, joint.m_upperAngle);
+							console.log(joint, joint.m_referenceAngle);
+						}
+
+						flippedJoints.push(joint);
+					}
+					jointEdge = jointEdge.next;
+				}
+
+
+			}else{
+				// sprite
+				object.scale.x *= -1;
+			}
+		})
 	}
 
 	this.groupObjects = function () {
