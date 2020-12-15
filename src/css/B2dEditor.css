@@ -888,6 +888,11 @@ body .dg .cr.function {
     width: 120px;
     margin: 0px auto;
 }
+#characterSelect img, #vehicleSelect img{
+    padding:2px;
+    user-select: none;
+    cursor: pointer;
+}
 
 .ratingHolder {
     display: flex;

@@ -4,6 +4,7 @@ import * as extramath from '../../b2Editor/utils/extramath';
 import {
     game
 } from "../../Game";
+import { Settings } from '../../Settings';
 
 
 export class BaseVehicle extends PrefabManager.basePrefab {
@@ -19,9 +20,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     init() {
 
         super.init();
-        var i;
+        this.character.setSkin(game.selectedCharacter);
+        let i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
-            var body = this.lookupObject._bodies[i];
+            let body = this.lookupObject._bodies[i];
             body.mySprite.data.prefabID = this.prefabObject.instanceID;
         }
         this.character.life = this.prefabObject.settings.life;
@@ -46,16 +48,13 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             return fraction;
         };
 
-        var i;
-        var maxEngines = 4;
+        let maxEngines = 4;
         for (i = 1; i <= maxEngines; i++) {
-            var engine = this.lookupObject["engine" + i.toString()];
+            let engine = this.lookupObject["engine" + i.toString()];
             if (engine != null) {
                 this.engines.push(engine);
-                this.desiredVehicleTorques.push(engine.GetMotorTorque());
-                this.desiredVehicleSpeeds.push(engine.GetMotorSpeed());
-                var tarBody = engine.GetBodyA();
-                var fixture = tarBody.GetFixtureList();
+                let tarBody = engine.GetBodyA();
+                let fixture = tarBody.GetFixtureList();
                 while (fixture != null) {
                     if (fixture.GetShape() instanceof Box2D.b2CircleShape) {
                         this.wheels.push(fixture)
@@ -76,15 +75,15 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 if (this.prefabObject.settings.selectedVehicle != value) {
                     this.prefabObject.settings.selectedVehicle = value;
 
-                    var vehicleDepth = game.editor.getLowestChildIndex([].concat(this.lookupObject._bodies, this.lookupObject._textures, this.lookupObject._joints));
+                    let vehicleDepth = game.editor.getLowestChildIndex([].concat(this.lookupObject._bodies, this.lookupObject._textures, this.lookupObject._joints));
 
-                    var vehiclePrefab = `{"objects":[[4,${this.prefabObject.x},${this.prefabObject.y},${this.prefabObject.rotation},${JSON.stringify(this.prefabObject.settings)},"${value}",${this.prefabObject.instanceID}]]}`;
-                    var newObjects = game.editor.buildJSON(JSON.parse(vehiclePrefab));
+                    let vehiclePrefab = `{"objects":[[4,${this.prefabObject.x},${this.prefabObject.y},${this.prefabObject.rotation},${JSON.stringify(this.prefabObject.settings)},"${value}",${this.prefabObject.instanceID}]]}`;
+                    let newObjects = game.editor.buildJSON(JSON.parse(vehiclePrefab));
                     game.editor.applyToObjects(game.editor.TRANSFORM_FORCEDEPTH, vehicleDepth, [].concat(newObjects._bodies, newObjects._textures, newObjects._joints));
 
-                    game.editor.deleteSelection();
+                    game.editor.deleteSelection(true);
 
-                    var instanceName;
+                    let instanceName;
                     if (newObjects._bodies.length > 0) instanceName = newObjects._bodies[0].mySprite.data.prefabInstanceName;
                     else if (newObjects._textures.length > 0) instanceName = newObjects._textures[0].data.prefabInstanceName;
 
@@ -100,28 +99,28 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 
     accelerate(dir) {
         this.accelerateWheels(dir);
-        var i;
-        var j;
-        var wheel;
+        let i;
+        let j;
+        let wheel;
         const offset = 0.5;
 
         for (i = 0; i < this.wheels.length; i++) {
             wheel = this.wheels[i];
 
-            var rayStart = wheel.GetBody().GetPosition();
-            var rayEnd;
+            let rayStart = wheel.GetBody().GetPosition();
+            let rayEnd;
             // add 360 scope
-            var wheelRadius = wheel.GetShape().GetRadius();
-            var rayLength = wheelRadius + offset;
-            var checkSlize = (360 / 20) * game.editor.DEG2RAD;
-            var totalCircleRad = 360 * game.editor.DEG2RAD;
+            let wheelRadius = wheel.GetShape().GetRadius();
+            let rayLength = wheelRadius + offset;
+            let checkSlize = (360 / 20) * game.editor.DEG2RAD;
+            let totalCircleRad = 360 * game.editor.DEG2RAD;
             for (j = 0; j < totalCircleRad; j += checkSlize) {
                 rayEnd = rayStart.Clone();
                 rayEnd.SelfAdd(new Box2D.b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
-                var callback = new this.RaycastCallbackWheel();
+                let callback = new this.RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if (callback.m_hit) {
-                    var forceDir = extramath.rotateVector(callback.m_normal, 90);
+                    let forceDir = extramath.rotateVector(callback.m_normal, 90);
                     this.applyImpulse(this.desiredVehicleSpeeds[i] * dir, forceDir);
                     //grounded = true;
                     break;
@@ -130,21 +129,21 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         }
     }
     applyImpulse(force, angle) {
-        var i;
-        var body;
-        var dirFore = angle.Clone();
+        let i;
+        let body;
+        let dirFore = angle.Clone();
         dirFore.SelfMul(force * 0.01)
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             body = this.lookupObject._bodies[i];
-            var oldVelocity = body.GetLinearVelocity();
-            var newVelocity = new Box2D.b2Vec2(oldVelocity.x + dirFore.x, oldVelocity.y + dirFore.y);
+            let oldVelocity = body.GetLinearVelocity();
+            let newVelocity = new Box2D.b2Vec2(oldVelocity.x + dirFore.x, oldVelocity.y + dirFore.y);
             body.SetLinearVelocity(newVelocity);
         }
 
     }
     accelerateWheels(dir) {
-        var i;
-        var engine;
+        let i;
+        let engine;
         for (i = 0; i < this.engines.length; i++) {
             engine = this.engines[i];
             engine.SetMaxMotorTorque(this.desiredVehicleTorques[i]);
@@ -157,8 +156,8 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         }
     }
     stopAccelerateWheels() {
-        var i;
-        var engine;
+        let i;
+        let engine;
         for (i = 0; i < this.engines.length; i++) {
             engine = this.engines[i];
             engine.SetMaxMotorTorque(0);
@@ -175,7 +174,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
     lean(dir) {
         if (this.lookupObject.frame) {
-            var velocity = this.leanSpeed * dir;
+            let velocity = this.leanSpeed * dir;
             this.lookupObject.frame.SetAngularVelocity(velocity * 10);
         }
     }
@@ -190,5 +189,5 @@ BaseVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
         max: 10000.0,
         step: 1.0
 	},
-    "selectedVehicle": ["Bike", "Stroller", "HorseVehicle", "NoVehicle"]
+    "selectedVehicle": Settings.availableVehicles
 });

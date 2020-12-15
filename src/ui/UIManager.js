@@ -10,6 +10,7 @@ import * as dat from '../../libs/dat.gui';
 import * as uiHelper from '../b2Editor/utils/uiHelper';
 import * as format from '../b2Editor/utils/formatString';
 import anime from 'animejs/lib/anime.es';
+import { Settings } from '../Settings'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 
@@ -18,6 +19,8 @@ let discordButton;
 let gameOver;
 let levelLoader;
 let levelBanner;
+let characterSelect;
+let vehicleSelect;
 let pauseMenu;
 let filterMenu;
 let winScreen;
@@ -501,7 +504,8 @@ function UIManager() {
 
             playButton.addEventListener('click', () => {
                 this.hideLevelBanner();
-                game.playWorld();
+                this.showCharacterSelect();
+                // game.playWorld();
             })
 
             let backButton = document.createElement('div');
@@ -538,8 +542,105 @@ function UIManager() {
         window.location.hash = `${game.currentLevelData.uid}/`
 
     }
+
     this.hideLevelBanner = function () {
         levelBanner.domElement.style.visibility = 'hidden';
+    }
+
+    this.showCharacterSelect = function () {
+        if (!characterSelect) {
+            characterSelect = new dat.GUI({
+                autoPlace: false,
+                width:438,
+            });
+            characterSelect.domElement.setAttribute('id', 'characterSelect');
+
+            let folder = characterSelect.addFolder('Select Character');
+            folder.domElement.classList.add('custom');
+
+            folder.open();
+
+            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+            let characterHolder = document.createElement('div');
+            characterHolder.style.padding = '10px';
+
+            for(let i = 0; i<Settings.availableCharacters; i++){
+                const portrait =  document.createElement('img');
+                portrait.src = `./assets/images/portraits/character${i+1}.png`
+                characterHolder.appendChild(portrait);
+                portrait.onclick = ()=>{
+                    game.selectedCharacter = i;
+                    this.hideCharacterSelect();
+                    this.showVehicleSelect();
+                }
+            }
+
+            targetDomElement.appendChild(characterHolder);
+            customGUIContainer.appendChild(characterSelect.domElement);
+            characterSelect.domElement.style.position = 'absolute';
+            characterSelect.domElement.style.left = '50%';
+            characterSelect.domElement.style.top = '50%';
+            characterSelect.domElement.style.transform = 'translate(-50%, -50%)';
+
+            game.editor.ui.registerDragWindow(characterSelect);
+
+
+        }
+        characterSelect.domElement.style.visibility = 'visible';
+        // set values
+    }
+
+    this.hideCharacterSelect = function () {
+        characterSelect.domElement.style.visibility = 'hidden';
+    }
+
+    this.showVehicleSelect = function () {
+        if (!vehicleSelect) {
+            vehicleSelect = new dat.GUI({
+                autoPlace: false,
+                width:438,
+            });
+            vehicleSelect.domElement.setAttribute('id', 'vehicleSelect');
+
+            let folder = vehicleSelect.addFolder('Select Vehicle');
+            folder.domElement.classList.add('custom');
+
+            folder.open();
+
+            const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+            const vehicleHolder = document.createElement('div');
+            vehicleHolder.style.padding = '10px';
+
+            for(let i = 0; i<Settings.availableVehicles.length; i++){
+                const portrait =  document.createElement('img');
+                portrait.src = `./assets/images/portraits/vehicle${i+1}.png`
+                vehicleHolder.appendChild(portrait);
+                portrait.onclick = ()=>{
+                    this.hideVehicleSelect();
+                    game.selectedVehicle = i+1;
+                    game.initLevel(game.currentLevelData);
+                    game.playWorld();
+                }
+            }
+
+            targetDomElement.appendChild(vehicleHolder);
+            customGUIContainer.appendChild(vehicleSelect.domElement);
+            vehicleSelect.domElement.style.position = 'absolute';
+            vehicleSelect.domElement.style.left = '50%';
+            vehicleSelect.domElement.style.top = '50%';
+            vehicleSelect.domElement.style.transform = 'translate(-50%, -50%)';
+
+            game.editor.ui.registerDragWindow(vehicleSelect);
+
+
+        }
+        vehicleSelect.domElement.style.visibility = 'visible';
+        // set values
+    }
+    this.hideVehicleSelect = function () {
+        vehicleSelect.domElement.style.visibility = 'hidden';
     }
 
     this.showPauseMenu = function () {
@@ -653,8 +754,8 @@ function UIManager() {
             divWrapper.appendChild(restartButton);
 
             restartButton.addEventListener('click', () => {
-                game.resetWorld();
                 game.unpauseGame();
+                game.previewLevel();
             })
 
             let exitButton = document.createElement('div');

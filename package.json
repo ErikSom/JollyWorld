@@ -1,6 +1,6 @@
 {
   "name": "jollywheels",
-  "version": "0.8.30",
+  "version": "0.8.35",
   "description": "This game is not for kids, its physics / gore and fun!",
   "main": "./build/index.html",
   "repository": "https://smerik@bitbucket.org/smerik/jollywheels.git",
@@ -16,12 +16,12 @@
     "server": "http-server build"
   },
   "dependencies": {
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/preset-env": "^7.12.7",
     "animejs": "^3.0.1",
-    "babel": "^6.23.0",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-1": "^6.24.1",
+    "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^6.0.2",
     "css-loader": "^0.28.9",
     "extend": "^3.0.2",
