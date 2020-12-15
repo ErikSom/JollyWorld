@@ -162,7 +162,7 @@ function Game() {
         this.myContainer = new PIXI.Container();
 
         this.levelCamera = new PIXICamera(this.myContainer);
-//        this.levelCamera.disable();
+        //this.levelCamera.disable();
         
         this.myContainer.camera = this.levelCamera;
 
@@ -257,7 +257,7 @@ function Game() {
         emitterManager.init();
         PhysicsParticleEmitter.init();
 
-        PIXICuller.init(this.editor.textures);
+        PIXICuller.init(this.editor.textures, this.levelCamera);
 
         // SITELOCK
         (function checkInit() {
@@ -765,7 +765,7 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
-        const camera = this.editor.container.camera || this.editor.container;
+        const camera = this.editor.cameraHolder;
 
         var currentZoom = camera.scale.x;
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());

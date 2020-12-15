@@ -26,6 +26,7 @@ import {
 import {
 	Settings
 } from "../Settings";
+import { spine } from "pixi.js";
 
 
 const camera = require("./utils/camera");
@@ -1789,23 +1790,33 @@ const _B2dEditor = function () {
 	}
 
 	this.handleParallax = function(){
-		return;
 		const camera = this.cameraHolder;
 
-		this.parallaxObject.forEach(sprite=>{
-			if(sprite.data.parallax){
-				sprite.x = -(camera.x-window.innerWidth/2)/camera.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.x
-				sprite.y = -(camera.y-window.innerHeight/2)/camera.scale.x*sprite.data.parallax+sprite.parallaxStartPosition.y
+		for(const sprite of this.parallaxObject) {
+			const oX = (camera.x - window.innerWidth / 2);
+			const oY = (camera.y - window.innerWidth / 2);
+
+			if (sprite.data.parallax){
+				sprite.x = -oX / camera.scale.x * sprite.data.parallax + sprite.parallaxStartPosition.x;
+				sprite.y = -oY / camera.scale.x * sprite.data.parallax + sprite.parallaxStartPosition.y;
 			}
-			if(sprite.data.repeatTeleportX){
-				while(sprite.x+(camera.x-window.innerWidth/2)/camera.scale.x > sprite.data.repeatTeleportX) sprite.x-=sprite.data.repeatTeleportX*2
-				while(sprite.x+(camera.x-window.innerWidth/2)/camera.scale.x <-sprite.data.repeatTeleportX) sprite.x+=sprite.data.repeatTeleportX*2
+
+			if (sprite.data.repeatTeleportX){
+				while (sprite.x + oX / camera.scale.x > sprite.data.repeatTeleportX)
+					sprite.x -= sprite.data.repeatTeleportX * 2;
+
+				while (sprite.x + oX / camera.scale.x < -sprite.data.repeatTeleportX)
+					sprite.x += sprite.data.repeatTeleportX * 2;
 			}
-			if(sprite.data.repeatTeleportY){
-				while(sprite.y+(camera.y-window.innerWidth/2)/camera.scale.y > sprite.data.repeatTeleportY) sprite.y-=sprite.data.repeatTeleportY*2
-				while(sprite.y+(camera.y-window.innerWidth/2)/camera.scale.y <-sprite.data.repeatTeleportY) sprite.y+=sprite.data.repeatTeleportY*2
+
+			if (sprite.data.repeatTeleportY) {
+				while (sprite.y + oY / camera.scale.y > sprite.data.repeatTeleportY)
+					sprite.y -= sprite.data.repeatTeleportY * 2;
+
+				while (sprite.y + oY / camera.scale.y < -sprite.data.repeatTeleportY)
+					sprite.y += sprite.data.repeatTeleportY * 2;
 			}
-		});
+		}
 	}
 
 	this.object_BODY = 0;
@@ -7861,10 +7872,14 @@ const _B2dEditor = function () {
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);
 			}
+
 			if(!sprite.myBody && (sprite.data.parallax || sprite.data.repeatTeleportX || sprite.data.repeatTeleportY)){
 				sprite.parallaxStartPosition = sprite.position.clone();
+				// disable cull for this sprite.
+				sprite.ignoreCulling = true;
 				this.parallaxObject.push(sprite);
 			}
+
 			if(sprite.data.type === this.object_ANIMATIONGROUP){
 				this.animationGroups.push(sprite);
 			}
