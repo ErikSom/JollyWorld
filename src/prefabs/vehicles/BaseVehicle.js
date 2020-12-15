@@ -14,6 +14,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
         this.destroyConnectedJoints = {};
+        this.flipped = false;
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
     }
 
@@ -98,6 +99,9 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
 
     accelerate(dir) {
+        if(this.flipped) dir*= -1;
+        if((dir < 0 && !this.flipped) || (dir>0 && this.flipped)) dir *= .6; // only 60% backwards speed
+
         this.accelerateWheels(dir);
         let i;
         let j;
@@ -171,6 +175,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 
     stopAccelerate() {
         this.stopAccelerateWheels();
+    }
+    flip(){
+        this.flipped = !this.flipped;
+        game.editor.mirrorPrefab(game.vehicle, 'frame');
     }
     lean(dir) {
         if (this.lookupObject.frame) {

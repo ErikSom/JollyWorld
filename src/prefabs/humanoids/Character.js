@@ -8,7 +8,6 @@ import {
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
-import { RopeHat } from '../hats/ropeHat';
 
 export class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -17,6 +16,7 @@ export class Character extends PrefabManager.basePrefab {
         super(target);
         this.life = 300;
         this.hat = undefined;
+        this.flipped = false;
     }
 
     init() {
@@ -71,6 +71,11 @@ export class Character extends PrefabManager.basePrefab {
             body.myTexture.data.textureName = targetTexture;
             body.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetTexture);
         }
+    }
+    flip(){
+        this.flipped = !this.flipped;
+        if(this.attachedToVehicle) game.vehicle.flip();
+        else game.editor.mirrorPrefab(this, 'body');
     }
     setHat(hatClass){
         if(this.hat) this.hat.detach();

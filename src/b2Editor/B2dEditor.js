@@ -6083,7 +6083,6 @@ const _B2dEditor = function () {
 
 				if(object.myTexture){
 					object.myTexture.scale.x *= -1;
-					console.log(object.myTexture.data)
 					object.myTexture.data.texturePositionOffsetAngle = -(object.myTexture.data.texturePositionOffsetAngle+Math.PI/2) - Math.PI/2;
 				}
 
@@ -6097,17 +6096,10 @@ const _B2dEditor = function () {
 						if(joint.m_localCenterA !== undefined) joint.m_localCenterA.x *= -1;
 						if(joint.m_localCenterB !== undefined) joint.m_localCenterB.x *= -1;
 
-						if(object.mySprite.data.refName === 'head' && joint.m_bodyB.mySprite.data.refName === 'body'){
-							console.log('before:', joint.m_lowerAngle, joint.m_upperAngle);
-						}
-
-						const oldLower = joint.m_lowerAngle;
-						joint.m_lowerAngle = -joint.m_upperAngle;
-						joint.m_upperAngle = -oldLower;
-
-						if(object.mySprite.data.refName === 'head' && joint.m_bodyB.mySprite.data.refName === 'body'){
-							console.log('after:', joint.m_lowerAngle, joint.m_upperAngle);
-							console.log(joint, joint.m_referenceAngle);
+						if(joint.m_lowerAngle !== undefined && joint.m_upperAngle !== undefined) {
+							const oldLower = joint.m_lowerAngle;
+							joint.m_lowerAngle = -joint.m_upperAngle;
+							joint.m_upperAngle = -oldLower;
 						}
 
 						flippedJoints.push(joint);

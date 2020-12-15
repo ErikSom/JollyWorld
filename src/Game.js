@@ -374,7 +374,7 @@ function Game() {
                     this.character.detachFromVehicle(Settings.detachForce);
                 };
                 if(Key.isPressed(Key.SPACE)){
-                    this.editor.mirrorPrefab(this.vehicle, 'frame');
+                    this.character.flip();
                 }
 
             } else if (this.character && !this.character.attachedToVehicle) {
@@ -393,7 +393,7 @@ function Game() {
                 }
 
                 if(Key.isPressed(Key.SPACE)){
-                    this.editor.mirrorPrefab(this.character, 'body');
+                    this.character.flip();
                 }
             }
 
