@@ -1793,8 +1793,9 @@ const _B2dEditor = function () {
 		const camera = this.cameraHolder;
 
 		for(const sprite of this.parallaxObject) {
+			// never use a window value, because it can has side effects if window will embeded
 			const oX = (camera.x - window.innerWidth / 2);
-			const oY = (camera.y - window.innerWidth / 2);
+			const oY = (camera.y - window.innerHeight / 2);
 
 			if (sprite.data.parallax){
 				sprite.x = -oX / camera.scale.x * sprite.data.parallax + sprite.parallaxStartPosition.x;
