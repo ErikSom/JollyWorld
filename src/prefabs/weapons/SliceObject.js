@@ -4,6 +4,9 @@ import {
     game
 } from "../../Game";
 
+import {Character} from '../humanoids/Character'
+ 
+
 export class SliceObject extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
@@ -48,6 +51,18 @@ export class SliceObject extends PrefabManager.basePrefab {
                 if(!self.objectsToSlice.includes(otherBody)){
                     self.objectsToSlice.push(otherBody);
                 }
+
+                if(otherBody.isFlesh){
+                    const refName = otherBody?.mySprite?.data?.refName;
+                    let damage = 30;
+                    if(refName === Character.BODY_PARTS.HEAD || refName === Character.BODY_PARTS.BODY){
+                        damage = 1000;
+                    }
+                    const characterClass = game.editor.retrieveSubClassFromBody(otherBody);
+                    characterClass.dealDamage(damage);
+                }
+
+
             }
 
 		}

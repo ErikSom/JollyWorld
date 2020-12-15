@@ -9,7 +9,6 @@ class HorseVehicle extends BaseVehicle {
     constructor(target) {
         super(target);
         this.leanSpeed = 1.0;
-        this.character.setSkin(1);
     }
     init() {
         super.init();

@@ -9,7 +9,7 @@ import {
 import {
     getPIXIDebugDraw
 } from "../libs/debugdraw";
-const PIXI = require('pixi.js');
+import * as PIXI from 'pixi.js'
 import {
     ui
 } from "./ui/UIManager";
@@ -17,7 +17,7 @@ import {
     firebaseManager
 } from "./utils/FireBaseManager";
 import {
-    LoadCoreAssets
+    LoadCoreAssets, ExtractTextureAssets
 } from "./AssetList";
 import {
     Settings
@@ -29,6 +29,7 @@ import {
 import { dateDiff } from "./b2Editor/utils/formatString";
 
 import * as emitterManager from './utils/EmitterManager';
+import * as PhysicsParticleEmitter from './utils/PhysicsParticleEmitter';
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
@@ -89,6 +90,8 @@ function Game() {
     this.levelWon = false;
     this.gameOver = false;
     this.checkPointData = null;
+    this.selectedCharacter = 0;
+    this.selectedVehicle = 0;
 
     this.ui = ui;
 
@@ -132,7 +135,12 @@ function Game() {
         this.editor = B2dEditor;
         this.editor.load(PIXI.loader);
 
-        PIXI.loader.load(this.setup.bind(this));
+        PIXI.loader.load(
+            async ()=> {
+                await ExtractTextureAssets();
+                this.setup();
+            }
+        );
 
         this.prepareGameFonts();
 
@@ -143,7 +151,6 @@ function Game() {
     };
 
     this.setup = function () {
-
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
@@ -191,7 +198,7 @@ function Game() {
         this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
         this.editor.assetLists.gore = Object.keys(PIXI.loader.resources["Characters_Gore.json"].textures);
 
-        this.editor.tileLists = ["", "Dirt.jpg", "Grass.jpg", "Fence.png", "YellowCat.jpg", "RedWhiteBlock.jpg", "PixelatedWater.jpg", "PixelatedStone.jpg", "PixelatedDirt.jpg", "PixelatedGrass.jpg", "GoldenBlock.jpg", "Brick0.jpg", "Brick1.jpg", "Brick2.jpg", "WhiteBlock.jpg"];
+        this.editor.tileLists = Settings.textureNames;
         this.editor.init(this.stage, this.myContainer, this.world, Settings.PTM);
         this.myContainer.addChild(this.newDebugGraphics);
 
@@ -248,7 +255,7 @@ function Game() {
         })
 
         emitterManager.init();
-
+        PhysicsParticleEmitter.init();
 
         PIXICuller.init(this.editor.textures);
 
@@ -399,10 +406,8 @@ function Game() {
                     this.character.positionBody('down');
                     if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) this.character.lean(-1);
                     else if (Key.isDown(Key.D)  || Key.isDown(Key.RIGHT)) this.character.lean(1);
-                } else if (Key.isPressed(Key.A) || Key.isDown(Key.LEFT)) {
-                    this.character.positionBody('set-random');
                 } else if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
-                    this.character.positionBody('random');
+                    this.character.positionBody('right');
                 } else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.character.positionBody('right');
                 }
@@ -439,7 +444,7 @@ function Game() {
         if (this.gameState == this.GAMESTATE_EDITOR) {
             if (e.keyCode == 84 || e.keyCode == 27) { // t esc enter
                 if (this.run) {
-                    if (e.shiftKey) this.editor.breakPrefabs = true; //TODO: REMOVE
+                    if (e.shiftKey && e.ctrlKey) this.editor.breakPrefabs = true; //TODO: REMOVE
                     this.stopTestingWorld(e);
                 } else if(e.keyCode !== 27){
                     this.testWorld();
@@ -544,6 +549,7 @@ function Game() {
         this.run = false;
         this.resetGame();
         ui.hideGameOverMenu();
+        PhysicsParticleEmitter.update(true);
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -592,7 +598,7 @@ function Game() {
     }
     this.newLevel = function () {
         let data = {
-            json: '{"objects":[[4,0,0,0,{"playableCharacter":false,"selectedVehicle":"Bike","life":300},"Bike",0]],"settings":[10,0,10]}',
+            json: '{"objects":[[4,0,0,0,{"selectedVehicle":"Bike","life":300},"Bike",0]],"settings":[10,0,10]}',
             title: '',
             description: '',
             crossPromos: [],
@@ -704,12 +710,8 @@ function Game() {
            .then(response => response.json())
            .then((data) =>{
                 self.currentLevelData.json = JSON.stringify(data);
-                self.initLevel(self.currentLevelData);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
-                ui.hideMainMenu();
-                ui.showLevelBanner();
-                this.editor.ui.hide();
-                game.gameState = game.GAMESTATE_PREVIEW;
+                this.previewLevel();
                 return resolve();
             }).catch((err) => {
                 console.log('fail', err);
@@ -719,6 +721,25 @@ function Game() {
                 });
             });
         });
+    }
+    this.previewLevel = function(){
+        self.initLevel(self.currentLevelData);
+        ui.hideMainMenu();
+        ui.showLevelBanner();
+        this.editor.ui.hide();
+        this.resetGame();
+
+        for (var key in this.editor.activePrefabs) {
+            if (this.editor.activePrefabs.hasOwnProperty(key)) {
+                if (this.editor.activePrefabs[key].class.constructor.playableCharacter) {
+                    const lookup = editor.lookupGroups[key];
+                    const allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
+                    this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, {x:-100000, y:-100000}, allObjects)
+                }
+            }
+        }
+
+        game.gameState = game.GAMESTATE_PREVIEW;
     }
 
     this.findPlayableCharacter = function () {
@@ -789,7 +810,7 @@ function Game() {
 
         for (var i = 0; i < bodies.length; i++) {
             body = bodies[i];
-            if (body.isFlesh && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
+            if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
 
                 var force = 0;
                 for (var j = 0; j < impulse.normalImpulses.length; j++)
@@ -835,6 +856,7 @@ function Game() {
         // this.shockFilter.center.x = this.editor.mousePosPixel.x;
         // this.shockFilter.center.y = this.editor.mousePosPixel.y;
 
+        this.stats.begin();
 
         if (Settings.allowMouseMovement && this.mouseJoint) {
             if (Key.isDown(Key.MOUSE)) {
@@ -846,24 +868,26 @@ function Game() {
         }
         if (this.run) {
             this.inputUpdate();
-            this.stats.begin();
             this.world.Step(Settings.physicsTimeStep, 4, 3);
-            this.stats.end();
             this.world.ClearForces();
             this.camera();
             emitterManager.update();
+            PhysicsParticleEmitter.update();
+            
         }
         EffectsComposer.update();
 
         this.editor.run();
 
         this.newDebugGraphics.clear();
-        if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug || !this.run)) {
+        if ((this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug)) {
             this.world.DrawDebugData();
         }
         this.app.render();
         PIXICuller.update();
         Key.update();
+
+        this.stats.end();
     };
 
     this.prepareGameFonts = function () {

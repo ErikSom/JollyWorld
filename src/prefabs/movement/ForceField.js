@@ -218,7 +218,7 @@ ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 
 
 PrefabManager.prefabLibrary.ForceField = {
-    json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#FFFFFF"],["#FFFFFF"],[0.6],true,true,[[{"x":-3.3230424036184223,"y":3.319249149419366},{"x":-3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":3.319249149419366}]],[1],2,[0],"TileArrow.jpg",[0]]]}',
+    json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#FFFFFF"],["#FFFFFF"],[0.6],true,true,[[{"x":-3.3230424036184223,"y":3.319249149419366},{"x":-3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":3.319249149419366}]],[1],2,[0],"TileArrow",[0]]]}',
     class: ForceField,
     library: PrefabManager.LIBRARY_MOVEMENT
 }

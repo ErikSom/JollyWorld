@@ -69,6 +69,7 @@ export const doAction = function (actionData, target) {
 
     let bodies;
     const prefab = target.data ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
+    let objects;
 
     switch (actionData.type) {
         case "Impulse":
@@ -83,7 +84,6 @@ export const doAction = function (actionData, target) {
                 });
             break;
         case "SetPosition":
-                var objects;
                 var targetPos;
 
                 if (target.data.prefabInstanceName) {
@@ -103,7 +103,6 @@ export const doAction = function (actionData, target) {
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
             break;
         case "SetRotation":
-                let objects;
                 let targetRotation;
 
                 if (target.data.prefabInstanceName) {
@@ -789,4 +788,38 @@ export const removeTargetFromTrigger = function (_trigger, target) {
             }
         }
     }
+}
+
+export const drawEditorTriggers = ()=>{
+    game.editor.triggerObjects.forEach( trigger => {
+        game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8);
+        const offsetInterval = 500;
+        const offset = (Date.now() % offsetInterval + 1) / offsetInterval;
+        const data = trigger.mySprite.data;
+        if (data.radius) {
+            let p = {
+                x: data.vertices[0].x * Settings.PTM,
+                y: data.vertices[0].y * Settings.PTM
+            };
+            const cosAngle = Math.cos(data.rotation);
+            const sinAngle = Math.sin(data.rotation);
+            const dx = p.x;
+            const dy = p.y;
+            p.x = (dx * cosAngle - dy * sinAngle);
+            p.y = (dx * sinAngle + dy * cosAngle);
+
+            game.editor.debugGraphics.drawDashedCircle(data.radius * game.editor.container.scale.x * trigger.mySprite.scale.x, (trigger.mySprite.x + p.x) * game.editor.container.scale.x + game.editor.container.x, (trigger.mySprite.y + p.y) * game.editor.container.scale.y + game.editor.container.y, data.rotation, 20, 10, offset);
+        } else {
+            const polygons = [];
+            let innerVertices = data.vertices
+
+            for (let k = 0; k < innerVertices.length; k++) {
+                polygons.push({
+                    x: (innerVertices[k].x * Settings.PTM) * game.editor.container.scale.x * trigger.mySprite.scale.x,
+                    y: (innerVertices[k].y * Settings.PTM) * game.editor.container.scale.y * trigger.mySprite.scale.y
+                });
+            }
+            game.editor.debugGraphics.drawDashedPolygon(polygons, trigger.mySprite.x * game.editor.container.scale.x + game.editor.container.x, trigger.mySprite.y * game.editor.container.scale.y + game.editor.container.y, data.rotation, 20, 10, offset);
+        }
+    })
 }

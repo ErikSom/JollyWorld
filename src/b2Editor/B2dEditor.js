@@ -63,7 +63,6 @@ const _B2dEditor = function () {
 
 	this.container = null;
 	this.selectedTool = -1;
-	this.admin = true; // for future to dissalow certain changes like naming
 	this.breakPrefabs = false;
 
 	this.selectedPhysicsBodies = [];
@@ -382,11 +381,11 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
 				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
 
-				var fonts = Settings.availableFonts;
+				const fonts = Settings.availableFonts;
 				ui.editorGUI.editData.fontName = fonts[0];
 				targetFolder.add(ui.editorGUI.editData, "fontName", fonts);
 
-				var alignments = ["left", "center", "right"];
+				const alignments = ["left", "center", "right"];
 				ui.editorGUI.editData.textAlign = alignments[0];
 				targetFolder.add(ui.editorGUI.editData, "textAlign", alignments);
 
@@ -802,7 +801,8 @@ const _B2dEditor = function () {
 					this.targetValue = value
 				});
 				// is Character is an admin feature
-				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"/*, "Is character"*/];
+				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
+				if(Settings.admin) collisionTypes.push("Is character");
 				ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
 				targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
 					this.humanUpdate = true;
@@ -1103,7 +1103,7 @@ const _B2dEditor = function () {
 			}
 		} else {
 			if (this.selectedPhysicsBodies.length == 1) {
-				if (this.selectedPhysicsBodies[0].myTexture) {
+				if (this.selectedPhysicsBodies[0].myTexture || this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) {
 					ui.editorGUI.editData.ungroupObjects = () => {
 						self.ungroupObjects();
 					};
@@ -1409,10 +1409,10 @@ const _B2dEditor = function () {
 			}
 		}
 	}
-	this.deleteSelection = function () {
-		var toBeDeletedPrefabs = []
+	this.deleteSelection = function (force) {
+		const toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
-				if (this.selectedPrefabs.hasOwnProperty(key)) {
+			if (this.selectedPrefabs.hasOwnProperty(key) && (!this.activePrefabs[key].class.constructor.playableCharacter || (Settings.admin || force))) {
 				toBeDeletedPrefabs.push(this.activePrefabs[key]);
 			}
 		}
@@ -1697,6 +1697,7 @@ const _B2dEditor = function () {
 		this.debugGraphics.moveTo(-crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
 		this.debugGraphics.lineTo(crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
 
+		trigger.drawEditorTriggers();
 
 		this.doEditorGUI();
 	}
@@ -2754,14 +2755,14 @@ const _B2dEditor = function () {
 	}
 
 	this.applyToSelectedObjects = function (transformType, obj) {
-		var allObjects = this.selectedPhysicsBodies.concat(this.selectedTextures);
-		var bodies = this.selectedPhysicsBodies;
-		var textures = this.selectedTextures;
+		let allObjects = this.selectedPhysicsBodies.concat(this.selectedTextures);
+		let bodies = this.selectedPhysicsBodies;
+		let textures = this.selectedTextures;
 
-		var key;
+		let key;
 		for (key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
-				var lookup = this.lookupGroups[key];
+				let lookup = this.lookupGroups[key];
 				allObjects = allObjects.concat(lookup._bodies, lookup._textures, lookup._joints);
 				bodies = bodies.concat(lookup._bodies);
 				textures = textures.concat(lookup._textures, lookup._joints);
@@ -3784,8 +3785,8 @@ const _B2dEditor = function () {
 					graphic.rotation = oldRotation;
 
 					if(graphic.data.type !== this.object_TEXT){ // fix for bug with text object
-						localPosition.x += graphic.width/2+anchorDiffX;
-						localPosition.y += graphic.height/2+anchorDiffY;
+						localPosition.x += anchorDiffX;
+						localPosition.y += anchorDiffY;
 					}
 
 					if(localPosition.x<0 || localPosition.y<0 || localPosition.x>graphic.width || localPosition.y>graphic.height){
@@ -4545,34 +4546,34 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.lockselection = controller.targetValue;
 							if (body.mySprite.data.lockselection) body.mySprite.alpha /= 2;
-							else body.mySprite.alpha = body.mySprite.data.alpha || 1;
+							else body.mySprite.alpha = body.mySprite.data.transparancy || 1;
 							if (body.myTexture) {
+								body.myTexture.data.lockselection = controller.targetValue;
 								if (body.mySprite.data.lockselection) body.myTexture.alpha /= 2;
-								else body.myTexture.alpha = body.myTexture.data.alpha || 1;
+								else body.myTexture.alpha = body.myTexture.data.transparancy || 1;
 							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.lockselection = controller.targetValue;
 							if (sprite.data.lockselection) sprite.alpha /= 2;
-							else sprite.alpha = sprite.data.alpha || 1;
+							else sprite.alpha = sprite.data.transparancy || 1;
 						}
 						var key;
 						for (key in this.selectedPrefabs) {
 							if (this.selectedPrefabs.hasOwnProperty(key)) {
 								var lookup = this.lookupGroups[key];
 								var allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
-								var sprite;
 								for (j = 0; j < allObjects.length; j++) {
 									if (allObjects[j].mySprite) sprite = allObjects[j].mySprite;
 									else sprite = allObjects[j];
 									sprite.data.lockselection = controller.targetValue;
 									if (sprite.data.lockselection) sprite.alpha /= 2;
-									else sprite.alpha = sprite.data.alpha || 1;
+									else sprite.alpha = sprite.data.transparancy || 1;
 
 									if (sprite.myBody && sprite.myBody.myTexture) {
 										if (sprite.data.lockselection) sprite.myBody.myTexture.alpha /= 2;
-										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.alpha || 1;
+										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.transparancy || 1;
 									}
 								}
 							}
@@ -4696,7 +4697,6 @@ const _B2dEditor = function () {
 			}
 
 			//new sync for mouse movements
-			var i;
 			for (i in controllers) {
 				controller = controllers[i];
 				if (controller.property == "x") {
@@ -7062,6 +7062,11 @@ const _B2dEditor = function () {
 				targetGraphic.alpha = 0;
 				return;
 			}
+			if(!PIXI.loader.resources[tileTexture]){
+				// legacy tile texture fix
+				tileTexture = tileTexture.split('.')[0];
+				if(!PIXI.utils.BaseTextureCache[tileTexture]) tileTexture = 'Dirt';
+			}
 
 			let tex = PIXI.Texture.fromImage(tileTexture);
 			tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
@@ -7546,12 +7551,13 @@ const _B2dEditor = function () {
 
 	this.buildJSON = function (json, prefabInstanceName) {
 		//console.log(json);
-		var createdObjects = new this.lookupObject();
+		let createdObjects = new this.lookupObject();
 
-		var startChildIndex = this.textures.children.length;
-		var prefabOffset = 0;
+		let startChildIndex = this.textures.children.length;
+		let prefabOffset = 0;
 
 		let jsonString = null;
+		let vehicleOffset = 0;
 
 		if (json != null) {
 			if (typeof json == 'string'){
@@ -7559,19 +7565,19 @@ const _B2dEditor = function () {
 				json = JSON.parse(json);
 			}
 			//clone json to not destroy old references
-			var worldObjects = JSON.parse(JSON.stringify(json));
+			let worldObjects = JSON.parse(JSON.stringify(json));
 
-			var i;
-			var obj;
-			var worldObject;
+			let i;
+			let obj;
+			let worldObject;
 			for (i = 0; i < worldObjects.objects.length; i++) {
 				obj = this.parseArrObject(worldObjects.objects[i]);
 
 				if (prefabInstanceName) {
 					obj.prefabInstanceName = prefabInstanceName;
 
-					var offsetX = this.activePrefabs[prefabInstanceName].x;
-					var offsetY = this.activePrefabs[prefabInstanceName].y;
+					let offsetX = this.activePrefabs[prefabInstanceName].x;
+					let offsetY = this.activePrefabs[prefabInstanceName].y;
 
 					if (obj.type == this.object_BODY) {
 						offsetX /= this.PTM;
@@ -7581,61 +7587,72 @@ const _B2dEditor = function () {
 					obj.x += offsetX;
 					obj.y += offsetY;
 				}
-				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset;
+				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset - vehicleOffset;
 
 				if (obj.type == this.object_BODY) {
 					worldObject = this.buildBodyFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXTURE) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildTextureFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_JOINT) {
-					obj.bodyA_ID += startChildIndex;
-					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex;
+					obj.bodyA_ID += startChildIndex - vehicleOffset;
+					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex - vehicleOffset;
 
 					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
 					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
 				} else if (obj.type == this.object_PREFAB) {
-					var prefabStartChildIndex = this.textures.children.length;
-					var prefabObjects = this.buildPrefabFromObj(obj);
+					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
+						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
+						obj.prefabName = Settings.availableVehicles[game.selectedVehicle-1];
+						obj.settings.selectedVehicle = obj.prefabName;
+						// we get the difference between the old vehicleOffset and the new one
+						vehicleOffset -= Settings.vehicleLayers[obj.prefabName];
+						console.log("VEHICLE OFFSET!!", vehicleOffset);
+					}
+					const prefabStartChildIndex = this.textures.children.length;
+					const prefabObjects = this.buildPrefabFromObj(obj);
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
 						createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
 						createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 						createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
 						prefabOffset = this.textures.children.length - prefabOffset;
+						if(obj.settings.selectedVehicle){
+							console.log("PREFABOFFSET:", this.textures.children.length-prefabStartChildIndex);
+						}
 					}
 				} else if (obj.type == this.object_GRAPHIC) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildGraphicFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_GRAPHICGROUP) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}else if (obj.type == this.object_ANIMATIONGROUP) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
 					for (var j = 0; j < obj.triggerObjects.length; j++) {
-						obj.triggerObjects[j] += startChildIndex;
+						obj.triggerObjects[j] += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXT) {
 					if (obj.bodyID != undefined) {
-						obj.bodyID += startChildIndex;
+						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildTextFromObj(obj);
 					createdObjects._textures.push(worldObject);
@@ -7940,6 +7957,7 @@ const _B2dEditor = function () {
 		}
 	}
 	PIXI.Graphics.prototype.drawDashedPolygon = function (polygons, x, y, rotation, dash, gap, offsetPercentage) {
+		offsetPercentage = 1-offsetPercentage;
 		var i;
 		var p1;
 		var p2;

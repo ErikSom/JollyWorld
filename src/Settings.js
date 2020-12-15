@@ -1,9 +1,10 @@
 const targetFPS = 60;
 export var Settings = {
     /*REFRESHRATE*/
+    admin:(window.location.search.indexOf('editorAdmin=true')>=0),
     targetFPS,
     timeStep:1000 / targetFPS,
-    allowMouseMovement:false,
+    allowMouseMovement:true,
     cameraZoom:0.8,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
@@ -11,15 +12,20 @@ export var Settings = {
     /*GORE*/
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
-    bashMaxForceMultiplier:200,
+    bashForce:2000,
     physicsParticleLifeTime:2000,
     physicsParticleLifeTimeRandomOffset:1000,
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,
+    availableCharacters:4,
+    availableVehicles:['Bike', 'DirtBike', 'NoVehicle'],
+    vehicleLayers:{'Bike':68, 'DirtBike':74, 'NoVehicle':50}, // we need the layers if we want to be able to switch vehicles, so we can correct the level
     /*EDITOR*/
     autoSaveInterval:5000,
     availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],
+    /* first texture name is empty so that in the editor you can select no tile texture as index */
+    textureNames: ['', 'Snow', 'Asphalt', 'Ice1', 'Ice2', 'DirtGrey', 'DirtGreen', 'Mud', 'DirtGold', 'PipeGreyHorizontal', 'PipeGreyVertical', 'PipeGreenHorizontal', 'PipeGreenVertical', 'PlankBrownHorizontal', 'PlankGreyHorizontal', 'PlankBrownVertical', 'PlankGreyVertical', 'Brick4', 'Brick5', 'PanelPurple', 'PanelGrey', 'Stripe1', 'Stripe2', 'Stripe3', 'Stripe4', 'WoodVertical', 'WoodHorizontal', 'Brick1', 'Brick2', 'Brick3', 'PixelatedWater', 'PixelatedStone', 'PixelatedGrass', 'PixelatedDirt', 'Dirt', 'Grass', 'GoldenBlock', 'WhiteBlock', 'Fence', 'TileArrow'],
     doubleClickTime:300,
     handleClosestDistance:5,
     verticeBoxSize:10,

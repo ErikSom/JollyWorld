@@ -1,3 +1,8 @@
+import * as PIXI from 'pixi.js';
+import {
+	Settings
+} from './Settings'
+
 export var LoadCoreAssets = function (loader){
     loader.add("Characters_1.json", "assets/images/characters/Characters_1.json")
         .add("Characters_Gore.json", "assets/images/characters/Characters_Gore.json")
@@ -7,22 +12,8 @@ export var LoadCoreAssets = function (loader){
         .add("Nature.json", "assets/images/prefabs/Nature.json")
         .add("Weapons.json", "assets/images/prefabs/Weapons.json")
         .add("Level.json", "assets/images/prefabs/Level.json")
+        .add("textures.json", "assets/images/textures/textures.json")
         /*TILE DATA*/
-        .add("Dirt.jpg", "assets/images/textures/Dirt.jpg")
-        .add("Grass.jpg", "assets/images/textures/Grass.jpg")
-        .add("Fence.png", "assets/images/textures/Fence.png")
-        .add("YellowCat.jpg", "assets/images/textures/YellowCat.jpg")
-        .add("RedWhiteBlock.jpg", "assets/images/textures/RedWhiteBlock.jpg")
-        .add("PixelatedWater.jpg", "assets/images/textures/PixelatedWater.jpg")
-        .add("PixelatedStone.jpg", "assets/images/textures/PixelatedStone.jpg")
-        .add("PixelatedDirt.jpg", "assets/images/textures/PixelatedDirt.jpg")
-        .add("PixelatedGrass.jpg", "assets/images/textures/PixelatedGrass.jpg")
-        .add("GoldenBlock.jpg", "assets/images/textures/GoldenBlock.jpg")
-        .add("Brick0.jpg", "assets/images/textures/Brick0.jpg")
-        .add("Brick1.jpg", "assets/images/textures/Brick1.jpg")
-        .add("Brick2.jpg", "assets/images/textures/Brick2.jpg")
-        .add("WhiteBlock.jpg", "assets/images/textures/WhiteBlock.jpg")
-        .add("TileArrow.jpg", "assets/images/textures/TileArrow.jpg")
         .add("rope.png", "assets/images/misc/rope.png")
         /*PARTICLE DATA*/
         .add("assets/images/particles/particles.json")
@@ -33,4 +24,29 @@ export var LoadCoreAssets = function (loader){
         // .add("characterData1", "data/character1.json")
         // .add("testData", "data/testData.json")
         // .add("testData2", "data/testData2.json");
+}
+
+export const ExtractTextureAssets = async () => {
+    const textureSheet = PIXI.loader.resources["textures.json"];
+    const sheetImage = textureSheet.spritesheet.baseTexture.source;
+
+    const tempCanvas = document.createElement('canvas');
+    const tempCTX = tempCanvas.getContext('2d');
+    const textureSize = 128;
+    tempCanvas.width = tempCanvas.height = textureSize;
+    const keys = Object.keys(textureSheet.textures);
+    for(let i = 0; i< keys.length; i++){
+        const key = keys[i];
+        const texture = textureSheet.textures[key];
+        tempCTX.clearRect(0, 0, textureSize, textureSize);
+        tempCTX.drawImage(sheetImage, texture.orig.x, texture.orig.y, textureSize, textureSize, 0, 0, textureSize, textureSize);
+
+        const image = await new Promise(resolve => {
+            const image = new Image();
+            image.src = tempCanvas.toDataURL();
+            image.onload = ()=>{resolve(image)};
+        })
+        const baseTexture = new PIXI.BaseTexture(image);
+        PIXI.BaseTexture.addToCache(baseTexture, Settings.textureNames[i+1])
+    };
 }
