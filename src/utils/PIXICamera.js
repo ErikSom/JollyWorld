@@ -49,6 +49,10 @@ export class Camera extends PIXI.DisplayObject {
 		this._enabled = true;
 	}
 
+	get isEnabled() {
+		return this._enabled;
+	}
+
 	disable() {
 		console.log("DISABLE CAMERA");
 		this._enabled = false;

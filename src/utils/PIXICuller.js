@@ -107,6 +107,7 @@ const placeGraphicInCells = function (graphic) {
          return;
     }
 
+    graphic.calculateBounds();
     var cx = graphic._cachedBounds.x + graphic._cachedBounds.width/2;
     var cy = graphic._cachedBounds.y + graphic._cachedBounds.height/2;
 
@@ -194,7 +195,7 @@ const updateVisibleCells = function () {
     const sp = container.toLocal(global_sp);
     const ep = container.toLocal(global_ep);
 
-    if (camera) {
+    if (camera && camera.isEnabled) {
         camera.matrix.applyInverse(sp, sp);
         camera.matrix.applyInverse(ep, ep);
     }
