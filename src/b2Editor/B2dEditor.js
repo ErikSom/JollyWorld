@@ -3788,14 +3788,8 @@ const _B2dEditor = function () {
 					graphic.rotation = 0;
 					const bounds = graphic.getBounds();
 
-					const posX = bounds.x / this.cameraHolder.scale.x - this.cameraHolder.x / this.cameraHolder.scale.x;
-					const posY = bounds.y / this.cameraHolder.scale.y - this.cameraHolder.y / this.cameraHolder.scale.y;
-					const spriteRect = new PIXI.Rectangle(posX, posY, bounds.width / this.cameraHolder.scale.x, bounds.height / this.cameraHolder.scale.y);
-					const centerX = spriteRect.x + spriteRect.width/2;
-					const centerY = spriteRect.y + spriteRect.height/2;
-
-					const anchorDiffX = graphic.x - centerX;
-					const anchorDiffY = graphic.y - centerY;
+					const anchorDiffX = graphic.x - bounds.x + bounds.width / 2;
+					const anchorDiffY = graphic.y - bounds.y + bounds.height / 2;
 
 					graphic.rotation = oldRotation;
 
