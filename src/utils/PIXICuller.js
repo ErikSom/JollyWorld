@@ -288,7 +288,7 @@ const drawAllCells = function () {
 }
 
 export const update = function () {
-    if(!enabled) return;
+    if(!enabled || !container) return;
     if (debug) {
         if (!debugGraphics) {
             debugGraphics = container;

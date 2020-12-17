@@ -129,6 +129,16 @@ const _B2dEditor = function () {
 
 	this.cameraHolder;
 
+	Object.defineProperty(this, 'cameraHolder', {
+		get: () => {
+			 if (this.container.camera) {
+				return this.container.camera;
+			}
+
+			return this.container;
+		}
+	});
+
 	//COLORS
 	this.selectionBoxColor = "0x5294AE";
 	this.jointLineColor = "0x888888";
@@ -161,12 +171,6 @@ const _B2dEditor = function () {
 
 		ui.initGui();
 		this.selectTool(this.tool_SELECT);
-
-		Object.defineProperty(this, 'cameraHolder', {
-			get: () => {
-			 	return this.container.camera || this.container;
-			}
-		});
 	}
 
 	this.prefabListGuiState = {};
