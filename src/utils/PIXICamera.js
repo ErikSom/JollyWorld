@@ -132,4 +132,8 @@ export class Camera extends PIXI.DisplayObject {
 		m.apply(point, output);
 		return output;
 	}
+
+	calculateBounds() {
+		this.stage.calculateBounds();
+	}
 }
