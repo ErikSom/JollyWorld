@@ -34,7 +34,7 @@ export const storeCurrentPosition = function(){
     storedZoom = camera.scale.x;
 }
 
-export const resetToStoredPosition = function(){    
+export const resetToStoredPosition = function(){
     const camera = B2dEditor.container.camera || B2dEditor.container;
 
     if(storedZoom){
@@ -51,7 +51,7 @@ export const zoom = function (pos, isZoomIn) {
 
     var direction = isZoomIn ? 1 : -1;
     var factor = (1 + direction * 0.1);
-    
+
     const camera = B2dEditor.container.camera || B2dEditor.container;
 
     setZoom(pos, camera.scale.x * factor);
@@ -97,7 +97,7 @@ export const setZoom = function (pos, scale) {
     scrollBars.update();
 }
 
-export const constrainCameraPosition = function(){    
+export const constrainCameraPosition = function(){
     const camera = B2dEditor.container.camera || B2dEditor.container;
 
     let difX = (-camera.x) + (editorSettings.worldSize.width/2*camera.scale.x)

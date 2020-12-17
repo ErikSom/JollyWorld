@@ -51,6 +51,7 @@ export const playOnceEmitter = function (type, body, point, angle) {
 
     let emitter = getEmitter(type, body);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
+    game.levelCamera.matrix.apply(emitter.spawnPos, emitter.spawnPos);
 
     if (body) {
         emitter.body = body;

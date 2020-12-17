@@ -163,7 +163,7 @@ function Game() {
 
         this.levelCamera = new PIXICamera(this.myContainer);
         //this.levelCamera.disable();
-        
+
         this.myContainer.camera = this.levelCamera;
 
         // inser rela camera to container, and now container broke transformation =)
@@ -263,10 +263,10 @@ function Game() {
         (function checkInit() {
             const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA=='];
             // localhost, .poki.com, .poki-gdn.com
-        
+
             let allowed = false;
             const liveHost = window.location.hostname;
-        
+
             for (let i = 0; i < hosts.length; i++) {
                 const host = atob(hosts[i]);
                 if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
@@ -495,6 +495,7 @@ function Game() {
     this.playWorld = function () {
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
+        this.levelCamera.enable();
     }
 
     this.testWorld = function () {
@@ -504,6 +505,7 @@ function Game() {
         this.findPlayableCharacter();
         this.stopAutoSave();
         this.levelStartTime = Date.now();
+        this.levelCamera.enable();
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -550,6 +552,7 @@ function Game() {
         this.resetGame();
         ui.hideGameOverMenu();
         PhysicsParticleEmitter.update(true);
+        this.levelCamera.disable();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -803,28 +806,28 @@ function Game() {
     this.gameContactListener.PreSolve = function (contact, oldManifold) {}
     this.gameContactListener.PostSolve = function (contact, impulse) {
 
-        var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-        var body;
+        const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+        let body;
 
         if(!bodies[0].mySprite || !bodies[1].mySprite) return;
 
-        for (var i = 0; i < bodies.length; i++) {
+        for (let i = 0; i < bodies.length; i++) {
             body = bodies[i];
             if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
 
-                var force = 0;
-                for (var j = 0; j < impulse.normalImpulses.length; j++)
+                let force = 0;
+                for (let j = 0; j < impulse.normalImpulses.length; j++)
                     if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
 
-                var velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
-                var velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
-                var impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
+                const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
+                const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
                 impactAngle *= game.editor.RAD2DEG + 180;
-                var velocitySum = velocityA + velocityB;
+                const velocitySum = velocityA + velocityB;
                 if (velocitySum > 10.0) {
-                    var worldManifold = new Box2D.b2WorldManifold();
+                    const worldManifold = new Box2D.b2WorldManifold();
                     contact.GetWorldManifold(worldManifold);
-                    var worldCollisionPoint = worldManifold.points[0];
+                    const worldCollisionPoint = worldManifold.points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
                     emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 

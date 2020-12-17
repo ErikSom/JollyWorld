@@ -246,13 +246,14 @@ const _B2dEditor = function () {
 				guiFunction.setAttribute('prefabName', prefabName);
 
 				const clickFunction = (e) =>{
+					const camera = B2dEditor.container.camera || B2dEditor.container;
 					const guiAsset = guiFunction.parentNode.parentNode.parentNode.parentNode;
 					const rect = guiAsset.getBoundingClientRect();
 					const domx = Math.max(e.pageX, rect.right + 200);
 					const domy = e.pageY;
 
-					const x = domx / self.camera.scale.x - self.camera.x / self.camera.scale.x;
-					const y = domy / self.camera.scale.y - self.camera.y / self.camera.scale.x;
+					const x = domx / camera.scale.x - camera.x / camera.scale.x;
+					const y = domy / camera.scale.y - camera.y / camera.scale.x;
 
 					if(folderName === 'Prefabs'){
 						const data = new self.prefabObject;
@@ -2171,9 +2172,7 @@ const _B2dEditor = function () {
 				}
 				this.selectingTriggerTarget = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
-
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-
 
 				// detect click on transformGUI
 				if(this.clickOnTransformGUI()) return;
@@ -3733,7 +3732,6 @@ const _B2dEditor = function () {
 	}
 	this.queryWorldForGraphics = function (lowerBound, upperBound, limitResult) {
 		const aabb = new b2AABB();
-
 		aabb.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
 		aabb.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
 		const lowerBoundPixi = this.getPIXIPointFromWorldPoint(aabb.lowerBound);
@@ -3745,9 +3743,10 @@ const _B2dEditor = function () {
 		for (i = this.textures.children.length - 1; i >= 0; i--) {
 			const sprite = this.textures.getChildAt(i);
 			const spriteBounds = sprite.getBounds();
-			const posX = spriteBounds.x / this.cameraHolder.scale.x - this.cameraHolder.x / this.cameraHolder.scale.x;
-			const posY = spriteBounds.y / this.cameraHolder.scale.y - this.cameraHolder.y / this.cameraHolder.scale.y;
-			const spriteRect = new PIXI.Rectangle(posX, posY, spriteBounds.width / this.cameraHolder.scale.x, spriteBounds.height / this.cameraHolder.scale.y);
+
+			const pos = new PIXI.Point(spriteBounds.x, spriteBounds.y);
+
+			const spriteRect = new PIXI.Rectangle(pos.x, pos.y, spriteBounds.width, spriteBounds.height);
 			const selectionRect = new PIXI.Rectangle(lowerBoundPixi.x, lowerBoundPixi.y, upperBoundPixi.x - lowerBoundPixi.x, upperBoundPixi.y - lowerBoundPixi.y);
 			if (!(((spriteRect.y + spriteRect.height) < selectionRect.y) ||
 					(spriteRect.y > (selectionRect.y + selectionRect.height)) ||
@@ -3819,6 +3818,7 @@ const _B2dEditor = function () {
 					}
 				}else if(graphic.data.type !== this.object_JOINT){
 					const screenPosition = this.cameraHolder.toGlobal(lowerBoundPixi);
+					game.levelCamera.matrix.applyInverse(screenPosition,screenPosition)
 					let containsPoint = false;
 					graphic.children.forEach(child=>{
 						if(child.containsPoint && child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
@@ -3928,14 +3928,17 @@ const _B2dEditor = function () {
 				if (origin) body.SetAngle(oldRot);
 			}
 			if(sprite){
+				const camera = B2dEditor.container.camera || B2dEditor.container;
+
 				oldRot = sprite.rotation;
 				if (origin) sprite.rotation = 0;
 				var bounds = sprite.getBounds();
 				var spriteAABB = new b2AABB;
-				var posX = bounds.x / this.cameraHolder.scale.x - this.cameraHolder.x / this.cameraHolder.scale.x;
-				var posY = bounds.y / this.cameraHolder.scale.y - this.cameraHolder.y / this.cameraHolder.scale.y;
-				spriteAABB.lowerBound = new b2Vec2(posX / this.PTM, posY / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((posX + bounds.width / this.cameraHolder.scale.x) / this.PTM, (posY + bounds.height / this.cameraHolder.scale.y) / this.PTM);
+
+				const pos = new PIXI.Point(bounds.x, bounds.y);
+
+				spriteAABB.lowerBound = new b2Vec2(pos.x / this.PTM, pos.y / this.PTM);
+				spriteAABB.upperBound = new b2Vec2((pos.x + bounds.width) / this.PTM, (pos.y + bounds.height) / this.PTM);
 				aabb.Combine1(spriteAABB);
 				if (origin) sprite.rotation = oldRot;
 			}
