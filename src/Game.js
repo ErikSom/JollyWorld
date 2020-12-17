@@ -147,6 +147,9 @@ function Game() {
         this.gameState = this.GAMESTATE_MENU;
 
         EffectsComposer.init(this.stage)
+        // because a this.app.screen is object getter,
+        // rectangle should updates automatically
+        this.stage.filterArea = this.app.screen;
 
     };
 

@@ -24,6 +24,11 @@ export const addEffect = (type, props) =>{
 		case effectTypes.shockWave:
 			props.follow = game.editor.container;
 			props.point = game.editor.container.toGlobal(props.point);
+
+			if (game.editor.container.camera) {
+				game.editor.container.camera.toScreenPoint(props.point, props.point);
+			}
+
 			const shockFilter = new PIXIFILTERS.ShockwaveFilter([props.point.x, props.point.y], {
 				amplitude: 20,
 				wavelength: 351,
