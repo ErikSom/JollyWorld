@@ -195,7 +195,7 @@ const updateVisibleCells = function () {
     const sp = container.toLocal(global_sp);
     const ep = container.toLocal(global_ep);
 
-    if (camera && camera.isEnabled) {
+    if (camera) {
         camera.matrix.applyInverse(sp, sp);
         camera.matrix.applyInverse(ep, ep);
     }
