@@ -6,7 +6,6 @@ import * as ui from "./utils/ui";
 import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
-import * as emitterManager from '../utils/EmitterManager';
 
 import {
 	lineIntersect,
@@ -1665,7 +1664,6 @@ const _B2dEditor = function () {
 		}
 	}
 	this.doEditor = function () {
-		emitterManager.update();
 		this.clearDebugGraphics();
 
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
@@ -2179,11 +2177,6 @@ const _B2dEditor = function () {
 				this.selectingTriggerTarget = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-
-				emitterManager.playOnceEmitter("explosion2_layer1", null, this.startSelectionPoint, 0);
-				emitterManager.playOnceEmitter("blood", null, this.startSelectionPoint, 0);
-
-
 
 				// detect click on transformGUI
 				if(this.clickOnTransformGUI()) return;
