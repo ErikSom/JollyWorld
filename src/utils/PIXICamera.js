@@ -83,11 +83,11 @@ export class Camera extends PIXI.DisplayObject {
 		}
 
         const {
-            _activeRenderTarget, currentRenderer
+            _activeRenderTarget
         } = renderer;
 
 		// flush last render
-		currentRenderer.flush();
+		renderer.currentRenderer.flush();
 
         _activeRenderTarget.save()
 
@@ -100,8 +100,9 @@ export class Camera extends PIXI.DisplayObject {
 
 		this.stage.renderWebGL (renderer);
 
-		// flush current
-		currentRenderer.flush();
+		// flush current REAL CURRENT
+		// becuase a main renderer can swap renderer
+		renderer.currentRenderer.flush();
 
 		// restore back
 		_activeRenderTarget.restore();
