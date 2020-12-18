@@ -27,6 +27,7 @@ import {
 	Settings
 } from "../Settings";
 import { spine } from "pixi.js";
+import { JSONStringify } from "./utils/formatString";
 
 
 const camera = require("./utils/camera");
@@ -1442,8 +1443,6 @@ const _B2dEditor = function () {
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			body = this.selectedPhysicsBodies[i];
 			this.updateObject(body.mySprite, body.mySprite.data);
-
-			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(body.mySprite.data)));
 
 			cloneObject = JSON.parse(JSON.stringify(body.mySprite.data))
 
@@ -7378,7 +7377,7 @@ const _B2dEditor = function () {
 			arr[16] = obj.fps;
 			arr[17] = obj.playing;
 		} 
-		return JSON.stringify(arr);
+		return JSONStringify(arr);
 	}
 	this.parseArrObject = function (arr) {
 		var obj;

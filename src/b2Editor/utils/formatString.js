@@ -32,3 +32,9 @@ export const formatNumber = (number) => {
     const scaled = number / scale;
     return scaled.toFixed(1) + suffix;
 }
+
+export const JSONStringify = json=>{
+    return JSON.stringify(json, function(key, val) {
+        return (val && val.toFixed) ? Number(val.toFixed(3)) : val;
+    })
+}

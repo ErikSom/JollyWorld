@@ -26,7 +26,7 @@ import {
     levelsData
 } from "./data/levelsData";
 
-import { dateDiff } from "./b2Editor/utils/formatString";
+import { dateDiff, JSONStringify } from "./b2Editor/utils/formatString";
 
 import * as emitterManager from './utils/EmitterManager';
 import * as PhysicsParticleEmitter from './utils/PhysicsParticleEmitter';
@@ -691,7 +691,7 @@ function Game() {
             fetch(`${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${levelData.uid}%2FlevelData.json?${levelData.dataURL}`)
             .then(response => response.json())
             .then(data => {
-                self.currentLevelData.json = JSON.stringify(data);
+                self.currentLevelData.json = JSONStringify(data);
                 self.currentLevelData.saved = true;
                 self.initLevel(self.currentLevelData);
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
@@ -712,7 +712,7 @@ function Game() {
            fetch(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.uid}/levelData.json`)
            .then(response => response.json())
            .then((data) =>{
-                self.currentLevelData.json = JSON.stringify(data);
+                self.currentLevelData.json = JSONStringify(data);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
                 this.previewLevel();
                 return resolve();

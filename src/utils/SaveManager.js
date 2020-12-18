@@ -1,3 +1,4 @@
+import { JSONStringify } from "../b2Editor/utils/formatString";
 import {
     levelsData
 } from "../data/levelsData";
@@ -27,7 +28,7 @@ export const getTempEditorWorld = function(){
 export const saveData = function(key, value){
     key = saveKeyPrefix+'_'+key;
     try{
-        window.localStorage.setItem(key, JSON.stringify(value));
+        window.localStorage.setItem(key, JSONStringify(value));
         return value;
     }catch(err){
         console.warn("Saving not working", err);
