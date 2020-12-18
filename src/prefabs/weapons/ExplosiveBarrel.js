@@ -28,9 +28,10 @@ class ExplosiveBarrel extends Explosive {
 		super.explode();
 
 		const pos = this.explodeTarget.GetPosition();
+
 		emitterManager.playOnceEmitter("explosion2_layer1", null, pos, 0);
 		emitterManager.playOnceEmitter("explosion2_layer2", null, pos, 0);
-
+		
 		const prefabData = PrefabBuilder.generatePrefab(pos, 0, 'ExplosiveBarrelBottom', true);
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];

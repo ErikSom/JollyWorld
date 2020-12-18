@@ -36,7 +36,7 @@ export const init = function () {
         poolSize: 10
     }];
     emitterPoolData.map((data) => {
-        for (let i = 0; i < data.poolSize; i++) getEmitter(data.type, null);
+        for (let i = 0; i < data.poolSize; i++) getEmitter(data.type);
     })
     for (let i = 0; i < emitters.length; i++) {
         emittersPool[emitters[i].type].push(emitters[i]);
@@ -49,7 +49,7 @@ export const playOnceEmitter = function (type, body, point, angle) {
     const maxEmitters = body === globalBody ? 30 : Settings.emittersPerBody;
     if (body && body.emitterCount && body.emitterCount >= maxEmitters) return;
 
-    let emitter = getEmitter(type, body);
+    let emitter = getEmitter(type);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
     game.levelCamera.matrix.apply(emitter.spawnPos, emitter.spawnPos);
 
@@ -69,18 +69,18 @@ export const playOnceEmitter = function (type, body, point, angle) {
         emittersPool[emitter.type].push(emitter);
 
     }
-    var angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
+    const angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
     emitter.minStartRotation = angle - angleOffset;
     emitter.maxStartRotation = angle + angleOffset;
     emitter.playOnce(returnToPool);
 
 
 }
-export const getEmitter = function (type, body) {
+export const getEmitter = function (type) {
     if (!emittersPool[type]) emittersPool[type] = [];
     if (emittersPool[type].length > 0) return emittersPool[type].shift();
 
-    var emitter;
+    let emitter;
     switch (type) {
         case "blood":
             emitter = new PIXI.particles.Emitter(
@@ -96,19 +96,19 @@ export const getEmitter = function (type, body) {
             break;
         case "explosion_layer1":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Smoke_1.png'), PIXI.Texture.fromImage('Smoke_2.png'), PIXI.Texture.fromImage('Smoke_3.png'), PIXI.Texture.fromImage('Smoke_4.png')],
+                game.myContainer, [PIXI.Texture.fromImage('Smoke_1.png'), PIXI.Texture.fromImage('Smoke_2.png'), PIXI.Texture.fromImage('Smoke_3.png'), PIXI.Texture.fromImage('Smoke_4.png')],
                 emitterData[type]
             );
             break;
         case "explosion_layer2":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Fire_1.png'), PIXI.Texture.fromImage('Fire_2.png'), PIXI.Texture.fromImage('Fire_3.png')],
+                game.myContainer, [PIXI.Texture.fromImage('Fire_1.png'), PIXI.Texture.fromImage('Fire_2.png'), PIXI.Texture.fromImage('Fire_3.png')],
                 emitterData[type]
             );
             break;
         case "explosion2_layer1":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Smoke_Fire_10000'), PIXI.Texture.fromImage('Smoke_Fire_20000'), PIXI.Texture.fromImage('Smoke_Fire_30000'), PIXI.Texture.fromImage('Smoke_Fire_40000')],
+                game.myContainer, [PIXI.Texture.fromImage('Smoke_Fire_10000'), PIXI.Texture.fromImage('Smoke_Fire_20000'), PIXI.Texture.fromImage('Smoke_Fire_30000'), PIXI.Texture.fromImage('Smoke_Fire_40000')],
                 emitterData['explosion_layer1']
             );
             emitter.minimumSpeedMultiplier = 6;
@@ -116,7 +116,7 @@ export const getEmitter = function (type, body) {
         break;
         case "explosion2_layer2":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Fire_Fire_10000'), PIXI.Texture.fromImage('Fire_Fire_20000'), PIXI.Texture.fromImage('Fire_Fire_30000')],
+                game.myContainer, [PIXI.Texture.fromImage('Fire_Fire_10000'), PIXI.Texture.fromImage('Fire_Fire_20000'), PIXI.Texture.fromImage('Fire_Fire_30000')],
                 emitterData['explosion_layer2']
             );
             emitter.minimumSpeedMultiplier = 9;

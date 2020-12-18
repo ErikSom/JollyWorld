@@ -498,7 +498,6 @@ function Game() {
     this.playWorld = function () {
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
-        this.levelCamera.enable();
     }
 
     this.testWorld = function () {
@@ -508,7 +507,6 @@ function Game() {
         this.findPlayableCharacter();
         this.stopAutoSave();
         this.levelStartTime = Date.now();
-        this.levelCamera.enable();
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -555,7 +553,6 @@ function Game() {
         this.resetGame();
         ui.hideGameOverMenu();
         PhysicsParticleEmitter.update(true);
-        this.levelCamera.disable();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -832,7 +829,7 @@ function Game() {
                     contact.GetWorldManifold(worldManifold);
                     const worldCollisionPoint = worldManifold.points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
-                    emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+                    emitterManager.playOnceEmitter("blood", null, worldCollisionPoint, impactAngle);
 
                     const bodyClass = self.editor.retrieveSubClassFromBody(body);
                     if(bodyClass && bodyClass.dealDamage){

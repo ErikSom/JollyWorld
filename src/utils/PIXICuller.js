@@ -116,10 +116,6 @@ const placeGraphicInCells = function (graphic) {
     let center = tmp;
 
     center = graphic.localTransform.apply(center, center);
-    
-    if (camera) {
-        //center = camera.toScreenPoint(center, center);
-    }
 
     const startX = Math.floor((center.x - graphic._cullingWidthExtent) / cellSize.x);
     const startY = Math.floor((center.y - graphic._cullingHeightExtent) / cellSize.y);
@@ -238,7 +234,7 @@ const updateVisibleCells = function () {
 
 const updateCells = function () {
 
-    let updatings = 0;
+    // let updatings = 0;
 
     for(let cell in visibleCells) {
         if (cellDictionary[cell][1] != updateTicks) {
@@ -252,7 +248,7 @@ const updateCells = function () {
             if (cellDictionary[cell].length == settingsIndexCount) delete cellDictionary[cell];
             delete visibleCells[cell];
 
-            updatings ++;
+            // updatings ++;
         } else if (cellDictionary[cell][1] == updateTicks && cellDictionary[cell][0] == false) {
             cellDictionary[cell][0] = true;
             // was not visible and is now visible
@@ -260,14 +256,14 @@ const updateCells = function () {
                 cellDictionary[cell][i]._cullingVisibleCells++
             }
             setGraphicsVisible(cellDictionary[cell]);
-            
-            updatings ++;
+
+            // updatings ++;
         }
     }
 
-    if(updatings > 0) {
-        console.debug("Cull update:", updatings);
-    }
+    // if(updatings > 0) {
+    //     console.debug("Cull update:", updatings);
+    // }
 }
 
 const setGraphicsVisible = function (arr) {

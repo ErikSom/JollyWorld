@@ -6,6 +6,7 @@ import * as ui from "./utils/ui";
 import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
+import * as emitterManager from '../utils/EmitterManager';
 
 import {
 	lineIntersect,
@@ -1664,6 +1665,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.doEditor = function () {
+		emitterManager.update();
 		this.clearDebugGraphics();
 
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
@@ -2177,6 +2179,11 @@ const _B2dEditor = function () {
 				this.selectingTriggerTarget = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+
+				emitterManager.playOnceEmitter("explosion2_layer1", null, this.startSelectionPoint, 0);
+				emitterManager.playOnceEmitter("blood", null, this.startSelectionPoint, 0);
+
+
 
 				// detect click on transformGUI
 				if(this.clickOnTransformGUI()) return;
@@ -7625,7 +7632,6 @@ const _B2dEditor = function () {
 						obj.settings.selectedVehicle = obj.prefabName;
 						// we get the difference between the old vehicleOffset and the new one
 						vehicleOffset -= Settings.vehicleLayers[obj.prefabName];
-						console.log("VEHICLE OFFSET!!", vehicleOffset);
 					}
 					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
@@ -7635,9 +7641,6 @@ const _B2dEditor = function () {
 						createdObjects._textures = createdObjects._textures.concat(prefabObjects._textures);
 						createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
 						prefabOffset = this.textures.children.length - prefabOffset;
-						if(obj.settings.selectedVehicle){
-							console.log("PREFABOFFSET:", this.textures.children.length-prefabStartChildIndex);
-						}
 					}
 				} else if (obj.type == this.object_GRAPHIC) {
 					if (obj.bodyID != undefined) {
