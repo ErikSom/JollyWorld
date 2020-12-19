@@ -12,6 +12,8 @@ export var cellSize = {
     y: 200
 };
 export const marginCells = 1;
+
+let camera;
 let container;
 let updateTicks = 0;
 let debugGraphics;
@@ -42,9 +44,10 @@ export const setEnabled = (bool) => {
     enabled = bool;
 }
 
-export const init = function (_container) {
+export const init = function (_container, _camera) {
 
     container = _container;
+    camera = _camera;
 
     cellDictionary = {};
     updateTicks = 0;
@@ -85,9 +88,11 @@ export const init = function (_container) {
     update();
 }
 
+const tmp = new PIXI.Point();
+
 const placeGraphicInCells = function (graphic) {
 
-    if(!graphic || !graphic.transform) return;
+    if(!graphic || !graphic.transform || graphic.ignoreCulling) return;
     if(!enabled) return;
     if (graphic == debugGraphics) return;
     if (!graphic.visible) return;
@@ -102,9 +107,15 @@ const placeGraphicInCells = function (graphic) {
          return;
     }
 
+    graphic.calculateBounds();
     var cx = graphic._cachedBounds.x + graphic._cachedBounds.width/2;
     var cy = graphic._cachedBounds.y + graphic._cachedBounds.height/2;
-    const center = graphic.localTransform.apply(new PIXI.Point(cx, cy));
+
+    tmp.set(cx, cy);
+
+    let center = tmp;
+
+    center = graphic.localTransform.apply(center, center);
 
     const startX = Math.floor((center.x - graphic._cullingWidthExtent) / cellSize.x);
     const startY = Math.floor((center.y - graphic._cullingHeightExtent) / cellSize.y);
@@ -136,12 +147,15 @@ const removeGraphicFromCells = function (graphic) {
     graphic._cullingVisibleCells = 0;
     graphic._cullingCells = [];
 }
+
 const initGraphicForCulling = function (graphic) {
-    if(!graphic || !graphic.transform) return;
+    if(!graphic || !graphic.transform || graphic.ignoreCulling) return;
+
     graphic._cullingTransformID = graphic.transform._currentLocalID;
     const _pixiContainerUpdateSuper = graphic.updateTransform;
+
     graphic.updateTransform = function updateTransform() {
-        if (this._cullingTransformID != this.transform._currentLocalID) {
+        if (this._cullingTransformID != this.transform._currentLocalID && !this.ignoreCulling) {
             this._cullingTransformID = this.transform._currentLocalID;
             placeGraphicInCells(graphic);
         }
@@ -153,6 +167,7 @@ const initGraphicForCulling = function (graphic) {
     graphic._cullingVisibleCells = 0;
     graphic._cullings = 0;
 }
+
 export const getSizeInfoForGraphic = function (graphic) {
     const bounds = graphic.getLocalBounds();
     graphic._cachedBounds = bounds;
@@ -172,10 +187,18 @@ const updateVisibleCells = function () {
     updateTicks++;
     const global_sp = new PIXI.Point(renderArea.x, renderArea.y);
     const global_ep = new PIXI.Point(renderArea.x + renderArea.width, renderArea.y + renderArea.height);
+
     const sp = container.toLocal(global_sp);
     const ep = container.toLocal(global_ep);
+
+    if (camera) {
+        camera.matrix.applyInverse(sp, sp);
+        camera.matrix.applyInverse(ep, ep);
+    }
+
     const w = ep.x - sp.x;
     const h = ep.y - sp.y;
+
     if (debug) {
         debugGraphics.lineStyle(10, 0x00FF00, 1);
         debugGraphics.drawRect(sp.x, sp.y, w, h);
@@ -208,8 +231,12 @@ const updateVisibleCells = function () {
         }
     }
 }
+
 const updateCells = function () {
-    Object.keys(visibleCells).map(cell => {
+
+    // let updatings = 0;
+
+    for(let cell in visibleCells) {
         if (cellDictionary[cell][1] != updateTicks) {
             cellDictionary[cell][0] = false;
             for (let i = settingsIndexCount; i < cellDictionary[cell].length; i++) {
@@ -220,6 +247,8 @@ const updateCells = function () {
 
             if (cellDictionary[cell].length == settingsIndexCount) delete cellDictionary[cell];
             delete visibleCells[cell];
+
+            // updatings ++;
         } else if (cellDictionary[cell][1] == updateTicks && cellDictionary[cell][0] == false) {
             cellDictionary[cell][0] = true;
             // was not visible and is now visible
@@ -227,26 +256,35 @@ const updateCells = function () {
                 cellDictionary[cell][i]._cullingVisibleCells++
             }
             setGraphicsVisible(cellDictionary[cell]);
+
+            // updatings ++;
         }
-    });
+    }
+
+    // if(updatings > 0) {
+    //     console.debug("Cull update:", updatings);
+    // }
 }
+
 const setGraphicsVisible = function (arr) {
     for (let i = settingsIndexCount; i < arr.length; i++) {
         arr[i].renderable = (arr[i]._cullingVisibleCells > 0);
     }
 }
+
 const drawAllCells = function () {
     debugGraphics.lineStyle(10, 0xFF0000, 0.5);
-    Object.keys(cellDictionary).map(cell => {
+
+    for(let cell in cellDictionary) {
         const splitCellString = cell.split('_');
         let tileX = parseInt(splitCellString[0]);
         let tileY = parseInt(splitCellString[1]);
         debugGraphics.drawRect(tileX * cellSize.x, tileY * cellSize.y, cellSize.x, cellSize.y);
-    });
+    }
 }
 
 export const update = function () {
-    if(!enabled) return;
+    if(!enabled || !container) return;
     if (debug) {
         if (!debugGraphics) {
             debugGraphics = container;

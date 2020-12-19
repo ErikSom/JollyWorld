@@ -26,13 +26,15 @@ import {
     levelsData
 } from "./data/levelsData";
 
-import { dateDiff } from "./b2Editor/utils/formatString";
+import { dateDiff, JSONStringify } from "./b2Editor/utils/formatString";
 
 import * as emitterManager from './utils/EmitterManager';
 import * as PhysicsParticleEmitter from './utils/PhysicsParticleEmitter';
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
+
+import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
 
 
 const nanoid = require('nanoid');
@@ -58,6 +60,7 @@ function Game() {
     this.app;
     this.stage;
     this.myContainer;
+    this.levelCamera;
     this.myEffectsContainer;
     this.newDebugGraphic;
     this.canvas;
@@ -91,6 +94,9 @@ function Game() {
     this.selectedVehicle = 0;
 
     this.ui = ui;
+
+    // path pixi for camera support
+    PathRenderTarget();
 
     this.init = function () {
 
@@ -141,6 +147,9 @@ function Game() {
         this.gameState = this.GAMESTATE_MENU;
 
         EffectsComposer.init(this.stage)
+        // because a this.app.screen is object getter,
+        // rectangle should updates automatically
+        this.stage.filterArea = this.app.screen;
 
     };
 
@@ -153,11 +162,26 @@ function Game() {
         this.m_groundBody = this.world.CreateBody(bodyDef);
 
         //container
-        this.myContainer = new PIXI.Graphics();
-        this.stage.addChild(this.myContainer);
+        this.myContainer = new PIXI.Container();
+
+        this.levelCamera = new PIXICamera(this.myContainer);
+        //this.levelCamera.disable();
+
+        this.myContainer.camera = this.levelCamera;
+
+        // inser rela camera to container, and now container broke transformation =)
+        // render order:
+        // stage (noraml update) 
+        //   => levelCamera_init_viewport 
+        //        => levelContaner (matix is shift it) 
+        //                => levelCamer_restore_viewport (normalUpdate)
+        this.stage.addChild(this.levelCamera);
+
+        //this.myContainer.addChild(this.levelContainer);
+
 
         //container
-        this.myEffectsContainer = new PIXI.Graphics();
+        this.myEffectsContainer = new PIXI.Container();
         this.stage.addChild(this.myEffectsContainer);
 
         //Debug Draw
@@ -178,7 +202,7 @@ function Game() {
         this.editor.assetLists.gore = Object.keys(PIXI.loader.resources["Characters_Gore.json"].textures);
 
         this.editor.tileLists = Settings.textureNames;
-        this.editor.init(this.myContainer, this.world, Settings.PTM);
+        this.editor.init(this.stage, this.myContainer, this.world, Settings.PTM);
         this.myContainer.addChild(this.newDebugGraphics);
 
         this.editor.contactCallBackListener = this.gameContactListener;
@@ -236,16 +260,16 @@ function Game() {
         emitterManager.init();
         PhysicsParticleEmitter.init();
 
-        PIXICuller.init(this.editor.textures);
+        PIXICuller.init(this.editor.textures, this.levelCamera);
 
         // SITELOCK
         (function checkInit() {
             const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA=='];
             // localhost, .poki.com, .poki-gdn.com
-        
+
             let allowed = false;
             const liveHost = window.location.hostname;
-        
+
             for (let i = 0; i < hosts.length; i++) {
                 const host = atob(hosts[i]);
                 if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
@@ -260,6 +284,8 @@ function Game() {
                 window.top.location !== window.location && (window.top.location = window.location);
             }
         }());
+
+        //this.myContainer.updateTransform = function() {};
     }
 
 
@@ -672,7 +698,7 @@ function Game() {
             fetch(`${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${levelData.uid}%2FlevelData.json?${levelData.dataURL}`)
             .then(response => response.json())
             .then(data => {
-                self.currentLevelData.json = JSON.stringify(data);
+                self.currentLevelData.json = JSONStringify(data);
                 self.currentLevelData.saved = true;
                 self.initLevel(self.currentLevelData);
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
@@ -693,7 +719,7 @@ function Game() {
            fetch(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.uid}/levelData.json`)
            .then(response => response.json())
            .then((data) =>{
-                self.currentLevelData.json = JSON.stringify(data);
+                self.currentLevelData.json = JSONStringify(data);
                 firebaseManager.increasePlayCountPublishedLevel(levelData);
                 this.previewLevel();
                 return resolve();
@@ -749,23 +775,24 @@ function Game() {
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
+        const camera = this.editor.cameraHolder;
 
-        var currentZoom = this.editor.container.scale.x;
+        var currentZoom = camera.scale.x;
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (Settings.cameraZoom - currentZoom) * zoomEase);
 
-        cameraTargetPosition.x -= this.canvas.width / 2.0 / this.editor.container.scale.x;
-        cameraTargetPosition.y -= this.canvas.height / 2.0 / this.editor.container.scale.y;
-        cameraTargetPosition.x *= this.editor.container.scale.x;
-        cameraTargetPosition.y *= this.editor.container.scale.y;
+        cameraTargetPosition.x -= this.canvas.width / 2.0 / camera.scale.x;
+        cameraTargetPosition.y -= this.canvas.height / 2.0 / camera.scale.y;
+        cameraTargetPosition.x *= camera.scale.x;
+        cameraTargetPosition.y *= camera.scale.y;
 
-        this.editor.container.x += (-cameraTargetPosition.x - this.editor.container.x) * panEase;
-        this.editor.container.y += (-cameraTargetPosition.y - this.editor.container.y) * panEase;
+        camera.x += (-cameraTargetPosition.x - camera.x) * panEase;
+        camera.y += (-cameraTargetPosition.y - camera.y) * panEase;
 
-        this.myEffectsContainer.scale.x = this.editor.container.scale.x;
-        this.myEffectsContainer.scale.y = this.editor.container.scale.y;
-        this.myEffectsContainer.x = this.editor.container.x;
-        this.myEffectsContainer.y = this.editor.container.y;
+        this.myEffectsContainer.scale.x = camera.scale.x;
+        this.myEffectsContainer.scale.y = camera.scale.y;
+        this.myEffectsContainer.x = camera.x;
+        this.myEffectsContainer.y = camera.y;
 
     }
 
@@ -786,30 +813,30 @@ function Game() {
     this.gameContactListener.PreSolve = function (contact, oldManifold) {}
     this.gameContactListener.PostSolve = function (contact, impulse) {
 
-        var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-        var body;
+        const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+        let body;
 
         if(!bodies[0].mySprite || !bodies[1].mySprite) return;
 
-        for (var i = 0; i < bodies.length; i++) {
+        for (let i = 0; i < bodies.length; i++) {
             body = bodies[i];
             if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
 
-                var force = 0;
-                for (var j = 0; j < impulse.normalImpulses.length; j++)
+                let force = 0;
+                for (let j = 0; j < impulse.normalImpulses.length; j++)
                     if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
 
-                var velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
-                var velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
-                var impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
+                const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
+                const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
                 impactAngle *= game.editor.RAD2DEG + 180;
-                var velocitySum = velocityA + velocityB;
+                const velocitySum = velocityA + velocityB;
                 if (velocitySum > 10.0) {
-                    var worldManifold = new Box2D.b2WorldManifold();
+                    const worldManifold = new Box2D.b2WorldManifold();
                     contact.GetWorldManifold(worldManifold);
-                    var worldCollisionPoint = worldManifold.points[0];
+                    const worldCollisionPoint = worldManifold.points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
-                    emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+                    emitterManager.playOnceEmitter("blood", null, worldCollisionPoint, impactAngle);
 
                     const bodyClass = self.editor.retrieveSubClassFromBody(body);
                     if(bodyClass && bodyClass.dealDamage){

@@ -43,7 +43,7 @@ export const blood = JSON.parse(`{
 		"x": 0,
 		"y": 0
 	},
-	"addAtBack": false,
+	"addAtBack": true,
 	"spawnType": "circle",
 	"spawnCircle": {
 		"x": 0,
@@ -160,6 +160,7 @@ export const explosion_layer1 = JSON.parse(`
 	"angleStart": 0,
 	"emit":false
 }`)
+
 export const explosion_layer2 = JSON.parse(`
 {
 	"alpha": {
