@@ -38,7 +38,7 @@ import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
 
 
 const nanoid = require('nanoid');
-const particles = require('pixi-particles');
+const particles = require('../libs/pixi-particles');
 const Stats = require('stats.js');
 
 var b2Vec2 = Box2D.b2Vec2,
@@ -836,7 +836,7 @@ function Game() {
                     contact.GetWorldManifold(worldManifold);
                     const worldCollisionPoint = worldManifold.points[0];
                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
-                    emitterManager.playOnceEmitter("blood", null, worldCollisionPoint, impactAngle);
+                    emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 
                     const bodyClass = self.editor.retrieveSubClassFromBody(body);
                     if(bodyClass && bodyClass.dealDamage){

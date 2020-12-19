@@ -265,7 +265,7 @@ export class Character extends PrefabManager.basePrefab {
                         }
 
                         this.generateGoreParticles(update.target);
-                        emitterManager.playOnceEmitter("gorecloud", null, targetBody.GetPosition());
+                        emitterManager.playOnceEmitter("gorecloud", targetBody, targetBody.GetPosition());
 
                         let connectedJointEdge = targetBody.GetJointList();
                         while(connectedJointEdge){

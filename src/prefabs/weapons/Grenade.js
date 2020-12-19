@@ -21,8 +21,8 @@ class Grenade extends Explosive {
 		super.explode();
 
 		const pos = this.explodeTarget.GetPosition();
-		emitterManager.playOnceEmitter("explosion_layer1", null, pos, 0);
-		emitterManager.playOnceEmitter("explosion_layer2", null, pos, 0);
+		emitterManager.playOnceEmitter("explosion_layer1", this.explodeTarget, pos, 0);
+		emitterManager.playOnceEmitter("explosion_layer2", this.explodeTarget, pos, 0);
 		this.destroy();
 	}
 	setActive(active){

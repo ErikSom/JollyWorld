@@ -56,6 +56,23 @@ export const playOnceEmitter = function (type, body, point, angle) {
     if(body && body.mySprite){
         // create container - postion container at right index
         // make sure to delete container on reset!!
+        if(!emitter.container){
+            emitter.container = new PIXI.Container();
+            emitter.parent.addChild(emitter.container)
+            emitter.parent = emitter.container;
+        }
+
+        let targetIndex;
+        if(body.myTexture) targetIndex = body.myTexture.parent.getChildIndex(body.myTexture);
+        else targetIndex = body.mySprite.parent.getChildIndex(body.mySprite);
+
+        console.log(game.myContainer, game.myContainer === emitter.container.parent);
+
+        emitter.container.parent.addChildAt(emitter.container, targetIndex+1)
+    }else if(emitter.container){
+        emitter.parent = emitter.container.parent;
+        emitter.container.parent.removeChild(emitter.container);
+        delete emitter.container;
     }
 
 
@@ -90,31 +107,31 @@ export const getEmitter = function (type) {
     switch (type) {
         case "blood":
             emitter = new PIXI.particles.Emitter(
-                game.myContainer, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-grey.png')],
+                game.editor.textures, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-grey.png')],
                 emitterData[type]
             );
             break;
         case "gorecloud":
             emitter = new PIXI.particles.Emitter(
-                game.myContainer, [PIXI.Texture.fromImage('gore-cloud.png')],
+                game.editor.textures, [PIXI.Texture.fromImage('gore-cloud.png')],
                 emitterData[type]
             );
             break;
         case "explosion_layer1":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Smoke_1.png'), PIXI.Texture.fromImage('Smoke_2.png'), PIXI.Texture.fromImage('Smoke_3.png'), PIXI.Texture.fromImage('Smoke_4.png')],
+                game.editor.textures, [PIXI.Texture.fromImage('Smoke_1.png'), PIXI.Texture.fromImage('Smoke_2.png'), PIXI.Texture.fromImage('Smoke_3.png'), PIXI.Texture.fromImage('Smoke_4.png')],
                 emitterData[type]
             );
             break;
         case "explosion_layer2":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Fire_1.png'), PIXI.Texture.fromImage('Fire_2.png'), PIXI.Texture.fromImage('Fire_3.png')],
+                game.editor.textures, [PIXI.Texture.fromImage('Fire_1.png'), PIXI.Texture.fromImage('Fire_2.png'), PIXI.Texture.fromImage('Fire_3.png')],
                 emitterData[type]
             );
             break;
         case "explosion2_layer1":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Smoke_Fire_10000'), PIXI.Texture.fromImage('Smoke_Fire_20000'), PIXI.Texture.fromImage('Smoke_Fire_30000'), PIXI.Texture.fromImage('Smoke_Fire_40000')],
+                game.editor.textures, [PIXI.Texture.fromImage('Smoke_Fire_10000'), PIXI.Texture.fromImage('Smoke_Fire_20000'), PIXI.Texture.fromImage('Smoke_Fire_30000'), PIXI.Texture.fromImage('Smoke_Fire_40000')],
                 emitterData['explosion_layer1']
             );
             emitter.minimumSpeedMultiplier = 6;
@@ -122,7 +139,7 @@ export const getEmitter = function (type) {
         break;
         case "explosion2_layer2":
             emitter = new PIXI.particles.Emitter(
-                game.myEffectsContainer, [PIXI.Texture.fromImage('Fire_Fire_10000'), PIXI.Texture.fromImage('Fire_Fire_20000'), PIXI.Texture.fromImage('Fire_Fire_30000')],
+                game.editor.textures, [PIXI.Texture.fromImage('Fire_Fire_10000'), PIXI.Texture.fromImage('Fire_Fire_20000'), PIXI.Texture.fromImage('Fire_Fire_30000')],
                 emitterData['explosion_layer2']
             );
             emitter.minimumSpeedMultiplier = 9;
@@ -150,9 +167,14 @@ export const update = function () {
 export const reset = function () {
     emittersPool = {};
     for (let i = 0; i < emitters.length; i++) {
-        emitters[i].body = undefined;
-        emitters[i].cleanup();
-        if (!emittersPool[emitters[i].type]) emittersPool[emitters[i].type] = [];
-        emittersPool[emitters[i].type].push(emitters[i]);
+        let emitter = emitters[i];
+        emitter.body = undefined;
+        emitter.cleanup();
+        if(emitter.container){
+            emitter.parent = game.editor.textures;
+            delete emitter.container;
+        }
+        if (!emittersPool[emitter.type]) emittersPool[emitter.type] = [];
+        emittersPool[emitter.type].push(emitter);
     }
 }
