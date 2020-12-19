@@ -4491,7 +4491,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue;
-							if ([this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP, this.object_TEXT].includes(sprite.data.type)) {
+							if ([this.object_GRAPHIC, this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP, this.object_TEXT].includes(sprite.data.type)) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
 								this.updateGraphicShapes(sprite);
