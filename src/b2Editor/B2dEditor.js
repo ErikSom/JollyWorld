@@ -2052,7 +2052,7 @@ const _B2dEditor = function () {
 	}
 	this.editorSettingsObject = new function () {
 		this.type = self.object_SETTINGS;
-		this.physicsDebug = false;
+		this.physicsDebug = (window.location.search.indexOf('editorAdmin=true')>=0);
 		this.gravityX = 0;
 		this.gravityY = 10;
 		this.showPlayerHistory = false;
@@ -6059,7 +6059,6 @@ const _B2dEditor = function () {
 	}
 
  	this.mirrorPrefab = function(prefabClass, centerObjectName){
-		// lookupObject._joints
 		const objects = [].concat(prefabClass.lookupObject._bodies, prefabClass.lookupObject._textures)
 		const centerObject = prefabClass.lookupObject[centerObjectName];
 		const flippedJoints = [];
@@ -6079,25 +6078,40 @@ const _B2dEditor = function () {
 						shape.Set(vertices);
 					}else{
 						const position = shape.GetLocalPosition();
-						// position.x *- 1;
+						position.x *- 1;
 						shape.SetLocalPosition(position);
 					}
 
 					fixture = fixture.GetNext();
 				}
 
-				const objectAngle = object.GetAngle();
-				const reflectedAngle = - objectAngle;
-				object.SetAngle(reflectedAngle);
+
 
 				if(object != centerObject){
+
+					const objectAngleDiff = centerObject.GetAngle()-object.GetAngle();
+					const reflectedAngle = centerObject.GetAngle()+objectAngleDiff
+					object.SetAngle(reflectedAngle);
+
 					const cdx = object.GetPosition().x-centerObject.GetPosition().x;
 					const cdy = object.GetPosition().y-centerObject.GetPosition().y;
+					const cda = Math.atan2(cdy, cdx);
 					const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
-					const reflectedcda =  -(Math.atan2(cdy, cdx)+Math.PI/2) - Math.PI/2;
+					
+					let reflectAngle = cda-centerObject.GetAngle();
+					let nx = - cdl * Math.cos(reflectAngle);
+					let ny = cdl * Math.sin(reflectAngle);
 
-					const nx = centerObject.GetPosition().x+cdl*Math.cos(reflectedcda)
-					const ny = centerObject.GetPosition().y+cdl*Math.sin(reflectedcda);
+					const na = Math.atan2(ny, nx);
+					const ndl = Math.sqrt(nx*nx + ny*ny);
+
+					reflectAngle = na+centerObject.GetAngle();
+
+					nx = centerObject.GetPosition().x + ndl * Math.cos(reflectAngle);
+					ny = centerObject.GetPosition().y + ndl * Math.sin(reflectAngle);
+
+					// const nx = centerObject.GetPosition().x+cdl*Math.cos(reflectedcda)
+					// const ny = centerObject.GetPosition().y+cdl*Math.sin(reflectedcda);
 
 					const position = object.GetPosition();
 					position.x = nx;
@@ -7138,6 +7152,8 @@ const _B2dEditor = function () {
 			}
 			if (!forceNew) return;
 		}
+
+		console.log(tileTexture, "TILE TEXTURE <----");
 
 		if (tileTexture && tileTexture != "") {
 

@@ -847,7 +847,6 @@ function Game() {
             }
         }
     }
-
     let then, now;
     this.render = (newtime) => {
         if (!then) then = window.performance.now();
@@ -861,10 +860,6 @@ function Game() {
     }
 
     this.update = function () {
-
-
-        // this.shockFilter.center.x = this.editor.mousePosPixel.x;
-        // this.shockFilter.center.y = this.editor.mousePosPixel.y;
 
         this.stats.begin();
 

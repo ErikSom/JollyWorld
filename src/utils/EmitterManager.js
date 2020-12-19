@@ -51,7 +51,14 @@ export const playOnceEmitter = function (type, body, point, angle) {
 
     let emitter = getEmitter(type);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
-    
+
+
+    if(body && body.mySprite){
+        // create container - postion container at right index
+        // make sure to delete container on reset!!
+    }
+
+
     if (body) {
         emitter.body = body;
         if (!body.emitterCount) body.emitterCount = 0;
