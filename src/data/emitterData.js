@@ -43,7 +43,7 @@ export const blood = JSON.parse(`{
 		"x": 0,
 		"y": 0
 	},
-	"addAtBack": true,
+	"addAtBack": false,
 	"spawnType": "circle",
 	"spawnCircle": {
 		"x": 0,
