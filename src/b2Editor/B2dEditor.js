@@ -7130,8 +7130,8 @@ const _B2dEditor = function () {
 		if (target.data.radius) this.updateCircleGraphic(target.originalGraphic, target.data.radius, {
 			x: 0,
 			y: 0
-		}, target.data.colorFill, target.data.colorLine, target.data.transparancy);
-		else this.updatePolyGraphic(target.originalGraphic, target.data.vertices, target.data.colorFill, target.data.colorLine, target.data.transparancy);
+		}, target.data.colorFill, target.data.colorLine, target.data.lineWidth, target.data.transparancy);
+		else this.updatePolyGraphic(target.originalGraphic, target.data.vertices, target.data.colorFill, target.data.colorLine, target.data.lineWidth, target.data.transparancy);
 		if (target.data.tileTexture != "") this.updateTileSprite(target, true);
 
 	}
@@ -7156,22 +7156,19 @@ const _B2dEditor = function () {
 				target.myTileSprite = undefined;
 				targetSprite.filters = [];
 				targetGraphic.alpha = 1;
+
+				target.myTileSpriteOutline.parent.removeChild(target.myTileSpriteOutline);
+				target.myTileSpriteOutline = undefined;
 			}
 			if (!forceNew) return;
 		}
-
-		console.log(tileTexture, "TILE TEXTURE <----");
-
+		
 		if (tileTexture && tileTexture != "") {
 
 			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) {
 
-
-				const color = parseInt([].concat(targetSprite.data.colorLine)[0].slice(1), 16);
-				target.myTileSprite.alpha = targetSprite.data.transparancy;
-				let outlineFilter = new PIXIFILTERS.OutlineFilter([].concat(targetSprite.data.lineWidth)[0], color, 0.1);
-				outlineFilter.padding = [].concat(targetSprite.data.lineWidth)[0]+2; // added 2 to fix line flickering
-				targetSprite.filters = [outlineFilter]
+				// REDRAW OUTLINE
+				this.updateTileSpriteOutline(target, targetSprite.data);
 				targetGraphic.alpha = 0;
 				return;
 			}
@@ -7206,10 +7203,15 @@ const _B2dEditor = function () {
 						uvs[i] = vertices[i] * 2.0 / tex.width + 0.5;
 					}
 				}
-
 				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
+
+				const outline = new PIXI.Graphics();
+				targetSprite.addChild(outline);
+				target.myTileSpriteOutline = outline;
+
+				this.updateTileSpriteOutline(target, targetSprite.data);
 
 				// find center vertice
 				mesh.cachedSpriteRotation = 0;
@@ -7243,18 +7245,38 @@ const _B2dEditor = function () {
 			}
 
 			target.myTileSprite.texture = tex;
-			const color = parseInt([].concat(targetSprite.data.colorLine)[0].slice(1), 16);
-			let outlineFilter = new PIXIFILTERS.OutlineFilter([].concat(targetSprite.data.lineWidth)[0], color, 0.1);
-			outlineFilter.padding = [].concat(targetSprite.data.lineWidth)[0]+2; // added 2 to fix line flickering
-			targetSprite.filters = [outlineFilter];
+			this.updateTileSpriteOutline(target, targetSprite.data);
 			targetGraphic.alpha = 0;
 		}
 	}
 
+	this.updateTileSpriteOutline = function(target, data){
+		target.myTileSpriteOutline.clear();
+		const oldTileTexture = data.tileTexture;
+		data.tileTexture = "";
+		const oldColorFill = data.colorFill;
+
+		if(Array.isArray(data.colorFill)){
+			data.colorFill = data.colorFill.map(()=> "transparent");
+		}else{
+			data.colorFill = "transparent";
+		}
+
+		const oldOriginalGraphic = target.originalGraphic;
+		target.originalGraphic = target.myTileSpriteOutline;
+		if(data.type === this.object_BODY){
+			this.updateBodyShapes(target);
+		}else{
+			this.updateGraphicShapes(target);
+		}
+		target.originalGraphic = oldOriginalGraphic;
+		data.tileTexture = oldTileTexture;
+		data.colorFill = oldColorFill;
+
+	}
+
 	this.updatePolyGraphic = function (graphic, verts, colorFill, colorLine, lineWidth, transparancy, dontClear) {
 		let color;
-		color = colorFill.slice(1);
-		let colorFillHex = parseInt(color, 16);
 		color = colorLine.slice(1);
 		let colorLineHex = parseInt(color, 16);
 
@@ -7262,7 +7284,12 @@ const _B2dEditor = function () {
 		graphic.boundsPadding = 0;
 
 		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
-		graphic.beginFill(colorFillHex, transparancy);
+
+		if(colorFill !== 'transparent'){
+			color = colorFill.slice(1);
+			let colorFillHex = parseInt(color, 16);
+			graphic.beginFill(colorFillHex, transparancy);
+		}
 
 		const count = verts.length;
 		const startPoint = verts[0];
@@ -7293,24 +7320,26 @@ const _B2dEditor = function () {
 
 		graphic.endFill();
 
-
 		return graphic;
 	}
 	this.updateCircleGraphic = function (graphic, radius, pos, colorFill, colorLine, lineWidth, transparancy, dontClear) {
-		var color;
-		color = colorFill.slice(1);
-		var colorFillHex = parseInt(color, 16);
+		let color;
 		color = colorLine.slice(1);
-		var colorLineHex = parseInt(color, 16);
+		const colorLineHex = parseInt(color, 16);
 
 		if (!dontClear) graphic.clear();
 		graphic.boundsPadding = 0;
 
 		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
-		graphic.beginFill(colorFillHex, transparancy);
 
-		var x = this.getPIXIPointFromWorldPoint(pos).x;
-		var y = this.getPIXIPointFromWorldPoint(pos).y;
+		if(colorFill !== 'transparent'){
+			color = colorFill.slice(1);
+			const colorFillHex = parseInt(color, 16);
+			graphic.beginFill(colorFillHex, transparancy);
+		}
+
+		let x = this.getPIXIPointFromWorldPoint(pos).x;
+		let y = this.getPIXIPointFromWorldPoint(pos).y;
 
 		graphic.moveTo(x + radius, y);
 		graphic.arc(x, y, radius, 0, 2 * Math.PI, false);
