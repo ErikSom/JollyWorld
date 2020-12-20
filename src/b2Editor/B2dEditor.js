@@ -2052,7 +2052,7 @@ const _B2dEditor = function () {
 	}
 	this.editorSettingsObject = new function () {
 		this.type = self.object_SETTINGS;
-		this.physicsDebug = (window.location.search.indexOf('editorAdmin=true')>=0);
+		this.physicsDebug = (window.location.search.indexOf('physicsDebug=true')>=0);
 		this.gravityX = 0;
 		this.gravityY = 10;
 		this.showPlayerHistory = false;
@@ -6126,9 +6126,16 @@ const _B2dEditor = function () {
 				}
 
 				let jointEdge = object.GetJointList();
+				const destroyJoints = [];
 				while (jointEdge) {
 					const joint = jointEdge.joint;
-					if(!flippedJoints.includes(joint)){
+
+					const keyA = this.activePrefabs[joint.GetBodyA().mySprite.data.prefabInstanceName].key;
+					const keyB = this.activePrefabs[joint.GetBodyB().mySprite.data.prefabInstanceName].key;
+
+					if(keyA !== keyB){
+						destroyJoints.push(joint);
+					}else if(!flippedJoints.includes(joint)){
 
 						if(joint.m_localAnchorA !== undefined) joint.m_localAnchorA.x *= -1;
 						if(joint.m_localAnchorB !== undefined) joint.m_localAnchorB.x *= -1;
@@ -6145,7 +6152,7 @@ const _B2dEditor = function () {
 					}
 					jointEdge = jointEdge.next;
 				}
-
+				destroyJoints.forEach(joint => game.world.DestroyJoint(joint));
 
 			}else{
 				// sprite
