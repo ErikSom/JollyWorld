@@ -6129,8 +6129,8 @@ const _B2dEditor = function () {
 				while (jointEdge) {
 					const joint = jointEdge.joint;
 
-					const keyA = this.activePrefabs[joint.GetBodyA().mySprite.data.prefabInstanceName].key;
-					const keyB = this.activePrefabs[joint.GetBodyB().mySprite.data.prefabInstanceName].key;
+					let keyA = joint.GetBodyA().mySprite ? joint.GetBodyA().mySprite.data.prefabInstanceName : joint.GetBodyA().key;
+					let keyB = joint.GetBodyB().mySprite ? joint.GetBodyB().mySprite.data.prefabInstanceName : joint.GetBodyB().key;
 
 					if(keyA !== keyB){
 						destroyJoints.push(joint);

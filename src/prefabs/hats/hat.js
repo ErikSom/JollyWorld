@@ -23,6 +23,7 @@ export default class Hat {
 		bd.angle = this.head.GetAngle();
 		this.hatBody = this.head.GetWorld().CreateBody(bd);
 		this.hatBody.isHat = true;
+		this.hatBody.key = this.head.mySprite.data.prefabInstanceName
 
 		const fixDef = new Box2D.b2FixtureDef;
 		fixDef.density = 0.01;
@@ -64,6 +65,9 @@ export default class Hat {
 	activate(){
 	}
 	update(){
+	}
+	flip(){
+		this.hatBody.myTexture.scale.x *= -1;
 	}
 	destroy(){
 	}

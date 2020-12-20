@@ -425,7 +425,7 @@ function Game() {
             }
 
             if(this.character.hat){
-                if (Key.isPressed(Key.SPACE)) {
+                if (Key.isPressed(Key.E)) {
                     this.character.hat.activate();
                 };
                 if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {

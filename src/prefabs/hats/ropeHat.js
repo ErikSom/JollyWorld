@@ -81,6 +81,7 @@ export class RopeHat extends Hat {
 		bd.angle =angle;
 
 		this.ropeEnd = this.head.GetWorld().CreateBody(bd);
+		this.ropeEnd.key = this.head.mySprite.data.prefabInstanceName
 		this.ropeEnd.SetBullet(true);
 
 		this.ropeEnd.contactListener = new Box2D.b2ContactListener();

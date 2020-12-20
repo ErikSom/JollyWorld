@@ -75,6 +75,7 @@ export class Character extends PrefabManager.basePrefab {
     flip(){
         this.flipped = !this.flipped;
         if(this.attachedToVehicle) game.vehicle.flip();
+        if(this.hat) this.hat.flip();
         else game.editor.mirrorPrefab(this, 'body');
     }
     setHat(hatClass){
