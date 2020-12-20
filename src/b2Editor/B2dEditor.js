@@ -360,7 +360,7 @@ const _B2dEditor = function () {
 				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
-				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
 				break
 			case this.tool_POLYDRAWING:
@@ -385,7 +385,7 @@ const _B2dEditor = function () {
 				targetFolder.open();
 
 				targetFolder.addColor(ui.editorGUI.editData, "textColor");
-				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
 
 				const fonts = Settings.availableFonts;
@@ -414,7 +414,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				ui.editorGUI.editData.transparancy = realVal;
 
-				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				targetFolder.add(ui.editorGUI.editData, "smoothen");
 				break
 			case this.tool_TRIGGER:
@@ -759,7 +759,7 @@ const _B2dEditor = function () {
 				});
 				if (ui.editorGUI.editData.colorFill.length > 1) {
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
-					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
@@ -788,7 +788,7 @@ const _B2dEditor = function () {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
@@ -845,7 +845,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -887,7 +887,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -946,7 +946,7 @@ const _B2dEditor = function () {
 
 				break;
 			case case_JUST_GRAPHICGROUPS:
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -968,7 +968,7 @@ const _B2dEditor = function () {
 				}.bind(controller));
 				break;
 			case case_JUST_ANIMATIONGROUPS:
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1055,7 +1055,7 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1);
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
