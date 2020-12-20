@@ -66,8 +66,6 @@ export const playOnceEmitter = function (type, body, point, angle) {
         if(body.myTexture) targetIndex = body.myTexture.parent.getChildIndex(body.myTexture);
         else targetIndex = body.mySprite.parent.getChildIndex(body.mySprite);
 
-        console.log(game.myContainer, game.myContainer === emitter.container.parent);
-
         emitter.container.parent.addChildAt(emitter.container, targetIndex+1)
     }else if(emitter.container){
         emitter.parent = emitter.container.parent;

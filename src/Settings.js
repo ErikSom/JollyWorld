@@ -6,6 +6,7 @@ export var Settings = {
     timeStep:1000 / targetFPS,
     allowMouseMovement:true,
     cameraZoom:0.8,
+    lineWidthCorrection:1.0,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
     PTM:30,

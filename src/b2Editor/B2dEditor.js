@@ -7283,6 +7283,7 @@ const _B2dEditor = function () {
 		if (!dontClear) graphic.clear();
 		graphic.boundsPadding = 0;
 
+		if(lineWidth) lineWidth += Settings.lineWidthCorrection;
 		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
 
 		if(colorFill !== 'transparent'){
@@ -7329,6 +7330,8 @@ const _B2dEditor = function () {
 
 		if (!dontClear) graphic.clear();
 		graphic.boundsPadding = 0;
+
+		if(lineWidth) lineWidth += Settings.lineWidthCorrection;
 
 		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
 

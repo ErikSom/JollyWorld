@@ -129,6 +129,7 @@ function Game() {
         this.app.renderer.plugins.interaction.removeEvents();
         PIXI.ticker.shared.stop();
         this.stage.interactiveChildren=false;
+        this.app.renderer.plugins.accessibility.destroy();
 
         LoadCoreAssets(PIXI.loader);
 
