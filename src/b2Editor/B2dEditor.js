@@ -2138,18 +2138,17 @@ const _B2dEditor = function () {
 		}
 	}
 	this.findPlayer = function(){
-		const camera = this.cameraHolder;
-
+		const cameraHolder = B2dEditor.container.camera || B2dEditor.container;
 		for (let key in this.activePrefabs) {
             if (this.activePrefabs.hasOwnProperty(key)) {
                 if (this.activePrefabs[key].class.constructor.playableCharacter) {
 
 					let cameraTargetX = this.activePrefabs[key].x;
 					let cameraTargetY = this.activePrefabs[key].y;
-					cameraTargetX -= game.canvas.width / 2.0 / camera.scale.x;
-					cameraTargetY -= game.canvas.height / 2.0 / camera.scale.y;
-					cameraTargetX *= camera.scale.x;
-					cameraTargetY *= camera.scale.y;
+					cameraTargetX -= game.canvas.width / 2.0 / cameraHolder.scale.x;
+					cameraTargetY -= game.canvas.height / 2.0 / cameraHolder.scale.y;
+					cameraTargetX *= cameraHolder.scale.x;
+					cameraTargetY *= cameraHolder.scale.y;
 
 					camera.set({x:-cameraTargetX, y:-cameraTargetY});
 					scrollBars.update();
