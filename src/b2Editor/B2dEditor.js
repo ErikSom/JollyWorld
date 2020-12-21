@@ -114,6 +114,9 @@ const _B2dEditor = function () {
 	this.undoList = [];
 	this.undoIndex = 0;
 
+	this.levelGradients = ['', '-new gradient-'];
+	this.levelColors = []; // every time you select an object it will push its colors to this stack, max stack size e.g. 10, need to add this to dat.gui
+
 	this.editorSettings = editorSettings;
 	this.camera = camera;
 	this.cameraSize = {
@@ -484,21 +487,21 @@ const _B2dEditor = function () {
 		ui.destroyEditorGUI();
 
 
-		var case_NOTHING = 0;
-		var case_JUST_BODIES = 1;
-		var case_JUST_TEXTURES = 2;
-		var case_JUST_JOINTS = 3;
-		var case_JUST_PREFABS = 4;
-		var case_MULTIPLE = 5;
-		var case_JUST_GRAPHICS = 6;
-		var case_JUST_TRIGGERS = 7;
-		var case_JUST_GRAPHICGROUPS = 8;
-		var case_JUST_TEXTS = 9;
-		var case_JUST_ANIMATIONGROUPS = 10;
+		const case_NOTHING = 0;
+		const case_JUST_BODIES = 1;
+		const case_JUST_TEXTURES = 2;
+		const case_JUST_JOINTS = 3;
+		const case_JUST_PREFABS = 4;
+		const case_MULTIPLE = 5;
+		const case_JUST_GRAPHICS = 6;
+		const case_JUST_TRIGGERS = 7;
+		const case_JUST_GRAPHICGROUPS = 8;
+		const case_JUST_TEXTS = 9;
+		const case_JUST_ANIMATIONGROUPS = 10;
 
 
-		var currentCase = case_NOTHING;
-		var prefabKeys = Object.keys(this.selectedPrefabs);
+		let currentCase = case_NOTHING;
+		let prefabKeys = Object.keys(this.selectedPrefabs);
 
 		let hideMirrorTransformGui = prefabKeys.length > 0;
 
@@ -869,6 +872,10 @@ const _B2dEditor = function () {
 				break;
 			case case_JUST_GRAPHICS:
 				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				});
+				targetFolder.add(ui.editorGUI.editData, "gradient", this.levelGradients).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
@@ -1960,6 +1967,7 @@ const _B2dEditor = function () {
 		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
+		this.gradient = '';
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -3313,7 +3321,6 @@ const _B2dEditor = function () {
 
 				}
 			} else if (this.selectedTool == this.tool_ART) {
-
 				this.activeVertices.push({
 					x: this.mousePosWorld.x,
 					y: this.mousePosWorld.y
@@ -3350,7 +3357,6 @@ const _B2dEditor = function () {
 							if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
 								mouseVertice = verticeIndex;
 							}
-		
 						})
 
 						if(mouseVertice>=0){
@@ -7458,6 +7464,7 @@ const _B2dEditor = function () {
 			arr[18] = obj.parallax;
 			arr[19] = obj.repeatTeleportX;
 			arr[20] = obj.repeatTeleportY;
+			arr[21] = obj.gradient;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -7581,6 +7588,7 @@ const _B2dEditor = function () {
 			obj.parallax = arr[18] !== undefined ? arr[18] : 0;
 			obj.repeatTeleportX = arr[19] !== undefined ? arr[19] : 0;
 			obj.repeatTeleportY = arr[20] !== undefined ? arr[20] : 0;
+			obj.gradient = arr[21] !== undefined ? arr[21] : '';
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
