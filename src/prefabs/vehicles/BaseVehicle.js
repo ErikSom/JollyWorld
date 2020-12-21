@@ -27,7 +27,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             let body = this.lookupObject._bodies[i];
             body.mySprite.data.prefabID = this.prefabObject.instanceID;
         }
-        this.character.life = this.prefabObject.settings.life;
+        this.character.life = this.prefabObject.settings.life || 300;
         this.initContactListener();
 
         this.leanSpeed = 0.2;

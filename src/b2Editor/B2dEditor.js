@@ -6131,8 +6131,6 @@ const _B2dEditor = function () {
 
 					let keyA = joint.GetBodyA().mySprite ? joint.GetBodyA().mySprite.data.prefabInstanceName : joint.GetBodyA().key;
 					let keyB = joint.GetBodyB().mySprite ? joint.GetBodyB().mySprite.data.prefabInstanceName : joint.GetBodyB().key;
-					
-					console.log(keyA, keyB, "KEYSSSS");
 
 					if(keyA !== keyB){
 						destroyJoints.push(joint);

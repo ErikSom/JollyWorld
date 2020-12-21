@@ -36,6 +36,7 @@ export class RopeHat extends Hat {
 	}
 	activate() {
 		if (this.ropeFired){
+			console.log("ACTIVATE - ROPE FIRED");
 			this.ropeFired = false;
 			this.releaseRope();
 			this.clearTilingRope();
@@ -44,6 +45,7 @@ export class RopeHat extends Hat {
 			this.anchorTexture = null;
 			return;
 		}
+		console.log("ACTIVATE");
 
 		this.ropeFired = true;
 		const rayStart = this.head.GetPosition();
@@ -64,6 +66,7 @@ export class RopeHat extends Hat {
 		}
 	}
 	attachRope(point, body, precise) {
+		console.log("ATTACH ROPE!!");
 		this.ropeActive = true;
 
 		const bd = new Box2D.b2BodyDef();
@@ -161,6 +164,7 @@ export class RopeHat extends Hat {
 
 	releaseRope() {
 		if (this.ropeEnd) {
+			console.log("RELEASE ROPE");
 			this.head.GetWorld().DestroyBody(this.ropeEnd);
 			if(this.pulleyJoint) this.head.GetWorld().DestroyJoint(this.pulleyJoint);
 			if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
@@ -170,6 +174,8 @@ export class RopeHat extends Hat {
 		}
 	}
 	bendRope(point, body) {
+		console.log("BEND ROPE");
+
 		const diff = this.head.GetPosition().Clone().SelfSub(point);
 		let angle = Math.atan2(diff.y, diff.x);
 		if(this.bendSpeed > 0){
@@ -199,6 +205,8 @@ export class RopeHat extends Hat {
 
 	}
 	unBendRope() {
+		console.log("UNBEND ROPE");
+
 		const bendData = this.ropePoints.pop();
 		this.bendRopeLength -= bendData.bendLength;
 
@@ -340,11 +348,13 @@ export class RopeHat extends Hat {
 		this.body.ApplyForce(new Box2D.b2Vec2(xForce, yForce), this.body.GetPosition(), true);
 	}
 	accelerate(dir) {
+		if(this.oldDir == dir) return;
 		if (!this.pulleyJoint) return;
 		if(dir === 0){
 			this.pulleyJoint.EnableMotor(false);
 			if(this.pulleyFrameJoint) this.pulleyFrameJoint.EnableMotor(false);
 			this.setDistanceJointEnabled(true);
+			this.oldDir = dir;
 			return;
 		}
 		this.setDistanceJointEnabled(false);
@@ -356,6 +366,7 @@ export class RopeHat extends Hat {
 			this.pulleyFrameJoint.EnableMotor(true);
 			this.pulleyFrameJoint.SetMotorSpeed(speed*-dir);
 		}
+		this.oldDir = dir;
 	}
 
 	detachFromVehicle(){
