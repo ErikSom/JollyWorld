@@ -3261,6 +3261,7 @@ const _B2dEditor = function () {
 					this.updateSelection();
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
+				if(!this.mouseDown) return;
 				if(ui.editorGUI.editData.isPhysicsObject){
 					let bodyObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
@@ -3321,6 +3322,8 @@ const _B2dEditor = function () {
 
 				}
 			} else if (this.selectedTool == this.tool_ART) {
+				if(!this.mouseDown) return;
+
 				this.activeVertices.push({
 					x: this.mousePosWorld.x,
 					y: this.mousePosWorld.y
@@ -3337,6 +3340,7 @@ const _B2dEditor = function () {
 				this.activeVertices = [];
 
 			}else if(this.selectedTool === this.tool_VERTICEEDITING){
+				if(!this.mouseDown) return;
 				if(Date.now() < this.doubleClickTime){
 
 					if(this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.data.type !== this.object_BODY){
