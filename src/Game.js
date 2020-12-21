@@ -230,8 +230,8 @@ function Game() {
         document.body.addEventListener("keyup", this.onKeyUp.bind(this), {passive:false});
         this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this), {passive:false});
         this.canvas.addEventListener("touchstart", this.onMouseDown.bind(this), {passive:false});
-        this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this), {passive:false});
-        this.canvas.addEventListener("touchend", this.onMouseUp.bind(this), {passive:false});
+        document.addEventListener("mouseup", this.onMouseUp.bind(this), {passive:false});
+        document.addEventListener("touchend", this.onMouseUp.bind(this), {passive:false});
 
 
         document.addEventListener("mouseup", ()=>{
@@ -243,8 +243,8 @@ function Game() {
         }, {passive:false});
 
 
-        this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this), {passive:false});
-        this.canvas.addEventListener("touchmove", this.onMouseMove.bind(this), {passive:false});
+        document.addEventListener("mousemove", this.onMouseMove.bind(this), {passive:false});
+        document.addEventListener("touchmove", this.onMouseMove.bind(this), {passive:false});
 
         document.addEventListener("mousemove", this.onDocumentMouseMove.bind(this), {passive:false});
         document.addEventListener("touchmove", this.onDocumentMouseMove.bind(this), {passive:false});

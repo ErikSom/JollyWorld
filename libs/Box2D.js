@@ -19737,7 +19737,6 @@
             }
             this.m_jointList = j;
             ++this.m_jointCount;
-            console.log("JOINTS:", this.m_jointCount);
             // Connect to the bodies' doubly linked lists.
             // j.m_edgeA.joint = j;
             // j.m_edgeA.other = j.m_bodyB;
