@@ -1,5 +1,6 @@
 import { B2dEditor } from "../B2dEditor";
 import * as Box2D from "../../../libs/Box2D";
+import * as dat from "../../../libs/dat.gui";
 import { Settings } from "../../Settings";
 
 var b2Vec2 = Box2D.b2Vec2;
@@ -97,4 +98,32 @@ export const addText = function(string, target, position, _textOptions){
     text.x = position.x;
     text.y = position.y;
     target.addChild(text);
+}
+
+export const drawGradient = function(canvas, gradient, size){
+    const offsetSize = Math.sqrt(size*size*2)/2;
+    const ctx = canvas.getContext('2d', {alpha:true});
+    ctx.clearRect(0, 0, size, size);
+    let ctxGradient;
+    const hs = size/2;
+
+    if(gradient.l){
+        const offsetX = offsetSize*Math.cos(gradient.r);
+        const offsetY = offsetSize*Math.sin(gradient.r);
+        const startX = hs - offsetX;
+        const startY = hs - offsetY;
+        const endX = hs + offsetX;
+        const endY = hs + offsetY;
+        ctxGradient = ctx.createLinearGradient(startX,startY, endX,endY);
+    }else{
+        ctxGradient = ctx.createRadialGradient(hs, hs, offsetSize,hs, hs, 0);
+    }
+
+    gradient.c.forEach((color, index) => {
+        const colorParser = new dat.color.Color(color);
+        ctxGradient.addColorStop(gradient.p[index],`rgba(${colorParser.r},${colorParser.g},${colorParser.b},${gradient.a[index]})`);
+    });
+
+    ctx.fillStyle = ctxGradient;
+    ctx.fillRect(0,0,size,size);
 }

@@ -27,10 +27,10 @@ export var Settings = {
     availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],
     /* first texture name is empty so that in the editor you can select no tile texture as index */
     textureNames: ['', 'Snow', 'Asphalt', 'Ice1', 'Ice2', 'DirtGrey', 'DirtGreen', 'Mud', 'DirtGold', 'PipeGreyHorizontal', 'PipeGreyVertical', 'PipeGreenHorizontal', 'PipeGreenVertical', 'PlankBrownHorizontal', 'PlankGreyHorizontal', 'PlankBrownVertical', 'PlankGreyVertical', 'Brick4', 'Brick5', 'PanelPurple', 'PanelGrey', 'Stripe1', 'Stripe2', 'Stripe3', 'Stripe4', 'WoodVertical', 'WoodHorizontal', 'Brick1', 'Brick2', 'Brick3', 'PixelatedWater', 'PixelatedStone', 'PixelatedGrass', 'PixelatedDirt', 'Dirt', 'Grass', 'GoldenBlock', 'WhiteBlock', 'Fence', 'TileArrow'],
+    gradientTextureSize:256,
     doubleClickTime:300,
     handleClosestDistance:5,
     verticeBoxSize:10,
-    /*CULLING SETTINGS*/
 
     /*LIMITS*/
     motorSpeedLimit:100,
@@ -59,6 +59,7 @@ export var Settings = {
         unsavedChanges: 'You have unsaved changes to your level, are you sure you wish to proceed?',
         confirm:'Yes!',
         decline:'NOPE!',
+        newGradient:'-new gradient-',
     }
 
 

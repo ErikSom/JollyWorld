@@ -169,7 +169,12 @@ body .dg .cr.function:active {
 
 .dg.main .close-button.close-bottom {
     position: static !important;
-} 
+}
+
 .dg .cr{
     border-left: 0px solid !important;
+}
+
+.dg .c select {
+    max-width: 130px;
 }

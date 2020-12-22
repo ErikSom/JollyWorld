@@ -114,8 +114,9 @@ const _B2dEditor = function () {
 	this.undoList = [];
 	this.undoIndex = 0;
 
-	this.levelGradientsNames = ['', '-new gradient-', 'gradient1'];
-	this.levelGradients = [{c:['#FFFFFF', '#000000'], a:[1, 1], p:[0, 1], r:0, l:true, n:'gradient1'}]
+	this.levelGradientsNames = [];
+	this.levelGradients = [];
+	this.levelGradientBaseTextures = [];
 	this.levelColors = []; // every time you select an object it will push its colors to this stack, max stack size e.g. 10, need to add this to dat.gui
 
 	this.editorSettings = editorSettings;
@@ -876,7 +877,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				targetFolder.add(ui.editorGUI.editData, "gradient", this.levelGradientsNames).onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "gradient", ['', Settings.DEFAULT_TEXTS.newGradient, ...this.levelGradientsNames]).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
@@ -4453,8 +4454,15 @@ const _B2dEditor = function () {
 							sprite.originalSprite.tint = parseInt(color, 16);
 						}
 					}else if(controller.property == "gradient"){
-						if(controller.targetValue === '-new gradient-'){
-							ui.showGradientsEditor('-new gradient-');
+						if(controller.targetValue === Settings.DEFAULT_TEXTS.newGradient){
+							ui.showGradientsEditor(Settings.DEFAULT_TEXTS.newGradient);
+							controller.targetValue = '';
+						}else{
+							for (j = 0; j < this.selectedTextures.length; j++) {
+								sprite = this.selectedTextures[j];
+								sprite.data.gradient = controller.targetValue;
+								this.updateTileSprite(sprite);
+							}
 						}
 					} else if (controller.property == "colorFill") {
 						//body & sprite
@@ -5821,8 +5829,7 @@ const _B2dEditor = function () {
 			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
 
-		if (obj.tileTexture != "") this.updateTileSprite(container);
-
+		if (obj.tileTexture != "" || obj.gradient != "") this.updateTileSprite(container);
 
 		this.addObjectToLookupGroups(container, container.data);
 		return container;
@@ -7155,12 +7162,22 @@ const _B2dEditor = function () {
 		let targetGraphic;
 		let targetSprite;
 
+		let gradientMode = false;
+
 		if (target.mySprite) {
 			tileTexture = target.mySprite.data.tileTexture;
+			if(!tileTexture){
+				tileTexture = target.mySprite.data.gradient;
+				gradientMode = true;
+			}
 			targetGraphic = target.originalGraphic;
 			targetSprite = target.mySprite;
 		} else {
 			tileTexture = target.data.tileTexture;
+			if(!tileTexture){
+				tileTexture = target.data.gradient;
+				gradientMode = true;
+			}
 			targetGraphic = target.originalGraphic || target;
 			targetSprite = target;
 		}
@@ -7176,7 +7193,7 @@ const _B2dEditor = function () {
 			}
 			if (!forceNew) return;
 		}
-		
+
 		if (tileTexture && tileTexture != "") {
 
 			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) {
@@ -7186,14 +7203,24 @@ const _B2dEditor = function () {
 				targetGraphic.alpha = 0;
 				return;
 			}
-			if(!PIXI.loader.resources[tileTexture]){
-				// legacy tile texture fix
-				tileTexture = tileTexture.split('.')[0];
-				if(!PIXI.utils.BaseTextureCache[tileTexture]) tileTexture = 'Dirt';
-			}
+			let tex;
+			if(!gradientMode){
+				if(!PIXI.loader.resources[tileTexture]){
+					// legacy tile texture fix
+					tileTexture = tileTexture.split('.')[0];
+					if(!PIXI.utils.BaseTextureCache[tileTexture]) tileTexture = 'Dirt';
+				}
 
-			let tex = PIXI.Texture.fromImage(tileTexture);
-			tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+				tex = PIXI.Texture.fromImage(tileTexture);
+				tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+			}else{
+				const gradientIndex = this.levelGradientsNames.indexOf(tileTexture);
+				if(gradientIndex >= 0){
+					tex = PIXI.Texture.from(this.levelGradientBaseTextures[gradientIndex]);
+				}else{
+					return;
+				}
+			}
 
 			if (!target.myTileSprite) {
 				game.app.renderer.plugins.graphics.updateGraphics(targetGraphic);
@@ -7211,12 +7238,26 @@ const _B2dEditor = function () {
 
 				const indices = targetGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
 				let uvs = new Float32Array(vertices.length);
-				for (i = 0; i < vertices.length; i++) {
+
+				let minX = Number.POSITIVE_INFINITY;
+				let maxX = -Number.POSITIVE_INFINITY;
+				let minY = Number.POSITIVE_INFINITY;
+				let maxY = -Number.POSITIVE_INFINITY;
+				for (i = 0; i < vertices.length; i+=2) {
 					uvs[i] = vertices[i] * 2.0 / tex.width;
-					if (i & 1) {
-						uvs[i] = vertices[i] * 2.0 / tex.width + 0.5;
-					}
+					uvs[i+1] = vertices[i+1] * 2.0 / tex.width + 0.5;
+
+					minX = Math.min(uvs[i], minX);
+					maxX = Math.max(uvs[i], maxX);
+					minY = Math.min(uvs[i+1], minY);
+					maxY = Math.max(uvs[i+1], maxY);
 				}
+				if(gradientMode){
+					uvs.forEach((uv, i) => {
+						uvs[i] = (i & 1) ? (uv - minY) / (maxY - minY) : (uv - minX) / (maxX - minX)
+					});
+				}
+
 				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
@@ -7243,13 +7284,14 @@ const _B2dEditor = function () {
 							mesh.vertices[i] = l*Math.cos(a);
 							mesh.vertices[i+1] = l*Math.sin(a);
 						}
+
 						const uvs = new Float32Array(mesh.vertices.length);
-						for (i = 0; i < mesh.vertices.length; i++) {
+						for (i = 0; i < mesh.vertices.length; i+=2) {
 							uvs[i] = mesh.vertices[i] * 2.0 / tex.width;
-							if (i & 1) {
-								uvs[i] = mesh.vertices[i] * 2.0 / tex.width + 0.5;
-							}
+							uvs[i+1] = mesh.vertices[i+1] * 2.0 / tex.width + 0.5;
+
 						}
+
 						mesh.uvs = uvs;
 						mesh.rotation = -targetSprite.rotation-mesh.fixedTextureRotationOffset;
 						mesh.cachedSpriteRotation = targetSprite.rotation
@@ -7386,8 +7428,10 @@ const _B2dEditor = function () {
 		}
 		this.worldJSON += '],'
 		this.worldJSON += '"settings":';
-
 		this.worldJSON += this.stringifyObject(this.editorSettingsObject);
+		this.worldJSON += ',';
+		this.worldJSON += '"gradients":';
+		this.worldJSON += JSONStringify(this.levelGradients);
 		this.worldJSON += '}';
 
 		// console.log("********************** World Data **********************");
@@ -7473,7 +7517,8 @@ const _B2dEditor = function () {
 			arr[18] = obj.parallax;
 			arr[19] = obj.repeatTeleportX;
 			arr[20] = obj.repeatTeleportY;
-			arr[21] = obj.gradient;
+			const gradientIndex = this.levelGradientsNames.indexOf(obj.gradient);
+			arr[21] = gradientIndex >= 0 ? gradientIndex : '';
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -7524,7 +7569,7 @@ const _B2dEditor = function () {
 			arr[15] = obj.repeatTeleportY;
 			arr[16] = obj.fps;
 			arr[17] = obj.playing;
-		} 
+		}
 		return JSONStringify(arr);
 	}
 	this.parseArrObject = function (arr) {
@@ -7597,7 +7642,7 @@ const _B2dEditor = function () {
 			obj.parallax = arr[18] !== undefined ? arr[18] : 0;
 			obj.repeatTeleportX = arr[19] !== undefined ? arr[19] : 0;
 			obj.repeatTeleportY = arr[20] !== undefined ? arr[20] : 0;
-			obj.gradient = arr[21] !== undefined ? arr[21] : '';
+			obj.gradient = arr[21] !== undefined ? (this.levelGradientsNames[arr[21]] || '') : '';
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
@@ -7728,6 +7773,10 @@ const _B2dEditor = function () {
 			//clone json to not destroy old references
 			let worldObjects = JSON.parse(JSON.stringify(json));
 
+			if(worldObjects.gradients){
+				this.parseLevelGradients(worldObjects.gradients);
+			}
+
 			let i;
 			let obj;
 			let worldObject;
@@ -7838,7 +7887,6 @@ const _B2dEditor = function () {
 			}
 		}
 
-
 		return createdObjects;
 		//console.log("END HERE");
 	}
@@ -7858,6 +7906,33 @@ const _B2dEditor = function () {
 		target.lineTo(x, y);
 
 		if (fillColor != undefined) target.endFill();
+	}
+	this.parseLevelGradients = function(gradients){
+		this.levelGradients = gradients;
+		this.levelGradients.forEach((gradient, index) => {
+			this.levelGradientsNames.push(gradient.n);
+			this.parseLevelGradient(index);
+		})
+	}
+	this.clearLevelGradients = function(){
+		this.levelGradients.forEach(gradient => gradient.destroy());
+		this.levelGradients = [];
+		this.levelGradientsNames = [];
+		this.levelGradientBaseTextures = [];
+	}
+
+	this.parseLevelGradient = function(index){
+		let baseTexture = this.levelGradientBaseTextures[index];
+
+		if(!baseTexture){
+			const gradientCanvas = document.createElement('canvas');
+			gradientCanvas.width = Settings.gradientTextureSize;
+			gradientCanvas.height = Settings.gradientTextureSize;
+			baseTexture = new PIXI.BaseTexture(gradientCanvas);
+			this.levelGradientBaseTextures[index] = baseTexture;
+		}
+		drawing.drawGradient(baseTexture.source, this.levelGradients[index], Settings.gradientTextureSize);
+		baseTexture.update();
 	}
 
 	this.resetEditor = function () {
@@ -7910,6 +7985,7 @@ const _B2dEditor = function () {
 		this.animationGroups = [];
 
 		this.clearDebugGraphics();
+		this.clearLevelGradients();
 		//reset gui
 		ui.destroyEditorGUI();
 		ui.show();

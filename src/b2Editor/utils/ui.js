@@ -16,7 +16,8 @@ import * as format from './formatString';
 
 import * as uiHelper from './uiHelper';
 
-import * as texts from '../utils/texts'
+import * as texts from '../utils/texts';
+import * as drawing from './drawing';
 
 const nanoid = require('nanoid');
 
@@ -1978,7 +1979,7 @@ const removeShowHelp = ()=>{
     }
 }
 
-export const showGradientsEditor = function (name) {
+export const showGradientsEditor = function (name, oldGradientData) {
     removeGradientEditor();
 
     const loginGUIWidth = 400;
@@ -1990,84 +1991,171 @@ export const showGradientsEditor = function (name) {
 
     gradientEditor.domElement.setAttribute('id', 'gradientEditor');
 
-    let folder = gradientEditor.addFolder('gradient editor');
+    const folder = gradientEditor.addFolder('gradient editor');
     folder.domElement.classList.add('custom');
     folder.open();
 
+    const gradientBox = document.createElement('canvas');
+    gradientBox.style = `
+        width: 100px;
+        height: 100%;
+        background-color: #E5E5F7;
+        opacity: 1.0;
+        background-image: linear-gradient(135deg, #949494 25%, transparent 25%), linear-gradient(225deg, #949494 25%, transparent 25%), linear-gradient(45deg, #949494 25%, transparent 25%), linear-gradient(315deg, #949494 25%, rgb(229, 229, 247) 25%);
+        background-position:  20px 0, 20px 0, 0 0, 0 0;
+        background-size: 20px 20px;
+        background-repeat: repeat;
+        position: absolute;
+        left: 300px;
+        top: 0;
+        border-left: 1px solid black;
+    `;
+    gradientBox.width = gradientBox.height = 256;
+    gradientEditor.domElement.appendChild(gradientBox);
+
     // adding fields
-    let gradientData;
-    if(name === '-new gradient-'){
-        let gradientCount = game.editor.levelGradients.length;
-        while(game.editor.levelGradients.find(el=>el.n === `gradient${gradientCount}`)){
-            gradientCount++;
+    let gradientData = oldGradientData;
+    if(!gradientData){
+        if(name === Settings.DEFAULT_TEXTS.newGradient){
+            if(oldGradientData){}
+            let gradientCount = game.editor.levelGradients.length+1;
+            while(game.editor.levelGradients.find(el=>el.n === `gradient${gradientCount}`)){
+                gradientCount++;
+            }
+            gradientData = {
+                n:`gradient${gradientCount}`,
+                c:['#FFFFFF', '#000000'],
+                a:[1, 1],
+                p:[0, 1],
+                r:0,
+                l:true
+            }
+        }else{
+            gradientData = game.editor.levelGradients.find(el=>el.n === name) || {};
+            gradientData = JSON.parse(JSON.stringify(gradientData)); // clone
         }
-        gradientData = {
-            n:`gradient${gradientCount}`,
-            c:['#FFFFFF', '#000000'],
-            a:[1, 1],
-            p:[0, 1],
-            r:0,
-            l:true
-        }
-    }else{
-        gradientData = game.editor.levelGradients.find(el=>el.n === name);
     }
 
     let gradientEditData = {};
     gradientEditData.selectedGradient = name;
-
-    const gradientNames = [...game.editor.levelGradientsNames];
-    gradientNames.shift();
-    folder.add(gradientEditData, "selectedGradient", gradientNames).onChange(function (value) {
-        this.humanUpdate = true;
-        this.targetValue = value;
-    });
-
     gradientEditData.name = gradientData.n;
-    folder.add(gradientEditData, "name").onChange(function (value) {
-        console.log("Value", value);
+
+    const gradientNames = [Settings.DEFAULT_TEXTS.newGradient, ...game.editor.levelGradientsNames];
+    folder.add(gradientEditData, "selectedGradient", gradientNames).onChange(function (value) {
+        if(name !== value) showGradientsEditor(value);
     });
 
+    const gradientTypes = ['linear', 'radial'];
+    gradientEditData.gradientType = gradientData.l ? gradientTypes[0] : gradientTypes[1];
+    folder.add(gradientEditData, "gradientType", gradientTypes).onChange(function (value) {
+        gradientData.l = value === gradientTypes[0];
+        showGradientsEditor(name, gradientData);
+    });
+
+    folder.add(gradientEditData, "name").onChange(function (value) {
+        const nameNoSpecial = value.replace(/\W/g, '').substr(0, 20);
+        gradientEditData.name = nameNoSpecial;
+        gradientData.n = nameNoSpecial;
+    });
 
     const colors = gradientData.c;
     colors.forEach((color, index) => {
         const colorName = `color${index}`
         gradientEditData[colorName] = color;
         const colorFolder = folder.addFolder(`Color ${index+1}`);
-        colorFolder.addColor(gradientEditData, colorName).name('color');
+        colorFolder.addColor(gradientEditData, colorName).name('color').onChange(value=>{
+            gradientData.c[index] = value;
+            drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
+        });
 
         const alphaName = `alpha${index}`;
         gradientEditData[alphaName] = gradientData.a[index];
-        colorFolder.add(gradientEditData, alphaName, 0, 1).name('alpha').step(0.01);
+        colorFolder.add(gradientEditData, alphaName, 0, 1).name('alpha').step(0.01).onChange(value=>{
+            gradientData.a[index] = value;
+            drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
+        });
 
         const posName = `pos${index}`;
-        gradientEditData[posName] = gradientData.p[index];
-        colorFolder.add(gradientEditData, posName, 0, 1).name('position').step(0.01);
+         gradientEditData[posName] = gradientData.p[index];
+        colorFolder.add(gradientEditData, posName, 0, 1).name('position').step(0.01).onChange(value=>{
+            gradientData.p[index] = value;
+            drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
+        });
     })
 
+    if(gradientData.l){
+        gradientEditData.rotation = gradientData.r * game.editor.RAD2DEG;
+        folder.add(gradientEditData, 'rotation', 0, 360).step(0.1).onChange(value=>{
+            gradientData.r = value * game.editor.DEG2RAD;
+            drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
+        });
+    }
 
-    gradientEditData.addColor = function () {};
+    gradientEditData.addColor = ()=>{
+        gradientData.c.push(gradientData.c[gradientData.c.length-1]);
+        gradientData.a.push(gradientData.a[gradientData.a.length-1]);
+        gradientData.p.push(gradientData.p[gradientData.p.length-1]);
+        showGradientsEditor(name, gradientData);
+    }
     folder.add(gradientEditData, "addColor").name('add color');
 
-    if(name !== '-new gradient-'){
-        gradientEditData.deleteGradient = function () {};
+    if(gradientData.c.length>2){
+        gradientEditData.removeColor = ()=>{
+            gradientData.c.pop();
+            gradientData.a.pop();
+            gradientData.p.pop();
+            showGradientsEditor(name, gradientData);
+        }
+        folder.add(gradientEditData, "removeColor").name('remove color');
+    }
+
+    if(name !== Settings.DEFAULT_TEXTS.newGradient){
+        gradientEditData.deleteGradient = ()=>{
+            const gradientIndex = game.editor.levelGradientsNames.indexOf(name);
+            game.editor.levelGradients.splice(gradientIndex, 1);
+            game.editor.levelGradientsNames.splice(gradientIndex, 1);
+            showGradientsEditor(gradientNames[0]);
+        }
         folder.add(gradientEditData, "deleteGradient").name('delete gradient');
     }
 
-    gradientEditData.saveGradient = function () {};
+    gradientEditData.saveGradient = ()=>{
+        if(name === Settings.DEFAULT_TEXTS.newGradient){
+            //force unique name;
+            let gradientName = gradientData.n;
+            let gradientNameCount = 0;
+            while(game.editor.levelGradientsNames.includes(gradientName) || gradientName === ''){
+                gradientNameCount++;
+                gradientName = `${gradientData.n}${gradientNameCount}`;
+            }
+            gradientData.n = gradientName;
+
+            game.editor.levelGradients.push(gradientData);
+            game.editor.levelGradientsNames.push(gradientData.n);
+            showGradientsEditor(gradientData.n);
+        }else{
+            // find index
+            const gradientIndex = game.editor.levelGradientsNames.indexOf(name);
+
+            if(name !== gradientData.n){
+                let gradientName = gradientData.n;
+                let gradientNameCount = 0;
+                while(game.editor.levelGradientsNames.includes(gradientName) || gradientName === ''){
+                    gradientNameCount++;
+                    gradientName = `${gradientData.n}${gradientNameCount}`;
+                }
+                gradientData.n = gradientName;
+            }
+
+            game.editor.levelGradientsNames[gradientIndex] = gradientData.n;
+            game.editor.levelGradients[gradientIndex] = gradientData;
+
+            showGradientsEditor(gradientData.n);
+        }
+    }
     folder.add(gradientEditData, "saveGradient").name('save gradient');
 
-    const gradientBox = document.createElement('div');
-    gradientBox.style = `
-        width: 100px;
-        height: 100%;
-        background: red;
-        position: absolute;
-        left: 300px;
-        top: 0;
-        border: 2px solid black;
-    `;
-    gradientEditor.domElement.appendChild(gradientBox);
+    drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
 
     gradientEditor.domElement.getElementsByTagName('ul')[0].style.width = '300px';
 
