@@ -35,6 +35,7 @@ let loadScreen;
 let notice;
 let prompt;
 let textEditor;
+let gradientEditor;
 export let helpScreen;
 
 let uiContainer = document.getElementById('editor-ui-container');
@@ -1974,6 +1975,117 @@ const removeShowHelp = ()=>{
     if(helpScreen){
         helpScreen.domElement.parentNode.removeChild(helpScreen.domElement);
         helpScreen = null;
+    }
+}
+
+export const showGradientsEditor = function (name) {
+    removeGradientEditor();
+
+    const loginGUIWidth = 400;
+
+    gradientEditor = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+
+    gradientEditor.domElement.setAttribute('id', 'gradientEditor');
+
+    let folder = gradientEditor.addFolder('gradient editor');
+    folder.domElement.classList.add('custom');
+    folder.open();
+
+    // adding fields
+    let gradientData;
+    if(name === '-new gradient-'){
+        let gradientCount = game.editor.levelGradients.length;
+        while(game.editor.levelGradients.find(el=>el.n === `gradient${gradientCount}`)){
+            gradientCount++;
+        }
+        gradientData = {
+            n:`gradient${gradientCount}`,
+            c:['#FFFFFF', '#000000'],
+            a:[1, 1],
+            p:[0, 1],
+            r:0,
+            l:true
+        }
+    }else{
+        gradientData = game.editor.levelGradients.find(el=>el.n === name);
+    }
+
+    let gradientEditData = {};
+    gradientEditData.selectedGradient = name;
+
+    const gradientNames = [...game.editor.levelGradientsNames];
+    gradientNames.shift();
+    folder.add(gradientEditData, "selectedGradient", gradientNames).onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    });
+
+    gradientEditData.name = gradientData.n;
+    folder.add(gradientEditData, "name").onChange(function (value) {
+        console.log("Value", value);
+    });
+
+
+    const colors = gradientData.c;
+    colors.forEach((color, index) => {
+        const colorName = `color${index}`
+        gradientEditData[colorName] = color;
+        const colorFolder = folder.addFolder(`Color ${index+1}`);
+        colorFolder.addColor(gradientEditData, colorName).name('color');
+
+        const alphaName = `alpha${index}`;
+        gradientEditData[alphaName] = gradientData.a[index];
+        colorFolder.add(gradientEditData, alphaName, 0, 1).name('alpha').step(0.01);
+
+        const posName = `pos${index}`;
+        gradientEditData[posName] = gradientData.p[index];
+        colorFolder.add(gradientEditData, posName, 0, 1).name('position').step(0.01);
+    })
+
+
+    gradientEditData.addColor = function () {};
+    folder.add(gradientEditData, "addColor").name('add color');
+
+    if(name !== '-new gradient-'){
+        gradientEditData.deleteGradient = function () {};
+        folder.add(gradientEditData, "deleteGradient").name('delete gradient');
+    }
+
+    gradientEditData.saveGradient = function () {};
+    folder.add(gradientEditData, "saveGradient").name('save gradient');
+
+    const gradientBox = document.createElement('div');
+    gradientBox.style = `
+        width: 100px;
+        height: 100%;
+        background: red;
+        position: absolute;
+        left: 300px;
+        top: 0;
+        border: 2px solid black;
+    `;
+    gradientEditor.domElement.appendChild(gradientBox);
+
+    gradientEditor.domElement.getElementsByTagName('ul')[0].style.width = '300px';
+
+    customGUIContainer.appendChild(gradientEditor.domElement);
+
+    const computedWidth = parseFloat(getComputedStyle(gradientEditor.domElement, null).width.replace("px", ""));
+    const computedHeight = parseFloat(getComputedStyle(gradientEditor.domElement, null).height.replace("px", ""));
+    gradientEditor.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    gradientEditor.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
+
+    registerDragWindow(gradientEditor);
+
+    return false;
+}
+const removeGradientEditor = ()=>{
+    if(gradientEditor){
+        gradientEditor.domElement.parentNode.removeChild(gradientEditor.domElement);
+        gradientEditor = null;
     }
 }
 

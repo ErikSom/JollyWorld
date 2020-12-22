@@ -114,7 +114,8 @@ const _B2dEditor = function () {
 	this.undoList = [];
 	this.undoIndex = 0;
 
-	this.levelGradients = ['', '-new gradient-'];
+	this.levelGradientsNames = ['', '-new gradient-', 'gradient1'];
+	this.levelGradients = [{c:['#FFFFFF', '#000000'], a:[1, 1], p:[0, 1], r:0, l:true, n:'gradient1'}]
 	this.levelColors = []; // every time you select an object it will push its colors to this stack, max stack size e.g. 10, need to add this to dat.gui
 
 	this.editorSettings = editorSettings;
@@ -875,7 +876,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				targetFolder.add(ui.editorGUI.editData, "gradient", this.levelGradients).onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "gradient", this.levelGradientsNames).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
@@ -4450,6 +4451,10 @@ const _B2dEditor = function () {
 							var color = sprite.data.tint;
 							color = color.slice(1);
 							sprite.originalSprite.tint = parseInt(color, 16);
+						}
+					}else if(controller.property == "gradient"){
+						if(controller.targetValue === '-new gradient-'){
+							ui.showGradientsEditor('-new gradient-');
 						}
 					} else if (controller.property == "colorFill") {
 						//body & sprite
