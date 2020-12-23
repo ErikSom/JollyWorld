@@ -232,6 +232,11 @@ function Game() {
         this.canvas.addEventListener("touchstart", this.onMouseDown.bind(this), {passive:false});
         document.addEventListener("mouseup", this.onMouseUp.bind(this), {passive:false});
         document.addEventListener("touchend", this.onMouseUp.bind(this), {passive:false});
+        this.canvas.addEventListener("blur", ()=>{
+            game.editor.shiftDown = false;
+            game.editor.ctrlDown = false;
+            Key.reset();
+        })
 
 
         document.addEventListener("mouseup", ()=>{
