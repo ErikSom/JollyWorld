@@ -36,7 +36,7 @@ let loadScreen;
 let notice;
 let prompt;
 let textEditor;
-let gradientEditor;
+export let gradientEditor;
 export let helpScreen;
 
 let uiContainer = document.getElementById('editor-ui-container');
@@ -1993,12 +1993,15 @@ export const showGradientsEditor = function (name, oldGradientData) {
 
     const folder = gradientEditor.addFolder('gradient editor');
     folder.domElement.classList.add('custom');
+    folder.domElement.querySelector('.title').style.width = `${loginGUIWidth}px`;
+
     folder.open();
 
     const gradientBox = document.createElement('canvas');
     gradientBox.style = `
         width: 100px;
-        height: 100%;
+        height: calc(100% - 26px);
+        margin-top: 26px;
         background-color: #E5E5F7;
         opacity: 1.0;
         background-image: linear-gradient(135deg, #949494 25%, transparent 25%), linear-gradient(225deg, #949494 25%, transparent 25%), linear-gradient(45deg, #949494 25%, transparent 25%), linear-gradient(315deg, #949494 25%, rgb(229, 229, 247) 25%);
@@ -2012,6 +2015,13 @@ export const showGradientsEditor = function (name, oldGradientData) {
     `;
     gradientBox.width = gradientBox.height = 256;
     gradientEditor.domElement.appendChild(gradientBox);
+
+    const closeButton = document.createElement('div');
+    closeButton.setAttribute('class', 'closeWindowIcon');
+    folder.domElement.append(closeButton);
+    closeButton.addEventListener('click', () => {
+        removeGradientEditor();
+    });
 
     // adding fields
     let gradientData = oldGradientData;
@@ -2091,13 +2101,15 @@ export const showGradientsEditor = function (name, oldGradientData) {
         });
     }
 
-    gradientEditData.addColor = ()=>{
-        gradientData.c.push(gradientData.c[gradientData.c.length-1]);
-        gradientData.a.push(gradientData.a[gradientData.a.length-1]);
-        gradientData.p.push(gradientData.p[gradientData.p.length-1]);
-        showGradientsEditor(name, gradientData);
+    if(gradientData.c.length<8){
+        gradientEditData.addColor = ()=>{
+            gradientData.c.push(gradientData.c[gradientData.c.length-1]);
+            gradientData.a.push(gradientData.a[gradientData.a.length-1]);
+            gradientData.p.push(gradientData.p[gradientData.p.length-1]);
+            showGradientsEditor(name, gradientData);
+        }
+        folder.add(gradientEditData, "addColor").name('add color');
     }
-    folder.add(gradientEditData, "addColor").name('add color');
 
     if(gradientData.c.length>2){
         gradientEditData.removeColor = ()=>{
@@ -2132,6 +2144,8 @@ export const showGradientsEditor = function (name, oldGradientData) {
 
             game.editor.levelGradients.push(gradientData);
             game.editor.levelGradientsNames.push(gradientData.n);
+            game.editor.parseLevelGradient(game.editor.levelGradientsNames.length-1);
+
             showGradientsEditor(gradientData.n);
         }else{
             // find index
@@ -2149,6 +2163,7 @@ export const showGradientsEditor = function (name, oldGradientData) {
 
             game.editor.levelGradientsNames[gradientIndex] = gradientData.n;
             game.editor.levelGradients[gradientIndex] = gradientData;
+            game.editor.parseLevelGradient(gradientIndex);
 
             showGradientsEditor(gradientData.n);
         }
@@ -2174,6 +2189,7 @@ const removeGradientEditor = ()=>{
     if(gradientEditor){
         gradientEditor.domElement.parentNode.removeChild(gradientEditor.domElement);
         gradientEditor = null;
+        game.editor.updateSelection();
     }
 }
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
@@ -2210,6 +2226,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
     registerDragWindow(errorScreen);
 
+    setHighestWindow(errorScreen.domElement);
 
     return false;
 }

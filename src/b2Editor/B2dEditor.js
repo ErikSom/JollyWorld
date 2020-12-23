@@ -3438,7 +3438,7 @@ const _B2dEditor = function () {
 	}
 	this.onMouseWheel = function(e){
 
-		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen]
+		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor];
 		// detect mouse on gui
 		let uiScroll = false;
 		guiToHaveMouseWheel.forEach( gui => {
@@ -7915,9 +7915,9 @@ const _B2dEditor = function () {
 		})
 	}
 	this.clearLevelGradients = function(){
-		this.levelGradients.forEach(gradient => gradient.destroy());
 		this.levelGradients = [];
 		this.levelGradientsNames = [];
+		this.levelGradientBaseTextures.forEach(gradient => gradient.destroy());
 		this.levelGradientBaseTextures = [];
 	}
 
