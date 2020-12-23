@@ -2258,14 +2258,14 @@ const _B2dEditor = function () {
 						if(this.selectedTextures.length > 0){
 							// editing sprite
 							const targetSprite = this.selectedTextures[0];
-							if(targetSprite.data.type === this.object_GRAPHIC){
+							if(targetSprite.data.type === this.object_GRAPHIC && !targetSprite.data.radius){
 								this.verticeEditingSprite = targetSprite;
 								this.selectTool(this.tool_VERTICEEDITING);
 							}
 						}else{
 							// editing body
 							const targetSprite = this.selectedPhysicsBodies[0].mySprite;
-							if(targetSprite.data.vertices.length === 1){
+							if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0]){
 								this.verticeEditingSprite = targetSprite;
 								this.selectTool(this.tool_VERTICEEDITING);
 							}
@@ -4442,6 +4442,9 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.tileTexture = controller.targetValue;
+							if(controller.targetValue != ''){
+								sprite.data.gradient = '';
+							}
 							this.updateTileSprite(sprite);
 						}
 					} else if (controller.property == "tint") {
@@ -4461,6 +4464,9 @@ const _B2dEditor = function () {
 							for (j = 0; j < this.selectedTextures.length; j++) {
 								sprite = this.selectedTextures[j];
 								sprite.data.gradient = controller.targetValue;
+								if(controller.targetValue != ''){
+									sprite.data.tileTexture = '';
+								}
 								this.updateTileSprite(sprite);
 							}
 						}
@@ -7074,7 +7080,7 @@ const _B2dEditor = function () {
 			}
 		}
 	}
-	this.updateBodyShapes = function (body) {
+	this.updateBodyShapes = function (body, dontUpdateTileTexture) {
 
 		//change update body shapes with actual vertices
 
@@ -7110,6 +7116,8 @@ const _B2dEditor = function () {
 			if (!radius) this.updatePolyGraphic(body.originalGraphic, verts, colorFill, colorLine, lineWidth, transparancy, (i != 0));
 			else this.updateCircleGraphic(body.originalGraphic, radius, innerVerts[0], colorFill, colorLine, lineWidth, transparancy, (i != 0));
 		}
+		if (!dontUpdateTileTexture && (body.mySprite.tileTexture != "" || body.mySprite.gradient != "")) this.updateTileSprite(body, true);
+
 	}
 	this.updateGraphicGroupShapes = function (graphic) {
 		while (graphic.children.length > 0) graphic.removeChild(graphic.getChildAt(0));
@@ -7147,13 +7155,13 @@ const _B2dEditor = function () {
 			g.alpha = gObj.transparancy;
 		}
 	}
-	this.updateGraphicShapes = function(target){
+	this.updateGraphicShapes = function(target, dontUpdateTileTexture){
 		if (target.data.radius) this.updateCircleGraphic(target.originalGraphic, target.data.radius, {
 			x: 0,
 			y: 0
 		}, target.data.colorFill, target.data.colorLine, target.data.lineWidth, target.data.transparancy);
 		else this.updatePolyGraphic(target.originalGraphic, target.data.vertices, target.data.colorFill, target.data.colorLine, target.data.lineWidth, target.data.transparancy);
-		if (target.data.tileTexture != "") this.updateTileSprite(target, true);
+		if (!dontUpdateTileTexture && (target.data.tileTexture != "" || target.data.gradient != "")) this.updateTileSprite(target, true);
 
 	}
 	this.updateTileSprite = function (target, forceNew = false) {
@@ -7321,9 +7329,9 @@ const _B2dEditor = function () {
 		const oldOriginalGraphic = target.originalGraphic;
 		target.originalGraphic = target.myTileSpriteOutline;
 		if(data.type === this.object_BODY){
-			this.updateBodyShapes(target);
+			this.updateBodyShapes(target, true);
 		}else{
-			this.updateGraphicShapes(target);
+			this.updateGraphicShapes(target, true);
 		}
 		target.originalGraphic = oldOriginalGraphic;
 		data.tileTexture = oldTileTexture;
