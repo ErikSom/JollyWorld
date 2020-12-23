@@ -1977,6 +1977,46 @@ const removeShowHelp = ()=>{
     }
 }
 
+const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
+    const loginGUIWidth = 500;
+
+    const errorScreen = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+    errorScreen.domElement.setAttribute('id', 'errorScreen');
+
+    let targetFolder = errorScreen.addFolder('ERROR');
+    targetFolder.open();
+    const mainFolderDomElement = targetFolder.domElement.getElementsByTagName('ul')[0];
+
+
+    const textWrapper = document.createElement('div');
+    textWrapper.classList.add('textWrapper');
+
+    let textarea = document.createElement('textarea');
+    textarea.value = `A CRITICAL ERROR HAS OCCURRED, PLEASE COPY ALL THIS TEXT IN THE #BUGS CHANNEL OF THE JOLLY WORLD DISCORD, REFRESH THE PAGE AFTERWARDS: \n\n ${msg},\n ${url},\n ${lineNo},\n ${columnNo},\n ${error}`
+    textarea.style.width = '500px';
+    textarea.style.height ='70vh';
+    textWrapper.appendChild(textarea);
+
+    mainFolderDomElement.appendChild(textWrapper);
+
+    customGUIContainer.appendChild(errorScreen.domElement);
+
+    const computedWidth = parseFloat(getComputedStyle(errorScreen.domElement, null).width.replace("px", ""));
+    const computedHeight = parseFloat(getComputedStyle(errorScreen.domElement, null).height.replace("px", ""));
+    errorScreen.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    errorScreen.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
+
+    registerDragWindow(errorScreen);
+
+
+    return false;
+}
+
+window.onerror = showErrorPrompt;
+
 // WINDOW DRAGING
 
 let windows = [];
@@ -2028,6 +2068,7 @@ const setHighestWindow = domElement => {
         }
     }, 0);
 }
+
 export const registerDragWindow = (_window) => {
 
 
