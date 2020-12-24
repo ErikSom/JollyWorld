@@ -1085,7 +1085,7 @@ body .dg .cr.function {
 }
 
 .imageDropDown {
-    border:1px solid black; width:200px; height:50px; overflow:hidden;
+    background: #4F4F4F; width:200px; height:50px; overflow:hidden;
     -moz-transition: height 0.1s;
     -webkit-transition: height 0.1s;
     -ms-transition: height 0.1s;

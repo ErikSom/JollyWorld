@@ -2232,7 +2232,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
 window.onerror = showErrorPrompt;
 
-export const createImageDropDown = (guiFolder, textureNames, clickCallback) => {
+export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clickCallback) => {
     const targetDomElement = guiFolder.domElement.getElementsByTagName('ul')[0];
 
     const listItem = document.createElement('li');
@@ -2250,7 +2250,11 @@ export const createImageDropDown = (guiFolder, textureNames, clickCallback) => {
     imageDropDown.onmouseup = imageDropDownContainer.ontouchend = ()=>{
         if(imageDropDown.classList.contains('open')){
             // else we close the dropdown before we select an item
-            setTimeout(()=>imageDropDown.classList.remove('open'), 0);
+            setTimeout(()=>{
+                imageDropDown.classList.remove('open');
+                const elementIndex = Array.from(imageDropDown.children).find(element => element.checked).value;
+                clickCallback(elementIndex);
+            }, 0);
         }else{
             imageDropDown.classList.add('open');
         }
@@ -2260,7 +2264,7 @@ export const createImageDropDown = (guiFolder, textureNames, clickCallback) => {
 
     for(let i = 0; i<textureNames.length; i++){
         const input = document.createElement('input');
-        if(i === 0) input.setAttribute('checked', 'checked');
+        if(i === selectedIndex) input.setAttribute('checked', 'checked');
         input.setAttribute('type', 'radio');
         const idName = `idd${i}`;
         input.setAttribute('id', idName);

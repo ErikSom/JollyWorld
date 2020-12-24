@@ -756,11 +756,17 @@ const _B2dEditor = function () {
 			});
 		}
 		//Populate custom  fields
+		let tileTextureGUI, selectedTextureIndex;
 		switch (currentCase) {
 			case case_JUST_BODIES:
-				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
+				tileTextureGUI = targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists);
+				tileTextureGUI.domElement.parentNode.parentNode.style.display = 'none';
+
+				selectedTextureIndex = Settings.textureNames.indexOf(ui.editorGUI.editData.tileTexture);
+
+				ui.createImageDropDown(targetFolder, Settings.textureNames, selectedTextureIndex, index => {
+					tileTextureGUI.humanUpdate = true;
+					tileTextureGUI.targetValue = Settings.textureNames[index];
 				});
 				if (ui.editorGUI.editData.colorFill.length > 1) {
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
@@ -873,14 +879,14 @@ const _B2dEditor = function () {
 
 				break;
 			case case_JUST_GRAPHICS:
-				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
-					console.log(this);
-					this.humanUpdate = true;
-					this.targetValue = value;
-				});
+				tileTextureGUI = targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists);
+				tileTextureGUI.domElement.parentNode.parentNode.style.display = 'none';
 
-				ui.createImageDropDown(targetFolder, Settings.textureNames, (index)=>{
-					console.log("Check this", index)
+				selectedTextureIndex = Settings.textureNames.indexOf(ui.editorGUI.editData.tileTexture);
+				
+				ui.createImageDropDown(targetFolder, Settings.textureNames, selectedTextureIndex, index => {
+					tileTextureGUI.humanUpdate = true;
+					tileTextureGUI.targetValue = Settings.textureNames[index];
 				});
 
 				targetFolder.add(ui.editorGUI.editData, "gradient", ['', Settings.DEFAULT_TEXTS.newGradient, ...this.levelGradientsNames]).onChange(function (value) {
