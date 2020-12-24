@@ -874,9 +874,15 @@ const _B2dEditor = function () {
 				break;
 			case case_JUST_GRAPHICS:
 				targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists).onChange(function (value) {
+					console.log(this);
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
+
+				ui.createImageDropDown(targetFolder, Settings.textureNames, (index)=>{
+					console.log("Check this", index)
+				});
+
 				targetFolder.add(ui.editorGUI.editData, "gradient", ['', Settings.DEFAULT_TEXTS.newGradient, ...this.levelGradientsNames]).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -3449,7 +3455,11 @@ const _B2dEditor = function () {
 
 				if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
 					&& this.mouseDocumentPosPixel.y > gui.cachedBounds.y && this.mouseDocumentPosPixel.y < gui.cachedBounds.y+gui.cachedBounds.height ){
-						gui.domElement.scrollBy(e.deltaX, e.deltaY);
+						if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown')){
+							e.target.parentNode.scrollBy(e.deltaX, e.deltaY);
+						}else{
+							gui.domElement.scrollBy(e.deltaX, e.deltaY);
+						}
 						uiScroll = true;
 					}
 			}

@@ -1084,6 +1084,55 @@ body .dg .cr.function {
     margin: unset !important;
 }
 
+.imageDropDown {
+    border:1px solid black; width:200px; height:50px; overflow:hidden;
+    -moz-transition: height 0.1s;
+    -webkit-transition: height 0.1s;
+    -ms-transition: height 0.1s;
+    -o-transition: height 0.1s;
+    transition: height 0.1s;
+}
+.imageDropDown.open {
+    height:200px;
+    overflow-y:scroll;
+    -moz-transition: height 0.5s;
+    -webkit-transition: height 0.5s;
+    -ms-transition: height 0.5s;
+    -o-transition: height 0.5s;
+    transition: height 0.5s;
+}
+.imageDropDown input {
+    position:absolute;top:0;left:0;opacity:0;
+}
+
+.imageDropDown label {
+    display:none; margin:0; height:46px; opacity:0.4;
+}
+.imageDropDown.open label{
+    display:block;
+}
+.imageDropDown label:hover {
+    opacity:0.8;
+}
+.imageDropDown input:checked + label {
+    opacity:1 !important; display:block; cursor: pointer;
+}
+
+.imageDropDown::-webkit-scrollbar {
+	width: 5px;
+    background: #FFF;
+}
+
+.imageDropDown::-webkit-scrollbar-corner {
+	height: 0;
+	display: none
+}
+
+.imageDropDown::-webkit-scrollbar-thumb {
+	border-radius: 5px;
+    background: #000;
+}
+
 
 @keyframes dotPulseBefore {
     0% {

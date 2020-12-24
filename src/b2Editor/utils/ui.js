@@ -363,8 +363,6 @@ export const showLoginScreen = function () {
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
-
-
         let span = document.createElement('span');
         span.innerText = 'LOG IN';
         targetDomElement.appendChild(span);
@@ -1980,6 +1978,7 @@ const removeShowHelp = ()=>{
 }
 
 export const showGradientsEditor = function (name, oldGradientData) {
+    //TODO: COUNT GRADIENTS!!
     removeGradientEditor();
 
     const loginGUIWidth = 400;
@@ -2232,6 +2231,62 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 }
 
 window.onerror = showErrorPrompt;
+
+export const createImageDropDown = (guiFolder, textureNames, clickCallback) => {
+    const targetDomElement = guiFolder.domElement.getElementsByTagName('ul')[0];
+
+    const listItem = document.createElement('li');
+    listItem.classList.add('cr-string')
+
+    const imageDropDownContainer = document.createElement('div');
+    const span = document.createElement('span');
+    span.classList.add('property-name');
+    span.innerText = 'tileTexture';
+    imageDropDownContainer.appendChild(span);
+
+    const imageDropDown = document.createElement('div');
+    imageDropDown.classList.add('imageDropDown', 'c');
+
+    imageDropDown.onmouseup = imageDropDownContainer.ontouchend = ()=>{
+        if(imageDropDown.classList.contains('open')){
+            // else we close the dropdown before we select an item
+            setTimeout(()=>imageDropDown.classList.remove('open'), 0);
+        }else{
+            imageDropDown.classList.add('open');
+        }
+    }
+
+    imageDropDownContainer.appendChild(imageDropDown);
+
+    for(let i = 0; i<textureNames.length; i++){
+        const input = document.createElement('input');
+        if(i === 0) input.setAttribute('checked', 'checked');
+        input.setAttribute('type', 'radio');
+        const idName = `idd${i}`;
+        input.setAttribute('id', idName);
+        input.setAttribute('value', i);
+        input.setAttribute('name', 'line-style');
+
+        const label = document.createElement('label');
+        label.setAttribute('for', idName)
+        if(i === 0){
+            label.style.background = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 100'><path d='M100 0 L0 100 ' stroke='black' stroke-width='1'/><path d='M0 0 L100 100 ' stroke='black' stroke-width='1'/></svg>")`;
+            label.style.backgroundRepeat = 'no-repeat';
+            label.style.backgroundPosition = 'center center';
+            label.style.backgroundSize = '100% 100%, auto';
+        }
+        else{
+            const base64Image = PIXI.utils.BaseTextureCache[Settings.textureNames[i]].source.src;
+            label.style.background = `url(${base64Image})`;
+            label.style.backgroundSize = 'contain';
+        }
+
+        imageDropDown.appendChild(input);
+        imageDropDown.appendChild(label);
+    }
+    listItem.appendChild(imageDropDownContainer)
+    targetDomElement.appendChild(listItem);
+}
 
 // WINDOW DRAGING
 
