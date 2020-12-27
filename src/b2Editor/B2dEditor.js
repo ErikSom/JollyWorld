@@ -6748,34 +6748,33 @@ const _B2dEditor = function () {
 			//TODO: Set collision for all fixtures
 			var filterData = fixture.GetFilterData();
 
-			if(filterData.categoryBits !== this.MASKBIT_TRIGGER){
 
-				if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
-				else filterData.categoryBits = this.MASKBIT_NORMAL;
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
-				fixture.SetSensor(false);
+			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+			else filterData.categoryBits = this.MASKBIT_NORMAL;
+			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
+			fixture.SetSensor(false);
 
-				if (collision == 1) {
-					filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
-				} else if (collision == 2) {
-					fixture.SetSensor(true);
-				} else if (collision == 3) {
-					filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
-					filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-				} else if (collision == 4) {
-					filterData.categoryBits = this.MASKBIT_ONLY_US;
-					filterData.maskBits = this.MASKBIT_ONLY_US; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
-				} else if (collision == 5) {
-					filterData.maskBits = this.MASKBIT_FIXED; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-				} else if (collision == 6) {
-					filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-				} else if (collision == 7) {
-					filterData.categoryBits = this.MASKBIT_CHARACTER;
-					filterData.groupIndex = this.GROUPINDEX_CHARACTER;
-				}
-
-				fixture.SetFilterData(filterData);
+			if (collision == 1) {
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
+			} else if (collision == 2) {
+				fixture.SetSensor(true);
+			} else if (collision == 3) {
+				filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+			} else if (collision == 4) {
+				filterData.categoryBits = this.MASKBIT_ONLY_US;
+				filterData.maskBits = this.MASKBIT_ONLY_US; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
+			} else if (collision == 5) {
+				filterData.maskBits = this.MASKBIT_FIXED; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+			} else if (collision == 6) {
+				filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+			} else if (collision == 7) {
+				filterData.categoryBits = this.MASKBIT_CHARACTER;
+				filterData.groupIndex = this.GROUPINDEX_CHARACTER;
 			}
+
+			fixture.SetFilterData(filterData);
+			
 			fixture = fixture.GetNext();
 			//
 		}
@@ -8509,7 +8508,6 @@ const _B2dEditor = function () {
 	this.MASKBIT_CHARACTER = 0x0004;
 	this.MASKBIT_EVERYTHING_BUT_US = 0x0008;
 	this.MASKBIT_ONLY_US = 0x0010;
-	this.MASKBIT_TRIGGER = 0x0020;
 	this.GROUPINDEX_CHARACTER = -3;
 
 	this.tool_SELECT = 0;
