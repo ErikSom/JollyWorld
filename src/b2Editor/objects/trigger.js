@@ -871,8 +871,8 @@ export const drawEditorTriggers = ()=>{
             p.x = (dx * cosAngle - dy * sinAngle);
             p.y = (dx * sinAngle + dy * cosAngle);
 
-            pixiPosition.x = trigger.mySprite.x + p.x;
-            pixiPosition.y = trigger.mySprite.y + p.y;
+            pixiPosition.x = trigger.GetPosition().x * Settings.PTM + p.x;
+            pixiPosition.y = trigger.GetPosition().y * Settings.PTM + p.y;
             game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
 
 
@@ -887,8 +887,8 @@ export const drawEditorTriggers = ()=>{
                 polygon.y = innerVertices[k].y * Settings.PTM * camera.scale.x * trigger.mySprite.scale.x;
                 polygons.push(polygon);
             }
-            pixiPosition.x = trigger.mySprite.x;
-            pixiPosition.y = trigger.mySprite.y;
+            pixiPosition.x = trigger.GetPosition().x * Settings.PTM;
+            pixiPosition.y = trigger.GetPosition().y * Settings.PTM;
             game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
 
             game.editor.debugGraphics.drawDashedPolygon(polygons, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
