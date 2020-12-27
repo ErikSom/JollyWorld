@@ -826,6 +826,10 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
+				targetFolder.add(ui.editorGUI.editData, "instaKill").name("kills player").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				});
 				// is Character is an admin feature
 				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
 				if(Settings.admin) collisionTypes.push("Is character");
@@ -1920,6 +1924,7 @@ const _B2dEditor = function () {
 		this.lockselection = false;
 		this.lineWidth = 1.0;
 		this.visible = true;
+		this.instaKill = false;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -4654,6 +4659,14 @@ const _B2dEditor = function () {
 							body.mySprite.data.collision = controller.targetValue;
 							this.setBodyCollision(body, controller.targetValue);
 						}
+					} else if(controller.property == "instaKill"){
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.instaKill = controller.targetValue;
+							if(controller.targetValue) body.instaKill = true;
+							else delete body.instaKill;
+						}
 					} else if (controller.property == "tileTexture") {
 						//do tileTexture
 					} else if (controller.property == "lockselection") {
@@ -5916,6 +5929,8 @@ const _B2dEditor = function () {
 		this.setBodyCollision(body, obj.collision);
 
 		this.addObjectToLookupGroups(body, body.mySprite.data);
+
+		body.instaKill = obj.instaKill;
 
 		return body;
 
@@ -7586,7 +7601,8 @@ const _B2dEditor = function () {
 			arr[15] = obj.radius;
 			arr[16] = obj.tileTexture;
 			arr[17] = obj.lineWidth !== undefined ? obj.lineWidth : 1.0;
-
+			arr[18] = obj.visible;
+			arr[19] = obj.instaKill;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -7602,7 +7618,7 @@ const _B2dEditor = function () {
 			arr[17] = obj.parallax;
 			arr[18] = obj.repeatTeleportX;
 			arr[19] = obj.repeatTeleportY;
-			
+			arr[20] = obj.visible;
 		} else if (obj.type == this.object_JOINT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.bodyA_ID;
@@ -7640,6 +7656,7 @@ const _B2dEditor = function () {
 			arr[20] = obj.repeatTeleportY;
 			const gradientIndex = this.levelGradientsNames.indexOf(obj.gradient);
 			arr[21] = gradientIndex >= 0 ? gradientIndex : '';
+			arr[22] = obj.visible;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -7651,6 +7668,7 @@ const _B2dEditor = function () {
 			arr[13] = obj.parallax;
 			arr[14] = obj.repeatTeleportX;
 			arr[15] = obj.repeatTeleportY;
+			arr[16] = obj.visible;
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -7673,6 +7691,7 @@ const _B2dEditor = function () {
 			arr[14] = obj.texturePositionOffsetLength;
 			arr[15] = obj.texturePositionOffsetAngle;
 			arr[16] = obj.textureAngleOffset;
+			arr[17] = obj.visible;
 		}else if(arr[0] == this.object_SETTINGS){
 			arr = [];
 			arr[0] = obj.type;
@@ -7692,6 +7711,7 @@ const _B2dEditor = function () {
 			arr[15] = obj.repeatTeleportY;
 			arr[16] = obj.fps;
 			arr[17] = obj.playing;
+			arr[18] = obj.visible;
 		}
 		return JSONStringify(arr);
 	}
@@ -7712,6 +7732,7 @@ const _B2dEditor = function () {
 			obj.tileTexture = arr[16] || "";
 			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
 			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
+			obj.instaKill = typeof arr[19] === "boolean" ? arr[19] : false;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];

@@ -821,35 +821,44 @@ function Game() {
 
         const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         let body;
+        let otherBody;
 
         if(!bodies[0].mySprite || !bodies[1].mySprite) return;
 
         for (let i = 0; i < bodies.length; i++) {
             body = bodies[i];
+            otherBody = i == 0 ? bodies[1] : bodies[0];
             if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
-
-                let force = 0;
-                for (let j = 0; j < impulse.normalImpulses.length; j++)
-                    if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
-
-                const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
-                const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
-                let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
-                impactAngle *= game.editor.RAD2DEG + 180;
-                const velocitySum = velocityA + velocityB;
-                if (velocitySum > 10.0) {
-                    const worldManifold = new Box2D.b2WorldManifold();
-                    contact.GetWorldManifold(worldManifold);
-                    const worldCollisionPoint = worldManifold.points[0];
-                    self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
-                    emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
-
+                if(otherBody.instaKill){
                     const bodyClass = self.editor.retrieveSubClassFromBody(body);
                     if(bodyClass && bodyClass.dealDamage){
-                        const slidingDamageScalar = 50;
-                        bodyClass.dealDamage(velocitySum/slidingDamageScalar);
+                        bodyClass.dealDamage(10000);
+                    }
+                }else {
+                    let force = 0;
+                    for (let j = 0; j < impulse.normalImpulses.length; j++)
+                        if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+
+                    const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
+                    const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
+                    let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
+                    impactAngle *= game.editor.RAD2DEG + 180;
+                    const velocitySum = velocityA + velocityB;
+                    if (velocitySum > 10.0) {
+                        const worldManifold = new Box2D.b2WorldManifold();
+                        contact.GetWorldManifold(worldManifold);
+                        const worldCollisionPoint = worldManifold.points[0];
+                        self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
+                        emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+
+                        const bodyClass = self.editor.retrieveSubClassFromBody(body);
+                        if(bodyClass && bodyClass.dealDamage){
+                            const slidingDamageScalar = 50;
+                            bodyClass.dealDamage(velocitySum/slidingDamageScalar);
+                        }
                     }
                 }
+                
             }
         }
     }

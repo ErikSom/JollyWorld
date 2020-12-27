@@ -160,6 +160,16 @@ export class Character extends PrefabManager.basePrefab {
 
     dealDamage(damage){
         this.life -= damage;
+
+        if(damage >= 10000){
+            for(let part in Character.BODY_PARTS){
+                this.collisionUpdates.push({
+                    type: Character.GORE_BASH,
+                    target: Character.BODY_PARTS[part]
+                });
+            }
+        }
+
         globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage});
     }
 
