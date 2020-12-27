@@ -3828,7 +3828,7 @@ const _B2dEditor = function () {
 		let graphic;
 		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
-			if (Boolean(graphic.data.lockselection) != this.altDown) {
+			if (Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
 				queryGraphics.splice(i, 1);
 				i--;
 			}
@@ -4724,9 +4724,13 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							if (controller.triggerActionKey == 'targetActionDropDown') {
-								body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
+								if(controller.triggerTargetID >= 0) body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
+								else body.mySprite.data.worldActions[controller.triggerActionID] = trigger.getAction(controller.targetValue);
 								trigger.updateTriggerGUI();
-							} else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+							} else{
+								if(controller.triggerTargetID >= 0) body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+								else body.mySprite.data.worldActions[controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "textColor") {
 						//Text Object
@@ -5205,6 +5209,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
+		debugger;
 		let i;
 		let body;
 		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);

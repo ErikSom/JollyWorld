@@ -159,7 +159,6 @@ export class Character extends PrefabManager.basePrefab {
     static GORE_SNAP = 1;
 
     dealDamage(damage){
-        console.log(damage, this.life);
         this.life -= damage;
         globalEvents.dispatchEvent({type:GLOBAL_EVENTS.CHARACTER_DAMAGE, data:damage});
     }

@@ -62,7 +62,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravityX", "SetGravityY", "SetWin"];
+const getWorldActions = ()=> ["SetGravity"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -74,7 +74,7 @@ export const getActionOptions = function (action) {
 export const doAction = function (actionData, target) {
 
     let bodies;
-    const prefab = target.data ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
+    const prefab = (target && target.data) ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
     let objects;
 
     switch (actionData.type) {
@@ -185,6 +185,9 @@ export const doAction = function (actionData, target) {
         case "SetFollowPlayer":
             target.data.followPlayer = actionData.setFollowPlayer;
             if(actionData.toggle) actionData.setFollowPlayer = !actionData.setFollowPlayer;
+            break;
+        case "SetGravity":
+            game.world.SetGravity(new Box2D.b2Vec2(actionData.gravityX, actionData.gravityY));
             break;
 
     }
@@ -451,6 +454,28 @@ export const actionDictionary = {
         },
     },
     /*******************/
+    actionObject_SetGravity: {
+        type: "SetGravity",
+        gravityX: 0,
+        gravityY: 10,
+    },
+    actionOptions_SetGravity: {
+        gravityX: {
+            type: guitype_MINMAX,
+            min: -20,
+            max: 20,
+            value: 0,
+            step: 0.1,
+        },
+        gravityY: {
+            type: guitype_MINMAX,
+            min: -20,
+            max: 20,
+            value: 0,
+            step: 0.1,
+        }
+    },
+    /******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -505,10 +530,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             actionFolder = actionsFolder.addFolder(`-- Action ${j+1}`);
             actionString = `${actionsString}_action_${j}`
             var action = dataJoint.triggerActions[i][j];
-            var actionVarString;
-            var actionOptions = getActionOptions(action.type);
-
-            actionVarString = `${actionString}_targetActionDropDown`;
+            let actionVarString = `${actionString}_targetActionDropDown`;
 
             ui.editorGUI.editData[actionVarString] = action.type;
             var controller;
@@ -525,51 +547,8 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 
             controller.name('actionType');
 
-            for (let key in action) {
-                let actionController;
-                if (action.hasOwnProperty(key) && key != "type") {
-                    actionVarString = `${actionString}_${key}`;
-                    ui.editorGUI.editData[actionVarString] = action[key];
-
-                    switch (actionOptions[key].type) {
-                        case guitype_MINMAX:
-                            actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
-                            actionController.step(actionOptions[key].step);
-                            actionController.name(key);
-                            actionController.onChange(function (value) {
-                                this.humanUpdate = true;
-                                this.targetValue = value
-                                this.triggerActionKey = key;
-                                this.triggerTargetID = targetID;
-                                this.triggerActionID = actionID;
-                            }.bind(actionController));
-                            break
-                        case guitype_LIST:
-                            actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
-                            actionController.name(key);
-                            actionController.onChange(function (value) {
-                                this.humanUpdate = true;
-                                this.targetValue = value;
-                                this.triggerActionKey = key;
-                                this.triggerTargetID = targetID;
-                                this.triggerActionID = actionID;
-                            }.bind(actionController));
-                            break;
-                        case guitype_BOOL:
-                            actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
-                            actionController.name(key);
-                            actionController.onChange(function (value) {
-                                this.humanUpdate = true;
-                                this.targetValue = value;
-                                this.triggerActionKey = key;
-                                this.triggerTargetID = targetID;
-                                this.triggerActionID = actionID;
-                            }.bind(actionController));
-                            break;
-                    }
-
-                }
-            }
+            addActionGUIToFolder(action, actionString, actionFolder, targetID, actionID)
+            
             ui.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
 
             if(dataJoint.triggerActions[i].length>1){
@@ -618,6 +597,29 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 
     const worldSettingsFolder = _folder.addFolder(`World Settings`);
 
+
+    for (let i = 0; i < dataJoint.worldActions.length; i++) {
+        let actionFolder = worldSettingsFolder.addFolder(`-- Action ${i+1}`);
+        let actionString = `_worldActions_action_${i}`
+        let action = dataJoint.worldActions[i];
+        let actionVarString = `${actionString}_targetActionDropDown`;
+
+        ui.editorGUI.editData[actionVarString] = action.type;
+        var controller;
+        controller = actionFolder.add(ui.editorGUI.editData, actionVarString, getWorldActions()).onChange(function (value) {
+            this.humanUpdate = true;
+            this.targetValue = value;
+            this.triggerActionKey = 'targetActionDropDown';
+            this.triggerTargetID = targetID;
+            this.triggerActionID = actionID;
+        }.bind(controller));
+
+        controller.name('actionType');
+
+        addActionGUIToFolder(action, actionString, actionFolder, -1, i)
+    }
+
+
     ui.editorGUI.editData.addWorldAction = function () {
         for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
             const targetSprite = B2dEditor.selectedPhysicsBodies[i].mySprite;
@@ -627,8 +629,58 @@ export const addTriggerGUI = function (dataJoint, _folder) {
     }
     label = 'Add Action';
     controller = worldSettingsFolder.add(ui.editorGUI.editData, 'addWorldAction').name(label);
-
 }
+
+const addActionGUIToFolder = (action, actionString, actionFolder, targetID, actionID) =>{
+    let actionOptions = getActionOptions(action.type);
+    let actionVarString;
+    for (let key in action) {
+        let actionController;
+        if (action.hasOwnProperty(key) && key != "type") {
+            actionVarString = `${actionString}_${key}`;
+            ui.editorGUI.editData[actionVarString] = action[key];
+
+            switch (actionOptions[key].type) {
+                case guitype_MINMAX:
+                    actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
+                    actionController.step(actionOptions[key].step);
+                    actionController.name(key);
+                    actionController.onChange(function (value) {
+                        this.humanUpdate = true;
+                        this.targetValue = value
+                        this.triggerActionKey = key;
+                        this.triggerTargetID = targetID;
+                        this.triggerActionID = actionID;
+                    }.bind(actionController));
+                    break
+                case guitype_LIST:
+                    actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
+                    actionController.name(key);
+                    actionController.onChange(function (value) {
+                        this.humanUpdate = true;
+                        this.targetValue = value;
+                        this.triggerActionKey = key;
+                        this.triggerTargetID = targetID;
+                        this.triggerActionID = actionID;
+                    }.bind(actionController));
+                    break;
+                case guitype_BOOL:
+                    actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
+                    actionController.name(key);
+                    actionController.onChange(function (value) {
+                        this.humanUpdate = true;
+                        this.targetValue = value;
+                        this.triggerActionKey = key;
+                        this.triggerTargetID = targetID;
+                        this.triggerActionID = actionID;
+                    }.bind(actionController));
+                    break;
+            }
+
+        }
+    }
+}
+
 export const triggerGUIState = {};
 export const updateTriggerGUI = function () {
     //save folder status
@@ -785,10 +837,14 @@ export class triggerCore {
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
     doTrigger() {
+        let i, actionData;
+        for(i = 0; i<this.data.worldActions.length; i++){
+            actionData = this.data.worldActions[i];
+            doAction(actionData);
+        }
         if (!this.targets) return;
-        for (var i = 0; i < this.targets.length; i++) {
-            var targetObject = this.targets[i];
-            var actionData;
+        for (i = 0; i < this.targets.length; i++) {
+            let targetObject = this.targets[i];
             const triggerLength = this.data.triggerActions[i].length;
             for (var j = 0; j < triggerLength; j++) {
                 actionData = this.data.triggerActions[i][j];
