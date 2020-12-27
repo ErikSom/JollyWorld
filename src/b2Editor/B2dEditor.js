@@ -5132,7 +5132,7 @@ const _B2dEditor = function () {
 					const tarPrefab = this.activePrefabs[highestObject.data.prefabInstanceName];
 					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
 				} else {
-					tarPos = highestObject.position;
+					tarPos = highestObject.position.clone();
 				}
 			}
 			let myPos;
