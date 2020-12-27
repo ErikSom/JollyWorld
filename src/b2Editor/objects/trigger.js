@@ -617,6 +617,17 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         controller.name('actionType');
 
         addActionGUIToFolder(action, actionString, actionFolder, -1, i)
+
+        ui.editorGUI.editData[`removeAction_${i}`] = function () {};
+        label = `Remove Action ${i+1}`;
+        let targetAction = i;
+        controller = actionFolder.add(ui.editorGUI.editData, `removeAction_${i}`).name(label);
+        ui.editorGUI.editData[`removeAction_${i}`] = function () {
+            for (var j = 0; j < B2dEditor.selectedPhysicsBodies.length; j++) {
+                B2dEditor.selectedPhysicsBodies[j].mySprite.data.worldActions.splice(targetAction, 1);
+                updateTriggerGUI();
+            }
+        }
     }
 
 

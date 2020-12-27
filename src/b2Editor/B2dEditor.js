@@ -5209,7 +5209,6 @@ const _B2dEditor = function () {
 		}
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
-		debugger;
 		let i;
 		let body;
 		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
