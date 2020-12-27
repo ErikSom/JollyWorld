@@ -775,14 +775,17 @@ const _B2dEditor = function () {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
+					controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
 				} else {
 					ui.editorGUI.editData.colorFill = ui.editorGUI.editData.colorFill[0];
 					ui.editorGUI.editData.colorLine = ui.editorGUI.editData.colorLine[0];
 					ui.editorGUI.editData.lineWidth = ui.editorGUI.editData.lineWidth[0];
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
 					ui.editorGUI.editData.density = ui.editorGUI.editData.density[0];
-
-
 
 					controller = targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
@@ -800,6 +803,11 @@ const _B2dEditor = function () {
 						this.targetValue = value;
 					}.bind(controller));
 					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value;
+					}.bind(controller));
+					controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
@@ -861,6 +869,11 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -909,6 +922,11 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -972,6 +990,11 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -990,6 +1013,11 @@ const _B2dEditor = function () {
 				break;
 			case case_JUST_ANIMATIONGROUPS:
 				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1077,6 +1105,12 @@ const _B2dEditor = function () {
 				}.bind(controller));
 
 				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
+				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1885,6 +1919,7 @@ const _B2dEditor = function () {
 		this.tileTexture = "";
 		this.lockselection = false;
 		this.lineWidth = 1.0;
+		this.visible = true;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -1909,6 +1944,7 @@ const _B2dEditor = function () {
 		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
+		this.visible = true;
 	}
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
@@ -1929,6 +1965,7 @@ const _B2dEditor = function () {
 		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
+		this.visible = true;
 	}
 	this.animationGroup = function () {
 		this.type = self.object_ANIMATIONGROUP;
@@ -1951,6 +1988,7 @@ const _B2dEditor = function () {
 		this.repeatTeleportY = 0;
 		this.fps = 12;
 		this.playing = true;
+		this.visible = true;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -1982,6 +2020,7 @@ const _B2dEditor = function () {
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
 		this.gradient = '';
+		this.visible = true;
 	}
 	this.jointObject = function () {
 		this.type = self.object_JOINT;
@@ -2050,6 +2089,7 @@ const _B2dEditor = function () {
 		this.parallax = 0.0;
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
+		this.visible = true;
 	}
 	this.multiObject = function () {
 		this.type = self.object_MULTIPLE;
@@ -4554,6 +4594,17 @@ const _B2dEditor = function () {
 								this.updateTileSprite(sprite);
 							}
 						}
+					} else if (controller.property == "visible") {
+						//body & sprite
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.visible = controller.targetValue;
+							if(body.myTexture) body.myTexture.visible = controller.targetValue;
+						}
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							sprite = this.selectedTextures[j];
+							sprite.visible = controller.targetValue;
+						}
 					} else if (controller.property == "fixed") {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
@@ -5726,6 +5777,7 @@ const _B2dEditor = function () {
 		container.rotation = obj.rotation;
 		container.data = obj;
 		container.alpha = obj.transparancy;
+		container.visible = obj.visible;
 
 		container.width = container.width * obj.scaleX;
 		container.height = container.height * obj.scaleY;
@@ -5782,6 +5834,7 @@ const _B2dEditor = function () {
 		container.data = obj;
 
 		container.alpha = obj.transparancy;
+		container.visible = obj.visible;
 
 		if (container.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
@@ -5844,6 +5897,7 @@ const _B2dEditor = function () {
 		body.mySprite.data = obj;
 
 		body.mySprite.alpha = obj.transparancy[0];
+		body.mySprite.visible = obj.visible;
 
 		this.updateBodyFixtures(body);
 		this.updateBodyShapes(body);
@@ -5867,7 +5921,7 @@ const _B2dEditor = function () {
 		container.x = obj.x;
 		container.y = obj.y;
 		container.rotation = obj.rotation;
-
+		container.visible = obj.visible;
 
 		var originalGraphic = new PIXI.Graphics();
 		container.addChild(originalGraphic);
@@ -5896,6 +5950,7 @@ const _B2dEditor = function () {
 		graphic.y = obj.y;
 		graphic.rotation = obj.rotation;
 
+
 		this.updateGraphicGroupShapes(graphic);
 		this.textures.addChild(graphic);
 
@@ -5905,6 +5960,8 @@ const _B2dEditor = function () {
 		}
 
 		graphic.alpha = obj.transparancy;
+		graphic.visible = obj.visible;
+
 
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
@@ -5925,6 +5982,7 @@ const _B2dEditor = function () {
 		}
 
 		graphic.alpha = obj.transparancy;
+		graphic.visible = obj.visible;
 
 		this.initAnimation(graphic);
 
@@ -7648,6 +7706,7 @@ const _B2dEditor = function () {
 			obj.radius = arr[15];
 			obj.tileTexture = arr[16] || "";
 			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
+			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
@@ -7664,6 +7723,7 @@ const _B2dEditor = function () {
 			obj.parallax = arr[17] !== undefined ? arr[17] : 0;
 			obj.repeatTeleportX = arr[18] !== undefined ? arr[18] : 0;
 			obj.repeatTeleportY = arr[19] !== undefined ? arr[19] : 0;
+			obj.visible = typeof arr[20] === "boolean" ? arr[20] : true;
 		} else if (arr[0] == this.object_JOINT) {
 			obj = new this.jointObject();
 			obj.ID = arr[6];
@@ -7703,6 +7763,7 @@ const _B2dEditor = function () {
 			obj.repeatTeleportX = arr[19] !== undefined ? arr[19] : 0;
 			obj.repeatTeleportY = arr[20] !== undefined ? arr[20] : 0;
 			obj.gradient = arr[21] !== undefined ? (this.levelGradientsNames[arr[21]] || '') : '';
+			obj.visible = typeof arr[22] === "boolean" ? arr[22] : true;
 		} else if (arr[0] == this.object_GRAPHICGROUP) {
 			obj = new this.graphicGroup();
 			obj.ID = arr[6];
@@ -7715,6 +7776,7 @@ const _B2dEditor = function () {
 			obj.parallax = arr[13] !== undefined ? arr[13] : 0;
 			obj.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
 			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
+			obj.visible = typeof arr[16] === "boolean" ? arr[16] : true;
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
@@ -7741,6 +7803,7 @@ const _B2dEditor = function () {
 			obj.parallax = arr[17] !== undefined ? arr[17] : 0;
 			obj.repeatTeleportX = arr[18] !== undefined ? arr[18] : 0;
 			obj.repeatTeleportY = arr[19] !== undefined ? arr[19] : 0;
+			obj.visible = typeof arr[20] === "boolean" ? arr[20] : true;
 		}else if (arr[0] == this.object_SETTINGS){
 			obj = this.editorSettingsObject;
 			obj.gravityX = arr[1];
@@ -7761,6 +7824,7 @@ const _B2dEditor = function () {
 			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
 			obj.fps = arr[16] !== undefined ? arr[16] : 12;
 			obj.playing = arr[17] !== undefined ? arr[17] : true;
+			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
 		}
 
 		obj.type = arr[0];
