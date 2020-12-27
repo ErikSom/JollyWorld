@@ -49,6 +49,9 @@ export const getActionsForObject = function (object) {
                 // B2dEditor.object_GRAPHIC = 6;
                 // B2dEditor.object_GRAPHICGROUP = 7;
                 // B2dEditor.object_TRIGGER = 8;
+            case B2dEditor.object_TRIGGER:
+                actions.push("SetEnabled");
+                actions.push("SetFollowPlayer");
             default:
                 break;
         }
@@ -172,6 +175,14 @@ export const doAction = function (actionData, target) {
             break;
         case "Shoot":
             prefab.class.setShouldShoot();
+            break;
+        case "SetEnabled":
+            target.data.enabled = actionData.setEnabled;
+            if(actionData.toggle) actionData.setEnabled = !actionData.setEnabled;
+            break;
+        case "SetFollowPlayer":
+            target.data.followPlayer = actionData.setFollowPlayer;
+            if(actionData.toggle) actionData.setFollowPlayer = !actionData.setFollowPlayer;
             break;
 
     }
@@ -410,6 +421,34 @@ export const actionDictionary = {
     },
     actionOptions_Shoot: {},
     /*******************/
+    actionObject_SetEnabled: {
+        type: 'SetEnabled',
+        toggle: false,
+        setEnabled: true,
+    },
+    actionOptions_SetEnabled: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setEnabled: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
+    actionObject_SetFollowPlayer: {
+        type: 'SetFollowPlayer',
+        toggle: false,
+        setFollowPlayer: false,
+    },
+    actionOptions_SetFollowPlayer: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setFollowPlayer: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -435,6 +474,17 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             this.targetValue = value
         });
     }
+
+    _folder.add(ui.editorGUI.editData, "enabled").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
+
+    _folder.add(ui.editorGUI.editData, "followPlayer").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
+
     ui.editorGUI.editData.selectTarget = function () {};
     var label = "Add Target";
     controller = _folder.add(ui.editorGUI.editData, "selectTarget").name(label);
@@ -647,29 +697,37 @@ export class triggerCore {
         this.data = trigger.mySprite.data;
         this.actions = trigger.mySprite.data.triggerActions;
         this.targets = trigger.mySprite.targets;
+
         this.initContactListener();
     }
     update() {
-        if (this.data.targetType == triggerTargetType.click) {
-            if (Key.isPressed(Key.MOUSE)) {
-                let fixture = this.trigger.GetFixtureList();
-                while (fixture != null) {
-                    if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
-                        this.doTrigger();
-                        break;
+        if(this.data.enabled){
+            if (this.data.targetType == triggerTargetType.click) {
+                if (Key.isPressed(Key.MOUSE)) {
+                    let fixture = this.trigger.GetFixtureList();
+                    while (fixture != null) {
+                        if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
+                            this.doTrigger();
+                            break;
+                        }
+                        fixture = fixture.GetNext();
                     }
-                    fixture = fixture.GetNext();
                 }
             }
-        }
-        if (this.runTriggerOnce) {
-            this.doTrigger();
-            this.runTriggerOnce = false;
-        }
-        if (this.destroy) {
-            B2dEditor.deleteObjects([this.trigger]);
-        } else if (this.touchingTarget && this.data.repeatType == triggerRepeatType.continuesOnContact) {
-            this.doTrigger();
+            if(this.data.followPlayer){
+                if(game?.character.lookupObject.body){
+                    this.trigger.SetPosition(game.character.lookupObject.body.GetPosition());
+                }
+            }
+            if (this.runTriggerOnce) {
+                this.doTrigger();
+                this.runTriggerOnce = false;
+            }
+            if (this.destroy) {
+                B2dEditor.deleteObjects([this.trigger]);
+            } else if (this.touchingTarget && this.data.repeatType == triggerRepeatType.continuesOnContact) {
+                this.doTrigger();
+            }
         }
     }
     initContactListener() {
@@ -680,7 +738,7 @@ export class triggerCore {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 const body = bodies[i];
-                if (body != self.trigger && containsTargetType(self, body)) {
+                if (body !== self.trigger && containsTargetType(self, body)) {
                     if (!self.touchingObjects.includes(body)) self.touchingObjects.push(body);
                     self.touchingTarget = true;
                     if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {

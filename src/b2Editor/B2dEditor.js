@@ -2029,6 +2029,7 @@ const _B2dEditor = function () {
 		this.repeatType = 0;
 		this.triggerObjects = [];
 		this.triggerActions = [];
+		this.followPlayer = false;
 		this.lockselection = false;
 	}
 	this.textObject = function () {
@@ -4654,6 +4655,18 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.repeatType = trigger.triggerRepeatType[controller.targetValue];
 						}
+					} else if (controller.property == "enabled") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.enabled = controller.targetValue;
+						}
+					} else if (controller.property == "followPlayer") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.followPlayer = controller.targetValue;
+						}
 					} else if (controller.triggerActionKey != undefined) {
 						//trigger action
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
@@ -5733,11 +5746,13 @@ const _B2dEditor = function () {
 	}
 	this.buildTriggerFromObj = function (obj) {
 		var bodyObject = JSON.parse(JSON.stringify(obj));
-		bodyObject.fixed = true;
+		bodyObject.trigger = true;
 		bodyObject.density = 1;
 		bodyObject.collision = 2;
 
 		var body = this.buildBodyFromObj(bodyObject);
+
+		body.SetSleepingAllowed(false);
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
 
 		body.mySprite.data = obj;
@@ -5793,7 +5808,8 @@ const _B2dEditor = function () {
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
-		if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
+		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
+		else if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
 		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
 		bd.angularDamping = 0.9;
 
@@ -6673,31 +6689,34 @@ const _B2dEditor = function () {
 			//TODO: Set collision for all fixtures
 			var filterData = fixture.GetFilterData();
 
-			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
-			else filterData.categoryBits = this.MASKBIT_NORMAL;
-			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
-			fixture.SetSensor(false);
+			if(filterData.categoryBits !== this.MASKBIT_TRIGGER){
 
-			if (collision == 1) {
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
-			} else if (collision == 2) {
-				fixture.SetSensor(true);
-			} else if (collision == 3) {
-				filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-			} else if (collision == 4) {
-				filterData.categoryBits = this.MASKBIT_ONLY_US;
-				filterData.maskBits = this.MASKBIT_ONLY_US; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
-			} else if (collision == 5) {
-				filterData.maskBits = this.MASKBIT_FIXED; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-			} else if (collision == 6) {
-				filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-			} else if (collision == 7) {
-				filterData.categoryBits = this.MASKBIT_CHARACTER;
-				filterData.groupIndex = this.GROUPINDEX_CHARACTER;
+				if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+				else filterData.categoryBits = this.MASKBIT_NORMAL;
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
+				fixture.SetSensor(false);
+
+				if (collision == 1) {
+					filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
+				} else if (collision == 2) {
+					fixture.SetSensor(true);
+				} else if (collision == 3) {
+					filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
+					filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				} else if (collision == 4) {
+					filterData.categoryBits = this.MASKBIT_ONLY_US;
+					filterData.maskBits = this.MASKBIT_ONLY_US; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
+				} else if (collision == 5) {
+					filterData.maskBits = this.MASKBIT_FIXED; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				} else if (collision == 6) {
+					filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				} else if (collision == 7) {
+					filterData.categoryBits = this.MASKBIT_CHARACTER;
+					filterData.groupIndex = this.GROUPINDEX_CHARACTER;
+				}
+
+				fixture.SetFilterData(filterData);
 			}
-
-			fixture.SetFilterData(filterData);
 			fixture = fixture.GetNext();
 			//
 		}
@@ -7578,6 +7597,7 @@ const _B2dEditor = function () {
 			arr[10] = obj.repeatType;
 			arr[11] = obj.triggerObjects;
 			arr[12] = obj.triggerActions;
+			arr[13] = obj.followPlayer;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -7699,11 +7719,12 @@ const _B2dEditor = function () {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
 			obj.radius = arr[7];
-			obj.enabled = arr[8];
+			obj.enabled = typeof arr[8] === "boolean" ? arr[8] : true;
 			obj.targetType = arr[9];
 			obj.repeatType = arr[10];
 			obj.triggerObjects = arr[11];
 			obj.triggerActions = arr[12];
+			obj.followPlayer = typeof arr[13] === "boolean" ? arr[13] : false;
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];
@@ -8421,6 +8442,7 @@ const _B2dEditor = function () {
 	this.MASKBIT_CHARACTER = 0x0004;
 	this.MASKBIT_EVERYTHING_BUT_US = 0x0008;
 	this.MASKBIT_ONLY_US = 0x0010;
+	this.MASKBIT_TRIGGER = 0x0020;
 	this.GROUPINDEX_CHARACTER = -3;
 
 	this.tool_SELECT = 0;
