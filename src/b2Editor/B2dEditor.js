@@ -1165,7 +1165,7 @@ const _B2dEditor = function () {
 			}
 		} else {
 			if (this.selectedPhysicsBodies.length == 1) {
-				if (this.selectedPhysicsBodies[0].myTexture || this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) {
+				if (this.selectedPhysicsBodies[0].myTexture || (Array.isArray(this.selectedPhysicsBodies[0].mySprite.data.density) && this.selectedPhysicsBodies[0].mySprite.data.density.length>1)) {
 					ui.editorGUI.editData.ungroupObjects = () => {
 						self.ungroupObjects();
 					};
@@ -2069,6 +2069,7 @@ const _B2dEditor = function () {
 		this.triggerObjects = [];
 		this.triggerActions = [];
 		this.followPlayer = false;
+		this.worldActions = [];
 		this.lockselection = false;
 	}
 	this.textObject = function () {
@@ -7656,6 +7657,7 @@ const _B2dEditor = function () {
 			arr[11] = obj.triggerObjects;
 			arr[12] = obj.triggerActions;
 			arr[13] = obj.followPlayer;
+			arr[14] = obj.worldActions;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -7787,6 +7789,7 @@ const _B2dEditor = function () {
 			obj.triggerObjects = arr[11];
 			obj.triggerActions = arr[12];
 			obj.followPlayer = typeof arr[13] === "boolean" ? arr[13] : false;
+			obj.worldActions = arr[14] || [];
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];

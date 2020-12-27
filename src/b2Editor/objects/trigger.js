@@ -62,6 +62,8 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
+const getWorldActions = ()=> ["SetGravityX", "SetGravityY", "SetWin"];
+
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
 }
@@ -452,7 +454,6 @@ export const actionDictionary = {
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
-    
     targetTypes.map(key => {
         if (triggerTargetType[key] == dataJoint.targetType) {
             ui.editorGUI.editData.targetTypeDropDown = key;
@@ -484,14 +485,13 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.humanUpdate = true;
         this.targetValue = value
     });
-
+    let label;
     ui.editorGUI.editData.selectTarget = function () {};
-    var label = "Add Target";
+    label = "Add Target";
     controller = _folder.add(ui.editorGUI.editData, "selectTarget").name(label);
     ui.editorGUI.editData.selectTarget = function () {
         B2dEditor.selectingTriggerTarget = true;
     }
-
 
     var actionsString;
     var actionsFolder;
@@ -572,22 +572,24 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             }
             ui.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
 
-            ui.editorGUI.editData[`removeAction_${j}`] = function () {};
-            var label = `Remove Action ${j+1}`;
-            let targetIndex = i;
-            let targetAction = j;
-            controller = actionFolder.add(ui.editorGUI.editData, `removeAction_${j}`).name(label);
-            ui.editorGUI.editData[`removeAction_${j}`] = function () {
-                for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
-                    if (B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length > 1) {
-                        B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].splice(targetAction, 1);
-                        updateTriggerGUI();
+            if(dataJoint.triggerActions[i].length>1){
+                ui.editorGUI.editData[`removeAction_${j}`] = function () {};
+                label = `Remove Action ${j+1}`;
+                let targetIndex = i;
+                let targetAction = j;
+                controller = actionFolder.add(ui.editorGUI.editData, `removeAction_${j}`).name(label);
+                ui.editorGUI.editData[`removeAction_${j}`] = function () {
+                    for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
+                        if (B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length > 1) {
+                            B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].splice(targetAction, 1);
+                            updateTriggerGUI();
+                        }
                     }
                 }
             }
         }
         ui.editorGUI.editData[`addAction_${i}`] = function () {};
-        var label = `Add Action`;
+        label = `Add Action`;
         let targetIndex = i;
         controller = actionsFolder.add(ui.editorGUI.editData, `addAction_${i}`).name(label);
         ui.editorGUI.editData[`addAction_${i}`] = function () {
@@ -599,7 +601,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         }
 
         ui.editorGUI.editData[`removeTarget_${i}`] = function () {};
-        var label = `Remove Target ${i+1}`;
+        label = `Remove Target ${i+1}`;
         controller = actionsFolder.add(ui.editorGUI.editData, `removeTarget_${i}`).name(label);
         ui.editorGUI.editData[`removeTarget_${i}`] = function () {
             for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
@@ -612,9 +614,20 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 
             }
         }
-
-
     }
+
+    const worldSettingsFolder = _folder.addFolder(`World Settings`);
+
+    ui.editorGUI.editData.addWorldAction = function () {
+        for (var i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
+            const targetSprite = B2dEditor.selectedPhysicsBodies[i].mySprite;
+            targetSprite.data.worldActions.push(getAction(getWorldActions()[0]));
+            updateTriggerGUI();
+        }
+    }
+    label = 'Add Action';
+    controller = worldSettingsFolder.add(ui.editorGUI.editData, 'addWorldAction').name(label);
+
 }
 export const triggerGUIState = {};
 export const updateTriggerGUI = function () {
