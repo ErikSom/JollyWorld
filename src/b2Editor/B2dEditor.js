@@ -1165,7 +1165,7 @@ const _B2dEditor = function () {
 			}
 		} else {
 			if (this.selectedPhysicsBodies.length == 1) {
-				if (this.selectedPhysicsBodies[0].myTexture || this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) {
+				if (this.selectedPhysicsBodies[0].myTexture || (Array.isArray(this.selectedPhysicsBodies[0].mySprite.data.density) && this.selectedPhysicsBodies[0].mySprite.data.density.length>1)) {
 					ui.editorGUI.editData.ungroupObjects = () => {
 						self.ungroupObjects();
 					};
@@ -2069,6 +2069,7 @@ const _B2dEditor = function () {
 		this.triggerObjects = [];
 		this.triggerActions = [];
 		this.followPlayer = false;
+		this.worldActions = [];
 		this.lockselection = false;
 	}
 	this.textObject = function () {
@@ -3827,7 +3828,7 @@ const _B2dEditor = function () {
 		let graphic;
 		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
-			if (Boolean(graphic.data.lockselection) != this.altDown) {
+			if (Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
 				queryGraphics.splice(i, 1);
 				i--;
 			}
@@ -4723,9 +4724,13 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							if (controller.triggerActionKey == 'targetActionDropDown') {
-								body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
+								if(controller.triggerTargetID >= 0) body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID] = trigger.getAction(controller.targetValue);
+								else body.mySprite.data.worldActions[controller.triggerActionID] = trigger.getAction(controller.targetValue);
 								trigger.updateTriggerGUI();
-							} else body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+							} else{
+								if(controller.triggerTargetID >= 0) body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+								else body.mySprite.data.worldActions[controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+							}
 						}
 					} else if (controller.property == "textColor") {
 						//Text Object
@@ -5204,6 +5209,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
+		debugger;
 		let i;
 		let body;
 		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
@@ -6747,34 +6753,33 @@ const _B2dEditor = function () {
 			//TODO: Set collision for all fixtures
 			var filterData = fixture.GetFilterData();
 
-			if(filterData.categoryBits !== this.MASKBIT_TRIGGER){
 
-				if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
-				else filterData.categoryBits = this.MASKBIT_NORMAL;
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
-				fixture.SetSensor(false);
+			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+			else filterData.categoryBits = this.MASKBIT_NORMAL;
+			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
+			fixture.SetSensor(false);
 
-				if (collision == 1) {
-					filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
-				} else if (collision == 2) {
-					fixture.SetSensor(true);
-				} else if (collision == 3) {
-					filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
-					filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-				} else if (collision == 4) {
-					filterData.categoryBits = this.MASKBIT_ONLY_US;
-					filterData.maskBits = this.MASKBIT_ONLY_US; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
-				} else if (collision == 5) {
-					filterData.maskBits = this.MASKBIT_FIXED; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-				} else if (collision == 6) {
-					filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
-				} else if (collision == 7) {
-					filterData.categoryBits = this.MASKBIT_CHARACTER;
-					filterData.groupIndex = this.GROUPINDEX_CHARACTER;
-				}
-
-				fixture.SetFilterData(filterData);
+			if (collision == 1) {
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
+			} else if (collision == 2) {
+				fixture.SetSensor(true);
+			} else if (collision == 3) {
+				filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+			} else if (collision == 4) {
+				filterData.categoryBits = this.MASKBIT_ONLY_US;
+				filterData.maskBits = this.MASKBIT_ONLY_US; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
+			} else if (collision == 5) {
+				filterData.maskBits = this.MASKBIT_FIXED; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+			} else if (collision == 6) {
+				filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+			} else if (collision == 7) {
+				filterData.categoryBits = this.MASKBIT_CHARACTER;
+				filterData.groupIndex = this.GROUPINDEX_CHARACTER;
 			}
+
+			fixture.SetFilterData(filterData);
+			
 			fixture = fixture.GetNext();
 			//
 		}
@@ -7656,6 +7661,7 @@ const _B2dEditor = function () {
 			arr[11] = obj.triggerObjects;
 			arr[12] = obj.triggerActions;
 			arr[13] = obj.followPlayer;
+			arr[14] = obj.worldActions;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -7787,6 +7793,7 @@ const _B2dEditor = function () {
 			obj.triggerObjects = arr[11];
 			obj.triggerActions = arr[12];
 			obj.followPlayer = typeof arr[13] === "boolean" ? arr[13] : false;
+			obj.worldActions = arr[14] || [];
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];
@@ -8506,7 +8513,6 @@ const _B2dEditor = function () {
 	this.MASKBIT_CHARACTER = 0x0004;
 	this.MASKBIT_EVERYTHING_BUT_US = 0x0008;
 	this.MASKBIT_ONLY_US = 0x0010;
-	this.MASKBIT_TRIGGER = 0x0020;
 	this.GROUPINDEX_CHARACTER = -3;
 
 	this.tool_SELECT = 0;
