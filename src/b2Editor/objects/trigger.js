@@ -13,6 +13,7 @@ import {
     game
 } from "../../Game";
 import { editorSettings } from "../utils/editorSettings";
+import * as drawing from '../utils/drawing'
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -790,7 +791,11 @@ export const removeTargetFromTrigger = function (_trigger, target) {
     }
 }
 
+const pixiPosition = new PIXI.Point();
+
 export const drawEditorTriggers = ()=>{
+	const camera = B2dEditor.container.camera || B2dEditor.container;
+
     game.editor.triggerObjects.forEach( trigger => {
         game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8);
         const offsetInterval = 500;
@@ -808,18 +813,55 @@ export const drawEditorTriggers = ()=>{
             p.x = (dx * cosAngle - dy * sinAngle);
             p.y = (dx * sinAngle + dy * cosAngle);
 
-            game.editor.debugGraphics.drawDashedCircle(data.radius * game.editor.container.scale.x * trigger.mySprite.scale.x, (trigger.mySprite.x + p.x) * game.editor.container.scale.x + game.editor.container.x, (trigger.mySprite.y + p.y) * game.editor.container.scale.y + game.editor.container.y, data.rotation, 20, 10, offset);
+            pixiPosition.x = trigger.mySprite.x + p.x;
+            pixiPosition.y = trigger.mySprite.y + p.y;
+            game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
+
+
+            game.editor.debugGraphics.drawDashedCircle(data.radius * camera.scale.x * trigger.mySprite.scale.x, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
         } else {
             const polygons = [];
             let innerVertices = data.vertices
 
             for (let k = 0; k < innerVertices.length; k++) {
-                polygons.push({
-                    x: (innerVertices[k].x * Settings.PTM) * game.editor.container.scale.x * trigger.mySprite.scale.x,
-                    y: (innerVertices[k].y * Settings.PTM) * game.editor.container.scale.y * trigger.mySprite.scale.y
-                });
+                const polygon = new PIXI.Point();
+                polygon.x = innerVertices[k].x * Settings.PTM * camera.scale.x * trigger.mySprite.scale.x;
+                polygon.y = innerVertices[k].y * Settings.PTM * camera.scale.x * trigger.mySprite.scale.x;
+                polygons.push(polygon);
             }
-            game.editor.debugGraphics.drawDashedPolygon(polygons, trigger.mySprite.x * game.editor.container.scale.x + game.editor.container.x, trigger.mySprite.y * game.editor.container.scale.y + game.editor.container.y, data.rotation, 20, 10, offset);
+            pixiPosition.x = trigger.mySprite.x;
+            pixiPosition.y = trigger.mySprite.y;
+            game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
+
+            game.editor.debugGraphics.drawDashedPolygon(polygons, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
         }
     })
+}
+export const drawEditorTriggerTargets = body=>{
+    if(body.mySprite.targets){
+        let myPos = body.GetPosition();
+        myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
+        game.levelCamera.matrix.apply(myPos,myPos);
+        for(let j = 0; j<body.mySprite.targets.length; j++){
+            let target = body.mySprite.targets[j];
+            let tarPos;
+            let tarPrefab;
+            if(target.mySprite){
+                if(target.mySprite.data.prefabInstanceName){
+                    tarPrefab = B2dEditor.activePrefabs[target.mySprite.data.prefabInstanceName];
+                    tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
+                }else tarPos = B2dEditor.getPIXIPointFromWorldPoint(target.GetPosition());
+            } else{
+                if(target.data.prefabInstanceName){
+                    tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
+                    tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
+                }else{
+                    tarPos = new PIXI.Point(target.x, target.y);
+                }
+            }
+
+            game.levelCamera.matrix.apply(tarPos,tarPos);
+            drawing.drawLine(myPos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
+        };
+    }
 }

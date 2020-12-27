@@ -25,38 +25,6 @@ const textOptionsBase = {
     align : 'center'
 }
 
-
-export const drawDebugTriggerHelpers = function(){
-	for(var i = 0; i<B2dEditor.selectedPhysicsBodies.length; i++){
-        var body = B2dEditor.selectedPhysicsBodies[i];
-        if(body.mySprite && body.mySprite.data && body.mySprite.data.type == B2dEditor.object_TRIGGER){
-            if(body.mySprite.targets){
-                var myPos = body.GetPosition();
-                myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
-                for(var j = 0; j<body.mySprite.targets.length; j++){
-                    var target = body.mySprite.targets[j];
-                    var tarPos;
-                    var tarPrefab;
-                    if(target.mySprite){
-                        if(target.mySprite.data.prefabInstanceName){
-                            tarPrefab = B2dEditor.activePrefabs[target.mySprite.data.prefabInstanceName];
-                            tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
-                        }else tarPos = B2dEditor.getPIXIPointFromWorldPoint(target.GetPosition());
-                    } else{
-                        if(target.data.prefabInstanceName){
-                            tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
-                            tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
-                        }else{
-                            tarPos = new b2Vec2(target.x, target.y);
-                        }
-                    }
-                    drawLine(myPos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
-                };
-            }
-        }
-    }
-}
-
 // ESSENTIALS
 export const drawLine = function(sp, ep, _lineOptions){
 

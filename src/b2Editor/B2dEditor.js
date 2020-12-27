@@ -4033,7 +4033,7 @@ const _B2dEditor = function () {
 		}
 		this.drawTransformGui();
 		this.drawDebugJointHelpers();
-		drawing.drawDebugTriggerHelpers();
+		this.drawDebugTriggerHelpers();
 	}
 	this.drawPlayerHistory = function(){
 		this.playerHistory.forEach(frame => {
@@ -4059,6 +4059,17 @@ const _B2dEditor = function () {
 			});
 		})
 	}
+
+	this.drawDebugTriggerHelpers = function () {
+		let sprite;
+		for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
+			sprite = this.selectedPhysicsBodies[i].mySprite;
+			if (sprite.data.type == this.object_TRIGGER) {
+				trigger.drawEditorTriggerTargets(this.selectedPhysicsBodies[i]);
+			}
+		}
+	}
+
 	this.drawDebugJointHelpers = function () {
 		//JOINTS draw upper and lower limits
 		var sprite;
@@ -5116,6 +5127,11 @@ const _B2dEditor = function () {
 				if (this.selectedPhysicsBodies[i] != highestObject) {
 					myPos = this.selectedPhysicsBodies[i].GetPosition();
 					myPos = this.getPIXIPointFromWorldPoint(myPos);
+
+					game.levelCamera.matrix.apply(myPos,myPos);
+					game.levelCamera.matrix.apply(tarPos,tarPos);
+
+
 					drawing.drawLine(myPos, tarPos, {
 						color: "0xFFFF00"
 					});
