@@ -2810,7 +2810,7 @@ const _B2dEditor = function () {
 	}
 
 	this.collidingWithTransformGui = function(){
-		if(!this.transformGUI) return;
+		if(!this.transformGUI || !this.transformGUI.visible) return;
 		const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
 		const screenPosition = this.cameraHolder.toGlobal(mousePixiPos);
 		let collidingChild = undefined;
@@ -3508,7 +3508,7 @@ const _B2dEditor = function () {
 
 				if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
 					&& this.mouseDocumentPosPixel.y > gui.cachedBounds.y && this.mouseDocumentPosPixel.y < gui.cachedBounds.y+gui.cachedBounds.height ){
-						if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown')){
+						if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown') && e.target.parentNode.classList.contains('open')){
 							e.target.parentNode.scrollBy(e.deltaX, e.deltaY);
 						}else{
 							gui.domElement.scrollBy(e.deltaX, e.deltaY);
@@ -4291,8 +4291,11 @@ const _B2dEditor = function () {
 			this.transformGUI.mirrorY.y-=iconHeight*3;
 			this.transformGUI.mirrorY.rotation = Math.PI/2;
 		}
+		this.transformGUI.visible = false;
 
 		if(Object.keys(this.selectedPrefabs).length === 0 && this.selectedTextures.length === 0 && this.selectedPhysicsBodies.length === 0) return;
+
+		this.transformGUI.visible = true;
 
 		this.debugGraphics.addChild(this.transformGUI);
 
@@ -6821,6 +6824,8 @@ const _B2dEditor = function () {
 			} else {
 				bodies = [this.selectedPhysicsBodies[0], this.selectedPhysicsBodies[1]];
 			}
+
+			if(bodies[0].mainCharacter || bodies[1].mainCharacter) return;
 
 			if (bodies.length == 0) return;
 			tarObj.bodyA_ID = bodies[0].mySprite.parent.getChildIndex(bodies[0].mySprite);

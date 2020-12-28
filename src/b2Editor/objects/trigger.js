@@ -27,6 +27,9 @@ export const getActionsForObject = function (object) {
         if(prefab.class.isCrossBow){
             actions.push("Shoot");
         }
+        if(prefab.class.isVehicle){
+            actions.push("DealDamage");
+        }
     } else {
         switch (object.data.type) {
             case B2dEditor.object_BODY:
@@ -189,7 +192,9 @@ export const doAction = function (actionData, target) {
         case "SetGravity":
             game.world.SetGravity(new Box2D.b2Vec2(actionData.gravityX, actionData.gravityY));
             break;
-
+        case "DealDamage":
+            prefab.class.character.dealDamage(actionData.damage);
+            break;
     }
 }
 export const guitype_MINMAX = 0;
@@ -474,6 +479,20 @@ export const actionDictionary = {
             value: 0,
             step: 0.1,
         }
+    },
+    /******************/
+    actionObject_DealDamage: {
+        type: "DealDamage",
+        damage: 10,
+    },
+    actionOptions_DealDamage: {
+        damage: {
+            type: guitype_MINMAX,
+            min: 0.1,
+            max: 10000,
+            value: 10,
+            step: 0.1,
+        },
     },
     /******************/
 }

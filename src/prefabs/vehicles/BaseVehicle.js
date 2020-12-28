@@ -15,6 +15,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         super(target);
         this.destroyConnectedJoints = {};
         this.flipped = false;
+        this.isVehicle = true;
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
     }
 
