@@ -7385,7 +7385,7 @@ const _B2dEditor = function () {
 				let minY = Number.POSITIVE_INFINITY;
 				let maxY = -Number.POSITIVE_INFINITY;
 				for (i = 0; i < vertices.length; i+=2) {
-					uvs[i] = vertices[i] * 2.0 / tex.width;
+					uvs[i] = vertices[i] * 2.0 / tex.width+0.5;
 					uvs[i+1] = vertices[i+1] * 2.0 / tex.width + 0.5;
 
 					minX = Math.min(uvs[i], minX);
@@ -7428,7 +7428,7 @@ const _B2dEditor = function () {
 
 						const uvs = new Float32Array(mesh.vertices.length);
 						for (i = 0; i < mesh.vertices.length; i+=2) {
-							uvs[i] = mesh.vertices[i] * 2.0 / tex.width;
+							uvs[i] = mesh.vertices[i] * 2.0 / tex.width + 0.5;
 							uvs[i+1] = mesh.vertices[i+1] * 2.0 / tex.width + 0.5;
 
 						}
