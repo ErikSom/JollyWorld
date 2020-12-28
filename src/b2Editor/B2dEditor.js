@@ -7403,9 +7403,18 @@ const _B2dEditor = function () {
 					});
 				}
 
-				const mesh = new PIXI.mesh.Mesh(tex, vertices, uvs, indices);
+				const mesh = new PIXI.heaven.mesh.Mesh(tex, vertices, uvs, indices);
+				console.log(mesh);
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
+
+				// SCROLLING TEXTURE
+				// setInterval(()=>{
+				// 	temp1.texture.orig.x += 1;
+				// 	temp1.texture.orig.x %=  temp1.texture.orig.width;
+				// 	temp1.texture._updateUvs();
+				// 	temp1.uploadUvTransform = true;
+				// 	})
 
 				const outline = new PIXI.Graphics();
 				targetSprite.addChild(outline);

@@ -1306,6 +1306,60 @@ var ColorController = function (_Controller) {
     _this2.__input = document.createElement('input');
     _this2.__input.type = 'text';
     _this2.__input_textShadow = '0 1px 1px ';
+    _this2.__recentcolors = document.createElement('div');
+    _this2.__recentcolors.style = `
+      position: absolute;
+      width: 38px;
+      background-color:rgb(34, 34, 34);
+      padding:3px;
+      top: 0;
+      left: -35px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 8px;
+      color:black;
+    `;
+    _this2.__colorpicker = document.createElement('div');
+    _this2.__colorpicker.style = `
+      background-color: white;
+      padding: 2px;
+      background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDEwMDAiPjxwYXRoIGQ9Ik05NTEuNyAyODAuM2M1Ni4yLTU2LjEgNDkuOS0xNTMuNy0xNC4xLTIxNy43Qzg3My41LTEuNCA3NzYtNy43IDcxOS45IDQ4LjRsLTcyLjcgNzIuOUw4NzkgMzUzLjFsNzIuNy03Mi44ek0zNDUuNiA4ODYuNWwzNzguNi0zNzguNyA0Ny42IDQ3LjYgOTcuNi05Ny43LTMyNy0zMjctOTcuNiA5Ny42IDQ3LjYgNDcuNi0zNzguOCAzNzguNUwxMCA5NDMuNWw0Ni40IDQ2LjQgMjg5LjItMTAzLjR6bTIxMi4zLTU0NWwxMDAuNyAxMDAuOC0zODUuNyAzODUuNUwxMTMuMiA4ODdsNTkuMS0xNTkuOSAzODUuNi0zODUuNnoiLz48L3N2Zz4=);
+      background-origin: content-box;
+      background-repeat: no-repeat;
+      border: 1px solid gray;
+      grid-column-end: span 2;
+      grid-row-end: span 2;
+      cursor:pointer;
+    `;
+    _this2.__colorplus = document.createElement('div');
+    _this2.__colorplus.innerText = '+';
+    _this2.__colorplus.style = `
+      background-color: white;
+      padding: 2px;
+      border: 1px solid gray;
+      grid-column-end: span 2;
+      grid-row-end: span 2;
+      text-align: center;
+      line-height: 10px;
+      font-size: 14px;
+      cursor:pointer;
+    `;
+    _this2.__colorminus = document.createElement('div');
+    _this2.__colorminus.innerText = '-';
+    _this2.__colorminus.style = `
+      background-color: white;
+      padding: 2px;
+      border: 1px solid gray;
+      grid-column-end: span 2;
+      grid-row-end: span 2;
+      line-height: 8px;
+      text-align: center;
+      font-size: 16px;
+      cursor:pointer;
+    `;
+  
+    window.__guiusercolors = ['#FFFFFF','#000000', '#FF0000', '#FFFF00', '#FF00FF', '#0000FF'];
+
     dom.bind(_this2.__input, 'keydown', function (e) {
       if (e.keyCode === 13) {
         onBlur.call(this);
@@ -1432,6 +1486,38 @@ var ColorController = function (_Controller) {
     _this2.__selector.appendChild(_this2.__field_knob);
     _this2.__selector.appendChild(_this2.__saturation_field);
     _this2.__selector.appendChild(_this2.__hue_field);
+    _this2.__selector.appendChild(_this2.__recentcolors);
+    _this2.__recentcolors.appendChild(_this2.__colorplus);
+    _this2.__recentcolors.appendChild(_this2.__colorpicker);
+    _this2.__recentcolors.appendChild(_this2.__colorminus);
+
+    const updateColors = ()=>{
+      console.log('update colors')
+      const oldElements = [..._this2.__recentcolors.children];
+      console.log(oldElements);
+      if(oldElements.length>3){
+        for(let i = 3; i<oldElements.length; i++){
+          _this2.__recentcolors.removeChild(oldElements[i]);
+        }
+      }
+      window.__guiusercolors.forEach(c => {
+        var color = document.createElement('div');
+        color.style = `
+          background-color: ${c};
+          border: 1px solid gray;
+          width:8px;
+          height:8px;
+          cursor:pointer;
+        `;
+        _this2.__recentcolors.appendChild(color);
+      });
+    }
+    _this2.__input.addEventListener('mouseover', updateColors);
+    _this2.__colorplus.onmousedown = ()=>{
+        window.__guiusercolors.push(_this2.__color.toHexString());
+        updateColors();
+    }
+
     _this2.__hue_field.appendChild(_this2.__hue_knob);
     _this2.domElement.appendChild(_this2.__input);
     _this2.domElement.appendChild(_this2.__selector);
