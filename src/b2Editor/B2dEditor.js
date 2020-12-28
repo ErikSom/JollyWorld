@@ -4516,10 +4516,13 @@ const _B2dEditor = function () {
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
-							sprite.data.tileTexture = controller.targetValue;
 							if(controller.targetValue != ''){
-								sprite.data.gradient = '';
+								if(sprite.data.gradient != ''){
+									sprite.data.gradient = '';
+									this.updateTileSprite(sprite);
+								}
 							}
+							sprite.data.tileTexture = controller.targetValue;
 							this.updateTileSprite(sprite);
 						}
 					} else if (controller.property == "tint") {
@@ -4538,10 +4541,13 @@ const _B2dEditor = function () {
 						}else{
 							for (j = 0; j < this.selectedTextures.length; j++) {
 								sprite = this.selectedTextures[j];
-								sprite.data.gradient = controller.targetValue;
 								if(controller.targetValue != ''){
-									sprite.data.tileTexture = '';
+									if(sprite.data.tileTexture != ''){
+										sprite.data.tileTexture = '';
+										this.updateTileSprite(sprite);
+									}
 								}
+								sprite.data.gradient = controller.targetValue;
 								this.updateTileSprite(sprite);
 							}
 						}
@@ -7424,11 +7430,25 @@ const _B2dEditor = function () {
 							mesh.vertices[i+1] = l*Math.sin(a);
 						}
 
+						let minX = Number.POSITIVE_INFINITY;
+						let maxX = -Number.POSITIVE_INFINITY;
+						let minY = Number.POSITIVE_INFINITY;
+						let maxY = -Number.POSITIVE_INFINITY;
 						const uvs = new Float32Array(mesh.vertices.length);
 						for (i = 0; i < mesh.vertices.length; i+=2) {
 							uvs[i] = mesh.vertices[i] * 2.0 / tex.width + 0.5;
 							uvs[i+1] = mesh.vertices[i+1] * 2.0 / tex.width + 0.5;
 
+							minX = Math.min(uvs[i], minX);
+							maxX = Math.max(uvs[i], maxX);
+							minY = Math.min(uvs[i+1], minY);
+							maxY = Math.max(uvs[i+1], maxY);
+						}
+
+						if(gradientMode){
+							uvs.forEach((uv, i) => {
+								uvs[i] = (i & 1) ? (uv - minY) / (maxY - minY) : (uv - minX) / (maxX - minX)
+							});
 						}
 
 						mesh.uvs = uvs;
