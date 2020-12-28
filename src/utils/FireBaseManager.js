@@ -355,7 +355,7 @@ function FireBaseManager() {
 
                     var levelObject = {};
                     levelObject['private'] = {};
-                    levelObject['private']["creationDate"] = levelData.creationDate;
+                    levelObject['private']["creationDate"] = Date.now();
                     levelObject['private']["description"] = levelData.description;
                     levelObject['private']["title"] = levelData.title;
                     levelObject['private']["creator"] = self.userData.username;
