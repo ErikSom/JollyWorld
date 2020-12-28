@@ -1100,6 +1100,10 @@ body .dg .cr.function {
     -ms-transition: height 0.5s;
     -o-transition: height 0.5s;
     transition: height 0.5s;
+    position: fixed;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    z-index: 1;
 }
 .imageDropDown input {
     position:absolute;top:0;left:0;opacity:0;

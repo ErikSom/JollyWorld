@@ -3505,16 +3505,14 @@ const _B2dEditor = function () {
 				if(!gui.cachedBounds){
 					gui.cachedBounds = gui.domElement.getBoundingClientRect();
 				}
-
-				if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
+				if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown') && e.target.parentNode.classList.contains('open')){
+					e.target.parentNode.scrollBy(e.deltaX, e.deltaY);
+					uiScroll = true;
+				}else  if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
 					&& this.mouseDocumentPosPixel.y > gui.cachedBounds.y && this.mouseDocumentPosPixel.y < gui.cachedBounds.y+gui.cachedBounds.height ){
-						if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown') && e.target.parentNode.classList.contains('open')){
-							e.target.parentNode.scrollBy(e.deltaX, e.deltaY);
-						}else{
-							gui.domElement.scrollBy(e.deltaX, e.deltaY);
-						}
-						uiScroll = true;
-					}
+					gui.domElement.scrollBy(e.deltaX, e.deltaY);
+					uiScroll = true;
+				}
 			}
 		});
 
