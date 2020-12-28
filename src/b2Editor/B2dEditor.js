@@ -3837,7 +3837,6 @@ const _B2dEditor = function () {
 			}
 		}
 
-		
 		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
 			for(let i = 0; i<queryGraphics.length; i++){
 				const graphic = queryGraphics[i];
@@ -3845,7 +3844,7 @@ const _B2dEditor = function () {
 					// pixel perfect detection
 					let pixels;
 					try{
-						pixels = game.app.renderer.plugins.extract.pixels(graphic);
+						pixels = game.app.renderer.plugins.extract.image(graphic);
 					}catch(err){
 						continue;
 					}
@@ -7404,10 +7403,10 @@ const _B2dEditor = function () {
 				}
 
 				const mesh = new PIXI.heaven.mesh.Mesh(tex, vertices, uvs, indices);
-				console.log(mesh);
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
 
+				//console.log(mesh);
 				// SCROLLING TEXTURE
 				// setInterval(()=>{
 				// 	temp1.texture.orig.x += 1;
@@ -7600,6 +7599,9 @@ const _B2dEditor = function () {
 		this.worldJSON += ',';
 		this.worldJSON += '"gradients":';
 		this.worldJSON += JSONStringify(this.levelGradients);
+		this.worldJSON += ",";
+		this.worldJSON += '"colors":';
+		this.worldJSON += JSONStringify(window.__guiusercolors);
 		this.worldJSON += '}';
 
 		// console.log("********************** World Data **********************");
@@ -7960,6 +7962,8 @@ const _B2dEditor = function () {
 			if(worldObjects.gradients){
 				this.parseLevelGradients(worldObjects.gradients);
 			}
+
+	  		if(worldObjects.colors) window.__guiusercolors = worldObjects.colors;
 
 			let i;
 			let obj;

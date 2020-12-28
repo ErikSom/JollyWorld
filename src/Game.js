@@ -93,6 +93,9 @@ function Game() {
     this.selectedCharacter = 0;
     this.selectedVehicle = 0;
 
+    this.needScreenshot = false;
+    this.screenShotData = null;
+
     this.ui = ui;
 
     // path pixi for camera support
@@ -121,8 +124,21 @@ function Game() {
             view: this.canvas,
             backgroundColor: 0xD4D4D4,
             width: w,
-            height: h
+            height: h,
         });
+
+        window.__pixiScreenshot = ()=>{
+            this.needScreenshot = true;
+            return new Promise((resolve, reject) => {
+                let interval = setInterval(()=>{
+                    if(this.screenShotData){
+                        clearInterval(interval);
+                        resolve(this.screenShotData);
+                        this.screenShotData = null;
+                    }
+                }, 1)
+            });
+        }
 
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
@@ -894,7 +910,6 @@ function Game() {
             emitterManager.update();
             PhysicsParticleEmitter.update();
             }
-            
         }
         EffectsComposer.update();
 
@@ -905,6 +920,7 @@ function Game() {
             this.world.DrawDebugData();
         }
         this.app.render();
+        if(this.needScreenshot) this.screenShotData = game.app.renderer.plugins.extract.canvas();
         PIXICuller.update();
         Key.update();
 
