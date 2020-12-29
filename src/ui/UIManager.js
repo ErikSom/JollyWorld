@@ -568,6 +568,8 @@ function UIManager() {
             for(let i = 0; i<Settings.availableCharacters; i++){
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/character${i+1}.png`
+                portrait.style.width = portrait.style.height = '100px';
+                portrait.style.backgroundColor = 'black';
                 characterHolder.appendChild(portrait);
                 portrait.onclick = ()=>{
                     game.selectedCharacter = i;
@@ -611,17 +613,23 @@ function UIManager() {
             const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
             const vehicleHolder = document.createElement('div');
+            vehicleHolder.classList.add('vehicleHolder');
             vehicleHolder.style.padding = '10px';
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/vehicle${i+1}.png`
+                portrait.style.width = portrait.style.height = '100px';
+                portrait.style.backgroundColor = 'black';
                 vehicleHolder.appendChild(portrait);
+
                 portrait.onclick = ()=>{
-                    this.hideVehicleSelect();
-                    game.selectedVehicle = i+1;
-                    game.initLevel(game.currentLevelData);
-                    game.playWorld();
+                    if(!game.currentLevelData.forcedVehicle || (i+1) === game.currentLevelData.forcedVehicle){
+                        this.hideVehicleSelect();
+                        game.selectedVehicle = i+1;
+                        game.initLevel(game.currentLevelData);
+                        game.playWorld();
+                    }
                 }
             }
 
@@ -636,6 +644,18 @@ function UIManager() {
 
 
         }
+
+        const vehicleHolderDiv = vehicleSelect.domElement.querySelector('.vehicleHolder');
+        [...vehicleHolderDiv.children].forEach((portrait, index)=> {
+            if(game.currentLevelData.forcedVehicle && (index+1) !== game.currentLevelData.forcedVehicle){
+                portrait.style.cursor = 'not-allowed';
+                portrait.style.filter = 'grayscale(1) brightness(0.5)';
+            }else{
+                portrait.style.cursor = 'pointer';
+                portrait.style.filter = 'unset';
+            }
+        })
+
         vehicleSelect.domElement.style.visibility = 'visible';
         // set values
     }

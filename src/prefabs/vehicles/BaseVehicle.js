@@ -97,10 +97,11 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                     game.editor.selectedPrefabs[instanceName] = true;
                     game.editor.updateSelection();
                 }
+                break;
             case 'forceVehicle':
                 if(value) game.currentLevelData.forcedVehicle = Settings.availableVehicles.indexOf(this.vehicleName)+1;
                 else game.currentLevelData.forcedVehicle = 0;
-            break;
+                break;
             default:
                 this.prefabObject.settings[property] = value;
             break;
