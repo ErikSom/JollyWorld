@@ -9,6 +9,7 @@ export class NoVehicle extends BaseVehicle {
     constructor(target) {
         super(target);
         this.character;
+        this.vehicleName = 'NoVehicle';
     }
     init() {
         super.init();

@@ -17,6 +17,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.flipped = false;
         this.isVehicle = true;
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+        this.vehicleName = '';
     }
 
     init() {
@@ -79,6 +80,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 
                     let vehicleDepth = game.editor.getLowestChildIndex([].concat(this.lookupObject._bodies, this.lookupObject._textures, this.lookupObject._joints));
 
+                    // reset force vehicle
+                    this.prefabObject.settings.forceVehicle = false;
+                    game.currentLevelData.forcedVehicle = 0;
+
                     let vehiclePrefab = `{"objects":[[4,${this.prefabObject.x},${this.prefabObject.y},${this.prefabObject.rotation},${JSON.stringify(this.prefabObject.settings)},"${value}",${this.prefabObject.instanceID}]]}`;
                     let newObjects = game.editor.buildJSON(JSON.parse(vehiclePrefab));
                     game.editor.applyToObjects(game.editor.TRANSFORM_FORCEDEPTH, vehicleDepth, [].concat(newObjects._bodies, newObjects._textures, newObjects._joints));
@@ -92,7 +97,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                     game.editor.selectedPrefabs[instanceName] = true;
                     game.editor.updateSelection();
                 }
-                break;
+            case 'forceVehicle':
+                if(value) game.currentLevelData.forcedVehicle = Settings.availableVehicles.indexOf(this.vehicleName)+1;
+                else game.currentLevelData.forcedVehicle = 0;
+            break;
             default:
                 this.prefabObject.settings[property] = value;
             break;
@@ -173,7 +181,6 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             this.lookupObject.pedal_engine.SetMotorSpeed(0);
         }
     }
-
     stopAccelerate() {
         this.stopAccelerateWheels();
     }
@@ -190,7 +197,8 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 }
 BaseVehicle.settings = Object.assign({}, BaseVehicle.settings, {
     "life": 300,
-    "selectedVehicle": "Bike"
+    "selectedVehicle": "Bike",
+    "forceVehicle": false
 });
 BaseVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
     "life": {
@@ -198,5 +206,6 @@ BaseVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
         max: 10000.0,
         step: 1.0
 	},
-    "selectedVehicle": Settings.availableVehicles
+    "selectedVehicle": Settings.availableVehicles,
+    "forceVehicle": false,
 });

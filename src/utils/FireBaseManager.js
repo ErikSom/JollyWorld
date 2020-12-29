@@ -328,6 +328,7 @@ function FireBaseManager() {
             levelObject["creationDate"] = details.creationDate;
             levelObject["description"] = details.description;
             levelObject["title"] = details.title;
+            levelObject["forcedVehicle"] = details.forcedVehicle || 0;
 
             const levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
             levelRef.set(levelObject, function (error) {
@@ -360,6 +361,7 @@ function FireBaseManager() {
                     levelObject['private']["title"] = levelData.title;
                     levelObject['private']["creator"] = self.userData.username;
                     levelObject['private']["creatorID"] = firebaseManager.getUserID();
+                    levelObject['private']["forcedVehicle"] = levelData.forcedVehicle || 0;
                     levelObject['public'] = {};
                     levelObject['public']["playCount"] = 0;
                     levelObject['public']["firstMonth_playCount"] = 'unset';

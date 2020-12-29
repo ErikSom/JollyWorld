@@ -635,6 +635,7 @@ function Game() {
             description: '',
             crossPromos: [],
             creationDate: Date.now(),
+            forcedVehicle:0,
             uid: nanoid(),
         }
         this.initLevel(data);

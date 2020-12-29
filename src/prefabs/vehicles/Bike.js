@@ -20,6 +20,7 @@ class Bike extends BaseVehicle {
             hand_left:['grip_left_joint', {ifno:'grip_right_joint', destroy:['back_joint']}],
             hand_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
         }
+        this.vehicleName = 'Bike';
     }
     init() {
         super.init();
