@@ -2989,6 +2989,9 @@ const _B2dEditor = function () {
 			let depthArray = [];
 			let jointArray = []
 
+			// filter joints, we dont want to change depth with them
+			objects = objects.filter(object => (object.mySprite || object.data.type != this.object_JOINT));
+
 			for (i = 0; i < objects.length; i++) {
 
 				if (objects[i].mySprite != undefined) {
@@ -3034,6 +3037,32 @@ const _B2dEditor = function () {
 				if ((obj && tarDepthIndexes[i] + 1 < child.parent.children.length) || (!obj && tarDepthIndexes[i] - 1 >= 0)) {
 					if (obj) neighbour = child.parent.getChildAt(tarDepthIndexes[i] + 1);
 					else neighbour = child.parent.getChildAt(tarDepthIndexes[i] - 1);
+
+					if(neighbour.data.prefabInstanceName){
+						// we got a prefab, find the lowest or highest clip
+						let targetIndex = neighbour.parent.getChildIndex(neighbour);
+						const prefab = this.activePrefabs[neighbour.data.prefabInstanceName];
+						const lookup = prefab.class ? prefab.class.lookupObject : null;
+						if(lookup){
+							const allSprites = [].concat(lookup._bodies, lookup._joints, lookup._textures);
+							allSprites.forEach(spriteObject => {
+								const sprite = spriteObject.mySprite ? spriteObject.mySprite : spriteObject;
+								let spriteIndex = sprite.parent.getChildIndex(sprite);
+								if(obj){
+									if(spriteIndex > targetIndex){
+										neighbour = sprite;
+										targetIndex = spriteIndex;
+									}
+								}else{
+									if(spriteIndex < targetIndex){
+										neighbour = sprite;
+										targetIndex = spriteIndex;
+									}
+								}
+							})
+						}
+					}
+
 					var allowed = true;
 					var j;
 					if (obj) {
@@ -3553,7 +3582,8 @@ const _B2dEditor = function () {
 			this.selectTool(this.tool_SELECT);
 		} else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
-				this.selectedTextures.push(this.attachJointPlaceHolder());
+				const newJoint = this.attachJointPlaceHolder();
+				if(newJoint) this.selectedTextures.push(newJoint);
 			} else this.selectTool(this.tool_JOINTS);
 		} else if (e.keyCode == 86) { // v
 			if (e.ctrlKey || e.metaKey) {
@@ -4291,6 +4321,7 @@ const _B2dEditor = function () {
 		this.transformGUI.visible = false;
 
 		if(Object.keys(this.selectedPrefabs).length === 0 && this.selectedTextures.length === 0 && this.selectedPhysicsBodies.length === 0) return;
+		if(this.selectedTextures.find(texture=>texture.data.type == this.object_JOINT)) return;
 
 		this.transformGUI.visible = true;
 
@@ -6828,9 +6859,15 @@ const _B2dEditor = function () {
 				bodies = [this.selectedPhysicsBodies[0], this.selectedPhysicsBodies[1]];
 			}
 
-			if(bodies[0].mainCharacter || bodies[1].mainCharacter) return;
-
 			if (bodies.length == 0) return;
+
+			const bodyAVehicle = bodies[0] && this.retrieveClassFromBody(bodies[0]) && this.retrieveClassFromBody(bodies[0]).isVehicle;
+			const bodyBVehicle = bodies[1] && this.retrieveClassFromBody(bodies[1]) && this.retrieveClassFromBody(bodies[1]).isVehicle;
+			if((bodyAVehicle || bodyBVehicle) && !game.currentLevelData.forcedVehicle){
+				ui.showNotice('You must set forceVehicle to true on the character if you want to attach joints to it');
+				return;
+			}
+
 			tarObj.bodyA_ID = bodies[0].mySprite.parent.getChildIndex(bodies[0].mySprite);
 			if (bodies.length > 1) {
 				tarObj.bodyB_ID = bodies[1].mySprite.parent.getChildIndex(bodies[1].mySprite);
@@ -7580,7 +7617,7 @@ const _B2dEditor = function () {
 
 		for (i = 0; i < this.textures.children.length; i++) {
 			if (i != 0) this.worldJSON += ',';
-			sprite = this.textures.getChildAt(i);
+			sprite = this.textures.children[i];
 			this.updateObject(sprite, sprite.data);
 			if (sprite.data.prefabInstanceName) {
 				if (stringifiedPrefabs[sprite.data.prefabInstanceName]) {

@@ -2227,6 +2227,8 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
     setHighestWindow(errorScreen.domElement);
 
+    window.onerror = ()=>{};
+
     return false;
 }
 

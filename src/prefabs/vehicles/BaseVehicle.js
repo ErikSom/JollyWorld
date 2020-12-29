@@ -100,7 +100,26 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 break;
             case 'forceVehicle':
                 if(value) game.currentLevelData.forcedVehicle = Settings.availableVehicles.indexOf(this.vehicleName)+1;
-                else game.currentLevelData.forcedVehicle = 0;
+                else {
+                    game.currentLevelData.forcedVehicle = 0;
+                    const jointsToDelete = [];
+                    for (let i = 0; i < game.editor.textures.children.length; i++) {
+                        let sprite = game.editor.textures.getChildAt(i);
+                        if(sprite.data && sprite.data.type === game.editor.object_JOINT){
+                            if(!sprite.data.prefabInstanceName){
+                                const spriteA = game.editor.textures.getChildAt(sprite.data.bodyA_ID);
+                                const spriteB = game.editor.textures.getChildAt(sprite.data.bodyB_ID);
+                                if(spriteA.myBody && game.editor.retrieveClassFromBody(spriteA.myBody) && game.editor.retrieveClassFromBody(spriteA.myBody).isVehicle){
+                                    jointsToDelete.push(sprite);
+                                }else if(spriteB.myBody && game.editor.retrieveClassFromBody(spriteB.myBody) && game.editor.retrieveClassFromBody(spriteB.myBody).isVehicle){
+                                    jointsToDelete.push(sprite);
+                                }
+
+                            }
+                        }
+                    }
+                    game.editor.deleteObjects(jointsToDelete);
+                }
                 break;
             default:
                 this.prefabObject.settings[property] = value;
