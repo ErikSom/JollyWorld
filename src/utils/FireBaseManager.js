@@ -429,7 +429,7 @@ function FireBaseManager() {
         });
 
         const now = new Date();
-        const creationDate = new Date(levelData.private.creationDate);
+        const creationDate = new Date(levelData.creationDate);
         if (now.getFullYear() === creationDate.getFullYear() && now.getMonth() == creationDate.getMonth()) {
             this.call_setRangedPopularity(levelData.uid);
         }

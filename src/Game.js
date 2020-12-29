@@ -743,7 +743,6 @@ function Game() {
            .then(response => response.json())
            .then((data) =>{
                 self.currentLevelData.json = JSONStringify(data);
-                firebaseManager.increasePlayCountPublishedLevel(levelData);
                 this.previewLevel();
                 return resolve();
             }).catch((err) => {

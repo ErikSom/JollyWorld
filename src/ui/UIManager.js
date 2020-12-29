@@ -505,7 +505,6 @@ function UIManager() {
             playButton.addEventListener('click', () => {
                 this.hideLevelBanner();
                 this.showCharacterSelect();
-                // game.playWorld();
             })
 
             let backButton = document.createElement('div');
@@ -629,6 +628,8 @@ function UIManager() {
                         game.selectedVehicle = i+1;
                         game.initLevel(game.currentLevelData);
                         game.playWorld();
+                        firebaseManager.increasePlayCountPublishedLevel(game.currentLevelData);
+
                     }
                 }
             }
