@@ -574,10 +574,21 @@ function FireBaseManager() {
 
             levelsRef.once('value', function (snapshot) {
                 let sortedLevelList = []
-                snapshot.forEach((level) =>{
+                snapshot.forEach((levelSnapshot) =>{
+                    const level = levelSnapshot.val();
+                    level.uid = levelSnapshot.key;
                     sortedLevelList.push(level);
                 });
-                if(filter.by !== game.ui.FILTER_BY_OLDEST) sortedLevelList.reverse();
+
+                if(filter.by === game.ui.FILTER_BY_NEWEST){
+                    sortedLevelList.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? 1 : -1);
+                }else if(filter.by === game.ui.FILTER_BY_OLDEST){
+                    sortedLevelList.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? -1 : 1);
+                }else if(filter.by === game.ui.FILTER_BY_PLAYCOUNT){
+                    sortedLevelList.sort((a,b)=> (a.public.playCount<b.public.playCount) ? 1 : -1);
+                }else if(filter.by === game.ui.FILTER_BY_RATING){
+                    sortedLevelList.sort((a,b)=> (a.public.voteAvg<b.public.voteAvg) ? 1 : -1);
+                }
 
                 return resolve(sortedLevelList);
             }, function (error) {

@@ -1361,13 +1361,7 @@ function UIManager() {
 
         let self = this;
 
-        const buildLevelList = (levelsData) => {
-
-            const levels = levelsData.map(level=>level.val());
-            levelsData.forEach((level, index)=>levels[index].uid=level.key);
-
-            // sort levels on creationDate
-            levels.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? 1 : -1);
+        const buildLevelList = (levels) => {
 
             itemListDotShell.style.visibility = 'hidden';
             levels.forEach(level => {
