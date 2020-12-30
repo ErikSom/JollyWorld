@@ -912,7 +912,6 @@ function Game() {
             }
         }
         EffectsComposer.update();
-
         this.editor.run();
 
         this.newDebugGraphics.clear();

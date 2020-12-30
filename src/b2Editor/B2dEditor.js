@@ -1348,7 +1348,21 @@ const _B2dEditor = function () {
 
 
 			} else if (obj instanceof this.prefabObject) {
+				console.log(obj.myTriggers, 'Check this one');
 				arr = arr.concat(this.lookupGroups[obj.key]._bodies, this.lookupGroups[obj.key]._textures, this.lookupGroups[obj.key]._joints);
+
+
+				arr.forEach(arrEl=>{
+					const sprite = arrEl.mySprite ? arrEl.mySprite : arrEl;
+					for (j = 0; j < (sprite.myTriggers ? sprite.myTriggers.length : 0); j++) {
+						let myTrigger = sprite.myTriggers[j];
+						trigger.removeTargetFromTrigger(myTrigger, sprite);
+						if(!sprite.myTriggers) break;
+						j--;
+					}
+				})
+
+
 				delete this.activePrefabs[obj.key];
 			} else if (obj.data) {
 				//graphic object
@@ -1424,6 +1438,8 @@ const _B2dEditor = function () {
 					for (j = 0; j < (b.mySprite.myTriggers ? b.mySprite.myTriggers.length : 0); j++) {
 						myTrigger = b.mySprite.myTriggers[j];
 						trigger.removeTargetFromTrigger(myTrigger, b.mySprite);
+						if(!sprite.myTriggers) break;
+						j--;
 					}
 				}
 				b.mySprite.destroyed = true;
@@ -2075,6 +2091,7 @@ const _B2dEditor = function () {
 		this.triggerActions = [];
 		this.followPlayer = false;
 		this.worldActions = [];
+		this.triggerKey = 32;
 		this.lockselection = false;
 	}
 	this.textObject = function () {
@@ -4768,6 +4785,13 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.followPlayer = controller.targetValue;
+						}
+					} else if (controller.property == "triggerKey") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							console.log(controller.targetValue, 'setting this')
+							body.mySprite.data.triggerKey = controller.targetValue;
 						}
 					} else if (controller.triggerActionKey != undefined) {
 						//trigger action
@@ -7750,6 +7774,7 @@ const _B2dEditor = function () {
 			arr[12] = obj.triggerActions;
 			arr[13] = obj.followPlayer;
 			arr[14] = obj.worldActions;
+			arr[15] = obj.triggerKey;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -7885,6 +7910,7 @@ const _B2dEditor = function () {
 			obj.triggerActions = arr[12];
 			obj.followPlayer = typeof arr[13] === "boolean" ? arr[13] : false;
 			obj.worldActions = arr[14] || [];
+			obj.triggerKey = arr[15] || 32;
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];

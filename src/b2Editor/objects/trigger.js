@@ -7,7 +7,7 @@ import {
     Settings
 } from "../../Settings";
 import {
-    Key
+    Key, KeyNames
 } from "../../../libs/Key";
 import {
     game
@@ -169,7 +169,9 @@ export const doAction = function (actionData, target) {
             target.SetDampingRatio(actionData.dampingRatio);
             break;
         case "Destroy":
-            const toDestroy = target.myBody || target;
+            console.log(prefab);
+            const toDestroy = prefab || target.myBody || target;
+            console.log(toDestroy);
             B2dEditor.deleteObjects([toDestroy]);
             break;
         case "SetActive":
@@ -182,6 +184,7 @@ export const doAction = function (actionData, target) {
             prefab.class.setShouldShoot();
             break;
         case "SetEnabled":
+            console.log(target.data);
             target.data.enabled = actionData.setEnabled;
             if(actionData.toggle) actionData.setEnabled = !actionData.setEnabled;
             break;
@@ -498,7 +501,7 @@ export const actionDictionary = {
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
-    targetTypes.map(key => {
+    targetTypes.forEach(key => {
         if (triggerTargetType[key] == dataJoint.targetType) {
             ui.editorGUI.editData.targetTypeDropDown = key;
         }
@@ -507,7 +510,8 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.humanUpdate = true;
         this.targetValue = value
     });
-    if(![triggerTargetType.click].includes(dataJoint.targetType)){
+
+    if(![triggerTargetType.click, triggerTargetType.keydown, triggerTargetType.keyup].includes(dataJoint.targetType)){
         var repeatTypes = Object.keys(triggerRepeatType);
         repeatTypes.map(key => {
             if (triggerRepeatType[key] == dataJoint.repeatType) {
@@ -517,6 +521,21 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).name('repeat').onChange(function (value) {
             this.humanUpdate = true;
             this.targetValue = value
+        });
+    }
+
+    if([triggerTargetType.keydown, triggerTargetType.keyup].includes(dataJoint.targetType)){
+        ui.editorGUI.editData.triggerKey = KeyNames[0];
+
+        KeyNames.forEach(key => {
+            if (Key[key] == dataJoint.triggerKey) {
+                ui.editorGUI.editData.triggerKey = key;
+            }
+        })
+
+        _folder.add(ui.editorGUI.editData, "triggerKey", KeyNames).name('key').onChange(function (value) {
+            this.humanUpdate = true;
+            this.targetValue = Key[value];
         });
     }
 
@@ -567,7 +586,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             controller.name('actionType');
 
             addActionGUIToFolder(action, actionString, actionFolder, targetID, actionID)
-            
+
             ui.editorGUI.editData[actionString] = dataJoint.triggerActions[i][j];
 
             if(dataJoint.triggerActions[i].length>1){
@@ -751,6 +770,8 @@ export const triggerTargetType = {
     allObjects: 3,
     attachedTargetsOnly: 4,
     click: 5,
+    keydown: 6,
+    keyup: 7
 }
 export const triggerRepeatType = {
     once: 0,
@@ -807,6 +828,14 @@ export class triggerCore {
                         }
                         fixture = fixture.GetNext();
                     }
+                }
+            } else if(this.data.targetType == triggerTargetType.keydown){
+                if(Key.isPressed(this.data.triggerKey)){
+                    this.doTrigger();
+                }
+            } else if(this.data.targetType == triggerTargetType.keyup){
+                if(Key.isReleased(this.data.triggerKey)){
+                    this.doTrigger();
                 }
             }
             if(this.data.followPlayer){
@@ -881,6 +910,7 @@ export class triggerCore {
                 doAction(actionData, targetObject);
                 if(targetObject.destroyed){
                     i--;
+                    j = triggerLength;
                 }
             }
         }
@@ -936,9 +966,9 @@ export const removeTargetFromTrigger = function (_trigger, target) {
     }
     if (target.myTriggers.length == 0) target.myTriggers = undefined;
 
-
     if (!target.data) return;
     if (target.data.prefabInstanceName) {
+        console.log(_trigger.mySprite.targetPrefabs);
         for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
             if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
                 _trigger.mySprite.targetPrefabs.splice(i, 1);
