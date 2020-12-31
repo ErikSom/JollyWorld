@@ -1849,6 +1849,7 @@ const _B2dEditor = function () {
 		}
 
 		//update objects
+		game.canvas.style.cursor = 'unset';
 		if (!this.editing) {
 			var key;
 			for (key in this.activePrefabs) {

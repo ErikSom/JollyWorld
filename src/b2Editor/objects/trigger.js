@@ -819,15 +819,16 @@ export class triggerCore {
     update() {
         if(this.data.enabled){
             if (this.data.targetType == triggerTargetType.click) {
-                if (Key.isPressed(Key.MOUSE)) {
-                    let fixture = this.trigger.GetFixtureList();
-                    while (fixture != null) {
-                        if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
+                let fixture = this.trigger.GetFixtureList();
+                while (fixture != null) {
+                    if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
+                        if(Key.isPressed(Key.MOUSE)){
                             this.doTrigger();
-                            break;
                         }
-                        fixture = fixture.GetNext();
+                        game.canvas.style.cursor = 'pointer';
+                        break;
                     }
+                    fixture = fixture.GetNext();
                 }
             } else if(this.data.targetType == triggerTargetType.keydown){
                 if(Key.isPressed(this.data.triggerKey)){
