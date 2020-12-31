@@ -120,6 +120,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                     }
                     game.editor.deleteObjects(jointsToDelete);
                 }
+                this.prefabObject.settings[property] = value;
                 break;
             default:
                 this.prefabObject.settings[property] = value;
