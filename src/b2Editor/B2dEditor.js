@@ -133,6 +133,9 @@ const _B2dEditor = function () {
 
 	this.selectingTriggerTarget = false;
 
+	this.customPrefabMouseDown = null;
+	this.customPrefabMouseMove = null;
+
 	this.cameraHolder;
 
 	Object.defineProperty(this, 'cameraHolder', {
@@ -1063,21 +1066,28 @@ const _B2dEditor = function () {
 				var prefabClassOptions = prefabClass.settingsOptions;
 
 
-				for (var key in prefabClassOptions) {
+				for (let key in prefabClassOptions) {
 					if (prefabClassOptions.hasOwnProperty(key) && prefabClassOptions[key] !== undefined) {
-						var argument;
+						let argument;
 						ui.editorGUI.editData[key] = prefabObjectSettings[key];
 
 						if(ui.editorGUI.editData[key] === undefined) ui.editorGUI.editData[key] = prefabClassSettings[key];
-
-						if (prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
+						if (prefabClassOptions[key] == '$function') {
+							// create a new function that passes the prefab object
+							ui.editorGUI.editData[key] = ()=>prefabClassSettings[key](prefabObject);
+							controller = targetFolder.add(ui.editorGUI.editData, key);
+							controller.onChange(function (value) {
+								this.humanUpdate = true;
+								this.targetValue = value
+							}.bind(controller));
+						}else if (prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
 							controller = targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step)
 							controller.onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value
 							}.bind(controller));
-						} else {
+						}else {
 							if (prefabClassOptions[key] instanceof Array) argument = prefabClassOptions[key];
 							else argument = null;
 							controller = targetFolder.add(ui.editorGUI.editData, key, argument);
@@ -2260,6 +2270,8 @@ const _B2dEditor = function () {
 					}
 				}
 				this.selectingTriggerTarget = false;
+			} else if(this.customPrefabMouseDown){
+				this.customPrefabMouseDown();
 			} else if (this.selectedTool == this.tool_SELECT) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 
@@ -2548,7 +2560,9 @@ const _B2dEditor = function () {
 		if (this.oldMousePosWorld == null) this.oldMousePosWorld = this.mousePosWorld;
 
 		if (this.editing) {
-			if (this.mouseDown) {
+			if(this.customPrefabMouseMove){
+				this.customPrefabMouseMove();
+			}else if (this.mouseDown) {
 				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
 				if (this.spaceCameraDrag) {
 					move.SelfMul(this.cameraHolder.scale.x);
@@ -2644,7 +2658,6 @@ const _B2dEditor = function () {
 								}
 							});
 						}
-						
 						if(spriteData.type === this.object_BODY){
 							this.updateBodyFixtures(this.verticeEditingSprite.myBody);
 							this.updateBodyShapes(this.verticeEditingSprite.myBody);
@@ -3345,7 +3358,9 @@ const _B2dEditor = function () {
 
 	this.onMouseUp = function (evt) {
 		if (this.editing) {
-			if (this.spaceCameraDrag) {
+			if(this.customPrefabMouseDown){
+				// dont do any mouse up action if we are doing a custom prefab action
+			}else if (this.spaceCameraDrag) {
 				this.spaceCameraDrag = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
@@ -3622,6 +3637,9 @@ const _B2dEditor = function () {
 			this.selectedPrefabs = {};
 			this.selectedTextures.length = 0;
 			this.selectedPhysicsBodies.length = 0;
+			this.selectingTriggerTarget = false;
+			this.customPrefabMouseDown = null;
+			this.customPrefabMouseMove = null;
 			this.updateSelection();
 
 			if([this.tool_VERTICEEDITING, this.tool_CAMERA].includes(this.selectedTool)){
@@ -8205,6 +8223,10 @@ const _B2dEditor = function () {
 
 		this.editorIcons = [];
 		this.triggerObjects = [];
+
+		this.selectingTriggerTarget = false;
+		this.customPrefabMouseDown = null;
+		this.customPrefabMouseMove = null;
 
 		//Destroy all bodies
 		var body = this.world.GetBodyList();

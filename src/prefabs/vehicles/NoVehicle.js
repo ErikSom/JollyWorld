@@ -28,3 +28,31 @@ PrefabManager.prefabLibrary.NoVehicle = {
     class: NoVehicle,
     library: PrefabManager.LIBRARY_ADMIN,
 }
+
+
+const stopPositioningLimb = (prefab, limb) => {
+    console.log("SETTING LIMB")
+    game.editor.customPrefabMouseDown = null;
+    game.editor.customPrefabMouseMove = null;
+}
+const positionLimb = (prefab, limb) => {
+    console.log("Position limb", prefab, limb)
+}
+const startPositioningLimb = (prefab, limb) =>{
+    game.editor.customPrefabMouseDown = ()=>{
+        stopPositioningLimb(prefab, limb)
+    }
+    game.editor.customPrefabMouseMove = ()=>{
+        positionLimb(prefab, limb)
+    }
+}
+
+
+NoVehicle.settings = Object.assign({}, BaseVehicle.settings, {
+    "positionLeftArm": prefab=>startPositioningLimb(prefab, 'left arm'),
+    "positionRightArm": prefab=>startPositioningLimb(prefab, 'right arm'),
+});
+NoVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
+    "positionLeftArm": '$function',
+    "positionRightArm": '$function',
+});
