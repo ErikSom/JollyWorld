@@ -36,16 +36,9 @@ export class RopeHat extends Hat {
 	}
 	activate() {
 		if (this.ropeFired){
-			console.log("ACTIVATE - ROPE FIRED");
-			this.ropeFired = false;
-			this.releaseRope();
-			this.clearTilingRope();
-			this.ropePoints = [];
-			this.anchorTexture.parent.removeChild(this.anchorTexture);
-			this.anchorTexture = null;
+			this.detach();
 			return;
 		}
-		console.log("ACTIVATE");
 
 		this.ropeFired = true;
 		const rayStart = this.head.GetPosition();
@@ -64,6 +57,14 @@ export class RopeHat extends Hat {
 		} else {
 			this.ropeFired = false;
 		}
+	}
+	detach() {
+		this.ropeFired = false;
+		this.releaseRope();
+		this.clearTilingRope();
+		this.ropePoints = [];
+		this.anchorTexture.parent.removeChild(this.anchorTexture);
+		this.anchorTexture = null;
 	}
 	attachRope(point, body, precise) {
 		console.log("ATTACH ROPE!!");

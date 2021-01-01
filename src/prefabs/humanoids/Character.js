@@ -313,6 +313,7 @@ export class Character extends PrefabManager.basePrefab {
 
                         this.dealDamage(30);
                         if([this.lookupObject[Character.BODY_PARTS.HEAD], this.lookupObject[Character.BODY_PARTS.BODY]].includes(targetBody)){
+                            if(this.hat) this.hat.detach();
                             this.dealDamage(1000);
                         }
 
