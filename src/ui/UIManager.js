@@ -85,7 +85,7 @@ function UIManager() {
             discordButton.classList.add('normalButton','discordButton');
             discordButton.style.backgroundImage = 'url(./assets/images/misc/discord.png)';
             discordButton.onclick = ()=>{
-                window.open("https://discord.gg/erYWbxd", "_blank");
+                window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
             }
             customGUIContainer.appendChild(discordButton);
 

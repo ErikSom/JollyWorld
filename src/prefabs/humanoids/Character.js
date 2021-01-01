@@ -8,6 +8,7 @@ import {
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
+import { rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
 
 export class Character extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -694,8 +695,54 @@ export class Character extends PrefabManager.basePrefab {
                 body.ApplyTorque(torque);
             }
         }
-
     }
+
+    positionLimb(limb, x, y){
+        let baseJoint,
+        upperPart,
+        lowerJoint,
+        lowerPart,
+        endJoint,
+        endPart;
+
+        switch(limb){
+            case Character.BODY_PARTS.ARM_LEFT:
+                baseJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT+"_joint"];
+                upperPart = this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT];
+                lowerJoint = this.lookupObject[Character.BODY_PARTS.ARM_LEFT+"_joint"];
+                lowerPart = this.lookupObject[Character.BODY_PARTS.ARM_LEFT];
+                endJoint = this.lookupObject[Character.BODY_PARTS.HAND_LEFT+"_joint"];
+                endPart = this.lookupObject[Character.BODY_PARTS.HAND_LEFT];
+            break;
+            case Character.BODY_PARTS.ARM_RIGHT:
+                baseJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT+"_joint"];
+                upperPart = this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT];
+                lowerJoint = this.lookupObject[Character.BODY_PARTS.ARM_RIGHT+"_joint"];
+                lowerPart = this.lookupObject[Character.BODY_PARTS.ARM_RIGHT];
+                endJoint = this.lookupObject[Character.BODY_PARTS.HAND_RIGHT+"_joint"];
+                endPart = this.lookupObject[Character.BODY_PARTS.HAND_RIGHT];
+            break;
+        }
+
+
+
+        const baseJointPos = new Box2D.b2Vec2(baseJoint.position.x/Settings.PTM, baseJoint.position.y/Settings.PTM);
+
+        let dx = x-baseJointPos.x;
+        let dy = y-baseJointPos.y;
+        const angle = Math.atan2(dy, dx);
+        console.log("Angle:", angle*game.editor.RAD2DEG);
+
+        upperPart.SetPosition(rotateVectorAroundPoint(upperPart.GetPosition(), baseJointPos, angle*game.editor.RAD2DEG));
+        upperPart.SetAngle(angle-Math.PI/2);
+
+        lowerPart.SetPosition(rotateVectorAroundPoint(lowerPart.GetPosition(), baseJointPos, angle*game.editor.RAD2DEG));
+        lowerPart.SetAngle(angle-Math.PI/2);
+
+        endPart.SetPosition(rotateVectorAroundPoint(endPart.GetPosition(), baseJointPos, angle*game.editor.RAD2DEG));
+        endPart.SetAngle(angle-Math.PI/2);
+    }
+
     detachFromVehicle(force) {
         if (!force) force = 0;
         if (!this.attachedToVehicle) return;

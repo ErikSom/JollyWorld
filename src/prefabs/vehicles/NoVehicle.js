@@ -1,5 +1,6 @@
 import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
+import { Character } from '../humanoids/Character'
 import {
     game
 } from "../../Game";
@@ -10,6 +11,11 @@ export class NoVehicle extends BaseVehicle {
         super(target);
         this.character;
         this.vehicleName = 'NoVehicle';
+    }
+    positionLimb(limb){
+        const x = this.prefabObject.settings.limbs[limb][0] + this.prefabObject.x / game.editor.PTM;
+        const y = this.prefabObject.settings.limbs[limb][1] + this.prefabObject.y / game.editor.PTM;
+        this.character.positionLimb(limb, x, y);
     }
     init() {
         super.init();
@@ -30,27 +36,31 @@ PrefabManager.prefabLibrary.NoVehicle = {
 }
 
 
-const stopPositioningLimb = (prefab, limb) => {
-    console.log("SETTING LIMB")
+const stopPositioningLimb = () => {
     game.editor.customPrefabMouseDown = null;
     game.editor.customPrefabMouseMove = null;
 }
-const positionLimb = (prefab, limb) => {
-    console.log("Position limb", prefab, limb)
+const setPositionLimb = (prefab, limb) => {
+    const x = game.editor.mousePosWorld.x - prefab.x / game.editor.PTM;
+    const y = game.editor.mousePosWorld.y - prefab.y / game.editor.PTM;
+    if(!prefab.settings.limbs) prefab.settings.limbs = {};
+    prefab.settings.limbs[limb] = [x, y];
+    prefab.class.positionLimb(limb);
 }
 const startPositioningLimb = (prefab, limb) =>{
     game.editor.customPrefabMouseDown = ()=>{
-        stopPositioningLimb(prefab, limb)
+        setPositionLimb(prefab, limb);
+        stopPositioningLimb(prefab, limb);
     }
     game.editor.customPrefabMouseMove = ()=>{
-        positionLimb(prefab, limb)
+        setPositionLimb(prefab, limb);
     }
 }
 
 
 NoVehicle.settings = Object.assign({}, BaseVehicle.settings, {
-    "positionLeftArm": prefab=>startPositioningLimb(prefab, 'left arm'),
-    "positionRightArm": prefab=>startPositioningLimb(prefab, 'right arm'),
+    "positionLeftArm": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.ARM_LEFT),
+    "positionRightArm": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.ARM_RIGHT),
 });
 NoVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
     "positionLeftArm": '$function',

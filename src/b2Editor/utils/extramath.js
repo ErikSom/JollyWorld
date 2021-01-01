@@ -13,6 +13,14 @@ export const rotateVector = function (vector, degrees) {
     const ty = vector.y;
     return new b2Vec2(cos * tx - sin * ty, sin * tx + cos * ty);
 }
+
+export const rotateVectorAroundPoint = function(vector, point, degrees){
+    const vec = vector.Clone().SelfSub(point);
+    const newvec = new b2Vec2(vec.Length(), 0);
+    const rotatedVector = rotateVector(newvec, degrees);
+    return rotatedVector.SelfAdd(point);
+}
+
 export const lineIntersect = function (A, B, C, D) {
     const ccw = function (A, B, C) {
         return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x)
