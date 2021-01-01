@@ -6953,7 +6953,7 @@ const _B2dEditor = function () {
 
 
 		if (tarObj.prefabInstanceName) {
-			jointGraphics.visible = false;
+			// jointGraphics.visible = false;
 			jointGraphics.isPrefabJointGraphic = true;
 		}
 

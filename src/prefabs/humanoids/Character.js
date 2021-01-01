@@ -731,17 +731,48 @@ export class Character extends PrefabManager.basePrefab {
 
         let dx = x-baseJointPos.x;
         let dy = y-baseJointPos.y;
-        const angle = Math.atan2(dy, dx);
-        console.log("Angle:", angle*game.editor.RAD2DEG);
+        let dl = Math.sqrt(dx*dx+dy*dy);
+        let angle = Math.atan2(dy, dx);
 
-        upperPart.SetPosition(rotateVectorAroundPoint(upperPart.GetPosition(), baseJointPos, angle*game.editor.RAD2DEG));
+        // IK position
+        const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
+        const endJointPos = new Box2D.b2Vec2(endJoint.position.x/Settings.PTM, endJoint.position.y/Settings.PTM);
+
+        const upperLength = lowerJointPos.Clone().SelfSub(baseJointPos).Length();
+        const lowerLength = endJointPos.Clone().SelfSub(lowerJointPos).Length();
+
+        const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
+        upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
         upperPart.SetAngle(angle-Math.PI/2);
 
-        lowerPart.SetPosition(rotateVectorAroundPoint(lowerPart.GetPosition(), baseJointPos, angle*game.editor.RAD2DEG));
+        const anchorDistanceLower = lowerJointPos.Clone().SelfSub(lowerPart.GetPosition()).Length();
+
+        const lowerEndDistance = lowerJointPos.Clone().SelfSub(endJointPos).Length();
+
+        const lowerJointPosRotated = rotateVectorAroundPoint(lowerJointPos, baseJointPos, angle*game.editor.RAD2DEG);
+        lowerJointPos.x = lowerJointPosRotated.x;
+        lowerJointPos.y = lowerJointPosRotated.y;
+        lowerJoint.position.x = lowerJointPos.x*Settings.PTM;
+        lowerJoint.position.y = lowerJointPos.y*Settings.PTM;
+
+        angle -= 0.8;
+
+        lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(angle), lowerJointPos.y+anchorDistanceLower*Math.sin(angle)));
         lowerPart.SetAngle(angle-Math.PI/2);
 
-        endPart.SetPosition(rotateVectorAroundPoint(endPart.GetPosition(), baseJointPos, angle*game.editor.RAD2DEG));
+        const anchorDistanceEnd = endJointPos.Clone().SelfSub(endPart.GetPosition()).Length();
+
+        const endJointPosRotated = rotateVectorAroundPoint(new Box2D.b2Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, angle*game.editor.RAD2DEG);
+        endJointPos.x = endJointPosRotated.x;
+        endJointPos.y = endJointPosRotated.y;
+        endJoint.position.x = endJointPos.x*Settings.PTM;
+        endJoint.position.y = endJointPos.y*Settings.PTM;
+
+        endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(angle), endJointPos.y+anchorDistanceEnd*Math.sin(angle)));
         endPart.SetAngle(angle-Math.PI/2);
+
+
+
     }
 
     detachFromVehicle(force) {
