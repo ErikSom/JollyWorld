@@ -704,7 +704,8 @@ export class Character extends PrefabManager.basePrefab {
         lowerJoint,
         lowerPart,
         endJoint,
-        endPart;
+        endPart,
+        invertAngle;
 
         switch(limb){
             case Character.BODY_PARTS.ARM_LEFT:
@@ -714,6 +715,7 @@ export class Character extends PrefabManager.basePrefab {
                 lowerPart = this.lookupObject[Character.BODY_PARTS.ARM_LEFT];
                 endJoint = this.lookupObject[Character.BODY_PARTS.HAND_LEFT+"_joint"];
                 endPart = this.lookupObject[Character.BODY_PARTS.HAND_LEFT];
+                invertAngle = false;
             break;
             case Character.BODY_PARTS.ARM_RIGHT:
                 baseJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT+"_joint"];
@@ -722,64 +724,121 @@ export class Character extends PrefabManager.basePrefab {
                 lowerPart = this.lookupObject[Character.BODY_PARTS.ARM_RIGHT];
                 endJoint = this.lookupObject[Character.BODY_PARTS.HAND_RIGHT+"_joint"];
                 endPart = this.lookupObject[Character.BODY_PARTS.HAND_RIGHT];
+                invertAngle = false;
+            break;
+            case Character.BODY_PARTS.LEG_LEFT:
+                baseJoint = this.lookupObject[Character.BODY_PARTS.THIGH_LEFT+"_joint"];
+                upperPart = this.lookupObject[Character.BODY_PARTS.THIGH_LEFT];
+                lowerJoint = this.lookupObject[Character.BODY_PARTS.LEG_LEFT+"_joint"];
+                lowerPart = this.lookupObject[Character.BODY_PARTS.LEG_LEFT];
+                endJoint = this.lookupObject[Character.BODY_PARTS.FEET_LEFT+"_joint"];
+                endPart = this.lookupObject[Character.BODY_PARTS.FEET_LEFT];
+                invertAngle = true;
+            break;
+            case Character.BODY_PARTS.LEG_RIGHT:
+                baseJoint = this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT+"_joint"];
+                upperPart = this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT];
+                lowerJoint = this.lookupObject[Character.BODY_PARTS.LEG_RIGHT+"_joint"];
+                lowerPart = this.lookupObject[Character.BODY_PARTS.LEG_RIGHT];
+                endJoint = this.lookupObject[Character.BODY_PARTS.FEET_RIGHT+"_joint"];
+                endPart = this.lookupObject[Character.BODY_PARTS.FEET_RIGHT];
+                invertAngle = true;
+            break;
+            case Character.BODY_PARTS.HEAD:
+                baseJoint = this.lookupObject[Character.BODY_PARTS.HEAD+"_joint"];
+                upperPart = this.lookupObject[Character.BODY_PARTS.HEAD];
+                lowerJoint = null;
+                lowerPart = null;
+                endJoint = null;
+                endPart = null;
             break;
         }
 
-
-
         const baseJointPos = new Box2D.b2Vec2(baseJoint.position.x/Settings.PTM, baseJoint.position.y/Settings.PTM);
-
         let dx = x-baseJointPos.x;
         let dy = y-baseJointPos.y;
         let dl = Math.sqrt(dx*dx+dy*dy);
         const angle = Math.atan2(dy, dx);
 
-        // IK position
-        const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
-        const endJointPos = new Box2D.b2Vec2(endJoint.position.x/Settings.PTM, endJoint.position.y/Settings.PTM);
+        const limitRadiance = radiance => {
+            if(radiance > Math.PI) radiance -= Math.PI * 2;
+            return radiance;
+        }
 
-        const upperLength = lowerJointPos.Clone().SelfSub(baseJointPos).Length();
-        const lowerLength = endJointPos.Clone().SelfSub(lowerJointPos).Length();
-        const totalLength = upperLength+lowerLength;
-        const upperLengthShare = upperLength/totalLength;
-        const lowerLengthShare = lowerLength/totalLength;
+        if(!lowerJoint){
+            const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
 
-        const baseDiff = Math.min(dl, totalLength);
 
-        const upperAngleChange = Math.acos(Math.max(-1.0, Math.min(1.0, (baseDiff * upperLengthShare) / upperLength)));
+            if(upperPart === this.lookupObject[Character.BODY_PARTS.HEAD]){
+                const eyeObjects = ['eye_left', 'eye_left_joint', 'eye_right', 'eye_right_joint'];
+                eyeObjects.forEach(key => {
+                    const eyeObject = this.lookupObject[key];
+                    let anchorEye;
+                    if(eyeObject.GetPosition) anchorEye = baseJointPos.Clone().SelfSub(eyeObject.GetPosition());
+                    else anchorEye = baseJointPos.Clone().SelfSub(new Box2D.b2Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM));
+                    const anchorAngle = Math.atan2(anchorEye.y, anchorEye.x)-upperPart.GetAngle()-Math.PI/2;
+                    const anchorLength = anchorEye.Length();
+                    if(eyeObject.SetPosition){
+                        eyeObject.SetPosition(new Box2D.b2Vec2(baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle), baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)));
+                        eyeObject.SetAngle(limitRadiance(angle+Math.PI/2));
+                    } else{
+                        eyeObject.position.x = (baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle)) * Settings.PTM;
+                        eyeObject.position.y = (baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)) * Settings.PTM;
+                    }
+                });
+            }
 
-        let upperAngle = angle+upperAngleChange;
 
-        const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
-        upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle)));
-        upperPart.SetAngle(upperAngle-Math.PI/2);
+            upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
+            upperPart.SetAngle(limitRadiance(angle+Math.PI/2));
 
-        const anchorDistanceLower = lowerJointPos.Clone().SelfSub(lowerPart.GetPosition()).Length();
 
-        const lowerEndDistance = lowerJointPos.Clone().SelfSub(endJointPos).Length();
+        }else{
+            // IK position
+            const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
+            const endJointPos = new Box2D.b2Vec2(endJoint.position.x/Settings.PTM, endJoint.position.y/Settings.PTM);
 
-        const lowerJointPosRotated = rotateVectorAroundPoint(lowerJointPos, baseJointPos, upperAngle*game.editor.RAD2DEG);
-        lowerJointPos.x = lowerJointPosRotated.x;
-        lowerJointPos.y = lowerJointPosRotated.y;
-        lowerJoint.position.x = lowerJointPos.x*Settings.PTM;
-        lowerJoint.position.y = lowerJointPos.y*Settings.PTM;
+            const upperLength = lowerJointPos.Clone().SelfSub(baseJointPos).Length();
+            const lowerLength = endJointPos.Clone().SelfSub(lowerJointPos).Length();
+            const totalLength = upperLength+lowerLength;
+            const upperLengthShare = upperLength/totalLength;
+            const lowerLengthShare = lowerLength/totalLength;
 
-        const lowerAngleChange = Math.acos(Math.max(-1.0, Math.min(1.0, (baseDiff * lowerLengthShare) / lowerLength)));
-        const lowerAngle = angle-lowerAngleChange;
+            const baseDiff = Math.min(dl, totalLength);
 
-        lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
-        lowerPart.SetAngle(lowerAngle-Math.PI/2);
+            const upperAngleChange = Math.acos(Math.max(-1.0, Math.min(1.0, (baseDiff * upperLengthShare) / upperLength)));
 
-        const anchorDistanceEnd = endJointPos.Clone().SelfSub(endPart.GetPosition()).Length();
+            let upperAngle = invertAngle ? angle-upperAngleChange  : angle+upperAngleChange;
 
-        const endJointPosRotated = rotateVectorAroundPoint(new Box2D.b2Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, lowerAngle*game.editor.RAD2DEG);
-        endJointPos.x = endJointPosRotated.x;
-        endJointPos.y = endJointPosRotated.y;
-        endJoint.position.x = endJointPos.x*Settings.PTM;
-        endJoint.position.y = endJointPos.y*Settings.PTM;
+            const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
+            upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle)));
+            upperPart.SetAngle(upperAngle-Math.PI/2);
 
-        endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
-        endPart.SetAngle(lowerAngle-Math.PI/2);
+            const anchorDistanceLower = lowerJointPos.Clone().SelfSub(lowerPart.GetPosition()).Length();
+
+            const lowerJointPosRotated = rotateVectorAroundPoint(lowerJointPos, baseJointPos, upperAngle*game.editor.RAD2DEG);
+            lowerJointPos.x = lowerJointPosRotated.x;
+            lowerJointPos.y = lowerJointPosRotated.y;
+            lowerJoint.position.x = lowerJointPos.x*Settings.PTM;
+            lowerJoint.position.y = lowerJointPos.y*Settings.PTM;
+
+            const lowerAngleChange = Math.acos(Math.max(-1.0, Math.min(1.0, (baseDiff * lowerLengthShare) / lowerLength)));
+            const lowerAngle = invertAngle ? angle+lowerAngleChange : angle-lowerAngleChange;
+
+            lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
+            lowerPart.SetAngle(lowerAngle-Math.PI/2);
+
+            const anchorDistanceEnd = endJointPos.Clone().SelfSub(endPart.GetPosition()).Length();
+
+            const endJointPosRotated = rotateVectorAroundPoint(new Box2D.b2Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, lowerAngle*game.editor.RAD2DEG);
+            endJointPos.x = endJointPosRotated.x;
+            endJointPos.y = endJointPosRotated.y;
+            endJoint.position.x = endJointPos.x*Settings.PTM;
+            endJoint.position.y = endJointPos.y*Settings.PTM;
+
+            endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
+            endPart.SetAngle(lowerAngle-Math.PI/2);
+        }
     }
 
     detachFromVehicle(force) {

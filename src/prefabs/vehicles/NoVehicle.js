@@ -61,8 +61,14 @@ const startPositioningLimb = (prefab, limb) =>{
 NoVehicle.settings = Object.assign({}, BaseVehicle.settings, {
     "positionLeftArm": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.ARM_LEFT),
     "positionRightArm": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.ARM_RIGHT),
+    "positionLeftLeg": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.LEG_LEFT),
+    "positionRightLeg": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.LEG_RIGHT),
+    "positionHead": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.HEAD),
 });
 NoVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
     "positionLeftArm": '$function',
     "positionRightArm": '$function',
+    "positionLeftLeg": '$function',
+    "positionRightLeg": '$function',
+    "positionHead": '$function',
 });
