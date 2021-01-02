@@ -11,11 +11,29 @@ export class NoVehicle extends BaseVehicle {
         super(target);
         this.character;
         this.vehicleName = 'NoVehicle';
+
+        if(this.prefabObject.settings.limbs){
+            for(let key in this.prefabObject.settings.limbs){
+                this.positionLimb(key);
+            }
+        }
     }
     positionLimb(limb){
-        const x = this.prefabObject.settings.limbs[limb][0] + this.prefabObject.x / game.editor.PTM;
-        const y = this.prefabObject.settings.limbs[limb][1] + this.prefabObject.y / game.editor.PTM;
-        this.character.positionLimb(limb, x, y);
+        let x = this.prefabObject.settings.limbs[limb][0];
+        let y = this.prefabObject.settings.limbs[limb][1];
+        const l = Math.sqrt(x*x+y*y);
+        const a = Math.atan2(y,x);
+
+        // must restore rotation with prefab rotation
+
+        x = l * Math.cos(a + this.prefabObject.rotation*game.editor.DEG2RAD);
+        y = l * Math.sin(a + this.prefabObject.rotation*game.editor.DEG2RAD);
+
+        x += this.prefabObject.x / game.editor.PTM;
+        y += this.prefabObject.y / game.editor.PTM;
+
+        console.log(x, y, 'log this shiiiiiit');
+        // this.character.positionLimb(limb, x, y);
     }
     init() {
         super.init();
@@ -41,8 +59,16 @@ const stopPositioningLimb = () => {
     game.editor.customPrefabMouseMove = null;
 }
 const setPositionLimb = (prefab, limb) => {
-    const x = game.editor.mousePosWorld.x - prefab.x / game.editor.PTM;
-    const y = game.editor.mousePosWorld.y - prefab.y / game.editor.PTM;
+    let x = game.editor.mousePosWorld.x - prefab.x / game.editor.PTM;
+    let y = game.editor.mousePosWorld.y - prefab.y / game.editor.PTM;
+    const l = Math.sqrt(x*x+y*y);
+    const a = Math.atan2(y,x);
+
+    // rotate arround prefabRotation
+
+    x = l * Math.cos(a-prefab.rotation*game.editor.DEG2RAD);
+    y = l * Math.sin(a-prefab.rotation*game.editor.DEG2RAD);
+
     if(!prefab.settings.limbs) prefab.settings.limbs = {};
     prefab.settings.limbs[limb] = [x, y];
     prefab.class.positionLimb(limb);
@@ -55,6 +81,7 @@ const startPositioningLimb = (prefab, limb) =>{
     game.editor.customPrefabMouseMove = ()=>{
         setPositionLimb(prefab, limb);
     }
+    setPositionLimb(prefab, limb);
 }
 
 

@@ -6645,6 +6645,7 @@
         GetAngle() {
             return this.m_sweep.a;
         }
+
         SetAngle(angle) {
             this.SetTransformVec(this.GetPosition(), angle);
         }

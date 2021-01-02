@@ -758,39 +758,41 @@ export class Character extends PrefabManager.basePrefab {
         let dx = x-baseJointPos.x;
         let dy = y-baseJointPos.y;
         let dl = Math.sqrt(dx*dx+dy*dy);
-        const angle = Math.atan2(dy, dx);
 
         const limitRadiance = radiance => {
-            if(radiance > Math.PI) radiance -= Math.PI * 2;
             return radiance;
         }
+
+        const angle = Math.atan2(dy, dx);
 
         if(!lowerJoint){
             const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
 
 
-            if(upperPart === this.lookupObject[Character.BODY_PARTS.HEAD]){
-                const eyeObjects = ['eye_left', 'eye_left_joint', 'eye_right', 'eye_right_joint'];
-                eyeObjects.forEach(key => {
-                    const eyeObject = this.lookupObject[key];
-                    let anchorEye;
-                    if(eyeObject.GetPosition) anchorEye = baseJointPos.Clone().SelfSub(eyeObject.GetPosition());
-                    else anchorEye = baseJointPos.Clone().SelfSub(new Box2D.b2Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM));
-                    const anchorAngle = Math.atan2(anchorEye.y, anchorEye.x)-upperPart.GetAngle()-Math.PI/2;
-                    const anchorLength = anchorEye.Length();
-                    if(eyeObject.SetPosition){
-                        eyeObject.SetPosition(new Box2D.b2Vec2(baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle), baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)));
-                        eyeObject.SetAngle(limitRadiance(angle+Math.PI/2));
-                    } else{
-                        eyeObject.position.x = (baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle)) * Settings.PTM;
-                        eyeObject.position.y = (baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)) * Settings.PTM;
-                    }
-                });
-            }
+            // if(upperPart === this.lookupObject[Character.BODY_PARTS.HEAD]){
+            //     const eyeObjects = ['eye_left', 'eye_left_joint', 'eye_right', 'eye_right_joint'];
+            //     eyeObjects.forEach(key => {
+            //         const eyeObject = this.lookupObject[key];
+            //         let anchorEye;
+            //         if(eyeObject.GetPosition) anchorEye = baseJointPos.Clone().SelfSub(eyeObject.GetPosition());
+            //         else anchorEye = baseJointPos.Clone().SelfSub(new Box2D.b2Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM));
+            //         const anchorAngle = Math.atan2(anchorEye.y, anchorEye.x)-upperPart.GetAngle()-Math.PI/2;
+            //         const anchorLength = anchorEye.Length();
+            //         if(eyeObject.SetPosition){
+            //             eyeObject.SetPosition(new Box2D.b2Vec2(baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle), baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)));
+            //             eyeObject.SetAngle(limitRadiance(angle+Math.PI/2));
+            //         } else{
+            //             eyeObject.position.x = (baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle)) * Settings.PTM;
+            //             eyeObject.position.y = (baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)) * Settings.PTM;
+            //         }
+            //     });
+            // }
 
 
-            upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
-            upperPart.SetAngle(limitRadiance(angle+Math.PI/2));
+            // upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
+            // upperPart.SetAngle(limitRadiance(angle+Math.PI/2));
+
+            console.log("Head rotation:", upperPart.GetAngle(), upperPart.GetPosition());
 
 
         }else{
@@ -812,7 +814,7 @@ export class Character extends PrefabManager.basePrefab {
 
             const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
             upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle)));
-            upperPart.SetAngle(upperAngle-Math.PI/2);
+            upperPart.SetAngle(limitRadiance(upperAngle-Math.PI/2));
 
             const anchorDistanceLower = lowerJointPos.Clone().SelfSub(lowerPart.GetPosition()).Length();
 
@@ -826,7 +828,7 @@ export class Character extends PrefabManager.basePrefab {
             const lowerAngle = invertAngle ? angle+lowerAngleChange : angle-lowerAngleChange;
 
             lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
-            lowerPart.SetAngle(lowerAngle-Math.PI/2);
+            lowerPart.SetAngle(limitRadiance(lowerAngle-Math.PI/2));
 
             const anchorDistanceEnd = endJointPos.Clone().SelfSub(endPart.GetPosition()).Length();
 
@@ -837,7 +839,7 @@ export class Character extends PrefabManager.basePrefab {
             endJoint.position.y = endJointPos.y*Settings.PTM;
 
             endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
-            endPart.SetAngle(lowerAngle-Math.PI/2);
+            endPart.SetAngle(limitRadiance(lowerAngle-Math.PI/2));
         }
     }
 

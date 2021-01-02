@@ -6953,7 +6953,7 @@ const _B2dEditor = function () {
 
 
 		if (tarObj.prefabInstanceName) {
-			jointGraphics.visible = false;
+			// jointGraphics.visible = false;
 			jointGraphics.isPrefabJointGraphic = true;
 		}
 
@@ -7027,8 +7027,6 @@ const _B2dEditor = function () {
 
 			joint = this.world.CreateJoint(prismaticJointDef);
 
-
-
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
 			let distanceJointDef = new Box2D.b2DistanceJointDef;
 			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
@@ -7074,6 +7072,11 @@ const _B2dEditor = function () {
 		this.activePrefabs[key] = obj;
 		var prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
 
+		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
+		prefabLookupObject._bodies.forEach(body =>{
+			this.updateBodyPosition(body);
+		});
+
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
 
 		if(obj.settings) Object.keys(obj.settings).forEach(key=>obj.class.set(key, obj.settings[key]));
@@ -7081,11 +7084,6 @@ const _B2dEditor = function () {
 		obj.class.subPrefabClasses = this.createdSubPrefabClasses;
 		this.createdSubPrefabClasses.map((prefab) => {
 			prefab.mainPrefabClass = obj.class
-		});
-
-		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
-		prefabLookupObject._bodies.forEach(body =>{
-			this.updateBodyPosition(body);
 		});
 
 		return prefabLookupObject;

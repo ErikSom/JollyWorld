@@ -80,8 +80,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 
                     let vehicleDepth = game.editor.getLowestChildIndex([].concat(this.lookupObject._bodies, this.lookupObject._textures, this.lookupObject._joints));
 
-                    // reset force vehicle
+                    // reset settings
                     this.prefabObject.settings.forceVehicle = false;
+                    delete this.prefabObject.settings.limbs;
+
                     game.currentLevelData.forcedVehicle = 0;
 
                     let vehiclePrefab = `{"objects":[[4,${this.prefabObject.x},${this.prefabObject.y},${this.prefabObject.rotation},${JSON.stringify(this.prefabObject.settings)},"${value}",${this.prefabObject.instanceID}]]}`;
