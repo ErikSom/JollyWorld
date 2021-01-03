@@ -32,8 +32,7 @@ export class NoVehicle extends BaseVehicle {
         x += this.prefabObject.x / game.editor.PTM;
         y += this.prefabObject.y / game.editor.PTM;
 
-        console.log(x, y, 'log this shiiiiiit');
-        // this.character.positionLimb(limb, x, y);
+        this.character.positionLimb(limb, x, y);
     }
     init() {
         super.init();

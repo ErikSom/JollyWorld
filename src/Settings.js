@@ -4,7 +4,7 @@ export var Settings = {
     admin:(window.location.search.indexOf('editorAdmin=true')>=0),
     targetFPS,
     timeStep:1000 / targetFPS,
-    allowMouseMovement:true,
+    allowMouseMovement:(window.location.search.indexOf('editorAdmin=true')>=0),
     cameraZoom:0.8,
     lineWidthCorrection:1.0,
     /*PHYSICS*/
@@ -60,7 +60,10 @@ export var Settings = {
         confirm:'Yes!',
         decline:'NOPE!',
         newGradient:'-new gradient-',
-    }
+    },
+
+    pidouble: Math.PI*2,
+    pihalve: Math.PI/2,
 
 
 

@@ -2885,12 +2885,9 @@ const _B2dEditor = function () {
 				} else if (transformType == this.TRANSFORM_ROTATE) {
 					const prefab = this.activePrefabs[key];
 					prefab.rotation += obj;
-					while(prefab.rotation<-360) prefab.rotation += 360;
-					while(prefab.rotation>360) prefab.rotation -= 360;
 				}
 			}
 		}
-
 
 		//if (transformType == this.TRANSFORM_DEPTH || transformType == this.TRANSFORM_UPDATE || transformType == this.TRANSFORM_ROTATE)
 		this.applyToObjects(transformType, obj, allObjects)
@@ -2901,6 +2898,8 @@ const _B2dEditor = function () {
 	}
 
 	this.applyToObjects = function (transformType, obj, objects, forceGroupRotation) {
+
+
 		let i;
 		let body;
 		let sprite;
@@ -2972,9 +2971,6 @@ const _B2dEditor = function () {
 						const oldAngle = body.GetAngle();
 
 						let newAngle = oldAngle + rAngle;
-						const pi_double = Math.PI*2;
-						while(newAngle<-pi_double) newAngle += pi_double;
-						while(newAngle>pi_double) newAngle -= pi_double;
 						body.SetAngle(newAngle);
 
 						if (group) {
@@ -2995,9 +2991,6 @@ const _B2dEditor = function () {
 						sprite.y += obj.y;
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						sprite.rotation += obj * this.DEG2RAD;
-						const pi_double = Math.PI*2;
-						while(sprite.rotation<-pi_double) sprite.rotation += pi_double;
-						while(sprite.rotation>pi_double) sprite.rotation -= pi_double;
 
 						if (group) {
 							const difX = sprite.x - centerPoints[group].x;
@@ -6953,7 +6946,7 @@ const _B2dEditor = function () {
 
 
 		if (tarObj.prefabInstanceName) {
-			// jointGraphics.visible = false;
+			jointGraphics.visible = false;
 			jointGraphics.isPrefabJointGraphic = true;
 		}
 
