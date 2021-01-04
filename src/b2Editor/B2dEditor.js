@@ -6967,6 +6967,14 @@ const _B2dEditor = function () {
 		if (jointPlaceHolder.bodyB_ID != null) {
 
 			bodyB = this.textures.getChildAt(jointPlaceHolder.bodyB_ID).myBody;
+
+
+			if(bodyA.mySprite && bodyA.mySprite.data.prefabInstanceName && bodyB.mySprite && !bodyB.mySprite.data.prefabInstanceName){
+				// this is an ancnhor created on a NoVehicle object that we want to force on the position of the actual body
+				jointPlaceHolder.x = bodyA.GetPosition().x*Settings.PTM;
+				jointPlaceHolder.y = bodyA.GetPosition().y*Settings.PTM;
+			}
+
 		} else {
 			//pin to background
 

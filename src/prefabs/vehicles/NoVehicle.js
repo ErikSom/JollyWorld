@@ -54,7 +54,6 @@ export class NoVehicle extends BaseVehicle {
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
     }
     patchJoints(){
-        const targetBody = this.lookupObject['body'];
         [...Object.values(Character.BODY_PARTS)].forEach(bodyPart => {
             const bodyObject = this.lookupObject[bodyPart];
             let jointEdge = bodyObject.GetJointList();
@@ -65,22 +64,30 @@ export class NoVehicle extends BaseVehicle {
                 const bodyB = joint.GetBodyB();
 
                 let patchJoint = false;
+                let otherBody = null;
                 if(bodyA && bodyA.mySprite && !bodyA.mySprite.data.prefabInstanceName){
                     patchJoint = bodyB;
+                    otherBody = bodyA;
                 }else if(bodyB && bodyB.mySprite && !bodyB.mySprite.data.prefabInstanceName){
                     patchJoint = bodyA;
+                    otherBody = bodyB;
                 }
 
                 if(patchJoint && bodyPart !== 'body'){
                     let refJoint;
+                    const bodiesToPatch = [this.lookupObject['body']];
                     if([Character.BODY_PARTS.HAND_LEFT, Character.BODY_PARTS.ARM_LEFT, Character.BODY_PARTS.SHOULDER_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT+'_joint'];
+                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.HAND_LEFT) bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.ARM_LEFT]);
                     } else if([Character.BODY_PARTS.HAND_RIGHT, Character.BODY_PARTS.ARM_RIGHT, Character.BODY_PARTS.SHOULDER_RIGHT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT+'_joint'];
+                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.HAND_RIGHT) bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.ARM_RIGHT]);
                     } else if([Character.BODY_PARTS.FEET_LEFT, Character.BODY_PARTS.LEG_LEFT, Character.BODY_PARTS.THIGH_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.THIGH_LEFT+'_joint'];
+                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.FEET_LEFT) bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.LEG_LEFT]);
                     } else if([Character.BODY_PARTS.FEET_RIGHT, Character.BODY_PARTS.LEG_RIGHT, Character.BODY_PARTS.THIGH_RIGHT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT+'_joint'];
+                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.FEET_RIGHT) bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.LEG_RIGHT]);
                     } else if([Character.BODY_PARTS.HEAD].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject['neck_joint'];
                     }else if([Character.BODY_PARTS.BELLY].includes(patchJoint.mySprite.data.refName)){
@@ -91,25 +98,32 @@ export class NoVehicle extends BaseVehicle {
 
                         const refJointAnchor = refJoint.GetAnchorA(new Box2D.b2Vec2);
 
-                        let anchor = null;
+                        let anchorOnBody = null;
                         if(patchJoint === bodyA && joint.GetAnchorA){
-                            anchor = joint.GetAnchorA(new Box2D.b2Vec2);
+                            anchorOnBody = joint.GetAnchorA(new Box2D.b2Vec2);
                         }else if(joint.GetAnchorB){
-                            anchor = joint.GetAnchorB(new Box2D.b2Vec2);
+                            anchorOnBody = joint.GetAnchorB(new Box2D.b2Vec2);
                         }
-
 
                         // TODO: set the anchors to the patchJoint
 
-                        if(anchor){
-                            const ropeJointDef = new Box2D.b2RopeJointDef;
+                        if(anchorOnBody){
+                            bodiesToPatch.forEach(body => {
+                                const ropeJointDef = new Box2D.b2RopeJointDef;
 
-                            ropeJointDef.Initialize(targetBody, patchJoint, refJointAnchor, anchor);
-                            const xd = refJointAnchor.x - anchor.x;
-                            const yd = refJointAnchor.y - anchor.y;
-                            ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
-                            const newJoint = game.editor.world.CreateJoint(ropeJointDef);
-                            console.log("HOLY SHIT BALLS WE CREATED A JOINT!!");
+                                let jointAnchor = body.GetPosition();
+
+                                if(body == this.lookupObject['body']){
+                                    jointAnchor = anchorOnBody;
+                                }
+
+                                ropeJointDef.Initialize(body, otherBody, refJointAnchor, jointAnchor);
+                                const xd = refJointAnchor.x - jointAnchor.x;
+                                const yd = refJointAnchor.y - jointAnchor.y;
+                                ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
+                                const newJoint = game.editor.world.CreateJoint(ropeJointDef);
+                                console.log("HOLY SHIT BALLS WE CREATED A JOINT!!", ropeJointDef);
+                            });
                         }
                     }
 
