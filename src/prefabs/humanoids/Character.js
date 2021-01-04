@@ -261,6 +261,7 @@ export class Character extends PrefabManager.basePrefab {
         ARM_RIGHT: 'arm_right',
         HAND_LEFT: 'hand_left',
         HAND_RIGHT: 'hand_right',
+        BELLY: 'belly',
     }
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
@@ -805,8 +806,6 @@ export class Character extends PrefabManager.basePrefab {
                     });
                 }
             }
-
-            console.log("Head rotation:", upperPart.GetAngle(), upperPart.GetPosition());
         }else{
             // IK position
             const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);

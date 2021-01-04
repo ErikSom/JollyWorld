@@ -1,9 +1,11 @@
 import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
+import * as Box2D from '../../../libs/Box2D'
 import { Character } from '../humanoids/Character'
 import {
     game
 } from "../../Game";
+import { Settings } from '../../Settings';
 
 
 export class NoVehicle extends BaseVehicle {
@@ -34,9 +36,88 @@ export class NoVehicle extends BaseVehicle {
 
         this.character.positionLimb(limb, x, y);
     }
+    set(property, value) {
+        switch (property) {
+            case "selectJointTarget":
+                this.prefabObject.class.jointTarget = value;
+                break;
+            default:
+                super.set(property, value)
+            break;
+        }
+    }
     init() {
         super.init();
+
+        this.patchJoints();
+
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+    }
+    patchJoints(){
+        const targetBody = this.lookupObject['body'];
+        [...Object.values(Character.BODY_PARTS)].forEach(bodyPart => {
+            const bodyObject = this.lookupObject[bodyPart];
+            let jointEdge = bodyObject.GetJointList();
+            while (jointEdge) {
+                const joint = jointEdge.joint;
+
+                const bodyA = joint.GetBodyA();
+                const bodyB = joint.GetBodyB();
+
+                let patchJoint = false;
+                if(bodyA && bodyA.mySprite && !bodyA.mySprite.data.prefabInstanceName){
+                    patchJoint = bodyB;
+                }else if(bodyB && bodyB.mySprite && !bodyB.mySprite.data.prefabInstanceName){
+                    patchJoint = bodyA;
+                }
+
+                if(patchJoint && bodyPart !== 'body'){
+                    let refJoint;
+                    if([Character.BODY_PARTS.HAND_LEFT, Character.BODY_PARTS.ARM_LEFT, Character.BODY_PARTS.SHOULDER_LEFT].includes(patchJoint.mySprite.data.refName)){
+                        refJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT+'_joint'];
+                    } else if([Character.BODY_PARTS.HAND_RIGHT, Character.BODY_PARTS.ARM_RIGHT, Character.BODY_PARTS.SHOULDER_RIGHT].includes(patchJoint.mySprite.data.refName)){
+                        refJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT+'_joint'];
+                    } else if([Character.BODY_PARTS.FEET_LEFT, Character.BODY_PARTS.LEG_LEFT, Character.BODY_PARTS.THIGH_LEFT].includes(patchJoint.mySprite.data.refName)){
+                        refJoint = this.lookupObject[Character.BODY_PARTS.THIGH_LEFT+'_joint'];
+                    } else if([Character.BODY_PARTS.FEET_RIGHT, Character.BODY_PARTS.LEG_RIGHT, Character.BODY_PARTS.THIGH_RIGHT].includes(patchJoint.mySprite.data.refName)){
+                        refJoint = this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT+'_joint'];
+                    } else if([Character.BODY_PARTS.HEAD].includes(patchJoint.mySprite.data.refName)){
+                        refJoint = this.lookupObject['neck_joint'];
+                    }else if([Character.BODY_PARTS.BELLY].includes(patchJoint.mySprite.data.refName)){
+                        refJoint = this.lookupObject['belly_joint'];
+                    }
+
+                    if(refJoint){
+
+                        const refJointAnchor = refJoint.GetAnchorA(new Box2D.b2Vec2);
+
+                        let anchor = null;
+                        if(patchJoint === bodyA && joint.GetAnchorA){
+                            anchor = joint.GetAnchorA(new Box2D.b2Vec2);
+                        }else if(joint.GetAnchorB){
+                            anchor = joint.GetAnchorB(new Box2D.b2Vec2);
+                        }
+
+
+                        // TODO: set the anchors to the patchJoint
+
+                        if(anchor){
+                            const ropeJointDef = new Box2D.b2RopeJointDef;
+
+                            ropeJointDef.Initialize(targetBody, patchJoint, refJointAnchor, anchor);
+                            const xd = refJointAnchor.x - anchor.x;
+                            const yd = refJointAnchor.y - anchor.y;
+                            ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
+                            const newJoint = game.editor.world.CreateJoint(ropeJointDef);
+                            console.log("HOLY SHIT BALLS WE CREATED A JOINT!!");
+                        }
+                    }
+
+                }
+
+                jointEdge = jointEdge.next;
+            }
+        })
     }
     update() {
         super.update();
@@ -47,15 +128,16 @@ export class NoVehicle extends BaseVehicle {
 }
 
 PrefabManager.prefabLibrary.NoVehicle = {
-    json: `{"objects":[[0,0.4934616139871987,-0.15960028547845545,-0.05235987755983046,".character#Character , .flesh","thigh_left",0,"#999999","#000",0,false,true,[{"x":-0.20241022695050503,"y":-1.031328299223996},{"x":0.1959845054600109,"y":-1.0441797422049808},{"x":0.17028161949803788,"y":1.0377540207144893},{"x":-0.16385589800755085,"y":1.0377540207144893}],1,7,null,"",1],[0,0.6757217330467975,1.839115804161336,-0.069813170079774,".character#Character , .flesh","leg_left",1,"#999999","#000",0,false,true,[{"x":-0.16064303726230378,"y":-0.9124524516498909},{"x":0.16064303726230378,"y":-0.9253038946308756},{"x":0.08353437937639896,"y":0.9124524516498909},{"x":-0.08353437937639896,"y":0.9253038946308738}],1,7,null,"",1],[1,14.524204707288073,-4.4837987672351165,-0.05235987755983046,"","",2,"Normal_Thigh0000",0,0.4132120599733628,-2.3665034033387577,0,true,"#FFFFFF"],[0,0.8190982325210658,3.0039389976219306,0.15707963267948957,".character#Character , .flesh","feet_left",3,"#999999","#000",0,false,true,[{"x":-0.3532003169100655,"y":-0.2334193398709985},{"x":0.3593429311171974,"y":0},{"x":0.3593429311171974,"y":0.12285228414263472},{"x":-0.3654855453243293,"y":0.11056705572837089}],1,7,null,"",1],[1,20.07334048926797,55.187341415956354,-0.069813170079774,"","",4,"Normal_Leg0000",1,0.19879575861250487,-3.1415926535889356,0,true,"#FFFFFF"],[2,17.0761804738651,26.488115238577613,-0.5410520681182422,".character#Character","leg_left_joint",5,1,0,0,false,false,1,10,true,0,-149,0,0,0,0],[1,25.31730561421113,88.79857014236806,0.15707963267948957,"","",6,"Normal_Feet0000",3,1.515062169946712,1.2142877670861258,0,true,"#FFFFFF"],[2,20.37041479966178,82.4272867639828,-0.5410520681182422,".character#Character","feet_left_joint",7,3,1,0,false,false,1,10,true,0,0,0,0,0,0],[0,0.6251309873233629,-3.3788747857317674,-0.06981317007977322,".character#Character , .flesh","shoulder_left",8,"#999999","#000",0,false,true,[{"x":-0.18491373990083915,"y":-0.8588215919838902},{"x":0.19313212834087423,"y":-0.8423848151038147},{"x":0.11094824394050207,"y":0.8506032035438524},{"x":-0.11916663238053715,"y":0.8506032035438524}],1,7,null,"",1],[0,0.8906863200932135,-1.8721310176728156,-0.2967059728390353,".character#Character , .flesh","arm_left",9,"#999999","#000",0,false,true,[{"x":-0.13560340926061798,"y":-0.6862354347431072},{"x":0.14382179770064596,"y":-0.7026722116231809},{"x":0.12738502082057224,"y":0.6944538231831459},{"x":-0.13560340926061798,"y":0.6944538231831459}],1,7,null,"",1],[1,19.32466960290511,-101.3142677333447,-0.06981317007977322,"","",10,"Normal_Shoulder0000",8,0.5731017503262358,-0.16063012257496162,0,true,"#FFFFFF"],[1,26.966710336135474,-55.99661577997369,-0.2967059728390353,"","",11,"Normal_Arm0000",9,0.29760652045521085,-0.8937510689744023,0,true,"#FFFFFF"],[2,21.55365851603832,-77.72220225267495,-0.2617993877991494,".character#Character","arm_left_joint",12,9,8,0,false,false,1,10,true,152,0,0,0,0,0],[0,1.0111779151058815,-1.00775995364162,-0.13962634015954592,".character#Character , .flesh","hand_left",13,"#999999","#000",0,false,true,[{"x":0,"y":0},{"x":0,"y":0}],1,7,7.512582183874799,"",1],[1,28.545347791290713,-30.39714512141079,-0.13962634015954592,"","",14,"Normal_Hand0000",13,1.7975185021906417,2.9104087855451417,0,true,"#FFFFFF"],[2,33.38045904037543,-38.234882886033105,1.3613568165555772,".character#Character","hand_left_joint",15,13,9,0,false,false,1,10,true,60,-60,0,0,0,0],[0,0.24153713581492642,-1.3272153499526933,-0.2617993877991494,".character#Character , .flesh","belly",16,"#999999","#000",0,false,true,[{"x":0,"y":0},{"x":0,"y":0}],1,7,14.181497764354457,"",1],[0,0.4348745413494831,-5.676105488534382,-0.2617993877991494,".character#Character , .flesh","head",17,"#999999","#000",0,false,true,[{"x":0,"y":0},{"x":0,"y":0}],1,7,30.393075689479595,"",1],[0,0.3626490660383448,-3.1372039568182863,0.08726646259971638,".character#Character , .flesh","body",18,"#999999","#000",0,false,true,[{"x":-0.5373137876370677,"y":1.2023497051222813},{"x":-0.4316127146592841,"y":-1.3697097373371037},{"x":-0.1497431867185277,"y":-1.82774772024083},{"x":0.1321263412222251,"y":-1.7925140292482356},{"x":0.5549306331333597,"y":-1.1230739003889436},{"x":0.5549306331333597,"y":1.308050778100065},{"x":0.09689265022963056,"y":1.801322451996385},{"x":-0.2202105687037168,"y":1.801322451996385}],1,7,null,"",1],[1,8.562579576754601,-48.463593240996396,-0.0617993877991494,"","",19,"Normal_Belly0000",16,8.746770037203438,1.1579140652818587,-0.2,false,"#FFFFFF"],[2,14.945286590396616,-32.662710193774046,-0.2617993877991494,".character#Character","thigh_left_joint",20,0,16,0,false,false,1,10,true,142,-16,0,0,0,0],[1,12.009743051276532,-98.12879511300896,0.08726646259971638,"","",21,"Normal_Core0000",18,4.16882293351236,1.3835014335302833,0,true,"#FFFFFF"],[2,17.363888177040526,-124.62306921558582,-0.2617993877991494,".character#Character","shoulder_left_joint",22,8,18,0,false,false,1,10,true,180,-19,0,0,0,0],[1,14.541075150109469,-172.87230159663383,-0.2617993877991494,"","",23,"Normal_Head_Idle0000",17,2.989677819250855,0.785398163397623,0,true,"#FFFFFF"],[2,16.962374807804526,-142.45262475142204,-0.2617993877991494,".character#Character","head_joint",24,17,18,0,false,false,1,10,true,58,-64,0,0,0,0],[0,0.2949638505337931,-0.10297830223352623,6.245004513516506e-17,".character#Character , .flesh","thigh_right",25,"#999999","#000",0,false,true,[{"x":-0.20241022695050503,"y":-1.031328299223996},{"x":0.1959845054600109,"y":-1.0441797422049808},{"x":0.17028161949803788,"y":1.0377540207144893},{"x":-0.16385589800755085,"y":1.0377540207144893}],1,7,null,"",1],[0,0.3628359516074833,1.854161669782273,-0.052359877559829876,".character#Character , .flesh","leg_right",26,"#999999","#000",0,false,true,[{"x":-0.16064303726230378,"y":-0.9124524516498909},{"x":0.16064303726230378,"y":-0.9253038946308756},{"x":0.08353437937639896,"y":0.9124524516498909},{"x":-0.08353437937639896,"y":0.9253038946308738}],1,7,null,"",1],[0,0.5930256706725493,-5.8173979867991426,-0.2617993877991494,".character#Character","eye_left",27,"#999999","#000",0,false,true,[{"x":0,"y":0},{"x":0,"y":0}],1,7,7.534037070968986,"",1],[1,8.553733935044082,-2.800191599933515,6.245004513516506e-17,"","",28,"Normal_Thigh0000",25,0.4132120599733628,-2.3665034033387577,0,true,"#FFFFFF"],[1,10.68655523229012,55.63525425959239,-0.052359877559829876,"","",29,"Normal_Leg0000",26,0.19879575861250487,-3.1415926535889356,0,true,"#FFFFFF"],[1,17.816234595172876,-175.08251352188367,-0.2617993877991494,"","",30,"Normal_Eye0000",27,0.5611519909321366,1.2636024235635333,0,null,"#FFFFFF"],[2,9.300637845542035,28.531483581119883,-0.2617993877991494,".character#Character","leg_right_joint",31,26,25,0,false,false,1,10,true,0,-149,0,0,0,0],[0,0.5842788034986947,3.0080808137758512,0.017453292519943292,".character#Character , .flesh","feet_right",32,"#999999","#000",0,false,true,[{"x":-0.3532003169100655,"y":-0.2334193398709985},{"x":0.3593429311171974,"y":0},{"x":0.3593429311171974,"y":0.12285228414263472},{"x":-0.3654855453243293,"y":0.11056705572837089}],1,7,null,"",1],[1,18.081825902153525,88.83207218143703,0.017453292519943292,"","",33,"Normal_Feet0000",32,1.515062169946712,1.2142877670861258,0,true,"#FFFFFF"],[2,11.839659837171208,83.10763852135102,-0.43633231299858233,".character#Character","feet_right_joint",34,32,26,0,false,false,1,10,true,0,0,0,0,0,0],[0,0.5031031922526416,-3.206014363231013,-0.08726646259971674,".character#Character , .flesh","shoulder_right",35,"#999999","#000",0,false,true,[{"x":-0.18491373990083915,"y":-0.8588215919838902},{"x":0.19313212834087423,"y":-0.8423848151038147},{"x":0.11094824394050207,"y":0.8506032035438524},{"x":-0.11916663238053715,"y":0.8506032035438524}],1,7,null,"",1],[0,0.7175793255274137,-1.6966320424915955,-0.17453292519943234,".character#Character , .flesh","arm_right",36,"#999999","#000",0,false,true,[{"x":-0.13560340926061798,"y":-0.6862354347431072},{"x":0.14382179770064596,"y":-0.7026722116231809},{"x":0.12738502082057224,"y":0.6944538231831459},{"x":-0.13560340926061798,"y":0.6944538231831459}],1,7,null,"",1],[0,1.2567524915837642,-5.984990068952187,-0.2617993877991494,".character#Character","eye_right",37,"#999999","#000",0,false,true,[{"x":0,"y":0},{"x":0,"y":0}],1,7,7.534037070968986,"",1],[1,37.728039222509324,-180.110275986475,-0.2617993877991494,"","",38,"Normal_Eye0000",37,0.5611519909321366,1.2636024235635333,0,null,"#FFFFFF"],[2,37.78281192654886,-179.094873530053,-0.2617993877991494,".character#Character","eye_right_joint",39,37,17,0,false,false,1,10,true,0,0,0,0,0,0],[1,15.664655927779897,-96.13842376065094,-0.08726646259971674,"","",40,"Normal_Shoulder0000",35,0.5731017503262358,-0.16063012257496162,0,true,"#FFFFFF"],[1,21.75127541378706,-50.702899091142896,-0.17453292519943234,"","",41,"Normal_Arm0000",36,0.29760652045521085,-0.8937510689744023,0,true,"#FFFFFF"],[2,17.68101702582442,-71.77526026292077,-0.2617993877991494,".character#Character","arm_right_joint",42,36,35,0,false,false,1,10,true,152,0,0,0,0,0],[0,0.7102091868847376,-0.803098504791899,-0.20943951023931898,".character#Character , .flesh","hand_right",43,"#999999","#000",0,false,true,[{"x":0,"y":0},{"x":0,"y":0}],1,7,7.512582183874799,"",1],[1,19.509182036347596,-24.132037949223978,-0.20943951023931898,"","",44,"Normal_Hand0000",43,1.7975185021906417,2.9104087855451417,0,true,"#FFFFFF"],[2,23.963711087601236,-31.570105007465678,1.5358897417550101,".character#Character","hand_right_joint",45,43,36,0,false,false,1,10,true,60,-60,0,0,0,0],[2,13.240942165754404,-118.7409292018908,-0.2617993877991494,".character#Character","shoulder_right_joint",46,35,18,0,false,false,1,10,true,180,-19,0,0,0,0],[2,17.53680586365938,-174.69743682391515,-0.2617993877991494,".character#Character","eye_left_joint",47,27,17,0,false,false,1,10,true,0,0,0,0,0,0],[2,7.628158309854597,-45.876061958092706,-0.2617993877991494,".character#Character","belly_joint",48,18,16,0,false,false,1,10,true,10,-10,0,0,0,0],[2,8.387868003140365,-31.358020107804997,-0.2617993877991494,".character#Character","thigh_right_joint",49,25,16,0,false,false,1,10,true,142,-16,0,0,0,0]]}`,
+    json: `{"objects":[[0,0.493,-0.16,-0.052,".character#Character , .flesh","thigh_left",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false],[0,0.69,1.839,-0.07,".character#Character , .flesh","leg_left",1,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false],[1,14.51,-4.496,-0.052,"","",2,"Normal_Thigh0000",0,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,0.819,3.004,0.157,".character#Character , .flesh","feet_left",3,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false],[1,20.501,55.184,-0.07,"","",4,"Normal_Leg0000",1,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,17.076,26.488,-0.541,".character#Character","leg_left_joint",5,1,0,0,false,false,1,10,true,0,-149,0,0,0,0],[1,25.315,88.801,0.157,"","",6,"Normal_Feet0000",3,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,20.37,82.427,-0.541,".character#Character","feet_left_joint",7,3,1,0,false,false,1,10,true,0,0,0,0,0,0],[0,0.625,-3.379,-0.07,".character#Character , .flesh","shoulder_left",8,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false],[0,0.891,-1.872,-0.297,".character#Character , .flesh","arm_left",9,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false],[1,19.321,-101.318,-0.07,"","",10,"Normal_Shoulder0000",8,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,26.976,-55.992,-0.297,"","",11,"Normal_Arm0000",9,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,21.554,-77.722,-0.262,".character#Character","arm_left_joint",12,9,8,0,false,false,1,10,true,152,0,0,0,0,0],[0,1.011,-1.008,-0.14,".character#Character , .flesh","hand_left",13,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false],[1,28.54,-30.404,-0.14,"","",14,"Normal_Hand0000",13,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,33.38,-38.235,1.361,".character#Character","hand_left_joint",15,13,9,0,false,false,1,10,true,60,-60,0,0,0,0],[0,0.242,-1.327,-0.262,".character#Character , .flesh","belly",16,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[14.181],"",[1],true,false],[0,0.435,-5.676,-0.262,".character#Character , .flesh","head",17,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[30.393],"",[1],true,false],[0,0.363,-3.122,0.087,".character#Character , .flesh","body",18,["#999999"],["#000"],[0],false,true,[[{"x":-0.537,"y":1.202},{"x":-0.432,"y":-1.37},{"x":-0.15,"y":-1.828},{"x":0.132,"y":-1.793},{"x":0.555,"y":-1.123},{"x":0.555,"y":1.308},{"x":0.097,"y":1.801},{"x":-0.22,"y":1.801}]],[1],7,[null],"",[1],true,false],[1,8.574,-48.458,-0.062,"","",19,"Normal_Belly0000",16,8.747,1.158,-0.2,false,"#FFFFFF",1,1,1,0,0,0,true],[2,14.945,-32.663,-0.262,".character#Character","thigh_left_joint",20,0,16,0,false,false,1,10,true,142,-16,0,0,0,0],[1,12.017,-97.686,0.087,"","",21,"Normal_Core0000",18,4.169,1.384,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,17.364,-124.623,-0.262,".character#Character","shoulder_left_joint",22,8,18,0,false,false,1,10,true,180,-19,0,0,0,0],[1,14.546,-172.869,-0.262,"","",23,"Normal_Head_Idle0000",17,2.99,0.785,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,16.962,-142.453,-0.262,".character#Character","head_joint",24,17,18,0,false,false,1,10,true,58,-64,0,0,0,0],[0,0.295,-0.114,0,".character#Character , .flesh","thigh_right",25,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false],[0,0.363,1.854,-0.052,".character#Character , .flesh","leg_right",26,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false],[0,0.593,-5.817,-0.262,".character#Character","eye_left",27,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false],[1,8.555,-3.131,0,"","",28,"Normal_Thigh0000",25,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,10.691,55.63,-0.052,"","",29,"Normal_Leg0000",26,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,17.815,-175.07,-0.262,"","",30,"Normal_Eye0000",27,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,9.301,28.531,-0.262,".character#Character","leg_right_joint",31,26,25,0,false,false,1,10,true,0,-149,0,0,0,0],[0,0.584,3.008,0.017,".character#Character , .flesh","feet_right",32,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false],[1,18.073,88.83,0.017,"","",33,"Normal_Feet0000",32,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,11.84,83.108,-0.436,".character#Character","feet_right_joint",34,32,26,0,false,false,1,10,true,0,0,0,0,0,0],[0,0.503,-3.206,-0.087,".character#Character , .flesh","shoulder_right",35,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false],[0,0.718,-1.697,-0.175,".character#Character , .flesh","arm_right",36,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false],[0,1.257,-5.985,-0.262,".character#Character","eye_right",37,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false],[1,37.735,-180.11,-0.262,"","",38,"Normal_Eye0000",37,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,37.783,-179.095,-0.262,".character#Character","eye_right_joint",39,37,17,0,false,false,1,10,true,0,0,0,0,0,0],[1,15.661,-96.138,-0.087,"","",40,"Normal_Shoulder0000",35,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,21.764,-50.714,-0.175,"","",41,"Normal_Arm0000",36,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,17.681,-71.775,-0.262,".character#Character","arm_right_joint",42,36,35,0,false,false,1,10,true,152,0,0,0,0,0],[0,0.71,-0.803,-0.209,".character#Character , .flesh","hand_right",43,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false],[1,19.502,-24.131,-0.209,"","",44,"Normal_Hand0000",43,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,23.964,-31.57,1.536,".character#Character","hand_right_joint",45,43,36,0,false,false,1,10,true,60,-60,0,0,0,0],[2,13.241,-118.741,-0.262,".character#Character","shoulder_right_joint",46,35,18,0,false,false,1,10,true,180,-19,0,0,0,0],[2,17.537,-174.697,-0.262,".character#Character","eye_left_joint",47,27,17,0,false,false,1,10,true,0,0,0,0,0,0],[2,7.628,-45.876,-0.262,".character#Character","belly_joint",48,18,16,0,false,false,1,10,true,10,-10,0,0,0,0],[2,8.388,-31.358,-0.262,".character#Character","thigh_right_joint",49,25,16,0,false,false,1,10,true,142,-16,0,0,0,0],[2,35.989,31.518,0,".character#Character","leg_left_rope_joint1",50,18,32,3,false,false,1,10,false,0,0,0,0,0,0],[2,36.814,46.768,0,".character#Character","leg_right_rope_joint1",51,18,3,3,false,false,1,10,false,0,0,0,0,0,0],[2,45.88,-76.879,0,".character#Character","arm_right_rope_joint1",52,18,43,3,false,false,1,10,false,0,0,0,0,0,0],[2,46.705,-92.129,0,".character#Character","arm_left_rope_joint1",53,18,13,3,false,false,1,10,false,0,0,0,0,0,0],[2,74.088,-94.108,0,".character#Character","arm_left_rope_joint2",54,18,36,3,false,false,1,10,false,0,0,0,0,0,0],[2,75.841,-75.707,0,".character#Character","arm_right_rope_joint2",55,18,9,3,false,false,1,10,false,0,0,0,0,0,0],[2,104.318,-99.365,0,".character#Character","arm_left_rope_joint3",56,18,35,3,false,false,1,10,false,0,0,0,0,0,0],[2,105.633,-80.526,0,".character#Character","arm_right_rope_joint3",57,18,8,3,false,false,1,10,false,0,0,0,0,0,0],[2,61.383,28.565,0,".character#Character","leg_left_rope_joint2",58,18,26,3,false,false,1,10,false,0,0,0,0,0,0],[2,61.383,43.461,0,".character#Character","leg_right_rope_joint2",59,18,1,3,false,false,1,10,false,0,0,0,0,0,0],[2,78.908,23.746,0,".character#Character","leg_left_rope_joint3",60,18,25,3,false,false,1,10,false,0,0,0,0,0,0],[2,81.098,43.899,0,".character#Character","leg_right_rope_joint3",61,18,0,3,false,false,1,10,false,0,0,0,0,0,0]]}`,
     class: NoVehicle,
     library: PrefabManager.LIBRARY_ADMIN,
 }
 
 
-const stopPositioningLimb = () => {
+const stopCustomBehaviour = () => {
     game.editor.customPrefabMouseDown = null;
     game.editor.customPrefabMouseMove = null;
+    game.editor.customDebugDraw = null;
 }
 const setPositionLimb = (prefab, limb) => {
     let x = game.editor.mousePosWorld.x - prefab.x / game.editor.PTM;
@@ -75,12 +157,75 @@ const setPositionLimb = (prefab, limb) => {
 const startPositioningLimb = (prefab, limb) =>{
     game.editor.customPrefabMouseDown = ()=>{
         setPositionLimb(prefab, limb);
-        stopPositioningLimb(prefab, limb);
+        stopCustomBehaviour();
     }
     game.editor.customPrefabMouseMove = ()=>{
         setPositionLimb(prefab, limb);
     }
     setPositionLimb(prefab, limb);
+    game.editor.customDebugDraw = null;
+}
+
+// Joint behaviour
+
+const tryAndAddJoint = prefab => {
+    if(prefab.class.jointTarget && prefab.class.jointTargetConnection){
+
+        const editor = game.editor;
+
+        const jointObject = new editor.jointObject;
+
+
+        const jointTargetBody = prefab.class.lookupObject[prefab.class.jointTarget];
+
+
+        jointObject.bodyA_ID = jointTargetBody.mySprite.parent.getChildIndex(jointTargetBody.mySprite);
+        jointObject.bodyB_ID = prefab.class.jointTargetConnection.mySprite.parent.getChildIndex(prefab.class.jointTargetConnection.mySprite);
+
+        jointObject.jointType = editor.jointObject_TYPE_PIN;
+        jointObject.x = editor.mousePosWorld.x * editor.PTM;
+        jointObject.y = editor.mousePosWorld.y * editor.PTM;
+
+        editor.attachJointPlaceHolder(jointObject);
+
+        stopCustomBehaviour();
+    }
+}
+
+const drawJointAdding = prefab => {
+
+    const bodyObject = prefab.class.lookupObject[prefab.class.jointTarget];
+    const sprite = bodyObject.mySprite ? bodyObject.mySprite : bodyObject;
+
+    const editor = game.editor;
+
+    let tarSprite = editor.getPIXIPointFromWorldPoint(editor.mousePosWorld);
+    editor.debugGraphics.lineStyle(1, editor.jointLineColor, 1);
+
+    const worldQuery = editor.queryWorldForBodies(editor.mousePosWorld, editor.mousePosWorld);
+    prefab.class.jointTargetConnection = null;
+    worldQuery.forEach(body => {
+        if(body.mySprite && !body.mySprite.data.prefabInstanceName){
+            tarSprite = body.mySprite;
+            prefab.class.jointTargetConnection = body;
+            editor.debugGraphics.lineStyle(1, "0xFFFF00", 1);
+        }
+    });
+
+    editor.debugGraphics.moveTo(sprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, sprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
+    editor.debugGraphics.lineTo(tarSprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, tarSprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
+
+}
+
+const startAddingJoint = prefab => {
+    if(!prefab.class.jointTarget) prefab.class.jointTarget = 'body';
+    game.editor.customPrefabMouseDown = ()=>{
+        tryAndAddJoint(prefab);
+    }
+    game.editor.customDebugDraw = ()=>{
+        drawJointAdding(prefab);
+    }
+    game.editor.customPrefabMouseMove = null;
 }
 
 
@@ -90,6 +235,8 @@ NoVehicle.settings = Object.assign({}, BaseVehicle.settings, {
     "positionLeftLeg": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.LEG_LEFT),
     "positionRightLeg": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.LEG_RIGHT),
     "positionHead": prefab=>startPositioningLimb(prefab, Character.BODY_PARTS.HEAD),
+    "selectJointTarget": "body",
+    "addJoint": prefab=>startAddingJoint(prefab),
 });
 NoVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
     "positionLeftArm": '$function',
@@ -97,4 +244,6 @@ NoVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
     "positionLeftLeg": '$function',
     "positionRightLeg": '$function',
     "positionHead": '$function',
+    "selectJointTarget": [...Object.values(Character.BODY_PARTS)],
+    "addJoint": '$function',
 });

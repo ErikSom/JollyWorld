@@ -135,6 +135,7 @@ const _B2dEditor = function () {
 
 	this.customPrefabMouseDown = null;
 	this.customPrefabMouseMove = null;
+	this.customDebugDraw = null;
 
 	this.cameraHolder;
 
@@ -3633,6 +3634,7 @@ const _B2dEditor = function () {
 			this.selectingTriggerTarget = false;
 			this.customPrefabMouseDown = null;
 			this.customPrefabMouseMove = null;
+			this.customDebugDraw = null;
 			this.updateSelection();
 
 			if([this.tool_VERTICEEDITING, this.tool_CAMERA].includes(this.selectedTool)){
@@ -4137,6 +4139,7 @@ const _B2dEditor = function () {
 		this.drawTransformGui();
 		this.drawDebugJointHelpers();
 		this.drawDebugTriggerHelpers();
+		if(this.customDebugDraw) this.customDebugDraw();
 	}
 	this.drawPlayerHistory = function(){
 		this.playerHistory.forEach(frame => {
@@ -8218,6 +8221,7 @@ const _B2dEditor = function () {
 		this.selectingTriggerTarget = false;
 		this.customPrefabMouseDown = null;
 		this.customPrefabMouseMove = null;
+		this.customDebugDraw = null;
 
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
