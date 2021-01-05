@@ -158,7 +158,6 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 if (callback.m_hit) {
                     let forceDir = extramath.rotateVector(callback.m_normal, 90);
                     this.applyImpulse(this.desiredVehicleSpeeds[i] * dir, forceDir);
-                    //grounded = true;
                     break;
                 }
             }

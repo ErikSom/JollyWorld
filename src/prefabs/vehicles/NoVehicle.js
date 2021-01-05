@@ -52,6 +52,7 @@ export class NoVehicle extends BaseVehicle {
         this.patchJoints();
 
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+        this.character.attachedToVehicle = false;
     }
     patchJoints(){
         const calculateJointDistance = (joint1, joint2, joint3) =>{
@@ -82,11 +83,11 @@ export class NoVehicle extends BaseVehicle {
                     otherBody = bodyB;
                 }
 
-                if(patchJoint && bodyPart !== 'body'){
+                if(patchJoint && bodyPart !== 'body' && joint.GetType() !== Box2D.b2JointType.e_distanceJoint){
                     let refJoint;
                     let maxLength = 0;
                     const bodyToPatch = this.lookupObject['body'];
-                    let linkedBodies = null;
+                    let linkedBodies = [];
                     if([Character.BODY_PARTS.HAND_LEFT, Character.BODY_PARTS.ARM_LEFT, Character.BODY_PARTS.SHOULDER_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT+'_joint'];
                         if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.HAND_LEFT){
@@ -181,9 +182,6 @@ export class NoVehicle extends BaseVehicle {
     }
     update() {
         super.update();
-        if (this.character.attachedToVehicle) {
-            this.character.attachedToVehicle = false;
-        }
     }
 }
 

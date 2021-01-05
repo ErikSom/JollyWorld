@@ -414,9 +414,11 @@ function Game() {
 
                 if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
                     this.vehicle.lean(-1);
+                    this.character.lean(-1);
                 }
                 if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.vehicle.lean(1);
+                    this.character.lean(1);
                 }
                 if (Key.isPressed(Key.Z)) {
                     this.character.detachFromVehicle(Settings.detachForce);
@@ -850,7 +852,7 @@ function Game() {
                     if(bodyClass && bodyClass.dealDamage){
                         bodyClass.dealDamage(10000);
                     }
-                }else {
+                }else if(!otherBody.isVehiclePart) {
                     let force = 0;
                     for (let j = 0; j < impulse.normalImpulses.length; j++)
                         if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];

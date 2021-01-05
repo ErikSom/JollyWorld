@@ -834,6 +834,10 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
+				targetFolder.add(ui.editorGUI.editData, "isVehiclePart").name("Is vehicle part").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				});
 				// is Character is an admin feature
 				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
 				if(Settings.admin) collisionTypes.push("Is character");
@@ -1953,6 +1957,7 @@ const _B2dEditor = function () {
 		this.lineWidth = 1.0;
 		this.visible = true;
 		this.instaKill = false;
+		this.isVehiclePart = false;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -4736,7 +4741,15 @@ const _B2dEditor = function () {
 							if(controller.targetValue) body.instaKill = true;
 							else delete body.instaKill;
 						}
-					} else if (controller.property == "tileTexture") {
+					} else if(controller.property == "isVehiclePart"){
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.isVehiclePart = controller.targetValue;
+							if(controller.targetValue) body.isVehiclePart = true;
+							else delete body.isVehiclePart;
+						}
+					}else if (controller.property == "tileTexture") {
 						//do tileTexture
 					} else if (controller.property == "lockselection") {
 						//body & sprite
@@ -6007,6 +6020,7 @@ const _B2dEditor = function () {
 		this.addObjectToLookupGroups(body, body.mySprite.data);
 
 		body.instaKill = obj.instaKill;
+		body.isVehiclePart = obj.isVehiclePart;
 
 		return body;
 
@@ -6964,6 +6978,9 @@ const _B2dEditor = function () {
 	this.attachJoint = function (jointPlaceHolder) {
 		let bodyA = this.textures.getChildAt(jointPlaceHolder.bodyA_ID).myBody;
 		let bodyB;
+
+		let addJointToCharacter = null;
+
 		if (jointPlaceHolder.bodyB_ID != null) {
 
 			bodyB = this.textures.getChildAt(jointPlaceHolder.bodyB_ID).myBody;
@@ -6971,8 +6988,12 @@ const _B2dEditor = function () {
 
 			if(bodyA.mySprite && bodyA.mySprite.data.prefabInstanceName && bodyB.mySprite && !bodyB.mySprite.data.prefabInstanceName){
 				// this is an ancnhor created on a NoVehicle object that we want to force on the position of the actual body
-				jointPlaceHolder.x = bodyA.GetPosition().x*Settings.PTM;
-				jointPlaceHolder.y = bodyA.GetPosition().y*Settings.PTM;
+				addJointToCharacter = this.retrieveSubClassFromBody(bodyA);
+
+				if(jointPlaceHolder.jointType != this.jointObject_TYPE_DISTANCE){
+					jointPlaceHolder.x = bodyA.GetPosition().x*Settings.PTM;
+					jointPlaceHolder.y = bodyA.GetPosition().y*Settings.PTM;
+				}
 			}
 
 		} else {
@@ -7063,6 +7084,12 @@ const _B2dEditor = function () {
 		joint.data = jointPlaceHolder.data;
 		bodyA.myJoints = undefined;
 		if (bodyB) bodyB.myJoints = undefined;
+
+
+		if(addJointToCharacter){
+			addJointToCharacter.addJoint(joint, bodyB);
+		}
+
 		return joint;
 	}
 
@@ -7719,6 +7746,7 @@ const _B2dEditor = function () {
 			arr[17] = obj.lineWidth !== undefined ? obj.lineWidth : 1.0;
 			arr[18] = obj.visible;
 			arr[19] = obj.instaKill;
+			arr[20] = obj.isVehiclePart;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -7850,6 +7878,7 @@ const _B2dEditor = function () {
 			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
 			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
 			obj.instaKill = typeof arr[19] === "boolean" ? arr[19] : false;
+			obj.isVehiclePart = typeof arr[20] === "boolean" ? arr[20] : false;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];

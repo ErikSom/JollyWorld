@@ -18,13 +18,14 @@ export class Character extends PrefabManager.basePrefab {
         this.life = 300;
         this.hat = undefined;
         this.flipped = false;
+        this.attachedToVehicle = true;
+        this.vehicleJoints = [];
     }
 
     init() {
         super.init();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
-        this.attachedToVehicle = true;
         this.alive = true;
         this.bleedTimer = -1;
         //** TEMP PORTAL GUN */
@@ -87,6 +88,18 @@ export class Character extends PrefabManager.basePrefab {
     update() {
         super.update();
         if(this.hat) this.hat.update();
+        if(this.vehicleJoints.length>0){
+            this.attachedToVehicle = true;
+            for(let i = 0; i<this.vehicleJoints.length; i++){
+                if(this.vehicleJoints[i].destroyed){
+                    this.vehicleJoints.splice(i, 1);
+                    i--;
+                }
+            }
+            if(this.vehicleJoints.length === 0){
+                this.attachedToVehicle = false;
+            }
+        }
 
         if (PrefabManager.timerReady(this.eyesTimer, Character.TIME_EYES_CLOSE, true) || !this.alive) {
             if (this.lookupObject.eye_left){
@@ -153,7 +166,19 @@ export class Character extends PrefabManager.basePrefab {
     }
     lean(dir) {
         const velocity = Settings.characterLeanSpeed * dir;
-        this.lookupObject['body'].SetAngularVelocity(velocity);
+
+        if(!this.attachedToVehicle){
+            this.lookupObject['body'].SetAngularVelocity(velocity);
+        }else{
+            const leanedBodies = [];
+            this.vehicleJoints.forEach(joint=> {
+                const vehicleBody = joint.GetBodyB();
+                if(!leanedBodies.includes(vehicleBody)){
+                    vehicleBody.SetAngularVelocity(velocity);
+                    leanedBodies.push(vehicleBody);
+                }
+            });
+        }
     }
 
     static GORE_BASH = 0;
@@ -474,6 +499,12 @@ export class Character extends PrefabManager.basePrefab {
                 goreLookupObject._textures[0].children[0].texture = PIXI.Texture.fromFrame(particle+ranId+'0000');
             }
         });
+    }
+
+    addJoint(joint, bodyB){
+        if(bodyB.isVehiclePart){
+            this.vehicleJoints.push(joint);
+        }
     }
 
     positionBody(direction) {
@@ -897,12 +928,23 @@ export class Character extends PrefabManager.basePrefab {
         if (!force) force = 0;
         if (!this.attachedToVehicle) return;
 
-        this.mainPrefabClass.destroyConnectedJoints['head'].map((jointName) => {
-            if (this.lookupObject[jointName]) {
-                game.world.DestroyJoint(this.lookupObject[jointName]);
-                delete this.lookupObject[jointName];
-            }
-        });
+        const vehicleJoints = this.mainPrefabClass.destroyConnectedJoints['head'];
+
+        if(vehicleJoints){
+            vehicleJoints.map((jointName) => {
+                if (this.lookupObject[jointName]) {
+                    game.world.DestroyJoint(this.lookupObject[jointName]);
+                    delete this.lookupObject[jointName];
+                }
+            });
+        }
+
+        if(this.vehicleJoints){
+            this.vehicleJoints.forEach(joint =>{
+                game.world.DestroyJoint(joint);
+                this.vehicleJoints = [];
+            })
+        }
 
         if(this.hat) this.hat.detachFromVehicle();
 
@@ -936,9 +978,9 @@ export class Character extends PrefabManager.basePrefab {
                 dirFore.SelfMul(force);
                 body.ApplyForce(dirFore, body.GetPosition());
             }
-            this.attachedToVehicle = false;
-
         }
+
+        this.attachedToVehicle = false;
     }
 }
 
