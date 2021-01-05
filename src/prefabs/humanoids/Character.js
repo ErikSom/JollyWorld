@@ -59,10 +59,6 @@ export class Character extends PrefabManager.basePrefab {
                 texture.addChildAt(sprite, 0);
             }
         }
-
-
-        console.log("Character:", this);
-
     }
     setSkin(skin){
         const targetFrame = String(skin).padStart(4, '0');

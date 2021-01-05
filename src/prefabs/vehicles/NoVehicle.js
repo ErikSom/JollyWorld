@@ -243,8 +243,8 @@ const tryAndAddJoint = prefab => {
         jointObject.bodyB_ID = prefab.class.jointTargetConnection.mySprite.parent.getChildIndex(prefab.class.jointTargetConnection.mySprite);
 
         jointObject.jointType = editor.jointObject_TYPE_PIN;
-        jointObject.x = editor.mousePosWorld.x * editor.PTM;
-        jointObject.y = editor.mousePosWorld.y * editor.PTM;
+        jointObject.x = jointTargetBody.mySprite.x;
+        jointObject.y = jointTargetBody.mySprite.y;
 
         editor.attachJointPlaceHolder(jointObject);
 
