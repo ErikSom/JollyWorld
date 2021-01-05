@@ -19776,6 +19776,11 @@
         /// @warning This function is locked during callbacks.
         DestroyJoint(j) {
             if(j.destroyed) return;
+            if(j.grabJoint){
+                this.DestroyJoint(j.grabJoint);
+                delete j.grabJoint;
+            }
+
             j.destroyed = true;
             if (this.IsLocked()) {
                 throw new Error();

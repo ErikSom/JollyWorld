@@ -85,22 +85,27 @@ export class NoVehicle extends BaseVehicle {
                 if(patchJoint && bodyPart !== 'body'){
                     let refJoint;
                     let maxLength = 0;
-                    const bodiesToPatch = [this.lookupObject['body']];
+                    const bodyToPatch = this.lookupObject['body'];
+                    let linkedBodies = null;
                     if([Character.BODY_PARTS.HAND_LEFT, Character.BODY_PARTS.ARM_LEFT, Character.BODY_PARTS.SHOULDER_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT+'_joint'];
                         if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.HAND_LEFT){
-                            // bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.ARM_LEFT]);
                             maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.ARM_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.HAND_LEFT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.SHOULDER_LEFT, Character.BODY_PARTS.ARM_LEFT, Character.BODY_PARTS.HAND_LEFT];
                         }else if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.ARM_LEFT){
                             maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.SHOULDER_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.ARM_LEFT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.SHOULDER_LEFT, Character.BODY_PARTS.ARM_LEFT];
+                        }else{
+                            linkedBodies = [Character.BODY_PARTS.SHOULDER_LEFT];
                         }
                     } else if([Character.BODY_PARTS.HAND_RIGHT, Character.BODY_PARTS.ARM_RIGHT, Character.BODY_PARTS.SHOULDER_RIGHT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT+'_joint'];
                         if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.HAND_RIGHT){
-                            bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.ARM_RIGHT]);
                             maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.ARM_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.HAND_RIGHT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.SHOULDER_RIGHT, Character.BODY_PARTS.ARM_RIGHT, Character.BODY_PARTS.HAND_RIGHT];
                         } else if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.ARM_RIGHT){
                             maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.SHOULDER_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.ARM_RIGHT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.SHOULDER_RIGHT, Character.BODY_PARTS.ARM_RIGHT];
                         }
                     } else if([Character.BODY_PARTS.FEET_LEFT, Character.BODY_PARTS.LEG_LEFT, Character.BODY_PARTS.THIGH_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.THIGH_LEFT+'_joint'];
@@ -125,26 +130,30 @@ export class NoVehicle extends BaseVehicle {
                             anchorOnBody = joint.GetAnchorB(new Box2D.b2Vec2);
                         }
 
-                        // TODO: set the anchors to the patchJoint
-
                         if(anchorOnBody){
-                            bodiesToPatch.forEach(body => {
-                                const ropeJointDef = new Box2D.b2RopeJointDef;
+                            const ropeJointDef = new Box2D.b2RopeJointDef;
 
-                                let jointAnchor = body.GetPosition();
+                            let jointAnchor = bodyToPatch.GetPosition();
 
-                                if(body == this.lookupObject['body']) jointAnchor = anchorOnBody;
+                            if(bodyToPatch == this.lookupObject['body']) jointAnchor = anchorOnBody;
 
-                                ropeJointDef.Initialize(body, otherBody, refJointAnchor, jointAnchor);
-                                const xd = refJointAnchor.x - jointAnchor.x;
-                                const yd = refJointAnchor.y - jointAnchor.y;
+                            ropeJointDef.Initialize(bodyToPatch, otherBody, refJointAnchor, jointAnchor);
+                            const xd = refJointAnchor.x - jointAnchor.x;
+                            const yd = refJointAnchor.y - jointAnchor.y;
 
-                                ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
-                                if(body == this.lookupObject['body']){
-                                    ropeJointDef.maxLength = maxLength ? maxLength : ropeJointDef.maxLength;
-                                }
-                                const newJoint = game.editor.world.CreateJoint(ropeJointDef);
-                            });
+                            ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
+                            if(bodyToPatch == this.lookupObject['body']){
+                                ropeJointDef.maxLength = maxLength ? maxLength : ropeJointDef.maxLength;
+                            }
+                            const newJoint = game.editor.world.CreateJoint(ropeJointDef);
+
+                            linkedBodies.forEach(linkedBodyKey => {
+                                const linkedBody = this.lookupObject[linkedBodyKey];
+                                if(!linkedBody.grabJoints) linkedBody.grabJoints = [];
+                                linkedBody.grabJoints.push(joint);
+                            })
+ 
+                            joint.grabJoint = newJoint;
                         }
                     }
 

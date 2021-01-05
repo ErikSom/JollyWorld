@@ -59,6 +59,10 @@ export class Character extends PrefabManager.basePrefab {
                 texture.addChildAt(sprite, 0);
             }
         }
+
+
+        console.log("Character:", this);
+
     }
     setSkin(skin){
         const targetFrame = String(skin).padStart(4, '0');
@@ -318,6 +322,13 @@ export class Character extends PrefabManager.basePrefab {
                             this.dealDamage(1000);
                         }
 
+                        if(targetBody.grabJoints){
+                            targetBody.grabJoints.forEach(grabJoint=>{
+                                game.world.DestroyJoint(grabJoint);
+                                delete targetBody.grabJoints;
+                            })
+                        }
+
                         game.editor.deleteObjects([targetBody]);
 
                     }
@@ -376,6 +387,15 @@ export class Character extends PrefabManager.basePrefab {
 
                         if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
                         if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+
+                        const targetBody = this.lookupObject[update.target];
+                        if(targetBody.grabJoints){
+                            targetBody.grabJoints.forEach(grabJoint=>{
+                                game.world.DestroyJoint(grabJoint);
+                                delete targetBody.grabJoints;
+                            })
+                        }
+
 
                         game.world.DestroyJoint(targetJoint);
                         delete this.lookupObject[update.target + "_joint"];
