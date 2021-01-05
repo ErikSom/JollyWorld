@@ -180,6 +180,9 @@ export class NoVehicle extends BaseVehicle {
             }
         })
     }
+    flip(){
+        
+    }
     update() {
         super.update();
     }

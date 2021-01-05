@@ -127,6 +127,16 @@ function Game() {
             height: h,
         });
 
+        if(this.app.renderer.context instanceof CanvasRenderingContext2D){
+            alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
+            window.location.reload();
+        }
+        this.app.view.addEventListener('webglcontextlost', (event) => {
+            alert("Jolly Goodness! I almost fried your PC, Sorry.. (kidding) Something stressed out the browser and I'm forced to restart the game! Click OK to restart.");
+            window.location.reload();
+        });
+
+
         window.__pixiScreenshot = ()=>{
             this.needScreenshot = true;
             return new Promise((resolve, reject) => {
@@ -306,6 +316,9 @@ function Game() {
                 window.top.location !== window.location && (window.top.location = window.location);
             }
         }());
+
+        const preloader = document.getElementById('preloader');
+        if(preloader)preloader.parentNode.removeChild(preloader);
 
         //this.myContainer.updateTransform = function() {};
     }

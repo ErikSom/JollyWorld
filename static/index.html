@@ -138,8 +138,6 @@
                             setProgress(1);
                             setTimeout(function(){
                                 eval(xhr.responseText);
-                                var preloader = document.getElementById('preloader');
-                                if(preloader)preloader.parentNode.removeChild(preloader);
                             }, 100);
                         } catch (e) {
                             onError(e);
