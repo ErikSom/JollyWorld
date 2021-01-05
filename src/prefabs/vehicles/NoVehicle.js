@@ -109,10 +109,26 @@ export class NoVehicle extends BaseVehicle {
                         }
                     } else if([Character.BODY_PARTS.FEET_LEFT, Character.BODY_PARTS.LEG_LEFT, Character.BODY_PARTS.THIGH_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.THIGH_LEFT+'_joint'];
-                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.FEET_LEFT) bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.LEG_LEFT]);
+                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.FEET_LEFT){
+                            maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.THIGH_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.LEG_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.FEET_LEFT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.THIGH_LEFT, Character.BODY_PARTS.LEG_LEFT, Character.BODY_PARTS.FEET_LEFT];
+                        }else if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.LEG_LEFT){
+                            maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.THIGH_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.LEG_LEFT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.THIGH_LEFT, Character.BODY_PARTS.LEG_LEFT];
+                        }else{
+                            linkedBodies = [Character.BODY_PARTS.THIGH_LEFT];
+                        }
                     } else if([Character.BODY_PARTS.FEET_RIGHT, Character.BODY_PARTS.LEG_RIGHT, Character.BODY_PARTS.THIGH_RIGHT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT+'_joint'];
-                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.FEET_RIGHT) bodiesToPatch.push(this.lookupObject[Character.BODY_PARTS.LEG_RIGHT]);
+                        if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.FEET_RIGHT){
+                            maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.LEG_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.FEET_RIGHT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.THIGH_RIGHT, Character.BODY_PARTS.LEG_RIGHT, Character.BODY_PARTS.FEET_RIGHT];
+                        }else if(patchJoint.mySprite.data.refName === Character.BODY_PARTS.LEG_RIGHT){
+                            maxLength = calculateJointDistance(this.lookupObject[Character.BODY_PARTS.THIGH_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Character.BODY_PARTS.LEG_RIGHT].GetPosition());
+                            linkedBodies = [Character.BODY_PARTS.THIGH_RIGHT, Character.BODY_PARTS.LEG_RIGHT];
+                        }else{
+                            linkedBodies = [Character.BODY_PARTS.THIGH_RIGHT];
+                        }
                     } else if([Character.BODY_PARTS.HEAD].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject['neck_joint'];
                     }else if([Character.BODY_PARTS.BELLY].includes(patchJoint.mySprite.data.refName)){
