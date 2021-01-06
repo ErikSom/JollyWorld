@@ -190,6 +190,7 @@ export const doAction = function (actionData, target) {
             break;
         case "SetFollowPlayer":
             target.data.followPlayer = actionData.setFollowPlayer;
+            if(target.data.followPlayer) target.data.followFirstTarget = false;
             if(actionData.toggle) actionData.setFollowPlayer = !actionData.setFollowPlayer;
             break;
         case "SetGravity":
