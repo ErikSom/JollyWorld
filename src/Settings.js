@@ -4,7 +4,7 @@ export var Settings = {
     admin:(window.location.search.indexOf('editorAdmin=true')>=0),
     targetFPS,
     timeStep:1000 / targetFPS,
-    allowMouseMovement:(window.location.search.indexOf('editorAdmin=true')>=0),
+    allowMouseMovement:true,
     cameraZoom:0.8,
     lineWidthCorrection:1.0,
     /*PHYSICS*/

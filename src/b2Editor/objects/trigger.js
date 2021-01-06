@@ -548,6 +548,10 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.humanUpdate = true;
         this.targetValue = value
     });
+    _folder.add(ui.editorGUI.editData, "followFirstTarget").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
     let label;
     ui.editorGUI.editData.selectTarget = function () {};
     label = "Add Target";
@@ -814,6 +818,32 @@ export class triggerCore {
         this.actions = trigger.mySprite.data.triggerActions;
         this.targets = trigger.mySprite.targets;
 
+        this.followTarget = null;
+        if(this.data.followFirstTarget){
+
+            const target = this.targets[0];
+            const targetX = target.mySprite ? target.GetPosition().x : target.x / Settings.PTM;
+            const targetY = target.mySprite ? target.GetPosition().y : target.y / Settings.PTM;
+
+            console.log(targetX, targetY);
+
+            const dx = trigger.GetPosition().x - targetX;
+            const dy = trigger.GetPosition().y - targetY;
+            const dl = Math.sqrt(dx * dx + dy * dy);
+            const da = Math.atan2(dy, dx);
+
+            console.log(dx, dy, dl, da);
+
+
+            const targetRotation = target.mySprite ? target.GetAngle() : target.rotation;
+
+            this.followTarget = target;
+            this.followLengthOffset = dl;
+            this.followRotationOffset = targetRotation-da;
+
+        }
+
+
         this.initContactListener();
     }
     update() {
@@ -843,6 +873,17 @@ export class triggerCore {
                 if(game?.character.lookupObject.body){
                     this.trigger.SetPosition(game.character.lookupObject.body.GetPosition());
                 }
+            }else if(this.data.followFirstTarget && !this.followTarget.destroyed){
+                let targetX = this.followTarget.mySprite ? this.followTarget.GetPosition().x : this.followTarget.x / Settings.PTM;
+                let targetY = this.followTarget.mySprite ? this.followTarget.GetPosition().y : this.followTarget.y / Settings.PTM;
+                let targetRot = this.followTarget.mySprite ? this.followTarget.GetAngle() : this.followTarget.rotation;
+                targetRot -= this.followRotationOffset;
+                targetX += this.followLengthOffset * Math.cos(targetRot);
+                targetY += this.followLengthOffset * Math.sin(targetRot);
+
+                console.log(targetX, targetY);
+
+                this.trigger.SetPosition(new Box2D.b2Vec2(targetX, targetY));
             }
             if (this.runTriggerOnce) {
                 this.doTrigger();

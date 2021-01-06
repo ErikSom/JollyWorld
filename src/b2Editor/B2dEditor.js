@@ -2109,6 +2109,7 @@ const _B2dEditor = function () {
 		this.followPlayer = false;
 		this.worldActions = [];
 		this.triggerKey = 32;
+		this.followFirstTarget = false;
 		this.lockselection = false;
 	}
 	this.textObject = function () {
@@ -4813,6 +4814,14 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.followPlayer = controller.targetValue;
+							if(controller.targetValue) body.mySprite.data.followFirstTarget = false;
+						}
+					} else if (controller.property == "followFirstTarget") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.followFirstTarget = controller.targetValue;
+							if(controller.targetValue) body.mySprite.data.followPlayer = false;
 						}
 					} else if (controller.property == "triggerKey") {
 						//trigger
@@ -7824,6 +7833,7 @@ const _B2dEditor = function () {
 			arr[13] = obj.followPlayer;
 			arr[14] = obj.worldActions;
 			arr[15] = obj.triggerKey;
+			arr[16] = obj.followFirstTarget;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -7961,6 +7971,7 @@ const _B2dEditor = function () {
 			obj.followPlayer = typeof arr[13] === "boolean" ? arr[13] : false;
 			obj.worldActions = arr[14] || [];
 			obj.triggerKey = arr[15] || 32;
+			obj.followFirstTarget = typeof arr[16] === "boolean" ? arr[16] : false;
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];

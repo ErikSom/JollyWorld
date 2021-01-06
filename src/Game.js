@@ -328,7 +328,7 @@ function Game() {
     this.onMouseDown = function (e) {
         this.fixTouchEvent(e);
 
-        if (Settings.allowMouseMovement && !this.mouseJoint && this.run) {
+        if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug &&  !this.mouseJoint && this.run) {
             var body = this.getBodyAtMouse();
             if (body) {
                 var md = new b2MouseJointDef();
