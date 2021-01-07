@@ -999,11 +999,27 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
+},
+"Textures-Pack-Full instance 10125":
+{
+	"frame": {"x":1664,"y":896,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"Textures-Pack-Full instance 10126":
+{
+	"frame": {"x":1792,"y":896,"w":0,"h":0},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
 }},
 "meta": {
 	"app": "Adobe Animate",
 	"version": "20.0.3.25487",
-	"image": "textures2.png",
+	"image": "textures.png",
 	"format": "RGBA8888",
 	"size": {"w":2048,"h":1024},
 	"scale": "1"
