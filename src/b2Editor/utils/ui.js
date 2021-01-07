@@ -1544,7 +1544,6 @@ export const destroyEditorGUI = function () {
         customGUIContainer.removeChild(editorGUI.domElement);
         editorGUI = undefined;
     }
-    removeGuiAssetSelection();
 }
 
 export const createEditorStyledGUI = function (name) {
@@ -1655,13 +1654,15 @@ export const initGuiAssetSelection = function () {
                 const x = Math.max(e.pageX, rect.right + image.width / 2);
                 const y = e.pageY;
 
+				const camera = B2dEditor.container.camera || B2dEditor.container;
+
                 const data = new B2dEditor.textureObject;
                 if (x == e.pageX) {
-                    data.x = (x - image.width / 2) / B2dEditor.container.scale.x - B2dEditor.container.x / B2dEditor.container.scale.x;
-                    data.y = (y + image.height / 2) / B2dEditor.container.scale.y - B2dEditor.container.y / B2dEditor.container.scale.x;
+                    data.x = (x - image.width / 2) / camera.scale.x - camera.x / camera.scale.x;
+                    data.y = (y + image.height / 2) / camera.scale.y - camera.y / camera.scale.x;
                 } else {
-                    data.x = (x) / B2dEditor.container.scale.x - B2dEditor.container.x / B2dEditor.container.scale.x;
-                    data.y = (y) / B2dEditor.container.scale.y - B2dEditor.container.y / B2dEditor.container.scale.x;
+                    data.x = (x) / camera.scale.x - camera.x / camera.scale.x;
+                    data.y = (y) / camera.scale.y - camera.y / camera.scale.x;
                 }
                 data.scaleX = data.scaleY = 1;
                 data.textureName = guiFunction.getAttribute('textureName');

@@ -3921,17 +3921,9 @@ const _B2dEditor = function () {
 
 					const oldRotation = graphic.rotation;
 					graphic.rotation = 0;
-					const bounds = graphic.getBounds();
-
-					const anchorDiffX = graphic.x - bounds.x + bounds.width / 2;
-					const anchorDiffY = graphic.y - bounds.y + bounds.height / 2;
 
 					graphic.rotation = oldRotation;
 
-					if(graphic.data.type !== this.object_TEXT){ // fix for bug with text object
-						localPosition.x += anchorDiffX;
-						localPosition.y += anchorDiffY;
-					}
 
 					if(localPosition.x<0 || localPosition.y<0 || localPosition.x>graphic.width || localPosition.y>graphic.height){
 						queryGraphics.splice(i, 1);
