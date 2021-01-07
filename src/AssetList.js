@@ -39,10 +39,11 @@ export const ExtractTextureAssets = async () => {
         const key = keys[i];
         const texture = textureSheet.textures[key];
         tempCTX.clearRect(0, 0, textureSize, textureSize);
-        tempCTX.drawImage(sheetImage, texture.orig.x, texture.orig.y, textureSize, textureSize, 0, 0, textureSize, textureSize);
+        tempCTX.drawImage(sheetImage, texture._frame.x, texture._frame.y, textureSize, textureSize, 0, 0, textureSize, textureSize);
 
         const image = await new Promise(resolve => {
             const image = new Image();
+            image.alt = Settings.textureNames[i+1];
             image.src = tempCanvas.toDataURL();
             image.onload = ()=>{resolve(image)};
         })

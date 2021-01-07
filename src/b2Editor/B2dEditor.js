@@ -453,6 +453,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
+				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
 				targetFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
 
 				ui.editorGUI.editData.resetHelp = ()=>{
@@ -2161,6 +2162,7 @@ const _B2dEditor = function () {
 		this.gravityY = 10;
 		this.showPlayerHistory = false;
 		this.backgroundColor = 0xD4D4D4;
+		this.cameraZoom = Settings.defaultCameraZoom;
 	}
 	this.editorJointObject = new this.jointObject();
 
@@ -7722,9 +7724,9 @@ const _B2dEditor = function () {
 		this.worldJSON += JSONStringify(window.__guiusercolors);
 		this.worldJSON += '}';
 
-		// console.log("********************** World Data **********************");
-		// console.log(this.worldJSON);
-		// console.log("********************************************************");
+		console.log("********************** World Data **********************");
+		console.log(this.worldJSON);
+		console.log("********************************************************");
 		return this.worldJSON;
 	}
 
@@ -7853,6 +7855,7 @@ const _B2dEditor = function () {
 			arr[1] = obj.gravityX;
 			arr[2] = obj.gravityY;
 			arr[3] = obj.backgroundColor;
+			arr[4] = obj.cameraZoom;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -7994,6 +7997,7 @@ const _B2dEditor = function () {
 			obj.gravityX = arr[1];
 			obj.gravityY = arr[2];
 			obj.backgroundColor = arr[3] || 0xD4D4D4;
+			obj.cameraZoom = arr[4] !== undefined ? arr[4] : Settings.defaultCameraZoom;
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();

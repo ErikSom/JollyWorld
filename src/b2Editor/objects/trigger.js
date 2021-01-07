@@ -65,7 +65,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -195,6 +195,9 @@ export const doAction = function (actionData, target) {
             break;
         case "SetGravity":
             game.world.SetGravity(new Box2D.b2Vec2(actionData.gravityX, actionData.gravityY));
+            break;
+        case "SetCameraZoom":
+            game.editor.editorSettingsObject.cameraZoom = actionData.zoom;
             break;
         case "DealDamage":
             prefab.class.character.dealDamage(actionData.damage);
@@ -485,6 +488,20 @@ export const actionDictionary = {
         }
     },
     /******************/
+    actionObject_SetCameraZoom: {
+        type: "SetCameraZoom",
+        zoom: Settings.defaultCameraZoom,
+    },
+    actionOptions_SetCameraZoom: {
+        zoom: {
+            type: guitype_MINMAX,
+            min: 0.1,
+            max: 2.0,
+            value: Settings.defaultCameraZoom,
+            step: 0.1,
+        },
+    },
+    /******************/
     actionObject_DealDamage: {
         type: "DealDamage",
         damage: 10,
@@ -653,8 +670,8 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             this.humanUpdate = true;
             this.targetValue = value;
             this.triggerActionKey = 'targetActionDropDown';
-            this.triggerTargetID = targetID;
-            this.triggerActionID = actionID;
+            this.triggerTargetID = -1;
+            this.triggerActionID = i;
         }.bind(controller));
 
         controller.name('actionType');
