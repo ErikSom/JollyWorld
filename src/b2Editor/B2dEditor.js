@@ -7472,7 +7472,7 @@ const _B2dEditor = function () {
 				if(!PIXI.loader.resources[tileTexture]){
 					// legacy tile texture fix
 					tileTexture = tileTexture.split('.')[0];
-					if(!PIXI.utils.BaseTextureCache[tileTexture]) tileTexture = 'Dirt';
+					if(!PIXI.utils.BaseTextureCache[tileTexture]) tileTexture = 'Sand';
 				}
 
 				tex = PIXI.Texture.fromImage(tileTexture);
