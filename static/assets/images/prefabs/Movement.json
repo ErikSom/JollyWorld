@@ -2,11 +2,19 @@
 
 "Booster0000":
 {
-	"frame": {"x":2,"y":94,"w":315,"h":30},
+	"frame": {"x":2,"y":62,"w":315,"h":30},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":30},
 	"sourceSize": {"w":315,"h":30}
+},
+"Jet_mc0000":
+{
+	"frame": {"x":319,"y":166,"w":67,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":67,"h":29},
+	"sourceSize": {"w":67,"h":29}
 },
 "Jumper0000":
 {
@@ -18,7 +26,7 @@
 },
 "Jumping0000":
 {
-	"frame": {"x":2,"y":62,"w":315,"h":30},
+	"frame": {"x":2,"y":94,"w":315,"h":30},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":30},
@@ -26,7 +34,7 @@
 },
 "Jumping_Pad0000":
 {
-	"frame": {"x":2,"y":158,"w":315,"h":7},
+	"frame": {"x":2,"y":166,"w":315,"h":7},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":315,"h":7},
@@ -42,7 +50,7 @@
 },
 "TreadmillRoll0000":
 {
-	"frame": {"x":319,"y":62,"w":45,"h":50},
+	"frame": {"x":319,"y":114,"w":45,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":45,"h":50},
@@ -50,7 +58,7 @@
 },
 "Treadmill_Edge0000":
 {
-	"frame": {"x":395,"y":2,"w":48,"h":50},
+	"frame": {"x":319,"y":62,"w":48,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":50},
@@ -58,7 +66,7 @@
 },
 "Treadmill_Wheel0000":
 {
-	"frame": {"x":445,"y":2,"w":42,"h":42},
+	"frame": {"x":369,"y":62,"w":42,"h":42},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":42},

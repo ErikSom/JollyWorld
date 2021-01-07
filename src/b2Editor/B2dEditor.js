@@ -3561,7 +3561,7 @@ const _B2dEditor = function () {
 	}
 	this.onMouseWheel = function(e){
 
-		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor];
+		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI];
 		// detect mouse on gui
 		let uiScroll = false;
 		guiToHaveMouseWheel.forEach( gui => {
