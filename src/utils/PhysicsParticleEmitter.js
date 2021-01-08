@@ -15,8 +15,8 @@ bodyDef.angularDamping = 0.9;
 
 const fixDef = new Box2D.b2FixtureDef;
 fixDef.density = 0.1;
-fixDef.friction = 0.5;
-fixDef.restitution = 0.2;
+fixDef.friction = Settings.defaultFriction;
+fixDef.restitution = Settings.defaultRestitution;
 fixDef.shape = new Box2D.b2CircleShape;
 
 const impulse = new Box2D.b2Vec2();

@@ -1959,6 +1959,8 @@ const _B2dEditor = function () {
 		this.visible = true;
 		this.instaKill = false;
 		this.isVehiclePart = false;
+		this.restitution = Settings.defaultRestitution;
+		this.friction = Settings.defaultFriction;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -7517,6 +7519,7 @@ const _B2dEditor = function () {
 				const mesh = new PIXI.heaven.mesh.Mesh(tex, vertices, uvs, indices);
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
+
 
 				//console.log(mesh);
 				// SCROLLING TEXTURE

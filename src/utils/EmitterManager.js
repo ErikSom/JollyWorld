@@ -159,7 +159,7 @@ export const update = function () {
                 emitters.splice(i, 1);
                 i--;
             }
-        } else emitter.update(Settings.timeStep * 0.001);
+        } else emitter.update(game.editor.deltaTime * 0.001);
     }
 }
 export const reset = function () {
