@@ -791,6 +791,8 @@ const _B2dEditor = function () {
 					ui.editorGUI.editData.lineWidth = ui.editorGUI.editData.lineWidth[0];
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
 					ui.editorGUI.editData.density = ui.editorGUI.editData.density[0];
+					ui.editorGUI.editData.friction = ui.editorGUI.editData.friction[0];
+					ui.editorGUI.editData.restitution = ui.editorGUI.editData.restitution[0];
 
 					controller = targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
@@ -818,6 +820,16 @@ const _B2dEditor = function () {
 						this.targetValue = value;
 					}.bind(controller));
 					controller = targetFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+					controller = targetFolder.add(ui.editorGUI.editData, "friction", 0, 1).name("roughness").step(0.01);
+					controller.onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = value
+					}.bind(controller));
+					controller = targetFolder.add(ui.editorGUI.editData, "restitution", 0, 1).name("bouncy").step(0.01);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value
@@ -4723,7 +4735,32 @@ const _B2dEditor = function () {
 							fixture.SetDensity(controller.targetValue);
 							body.ResetMassData();
 						}
-					} else if (controller.property == "collisionTypes") {
+					} else if (controller.property == "friction") {
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.friction[0] = controller.targetValue;
+							var fixture = body.GetFixtureList();
+							while(fixture){
+								console.log("UPDATING FRICTION!!!");
+								fixture.SetFriction(controller.targetValue);
+								fixture = fixture.GetNext();
+							}
+						}
+					} else if (controller.property == "restitution") {
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.restitution[0] = controller.targetValue;
+							var fixture = body.GetFixtureList();
+							while(fixture){
+								console.log("UPDATING RESTITUTION!!!");
+								fixture.SetRestitution(controller.targetValue);
+								fixture = fixture.GetNext();
+							}
+						}
+					}else if (controller.property == "collisionTypes") {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -5433,6 +5470,8 @@ const _B2dEditor = function () {
 		bodyObject.lineWidth = [bodyObject.lineWidth];
 		bodyObject.transparancy = [bodyObject.transparancy];
 		bodyObject.density = [bodyObject.density];
+		bodyObject.friction = [bodyObject.friction];
+		bodyObject.restitution = [bodyObject.restitution];
 
 		return bodyObject;
 	}
@@ -5995,6 +6034,9 @@ const _B2dEditor = function () {
 			obj.transparancy = [obj.transparancy];
 			obj.density = [obj.density];
 		}
+		// backwards fix for restitution and friction
+		obj.restitution = [].concat(obj.restitution);
+		obj.friction = [].concat(obj.friction);
 
 		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
 		body.SetAngle(obj.rotation);
@@ -6499,6 +6541,8 @@ const _B2dEditor = function () {
 		groupedBodyObject.transparancy = [1];
 		groupedBodyObject.radius = [];
 		groupedBodyObject.density = [];
+		groupedBodyObject.friction = [];
+		groupedBodyObject.restitution = [];
 
 		// let bounds = {l:Number.POSITIVE_INFINITY, r:-Number.POSITIVE_INFINITY, u:-Number.POSITIVE_INFINITY, d:Number.POSITIVE_INFINITY};
 		let centerPoint = {
@@ -6573,6 +6617,8 @@ const _B2dEditor = function () {
 			groupedBodyObject.lineWidth = groupedBodyObject.lineWidth.concat(bodyObjects[i].mySprite.data.lineWidth);
 			groupedBodyObject.transparancy = groupedBodyObject.transparancy.concat(bodyObjects[i].mySprite.data.transparancy);
 			groupedBodyObject.density = groupedBodyObject.density.concat(bodyObjects[i].mySprite.data.density);
+			groupedBodyObject.friction = groupedBodyObject.friction.concat(bodyObjects[i].mySprite.data.friction);
+			groupedBodyObject.restitution = groupedBodyObject.restitution.concat(bodyObjects[i].mySprite.data.restitution);
 
 		}
 
@@ -6596,6 +6642,8 @@ const _B2dEditor = function () {
 		var transparancy = bodyGroup.mySprite.data.transparancy;
 		var radius = bodyGroup.mySprite.data.radius;
 		var density = bodyGroup.mySprite.data.density;
+		var friction = bodyGroup.mySprite.data.friction;
+		var restitution = bodyGroup.mySprite.data.restitution;
 
 		for (var i = 0; i < verts.length; i++) {
 			var bodyObject = new this.bodyObject;
@@ -6649,6 +6697,8 @@ const _B2dEditor = function () {
 			bodyObject.lineWidth = lineWidth[i];
 			bodyObject.transparancy = transparancy[i + 1];
 			bodyObject.density = density[i];
+			bodyObject.friction = friction[i];
+			bodyObject.restitution = restitution[i];
 
 			if (innerVerts[0] instanceof Array == true) { // a fix for earcut bodies being ungrouped
 				bodyObject.colorFill = [bodyObject.colorFill];
@@ -6656,6 +6706,8 @@ const _B2dEditor = function () {
 				bodyObject.lineWidth = [bodyObject.lineWidth];
 				bodyObject.transparancy = [bodyObject.transparancy];
 				bodyObject.density = [bodyObject.density];
+				bodyObject.friction = [bodyObject.friction];
+				bodyObject.restitution = [bodyObject.restitution];
 			}
 
 
@@ -7006,8 +7058,8 @@ const _B2dEditor = function () {
 
 			let fixDef = new b2FixtureDef;
 			fixDef.density = 1.0;
-			fixDef.friction = 0.5;
-			fixDef.restitution = 0.2;
+			fixDef.friction = Settings.defaultFriction;
+			fixDef.restitution = Settings.defaultRestitution;
 
 			let bd = new b2BodyDef();
 			bd.type = Box2D.b2BodyType.b2_staticBody;
@@ -7307,8 +7359,8 @@ const _B2dEditor = function () {
 			for (let j = 0; j < innerVertices.length; j++) {
 				fixDef = new b2FixtureDef;
 				fixDef.density = data.density[i];
-				fixDef.friction = 0.5;
-				fixDef.restitution = 0.2;
+				fixDef.friction = data.friction[i];
+				fixDef.restitution = data.restitution[i];
 				const radius = data.radius[i];
 				if (!radius) {
 					let vert;
@@ -7753,6 +7805,8 @@ const _B2dEditor = function () {
 			arr[18] = obj.visible;
 			arr[19] = obj.instaKill;
 			arr[20] = obj.isVehiclePart;
+			arr[21] = obj.friction;
+			arr[22] = obj.restitution;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -7887,6 +7941,8 @@ const _B2dEditor = function () {
 			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
 			obj.instaKill = typeof arr[19] === "boolean" ? arr[19] : false;
 			obj.isVehiclePart = typeof arr[20] === "boolean" ? arr[20] : false;
+			obj.friction = arr[21] !== undefined ? arr[21] : Settings.defaultFriction;
+			obj.restitution = arr[22] !== undefined  ? arr[22] : Settings.defaultRestitution;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];

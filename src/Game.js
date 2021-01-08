@@ -847,9 +847,7 @@ function Game() {
         else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
     }
     this.gameContactListener.EndContact = function (contact) {}
-    this.gameContactListener.PreSolve = function (contact, oldManifold) {}
-    this.gameContactListener.PostSolve = function (contact, impulse) {
-
+    this.gameContactListener.PreSolve = function (contact, oldManifold) {
         const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         let body;
         let otherBody;
@@ -859,6 +857,39 @@ function Game() {
         for (let i = 0; i < bodies.length; i++) {
             body = bodies[i];
             otherBody = i == 0 ? bodies[1] : bodies[0];
+            if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
+                body.oldBounceManifest = body.GetLinearVelocity().Clone();
+            }
+        }
+    }
+    this.gameContactListener.PostSolve = function (contact, impulse) {
+
+        const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+        let body;
+        let otherBody;
+
+        if(!bodies[0].mySprite || !bodies[1].mySprite) return;
+
+
+        for (let i = 0; i < bodies.length; i++) {
+            body = bodies[i];
+            otherBody = i == 0 ? bodies[1] : bodies[0];
+
+            if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
+                if(body.oldBounceManifest){
+                    const prefab = self.editor.activePrefabs[body.mySprite.data.prefabInstanceName];
+                    const bodies = prefab.class.lookupObject._bodies;
+                    const velocityBoostX = (body.GetLinearVelocity().x - body.oldBounceManifest.x)*Settings.prefabBounceLimiter;
+                    const velocityBoostY = (body.GetLinearVelocity().y - body.oldBounceManifest.y)*Settings.prefabBounceLimiter;
+                    bodies.forEach(prefabBody=>{
+                        const velocity = prefabBody.GetLinearVelocity();
+                        if(Math.abs(velocity.x-velocityBoostX) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX;
+                        if(Math.abs(velocity.y-velocityBoostY) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY;
+                    })
+                }
+            }
+
+
             if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
                 if(otherBody.instaKill){
                     const bodyClass = self.editor.retrieveSubClassFromBody(body);

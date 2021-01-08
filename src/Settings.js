@@ -12,6 +12,7 @@ export var Settings = {
     PTM:30,
     defaultRestitution:0.2,
     defaultFriction:0.5,
+    prefabBounceLimiter:0.9,
     /*GORE*/
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
