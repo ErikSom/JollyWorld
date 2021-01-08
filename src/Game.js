@@ -874,18 +874,24 @@ function Game() {
         for (let i = 0; i < bodies.length; i++) {
             body = bodies[i];
             otherBody = i == 0 ? bodies[1] : bodies[0];
+            const otherFixture = i == 0 ? contact.GetFixtureB() : contact.GetFixtureA();
 
             if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
-                if(body.oldBounceManifest){
-                    const prefab = self.editor.activePrefabs[body.mySprite.data.prefabInstanceName];
-                    const bodies = prefab.class.lookupObject._bodies;
-                    const velocityBoostX = (body.GetLinearVelocity().x - body.oldBounceManifest.x)*Settings.prefabBounceLimiter;
-                    const velocityBoostY = (body.GetLinearVelocity().y - body.oldBounceManifest.y)*Settings.prefabBounceLimiter;
-                    bodies.forEach(prefabBody=>{
-                        const velocity = prefabBody.GetLinearVelocity();
-                        if(Math.abs(velocity.x-velocityBoostX) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX;
-                        if(Math.abs(velocity.y-velocityBoostY) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY;
-                    })
+                if(body.oldBounceManifest && otherFixture.GetRestitution()>=0.5){
+                    // const prefab = self.editor.activePrefabs[body.mySprite.data.prefabInstanceName];
+                    // const bodies = prefab.class.lookupObject._bodies;
+                    // const velocityBoostX = (body.GetLinearVelocity().x - body.oldBounceManifest.x);
+                    // const velocityBoostY = (body.GetLinearVelocity().y - body.oldBounceManifest.y);
+                    // bodies.forEach(prefabBody=>{
+                    //     const velocity = prefabBody.GetLinearVelocity();
+                    //     if(Math.abs(velocity.x-body.GetLinearVelocity().x) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX*Settings.prefabBounceLimiter;
+                    //     if(Math.abs(velocity.y-body.GetLinearVelocity().y) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY*Settings.prefabBounceLimiter;
+                    // })
+
+
+                    // query for all connected bodies (all bodies in all joints);
+                    debugger;
+
                 }
             }
 
@@ -920,7 +926,6 @@ function Game() {
                         }
                     }
                 }
-                
             }
         }
     }
