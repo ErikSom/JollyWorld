@@ -918,7 +918,7 @@ function Game() {
                     if(bodyClass && bodyClass.dealDamage){
                         bodyClass.dealDamage(10000);
                     }
-                }else if(!otherBody.isVehiclePart) {
+                }else if(!otherBody.isVehiclePart && !otherBody.noImpactDamage) {
                     let force = 0;
                     for (let j = 0; j < impulse.normalImpulses.length; j++)
                         if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];

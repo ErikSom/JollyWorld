@@ -8,6 +8,9 @@ class Trampoline extends PrefabManager.basePrefab {
     init(){
         super.init();
         this.base = this.lookupObject['base'];
+        this.bounce = this.lookupObject['bounce'];
+
+        this.bounce.noImpactDamage = true;
 
         if(this.prefabObject.settings.isFixed){
             this.base.SetType(Box2D.b2BodyType.b2_staticBody);
