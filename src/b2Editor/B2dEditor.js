@@ -4738,12 +4738,10 @@ const _B2dEditor = function () {
 					} else if (controller.property == "friction") {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
-							
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.friction[0] = controller.targetValue;
 							var fixture = body.GetFixtureList();
 							while(fixture){
-								console.log("UPDATING FRICTION!!!");
 								fixture.SetFriction(controller.targetValue);
 								fixture = fixture.GetNext();
 							}
@@ -4755,7 +4753,6 @@ const _B2dEditor = function () {
 							body.mySprite.data.restitution[0] = controller.targetValue;
 							var fixture = body.GetFixtureList();
 							while(fixture){
-								console.log("UPDATING RESTITUTION!!!");
 								fixture.SetRestitution(controller.targetValue);
 								fixture = fixture.GetNext();
 							}

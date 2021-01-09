@@ -878,20 +878,36 @@ function Game() {
 
             if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
                 if(body.oldBounceManifest && otherFixture.GetRestitution()>=0.5){
-                    // const prefab = self.editor.activePrefabs[body.mySprite.data.prefabInstanceName];
-                    // const bodies = prefab.class.lookupObject._bodies;
-                    // const velocityBoostX = (body.GetLinearVelocity().x - body.oldBounceManifest.x);
-                    // const velocityBoostY = (body.GetLinearVelocity().y - body.oldBounceManifest.y);
-                    // bodies.forEach(prefabBody=>{
-                    //     const velocity = prefabBody.GetLinearVelocity();
-                    //     if(Math.abs(velocity.x-body.GetLinearVelocity().x) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX*Settings.prefabBounceLimiter;
-                    //     if(Math.abs(velocity.y-body.GetLinearVelocity().y) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY*Settings.prefabBounceLimiter;
-                    // })
 
+                    const velocityBoostX = (body.GetLinearVelocity().x - body.oldBounceManifest.x);
+                    const velocityBoostY = (body.GetLinearVelocity().y - body.oldBounceManifest.y);
 
-                    // query for all connected bodies (all bodies in all joints);
-                    debugger;
+                    if(Math.sqrt(velocityBoostX*velocityBoostX + velocityBoostY * velocityBoostY) > 5){
+                        let jointEdge = body.GetJointList();
+                        while (jointEdge) {
+                            const joint = jointEdge.joint;
+                            const connectedBody = joint.GetBodyA() === body ? joint.GetBodyB() : joint.GetBodyA();
+                            const velocity = connectedBody.GetLinearVelocity();
+                            if(Math.abs(velocity.x-body.GetLinearVelocity().x) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX*Settings.prefabBounceLimiter;
+                            if(Math.abs(velocity.y-body.GetLinearVelocity().y) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY*Settings.prefabBounceLimiter;
 
+                            let innerJointEdge = connectedBody.GetJointList();
+
+                            while(innerJointEdge){
+                                const innerConnectedBody = innerJointEdge.joint.GetBodyA() === connectedBody ? innerJointEdge.joint.GetBodyB() : innerJointEdge.joint.GetBodyA();
+                                if(innerConnectedBody != body){
+                                    const innerVelocity = innerConnectedBody.GetLinearVelocity();
+                                    if(Math.abs(innerVelocity.x-body.GetLinearVelocity().x) > Math.abs(velocityBoostX)/2) innerVelocity.x += velocityBoostX*Settings.prefabBounceLimiter;
+                                    if(Math.abs(innerVelocity.y-body.GetLinearVelocity().y) > Math.abs(velocityBoostY)/2) innerVelocity.y += velocityBoostY*Settings.prefabBounceLimiter;
+                                }
+                                innerJointEdge = innerJointEdge.next;
+                            }
+
+                            jointEdge = jointEdge.next;
+
+                        }
+                    }
+                    delete body.oldBounceManifest;
                 }
             }
 
