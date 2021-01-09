@@ -23,12 +23,12 @@ export const getActionsForObject = function (object) {
         if(prefab.class.isExplosive){
             actions.push("SetActive");
             actions.push("Explode");
-        }
-        if(prefab.class.isCrossBow){
+        }else if(prefab.class.isCrossBow){
             actions.push("Shoot");
-        }
-        if(prefab.class.isVehicle){
+        }else if(prefab.class.isVehicle){
             actions.push("DealDamage");
+        }else if(prefab.class.isJet){
+            actions.push("EngineOn");
         }
     } else {
         switch (object.data.type) {
@@ -201,6 +201,10 @@ export const doAction = function (actionData, target) {
             break;
         case "DealDamage":
             prefab.class.character.dealDamage(actionData.damage);
+            break;
+        case "EngineOn":
+            prefab.class.engineOn = actionData.engineOn;
+            if(actionData.toggle) actionData.engineOn = !actionData.engineOn;
             break;
     }
 }
@@ -516,6 +520,20 @@ export const actionDictionary = {
         },
     },
     /******************/
+    actionObject_EngineOn: {
+        type: 'EngineOn',
+        toggle: false,
+        engineOn: true,
+    },
+    actionOptions_EngineOn: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        engineOn: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
