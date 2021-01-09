@@ -289,6 +289,23 @@ function Game() {
             }
         })
 
+        window.addEventListener('paste', (e)=> {
+            try{
+            if(e.clipboardData == false) return false;
+            const el = e.clipboardData.items[0];
+            if(el.type === 'text/plain'){
+               el.getAsString(s=>{
+                    if(s && s.startsWith(Settings.jollyDataPrefix) && s.endsWith('>')){
+                        const copyData = s.substr(Settings.jollyDataPrefix.length, s.length-Settings.jollyDataPrefix.length-1);
+                        this.editor.pasteData(copyData);
+                    }
+                });
+            }
+            }catch(e){
+                console.log("Copy Paste error:", e);
+            }
+        })
+
         emitterManager.init();
         PhysicsParticleEmitter.init();
 
@@ -504,6 +521,10 @@ function Game() {
                 this.resetWorld(true);
             }
         }
+        if((this.editor.editing && !this.run) && (e.ctrlKey || e.metaKey) && e.keyCode == 86) {
+            return;
+        }
+
         Key.onKeydown(e);
         if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
         e.preventDefault();

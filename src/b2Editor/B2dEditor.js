@@ -28,6 +28,8 @@ import {
 } from "../Settings";
 import { spine } from "pixi.js";
 import { JSONStringify } from "./utils/formatString";
+import LZString from 'lz-string'
+import { copyStringToClipboard } from "./utils/copyToClipboard";
 
 
 const camera = require("./utils/camera");
@@ -1703,16 +1705,34 @@ const _B2dEditor = function () {
 		this.copyCenterPoint.y = this.copyCenterPoint.y / copyArray.length;
 		copyJSON += ']}';
 
+		// console.log("*******************COPY JSON*********************");
+		// console.log(copyJSON);
+		// console.log("*************************************************");
 
-		if (copyArray.length == 0) this.copiedJSON = null;
-		else this.copiedJSON = JSON.parse(copyJSON);
-		console.log("*******************COPY JSON*********************");
-		console.log(copyJSON);
-		console.log("*************************************************");
+		if (copyArray.length !== 0){
+			try{
+				copyStringToClipboard(`${Settings.jollyDataPrefix}${LZString.compressToEncodedURIComponent(copyJSON)}>`);
+			}catch(e){
+
+			}
+		}
 	}
+
 	this.cutSelection = function () {
 		this.copySelection();
 		if (this.copiedJSON != null) this.deleteSelection();
+	}
+	this.pasteData = function(compressedString){
+		try{
+			const copyJsonString = LZString.decompressFromEncodedURIComponent(compressedString);
+			const jsonData = JSON.parse(copyJsonString);
+			if(jsonData){
+				this.copiedJSON = jsonData;
+				this.pasteSelection();
+			}
+		}catch(e){
+			//
+		}
 	}
 
 	this.pasteSelection = function () {
@@ -3634,10 +3654,6 @@ const _B2dEditor = function () {
 				const newJoint = this.attachJointPlaceHolder();
 				if(newJoint) this.selectedTextures.push(newJoint);
 			} else this.selectTool(this.tool_JOINTS);
-		} else if (e.keyCode == 86) { // v
-			if (e.ctrlKey || e.metaKey) {
-				this.pasteSelection();
-			}
 		} else if (e.keyCode == 88) { // x
 			if (e.ctrlKey || e.metaKey) {
 				this.cutSelection();

@@ -64,6 +64,7 @@ export var Settings = {
         decline:'NOPE!',
         newGradient:'-new gradient-',
     },
+    jollyDataPrefix:window.atob('PGpvbGx5RGF0YS0='),
 
     pidouble: Math.PI*2,
     pihalve: Math.PI/2,
