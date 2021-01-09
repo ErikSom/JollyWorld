@@ -217,7 +217,7 @@ export class Character extends PrefabManager.basePrefab {
                 otherBody = contact.GetFixtureA().GetBody();
             }
 
-            if(otherBody.GetMass()===0) return;
+            if(otherBody.GetMass()===0 || otherBody.isVehiclePart || otherBody.noImpactDamage) return;
 
             if ((otherBody.mySprite.data.prefabID != characterBody.mySprite.data.prefabID || otherBody.mySprite.data.prefabID == undefined)) {
 
