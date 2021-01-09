@@ -95,10 +95,6 @@ const _B2dEditor = function () {
 	this.lastValidWorldJSON;
 
 	this.copiedJSON = '';
-	this.copyCenterPoint = {
-		x: 0,
-		y: 0
-	};
 	this.ui = ui;
 
 	this.mouseDown = false;
@@ -1682,27 +1678,36 @@ const _B2dEditor = function () {
 		}
 
 		var copyJSON = '{"objects":[';
-		this.copyCenterPoint = {
+		const copyCenterPoint = {
 			x: 0,
 			y: 0
 		};
+		// find center
+		for (i = 0; i < copyArray.length; i++) {
+			data = copyArray[i].data;
+			if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
+				copyCenterPoint.x += data.x * this.PTM;
+				copyCenterPoint.y += data.y * this.PTM;
+
+			} else {
+				copyCenterPoint.x += data.x;
+				copyCenterPoint.y += data.y;
+			}
+		}
+
+		copyCenterPoint.x = copyCenterPoint.x / copyArray.length;
+		copyCenterPoint.y = copyCenterPoint.y / copyArray.length;
+
+		//adjust center and build string
 		for (i = 0; i < copyArray.length; i++) {
 			if (i != 0) copyJSON += ',';
 			data = copyArray[i].data;
 			data.ID = i;
+			data.x -= copyCenterPoint.x;
+			data.y -= copyCenterPoint.y;
 			copyJSON += this.stringifyObject(data);
-			if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
-				this.copyCenterPoint.x += data.x * this.PTM;
-				this.copyCenterPoint.y += data.y * this.PTM;
-
-			} else {
-				this.copyCenterPoint.x += data.x;
-				this.copyCenterPoint.y += data.y;
-			}
-
 		}
-		this.copyCenterPoint.x = this.copyCenterPoint.x / copyArray.length;
-		this.copyCenterPoint.y = this.copyCenterPoint.y / copyArray.length;
+
 		copyJSON += ']}';
 
 		// console.log("*******************COPY JSON*********************");
@@ -1747,8 +1752,8 @@ const _B2dEditor = function () {
 
 			var i;
 			var sprite;
-			var movX = this.copyCenterPoint.x - (this.mousePosWorld.x * this.PTM);
-			var movY = this.copyCenterPoint.y - (this.mousePosWorld.y * this.PTM);
+			var movX = - this.mousePosWorld.x * this.PTM;
+			var movY = - this.mousePosWorld.y * this.PTM;
 
 			if (this.shiftDown) {
 				movX = 0;
@@ -7910,7 +7915,10 @@ const _B2dEditor = function () {
 			arr[14] = obj.texturePositionOffsetLength;
 			arr[15] = obj.texturePositionOffsetAngle;
 			arr[16] = obj.textureAngleOffset;
-			arr[17] = obj.visible;
+			arr[17] = obj.parallax;
+			arr[18] = obj.repeatTeleportX;
+			arr[19] = obj.repeatTeleportY;
+			arr[20] = obj.visible;
 		}else if(arr[0] == this.object_SETTINGS){
 			arr = [];
 			arr[0] = obj.type;
