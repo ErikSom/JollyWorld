@@ -992,12 +992,11 @@ function Game() {
         }
         if (this.run) {
             this.inputUpdate();
-            if(this.run){this.world.Step(Settings.physicsTimeStep, 4, 3);
+            this.world.Step(Settings.physicsTimeStep, 4, 3);
             this.world.ClearForces();
             this.camera();
             emitterManager.update();
             PhysicsParticleEmitter.update();
-            }
         }
         EffectsComposer.update();
         this.editor.run();

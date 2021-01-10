@@ -30,6 +30,7 @@ import { spine } from "pixi.js";
 import { JSONStringify } from "./utils/formatString";
 import LZString from 'lz-string'
 import { copyStringToClipboard } from "./utils/copyToClipboard";
+import { removeGraphicFromCells } from '../utils/PIXICuller';
 
 
 const camera = require("./utils/camera");
@@ -8594,6 +8595,7 @@ const _B2dEditor = function () {
 				sprite.parallaxStartPosition = sprite.position.clone();
 				// disable cull for this sprite.
 				sprite.ignoreCulling = true;
+				removeGraphicFromCells(sprite); // <--- this line was missing
 				this.parallaxObject.push(sprite);
 			}
 

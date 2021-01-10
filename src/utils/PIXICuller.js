@@ -138,7 +138,7 @@ const placeGraphicInCells = function (graphic) {
     }
     setGraphicsVisible([0, 0, graphic]);
 }
-const removeGraphicFromCells = function (graphic) {
+export const removeGraphicFromCells = function (graphic) {
     if(!graphic._cullingCells) return;
     graphic._cullingCells.map((cell) => {
         cellDictionary[cell] = cellDictionary[cell].filter(item => item !== graphic);
