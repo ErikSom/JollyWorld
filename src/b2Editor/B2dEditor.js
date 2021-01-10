@@ -5179,7 +5179,8 @@ const _B2dEditor = function () {
 				this.debugGraphics.arc(point1Screen.x, point1Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
 				this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
 				const previousVertice = this.activeVertices[this.activeVertices.length-2];
-				const point2Screen = this.getScreenPointFromWorldPoint((this.activeVertices.length > 1 ? previousVertice.point2 : activeVertice.tempPoint2));
+				const point2Screen = this.getScreenPointFromWorldPoint((this.activeVertices.length > 1 ? (previousVertice.point2 || previousVertice) : activeVertice.tempPoint2));
+
 				this.debugGraphics.lineTo(point2Screen.x, point2Screen.y);
 				this.debugGraphics.moveTo(point2Screen.x + this.verticesBulletRadius, point2Screen.y);
 				this.debugGraphics.arc(point2Screen.x, point2Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
