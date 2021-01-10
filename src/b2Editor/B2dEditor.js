@@ -4765,11 +4765,13 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.visible = controller.targetValue;
 							body.mySprite.visible = controller.targetValue;
 							if(body.myTexture) body.myTexture.visible = controller.targetValue;
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
+							sprite.data.visible = controller.targetValue;
 							sprite.visible = controller.targetValue;
 						}
 					} else if (controller.property == "fixed") {
