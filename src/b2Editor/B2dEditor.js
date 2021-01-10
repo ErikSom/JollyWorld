@@ -1704,8 +1704,13 @@ const _B2dEditor = function () {
 			if (i != 0) copyJSON += ',';
 			data = copyArray[i].data;
 			data.ID = i;
-			data.x -= copyCenterPoint.x;
-			data.y -= copyCenterPoint.y;
+			if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
+				data.x -= copyCenterPoint.x / this.PTM;
+				data.y -= copyCenterPoint.y / this.PTM;
+			}else {
+				data.x -= copyCenterPoint.x;
+				data.y -= copyCenterPoint.y;
+			}
 			copyJSON += this.stringifyObject(data);
 		}
 
