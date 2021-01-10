@@ -29,6 +29,7 @@ export const HELP = {
 	<li>If you wish to group objects but want one single outline (like drawing a house using a square and a triangle), you can overlap these shapes a little bit and use the <em><strong>Merge Graphics&nbsp;</strong></em>option. It will only merge objects if the new shape does not introduce holes.</li>
 	<li>Double clicking any Graphic or Physics Object using the select tool to edit the vertices.</li>
 	</ul>`,
+	pen:`placeholder text`,
 	polydrawing: `<p>The polydrawing tool is used to draw more complex shapes. Click to place a vertice on the screen, then click again somewhere else to connect the vertices. Draw a full shape and then close the shape by clicking the first vertice you placed.</p>
 	<p><strong>Tips:</strong></p>
 	<ul>

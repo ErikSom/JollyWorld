@@ -107,7 +107,7 @@ function Game() {
         this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
         document.body.appendChild(this.stats.dom);
         this.stats.dom.style.left = '0px';
-        this.stats.dom.style.top = '400px';
+        this.stats.dom.style.top = '420px';
 
         this.canvas = document.getElementById("canvas");
 
@@ -521,7 +521,7 @@ function Game() {
                 this.resetWorld(true);
             }
         }
-        if((this.editor.editing && !this.run) && (e.ctrlKey || e.metaKey) && e.keyCode == 86) {
+        if((this.editor.editing && !this.run) && (e.ctrlKey || e.metaKey) && e.keyCode == 86) { // v
             return;
         }
 

@@ -371,6 +371,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
 				break
 			case this.tool_POLYDRAWING:
+			case this.tool_PEN:
 				ui.destroyEditorGUI();
 				break
 			case this.tool_JOINTS:
@@ -1796,8 +1797,8 @@ const _B2dEditor = function () {
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
 			if (this.selectingTriggerTarget) this.doTriggerTargetSelection();
 			else this.doSelection();
-		} else if (this.selectedTool == this.tool_POLYDRAWING) {
-			this.doVerticesLineDrawing(true);
+		} else if (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN) {
+			this.doVerticesLineDrawing(this.selectedTool == this.tool_POLYDRAWING);
 		} else if (this.selectedTool == this.tool_GEOMETRY) {
 			this.doGeometryDrawing();
 		} else if (this.selectedTool == this.tool_CAMERA) {
@@ -2412,7 +2413,7 @@ const _B2dEditor = function () {
 
 				}
 
-			} else if (this.selectedTool == this.tool_POLYDRAWING) {
+			} else if (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN) {
 				if (!this.closeDrawing) {
 					if (!this.checkVerticeDrawingHasErrors()) {
 						const newVertice = this.getCurrentMouseVertice();
@@ -2420,10 +2421,26 @@ const _B2dEditor = function () {
 						if (this.activeVertices.length > editorSettings.maxLineVertices) this.activeVertices.shift();
 					}
 				} else {
-					this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
-					if (this.activeVertices && this.activeVertices.length > 2) {
-						var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
-						if (bodyObject) this.buildBodyFromObj(bodyObject);
+					if(this.selectedTool == this.tool_POLYDRAWING){
+						this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
+						if (this.activeVertices && this.activeVertices.length > 2) {
+							var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
+							if (bodyObject) this.buildBodyFromObj(bodyObject);
+						}
+					}else{
+						if(this.activeVertices[0].tempPoint2){
+							const lastVertice = this.activeVertices[this.activeVertices.length-1];
+							lastVertice.point2 = this.activeVertices[0].tempPoint2;
+							if(!lastVertice.point1){
+								lastVertice.point1 = {x:lastVertice.x, y:lastVertice.y};
+							}
+							delete this.activeVertices[0].tempPoint2;
+						}
+						const graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+						if (graphicObject) {
+							this.buildGraphicFromObj(graphicObject);
+						}
+
 					}
 					this.activeVertices = [];
 				}
@@ -2625,7 +2642,40 @@ const _B2dEditor = function () {
 					} else if (this.mouseTransformType == this.mouseTransformType_Rotation) {
 						this.applyToSelectedObjects(this.TRANSFORM_ROTATE, move.x * this.PTM / 10);
 					}
-				} else if (this.selectedTool == this.tool_ART) {
+				} else if(this.selectedTool == this.tool_PEN && this.activeVertices.length){
+
+					const mouseVertice = this.getCurrentMouseVertice();
+
+					const vertice = this.activeVertices[this.activeVertices.length-1];
+					const previousVertice = this.activeVertices[this.activeVertices.length-2];
+					const dx = vertice.x-mouseVertice.x;
+					const dy = vertice.y-mouseVertice.y;
+					const angle = Math.atan2(dy, dx);
+					const dl = Math.sqrt(dx*dx + dy*dy);
+
+					const minDistance = 1;
+
+					if(dl > minDistance && dl > minDistance){
+						vertice.point1 = {x:vertice.x-dl*Math.cos(angle), y:vertice.y-dl*Math.sin(angle)}
+					}
+
+					if(previousVertice){
+						if(dl > minDistance && dl > minDistance){
+							previousVertice.point2 = {x:vertice.x+dl*Math.cos(angle), y:vertice.y+dl*Math.sin(angle)}
+							if(!previousVertice.point1){
+								previousVertice.point1 = {x:previousVertice.x, y:previousVertice.y};
+							}
+						}
+					}else{
+						if(dl > minDistance && dl > minDistance){
+							vertice.tempPoint2 = {x:vertice.x+dl*Math.cos(angle), y:vertice.y+dl*Math.sin(angle)}
+						}else{
+							delete vertice.tempPoint2;
+						}
+					}
+
+
+				}else if (this.selectedTool == this.tool_ART) {
 					this.activeVertices.push({
 						x: this.mousePosWorld.x,
 						y: this.mousePosWorld.y
@@ -3632,8 +3682,10 @@ const _B2dEditor = function () {
 
     }
 	this.onKeyDown = function (e) {
-		if (e.keyCode == 80) { //p
+		if (e.keyCode == 86) { //v
 			this.selectTool(this.tool_POLYDRAWING);
+		}else if (e.keyCode == 80) { //p
+			this.selectTool(this.tool_PEN);
 		}
 		if (e.keyCode == 67) { //c
 			if (e.ctrlKey || e.metaKey) {
@@ -3686,7 +3738,7 @@ const _B2dEditor = function () {
 
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
-				if(this.selectedTool == this.tool_POLYDRAWING){
+				if(this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN){
 					this.activeVertices.pop();
 				}else{
 					this.undoMove(true);
@@ -3732,7 +3784,7 @@ const _B2dEditor = function () {
 			this.updateSelection()
 
 		}else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
-			if(e.keyCode == 8 && this.selectedTool == this.tool_POLYDRAWING){
+			if(e.keyCode == 8 && (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN)){
 				this.activeVertices.pop();
 			}
 			if(this.selectedTool === this.tool_VERTICEEDITING && this.verticeEditingSprite.selectedVertice){
@@ -5022,14 +5074,16 @@ const _B2dEditor = function () {
 
 		let i = 0;
 		let newVertice;
+		let newVerticeScreen;
 		let activeVertice;
-		let previousVertice;
+		let activeVerticeScreen;
 
 		this.closeDrawing = false;
 
 		if (this.activeVertices.length > 0) {
 			newVertice = this.getCurrentMouseVertice();
 			activeVertice = this.activeVertices[this.activeVertices.length - 1];
+			activeVerticeScreen = this.getScreenPointFromWorldPoint(activeVertice);
 
 			if (this.activeVertices.length > 1) {
 				let firstVertice = this.activeVertices[0];
@@ -5046,33 +5100,53 @@ const _B2dEditor = function () {
 				}
 				if (dis <= graphicClosingMargin && !hasErrors) {
 					this.closeDrawing = true;
+
+					if(firstVertice.tempPoint2){
+						activeVertice.point2 = firstVertice.tempPoint2;
+						if(!activeVertice.point1){
+							activeVertice.point1 = {x:activeVertice.x, y:activeVertice.y};
+						}
+					}
 					newVertice = firstVertice;
 				}
 
 			}
-			this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
+			newVerticeScreen = this.getScreenPointFromWorldPoint(newVertice);
 
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
-			this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(newVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(newVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
-			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(newVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(newVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
 
-			this.debugGraphics.endFill();
+			if(!activeVertice.point1){
+				this.debugGraphics.bezierCurveTo(activeVerticeScreen.x, activeVerticeScreen.y, newVerticeScreen.x, newVerticeScreen.y, newVerticeScreen.x, newVerticeScreen.y);
+			}else{
+
+				const point1Screen = this.getScreenPointFromWorldPoint(activeVertice.point1);
+				if(!this.closeDrawing) activeVertice.point2 = {x:newVertice.x, y:newVertice.y};
+				const point2Screen = this.getScreenPointFromWorldPoint(activeVertice.point2);
+				this.debugGraphics.bezierCurveTo(point1Screen.x, point1Screen.y, point2Screen.x, point2Screen.y, newVerticeScreen.x, newVerticeScreen.y);
+			}
 		}
-		previousVertice = null;
 
+		for (i = 1; i < this.activeVertices.length; i++) {
+			let currentPoint = this.activeVertices[i - 1];
+			let nextPoint = this.activeVertices[i];
 
-		for (i = 0; i < this.activeVertices.length; i++) {
-			activeVertice = this.activeVertices[i];
+			let currentScreenPoint = this.getScreenPointFromWorldPoint(currentPoint);
+			let nextScreenPoint = this.getScreenPointFromWorldPoint(nextPoint);
 
-			if (i > 0) previousVertice = this.activeVertices[i - 1];
+			this.debugGraphics.moveTo(currentScreenPoint.x, currentScreenPoint.y);
 
-			if (previousVertice) {
-				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
-				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(previousVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(previousVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
+			if(!currentPoint.point1){
+				this.debugGraphics.bezierCurveTo(currentScreenPoint.x, currentScreenPoint.y, nextScreenPoint.x, nextScreenPoint.y, nextScreenPoint.x, nextScreenPoint.y);
+			}else{
+
+				const point1Screen = this.getScreenPointFromWorldPoint(currentPoint.point1);
+				const point2Screen = this.getScreenPointFromWorldPoint(currentPoint.point2);
+
+				this.debugGraphics.bezierCurveTo(point1Screen.x, point1Screen.y, point2Screen.x, point2Screen.y, nextScreenPoint.x, nextScreenPoint.y);
 			}
 
 		}
+
 		for (i = 0; i < this.activeVertices.length; i++) {
 
 			if (i == 0 && !this.closeDrawing) this.debugGraphics.beginFill(this.verticesFirstFillColor, 1.0);
@@ -5080,13 +5154,34 @@ const _B2dEditor = function () {
 			else this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
 
 			activeVertice = this.activeVertices[i];
+			activeVerticeScreen = this.getScreenPointFromWorldPoint(activeVertice);
 
-			this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x + this.verticesBulletRadius, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y);
-			this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(activeVertice).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(activeVertice).y * this.cameraHolder.scale.y + this.cameraHolder.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			this.debugGraphics.drawRect(activeVerticeScreen.x-Settings.verticeBoxSize/2, activeVerticeScreen.y-Settings.verticeBoxSize/2, Settings.verticeBoxSize, Settings.verticeBoxSize);
 
 			this.debugGraphics.endFill();
 		}
+
+		// draw points
+		if (this.activeVertices.length > 0) {
+			if(activeVertice.point1){
+				this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
+				const point1Screen = this.getScreenPointFromWorldPoint(activeVertice.point1);
+				this.debugGraphics.lineTo(point1Screen.x, point1Screen.y);
+				this.debugGraphics.moveTo(point1Screen.x + this.verticesBulletRadius, point1Screen.y);
+				this.debugGraphics.arc(point1Screen.x, point1Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+				this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
+				const previousVertice = this.activeVertices[this.activeVertices.length-2];
+				const point2Screen = this.getScreenPointFromWorldPoint((this.activeVertices.length > 1 ? previousVertice.point2 : activeVertice.tempPoint2));
+				this.debugGraphics.lineTo(point2Screen.x, point2Screen.y);
+				this.debugGraphics.moveTo(point2Screen.x + this.verticesBulletRadius, point2Screen.y);
+				this.debugGraphics.arc(point2Screen.x, point2Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+			}
+		}
+
+
+
 	}
+
 	this.checkVerticeDrawingHasErrors = function () {
 		const minimumAngleDif = 0.2;
 		const newVertice = this.getCurrentMouseVertice();
@@ -8538,6 +8633,14 @@ const _B2dEditor = function () {
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
 		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
 	}
+	this.getScreenPointFromWorldPoint = function(worldPoint){
+		const point = this.getPIXIPointFromWorldPoint(worldPoint);
+		point.x *= this.cameraHolder.scale.x;
+		point.x += this.cameraHolder.x;
+		point.y *= this.cameraHolder.scale.y;
+		point.y += this.cameraHolder.y;
+		return point;
+	}
 	this.renderPrefabToImage = function (prefabName) {
 		var prefabObject = new this.prefabObject;
 		prefabObject.prefabName = prefabName;
@@ -8779,14 +8882,15 @@ const _B2dEditor = function () {
 	this.tool_SELECT = 0;
 	this.tool_GEOMETRY = 1;
 	this.tool_POLYDRAWING = 2;
-	this.tool_JOINTS = 3;
-	this.tool_SPECIALS = 4;
-	this.tool_TEXT = 5;
-	this.tool_ART = 6;
-	this.tool_TRIGGER = 7;
-	this.tool_SETTINGS = 8;
-	this.tool_CAMERA = 9;
-	this.tool_VERTICEEDITING = 10;
+	this.tool_PEN = 3;
+	this.tool_JOINTS = 4;
+	this.tool_SPECIALS = 5;
+	this.tool_TEXT = 6;
+	this.tool_ART = 7;
+	this.tool_TRIGGER = 8;
+	this.tool_SETTINGS = 9;
+	this.tool_CAMERA = 10;
+	this.tool_VERTICEEDITING = 11;
 
 	this.minimumBodySurfaceArea = 0.3;
 }

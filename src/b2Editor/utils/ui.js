@@ -1560,12 +1560,12 @@ export const createEditorStyledGUI = function (name) {
     element.appendChild(header);
     return element;
 }
-const toolReferences = ['select', 'geometry', 'polydrawing', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings', 'camera', 'vertice editing'];
+const toolReferences = ['select', 'geometry', 'polydrawing', 'pen', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings', 'camera', 'vertice editing'];
 
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
 
-    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
+    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Pen.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
     var buttonElement;
     var imgElement;
     for (var i = 0; i < icons.length; i++) {
