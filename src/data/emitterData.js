@@ -1,4 +1,4 @@
-export const blood = JSON.parse(`{
+export const blood = {
 	"alpha": {
 		"start": 0.73,
 		"end": 0.46
@@ -51,9 +51,9 @@ export const blood = JSON.parse(`{
 		"r": 1
 	},
 	"emit":false
-}`);
+};
 
-export const gorecloud = JSON.parse(`{
+export const gorecloud = {
 	"alpha": {
 		"start": 1,
 		"end": 0
@@ -106,8 +106,8 @@ export const gorecloud = JSON.parse(`{
 		"r": 0
     },
     "emit":false
-}`);
-export const explosion_layer1 = JSON.parse(`
+};
+export const explosion_layer1 =
 {
 	"alpha": {
 		"start": 1,
@@ -159,9 +159,9 @@ export const explosion_layer1 = JSON.parse(`
 	"particleSpacing": 0,
 	"angleStart": 0,
 	"emit":false
-}`)
+};
 
-export const explosion_layer2 = JSON.parse(`
+export const explosion_layer2 =
 {
 	"alpha": {
 		"start": 1,
@@ -215,4 +215,58 @@ export const explosion_layer2 = JSON.parse(`
 		"r": 30
 	},
 	"emit":false
-}`)
+}
+
+export const jetfire = {
+	"alpha": {
+		"start": 0.52,
+		"end": 0
+	},
+	"scale": {
+		"start": 0.25,
+		"end": 0.52,
+		"minimumScaleMultiplier": 1
+	},
+	"color": {
+		"start": "#ffffff",
+		"end": "#29a9ff"
+	},
+	"speed": {
+		"start": 300,
+		"end": 300,
+		"minimumSpeedMultiplier": 1
+	},
+	"acceleration": {
+		"x": 0,
+		"y": 0
+	},
+	"maxSpeed": 0,
+	"startRotation": {
+		"min": 265,
+		"max": 275
+	},
+	"noRotation": false,
+	"rotationSpeed": {
+		"min": 50,
+		"max": 50
+	},
+	"lifetime": {
+		"min": 0.11,
+		"max": 0.15
+	},
+	"blendMode": "normal",
+	"frequency": 0.001,
+	"emitterLifetime": -1,
+	"maxParticles": 1000,
+	"pos": {
+		"x": 0,
+		"y": 0
+	},
+	"addAtBack": false,
+	"spawnType": "circle",
+	"spawnCircle": {
+		"x": 0,
+		"y": 0,
+		"r": 10
+	}
+}

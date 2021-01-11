@@ -3,6 +3,7 @@ import * as PrefabManager from '../PrefabManager';
 import * as Box2D from '../../../libs/Box2D';
 import { game } from '../../Game';
 import { Settings } from '../../Settings';
+import * as emitterManager from '../../utils/EmitterManager';
 
 
 class Jet extends PrefabManager.basePrefab {
@@ -17,6 +18,14 @@ class Jet extends PrefabManager.basePrefab {
         this.connectedBody = undefined;
         this.force = this.prefabObject.settings.force;
         this.engineOn = this.prefabObject.settings.engineOn;
+
+		const pos = this.base.GetPosition();
+
+        this.emitter = emitterManager.getLoopingEmitter("jetfire", this.base, pos, 0);
+        this.positionJetEmitter();
+        this.emitter.playOnce();
+
+        console.log(this.emitter);
 
         if(!this.prefabObject.settings.isVisible){
             this.base.myTexture.visible = false;
@@ -37,12 +46,29 @@ class Jet extends PrefabManager.basePrefab {
             this.base.ApplyForce(force, position, true);
             if(this.connectedBody) this.connectedBody.ApplyForce(force, position, true);
         }
+
+        this.positionJetEmitter();
+        this.emitter.emit = this.engineOn && this.prefabObject.settings.isVisible;
+        this.emitter.update(game.editor.deltaTime * 0.001);
     }
-    initContactListener() {
-        super.initContactListener();
-        var self = this;
-        this.contactListener.PostSolve = function (contact, impulse) {
-        }
+    destroy(){
+        this.emitter.destroy();
+        delete this.emitter;
+        super.destroy();
+    }
+    positionJetEmitter(){
+        const pos = this.base.GetPosition().Clone();
+        const lengthOffset = 1.0;
+        const angleOffset = Math.PI;
+        const angle = this.base.GetAngle()+angleOffset;
+        pos.x += lengthOffset * Math.cos(angle);
+        pos.y += lengthOffset * Math.sin(angle);
+        this.emitter.spawnPos.set(pos.x * Settings.PTM, pos.y * Settings.PTM);
+
+        const emitterAngleOffset = (this.emitter.maxStartRotation - this.emitter.minStartRotation) / 2;
+        this.emitter.minStartRotation = angle - emitterAngleOffset;
+        this.emitter.maxStartRotation = angle + emitterAngleOffset;
+        this.emitter.rotation = angle * game.editor.RAD2DEG;
     }
 }
 

@@ -13,9 +13,6 @@ let globalBody = {
 };
 
 export const init = function () {
-    /*TODO
-   1) Create proper pooler per available types
-   */
     const emitterPoolData = [{
         type: 'blood',
         poolSize: 30
@@ -52,27 +49,7 @@ export const playOnceEmitter = function (type, body, point, angle) {
     let emitter = getEmitter(type);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
 
-
-    if(body && body.mySprite){
-        // create container - postion container at right index
-        // make sure to delete container on reset!!
-        if(!emitter.container){
-            emitter.container = new PIXI.Container();
-            emitter.parent.addChild(emitter.container)
-            emitter.parent = emitter.container;
-        }
-
-        let targetIndex;
-        if(body.myTexture) targetIndex = body.myTexture.parent.getChildIndex(body.myTexture);
-        else targetIndex = body.mySprite.parent.getChildIndex(body.mySprite);
-
-        emitter.container.parent.addChildAt(emitter.container, targetIndex+1)
-    }else if(emitter.container){
-        emitter.parent = emitter.container.parent;
-        emitter.container.parent.removeChild(emitter.container);
-        delete emitter.container;
-    }
-
+    attachEmitter(body, emitter);
 
     if (body) {
         emitter.body = body;
@@ -95,11 +72,51 @@ export const playOnceEmitter = function (type, body, point, angle) {
     emitter.maxStartRotation = angle + angleOffset;
     emitter.playOnce(returnToPool);
 
-
 }
-export const getEmitter = function (type) {
-    if (!emittersPool[type]) emittersPool[type] = [];
-    if (emittersPool[type].length > 0) return emittersPool[type].shift();
+
+export const getLoopingEmitter = function(type,body,point,angle){
+    if (!angle) angle = 0;
+
+    let emitter = getEmitter(type, false);
+    emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
+
+    attachEmitter(body, emitter);
+
+    const angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
+    emitter.minStartRotation = angle - angleOffset;
+    emitter.maxStartRotation = angle + angleOffset;
+    
+    return emitter;
+}
+
+
+const attachEmitter = (body, emitter)=>{
+    if(body && body.mySprite){
+        // create container - postion container at right index
+        // make sure to delete container on reset!!
+        if(!emitter.container){
+            emitter.container = new PIXI.Container();
+            emitter.parent.addChild(emitter.container)
+            emitter.parent = emitter.container;
+        }
+
+        let targetIndex;
+        if(body.myTexture) targetIndex = body.myTexture.parent.getChildIndex(body.myTexture);
+        else targetIndex = body.mySprite.parent.getChildIndex(body.mySprite);
+
+        emitter.container.parent.addChildAt(emitter.container, targetIndex+1)
+    }else if(emitter.container){
+        emitter.parent = emitter.container.parent;
+        emitter.container.parent.removeChild(emitter.container);
+        delete emitter.container;
+    }
+}
+
+export const getEmitter = function (type, pool = true) {
+    if(pool){
+        if (!emittersPool[type]) emittersPool[type] = [];
+        if (emittersPool[type].length > 0) return emittersPool[type].shift();
+    }
 
     let emitter;
     switch (type) {
@@ -143,9 +160,17 @@ export const getEmitter = function (type) {
             emitter.minimumSpeedMultiplier = 9;
             emitter.frequency = 0.0005;
          break;
+         case "jetfire":
+            emitter = new PIXI.particles.Emitter(
+                game.editor.textures, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-fire.png')],
+                emitterData[type]
+            );
+            break;
     }
-    emitter.type = type;
-    emitters.push(emitter);
+    if(pool){
+        emitter.type = type;
+        emitters.push(emitter);
+    }
     return emitter;
 }
 export const update = function () {
