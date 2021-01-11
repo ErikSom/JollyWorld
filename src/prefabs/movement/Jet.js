@@ -25,8 +25,6 @@ class Jet extends PrefabManager.basePrefab {
         this.positionJetEmitter();
         this.emitter.playOnce();
 
-        console.log(this.emitter);
-
         if(!this.prefabObject.settings.isVisible){
             this.base.myTexture.visible = false;
         }

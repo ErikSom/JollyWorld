@@ -266,7 +266,7 @@ const drawJointAdding = prefab => {
     const worldQuery = editor.queryWorldForBodies(editor.mousePosWorld, editor.mousePosWorld);
     prefab.class.jointTargetConnection = null;
     worldQuery.forEach(body => {
-        if(body.mySprite && !body.mySprite.data.prefabInstanceName){
+        if(body.mySprite && !game.editor.retrieveClassFromBody(body).isVehicle){
             tarSprite = body.mySprite;
             prefab.class.jointTargetConnection = body;
             editor.debugGraphics.lineStyle(1, "0xFFFF00", 1);
