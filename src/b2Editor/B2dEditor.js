@@ -4271,6 +4271,8 @@ const _B2dEditor = function () {
 
 	this.drawDebugJointHelpers = function () {
 		//JOINTS draw upper and lower limits
+		const camera = B2dEditor.container.camera || B2dEditor.container;
+
 		var sprite;
 		for (var i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
@@ -4287,22 +4289,22 @@ const _B2dEditor = function () {
 						tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
 
 						this.debugGraphics.lineStyle(1, "0x707070", 1);
-						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-						this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(sprite.rotation));
+						this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+						this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * camera.scale.y + camera.y + lineLength * Math.sin(sprite.rotation));
 
 
 						this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-						this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(upAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(upAngle));
+						this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+						this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x + lineLength * Math.cos(upAngle), tarSprite.y * camera.scale.y + camera.y + lineLength * Math.sin(upAngle));
 
 						this.debugGraphics.lineStyle(1, "0xFF3300", 1);
-						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-						this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(lowAngle));
+						this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+						this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x + lineLength * Math.cos(lowAngle), tarSprite.y * camera.scale.y + camera.y + lineLength * Math.sin(lowAngle));
 
 						this.debugGraphics.lineStyle(1, "0x000000", 0);
 						this.debugGraphics.beginFill("0xFF9900", 0.3);
-						this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-						this.debugGraphics.arc(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y, lineLength, upAngle, lowAngle, false);
+						this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+						this.debugGraphics.arc(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y, lineLength, upAngle, lowAngle, false);
 						this.debugGraphics.endFill();
 
 						//FOR OBJECT B
@@ -4314,99 +4316,107 @@ const _B2dEditor = function () {
 							tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
 
 							this.debugGraphics.lineStyle(1, "0x707070", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(sprite.rotation));
+							this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+							this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x + lineLength * Math.cos(sprite.rotation), tarSprite.y * camera.scale.y + camera.y + lineLength * Math.sin(sprite.rotation));
 
 							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(upAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(upAngle));
+							this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+							this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x + lineLength * Math.cos(upAngle), tarSprite.y * camera.scale.y + camera.y + lineLength * Math.sin(upAngle));
 
 							this.debugGraphics.lineStyle(1, "0x8105BB", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x + lineLength * Math.cos(lowAngle), tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y + lineLength * Math.sin(lowAngle));
+							this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+							this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x + lineLength * Math.cos(lowAngle), tarSprite.y * camera.scale.y + camera.y + lineLength * Math.sin(lowAngle));
 
 							this.debugGraphics.lineStyle(1, "0x000000", 0);
 							this.debugGraphics.beginFill("0xC554FA", 0.3);
-							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.arc(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y, lineLength, lowAngle, upAngle, false);
+							this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+							this.debugGraphics.arc(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y, lineLength, lowAngle, upAngle, false);
 							this.debugGraphics.endFill();
 						}
 					}
 				} else if (sprite.data.jointType == this.jointObject_TYPE_SLIDE) {
-					var self = this;
-					const drawArrow = function (x, y, rotation, arrowLength, arrowAngle) {
-						arrowAngle = arrowAngle / self.DEG2RAD;
-						var upArrowVec = {
+					const drawArrow = (x, y, rotation, arrowLength, arrowAngle) => {
+						arrowAngle = arrowAngle / this.DEG2RAD;
+						const upArrowVec = {
 							x: arrowLength * Math.cos(rotation + arrowAngle),
 							y: arrowLength * Math.sin(rotation + arrowAngle)
 						};
-						var lowArrowVec = {
+						const lowArrowVec = {
 							x: arrowLength * Math.cos(rotation - arrowAngle),
 							y: arrowLength * Math.sin(rotation - arrowAngle)
 						};
-						self.debugGraphics.moveTo((x + upArrowVec.x) * self.container.scale.x + self.container.x, (y + upArrowVec.y) * self.container.scale.y + self.container.y);
-						self.debugGraphics.lineTo(x * self.container.scale.x + self.container.x, y * self.container.scale.y + self.container.y);
-						self.debugGraphics.lineTo((x + lowArrowVec.x) * self.container.scale.x + self.container.x, (y + lowArrowVec.y) * self.container.scale.y + self.container.y);
-						self.debugGraphics.lineTo((x + upArrowVec.x) * self.container.scale.x + self.container.x, (y + upArrowVec.y) * self.container.scale.y + self.container.y);
+						this.debugGraphics.moveTo((x + upArrowVec.x) * camera.scale.x + camera.x, (y + upArrowVec.y) * camera.scale.y + camera.y);
+						this.debugGraphics.lineTo(x * camera.scale.x + camera.x, y * camera.scale.y + camera.y);
+						this.debugGraphics.lineTo((x + lowArrowVec.x) * camera.scale.x + camera.x, (y + lowArrowVec.y) * camera.scale.y + camera.y);
+						this.debugGraphics.lineTo((x + upArrowVec.x) * camera.scale.x + camera.x, (y + upArrowVec.y) * camera.scale.y + camera.y);
 					}
-					var spritesToDraw = [sprite.parent.getChildAt(sprite.data.bodyA_ID), sprite];
+					const spritesToDraw = [sprite.parent.getChildAt(sprite.data.bodyA_ID)];
+					if(sprite.data.bodyB_ID) spritesToDraw.push(sprite.parent.getChildAt(sprite.data.bodyB_ID));
+					else spritesToDraw.push(sprite);
 
-					spritesToDraw.map(tarSprite => {
+					spritesToDraw.forEach((tarSprite, index) => {
+						const rotationOffsetBodyB = index === 1 ? Math.PI : 0;
+						const targetRotation = sprite.rotation + 270 * this.DEG2RAD + rotationOffsetBodyB;
+						let lineAlpha = 1;
+
+
+						if(tarSprite.data.type == this.object_JOINT || tarSprite.data.fixed) lineAlpha = 0;
+
 						if (sprite.data.enableLimit) {
 							const upperLengthVec = {
-								x: sprite.data.upperLimit * Math.cos(sprite.rotation + 270 * this.DEG2RAD),
-								y: sprite.data.upperLimit * Math.sin(sprite.rotation + 270 * this.DEG2RAD)
+								x: sprite.data.upperLimit * Math.cos(targetRotation),
+								y: sprite.data.upperLimit * Math.sin(targetRotation)
 							};
 							const lowerLengthVec = {
-								x: sprite.data.lowerLimit * Math.cos(sprite.rotation + 270 * this.DEG2RAD),
-								y: sprite.data.lowerLimit * Math.sin(sprite.rotation + 270 * this.DEG2RAD)
+								x: sprite.data.lowerLimit * Math.cos(targetRotation),
+								y: sprite.data.lowerLimit * Math.sin(targetRotation)
 							};
 
-							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-							this.debugGraphics.moveTo((tarSprite.x + lowerLengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y + lowerLengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineStyle(1, "0xC554FA", lineAlpha);
+							this.debugGraphics.moveTo((tarSprite.x + lowerLengthVec.x) * camera.scale.x + camera.x, (tarSprite.y + lowerLengthVec.y) * camera.scale.y + camera.y);
+							this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
 
-							drawArrow(tarSprite.x + lowerLengthVec.x, tarSprite.y + lowerLengthVec.y, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							drawArrow(tarSprite.x + lowerLengthVec.x, tarSprite.y + lowerLengthVec.y, targetRotation, 20, 45);
 							var arrowPosition = 0.2;
-							if (sprite.data.lowerLimit < -300) drawArrow(tarSprite.x + lowerLengthVec.x * arrowPosition, tarSprite.y + lowerLengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							if (sprite.data.lowerLimit < -300) drawArrow(tarSprite.x + lowerLengthVec.x * arrowPosition, tarSprite.y + lowerLengthVec.y * arrowPosition, targetRotation, 20, 45);
 
-							this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-							this.debugGraphics.moveTo((tarSprite.x + upperLengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y + upperLengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+							this.debugGraphics.lineStyle(1, "0xFF9900", lineAlpha);
+							this.debugGraphics.moveTo((tarSprite.x + upperLengthVec.x) * camera.scale.x + camera.x, (tarSprite.y + upperLengthVec.y) * camera.scale.y + camera.y);
+							this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
 
-							drawArrow(tarSprite.x + upperLengthVec.x, tarSprite.y + upperLengthVec.y, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							drawArrow(tarSprite.x + upperLengthVec.x, tarSprite.y + upperLengthVec.y, targetRotation, 20, 45);
 							var arrowPosition = 0.2;
-							if (sprite.data.upperLimit > 300) drawArrow(tarSprite.x + upperLengthVec.x * arrowPosition, tarSprite.y + upperLengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							if (sprite.data.upperLimit > 300) drawArrow(tarSprite.x + upperLengthVec.x * arrowPosition, tarSprite.y + upperLengthVec.y * arrowPosition, targetRotation, 20, 45);
 
 						} else {
-							const length = 5000 / this.cameraHolder.scale.x;
+							const length = 5000 / camera.scale.x;
 							var lengthVec = {
-								x: length * Math.cos(sprite.rotation + 270 * this.DEG2RAD),
-								y: length * Math.sin(sprite.rotation + 270 * this.DEG2RAD)
+								x: length * Math.cos(targetRotation),
+								y: length * Math.sin(targetRotation)
 							};
 							var arrowPosition = 0.03;
-							this.debugGraphics.lineStyle(1, "0xC554FA", 1);
-							this.debugGraphics.moveTo((tarSprite.x - lengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y - lengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-							drawArrow(tarSprite.x - lengthVec.x * arrowPosition, tarSprite.y - lengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							this.debugGraphics.lineStyle(1, "0xC554FA", lineAlpha);
+							this.debugGraphics.moveTo((tarSprite.x - lengthVec.x) * camera.scale.x + camera.x, (tarSprite.y - lengthVec.y) * camera.scale.y + camera.y);
+							this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+							drawArrow(tarSprite.x - lengthVec.x * arrowPosition, tarSprite.y - lengthVec.y * arrowPosition, targetRotation, 20, 45);
 
-							this.debugGraphics.lineStyle(1, "0xFF9900", 1);
-							this.debugGraphics.moveTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-							this.debugGraphics.lineTo((tarSprite.x + lengthVec.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (tarSprite.y + lengthVec.y) * this.cameraHolder.scale.y + this.cameraHolder.y);
-							drawArrow(tarSprite.x + lengthVec.x * arrowPosition, tarSprite.y + lengthVec.y * arrowPosition, sprite.rotation + 270 * this.DEG2RAD, 20, 45);
+							this.debugGraphics.lineStyle(1, "0xFF9900", lineAlpha);
+							this.debugGraphics.moveTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
+							this.debugGraphics.lineTo((tarSprite.x + lengthVec.x) * camera.scale.x + camera.x, (tarSprite.y + lengthVec.y) * camera.scale.y + camera.y);
+							drawArrow(tarSprite.x + lengthVec.x * arrowPosition, tarSprite.y + lengthVec.y * arrowPosition, targetRotation, 20, 45);
 						}
 					});
 				}
 				// draw joint lines
 				this.debugGraphics.lineStyle(1, this.jointLineColor, 1);
 				tarSprite = sprite.parent.getChildAt(sprite.data.bodyA_ID);
-				this.debugGraphics.moveTo(sprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, sprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-				this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+				this.debugGraphics.moveTo(sprite.x * camera.scale.x + camera.x, sprite.y * camera.scale.y + camera.y);
+				this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
 
 				if (sprite.data.bodyB_ID != undefined) {
 					tarSprite = sprite.parent.getChildAt(sprite.data.bodyB_ID);
-					this.debugGraphics.moveTo(sprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, sprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
-					this.debugGraphics.lineTo(tarSprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, tarSprite.y * this.cameraHolder.scale.y + this.cameraHolder.y);
+					this.debugGraphics.moveTo(sprite.x * camera.scale.x + camera.x, sprite.y * camera.scale.y + camera.y);
+					this.debugGraphics.lineTo(tarSprite.x * camera.scale.x + camera.x, tarSprite.y * camera.scale.y + camera.y);
 				}
 
 			}
@@ -7215,13 +7225,14 @@ const _B2dEditor = function () {
 			joint = this.world.CreateJoint(revoluteJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE) {
 
-			const axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation + 90 * this.DEG2RAD), Math.sin(jointPlaceHolder.rotation + 90 * this.DEG2RAD));
+			const rotation = jointPlaceHolder.rotation + 90.0 * this.DEG2RAD;
+			const axis = new b2Vec2(Math.cos(rotation), Math.sin(rotation));
 
 			let prismaticJointDef = new Box2D.b2PrismaticJointDef;
 
 			prismaticJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
 			prismaticJointDef.collideConnected = jointPlaceHolder.collideConnected;
-			prismaticJointDef.referenceAngle = 0.0;
+			prismaticJointDef.referenceAngle = bodyB.GetAngle()-bodyA.GetAngle();
 			prismaticJointDef.lowerTranslation = jointPlaceHolder.lowerLimit / this.PTM;
 			prismaticJointDef.upperTranslation = jointPlaceHolder.upperLimit / this.PTM;
 			prismaticJointDef.maxMotorForce = jointPlaceHolder.maxMotorTorque;
