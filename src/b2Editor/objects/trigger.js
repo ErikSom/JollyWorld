@@ -56,6 +56,7 @@ export const getActionsForObject = function (object) {
             case B2dEditor.object_TRIGGER:
                 actions.push("SetEnabled");
                 actions.push("SetFollowPlayer");
+                actions.push("Trigger");
             default:
                 break;
         }
@@ -87,7 +88,7 @@ export const doAction = function (actionData, target) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
                 } else bodies = [target.myBody];
                 bodies.map(body => {
-                    const a = (actionData.direction * 360) * B2dEditor.DEG2RAD;
+                    const a = actionData.direction * B2dEditor.DEG2RAD;
                     const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
                     body.ApplyTorque(actionData.rotationForce, true)
@@ -206,6 +207,9 @@ export const doAction = function (actionData, target) {
         case "EngineOn":
             prefab.class.engineOn = actionData.engineOn;
             if(actionData.toggle) actionData.engineOn = !actionData.engineOn;
+            break;
+        case "Trigger":
+            target.myBody.class.doTrigger();
             break;
     }
 }
@@ -537,6 +541,10 @@ export const actionDictionary = {
     /*******************/
     actionObject_Empty: {
         type: 'Empty',
+    },
+    /*******************/
+    actionObject_Trigger: {
+        type: 'Trigger',
     }
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
@@ -1115,18 +1123,16 @@ export const drawEditorTriggerTargets = body=>{
             let target = body.mySprite.targets[j];
             let tarPos;
             let tarPrefab;
-            if(target.mySprite){
-                if(target.mySprite.data.prefabInstanceName){
-                    tarPrefab = B2dEditor.activePrefabs[target.mySprite.data.prefabInstanceName];
-                    tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
-                }else tarPos = B2dEditor.getPIXIPointFromWorldPoint(target.GetPosition());
+
+            if(target.data.prefabInstanceName){
+                tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
+                tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
+            } else if ([game.editor.object_BODY, game.editor.object_TRIGGER].includes(target.data.type)) {
+                tarPos = target.myBody.GetPosition().Clone();
+				tarPos.x *= game.editor.PTM;
+				tarPos.y *= game.editor.PTM;
             } else{
-                if(target.data.prefabInstanceName){
-                    tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
-                    tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
-                }else{
-                    tarPos = new PIXI.Point(target.x, target.y);
-                }
+                tarPos = new PIXI.Point(target.x, target.y);
             }
 
             game.levelCamera.matrix.apply(tarPos,tarPos);

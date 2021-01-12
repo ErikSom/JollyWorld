@@ -218,19 +218,30 @@ class Treadmill extends PrefabManager.basePrefab {
 			const treadmillFixture = [self.edgeBottom, self.edgeTop, self.edgeLeft, self.edgeRight].includes(contact.GetFixtureA()) ? contact.GetFixtureA() : contact.GetFixtureB();
 			const otherBody = contact.GetFixtureA() == treadmillFixture ? contact.GetFixtureB().GetBody() :contact.GetFixtureA().GetBody();
 
-			if(treadmillFixture === self.edgeLeft) otherBody.edgeLeft = true;
-			else if(treadmillFixture === self.edgeRight) otherBody.edgeRight = true;
-			else if(treadmillFixture === self.edgeBottom) otherBody.edgeBottom = true;
-			else if(treadmillFixture === self.edgeTop) otherBody.edgeTop = true;
+			if(otherBody.edgeLeft === undefined) otherBody.edgeLeft = 0;
+			if(otherBody.edgeRight === undefined) otherBody.edgeRight = 0;
+			if(otherBody.edgeBottom === undefined) otherBody.edgeBottom = 0;
+			if(otherBody.edgeTop === undefined) otherBody.edgeTop = 0;
+
+
+			if(treadmillFixture === self.edgeLeft) otherBody.edgeLeft++;
+			else if(treadmillFixture === self.edgeRight) otherBody.edgeRight++;
+			else if(treadmillFixture === self.edgeBottom) otherBody.edgeBottom++;
+			else if(treadmillFixture === self.edgeTop) otherBody.edgeTop++;
 		}
 		this.contactListener.EndContact = function (contact) {
 			const treadmillFixture = [self.edgeBottom, self.edgeTop, self.edgeLeft, self.edgeRight].includes(contact.GetFixtureA()) ? contact.GetFixtureA() : contact.GetFixtureB();
 			const otherBody = contact.GetFixtureA() == treadmillFixture ? contact.GetFixtureB().GetBody() :contact.GetFixtureA().GetBody();
 
-			if(treadmillFixture === self.edgeLeft) delete otherBody.edgeLeft
-			else if(treadmillFixture === self.edgeRight) delete otherBody.edgeRight
-			else if(treadmillFixture === self.edgeBottom) delete otherBody.edgeBottom
-			else if(treadmillFixture === self.edgeTop) delete otherBody.edgeTop
+			if(treadmillFixture === self.edgeLeft) otherBody.edgeLeft--;
+			else if(treadmillFixture === self.edgeRight) otherBody.edgeRight--;
+			else if(treadmillFixture === self.edgeBottom) otherBody.edgeBottom--;
+			else if(treadmillFixture === self.edgeTop) otherBody.edgeTop--;
+
+			if(otherBody.edgeLeft === 0) delete otherBody.edgeLeft;
+			if(otherBody.edgeRight === 0) delete otherBody.edgeRight;
+			if(otherBody.edgeBottom === 0) delete otherBody.edgeBottom;
+			if(otherBody.edgeTop === 0) delete otherBody.edgeTop;
 		}
 		this.contactListener.PostSolve = function (contact, impulse){
 			const otherBody = contact.GetFixtureA().GetBody() === self.base ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();

@@ -1466,7 +1466,7 @@ const _B2dEditor = function () {
 					for (j = 0; j < (b.mySprite.myTriggers ? b.mySprite.myTriggers.length : 0); j++) {
 						myTrigger = b.mySprite.myTriggers[j];
 						trigger.removeTargetFromTrigger(myTrigger, b.mySprite);
-						if(!sprite.myTriggers) break;
+						if(!b.mySprite.myTriggers) break;
 						j--;
 					}
 				}
@@ -5451,21 +5451,15 @@ const _B2dEditor = function () {
 		let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 		if (highestObject) {
 			let tarPos;
-			if (highestObject.mySprite) {
-				if (highestObject.mySprite.data.prefabInstanceName) {
-					const tarPrefab = this.activePrefabs[highestObject.mySprite.data.prefabInstanceName];
-					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
-				} else {
-					tarPos = highestObject.GetPosition();
-					tarPos = this.getPIXIPointFromWorldPoint(tarPos.x, tarPos.y);
-				}
+			if (highestObject.data.prefabInstanceName) {
+				const tarPrefab = this.activePrefabs[highestObject.data.prefabInstanceName];
+				tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
+			} else if ([this.object_BODY, this.object_TRIGGER].includes(highestObject.data.type)) {
+				tarPos = highestObject.myBody.GetPosition().Clone();
+				tarPos.x *= this.PTM;
+				tarPos.y *= this.PTM;
 			} else {
-				if (highestObject.data.prefabInstanceName) {
-					const tarPrefab = this.activePrefabs[highestObject.data.prefabInstanceName];
-					tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
-				} else {
-					tarPos = highestObject.position.clone();
-				}
+				tarPos = highestObject.position.clone();
 			}
 			let myPos;
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
