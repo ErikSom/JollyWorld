@@ -511,42 +511,42 @@ export class Character extends PrefabManager.basePrefab {
         const positions = {
             up: {
                 thigh_right: {
-                    angle: 0,
+                    angle: 10,
                     reference: "body",
                     clockwise: 1
                 },
                 thigh_left: {
-                    angle: 0,
+                    angle: 10,
                     reference: "body",
                     clockwise: 1
                 },
                 leg_right: {
-                    angle: 0,
+                    angle: 10,
                     reference: "thigh_right",
-                    clockwise: -1
+                    clockwise: 1
                 },
                 leg_left: {
-                    angle: 0,
+                    angle: 10,
                     reference: "thigh_left",
-                    clockwise: -1
+                    clockwise: 1
                 },
                 shoulder_right: {
-                    angle: 180,
+                    angle: 170,
                     reference: "body",
                     clockwise: -1
                 },
                 shoulder_left: {
-                    angle: 180,
+                    angle: 170,
                     reference: "body",
                     clockwise: -1
                 },
                 arm_right: {
-                    angle: 0,
+                    angle: 10,
                     reference: "shoulder_right",
                     clockwise: -1
                 },
                 arm_left: {
-                    angle: 0,
+                    angle: 10,
                     reference: "shoulder_left",
                     clockwise: -1
                 },
@@ -615,24 +615,24 @@ export class Character extends PrefabManager.basePrefab {
             },
             right: {
                 thigh_right: {
-                    angle: 0,
+                    angle: 10,
                     reference: "body",
                     clockwise: 1
                 },
                 thigh_left: {
-                    angle: 0,
+                    angle: 10,
                     reference: "body",
                     clockwise: 1
                 },
                 leg_right: {
-                    angle: 0,
+                    angle: 10,
                     reference: "thigh_right",
-                    clockwise: -1
+                    clockwise: 1
                 },
                 leg_left: {
-                    angle: 0,
+                    angle: 10,
                     reference: "thigh_left",
-                    clockwise: -1
+                    clockwise: 1
                 },
                 shoulder_right: {
                     angle: 90,
@@ -641,6 +641,58 @@ export class Character extends PrefabManager.basePrefab {
                 },
                 shoulder_left: {
                     angle: 90,
+                    reference: "body",
+                    clockwise: -1
+                },
+                arm_right: {
+                    angle: 0,
+                    reference: "shoulder_right",
+                    clockwise: -1
+                },
+                arm_left: {
+                    angle: 0,
+                    reference: "shoulder_left",
+                    clockwise: -1
+                },
+                head: {
+                    angle: 40,
+                    reference: "body",
+                    clockwise: 0
+                },
+                belly: {
+                    angle: 0,
+                    reference: "body",
+                    clockwise: 0,
+                }
+            },
+            left: {
+                thigh_right: {
+                    angle: 10,
+                    reference: "body",
+                    clockwise: 1
+                },
+                thigh_left: {
+                    angle: 10,
+                    reference: "body",
+                    clockwise: 1
+                },
+                leg_right: {
+                    angle: -90,
+                    reference: "thigh_right",
+                    clockwise: 1
+                },
+                leg_left: {
+                    angle: -90,
+                    reference: "thigh_left",
+                    clockwise: 1
+                },
+                shoulder_right: {
+                    angle: -20,
+                    reference: "body",
+                    clockwise: -1
+                },
+                shoulder_left: {
+                    angle: -20,
                     reference: "body",
                     clockwise: -1
                 },
@@ -687,14 +739,9 @@ export class Character extends PrefabManager.basePrefab {
 
                 if (targetPosition[body_part].reference != 'body' && !this.lookupObject[targetPosition[body_part].reference + '_joint']) continue;
 
-
                 let desiredAngle = refBody.GetAngle() - targetPosition[body_part].angle * game.editor.DEG2RAD;
-                const positioningSpeed = 10.0;
-                let nextAngle = body.GetAngle() + body.GetAngularVelocity() / positioningSpeed;
+                let nextAngle = body.GetAngle() + body.GetAngularVelocity() / 15;
                 let totalRotation = desiredAngle - nextAngle;
-
-                //rotation logic
-
 
                 if (targetPosition[body_part].clockwise == 0 || !refJoint || !refJoint.IsLimitEnabled()) {
                     while (totalRotation < -180 * game.editor.DEG2RAD) totalRotation += 360 * game.editor.DEG2RAD;
@@ -740,8 +787,8 @@ export class Character extends PrefabManager.basePrefab {
                 }
 
                 let desiredAngularVelocity = totalRotation * 60;
-                let torque = body.GetInertia() * desiredAngularVelocity / (1 / positioningSpeed);;
-                body.ApplyTorque(torque);
+                let torque = body.GetInertia() * desiredAngularVelocity / (1/30.0);
+                if(Math.abs(torque) > 1) body.ApplyTorque(torque * .6);
             }
         }
     }

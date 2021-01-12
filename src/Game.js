@@ -468,7 +468,7 @@ function Game() {
                     if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) this.character.lean(-1);
                     else if (Key.isDown(Key.D)  || Key.isDown(Key.RIGHT)) this.character.lean(1);
                 } else if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
-                    this.character.positionBody('right');
+                    this.character.positionBody('left');
                 } else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.character.positionBody('right');
                 }
