@@ -28,7 +28,6 @@ class Treadmill extends PrefabManager.basePrefab {
 		let fixture = this.base.GetFixtureList();
 		let count = 0;
 		while(fixture){
-			console.log("Treadmill fixture:", fixture);
 			if(count === 0) this.edgeLeft = fixture;
 			if(count === 1) this.edgeRight = fixture;
 			if(count === 2) this.edgeBottom = fixture;

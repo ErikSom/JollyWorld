@@ -3753,8 +3753,7 @@ const _B2dEditor = function () {
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
-		}else if (e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) { // W A S D
-
+		}else if ((e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
 			const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
 			const currentSize = {
 				width: aabb.GetExtents().x * 2 * this.PTM,
