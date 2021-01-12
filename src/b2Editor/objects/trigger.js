@@ -17,6 +17,7 @@ import * as drawing from '../utils/drawing'
 
 export const getActionsForObject = function (object) {
     var actions = [];
+    actions.push("Empty");
     if (object.data.prefabInstanceName != undefined) {
         actions.push("Impulse") //, "SetAwake");
         const prefab = B2dEditor.activePrefabs[object.data.prefabInstanceName];
@@ -534,6 +535,9 @@ export const actionDictionary = {
         },
     },
     /*******************/
+    actionObject_Empty: {
+        type: 'Empty',
+    }
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
