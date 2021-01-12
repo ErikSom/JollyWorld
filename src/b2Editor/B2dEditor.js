@@ -1716,10 +1716,11 @@ const _B2dEditor = function () {
 		}
 
 		copyJSON += ']}';
-
-		// console.log("*******************COPY JSON*********************");
-		// console.log(copyJSON);
-		// console.log("*************************************************");
+		if(Settings.admin){
+			console.log("*******************COPY JSON*********************");
+			console.log(copyJSON);
+			console.log("*************************************************");
+		}
 
 		if (copyArray.length !== 0){
 			try{
