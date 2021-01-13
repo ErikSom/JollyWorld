@@ -24,7 +24,7 @@ export const getActionsForObject = function (object) {
         if(prefab.class.isExplosive){
             actions.push("SetActive");
             actions.push("Explode");
-        }else if(prefab.class.isCrossBow){
+        }else if(prefab.class.isCrossBow || prefab.class.isCannon){
             actions.push("Shoot");
         }else if(prefab.class.isVehicle){
             actions.push("DealDamage");

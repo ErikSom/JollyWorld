@@ -1843,6 +1843,7 @@ const _B2dEditor = function () {
 		this.doEditorGUI();
 	}
 	this.clearDebugGraphics = function(){
+		// if(Settings.admin && this.shiftDown) return;
 		this.debugGraphics.clear();
 		while (this.debugGraphics.children.length > 0) {
 			var child = this.debugGraphics.getChildAt(0);
