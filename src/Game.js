@@ -295,6 +295,7 @@ function Game() {
             e.clipboardData.items.forEach( el => {
                 if(el.type == 'text/plain'){
                 el.getAsString(s=>{
+                        s = s.trim();
                         if(s && s.startsWith(Settings.jollyDataPrefix) && s.endsWith('>')){
                             const copyData = s.substr(Settings.jollyDataPrefix.length, s.length-Settings.jollyDataPrefix.length-1);
                             this.editor.pasteData(copyData);
