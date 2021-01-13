@@ -62,6 +62,7 @@ function Game() {
     this.myContainer;
     this.levelCamera;
     this.myEffectsContainer;
+    this.traceImage;
     this.newDebugGraphic;
     this.canvas;
     this.renderer;
@@ -288,7 +289,6 @@ function Game() {
                 location.reload();
             }
         })
-
         window.addEventListener('paste', (e)=> {
             try{
             if(e.clipboardData == false) return false;
@@ -299,6 +299,24 @@ function Game() {
                         if(s && s.startsWith(Settings.jollyDataPrefix) && s.endsWith('>')){
                             const copyData = s.substr(Settings.jollyDataPrefix.length, s.length-Settings.jollyDataPrefix.length-1);
                             this.editor.pasteData(copyData);
+                        }
+                    });
+                }else if(el.type.indexOf("image")>=0){
+                    const imageFile =  el.getAsFile();
+                    const src = URL.createObjectURL(imageFile);
+                    const texture = PIXI.Texture.fromImage(src);
+                    texture.baseTexture.addListener('loaded', ()=> {
+
+                        if(game.editor.tracingTexture){
+                            game.editor.tracingTexture.destroy({texture:true, baseTexture:true});
+                        }
+
+                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.fromImage(src));
+                        game.editor.tracingTexture.pivot.set(game.editor.tracingTexture.width/2, game.editor.tracingTexture.height/2);
+                        game.editor.container.addChildAt(game.editor.tracingTexture, 0);
+                        if(game.editor.selectedTool === game.editor.tool_SETTINGS){
+                            game.editor.selectedTool = -1;
+                            game.editor.selectTool(game.editor.tool_SETTINGS);
                         }
                     });
                 }
@@ -733,7 +751,6 @@ function Game() {
         if (!this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(Date.now(), this.levelStartTime);
-            console.log(d);
             const s = `${d.hh}:${d.mm}:${d.ss}:${d.ms}`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();

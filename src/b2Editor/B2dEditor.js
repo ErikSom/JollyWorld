@@ -56,6 +56,7 @@ const _B2dEditor = function () {
 	this.PTM;
 	this.world;
 	this.debugGraphics = null;
+	this.tracingTexture = null;
 	this.textures = null;
 	this.currentTime;
 	this.deltaTime;
@@ -465,6 +466,21 @@ const _B2dEditor = function () {
 					this.findPlayer();
 				}
 				targetFolder.add(ui.editorGUI.editData, "findPlayer").name('find player');
+
+
+				if(this.tracingTexture){
+					ui.editorGUI.editData.traceTextureScale = this.tracingTexture.scale.x;
+					targetFolder.add(ui.editorGUI.editData, 'traceTextureScale', 0.1, 10.0).step(0.01).onChange(value=>{
+						this.tracingTexture.scale.x = this.tracingTexture.scale.y = value;
+					});
+					ui.editorGUI.editData.destroyTraceTexture = ()=>{
+						this.tracingTexture.destroy({texture:true, baseTexture:true});
+						this.tracingTexture = null;
+						this.selectedTool = -1;
+						this.selectTool(this.tool_SETTINGS);
+					}
+					targetFolder.add(ui.editorGUI.editData, 'destroyTraceTexture');
+				}
 
 				break
 			case this.tool_CAMERA:
@@ -8487,6 +8503,8 @@ const _B2dEditor = function () {
 		//reset gui
 		ui.destroyEditorGUI();
 		ui.show();
+
+        if(this.tracingTexture) this.tracingTexture.renderable = true;
 	}
 
 	this.B2dEditorContactListener = new Box2D.b2ContactListener();
@@ -8630,7 +8648,7 @@ const _B2dEditor = function () {
 
 		game.world.SetGravity(new b2Vec2(this.editorSettingsObject.gravityX, this.editorSettingsObject.gravityY));
 
-
+        if(this.tracingTexture) this.tracingTexture.renderable = false;
 
 	}
 	this.resize = function () {
