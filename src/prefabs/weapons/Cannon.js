@@ -1,6 +1,8 @@
 import * as PrefabManager from '../PrefabManager'
 import * as PrefabBuilder from '../../utils/PrefabBuilder'
 import * as Box2D from '../../../libs/Box2D';
+import * as EffectsComposer from '../../utils/EffectsComposer';
+import * as emitterManager from '../../utils/EmitterManager';
 
 import { drawCircle } from '../../b2Editor/utils/drawing';
 
@@ -26,6 +28,10 @@ class Cannon extends PrefabManager.basePrefab {
 		this.autoShoot = this.prefabObject.settings.autoShoot;
 		this.shouldShoot = false;
 
+		this.emitter = emitterManager.getLoopingEmitter("cannonShoot", this.cannonBody, this.cannonBody.GetPosition(), 0);
+		this.emitter.emit = false;
+		this.positionCannonEmitter();
+
 		if(this.prefabObject.settings.isFixed){
             this.cannonBody.SetType(Box2D.b2BodyType.b2_staticBody);
         }else{
@@ -36,6 +42,7 @@ class Cannon extends PrefabManager.basePrefab {
 		super.init();
 	}
 	update() {
+		if(this.destroyed) return;
 		super.update();
 		if(!this.loaded){
 			if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
@@ -48,29 +55,48 @@ class Cannon extends PrefabManager.basePrefab {
 			}
 			this.shootTimer += game.editor.deltaTime;
 		}
+		this.positionCannonEmitter();
+		this.emitter.update(game.editor.deltaTime * 0.001);
 	}
 	setShouldShoot() {
 		this.shouldShoot = true;
 	}
-	shoot() {
 
-		const pos = this.cannonBody.GetPosition();
+	getShootingPosition(){
+		const pos = this.cannonBody.GetPosition().Clone();
 		const angle = this.cannonBody.GetAngle();
 		const offsetLength = 5.0;
 		const angleOffset = Math.PI;
 		pos.x -= offsetLength*Math.cos(angle+angleOffset);
 		pos.y -= offsetLength*Math.sin(angle+angleOffset);
+		return pos;
+	}
+	positionCannonEmitter(){
+        const pos = this.getShootingPosition();
+        this.emitter.spawnPos.set(pos.x * Settings.PTM, pos.y * Settings.PTM);
+    }
 
-		// const pixiPoint = game.editor.getPIXIPointFromWorldPoint(pos);
+
+	shoot() {
+
+		const pos = this.getShootingPosition();
+
+		const pixiPoint = game.editor.getPIXIPointFromWorldPoint(pos);
 		// game.levelCamera.matrix.apply(pixiPoint,pixiPoint);
 		// drawCircle(pixiPoint, 10);
 
+		EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:75, point:pixiPoint});
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.shootForce/600, point:pixiPoint});
+
+		const angle = this.cannonBody.GetAngle();
 		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'CannonBall', true);
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, body.GetPosition());
+
+        this.emitter.playOnce();
 
 		this.cannonBody.ApplyForce(impulse.SelfMul(-0.1), pos, true);
 
@@ -83,6 +109,12 @@ class Cannon extends PrefabManager.basePrefab {
 		this.shootTimer = 0;
 		this.loaded = true;
 	}
+	destroy(){
+		if(this.destroyed) return;
+        emitterManager.destroyEmitter(this.emitter);
+        delete this.emitter;
+        super.destroy();
+    }
 }
 
 Cannon.settings = Object.assign({}, Cannon.settings, {

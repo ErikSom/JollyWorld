@@ -1376,10 +1376,7 @@ const _B2dEditor = function () {
 
 
 			} else if (obj instanceof this.prefabObject) {
-				console.log(obj.myTriggers, 'Check this one');
 				arr = arr.concat(this.lookupGroups[obj.key]._bodies, this.lookupGroups[obj.key]._textures, this.lookupGroups[obj.key]._joints);
-
-
 				arr.forEach(arrEl=>{
 					const sprite = arrEl.mySprite ? arrEl.mySprite : arrEl;
 					for (j = 0; j < (sprite.myTriggers ? sprite.myTriggers.length : 0); j++) {
@@ -1389,8 +1386,6 @@ const _B2dEditor = function () {
 						j--;
 					}
 				})
-
-
 				delete this.activePrefabs[obj.key];
 			} else if (obj.data) {
 				//graphic object

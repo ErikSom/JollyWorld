@@ -270,3 +270,74 @@ export const jetfire = {
 		"r": 10
 	}
 }
+
+export const cannonShoot = {
+	"alpha": {
+		"start": 0.7,
+		"end": 0
+	},
+	"scale": {
+		"start": 1,
+		"end": 0.8,
+		"minimumScaleMultiplier": 1
+	},
+	"color": {
+		"start": "#ff9900",
+		"end": "#100f0c"
+	},
+	"speed": {
+		"start": 400,
+		"end": 0,
+		"minimumSpeedMultiplier": 1
+	},
+	"acceleration": {
+		"x": 0,
+		"y": 0
+	},
+	"maxSpeed": 0,
+	"startRotation": {
+		"min": 0,
+		"max": 360
+	},
+	"noRotation": false,
+	"rotationSpeed": {
+		"min": 0,
+		"max": 200
+	},
+	"lifetime": {
+		"min": 0.2,
+		"max": 0.3
+	},
+	"blendMode": "normal",
+	"ease": [
+		{
+			"s": 0,
+			"cp": 0.329,
+			"e": 0.548
+		},
+		{
+			"s": 0.548,
+			"cp": 0.767,
+			"e": 0.876
+		},
+		{
+			"s": 0.876,
+			"cp": 0.985,
+			"e": 1
+		}
+	],
+	"frequency": 0.001,
+	"emitterLifetime": 0.1,
+	"maxParticles": 100,
+	"pos": {
+		"x": 0,
+		"y": 0
+	},
+	"addAtBack": true,
+	"spawnType": "circle",
+	"spawnCircle": {
+		"x": 2,
+		"y": 0,
+		"r": 0
+	}
+}

@@ -50,7 +50,7 @@ class Jet extends PrefabManager.basePrefab {
         this.emitter.update(game.editor.deltaTime * 0.001);
     }
     destroy(){
-        this.emitter.destroy();
+        emitterManager.destroyEmitter(this.emitter);
         delete this.emitter;
         super.destroy();
     }

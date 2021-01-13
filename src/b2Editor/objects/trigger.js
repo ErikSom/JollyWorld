@@ -171,10 +171,9 @@ export const doAction = function (actionData, target) {
             target.SetDampingRatio(actionData.dampingRatio);
             break;
         case "Destroy":
-            console.log(prefab);
             const toDestroy = prefab || target.myBody || target;
-            console.log(toDestroy);
-            B2dEditor.deleteObjects([toDestroy]);
+            if(prefab) prefab.class.destroy();
+            else B2dEditor.deleteObjects([toDestroy]);
             break;
         case "SetActive":
             prefab.class.set('active', actionData.active);
@@ -186,7 +185,6 @@ export const doAction = function (actionData, target) {
             prefab.class.setShouldShoot();
             break;
         case "SetEnabled":
-            console.log(target.data);
             target.data.enabled = actionData.setEnabled;
             if(actionData.toggle) actionData.setEnabled = !actionData.setEnabled;
             break;
@@ -873,15 +871,10 @@ export class triggerCore {
             const targetX = target.mySprite ? target.GetPosition().x : target.x / Settings.PTM;
             const targetY = target.mySprite ? target.GetPosition().y : target.y / Settings.PTM;
 
-            console.log(targetX, targetY);
-
             const dx = trigger.GetPosition().x - targetX;
             const dy = trigger.GetPosition().y - targetY;
             const dl = Math.sqrt(dx * dx + dy * dy);
             const da = Math.atan2(dy, dx);
-
-            console.log(dx, dy, dl, da);
-
 
             const targetRotation = target.mySprite ? target.GetAngle() : target.rotation;
 
@@ -928,8 +921,6 @@ export class triggerCore {
                 targetRot -= this.followRotationOffset;
                 targetX += this.followLengthOffset * Math.cos(targetRot);
                 targetY += this.followLengthOffset * Math.sin(targetRot);
-
-                console.log(targetX, targetY);
 
                 this.trigger.SetPosition(new Box2D.b2Vec2(targetX, targetY));
             }
@@ -1058,7 +1049,6 @@ export const removeTargetFromTrigger = function (_trigger, target) {
 
     if (!target.data) return;
     if (target.data.prefabInstanceName) {
-        console.log(_trigger.mySprite.targetPrefabs);
         for (i = 0; i < _trigger.mySprite.targetPrefabs.length; i++) {
             if (_trigger.mySprite.targetPrefabs == target.data.prefabInstanceName) {
                 _trigger.mySprite.targetPrefabs.splice(i, 1);

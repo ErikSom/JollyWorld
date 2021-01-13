@@ -85,7 +85,7 @@ export const getLoopingEmitter = function(type,body,point,angle){
     const angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
     emitter.minStartRotation = angle - angleOffset;
     emitter.maxStartRotation = angle + angleOffset;
-    
+
     return emitter;
 }
 
@@ -110,6 +110,15 @@ const attachEmitter = (body, emitter)=>{
         emitter.container.parent.removeChild(emitter.container);
         delete emitter.container;
     }
+}
+
+export const destroyEmitter = emitter =>{
+    if(!emitter) return;
+    if(emitter.container){
+        emitter.container.parent.removeChild(emitter.container);
+        delete emitter.container;
+    }
+    emitter.destroy();
 }
 
 export const getEmitter = function (type, pool = true) {
@@ -163,6 +172,12 @@ export const getEmitter = function (type, pool = true) {
          case "jetfire":
             emitter = new PIXI.particles.Emitter(
                 game.editor.textures, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-fire.png')],
+                emitterData[type]
+            );
+            break;
+        case "cannonShoot":
+            emitter = new PIXI.particles.Emitter(
+                game.editor.textures, [PIXI.Texture.fromImage('particle.png')],
                 emitterData[type]
             );
             break;
