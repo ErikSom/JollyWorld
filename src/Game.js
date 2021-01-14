@@ -1001,7 +1001,7 @@ function Game() {
                         emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 
                         const bodyClass = self.editor.retrieveSubClassFromBody(body);
-                        if(bodyClass && bodyClass.dealDamage){
+                        if(bodyClass && bodyClass.dealDamage && !body.noDamage){
                             const slidingDamageScalar = 50;
                             bodyClass.dealDamage(velocitySum/slidingDamageScalar);
                         }

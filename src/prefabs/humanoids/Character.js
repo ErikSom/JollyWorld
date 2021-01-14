@@ -39,6 +39,10 @@ export class Character extends PrefabManager.basePrefab {
         // let joint = game.world.CreateJoint(revoluteJointDef);
         //this.attachedGun = portalGun;
         /*****/
+        this.lookupObject[Character.BODY_PARTS.HAND_LEFT].noDamage = true;
+        this.lookupObject[Character.BODY_PARTS.HAND_RIGHT].noDamage = true;
+        this.lookupObject[Character.BODY_PARTS.FEET_LEFT].noDamage = true;
+        this.lookupObject[Character.BODY_PARTS.FEET_RIGHT].noDamage = true;
 
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
@@ -229,8 +233,8 @@ export class Character extends PrefabManager.basePrefab {
                 const minForceForDamage = 10.0;
                 const forceToDamageDivider = 50.0;
 
-                if(force> characterBody.GetMass() * minForceForDamage){
-                    self.dealDamage(force/forceToDamageDivider)
+                if(force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
+                    self.dealDamage(force/forceToDamageDivider);
                 }
 
                 let forceDamage = 0;
