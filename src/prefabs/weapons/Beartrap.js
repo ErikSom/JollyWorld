@@ -1,21 +1,25 @@
 import * as PrefabManager from '../PrefabManager';
 import * as Box2D from '../../../libs/Box2D';
+import {
+    game
+} from "../../Game";
 
 class Beartrap extends PrefabManager.basePrefab {
     static BEARTRAP_RELEASE = 50;
 	static BEARTRAP_RELEASED = 100;
-	static BEARTRAP_FORCE = 10000;
-	static BEARTRAP_SPEED = 30;
+	static BEARTRAP_FORCE = 100000;
+	static BEARTRAP_SPEED = 50;
 
     constructor(target) {
         super(target);
     }
     init(){
 		super.init();
-		this.triggered = false;
-		this.triggerTime = 0;
 		this.base = this.lookupObject['base'];
-		this.floor = this.lookupObject['floor'];
+		this.lever = this.lookupObject['lever'];
+
+		this.ready = true;
+		this.beartrapTimer = Number.POSITIVE_INFINITY;
         this.beartrapDelay = this.prefabObject.settings.delay * 1000.0;
 
 		this.progressLights = this.base.myTexture.children.filter((light, index) => index > 0);
@@ -39,12 +43,19 @@ class Beartrap extends PrefabManager.basePrefab {
 	update(){
         super.update();
         if (PrefabManager.timerReady(this.beartrapTimer, this.beartrapDelay, true)) {
-            this.lookupObject["pad_engine"].EnableMotor(true);
-            this.lookupObject["pad_engine"].SetMaxMotorForce(this.prefabObject.settings.force * 10.0);
-            this.lookupObject["pad_engine"].SetMotorSpeed(50.0);
+			console.log("ATTAAAAACK");
+            this.lookupObject["spikeLeft_joint"].EnableMotor(true);
+            this.lookupObject["spikeLeft_joint"].SetMaxMotorTorque(Beartrap.BEARTRAP_FORCE);
+			this.lookupObject["spikeLeft_joint"].SetMotorSpeed(Beartrap.BEARTRAP_FORCE);
+			this.lookupObject["spikeRight_joint"].EnableMotor(true);
+            this.lookupObject["spikeRight_joint"].SetMaxMotorTorque(Beartrap.BEARTRAP_FORCE);
+            this.lookupObject["spikeRight_joint"].SetMotorSpeed(-Beartrap.BEARTRAP_FORCE);
         } else if (PrefabManager.timerReady(this.beartrapTimer, this.beartrapDelay + Beartrap.BEARTRAP_RELEASE, true)) {
-            this.lookupObject["pad_engine"].EnableMotor(false);
+			console.log("STOP ATTAAAAACK");
+			this.lookupObject["spikeLeft_joint"].EnableMotor(false);
+			this.lookupObject["spikeRight_joint"].EnableMotor(false);
         } else if (PrefabManager.timerReady(this.beartrapTimer, this.beartrapDelay + Beartrap.BEARTRAP_RELEASED, false)) {
+			console.log("ATTAAAAACK REAADY");
             this.ready = true;
         }
         this.beartrapTimer += game.editor.deltaTime;
@@ -54,10 +65,13 @@ class Beartrap extends PrefabManager.basePrefab {
         super.initContactListener();
         const self = this;
         this.contactListener.BeginContact = function(contact) {
-            if(contact.GetFixtureA().GetBody() === self.floor || contact.GetFixtureB().GetBody() === self.floor){
-				self.triggered = true;
+            if(contact.GetFixtureA().GetBody() === self.lever || contact.GetFixtureB().GetBody() === self.lever){
+				if (self.ready) {
+					console.log("check check");
+					self.beartrapTimer = -0.001;
+					self.ready = false;
+				}
 			}
-
         }
     }
 }
