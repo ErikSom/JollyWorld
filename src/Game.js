@@ -145,6 +145,7 @@ function Game() {
                     if(this.screenShotData){
                         clearInterval(interval);
                         resolve(this.screenShotData);
+                        this.needScreenshot = false;
                         this.screenShotData = null;
                     }
                 }, 1)
