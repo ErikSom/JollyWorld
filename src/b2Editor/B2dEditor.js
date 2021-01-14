@@ -485,6 +485,7 @@ const _B2dEditor = function () {
 
 				break
 			case this.tool_CAMERA:
+				if(this.tracingTexture) this.tracingTexture.renderable = false;
 				ui.destroyEditorGUI();
 				break
 		}
@@ -500,6 +501,9 @@ const _B2dEditor = function () {
 				delete this.verticeEditingSprite.selectedVertice;
 				delete this.verticeEditingSprite.oldIndex;
 				delete this.verticeEditingSprite;
+			break;
+			case this.tool_CAMERA:
+				if(this.tracingTexture) this.tracingTexture.renderable = true;
 			break;
 		}
 	}
