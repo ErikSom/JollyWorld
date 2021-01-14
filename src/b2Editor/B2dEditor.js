@@ -2983,7 +2983,8 @@ const _B2dEditor = function () {
 	this.clickOnTransformGUI = function(){
 		const clickedChild =  this.collidingWithTransformGui();
 		if([this.transformGUI.layerUp, this.transformGUI.layerDown].includes(clickedChild)){
-			this.applyToSelectedObjects(this.TRANSFORM_DEPTH, clickedChild===this.transformGUI.layerUp);
+			const depthTransforms = this.shiftDown ? this.textures.children.length : 1;
+			for(let i = 0; i<depthTransforms; i++) this.applyToSelectedObjects(this.TRANSFORM_DEPTH, clickedChild===this.transformGUI.layerUp);
 			this.checkForTooltip();
 		} else if([this.transformGUI.mirrorX, this.transformGUI.mirrorY].includes(clickedChild)){
 			this.applyToSelectedObjects(this.TRANSFORM_MIRROR, clickedChild===this.transformGUI.mirrorX);
@@ -3891,7 +3892,8 @@ const _B2dEditor = function () {
 			}
 			if(this.selectedTool === this.tool_SELECT){
 				if ((e.ctrlKey || e.metaKey) && (e.keyCode === 38 || e.keyCode === 40)) {
-					this.applyToSelectedObjects(this.TRANSFORM_DEPTH, e.keyCode === 38);
+					const depthTransforms = this.shiftDown ? this.textures.children.length : 1;
+					for(let i = 0; i<depthTransforms; i++) this.applyToSelectedObjects(this.TRANSFORM_DEPTH, e.keyCode === 38);
 				}else{
 					this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 						x: movX,
@@ -4446,18 +4448,17 @@ const _B2dEditor = function () {
 		const iconHeight = 32;
 		const scale = 0.8;
 		if(!this.transformGUI){
-
 			this.transformGUI = new PIXI.Container();
-			this.transformGUI.layerUp = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('layerUp'));
-			this.transformGUI.layerUp.pivot.set(this.transformGUI.layerUp.width / 2, this.transformGUI.layerUp.height / 2);
-			this.transformGUI.layerUp.scale.set(scale);
-			this.transformGUI.addChild(this.transformGUI.layerUp);
-
 			this.transformGUI.layerDown = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('layerDown'));
 			this.transformGUI.layerDown.pivot.set(this.transformGUI.layerDown.width / 2, this.transformGUI.layerDown.height / 2);
 			this.transformGUI.layerDown.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.layerDown);
-			this.transformGUI.layerDown.y-=iconHeight;
+
+			this.transformGUI.layerUp = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('layerUp'));
+			this.transformGUI.layerUp.pivot.set(this.transformGUI.layerUp.width / 2, this.transformGUI.layerUp.height / 2);
+			this.transformGUI.layerUp.scale.set(scale);
+			this.transformGUI.layerUp.y-=iconHeight;
+			this.transformGUI.addChild(this.transformGUI.layerUp);
 
 			this.transformGUI.mirrorX = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('mirrorIcon'));
 			this.transformGUI.mirrorX.pivot.set(this.transformGUI.mirrorX.width / 2, this.transformGUI.mirrorX.height / 2);
