@@ -849,14 +849,17 @@ function Game() {
             }
         }
     }
-
+    this.movementBufferSize = 60;
+    this.movementBuffer = [];
     this.camera = function () {
         var panEase = 0.1;
         var zoomEase = 0.1;
         const camera = this.editor.cameraHolder;
 
         var currentZoom = camera.scale.x;
+
         var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
+
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (this.editor.editorSettingsObject.cameraZoom - currentZoom) * zoomEase);
 
         cameraTargetPosition.x -= this.canvas.width / 2.0 / camera.scale.x;
@@ -864,8 +867,29 @@ function Game() {
         cameraTargetPosition.x *= camera.scale.x;
         cameraTargetPosition.y *= camera.scale.y;
 
-        camera.x += (-cameraTargetPosition.x - camera.x) * panEase;
-        camera.y += (-cameraTargetPosition.y - camera.y) * panEase;
+
+        const movX = (-cameraTargetPosition.x - camera.x) * panEase;
+        const movY = (-cameraTargetPosition.y - camera.y) * panEase;
+
+
+        let offsetX = 0;
+        let offsetY = 0;
+        this.movementBuffer.push(this.cameraFocusObject.GetLinearVelocity().Clone());
+        if(this.movementBuffer.length > this.movementBufferSize) this.movementBuffer.shift();
+
+        if(this.movementBuffer.length){
+            for(let i = 0; i<this.movementBuffer.length; i++){
+                offsetX += this.movementBuffer[i].x;
+                offsetY += this.movementBuffer[i].y;
+            }
+            offsetX /= this.movementBufferSize;
+            offsetY /= this.movementBufferSize;
+        }
+
+        const offsetScale = 1.5;
+
+        camera.x += movX-offsetX*offsetScale;
+        camera.y += movY-offsetY*offsetScale;
 
         this.myEffectsContainer.scale.x = camera.scale.x;
         this.myEffectsContainer.scale.y = camera.scale.y;
