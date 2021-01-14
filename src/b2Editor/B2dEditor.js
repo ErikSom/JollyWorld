@@ -2681,6 +2681,8 @@ const _B2dEditor = function () {
 
 					if(dl > minDistance && dl > minDistance){
 						vertice.point1 = {x:vertice.x-dl*Math.cos(angle), y:vertice.y-dl*Math.sin(angle)}
+					}else{
+						delete vertice.point1;
 					}
 
 					if(previousVertice){
@@ -5199,18 +5201,22 @@ const _B2dEditor = function () {
 		// draw points
 		if (this.activeVertices.length > 0) {
 			if(activeVertice.point1){
-				this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
-				const point1Screen = this.getScreenPointFromWorldPoint(activeVertice.point1);
-				this.debugGraphics.lineTo(point1Screen.x, point1Screen.y);
-				this.debugGraphics.moveTo(point1Screen.x + this.verticesBulletRadius, point1Screen.y);
-				this.debugGraphics.arc(point1Screen.x, point1Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
-				this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
 				const previousVertice = this.activeVertices[this.activeVertices.length-2];
-				const point2Screen = this.getScreenPointFromWorldPoint((this.activeVertices.length > 1 ? (previousVertice.point2 || previousVertice) : activeVertice.tempPoint2));
+				const point2 = this.activeVertices.length > 1 ? (previousVertice.point2 || previousVertice) : activeVertice.tempPoint2;
+				if(point2){
 
-				this.debugGraphics.lineTo(point2Screen.x, point2Screen.y);
-				this.debugGraphics.moveTo(point2Screen.x + this.verticesBulletRadius, point2Screen.y);
-				this.debugGraphics.arc(point2Screen.x, point2Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+					this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
+					const point1Screen = this.getScreenPointFromWorldPoint(activeVertice.point1);
+					this.debugGraphics.lineTo(point1Screen.x, point1Screen.y);
+					this.debugGraphics.moveTo(point1Screen.x + this.verticesBulletRadius, point1Screen.y);
+					this.debugGraphics.arc(point1Screen.x, point1Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+					this.debugGraphics.moveTo(activeVerticeScreen.x, activeVerticeScreen.y);
+
+					const point2Screen = this.getScreenPointFromWorldPoint(point2);
+					this.debugGraphics.lineTo(point2Screen.x, point2Screen.y);
+					this.debugGraphics.moveTo(point2Screen.x + this.verticesBulletRadius, point2Screen.y);
+					this.debugGraphics.arc(point2Screen.x, point2Screen.y, this.verticesBulletRadius, 0, 2 * Math.PI, false);
+				}
 			}
 		}
 
