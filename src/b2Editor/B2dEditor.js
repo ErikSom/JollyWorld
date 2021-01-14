@@ -320,6 +320,7 @@ const _B2dEditor = function () {
 		}
 		ui.showTextEditor(startValue, callBack);
 	}
+
 	this.selectTool = function (i) {
 		if (game.gameState == game.GAMESTATE_EDITOR) ui.showHelp(i);
 
@@ -8560,6 +8561,7 @@ const _B2dEditor = function () {
 	}
 	this.testWorld = function () {
 		camera.storeCurrentPosition();
+		this.selectTool(this.tool_SELECT);
 		this.playerHistory.length = 0;
 		this.runWorld();
 	}
