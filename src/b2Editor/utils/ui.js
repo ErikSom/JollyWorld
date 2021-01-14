@@ -21,8 +21,6 @@ import * as drawing from './drawing';
 
 const nanoid = require('nanoid');
 
-
-
 let toolGUI;
 export let assetGUI;
 export let editorGUI;

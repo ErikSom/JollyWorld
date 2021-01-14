@@ -132,6 +132,7 @@ class ForceField extends PrefabManager.basePrefab {
 			case 'height':
 				this.setWidthHeight(this.width, value);
 			break
+			case 'isVisible':
 			case 'visible':
 				this.setVisible(value);
 			break
@@ -184,7 +185,7 @@ ForceField.settings = Object.assign({}, ForceField.settings, {
 	"damping": 1.0,
 	"width": 200,
 	"height": 200,
-	"visible": true,
+	"isVisible": true,
 });
 ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 	"width":{
@@ -213,7 +214,7 @@ ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 		max:20.0,
 		step:0.01
 	},
-	"visible": true
+	"isVisible": true
 });
 
 

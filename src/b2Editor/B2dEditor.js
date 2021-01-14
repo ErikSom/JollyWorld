@@ -1373,7 +1373,6 @@ const _B2dEditor = function () {
 
 		for (i = 0; i < arr.length; i++) {
 			obj = arr[i];
-			obj.destroyed = true;
 			if (obj instanceof Box2D.b2Joint) {
 				let joint = obj;
 				if (joint.myTriggers != undefined) {
@@ -1528,6 +1527,7 @@ const _B2dEditor = function () {
 				}
 				this.world.DestroyBody(b);
 			}
+			obj.destroyed = true;
 		}
 	}
 	this.deleteSelection = function (force) {
