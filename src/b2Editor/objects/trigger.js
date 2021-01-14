@@ -780,12 +780,15 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
     }
 }
 
-export const triggerGUIState = {};
+const triggerGUIState = {};
+let triggerGUIScroll = 0;
+
 export const updateTriggerGUI = function () {
     //save folder status
     const title = ui.editorGUI.domElement.querySelector('.title');
     var targetFolder = ui.editorGUI.__folders[title.innerText];
 
+    triggerGUIScroll = ui.editorGUI.domElement.scrollTop;
 
     let folder;
     for (var propt in targetFolder.__folders) {
@@ -812,6 +815,7 @@ export const updateTriggerGUI = function () {
             folder.closed = triggerGUIState[propt + _propt] || false;
         }
     }
+    ui.editorGUI.domElement.scrollTop = triggerGUIScroll;
 }
 export const triggerTargetType = {
     mainCharacter: 0,
