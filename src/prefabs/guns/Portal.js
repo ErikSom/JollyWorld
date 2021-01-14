@@ -27,7 +27,7 @@ class Portal extends PrefabManager.basePrefab {
             if (!self.connectedPortal) return;
             const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             const target = (bodies[0] === self.lookupObject['portal']) ? bodies[1] : bodies[0];
-            if (target.GetType() == Box2D.b2BodyType.b2_staticBody) return;
+            if (target.GetType() == Box2D.BodyType.b2_staticBody) return;
 
             contact.SetEnabled(false);
 
@@ -111,14 +111,14 @@ class Portal extends PrefabManager.basePrefab {
                 complete: function () {
                     const newPosition = self.lookupObject['portal'].GetPosition().Clone();
                     const angle = self.lookupObject['portal'].GetAngle() + teleportData.offsetPositionAngle;
-                    const offsetPosition = new Box2D.b2Vec2(teleportData.offsetPositionLength * Math.cos(angle), teleportData.offsetPositionLength * Math.sin(angle));
+                    const offsetPosition = new Box2D.Vec2(teleportData.offsetPositionLength * Math.cos(angle), teleportData.offsetPositionLength * Math.sin(angle));
                     newPosition.SelfAdd(offsetPosition);
                     teleportData.target.SetPosition(newPosition);
                     teleportData.target.SetAngle(self.lookupObject['portal'].GetAngle() + teleportData.offsetAngle);
 
                     //translate linear velocity:
                     const translatedAngle = self.lookupObject['portal'].GetAngle() - teleportData.linearVelocityAngle;
-                    const translatedVelocity = new Box2D.b2Vec2(-teleportData.linearVelocityLength * Math.cos(translatedAngle), -teleportData.linearVelocityLength * Math.sin(translatedAngle));
+                    const translatedVelocity = new Box2D.Vec2(-teleportData.linearVelocityLength * Math.cos(translatedAngle), -teleportData.linearVelocityLength * Math.sin(translatedAngle));
                     teleportData.target.SetLinearVelocity(translatedVelocity);
 
                     teleportData.target.SetAngularVelocity(teleportData.angularVelocity);
@@ -146,7 +146,7 @@ class Portal extends PrefabManager.basePrefab {
             var jointEdge = _target.GetJointList();
             while (jointEdge) {
                 let targetBody = (jointEdge.joint.GetBodyA() == _target) ? jointEdge.joint.GetBodyB() : jointEdge.joint.GetBodyA();
-                if (targetBody.GetType() == Box2D.b2BodyType.b2_staticBody) {
+                if (targetBody.GetType() == Box2D.BodyType.b2_staticBody) {
                     targetBody = undefined;
                     self.jointsToDestroy.push(jointEdge.joint);
                 }
@@ -166,7 +166,7 @@ class Portal extends PrefabManager.basePrefab {
 
         const tolerance = 0.7;
 
-        const portalAngleVector = new Box2D.b2Vec2(Math.cos(this.lookupObject['portal'].GetAngle()), Math.sin(this.lookupObject['portal'].GetAngle()));
+        const portalAngleVector = new Box2D.Vec2(Math.cos(this.lookupObject['portal'].GetAngle()), Math.sin(this.lookupObject['portal'].GetAngle()));
         const rayEndOffset = portalAngleVector.SelfMul(10.0);
         const self = this;
 

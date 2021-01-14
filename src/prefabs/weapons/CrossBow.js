@@ -61,8 +61,8 @@ class CrossBow extends PrefabManager.basePrefab {
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
-		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
-		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x, body.GetPosition().y));
+		const impulse = new Box2D.Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
+		body.ApplyForce(impulse, new Box2D.Vec2(body.GetPosition().x, body.GetPosition().y));
 
 		this.arrowSprite.alpha = 0;
 		this.reloadTimer = 0;

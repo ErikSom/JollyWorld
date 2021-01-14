@@ -59,7 +59,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 let tarBody = engine.GetBodyA();
                 let fixture = tarBody.GetFixtureList();
                 while (fixture != null) {
-                    if (fixture.GetShape() instanceof Box2D.b2CircleShape) {
+                    if (fixture.GetShape() instanceof Box2D.CircleShape) {
                         this.wheels.push(fixture)
                     }
                     fixture = fixture.GetNext();
@@ -152,7 +152,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             let totalCircleRad = 360 * game.editor.DEG2RAD;
             for (j = 0; j < totalCircleRad; j += checkSlize) {
                 rayEnd = rayStart.Clone();
-                rayEnd.SelfAdd(new Box2D.b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
+                rayEnd.SelfAdd(new Box2D.Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
                 let callback = new this.RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if (callback.m_hit) {
@@ -171,7 +171,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             body = this.lookupObject._bodies[i];
             let oldVelocity = body.GetLinearVelocity();
-            let newVelocity = new Box2D.b2Vec2(oldVelocity.x + dirFore.x, oldVelocity.y + dirFore.y);
+            let newVelocity = new Box2D.Vec2(oldVelocity.x + dirFore.x, oldVelocity.y + dirFore.y);
             body.SetLinearVelocity(newVelocity);
         }
 

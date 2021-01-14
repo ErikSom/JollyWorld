@@ -37,8 +37,8 @@ class ExplosiveBarrel extends Explosive {
 		const body = lookupObject._bodies[0];
 		const force = 1500;
 		const offset = 0.5;
-		const impulse = new Box2D.b2Vec2((Math.random()*(force*2)-force), (Math.random()*(force*2)-force));
-		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x+(Math.random()*(offset*2)-offset), body.GetPosition().y+(Math.random()*(offset*2)-offset)));
+		const impulse = new Box2D.Vec2((Math.random()*(force*2)-force), (Math.random()*(force*2)-force));
+		body.ApplyForce(impulse, new Box2D.Vec2(body.GetPosition().x+(Math.random()*(offset*2)-offset), body.GetPosition().y+(Math.random()*(offset*2)-offset)));
 
 		PhysicsParticleEmitter.emit(['Cardboard_1', 'Cardboard_2', 'Cardboard_3'], pos, 20, 5, 20, false, [0x752E00, 0x98440D]);
 

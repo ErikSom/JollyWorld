@@ -15,8 +15,8 @@ export default class Hat {
 		this.texture = "";
 	}
 	attach(){
-		const bd = new Box2D.b2BodyDef();
-		bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		const bd = new Box2D.BodyDef();
+		bd.type = Box2D.BodyType.b2_dynamicBody;
 		bd.angularDamping = 0.85;
 		bd.linearDamping = 0.85;
 		bd.position = this.head.GetPosition();
@@ -25,13 +25,13 @@ export default class Hat {
 		this.hatBody.isHat = true;
 		this.hatBody.key = this.head.mySprite.data.prefabInstanceName
 
-		const fixDef = new Box2D.b2FixtureDef;
+		const fixDef = new Box2D.FixtureDef;
 		fixDef.density = 0.01;
-		fixDef.shape = new Box2D.b2CircleShape;
+		fixDef.shape = new Box2D.CircleShape;
 		fixDef.shape.SetRadius(1.2);
 		this.hatBody.CreateFixture(fixDef);
 
-		const hatWeldJointDef = new Box2D.b2WeldJointDef();
+		const hatWeldJointDef = new Box2D.WeldJointDef();
 		hatWeldJointDef.Initialize(this.hatBody, this.head, this.hatBody.GetPosition());
 		hatWeldJointDef.frequencyHz = 60;
 		hatWeldJointDef.dampingRatio = 1.0;

@@ -42,9 +42,9 @@ class ForceField extends PrefabManager.basePrefab {
 
 		const body = this.forceField;
 
-		const aabb = new Box2D.b2AABB;
-		aabb.lowerBound = new Box2D.b2Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
-		aabb.upperBound = new Box2D.b2Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
+		const aabb = new Box2D.AABB;
+		aabb.lowerBound = new Box2D.Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
+		aabb.upperBound = new Box2D.Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
 
 		const oldRot = body.GetAngle();
 		body.SetAngle(0);
@@ -70,7 +70,7 @@ class ForceField extends PrefabManager.basePrefab {
 		fixture = body.GetFixtureList();
 		while (fixture != null) {
 			oldFixtures.push(fixture);
-			if (fixture.GetShape() instanceof Box2D.b2CircleShape) {
+			if (fixture.GetShape() instanceof Box2D.CircleShape) {
 				//oh shit we have a circle, must scale with aspect ratio
 				if (Math.round(scaleX * 100) / 100 != 1) {
 					scaleY = scaleX;
@@ -86,7 +86,7 @@ class ForceField extends PrefabManager.basePrefab {
 		for (let i = 0; i < oldFixtures.length; i++) {
 			let fixture = oldFixtures[i];
 			var shape = fixture.GetShape();
-			if (shape instanceof Box2D.b2PolygonShape) {
+			if (shape instanceof Box2D.PolygonShape) {
 				let oldVertices = shape.GetVertices();
 
 				for (let j = 0; j < oldVertices.length; j++) {
@@ -102,7 +102,7 @@ class ForceField extends PrefabManager.basePrefab {
 					oldVertices[j].y = oldVertices[j].y * scaleY;
 				}
 
-			} else if (shape instanceof Box2D.b2CircleShape) {
+			} else if (shape instanceof Box2D.CircleShape) {
 				shape.SetRadius(shape.GetRadius() * scaleX);
 				body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
 			}
@@ -172,7 +172,7 @@ class ForceField extends PrefabManager.basePrefab {
 			body.SetLinearDamping(this.damping);
 			body.SetAngularDamping(this.damping);
 
-			const force = new Box2D.b2Vec2(this.force*Math.cos(direction), this.force*Math.sin(direction));
+			const force = new Box2D.Vec2(this.force*Math.cos(direction), this.force*Math.sin(direction));
 			body.ApplyForceToCenter(force, true);
 		})
 	}

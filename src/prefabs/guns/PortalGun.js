@@ -22,16 +22,16 @@ class PortalGun extends PrefabManager.basePrefab {
     shoot(){
         const characterWeapon = this.lookupObject.gun;
         const weaponAngle = characterWeapon.GetAngle()-90*game.editor.RAD2DEG;
-        const bodyAngleVector = new Box2D.b2Vec2(Math.cos(weaponAngle), Math.sin(weaponAngle));
+        const bodyAngleVector = new Box2D.Vec2(Math.cos(weaponAngle), Math.sin(weaponAngle));
         const gunLength = 2;
-        let gunExtent = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+        let gunExtent = new Box2D.Vec2(bodyAngleVector.y, -bodyAngleVector.x);
         gunExtent.SelfMul(gunLength);
-        const bulletSpawnPosition = new Box2D.b2Vec2(characterWeapon.GetPosition().x+gunExtent.x, characterWeapon.GetPosition().y+gunExtent.y);
+        const bulletSpawnPosition = new Box2D.Vec2(characterWeapon.GetPosition().x+gunExtent.x, characterWeapon.GetPosition().y+gunExtent.y);
         const bullet = game.editor.buildRuntimePrefab("PortalBullet", bulletSpawnPosition.x * Settings.PTM, bulletSpawnPosition.y * Settings.PTM);
         game.editor.retrieveClassFromPrefabLookup(bullet).setOwner(this);
 
         const bulletForce = 1000;
-        let dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+        let dirFore = new Box2D.Vec2(bodyAngleVector.y, -bodyAngleVector.x);
         dirFore.SelfMul(bulletForce);
         bullet._bodies[0].ApplyForce(dirFore, characterWeapon.GetPosition());
     }

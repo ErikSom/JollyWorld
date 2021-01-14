@@ -23,13 +23,13 @@ class PhysicsParticle extends PrefabManager.basePrefab {
         // resize particle
         const oldFixture = body.GetFixtureList();
 
-        const fixDef = new Box2D.b2FixtureDef;
+        const fixDef = new Box2D.FixtureDef;
         fixDef.density = oldFixture.m_density;
         fixDef.friction = oldFixture.m_friction;
         fixDef.restitution = oldFixture.m_restitution;
         fixDef.filter = oldFixture.m_filter.Clone();
 
-        fixDef.shape = new Box2D.b2CircleShape;
+        fixDef.shape = new Box2D.CircleShape;
         fixDef.shape.SetRadius(this.particleSize / Settings.PTM);
         body.CreateFixture(fixDef);
         body.DestroyFixture(oldFixture);

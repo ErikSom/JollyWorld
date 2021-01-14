@@ -26,7 +26,7 @@ class HorseVehicle extends BaseVehicle {
         const frontLegDelay = 20;
         const tarAngleOffsets = [180, 0 - frontLegDelay, 180 - frontLegDelay];
         let vehicleSpeed = this.lookupObject["frame"].GetLinearVelocity().Clone().SelfNormalize();
-        let vehicleDirection = this.lookupObject["frame"].GetTransform().GetRotation().GetXAxis(new Box2D.b2Vec2());
+        let vehicleDirection = this.lookupObject["frame"].GetTransform().GetRotation().GetXAxis(new Box2D.Vec2());
         let moveForward = (vehicleSpeed.Dot(vehicleDirection) > 0);
         const motionToRotationSmoothing = 0.4;
         let legSpeed = this.lookupObject["frame"].GetLinearVelocity().Length() * motionToRotationSmoothing;
@@ -45,7 +45,7 @@ class HorseVehicle extends BaseVehicle {
             const totalCircleRad = 360 * game.editor.DEG2RAD;
             for (var j = 0; j < totalCircleRad; j += checkSlize) {
                 rayEnd = rayStart.Clone();
-                rayEnd.SelfAdd(new Box2D.b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
+                rayEnd.SelfAdd(new Box2D.Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
                 let callback = new this.RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if (callback.m_hit) {

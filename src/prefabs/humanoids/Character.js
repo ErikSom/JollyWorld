@@ -33,7 +33,7 @@ export class Character extends PrefabManager.basePrefab {
         // const portalGunBodies = game.editor.buildRuntimePrefab("PortalGun", gunPosition.x * Settings.PTM, gunPosition.y * Settings.PTM);
         // const portalGun = game.editor.retrieveClassFromPrefabLookup(portalGunBodies);
         // portalGun.setOwner(this);
-        // let revoluteJointDef = new Box2D.b2RevoluteJointDef;
+        // let revoluteJointDef = new Box2D.RevoluteJointDef;
         // revoluteJointDef.Initialize(portalGun.lookupObject.holder, this.lookupObject.shoulder_left, gunPosition);
         // revoluteJointDef.collideConnected = false;
         // let joint = game.world.CreateJoint(revoluteJointDef);
@@ -151,7 +151,7 @@ export class Character extends PrefabManager.basePrefab {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
 
-            let reactionForce = new Box2D.b2Vec2();
+            let reactionForce = new Box2D.Vec2();
             targetJoint.GetReactionForce(1 / Settings.physicsTimeStep, reactionForce);
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
@@ -309,8 +309,8 @@ export class Character extends PrefabManager.basePrefab {
                         let connectedJointEdge = targetBody.GetJointList();
                         while(connectedJointEdge){
                             const joint = connectedJointEdge.joint;
-                            if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.addDecalToBody(joint.GetBodyA(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                            if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.addDecalToBody(joint.GetBodyB(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+                            if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.addDecalToBody(joint.GetBodyA(), joint.GetAnchorA(new Box2D.Vec2()), "Decal.png", true);
+                            if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.addDecalToBody(joint.GetBodyB(), joint.GetAnchorA(new Box2D.Vec2()), "Decal.png", true);
                             connectedJointEdge = connectedJointEdge.next;
                         }
 
@@ -365,26 +365,26 @@ export class Character extends PrefabManager.basePrefab {
                         let revoluteJointDef;
                         let joint;
 
-                        let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain"]]}'
+                        let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.Vec2()).y * Settings.PTM + ',0,{},"Vain"]]}'
 
                         let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
                         let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
 
-                        revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                        revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                        revoluteJointDef = new Box2D.RevoluteJointDef;
+                        revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.Vec2()));
                         revoluteJointDef.collideConnected = false;
                         joint = game.world.CreateJoint(revoluteJointDef);
 
-                        revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                        revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                        revoluteJointDef = new Box2D.RevoluteJointDef;
+                        revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.Vec2()));
                         revoluteJointDef.collideConnected = false;
                         joint = game.world.CreateJoint(revoluteJointDef);
 
                         let ropeJointDef;
 
-                        ropeJointDef = new Box2D.b2RopeJointDef;
-                        ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                        ropeJointDef = new Box2D.RopeJointDef;
+                        ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.Vec2()), targetJoint.GetAnchorA(new Box2D.Vec2()));
                         ropeJointDef.maxLength = vainSize;
 
                         joint = game.world.CreateJoint(ropeJointDef);
@@ -406,8 +406,8 @@ export class Character extends PrefabManager.basePrefab {
                         })
                         //carve bodies
 
-                        if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                        if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+                        if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.Vec2()), "Decal.png", true);
+                        if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.Vec2()), "Decal.png", true);
 
                         const targetBody = this.lookupObject[update.target];
                         if(targetBody.grabJoints){
@@ -489,7 +489,7 @@ export class Character extends PrefabManager.basePrefab {
         particlesToGenerate.map((particle)=>{
             const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM},${targetBody.GetPosition().y * Settings.PTM},0,{},"${particle}"]]}`;
             const goreLookupObject = game.editor.buildJSON(JSON.parse(gorePrefab));
-            const impulse = new Box2D.b2Vec2((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
+            const impulse = new Box2D.Vec2((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
             goreLookupObject._bodies.map((body)=>{
                 body.ApplyForce(impulse, targetBody.GetPosition());
             });
@@ -849,7 +849,7 @@ export class Character extends PrefabManager.basePrefab {
             break;
         }
 
-        const baseJointPos = new Box2D.b2Vec2(baseJoint.position.x/Settings.PTM, baseJoint.position.y/Settings.PTM);
+        const baseJointPos = new Box2D.Vec2(baseJoint.position.x/Settings.PTM, baseJoint.position.y/Settings.PTM);
         let dx = x-baseJointPos.x;
         let dy = y-baseJointPos.y;
         let dl = Math.sqrt(dx*dx+dy*dy);
@@ -866,11 +866,11 @@ export class Character extends PrefabManager.basePrefab {
                     const eyeObject = this.lookupObject[key];
                     let anchorEye;
                     if(eyeObject.GetPosition) anchorEye = baseJointPos.Clone().SelfSub(eyeObject.GetPosition());
-                    else anchorEye = baseJointPos.Clone().SelfSub(new Box2D.b2Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM));
+                    else anchorEye = baseJointPos.Clone().SelfSub(new Box2D.Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM));
                     const anchorAngle = Math.atan2(anchorEye.y, anchorEye.x)-upperPart.GetAngle()-Settings.pihalve;
                     const anchorLength = anchorEye.Length();
                     if(eyeObject.SetPosition){
-                        eyeObject.SetPosition(new Box2D.b2Vec2(baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle), baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)));
+                        eyeObject.SetPosition(new Box2D.Vec2(baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle), baseJointPos.y + anchorLength * Math.sin(angle+anchorAngle)));
                         eyeObject.SetAngle(angle+Settings.pihalve);
                     } else{
                         eyeObject.position.x = (baseJointPos.x + anchorLength * Math.cos(angle+anchorAngle)) * Settings.PTM;
@@ -880,7 +880,7 @@ export class Character extends PrefabManager.basePrefab {
             }
 
 
-            upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
+            upperPart.SetPosition(new Box2D.Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
             upperPart.SetAngle(angle+Settings.pihalve);
 
             const bodyAngle = this.lookupObject[Character.BODY_PARTS.BODY].GetAngle();
@@ -902,8 +902,8 @@ export class Character extends PrefabManager.basePrefab {
             }
         }else{
             // IK position
-            const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
-            const endJointPos = new Box2D.b2Vec2(endJoint.position.x/Settings.PTM, endJoint.position.y/Settings.PTM);
+            const lowerJointPos = new Box2D.Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
+            const endJointPos = new Box2D.Vec2(endJoint.position.x/Settings.PTM, endJoint.position.y/Settings.PTM);
 
             const upperLength = lowerJointPos.Clone().SelfSub(baseJointPos).Length();
             const lowerLength = endJointPos.Clone().SelfSub(lowerJointPos).Length();
@@ -918,7 +918,7 @@ export class Character extends PrefabManager.basePrefab {
             let upperAngle = invertAngle ? angle-upperAngleChange  : angle+upperAngleChange;
 
             const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
-            upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle)));
+            upperPart.SetPosition(new Box2D.Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle)));
             upperPart.SetAngle(upperAngle-Settings.pihalve);
 
             const anchorDistanceLower = lowerJointPos.Clone().SelfSub(lowerPart.GetPosition()).Length();
@@ -932,18 +932,18 @@ export class Character extends PrefabManager.basePrefab {
             const lowerAngleChange = Math.acos(Math.max(-1.0, Math.min(1.0, (baseDiff * lowerLengthShare) / lowerLength)));
             const lowerAngle = invertAngle ? angle+lowerAngleChange : angle-lowerAngleChange;
 
-            lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
+            lowerPart.SetPosition(new Box2D.Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
             lowerPart.SetAngle(lowerAngle-Settings.pihalve);
 
             const anchorDistanceEnd = endJointPos.Clone().SelfSub(endPart.GetPosition()).Length();
 
-            const endJointPosRotated = rotateVectorAroundPoint(new Box2D.b2Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, lowerAngle*game.editor.RAD2DEG);
+            const endJointPosRotated = rotateVectorAroundPoint(new Box2D.Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, lowerAngle*game.editor.RAD2DEG);
             endJointPos.x = endJointPosRotated.x;
             endJointPos.y = endJointPosRotated.y;
             endJoint.position.x = endJointPos.x*Settings.PTM;
             endJoint.position.y = endJointPos.y*Settings.PTM;
 
-            endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
+            endPart.SetPosition(new Box2D.Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
             endPart.SetAngle(lowerAngle-Settings.pihalve);
 
             const bodyAngle = this.lookupObject[Character.BODY_PARTS.BODY].GetAngle();
@@ -1020,8 +1020,8 @@ export class Character extends PrefabManager.basePrefab {
 
             var body = this.lookupObject["body"];
             if(body){
-                var bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
-                var dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+                var bodyAngleVector = new Box2D.Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
+                var dirFore = new Box2D.Vec2(bodyAngleVector.y, -bodyAngleVector.x);
                 dirFore.SelfMul(force);
                 body.ApplyForce(dirFore, body.GetPosition());
             }

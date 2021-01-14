@@ -22,7 +22,7 @@ class PortalBullet extends PrefabManager.basePrefab {
         super.initContactListener();
         const self = this;
         this.contactListener.PostSolve = function (contact, impulse) {
-            var worldManifold = new Box2D.b2WorldManifold();
+            var worldManifold = new Box2D.WorldManifold();
             contact.GetWorldManifold(worldManifold);
             self.destroyMe = {x:worldManifold.points[0].x*game.editor.PTM, y:worldManifold.points[0].y*game.editor.PTM, a:Math.atan2(worldManifold.normal.y, worldManifold.normal.x)};
         }

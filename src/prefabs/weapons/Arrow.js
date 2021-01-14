@@ -16,9 +16,9 @@ class Arrow extends PrefabManager.basePrefab {
 		this.arrowBody.isArrow = true;
 
 		super.init();
-		this.pointingVec = new Box2D.b2Vec2( 1, 0 );
-		this.tailVec = new Box2D.b2Vec2( -1.4, 0 );
-		this.vec = new Box2D.b2Vec2();
+		this.pointingVec = new Box2D.Vec2( 1, 0 );
+		this.tailVec = new Box2D.Vec2( -1.4, 0 );
+		this.vec = new Box2D.Vec2();
 		this.sticking = false;
 		this.bodyToStick = null;
 		this.stickImpulse = 8.0;
@@ -46,7 +46,7 @@ class Arrow extends PrefabManager.basePrefab {
 			const flightSpeed = flightDirection.Normalize();
 
 
-			const dot = Box2D.b2Vec2.DotVV( flightDirection, pointingDirection );
+			const dot = Box2D.Vec2.DotVV( flightDirection, pointingDirection );
 
 			const dragForceMagnitude = (1 - Math.abs(dot)) * flightSpeed * flightSpeed * this.dragConstant * this.arrowBody.GetMass();
 
@@ -57,9 +57,9 @@ class Arrow extends PrefabManager.basePrefab {
 
 			if(this.bodyToStick){
 				this.arrowBody.SetBullet(false);
-				this.arrowBody.GetWorldPoint( new Box2D.b2Vec2(0.6, 0), this.vec );
+				this.arrowBody.GetWorldPoint( new Box2D.Vec2(0.6, 0), this.vec );
 				const worldCoordsAnchorPoint = this.vec;
-				const weldJointDef = new Box2D.b2WeldJointDef();
+				const weldJointDef = new Box2D.WeldJointDef();
 
 				this.arrowBody.SetPosition(this.worldCollisionPoint);
 				this.arrowBody.SetAngle(this.impactAngle);
@@ -112,7 +112,7 @@ class Arrow extends PrefabManager.basePrefab {
 					body = bodies[i];
 					if(body == self.arrowBody || !body.isFlesh) continue;
 					if(impulse.normalImpulses[0] > self.stickImpulse && !self.bodyToStick){
-						const worldManifold = new Box2D.b2WorldManifold();
+						const worldManifold = new Box2D.WorldManifold();
 						contact.GetWorldManifold(worldManifold);
 						self.collisionImpulse = impulse.normalImpulses[0];
 						self.bodyToStick = body;

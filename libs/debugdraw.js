@@ -1,6 +1,6 @@
 import * as Box2D  from "./Box2D";
 
-class DebugDraw extends Box2D.b2Draw {
+class DebugDraw extends Box2D.Draw {
   
   constructor() {
       super();
@@ -119,12 +119,12 @@ class DebugDraw extends Box2D.b2Draw {
           ctx.beginPath();
           ctx.moveTo(0, 0);
           ctx.lineTo(1, 0);
-          ctx.strokeStyle = Box2D.b2Color.RED.MakeStyleString(1);
+          ctx.strokeStyle = Box2D.Color.RED.MakeStyleString(1);
           ctx.stroke();
           ctx.beginPath();
           ctx.moveTo(0, 0);
           ctx.lineTo(0, 1);
-          ctx.strokeStyle = Box2D.b2Color.GREEN.MakeStyleString(1);
+          ctx.strokeStyle = Box2D.Color.GREEN.MakeStyleString(1);
           ctx.stroke();
           this.PopTransform(xf);
       }
@@ -157,17 +157,17 @@ class DebugDraw extends Box2D.b2Draw {
           const p = DebugDraw.DrawStringWorld_s_p.Set(x, y);
           // world -> viewport
           const vt = g_camera.m_center;
-          Box2D.b2Vec2.SubVV(p, vt, p);
+          Box2D.Vec2.SubVV(p, vt, p);
           ///const vr = g_camera.m_roll;
           ///box2d.b2Rot.MulTRV(vr, p, p);
           const vs = g_camera.m_zoom;
-          Box2D.b2Vec2.MulSV(1 / vs, p, p);
+          Box2D.Vec2.MulSV(1 / vs, p, p);
           // viewport -> canvas
           const cs = 0.5 * g_camera.m_height / g_camera.m_extent;
-          Box2D.b2Vec2.MulSV(cs, p, p);
+          Box2D.Vec2.MulSV(cs, p, p);
           p.y *= -1;
           const cc = DebugDraw.DrawStringWorld_s_cc.Set(0.5 * ctx.canvas.width, 0.5 * ctx.canvas.height);
-          Box2D.b2Vec2.AddVV(p, cc, p);
+          Box2D.Vec2.AddVV(p, cc, p);
           ctx.save();
           ctx.setTransform(1, 0, 0, 1, 0, 0);
           ctx.font = "15px DroidSans";
@@ -189,10 +189,10 @@ class DebugDraw extends Box2D.b2Draw {
       }
   }
 }
-DebugDraw.DrawString_s_color = new Box2D.b2Color(0.9, 0.6, 0.6);
-DebugDraw.DrawStringWorld_s_p = new Box2D.b2Vec2();
-DebugDraw.DrawStringWorld_s_cc = new Box2D.b2Vec2();
-DebugDraw.DrawStringWorld_s_color = new Box2D.b2Color(0.5, 0.9, 0.5);
+DebugDraw.DrawString_s_color = new Box2D.Color(0.9, 0.6, 0.6);
+DebugDraw.DrawStringWorld_s_p = new Box2D.Vec2();
+DebugDraw.DrawStringWorld_s_cc = new Box2D.Vec2();
+DebugDraw.DrawStringWorld_s_color = new Box2D.Color(0.5, 0.9, 0.5);
 
 
 export function getPIXIDebugDraw(graphics, scale) {
@@ -242,8 +242,8 @@ export function getPIXIDebugDraw(graphics, scale) {
 
     if (fill) {
       //render axis marker
-      var vert2 = new Box2D.b2Vec2(center.x, center.y);
-      vert2 = new Box2D.b2Vec2(vert2.x+axis.x * radius, vert2.y+axis.y * radius);
+      var vert2 = new Box2D.Vec2(center.x, center.y);
+      vert2 = new Box2D.Vec2(vert2.x+axis.x * radius, vert2.y+axis.y * radius);
       graphics.moveTo(center.x * scale, center.y * scale);
       graphics.lineTo(vert2.x * scale, vert2.y * scale);
     }
@@ -284,7 +284,7 @@ export function getPIXIDebugDraw(graphics, scale) {
 
   };
   debugDraw.DrawCircle = function(center, radius, color) {
-    drawCircle(graphics, center, radius, Box2D.Box2D.b2Vec2(0,0), false, getColorFromDebugDrawCallback(color));
+    drawCircle(graphics, center, radius, Box2D.Box2D.Vec2(0,0), false, getColorFromDebugDrawCallback(color));
   };
   debugDraw.DrawSolidCircle = function(center, radius, axis, color) {
     drawCircle(graphics, center, radius, axis, true, getColorFromDebugDrawCallback(color));

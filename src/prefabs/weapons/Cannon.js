@@ -33,9 +33,9 @@ class Cannon extends PrefabManager.basePrefab {
 		this.positionCannonEmitter();
 
 		if(this.prefabObject.settings.isFixed){
-            this.cannonBody.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.cannonBody.SetType(Box2D.BodyType.b2_staticBody);
         }else{
-            this.cannonBody.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.cannonBody.SetType(Box2D.BodyType.b2_dynamicBody);
         }
 
 		this.reload();
@@ -93,7 +93,7 @@ class Cannon extends PrefabManager.basePrefab {
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
-		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
+		const impulse = new Box2D.Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, body.GetPosition());
 
         this.emitter.playOnce();

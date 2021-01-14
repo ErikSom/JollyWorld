@@ -37,18 +37,18 @@ const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
 
-var b2Vec2 = Box2D.b2Vec2,
-	b2AABB = Box2D.b2AABB,
-	b2BodyDef = Box2D.b2BodyDef,
-	b2Body = Box2D.b2Body,
-	b2FixtureDef = Box2D.b2FixtureDef,
-	b2Fixture = Box2D.b2Fixture,
-	b2World = Box2D.b2World,
-	b2MassData = Box2D.b2MassData,
-	b2PolygonShape = Box2D.b2PolygonShape,
-	b2CircleShape = Box2D.b2CircleShape,
-	b2DebugDraw = Box2D.b2DebugDraw,
-	b2MouseJointDef = Box2D.b2MouseJointDef;
+var b2Vec2 = Box2D.Vec2,
+	b2AABB = Box2D.AABB,
+	b2BodyDef = Box2D.BodyDef,
+	b2Body = Box2D.Body,
+	b2FixtureDef = Box2D.FixtureDef,
+	b2Fixture = Box2D.Fixture,
+	b2World = Box2D.World,
+	b2MassData = Box2D.MassData,
+	b2PolygonShape = Box2D.PolygonShape,
+	b2CircleShape = Box2D.CircleShape,
+	b2DebugDraw = Box2D.DebugDraw,
+	b2MouseJointDef = Box2D.MouseJointDef;
 
 const _B2dEditor = function () {
 
@@ -1378,7 +1378,7 @@ const _B2dEditor = function () {
 
 		for (i = 0; i < arr.length; i++) {
 			obj = arr[i];
-			if (obj instanceof Box2D.b2Joint) {
+			if (obj instanceof Box2D.Joint) {
 				let joint = obj;
 				if (joint.myTriggers != undefined) {
 					var j;
@@ -4809,8 +4809,8 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.fixed = controller.targetValue;
-							if (body.mySprite.data.fixed) body.SetType(Box2D.b2BodyType.b2_staticBody);
-							else body.SetType(Box2D.b2BodyType.b2_dynamicBody);
+							if (body.mySprite.data.fixed) body.SetType(Box2D.BodyType.b2_staticBody);
+							else body.SetType(Box2D.BodyType.b2_dynamicBody);
 
 							var oldPosition = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
 							body.SetPosition(new b2Vec2(1000, 1000));
@@ -4820,7 +4820,7 @@ const _B2dEditor = function () {
 							this.setBodyCollision(body, body.mySprite.data.collision);
 
 							//awake fix
-							if (body.GetType() == Box2D.b2BodyType.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
+							if (body.GetType() == Box2D.BodyType.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
 						}
 
 					} else if (controller.property == "awake") {
@@ -6161,9 +6161,9 @@ const _B2dEditor = function () {
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
-		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
-		else if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
-		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		if(obj.trigger) bd.type = Box2D.BodyType.b2_kinematicBody;
+		else if (obj.fixed) bd.type = Box2D.BodyType.b2_staticBody;
+		else bd.type = Box2D.BodyType.b2_dynamicBody;
 		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
@@ -6187,7 +6187,7 @@ const _B2dEditor = function () {
 		obj.restitution = [].concat(obj.restitution);
 		obj.friction = [].concat(obj.friction);
 
-		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
+		body.SetPosition(new b2Vec2(obj.x, obj.y));
 		body.SetAngle(obj.rotation);
 
 
@@ -6361,7 +6361,7 @@ const _B2dEditor = function () {
 			for (let i = 0; i < oldFixtures.length; i++) {
 				let fixture = oldFixtures[i];
 				var shape = fixture.GetShape();
-				if (shape instanceof Box2D.b2PolygonShape) {
+				if (shape instanceof Box2D.PolygonShape) {
 					let oldVertices = shape.GetVertices();
 
 					for (let j = 0; j < oldVertices.length; j++) {
@@ -6373,7 +6373,7 @@ const _B2dEditor = function () {
 					if(data.type === this.object_TRIGGER){
 						obj.mySprite.data.vertices = oldVertices.map(vertice =>({x:vertice.x, y:vertice.y}));
 					}
-				} else if (shape instanceof Box2D.b2CircleShape) {
+				} else if (shape instanceof Box2D.CircleShape) {
 					shape.SetRadius(shape.GetRadius() * scaleX);
 					if(Array.isArray(body.mySprite.data.radius)) body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
 					else body.mySprite.data.radius = body.mySprite.data.radius* scaleX;
@@ -6507,7 +6507,7 @@ const _B2dEditor = function () {
 				let fixture = object.GetFixtureList();
 				while(fixture){
 					const shape = fixture.GetShape();
-					if(shape instanceof Box2D.b2PolygonShape){
+					if(shape instanceof Box2D.PolygonShape){
 						let vertices = shape.GetVertices();
 						for (let i = 0; i < vertices.length; i++) {
 							vertices[i].x *= -1;
@@ -7064,7 +7064,7 @@ const _B2dEditor = function () {
 			var filterData = fixture.GetFilterData();
 
 
-			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+			if (body.GetType() == Box2D.BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 			else filterData.categoryBits = this.MASKBIT_NORMAL;
 			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
 			fixture.SetSensor(false);
@@ -7211,7 +7211,7 @@ const _B2dEditor = function () {
 			fixDef.restitution = Settings.defaultRestitution;
 
 			let bd = new b2BodyDef();
-			bd.type = Box2D.b2BodyType.b2_staticBody;
+			bd.type = Box2D.BodyType.b2_staticBody;
 			bodyB = this.world.CreateBody(bd);
 			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
@@ -7226,7 +7226,7 @@ const _B2dEditor = function () {
 		let joint;
 
 		if (jointPlaceHolder.jointType == this.jointObject_TYPE_PIN) {
-			let revoluteJointDef = new Box2D.b2RevoluteJointDef;
+			let revoluteJointDef = new Box2D.RevoluteJointDef;
 
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
@@ -7245,7 +7245,7 @@ const _B2dEditor = function () {
 			const rotation = jointPlaceHolder.rotation + 90.0 * this.DEG2RAD;
 			const axis = new b2Vec2(Math.cos(rotation), Math.sin(rotation));
 
-			let prismaticJointDef = new Box2D.b2PrismaticJointDef;
+			let prismaticJointDef = new Box2D.PrismaticJointDef;
 
 			prismaticJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
 			prismaticJointDef.collideConnected = jointPlaceHolder.collideConnected;
@@ -7260,14 +7260,14 @@ const _B2dEditor = function () {
 			joint = this.world.CreateJoint(prismaticJointDef);
 
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
-			let distanceJointDef = new Box2D.b2DistanceJointDef;
+			let distanceJointDef = new Box2D.DistanceJointDef;
 			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 			distanceJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
 			distanceJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
 
 			joint = this.world.CreateJoint(distanceJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
-			let ropeJointDef = new Box2D.b2RopeJointDef;
+			let ropeJointDef = new Box2D.RopeJointDef;
 			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
 			const xd = bodyA.GetPosition().x - bodyB.GetPosition().x;
 			const yd = bodyA.GetPosition().y - bodyB.GetPosition().y;
@@ -7277,7 +7277,7 @@ const _B2dEditor = function () {
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_WHEEL) {
 			const axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation + 90 * this.DEG2RAD), Math.sin(jointPlaceHolder.rotation + 90 * this.DEG2RAD));
 
-			let wheelJointDef = new Box2D.b2WheelJointDef;
+			let wheelJointDef = new Box2D.WheelJointDef;
 			wheelJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
 			wheelJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
 			wheelJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
@@ -7522,7 +7522,7 @@ const _B2dEditor = function () {
 					}
 
 					fixDef.shape = new b2PolygonShape;
-					fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
+					fixDef.shape.Set(b2Vec2Arr, b2Vec2Arr.length);
 				} else {
 					fixDef.shape = new b2CircleShape;
 					fixDef.shape.SetLocalPosition(new b2Vec2(innerVertices[j][0].x, innerVertices[j][0].y));
@@ -8518,7 +8518,7 @@ const _B2dEditor = function () {
         if(this.tracingTexture) this.tracingTexture.renderable = true;
 	}
 
-	this.B2dEditorContactListener = new Box2D.b2ContactListener();
+	this.B2dEditorContactListener = new Box2D.ContactListener();
 	this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
 		if (self.contactCallBackListener) {
 			if (secondParam) self.contactCallBackListener[name](contact, secondParam);

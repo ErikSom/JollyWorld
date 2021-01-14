@@ -89,7 +89,7 @@ export const doAction = function (actionData, target) {
                 } else bodies = [target.myBody];
                 bodies.map(body => {
                     const a = actionData.direction * B2dEditor.DEG2RAD;
-                    const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
+                    const impulse = new Box2D.Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
                     body.ApplyTorque(actionData.rotationForce, true)
                 });
@@ -99,17 +99,17 @@ export const doAction = function (actionData, target) {
 
                 if (target.data.prefabInstanceName) {
                     objects = [].concat(B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies, B2dEditor.lookupGroups[target.data.prefabInstanceName]._textures);
-                    targetPos = new Box2D.b2Vec2(target.x, target.y);
+                    targetPos = new Box2D.Vec2(target.x, target.y);
                 } else if (target.myBody) {
                     objects = [target.myBody];
-                    targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x * Settings.PTM, target.myBody.GetPosition().y * Settings.PTM);
+                    targetPos = new Box2D.Vec2(target.myBody.GetPosition().x * Settings.PTM, target.myBody.GetPosition().y * Settings.PTM);
                 } else {
                     objects = [target];
-                    targetPos = new Box2D.b2Vec2(target.x, target.y);
+                    targetPos = new Box2D.Vec2(target.x, target.y);
                 }
 
-                if (actionData.setAdd == "fixed") targetPos = new Box2D.b2Vec2(actionData.X - targetPos.x, actionData.Y - targetPos.y);
-                else targetPos = new Box2D.b2Vec2(actionData.X, actionData.Y);
+                if (actionData.setAdd == "fixed") targetPos = new Box2D.Vec2(actionData.X - targetPos.x, actionData.Y - targetPos.y);
+                else targetPos = new Box2D.Vec2(actionData.X, actionData.Y);
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
             break;
@@ -194,7 +194,7 @@ export const doAction = function (actionData, target) {
             if(actionData.toggle) actionData.setFollowPlayer = !actionData.setFollowPlayer;
             break;
         case "SetGravity":
-            game.world.SetGravity(new Box2D.b2Vec2(actionData.gravityX, actionData.gravityY));
+            game.world.SetGravity(new Box2D.Vec2(actionData.gravityX, actionData.gravityY));
             break;
         case "SetCameraZoom":
             game.editor.editorSettingsObject.cameraZoom = actionData.zoom;
@@ -926,7 +926,7 @@ export class triggerCore {
                 targetX += this.followLengthOffset * Math.cos(targetRot);
                 targetY += this.followLengthOffset * Math.sin(targetRot);
 
-                this.trigger.SetPosition(new Box2D.b2Vec2(targetX, targetY));
+                this.trigger.SetPosition(new Box2D.Vec2(targetX, targetY));
             }
             if (this.runTriggerOnce) {
                 this.doTrigger();
@@ -941,7 +941,7 @@ export class triggerCore {
     }
     initContactListener() {
         var self = this;
-        this.contactListener = new Box2D.b2ContactListener();
+        this.contactListener = new Box2D.ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
             if (self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];

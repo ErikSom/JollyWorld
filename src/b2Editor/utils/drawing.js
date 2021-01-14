@@ -3,7 +3,7 @@ import * as Box2D from "../../../libs/Box2D";
 import * as dat from "../../../libs/dat.gui";
 import { Settings } from "../../Settings";
 
-var b2Vec2 = Box2D.b2Vec2;
+var b2Vec2 = Box2D.Vec2;
 
 const lineOptionsBase = {
     color:0xFFFFFF,

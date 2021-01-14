@@ -41,18 +41,18 @@ const nanoid = require('nanoid');
 const particles = require('../libs/pixi-particles');
 const Stats = require('stats.js');
 
-var b2Vec2 = Box2D.b2Vec2,
-    b2AABB = Box2D.b2AABB,
-    b2BodyDef = Box2D.b2BodyDef,
-    b2Body = Box2D.b2Body,
-    b2FixtureDef = Box2D.b2FixtureDef,
-    b2Fixture = Box2D.b2Fixture,
-    b2World = Box2D.b2World,
-    b2MassData = Box2D.b2MassData,
-    b2PolygonShape = Box2D.b2PolygonShape,
-    b2CircleShape = Box2D.b2CircleShape,
-    b2DebugDraw = Box2D.b2DebugDraw,
-    b2MouseJointDef = Box2D.b2MouseJointDef;
+var b2Vec2 = Box2D.Vec2,
+    b2AABB = Box2D.AABB,
+    b2BodyDef = Box2D.BodyDef,
+    b2Body = Box2D.Body,
+    b2FixtureDef = Box2D.FixtureDef,
+    b2Fixture = Box2D.Fixture,
+    b2World = Box2D.World,
+    b2MassData = Box2D.MassData,
+    b2PolygonShape = Box2D.PolygonShape,
+    b2CircleShape = Box2D.CircleShape,
+    b2DebugDraw = Box2D.DebugDraw,
+    b2MouseJointDef = Box2D.MouseJointDef;
 
 function Game() {
 
@@ -187,7 +187,7 @@ function Game() {
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
         );
-        const bodyDef = new Box2D.b2BodyDef();
+        const bodyDef = new Box2D.BodyDef();
         this.m_groundBody = this.world.CreateBody(bodyDef);
 
         //container
@@ -216,7 +216,7 @@ function Game() {
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
-        this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
+        this.myDebugDraw.SetFlags(Box2D.DrawFlags.e_shapeBit | Box2D.DrawFlags.e_jointBit);
         this.world.SetDebugDraw(this.myDebugDraw);
 
         this.render();
@@ -372,7 +372,7 @@ function Game() {
                 var md = new b2MouseJointDef();
                 md.bodyA = this.m_groundBody;
                 md.bodyB = body;
-                md.target = new Box2D.b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y);
+                md.target = new Box2D.Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y);
                 md.collideConnected = true;
                 md.maxForce = 300.0 * body.GetMass();
                 this.mouseJoint = this.world.CreateJoint(md);
@@ -875,7 +875,7 @@ function Game() {
     }
 
     var self = this;
-    this.gameContactListener = new Box2D.b2ContactListener();
+    this.gameContactListener = new Box2D.ContactListener();
     this.gameContactListener.BeginContact = function (contact) {
 
         const currentTime = Date.now();
@@ -970,7 +970,7 @@ function Game() {
                     impactAngle *= game.editor.RAD2DEG + 180;
                     const velocitySum = velocityA + velocityB;
                     if (velocitySum > 10.0) {
-                        const worldManifold = new Box2D.b2WorldManifold();
+                        const worldManifold = new Box2D.WorldManifold();
                         contact.GetWorldManifold(worldManifold);
                         const worldCollisionPoint = worldManifold.points[0];
                         self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);

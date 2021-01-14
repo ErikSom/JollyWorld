@@ -39,7 +39,7 @@ class Jet extends PrefabManager.basePrefab {
         if(this.engineOn){
             const direction = this.base.GetAngle();
             const deltaForce = (this.force / Settings.targetFPS) * game.editor.deltaTime;
-            const force = new Box2D.b2Vec2(deltaForce*Math.cos(direction), deltaForce*Math.sin(direction));
+            const force = new Box2D.Vec2(deltaForce*Math.cos(direction), deltaForce*Math.sin(direction));
             const position = this.base.GetPosition();
             this.base.ApplyForce(force, position, true);
             if(this.connectedBody) this.connectedBody.ApplyForce(force, position, true);

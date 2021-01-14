@@ -35,7 +35,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		if(this.exploded) return;
 		this.exploded = true;
 
-		const aabb = new Box2D.b2AABB();
+		const aabb = new Box2D.AABB();
 		const rayStartPosition = this.explodeTarget.GetPosition();
 		const radius = this.explosiveRadius/Settings.PTM;
 		aabb.lowerBound.Set(rayStartPosition.x-radius, rayStartPosition.y-radius);
@@ -58,7 +58,7 @@ export class Explosive extends PrefabManager.basePrefab {
 				diff.SelfNormalize();
 
 				const power = (1-rayCallback.m_fraction)*this.explosivePower*5;
-				const force = new Box2D.b2Vec2(power*-diff.x, power*-diff.y);
+				const force = new Box2D.Vec2(power*-diff.x, power*-diff.y);
 
 				if(rayCallback.m_point){
 
@@ -189,7 +189,7 @@ Explosive.RaycastCallbackExplosive = function () {
 Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture,	point, normal, fraction) {
 	const body = fixture.GetBody();
 	if(!this.target){
-		if(body.GetType() !== Box2D.b2BodyType.b2_staticBody) return -1;
+		if(body.GetType() !== Box2D.BodyType.b2_staticBody) return -1;
 		if (fixture.IsSensor()) return -1;
 	}else{
 		if(body !== this.target) return -1;

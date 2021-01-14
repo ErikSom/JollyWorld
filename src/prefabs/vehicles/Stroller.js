@@ -14,7 +14,7 @@ class Stroller extends BaseVehicle {
     update() {
         super.update();
         var drone = this.lookupObject["drone"];
-        var dirFore = new Box2D.b2Vec2(0, -1);
+        var dirFore = new Box2D.Vec2(0, -1);
         dirFore.SelfMul(400.0);
         drone.ApplyForce(dirFore, drone.GetPosition());
 

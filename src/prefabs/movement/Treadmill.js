@@ -119,13 +119,13 @@ class Treadmill extends PrefabManager.basePrefab {
 		fixtures.forEach(fixture=>{
 			const vertices = fixture.GetShape().GetVertices();
 
-			const fixDef = new Box2D.b2FixtureDef;
+			const fixDef = new Box2D.FixtureDef;
 			fixDef.density = fixture.GetDensity();
 			fixDef.friction = fixture.GetFriction();
 			fixDef.restitution = fixture.GetRestitution();
 			fixDef.isSensor = fixture.IsSensor();
-			fixDef.shape = new Box2D.b2PolygonShape;
-			fixDef.shape.SetAsArray(vertices, vertices.length);
+			fixDef.shape = new Box2D.PolygonShape;
+			fixDef.shape.Set(vertices, vertices.length);
 
 			const newFixture = this.base.CreateFixture(fixDef);
 
@@ -175,9 +175,9 @@ class Treadmill extends PrefabManager.basePrefab {
     init(){
         super.init();
         if(this.prefabObject.settings.isFixed){
-            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.base.SetType(Box2D.BodyType.b2_staticBody);
         }else{
-            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.base.SetType(Box2D.BodyType.b2_dynamicBody);
 		}
 		this.targetSpeedPTM = this.prefabObject.settings.wheelSpeed / Settings.PTM;
 	}
@@ -246,7 +246,7 @@ class Treadmill extends PrefabManager.basePrefab {
 		this.contactListener.PostSolve = function (contact, impulse){
 			const otherBody = contact.GetFixtureA().GetBody() === self.base ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
 
-			const worldManifold = new Box2D.b2WorldManifold();
+			const worldManifold = new Box2D.WorldManifold();
 			contact.GetWorldManifold(worldManifold);
 			const worldCollisionPoint = worldManifold.points[0];
 
@@ -259,28 +259,28 @@ class Treadmill extends PrefabManager.basePrefab {
 			const targetDirections = [];
 			if(otherBody.edgeTop){
 				let angle = self.base.GetAngle();
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+				targetVelocities.push(new Box2D.Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
 				targetDirections.push(0);
 			}
 			if(otherBody.edgeRight){
 				let angle = self.base.GetAngle()+Settings.pihalve;
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+				targetVelocities.push(new Box2D.Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
 				targetDirections.push(1);
 			}
 			if(otherBody.edgeBottom){
 				let angle = self.base.GetAngle()+Math.PI;
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+				targetVelocities.push(new Box2D.Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
 				targetDirections.push(2);
 			}
 			if(otherBody.edgeLeft){
 				let angle = self.base.GetAngle()-Settings.pihalve;
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+				targetVelocities.push(new Box2D.Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
 				targetDirections.push(3);
 			}
 
 			targetVelocities.forEach((targetVelocity, index) => {
 
-				if(otherBody.GetType() == Box2D.b2BodyType.b2_staticBody && !self.prefabObject.settings.isFixed) {
+				if(otherBody.GetType() == Box2D.BodyType.b2_staticBody && !self.prefabObject.settings.isFixed) {
 
 
 					const direction = targetDirections[index];

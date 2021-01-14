@@ -30,7 +30,7 @@ export class SharpObject extends PrefabManager.basePrefab {
         let fixture = this.sharpBody.GetFixtureList();
 
         //Prepare sharp object to collide with fixed objects but not dynamic objects
-		const fixDef = new Box2D.b2FixtureDef;
+		const fixDef = new Box2D.FixtureDef;
 		fixDef.density = fixture.GetDensity();
 		fixDef.friction = fixture.GetFriction();
 		fixDef.restitution = fixture.GetRestitution();
@@ -72,7 +72,7 @@ export class SharpObject extends PrefabManager.basePrefab {
         var basePosition = this.sharpBody.GetPosition();
 
         var startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
-        var startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
+        var startPosition = new Box2D.Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
 
         const numSpreadParts = Math.floor((this.width*2)/this.spread)+1;
 
@@ -84,8 +84,8 @@ export class SharpObject extends PrefabManager.basePrefab {
             const sideBladeAngle = bladeAngle+side*game.editor.DEG2RAD;
             for(let j = 0; j<numSpreadParts; j++){
                 const totalSpread = this.spread*j;
-                let bladePosition = new Box2D.b2Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
-                let bladeEndPosition = new Box2D.b2Vec2(bladePosition.x + this.extent * Math.cos(sideBladeAngle),bladePosition.y + this.extent * Math.sin(sideBladeAngle));
+                let bladePosition = new Box2D.Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
+                let bladeEndPosition = new Box2D.Vec2(bladePosition.x + this.extent * Math.cos(sideBladeAngle),bladePosition.y + this.extent * Math.sin(sideBladeAngle));
                 drawLine(game.editor.getPIXIPointFromWorldPoint(bladePosition), game.editor.getPIXIPointFromWorldPoint(bladeEndPosition));
             }
         })
@@ -108,9 +108,9 @@ export class SharpObject extends PrefabManager.basePrefab {
                 const sharpBodyAngle = this.sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
 
                 if(this.bodiesToSeperate.includes(this.bodiesToStick[i].body)) return;
-                const prismaticJointDef = new Box2D.b2PrismaticJointDef;
+                const prismaticJointDef = new Box2D.PrismaticJointDef;
                 const axisRotation = sharpBodyAngle + 90 * game.editor.DEG2RAD;
-                const axis = new Box2D.b2Vec2(Math.cos(axisRotation), Math.sin(axisRotation));
+                const axis = new Box2D.Vec2(Math.cos(axisRotation), Math.sin(axisRotation));
                 prismaticJointDef.Initialize(this.bodiesToStick[i].body, sharpBody, this.sharpBody.GetPosition(), axis);
                 prismaticJointDef.collideConnected = true;
                 prismaticJointDef.maxMotorForce = this.resistance;
@@ -124,7 +124,7 @@ export class SharpObject extends PrefabManager.basePrefab {
                 const basePosition = this.sharpBody.GetPosition();
                 const extentAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
                 const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
-                const startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
+                const startPosition = new Box2D.Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
 
                 const numSpreadParts = Math.floor((this.width*2)/this.spread)+1;
 
@@ -136,8 +136,8 @@ export class SharpObject extends PrefabManager.basePrefab {
                     const sideBladeAngle = bladeAngle+side*game.editor.DEG2RAD;
                     for(let j = 0; j<numSpreadParts; j++){
                         const totalSpread = this.spread*j;
-                        let bladePosition = new Box2D.b2Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
-                        let bladeEndPosition = new Box2D.b2Vec2(bladePosition.x + this.extent * Math.cos(sideBladeAngle),bladePosition.y + this.extent * Math.sin(sideBladeAngle));
+                        let bladePosition = new Box2D.Vec2(startPosition.x + totalSpread*Math.cos(spreadAngle), startPosition.y + totalSpread*Math.sin(spreadAngle));
+                        let bladeEndPosition = new Box2D.Vec2(bladePosition.x + this.extent * Math.cos(sideBladeAngle),bladePosition.y + this.extent * Math.sin(sideBladeAngle));
 
                         const callback = new this.RaycastCallbackSpike();
                         this.sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
@@ -182,8 +182,8 @@ export class SharpObject extends PrefabManager.basePrefab {
         const basePosition = this.sharpBody.GetPosition();
         const sharpBodyAngle = this.sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
         const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
-        const startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
-        const bladePosition = new Box2D.b2Vec2(startPosition.x + this.width*Math.cos(sharpBodyAngle), startPosition.y + this.width*Math.sin(sharpBodyAngle));
+        const startPosition = new Box2D.Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
+        const bladePosition = new Box2D.Vec2(startPosition.x + this.width*Math.cos(sharpBodyAngle), startPosition.y + this.width*Math.sin(sharpBodyAngle));
 
         const diff = bladePosition.Clone().SelfSub(contactPoint);
         const angle = Math.atan2(diff.y, diff.x) - game.editor.PI2;
@@ -213,12 +213,12 @@ export class SharpObject extends PrefabManager.basePrefab {
 
             if(sharpFixture.GetBody() != sharpBody) return;
 
-            let worldManifold = new Box2D.b2WorldManifold();
+            let worldManifold = new Box2D.WorldManifold();
             contact.GetWorldManifold(worldManifold);
 
             let otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
 
-            if(!otherBody.mySprite || otherBody.connectedSpike || otherBody.mySprite.data.collision == 2 || otherBody.GetType() != Box2D.b2BodyType.b2_dynamicBody) return;
+            if(!otherBody.mySprite || otherBody.connectedSpike || otherBody.mySprite.data.collision == 2 || otherBody.GetType() != Box2D.BodyType.b2_dynamicBody) return;
             const allowedBodyParts = ['head', 'body'];
             if(otherBody.isFlesh && !allowedBodyParts.includes(otherBody.mySprite.data.refName)) return;
 

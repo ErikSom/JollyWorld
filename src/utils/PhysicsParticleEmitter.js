@@ -9,17 +9,17 @@ const poolSize = 200;
 const spritePool = [];
 const activeParticles = [];
 
-const bodyDef = new Box2D.b2BodyDef();
-bodyDef.type = Box2D.b2BodyType.b2_dynamicBody;
+const bodyDef = new Box2D.BodyDef();
+bodyDef.type = Box2D.BodyType.b2_dynamicBody;
 bodyDef.angularDamping = 0.9;
 
-const fixDef = new Box2D.b2FixtureDef;
+const fixDef = new Box2D.FixtureDef;
 fixDef.density = 0.1;
 fixDef.friction = Settings.defaultFriction;
 fixDef.restitution = Settings.defaultRestitution;
-fixDef.shape = new Box2D.b2CircleShape;
+fixDef.shape = new Box2D.CircleShape;
 
-const impulse = new Box2D.b2Vec2();
+const impulse = new Box2D.Vec2();
 
 export const init = ()=> {
 	fixDef.filter.categoryBits = game.editor.MASKBIT_EVERYTHING_BUT_US;
