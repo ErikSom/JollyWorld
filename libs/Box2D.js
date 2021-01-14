@@ -2018,7 +2018,7 @@
         // int32 iter = 0;
         let iter = 0;
         // while (iter < k_maxIters && b2Abs(v.Length() - sigma) > tolerance)
-        while (iter < k_maxIters && b2Abs(v.Length() - sigma) > tolerance) {
+        while (iter < k_maxIters && v.Length() - sigma > tolerance) {
             // DEBUG: b2Assert(simplex.m_count < 3);
             output.iterations += 1;
             // Support in direction -v (A - B)
@@ -2088,6 +2088,10 @@
             // Iteration count is equated to the number of support point calls.
             ++iter;
         }
+        if (iter === 0) {
+			// Initial overlap
+			return false;
+		}
         // Prepare output.
         const pointA = b2ShapeCast_s_pointA;
         const pointB = b2ShapeCast_s_pointB;
@@ -2731,9 +2735,9 @@
             stack.Push(this.m_root);
             while (stack.GetCount() > 0) {
                 const node = stack.Pop();
-                // if (node === null) {
-                //   continue;
-                // }
+                if (node === null) {
+                  continue;
+                }
                 if (node.aabb.TestOverlap(aabb)) {
                     if (node.IsLeaf()) {
                         const proceed = callback(node);
@@ -2742,23 +2746,21 @@
                         }
                     }
                     else {
-                        stack.Push(verify(node.child1));
-                        stack.Push(verify(node.child2));
+                        stack.Push(node.child1);
+                        stack.Push(node.child2);
                     }
                 }
             }
         }
         QueryPoint(point, callback) {
-            if (this.m_root === null) {
-                return;
-            }
+
             const stack = this.m_stack.Reset();
             stack.Push(this.m_root);
             while (stack.GetCount() > 0) {
                 const node = stack.Pop();
-                // if (node === null) {
-                //   continue;
-                // }
+                if (node === null) {
+                  continue;
+                }
                 if (node.aabb.TestContain(point)) {
                     if (node.IsLeaf()) {
                         const proceed = callback(node);
@@ -2774,9 +2776,7 @@
             }
         }
         RayCast(input, callback) {
-            if (this.m_root === null) {
-                return;
-            }
+
             const p1 = input.p1;
             const p2 = input.p2;
             const r = b2Vec2.SubVV(p2, p1, b2DynamicTree.s_r);
@@ -2800,9 +2800,9 @@
             stack.Push(this.m_root);
             while (stack.GetCount() > 0) {
                 const node = stack.Pop();
-                // if (node === null) {
-                //   continue;
-                // }
+                if (node === null) {
+                  continue;
+                }
                 if (!b2TestOverlapAABB(node.aabb, segmentAABB)) {
                     continue;
                 }
@@ -2836,8 +2836,8 @@
                     }
                 }
                 else {
-                    stack.Push(verify(node.child1));
-                    stack.Push(verify(node.child2));
+                    stack.Push(node.child1);
+                    stack.Push(node.child2);
                 }
             }
         }
