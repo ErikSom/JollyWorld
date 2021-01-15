@@ -6,9 +6,10 @@ import {
 
 class Beartrap extends PrefabManager.basePrefab {
     static BEARTRAP_RELEASE = 50;
-	static BEARTRAP_RELEASED = 100;
+	static BEARTRAP_RELEASED = 500;
 	static BEARTRAP_FORCE = 100000;
 	static BEARTRAP_SPEED = 50;
+	static LIGHT_COUNT = 8;
 
     constructor(target) {
         super(target);
@@ -39,11 +40,19 @@ class Beartrap extends PrefabManager.basePrefab {
 			light.visible = visible;
 		})
 	}
+	enableLights(progress){
+		progress = Math.max(0, Math.min(1.0, progress));
+		const lightsOn = Math.floor(Beartrap.LIGHT_COUNT * progress);
+		this.progressLights.forEach((light, index)=>{
+			light.visible = index<=lightsOn;
+		})
+	}
 
 	update(){
-        super.update();
+		super.update();
+		if(!this.ready)	this.enableLights(this.beartrapTimer/this.beartrapDelay);
         if (PrefabManager.timerReady(this.beartrapTimer, this.beartrapDelay, true)) {
-			console.log("ATTAAAAACK");
+			this.setLights(0xff0000, true);
             this.lookupObject["spikeLeft_joint"].EnableMotor(true);
             this.lookupObject["spikeLeft_joint"].SetMaxMotorTorque(Beartrap.BEARTRAP_FORCE);
 			this.lookupObject["spikeLeft_joint"].SetMotorSpeed(Beartrap.BEARTRAP_FORCE);
@@ -51,12 +60,11 @@ class Beartrap extends PrefabManager.basePrefab {
             this.lookupObject["spikeRight_joint"].SetMaxMotorTorque(Beartrap.BEARTRAP_FORCE);
             this.lookupObject["spikeRight_joint"].SetMotorSpeed(-Beartrap.BEARTRAP_FORCE);
         } else if (PrefabManager.timerReady(this.beartrapTimer, this.beartrapDelay + Beartrap.BEARTRAP_RELEASE, true)) {
-			console.log("STOP ATTAAAAACK");
 			this.lookupObject["spikeLeft_joint"].EnableMotor(false);
 			this.lookupObject["spikeRight_joint"].EnableMotor(false);
         } else if (PrefabManager.timerReady(this.beartrapTimer, this.beartrapDelay + Beartrap.BEARTRAP_RELEASED, false)) {
-			console.log("ATTAAAAACK REAADY");
-            this.ready = true;
+			this.ready = true;
+			this.setLights(0x00ff00, false);
         }
         this.beartrapTimer += game.editor.deltaTime;
 	}
@@ -67,7 +75,6 @@ class Beartrap extends PrefabManager.basePrefab {
         this.contactListener.BeginContact = function(contact) {
             if(contact.GetFixtureA().GetBody() === self.lever || contact.GetFixtureB().GetBody() === self.lever){
 				if (self.ready) {
-					console.log("check check");
 					self.beartrapTimer = -0.001;
 					self.ready = false;
 				}
