@@ -98,7 +98,15 @@ export function linePointDistance(x, y, x1, y1, x2, y2) {
 if(typeof Math.sgn == "undefined") {
     Math.sgn = function(x) { return x == 0 ? 0 : x > 0 ? 1 :-1; };
 }
-Math.signedFloor = function(x){ return x >= 0 ? Math.floor(x) : Math.ceil(x)};
+
+const pidouble = Math.PI*2;
+export const normalizePI = angle => {
+    while (angle <= -Math.PI) angle += pidouble;
+    while (angle > Math.PI) angle -= pidouble;
+    return angle;
+}
+
+export const clampAngleToRange = (angle, min, max) => Math.min(max, Math.max(min, normalizePI(angle)));
 
 let Vectors = {
         subtract 	: 	function(v1, v2) { return {x:v1.x - v2.x, y:v1.y - v2.y }; },

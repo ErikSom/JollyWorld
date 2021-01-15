@@ -7,7 +7,8 @@ import {
     Settings
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
-import { rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
+import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
+
 
 export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -71,7 +72,6 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
     update() {
         super.update();
-        console.log(this.lookupObject['thigh_left_joint'].GetJointAngle(), this.lookupObject['thigh_left_joint'].GetUpperLimit(), this.lookupObject['thigh_left_joint'].GetLowerLimit())
 
         if (PrefabManager.timerReady(this.eyesTimer, Humanoid.TIME_EYES_CLOSE, true) || !this.alive) {
             if (this.lookupObject.eye_left){
@@ -738,16 +738,6 @@ export class Humanoid extends PrefabManager.basePrefab {
         }
     }
 
-    correctLimbAngle(limb, angleDiff){
-        let angleDiffCircles = Math.signedFloor(angleDiff / Settings.pidouble);
-        if(angleDiff<0) angleDiffCircles -= 1;
-        const angleCorrection = angleDiffCircles*Settings.pidouble;
-        if(limb.mySprite.data.refName === 'shoulder_left') console.log('correction shoulder:', angleDiff, angleCorrection, angleDiffCircles);
-        if(limb.mySprite.data.refName === 'hand_left') console.log('correction hand:', angleDiff, angleCorrection, angleDiffCircles);
-        limb.SetAngle(limb.GetAngle()+angleCorrection);
-        return angleCorrection;
-    }
-
     patchJointAngles(){
         this.patchJointAngle([Humanoid.BODY_PARTS.HEAD, 'eye_left', 'eye_right']);
         this.patchJointAngle(['eye_left']);
@@ -770,36 +760,14 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.patchJointAngle([Humanoid.BODY_PARTS.FEET_RIGHT]);
     }
 
-    
-
     patchJointAngle(refNames){
         const joint = this.lookupObject[refNames[0]+'_joint'];
-
-        const normalizePI = angle => {
-            while (angle <= -Math.PI) angle += Settings.pidouble;
-            while (angle > Math.PI) angle -= Settings.pidouble;
-            return angle;
-        }
-        const clampAngleToRange = (angle, min, max) => Math.min(max, Math.max(min, normalizePI(angle)));
 
         const jointAngle = joint.GetJointAngle();
 
         const clampedAngle = clampAngleToRange(jointAngle,joint.GetLowerLimit(), joint.GetUpperLimit());
         const angleCorrection = clampedAngle-jointAngle;
         const rotationPoint = joint.GetAnchorA(new Box2D.b2Vec2());
-
-
-
-
-        if(refNames[0] === 'thigh_left'){
-            console.log('before:');
-            console.log('jointAngle', jointAngle)
-            console.log('clampedAngle', clampedAngle)
-            console.log('angleCorrection', angleCorrection)
-            console.log('joint.GetLowerLimit()', joint.GetLowerLimit())
-            console.log('joint.GetUpperLimit()', joint.GetUpperLimit())
-        }
-
 
         refNames.forEach(linkedBodyRef=> {
             const linkedBody =  this.lookupObject[linkedBodyRef];
@@ -811,20 +779,10 @@ export class Humanoid extends PrefabManager.basePrefab {
             const newX = rotationPoint.x + dl * Math.cos(newRot);
             const newY = rotationPoint.y + dl * Math.sin(newRot);
 
-            console.log(newRot, newX, linkedBody.GetPosition().x, newY, linkedBody.GetPosition().y, angleCorrection);
             linkedBody.GetPosition().x = newX;
             linkedBody.GetPosition().y = newY;
             linkedBody.SetAngle(linkedBody.GetAngle()-angleCorrection);
         });
-
-        if(refNames[0] === 'thigh_left'){
-            console.log('after:');
-            console.log('jointAngle', joint.GetJointAngle())
-            console.log('clampedAngle', clampedAngle)
-            console.log('angleCorrection', angleCorrection)
-            console.log('joint.GetLowerLimit()', joint.GetLowerLimit())
-            console.log('joint.GetUpperLimit()', joint.GetUpperLimit())
-        }
     };
 
     positionLimb(limb, x, y){
@@ -917,21 +875,6 @@ export class Humanoid extends PrefabManager.basePrefab {
             upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
             upperPart.SetAngle(angle+Settings.pihalve);
 
-            // const bodyAngle = this.lookupObject[Humanoid.BODY_PARTS.BODY].GetAngle();
-            // const angleDiffUpper = bodyAngle - upperPart.GetAngle();
-
-            // if(Math.abs(angleDiffUpper) > Settings.pihalve){
-            //     const angleCorrection = this.correctLimbAngle(upperPart, angleDiffUpper);
-
-            //     if(upperPart === this.lookupObject[Humanoid.BODY_PARTS.HEAD]){
-            //         eyeObjects.forEach(key => {
-            //             const eyeObject = this.lookupObject[key];
-            //             if(eyeObject.SetAngle){
-            //                 eyeObject.SetAngle(eyeObject.GetAngle()+angleCorrection);
-            //             }
-            //         });
-            //     }
-            // }
         }else{
             // IK position
             const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
@@ -977,23 +920,6 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
             endPart.SetAngle(lowerAngle-Settings.pihalve);
-
-            // const bodyAngle = this.lookupObject[Humanoid.BODY_PARTS.BODY].GetAngle();
-            // const angleDiffUpper = bodyAngle - upperPart.GetAngle();
-
-            // if(Math.abs(angleDiffUpper) > Settings.pihalve){
-            //     this.correctLimbAngle(upperPart, angleDiffUpper);
-            // }
-
-            // const angleDiffLower = bodyAngle - lowerPart.GetAngle();
-            // if(Math.abs(angleDiffLower) > Settings.pihalve){
-            //     this.correctLimbAngle(lowerPart, angleDiffLower);
-            // }
-
-            // const angleDiffEnd = lowerPart.GetAngle() - endPart.GetAngle();
-            // if(Math.abs(angleDiffEnd) > Settings.pihalve){
-            //     this.correctLimbAngle(endPart, angleDiffEnd);
-            // }
         }
     }
 }
