@@ -3575,7 +3575,8 @@ const _B2dEditor = function () {
 					var graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 					graphicObject.colorFill = ui.editorGUI.editData.colorFill;
 					graphicObject.colorLine = ui.editorGUI.editData.colorLine;
-					graphicObject.transparany = ui.editorGUI.editData.transparancy;
+					graphicObject.transparancy = ui.editorGUI.editData.transparancy;
+					graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
 					this.buildGraphicFromObj(graphicObject);
 				}
 				this.activeVertices = [];
