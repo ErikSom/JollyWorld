@@ -19819,7 +19819,7 @@
         /// Destroy a joint. This may cause the connected bodies to begin colliding.
         /// @warning This function is locked during callbacks.
         DestroyJoint(j) {
-            if(j.destroyed) return;
+            if(!j || j.destroyed) return;
             if(j.grabJoint){
                 this.DestroyJoint(j.grabJoint);
                 delete j.grabJoint;

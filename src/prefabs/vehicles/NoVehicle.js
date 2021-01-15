@@ -55,7 +55,6 @@ export class NoVehicle extends BaseVehicle {
         this.character.attachedToVehicle = false;
     }
     patchJoints(){
-        console.log("Patching joints");
         const calculateJointDistance = (joint1, joint2, joint3) =>{
             let length = 0;
             length += joint1.Clone().SelfSub(joint2).Length();
