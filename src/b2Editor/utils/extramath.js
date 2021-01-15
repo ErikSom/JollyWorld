@@ -108,6 +108,13 @@ export const normalizePI = angle => {
 
 export const clampAngleToRange = (angle, min, max) => Math.min(max, Math.max(min, normalizePI(angle)));
 
+export const angleDifference = ( angle1, angle2 ) =>
+{
+    const diff = ( angle2 - angle1 + Math.PI ) % pidouble - Math.PI;
+    return diff < -Math.PI ? diff + pidouble : diff;
+}
+
+
 let Vectors = {
         subtract 	: 	function(v1, v2) { return {x:v1.x - v2.x, y:v1.y - v2.y }; },
         dotProduct	: 	function(v1, v2) { return (v1.x * v2.x)  + (v1.y * v2.y); },

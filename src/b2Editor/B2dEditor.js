@@ -13,7 +13,8 @@ import {
 	isConvex,
 	linePointDistance,
 	distanceFromCurve,
-	nearestPointOnCurve
+	nearestPointOnCurve,
+	angleDifference
 } from './utils/extramath';
 
 import {
@@ -2702,10 +2703,30 @@ const _B2dEditor = function () {
 
 
 				}else if (this.selectedTool == this.tool_ART) {
-					this.activeVertices.push({
-						x: this.mousePosWorld.x,
-						y: this.mousePosWorld.y
-					});
+
+					const camera = B2dEditor.container.camera || B2dEditor.container;
+
+					let canPlace = true;
+
+					const previousVertice = this.activeVertices[this.activeVertices.length-1];
+
+					if(previousVertice){
+						const dx = this.mousePosWorld.x-previousVertice.x;
+						const dy = this.mousePosWorld.y-previousVertice.y;
+						const dl = Math.sqrt(dx*dx + dy*dy);
+						if(dl < Settings.minimumArtToolMovement/camera.scale.x){
+							canPlace = false;
+						}
+					}
+
+					if(canPlace){
+						this.activeVertices.push({
+							x: this.mousePosWorld.x,
+							y: this.mousePosWorld.y
+						});
+					}
+					this.preOptimizeArtVertices();
+
 					if (this.activeVertices.length > editorSettings.maxVertices) this.activeVertices.shift();
 				}else if(this.selectedTool === this.tool_VERTICEEDITING){
 					if(this.verticeEditingSprite.selectedVertice){
@@ -5221,9 +5242,27 @@ const _B2dEditor = function () {
 				}
 			}
 		}
+	}
 
+	this.preOptimizeArtVertices = function(){
+		if(this.activeVertices.length>2){
+			const p1 = this.activeVertices[this.activeVertices.length-3];
+			const p2 = this.activeVertices[this.activeVertices.length-2];
+			const p3 = this.activeVertices[this.activeVertices.length-1];
 
+			const s1dx = p2.x-p1.x;
+			const s1dy = p2.y-p1.y;
+			const s1a = Math.atan2(s1dy, s1dx);
 
+			const s2dx = p3.x-p2.x;
+			const s2dy = p3.y-p2.y;
+			const s2a = Math.atan2(s2dy, s2dx);
+
+			if(Math.abs(angleDifference(s1a, s2a)) < Settings.minimumArtToolAngle){
+				this.activeVertices.splice(this.activeVertices.length-2, 1);
+			}
+
+		}
 	}
 
 	this.checkVerticeDrawingHasErrors = function () {
