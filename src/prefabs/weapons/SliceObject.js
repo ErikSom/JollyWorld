@@ -4,7 +4,7 @@ import {
     game
 } from "../../Game";
 
-import {Character} from '../humanoids/Character'
+import {Humanoid} from '../humanoids/Humanoid'
  
 
 export class SliceObject extends PrefabManager.basePrefab {
@@ -55,7 +55,7 @@ export class SliceObject extends PrefabManager.basePrefab {
                 if(otherBody.isFlesh){
                     const refName = otherBody?.mySprite?.data?.refName;
                     let damage = 30;
-                    if(refName === Character.BODY_PARTS.HEAD || refName === Character.BODY_PARTS.BODY){
+                    if(refName === Humanoid.BODY_PARTS.HEAD || refName === Humanoid.BODY_PARTS.BODY){
                         damage = 1000;
                     }
                     const characterClass = game.editor.retrieveSubClassFromBody(otherBody);
