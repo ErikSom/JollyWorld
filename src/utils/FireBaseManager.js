@@ -580,7 +580,7 @@ function FireBaseManager() {
                     sortedLevelList.push(level);
                 });
 
-                if(filter.by === game.ui.FILTER_BY_NEWEST){
+                if(filter.by === game.ui.FILTER_BY_NEWEST || filter.by === game.ui.FILTER_BY_FEATURED){
                     sortedLevelList.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? 1 : -1);
                 }else if(filter.by === game.ui.FILTER_BY_OLDEST){
                     sortedLevelList.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? -1 : 1);
