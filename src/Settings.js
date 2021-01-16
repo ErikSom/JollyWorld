@@ -65,6 +65,7 @@ export var Settings = {
         confirm:'Yes!',
         decline:'NOPE!',
         newGradient:'-new gradient-',
+        error_message:'A CRITICAL ERROR HAS OCCURRED, PLEASE COPY ALL THIS TEXT IN THE #BUGS CHANNEL OF THE JOLLY WORLD DISCORD INCLUDING A BRIEF EXPLANATION OF WHAT HAPPENED, REFRESH THE PAGE AFTERWARDS:'
     },
     jollyDataPrefix:window.atob('PGpvbGx5RGF0YS0='),
 
