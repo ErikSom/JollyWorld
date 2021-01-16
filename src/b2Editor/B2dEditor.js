@@ -1204,50 +1204,51 @@ const _B2dEditor = function () {
 				break;
 		}
 
-		const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
-		const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
+		if(this.selectedPrefabs.length === 0){
+			const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
+			const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
 
-		if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
-			
-			let canGroup = true;
-			if(hasAnimation && hasOthers) canGroup = false; // we cant group when we have mixed animations and other graphics
-			if(canGroup && hasAnimation && this.selectedTextures.length > 1) canGroup = false; // we cant group multiple animations
+			if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
+				let canGroup = true;
+				if(hasAnimation && hasOthers) canGroup = false; // we cant group when we have mixed animations and other graphics
+				if(canGroup && hasAnimation && this.selectedTextures.length > 1) canGroup = false; // we cant group multiple animations
 
-			if(canGroup){
-				ui.editorGUI.editData.groupObjects = () => {
-					self.groupObjects();
-				};
-				controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
-			}
-		} else {
-			if (this.selectedPhysicsBodies.length == 1) {
-				if (this.selectedPhysicsBodies[0].myTexture || (Array.isArray(this.selectedPhysicsBodies[0].mySprite.data.density) && this.selectedPhysicsBodies[0].mySprite.data.density.length>1)) {
-					ui.editorGUI.editData.ungroupObjects = () => {
-						self.ungroupObjects();
+				if(canGroup){
+					ui.editorGUI.editData.groupObjects = () => {
+						self.groupObjects();
 					};
-					controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+					controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
 				}
-			} else if (this.selectedTextures.length == 1) {
-				if (this.selectedTextures[0].data.type == this.object_GRAPHICGROUP) {
-					ui.editorGUI.editData.ungroupObjects = () => {
-						self.ungroupObjects();
-					};
-					controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
-				}else if (this.selectedTextures[0].data.type == this.object_ANIMATIONGROUP) {
-					ui.editorGUI.editData.breakAnimation = () => {
-						self.ungroupObjects();
-					};
-					controller = targetFolder.add(ui.editorGUI.editData, "breakAnimation").name('Break Animation');
+			} else {
+				if (this.selectedPhysicsBodies.length == 1) {
+					if (this.selectedPhysicsBodies[0].myTexture || (Array.isArray(this.selectedPhysicsBodies[0].mySprite.data.density) && this.selectedPhysicsBodies[0].mySprite.data.density.length>1)) {
+						ui.editorGUI.editData.ungroupObjects = () => {
+							self.ungroupObjects();
+						};
+						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+					}
+				} else if (this.selectedTextures.length == 1) {
+					if (this.selectedTextures[0].data.type == this.object_GRAPHICGROUP) {
+						ui.editorGUI.editData.ungroupObjects = () => {
+							self.ungroupObjects();
+						};
+						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+					}else if (this.selectedTextures[0].data.type == this.object_ANIMATIONGROUP) {
+						ui.editorGUI.editData.breakAnimation = () => {
+							self.ungroupObjects();
+						};
+						controller = targetFolder.add(ui.editorGUI.editData, "breakAnimation").name('Break Animation');
+					}
 				}
 			}
-		}
 
-		if(this.selectedPhysicsBodies.length === 0 && this.selectedTextures.length > 1){
-			if(!hasAnimation){
-				ui.editorGUI.editData.animateObjects = () => {
-					self.createAnimationGroup();
-				};
-				controller = targetFolder.add(ui.editorGUI.editData, "animateObjects").name('Create Animation');
+			if(this.selectedPhysicsBodies.length === 0 && this.selectedTextures.length > 1){
+				if(!hasAnimation){
+					ui.editorGUI.editData.animateObjects = () => {
+						self.createAnimationGroup();
+					};
+					controller = targetFolder.add(ui.editorGUI.editData, "animateObjects").name('Create Animation');
+				}
 			}
 		}
 
