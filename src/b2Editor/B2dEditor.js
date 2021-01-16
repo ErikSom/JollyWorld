@@ -6647,7 +6647,6 @@ const _B2dEditor = function () {
 						if(joint.m_localCenterA !== undefined) joint.m_localCenterA.x *= -1;
 						if(joint.m_localCenterB !== undefined) joint.m_localCenterB.x *= -1;
 
-
 						if(joint.m_lowerAngle !== undefined && joint.m_upperAngle !== undefined) {
 							const oldLower = joint.m_lowerAngle;
 							joint.m_lowerAngle = -joint.m_upperAngle;
@@ -6664,6 +6663,13 @@ const _B2dEditor = function () {
 				// sprite or joint
 				object.scale.x *= -1;
 
+				if(object.data.type === this.object_JOINT){
+					if(object.data.lowerAngle !== undefined && object.data.upperAngle !== undefined) {
+						const oldLower = object.data.lowerAngle;
+						object.data.lowerAngle = -object.data.upperAngle;
+						object.data.upperAngle = -oldLower;
+					}
+				}
 
 				const objectAngleDiff = centerObject.GetAngle()-object.rotation;
 				const reflectedAngle = centerObject.GetAngle()+objectAngleDiff

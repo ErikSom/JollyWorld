@@ -195,12 +195,12 @@ PrefabManager.prefabLibrary.NoVehicle = {
 }
 
 
-const stopCustomBehaviour = () => {
+export const stopCustomBehaviour = () => {
     game.editor.customPrefabMouseDown = null;
     game.editor.customPrefabMouseMove = null;
     game.editor.customDebugDraw = null;
 }
-const setPositionLimb = (prefab, limb) => {
+export const setPositionLimb = (prefab, limb) => {
     let x = game.editor.mousePosWorld.x - prefab.x / game.editor.PTM;
     let y = game.editor.mousePosWorld.y - prefab.y / game.editor.PTM;
     const l = Math.sqrt(x*x+y*y);
@@ -215,7 +215,7 @@ const setPositionLimb = (prefab, limb) => {
     prefab.settings.limbs[limb] = [x, y];
     prefab.class.positionLimb(limb);
 }
-const startPositioningLimb = (prefab, limb) =>{
+export const startPositioningLimb = (prefab, limb) =>{
     game.editor.customPrefabMouseDown = ()=>{
         setPositionLimb(prefab, limb);
         stopCustomBehaviour();
@@ -229,7 +229,7 @@ const startPositioningLimb = (prefab, limb) =>{
 
 // Joint behaviour
 
-const tryAndAddJoint = prefab => {
+export const tryAndAddJoint = prefab => {
     if(prefab.class.jointTarget && prefab.class.jointTargetConnection){
 
         const editor = game.editor;
@@ -253,7 +253,7 @@ const tryAndAddJoint = prefab => {
     }
 }
 
-const drawJointAdding = prefab => {
+export const drawJointAdding = prefab => {
 
     const bodyObject = prefab.class.lookupObject[prefab.class.jointTarget];
     const sprite = bodyObject.mySprite ? bodyObject.mySprite : bodyObject;
@@ -279,7 +279,7 @@ const drawJointAdding = prefab => {
 
 }
 
-const startAddingJoint = prefab => {
+export const startAddingJoint = prefab => {
     if(!prefab.class.jointTarget) prefab.class.jointTarget = 'body';
     game.editor.customPrefabMouseDown = ()=>{
         tryAndAddJoint(prefab);

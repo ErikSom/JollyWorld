@@ -838,9 +838,9 @@ export const containsTargetType = function (targetTrigger, body) {
         case triggerTargetType.mainCharacter:
             return body.mainCharacter;
         case triggerTargetType.anyCharacter:
-            return body.mainCharacter; //TODO
+            return body.isCharacter; //TODO
         case triggerTargetType.anyButMainCharacter:
-            return !body.mainCharacter;
+            return !body.mainCharacter && body.isCharacter;
         case triggerTargetType.allObjects:
             return true;
         case triggerTargetType.attachedTargetsOnly:

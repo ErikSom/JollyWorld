@@ -83,6 +83,26 @@ export class Character extends Humanoid {
             this.vehicleJoints.push(joint);
         }
     }
+    doCollisionUpdate(update) {
+        super.doCollisionUpdate(update);
+        //Destroy connected joints
+        if(!this.mainPrefabClass.destroyConnectedJoints[update.target]) return;
+        this.mainPrefabClass.destroyConnectedJoints[update.target].forEach((targetJointName) => {
+            if (targetJointName instanceof String || typeof(targetJointName) === 'string') {
+                if (this.lookupObject[targetJointName]) {
+                    game.world.DestroyJoint(this.lookupObject[targetJointName]);
+                    delete this.lookupObject[targetJointName];
+                }
+            } else if (!this.lookupObject[targetJointName.ifno]) {
+                targetJointName.destroy.forEach((connectedJointName) => {
+                    if (this.lookupObject[connectedJointName]) {
+                        game.world.DestroyJoint(this.lookupObject[connectedJointName]);
+                        delete this.lookupObject[connectedJointName];
+                    }
+                });
+            }
+        });
+    }
 
     detachFromVehicle(force) {
         if (!force) force = 0;

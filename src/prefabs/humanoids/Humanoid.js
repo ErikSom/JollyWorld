@@ -14,7 +14,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
     static TIME_EYES_OPEN = 3100;
 
-    static JSON_ADULT = '{"objects":[[0,0.493,-0.16,-0.052,".character#Humanoid , .flesh","thigh_left",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false],[0,0.69,1.839,-0.07,".character#Humanoid , .flesh","leg_left",1,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false],[1,14.51,-4.496,-0.052,"","",2,"Normal_Thigh0000",0,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,0.819,3.004,0.157,".character#Humanoid , .flesh","feet_left",3,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false],[1,20.501,55.184,-0.07,"","",4,"Normal_Leg0000",1,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,17.076,26.488,-0.541,".character#Humanoid","leg_left_joint",5,1,0,0,false,false,1,10,true,0,-149,0,0,0,0],[1,25.315,88.801,0.157,"","",6,"Normal_Feet0000",3,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,20.37,82.427,-0.541,".character#Humanoid","feet_left_joint",7,3,1,0,false,false,1,10,true,0,0,0,0,0,0],[0,0.625,-3.379,-0.07,".character#Humanoid , .flesh","shoulder_left",8,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false],[0,0.891,-1.872,-0.297,".character#Humanoid , .flesh","arm_left",9,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false],[1,19.321,-101.318,-0.07,"","",10,"Normal_Shoulder0000",8,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,26.976,-55.992,-0.297,"","",11,"Normal_Arm0000",9,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,21.554,-77.722,-0.262,".character#Humanoid","arm_left_joint",12,9,8,0,false,false,1,10,true,152,0,0,0,0,0],[0,1.011,-1.008,-0.14,".character#Humanoid , .flesh","hand_left",13,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false],[1,28.54,-30.404,-0.14,"","",14,"Normal_Hand0000",13,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,33.38,-38.235,1.361,".character#Humanoid","hand_left_joint",15,13,9,0,false,false,1,10,true,60,-60,0,0,0,0],[0,0.242,-1.327,-0.262,".character#Humanoid , .flesh","belly",16,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[14.181],"",[1],true,false],[0,0.435,-5.676,-0.262,".character#Humanoid , .flesh","head",17,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[30.393],"",[1],true,false],[0,0.363,-3.122,0.087,".character#Humanoid , .flesh","body",18,["#999999"],["#000"],[0],false,true,[[{"x":-0.537,"y":1.202},{"x":-0.432,"y":-1.37},{"x":-0.15,"y":-1.828},{"x":0.132,"y":-1.793},{"x":0.555,"y":-1.123},{"x":0.555,"y":1.308},{"x":0.097,"y":1.801},{"x":-0.22,"y":1.801}]],[1],7,[null],"",[1],true,false],[1,8.574,-48.458,-0.062,"","",19,"Normal_Belly0000",16,8.747,1.158,-0.2,false,"#FFFFFF",1,1,1,0,0,0,true],[2,14.945,-32.663,-0.262,".character#Humanoid","thigh_left_joint",20,0,16,0,false,false,1,10,true,142,-16,0,0,0,0],[1,12.017,-97.674,0.087,"","",21,"Normal_Core0000",18,4.169,1.384,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,17.364,-124.623,-0.262,".character#Humanoid","shoulder_left_joint",22,8,18,0,false,false,1,10,true,180,-19,0,0,0,0],[1,14.546,-172.869,-0.262,"","",23,"Normal_Head_Idle0000",17,2.99,0.785,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,16.962,-142.453,-0.262,".character#Humanoid","head_joint",24,17,18,0,false,false,1,10,true,58,-64,0,0,0,0],[0,0.295,-0.114,0,".character#Humanoid , .flesh","thigh_right",25,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false],[0,0.363,1.854,-0.052,".character#Humanoid , .flesh","leg_right",26,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false],[0,0.593,-5.817,-0.262,".character#Humanoid","eye_left",27,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false],[1,8.555,-3.131,0,"","",28,"Normal_Thigh0000",25,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,10.691,55.63,-0.052,"","",29,"Normal_Leg0000",26,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,17.815,-175.07,-0.262,"","",30,"Normal_Eye0000",27,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,9.301,28.531,-0.262,".character#Humanoid","leg_right_joint",31,26,25,0,false,false,1,10,true,0,-149,0,0,0,0],[0,0.584,3.008,0.017,".character#Humanoid , .flesh","feet_right",32,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false],[1,18.073,88.83,0.017,"","",33,"Normal_Feet0000",32,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,11.84,83.108,-0.436,".character#Humanoid","feet_right_joint",34,32,26,0,false,false,1,10,true,0,0,0,0,0,0],[0,0.503,-3.206,-0.087,".character#Humanoid , .flesh","shoulder_right",35,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false],[0,0.718,-1.697,-0.175,".character#Humanoid , .flesh","arm_right",36,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false],[0,1.257,-5.985,-0.262,".character#Humanoid","eye_right",37,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false],[1,37.735,-180.11,-0.262,"","",38,"Normal_Eye0000",37,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,37.783,-179.095,-0.262,".character#Humanoid","eye_right_joint",39,37,17,0,false,false,1,10,true,0,0,0,0,0,0],[1,15.661,-96.138,-0.087,"","",40,"Normal_Shoulder0000",35,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,21.764,-50.714,-0.175,"","",41,"Normal_Arm0000",36,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,17.681,-71.775,-0.262,".character#Humanoid","arm_right_joint",42,36,35,0,false,false,1,10,true,152,0,0,0,0,0],[0,0.71,-0.803,-0.209,".character#Humanoid , .flesh","hand_right",43,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false],[1,19.502,-24.131,-0.209,"","",44,"Normal_Hand0000",43,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,23.964,-31.57,1.536,".character#Humanoid","hand_right_joint",45,43,36,0,false,false,1,10,true,60,-60,0,0,0,0],[2,13.241,-118.741,-0.262,".character#Humanoid","shoulder_right_joint",46,35,18,0,false,false,1,10,true,180,-19,0,0,0,0],[2,17.537,-174.697,-0.262,".character#Humanoid","eye_left_joint",47,27,17,0,false,false,1,10,true,0,0,0,0,0,0],[2,7.628,-45.876,-0.262,".character#Humanoid","belly_joint",48,18,16,0,false,false,1,10,true,10,-10,0,0,0,0],[2,8.388,-31.358,-0.262,".character#Humanoid","thigh_right_joint",49,25,16,0,false,false,1,10,true,142,-16,0,0,0,0]]}';
+    static JSON_ADULT = '{"objects":[[0,-0.003,1.402,-0.139,".character#Humanoid , .flesh","thigh_left",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.368,3.376,-0.157,".character#Humanoid , .flesh","leg_left",1,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,-0.336,42.377,-0.139,"","",2,"Normal_Thigh0000",0,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,0.598,4.525,0.07,".character#Humanoid , .flesh","feet_left",3,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,10.834,101.307,-0.157,"","",4,"Normal_Leg0000",1,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,4.923,73.022,-0.628,".character#Humanoid","leg_left_joint",5,1,0,0,false,false,1,10,true,0,-149,0,0,0,0],[1,18.558,134.377,0.07,"","",6,"Normal_Feet0000",3,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,13.08,128.461,-0.628,".character#Humanoid","feet_left_joint",7,3,1,0,false,false,1,10,true,0,0,0,0,0,0],[0,-0.152,-1.817,-0.157,".character#Humanoid , .flesh","shoulder_left",8,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.244,-0.339,-0.384,".character#Humanoid , .flesh","arm_left",9,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,-3.983,-54.496,-0.157,"","",10,"Normal_Shoulder0000",8,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,7.594,-10.01,-0.384,"","",11,"Normal_Arm0000",9,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,0.302,-31.182,-0.349,".character#Humanoid","arm_left_joint",12,9,8,0,false,false,1,10,true,152,0,0,0,0,0],[0,0.439,0.512,-0.227,".character#Humanoid , .flesh","hand_left",13,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false,false,[0.5],[0.2]],[1,11.382,15.344,-0.227,"","",14,"Normal_Hand0000",13,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,15.524,7.124,1.274,".character#Humanoid","hand_left_joint",15,13,9,0,false,false,1,10,true,60,-60,0,0,0,0],[0,-0.355,0.261,-0.349,".character#Humanoid , .flesh","belly",16,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[14.181],"",[1],true,false,false,[0.5],[0.2]],[0,-0.541,-4.088,-0.349,".character#Humanoid , .flesh","head",17,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[30.393],"",[1],true,false,false,[0.5],[0.2]],[0,-0.39,-1.538,0,".character#Humanoid , .flesh","body",18,["#999999"],["#000"],[0],false,true,[[{"x":-0.537,"y":1.202},{"x":-0.432,"y":-1.37},{"x":-0.15,"y":-1.828},{"x":0.132,"y":-1.793},{"x":0.555,"y":-1.123},{"x":0.555,"y":1.308},{"x":0.097,"y":1.801},{"x":-0.22,"y":1.801}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,-10.081,-0.9,-0.149,"","",19,"Normal_Belly0000",16,8.747,1.158,-0.2,false,"#FFFFFF",1,1,1,0,0,0,true],[2,-2.355,14.282,-0.349,".character#Humanoid","thigh_left_joint",20,0,16,0,false,false,1,10,true,142,-16,0,0,0,0],[1,-10.941,-50.229,0,"","",21,"Normal_Core0000",18,4.169,1.384,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-7.96,-77.539,-0.349,".character#Humanoid","shoulder_left_joint",22,8,18,0,false,false,1,10,true,180,-19,0,0,0,0],[1,-14.976,-125.359,-0.349,"","",23,"Normal_Head_Idle0000",17,2.99,0.785,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-9.914,-95.266,-0.349,".character#Humanoid","head_joint",24,17,18,0,false,false,1,10,true,58,-64,0,0,0,0],[0,-0.196,1.465,-0.087,".character#Humanoid , .flesh","thigh_right",25,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.043,3.419,-0.139,".character#Humanoid , .flesh","leg_right",26,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,-0.396,-4.243,-0.349,".character#Humanoid","eye_left",27,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false,false,[0.5],[0.2]],[1,-6.15,44.255,-0.087,"","",28,"Normal_Thigh0000",25,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,1.1,102.607,-0.139,"","",29,"Normal_Leg0000",26,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-11.91,-127.837,-0.349,"","",30,"Normal_Eye0000",27,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,-2.644,75.735,-0.349,".character#Humanoid","leg_right_joint",31,26,25,0,false,false,1,10,true,0,-149,0,0,0,0],[0,0.364,4.55,-0.07,".character#Humanoid , .flesh","feet_right",32,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,11.347,135.037,-0.07,"","",33,"Normal_Feet0000",32,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,4.642,129.883,-0.523,".character#Humanoid","feet_right_joint",34,32,26,0,false,false,1,10,true,0,0,0,0,0,0],[0,-0.258,-1.634,-0.174,".character#Humanoid , .flesh","shoulder_right",35,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.087,-0.149,-0.262,".character#Humanoid , .flesh","arm_right",36,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.251,-4.468,-0.349,".character#Humanoid","eye_right",37,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false,false,[0.5],[0.2]],[1,7.495,-134.594,-0.349,"","",38,"Normal_Eye0000",37,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,7.634,-133.584,-0.349,".character#Humanoid","eye_right_joint",39,37,17,0,false,false,1,10,true,0,0,0,0,0,0],[1,-7.176,-49.017,-0.174,"","",40,"Normal_Shoulder0000",35,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,2.862,-4.297,-0.262,"","",41,"Normal_Arm0000",36,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-3.038,-24.92,-0.349,".character#Humanoid","arm_right_joint",42,36,35,0,false,false,1,10,true,152,0,0,0,0,0],[0,0.157,0.742,-0.296,".character#Humanoid , .flesh","hand_right",43,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false,false,[0.5],[0.2]],[1,2.926,22.382,-0.296,"","",44,"Normal_Hand0000",43,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,6.725,14.584,1.449,".character#Humanoid","hand_right_joint",45,43,36,0,false,false,1,10,true,60,-60,0,0,0,0],[2,-11.554,-71.32,-0.349,".character#Humanoid","shoulder_right_joint",46,35,18,0,false,false,1,10,true,180,-19,0,0,0,0],[2,-12.152,-127.438,-0.349,".character#Humanoid","eye_left_joint",47,27,17,0,false,false,1,10,true,0,0,0,0,0,0],[2,-10.795,1.757,-0.349,".character#Humanoid","belly_joint",48,18,16,0,false,false,1,10,true,10,-10,0,0,0,0],[2,-8.773,16.153,-0.349,".character#Humanoid","thigh_right_joint",49,25,16,0,false,false,1,10,true,142,-16,0,0,0,0]]}';
 
     constructor(target) {
         super(target);
@@ -41,6 +41,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             if (body.mySprite.data.groups.indexOf('.flesh') >= 0) {
 
                 body.isFlesh = true;
+                body.isCharacter = true;
                 game.editor.prepareBodyForDecals(body);
 
                 var texture = body.myTexture;
@@ -242,167 +243,149 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
-            switch (update.type) {
-                case Humanoid.GORE_BASH:
+        switch (update.type) {
+            case Humanoid.GORE_BASH:
 
-                    var targetBody = this.lookupObject[update.target];
-                    if (targetBody) {
+                var targetBody = this.lookupObject[update.target];
+                if (targetBody) {
 
-                        for (var i = 1; i < this.collisionUpdates.length; i++) {
-                            if (this.collisionUpdates[i].target === update.target) {
-                                this.collisionUpdates.splice(i, 1);
-                                i--;
-                            }
+                    for (var i = 1; i < this.collisionUpdates.length; i++) {
+                        if (this.collisionUpdates[i].target === update.target) {
+                            this.collisionUpdates.splice(i, 1);
+                            i--;
                         }
-
-                        this.generateGoreParticles(update.target);
-                        emitterManager.playOnceEmitter("gorecloud", targetBody, targetBody.GetPosition());
-
-                        let connectedJointEdge = targetBody.GetJointList();
-                        while(connectedJointEdge){
-                            const joint = connectedJointEdge.joint;
-                            if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.addDecalToBody(joint.GetBodyA(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                            if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.addDecalToBody(joint.GetBodyB(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                            connectedJointEdge = connectedJointEdge.next;
-                        }
-
-                        // Fix bash damaage & also set snapped for objects that got detached from the player
-                        if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT].snapped = true;
-                            if(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].snapped = true;
-                        } else if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT].snapped = true;
-                            if(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].snapped = true;
-                        } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT].snapped = true;
-                            if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
-                        } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].snapped = true;
-                            if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
-                        } else if(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].snapped = true;
-                        } else if(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].snapped = true;
-                        } else if(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
-                        } else if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT] === targetBody){
-                            if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
-                        }
-
-                        this.dealDamage(30);
-                        if([this.lookupObject[Humanoid.BODY_PARTS.HEAD], this.lookupObject[Humanoid.BODY_PARTS.BODY]].includes(targetBody)){
-                            if(this.hat) this.hat.detach();
-                            this.dealDamage(1000);
-                        }
-
-                        if(targetBody.grabJoints){
-                            targetBody.grabJoints.forEach(grabJoint=>{
-                                game.world.DestroyJoint(grabJoint);
-                                delete targetBody.grabJoints;
-                            })
-                        }
-
-                        game.editor.deleteObjects([targetBody]);
-
                     }
 
-                    break;
-                case Humanoid.GORE_SNAP:
+                    this.generateGoreParticles(update.target);
+                    emitterManager.playOnceEmitter("gorecloud", targetBody, targetBody.GetPosition());
 
-                    const targetJoint = this.lookupObject[update.target + "_joint"];
-                    if (targetJoint) {
+                    let connectedJointEdge = targetBody.GetJointList();
+                    while(connectedJointEdge){
+                        const joint = connectedJointEdge.joint;
+                        if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.addDecalToBody(joint.GetBodyA(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+                        if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.addDecalToBody(joint.GetBodyB(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+                        connectedJointEdge = connectedJointEdge.next;
+                    }
 
-                        if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
+                    // Fix bash damaage & also set snapped for objects that got detached from the player
+                    if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT].snapped = true;
+                        if(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT].snapped = true;
+                        if(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT].snapped = true;
+                        if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].snapped = true;
+                        if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT] === targetBody){
+                        if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
+                    }
 
-                        let revoluteJointDef, joint;
+                    this.dealDamage(30);
+                    if([this.lookupObject[Humanoid.BODY_PARTS.HEAD], this.lookupObject[Humanoid.BODY_PARTS.BODY]].includes(targetBody)){
+                        if(this.hat) this.hat.detach();
+                        this.dealDamage(1000);
+                    }
 
-                        let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain"]]}'
-
-                        let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
-
-                        let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
-
-                        revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                        revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
-                        revoluteJointDef.collideConnected = false;
-                        joint = game.world.CreateJoint(revoluteJointDef);
-
-                        revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                        revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
-                        revoluteJointDef.collideConnected = false;
-                        joint = game.world.CreateJoint(revoluteJointDef);
-
-                        let ropeJointDef;
-
-                        ropeJointDef = new Box2D.b2RopeJointDef;
-                        ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
-                        ropeJointDef.maxLength = vainSize;
-
-                        joint = game.world.CreateJoint(ropeJointDef);
-
-                        [targetJoint.GetBodyA(), targetJoint.GetBodyB()].forEach(body => {
-                            if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT] === body){
-                                if(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT])this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT].snapped = true;
-                                if(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT])this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].snapped = true;
-                            } else if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT] === body){
-                                if(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT].snapped = true;
-                                if(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].snapped = true;
-                            } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT] === body){
-                                if(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT])this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT].snapped = true;
-                                if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT])this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
-                            } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT] === body){
-                                if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].snapped = true;
-                                if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
-                            }
+                    if(targetBody.grabJoints){
+                        targetBody.grabJoints.forEach(grabJoint=>{
+                            game.world.DestroyJoint(grabJoint);
+                            delete targetBody.grabJoints;
                         })
-                        //carve bodies
-
-                        if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                        if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-
-                        const targetBody = this.lookupObject[update.target];
-                        if(targetBody.grabJoints){
-                            targetBody.grabJoints.forEach(grabJoint=>{
-                                game.world.DestroyJoint(grabJoint);
-                                delete targetBody.grabJoints;
-                            })
-                        }
-
-
-                        game.world.DestroyJoint(targetJoint);
-                        delete this.lookupObject[update.target + "_joint"];
-
-                        //fix display positions:
-                        const swapBodies = vainBodies._bodies.concat().reverse();
-                        let tarSprite;
-                        const tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
-                        for (var i = 0; i < swapBodies.length; i++) {
-                            tarSprite = swapBodies[i].mySprite;
-                            tarSprite.parent.removeChild(tarSprite);
-                            this.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
-                        }
                     }
-                    break;
-            }
 
+                    game.editor.deleteObjects([targetBody]);
 
-        //Destroy connected joints
-        if(!this.mainPrefabClass.destroyConnectedJoints[update.target]) return;
-        this.mainPrefabClass.destroyConnectedJoints[update.target].forEach((targetJointName) => {
-            if (targetJointName instanceof String || typeof(targetJointName) === 'string') {
-                if (this.lookupObject[targetJointName]) {
-                    game.world.DestroyJoint(this.lookupObject[targetJointName]);
-                    delete this.lookupObject[targetJointName];
                 }
-            } else if (!this.lookupObject[targetJointName.ifno]) {
-                targetJointName.destroy.forEach((connectedJointName) => {
-                    if (this.lookupObject[connectedJointName]) {
-                        game.world.DestroyJoint(this.lookupObject[connectedJointName]);
-                        delete this.lookupObject[connectedJointName];
+
+                break;
+            case Humanoid.GORE_SNAP:
+
+                const targetJoint = this.lookupObject[update.target + "_joint"];
+                if (targetJoint) {
+
+                    if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
+
+                    let revoluteJointDef, joint;
+
+                    let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain"]]}'
+
+                    let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
+
+                    let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
+
+                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
+                    revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                    revoluteJointDef.collideConnected = false;
+                    joint = game.world.CreateJoint(revoluteJointDef);
+
+                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
+                    revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                    revoluteJointDef.collideConnected = false;
+                    joint = game.world.CreateJoint(revoluteJointDef);
+
+                    let ropeJointDef;
+
+                    ropeJointDef = new Box2D.b2RopeJointDef;
+                    ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                    ropeJointDef.maxLength = vainSize;
+
+                    joint = game.world.CreateJoint(ropeJointDef);
+
+                    [targetJoint.GetBodyA(), targetJoint.GetBodyB()].forEach(body => {
+                        if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT] === body){
+                            if(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT])this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT].snapped = true;
+                            if(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT])this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].snapped = true;
+                        } else if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT] === body){
+                            if(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT].snapped = true;
+                            if(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].snapped = true;
+                        } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT] === body){
+                            if(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT])this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT].snapped = true;
+                            if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT])this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
+                        } else if(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT] === body){
+                            if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].snapped = true;
+                            if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
+                        }
+                    })
+                    //carve bodies
+
+                    if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+                    if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+
+                    const targetBody = this.lookupObject[update.target];
+                    if(targetBody.grabJoints){
+                        targetBody.grabJoints.forEach(grabJoint=>{
+                            game.world.DestroyJoint(grabJoint);
+                            delete targetBody.grabJoints;
+                        })
                     }
-                });
-            }
-        });
+
+
+                    game.world.DestroyJoint(targetJoint);
+                    delete this.lookupObject[update.target + "_joint"];
+
+                    //fix display positions:
+                    const swapBodies = vainBodies._bodies.concat().reverse();
+                    let tarSprite;
+                    const tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
+                    for (var i = 0; i < swapBodies.length; i++) {
+                        tarSprite = swapBodies[i].mySprite;
+                        tarSprite.parent.removeChild(tarSprite);
+                        this.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
+                    }
+                }
+                break;
+        }
+
     }
     generateGoreParticles(targetBodyPart){
         let meatParticles = ["Gore_Meat", "Gore_Meat", "Gore_Meat"];
@@ -805,7 +788,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 lowerPart = this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT];
                 endJoint = this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT+"_joint"];
                 endPart = this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT];
-                invertAngle = false;
+                invertAngle = this.flipped;
             break;
             case Humanoid.BODY_PARTS.ARM_RIGHT:
                 baseJoint = this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT+"_joint"];
@@ -814,7 +797,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 lowerPart = this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT];
                 endJoint = this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT+"_joint"];
                 endPart = this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT];
-                invertAngle = false;
+                invertAngle = this.flipped;
             break;
             case Humanoid.BODY_PARTS.LEG_LEFT:
                 baseJoint = this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT+"_joint"];
@@ -823,7 +806,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 lowerPart = this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT];
                 endJoint = this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT+"_joint"];
                 endPart = this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT];
-                invertAngle = true;
+                invertAngle = !this.flipped;
             break;
             case Humanoid.BODY_PARTS.LEG_RIGHT:
                 baseJoint = this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT+"_joint"];
@@ -832,7 +815,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 lowerPart = this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT];
                 endJoint = this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT+"_joint"];
                 endPart = this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT];
-                invertAngle = true;
+                invertAngle = !this.flipped;
             break;
             case Humanoid.BODY_PARTS.HEAD:
                 baseJoint = this.lookupObject[Humanoid.BODY_PARTS.HEAD+"_joint"];
