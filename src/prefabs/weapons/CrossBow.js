@@ -28,6 +28,12 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.autoShoot = this.prefabObject.settings.autoShoot;
 		this.shouldShoot = false;
 
+		if(this.prefabObject.settings.isFixed){
+            this.crossbowBody.SetType(Box2D.b2BodyType.b2_staticBody);
+        }else{
+            this.crossbowBody.SetType(Box2D.b2BodyType.b2_dynamicBody);
+        }
+
 		this.reload();
 		super.init();
 	}
@@ -77,12 +83,14 @@ class CrossBow extends PrefabManager.basePrefab {
 }
 
 CrossBow.settings = Object.assign({}, CrossBow.settings, {
+    "isFixed": false,
     "reloadTime": 2,
     "shootDelay": 1,
 	"shootForce": 1500,
 	"autoShoot": false,
 });
 CrossBow.settingsOptions = Object.assign({}, CrossBow.settingsOptions, {
+	"isFixed": false,
     "reloadTime": {
         min: 0.0,
         max: 10.0,

@@ -9,6 +9,8 @@ class Arrow extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
 		this.dragConstant = 0.2;
+		this.lifeTime = 10000;
+        this.lifeTimer = 0;
     }
     init() {
 		this.arrowBody = this.lookupObject['arrowBody'];
@@ -81,8 +83,11 @@ class Arrow extends PrefabManager.basePrefab {
 				this.sticking = true;
 
 			}
-
 		}
+		if (PrefabManager.timerReady(this.lifeTimer, this.lifeTime, true)) {
+            this.destroy();
+        }
+        this.lifeTimer += game.editor.deltaTime;
 	}
 	initContactListener() {
         super.initContactListener();
