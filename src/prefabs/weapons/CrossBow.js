@@ -14,6 +14,7 @@ class CrossBow extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
 		this.isCrossBow = true;
+		this.flipped = false;
     }
     init() {
 		this.loaded = true;
@@ -37,6 +38,20 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.reload();
 		super.init();
 	}
+	flip(flipped){
+		if(this.flipped != flipped){
+			this.flipped = flipped;
+			game.editor.mirrorPrefab(this, 'body');
+		}
+	}
+	set(property, value) {
+		super.set(property, value);
+        switch (property) {
+            case 'isFlipped':
+                this.flip(value);
+                break;
+        }
+    }
 	update() {
 		super.update();
 		if(!this.loaded){
@@ -56,10 +71,10 @@ class CrossBow extends PrefabManager.basePrefab {
 	}
 	shoot() {
 
-		const pos = this.crossbowBody.GetPosition();
-		const angle = this.crossbowBody.GetAngle();
+		const pos = this.crossbowBody.GetPosition().Clone();
+		const angle = this.crossbowBody.GetAngle()+(this.flipped ? Math.PI : 0);
 		const offsetLength = 0.6;
-		const angleOffset = game.editor.PI2;
+		const angleOffset = game.editor.PI2 +(this.flipped ? Math.PI : 0);
 		pos.x -= offsetLength*Math.cos(angle+angleOffset);
 		pos.y -= offsetLength*Math.sin(angle+angleOffset);
 
@@ -83,7 +98,8 @@ class CrossBow extends PrefabManager.basePrefab {
 }
 
 CrossBow.settings = Object.assign({}, CrossBow.settings, {
-    "isFixed": false,
+	"isFixed": false,
+	"isFlipped":false,
     "reloadTime": 2,
     "shootDelay": 1,
 	"shootForce": 1500,
@@ -91,6 +107,7 @@ CrossBow.settings = Object.assign({}, CrossBow.settings, {
 });
 CrossBow.settingsOptions = Object.assign({}, CrossBow.settingsOptions, {
 	"isFixed": false,
+	"isFlipped": false,
     "reloadTime": {
         min: 0.0,
         max: 10.0,

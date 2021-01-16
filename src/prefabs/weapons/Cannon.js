@@ -15,6 +15,7 @@ class Cannon extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
 		this.isCannon = true;
+		this.flipped = false;
     }
     init() {
 		this.loaded = true;
@@ -41,6 +42,22 @@ class Cannon extends PrefabManager.basePrefab {
 		this.reload();
 		super.init();
 	}
+
+	set(property, value) {
+		super.set(property, value);
+        switch (property) {
+            case 'isFlipped':
+                this.flip(value);
+                break;
+        }
+    }
+
+	flip(flipped){
+		if(this.flipped != flipped){
+			this.flipped = flipped;
+			game.editor.mirrorPrefab(this, 'barrol');
+		}
+	}
 	update() {
 		if(this.destroyed) return;
 		super.update();
@@ -64,7 +81,7 @@ class Cannon extends PrefabManager.basePrefab {
 
 	getShootingPosition(){
 		const pos = this.cannonBody.GetPosition().Clone();
-		const angle = this.cannonBody.GetAngle();
+		const angle = this.cannonBody.GetAngle() + (this.flipped ? Math.PI : 0);
 		const offsetLength = 5.0;
 		const angleOffset = Math.PI;
 		pos.x -= offsetLength*Math.cos(angle+angleOffset);
@@ -88,7 +105,7 @@ class Cannon extends PrefabManager.basePrefab {
 		EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:75, point:pixiPoint});
         EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.shootForce/600, point:pixiPoint});
 
-		const angle = this.cannonBody.GetAngle();
+		const angle = this.cannonBody.GetAngle() + (this.flipped ? Math.PI : 0);
 		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'CannonBall', true);
 
 		const { lookupObject } = prefabData;
@@ -119,6 +136,7 @@ class Cannon extends PrefabManager.basePrefab {
 
 Cannon.settings = Object.assign({}, Cannon.settings, {
 	"isFixed": false,
+	"isFlipped": false,
     "reloadTime": 2,
     "shootDelay": 1,
 	"shootForce": 1500,
@@ -126,6 +144,7 @@ Cannon.settings = Object.assign({}, Cannon.settings, {
 });
 Cannon.settingsOptions = Object.assign({}, Cannon.settingsOptions, {
 	"isFixed": false,
+	"isFlipped": false,
     "reloadTime": {
         min: 0.0,
         max: 10.0,
@@ -145,7 +164,7 @@ Cannon.settingsOptions = Object.assign({}, Cannon.settingsOptions, {
 });
 
 PrefabManager.prefabLibrary.Cannon = {
-    json: '{"objects":[[0,0.479,-1.297,0,"cannon","barrol",0,["#999999","#999999"],["#000","#000"],[0,1,1],false,true,[[{"x":-1.545,"y":0},{"x":-1.545,"y":0}],[[{"x":-1.526,"y":-1.475},{"x":4.606,"y":-0.737},{"x":4.625,"y":0.737},{"x":-1.526,"y":1.475}]]],[1,0.1],0,[45.728,0],"",[1,1],true,false,false,[0.5,0.5],[0.2,0.2]],[1,41.577,-39.153,0,"","",1,"Cannon0000",0,27.218,0.009,0,false,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.965,0.094,0,"cannon","wheel",2,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[52.337],"",[1],true,false,false,[0.5],[0.2]],[1,-28.96,2.822,0,"","",3,"WoodWheel0000",2,0,0,0,false,"#FFFFFF",1,1,1,0,0,0,true],[2,-29.828,2.549,0,"","",4,2,0,0,false,false,1,10,false,0,0,0,0,0,0],[0,0.553,1.17,0,"cannon","extrawheel",5,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],5,[20.737],"",[1],true,false,false,[0.5],[0.2]],[2,15.23,34.769,0,"","",6,0,5,0,false,false,1,10,false,0,0,0,0,0,0]]}',
+    json: '{"objects":[[0,0.479,-1.297,0,"cannon","barrol",0,["#999999","#999999"],["#000","#000"],[0,1,1],false,true,[[{"x":-1.545,"y":0},{"x":-1.545,"y":0}],[[{"x":-1.526,"y":-1.475},{"x":4.606,"y":-0.737},{"x":4.625,"y":0.737},{"x":-1.526,"y":1.475}]]],[1,0.1],0,[45.728,0],"",[1,1],true,false,false,[0.5,0.5],[0.2,0.2]],[1,41.58,-39.154,0,"","",1,"Cannon0000",0,27.218,0.009,0,false,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.965,0.094,0,"cannon","wheel",2,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],0,[52.337],"",[1],true,false,false,[0.5],[0.2]],[1,-28.957,2.821,0,"","",3,"WoodWheel0000",2,0,0,0,false,"#FFFFFF",1,1,1,0,0,0,true],[2,-29.835,2.55,0,"cannon","wheel_joint",4,2,0,0,false,false,1,10,false,0,0,0,0,0,0],[0,0.553,1.17,0,"cannon","extrawheel",5,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],5,[20.737],"",[1],true,false,false,[0.5],[0.2]],[2,15.223,34.77,0,"cannon","extrawheel_joint",6,0,5,0,false,false,1,10,false,0,0,0,0,0,0]]}',
     class: Cannon,
     library: PrefabManager.LIBRARY_WEAPON,
 }
