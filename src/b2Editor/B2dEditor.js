@@ -240,10 +240,12 @@ const _B2dEditor = function () {
 
 				guiFunctionImg.onload = () => {
 					if(guiFunctionImg.width>guiFunctionImg.height){
+						let targetWidth = guiFunctionImg.width;
 						if(guiFunctionImg.width>maxImageWidth){
 							guiFunctionImg.style.width = `${maxImageWidth}px`;
+							targetWidth = maxImageWidth;
 						}
-						const scaleFactor = parseFloat(guiFunctionImg.style.width)/guiFunctionImg.width;
+						const scaleFactor = targetWidth/guiFunctionImg.width;
 						functionHeight = guiFunctionImg.height*scaleFactor+10;
 					}else{
 						if(guiFunctionImg.height>maxImageHeight){
