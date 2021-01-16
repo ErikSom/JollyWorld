@@ -6559,7 +6559,12 @@ const _B2dEditor = function () {
 	}
 
  	this.mirrorPrefab = function(prefabClass, centerObjectName){
-		const objects = [].concat(prefabClass.lookupObject._bodies, prefabClass.lookupObject._textures)
+		const objects = [].concat(prefabClass.lookupObject._bodies, prefabClass.lookupObject._textures);
+
+		prefabClass.lookupObject._joints.forEach(joint=>{
+			if(joint instanceof PIXI.Sprite) objects.push(joint);
+		})
+
 		const centerObject = prefabClass.lookupObject[centerObjectName];
 		const flippedJoints = [];
 		objects.forEach(object =>{
@@ -6578,14 +6583,13 @@ const _B2dEditor = function () {
 						shape.Set(vertices);
 					}else{
 						const position = shape.GetLocalPosition();
-						position.x *- 1;
+						position.x *= -1;
 						shape.SetLocalPosition(position);
 					}
 
 					fixture = fixture.GetNext();
 				}
-
-
+				object.ResetMassData();
 
 				if(object != centerObject){
 
@@ -6642,6 +6646,7 @@ const _B2dEditor = function () {
 						if(joint.m_localCenterA !== undefined) joint.m_localCenterA.x *= -1;
 						if(joint.m_localCenterB !== undefined) joint.m_localCenterB.x *= -1;
 
+
 						if(joint.m_lowerAngle !== undefined && joint.m_upperAngle !== undefined) {
 							const oldLower = joint.m_lowerAngle;
 							joint.m_lowerAngle = -joint.m_upperAngle;
@@ -6655,8 +6660,35 @@ const _B2dEditor = function () {
 				destroyJoints.forEach(joint => game.world.DestroyJoint(joint));
 
 			}else{
-				// sprite
+				// sprite or joint
 				object.scale.x *= -1;
+
+
+				const objectAngleDiff = centerObject.GetAngle()-object.rotation;
+				const reflectedAngle = centerObject.GetAngle()+objectAngleDiff
+				object.rotation = reflectedAngle;
+
+				const cdx = object.x-centerObject.GetPosition().x*Settings.PTM;
+				const cdy = object.y-centerObject.GetPosition().y*Settings.PTM;
+				const cda = Math.atan2(cdy, cdx);
+				const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
+
+				let reflectAngle = cda-centerObject.GetAngle();
+				let nx = - cdl * Math.cos(reflectAngle);
+				let ny = cdl * Math.sin(reflectAngle);
+
+				const na = Math.atan2(ny, nx);
+				const ndl = Math.sqrt(nx*nx + ny*ny);
+
+				reflectAngle = na+centerObject.GetAngle();
+
+				nx = centerObject.GetPosition().x * Settings.PTM + ndl * Math.cos(reflectAngle);
+				ny = centerObject.GetPosition().y * Settings.PTM + ndl * Math.sin(reflectAngle);
+
+				object.x = nx;
+				object.y = ny;
+
+
 			}
 		})
 	}
