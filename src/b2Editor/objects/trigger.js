@@ -87,7 +87,7 @@ export const doAction = function (actionData, target) {
                 if (target.data.prefabInstanceName) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
                 } else bodies = [target.myBody];
-                bodies.map(body => {
+                bodies.forEach(body => {
                     const a = actionData.direction * B2dEditor.DEG2RAD;
                     const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
@@ -559,7 +559,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 
     if(![triggerTargetType.click, triggerTargetType.keydown, triggerTargetType.keyup].includes(dataJoint.targetType)){
         var repeatTypes = Object.keys(triggerRepeatType);
-        repeatTypes.map(key => {
+        repeatTypes.forEach(key => {
             if (triggerRepeatType[key] == dataJoint.repeatType) {
                 ui.editorGUI.editData.repeatTypeDropDown = key;
             }

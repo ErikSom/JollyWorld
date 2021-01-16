@@ -841,7 +841,7 @@ function Game() {
                     this.cameraFocusObject = this.character.lookupObject.body;
 
                     var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
-                    bodies.map(body => {
+                    bodies.forEach(body => {
                         body.mainCharacter = true;
                     });
                     break;

@@ -35,7 +35,7 @@ export const toggleEnabled = ()=>{
 }
 export const setEnabled = (bool) => {
     if(enabled == bool) return;
-    container.children.map((child)=>{
+    container.children.forEach((child)=>{
         child.renderable = !bool;
         if(!bool) child._cullingCells = undefined;
         if(debugGraphics) debugGraphics.clear();
@@ -140,7 +140,7 @@ const placeGraphicInCells = function (graphic) {
 }
 export const removeGraphicFromCells = function (graphic) {
     if(!graphic._cullingCells) return;
-    graphic._cullingCells.map((cell) => {
+    graphic._cullingCells.forEach((cell) => {
         cellDictionary[cell] = cellDictionary[cell].filter(item => item !== graphic);
         if (cellDictionary[cell].length == settingsIndexCount && !cellDictionary[cell][0]) delete cellDictionary[cell];
     });

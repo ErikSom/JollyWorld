@@ -32,7 +32,7 @@ export const init = function () {
         type: 'explosion2_layer2',
         poolSize: 10
     }];
-    emitterPoolData.map((data) => {
+    emitterPoolData.forEach((data) => {
         for (let i = 0; i < data.poolSize; i++) getEmitter(data.type);
     })
     for (let i = 0; i < emitters.length; i++) {

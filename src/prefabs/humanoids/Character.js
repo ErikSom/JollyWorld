@@ -91,7 +91,7 @@ export class Character extends Humanoid {
         const vehicleJoints = this.mainPrefabClass.destroyConnectedJoints['head'];
 
         if(vehicleJoints){
-            vehicleJoints.map((jointName) => {
+            vehicleJoints.forEach((jointName) => {
                 if (this.lookupObject[jointName]) {
                     game.world.DestroyJoint(this.lookupObject[jointName]);
                     delete this.lookupObject[jointName];

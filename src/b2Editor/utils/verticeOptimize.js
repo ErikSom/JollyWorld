@@ -18,13 +18,13 @@ export const simplifyPath = function (vertices, smooth, zoom) {
         while ((!optimizedVertices || optimizedVertices.length > editorSettings.pathSimplificationMaxVertices) && iterations < maxIterations) {
             optimizedVertices = [];
             let path = new paper.Path({});
-            vertices.map((v) => {
+            vertices.forEach((v) => {
                 path.add(new paper.Point(v.x * precision, v.y * precision));
             });
             path.closed = true;
             path.simplify(editorSettings.pathSmoothTolerance + toleranceIncreaser);
             console.log(path);
-            path.segments.map((p) => {
+            path.segments.forEach((p) => {
                 optimizedVertices.push({
                     x: p.point.x / precision,
                     y: p.point.y / precision,

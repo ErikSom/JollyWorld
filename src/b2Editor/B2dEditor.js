@@ -3193,7 +3193,7 @@ const _B2dEditor = function () {
 						tarDepthIndexes.push(objects[i].mySprite.parent.getChildIndex(objects[i].myTexture));
 					}
 
-					if (objects[i].myJoints) objects[i].myJoints.map(joint => {
+					if (objects[i].myJoints) objects[i].myJoints.forEach(joint => {
 						if (!(objects.includes(joint))) {
 							depthArray.push(joint);
 							tarDepthIndexes.push(joint.parent.getChildIndex(joint));
@@ -3283,7 +3283,7 @@ const _B2dEditor = function () {
 			for (i = 0; i < jointArray.length; i++) {
 				const joint = jointArray[i];
 				const jointIndex = joint.parent.getChildIndex(joint);
-				joint.bodies.map(body => {
+				joint.bodies.forEach(body => {
 					if (body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite) > jointIndex) {
 						joint.parent.swapChildren(joint, body.mySprite);
 					}
@@ -5782,7 +5782,7 @@ const _B2dEditor = function () {
 			var graphicContainer = arr[i];
 
 			if (graphicContainer.data.type == this.object_GRAPHIC) innerGraphics.push(graphicContainer.data);
-			else graphicContainer.data.graphicObjects.map(g => {
+			else graphicContainer.data.graphicObjects.forEach(g => {
 				innerGraphics.push(this.parseArrObject(JSON.parse(g)));
 			});
 
@@ -5831,7 +5831,7 @@ const _B2dEditor = function () {
 				}
 			}
 
-			innerBodies.map(b => {
+			innerBodies.forEach(b => {
 				this.updateObject(b.mySprite, b.mySprite.data);
 			});
 
@@ -6792,7 +6792,7 @@ const _B2dEditor = function () {
 			x: 0,
 			y: 0
 		};
-		bodyObjects.map((body) => {
+		bodyObjects.forEach((body) => {
 			this.updateObject(body.mySprite, body.mySprite.data);
 			centerPoint.x += body.GetPosition().x;
 			centerPoint.y += body.GetPosition().y;
