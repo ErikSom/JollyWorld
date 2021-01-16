@@ -43,6 +43,7 @@ export const LIBRARY_MOVEMENT = "movement";
 export const LIBRARY_DECORATION = "decoration";
 export const LIBRARY_WEAPON = "weapon";
 export const LIBRARY_LEVEL = "level";
+export const LIBRARY_CHARACTERS = "characters";
 export const LIBRARY_BLUEPRINTS = "blueprints";
 
 export var prefabLibrary = {
@@ -87,3 +88,4 @@ importAll(require.context('./level', true, /\.js$/));
 importAll(require.context('./guns', true, /\.js$/));
 importAll(require.context('./blueprints', true, /\.js$/));
 importAll(require.context('./decoration', true, /\.js$/));
+importAll(require.context('./npc', true, /\.js$/));
