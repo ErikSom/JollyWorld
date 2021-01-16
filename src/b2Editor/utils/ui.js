@@ -2208,7 +2208,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
     textWrapper.classList.add('textWrapper');
 
     let textarea = document.createElement('textarea');
-    textarea.value = `A CRITICAL ERROR HAS OCCURRED, PLEASE COPY ALL THIS TEXT IN THE #BUGS CHANNEL OF THE JOLLY WORLD DISCORD, REFRESH THE PAGE AFTERWARDS: \n\n ${msg},\n ${url},\n ${lineNo},\n ${columnNo},\n ${error}`
+    textarea.value = `A CRITICAL ERROR HAS OCCURRED, PLEASE COPY ALL THIS TEXT IN THE #BUGS CHANNEL OF THE JOLLY WORLD DISCORD, REFRESH THE PAGE AFTERWARDS: \n\n ${msg},\n ${url},\n ${lineNo},\n ${columnNo},\n ${(error && error.stack) ? error.stack : ''}`
     textarea.style.width = '500px';
     textarea.style.height ='70vh';
     textWrapper.appendChild(textarea);
