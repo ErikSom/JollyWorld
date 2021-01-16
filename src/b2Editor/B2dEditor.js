@@ -2641,6 +2641,24 @@ const _B2dEditor = function () {
 					delete this.verticeEditingSprite.highlightVerticeIndex;
 				}
 
+			}else if(this.selectedTool == this.tool_SPECIALS){
+
+				const ignoreClickOnGUI = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI];
+				// detect mouse on gui
+				ignoreClickOnGUI.forEach( gui => {
+					if(gui && gui.domElement){
+						if(!gui.cachedBounds){
+							gui.cachedBounds = gui.domElement.getBoundingClientRect();
+						}
+						if(!(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
+							&& this.mouseDocumentPosPixel.y > gui.cachedBounds.y && this.mouseDocumentPosPixel.y < gui.cachedBounds.y+gui.cachedBounds.height)){
+							this.selectTool(this.tool_SELECT);
+							this.onMouseDown(evt);
+							return;
+						}
+					}
+				});
+
 			}
 
 		}
