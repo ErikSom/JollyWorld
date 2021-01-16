@@ -139,7 +139,7 @@ Cannon.settings = Object.assign({}, Cannon.settings, {
 	"isFlipped": false,
     "reloadTime": 2,
     "shootDelay": 1,
-	"shootForce": 1500,
+	"shootForce": 2000,
 	"autoShoot": false,
 });
 Cannon.settingsOptions = Object.assign({}, Cannon.settingsOptions, {

@@ -1554,21 +1554,9 @@ window.__guiusercolors = [];
           _this2.__recentcolors.appendChild(color);
 
           color.onmousedown = () => {
-            if (_this2.__removecolor) {
-              for (let i = 0; i < window.__guiusercolors.length; i++) {
-                if (window.__guiusercolors[i] === c) {
-                  window.__guiusercolors.splice(i, 1);
-                  _this2.__recentcolors.removeChild(color);
-                  break;
-                }
-              }
-              _this2.__colorminus.style.backgroundColor = 'white';
-              _this2.__removecolor = false;
-            } else {
               // select color
               _this2.__color.hex = c.replace('#', '0x');
               _this2.setValue(_this2.__color.toOriginal());
-            }
           }
         });
       }
@@ -1581,8 +1569,15 @@ window.__guiusercolors = [];
         }
       }
       _this2.__colorminus.onmousedown = () => {
-        _this2.__removecolor = !_this2.__removecolor;
-        _this2.__colorminus.style.backgroundColor = _this2.__removecolor ? 'red' : 'white';
+        const colorString = _this2.__color.toHexString();
+        for (let i = 0; i < window.__guiusercolors.length; i++) {
+          if (window.__guiusercolors[i] === colorString) {
+            window.__guiusercolors.splice(i, 1);
+            _this2.__recentcolors.removeChild(_this2.__recentcolors.children[i+3]);
+            break;
+          }
+        }
+
       }
       _this2.__colorpicker.onmousedown = () => {
         const editorGUI = document.querySelector('#editor-ui-container');
