@@ -11,7 +11,7 @@ module.exports = {
 	// stats: 'verbose',
 	mode: isProduction ? 'production' : 'development',
 	output: {
-		path: path.resolve(__dirname, 'build/scripts/'),
+		path: path.resolve(__dirname, 'build/assets/'),
 		filename: 'awesome-game.js',
 	},
 	module: {
@@ -31,6 +31,7 @@ module.exports = {
 					  options: {
 						limit: 8192,
 						esModule: false,
+						publicPath: './assets'
 					  },
 					},
 				  ],
