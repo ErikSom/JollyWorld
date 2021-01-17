@@ -31,7 +31,7 @@ const linkJSONwithPNG = () => {
 linkJSONwithPNG();
 
 // remove all linked pngs
-files = files.filter(file => !pngsToDelete.includes(file) && file.indexOf('.DS_Store') < 0);
+files = files.filter(file => !pngsToDelete.includes(file) && file.indexOf('.DS_Store') < 0 && file.indexOf('awesome-game.js') < 0);
 
 const renamedFiles = {};
 
