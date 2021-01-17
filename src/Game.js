@@ -333,7 +333,7 @@ function Game() {
 
         // SITELOCK
         (function checkInit() {
-            const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA=='];
+            const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA==', 'am9sbHl3b3JsZC5hcHA='];
             // localhost, .poki.com, .poki-gdn.com
 
             let allowed = false;
