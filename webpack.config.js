@@ -51,7 +51,6 @@ module.exports = {
 		minimizer: [new TerserPlugin()],
 	},
 
-
 	resolve: {
 		modules: [
 			path.resolve(__dirname, 'src'),

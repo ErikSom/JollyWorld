@@ -8,8 +8,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "env NODE_ENV=production yarn webpack",
     "watch": "npm-run-all --parallel watch:*",
+    "build:webpack": "env NODE_ENV=production yarn webpack",
+    "build:hash": "node hashfiles.js",
     "watch:webpack": "webpack --watch",
     "watch:server": "yarn run server",
     "watch:code": "code .",
@@ -30,6 +31,7 @@
     "firebase-tools": "^8.4.3",
     "http-server": "^0.11.1",
     "lz-string": "^1.4.4",
+    "md5-file": "^5.0.0",
     "nanoid": "^1.2.3",
     "npm-run-all": "^4.1.2",
     "pixi-filters": "^2.6.1",

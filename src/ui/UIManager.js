@@ -564,9 +564,11 @@ function UIManager() {
             let characterHolder = document.createElement('div');
             characterHolder.style.padding = '10px';
 
+            const characterImages = ['character1.png', 'character2.png', 'character3.png', 'character4.png'];
+
             for(let i = 0; i<Settings.availableCharacters; i++){
                 const portrait =  document.createElement('img');
-                portrait.src = `./assets/images/portraits/character${i+1}.png`
+                portrait.src = `./assets/images/portraits/${characterImages[i]}`
                 portrait.style.width = portrait.style.height = '100px';
                 portrait.style.backgroundColor = 'black';
                 characterHolder.appendChild(portrait);
@@ -615,9 +617,11 @@ function UIManager() {
             vehicleHolder.classList.add('vehicleHolder');
             vehicleHolder.style.padding = '10px';
 
+            const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png'];
+
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 const portrait =  document.createElement('img');
-                portrait.src = `./assets/images/portraits/vehicle${i+1}.png`
+                portrait.src = `./assets/images/portraits/${vehicleImages[i]}`
                 portrait.style.width = portrait.style.height = '100px';
                 portrait.style.backgroundColor = 'black';
                 vehicleHolder.appendChild(portrait);
