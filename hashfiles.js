@@ -2,7 +2,7 @@ const md5File = require('md5-file')
 const path = require("path");
 const fs = require("fs");
 let files = [];
-const scriptPath = './build/awesome-game.js';
+const scriptPath = './build/scripts/awesome-game.js';
 const htmlPath = './build/index.html';
 
 const getAllFiles = directory => {

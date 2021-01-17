@@ -11,7 +11,7 @@ module.exports = {
 	// stats: 'verbose',
 	mode: isProduction ? 'production' : 'development',
 	output: {
-		path: path.resolve(__dirname, 'build'),
+		path: path.resolve(__dirname, 'build/scripts/'),
 		filename: 'awesome-game.js',
 	},
 	module: {
@@ -60,7 +60,7 @@ module.exports = {
 	plugins: [
 		new CopyPlugin({
 			patterns: [
-			  { from: 'static', to: '' },
+			  { from: 'static', to: '../' },
 			],
 		  }),
 		  new webpack.DefinePlugin({
