@@ -162,7 +162,6 @@ function Game() {
         LoadCoreAssets(PIXI.loader);
 
         this.editor = B2dEditor;
-        this.editor.load(PIXI.loader);
 
         PIXI.loader.load(
             async ()=> {

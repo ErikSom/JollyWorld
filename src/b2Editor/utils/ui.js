@@ -18,6 +18,7 @@ import * as uiHelper from './uiHelper';
 
 import * as texts from '../utils/texts';
 import * as drawing from './drawing';
+import { hashName } from "../../AssetList";
 
 const nanoid = require('nanoid');
 
@@ -1587,7 +1588,7 @@ export const createToolGUI = function () {
     uiContainer.appendChild(toolGUI);
     const buttons = document.querySelectorAll('.toolgui .img');
     for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.backgroundImage = `url(assets/images/gui/${icons[i]})`;
+        buttons[i].style.backgroundImage = `url(assets/images/gui/${hashName(icons[i])})`;
     }
     const dgEls = document.querySelectorAll('.dg');
     dgEls.forEach(dgEl => dgEl.parentNode.removeChild(dgEl));

@@ -31,7 +31,7 @@ const linkJSONwithPNG = () => {
 linkJSONwithPNG();
 
 // remove all linked pngs
-files = files.filter(file => !pngsToDelete.includes(file));
+files = files.filter(file => !pngsToDelete.includes(file) && file.indexOf('.DS_Store') < 0);
 
 const renamedFiles = {};
 
@@ -80,26 +80,7 @@ const fixPNGNameInJson = (jsonPath, oldName, newName) => {
 	})
 }
 
-const replaceInSource = () => {
-	return new Promise((resolve, reject) => {
-		fs.readFile(scriptPath, 'utf8', function (err, data) {
-			if (err) {
-				return console.log(err);
-			}
-			let newData = data;
-			Object.keys(renamedFiles).forEach(key => {
-				const regex = new RegExp(key, 'g');
-				newData = newData.replace(regex, renamedFiles[key]);
-			})
-			fs.writeFile(scriptPath, newData, 'utf8', function (err) {
-				if (err) return reject(err);
-				console.log("Replaced in source");
-				resolve();
-			});
-		});
-	})
-}
-const hashSource = async () => {
+const patchHTML = async () => {
 	const md5hash = await md5File(scriptPath);
 	const dir = path.dirname(scriptPath);
 	const fileName = md5hash + path.extname(scriptPath);
@@ -111,8 +92,12 @@ const hashSource = async () => {
 			return console.log(err);
 		}
 		const scriptName = path.basename(scriptPath);
-		const regex = new RegExp(scriptName, 'g');
-		let newData = data.replace(regex, fileName);
+		const regexFileName = new RegExp(scriptName, 'g');
+		let newData = data.replace(regexFileName, fileName);
+
+		const regexAssetHashList = new RegExp("'{{{ASSET_HASH_NAMES}}}'", 'g');
+		newData = newData.replace(regexAssetHashList, JSON.stringify(renamedFiles));
+
 		fs.writeFile(htmlPath, newData, 'utf8', function (err) {
 			if (err) return console.log(err);
 			console.log("Hashed source script");
@@ -121,5 +106,4 @@ const hashSource = async () => {
 }
 
 hashFileNames()
-.then(()=> replaceInSource())
-.then(()=> hashSource());
+.then(()=> patchHTML());

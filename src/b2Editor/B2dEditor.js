@@ -154,10 +154,6 @@ const _B2dEditor = function () {
 	this.selectionBoxColor = "0x5294AE";
 	this.jointLineColor = "0x888888";
 
-	this.load = function (loader) {
-		loader.add("assets/images/gui/iconSet.json");
-	}
-
 	this.init = function (_root, _container, _world, _PTM) {
 		this.root = _root;
 		this.container = _container;
