@@ -19,11 +19,6 @@ export var LoadCoreAssets = function (loader){
         .add("assets/images/particles/particles.json")
         /*MISC*/
         .add("Logo", "assets/images/gui/Logo.svg")
-        /*WORLD DATA*/
-        // .add("worldData", "data/worldData.json")
-        // .add("characterData1", "data/character1.json")
-        // .add("testData", "data/testData.json")
-        // .add("testData2", "data/testData2.json");
 }
 
 export const ExtractTextureAssets = async () => {
