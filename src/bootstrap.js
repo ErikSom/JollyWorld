@@ -7,16 +7,13 @@ Date.prototype.getWeek = function() {
 						  - 3 + (week1.getDay() + 6) % 7) / 7);
 }
 
-import "core-js/stable";
-import "regenerator-runtime/runtime";
-
-import 'AssetList.js'
+import './AssetList.js'
 import './b2Editor/B2dEditor.js'
-import 'Settings.js'
+import './Settings.js'
 import '../libs/pixi-heaven.js'
-import 'Game.js'
+import './Game.js'
 
-import 'css/B2dEditor.css'
-import 'css/dat-gui-light-theme.css'
-import 'css/tooltip.css'
-import 'css/socialshare.css'
+import './css/B2dEditor.css'
+import './css/dat-gui-light-theme.css'
+import './css/tooltip.css'
+import './css/socialshare.css'

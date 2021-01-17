@@ -2,7 +2,8 @@ import {
     B2dEditor
 } from "../B2dEditor";
 import * as scrollBars from "./scrollBars";
-import * as dat from "../../../libs/dat.gui";
+import datModule from "../../../libs/dat.gui";
+const {dat} = datModule;
 import {
     game
 } from "../../Game";

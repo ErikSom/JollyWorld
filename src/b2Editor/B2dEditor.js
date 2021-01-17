@@ -1,11 +1,14 @@
-import * as Box2D from "../../libs/Box2D";
+import box2dModule from "../../libs/Box2D";
+const {Box2D} = box2dModule;
 import * as PrefabManager from "../prefabs/PrefabManager";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
 import * as ui from "./utils/ui";
 import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
-import * as dat from "../../libs/dat.gui";
+
+import datModule from "../../libs/dat.gui";
+const {dat} = datModule;
 
 import {
 	lineIntersect,
@@ -27,15 +30,13 @@ import {
 import {
 	Settings
 } from "../Settings";
-import { spine } from "pixi.js";
 import { JSONStringify } from "./utils/formatString";
-import LZString from 'lz-string'
+import * as LZString from 'lz-string'
 import { copyStringToClipboard } from "./utils/copyToClipboard";
 import { removeGraphicFromCells } from '../utils/PIXICuller';
+import * as PIXI from 'pixi.js';
 
-
-const camera = require("./utils/camera");
-const PIXI = require('pixi.js');
+import * as camera from './utils/camera';
 const PIXIFILTERS = require('pixi-filters')
 
 var b2Vec2 = Box2D.b2Vec2,

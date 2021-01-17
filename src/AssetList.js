@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+
 import {
 	Settings
 } from './Settings'

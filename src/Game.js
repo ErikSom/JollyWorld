@@ -1,5 +1,6 @@
 
-import * as Box2D from "../libs/Box2D";
+import box2dModule from "../libs/Box2D";
+const {Box2D} = box2dModule;
 import {
     Key
 } from "../libs/Key";
@@ -9,7 +10,7 @@ import {
 import {
     getPIXIDebugDraw
 } from "../libs/debugdraw";
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js';
 import {
     ui
 } from "./ui/UIManager";

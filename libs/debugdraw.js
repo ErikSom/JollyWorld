@@ -1,7 +1,8 @@
-import * as Box2D  from "./Box2D";
+import box2dModule from "./Box2D";
+const {Box2D} = box2dModule;
 
 class DebugDraw extends Box2D.b2Draw {
-  
+
   constructor() {
       super();
       this.m_ctx = null;

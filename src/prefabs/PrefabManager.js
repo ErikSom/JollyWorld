@@ -1,4 +1,5 @@
-import * as Box2D from "../../libs/Box2D";
+import box2dModule from "../../libs/Box2D";
+const {Box2D} = box2dModule;
 import {
     game
 } from "../Game";

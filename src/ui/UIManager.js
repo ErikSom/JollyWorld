@@ -6,7 +6,8 @@ import * as FireBaseCache from '../utils/FireBaseCacheManager'
 import {
     game
 } from '../Game';
-import * as dat from '../../libs/dat.gui';
+import datModule from "../../libs/dat.gui";
+const {dat} = datModule;
 import * as uiHelper from '../b2Editor/utils/uiHelper';
 import * as format from '../b2Editor/utils/formatString';
 import anime from 'animejs/lib/anime.es';

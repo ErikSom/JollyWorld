@@ -1,6 +1,8 @@
-import {
-    b2Vec2
-} from "../../../libs/Box2D";
+import box2dModule from "../../../libs/Box2D";
+
+const {Box2D} = box2dModule;
+const {b2Vec2} = Box2D;
+
 import {
     game
 } from "../../Game";

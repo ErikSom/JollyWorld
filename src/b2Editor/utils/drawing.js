@@ -1,6 +1,8 @@
 import { B2dEditor } from "../B2dEditor";
-import * as Box2D from "../../../libs/Box2D";
-import * as dat from "../../../libs/dat.gui";
+import box2dModule from "../../../libs/Box2D";
+const {Box2D} = box2dModule;
+import datModule from "../../../libs/dat.gui";
+const {dat} = datModule;
 import { Settings } from "../../Settings";
 
 var b2Vec2 = Box2D.b2Vec2;
