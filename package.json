@@ -11,7 +11,7 @@
     "build": "npm-run-all build:*",
     "build:deleteold": "rm -rf ./build",
     "build:webpack": "env NODE_ENV=production yarn webpack",
-    "build:log": "find .",
+    "build:log": "find build",
     "build:hash": "node hashfiles.js",
     "watch": "npm-run-all --parallel watch:*",
     "watch:webpack": "webpack --watch",
