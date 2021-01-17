@@ -8,9 +8,10 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "watch": "npm-run-all --parallel watch:*",
+    "build": "npm-run-all build:*",
     "build:webpack": "env NODE_ENV=production yarn webpack",
     "build:hash": "node hashfiles.js",
+    "watch": "npm-run-all --parallel watch:*",
     "watch:webpack": "webpack --watch",
     "watch:server": "yarn run server",
     "watch:code": "code .",
