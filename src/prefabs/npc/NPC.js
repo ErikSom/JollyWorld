@@ -45,12 +45,57 @@ export class NPC extends Humanoid {
                 break;
         }
 	}
+
+	flipLimbs(){
+		for(let key in this.prefabObject.settings.limbs){
+
+			let x = this.prefabObject.settings.limbs[key][0];
+			let y = this.prefabObject.settings.limbs[key][1];
+
+			let a = Math.atan2(y, x);
+			let l = Math.sqrt(x*x + y*y);
+
+			// rotate back on prefab
+			x = l * Math.cos(a+this.prefabObject.rotation*game.editor.DEG2RAD);
+			y = l * Math.sin(a+this.prefabObject.rotation*game.editor.DEG2RAD);
+			x += this.prefabObject.x / game.editor.PTM;
+			y += this.prefabObject.y / game.editor.PTM;
+
+			// rotate around body
+			const body = this.prefabObject.class.lookupObject['body'];
+			const dx = x-body.GetPosition().x;
+			const dy = y-body.GetPosition().y;
+			const dl = Math.sqrt(dx*dx + dy*dy);
+			let da = Math.atan2(dy, dx);
+
+			x = dl * Math.cos(da-body.GetAngle());
+			y = dl * Math.sin(da-body.GetAngle());
+			x *= -1;
+
+			da = Math.atan2(y, x);
+
+			x = body.GetPosition().x + dl * Math.cos(da+body.GetAngle());
+			y = body.GetPosition().y + dl * Math.sin(da+body.GetAngle());
+
+			x -= this.prefabObject.x / game.editor.PTM;
+			y -= this.prefabObject.y / game.editor.PTM;
+
+
+			// rotate back around prefab
+			a = Math.atan2(y,x);
+			l = Math.sqrt(x*x + y*y);
+			x = l * Math.cos(a-this.prefabObject.rotation*game.editor.DEG2RAD);
+			y = l * Math.sin(a-this.prefabObject.rotation*game.editor.DEG2RAD);
+
+			this.prefabObject.settings.limbs[key][0] = x;
+			this.prefabObject.settings.limbs[key][1] = y;
+
+		}
+	}
 	flip(flipped){
 		if(this.flipped != flipped){
 			if(this.initialized && this.prefabObject.settings?.limbs){
-				for(let key in this.prefabObject.settings.limbs){
-					this.prefabObject.settings.limbs[key][0] *=  -1;
-				}
+				this.flipLimbs();
 			}
 			super.flip();
 			if(this.initialized && this.prefabObject.settings?.limbs){
