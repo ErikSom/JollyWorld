@@ -154,10 +154,6 @@ const _B2dEditor = function () {
 	this.selectionBoxColor = "0x5294AE";
 	this.jointLineColor = "0x888888";
 
-	this.load = function (loader) {
-		loader.add("assets/images/gui/iconSet.json");
-	}
-
 	this.init = function (_root, _container, _world, _PTM) {
 		this.root = _root;
 		this.container = _container;
@@ -694,7 +690,7 @@ const _B2dEditor = function () {
 			case case_JUST_PREFABS:
 				ui.editorGUI.editData = new this.prefabObject;
 				dataJoint = this.activePrefabs[prefabKeys[0]];
-				if (this.selectedPrefabs.length > 1) targetFolder = ui.editorGUI.addFolder('multiple prefabs');
+				if (prefabKeys.length > 1) targetFolder = ui.editorGUI.addFolder('multiple prefabs');
 				else targetFolder = ui.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
 				break;
 			case case_MULTIPLE:
@@ -1204,7 +1200,7 @@ const _B2dEditor = function () {
 				break;
 		}
 
-		if(this.selectedPrefabs.length === 0){
+		if(prefabKeys.length === 0){
 			const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
 			const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
 

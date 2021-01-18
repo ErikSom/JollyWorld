@@ -11,6 +11,7 @@ import * as uiHelper from '../b2Editor/utils/uiHelper';
 import * as format from '../b2Editor/utils/formatString';
 import anime from 'animejs/lib/anime.es';
 import { Settings } from '../Settings'
+import { hashName } from '../AssetList';
 
 let customGUIContainer = document.getElementById('game-ui-container');
 
@@ -83,7 +84,7 @@ function UIManager() {
 
             discordButton = document.createElement('button');
             discordButton.classList.add('normalButton','discordButton');
-            discordButton.style.backgroundImage = 'url(./assets/images/misc/discord.png)';
+            discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discord.png')})`;
             discordButton.onclick = ()=>{
                 window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
             }
@@ -564,9 +565,11 @@ function UIManager() {
             let characterHolder = document.createElement('div');
             characterHolder.style.padding = '10px';
 
+            const characterImages = ['character1.png', 'character2.png', 'character3.png', 'character4.png'];
+
             for(let i = 0; i<Settings.availableCharacters; i++){
                 const portrait =  document.createElement('img');
-                portrait.src = `./assets/images/portraits/character${i+1}.png`
+                portrait.src = `./assets/images/portraits/${hashName(characterImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';
                 portrait.style.backgroundColor = 'black';
                 characterHolder.appendChild(portrait);
@@ -615,9 +618,11 @@ function UIManager() {
             vehicleHolder.classList.add('vehicleHolder');
             vehicleHolder.style.padding = '10px';
 
+            const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png'];
+
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 const portrait =  document.createElement('img');
-                portrait.src = `./assets/images/portraits/vehicle${i+1}.png`
+                portrait.src = `./assets/images/portraits/${hashName(vehicleImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';
                 portrait.style.backgroundColor = 'black';
                 vehicleHolder.appendChild(portrait);

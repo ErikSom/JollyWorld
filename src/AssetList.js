@@ -3,27 +3,30 @@ import {
 	Settings
 } from './Settings'
 
-export var LoadCoreAssets = function (loader){
-    loader.add("Characters_1.json", "assets/images/characters/Characters_1.json")
-        .add("Characters_Gore.json", "assets/images/characters/Characters_Gore.json")
-        .add("Vehicles_1.json", "assets/images/vehicles/Vehicles_1.json")
-        .add("Movement.json", "assets/images/prefabs/Movement.json")
-        .add("Construction.json", "assets/images/prefabs/Construction.json")
-        .add("Nature.json", "assets/images/prefabs/Nature.json")
-        .add("Weapons.json", "assets/images/prefabs/Weapons.json")
-        .add("Level.json", "assets/images/prefabs/Level.json")
-        .add("textures.json", "assets/images/textures/textures.json")
+export const hashName = name => {
+    if(window.__assetHashNames && typeof window.__assetHashNames === 'object' && window.__assetHashNames !== null){
+        if(window.__assetHashNames[name]) return window.__assetHashNames[name];
+    }
+    return name;
+}
+
+export const LoadCoreAssets = function (loader){
+    loader.add("Characters_1.json", `assets/images/characters/${hashName('Characters_1.json')}`)
+        .add("Characters_Gore.json", `assets/images/characters/${hashName('Characters_Gore.json')}`)
+        .add("Vehicles_1.json", `assets/images/vehicles/${hashName('Vehicles_1.json')}`)
+        .add("Movement.json", `assets/images/prefabs/${hashName('Movement.json')}`)
+        .add("Construction.json", `assets/images/prefabs/${hashName('Construction.json')}`)
+        .add("Nature.json", `assets/images/prefabs/${hashName('Nature.json')}`)
+        .add("Weapons.json", `assets/images/prefabs/${hashName('Weapons.json')}`)
+        .add("Level.json", `assets/images/prefabs/${hashName('Level.json')}`)
+        .add("textures.json", `assets/images/textures/${hashName('textures.json')}`)
         /*TILE DATA*/
-        .add("rope.png", "assets/images/misc/rope.png")
+        .add("rope.png", `assets/images/misc/${hashName('rope.png')}`)
         /*PARTICLE DATA*/
-        .add("assets/images/particles/particles.json")
+        .add(`assets/images/particles/${hashName('particles.json')}`)
         /*MISC*/
-        .add("Logo", "assets/images/gui/Logo.svg")
-        /*WORLD DATA*/
-        // .add("worldData", "data/worldData.json")
-        // .add("characterData1", "data/character1.json")
-        // .add("testData", "data/testData.json")
-        // .add("testData2", "data/testData2.json");
+        .add("Logo", `assets/images/gui/${hashName('Logo.svg')}`)
+        .add(`assets/images/gui/${hashName('iconSet.json')}`);
 }
 
 export const ExtractTextureAssets = async () => {
