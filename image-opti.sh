@@ -85,7 +85,7 @@ optimize_mp3() {
 }
 
 # if I don't use a for loop here, it's because they suck! Motherfuckers can't handle spaces https://unix.stackexchange.com/questions/9496/looping-through-files-with-spaces-in-the-names
-find $1 -type f \( -name "*.png" -or -name "*.jpeg" -or -name "*.jpg" -or -name "*.ogg" -or -name "*.mp3" \) ! -name "*.$original_marker.*" -print0 | while IFS= read -r '' file; do
+find $1 -type f \( -name "*.png" -or -name "*.jpeg" -or -name "*.jpg" -or -name "*.ogg" -or -name "*.mp3" \) ! -name "*.$original_marker.*" -print0 | while IFS= read -r -d '' file; do
 	filename=$(basename -- "$file")
 	extension="${filename##*.}"
 	filename="${filename%.*}"
@@ -114,3 +114,5 @@ find $1 -type f \( -name "*.png" -or -name "*.jpeg" -or -name "*.jpg" -or -name 
 	rm "$original_file"
 
 done
+
+echo 'Optimized assets'

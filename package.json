@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npm-run-all build:*",
     "build:clonestatic": "cp -R static static-copy",
-    "build:optimisestatic": "node optimiseassets.js",
+    "build:optimisestatic": "bash image-opti.sh static",
     "build:deleteold": "rm -rf ./build",
     "build:webpack": "env NODE_ENV=production yarn webpack",
     "build:hash": "node hashfiles.js",
