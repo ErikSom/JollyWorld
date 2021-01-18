@@ -5,13 +5,6 @@ if [ -z "$1" ]; then
 	exit 1
 fi
 
-for dep in pngquant cjpeg lame sox oggenc; do
-	if ! [ -x "$(command -v $dep)" ]; then
-	  echo "Please install $dep" >&2
-	  exit 2
-	fi
-done
-
 # a unique ID in case we wanna do stuff with the original files in the future / to avoid losing quality
 original_marker=original-lupyw
 
@@ -40,7 +33,7 @@ optimize_png() {
 
 	# nofs because dithering looks bad and is bigger for game graphics
 	# imo it's only good for photographs
-	pngquant "$1" --quality='65-80' --nofs --strip --skip-if-larger -o "$2" --force || true
+	./bins/pngquant "$1" --quality='65-80' --nofs --strip --skip-if-larger -o "$2" --force || true
 	if test ! -f "$2"; then
 		# pngquant couldn't optimize this further so it did not write it to disk
 		cp "$1" "$2"
@@ -59,7 +52,7 @@ optimize_jpeg() {
 	# this will fail if you have the original cjpeg from libjpeg (or libjpeg-turbo)
 	# because only mozjpeg supports jpeg -> jpeg
 	# mozjpeg has to be installed, specifically
-	stderr=$(cjpeg -quality 70 "$1" 2>&1 > "$2")
+	stderr=$(./bins/cjpeg -quality 70 "$1" 2>&1 > "$2")
 	retval=$?
 	if test $retval -ne 0 && [[ "$stderr" =~ 'Unrecognized input file format' ]]; then
 		echo 'Please install mozjpeg' >&2
@@ -75,7 +68,7 @@ optimize_ogg() {
 	# $1 = source
 	# $2 = destination
 
-	sox "$1" -t wav - | oggenc - --downmix -q 1 -o "$2"
+	./bins/sox "$1" -t wav - | oggenc - --downmix -q 1 -o "$2"
 
 	# don't keep output if it became bigger
 	cp_smallest "$1" "$2" "$2"
@@ -85,14 +78,14 @@ optimize_mp3() {
 	# $1 = source
 	# $2 = destination
 
-	lame --nohist -V 7 -mm "$1" "$2"
+	./bins/lame --nohist -V 7 -mm "$1" "$2"
 
 	# don't keep output if it became bigger
 	cp_smallest "$1" "$2" "$2"
 }
 
 # if I don't use a for loop here, it's because they suck! Motherfuckers can't handle spaces https://unix.stackexchange.com/questions/9496/looping-through-files-with-spaces-in-the-names
-find $1 -type f \( -name "*.png" -or -name "*.jpeg" -or -name "*.jpg" -or -name "*.ogg" -or -name "*.mp3" \) ! -name "*.$original_marker.*" -print0 | while IFS= read -r -d '' file; do
+find $1 -type f \( -name "*.png" -or -name "*.jpeg" -or -name "*.jpg" -or -name "*.ogg" -or -name "*.mp3" \) ! -name "*.$original_marker.*" -print0 | while IFS= read -r '' file; do
 	filename=$(basename -- "$file")
 	extension="${filename##*.}"
 	filename="${filename%.*}"
