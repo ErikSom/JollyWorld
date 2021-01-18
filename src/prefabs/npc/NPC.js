@@ -42,7 +42,12 @@ export class NPC extends Humanoid {
         switch (property) {
             case 'isFlipped':
                 this.flip(value);
-                break;
+				break;
+			case 'skin':
+				this.setSkin(value-1);
+				break;
+			case "selectJointTarget":
+				this.prefabObject.class.jointTarget = value;
         }
 	}
 
