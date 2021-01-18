@@ -1,6 +1,8 @@
 const md5File = require('md5-file')
 const path = require("path");
 const fs = require("fs");
+const minify = require('html-minifier').minify;
+
 let files = [];
 const scriptPath = './build/assets/awesome-game.js';
 const htmlPath = './build/index.html';
@@ -97,6 +99,19 @@ const patchHTML = async () => {
 
 		const regexAssetHashList = new RegExp("'{{{ASSET_HASH_NAMES}}}'", 'g');
 		newData = newData.replace(regexAssetHashList, JSON.stringify(renamedFiles));
+
+		newData = minify(newData, {
+			removeAttributeQuotes: true,
+			collapseWhitespace:true,
+			removeComments:true,
+			removeOptionalTags:true,
+			removeRedundantAttributes:true,
+			removeScriptTypeAttributes:true,
+			removeTagWhitespace:true,
+			useShortDoctype:true,
+			minifyCSS:true,
+			minifyJS:true
+		});
 
 		fs.writeFile(htmlPath, newData, 'utf8', function (err) {
 			if (err) return console.log(err);
