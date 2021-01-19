@@ -35,6 +35,7 @@ export const getActionsForObject = function (object) {
         switch (object.data.type) {
             case B2dEditor.object_BODY:
                 actions.push("Impulse") //, "SetAwake");
+                actions.push("SetCameraTarget");
                 break;
             case B2dEditor.object_JOINT:
                 if (object.data.jointType == B2dEditor.jointObject_TYPE_PIN || object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE || object.data.jointType == B2dEditor.jointObject_TYPE_WHEEL) {
@@ -67,7 +68,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -209,11 +210,18 @@ export const doAction = function (actionData, target) {
         case "Trigger":
             target.myBody.class.doTrigger();
             break;
+        case "ResetCameraTarget":
+            game.cameraFocusObject = game.cameraFocusCharacterObject;
+        break;
+        case "SetCameraTarget":
+            game.cameraFocusObject = target.myBody;
+        break
     }
 }
 export const guitype_MINMAX = 0;
 export const guitype_LIST = 1;
 export const guitype_BOOL = 2;
+export const guitype_UNIQUE_BOOL = 3;
 
 export const actionDictionary = {
     //*** IMPULSE ***/
@@ -543,7 +551,16 @@ export const actionDictionary = {
     /*******************/
     actionObject_Trigger: {
         type: 'Trigger',
-    }
+    },
+    /******************/
+    actionObject_SetCameraTarget: {
+        type: 'SetCameraTarget',
+    },
+    /*******************/
+    actionObject_ResetCameraTarget: {
+        type: 'ResetCameraTarget',
+    },
+    /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -764,6 +781,7 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                     }.bind(actionController));
                     break;
                 case guitype_BOOL:
+                case guitype_UNIQUE_BOOL:
                     actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
                     actionController.name(key);
                     actionController.onChange(function (value) {
@@ -772,6 +790,7 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         this.triggerActionKey = key;
                         this.triggerTargetID = targetID;
                         this.triggerActionID = actionID;
+                        if(actionOptions[key].type === guitype_UNIQUE_BOOL) this.forceUniqueBool = true;
                     }.bind(actionController));
                     break;
             }
@@ -984,7 +1003,7 @@ export class triggerCore {
         let i, actionData;
         for(i = 0; i<this.data.worldActions.length; i++){
             actionData = this.data.worldActions[i];
-            doAction(actionData);
+            doAction(actionData, this);
         }
         if (!this.targets) return;
         for (i = 0; i < this.targets.length; i++) {

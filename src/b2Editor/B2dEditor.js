@@ -5021,8 +5021,28 @@ const _B2dEditor = function () {
 								else body.mySprite.data.worldActions[controller.triggerActionID] = trigger.getAction(controller.targetValue);
 								trigger.updateTriggerGUI();
 							} else{
-								if(controller.triggerTargetID >= 0) body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
-								else body.mySprite.data.worldActions[controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+								if(controller.triggerTargetID >= 0){
+									body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+									if(controller.forceUniqueBool){
+										Object.keys(body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID]).forEach(key=>{
+											if(key !== controller.triggerActionKey){
+												body.mySprite.data.triggerActions[controller.triggerTargetID][key] = !controller.targetValue;
+											}
+										})
+										trigger.updateTriggerGUI();
+									}
+								}
+								else {
+									body.mySprite.data.worldActions[controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+									if(controller.forceUniqueBool){
+										Object.keys(body.mySprite.data.worldActions[controller.triggerActionID]).forEach(key=>{
+											if(key !== controller.triggerActionKey && key !== 'type'){
+												body.mySprite.data.worldActions[controller.triggerActionID][key] = !controller.targetValue;
+											}
+										})
+										trigger.updateTriggerGUI();
+									}
+								}
 							}
 						}
 					} else if (controller.property == "textColor") {

@@ -82,6 +82,7 @@ function Game() {
     this.desiredVehicleTorque = 0;
 
     this.cameraFocusObject;
+    this.cameraFocusCharacterObject;
 
     this.stats;
 
@@ -837,7 +838,7 @@ function Game() {
 
                     this.character = this.editor.activePrefabs[this.playerPrefabObject.class.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
                     this.vehicle = this.editor.activePrefabs[this.playerPrefabObject.class.prefabObject.key].class;
-                    this.cameraFocusObject = this.character.lookupObject.body;
+                    this.cameraFocusObject = this.cameraFocusCharacterObject = this.character.lookupObject.body;
 
                     var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
                     bodies.forEach(body => {
