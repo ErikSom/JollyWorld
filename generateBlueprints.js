@@ -2,6 +2,8 @@
 // More info here: https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const fs = require('fs');
+const md5File = require('md5-file')
+const path = require("path");
 
 (async function() {
 
@@ -25,6 +27,7 @@ const fs = require('fs');
 			console.log("DUPLICATE SHEET NAME")
 			return;
 		}
+
 		await sheet.loadCells(`A1:B${maxRows}`);
 		console.log('Parsing sheet:', sheet.title);
 		for(let j = 0; j<maxRows; j++){
@@ -35,10 +38,23 @@ const fs = require('fs');
 			newJSON[cellA.value] = cellB.value;
 		}
 
-		let data = JSON.stringify(newJSON);
-		fs.writeFileSync(`./static/assets/blueprints/${jsonTitle}`, data);
-		console.log('Sheet created');
+		const data = JSON.stringify(newJSON);
+		const jsonPath = `./static/assets/blueprints/${jsonTitle}`;
+		fs.writeFileSync(jsonPath, data);
 
+		const md5hash = await md5File(jsonPath);
+		const dir = path.dirname(jsonPath);
+		const newFileName = md5hash + path.extname(jsonPath);
+		const newName = path.join(dir, newFileName);
+		fs.renameSync(jsonPath, newName);
+
+		jsonFiles.push([sheet.title, newFileName]);
+
+		console.log('Sheet created');
 	};
 
+	const blueprints = {files:jsonFiles};
+	const data = JSON.stringify(blueprints);
+	fs.writeFileSync('./static/assets/blueprints/blueprints.json', data);
+	console.log('Finalized blueprints creation');
 }());
