@@ -17,6 +17,10 @@
     "watch:server": "yarn run server",
     "watch:code": "code .",
     "optimise": "bash image-opti.sh static",
+    "blueprints": "npm-run-all blueprints:*",
+    "blueprints:deleteold": "rm -rf ./static/assets/blueprints",
+    "blueprints:makenew": "mkdir ./static/assets/blueprints",
+    "blueprints:build": "node generateBlueprints.js",
     "server": "http-server build"
   },
   "dependencies": {
