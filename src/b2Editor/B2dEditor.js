@@ -1745,6 +1745,7 @@ const _B2dEditor = function () {
 
 			}
 		}
+		return copyJSON;
 	}
 
 	this.cutSelection = function () {
@@ -3757,7 +3758,8 @@ const _B2dEditor = function () {
 			if (e.ctrlKey || e.metaKey) {
 				this.copySelection();
 			} else {
-				this.selectTool(this.tool_GEOMETRY);
+				this.copiedJSON = this.copySelection();
+				this.pasteSelection();
 			}
 		} else if (e.keyCode == 71) { // g
 			if (e.ctrlKey || e.metaKey) {
