@@ -2395,11 +2395,13 @@ const _B2dEditor = function () {
 						for (i = 0; i < oldSelectedPhysicsBodies.length; i++) {
 							if (oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]) {
 								this.selectedPhysicsBodies.unshift(oldSelectedPhysicsBodies[i]);
+								this.selectedPhysicsBodies = [...new Set(this.selectedPhysicsBodies)]; // deduplicate
 							}
 						}
 						for (i = 0; i < oldSelectedTextures.length; i++) {
 							if (oldSelectedTextures[i] != this.selectedTextures[0]) {
 								this.selectedTextures.unshift(oldSelectedTextures[i]);
+								this.selectedTextures = [...new Set(this.selectedTextures)]; // deduplicate
 							}
 						}
 						for (var key in oldSelectedPrefabs) {
@@ -2407,6 +2409,7 @@ const _B2dEditor = function () {
 								this.selectedPrefabs[key] = true;
 							}
 						}
+						console.log(this.selectedTextures.length);
 					}else if(this.ctrlDown){
 						// filter selected object
 						this.selectedPhysicsBodies = oldSelectedPhysicsBodies.filter(body=>!this.selectedPhysicsBodies.includes(body));
@@ -2696,7 +2699,7 @@ const _B2dEditor = function () {
 					const angle = Math.atan2(dy, dx);
 					const dl = Math.sqrt(dx*dx + dy*dy);
 
-					const minDistance = 1;
+					const minDistance = 0.5 / this.cameraHolder.scale.x;
 
 					if(dl > minDistance && dl > minDistance){
 						vertice.point1 = {x:vertice.x-dl*Math.cos(angle), y:vertice.y-dl*Math.sin(angle)}
@@ -4052,6 +4055,7 @@ const _B2dEditor = function () {
 			}
 		}
 
+
 		let graphic;
 		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
@@ -4060,6 +4064,8 @@ const _B2dEditor = function () {
 				i--;
 			}
 		}
+
+
 
 		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
 			for(let i = 0; i<queryGraphics.length; i++){
@@ -4096,7 +4102,7 @@ const _B2dEditor = function () {
 						queryGraphics.splice(i, 1);
 						i--;
 					}
-				}else if(graphic.data.type !== this.object_JOINT){
+				}else if(graphic.data.type !== this.object_JOINT && graphic.data.type !== this.object_ANIMATIONGROUP){
 					const screenPosition = this.cameraHolder.toGlobal(lowerBoundPixi);
 					game.levelCamera.matrix.applyInverse(screenPosition,screenPosition)
 					let containsPoint = false;
@@ -4105,11 +4111,14 @@ const _B2dEditor = function () {
 							containsPoint = true;
 						}else{
 							let innerChild = child.children[0];
+							console.log(innerChild);
 							if(innerChild && innerChild.containsPoint && innerChild.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
 								containsPoint = true;
 							}
 						}
 					})
+					console.log(queryGraphics.length, containsPoint, 'dafuq?');
+
 					if(!containsPoint){
 						queryGraphics.splice(i, 1);
 						i--;
@@ -5029,7 +5038,7 @@ const _B2dEditor = function () {
 												body.mySprite.data.triggerActions[controller.triggerTargetID][key] = !controller.targetValue;
 											}
 										})
-										trigger.updateTriggerGUI();
+									trigger.updateTriggerGUI();
 									}
 								}
 								else {
