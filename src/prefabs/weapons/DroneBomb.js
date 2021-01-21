@@ -10,6 +10,13 @@ import {
 class DroneBomb extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
+
+
+		this.throttleController = new PIDController(2, 0, 1);
+		this.angleController = new PIDController(5, 0, 0.1);
+
+		console.log(this.throttleController);
+		console.log(this.angleController);
     }
     init(){
         super.init();
@@ -26,47 +33,102 @@ class DroneBomb extends PrefabManager.basePrefab {
 			fixture = fixture.GetNext();
 		}
 
-		this.angleController = new PIDController(1, 0, 0.1);
-		this.posXController = new PIDController(1, 0, 1);
-		this.posYController = new PIDController(1, 0, 1);
+		// this.angleController = new PIDController(1, 0, 0.1);
+		// this.posXController = new PIDController(1, 0, 1);
+		// this.posYController = new PIDController(1, 0, 1);
+
+
 
 
 	}
 	update(){
 
-		const velocity = this.body.GetLinearVelocity();
+		// const velocity = this.body.GetLinearVelocity();
+
+		// const targetY = game.editor.mousePosWorld.y;
+
+		// this.posYController.setError( targetY - this.body.GetPosition().y );
+		// this.posYController.step( 1 / Settings.physicsTimeStep );
+		// const targetYAccel = Box2D.b2Clamp(this.posYController.getOutput(), -10.0, 10.0);
+
+		// velocity.y = targetYAccel;
+
+		// const targetX = game.editor.mousePosWorld.x;
+
+		// this.posXController.setError( targetX - this.body.GetPosition().x );
+		// this.posXController.step( 1 / Settings.physicsTimeStep );
+		// const targetXAccel = Box2D.b2Clamp(this.posXController.getOutput(), -10.0, 10.0);
+
+		// velocity.x = targetXAccel;
+
+
+		// this.body.SetAngularVelocity(-targetSpeed);
+
 
 		const targetY = game.editor.mousePosWorld.y;
+		const maxForce = 20;
 
-		this.posYController.setError( targetY - this.body.GetPosition().y );
-		this.posYController.step( 1 / Settings.physicsTimeStep );
-		const targetYAccel = Box2D.b2Clamp(this.posYController.getOutput(), -10.0, 10.0);
-
-		velocity.y = targetYAccel;
-
-		const targetX = game.editor.mousePosWorld.x;
-
-		this.posXController.setError( targetX - this.body.GetPosition().x );
-		this.posXController.step( 1 / Settings.physicsTimeStep );
-		const targetXAccel = Box2D.b2Clamp(this.posXController.getOutput(), -10.0, 10.0);
-
-		velocity.x = targetXAccel;
-
-		const targetAngle = game.world.GetGravity().y  === 0 ? targetXAccel : targetXAccel / game.world.GetGravity().y;
-
-		console.log(targetAngle);
-
-
+		this.throttleController.setError( targetY - this.body.GetPosition().y - this.body.GetLinearVelocity().y );
+		this.throttleController.step( 1 / Settings.physicsTimeStep );
+		let targetThrottle = Box2D.b2Clamp(this.throttleController.getOutput(), -maxForce, maxForce);
 
 		const currentAngle = normalizePI(this.body.GetAngle());
-		this.angleController.setError(currentAngle - targetAngle);
-		this.angleController.step(1 / Settings.physicsTimeStep);
-		let targetSpeed = this.angleController.getOutput();
-		if(Math.abs(targetSpeed) > 1000){
-			targetSpeed = 0;
+
+		const almostFlipped = .6;
+		if(currentAngle> Math.PI * almostFlipped || currentAngle< - Math.PI * almostFlipped){
+			console.log("mkay");
+			targetThrottle *= -1;
 		}
 
-		this.body.SetAngularVelocity(-targetSpeed);
+
+		const distTarget = this.body.GetPosition().Clone().SelfSub(game.editor.mousePosWorld);
+		const distA = Math.atan2(distTarget.y, distTarget.x);
+
+
+
+		const angle = this.body.GetAngle();
+		const offset = new Box2D.b2Vec2();
+		const quadLength = 1.0;
+		offset.x = quadLength * Math.cos(angle);
+		offset.y = quadLength * Math.sin(angle);
+
+		const posLeft = this.body.GetPosition().Clone().SelfSub(offset);
+		const posRight = this.body.GetPosition().Clone().SelfAdd(offset);
+
+		const forceDirection = this.body.GetAngle() + Math.PI /2;
+		const force = new Box2D.b2Vec2();
+		force.x = targetThrottle * Math.cos(forceDirection);
+		force.y = targetThrottle * Math.sin(forceDirection);
+
+		const targetX = game.editor.mousePosWorld.x;
+		const angleChange = 15 * game.editor.DEG2RAD;
+		const angleCorrection = Box2D.b2Clamp(targetX - this.body.GetPosition().x, -angleChange, angleChange);
+
+
+		this.angleController.setError(currentAngle - angleCorrection);
+		this.angleController.step(1 / Settings.physicsTimeStep);
+		let targetSpeed = this.angleController.getOutput();
+
+		console.log('speed:', targetSpeed);
+
+		let leftLimiter = 1.0;
+		let rightLimiter = 1.0;
+
+		if(targetSpeed < 0 ){
+			rightLimiter = Math.max(0, Math.min(1, 1-(Math.abs(targetSpeed) / Math.PI/2)));
+		}else if(targetSpeed > 0){
+			leftLimiter = Math.max(0, Math.min(1, 1-(Math.abs(targetSpeed) / Math.PI/2)));
+		}
+
+
+		if(currentAngle > Math.PI * almostFlipped || currentAngle < - Math.PI * almostFlipped){
+			leftLimiter = 0.4;
+			rightLimiter = 0.8;
+		}
+
+
+		this.body.ApplyForce(force.Clone().SelfMul(leftLimiter), posLeft, true);
+		this.body.ApplyForce(force.Clone().SelfMul(rightLimiter), posRight, true);
 
 	}
 }
