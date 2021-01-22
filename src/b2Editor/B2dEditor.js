@@ -7529,6 +7529,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size, rotation, optional) {
+		console.log("Size:", size)
 		if(body.destroyed) return;
 		if (!size) size = 1;
 		if(!rotation) rotation = 0;

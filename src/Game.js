@@ -997,7 +997,12 @@ function Game() {
                         const worldManifold = new Box2D.b2WorldManifold();
                         contact.GetWorldManifold(worldManifold);
                         const worldCollisionPoint = worldManifold.points[0];
-                        self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true);
+                        
+                        const slidingDecalSlider = 50;
+                        const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
+                        console.log("GoreSize:", goreSize);
+                        self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
+
                         emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 
                         const bodyClass = self.editor.retrieveSubClassFromBody(body);

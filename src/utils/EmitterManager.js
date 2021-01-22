@@ -181,6 +181,12 @@ export const getEmitter = function (type, pool = true) {
                 emitterData[type]
             );
             break;
+        case "sparksMetal":
+            emitter = new PIXI.particles.Emitter(
+                game.editor.textures, [PIXI.Texture.fromImage('particle-spark.png')],
+                emitterData[type]
+            );
+            break;
     }
     if(pool){
         emitter.type = type;

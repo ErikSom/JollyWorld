@@ -16,7 +16,7 @@ export var Settings = {
     /*GORE*/
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
-    bashForce:2000,
+    bashForce:10000,
     physicsParticleLifeTime:2000,
     physicsParticleLifeTimeRandomOffset:1000,
     /*CHARACTER*/

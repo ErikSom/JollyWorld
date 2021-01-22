@@ -341,3 +341,52 @@ export const cannonShoot = {
 		"r": 0
 	}
 }
+
+export const sparksMetal = {
+	"alpha": {
+		"start": 1,
+		"end": 0.31
+	},
+	"scale": {
+		"start": 0.5,
+		"end": 1,
+		"minimumScaleMultiplier": 1
+	},
+	"color": {
+		"start": "#fafa00",
+		"end": "#ff7b00"
+	},
+	"speed": {
+		"start": 1000,
+		"end": 200,
+		"minimumSpeedMultiplier": 1
+	},
+	"acceleration": {
+		"x": 0,
+		"y": 0
+	},
+	"maxSpeed": 0,
+	"startRotation": {
+		"min": -20,
+		"max": 20
+	},
+	"noRotation": false,
+	"rotationSpeed": {
+		"min": 0,
+		"max": 20
+	},
+	"lifetime": {
+		"min": 0.1,
+		"max": 0.3
+	},
+	"blendMode": "normal",
+	"frequency": 0.007,
+	"emitterLifetime": 0.1,
+	"maxParticles": 1000,
+	"pos": {
+		"x": 0,
+		"y": 0
+	},
+	"addAtBack": false,
+	"spawnType": "point"
+}
