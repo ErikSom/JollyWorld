@@ -4,4 +4,4 @@ node_modules/
 *.log
 build/
 CREDS_GoogleSpreadSheets.json
-BLUEPRINTS/
+BLUEPRINTS_SOURCE

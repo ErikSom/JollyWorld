@@ -3,7 +3,7 @@
 const fs = require('fs');
 const md5File = require('md5-file')
 const path = require("path");
-const BLUEPRINT_PATH = './BLUEPRINTS'
+const BLUEPRINT_PATH = './BLUEPRINTS_SOURCE'
 
 const categories = [];
 
