@@ -1000,7 +1000,6 @@ function Game() {
                         
                         const slidingDecalSlider = 50;
                         const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
-                        console.log("GoreSize:", goreSize);
                         self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
 
                         emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);

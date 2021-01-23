@@ -24,12 +24,18 @@ export const getActionsForObject = function (object) {
         if(prefab.class.isExplosive){
             actions.push("SetActive");
             actions.push("Explode");
-        }else if(prefab.class.isCrossBow || prefab.class.isCannon){
+        }
+        if(prefab.class.isCrossBow || prefab.class.isCannon){
             actions.push("Shoot");
-        }else if(prefab.class.isVehicle){
+        }
+        if(prefab.class.isVehicle){
             actions.push("DealDamage");
-        }else if(prefab.class.isJet){
+        }
+        if(prefab.class.isJet){
             actions.push("EngineOn");
+        }
+        if(prefab.class.isDrone){
+            actions.push("SetWayPoint");
         }
     } else {
         switch (object.data.type) {
@@ -273,6 +279,9 @@ export const doAction = function (actionData, target) {
             if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
             animation.frameTime = 1000 / actionData.fps;
         break
+        case "SetWayPoint":
+            prefab.class.wayPoint = new Box2D.b2Vec2(actionData.x, actionData.y).SelfMul(1/game.editor.PTM);
+        break;
     }
 }
 export const guitype_MINMAX = 0;
@@ -673,6 +682,28 @@ export const actionDictionary = {
             max: 60,
             value: 30,
             step: 1,
+        },
+    },
+    /*******************/
+    actionObject_SetWayPoint: {
+        type: 'SetWayPoint',
+        x: 0,
+        y: 0,
+    },
+    actionOptions_SetWayPoint: {
+        x: {
+            type: guitype_MINMAX,
+            min: -editorSettings.worldSize.width,
+            max: editorSettings.worldSize.width,
+            value: 0,
+            step: 0.1,
+        },
+        y: {
+            type: guitype_MINMAX,
+            min: -editorSettings.worldSize.width,
+            max: editorSettings.worldSize.width,
+            value: 0,
+            step: 0.1,
         },
     },
     /*******************/

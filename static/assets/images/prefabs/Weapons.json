@@ -2,7 +2,7 @@
 
 "Arrow0000":
 {
-	"frame": {"x":427,"y":655,"w":166,"h":21},
+	"frame": {"x":427,"y":659,"w":166,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":21},
@@ -138,7 +138,7 @@
 },
 "HommingBomb_Drone_off0000":
 {
-	"frame": {"x":590,"y":580,"w":145,"h":73},
+	"frame": {"x":155,"y":604,"w":145,"h":73},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":73},
@@ -146,11 +146,19 @@
 },
 "HommingBomb_Drone_on0000":
 {
-	"frame": {"x":155,"y":604,"w":145,"h":73},
+	"frame": {"x":429,"y":580,"w":145,"h":77},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":73},
-	"sourceSize": {"w":145,"h":73}
+	"spriteSourceSize": {"x":0,"y":0,"w":145,"h":77},
+	"sourceSize": {"w":145,"h":77}
+},
+"HommingDrone_Light0000":
+{
+	"frame": {"x":998,"y":2,"w":11,"h":3},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":11,"h":3},
+	"sourceSize": {"w":11,"h":3}
 },
 "IceBlock0000":
 {
@@ -266,7 +274,7 @@
 },
 "Tank_Poison_off0000":
 {
-	"frame": {"x":429,"y":580,"w":159,"h":68},
+	"frame": {"x":576,"y":580,"w":159,"h":68},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":159,"h":68},

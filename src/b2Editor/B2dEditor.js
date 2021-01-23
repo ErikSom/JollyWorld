@@ -2409,7 +2409,6 @@ const _B2dEditor = function () {
 								this.selectedPrefabs[key] = true;
 							}
 						}
-						console.log(this.selectedTextures.length);
 					}else if(this.ctrlDown){
 						// filter selected object
 						this.selectedPhysicsBodies = oldSelectedPhysicsBodies.filter(body=>!this.selectedPhysicsBodies.includes(body));
@@ -4111,13 +4110,11 @@ const _B2dEditor = function () {
 							containsPoint = true;
 						}else{
 							let innerChild = child.children[0];
-							console.log(innerChild);
 							if(innerChild && innerChild.containsPoint && innerChild.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
 								containsPoint = true;
 							}
 						}
 					})
-					console.log(queryGraphics.length, containsPoint, 'dafuq?');
 
 					if(!containsPoint){
 						queryGraphics.splice(i, 1);
@@ -5018,7 +5015,6 @@ const _B2dEditor = function () {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							console.log(controller.targetValue, 'setting this')
 							body.mySprite.data.triggerKey = controller.targetValue;
 						}
 					} else if (controller.triggerActionKey != undefined) {
@@ -7529,7 +7525,6 @@ const _B2dEditor = function () {
 		}
 	}
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size, rotation, optional) {
-		console.log("Size:", size)
 		if(body.destroyed) return;
 		if (!size) size = 1;
 		if(!rotation) rotation = 0;

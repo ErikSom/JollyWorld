@@ -24,7 +24,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		this.explodeTarget = null;
 		this.active = this.prefabObject.settings.active;
 		this.activateOn = this.prefabObject.settings.activateOn;
-		this.impactForExplosion = 8;
+		this.impactForExplosion = 200;
 		this.exploded = false;
 		// this.clipWalls = false;
 		// this.exploded = false;
@@ -108,11 +108,14 @@ export class Explosive extends PrefabManager.basePrefab {
 	set(property, value) {
         switch (property) {
 			case 'active':
-				this.explodeTimer = 0;
+				if(!this.active){
+					this.explodeTimer = 0;
+					this.active = true;
+				}
             default:
                 this.prefabObject.settings[property] = value;
                 break;
-        }
+		}
     }
     initContactListener() {
         super.initContactListener();
@@ -131,6 +134,7 @@ export class Explosive extends PrefabManager.basePrefab {
 						const count = contact.GetManifold().pointCount;
 						let force = 0;
 						for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+						force *= body.GetMass();
 						if(force > self.impactForExplosion){
 							self.set('active', true);
 						}
