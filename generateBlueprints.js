@@ -1,60 +1,85 @@
-// Spreadsheet URL: https://docs.google.com/spreadsheets/d/19HYk5LIGRJhbTi2sCJKI4MMpsYokztD1BivN7B50zkY/edit#gid=0
-// More info here: https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
-const { GoogleSpreadsheet } = require('google-spreadsheet');
+// Google Drive link:
+
 const fs = require('fs');
 const md5File = require('md5-file')
 const path = require("path");
+const BLUEPRINT_PATH = './BLUEPRINTS'
+
+const categories = [];
+
+const findCategories = () => {
+	if (!fs.existsSync(BLUEPRINT_PATH)) {
+		console.log("NO BLUEPRINTS FOLDER FOUND");
+		return;
+	}
+	fs.readdirSync(BLUEPRINT_PATH).forEach(file => {
+		if (file.indexOf('DS_Store') < 0) {
+			console.log("Found catagory:", file);
+			categories.push(file);
+		}
+	});
+}
+
+const findFilesForCategory = category => {
+	const blueprints = [];
+	fs.readdirSync(path.join(BLUEPRINT_PATH, category)).forEach(file => {
+		if (file.indexOf('DS_Store') < 0 && file.indexOf('.txt') > 0) {
+			console.log("Found blueprint:", file);
+			blueprints.push(file);
+		}
+	});
+	return blueprints;
+}
+const incorrectFiles = [];
+const processCategories = async () => {
+	return new Promise(async (resolve, reject) => {
+		const jsonFiles = [];
+		for(let i = 0; i<categories.length; i++){
+			category = categories[i];
+			const newJSON = {};
+			const blueprints = findFilesForCategory(category);
+
+			blueprints.forEach(fileName => {
+				const blueprintPath = path.join(BLUEPRINT_PATH, category, fileName);
+				let blueprint = fs.readFileSync(blueprintPath, 'utf8');
+				blueprint = blueprint.trim();
+				if(!blueprint.startsWith(`{\"objects\":`)){
+					incorrectFiles.push(blueprintPath);
+				}else if(!blueprint.endsWith(`}`)){
+					incorrectFiles.push(blueprintPath);
+				}else{
+					const name = fileName.split('.txt')[0];
+					newJSON[name] = blueprint;
+				}
+			})
+
+			const data = JSON.stringify(newJSON);
+
+
+			const jsonName = `${category}.json`;
+			const jsonPath = `./static/assets/blueprints/${jsonName}`;
+			fs.writeFileSync(jsonPath, data);
+
+			const md5hash = await md5File(jsonPath);
+			const dir = path.dirname(jsonPath);
+			const newFileName = md5hash + path.extname(jsonPath);
+			const newName = path.join(dir, newFileName);
+			fs.renameSync(jsonPath, newName);
+
+			jsonFiles.push([category, newFileName]);
+		};
+
+		const blueprints = {files:jsonFiles};
+		const data = JSON.stringify(blueprints);
+		fs.writeFileSync('./static/assets/blueprints/blueprints.json', data);
+		console.log('Finalized blueprints creation');
+		resolve();
+	});
+}
 
 (async function() {
-
-	const creds = require('./CREDS_GoogleSpreadSheets.json');
-	const doc = new GoogleSpreadsheet('19HYk5LIGRJhbTi2sCJKI4MMpsYokztD1BivN7B50zkY');
-	await doc.useServiceAccountAuth(creds);
-	await doc.loadInfo();
-
-	const maxRows = 20;
-
-	const jsonFiles = [];
-
-	for(let i = 0; i<doc.sheetsByIndex.length; i++){
-		const sheet = doc.sheetsByIndex[i];
-		if(sheet.title.startsWith('__')) continue;
-
-		const newJSON = {};
-
-		const jsonTitle = `${sheet.title}.json`;
-		if(jsonFiles.includes(jsonTitle)){
-			console.log("DUPLICATE SHEET NAME")
-			return;
-		}
-
-		await sheet.loadCells(`A1:B${maxRows}`);
-		console.log('Parsing sheet:', sheet.title);
-		for(let j = 0; j<maxRows; j++){
-			const cellA = sheet.getCell(j, 0);
-			const cellB = sheet.getCell(j, 1);
-			if(!cellA.value) break;
-			console.log('Reading cell:', cellA.value);
-			newJSON[cellA.value] = cellB.value;
-		}
-
-		const data = JSON.stringify(newJSON);
-		const jsonPath = `./static/assets/blueprints/${jsonTitle}`;
-		fs.writeFileSync(jsonPath, data);
-
-		const md5hash = await md5File(jsonPath);
-		const dir = path.dirname(jsonPath);
-		const newFileName = md5hash + path.extname(jsonPath);
-		const newName = path.join(dir, newFileName);
-		fs.renameSync(jsonPath, newName);
-
-		jsonFiles.push([sheet.title, newFileName]);
-
-		console.log('Sheet created');
-	};
-
-	const blueprints = {files:jsonFiles};
-	const data = JSON.stringify(blueprints);
-	fs.writeFileSync('./static/assets/blueprints/blueprints.json', data);
-	console.log('Finalized blueprints creation');
+	findCategories();
+	await processCategories();
+	console.log("Incompatible files:");
+	console.log(incorrectFiles);
 }());

@@ -208,21 +208,20 @@ const _B2dEditor = function () {
 		if(Array.isArray(PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category])) return;
 		const urlIndex = this.bluePrintData.categories.indexOf(category);
 		const url = this.bluePrintData.urls[urlIndex];
-
-		console.log("Index:", urlIndex, "url:", url);
 		if(url){
 			fetch(`./assets/blueprints/${url}`)
 			.then(response => response.json())
 			.then(data => {
-				console.log("Downloaded prefab list")
 				const prefabNames = Object.keys(data);
 				const prefabKeys = [];
+				const categoryTrimmed = category.replace(/\s+/g, '');
 				prefabNames.forEach(prefabName => {
-					const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${category}_${prefabName}`;
+					const trimmedName = prefabName.replace(/\s+/g, '');
+					const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
 					prefabKeys.push(prefabKey);
 					PrefabManager.prefabLibrary[prefabKey] = {json:data[prefabName], class:PrefabManager.basePrefab};
 				})
-				PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category] = prefabKeys;
+				PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = prefabKeys;
 				this.refreshPrefablist();
 			});
 		}
@@ -248,7 +247,6 @@ const _B2dEditor = function () {
 		[PREFABS, BLUEPRINTS].forEach(folderName=>{
 			let folder = targetFolder.addFolder(folderName);
 			let self = this;
-			if(this.bluePrintData) console.log('Dafuq...');
 			const prefabPages = folderName === PREFABS ? [...PrefabManager.getLibraryKeys()] : (this.bluePrintData ? [...this.bluePrintData.categories] : [Settings.DEFAULT_TEXTS.downloading_blueprints]);
 			prefabPages.unshift('');
 
@@ -269,7 +267,7 @@ const _B2dEditor = function () {
 			let targetLibrary;
 
 			if(folderName === PREFABS) targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[this.prefabSelectedCategory];
-			else if(folderName === BLUEPRINTS) targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.blueprintsSelectedCategory];
+			else if(folderName === BLUEPRINTS) targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+(this.blueprintsSelectedCategory.replace(/\s+/g, ''))];
 
 			if((folderName === PREFABS && this.prefabSelectedCategory == '') || folderName === BLUEPRINTS && this.blueprintsSelectedCategory == ''){
 				// do nothing
@@ -7489,10 +7487,11 @@ const _B2dEditor = function () {
 		if (this.breakPrefabs) return this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json));
 		if(obj.instanceID !== -1) obj.instanceID = this.prefabCounter++;
 
-		var key = obj.prefabName + "_" + obj.instanceID;
+		const key = obj.prefabName + "_" + obj.instanceID;
 		obj.key = key;
 		this.activePrefabs[key] = obj;
-		var prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
+
+		const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[obj.prefabName].json), key);
 
 		this.applyToObjects(this.TRANSFORM_ROTATE, obj.rotation, [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints));
 		prefabLookupObject._bodies.forEach(body =>{
