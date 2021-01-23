@@ -138,7 +138,7 @@
 },
 "FruitPiece_20000":
 {
-	"frame": {"x":458,"y":48,"w":9,"h":7},
+	"frame": {"x":477,"y":48,"w":9,"h":7},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":7},
@@ -154,7 +154,7 @@
 },
 "FruitPiece_40000":
 {
-	"frame": {"x":498,"y":71,"w":7,"h":9},
+	"frame": {"x":498,"y":80,"w":7,"h":9},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":9},
@@ -162,7 +162,7 @@
 },
 "FruitPiece_50000":
 {
-	"frame": {"x":469,"y":48,"w":9,"h":7},
+	"frame": {"x":498,"y":71,"w":9,"h":7},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":7},
@@ -455,6 +455,14 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":44},
 	"sourceSize": {"w":44,"h":44}
+},
+"particle-spark.png":
+{
+	"frame": {"x":458,"y":48,"w":17,"h":5},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":17,"h":5},
+	"sourceSize": {"w":17,"h":5}
 },
 "particle.png":
 {

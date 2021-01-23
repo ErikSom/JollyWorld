@@ -1806,6 +1806,7 @@ const _B2dEditor = function () {
 
 			}
 		}
+		return copyJSON;
 	}
 
 	this.cutSelection = function () {
@@ -2455,11 +2456,13 @@ const _B2dEditor = function () {
 						for (i = 0; i < oldSelectedPhysicsBodies.length; i++) {
 							if (oldSelectedPhysicsBodies[i] != this.selectedPhysicsBodies[0]) {
 								this.selectedPhysicsBodies.unshift(oldSelectedPhysicsBodies[i]);
+								this.selectedPhysicsBodies = [...new Set(this.selectedPhysicsBodies)]; // deduplicate
 							}
 						}
 						for (i = 0; i < oldSelectedTextures.length; i++) {
 							if (oldSelectedTextures[i] != this.selectedTextures[0]) {
 								this.selectedTextures.unshift(oldSelectedTextures[i]);
+								this.selectedTextures = [...new Set(this.selectedTextures)]; // deduplicate
 							}
 						}
 						for (var key in oldSelectedPrefabs) {
@@ -2756,7 +2759,7 @@ const _B2dEditor = function () {
 					const angle = Math.atan2(dy, dx);
 					const dl = Math.sqrt(dx*dx + dy*dy);
 
-					const minDistance = 1;
+					const minDistance = 0.5 / this.cameraHolder.scale.x;
 
 					if(dl > minDistance && dl > minDistance){
 						vertice.point1 = {x:vertice.x-dl*Math.cos(angle), y:vertice.y-dl*Math.sin(angle)}
@@ -3818,7 +3821,8 @@ const _B2dEditor = function () {
 			if (e.ctrlKey || e.metaKey) {
 				this.copySelection();
 			} else {
-				this.selectTool(this.tool_GEOMETRY);
+				this.copiedJSON = this.copySelection();
+				this.pasteSelection();
 			}
 		} else if (e.keyCode == 71) { // g
 			if (e.ctrlKey || e.metaKey) {
@@ -4111,6 +4115,7 @@ const _B2dEditor = function () {
 			}
 		}
 
+
 		let graphic;
 		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
@@ -4119,6 +4124,8 @@ const _B2dEditor = function () {
 				i--;
 			}
 		}
+
+
 
 		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
 			for(let i = 0; i<queryGraphics.length; i++){
@@ -4155,7 +4162,7 @@ const _B2dEditor = function () {
 						queryGraphics.splice(i, 1);
 						i--;
 					}
-				}else if(graphic.data.type !== this.object_JOINT){
+				}else if(graphic.data.type !== this.object_JOINT && graphic.data.type !== this.object_ANIMATIONGROUP){
 					const screenPosition = this.cameraHolder.toGlobal(lowerBoundPixi);
 					game.levelCamera.matrix.applyInverse(screenPosition,screenPosition)
 					let containsPoint = false;
@@ -4169,6 +4176,7 @@ const _B2dEditor = function () {
 							}
 						}
 					})
+
 					if(!containsPoint){
 						queryGraphics.splice(i, 1);
 						i--;
@@ -5068,7 +5076,6 @@ const _B2dEditor = function () {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							console.log(controller.targetValue, 'setting this')
 							body.mySprite.data.triggerKey = controller.targetValue;
 						}
 					} else if (controller.triggerActionKey != undefined) {
@@ -5080,8 +5087,28 @@ const _B2dEditor = function () {
 								else body.mySprite.data.worldActions[controller.triggerActionID] = trigger.getAction(controller.targetValue);
 								trigger.updateTriggerGUI();
 							} else{
-								if(controller.triggerTargetID >= 0) body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
-								else body.mySprite.data.worldActions[controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+								if(controller.triggerTargetID >= 0){
+									body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+									if(controller.forceUniqueBool){
+										Object.keys(body.mySprite.data.triggerActions[controller.triggerTargetID][controller.triggerActionID]).forEach(key=>{
+											if(key !== controller.triggerActionKey){
+												body.mySprite.data.triggerActions[controller.triggerTargetID][key] = !controller.targetValue;
+											}
+										})
+									trigger.updateTriggerGUI();
+									}
+								}
+								else {
+									body.mySprite.data.worldActions[controller.triggerActionID][controller.triggerActionKey] = controller.targetValue;
+									if(controller.forceUniqueBool){
+										Object.keys(body.mySprite.data.worldActions[controller.triggerActionID]).forEach(key=>{
+											if(key !== controller.triggerActionKey && key !== 'type'){
+												body.mySprite.data.worldActions[controller.triggerActionID][key] = !controller.targetValue;
+											}
+										})
+										trigger.updateTriggerGUI();
+									}
+								}
 							}
 						}
 					} else if (controller.property == "textColor") {

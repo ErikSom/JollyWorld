@@ -24,17 +24,35 @@ export const getActionsForObject = function (object) {
         if(prefab.class.isExplosive){
             actions.push("SetActive");
             actions.push("Explode");
-        }else if(prefab.class.isCrossBow || prefab.class.isCannon){
+        }
+        if(prefab.class.isCrossBow || prefab.class.isCannon){
             actions.push("Shoot");
-        }else if(prefab.class.isVehicle){
+        }
+        if(prefab.class.isVehicle){
             actions.push("DealDamage");
-        }else if(prefab.class.isJet){
+        }
+        if(prefab.class.isJet){
             actions.push("EngineOn");
+        }
+        if(prefab.class.isDrone){
+            actions.push("SetWayPoint");
         }
     } else {
         switch (object.data.type) {
             case B2dEditor.object_BODY:
                 actions.push("Impulse") //, "SetAwake");
+                actions.push("SetCameraTarget");
+
+                if(object.myBody.myTexture && object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
+                    actions.push("Pause");
+                    actions.push("Play");
+                    actions.push("GotoAndPlay");
+                    actions.push("GotoAndStop");
+                    actions.push("Nextframe");
+                    actions.push("Prevframe");
+                    actions.push("animationFPS");
+                }
+
                 break;
             case B2dEditor.object_JOINT:
                 if (object.data.jointType == B2dEditor.jointObject_TYPE_PIN || object.data.jointType == B2dEditor.jointObject_TYPE_SLIDE || object.data.jointType == B2dEditor.jointObject_TYPE_WHEEL) {
@@ -57,6 +75,14 @@ export const getActionsForObject = function (object) {
                 actions.push("SetEnabled");
                 actions.push("SetFollowPlayer");
                 actions.push("Trigger");
+            case B2dEditor.object_ANIMATIONGROUP:
+                actions.push("Pause");
+                actions.push("Play");
+                actions.push("GotoAndPlay");
+                actions.push("GotoAndStop");
+                actions.push("Nextframe");
+                actions.push("Prevframe");
+                actions.push("animationFPS");
             default:
                 break;
         }
@@ -67,7 +93,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -81,6 +107,7 @@ export const doAction = function (actionData, target) {
     let bodies;
     const prefab = (target && target.data) ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
     let objects;
+    let animation;
 
     switch (actionData.type) {
         case "Impulse":
@@ -209,11 +236,58 @@ export const doAction = function (actionData, target) {
         case "Trigger":
             target.myBody.class.doTrigger();
             break;
+        case "ResetCameraTarget":
+            game.cameraFocusObject = game.cameraFocusCharacterObject;
+        break;
+        case "SetCameraTarget":
+            game.cameraFocusObject = target.myBody;
+        break
+        case "Pause":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            animation.playing = false;
+        break
+        case "Play":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            animation.playing = true;
+        break
+        case "GotoAndStop":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            animation.setFrame(actionData.frame);
+            animation.playing = false;
+        break
+        case "GotoAndPlay":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            animation.setFrame(actionData.frame);
+            animation.playing = true;
+        break
+        case "Nextframe":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            animation.nextFrame();
+        break
+        case "Prevframe":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            animation.prevFrame();
+        break
+        case "animationFPS":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            animation.frameTime = 1000 / actionData.fps;
+        break
+        case "SetWayPoint":
+            prefab.class.wayPoint = new Box2D.b2Vec2(actionData.x, actionData.y).SelfMul(1/game.editor.PTM);
+        break;
     }
 }
 export const guitype_MINMAX = 0;
 export const guitype_LIST = 1;
 export const guitype_BOOL = 2;
+export const guitype_UNIQUE_BOOL = 3;
 
 export const actionDictionary = {
     //*** IMPULSE ***/
@@ -543,7 +617,96 @@ export const actionDictionary = {
     /*******************/
     actionObject_Trigger: {
         type: 'Trigger',
-    }
+    },
+    /******************/
+    actionObject_SetCameraTarget: {
+        type: 'SetCameraTarget',
+    },
+    /*******************/
+    actionObject_ResetCameraTarget: {
+        type: 'ResetCameraTarget',
+    },
+    /*******************/
+    actionObject_Pause: {
+        type: 'Pause',
+    },
+    /*******************/
+    actionObject_Play: {
+        type: 'Play',
+    },
+    /*******************/
+    actionObject_GotoAndPlay: {
+        type: 'GotoAndPlay',
+        frame: 1,
+    },
+    actionOptions_GotoAndPlay: {
+        frame: {
+            type: guitype_MINMAX,
+            min: 1,
+            max: Settings.maxAnimationFrames,
+            value: 1,
+            step: 1,
+        },
+    },
+    /*******************/
+    actionObject_GotoAndStop: {
+        type: 'GotoAndStop',
+        frame: 1,
+    },
+    actionOptions_GotoAndStop: {
+        frame: {
+            type: guitype_MINMAX,
+            min: 1,
+            max: Settings.maxAnimationFrames,
+            value: 1,
+            step: 1,
+        },
+    },
+    /*******************/
+    actionObject_Nextframe: {
+        type: 'Nextframe',
+    },
+    /*******************/
+    actionObject_Prevframe: {
+        type: 'Prevframe',
+    },
+    /*******************/
+    actionObject_animationFPS: {
+        type: 'animationFPS',
+        fps: 30,
+    },
+    actionOptions_animationFPS: {
+        fps: {
+            type: guitype_MINMAX,
+            min: 1,
+            max: 60,
+            value: 30,
+            step: 1,
+        },
+    },
+    /*******************/
+    actionObject_SetWayPoint: {
+        type: 'SetWayPoint',
+        x: 0,
+        y: 0,
+    },
+    actionOptions_SetWayPoint: {
+        x: {
+            type: guitype_MINMAX,
+            min: -editorSettings.worldSize.width,
+            max: editorSettings.worldSize.width,
+            value: 0,
+            step: 0.1,
+        },
+        y: {
+            type: guitype_MINMAX,
+            min: -editorSettings.worldSize.width,
+            max: editorSettings.worldSize.width,
+            value: 0,
+            step: 0.1,
+        },
+    },
+    /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -764,6 +927,7 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                     }.bind(actionController));
                     break;
                 case guitype_BOOL:
+                case guitype_UNIQUE_BOOL:
                     actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
                     actionController.name(key);
                     actionController.onChange(function (value) {
@@ -772,6 +936,7 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         this.triggerActionKey = key;
                         this.triggerTargetID = targetID;
                         this.triggerActionID = actionID;
+                        if(actionOptions[key].type === guitype_UNIQUE_BOOL) this.forceUniqueBool = true;
                     }.bind(actionController));
                     break;
             }
@@ -984,7 +1149,7 @@ export class triggerCore {
         let i, actionData;
         for(i = 0; i<this.data.worldActions.length; i++){
             actionData = this.data.worldActions[i];
-            doAction(actionData);
+            doAction(actionData, this);
         }
         if (!this.targets) return;
         for (i = 0; i < this.targets.length; i++) {
@@ -1009,7 +1174,7 @@ export const addTargetToTrigger = function (_trigger, target) {
         target = game.editor.textures.getChildAt(prefab.ID);
     }
 
-    if(target.data.type === B2dEditor.object_TEXTURE && target.myBody) target = target.myBody.mySprite;
+    if([B2dEditor.object_TEXTURE, B2dEditor.object_GRAPHIC, B2dEditor.object_GRAPHICGROUP, B2dEditor.object_ANIMATIONGROUP].includes(target.data.type) && target.myBody) target = target.myBody.mySprite;
 
     if (_trigger.mySprite == target) return;
     if (_trigger.mySprite.targets.includes(target)) return;
