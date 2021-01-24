@@ -108,9 +108,8 @@ function BackendManager() {
 		const oauthhandshake = localStorage.getItem('oauth-handshake');
 		if(!oauthhandshake) return;
 
-		//redirect=http%3A%2F%2Flocalhost%3A11000%2Flogin.html
 
-		fetch(`${Settings.API}/login?code=${encodeURIComponent(oauthhandshake)}}`)
+		fetch(`${Settings.API}/login?code=${encodeURIComponent(oauthhandshake)}`)
 		.then(result => result.json())
 		.then(data=> {
 			localStorage.removeItem('oauth-handshake');
@@ -224,12 +223,17 @@ function BackendManager() {
     this.voteLevel = function (levelid, vote) {
 		// (POST) level/vote/id/up (or down)
 		return new Promise((resolve, reject) => {
+
+			if(!this.isLoggedIn()){
+                game.editor.ui.showLoginScreen();
+                return resolve(false);
+            }
+
 			const body = {
 				method: 'POST',
 				withCredentials: true,
 				headers: {
 				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
-				'Content-Type': 'application/json'
 				},
 			}
 
