@@ -1125,17 +1125,17 @@ body .dg .cr.function {
     opacity:1 !important; display:block; cursor: pointer;
 }
 
-.imageDropDown::-webkit-scrollbar {
+*::-webkit-scrollbar {
 	width: 5px;
     background: #FFF;
 }
 
-.imageDropDown::-webkit-scrollbar-corner {
+*::-webkit-scrollbar-corner {
 	height: 0;
 	display: none
 }
 
-.imageDropDown::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
 	border-radius: 5px;
     background: #000;
 }

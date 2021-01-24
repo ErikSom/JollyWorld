@@ -275,7 +275,7 @@ export const showHeaderBar = function () {
     button.setAttribute('id', 'loginButton');
     button.innerHTML = "LOGIN";
     headerBar.appendChild(button);
-    button.addEventListener('click', showLoginScreen);
+    button.addEventListener('click', ()=>{showLoginScreen()});
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton profile buttonOverlay dark');
@@ -329,7 +329,70 @@ export const showHeaderBar = function () {
     handleLoginStatusChange();
 }
 
-export const showLoginScreen = function () {
+export const showLoginScreen = function (center) {
+    if (!loginScreen) {
+        const loginGUIWidth = 300;
+
+        loginScreen = new dat.GUI({
+            autoPlace: false,
+            width: loginGUIWidth
+        });
+        loginScreen.domElement.setAttribute('id', 'loginScreen');
+
+        let folder = loginScreen.addFolder('Login Screen');
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
+
+        folder.open();
+
+        const closeButton = document.createElement('div');
+        closeButton.setAttribute('class', 'closeWindowIcon');
+        folder.domElement.append(closeButton);
+        closeButton.addEventListener('click', () => {
+            hidePanel(loginScreen);
+        });
+
+        const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+        const discordButton = document.createElement('button');
+        discordButton.setAttribute('id', 'discord')
+        discordButton.setAttribute('tabindex', '0');
+        discordButton.classList.add('menuButton');
+        discordButton.innerHTML = '';
+        targetDomElement.appendChild(discordButton);
+        discordButton.style.margin = '10px auto';
+        discordButton.style.backgroundColor = '#7289da';
+
+        discordButton.style.backgroundPosition = 'center';
+        discordButton.style.backgroundSize = '140px';
+        discordButton.style.backgroundRepeat = 'no-repeat';
+        discordButton.style.padding = '20px';
+        discordButton.style.backgroundImage = `url("data:image/svg+xml,%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' x='0' y='0' viewBox='0 0 241.2 34' xml:space='preserve'%3E%3Cstyle%3E.st0%7Bfill:%23fff%7D%3C/style%3E%3Cpath class='st0' d='M39.6 3.8C35.6.6 29.3 0 29.1 0c-.4 0-.8.2-1 .6-.1.3-.2.5-.3.8 2.6.4 5.9 1.3 8.8 3.2.5.3.6.9.3 1.4s-.9.6-1.4.3C30.5 3.2 24.2 3 23 3s-7.5.2-12.5 3.3c-.5.3-1.1.1-1.4-.3-.3-.5-.1-1.1.3-1.4 2.9-1.8 6.2-2.7 8.8-3.2-.2-.5-.3-.8-.3-.8-.2-.4-.6-.6-1-.6-.3 0-6.6.6-10.6 3.8C4.2 5.8 0 17.2 0 27c0 .2 0 .3.1.5C3 32.6 11 33.9 12.8 34c.3 0 .6-.2.8-.4l1.8-2.5c-4.9-1.3-7.5-3.4-7.6-3.6-.4-.4-.5-1-.1-1.4s1-.5 1.4-.1c.1.1 4.7 4 13.8 4s13.8-4 13.8-4c.4-.4 1-.3 1.4.1.4.4.3 1-.1 1.4-.1.1-2.7 2.3-7.6 3.6l1.8 2.5c.2.3.5.4.8.4 1.8-.1 9.7-1.4 12.7-6.5.3-.2.3-.3.3-.5 0-9.8-4.2-21.2-6.4-23.2zM16.5 23c-1.9 0-3.5-1.8-3.5-4s1.6-4 3.5-4 3.5 1.8 3.5 4-1.6 4-3.5 4zm13 0c-1.9 0-3.5-1.8-3.5-4s1.6-4 3.5-4 3.5 1.8 3.5 4-1.6 4-3.5 4zM71.2.5H58.9v13.8l8.2 7.4V8.3h4.4c2.8 0 4.1 1.3 4.1 3.5V22c0 2.1-1.3 3.6-4.1 3.6H58.9v7.8h12.3c6.6 0 12.8-3.3 12.8-10.8v-11C84 3.9 77.8.5 71.2.5zm64.5 22.1V11.3c0-4.1 7.3-5 9.6-.9l6.8-2.7c-2.7-5.9-7.5-7.6-11.6-7.6-6.6 0-13.1 3.8-13.1 11.2v11.3c0 7.5 6.5 11.2 13 11.2 4.1 0 9.1-2 11.9-7.4l-7.3-3.3c-1.9 4.6-9.3 3.5-9.3-.5zm-22.4-9.8c-2.6-.6-4.3-1.5-4.4-3.1.1-3.8 6-4 9.5-.3l5.4-4.2c-3.4-4.1-7.3-5.3-11.2-5.3-6 0-11.9 3.4-11.9 9.9 0 6.3 4.8 9.6 10.1 10.4 2.7.4 5.7 1.4 5.6 3.3-.2 3.5-7.5 3.3-10.8-.7l-5.3 4.9c3.1 4 7.3 6 11.2 6 6 0 12.7-3.5 13-9.9.5-7.9-5.4-9.9-11.2-11zM88.5 33.4h8.3V.5h-8.3v32.9zM228.4.5h-12.3v13.8l8.2 7.4V8.3h4.4c2.8 0 4.1 1.3 4.1 3.5V22c0 2.1-1.3 3.6-4.1 3.6H216v7.8h12.3c6.6 0 12.8-3.3 12.8-10.8v-11C241.2 3.9 235 .5 228.4.5zM168 0c-6.8 0-13.6 3.7-13.6 11.3v11.2c0 7.5 6.8 11.3 13.7 11.3 6.8 0 13.6-3.8 13.6-11.3V11.3C181.7 3.8 174.8 0 168 0zm5.4 22.6c0 2.4-2.7 3.6-5.3 3.6-2.7 0-5.3-1.1-5.3-3.6V11.3c0-2.4 2.6-3.7 5.2-3.7 2.7 0 5.4 1.1 5.4 3.7v11.3zm38.1-11.3C211.3 3.6 206.1.5 199.3.5h-13.2v32.9h8.4V23h1.5l7.6 10.4H214l-9-11.3c4-1.2 6.5-4.7 6.5-10.8zm-12.1 4.5h-4.9V8.3h4.9c5.2 0 5.2 7.5 0 7.5z'/%3E%3C/svg%3E")`;
+
+        discordButton.addEventListener('click', ()=>{
+            openDiscordOauth();
+            hidePanel(loginScreen);
+        });
+
+        targetDomElement.appendChild(document.createElement('br'));
+
+        customGUIContainer.appendChild(loginScreen.domElement);
+
+        registerDragWindow(loginScreen);
+
+    }
+    if(center){
+
+    }else{
+        loginScreen.domElement.style.top = '10px';
+        loginScreen.domElement.style.left = '80px';
+    }
+
+    showPanel(loginScreen);
+
+}
+
+const openDiscordOauth = ()=>{
     const shrink = .8;
     const w = Math.min(Math.floor(window.innerWidth * shrink), 600);
     const h = 800;
@@ -339,7 +402,6 @@ export const showLoginScreen = function () {
 
     const url = 'https://api.jollyworld.app/login';
     window.open(url, 'oAuthLogin', settings);
-
 }
 
 export const showRegisterScreen = function () {
@@ -1304,10 +1366,8 @@ export const showLoadScreen = function () {
 
     generateLevelList(levelListDiv, 'Load', buttonFunction);
 
-    if (saveScreen) {
-        loadScreen.domElement.style.top = saveScreen.domElement.style.top;
-        loadScreen.domElement.style.left = saveScreen.domElement.style.left;
-    }
+    loadScreen.domElement.style.top = '10px';
+    loadScreen.domElement.style.left = `${window.innerWidth-400-20}px`
 }
 let editorGUIPos = {
     x: 0,
@@ -1497,17 +1557,11 @@ export const showNotice = function (message) {
 
     var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
-    let span = document.createElement('span');
-    span.innerText = 'NOTICE';
-    targetDomElement.appendChild(span);
-    span.style.fontSize = '20px';
-    span.style.marginTop = '20px';
-    span.style.display = 'inline-block';
-
     let divWrapper = document.createElement('div');
     divWrapper.style.padding = '0px 20px';
+    divWrapper.style.marginTop = '10px';
 
-    span = document.createElement('span');
+    let span = document.createElement('span');
     span.setAttribute('class', 'itemDate');
     span.innerText = message;
     divWrapper.appendChild(span);
@@ -1518,6 +1572,7 @@ export const showNotice = function (message) {
     let button = document.createElement('div');
     button.setAttribute('class', 'headerButton save buttonOverlay dark');
     button.style.margin = 'auto';
+    button.style.maxWidth = '100px';
     button.innerHTML = "OK";
     divWrapper.appendChild(button);
 

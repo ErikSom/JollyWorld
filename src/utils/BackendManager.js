@@ -8,6 +8,7 @@ import {
 import {
     Settings
 } from '../Settings';
+import nanoid from 'nanoid';
 
 
 // static assets van een level:
@@ -134,6 +135,7 @@ function BackendManager() {
 		localStorage.removeItem('oauth-handshake');
 		localStorage.removeItem('oauth-token');
 		localStorage.removeItem('needsToRegister');
+		this.dispatchEvent('logout');
     }
 
     this.uploadFiles = function (files, UUID, completeCall, progressCall, errorCall) {
@@ -252,55 +254,46 @@ function BackendManager() {
 		})
     }
 
-    this.publishLevelData = function (levelData) {
-        // return new Promise((resolve, reject) => {
+    this.publishLevelData = (levelData) => {
+		// (POST) /level/publish/old-id/new-id (or existing new)
+		return new Promise(async (resolve, reject) => {
 
-        //     // reupload to publish storage section
-        //     if (!this.userData) return reject({
-        //         message: "Userdata not loaded"
-        //     });
+			const body = {
+				method: 'POST',
+				withCredentials: true,
+				headers: {
+				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Content-Type': 'application/json'
+				},
+			}
 
-        //     var self = this;
+			const userData = await this.getUserData();
 
-        //     firebase.functions().httpsCallable('publishLevel')({
-        //         levelid: levelData.uid,
-        //         creatorid: backendManager.getUserID()
-        //     }).then(function (result) {
-        //         if(result.data === "success"){
+			const serverLevelData = userData.my_levels.find(level => level.id === levelData.id);
 
-        //             var levelObject = {};
-        //             levelObject['private'] = {};
-        //             levelObject['private']["creationDate"] = Date.now();
-        //             levelObject['private']["description"] = levelData.description;
-        //             levelObject['private']["title"] = levelData.title;
-        //             levelObject['private']["creator"] = self.userData.username;
-        //             levelObject['private']["creatorID"] = backendManager.getUserID();
-        //             levelObject['private']["forcedVehicle"] = levelData.forcedVehicle || 0;
-        //             levelObject['public'] = {};
-        //             levelObject['public']["playCount"] = 0;
-        //             levelObject['public']["firstMonth_playCount"] = 'unset';
-        //             levelObject['public']["firstWeek_playCount"] = 'unset';
-        //             levelObject['public']["firstDay_playCount"] = 'unset';
-        //             levelObject['public']["voteNum"] = 0;
-        //             levelObject['public']["voteAvg"] = 0.5;
-        //             levelObject['public']["firstMonth_voteAvg"] = 'unset';
-        //             levelObject['public']["firstWeek_voteAvg"] = 'unset';
-        //             levelObject['public']["firstDay_voteAvg"] = 'unset';
+			if(!serverLevelData) return reject({error:'Level not found in userdata'});
 
-        //             var levelRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}`);
-        //             levelRef.set(levelObject, function (error) {
-        //                 levelObject.uid = levelData.uid;
-        //                 if (error) reject(error);
-        //                 else resolve(levelObject);
-        //             });
-        //         }else{
-        //             reject(result.data);
-        //         }
+			const publishLevelId = serverLevelData.published_id || nanoid();
 
-        //     }).catch(error=>{
-        //         reject(error);
-        //     });
-        // });
+			fetch(`${Settings.API}/level/publish/${details.id}/${publishLevelId}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+
+				if(error){
+					reject(error)
+				}else{
+					const levelData = data[0];
+					console.log("SUCCESSS :)!");
+
+					// update the local cache
+					serverLevelData.published_id = publishLevelId;
+					Object.assign(cachedLevel, levelData);
+
+					resolve(levelData);
+				}
+			});
+		})
     }
     this.voteLevel = function (levelid, vote, _creationDate) {
         // return new Promise(resolve => {
