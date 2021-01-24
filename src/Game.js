@@ -781,7 +781,7 @@ function Game() {
 				method: 'GET',
 			}
 
-            fetch(`https://cors-anywhere.herokuapp.com/${Settings.STATIC}/${levelData.level_md5}.json`, body)
+            fetch(`${Settings.STATIC}/${levelData.level_md5}.json`, body)
             .then(response => response.json())
             .then(data => {
                 this.currentLevelData.json = JSONStringify(data);

@@ -25,7 +25,7 @@ let toolGUI;
 export let assetGUI;
 export let editorGUI;
 let headerBar;
-let levelEditScreen;
+export let levelEditScreen;
 let loginScreen;
 let registerScreen;
 let usernameScreen;
@@ -97,6 +97,10 @@ export const setNewLevelData = function () {
     if (levelEditScreen) {
         game.currentLevelData.title = levelEditScreen.domElement.querySelector('#levelEdit_title').value;
         game.currentLevelData.description = levelEditScreen.domElement.querySelector('#levelEdit_description').value;
+
+        const youtubeIds = levelEditScreen.domElement.querySelectorAll('.levelEdit_youtubeLink');
+        const values = Array.from(new Set([...youtubeIds].map(el=>el.value).filter(el=>el.length>0))); // deduplicate and filter empty
+        game.currentLevelData.youtubelinks = values;
     }
 }
 
@@ -222,12 +226,12 @@ const doPublishLevelData = function (publishButton) {
                 publishButton.style.backgroundColor = '';
                 publishButton.innerText = 'PUBLISH';
                 console.log("PUBLISH SUCCESSSSSS");
-            }).catch((error) => {
+            }).catch(error => {
                 console.log(error);
                 publishButton.style.backgroundColor = '';
                 publishButton.innerText = 'PUBLISH';
             });
-        }).catch((error) => {
+        }).catch(error => {
             console.log(error);
         });
     }
@@ -235,7 +239,7 @@ const doPublishLevelData = function (publishButton) {
     if (hasUnsavedChanges()) {
         showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
             publishLevel();
-        }).catch((error) => {});
+        }).catch(error => {});
     } else publishLevel();
 
 }
@@ -310,9 +314,12 @@ export const showHeaderBar = function () {
     headerBar.appendChild(button);
 
     button.addEventListener('click', () => {
-        game.newLevel();
-        hideEditorPanels();
-        setLevelSpecifics();
+
+        showPrompt(`${Settings.DEFAULT_TEXTS.new_level}`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+            game.newLevel();
+            hideEditorPanels();
+            setLevelSpecifics();
+        }).catch(error => {})
     });
 
     button = document.createElement('div');
@@ -748,7 +755,7 @@ export const showUsernameScreen = function () {
                         hidePanel(usernameScreen);
                         dotShell.classList.add('hidden');;
                         button.innerHTML = oldText;
-                    }).catch((error) => {
+                    }).catch(error => {
                         /*console.log("Firebase responded with", error);
                         let errorMessage = error.message;
                         if (error.code == 'USERNAME_TAKEN')*/ 
@@ -989,13 +996,13 @@ export const showLevelEditScreen = function (dontReplace) {
                     hideEditorPanels();
                     setLevelSpecifics();
                     showNotice("Level succesfully deleted!");
-                }).catch((error) => {
+                }).catch(error => {
                     deleteButton.style.backgroundColor = '';
                     deleteButton.innerText = 'DELETE';
                     showNotice("Error deleting level?");
 
                 });
-            }).catch((error) => {});
+            }).catch(error => {});
         });
 
         targetDomElement.appendChild(document.createElement('br'));
@@ -1033,6 +1040,13 @@ export const showLevelEditScreen = function (dontReplace) {
         }
         levelEditScreen.domElement.querySelector('#levelEdit_title').value = game.currentLevelData.title;
         levelEditScreen.domElement.querySelector('#levelEdit_description').value = game.currentLevelData.description;
+
+        const youtubeIds = levelEditScreen.domElement.querySelectorAll('.levelEdit_youtubeLink');
+        youtubeIds.forEach(el=>el.value='');
+
+        if(game.currentLevelData.youtubelinks && (game.currentLevelData.youtubelinks.length>1 || game.currentLevelData.youtubelinks[0])){
+            game.currentLevelData.youtubelinks.forEach((id, index)=>{youtubeIds[index].value = id});
+        }
     }
 }
 export const showSaveScreen = function () {
@@ -1355,7 +1369,7 @@ export const showLoadScreen = function () {
         if (hasUnsavedChanges()) {
             showPrompt(Settings.DEFAULT_TEXTS.unsavedChanges, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 doLevelLoad();
-            }).catch((error) => {});
+            }).catch(error => {});
         } else doLevelLoad();
     }
 
@@ -1710,19 +1724,13 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     folder.open();
 
-    var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-    let span = document.createElement('span');
-    span.innerText = 'PROMPT';
-    targetDomElement.appendChild(span);
-    span.style.fontSize = '20px';
-    span.style.marginTop = '20px';
-    span.style.display = 'inline-block';
+    const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
     let divWrapper = document.createElement('div');
     divWrapper.style.padding = '0px 20px';
+    divWrapper.style.marginTop = '10px';
 
-    span = document.createElement('span');
+    let span = document.createElement('span');
     span.setAttribute('class', 'itemDate');
     span.innerText = message;
     divWrapper.appendChild(span);

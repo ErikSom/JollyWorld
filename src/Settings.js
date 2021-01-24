@@ -67,6 +67,7 @@ export var Settings = {
         publish_noDescription: 'Your level needs a description before you can publish it.',
         load_notLoggedIn: 'You must be logged in to load levels from the cloud. Your current level is automatically loaded on the next boot.',
         unsavedChanges: 'You have unsaved changes to your level, are you sure you wish to proceed?',
+        new_level: 'Are you sure you want to start a new level?',
         confirm:'Yes!',
         decline:'NOPE!',
         newGradient:'-new gradient-',

@@ -218,6 +218,7 @@ function BackendManager() {
 		bodyLevelData.forced_vehicle = details.forced_vehicle;
 		bodyLevelData.game_build = __VERSION__;
 		if(cameraShotData) bodyLevelData.thumbnail = cameraShotData.replace('data:image/png;base64,', '') // kan ik hier ook geen data sturen? overschrijf ik het dan niet?
+        if(details.youtubelinks)  bodyLevelData.youtubelinks = details.youtubelinks;
 		bodyLevelData.data = window.btoa(levelJSON);
 		// creation data, is dat de date van eerste keer opslaan?
 		// minimum string length title & description = 3;
@@ -343,13 +344,36 @@ function BackendManager() {
 
     }
     this.deleteUserLevelData = function (details) {
-        // return new Promise((resolve, reject) => {
-        //     var levelRef = firebase.database().ref(`/Users_Private/${this.app.auth().currentUser.uid}/Levels/${details.uid}`);
-        //     levelRef.set(null, function (error) {
-        //         if (error) reject(error);
-        //         else resolve();
-        //     });
-        // });
+		//DELETE /level/:id
+		return new Promise((resolve, reject) => {
+			const body = {
+				method: 'DELETE',
+				withCredentials: true,
+				headers: {
+				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Content-Type': 'application/json'
+				},
+			}
+			fetch(`${Settings.API}/level/${details.id}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+
+				if(error){
+					reject(error)
+				}else{
+					const levelData = data[0];
+					console.log("SUCCESSS :)!", data);
+
+					// update the local cache
+					// const userData = await this.getUserData();
+					// const cachedLevel = userData.my_levels.find(level=> level.id === levelData.id);
+					// userData.my_levels = userData.my_levels.filer(level=> level.id !== levelData.id);
+
+					resolve(levelData);
+				}
+			});
+		})
     }
     this.getUserLevels = async () => {
 		const userData = await this.getUserData();
