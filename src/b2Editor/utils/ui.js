@@ -577,7 +577,7 @@ export const showRegisterScreen = function () {
                     dotShell.classList.add('hidden');;
                     button.innerHTML = oldText;
                 }).catch((error) => {
-                    console.log("Firebase responded with", error.code);
+                    console.log("Backend responded with", error.code);
                     let errorMessage = error.message;
                     if (error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
                     errorSpan.innerText = errorMessage;
@@ -756,7 +756,7 @@ export const showUsernameScreen = function () {
                         dotShell.classList.add('hidden');;
                         button.innerHTML = oldText;
                     }).catch(error => {
-                        /*console.log("Firebase responded with", error);
+                        /*console.log("Backend responded with", error);
                         let errorMessage = error.message;
                         if (error.code == 'USERNAME_TAKEN')*/ 
                         const errorMessage = 'Username already claimed by other email';

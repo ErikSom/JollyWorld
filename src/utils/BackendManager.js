@@ -1,6 +1,7 @@
 import {
     ui
 } from '../ui/UIManager';
+import * as BackendCache from './BackendCacheManager'
 
 import {
     game
@@ -51,9 +52,6 @@ function BackendManager() {
     this.userData;
 
     this.init = function () {
-    }
-    this.getUserID = function(){
-        // return firebase.auth().currentUser.uid;
     }
 
     this.claimUsername = function (username) {
@@ -221,27 +219,57 @@ function BackendManager() {
 
 			});
 		})
-    }
+	}
+
     this.voteLevel = function (levelid, vote) {
+		// (POST) level/vote/id/up (or down)
+		return new Promise((resolve, reject) => {
+			const body = {
+				method: 'POST',
+				withCredentials: true,
+				headers: {
+				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Content-Type': 'application/json'
+				},
+			}
 
-    }
-    this.increasePlayCountPublishedLevel = function (levelData) {
-        // var playCountRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}/public/playCount`);
-        // playCountRef.transaction(count => {
-        //     if (count === null) {
-        //         return count = 0;
-        //     } else {
-        //         return count + 1;
-        //     }
-        // });
+			const voteType = vote > 0 ? 'up' : 'down';
 
-        // const now = new Date();
-        // const creationDate = new Date(levelData.creationDate);
-        // if (now.getFullYear() === creationDate.getFullYear() && now.getMonth() == creationDate.getMonth()) {
-        //     this.call_setRangedPopularity(levelData.uid);
-        // }
+			fetch(`${Settings.API}/level/vote/${levelid}/${voteType}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+				if(error) return reject(error);
 
-    }
+				console.log("VOTE SUCCESS :)");
+
+				// update local thumbnail cache
+				BackendCache.voteDataCache[levelid] = vote;
+				BackendCache.save();
+
+				resolve();
+			});
+		});
+	}
+
+    this.increasePlayCountPublishedLevel = function (details) {
+		// (POST) level/play/id
+		const body = {
+			method: 'POST',
+		}
+
+		fetch(`${Settings.API}/level/play/${details.id}`, body)
+		.then(result => result.json())
+		.then(async data => {
+			const {error} = data;
+			if(error){
+				return console.log(error);
+			}
+			console.log("PLAYCOUNT INCREASE SUCCESS :)");
+		});
+
+	}
+
     this.deleteUserLevelData = function (details) {
 		//DELETE /level/:id
 		return new Promise((resolve, reject) => {

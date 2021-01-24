@@ -245,7 +245,6 @@ function Game() {
             ui.disableMainMenu(true);
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
 
-                console.log(levelData.level_md5, 'wtf is this here?')
                 this.loadPublishedLevelData(levelData);
             }).catch(err =>{
                 location.hash = '';
@@ -792,8 +791,6 @@ function Game() {
         });
     }
     this.loadPublishedLevelData = function (levelData) {
-        console.log(levelData.level_md5, 'wtf is this here 2?')
-
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData;
             const self = this;

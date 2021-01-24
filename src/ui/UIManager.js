@@ -1,7 +1,7 @@
 import {
     backendManager
 } from '../utils/BackendManager';
-import * as FireBaseCache from '../utils/FireBaseCacheManager'
+import * as BackendCache from '../utils/BackendCacheManager'
 
 import {
     game
@@ -1445,8 +1445,7 @@ export var ui = new UIManager();
 
 
 const shouldShowVoteButton = (up, down)=>{
-    const vote = FireBaseCache.voteDataCache[game.currentLevelData.id];
-    console.log("VOTE??", vote, up, down)
+    const vote = BackendCache.voteDataCache[game.currentLevelData.id];
     if(vote){
         if(vote > 0){
             up.style.filter = '';

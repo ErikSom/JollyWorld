@@ -43,9 +43,6 @@ export var Settings = {
     motorForceLimit:50000,
     slideJointDistanceLimit:5000,
 
-    //FIREBASE
-    levelsPerRequest:100,
-
     /*TELEPORTS*/
     timeBetweenTeleports:5000,
 
@@ -55,6 +52,8 @@ export var Settings = {
     // REDIRECT:'http://localhost:11009/login.html', // TODO change
     REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
     // REDIRECT:'https://jollyworld.app/login.html',
+    levelsPerRequest:100,
+
 
     /*TEXT*/
     DEFAULT_TEXTS:{
