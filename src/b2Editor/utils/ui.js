@@ -407,7 +407,7 @@ const openDiscordOauth = ()=>{
     const topPosition = (window.innerHeight-h)/2;
     const settings = `height=${h},width=${w},top=${topPosition},left=${leftPosition},scrollbars=yes,directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no`;
 
-    const url = 'https://api.jollyworld.app/login';
+    const url = `https://api.jollyworld.app/login?redirect=${encodeURIComponent(Settings.REDIRECT)}`;
     window.open(url, 'oAuthLogin', settings);
 }
 

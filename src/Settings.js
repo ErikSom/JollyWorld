@@ -52,6 +52,9 @@ export var Settings = {
     /*BACKEND*/
     API:'https://api.jollyworld.app',
     STATIC:'https://static.jollyworld.app',
+    // REDIRECT:'http://localhost:11009/login.html', // TODO change
+    REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
+    // REDIRECT:'https://jollyworld.app/login.html',
 
     /*TEXT*/
     DEFAULT_TEXTS:{

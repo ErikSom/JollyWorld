@@ -24,6 +24,46 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":16},
 	"sourceSize": {"w":18,"h":16}
 },
+"Confetti0000":
+{
+	"frame": {"x":142,"y":182,"w":14,"h":15},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":15},
+	"sourceSize": {"w":14,"h":15}
+},
+"Confetti0001":
+{
+	"frame": {"x":189,"y":72,"w":13,"h":11},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":3,"w":14,"h":15},
+	"sourceSize": {"w":14,"h":15}
+},
+"Confetti0002":
+{
+	"frame": {"x":495,"y":153,"w":11,"h":6},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":4,"w":14,"h":15},
+	"sourceSize": {"w":14,"h":15}
+},
+"Confetti0003":
+{
+	"frame": {"x":498,"y":100,"w":12,"h":2},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":6,"w":14,"h":15},
+	"sourceSize": {"w":14,"h":15}
+},
+"Confetti0004":
+{
+	"frame": {"x":477,"y":48,"w":10,"h":8},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":3,"w":14,"h":15},
+	"sourceSize": {"w":14,"h":15}
+},
 "Decal.png":
 {
 	"frame": {"x":44,"y":132,"w":31,"h":33},
@@ -130,7 +170,7 @@
 },
 "FruitPiece_10000":
 {
-	"frame": {"x":189,"y":72,"w":11,"h":11},
+	"frame": {"x":173,"y":127,"w":11,"h":11},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":11,"h":11},
@@ -138,7 +178,7 @@
 },
 "FruitPiece_20000":
 {
-	"frame": {"x":477,"y":48,"w":9,"h":7},
+	"frame": {"x":498,"y":71,"w":9,"h":7},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":7},
@@ -154,7 +194,7 @@
 },
 "FruitPiece_40000":
 {
-	"frame": {"x":498,"y":80,"w":7,"h":9},
+	"frame": {"x":498,"y":89,"w":7,"h":9},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":9},
@@ -162,7 +202,7 @@
 },
 "FruitPiece_50000":
 {
-	"frame": {"x":498,"y":71,"w":9,"h":7},
+	"frame": {"x":498,"y":80,"w":9,"h":7},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":7},

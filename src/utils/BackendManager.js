@@ -110,7 +110,9 @@ function BackendManager() {
 		const oauthhandshake = localStorage.getItem('oauth-handshake');
 		if(!oauthhandshake) return;
 
-		fetch(`${Settings.API}/login?code=${encodeURIComponent(oauthhandshake)}`)
+		//redirect=http%3A%2F%2Flocalhost%3A11000%2Flogin.html
+
+		fetch(`${Settings.API}/login?code=${encodeURIComponent(oauthhandshake)}}`)
 		.then(result => result.json())
 		.then(data=> {
 			localStorage.removeItem('oauth-handshake');
