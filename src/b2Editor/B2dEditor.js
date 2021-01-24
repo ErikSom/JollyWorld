@@ -127,10 +127,7 @@ const _B2dEditor = function () {
 		w: 400,
 		h: 300
 	};
-	this.cameraShotData = {
-		highRes: null,
-		lowRes: null
-	}
+	this.cameraShotData = null;
 	this.playerHistory = [];
 
 	this.selectingTriggerTarget = false;
@@ -2326,36 +2323,21 @@ const _B2dEditor = function () {
 		}
 		game.app.render();
 		//
-		let imageData = this.canvas.toDataURL('image/jpeg', 1);
+		let imageData = this.canvas.toDataURL('image/png', 1);
 		let image = new Image();
 		image.src = imageData;
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext("2d");
-		const shotQuality = 1.0;
 		const self = this;
 		image.onload = function () {
 			//highRes;
-			var scale = 0.5;
+			const scale = 1.0;
 			canvas.width = self.cameraSize.w * scale;
 			canvas.height = self.cameraSize.h * scale;
 			context.drawImage(image, self.mousePosPixel.x - self.cameraSize.w / 2, self.mousePosPixel.y - self.cameraSize.h / 2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
-			var highResThumb = canvas.toDataURL('image/jpeg', shotQuality);
-			// var _image = new Image();
-			// _image.src = highResThumb;
-			// document.body.appendChild(_image);
+			const highResThumb = canvas.toDataURL('image/png', 1.0);
 
-			//lowRes
-			scale = 0.25;
-			canvas.width = self.cameraSize.w * scale;
-			canvas.height = self.cameraSize.h * scale;
-			context.drawImage(image, self.mousePosPixel.x - self.cameraSize.w / 2, self.mousePosPixel.y - self.cameraSize.h / 2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
-			var lowResThumb = canvas.toDataURL('image/jpeg', shotQuality);
-			/*var _image = new Image();
-			_image.src = lowResThumb;
-			document.body.appendChild(_image);*/
-
-			self.cameraShotData.highRes = highResThumb;
-			self.cameraShotData.lowRes = lowResThumb;
+			self.cameraShotData = highResThumb;
 
 			self.cameraShotCallBack();
 
@@ -3778,15 +3760,19 @@ const _B2dEditor = function () {
 	}
 	this.onMouseWheel = function(e){
 
-		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI];
+		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI, ui.loadScreen, ui.saveScreen];
 		// detect mouse on gui
 		let uiScroll = false;
 		guiToHaveMouseWheel.forEach( gui => {
-			if(gui && gui.domElement){
+			if(gui && gui.domElement && gui.domElement.offsetParent !== null){
 				if(!gui.cachedBounds){
 					gui.cachedBounds = gui.domElement.getBoundingClientRect();
 				}
-				if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown') && e.target.parentNode.classList.contains('open')){
+				const itemList = e.path.find(el => el.classList && el.classList.contains('itemList'));
+				if(itemList){
+					itemList.scrollBy(e.deltaX, e.deltaY);
+					uiScroll = true;
+				}else if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown') && e.target.parentNode.classList.contains('open')){
 					e.target.parentNode.scrollBy(e.deltaX, e.deltaY);
 					uiScroll = true;
 				}else  if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
@@ -7304,7 +7290,7 @@ const _B2dEditor = function () {
 
 			const bodyAVehicle = bodies[0] && this.retrieveClassFromBody(bodies[0]) && this.retrieveClassFromBody(bodies[0]).isVehicle;
 			const bodyBVehicle = bodies[1] && this.retrieveClassFromBody(bodies[1]) && this.retrieveClassFromBody(bodies[1]).isVehicle;
-			if((bodyAVehicle || bodyBVehicle) && !game.currentLevelData.forcedVehicle){
+			if((bodyAVehicle || bodyBVehicle) && !game.currentLevelData.forced_vehicle){
 				ui.showNotice('You must set forceVehicle to true on the character if you want to attach joints to it');
 				return;
 			}

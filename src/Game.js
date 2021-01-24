@@ -14,8 +14,8 @@ import {
     ui
 } from "./ui/UIManager";
 import {
-    firebaseManager
-} from "./utils/FireBaseManager";
+    backendManager
+} from "./utils/BackendManager";
 import {
     LoadCoreAssets, ExtractTextureAssets
 } from "./AssetList";
@@ -104,7 +104,6 @@ function Game() {
     PathRenderTarget();
 
     this.init = function () {
-
         this.stats = new Stats();
         this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
         document.body.appendChild(this.stats.dom);
@@ -244,9 +243,8 @@ function Game() {
 
         if(uidHash && uidHash.length===21){
             ui.disableMainMenu(true);
-            firebaseManager.getPublishedLevelInfo(uidHash).then(snapshot => {
+            backendManager.getPublishedLevelInfo(uidHash).then(snapshot => {
                 const levelData = snapshot.val();
-                levelData.uid = uidHash;
                 this.loadPublishedLevelData(levelData);
             }).catch(err =>{
                 location.hash = '';
@@ -285,8 +283,8 @@ function Game() {
         window.addEventListener('wheel', this.onMouseWheel.bind(this), {passive:false});
         window.addEventListener('resize', this.handleResize.bind(this));
         window.addEventListener('hashchange', ()=>{
-            const uid = location.hash.split('/')[0].substr(1);
-            if(uid.length === 21  && this.currentLevelData && uid !== this.currentLevelData.uid){
+            const id = location.hash.split('/')[0].substr(1);
+            if(id.length === 21  && this.currentLevelData && id !== this.currentLevelData.id){
                 location.reload();
             }
         })
@@ -325,6 +323,10 @@ function Game() {
             }catch(e){
                 console.log("Copy Paste error:", e);
             }
+        })
+
+        window.addEventListener('focus', ()=>{
+            backendManager.login();
         })
 
         emitterManager.init();
@@ -647,6 +649,10 @@ function Game() {
         this.doAutoSave();
         this.editor.editing = true;
         ui.hide();
+
+        if(localStorage.getItem('needsToRegister')){
+			backendManager.dispatchEvent('username');
+		}
     }
     this.initLevel = function (data) {
         this.stopWorld();
@@ -692,14 +698,14 @@ function Game() {
             description: '',
             crossPromos: [],
             creationDate: Date.now(),
-            forcedVehicle:0,
-            uid: nanoid(),
+            forced_vehicle:0,
+            id: nanoid(),
         }
         this.initLevel(data);
         SaveManager.saveTempEditorWorld(this.currentLevelData);
     }
     this.saveNewLevelData = function () {
-        game.currentLevelData.uid = nanoid();
+        game.currentLevelData.id = nanoid();
         game.currentLevelData.creationDate = Date.now();
 
         game.currentLevelData.thumbHighResURL = undefined;
@@ -710,11 +716,10 @@ function Game() {
     }
     this.saveLevelData = function () {
         return new Promise((resolve, reject) => {
-            firebaseManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then((levelData) => {
+            backendManager.uploadUserLevelData(game.currentLevelData, game.editor.stringifyWorldJSON(), game.editor.cameraShotData).then((levelData) => {
                 this.currentLevelData = levelData;
                 game.currentLevelData.saved = true;
-                game.editor.cameraShotData.highRes = null;
-                game.editor.cameraShotData.lowRes = null;
+                game.editor.cameraShotData = null;
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
                 resolve();
             }).catch((error) => {
@@ -724,7 +729,7 @@ function Game() {
     }
     this.publishLevelData = function () {
         return new Promise((resolve, reject) => {
-            firebaseManager.publishLevelData(game.currentLevelData).then((levelData) => {
+            backendManager.publishLevelData(game.currentLevelData).then((levelData) => {
                 resolve();
             }).catch((error) => {
                 reject(error);
@@ -732,7 +737,7 @@ function Game() {
         });
     }
     this.deleteLevelData = function () {
-        return firebaseManager.deleteUserLevelData(game.currentLevelData);
+        return backendManager.deleteUserLevelData(game.currentLevelData);
     }
     this.levelHasChanges = function () {
         if (game.currentLevelData.json != game.editor.stringifyWorldJSON()) return true;
@@ -771,16 +776,18 @@ function Game() {
     this.loadUserLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData;
-            game.currentLevelData.uid = levelData.uid;
-            var self = this;
 
-            fetch(`${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${levelData.uid}%2FlevelData.json?${levelData.dataURL}`)
+			const body = {
+				method: 'GET',
+			}
+
+            fetch(`https://cors-anywhere.herokuapp.com/${Settings.STATIC}/${levelData.level_md5}.json`, body)
             .then(response => response.json())
             .then(data => {
-                self.currentLevelData.json = JSONStringify(data);
-                self.currentLevelData.saved = true;
-                self.initLevel(self.currentLevelData);
-                SaveManager.saveTempEditorWorld(self.currentLevelData);
+                this.currentLevelData.json = JSONStringify(data);
+                this.currentLevelData.saved = true;
+                this.initLevel(this.currentLevelData);
+                SaveManager.saveTempEditorWorld(this.currentLevelData);
                 return resolve();
             }).catch((err)=>{
                 return reject({
@@ -792,10 +799,9 @@ function Game() {
     this.loadPublishedLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData.private;
-            game.currentLevelData.uid = levelData.uid;
             game.currentLevelData.public = levelData.public;
             var self = this;
-           fetch(`${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.uid}/levelData.json`)
+           fetch(`${backendManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.id}/levelData.json`)
            .then(response => response.json())
            .then((data) =>{
                 self.currentLevelData.json = JSONStringify(data);

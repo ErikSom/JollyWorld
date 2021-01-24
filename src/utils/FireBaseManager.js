@@ -20,7 +20,7 @@ import {
 
 const nanoid = require('nanoid');
 
-function FireBaseManager() {
+function backendManager() {
     this.app;
     this.user;
     this.userData;
@@ -67,7 +67,7 @@ function FireBaseManager() {
         return new Promise((resolve, reject) => {
             var usernameRef = firebase.database().ref('/Usernames/' + username);
             usernameRef.transaction(function (currentData) {
-                if (currentData === null) return firebaseManager.getUserID();
+                if (currentData === null) return backendManager.getUserID();
                 else return;
             }, function (error, committed, snapshot) {
                 if (error) {
@@ -89,7 +89,7 @@ function FireBaseManager() {
         return new Promise((resolve, reject) => {
             if (this.userData) return resolve();
             console.log(self.getus)
-            var usernameRef = firebase.database().ref('/Users/' + firebaseManager.getUserID());
+            var usernameRef = firebase.database().ref('/Users/' + backendManager.getUserID());
             usernameRef.once('value').then(snapshot => {
                 self.userData = snapshot.val();
                 if (!self.userData) {
@@ -105,7 +105,7 @@ function FireBaseManager() {
     this.storeUserData = function (data) {
         return new Promise((resolve, reject) => {
             var self = this;
-            var usernameRef = firebase.database().ref('/Users/' + firebaseManager.getUserID());
+            var usernameRef = firebase.database().ref('/Users/' + backendManager.getUserID());
             usernameRef.set(data, function (error) {
                 if (error) reject(error);
                 else {
@@ -216,7 +216,7 @@ function FireBaseManager() {
         }
         this.complete = function (task) {
             task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                var token = downloadURL.split(firebaseManager.baseDownloadURL)[1];
+                var token = downloadURL.split(backendManager.baseDownloadURL)[1];
                 self.tokens.push(token);
                 self.currentFileProgress = 0;
                 if (self.currentIndex == self.totalFiles) {
@@ -228,7 +228,7 @@ function FireBaseManager() {
         }
 
         this.uploadFile = function (file, dir, name, datatype) {
-            const storageRef = firebase.storage().ref(`${dir}/${firebaseManager.getUserID()}/${self.uploadUUID}/${name}`);
+            const storageRef = firebase.storage().ref(`${dir}/${backendManager.getUserID()}/${self.uploadUUID}/${name}`);
 
             let task;
             if (typeof file === 'string') {
@@ -350,7 +350,7 @@ function FireBaseManager() {
 
             firebase.functions().httpsCallable('publishLevel')({
                 levelid: levelData.uid,
-                creatorid: firebaseManager.getUserID()
+                creatorid: backendManager.getUserID()
             }).then(function (result) {
                 if(result.data === "success"){
 
@@ -360,7 +360,7 @@ function FireBaseManager() {
                     levelObject['private']["description"] = levelData.description;
                     levelObject['private']["title"] = levelData.title;
                     levelObject['private']["creator"] = self.userData.username;
-                    levelObject['private']["creatorID"] = firebaseManager.getUserID();
+                    levelObject['private']["creatorID"] = backendManager.getUserID();
                     levelObject['private']["forcedVehicle"] = levelData.forcedVehicle || 0;
                     levelObject['public'] = {};
                     levelObject['public']["playCount"] = 0;
@@ -659,5 +659,5 @@ function FireBaseManager() {
 
 }
 
-export var firebaseManager = new FireBaseManager();
-firebaseManager.init();
+export var backendManager = new backendManager();
+backendManager.init();

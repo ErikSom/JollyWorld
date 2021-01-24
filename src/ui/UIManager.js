@@ -1,6 +1,6 @@
 import {
-    firebaseManager
-} from '../utils/FireBaseManager';
+    backendManager
+} from '../utils/BackendManager';
 import * as FireBaseCache from '../utils/FireBaseCacheManager'
 
 import {
@@ -529,7 +529,7 @@ function UIManager() {
         // set values
 
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
-        thumbNailImage.src = `${firebaseManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.uid}/thumb_highRes.jpg`;
+        thumbNailImage.src = `${backendManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.id}/thumb_highRes.jpg`;
 
         levelBanner.domElement.querySelector('#levelbanner_title').innerText = game.currentLevelData.title;
         levelBanner.domElement.querySelector('#levelbanner_creatorSpan').innerText = game.currentLevelData.creator;
@@ -539,7 +539,7 @@ function UIManager() {
         levelBanner.domElement.style.top = '50%';
         levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
 
-        window.location.hash = `${game.currentLevelData.uid}/`
+        window.location.hash = `${game.currentLevelData.id}/`
 
     }
 
@@ -628,12 +628,12 @@ function UIManager() {
                 vehicleHolder.appendChild(portrait);
 
                 portrait.onclick = ()=>{
-                    if(!game.currentLevelData.forcedVehicle || (i+1) === game.currentLevelData.forcedVehicle){
+                    if(!game.currentLevelData.forced_vehicle || (i+1) === game.currentLevelData.forced_vehicle){
                         this.hideVehicleSelect();
                         game.selectedVehicle = i+1;
                         game.initLevel(game.currentLevelData);
                         game.playWorld();
-                        firebaseManager.increasePlayCountPublishedLevel(game.currentLevelData);
+                        backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
 
                     }
                 }
@@ -653,7 +653,7 @@ function UIManager() {
 
         const vehicleHolderDiv = vehicleSelect.domElement.querySelector('.vehicleHolder');
         [...vehicleHolderDiv.children].forEach((portrait, index)=> {
-            if(game.currentLevelData.forcedVehicle && (index+1) !== game.currentLevelData.forcedVehicle){
+            if(game.currentLevelData.forced_vehicle && (index+1) !== game.currentLevelData.forced_vehicle){
                 portrait.style.cursor = 'not-allowed';
                 portrait.style.filter = 'grayscale(1) brightness(0.5)';
             }else{
@@ -748,12 +748,12 @@ function UIManager() {
             ratingHolder.appendChild(downvoteButton);
 
             upvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, 1, game.currentLevelData.creationDate).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
             downvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, -1, game.currentLevelData.creationDate).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
@@ -909,13 +909,13 @@ function UIManager() {
             ratingHolder.appendChild(downvoteButton);
 
             upvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, 1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, 1, game.currentLevelData.creationDate).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
 
             downvoteButton.addEventListener('click', () => {
-                firebaseManager.voteLevel(game.currentLevelData.uid, -1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, -1, game.currentLevelData.creationDate).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
@@ -1086,7 +1086,7 @@ function UIManager() {
 
         socialShareScreen.domElement.style.visibility = 'visible';
 
-        const url = encodeURIComponent('https://jollyworld.netlify.app/#'+level.uid);
+        const url = encodeURIComponent('https://jollyworld.netlify.app/#'+level.id);
         const body = encodeURIComponent('Check out this level in JollyWorld! ' + level.private.description);
 
         const socialHTML =`
@@ -1389,7 +1389,7 @@ function UIManager() {
 
                 itemBarClone.querySelector('.itemPlays').innerText = format.formatNumber(level.public.playCount);
 
-                itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.basePublicURL}publishedLevels/${level.private.creatorID}/${level.uid}/thumb_lowRes.jpg`;
+                itemBarClone.querySelector('#thumbImage').src = `${backendManager.basePublicURL}publishedLevels/${level.private.creatorID}/${level.id}/thumb_lowRes.jpg`;
 
                 itemBarClone.querySelector('.levelShareDiv').addEventListener('click', () => {
                     this.showSocialShare(level);
@@ -1412,7 +1412,7 @@ function UIManager() {
 
             });
         }
-        firebaseManager.getPublishedLevels(filter).then((levels) => {
+        backendManager.getPublishedLevels(filter).then((levels) => {
             buildLevelList(levels);
         })
     }
@@ -1431,7 +1431,7 @@ export var ui = new UIManager();
 
 
 const shouldShowVoteButton = (up, down)=>{
-    const vote = FireBaseCache.voteDataCache[game.currentLevelData.uid];
+    const vote = FireBaseCache.voteDataCache[game.currentLevelData.id];
     console.log("VOTE??", vote, up, down)
     if(vote){
         if(vote > 0){

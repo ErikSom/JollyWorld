@@ -49,6 +49,10 @@ export var Settings = {
     /*TELEPORTS*/
     timeBetweenTeleports:5000,
 
+    /*BACKEND*/
+    API:'https://api.jollyworld.app',
+    STATIC:'https://static.jollyworld.app',
+
     /*TEXT*/
     DEFAULT_TEXTS:{
         levelEditScreen_DefaultTitleText: 'Fill in Title',

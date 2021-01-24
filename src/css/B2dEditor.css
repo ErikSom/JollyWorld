@@ -618,7 +618,6 @@ body .dg .cr.function {
 .levelLoadDiv {
     height: 100%;
     padding: 5px;
-    text-align: center;
     text-align: left;
     display: inline-block;
 }
@@ -682,6 +681,7 @@ body .dg .cr.function {
 .listItem #thumbImage {
     width: 100%;
     height: 100%;
+    background: black;
 }
 
 .itemList_ScrollOverlay {
@@ -728,7 +728,6 @@ body .dg .cr.function {
     height: 100%;
     padding: 5px;
     text-align: center;
-    text-align: left;
     display: inline-block;
 }
 

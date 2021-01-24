@@ -7,8 +7,8 @@ import {
     game
 } from "../../Game";
 import {
-    firebaseManager
-} from "../../utils/FireBaseManager";
+    backendManager
+} from "../../utils/BackendManager";
 import {
     Settings
 } from "../../Settings";
@@ -20,7 +20,6 @@ import * as texts from '../utils/texts';
 import * as drawing from './drawing';
 import { hashName } from "../../AssetList";
 
-const nanoid = require('nanoid');
 
 let toolGUI;
 export let assetGUI;
@@ -30,8 +29,8 @@ let levelEditScreen;
 let loginScreen;
 let registerScreen;
 let usernameScreen;
-let saveScreen;
-let loadScreen;
+export let saveScreen;
+export let loadScreen;
 let notice;
 let prompt;
 let textEditor;
@@ -40,9 +39,7 @@ export let helpScreen;
 
 let uiContainer = document.getElementById('editor-ui-container');
 let customGUIContainer = document.getElementById('custom-gui');
-let windowHideTime = 500;
 
-let levelList = undefined;
 export let helpClosed = [];
 
 export const hide = function () {
@@ -63,8 +60,9 @@ export const initGui = function () {
     showHeaderBar();
     scrollBars.update();
 
-    firebaseManager.registerListener('login', handleLoginStatusChange);
-    firebaseManager.registerListener('logout', handleLoginStatusChange);
+    backendManager.registerListener('login', handleLoginStatusChange);
+    backendManager.registerListener('logout', handleLoginStatusChange);
+    backendManager.registerListener('username', showUsernameScreen);
 
     handleLoginStatusChange();
 }
@@ -108,25 +106,20 @@ const hasUnsavedChanges = function () {
     else {
         if (game.currentLevelData.title != levelEditScreen.domElement.querySelector('#levelEdit_title').value) return true;
         if (game.currentLevelData.description != levelEditScreen.domElement.querySelector('#levelEdit_description').value) return true;
-        if(game.editor.cameraShotData.highRes != null) return true;
+        if(game.editor.cameraShotData != null) return true;
 
     }
     return false;
 }
 const handleLoginStatusChange = function (event) {
     if (headerBar) {
-        if (firebaseManager.isLoggedIn()) {
+        if (backendManager.isLoggedIn()) {
             headerBar.querySelector('#loginButton').style.visibility = 'hidden';
             headerBar.querySelector('#profileButton').style.visibility = 'visible';
         } else {
             headerBar.querySelector('#loginButton').style.visibility = 'visible';
             headerBar.querySelector('#profileButton').style.visibility = 'hidden';
         }
-    }
-    if ((event && event.type == 'login') || firebaseManager.isLoggedIn()) {
-        firebaseManager.getUserData().then(() => {}).catch((error) => {
-            showUsernameScreen();
-        });
     }
 }
 const checkLevelDataForErrors = async function () {
@@ -193,7 +186,7 @@ const doSaveLevelData = async function (saveButton) {
         showLevelEditScreen(true);
         return;
     }
-    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+    if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
     setNewLevelData();
     setLevelSpecifics();
@@ -212,7 +205,7 @@ const doSaveLevelData = async function (saveButton) {
     });
 }
 const doPublishLevelData = function (publishButton) {
-    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+    if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
     const publishLevel = () => {
 
@@ -291,7 +284,7 @@ export const showHeaderBar = function () {
     button.style.width = '48px';
     button.style.height = '30px';
     button.addEventListener('click', () => {
-        firebaseManager.signout();
+        backendManager.signout();
     });
 
 
@@ -337,195 +330,16 @@ export const showHeaderBar = function () {
 }
 
 export const showLoginScreen = function () {
-    if (!loginScreen) {
-        const loginGUIWidth = 300;
+    const shrink = .8;
+    const w = Math.min(Math.floor(window.innerWidth * shrink), 600);
+    const h = 800;
+    const leftPosition = (window.innerWidth-w)/2;
+    const topPosition = (window.innerHeight-h)/2;
+    const settings = `height=${h},width=${w},top=${topPosition},left=${leftPosition},scrollbars=yes,directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no`;
 
-        loginScreen = new dat.GUI({
-            autoPlace: false,
-            width: loginGUIWidth
-        });
-        loginScreen.domElement.setAttribute('id', 'loginScreen');
+    const url = 'https://api.jollyworld.app/login';
+    window.open(url, 'oAuthLogin', settings);
 
-        let folder = loginScreen.addFolder('Login Screen');
-        folder.domElement.classList.add('custom');
-        folder.domElement.style.textAlign = 'center';
-
-        folder.open();
-
-        const closeButton = document.createElement('div');
-        closeButton.setAttribute('class', 'closeWindowIcon');
-        folder.domElement.append(closeButton);
-        closeButton.addEventListener('click', () => {
-            hidePanel(loginScreen);
-        });
-
-
-        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-        let span = document.createElement('span');
-        span.innerText = 'LOG IN';
-        targetDomElement.appendChild(span);
-        span.style.fontSize = '20px';
-        span.style.marginTop = '20px';
-        span.style.display = 'inline-block';
-
-
-        let divWrapper = document.createElement('div');
-        divWrapper.style.padding = '0px 20px';
-
-        var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
-
-        let email = document.createElement('input');
-        //email.value = '1@1.nl'; //PLACEHOLDER
-        email.setAttribute('placeholder', 'Email');
-        email.setAttribute('tabindex', '0');
-        divWrapper.appendChild(email);
-        email.style = textAreanStyle;
-
-        let password = document.createElement('input');
-        password.setAttribute('placeholder', 'Password');
-        //password.value = 'appelsap'; //PLACEHOLDER
-        password.setAttribute('tabindex', '0');
-        password.setAttribute('type', 'password');
-        divWrapper.appendChild(password);
-        password.style = textAreanStyle;
-
-
-        let errorSpan = document.createElement('span');
-        errorSpan.innerText = '';
-        errorSpan.style.display = 'block';
-        errorSpan.style.color = '#ff4b00';
-        errorSpan.style.margin = '20px auto';
-        divWrapper.appendChild(errorSpan);
-
-
-        const errorChecks = (noDefault = false) => {
-            var errorStack = [];
-            const textAreaDefaultColor = '#fff';
-            const textAreaErrorColor = '#e8764b';
-
-            email.style.backgroundColor = textAreaDefaultColor;
-            password.style.backgroundColor = textAreaDefaultColor;
-
-            if (email.value != '' || noDefault) {
-                var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-                if (!re.test(String(email.value).toLowerCase())) {
-                    errorStack.push("Email entered is not a valid email address");
-                    email.style.backgroundColor = textAreaErrorColor;
-                }
-            }
-
-            if (password.value != '' || noDefault) {
-                if (password.value.length < 6) {
-                    errorStack.push("Password must be at last 6 characters long");
-                    password.style.backgroundColor = textAreaErrorColor;
-                }
-            }
-
-            errorSpan.innerText = '';
-            //errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
-            if (errorStack.length == 0) return true;
-            for (var i = 0; i < errorStack.length; i++) {
-                errorSpan.innerText += errorStack[i] + '\n';
-            }
-            return false;
-        }
-        let func = (textarea) => {
-            let _text = textarea;
-            var f = () => {
-                const maxChars = 32;
-                if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
-                errorChecks();
-            }
-            f();
-            return f;
-        }
-
-        const emailFunction = func(email);
-        email.addEventListener('input', emailFunction);
-        email.addEventListener('selectionchange', emailFunction);
-        email.addEventListener('propertychange', emailFunction);
-        email.addEventListener('blur', errorChecks);
-
-        const passwordFunction = func(password);
-        password.addEventListener('input', passwordFunction);
-        password.addEventListener('selectionchange', passwordFunction);
-        password.addEventListener('propertychange', passwordFunction);
-        password.addEventListener('blur', errorChecks);
-
-        targetDomElement.appendChild(divWrapper);
-
-        span = document.createElement('span');
-        span.innerText = 'No account? ';
-        targetDomElement.appendChild(span);
-
-        span = document.createElement('span');
-        span.innerText = 'Sign Up!';
-        targetDomElement.appendChild(span);
-        span.setAttribute('class', 'text_button');
-        span.addEventListener('click', () => {
-            hidePanel(loginScreen);
-            showRegisterScreen();
-        });
-
-        let button = document.createElement('div');
-        button.setAttribute('id', 'acceptButton')
-        button.setAttribute('tabindex', '0');
-        button.classList.add('menuButton');
-        button.innerHTML = 'Login!';
-        targetDomElement.appendChild(button);
-        button.style.margin = '10px auto';
-        [email, password, button].forEach(el => el.addEventListener('keydown', (e) => {
-            if (e.keyCode == 13)
-                button.click();
-        }));
-
-        const dotShell = uiHelper.buildDotShell(true);
-        button.appendChild(dotShell);
-
-        button.addEventListener('click', () => {
-            if (errorChecks(true)) {
-                let oldText = button.innerHTML;
-                button.innerHTML = '';
-                button.appendChild(dotShell);
-                dotShell.classList.remove('hidden');
-                firebaseManager.login(email.value, password.value).then(() => {
-                    console.log("Succesfully logged in!!");
-                    hidePanel(loginScreen);
-                    button.innerHTML = oldText;
-                    dotShell.classList.add('hidden');;
-
-                }).catch((error) => {
-                    console.log("Firebase responded with", error.code);
-                    errorSpan.innerText = error.message;
-                    button.innerHTML = oldText;
-                    dotShell.classList.add('hidden');;
-                });
-            }
-        });
-
-        span = document.createElement('span');
-        span.innerText = 'Forgot your password?';
-        targetDomElement.appendChild(span);
-        span.setAttribute('class', 'text_button');
-
-        targetDomElement.appendChild(document.createElement('br'));
-        targetDomElement.appendChild(document.createElement('br'));
-
-
-        customGUIContainer.appendChild(loginScreen.domElement);
-
-
-        registerDragWindow(loginScreen);
-
-    }
-
-    showPanel(loginScreen);
-
-    if (registerScreen) {
-        loginScreen.domElement.style.top = registerScreen.domElement.style.top;
-        loginScreen.domElement.style.left = registerScreen.domElement.style.left;
-    }
 }
 
 export const showRegisterScreen = function () {
@@ -688,7 +502,7 @@ export const showRegisterScreen = function () {
                 let oldText = button.innerHTML;
                 button.innerHTML = '';
                 button.appendChild(dotShell);
-                firebaseManager.registerUser(email.value, password.value).then(() => {
+                backendManager.registerUser(email.value, password.value).then(() => {
                     console.log("Succesfully registered!!");
                     hidePanel(registerScreen);
                     dotShell.classList.add('hidden');;
@@ -867,22 +681,16 @@ export const showUsernameScreen = function () {
                 button.innerHTML = '';
                 button.appendChild(dotShell);
 
-                var userData = {
-                    username: username.value,
-                    creationDate: Date.now(),
-                }
-                firebaseManager.claimUsername(username.value)
-                    .then(() => {
-                        firebaseManager.storeUserData(userData)
-                    })
+                backendManager.claimUsername(username.value)
                     .then(() => {
                         hidePanel(usernameScreen);
                         dotShell.classList.add('hidden');;
                         button.innerHTML = oldText;
                     }).catch((error) => {
-                        console.log("Firebase responded with", error);
+                        /*console.log("Firebase responded with", error);
                         let errorMessage = error.message;
-                        if (error.code == 'USERNAME_TAKEN') errorMessage = 'Username already claimed by other email';
+                        if (error.code == 'USERNAME_TAKEN')*/ 
+                        const errorMessage = 'Username already claimed by other email';
                         errorSpan.innerText = errorMessage;
                         dotShell.classList.add('hidden');;
                         button.innerHTML = oldText;
@@ -963,7 +771,7 @@ export const showLevelEditScreen = function (dontReplace) {
 
         let thumbnailShotComplete = () => {
             levelEditScreen.domElement.style.display = 'block';
-            thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
+            thumbNailImage.src = B2dEditor.cameraShotData;
             thumbNailImage.style.display = 'block';
             clickToAddSpan.style.display = 'none';
         }
@@ -1143,16 +951,15 @@ export const showLevelEditScreen = function (dontReplace) {
 
     showPanel(levelEditScreen);
 
-    console.log("DONT REPLACE:", dontReplace);
     if(dontReplace !== true){
         let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
         let clickToAdd = levelEditScreen.domElement.querySelector('.clickToAdd');
         if (game.currentLevelData.thumbLowResURL) {
-            thumbNailImage.src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${game.currentLevelData.uid}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
+            thumbNailImage.src = `${backendManager.baseDownloadURL}levels%2F${backendManager.getUserID()}%2F${game.currentLevelData.id}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
             thumbNailImage.style.display = 'block';
             clickToAdd.style.display = 'none';
-        }else if (B2dEditor.cameraShotData.lowRes) {
-            thumbNailImage.src = B2dEditor.cameraShotData.lowRes;
+        }else if (B2dEditor.cameraShotData) {
+            thumbNailImage.src = B2dEditor.cameraShotData;
             thumbNailImage.style.display = 'block';
             clickToAdd.style.display = 'none';
         } else {
@@ -1165,7 +972,7 @@ export const showLevelEditScreen = function (dontReplace) {
 }
 export const showSaveScreen = function () {
 
-    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
+    if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
 
     if (!saveScreen) {
@@ -1214,8 +1021,8 @@ export const showSaveScreen = function () {
                 new_button.click();
         });
 
-        const dotShell = uiHelper.buildDotShell(true);
-        button.appendChild(dotShell);
+        // const dotShell = uiHelper.buildDotShell(true);
+        // button.appendChild(dotShell);
 
         new_button.addEventListener('click', () => {
             let oldText = new_button.innerHTML;
@@ -1260,7 +1067,7 @@ export const showSaveScreen = function () {
 
     const buttonFunction = (button, level) => {
         showPrompt(`Are you sure you want to overwrite level ${level.title} with your new level?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
-            game.currentLevelData.uid = level.uid;
+            game.currentLevelData.id = level.id;
             button.style.backgroundColor = 'grey';
             button.innerText = 'SAVING..';
 
@@ -1282,7 +1089,7 @@ export const showSaveScreen = function () {
     }
     const levelListDiv = saveScreen.domElement.querySelector('#levelList');
     while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
-    generateLevelList(levelListDiv, 'SAVE', buttonFunction);
+    generateLevelList(levelListDiv, 'Save', buttonFunction);
 
     if (loadScreen) {
         saveScreen.domElement.style.top = loadScreen.domElement.style.top;
@@ -1327,7 +1134,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
 
     span = document.createElement('span');
     span.setAttribute('class', 'filterTitle');
-    span.innerText = 'Save';
+    span.innerText = buttonName;
     levelPlayFilter.appendChild(span);
 
 
@@ -1384,7 +1191,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
 
     let button = document.createElement('div');
     button.setAttribute('class', 'headerButton save buttonOverlay dark');
-    button.innerHTML = buttonName;
+    button.innerHTML = buttonName.toUpperCase();
     levelSaveDiv.appendChild(button);
     //*********************************/
 
@@ -1397,7 +1204,6 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
             if (levels.hasOwnProperty(level_id)) {
 
                 const level = levels[level_id];
-                level.uid = level_id;
                 const itemBarClone = itemBar.cloneNode(true);
                 itemList.appendChild(itemBarClone);
 
@@ -1410,9 +1216,10 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 itemDescription.innerText = level.description;
                 uiHelper.clampDot(itemDescription, 3, 14);
 
-                itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.creationDate);
+                itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.created_at);
                 // using %2F because '/' does not work for private urls
-                if (level.thumbLowResURL) itemBarClone.querySelector('#thumbImage').src = `${firebaseManager.baseDownloadURL}levels%2F${firebaseManager.getUserID()}%2F${level.uid}%2Fthumb_lowRes.jpg?${level.thumbLowResURL}`;
+
+                if (level.thumb_small_md5) itemBarClone.querySelector('#thumbImage').src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
 
                 let saveButton = itemBarClone.querySelector('.headerButton.save');
                 saveButton.addEventListener('click', () => {
@@ -1422,8 +1229,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
         }
     }
 
-    firebaseManager.getUserLevels().then((levels) => {
-        levelList = levels;
+    backendManager.getUserLevels().then((levels) => {
         buildLevelList(levels);
     })
 
@@ -1431,7 +1237,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
 }
 export const showLoadScreen = function () {
 
-    if (!firebaseManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.load_notLoggedIn);
+    if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.load_notLoggedIn);
 
 
     if (!loadScreen) {
@@ -1517,7 +1323,7 @@ export const showLoadScreen = function () {
     const levelListDiv = loadScreen.domElement.querySelector('#levelList');
     while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
 
-    generateLevelList(levelListDiv, 'LOAD', buttonFunction);
+    generateLevelList(levelListDiv, 'Load', buttonFunction);
 
     if (saveScreen) {
         loadScreen.domElement.style.top = saveScreen.domElement.style.top;

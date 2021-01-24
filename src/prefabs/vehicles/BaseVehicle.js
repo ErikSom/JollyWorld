@@ -84,7 +84,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                     this.prefabObject.settings.forceVehicle = false;
                     delete this.prefabObject.settings.limbs;
 
-                    game.currentLevelData.forcedVehicle = 0;
+                    game.currentLevelData.forced_vehicle = 0;
 
                     let vehiclePrefab = `{"objects":[[4,${this.prefabObject.x},${this.prefabObject.y},${this.prefabObject.rotation},${JSON.stringify(this.prefabObject.settings)},"${value}",${this.prefabObject.instanceID}]]}`;
                     let newObjects = game.editor.buildJSON(JSON.parse(vehiclePrefab));
@@ -101,9 +101,9 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 }
                 break;
             case 'forceVehicle':
-                if(value) game.currentLevelData.forcedVehicle = Settings.availableVehicles.indexOf(this.vehicleName)+1;
+                if(value) game.currentLevelData.forced_vehicle = Settings.availableVehicles.indexOf(this.vehicleName)+1;
                 else {
-                    game.currentLevelData.forcedVehicle = 0;
+                    game.currentLevelData.forced_vehicle = 0;
                     const jointsToDelete = [];
                     for (let i = 0; i < game.editor.textures.children.length; i++) {
                         let sprite = game.editor.textures.getChildAt(i);
