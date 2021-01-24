@@ -791,10 +791,11 @@ export const showLevelEditScreen = function (dontReplace) {
         title.style.fontSize = '18px';
         title.style.height = '30px';
         title.style.fontWeight = 'bold';
-
+        title.style.marginBottom = '5px';
 
         span = document.createElement('span');
-        span.innerText = 'Characters left:100';
+        span.innerText = 'Characters left: 100';
+        span.style.marginLeft = '2px';
         divWrapper.appendChild(span);
 
 
@@ -804,7 +805,7 @@ export const showLevelEditScreen = function (dontReplace) {
             var f = () => {
                 const maxChars = 32;
                 if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
-                _span.innerText = `Characters left:${maxChars-_text.value.length}`;
+                _span.innerText = `Characters left: ${maxChars-_text.value.length}`;
             }
             f();
             return f;
@@ -822,10 +823,11 @@ export const showLevelEditScreen = function (dontReplace) {
         description.setAttribute('placeholder', 'Description');
         divWrapper.appendChild(description);
         description.style.height = '100px';
-
+        description.style.marginBottom = '2px';
 
         span = document.createElement('span');
-        span.innerText = 'Characters left:300';
+        span.innerText = 'Characters left: 300';
+        span.style.marginLeft = '2px';
         divWrapper.appendChild(span);
 
         func = (textarea, span) => {
@@ -834,7 +836,7 @@ export const showLevelEditScreen = function (dontReplace) {
             var f = () => {
                 const maxChars = 300;
                 if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
-                _span.innerText = `Characters left:${maxChars-_text.value.length}`;
+                _span.innerText = `Characters left: ${maxChars-_text.value.length}`;
             }
             f();
             return f;
@@ -911,6 +913,7 @@ export const showLevelEditScreen = function (dontReplace) {
         deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
         deleteButton.innerHTML = "DELETE";
         deleteButton.style.float = 'right';
+        deleteButton.style.marginRight = '10px';
         targetDomElement.appendChild(deleteButton);
 
         deleteButton.addEventListener('click', () => {
@@ -954,8 +957,8 @@ export const showLevelEditScreen = function (dontReplace) {
     if(dontReplace !== true){
         let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
         let clickToAdd = levelEditScreen.domElement.querySelector('.clickToAdd');
-        if (game.currentLevelData.thumbLowResURL) {
-            thumbNailImage.src = `${backendManager.baseDownloadURL}levels%2F${backendManager.getUserID()}%2F${game.currentLevelData.id}%2Fthumb_lowRes.jpg?${game.currentLevelData.thumbLowResURL}`;
+        if (game.currentLevelData.thumb_small_md5) {
+            thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_small_md5}.png`;
             thumbNailImage.style.display = 'block';
             clickToAdd.style.display = 'none';
         }else if (B2dEditor.cameraShotData) {
@@ -1000,15 +1003,6 @@ export const showSaveScreen = function () {
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
-
-        let span = document.createElement('span');
-        span.innerText = 'SAVE IN';
-        targetDomElement.appendChild(span);
-        span.style.fontSize = '20px';
-        span.style.marginTop = '20px';
-        span.style.display = 'inline-block';
-
-
         let new_button = document.createElement('div');
         new_button.setAttribute('id', 'saveButton')
         new_button.setAttribute('tabindex', '0');
@@ -1051,10 +1045,7 @@ export const showSaveScreen = function () {
         divWrapper.style.padding = '0px 10px';
         targetDomElement.appendChild(divWrapper);
 
-
         targetDomElement.appendChild(document.createElement('br'));
-        targetDomElement.appendChild(document.createElement('br'));
-
 
         customGUIContainer.appendChild(saveScreen.domElement);
 
@@ -1219,6 +1210,10 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.created_at);
                 // using %2F because '/' does not work for private urls
 
+                if(level.title.indexOf('checkpoint') > 0){
+                    console.log('***************', level);
+                }
+
                 if (level.thumb_small_md5) itemBarClone.querySelector('#thumbImage').src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
 
                 let saveButton = itemBarClone.querySelector('.headerButton.save');
@@ -1262,30 +1257,14 @@ export const showLoadScreen = function () {
             hidePanel(loadScreen);
         });
 
-
-        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-
-        let span = document.createElement('span');
-        span.innerText = 'LOAD';
-        targetDomElement.appendChild(span);
-        span.style.fontSize = '20px';
-        span.style.marginTop = '20px';
-        span.style.display = 'inline-block';
-
+        const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
         let divWrapper = document.createElement('div');
         divWrapper.setAttribute('id', 'levelList');
-        divWrapper.style.padding = '0px 10px';
+        divWrapper.style.padding = '10px';
         targetDomElement.appendChild(divWrapper);
 
-
-        targetDomElement.appendChild(document.createElement('br'));
-        targetDomElement.appendChild(document.createElement('br'));
-
-
         customGUIContainer.appendChild(loadScreen.domElement);
-
 
         registerDragWindow(loadScreen);
 

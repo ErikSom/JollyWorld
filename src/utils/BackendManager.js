@@ -83,8 +83,7 @@ function BackendManager() {
 		})
     }
 
-    this.getUserData = function () {
-		console.trace();
+    this.getUserData = () => {
 		return new Promise((resolve, reject) => {
 			if(this.userData) return resolve(this.userData);
 			const body = {
@@ -98,15 +97,14 @@ function BackendManager() {
 			.then(result => result.json())
 			.then(data => {
 				console.log("Userdata:", data);
+				console.log(this, 'what is this')
 				this.userData = data;
 				resolve(data);
 			});
 		})
     }
 
-    this.isLoggedIn = function () {
-		return !!localStorage.getItem('oauth-token') && !localStorage.getItem('needsToRegister');
-    }
+    this.isLoggedIn =  () => !!localStorage.getItem('oauth-token') && !localStorage.getItem('needsToRegister');
 
     this.login = function () {
 		const oauthhandshake = localStorage.getItem('oauth-handshake');
@@ -203,7 +201,7 @@ function BackendManager() {
         // this.uploadNext();
     }
 
-    this.uploadUserLevelData = function (details, levelJSON, cameraShotData) {
+    this.uploadUserLevelData = (details, levelJSON, cameraShotData) => {
 
 
 		// posten van een level:
@@ -234,7 +232,7 @@ function BackendManager() {
 			}
 			fetch(`${Settings.API}/level/update/${details.id}`, body)
 			.then(result => result.json())
-			.then(data => {
+			.then(async data => {
 				const {error} = data;
 
 				if(error){
@@ -242,16 +240,11 @@ function BackendManager() {
 				}else{
 					const levelData = data[0];
 					console.log("SUCCESSS :)!");
-					console.log(data);
 
-					// const { token, error } = data;
-
-					// // show error code
-
-					// localStorage.setItem('oauth-token', token);
-					// localStorage.removeItem('needsToRegister');
-
-					// this.dispatchEvent('login');
+					// update the local cache
+					const userData = await this.getUserData();
+					const cachedLevel = userData.my_levels.find(level=> level.id === levelData.id);
+					Object.assign(cachedLevel, levelData);
 
 					resolve(levelData);
 				}
