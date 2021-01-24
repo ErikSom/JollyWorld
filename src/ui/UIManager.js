@@ -529,10 +529,10 @@ function UIManager() {
         // set values
 
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
-        thumbNailImage.src = `${backendManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.id}/thumb_highRes.jpg`;
+        thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_big_md5}.png`;
 
         levelBanner.domElement.querySelector('#levelbanner_title').innerText = game.currentLevelData.title;
-        levelBanner.domElement.querySelector('#levelbanner_creatorSpan').innerText = game.currentLevelData.creator;
+        levelBanner.domElement.querySelector('#levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
         levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;
 
         levelBanner.domElement.style.left = '50%';
@@ -723,8 +723,12 @@ function UIManager() {
             ratingText.setAttribute('class', 'ratingText')
             ratingHolder.appendChild(ratingText);
 
+
+            const sumVotes = game.currentLevelData.upvotes + game.currentLevelData.downvotes;
+            const rating = game.currentLevelData.upvotes/sumVotes;
+
             span = document.createElement('span');
-            if(game.currentLevelData.public) span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
+            span.innerText = (!sumVotes || sumVotes < 10) ? '??' : Math.round(rating*100)+'%';
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -734,7 +738,7 @@ function UIManager() {
             ratingText.appendChild(span);
 
             span = document.createElement('span');
-            if(game.currentLevelData.public) span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
+            span.innerText = format.formatNumber(sumVotes);
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -748,12 +752,12 @@ function UIManager() {
             ratingHolder.appendChild(downvoteButton);
 
             upvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, 1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, 1).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
             downvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, -1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, -1).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
@@ -814,7 +818,7 @@ function UIManager() {
 
 
         pauseMenu.domElement.querySelector('#pauseMenu_title').innerText = game.currentLevelData.title;
-        pauseMenu.domElement.querySelector('#pauseMenu_creatorSpan').innerText = game.currentLevelData.creator;
+        pauseMenu.domElement.querySelector('#pauseMenu_creatorSpan').innerText = game.currentLevelData.author.username;
 
         pauseMenu.domElement.style.left = '50%';
         pauseMenu.domElement.style.top = '50%';
@@ -884,8 +888,12 @@ function UIManager() {
             ratingText.setAttribute('class', 'ratingText')
             ratingHolder.appendChild(ratingText);
 
+
+            const sumVotes = game.currentLevelData.upvotes + game.currentLevelData.downvotes;
+            const rating = game.currentLevelData.upvotes/sumVotes;
+
             span = document.createElement('span');
-            if(game.currentLevelData.public) span.innerText = game.currentLevelData.public.voteNum < 10 ? '??' : Math.round(game.currentLevelData.public.voteAvg*100)+'%';
+            span.innerText = (!sumVotes || sumVotes < 10) ? '??' : Math.round(rating*100)+'%';
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -895,7 +903,7 @@ function UIManager() {
             ratingText.appendChild(span);
 
             span = document.createElement('span');
-            if(game.currentLevelData.public) span.innerText = format.formatNumber(game.currentLevelData.public.voteNum);
+            if(game.currentLevelData.public) span.innerText = format.formatNumber(sumVotes);
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -909,13 +917,13 @@ function UIManager() {
             ratingHolder.appendChild(downvoteButton);
 
             upvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, 1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, 1).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
 
             downvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, -1, game.currentLevelData.creationDate).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, -1).then(()=>{
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
@@ -989,7 +997,7 @@ function UIManager() {
 
         winScreen.domElement.querySelector('#winScreen_time').innerText = time;
         winScreen.domElement.querySelector('#winScreen_title').innerText = game.currentLevelData.title;
-        winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = game.currentLevelData.creator;
+        winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = game.currentLevelData.author.username;
 
         winScreen.domElement.style.left = '50%';
         winScreen.domElement.style.top = '50%';
@@ -1368,6 +1376,8 @@ function UIManager() {
 
         const buildLevelList = (levels) => {
 
+            console.log("RECEIVED LEVELS:", levels);
+
             itemListDotShell.style.visibility = 'hidden';
             levels.forEach(level => {
 
@@ -1375,21 +1385,25 @@ function UIManager() {
                 itemList.appendChild(itemBarClone);
 
                 const itemTitle = itemBarClone.querySelector('.itemTitle')
-                itemTitle.innerText = level.private.title;
+                itemTitle.innerText = level.title;
                 uiHelper.clampDot(itemTitle, 1, 14);
 
                 const itemDescription = itemBarClone.querySelector('.itemDescription');
-                itemDescription.innerText = level.private.description;
+                itemDescription.innerText = level.description;
                 uiHelper.clampDot(itemDescription, 3, 12);
 
-                itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.private.creationDate);
-                itemBarClone.querySelector('.itemAuthor').innerText = level.private.creator;
+                itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.created_at);
+                itemBarClone.querySelector('.itemAuthor').innerText = level.author.username;
 
-                itemBarClone.querySelector('.itemRating').innerText = level.public.voteNum < 10 ? '??' : Math.round(level.public.voteAvg*100)+'%';
 
-                itemBarClone.querySelector('.itemPlays').innerText = format.formatNumber(level.public.playCount);
+                const sumVotes = level.upvotes + level.downvotes;
+                const rating = level.upvotes/sumVotes;
 
-                itemBarClone.querySelector('#thumbImage').src = `${backendManager.basePublicURL}publishedLevels/${level.private.creatorID}/${level.id}/thumb_lowRes.jpg`;
+                itemBarClone.querySelector('.itemRating').innerText = (!sumVotes || sumVotes) < 10 ? '??' : Math.round(rating*100)+'%';
+
+                itemBarClone.querySelector('.itemPlays').innerText = format.formatNumber(level.playcount);
+
+                itemBarClone.querySelector('#thumbImage').src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
 
                 itemBarClone.querySelector('.levelShareDiv').addEventListener('click', () => {
                     this.showSocialShare(level);

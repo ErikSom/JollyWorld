@@ -243,8 +243,9 @@ function Game() {
 
         if(uidHash && uidHash.length===21){
             ui.disableMainMenu(true);
-            backendManager.getPublishedLevelInfo(uidHash).then(snapshot => {
-                const levelData = snapshot.val();
+            backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
+
+                console.log(levelData.level_md5, 'wtf is this here?')
                 this.loadPublishedLevelData(levelData);
             }).catch(err =>{
                 location.hash = '';
@@ -706,12 +707,6 @@ function Game() {
     }
     this.saveNewLevelData = function () {
         game.currentLevelData.id = nanoid();
-        game.currentLevelData.creationDate = Date.now();
-
-        game.currentLevelData.thumbHighResURL = undefined;
-        game.currentLevelData.thumbLowResURL = undefined;
-
-
         return this.saveLevelData();
     }
     this.saveLevelData = function () {
@@ -797,11 +792,12 @@ function Game() {
         });
     }
     this.loadPublishedLevelData = function (levelData) {
+        console.log(levelData.level_md5, 'wtf is this here 2?')
+
         return new Promise((resolve, reject) => {
-            game.currentLevelData = levelData.private;
-            game.currentLevelData.public = levelData.public;
-            var self = this;
-           fetch(`${backendManager.basePublicURL}publishedLevels/${game.currentLevelData.creatorID}/${game.currentLevelData.id}/levelData.json`)
+            game.currentLevelData = levelData;
+            const self = this;
+           fetch(`${Settings.STATIC}/${levelData.level_md5}.json`)
            .then(response => response.json())
            .then((data) =>{
                 self.currentLevelData.json = JSONStringify(data);

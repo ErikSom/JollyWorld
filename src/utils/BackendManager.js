@@ -86,7 +86,6 @@ function BackendManager() {
 
     this.getUserData = () => {
 		return new Promise((resolve, reject) => {
-			if(this.userData) return resolve(this.userData);
 			const body = {
 				method: 'GET',
 				withCredentials: true,
@@ -138,74 +137,7 @@ function BackendManager() {
 		this.dispatchEvent('logout');
     }
 
-    this.uploadFiles = function (files, UUID, completeCall, progressCall, errorCall) {
-        // this.currentIndex = 0;
-        // this.currentFile;
-        // this.totalFiles = files.length;
-        // this.currentFileProgress = 0;
-        // this.tokens = []
-        // this.uploadUUID = UUID;
-        // var self = this;
-
-        // this.uploadNext = function () {
-        //     self.currentFile = files[self.currentIndex];
-        //     self.uploadFile(self.currentFile.file, self.currentFile.dir, self.currentFile.name, self.currentFile.datatype);
-        //     self.currentIndex++;
-        // }
-
-        // this.progress = function (snapshot) {
-        //     self.currentFileProgress = snapshot.bytesTransferred / snapshot.totalBytes;
-        //     var totalProgress = (self.currentIndex - 1 + self.currentFileProgress) / self.totalFiles;
-        //     if (progressCall) progressCall(totalProgress);
-        // }
-        // this.error = function (error) {
-        //     console.log(error.message);
-        //     if (errorCall) errorCall(error);
-        // }
-        // this.complete = function (task) {
-        //     task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-        //         var token = downloadURL.split(backendManager.baseDownloadURL)[1];
-        //         self.tokens.push(token);
-        //         self.currentFileProgress = 0;
-        //         if (self.currentIndex == self.totalFiles) {
-        //             if (completeCall) completeCall(self.tokens);
-        //         } else {
-        //             self.uploadNext();
-        //         }
-        //     });
-        // }
-
-        // this.uploadFile = function (file, dir, name, datatype) {
-        //     const storageRef = firebase.storage().ref(`${dir}/${backendManager.getUserID()}/${self.uploadUUID}/${name}`);
-
-        //     let task;
-        //     if (typeof file === 'string') {
-        //         if (datatype && datatype == "data_url") {
-        //             task = storageRef.putString(file, datatype);
-        //         } else {
-        //             task = storageRef.putString(file);
-        //         }
-        //     } else {
-        //         task = storageRef.put(file);
-        //     }
-        //     task.on('state_changed',
-        //         function progress(snapshot) {
-        //             self.progress(snapshot);
-        //         },
-        //         function error(error) {
-        //             self.error(error);
-        //         },
-        //         function complete() {
-        //             self.complete(task);
-        //         }
-        //     );
-        // }
-        // this.uploadNext();
-    }
-
     this.uploadUserLevelData = (details, levelJSON, cameraShotData) => {
-
-
 		// posten van een level:
 		// (POST) /level/update/id
 		// JSON Data: title / description / forced_vehicle / game_build / thumbnail / data
@@ -237,25 +169,22 @@ function BackendManager() {
 			.then(result => result.json())
 			.then(async data => {
 				const {error} = data;
+				if(error) return reject(error);
 
-				if(error){
-					reject(error)
-				}else{
-					const levelData = data[0];
-					console.log("SUCCESSS :)!");
+				const levelData = data[0];
 
-					// update the local cache
-					const userData = await this.getUserData();
-					const cachedLevel = userData.my_levels.find(level=> level.id === levelData.id);
-					Object.assign(cachedLevel, levelData);
+				console.log("SUCCESS :)");
 
-					resolve(levelData);
-				}
+				// update local thumbnail cache
+				details.thumb_big_md5 = levelData.thumb_big_md5;
+				details.thumb_small_md5 = levelData.thumb_small_md5;
+
+				resolve(levelData);
 			});
 		})
     }
 
-    this.publishLevelData = (levelData) => {
+    this.publishLevelData = (details) => {
 		// (POST) /level/publish/old-id/new-id (or existing new)
 		return new Promise(async (resolve, reject) => {
 
@@ -270,7 +199,7 @@ function BackendManager() {
 
 			const userData = await this.getUserData();
 
-			const serverLevelData = userData.my_levels.find(level => level.id === levelData.id);
+			const serverLevelData = userData.my_levels.find(level => level.id === details.id);
 
 			if(!serverLevelData) return reject({error:'Level not found in userdata'});
 
@@ -280,51 +209,19 @@ function BackendManager() {
 			.then(result => result.json())
 			.then(async data => {
 				const {error} = data;
+				if(error) return reject(error)
+	
+				console.log("PUBLISH SUCCESSS :)!");
 
-				if(error){
-					reject(error)
-				}else{
-					const levelData = data[0];
-					console.log("SUCCESSS :)!");
+				// show level share screen
 
-					// update the local cache
-					serverLevelData.published_id = publishLevelId;
-					Object.assign(cachedLevel, levelData);
+				resolve(publishLevelId);
 
-					resolve(levelData);
-				}
 			});
 		})
     }
-    this.voteLevel = function (levelid, vote, _creationDate) {
-        // return new Promise(resolve => {
+    this.voteLevel = function (levelid, vote) {
 
-        //     if(!this.isLoggedIn()){
-        //         game.editor.ui.showLoginScreen();
-        //         return resolve(false);
-        //     }
-        //     const self = this;
-        //     const data = vote;
-        //     const voteRef = firebase.database().ref(`/PublishedLevelsVoters/${levelid}/${this.app.auth().currentUser.uid}`);
-        //     voteRef.set(data, function (error) {
-
-        //         if (error){
-        //             console.log('Vote error:', error);
-        //         } else {
-
-        //             FireBaseCache.voteDataCache[levelid] = vote;
-        //             FireBaseCache.save();
-
-        //             const now = new Date()
-        //             const creationDate = new Date(_creationDate);
-        //             if (now.getFullYear() === creationDate.getFullYear() && now.getMonth() == creationDate.getMonth()) {
-        //                 self.call_setRangedVotes(levelid);
-        //             }
-        //         }
-        //         resolve();
-
-        //     });
-        // });
     }
     this.increasePlayCountPublishedLevel = function (levelData) {
         // var playCountRef = firebase.database().ref(`/PublishedLevels/${levelData.uid}/public/playCount`);
@@ -359,19 +256,17 @@ function BackendManager() {
 			.then(async data => {
 				const {error} = data;
 
-				if(error){
-					reject(error)
-				}else{
-					const levelData = data[0];
-					console.log("SUCCESSS :)!", data);
+				if(error) return reject(error)
 
-					// update the local cache
-					// const userData = await this.getUserData();
-					// const cachedLevel = userData.my_levels.find(level=> level.id === levelData.id);
-					// userData.my_levels = userData.my_levels.filer(level=> level.id !== levelData.id);
+				console.log("DELETE SUCCESSS :)!", data);
 
-					resolve(levelData);
-				}
+				// update the local cache
+				// const userData = await this.getUserData();
+				// const cachedLevel = userData.my_levels.find(level=> level.id === levelData.id);
+				// userData.my_levels = userData.my_levels.filer(level=> level.id !== levelData.id);
+
+				resolve(levelData);
+
 			});
 		})
     }
@@ -381,157 +276,84 @@ function BackendManager() {
 		return levels;
     }
     this.getPublishedLevels = function (filter) {
+		// level search
+		// (GET) levels/?
+		/* QUERY PARAMS:
+		(req - niet nodig met search) 	sort=oldest|newest|mostplayed|best
+		(req) 	timespan=today|week|month|anytime
+		(req)	search=string
+				forcedVehicle=nummer
+				user=name
+				featured=1
+				limit=nummer
+		*/
 
-        // var now = new Date();
-        // let prefixedRangeValue = now.getFullYear();
-        // let paddedMonth, paddedWeek, paddedDay;
+		let timespan = 'anytime'
+        switch (filter.range) {
+            case game.ui.FILTER_RANGE_THISMONTH:
+                timespan='month';
+                break;
+            case game.ui.FILTER_RANGE_THISWEEK:
+                timespan='week';
+                break;
+            case game.ui.FILTER_RANGE_TODAY:
+				timespan='today';
+                break;
+		}
 
-        // switch (filter.range) {
-        //     case game.ui.FILTER_RANGE_THISMONTH:
-        //         //e.g. 201804_0.8483
-        //         paddedMonth = now.getMonth().toString().padStart(2, '0');
-        //         prefixedRangeValue += paddedMonth;
-        //         break;
-        //     case game.ui.FILTER_RANGE_THISWEEK:
-        //         ///e.g. 2018w03_0.8483
-        //         paddedWeek = now.getWeek().toString().padStart(2, '0');
-        //         prefixedRangeValue += 'w' + paddedWeek;
+        return new Promise((resolve, reject) => {
+			let query = '';
 
-        //         break;
-        //     case game.ui.FILTER_RANGE_TODAY:
-        //         //e.g. 2018w03d3_0.8483
-        //         paddedWeek = now.getWeek().toString().padStart(2, '0');
-        //         paddedDay = now.getDay();
-        //         prefixedRangeValue += 'w' + paddedWeek + 'd' + paddedDay;
-        //         break;
-        // }
+            switch (filter.by) {
+                case game.ui.FILTER_BY_FEATURED:
+                    query = `sort=newest&timespan=${timespan}&featured=1`;
+                    break;
+                case game.ui.FILTER_BY_NEWEST:
+					query = `sort=newest&timespan=${timespan}`;
+                    break;
+                case game.ui.FILTER_BY_OLDEST:
+					query = `sort=oldest&timespan=${timespan}`;
+                    break;
+                case game.ui.FILTER_BY_PLAYCOUNT:
+					query = `sort=mostplayed&timespan=${timespan}`;
+                    break;
+                case game.ui.FILTER_BY_RATING:
+					query = `sort=best&timespan=${timespan}`;
+					break;
+			}
 
-        // return new Promise((resolve, reject) => {
-        //     let levelsRef;
+			const body = {
+				method: 'GET',
+			}
 
-        //     switch (filter.by) {
-        //         case game.ui.FILTER_BY_FEATURED:
-        //             levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/featured').equalTo(true);
-        //             break;
-        //         case game.ui.FILTER_BY_NEWEST:
-        //         case game.ui.FILTER_BY_OLDEST:
-        //             const date = new Date();
-        //             date.setHours(0), date.setMinutes(0), date.setSeconds(0);
-        //             let firstDay;
-        //             let lastDay;
-        //             if (filter.range === game.ui.FILTER_RANGE_ANYTIME) {
+			fetch(`${Settings.API}/levels/?${query}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+				if(error) return reject(error);
 
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate');
+				resolve(data);
 
-        //             } else if (filter.range === game.ui.FILTER_RANGE_THISMONTH) {
+			});
 
-        //                 firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-
-        //                 lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime());
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_THISWEEK) {
-
-        //                 firstDay = new Date(date);
-        //                 let day = firstDay.getDay() || 7;
-        //                 if (day !== 1) firstDay.setHours(-24 * (day - 1));
-
-        //                 lastDay = new Date(firstDay);
-        //                 lastDay.setHours(24 * 7);
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime());
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_TODAY) {
-
-        //                 firstDay = new Date(date);
-
-        //                 lastDay = new Date(firstDay);
-        //                 lastDay.setHours(24);
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('private/creationDate').startAt(firstDay.getTime()).endAt(lastDay.getTime());
-        //             }
-
-        //             if(filter.by == game.ui.FILTER_BY_NEWEST) levelsRef.limitToFirst(Settings.levelsPerRequest);
-        //             else levelsRef.limitToLast(Settings.levelsPerRequest);
-        //             break;
-        //         case game.ui.FILTER_BY_PLAYCOUNT:
-
-        //             if (filter.range === game.ui.FILTER_RANGE_ANYTIME) {
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/playCount').limitToFirst(Settings.levelsPerRequest);
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_THISMONTH) {
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstMonth_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_THISWEEK) {
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstWeek_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_TODAY) {
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstDay_playCount').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
-
-        //             }
-
-        //             break;
-        //         case game.ui.FILTER_BY_RATING:
-
-        //             if (filter.range === game.ui.FILTER_RANGE_ANYTIME) {
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/voteAvg').limitToFirst(Settings.levelsPerRequest);
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_THISMONTH) {
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstMonth_voteAvg').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_THISWEEK) {
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstWeek_voteAvg').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
-
-        //             } else if (filter.range === game.ui.FILTER_RANGE_TODAY) {
-
-        //                 levelsRef = firebase.database().ref(`/PublishedLevels/`).orderByChild('public/firstDay_voteAvg').startAt(prefixedRangeValue+'_').endAt(prefixedRangeValue+'~').limitToFirst(Settings.levelsPerRequest);
-
-        //             }
-
-        //             break;
-        //     }
-
-        //     levelsRef.once('value', function (snapshot) {
-        //         let sortedLevelList = []
-        //         snapshot.forEach((levelSnapshot) =>{
-        //             const level = levelSnapshot.val();
-        //             level.uid = levelSnapshot.key;
-        //             sortedLevelList.push(level);
-        //         });
-
-        //         if(filter.by === game.ui.FILTER_BY_NEWEST || filter.by === game.ui.FILTER_BY_FEATURED){
-        //             sortedLevelList.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? 1 : -1);
-        //         }else if(filter.by === game.ui.FILTER_BY_OLDEST){
-        //             sortedLevelList.sort((a,b)=> (a.private.creationDate<b.private.creationDate) ? -1 : 1);
-        //         }else if(filter.by === game.ui.FILTER_BY_PLAYCOUNT){
-        //             sortedLevelList.sort((a,b)=> (a.public.playCount<b.public.playCount) ? 1 : -1);
-        //         }else if(filter.by === game.ui.FILTER_BY_RATING){
-        //             sortedLevelList.sort((a,b)=> (a.public.voteAvg<b.public.voteAvg) ? 1 : -1);
-        //         }
-
-        //         return resolve(sortedLevelList);
-        //     }, function (error) {
-        //         return reject(error);
-        //     });
-        // })
+        });
     }
     this.getPublishedLevelInfo = id =>{
-		// get level endpoint gebruiken
+		// (GET) /level/id
 
-        // return new Promise((resolve, reject) => {
-        //     firebase.database().ref(`/PublishedLevels/${id}`).once('value', function (snapshot) {
-        //         resolve(snapshot);
-        //     },function (error) {
-        //         reject(error);
-        //     })
-        // });
+		return new Promise((resolve, reject) => {
+			const body = {
+				method: 'GET',
+			}
+			fetch(`${Settings.API}/level/${id}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+				if(error) return reject(error);
+
+				resolve(data[0]);
+			});
+		})
 	}
 
 	//SIMPLE CALLBACK SYSTEM

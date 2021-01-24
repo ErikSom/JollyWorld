@@ -214,7 +214,7 @@ const doPublishLevelData = function (publishButton) {
     const publishLevel = () => {
 
         if (!game.currentLevelData.saved) return showNotice(Settings.DEFAULT_TEXTS.publish_notYetSaved);
-        if (!game.currentLevelData.thumbLowResURL) return showNotice(Settings.DEFAULT_TEXTS.publish_noThumbnail);
+        if (!game.currentLevelData.thumb_small_md5) return showNotice(Settings.DEFAULT_TEXTS.publish_noThumbnail);
         if (!game.currentLevelData.description) return showNotice(Settings.DEFAULT_TEXTS.publish_noDescription);
 
 
