@@ -366,6 +366,11 @@ function Game() {
 
     //mouse
     this.onMouseDown = function (e) {
+
+
+        emitterManager.playOnceEmitter("confetti", body, game.editor.mousePosWorld, 0);
+
+
         this.fixTouchEvent(e);
 
         if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug &&  !this.mouseJoint && this.run) {

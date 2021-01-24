@@ -31,6 +31,10 @@ export const init = function () {
     }, {
         type: 'explosion2_layer2',
         poolSize: 10
+    },
+    {
+        type: 'confetti',
+        poolSize: 5
     }];
     emitterPoolData.forEach((data) => {
         for (let i = 0; i < data.poolSize; i++) getEmitter(data.type);
@@ -186,6 +190,48 @@ export const getEmitter = function (type, pool = true) {
                 game.editor.textures, [PIXI.Texture.fromImage('particle-spark.png')],
                 emitterData[type]
             );
+            break;
+        case "confetti":
+            emitter = new PIXI.particles.Emitter(
+                game.editor.textures,
+                [
+                    {
+                        framerate: 20,
+                        loop: true,
+                        textures: [
+                            "Confetti0000",
+                            "Confetti0001",
+                            "Confetti0002",
+                            "Confetti0003",
+                            "Confetti0004",
+                        ]
+                    },
+                    {
+                        framerate: 20,
+                        loop: true,
+                        textures: [
+                            "Confetti0002",
+                            "Confetti0003",
+                            "Confetti0004",
+                            "Confetti0000",
+                            "Confetti0001",
+                        ]
+                    },
+                    {
+                        framerate: 20,
+                        loop: true,
+                        textures: [
+                            "Confetti0004",
+                            "Confetti0000",
+                            "Confetti0001",
+                            "Confetti0002",
+                            "Confetti0003",
+                        ]
+                    }
+                ],
+                emitterData[type]
+            );
+            emitter.particleConstructor = PIXI.particles.AnimatedParticle;
             break;
     }
     if(pool){

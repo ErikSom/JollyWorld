@@ -389,6 +389,11 @@ var Emitter = /** @class */ (function () {
         else {
             this.startColor = new PropertyNode_1.default({ r: 0xFF, g: 0xFF, b: 0xFF }, 0);
         }
+
+        if(config.randomColors){
+            this.randomColors = config.randomColors;
+        }
+
         //set up the start rotation
         if (config.startRotation) {
             this.minStartRotation = config.startRotation.min;
@@ -714,6 +719,17 @@ var Emitter = /** @class */ (function () {
                         else {
                             p = new this.particleConstructor(this);
                         }
+
+                        if(this.randomColors){
+                            const color = this.randomColors[Math.floor(Math.random() * this.randomColors.length)];
+                            const colorObject =
+                                {
+                                    "start": color,
+                                    "end": color
+                                }
+                            this.startColor = PropertyNode_1.default.createList(colorObject);
+                        }
+
                         //set a random texture if we have more than one
                         if (this.particleImages.length > 1) {
                             p.applyArt(this.particleImages[Math.floor(Math.random() * this.particleImages.length)]);

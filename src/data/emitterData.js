@@ -390,3 +390,56 @@ export const sparksMetal = {
 	"addAtBack": false,
 	"spawnType": "point"
 }
+
+export const confetti = {
+	"alpha": {
+		"start": 1,
+		"end": 1
+	},
+	"scale": {
+		"start": 1,
+		"end": 1,
+		"minimumScaleMultiplier": 0.6
+	},
+	"color": {
+		"start": "#e4f9ff",
+		"end": "#3fcbff"
+	},
+	"randomColors":['#FF0000', '#FF00FF', '#00FF00', '#0000FF'],
+	"speed": {
+		"start": 500,
+		"end": 100,
+		"minimumSpeedMultiplier": 0.001
+	},
+	"acceleration": {
+		"x": 0,
+		"y": 0
+	},
+	"maxSpeed": 0,
+	"startRotation": {
+		"min": 0,
+		"max": 360
+	},
+	"noRotation": false,
+	"rotationSpeed": {
+		"min": 1,
+		"max": 7
+	},
+	"lifetime": {
+		"min": 0.5,
+		"max": 1
+	},
+	"blendMode": "normal",
+	"frequency": 0.001,
+	"emitterLifetime": 0.3,
+	"maxParticles": 500,
+	"pos": {
+		"x": 0,
+		"y": 0
+	},
+	"addAtBack": false,
+	"spawnType": "burst",
+	"particlesPerWave": 3,
+	"particleSpacing": 0,
+	"angleStart": 0
+}
