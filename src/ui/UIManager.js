@@ -903,7 +903,7 @@ function UIManager() {
             ratingText.appendChild(span);
 
             span = document.createElement('span');
-            if(game.currentLevelData.public) span.innerText = format.formatNumber(sumVotes);
+            span.innerText = format.formatNumber(sumVotes);
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -1095,7 +1095,7 @@ function UIManager() {
         socialShareScreen.domElement.style.visibility = 'visible';
 
         const url = encodeURIComponent('https://jollyworld.netlify.app/#'+level.id);
-        const body = encodeURIComponent('Check out this level in JollyWorld! ' + level.private.description);
+        const body = encodeURIComponent('Check out this level in JollyWorld! ' + level.description);
 
         const socialHTML =`
             <a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=${url}" target="_blank" rel="noopener" aria-label="Share on Facebook">
