@@ -19,6 +19,7 @@ import * as uiHelper from './uiHelper';
 import * as texts from '../utils/texts';
 import * as drawing from './drawing';
 import { hashName } from "../../AssetList";
+import * as emitterManager from '../../utils/EmitterManager';
 
 
 let toolGUI;
@@ -115,9 +116,17 @@ const hasUnsavedChanges = function () {
     }
     return false;
 }
-const handleLoginStatusChange = function (event) {
+
+const handleLoginStatusChange = function () {
     if (headerBar) {
-        if (backendManager.isLoggedIn()) {
+        if (backendManager.isLoggedIn() || true) {
+
+            let getStagePosition = new PIXI.Point(300, 50);
+            getStagePosition.x *= 1/Settings.PTM;
+            getStagePosition.y *= 1/Settings.PTM;
+
+            emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, ['#7289da','#7289da','#7289da','#7289da', '#ffffff', '#99aab5', '#2c2f33']);
+
             headerBar.querySelector('#loginButton').style.visibility = 'hidden';
             headerBar.querySelector('#profileButton').style.visibility = 'visible';
         } else {
@@ -126,6 +135,9 @@ const handleLoginStatusChange = function (event) {
         }
     }
 }
+
+console.log(handleLoginStatusChange);
+
 const checkLevelDataForErrors = async function () {
     const title = levelEditScreen.domElement.querySelector('#levelEdit_title');
     const description = levelEditScreen.domElement.querySelector('#levelEdit_description');

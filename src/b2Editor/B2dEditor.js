@@ -34,7 +34,6 @@ import { copyStringToClipboard } from "./utils/copyToClipboard";
 import { removeGraphicFromCells } from '../utils/PIXICuller';
 import { hashName } from "../AssetList";
 
-
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
@@ -4103,7 +4102,7 @@ const _B2dEditor = function () {
 		let graphic;
 		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
-			if (Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
+			if (!graphic.data || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
 				queryGraphics.splice(i, 1);
 				i--;
 			}

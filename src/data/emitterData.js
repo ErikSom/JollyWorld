@@ -268,7 +268,8 @@ export const jetfire = {
 		"x": 0,
 		"y": 0,
 		"r": 10
-	}
+	},
+	"emit":false
 }
 
 export const cannonShoot = {
@@ -339,7 +340,8 @@ export const cannonShoot = {
 		"x": 2,
 		"y": 0,
 		"r": 0
-	}
+	},
+	"emit":false
 }
 
 export const sparksMetal = {
@@ -388,8 +390,61 @@ export const sparksMetal = {
 		"y": 0
 	},
 	"addAtBack": false,
-	"spawnType": "point"
+	"spawnType": "point",
+	"emit":false
 }
+
+const EasingFunctions = {
+	// linear: t => t,
+	// easeInQuad: t => t*t,
+	// easeOutQuad: t => t*(2-t),
+	easeInOutQuad: t => t<.5 ? 2*t*t : -1+(4-2*t)*t
+	// easeInCubic: t => t*t*t,
+	// easeOutCubic: t => (--t)*t*t+1,
+	// easeInOutCubic: t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1,
+	// easeInQuart: t => t*t*t*t,
+	// easeOutQuart: t => 1-(--t)*t*t*t,
+	// easeInOutQuart: t => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t,
+	// easeInQuint: t => t*t*t*t*t,
+	// easeOutQuint: t => 1+(--t)*t*t*t*t,
+	// easeInOutQuint: t => t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t
+}
+
+export const confettiFrames = [
+	{
+		framerate: 20,
+		loop: true,
+		textures: [
+			"Confetti0000",
+			"Confetti0001",
+			"Confetti0002",
+			"Confetti0003",
+			"Confetti0004",
+		]
+	},
+	{
+		framerate: 20,
+		loop: true,
+		textures: [
+			"Confetti0002",
+			"Confetti0003",
+			"Confetti0004",
+			"Confetti0000",
+			"Confetti0001",
+		]
+	},
+	{
+		framerate: 20,
+		loop: true,
+		textures: [
+			"Confetti0004",
+			"Confetti0000",
+			"Confetti0001",
+			"Confetti0002",
+			"Confetti0003",
+		]
+	}
+];
 
 export const confetti = {
 	"alpha": {
@@ -398,22 +453,21 @@ export const confetti = {
 	},
 	"scale": {
 		"start": 1,
-		"end": 1,
+		"end": 1.0,
 		"minimumScaleMultiplier": 0.6
 	},
 	"color": {
 		"start": "#e4f9ff",
 		"end": "#3fcbff"
 	},
-	"randomColors":['#FF0000', '#FF00FF', '#00FF00', '#0000FF'],
 	"speed": {
 		"start": 500,
 		"end": 100,
 		"minimumSpeedMultiplier": 0.001
 	},
 	"acceleration": {
-		"x": 0,
-		"y": 0
+		"x": -0.1,
+		"y": -0.1
 	},
 	"maxSpeed": 0,
 	"startRotation": {
@@ -430,7 +484,7 @@ export const confetti = {
 		"max": 1
 	},
 	"blendMode": "normal",
-	"frequency": 0.001,
+	"frequency": 0.002,
 	"emitterLifetime": 0.3,
 	"maxParticles": 500,
 	"pos": {
@@ -438,8 +492,12 @@ export const confetti = {
 		"y": 0
 	},
 	"addAtBack": false,
-	"spawnType": "burst",
-	"particlesPerWave": 3,
-	"particleSpacing": 0,
-	"angleStart": 0
+	"spawnType": "circle",
+	"spawnCircle": {
+		"x": 0,
+		"y": 0,
+		"r": 100
+	},
+	"ease":EasingFunctions.easeInOutQuad,
+	"emit":false
 }

@@ -367,10 +367,6 @@ function Game() {
     //mouse
     this.onMouseDown = function (e) {
 
-
-        emitterManager.playOnceEmitter("confetti", body, game.editor.mousePosWorld, 0);
-
-
         this.fixTouchEvent(e);
 
         if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug &&  !this.mouseJoint && this.run) {
@@ -1047,9 +1043,10 @@ function Game() {
             this.world.Step(Settings.physicsTimeStep, 4, 3);
             this.world.ClearForces();
             this.camera();
-            emitterManager.update();
             PhysicsParticleEmitter.update();
         }
+        emitterManager.update();
+
         EffectsComposer.update();
         this.editor.run();
 

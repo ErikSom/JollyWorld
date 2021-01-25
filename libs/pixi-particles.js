@@ -390,10 +390,6 @@ var Emitter = /** @class */ (function () {
             this.startColor = new PropertyNode_1.default({ r: 0xFF, g: 0xFF, b: 0xFF }, 0);
         }
 
-        if(config.randomColors){
-            this.randomColors = config.randomColors;
-        }
-
         //set up the start rotation
         if (config.startRotation) {
             this.minStartRotation = config.startRotation.min;
@@ -505,6 +501,12 @@ var Emitter = /** @class */ (function () {
         this.emit = config.emit === undefined ? true : !!config.emit;
         this.autoUpdate = config.autoUpdate === undefined ? false : !!config.autoUpdate;
     };
+    Emitter.prototype.setRandomColors = function(colors){
+        this.randomColors = colors.map(hex => {
+            const hexParts = hex.substr(1, hex.length).match(/.{1,2}/g);
+            return new PropertyNode_1.default({ r: parseInt(Number(`0x${hexParts[0]}`), 10), g: parseInt(Number(`0x${hexParts[1]}`), 10), b: parseInt(Number(`0x${hexParts[2]}`), 10) }, 0)
+        });
+    }
     /**
      * Recycles an individual particle.
      * @method PIXI.particles.Emitter#recycle
@@ -721,13 +723,7 @@ var Emitter = /** @class */ (function () {
                         }
 
                         if(this.randomColors){
-                            const color = this.randomColors[Math.floor(Math.random() * this.randomColors.length)];
-                            const colorObject =
-                                {
-                                    "start": color,
-                                    "end": color
-                                }
-                            this.startColor = PropertyNode_1.default.createList(colorObject);
+                            this.startColor = this.randomColors[Math.floor(Math.random() * this.randomColors.length)];
                         }
 
                         //set a random texture if we have more than one

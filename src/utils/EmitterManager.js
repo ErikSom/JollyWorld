@@ -33,8 +33,8 @@ export const init = function () {
         poolSize: 10
     },
     {
-        type: 'confetti',
-        poolSize: 5
+        type: 'screenConfetti',
+        poolSize: 3
     }];
     emitterPoolData.forEach((data) => {
         for (let i = 0; i < data.poolSize; i++) getEmitter(data.type);
@@ -43,7 +43,7 @@ export const init = function () {
         emittersPool[emitters[i].type].push(emitters[i]);
     }
 }
-export const playOnceEmitter = function (type, body, point, angle) {
+export const playOnceEmitter = function (type, body, point, angle, randomColors) {
     if (!angle) angle = 0;
     if (!body) body = globalBody;
 
@@ -74,6 +74,8 @@ export const playOnceEmitter = function (type, body, point, angle) {
     const angleOffset = (emitter.maxStartRotation - emitter.minStartRotation) / 2;
     emitter.minStartRotation = angle - angleOffset;
     emitter.maxStartRotation = angle + angleOffset;
+
+    if(randomColors) emitter.setRandomColors(randomColors);
     emitter.playOnce(returnToPool);
 
 }
@@ -99,7 +101,7 @@ const attachEmitter = (body, emitter)=>{
         // create container - postion container at right index
         // make sure to delete container on reset!!
         if(!emitter.container){
-            emitter.container = new PIXI.Container();
+            emitter.container = new PIXI.ParticleContainer();
             emitter.parent.addChild(emitter.container)
             emitter.parent = emitter.container;
         }
@@ -191,45 +193,11 @@ export const getEmitter = function (type, pool = true) {
                 emitterData[type]
             );
             break;
-        case "confetti":
+        case "screenConfetti":
             emitter = new PIXI.particles.Emitter(
-                game.editor.textures,
-                [
-                    {
-                        framerate: 20,
-                        loop: true,
-                        textures: [
-                            "Confetti0000",
-                            "Confetti0001",
-                            "Confetti0002",
-                            "Confetti0003",
-                            "Confetti0004",
-                        ]
-                    },
-                    {
-                        framerate: 20,
-                        loop: true,
-                        textures: [
-                            "Confetti0002",
-                            "Confetti0003",
-                            "Confetti0004",
-                            "Confetti0000",
-                            "Confetti0001",
-                        ]
-                    },
-                    {
-                        framerate: 20,
-                        loop: true,
-                        textures: [
-                            "Confetti0004",
-                            "Confetti0000",
-                            "Confetti0001",
-                            "Confetti0002",
-                            "Confetti0003",
-                        ]
-                    }
-                ],
-                emitterData[type]
+                game.stage,
+                emitterData.confettiFrames,
+                emitterData['confetti']
             );
             emitter.particleConstructor = PIXI.particles.AnimatedParticle;
             break;
