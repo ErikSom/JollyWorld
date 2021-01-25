@@ -33,6 +33,7 @@ let usernameScreen;
 let publishSocialShareScreen;
 export let saveScreen;
 export let loadScreen;
+let profileScreen;
 let notice;
 let prompt;
 let textEditor;
@@ -74,6 +75,8 @@ export const hideEditorPanels = function () {
     hidePanel(registerScreen);
     hidePanel(saveScreen);
     hidePanel(loadScreen);
+    hidePanel(profileScreen);
+    if(publishSocialShareScreen) publishSocialShareScreen.hide();
     removeNotice();
     removePrompt();
     removeTextEditor();
@@ -122,17 +125,17 @@ const handleLoginStatusChange = function () {
     if (headerBar) {
         if (backendManager.isLoggedIn()) {
 
-            let getStagePosition = new PIXI.Point(300, 50);
+            let getStagePosition = new PIXI.Point(230, 50);
             getStagePosition.x *= 1/Settings.PTM;
             getStagePosition.y *= 1/Settings.PTM;
 
-            emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, ['#7289da','#7289da','#7289da','#7289da', '#ffffff', '#99aab5', '#2c2f33']);
+            if(game.gameState === game.GAMESTATE_EDITOR) emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, ['#7289da','#7289da','#7289da','#7289da', '#ffffff', '#99aab5', '#2c2f33']);
 
-            headerBar.querySelector('#loginButton').style.visibility = 'hidden';
-            headerBar.querySelector('#profileButton').style.visibility = 'visible';
+            headerBar.querySelector('#loginButton').style.display = 'none';
+            headerBar.querySelector('#profileButton').style.display = 'block';
         } else {
-            headerBar.querySelector('#loginButton').style.visibility = 'visible';
-            headerBar.querySelector('#profileButton').style.visibility = 'hidden';
+            headerBar.querySelector('#loginButton').style.display = 'block';
+            headerBar.querySelector('#profileButton').style.display = 'none';
         }
     }
 }
@@ -221,33 +224,6 @@ const doSaveLevelData = async function (saveButton) {
 }
 const doPublishLevelData = function (publishButton) {
 
-
-    // FAKE SUCCESS:
-
-    const jollyConfetti = ['#c5291c','#66a03d'];
-    let getStagePosition = new PIXI.Point(window.innerWidth/2, window.innerHeight*0.75);
-    getStagePosition.x *= 1/Settings.PTM;
-    getStagePosition.y *= 1/Settings.PTM;
-
-    emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, jollyConfetti);
-
-    let getStagePosition1 = new PIXI.Point(window.innerWidth/4, window.innerHeight/2);
-    getStagePosition1.x *= 1/Settings.PTM;
-    getStagePosition1.y *= 1/Settings.PTM;
-
-    setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition1, 0, jollyConfetti), 200);
-
-    let getStagePosition2 = new PIXI.Point(window.innerWidth*0.75, window.innerHeight/2);
-    getStagePosition2.x *= 1/Settings.PTM;
-    getStagePosition2.y *= 1/Settings.PTM;
-
-    setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
-
-    showPublishSocialShareScreen(game.currentLevelData);
-    hidePanel(levelEditScreen);
-
-    //
-
     if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
     const publishLevel = () => {
@@ -260,10 +236,32 @@ const doPublishLevelData = function (publishButton) {
         showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
             publishButton.style.backgroundColor = 'grey';
             publishButton.innerText = '...';
-            console.log("Yeah publishing now..");
             game.publishLevelData().then(() => {
                 publishButton.style.backgroundColor = '';
                 publishButton.innerText = 'PUBLISH';
+
+                const jollyConfetti = ['#c5291c','#66a03d'];
+                let getStagePosition = new PIXI.Point(window.innerWidth/2, window.innerHeight*0.75);
+                getStagePosition.x *= 1/Settings.PTM;
+                getStagePosition.y *= 1/Settings.PTM;
+
+                emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, jollyConfetti);
+
+                let getStagePosition1 = new PIXI.Point(window.innerWidth/4, window.innerHeight/2);
+                getStagePosition1.x *= 1/Settings.PTM;
+                getStagePosition1.y *= 1/Settings.PTM;
+
+                setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition1, 0, jollyConfetti), 200);
+
+                let getStagePosition2 = new PIXI.Point(window.innerWidth*0.75, window.innerHeight/2);
+                getStagePosition2.x *= 1/Settings.PTM;
+                getStagePosition2.y *= 1/Settings.PTM;
+
+                setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
+
+                showPublishSocialShareScreen(game.currentLevelData);
+                hidePanel(levelEditScreen);
+
                 console.log("PUBLISH SUCCESSSSSS");
             }).catch(error => {
                 console.log(error);
@@ -327,7 +325,7 @@ export const showHeaderBar = function () {
     button.style.width = '48px';
     button.style.height = '30px';
     button.addEventListener('click', () => {
-        backendManager.signout();
+        showProfileScreen();
     });
 
 
@@ -435,8 +433,74 @@ export const showLoginScreen = function (center) {
     }
 
     showPanel(loginScreen);
+}
+
+export const showProfileScreen = async () => {
+    if (!profileScreen) {
+        profileScreen = new dat.GUI({
+            autoPlace: false,
+            width:'unset'
+        });
+        profileScreen.domElement.setAttribute('id', 'profileScreen');
+        profileScreen.domElement.style.minWidth = '180px';
+        profileScreen.domElement.style.width = 'unset';
+
+        let folder = profileScreen.addFolder('Profile Screen');
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
+
+        folder.open();
+
+        const closeButton = document.createElement('div');
+        closeButton.setAttribute('class', 'closeWindowIcon');
+        folder.domElement.append(closeButton);
+        closeButton.addEventListener('click', () => {
+            hidePanel(profileScreen);
+        });
+
+        const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+
+        const userData = await backendManager.getUserData();
+        const username = document.createElement('div');
+        username.innerText = `${userData.username}`;
+        username.style.color = '#00FF00';
+        username.style.fontSize = '22px';
+        username.style.margin = '10px';
+        username.style.display = 'block';
+
+        targetDomElement.appendChild(username);
+
+        let signOut = document.createElement('div');
+        signOut.setAttribute('class', 'headerButton save buttonOverlay dark');
+        signOut.innerHTML = "LOG OUT";
+        signOut.style.width = '80px';
+        signOut.style.margin = 'auto';
+        signOut.style.marginTop = '10px';
+
+        targetDomElement.appendChild(signOut);
+
+        signOut.addEventListener('click', ()=>{
+            backendManager.signout();
+            hidePanel(profileScreen);
+        });
+
+        targetDomElement.appendChild(document.createElement('br'));
+
+        customGUIContainer.appendChild(profileScreen.domElement);
+
+        registerDragWindow(profileScreen);
+
+    }
+
+    const computedWidth = parseFloat(getComputedStyle(profileScreen.domElement, null).width.replace("px", ""));
+    profileScreen.domElement.style.left = `${228 - computedWidth / 2}px`;
+    profileScreen.domElement.style.top = '10px';
+
+    showPanel(profileScreen);
 
 }
+
 
 const openDiscordOauth = ()=>{
     const shrink = .8;
@@ -450,212 +514,8 @@ const openDiscordOauth = ()=>{
     window.open(url, 'oAuthLogin', settings);
 }
 
-export const showRegisterScreen = function () {
-    if (!registerScreen) {
-        const loginGUIWidth = 300;
-
-        registerScreen = new dat.GUI({
-            autoPlace: false,
-            width: loginGUIWidth
-        });
-        registerScreen.domElement.setAttribute('id', 'registerScreen');
-
-        let folder = registerScreen.addFolder('Register Screen');
-        folder.domElement.classList.add('custom');
-        folder.domElement.style.textAlign = 'center';
-
-        folder.open();
-
-        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-        let span = document.createElement('span');
-        span.innerText = 'SIGN UP';
-        targetDomElement.appendChild(span);
-        span.style.fontSize = '20px';
-        span.style.marginTop = '20px';
-        span.style.display = 'inline-block';
-
-        let divWrapper = document.createElement('div');
-        divWrapper.style.padding = '0px 20px';
-
-        var textAreanStyle = 'font-size:18px;height:30px;margin:10px auto;text-align:center;font-weight:bold'
-
-        let email = document.createElement('input');
-        email.setAttribute('placeholder', 'Email');
-        email.setAttribute('tabindex', '0');
-        divWrapper.appendChild(email);
-        email.style = textAreanStyle;
-
-        let password = document.createElement('input');
-        password.setAttribute('placeholder', 'Password');
-        password.setAttribute('tabindex', '0');
-        password.setAttribute('type', 'password');
-        divWrapper.appendChild(password);
-        password.style = textAreanStyle;
-
-        let repassword = document.createElement('input');
-        repassword.setAttribute('placeholder', 'Re-type Password');
-        repassword.setAttribute('tabindex', '0');
-        repassword.setAttribute('type', 'password');
-        divWrapper.appendChild(repassword);
-        repassword.style = textAreanStyle;
-
-        let errorSpan = document.createElement('span');
-        errorSpan.innerText = '';
-        errorSpan.style.display = 'block';
-        errorSpan.style.color = '#ff4b00';
-        errorSpan.style.margin = '20px auto';
-        divWrapper.appendChild(errorSpan);
 
 
-        const errorChecks = (noDefault = false) => {
-            var errorStack = [];
-            const textAreaDefaultColor = '#fff';
-            const textAreaErrorColor = '#e8764b';
-
-            password.style.backgroundColor = textAreaDefaultColor;
-            repassword.style.backgroundColor = textAreaDefaultColor;
-            email.style.backgroundColor = textAreaDefaultColor;
-
-            if (password.value != '' || noDefault) {
-                if (password.value.length < 6) {
-                    errorStack.push("Password must be at last 6 characters long");
-                    password.style.backgroundColor = textAreaErrorColor;
-                }
-            }
-
-            if (repassword.value != '' || noDefault) {
-                if (repassword.value != password.value) {
-                    errorStack.push("Your passwords do not match");
-                    repassword.style.backgroundColor = textAreaErrorColor;
-                }
-            }
-
-            if (email.value != '' || noDefault) {
-                var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-                if (!re.test(String(email.value).toLowerCase())) {
-                    errorStack.push("Email entered is not a valid email address");
-                    email.style.backgroundColor = textAreaErrorColor;
-                }
-            }
-
-            errorSpan.innerText = '';
-            //errorSpan.style.margin = errorStack.length>0? '20px auto' : '0px';
-            if (errorStack.length == 0) return true;
-            for (var i = 0; i < errorStack.length; i++) {
-                errorSpan.innerText += errorStack[i] + '\n';
-            }
-            return false;
-        }
-        let func = (textarea) => {
-            let _text = textarea;
-            var f = () => {
-                const maxChars = 32;
-                if (_text.value.length > maxChars) _text.value = _text.value.substr(0, maxChars);
-                errorChecks();
-            }
-            f();
-            return f;
-        }
-
-
-        const passwordFunction = func(password);
-        password.addEventListener('input', passwordFunction);
-        password.addEventListener('selectionchange', passwordFunction);
-        password.addEventListener('propertychange', passwordFunction);
-        password.addEventListener('blur', errorChecks);
-
-        const repasswordFunction = func(repassword);
-        repassword.addEventListener('input', repasswordFunction);
-        repassword.addEventListener('selectionchange', repasswordFunction);
-        repassword.addEventListener('propertychange', repasswordFunction);
-        repassword.addEventListener('blur', errorChecks);
-
-        const emailFunction = func(email);
-        email.addEventListener('input', emailFunction);
-        email.addEventListener('selectionchange', emailFunction);
-        email.addEventListener('propertychange', emailFunction);
-        email.addEventListener('blur', errorChecks);
-
-        targetDomElement.appendChild(divWrapper);
-
-
-        span = document.createElement('span');
-        span.innerText = 'Do you agree to our ';
-        targetDomElement.appendChild(span);
-
-        span = document.createElement('span');
-        span.innerText = 'Terms of Use?';
-        targetDomElement.appendChild(span);
-        span.setAttribute('class', 'text_button');
-
-        let button = document.createElement('div');
-        button.setAttribute('id', 'acceptButton')
-        button.setAttribute('tabindex', '0');
-        button.classList.add('menuButton');
-        button.innerHTML = 'Accept!';
-        targetDomElement.appendChild(button);
-        button.style.margin = '10px auto';
-        [email, password, repassword, button].forEach(el => el.addEventListener('keydown', (e) => {
-            if (e.keyCode == 13)
-                button.click();
-        }));
-
-        const dotShell = uiHelper.buildDotShell(true);
-        button.appendChild(dotShell);
-
-        button.addEventListener('click', () => {
-            if (errorChecks(true)) {
-                dotShell.classList.remove('hidden');
-                let oldText = button.innerHTML;
-                button.innerHTML = '';
-                button.appendChild(dotShell);
-                backendManager.registerUser(email.value, password.value).then(() => {
-                    console.log("Succesfully registered!!");
-                    hidePanel(registerScreen);
-                    dotShell.classList.add('hidden');;
-                    button.innerHTML = oldText;
-                }).catch((error) => {
-                    console.log("Backend responded with", error.code);
-                    let errorMessage = error.message;
-                    if (error.code == 'PERMISSION_DENIED') errorMessage = 'Username already claimed by other email';
-                    errorSpan.innerText = errorMessage;
-                    dotShell.classList.add('hidden');;
-                    button.innerHTML = oldText;
-                });
-            }
-        });
-
-
-        span = document.createElement('span');
-        span.innerText = 'Have an account? ';
-        targetDomElement.appendChild(span);
-
-        span = document.createElement('span');
-        span.innerText = 'Log In!';
-        targetDomElement.appendChild(span);
-        span.setAttribute('class', 'text_button');
-        span.addEventListener('click', () => {
-            hidePanel(registerScreen);
-            showLoginScreen();
-        });
-
-        targetDomElement.appendChild(document.createElement('br'));
-        targetDomElement.appendChild(document.createElement('br'));
-
-        customGUIContainer.appendChild(registerScreen.domElement);
-
-        registerDragWindow(registerScreen);
-
-    }
-
-    showPanel(registerScreen);
-
-    if (registerScreen) {
-        registerScreen.domElement.style.top = loginScreen.domElement.style.top;
-        registerScreen.domElement.style.left = loginScreen.domElement.style.left;
-    }
-}
 export const showUsernameScreen = function () {
     if (!usernameScreen) {
         const loginGUIWidth = 300;

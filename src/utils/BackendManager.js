@@ -95,7 +95,6 @@ function BackendManager() {
 			.then(result => result.json())
 			.then(data => {
 				console.log("Userdata:", data);
-				console.log(this, 'what is this')
 				this.userData = data;
 				resolve(data);
 			});
