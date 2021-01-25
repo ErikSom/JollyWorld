@@ -1031,7 +1031,7 @@ function UIManager() {
 
         const divWrapper = document.createElement('div');
         divWrapper.classList.add('divWrapper');
-        divWrapper.style.padding = '5px';
+        divWrapper.style.padding = '10px';
         divWrapper.style.display = 'flex';
         divWrapper.style.flexDirection = 'column';
 

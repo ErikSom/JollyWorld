@@ -999,7 +999,7 @@ export const showSaveScreen = function () {
         new_button.classList.add('menuButton');
         new_button.innerHTML = 'New!';
         targetDomElement.appendChild(new_button);
-        new_button.style.margin = '10px auto';
+        new_button.style.margin = '20px auto';
         new_button.addEventListener('keydown', (e) => {
             if (e.keyCode == 13)
                 new_button.click();
@@ -1032,7 +1032,6 @@ export const showSaveScreen = function () {
 
         let divWrapper = document.createElement('div');
         divWrapper.setAttribute('id', 'levelList');
-        divWrapper.style.padding = '0px 10px';
         targetDomElement.appendChild(divWrapper);
 
         targetDomElement.appendChild(document.createElement('br'));
@@ -1251,7 +1250,6 @@ export const showLoadScreen = function () {
 
         let divWrapper = document.createElement('div');
         divWrapper.setAttribute('id', 'levelList');
-        divWrapper.style.padding = '10px';
         targetDomElement.appendChild(divWrapper);
 
         customGUIContainer.appendChild(loadScreen.domElement);

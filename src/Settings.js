@@ -49,8 +49,8 @@ export var Settings = {
     /*BACKEND*/
     API:'https://api.jollyworld.app',
     STATIC:'https://static.jollyworld.app',
-    REDIRECT:'http://localhost:11009/login.html', // TODO change
-    // REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
+    // REDIRECT:'http://localhost:11009/login.html', // TODO change
+    REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
     // REDIRECT:'https://jollyworld.app/login.html',
     GAMEURI: 'https://jollyworld.app',
     levelsPerRequest:100,
@@ -76,7 +76,7 @@ export var Settings = {
         newGradient:'-new gradient-',
         error_message:'A CRITICAL ERROR HAS OCCURRED, PLEASE COPY ALL THIS TEXT IN THE #BUGS CHANNEL OF THE JOLLY WORLD DISCORD INCLUDING A BRIEF EXPLANATION OF WHAT HAPPENED, REFRESH THE PAGE AFTERWARDS:',
         downloading_blueprints:'downloading...',
-        publish_succes:'Your level is LIVE now!'
+        publish_succes:'Your level is now LIVE!'
     },
     jollyDataPrefix:window.atob('PGpvbGx5RGF0YS0='),
 
