@@ -293,12 +293,7 @@ function BackendManager() {
 
 				console.log("DELETE SUCCESSS :)!", data);
 
-				// update the local cache
-				// const userData = await this.getUserData();
-				// const cachedLevel = userData.my_levels.find(level=> level.id === levelData.id);
-				// userData.my_levels = userData.my_levels.filer(level=> level.id !== levelData.id);
-
-				resolve(levelData);
+				resolve();
 
 			});
 		})

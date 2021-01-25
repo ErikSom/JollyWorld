@@ -146,7 +146,7 @@ const checkLevelDataForErrors = async function () {
     const errorSpan = levelEditScreen.domElement.querySelector('#levelEdit_errorText');
 
     var errorStack = [];
-    const textAreaDefaultColor = '#fff';
+    const textAreaDefaultColor = '#444';
     const textAreaErrorColor = '#e8764b';
 
     title.style.backgroundColor = textAreaDefaultColor;
@@ -760,6 +760,11 @@ export const showLevelEditScreen = function (dontReplace) {
         title.style.height = '30px';
         title.style.fontWeight = 'bold';
         title.style.marginBottom = '5px';
+        title.style.backgroundColor = '#444';
+        title.style.padding = '0px 5px';
+        title.style.border = 'none';
+        title.style.color = '#00FF00';
+
 
         span = document.createElement('span');
         span.innerText = 'Characters left: 100';
@@ -792,6 +797,10 @@ export const showLevelEditScreen = function (dontReplace) {
         divWrapper.appendChild(description);
         description.style.height = '100px';
         description.style.marginBottom = '2px';
+        description.style.backgroundColor = '#444';
+        description.style.color = '#00FF00';
+        description.style.fontFamily = 'arial';
+        description.style.padding = '5px';
 
         span = document.createElement('span');
         span.innerText = 'Characters left: 300';
@@ -831,6 +840,11 @@ export const showLevelEditScreen = function (dontReplace) {
             youtubeLink.style.height = '30px';
             youtubeLink.style.fontSize = '14px';
             youtubeLink.style.fontWeight = 'bold';
+            youtubeLink.style.background = '#444';
+            youtubeLink.style.padding = '0px 5px';
+            youtubeLink.style.border = 'none';
+            youtubeLink.style.marginBottom = '5px';
+            youtubeLink.style.color = '#00FF00';
             youtubeDivWrapper.appendChild(youtubeLink);
         }
 
@@ -843,6 +857,7 @@ export const showLevelEditScreen = function (dontReplace) {
         errorSpan.innerText = '';
         errorSpan.style.color = '#ff4b00';
         errorSpan.style.padding = '10px';
+        errorSpan.style.paddingTop = 0;
         errorSpan.style.display = 'none';
         targetDomElement.appendChild(errorSpan);
 
@@ -990,8 +1005,8 @@ export const showSaveScreen = function () {
                 new_button.click();
         });
 
-        // const dotShell = uiHelper.buildDotShell(true);
-        // button.appendChild(dotShell);
+        const dotShell = uiHelper.buildDotShell(true);
+        new_button.appendChild(dotShell);
 
         new_button.addEventListener('click', () => {
             let oldText = new_button.innerHTML;
