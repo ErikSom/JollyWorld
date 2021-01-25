@@ -101,7 +101,7 @@ const attachEmitter = (body, emitter)=>{
         // create container - postion container at right index
         // make sure to delete container on reset!!
         if(!emitter.container){
-            emitter.container = new PIXI.ParticleContainer();
+            emitter.container = new PIXI.particles.ParticleContainer();
             emitter.parent.addChild(emitter.container)
             emitter.parent = emitter.container;
         }

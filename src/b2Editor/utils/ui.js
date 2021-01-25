@@ -30,6 +30,7 @@ export let levelEditScreen;
 let loginScreen;
 let registerScreen;
 let usernameScreen;
+let publishSocialShareScreen;
 export let saveScreen;
 export let loadScreen;
 let notice;
@@ -119,7 +120,7 @@ const hasUnsavedChanges = function () {
 
 const handleLoginStatusChange = function () {
     if (headerBar) {
-        if (backendManager.isLoggedIn() || true) {
+        if (backendManager.isLoggedIn()) {
 
             let getStagePosition = new PIXI.Point(300, 50);
             getStagePosition.x *= 1/Settings.PTM;
@@ -135,8 +136,6 @@ const handleLoginStatusChange = function () {
         }
     }
 }
-
-console.log(handleLoginStatusChange);
 
 const checkLevelDataForErrors = async function () {
     const title = levelEditScreen.domElement.querySelector('#levelEdit_title');
@@ -221,6 +220,34 @@ const doSaveLevelData = async function (saveButton) {
     });
 }
 const doPublishLevelData = function (publishButton) {
+
+
+    // FAKE SUCCESS:
+
+    const jollyConfetti = ['#c5291c','#66a03d'];
+    let getStagePosition = new PIXI.Point(window.innerWidth/2, window.innerHeight*0.75);
+    getStagePosition.x *= 1/Settings.PTM;
+    getStagePosition.y *= 1/Settings.PTM;
+
+    emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, jollyConfetti);
+
+    let getStagePosition1 = new PIXI.Point(window.innerWidth/4, window.innerHeight/2);
+    getStagePosition1.x *= 1/Settings.PTM;
+    getStagePosition1.y *= 1/Settings.PTM;
+
+    setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition1, 0, jollyConfetti), 200);
+
+    let getStagePosition2 = new PIXI.Point(window.innerWidth*0.75, window.innerHeight/2);
+    getStagePosition2.x *= 1/Settings.PTM;
+    getStagePosition2.y *= 1/Settings.PTM;
+
+    setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
+
+    showPublishSocialShareScreen(game.currentLevelData);
+    hidePanel(levelEditScreen);
+
+    //
+
     if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
     const publishLevel = () => {
@@ -1704,6 +1731,35 @@ const removePrompt = ()=>{
         prompt = null;
     }
 }
+
+const showPublishSocialShareScreen = level =>{
+    if(!publishSocialShareScreen){
+        publishSocialShareScreen = game.ui.buildSocialShare(customGUIContainer);
+
+        const targetElement = publishSocialShareScreen.domElement.querySelector('.folder .divWrapper');
+        const span = document.createElement('span');
+        span.style.fontSize = '22px';
+        span.style.marginBottom = '10px';
+        publishSocialShareScreen.setTitle = title => span.innerHTML = title;
+        targetElement.prepend(span);
+
+        registerDragWindow(publishSocialShareScreen);
+
+    }
+    publishSocialShareScreen.domElement.style.visibility = 'visible';
+
+    const computedWidth = parseFloat(getComputedStyle(publishSocialShareScreen.domElement, null).width.replace("px", ""));
+    const computedHeight = parseFloat(getComputedStyle(publishSocialShareScreen.domElement, null).height.replace("px", ""));
+    publishSocialShareScreen.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    publishSocialShareScreen.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
+
+
+    publishSocialShareScreen.setTitle(Settings.DEFAULT_TEXTS.publish_succes.replace('%title%', level.title));
+    publishSocialShareScreen.setSocialMediaHTML(level);
+
+    setHighestWindow(publishSocialShareScreen.domElement);
+}
+
 export const fetchControllersFromGUI = function(gui){
     let controllers = [].concat(gui.__controllers);
     for (var propt in gui.__folders) {
@@ -1719,6 +1775,7 @@ export const fetchControllersFromGUI = function(gui){
     }
     return controllers;
 }
+
 export const showPrompt = function (message, positivePrompt, negativePrompt) {
     removePrompt();
 
@@ -1786,6 +1843,7 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
         })
     });
 }
+
 export const showHelp = function(i){
     removeShowHelp();
 
