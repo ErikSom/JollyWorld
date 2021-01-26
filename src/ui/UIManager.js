@@ -83,8 +83,8 @@ function UIManager() {
             setTimeout(()=>{span.style.opacity = 1}, 1800);
 
             discordButton = document.createElement('button');
-            discordButton.classList.add('normalButton','discordButton');
-            discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discord.png')})`;
+            discordButton.classList.add('menuButton','discordButton');
+            discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discord.svg')})`;
             discordButton.onclick = ()=>{
                 window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
             }
