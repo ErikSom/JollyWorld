@@ -1075,7 +1075,7 @@ body .dg .cr.function {
 }
 
 #helpScreen .textWrapper {
-    margin: 5px;
+    margin: 10px;
 }
 
 #helpScreen .textWrapper p {
@@ -1088,6 +1088,10 @@ body .dg .cr.function {
 
 #helpScreen .textWrapper>div {
     font-weight: 100;
+    line-height: 16px;
+    letter-spacing: .05em;
+    font-family: sans-serif;
+    color: #e8e8e8;
 }
 
 .textWrapper li {
