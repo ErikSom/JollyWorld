@@ -1,6 +1,8 @@
 const targetFPS = 60;
 export var Settings = {
     /*REFRESHRATE*/
+    HDR:true,
+    pixelRatio: 1,
     admin:(window.location.search.indexOf('editorAdmin=true')>=0),
     targetFPS,
     timeStep:1000 / targetFPS,

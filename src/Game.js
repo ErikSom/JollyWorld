@@ -112,21 +112,14 @@ function Game() {
 
         this.canvas = document.getElementById("canvas");
 
-        var w = window.innerWidth;
-        var h = window.innerHeight;
-
-        this.canvas.width = w;
-        this.canvas.height = h;
-
-        PIXICuller.renderArea.width = w;
-        PIXICuller.renderArea.height = h;
+        if(Settings.HDR && window.devicePixelRatio >= 2) Settings.pixelRatio = 2;
 
         this.app = new PIXI.Application({
             view: this.canvas,
             backgroundColor: 0xD4D4D4,
-            width: w,
-            height: h,
+            resolution: Settings.pixelRatio
         });
+        this.handleResize();
 
         if(this.app.renderer.context instanceof CanvasRenderingContext2D){
             alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
@@ -418,8 +411,8 @@ function Game() {
         const w = window.innerWidth;
         const h = window.innerHeight;
 
-        this.canvas.width = w;
-        this.canvas.height = h;
+        this.canvas.style.width = `${w}px`;
+        this.canvas.style.height = `${h}px`;
         this.app.renderer.resize(w, h);
 
         PIXICuller.renderArea.width = w;
@@ -450,7 +443,6 @@ function Game() {
             return true;
         }
     };
-
 
     this.inputUpdate = function () {
         if (this.gameState != this.GAMESTATE_MENU && this.character.alive && !this.pause && !this.levelWon) {
@@ -862,8 +854,8 @@ function Game() {
 
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (this.editor.editorSettingsObject.cameraZoom - currentZoom) * zoomEase);
 
-        cameraTargetPosition.x -= this.canvas.width / 2.0 / camera.scale.x;
-        cameraTargetPosition.y -= this.canvas.height / 2.0 / camera.scale.y;
+        cameraTargetPosition.x -= window.innerWidth / 2.0 / camera.scale.x;
+        cameraTargetPosition.y -= window.innerHeight / 2.0 / camera.scale.y;
         cameraTargetPosition.x *= camera.scale.x;
         cameraTargetPosition.y *= camera.scale.y;
 
