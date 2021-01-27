@@ -43,6 +43,8 @@ export var Settings = {
     doubleClickTime:300,
     handleClosestDistance:5,
     verticeBoxSize:10,
+    /*MOBILE*/
+    touchButtonSize:80,
 
     /*LIMITS*/
     motorSpeedLimit:100,

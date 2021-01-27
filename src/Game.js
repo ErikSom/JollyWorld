@@ -33,8 +33,10 @@ import * as PhysicsParticleEmitter from './utils/PhysicsParticleEmitter';
 import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
+import * as MobileController from './utils/MobileController';
 
 import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
+
 
 
 const nanoid = require('nanoid');
@@ -171,6 +173,8 @@ function Game() {
         // because a this.app.screen is object getter,
         // rectangle should updates automatically
         this.stage.filterArea = this.app.screen;
+
+        if(MobileController.isMobile()) MobileController.init();
 
     };
 
