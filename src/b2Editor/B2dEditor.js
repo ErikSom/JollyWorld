@@ -511,6 +511,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
 				targetFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
+				targetFolder.add(ui.editorGUI.editData, 'showCameraLines').onChange(onChange('showCameraLines'));
 
 				ui.editorGUI.editData.resetHelp = ()=>{
 					ui.helpClosed.length = 0;
@@ -1891,24 +1892,89 @@ const _B2dEditor = function () {
 
 		if(this.editorSettingsObject.showPlayerHistory) this.drawPlayerHistory();
 
-		const camera = this.cameraHolder;
-		// Draw 0,0 reference
-		this.debugGraphics.lineStyle(3, "0x00FF00", 1);
-		const crossSize = 100;
-		this.debugGraphics.moveTo(camera.x, -crossSize + camera.y);
-		this.debugGraphics.lineTo(camera.x, crossSize + camera.y);
-		this.debugGraphics.moveTo(-crossSize + camera.x, camera.y);
-		this.debugGraphics.lineTo(crossSize + camera.x, camera.y);
+		if(this.editorSettingsObject.showCameraLines){
+			const camera = this.cameraHolder;
+			// Draw 0,0 reference
 
-		this.debugGraphics.moveTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
-		this.debugGraphics.lineTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
-		this.debugGraphics.moveTo(-crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
-		this.debugGraphics.lineTo(crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+			const colorLight = "0x0affff";
+			const colorDark = "0x015d5d"
+			const lineAlpha = 0.5;
+			const lineWidth = 2;
 
-		this.debugGraphics.moveTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
-		this.debugGraphics.lineTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
-		this.debugGraphics.moveTo(-crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
-		this.debugGraphics.lineTo(crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+			let crossSize = 20;
+			this.debugGraphics.lineStyle(lineWidth, colorLight, lineAlpha);
+
+			this.debugGraphics.moveTo(camera.x, -crossSize + camera.y);
+			this.debugGraphics.lineTo(camera.x, crossSize + camera.y);
+			this.debugGraphics.moveTo(-crossSize + camera.x, camera.y);
+			this.debugGraphics.lineTo(crossSize + camera.x, camera.y);
+
+			this.debugGraphics.moveTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
+			this.debugGraphics.lineTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
+			this.debugGraphics.moveTo(-crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+			this.debugGraphics.lineTo(crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+
+			this.debugGraphics.moveTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
+			this.debugGraphics.lineTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
+			this.debugGraphics.moveTo(-crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+			this.debugGraphics.lineTo(crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+
+			crossSize = 10;
+			this.debugGraphics.lineStyle(lineWidth, colorDark, lineAlpha);
+
+			this.debugGraphics.moveTo(camera.x, -crossSize + camera.y);
+			this.debugGraphics.lineTo(camera.x, crossSize + camera.y);
+			this.debugGraphics.moveTo(-crossSize + camera.x, camera.y);
+			this.debugGraphics.lineTo(crossSize + camera.x, camera.y);
+
+			this.debugGraphics.moveTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
+			this.debugGraphics.lineTo(camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
+			this.debugGraphics.moveTo(-crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+			this.debugGraphics.lineTo(crossSize + camera.x - editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+
+			this.debugGraphics.moveTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, -crossSize + camera.y);
+			this.debugGraphics.lineTo(camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, crossSize + camera.y);
+			this.debugGraphics.moveTo(-crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+			this.debugGraphics.lineTo(crossSize + camera.x + editorSettings.worldSize.width / 2 * camera.scale.x, camera.y);
+
+
+			const cameraRealWidth = Settings.targetResolution.x * camera.scale.x;
+			const cameraRealHeight = Settings.targetResolution.y * camera.scale.x;
+
+			const playerPosition = this.getPlayerPosition();
+			playerPosition.x *= camera.scale.x;
+			playerPosition.x += camera.x;
+			playerPosition.y *= camera.scale.x;
+			playerPosition.y += camera.y;
+
+			if(playerPosition){
+				this.debugGraphics.lineStyle(lineWidth, colorLight, lineAlpha);
+				this.debugGraphics.drawRect(playerPosition.x - cameraRealWidth / 2, playerPosition.y - cameraRealHeight / 2, cameraRealWidth, cameraRealHeight);
+
+				const cameraCornerSize = 200;
+				this.debugGraphics.lineStyle(lineWidth, colorDark, lineAlpha);
+				// TL
+				this.debugGraphics.moveTo(playerPosition.x - cameraRealWidth / 2 + cameraCornerSize * camera.scale.x, playerPosition.y - cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x - cameraRealWidth / 2, playerPosition.y - cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x - cameraRealWidth / 2, playerPosition.y - cameraRealHeight / 2 + cameraCornerSize * camera.scale.x);
+
+				// TR
+				this.debugGraphics.moveTo(playerPosition.x + cameraRealWidth / 2 - cameraCornerSize * camera.scale.x, playerPosition.y - cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x + cameraRealWidth / 2, playerPosition.y - cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x + cameraRealWidth / 2, playerPosition.y - cameraRealHeight / 2 + cameraCornerSize * camera.scale.x);
+
+				// BL
+				this.debugGraphics.moveTo(playerPosition.x - cameraRealWidth / 2 + cameraCornerSize * camera.scale.x, playerPosition.y + cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x - cameraRealWidth / 2, playerPosition.y + cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x - cameraRealWidth / 2, playerPosition.y + cameraRealHeight / 2 - cameraCornerSize * camera.scale.x);
+
+				// BR
+				this.debugGraphics.moveTo(playerPosition.x + cameraRealWidth / 2 - cameraCornerSize * camera.scale.x, playerPosition.y + cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x + cameraRealWidth / 2, playerPosition.y + cameraRealHeight / 2);
+				this.debugGraphics.lineTo(playerPosition.x + cameraRealWidth / 2, playerPosition.y + cameraRealHeight / 2 - cameraCornerSize * camera.scale.x);
+
+			}
+		}
 
 		trigger.drawEditorTriggers();
 
@@ -2281,6 +2347,7 @@ const _B2dEditor = function () {
 		this.gravityX = 0;
 		this.gravityY = 10;
 		this.showPlayerHistory = false;
+		this.showCameraLines = true;
 		this.backgroundColor = 0xD4D4D4;
 		this.cameraZoom = Settings.defaultCameraZoom;
 	}
@@ -2349,23 +2416,33 @@ const _B2dEditor = function () {
 		}
 	}
 	this.findPlayer = function(){
+		const playerPosition = this.getPlayerPosition();
 		const cameraHolder = B2dEditor.container.camera || B2dEditor.container;
+		if(playerPosition){
+			playerPosition.x -= window.innerWidth / 2.0 / cameraHolder.scale.x;
+			playerPosition.y -= window.innerHeight / 2.0 / cameraHolder.scale.y;
+			playerPosition.x *= cameraHolder.scale.x;
+			playerPosition.y *= cameraHolder.scale.y;
+			camera.set({x:-playerPosition.x, y:-playerPosition.y});
+
+			scrollBars.update();
+		}
+	}
+	this.getPlayerPosition = function(){
 		for (let key in this.activePrefabs) {
             if (this.activePrefabs.hasOwnProperty(key)) {
                 if (this.activePrefabs[key].class.constructor.playableCharacter) {
 
-					let cameraTargetX = this.activePrefabs[key].x;
-					let cameraTargetY = this.activePrefabs[key].y;
-					cameraTargetX -= game.canvas.width / 2.0 / cameraHolder.scale.x;
-					cameraTargetY -= game.canvas.height / 2.0 / cameraHolder.scale.y;
-					cameraTargetX *= cameraHolder.scale.x;
-					cameraTargetY *= cameraHolder.scale.y;
+					const targetBody = this.activePrefabs[key].class.lookupObject['body'];
 
-					camera.set({x:-cameraTargetX, y:-cameraTargetY});
-					scrollBars.update();
+					let cameraTargetX = targetBody.GetPosition().x*this.PTM;
+					let cameraTargetY = targetBody.GetPosition().y*this.PTM;
+
+					return {x:cameraTargetX, y: cameraTargetY}
                 }
             }
-        }
+		}
+		return null;
 	}
 
 	this.onMouseDown = function (evt) {
