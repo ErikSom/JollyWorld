@@ -45,6 +45,7 @@ export var Settings = {
     verticeBoxSize:10,
     /*MOBILE*/
     touchButtonSize:80,
+    touchControlsAlpha:0.6,
 
     /*LIMITS*/
     motorSpeedLimit:100,

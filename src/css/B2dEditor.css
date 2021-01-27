@@ -882,6 +882,9 @@ body .dg .cr.function {
 #levelBanner #levelbanner_description {
     text-align: center;
 }
+#levelBanner #levelbanner_description{
+    margin-top: 10px;
+}
 
 #levelBanner #levelbanner_creatorSpan {
     color: #00FF00;

@@ -2002,7 +2002,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
     let textarea = document.createElement('textarea');
     textarea.value = `${Settings.DEFAULT_TEXTS.error_message}\n\n ${msg},\n ${url},\n ${lineNo},\n ${columnNo},\n ${(error && error.stack) ? error.stack : ''}`
     textarea.style.width = '500px';
-    textarea.style.height ='70vh';
+    textarea.style.height ='90vh';
     textWrapper.appendChild(textarea);
 
     mainFolderDomElement.appendChild(textWrapper);

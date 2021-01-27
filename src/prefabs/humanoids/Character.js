@@ -22,7 +22,10 @@ export class Character extends Humanoid {
     }
 
     flip(){
-        if(this.attachedToVehicle) game.vehicle.flip();
+        if(this.attachedToVehicle){
+            game.vehicle.flip();
+            this.flipped = !this.flipped;
+        }
         else super.flip();
         if(this.hat) this.hat.flip();
     }

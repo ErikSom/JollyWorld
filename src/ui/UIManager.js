@@ -463,7 +463,7 @@ function UIManager() {
             var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
             let divWrapper = document.createElement('div');
-            divWrapper.style.padding = '20px';
+            divWrapper.style.padding = '10px';
 
             let title = document.createElement('div');
             title.setAttribute('id', 'levelbanner_title');

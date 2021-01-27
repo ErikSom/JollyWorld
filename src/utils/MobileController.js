@@ -1,8 +1,14 @@
+import { game } from "../Game";
 import {
     Settings
 } from "../Settings";
 
 let layoutHolder;
+let arrowLeft;
+let arrowRight;
+let accelDown;
+let accelUp;
+let flip;
 
 export const init = ()=> {
 
@@ -14,6 +20,8 @@ export const init = ()=> {
 		left:0;
 		top:0;
 		z-index:999;
+		pointer-events:none;
+		opacity:${Settings.touchControlsAlpha}
 	`;
 	document.body.appendChild(layoutHolder);
 
@@ -25,9 +33,11 @@ export const init = ()=> {
 	const verticalAngularOffset = '60px';
 
 	const rotateButtons = document.createElement('div');
-	const arrowLeft = createButton('arrow', buttonSize, rotateButtons, buttonMargin);
+	arrowLeft = createButton('arrow', buttonSize, rotateButtons, buttonMargin);
 	arrowLeft.style.marginBottom = verticalAngularOffset;
-	const arrowRight = createButton('arrow', buttonSize, rotateButtons, buttonMargin, true);
+	arrowRight = createButton('arrow', buttonSize, rotateButtons, buttonMargin, true);
+	flip = createButton('flip', buttonSize, rotateButtons, buttonMargin, true);
+	flip.style.marginLeft = '20px';
 	rotateButtons.style = `
 	position:absolute;
 	left:0;
@@ -37,8 +47,8 @@ export const init = ()=> {
 	layoutHolder.appendChild(rotateButtons);
 
 	const accelerateButtons = document.createElement('div');
-	const accelDown = createButton('accel', buttonSize, accelerateButtons, buttonMargin, true);
-	const accelUp = createButton('accel', buttonSize, accelerateButtons, buttonMargin);
+	accelDown = createButton('accel', buttonSize, accelerateButtons, buttonMargin, true);
+	accelUp = createButton('accel', buttonSize, accelerateButtons, buttonMargin);
 	accelUp.style.marginBottom = verticalAngularOffset;
 	accelerateButtons.style = `
 	position:absolute;
@@ -47,7 +57,14 @@ export const init = ()=> {
 	margin:${screenMargin};
 `
 	layoutHolder.appendChild(accelerateButtons);
+	hide();
+}
 
+export const hide = ()=>{
+	layoutHolder.style.display = 'none';
+}
+export const show = ()=>{
+	layoutHolder.style.display = 'block';
 }
 
 export const isMobile = ()=> {
@@ -78,6 +95,53 @@ const createButton = (type, size, target, margin, mirrorX) => {
 	if(mirrorX) svgElement.style.transform = 'scale(-1, 1)';
 	if(margin) svgElement.style.margin = margin;
 	svgElement.innerHTML = generatedHTML
+	svgElement.style.pointerEvents = 'all';
+	svgElement.style.cursor = 'pointer';
+	svgElement.style.userSelect = 'none';
 	target.appendChild(svgElement);
+
+	svgElement.ontouchstart = handleButton;
+	svgElement.ontouchend = handleButton;
+
 	return svgElement;
+}
+
+const handleButton = event => {
+	const {currentTarget, type} = event;
+
+	const buttonDown = type === 'touchstart';
+	const charFlipped = game.character.flipped;
+
+	console.log(charFlipped, 'is flipped?');
+
+	switch(event.currentTarget){
+		case arrowLeft:
+			fireKeyboardEvent(buttonDown, 65);
+		break
+		case arrowRight:
+			fireKeyboardEvent(buttonDown, 68);
+		break
+		case accelUp:
+			fireKeyboardEvent(buttonDown, charFlipped  ? 83 : 87);
+		break
+		case accelDown:
+			fireKeyboardEvent(buttonDown, charFlipped  ? 87 : 83);
+		break
+		case flip:
+			fireKeyboardEvent(buttonDown, 32);
+		break
+	}
+
+	if(buttonDown) currentTarget.style.filter = 'brightness(0.5)';
+	else currentTarget.style.filter = 'unset';
+	event.preventDefault();
+}
+
+
+const fireKeyboardEvent = (down, key)=> {
+	const keyEvent = down ? 'keydown' : 'keyup'
+	document.body.dispatchEvent(new KeyboardEvent(keyEvent, {
+		keyCode: key,
+		charCode: key,
+	}));
 }

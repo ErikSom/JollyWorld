@@ -610,6 +610,7 @@ function Game() {
     this.playWorld = function () {
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
+        MobileController.show();
     }
 
     this.testWorld = function () {
@@ -619,6 +620,7 @@ function Game() {
         this.findPlayableCharacter();
         this.stopAutoSave();
         this.levelStartTime = Date.now();
+        MobileController.show();
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -665,6 +667,7 @@ function Game() {
         this.resetGame();
         ui.hideGameOverMenu();
         PhysicsParticleEmitter.update(true);
+        MobileController.hide();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
