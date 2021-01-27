@@ -418,7 +418,34 @@ function Game() {
         PIXICuller.renderArea.width = w;
         PIXICuller.renderArea.height = h;
 
-        //        this.editor.resize();
+        const aspect = window.innerWidth/window.innerHeight;
+
+        if(aspect<Settings.minimumAspect){
+            const targetHeight = Settings.targetResolution.y;
+            Settings.aspectZoom = window.innerHeight / targetHeight;
+
+            console.log("CASE 1");
+
+        } else if(aspect>Settings.maximumAspect){
+            const targetWidth = Settings.targetResolution.x;
+            Settings.aspectZoom = window.innerWidth / targetWidth;
+
+            console.log("CASE 2");
+
+        }else{
+            const targetWidth = Settings.targetResolution.x;
+            Settings.aspectZoom = window.innerWidth / targetWidth;
+
+            if(window.innerHeight / Settings.aspectZoom < Settings.targetResolution.y){
+                const targetHeight = Settings.targetResolution.y
+                Settings.aspectZoom = window.innerHeight / targetHeight;
+                console.log("CASE 3");
+            }else{
+                console.log("CASE 4");
+
+            }
+        }
+        console.log('Aspect zoom:', Settings.aspectZoom);
     }
 
     this.getBodyAtMouse = function () {
@@ -843,16 +870,16 @@ function Game() {
     }
     this.movementBufferSize = 60;
     this.movementBuffer = [];
-    this.camera = function () {
-        var panEase = 0.1;
-        var zoomEase = 0.1;
+    this.camera = function (instant) {
+        const panEase = !instant ? 0.1 : 1.0;
+        const zoomEase = !instant ? 0.1 : 1.0;
         const camera = this.editor.cameraHolder;
 
-        var currentZoom = camera.scale.x;
+        const currentZoom = camera.scale.x;
+        const targetZoom = Settings.aspectZoom * this.editor.editorSettingsObject.cameraZoom;
+        const cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
 
-        var cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
-
-        this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (this.editor.editorSettingsObject.cameraZoom - currentZoom) * zoomEase);
+        this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
 
         cameraTargetPosition.x -= window.innerWidth / 2.0 / camera.scale.x;
         cameraTargetPosition.y -= window.innerHeight / 2.0 / camera.scale.y;

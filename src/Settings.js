@@ -1,13 +1,17 @@
 const targetFPS = 60;
 export var Settings = {
-    /*REFRESHRATE*/
+    /*APP*/
+    targetResolution:{x:1280, y:720},
+    minimumAspect:1.20,
+    maximumAspect:2.60,
+    aspectZoom:1,
     HDR:true,
     pixelRatio: 1,
     admin:(window.location.search.indexOf('editorAdmin=true')>=0),
     targetFPS,
     timeStep:1000 / targetFPS,
     allowMouseMovement:true,
-    defaultCameraZoom:0.8,
+    defaultCameraZoom:1.0,
     lineWidthCorrection:1.0,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
