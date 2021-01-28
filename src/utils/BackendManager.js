@@ -71,6 +71,7 @@ function BackendManager() {
 				const { token, error } = data;
 
 				// show error code
+				if(error) return reject(error);
 
 				localStorage.setItem('oauth-token', token);
 				localStorage.removeItem('needsToRegister');
@@ -332,19 +333,19 @@ function BackendManager() {
 
             switch (filter.by) {
                 case game.ui.FILTER_BY_FEATURED:
-                    query = `sort=newest&timespan=${timespan}&featured=1`;
+                    query = `sort=newest&timespan=${timespan}&featured=1&limit=${Settings.levelsPerRequest}`;
                     break;
                 case game.ui.FILTER_BY_NEWEST:
-					query = `sort=newest&timespan=${timespan}`;
+					query = `sort=newest&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
                     break;
                 case game.ui.FILTER_BY_OLDEST:
-					query = `sort=oldest&timespan=${timespan}`;
+					query = `sort=oldest&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
                     break;
                 case game.ui.FILTER_BY_PLAYCOUNT:
-					query = `sort=mostplayed&timespan=${timespan}`;
+					query = `sort=mostplayed&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
                     break;
                 case game.ui.FILTER_BY_RATING:
-					query = `sort=best&timespan=${timespan}`;
+					query = `sort=best&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
 					break;
 			}
 

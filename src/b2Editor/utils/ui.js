@@ -658,7 +658,7 @@ export const showUsernameScreen = function () {
                         /*console.log("Backend responded with", error);
                         let errorMessage = error.message;
                         if (error.code == 'USERNAME_TAKEN')*/ 
-                        const errorMessage = 'Username already claimed by other email';
+                        const errorMessage = error;
                         errorSpan.innerText = errorMessage;
                         dotShell.classList.add('hidden');;
                         button.innerHTML = oldText;
