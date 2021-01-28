@@ -4078,7 +4078,7 @@ const _B2dEditor = function () {
 		var body;
 		for (var i = 0; i < this.queryPhysicsBodies.length; i++) {
 			body = this.queryPhysicsBodies[i];
-			if (Boolean(body.mySprite.data.lockselection) != this.altDown) {
+			if (body.mySprite && body.mySprite.data && Boolean(body.mySprite.data.lockselection) != this.altDown) {
 				this.queryPhysicsBodies.splice(i, 1);
 				i--;
 			}

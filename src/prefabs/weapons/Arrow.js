@@ -9,7 +9,7 @@ class Arrow extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
 		this.dragConstant = 0.2;
-		this.lifeTime = 10000;
+		this.lifeTime = 8000;
         this.lifeTimer = 0;
     }
     init() {

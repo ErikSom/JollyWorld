@@ -37,7 +37,8 @@ class Cannon extends PrefabManager.basePrefab {
             this.cannonBody.SetType(Box2D.b2BodyType.b2_staticBody);
         }else{
             this.cannonBody.SetType(Box2D.b2BodyType.b2_dynamicBody);
-        }
+		}
+		this.lastCannonBalls = [];
 
 		this.reload();
 		super.init();
@@ -113,6 +114,12 @@ class Cannon extends PrefabManager.basePrefab {
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, body.GetPosition());
 
+
+		this.lastCannonBalls.push(prefabData.prefabClass);
+		if(this.lastCannonBalls.length>Settings.maxBullets){
+			this.lastCannonBalls.shift().destroy();
+		}
+
         this.emitter.playOnce();
 
 		this.cannonBody.ApplyForce(impulse.SelfMul(-0.1), pos, true);
@@ -146,12 +153,12 @@ Cannon.settingsOptions = Object.assign({}, Cannon.settingsOptions, {
 	"isFixed": false,
 	"isFlipped": false,
     "reloadTime": {
-        min: 0.0,
+        min: 0.5,
         max: 10.0,
         step: 0.1
 	},
 	"shootDelay": {
-        min: 0.0,
+        min: 0.5,
         max: 10.0,
         step: 0.1
 	},

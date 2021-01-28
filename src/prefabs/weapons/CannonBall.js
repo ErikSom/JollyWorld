@@ -6,7 +6,7 @@ import {
 class CannonBall extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
-		this.lifeTime = 10000;
+		this.lifeTime = 8000;
         this.lifeTimer = 0;
 		this.lookupObject['body'].SetBullet(true);
 	}
