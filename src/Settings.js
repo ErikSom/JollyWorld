@@ -60,8 +60,8 @@ export var Settings = {
     API:'https://api.jollyworld.app',
     STATIC:'https://static.jollyworld.app',
     // REDIRECT:'http://localhost:11009/login.html', // TODO change
-    REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
-    // REDIRECT:'https://jollyworld.app/login.html',
+    // REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
+    REDIRECT:'https://jollyworld.app/login.html',
     GAMEURI: 'https://jollyworld.app',
     levelsPerRequest:100,
 

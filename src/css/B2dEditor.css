@@ -282,7 +282,7 @@ body .dg .cr.function {
     width: 200px;
     height: 60px;
     text-align: center;
-    line-height: 60px;
+    line-height: 54px;
     border-radius: 30px;
     border: 3px solid black;
     box-shadow: inset 0px 4px 1px rgba(255, 255, 255, 0.60), 0px 0px 0px 3px hsl(0, 0%, 100%);
@@ -315,9 +315,20 @@ body .dg .cr.function {
     opacity: 1;
 }
 
-#mainMenu.disable>.menuButton {
+#mainMenu.disable>.menuButton, .menuButton.disable {
     pointer-events: none;
     filter: grayscale(1);
+}
+.menuButton.disable{
+    line-height: 40px;
+}
+.menuButton.disable:before{
+    content: 'Only on Desktop';
+    position: absolute;
+    font-size: 12px;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, 0%);
 }
 
 #editorButton,
@@ -329,7 +340,7 @@ body .dg .cr.function {
 .backButton,
 .moreLevels {
     height: 40px;
-    line-height: 40px;
+    line-height: 36px;
     width: unset;
     padding: 0px 30px;
     font-size: 24px;
@@ -341,7 +352,7 @@ body .dg .cr.function {
     margin: 10px;
     width: 140px;
     height: 40px;
-    line-height: 34px;
+    line-height: 38px;
     font-size: 20px;
 }
 
