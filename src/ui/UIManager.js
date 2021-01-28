@@ -12,6 +12,8 @@ import * as format from '../b2Editor/utils/formatString';
 import anime from 'animejs/lib/anime.es';
 import { Settings } from '../Settings'
 import { hashName } from '../AssetList';
+import * as MobileController from '../utils/MobileController';
+
 
 let customGUIContainer = document.getElementById('game-ui-container');
 
@@ -62,6 +64,7 @@ function UIManager() {
             button.addEventListener("click", () => {
                 self.hideMainMenu();
                 this.showLevelLoader();
+                MobileController.openFullscreen();
             });
 
             button = document.createElement('div');
@@ -69,7 +72,12 @@ function UIManager() {
             button.classList.add('menuButton');
             button.innerHTML = 'Editor';
 
+            if(MobileController.isMobile()){
+                button.classList.add('disable');
+            }
+
             button.addEventListener("click", () => {
+                MobileController.openFullscreen();
                 self.hideMainMenu();
                 game.openEditor();
             });
@@ -506,6 +514,7 @@ function UIManager() {
             playButton.addEventListener('click', () => {
                 this.hideLevelBanner();
                 this.showCharacterSelect();
+                MobileController.openFullscreen();
             })
 
             let backButton = document.createElement('div');
@@ -516,6 +525,7 @@ function UIManager() {
             backButton.addEventListener('click', () => {
                 this.hideLevelBanner();
                 game.openMainMenu(true);
+                MobileController.openFullscreen();
             })
 
             targetDomElement.appendChild(divWrapper);
@@ -577,6 +587,7 @@ function UIManager() {
                     game.selectedCharacter = i;
                     this.hideCharacterSelect();
                     this.showVehicleSelect();
+                    MobileController.openFullscreen();
                 }
             }
 
@@ -634,7 +645,6 @@ function UIManager() {
                         game.initLevel(game.currentLevelData);
                         game.playWorld();
                         backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
-
                     }
                 }
             }

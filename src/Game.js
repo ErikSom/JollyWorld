@@ -427,15 +427,9 @@ function Game() {
         if(aspect<Settings.minimumAspect){
             const targetHeight = Settings.targetResolution.y;
             Settings.aspectZoom = window.innerHeight / targetHeight;
-
-            console.log("CASE 1");
-
         } else if(aspect>Settings.maximumAspect){
             const targetWidth = Settings.targetResolution.x;
             Settings.aspectZoom = window.innerWidth / targetWidth;
-
-            console.log("CASE 2");
-
         }else{
             const targetWidth = Settings.targetResolution.x;
             Settings.aspectZoom = window.innerWidth / targetWidth;
@@ -443,13 +437,9 @@ function Game() {
             if(window.innerHeight / Settings.aspectZoom < Settings.targetResolution.y){
                 const targetHeight = Settings.targetResolution.y
                 Settings.aspectZoom = window.innerHeight / targetHeight;
-                console.log("CASE 3");
-            }else{
-                console.log("CASE 4");
-
             }
         }
-        console.log('Aspect zoom:', Settings.aspectZoom);
+        MobileController.resize();
     }
 
     this.getBodyAtMouse = function () {
@@ -608,6 +598,7 @@ function Game() {
         this.findPlayableCharacter();
     }
     this.playWorld = function () {
+        MobileController.openFullscreen();
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
         MobileController.show();
@@ -912,10 +903,10 @@ function Game() {
             offsetY /= this.movementBufferSize;
         }
 
-        const offsetScale = 1.5;
+        const offsetScale = 2.0;
 
-        camera.x += movX-offsetX*offsetScale;
-        camera.y += movY-offsetY*offsetScale;
+        camera.x += movX-offsetX*offsetScale*camera.scale.x;
+        camera.y += movY-offsetY*offsetScale*camera.scale.x;
 
         this.myEffectsContainer.scale.x = camera.scale.x;
         this.myEffectsContainer.scale.y = camera.scale.y;

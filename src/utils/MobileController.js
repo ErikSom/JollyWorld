@@ -9,6 +9,7 @@ let arrowRight;
 let accelDown;
 let accelUp;
 let flip;
+let pauseButton;
 
 export const init = ()=> {
 
@@ -43,7 +44,7 @@ export const init = ()=> {
 	left:0;
 	bottom:0;
 	margin:${screenMargin};
-`
+	`;
 	layoutHolder.appendChild(rotateButtons);
 
 	const accelerateButtons = document.createElement('div');
@@ -55,16 +56,40 @@ export const init = ()=> {
 	right:0;
 	bottom:0;
 	margin:${screenMargin};
-`
+	`;
+	pauseButton = createButton('pause', buttonSize*.5, layoutHolder, buttonMargin);
+	pauseButton.style.position = 'absolute';
+	pauseButton.style.top = '0';
+	pauseButton.style.right = '0';
+	pauseButton.style.margin = '20px';
+
 	layoutHolder.appendChild(accelerateButtons);
+	resize();
 	hide();
 }
 
+export const resize = ()=>{
+	if(!layoutHolder) return;
+
+	const landscape = window.innerWidth > window.innerHeight;
+
+	const buttonSize = landscape ? 80 : 50;
+
+	[arrowLeft,	arrowRight,	accelDown, accelUp,	flip].forEach(but=>{
+		but.style.width = `${buttonSize}px`
+		but.style.height = `${buttonSize}px`
+	});
+
+	const pauseButonSize = 50;
+	pauseButton.style.width = `${pauseButonSize}px`
+	pauseButton.style.height = `${pauseButonSize}px`
+}
+
 export const hide = ()=>{
-	layoutHolder.style.display = 'none';
+	if(layoutHolder) layoutHolder.style.display = 'none';
 }
 export const show = ()=>{
-	layoutHolder.style.display = 'block';
+	if(layoutHolder) layoutHolder.style.display = 'block';
 }
 
 export const isMobile = ()=> {
@@ -91,6 +116,12 @@ const createButton = (type, size, target, margin, mirrorX) => {
 	${type === 'flip' ? `
 	<path d="M48.8 60.9c-3.1-.1-6.7-.6-10.6-1.4-5.3-1.1-9.7-2.5-13.1-4.1-6.3-3.2-6.5-6.5-5.5-8.7 1.3-3 5.4-5.1 13.5-7 5.7-1.1 11.4-1.7 17-1.7 6.2 0 12.4.7 18.6 2.1 3.3.7 5.9 1.7 8 3 2.5 1.5 3.9 3.3 4.2 5.4 1 6.7-8.8 9.1-12.1 9.9-.8.2-1.5.4-2.1.5l-3.2.7v-8.1l2-.5c.4-.1.7-.2 1-.2 4.3-1 5.4-2.1 5.7-2.4-.3-.3-1.3-1.2-4.7-2.1-5.7-1.2-11.6-1.8-17.3-1.8-5.3 0-10.6.5-15.9 1.5-2.9.9-4.5 1.6-5.3 2.1.6.3 1.5.7 3 1.1 2.8.8 6.4 1.6 10.8 2.1 2.4.3 4.4.5 6 .6v-7l11.4 11.4-11.4 11.4v-6.8z" fill="#fff" id="flip" />	
 	` : ''}
+	${type === 'pause' ? `
+	<g id="pause"><path id="r2" class="mc5" d="M32.8 30.5h10.5v39.1H32.8z" /><path id="r" class="mc5" d="M57 30.6h10.5v39.1H57z" /></g>
+	` : ''}
+	${type === 'exit' ? `
+	<g id="exit"><path class="mc5"d="M31.3 74.6c-3.5 0-6.3-2.8-6.3-6.3V56.8h7.3v10.5h34.9V32.4H32.3V43H25V31.4c0-3.5 2.8-6.3 6.3-6.3h36.9c3.5 0 6.3 2.8 6.3 6.3v36.9c0 3.5-2.8 6.3-6.3 6.3H31.3zm12.1-15.2l5.9-5.9H25.1v-7.3h24.2l-5.9-5.9 5.1-5.1 14.6 14.6-14.6 14.7-5.1-5.1z" id="exit-to-app_6_" /></g>
+	` : ''}
 	`;
 	if(mirrorX) svgElement.style.transform = 'scale(-1, 1)';
 	if(margin) svgElement.style.margin = margin;
@@ -112,8 +143,6 @@ const handleButton = event => {
 	const buttonDown = type === 'touchstart';
 	const charFlipped = game.character.flipped;
 
-	console.log(charFlipped, 'is flipped?');
-
 	switch(event.currentTarget){
 		case arrowLeft:
 			fireKeyboardEvent(buttonDown, 65);
@@ -130,6 +159,9 @@ const handleButton = event => {
 		case flip:
 			fireKeyboardEvent(buttonDown, 32);
 		break
+		case pauseButton:
+			fireKeyboardEvent(buttonDown, 80);
+		break
 	}
 
 	if(buttonDown) currentTarget.style.filter = 'brightness(0.5)';
@@ -144,4 +176,23 @@ const fireKeyboardEvent = (down, key)=> {
 		keyCode: key,
 		charCode: key,
 	}));
+}
+
+
+export const openFullscreen = () => {
+	if(isMobile()){
+		const fullscreenElement = document.body;
+		if (fullscreenElement.requestFullscreen) {
+			fullscreenElement.requestFullscreen();
+		} else if (fullscreenElement.mozRequestFullScreen) {
+			/* Firefox */
+			fullscreenElement.mozRequestFullScreen();
+		} else if (fullscreenElement.webkitRequestFullscreen) {
+			/* Chrome, Safari and Opera */
+			fullscreenElement.webkitRequestFullscreen();
+		} else if (fullscreenElement.msRequestFullscreen) {
+			/* IE/Edge */
+			fullscreenElement.msRequestFullscreen();
+		}
+	}
 }
