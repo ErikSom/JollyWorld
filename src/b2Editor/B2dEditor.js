@@ -3921,6 +3921,7 @@ const _B2dEditor = function () {
 			this.customPrefabMouseDown = null;
 			this.customPrefabMouseMove = null;
 			this.customDebugDraw = null;
+			this.activeVertices = [];
 			this.updateSelection();
 
 			if([this.tool_VERTICEEDITING, this.tool_CAMERA].includes(this.selectedTool)){
