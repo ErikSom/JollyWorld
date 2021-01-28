@@ -7,6 +7,8 @@ require('firebase/storage');
 require('firebase/auth');
 require('firebase/database');
 
+// OLD BACKEND
+
 
 import * as FireBaseCache from './FireBaseCacheManager'
 
