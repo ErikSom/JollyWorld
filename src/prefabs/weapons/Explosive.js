@@ -93,7 +93,7 @@ export class Explosive extends PrefabManager.basePrefab {
 
         const pixiPoint = game.editor.getPIXIPointFromWorldPoint(rayStartPosition);
 		EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:this.explosiveRadius*10, point:pixiPoint});
-        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.explosivePower/200});
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.explosivePower/200, point:pixiPoint});
 
 	}
     update(){

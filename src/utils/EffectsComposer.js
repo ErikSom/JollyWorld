@@ -20,14 +20,25 @@ export const effectTypes = {
 }
 export const addEffect = (type, props) =>{
 	let effect = null;
+	const effectMargin = 300;
+
+
+	if(props.point){
+		props.point = game.editor.container.toGlobal(props.point);
+
+		if (game.editor.container.camera) {
+			game.editor.container.camera.toScreenPoint(props.point, props.point);
+		}
+
+		if(props.point.x > window.innerWidth + effectMargin || props.point.x < -effectMargin
+			|| props.point.y > window.innerHeight + effectMargin || props.point.y < -effectMargin){
+				return;
+		}
+	}
+
 	switch(type){
 		case effectTypes.shockWave:
 			props.follow = game.editor.container;
-			props.point = game.editor.container.toGlobal(props.point);
-
-			if (game.editor.container.camera) {
-				game.editor.container.camera.toScreenPoint(props.point, props.point);
-			}
 
 			const shockFilter = new PIXIFILTERS.ShockwaveFilter([props.point.x, props.point.y], {
 				amplitude: 20,

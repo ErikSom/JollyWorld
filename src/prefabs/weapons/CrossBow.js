@@ -33,7 +33,9 @@ class CrossBow extends PrefabManager.basePrefab {
             this.crossbowBody.SetType(Box2D.b2BodyType.b2_staticBody);
         }else{
             this.crossbowBody.SetType(Box2D.b2BodyType.b2_dynamicBody);
-        }
+		}
+
+		this.lastArrows = [];
 
 		this.reload();
 		super.init();
@@ -85,6 +87,13 @@ class CrossBow extends PrefabManager.basePrefab {
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x, body.GetPosition().y));
 
+		this.lastArrows.push(prefabData.prefabClass);
+		if(this.lastArrows.length>Settings.maxBullets){
+			const lastArrow = this.lastArrows.shift();
+			if(!lastArrow.sticking)	lastArrow.destroy();
+		}
+
+
 		this.arrowSprite.alpha = 0;
 		this.reloadTimer = 0;
 		this.loaded = false;
@@ -109,12 +118,12 @@ CrossBow.settingsOptions = Object.assign({}, CrossBow.settingsOptions, {
 	"isFixed": false,
 	"isFlipped": false,
     "reloadTime": {
-        min: 0.0,
+        min: 0.5,
         max: 10.0,
         step: 0.1
 	},
 	"shootDelay": {
-        min: 0.0,
+        min: 0.5,
         max: 10.0,
         step: 0.1
 	},
