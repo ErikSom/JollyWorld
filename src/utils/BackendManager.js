@@ -169,15 +169,13 @@ function BackendManager() {
 				const {error} = data;
 				if(error) return reject(error);
 
-				const levelData = data[0];
-
 				console.log("SUCCESS :)");
 
 				// update local thumbnail cache
-				details.thumb_big_md5 = levelData.thumb_big_md5;
-				details.thumb_small_md5 = levelData.thumb_small_md5;
+				details.thumb_big_md5 = data.thumb_big_md5;
+				details.thumb_small_md5 = data.thumb_small_md5;
 
-				resolve(levelData);
+				resolve(data);
 			});
 		})
     }
@@ -379,7 +377,7 @@ function BackendManager() {
 				const {error} = data;
 				if(error) return reject(error);
 
-				resolve(data[0]);
+				resolve(data);
 			});
 		})
 	}
