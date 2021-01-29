@@ -1,11 +1,7 @@
 import * as SaveManager from "./SaveManager";
 
-export const KEYS = {
-	VOTEDATA:'voteCache',
-}
-
-export let voteDataCache = SaveManager.loadData(KEYS.VOTEDATA) || {};
+export let voteDataCache = SaveManager.loadData(SaveManager.SAVEKEYS.levelsVoted) || {};
 
 export const save = ()=>{
-	SaveManager.saveData(KEYS.VOTEDATA, voteDataCache);
+	SaveManager.saveData(SaveManager.SAVEKEYS.levelsVoted, voteDataCache);
 }

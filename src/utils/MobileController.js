@@ -2,6 +2,7 @@ import { game } from "../Game";
 import {
     Settings
 } from "../Settings";
+import * as SaveManager from "./SaveManager";
 
 let layoutHolder;
 let arrowLeft;
@@ -66,6 +67,16 @@ export const init = ()=> {
 	layoutHolder.appendChild(accelerateButtons);
 	resize();
 	hide();
+
+
+	if (isIos() && !isIOSStandaloneMode()) {
+		const userData = SaveManager.getLocalUserdata();
+		if(userData.applePWAModals < 3){
+			showApplePWAInstall();
+			userData.applePWAModals++;
+			SaveManager.updateLocaluserData(userData);
+		}
+	}
 }
 
 export const resize = ()=>{
@@ -95,8 +106,19 @@ export const show = ()=>{
 export const isMobile = ()=> {
 	const mobile = /(?:phone|windows\s+phone|ipod|blackberry|(?:android|bb\d+|meego|silk|googlebot) .+? mobile|palm|windows\s+ce|opera\smini|avantgo|mobilesafari|docomo)/i;
 	const tablet = /(?:ipad|playbook|(?:android|bb\d+|meego|silk)(?! .+? mobile))/i;
-	return mobile.test(navigator.userAgent) || tablet.test(navigator.userAgent);
+	return mobile.test(navigator.userAgent) || tablet.test(navigator.userAgent) || isIpad();
 }
+
+const isIpad = () => {
+	return (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) &&!window.MSStream;
+}
+
+const isIos = () => {
+	const userAgent = window.navigator.userAgent.toLowerCase();
+	return (/iphone|ipad|ipod/.test( userAgent ) || isIpad());
+}
+const isIOSStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
 
 const createButton = (type, size, target, margin, mirrorX) => {
 	const box = 100;
@@ -196,3 +218,59 @@ export const openFullscreen = () => {
 		}
 	}
 }
+
+const showApplePWAInstall = ()=>{
+	const prompt = document.createElement('div');
+	prompt.classList.add('ios-pwa-container');
+
+	const pwa = document.createElement('div');
+	pwa.classList.add('ios-pwa');
+	prompt.appendChild(pwa);
+
+	document.body.appendChild(prompt);
+
+	const iconContainer = document.createElement('div');
+	iconContainer.classList.add('ios-pwa-icon-container')
+	pwa.appendChild(iconContainer);
+
+	const thumb = document.createElement('div');
+	iconContainer.appendChild(thumb);
+	thumb.classList.add('ios-pwa-icon-thumb');
+
+	const cross = document.createElement('div');
+	cross.classList.add('ios-pwa-cross');
+	cross.innerText = '✕';
+	pwa.appendChild(cross);
+
+	cross.onclick = () => {
+		if(prompt && prompt.parentNode){
+			prompt.parentNode.removeChild(prompt);
+		}
+	}
+
+	const content = document.createElement('div');
+	content.classList.add('ios-pwa-content');
+	pwa.appendChild(content);
+
+	const text = document.createElement('div');
+	text.classList.add('ios-pwa-text');
+	text.innerHTML = "<span>Install <strong>JollyWorld</strong> on your home screen for <strong>fullscreen</strong> gameplay and quick and easy access when you&rsquo;re on the go.</span>"
+	content.appendChild(text);
+
+	const guide = document.createElement('p');
+	guide.classList.add('ios-pwa-guide');
+	content.appendChild(guide);
+
+	guide.innerHTML = `
+	Just tap <svg class="ios-pwa-guide-icon" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Share</title><path fill="#007AFF" d="M48.883,22.992L61.146,10.677L61.146,78.282C61.146,80.005 62.285,81.149 64,81.149C65.715,81.149 66.854,80.005 66.854,78.282L66.854,10.677L79.117,22.992C79.693,23.57 80.256,23.853 81.114,23.853C81.971,23.853 82.534,23.57 83.11,22.992C84.25,21.848 84.25,20.125 83.11,18.981L65.997,1.794C65.715,1.511 65.421,1.215 65.139,1.215C64.563,0.932 63.718,0.932 62.861,1.215C62.579,1.498 62.285,1.498 62.003,1.794L44.89,18.981C43.75,20.125 43.75,21.848 44.89,22.992C46.029,24.149 47.744,24.149 48.883,22.992ZM103.936,35.32L81.114,35.32L81.114,41.053L103.936,41.053L103.936,121.27L24.064,121.27L24.064,41.053L46.886,41.053L46.886,35.32L24.064,35.32C20.928,35.32 18.355,37.904 18.355,41.053L18.355,121.27C18.355,124.419 20.928,127.003 24.064,127.003L103.936,127.003C107.072,127.003 109.645,124.419 109.645,121.27L109.645,41.053C109.645,37.891 107.072,35.32 103.936,35.32Z"></path></svg> then “Add to Home Screen”
+	`
+	prompt.style.visibility = 'hidden';
+	pwa.style.opacity = 0;
+
+	setTimeout(()=>{
+		pwa.style.opacity = 1.0;
+		prompt.style.visibility = 'visible';
+	}, 300);
+}
+
+

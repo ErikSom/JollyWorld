@@ -8,13 +8,27 @@ const saveKeyPrefix = 'JollyWorld';
 export const SAVEKEYS = {
     tempEditorWorld:"tempEditorWorld",
     levelsVoted:"levelsVoted",
+    userData:'userData',
 }
-export const saveLevel = function(){
 
+export const getLocalUserdata = function(){
+    const userData = loadData(SAVEKEYS.userData);
+    if(userData) return userData;
+    const defaultData = {
+        applePWAModals:0,
+    }
+    saveData(SAVEKEYS.userData, defaultData);
+    return defaultData;
 }
+export const updateLocaluserData = function(data){
+    saveData(SAVEKEYS.userData, data);
+    return data;
+}
+
 export const saveTempEditorWorld = function(data){
     saveData(SAVEKEYS.tempEditorWorld, data);
 }
+
 export const getTempEditorWorld = function(){
     var tempWorld = loadData(SAVEKEYS.tempEditorWorld);
     if(!tempWorld){
