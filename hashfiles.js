@@ -4,8 +4,10 @@ const fs = require("fs");
 const minify = require('html-minifier').minify;
 
 let files = [];
+
 const scriptPath = './build/assets/awesome-game.js';
 const htmlPath = './build/index.html';
+const swPath = './build/sw.js';
 
 const getAllFiles = directory => {
 	fs.readdirSync(directory).forEach(file => {
@@ -31,6 +33,10 @@ const linkJSONwithPNG = () => {
 	})
 }
 linkJSONwithPNG();
+
+
+
+serviceWorkerFiles = files.filter(file => file.indexOf('.ttf') >= 0);
 
 // remove all linked pngs
 files = files.filter(file => !pngsToDelete.includes(file) && file.indexOf('.DS_Store') < 0 && file.indexOf('awesome-game.js') < 0 && file.indexOf('.ttf') < 0 && path.basename(file).length<30);
@@ -119,5 +125,34 @@ const patchHTML = async () => {
 	});
 }
 
+const patchServiceWorker = async () => {
+	files.length = 0;
+	getAllFiles('./build/assets');
+	files = files.filter(file => file.indexOf('.DS_Store') < 0);
+
+	const md5Index = await md5File(htmlPath);
+
+	fs.readFile(swPath, 'utf8', function (err, data) {
+		if (err) {
+			return console.log(err);
+		}
+
+		const regexAssetHashList = new RegExp('"{{{SERVICE_WORKER_FILES}}}"', 'g');
+		let newData = data.replace(regexAssetHashList, JSON.stringify(files));
+
+		const regexVersionHashList = new RegExp('{{{SERVICE_WORKER_VERSION}}}', 'g');
+		newData = newData.replace(regexVersionHashList, md5Index);
+
+		fs.writeFile(swPath, newData, 'utf8', function (err) {
+			if (err) return console.log(err);
+			console.log("Created SW script");
+		});
+	});
+}
+
+
+
+
 hashFileNames()
-.then(()=> patchHTML());
+.then(()=> patchHTML())
+.then(()=> patchServiceWorker() );

@@ -1,6 +1,8 @@
-import { game } from "../Game";
 import {
-    Settings
+	game
+} from "../Game";
+import {
+	Settings
 } from "../Settings";
 import * as SaveManager from "./SaveManager";
 
@@ -12,7 +14,7 @@ let accelUp;
 let flip;
 let pauseButton;
 
-export const init = ()=> {
+export const init = () => {
 
 	layoutHolder = document.createElement('div');
 	layoutHolder.style = `
@@ -58,7 +60,7 @@ export const init = ()=> {
 	bottom:0;
 	margin:${screenMargin};
 	`;
-	pauseButton = createButton('pause', buttonSize*.5, layoutHolder, buttonMargin);
+	pauseButton = createButton('pause', buttonSize * .5, layoutHolder, buttonMargin);
 	pauseButton.style.position = 'absolute';
 	pauseButton.style.top = '0';
 	pauseButton.style.right = '0';
@@ -71,22 +73,24 @@ export const init = ()=> {
 
 	if (isIos() && !isIOSStandaloneMode()) {
 		const userData = SaveManager.getLocalUserdata();
-		if(userData.applePWAModals < 3){
+		if (userData.applePWAModals < 3) {
 			showApplePWAInstall();
 			userData.applePWAModals++;
 			SaveManager.updateLocaluserData(userData);
 		}
 	}
+
+	doServiceWorker();
 }
 
-export const resize = ()=>{
-	if(!layoutHolder) return;
+export const resize = () => {
+	if (!layoutHolder) return;
 
 	const landscape = window.innerWidth > window.innerHeight;
 
 	const buttonSize = landscape ? 80 : 50;
 
-	[arrowLeft,	arrowRight,	accelDown, accelUp,	flip].forEach(but=>{
+	[arrowLeft, arrowRight, accelDown, accelUp, flip].forEach(but => {
 		but.style.width = `${buttonSize}px`
 		but.style.height = `${buttonSize}px`
 	});
@@ -96,26 +100,26 @@ export const resize = ()=>{
 	pauseButton.style.height = `${pauseButonSize}px`
 }
 
-export const hide = ()=>{
-	if(layoutHolder) layoutHolder.style.display = 'none';
+export const hide = () => {
+	if (layoutHolder) layoutHolder.style.display = 'none';
 }
-export const show = ()=>{
-	if(layoutHolder) layoutHolder.style.display = 'block';
+export const show = () => {
+	if (layoutHolder) layoutHolder.style.display = 'block';
 }
 
-export const isMobile = ()=> {
+export const isMobile = () => {
 	const mobile = /(?:phone|windows\s+phone|ipod|blackberry|(?:android|bb\d+|meego|silk|googlebot) .+? mobile|palm|windows\s+ce|opera\smini|avantgo|mobilesafari|docomo)/i;
 	const tablet = /(?:ipad|playbook|(?:android|bb\d+|meego|silk)(?! .+? mobile))/i;
 	return mobile.test(navigator.userAgent) || tablet.test(navigator.userAgent) || isIpad();
 }
 
 const isIpad = () => {
-	return (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) &&!window.MSStream;
+	return (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) && !window.MSStream;
 }
 
 const isIos = () => {
 	const userAgent = window.navigator.userAgent.toLowerCase();
-	return (/iphone|ipad|ipod/.test( userAgent ) || isIpad());
+	return (/iphone|ipad|ipod/.test(userAgent) || isIpad());
 }
 const isIOSStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
@@ -127,7 +131,7 @@ const createButton = (type, size, target, margin, mirrorX) => {
 	svgElement.setAttributeNS(null, "width", `${size}`);
 	svgElement.setAttributeNS(null, "height", `${size}`);
 	const generatedHTML =
-	`
+		`
 	<style>.mc5 {display: inline;fill-rule: evenodd;clip-rule: evenodd;fill: #fff}	</style><linearGradient id="edge_1_" gradientUnits="userSpaceOnUse" x1="7599.08" y1="7903.88" x2="9647.08" y2="7903.88"	gradientTransform="matrix(0 -.04883 -.04883 0 435.932 471.049)"><stop offset="0" stop-color="#383838" /><stop offset="1" stop-color="#585858" /></linearGradient><path id="edge" d="M80.3 80.3C88.7 72 92.9 61.9 92.9 50c0-11.8-4.2-21.9-12.6-30.3C72 11.3 61.9 7.1 50 7.1c-11.9 0-22 4.2-30.3 12.6C11.3 28.1 7.1 38.2 7.1 50c0 11.9 4.2 22 12.6 30.3C28 88.7 38.1 92.9 50 92.9c11.9 0 22-4.2 30.3-12.6m5-65.7C95.1 24.4 100 36.2 100 50s-4.9 25.6-14.7 35.3C75.6 95.1 63.8 100 50 100c-13.9 0-25.7-4.9-35.4-14.7C4.9 75.6 0 63.8 0 50s4.9-25.6 14.6-35.4C24.3 4.9 36.1 0 50 0c13.8 0 25.6 4.9 35.3 14.6" fill="url(#edge_1_)" /><path id="bg"	d="M80.3 80.3C72 88.7 61.9 92.9 50 92.9c-11.9 0-22-4.2-30.3-12.6C11.3 72 7.1 61.9 7.1 50c0-11.8 4.2-21.9 12.6-30.3C28 11.3 38.1 7.1 50 7.1c11.9 0 22 4.2 30.3 12.6 8.4 8.4 12.6 18.5 12.6 30.3 0 11.9-4.2 22-12.6 30.3"	fill="#383838" />
 	${type === 'arrow'  ? `
 	<path d="M545.7 4335.9c103.3 6.8 195.9 73.7 235.2 170.1 29.2 71.5 26.7 153-6.8 222.6-23.1 48.4-61.3 89.8-107.8 117.5-33.1 19.8-73.2 33-112.2 36.9-11.8 1.1-39.7 1.4-51.2.4-115.9-10.1-214-93.7-242.4-206.5-2.2-8.7-4.7-21.3-5.5-27.7-.7-6.4-1.6-12.9-2-14.4l-.5-2.8-81.2-.2L314.1 4496s22.3 19.3 70 66.7c36.6 36.2 66.3 69.5 66.3 69.5s-79.9.2-80.2.8c-.9 1.4 2.5 15.8 6 26.7 7.4 22.4 20.5 43.8 37.4 60.9 30.8 31.1 68.3 47 112 47.3 20.4 0 31-1.5 49.2-7.4 25.8-8.2 46.6-21.3 65.7-41.2 29.3-30.5 44.2-67.3 44.2-109.4-.1-44.5-16.4-82.6-48.5-113.8-25.5-24.7-56.7-39.5-91.9-43.7" fill="#fff" transform="matrix(.1 0 0 -.1 0 511)" id="arrow" />
@@ -145,8 +149,8 @@ const createButton = (type, size, target, margin, mirrorX) => {
 	<g id="exit"><path class="mc5"d="M31.3 74.6c-3.5 0-6.3-2.8-6.3-6.3V56.8h7.3v10.5h34.9V32.4H32.3V43H25V31.4c0-3.5 2.8-6.3 6.3-6.3h36.9c3.5 0 6.3 2.8 6.3 6.3v36.9c0 3.5-2.8 6.3-6.3 6.3H31.3zm12.1-15.2l5.9-5.9H25.1v-7.3h24.2l-5.9-5.9 5.1-5.1 14.6 14.6-14.6 14.7-5.1-5.1z" id="exit-to-app_6_" /></g>
 	` : ''}
 	`;
-	if(mirrorX) svgElement.style.transform = 'scale(-1, 1)';
-	if(margin) svgElement.style.margin = margin;
+	if (mirrorX) svgElement.style.transform = 'scale(-1, 1)';
+	if (margin) svgElement.style.margin = margin;
 	svgElement.innerHTML = generatedHTML
 	svgElement.style.pointerEvents = 'all';
 	svgElement.style.cursor = 'pointer';
@@ -160,39 +164,42 @@ const createButton = (type, size, target, margin, mirrorX) => {
 }
 
 const handleButton = event => {
-	const {currentTarget, type} = event;
+	const {
+		currentTarget,
+		type
+	} = event;
 
 	const buttonDown = type === 'touchstart';
 	const charFlipped = game.character.flipped;
 
-	switch(event.currentTarget){
+	switch (event.currentTarget) {
 		case arrowLeft:
 			fireKeyboardEvent(buttonDown, 65);
-		break
+			break
 		case arrowRight:
 			fireKeyboardEvent(buttonDown, 68);
-		break
+			break
 		case accelUp:
-			fireKeyboardEvent(buttonDown, charFlipped  ? 83 : 87);
-		break
+			fireKeyboardEvent(buttonDown, charFlipped ? 83 : 87);
+			break
 		case accelDown:
-			fireKeyboardEvent(buttonDown, charFlipped  ? 87 : 83);
-		break
+			fireKeyboardEvent(buttonDown, charFlipped ? 87 : 83);
+			break
 		case flip:
 			fireKeyboardEvent(buttonDown, 32);
-		break
+			break
 		case pauseButton:
 			fireKeyboardEvent(buttonDown, 80);
-		break
+			break
 	}
 
-	if(buttonDown) currentTarget.style.filter = 'brightness(0.5)';
+	if (buttonDown) currentTarget.style.filter = 'brightness(0.5)';
 	else currentTarget.style.filter = 'unset';
 	event.preventDefault();
 }
 
 
-const fireKeyboardEvent = (down, key)=> {
+const fireKeyboardEvent = (down, key) => {
 	const keyEvent = down ? 'keydown' : 'keyup'
 	document.body.dispatchEvent(new KeyboardEvent(keyEvent, {
 		keyCode: key,
@@ -202,7 +209,7 @@ const fireKeyboardEvent = (down, key)=> {
 
 
 export const openFullscreen = () => {
-	if(isMobile()){
+	if (isMobile()) {
 		const fullscreenElement = document.body;
 		if (fullscreenElement.requestFullscreen) {
 			fullscreenElement.requestFullscreen();
@@ -219,7 +226,7 @@ export const openFullscreen = () => {
 	}
 }
 
-const showApplePWAInstall = ()=>{
+const showApplePWAInstall = () => {
 	const prompt = document.createElement('div');
 	prompt.classList.add('ios-pwa-container');
 
@@ -243,7 +250,7 @@ const showApplePWAInstall = ()=>{
 	pwa.appendChild(cross);
 
 	cross.onclick = () => {
-		if(prompt && prompt.parentNode){
+		if (prompt && prompt.parentNode) {
 			prompt.parentNode.removeChild(prompt);
 		}
 	}
@@ -267,10 +274,18 @@ const showApplePWAInstall = ()=>{
 	prompt.style.visibility = 'hidden';
 	pwa.style.opacity = 0;
 
-	setTimeout(()=>{
+	setTimeout(() => {
 		pwa.style.opacity = 1.0;
 		prompt.style.visibility = 'visible';
 	}, 300);
 }
 
-
+const doServiceWorker = () => {
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register('/sw.js', {scope: '/'}).then(function(registration) {
+			console.log('ServiceWorker registration successful with scope: ', registration.scope);
+		}, function(err) {
+			console.log('ServiceWorker registration failed: ', err);
+		});
+	}
+}
