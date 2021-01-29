@@ -1942,6 +1942,9 @@ const _B2dEditor = function () {
 			const cameraRealHeight = Settings.targetResolution.y * camera.scale.x;
 
 			const playerPosition = this.getPlayerPosition();
+			console.info("CAMERA:", camera);
+			console.info("Player:", playerPosition);
+			console.info("CAMERA SCALE:", camera.scale);
 			playerPosition.x *= camera.scale.x;
 			playerPosition.x += camera.x;
 			playerPosition.y *= camera.scale.x;
