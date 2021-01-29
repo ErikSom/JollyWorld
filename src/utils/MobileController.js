@@ -280,12 +280,56 @@ const showApplePWAInstall = () => {
 	}, 300);
 }
 
+
+let newWorker = null;
+let serviceWorkerRefreshing = false;
+
 const doServiceWorker = () => {
 	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('/sw.js', {scope: '/'}).then(function(registration) {
-			console.log('ServiceWorker registration successful with scope: ', registration.scope);
-		}, function(err) {
-			console.log('ServiceWorker registration failed: ', err);
+		navigator.serviceWorker.register('./sw.js', {
+			scope: '/'
+		}).then(reg => {
+			reg.addEventListener('updatefound', () => {
+					// An updated service worker has appeared in reg.installing!
+					newWorker = reg.installing;
+					newWorker.addEventListener('statechange', () => {
+
+						// Has service worker state changed?
+						switch (newWorker.state) {
+							case 'installed':
+
+								// There is a new service worker available, show the notification
+								if (navigator.serviceWorker.controller) {
+									showServiceWorkerUpdate();
+								}
+
+								break;
+						}
+					});
+				}),
+				function (err) {
+					console.log('ServiceWorker registration failed: ', err);
+				};
 		});
 	}
+
+	 navigator.serviceWorker.addEventListener('controllerchange', function () {
+	   if (serviceWorkerRefreshing) return;
+	   window.location.reload();
+	   serviceWorkerRefreshing = true;
+	 });
+}
+
+const showServiceWorkerUpdate = ()=>{
+	game.editor.ui.showPrompt('An update is ready, would you like to refresh to install it?',
+	'Update',
+	'Nope!'	,
+	document.body)
+	.then(()=>{
+		newWorker.postMessage({
+			action: 'skipWaiting'
+		})
+		},
+		()=>{}
+	)
 }

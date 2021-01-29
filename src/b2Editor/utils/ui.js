@@ -18,7 +18,9 @@ import * as uiHelper from './uiHelper';
 
 import * as texts from '../utils/texts';
 import * as drawing from './drawing';
-import { hashName } from "../../AssetList";
+import {
+    hashName
+} from "../../AssetList";
 import * as emitterManager from '../../utils/EmitterManager';
 
 
@@ -76,7 +78,7 @@ export const hideEditorPanels = function () {
     hidePanel(saveScreen);
     hidePanel(loadScreen);
     hidePanel(profileScreen);
-    if(publishSocialShareScreen) publishSocialShareScreen.hide();
+    if (publishSocialShareScreen) publishSocialShareScreen.hide();
     removeNotice();
     removePrompt();
     removeTextEditor();
@@ -86,10 +88,10 @@ export const hidePanel = panel => {
     if (panel) panel.domElement.classList.add('fadedHide');
 }
 export const showPanel = panel => {
-    if(panel){
+    if (panel) {
         panel.domElement.classList.remove('fadedHide');
-        setTimeout(()=>{
-            if(!panel) return;
+        setTimeout(() => {
+            if (!panel) return;
             panel.domElement.parentNode.appendChild(panel.domElement);
             panel.domElement.focus();
         }, 1);
@@ -104,7 +106,7 @@ export const setNewLevelData = function () {
         game.currentLevelData.description = levelEditScreen.domElement.querySelector('#levelEdit_description').value;
 
         const youtubeIds = levelEditScreen.domElement.querySelectorAll('.levelEdit_youtubeLink');
-        const values = Array.from(new Set([...youtubeIds].map(el=>el.value).filter(el=>el.length>0))); // deduplicate and filter empty
+        const values = Array.from(new Set([...youtubeIds].map(el => el.value).filter(el => el.length > 0))); // deduplicate and filter empty
         game.currentLevelData.youtubelinks = values;
     }
 }
@@ -115,7 +117,7 @@ const hasUnsavedChanges = function () {
     else {
         if (game.currentLevelData.title != levelEditScreen.domElement.querySelector('#levelEdit_title').value) return true;
         if (game.currentLevelData.description != levelEditScreen.domElement.querySelector('#levelEdit_description').value) return true;
-        if(game.editor.cameraShotData != null) return true;
+        if (game.editor.cameraShotData != null) return true;
 
     }
     return false;
@@ -126,10 +128,10 @@ const handleLoginStatusChange = function () {
         if (backendManager.isLoggedIn()) {
 
             let getStagePosition = new PIXI.Point(230, 50);
-            getStagePosition.x *= 1/Settings.PTM;
-            getStagePosition.y *= 1/Settings.PTM;
+            getStagePosition.x *= 1 / Settings.PTM;
+            getStagePosition.y *= 1 / Settings.PTM;
 
-            if(game.gameState === game.GAMESTATE_EDITOR) emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, ['#7289da','#7289da','#7289da','#7289da', '#ffffff', '#99aab5', '#2c2f33']);
+            if (game.gameState === game.GAMESTATE_EDITOR) emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, ['#7289da', '#7289da', '#7289da', '#7289da', '#ffffff', '#99aab5', '#2c2f33']);
 
             headerBar.querySelector('#loginButton').style.display = 'none';
             headerBar.querySelector('#profileButton').style.display = 'block';
@@ -160,24 +162,24 @@ const checkLevelDataForErrors = async function () {
 
     // youtube ids
     const youtubeIds = levelEditScreen.domElement.querySelectorAll('.levelEdit_youtubeLink');
-    const values = Array.from(new Set([...youtubeIds].map(el=>el.value).filter(el=>el.length>0))); // deduplicate and filter empty
+    const values = Array.from(new Set([...youtubeIds].map(el => el.value).filter(el => el.length > 0))); // deduplicate and filter empty
 
-    [...youtubeIds].forEach((el, index)=> el.value = values[index] || '');
-    for(let i = 0; i<youtubeIds.length; i++){
+    [...youtubeIds].forEach((el, index) => el.value = values[index] || '');
+    for (let i = 0; i < youtubeIds.length; i++) {
         const idElement = youtubeIds[i];
         idElement.style.backgroundColor = textAreaDefaultColor;
-        if(idElement.value.length>0){
-            if(idElement.value.length !== 11){
+        if (idElement.value.length > 0) {
+            if (idElement.value.length !== 11) {
                 idElement.style.backgroundColor = textAreaErrorColor;
                 errorStack.push(`YouTube ID ${i+1} must be 11 characters`)
-            }else{
+            } else {
                 const API_KEY = 'AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0'
-                const response = await fetch (`https://www.googleapis.com/youtube/v3/videos?id=${idElement.value}&key=${API_KEY}
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${idElement.value}&key=${API_KEY}
                 &part=status`)
                 const json = await response.json();
-                if(!json.items || json.items.length === 0){
+                if (!json.items || json.items.length === 0) {
                     errorStack.push(`YouTube ID ${i+1} is invalid`);
-                }else if(!json.items[0].status || !json.items[0].status.embeddable){
+                } else if (!json.items[0].status || !json.items[0].status.embeddable) {
                     errorStack.push(`YouTube ID ${i+1} is not embeddable`);
                 }
             }
@@ -240,24 +242,24 @@ const doPublishLevelData = function (publishButton) {
                 publishButton.style.backgroundColor = '';
                 publishButton.innerText = 'PUBLISH';
 
-                const jollyConfetti = ['#c5291c','#66a03d'];
-                let getStagePosition = new PIXI.Point(window.innerWidth/2, window.innerHeight*0.75);
-                getStagePosition.x *= 1/Settings.PTM;
-                getStagePosition.y *= 1/Settings.PTM;
+                const jollyConfetti = ['#c5291c', '#66a03d'];
+                let getStagePosition = new PIXI.Point(window.innerWidth / 2, window.innerHeight * 0.75);
+                getStagePosition.x *= 1 / Settings.PTM;
+                getStagePosition.y *= 1 / Settings.PTM;
 
                 emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, jollyConfetti);
 
-                let getStagePosition1 = new PIXI.Point(window.innerWidth/4, window.innerHeight/2);
-                getStagePosition1.x *= 1/Settings.PTM;
-                getStagePosition1.y *= 1/Settings.PTM;
+                let getStagePosition1 = new PIXI.Point(window.innerWidth / 4, window.innerHeight / 2);
+                getStagePosition1.x *= 1 / Settings.PTM;
+                getStagePosition1.y *= 1 / Settings.PTM;
 
-                setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition1, 0, jollyConfetti), 200);
+                setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition1, 0, jollyConfetti), 200);
 
-                let getStagePosition2 = new PIXI.Point(window.innerWidth*0.75, window.innerHeight/2);
-                getStagePosition2.x *= 1/Settings.PTM;
-                getStagePosition2.y *= 1/Settings.PTM;
+                let getStagePosition2 = new PIXI.Point(window.innerWidth * 0.75, window.innerHeight / 2);
+                getStagePosition2.x *= 1 / Settings.PTM;
+                getStagePosition2.y *= 1 / Settings.PTM;
 
-                setTimeout(()=> emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
+                setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
 
                 showPublishSocialShareScreen(game.currentLevelData);
                 hidePanel(levelEditScreen);
@@ -316,7 +318,9 @@ export const showHeaderBar = function () {
     button.setAttribute('id', 'loginButton');
     button.innerHTML = "LOGIN";
     headerBar.appendChild(button);
-    button.addEventListener('click', ()=>{showLoginScreen()});
+    button.addEventListener('click', () => {
+        showLoginScreen()
+    });
 
     button = document.createElement('div');
     button.setAttribute('class', 'headerButton profile buttonOverlay dark');
@@ -333,7 +337,7 @@ export const showHeaderBar = function () {
     button.setAttribute('class', 'headerButton exit buttonOverlay dark');
     button.innerHTML = "EXIT";
     headerBar.appendChild(button);
-    button.addEventListener('click', ()=>{
+    button.addEventListener('click', () => {
 
         game.openMainMenu();
 
@@ -413,7 +417,7 @@ export const showLoginScreen = function (center) {
         discordButton.style.padding = '20px';
         discordButton.style.backgroundImage = `url("data:image/svg+xml,%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' x='0' y='0' viewBox='0 0 241.2 34' xml:space='preserve'%3E%3Cstyle%3E.st0%7Bfill:%23fff%7D%3C/style%3E%3Cpath class='st0' d='M39.6 3.8C35.6.6 29.3 0 29.1 0c-.4 0-.8.2-1 .6-.1.3-.2.5-.3.8 2.6.4 5.9 1.3 8.8 3.2.5.3.6.9.3 1.4s-.9.6-1.4.3C30.5 3.2 24.2 3 23 3s-7.5.2-12.5 3.3c-.5.3-1.1.1-1.4-.3-.3-.5-.1-1.1.3-1.4 2.9-1.8 6.2-2.7 8.8-3.2-.2-.5-.3-.8-.3-.8-.2-.4-.6-.6-1-.6-.3 0-6.6.6-10.6 3.8C4.2 5.8 0 17.2 0 27c0 .2 0 .3.1.5C3 32.6 11 33.9 12.8 34c.3 0 .6-.2.8-.4l1.8-2.5c-4.9-1.3-7.5-3.4-7.6-3.6-.4-.4-.5-1-.1-1.4s1-.5 1.4-.1c.1.1 4.7 4 13.8 4s13.8-4 13.8-4c.4-.4 1-.3 1.4.1.4.4.3 1-.1 1.4-.1.1-2.7 2.3-7.6 3.6l1.8 2.5c.2.3.5.4.8.4 1.8-.1 9.7-1.4 12.7-6.5.3-.2.3-.3.3-.5 0-9.8-4.2-21.2-6.4-23.2zM16.5 23c-1.9 0-3.5-1.8-3.5-4s1.6-4 3.5-4 3.5 1.8 3.5 4-1.6 4-3.5 4zm13 0c-1.9 0-3.5-1.8-3.5-4s1.6-4 3.5-4 3.5 1.8 3.5 4-1.6 4-3.5 4zM71.2.5H58.9v13.8l8.2 7.4V8.3h4.4c2.8 0 4.1 1.3 4.1 3.5V22c0 2.1-1.3 3.6-4.1 3.6H58.9v7.8h12.3c6.6 0 12.8-3.3 12.8-10.8v-11C84 3.9 77.8.5 71.2.5zm64.5 22.1V11.3c0-4.1 7.3-5 9.6-.9l6.8-2.7c-2.7-5.9-7.5-7.6-11.6-7.6-6.6 0-13.1 3.8-13.1 11.2v11.3c0 7.5 6.5 11.2 13 11.2 4.1 0 9.1-2 11.9-7.4l-7.3-3.3c-1.9 4.6-9.3 3.5-9.3-.5zm-22.4-9.8c-2.6-.6-4.3-1.5-4.4-3.1.1-3.8 6-4 9.5-.3l5.4-4.2c-3.4-4.1-7.3-5.3-11.2-5.3-6 0-11.9 3.4-11.9 9.9 0 6.3 4.8 9.6 10.1 10.4 2.7.4 5.7 1.4 5.6 3.3-.2 3.5-7.5 3.3-10.8-.7l-5.3 4.9c3.1 4 7.3 6 11.2 6 6 0 12.7-3.5 13-9.9.5-7.9-5.4-9.9-11.2-11zM88.5 33.4h8.3V.5h-8.3v32.9zM228.4.5h-12.3v13.8l8.2 7.4V8.3h4.4c2.8 0 4.1 1.3 4.1 3.5V22c0 2.1-1.3 3.6-4.1 3.6H216v7.8h12.3c6.6 0 12.8-3.3 12.8-10.8v-11C241.2 3.9 235 .5 228.4.5zM168 0c-6.8 0-13.6 3.7-13.6 11.3v11.2c0 7.5 6.8 11.3 13.7 11.3 6.8 0 13.6-3.8 13.6-11.3V11.3C181.7 3.8 174.8 0 168 0zm5.4 22.6c0 2.4-2.7 3.6-5.3 3.6-2.7 0-5.3-1.1-5.3-3.6V11.3c0-2.4 2.6-3.7 5.2-3.7 2.7 0 5.4 1.1 5.4 3.7v11.3zm38.1-11.3C211.3 3.6 206.1.5 199.3.5h-13.2v32.9h8.4V23h1.5l7.6 10.4H214l-9-11.3c4-1.2 6.5-4.7 6.5-10.8zm-12.1 4.5h-4.9V8.3h4.9c5.2 0 5.2 7.5 0 7.5z'/%3E%3C/svg%3E")`;
 
-        discordButton.addEventListener('click', ()=>{
+        discordButton.addEventListener('click', () => {
             openDiscordOauth();
             hidePanel(loginScreen);
         });
@@ -425,9 +429,9 @@ export const showLoginScreen = function (center) {
         registerDragWindow(loginScreen);
 
     }
-    if(center){
+    if (center) {
 
-    }else{
+    } else {
         loginScreen.domElement.style.top = '10px';
         loginScreen.domElement.style.left = '80px';
     }
@@ -439,7 +443,7 @@ export const showProfileScreen = async () => {
     if (!profileScreen) {
         profileScreen = new dat.GUI({
             autoPlace: false,
-            width:'unset'
+            width: 'unset'
         });
         profileScreen.domElement.setAttribute('id', 'profileScreen');
         profileScreen.domElement.style.minWidth = '180px';
@@ -480,7 +484,7 @@ export const showProfileScreen = async () => {
 
         targetDomElement.appendChild(signOut);
 
-        signOut.addEventListener('click', ()=>{
+        signOut.addEventListener('click', () => {
             backendManager.signout();
             hidePanel(profileScreen);
         });
@@ -502,12 +506,12 @@ export const showProfileScreen = async () => {
 }
 
 
-const openDiscordOauth = ()=>{
+const openDiscordOauth = () => {
     const shrink = .8;
     const w = Math.min(Math.floor(window.innerWidth * shrink), 600);
     const h = 800;
-    const leftPosition = (window.innerWidth-w)/2;
-    const topPosition = (window.innerHeight-h)/2;
+    const leftPosition = (window.innerWidth - w) / 2;
+    const topPosition = (window.innerHeight - h) / 2;
     const settings = `height=${h},width=${w},top=${topPosition},left=${leftPosition},scrollbars=yes,directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no`;
 
     const url = `https://api.jollyworld.app/login?redirect=${encodeURIComponent(Settings.REDIRECT)}`;
@@ -657,7 +661,7 @@ export const showUsernameScreen = function () {
                     }).catch(error => {
                         /*console.log("Backend responded with", error);
                         let errorMessage = error.message;
-                        if (error.code == 'USERNAME_TAKEN')*/ 
+                        if (error.code == 'USERNAME_TAKEN')*/
                         const errorMessage = error;
                         errorSpan.innerText = errorMessage;
                         dotShell.classList.add('hidden');;
@@ -833,7 +837,7 @@ export const showLevelEditScreen = function (dontReplace) {
         let youtubeDivWrapper = document.createElement('div');
         youtubeDivWrapper.style.padding = '10px';
 
-        for(let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             let youtubeLink = document.createElement('input');
             youtubeLink.classList.add('levelEdit_youtubeLink');
             youtubeLink.setAttribute('placeholder', `YouTube Video ID #${i+1}`);
@@ -875,7 +879,7 @@ export const showLevelEditScreen = function (dontReplace) {
         saveAsButton.innerHTML = "SAVE AS";
         targetDomElement.appendChild(saveAsButton);
 
-        saveAsButton.addEventListener('click', async ()=>{
+        saveAsButton.addEventListener('click', async () => {
             if (!await checkLevelDataForErrors()) return;
             showSaveScreen.bind(this)();
         });
@@ -937,14 +941,14 @@ export const showLevelEditScreen = function (dontReplace) {
 
     showPanel(levelEditScreen);
 
-    if(dontReplace !== true){
+    if (dontReplace !== true) {
         let thumbNailImage = levelEditScreen.domElement.querySelector('#levelThumbnailImage');
         let clickToAdd = levelEditScreen.domElement.querySelector('.clickToAdd');
         if (game.currentLevelData.thumb_small_md5) {
             thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_small_md5}.png`;
             thumbNailImage.style.display = 'block';
             clickToAdd.style.display = 'none';
-        }else if (B2dEditor.cameraShotData) {
+        } else if (B2dEditor.cameraShotData) {
             thumbNailImage.src = B2dEditor.cameraShotData;
             thumbNailImage.style.display = 'block';
             clickToAdd.style.display = 'none';
@@ -956,10 +960,12 @@ export const showLevelEditScreen = function (dontReplace) {
         levelEditScreen.domElement.querySelector('#levelEdit_description').value = game.currentLevelData.description;
 
         const youtubeIds = levelEditScreen.domElement.querySelectorAll('.levelEdit_youtubeLink');
-        youtubeIds.forEach(el=>el.value='');
+        youtubeIds.forEach(el => el.value = '');
 
-        if(game.currentLevelData.youtubelinks && (game.currentLevelData.youtubelinks.length>1 || game.currentLevelData.youtubelinks[0])){
-            game.currentLevelData.youtubelinks.forEach((id, index)=>{youtubeIds[index].value = id});
+        if (game.currentLevelData.youtubelinks && (game.currentLevelData.youtubelinks.length > 1 || game.currentLevelData.youtubelinks[0])) {
+            game.currentLevelData.youtubelinks.forEach((id, index) => {
+                youtubeIds[index].value = id
+            });
         }
     }
 }
@@ -1068,7 +1074,7 @@ export const showSaveScreen = function () {
         }).catch((error) => {});
     }
     const levelListDiv = saveScreen.domElement.querySelector('#levelList');
-    while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
+    while (levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
     generateLevelList(levelListDiv, 'Save', buttonFunction);
 
     if (loadScreen) {
@@ -1199,7 +1205,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.created_at);
                 // using %2F because '/' does not work for private urls
 
-                if(level.title.indexOf('checkpoint') > 0){
+                if (level.title.indexOf('checkpoint') > 0) {
                     console.log('***************', level);
                 }
 
@@ -1288,7 +1294,7 @@ export const showLoadScreen = function () {
     showPanel(loadScreen);
 
     const levelListDiv = loadScreen.domElement.querySelector('#levelList');
-    while(levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
+    while (levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
 
     generateLevelList(levelListDiv, 'Load', buttonFunction);
 
@@ -1335,7 +1341,7 @@ const toolReferences = ['select', 'geometry', 'polydrawing', 'pen', 'joints', 'p
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
 
-    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Pen.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png'/*, 'Icon_Zoom.png'*/, 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
+    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Pen.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png' /*, 'Icon_Zoom.png'*/ , 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
     var buttonElement;
     var imgElement;
     for (var i = 0; i < icons.length; i++) {
@@ -1424,7 +1430,7 @@ export const initGuiAssetSelection = function () {
                 const x = Math.max(e.pageX, rect.right + image.width / 2);
                 const y = e.pageY;
 
-				const camera = B2dEditor.container.camera || B2dEditor.container;
+                const camera = B2dEditor.container.camera || B2dEditor.container;
 
                 const data = new B2dEditor.textureObject;
                 if (x == e.pageX) {
@@ -1526,8 +1532,8 @@ export const showNotice = function (message) {
 
     return false;
 }
-const removeNotice = ()=>{
-    if(notice){
+const removeNotice = () => {
+    if (notice) {
         notice.domElement.parentNode.removeChild(notice.domElement);
         notice = null;
     }
@@ -1592,21 +1598,21 @@ export const showTextEditor = function (startValue, callBack) {
 
     return false;
 }
-const removeTextEditor = ()=>{
-    if(textEditor){
+const removeTextEditor = () => {
+    if (textEditor) {
         textEditor.domElement.parentNode.removeChild(textEditor.domElement);
         textEditor = null;
     }
 }
-const removePrompt = ()=>{
-    if(prompt){
+const removePrompt = () => {
+    if (prompt) {
         prompt.domElement.parentNode.removeChild(prompt.domElement);
         prompt = null;
     }
 }
 
-const showPublishSocialShareScreen = level =>{
-    if(!publishSocialShareScreen){
+const showPublishSocialShareScreen = level => {
+    if (!publishSocialShareScreen) {
         publishSocialShareScreen = game.ui.buildSocialShare(customGUIContainer);
 
         const targetElement = publishSocialShareScreen.domElement.querySelector('.folder .divWrapper');
@@ -1633,7 +1639,7 @@ const showPublishSocialShareScreen = level =>{
     setHighestWindow(publishSocialShareScreen.domElement);
 }
 
-export const fetchControllersFromGUI = function(gui){
+export const fetchControllersFromGUI = function (gui) {
     let controllers = [].concat(gui.__controllers);
     for (var propt in gui.__folders) {
         controllers = controllers.concat(gui.__folders[propt].__controllers);
@@ -1649,12 +1655,10 @@ export const fetchControllersFromGUI = function(gui){
     return controllers;
 }
 
-export const showPrompt = function (message, positivePrompt, negativePrompt) {
-    removePrompt();
-
+export const generatePrompt = function (message, positivePrompt, negativePrompt, target) {
     const loginGUIWidth = 400;
 
-    prompt = new dat.GUI({
+    const prompt = new dat.GUI({
         autoPlace: false,
         width: loginGUIWidth
     });
@@ -1694,33 +1698,48 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 
     targetDomElement.appendChild(document.createElement('br'));
 
-    customGUIContainer.appendChild(prompt.domElement);
+
+    target.appendChild(prompt.domElement);
 
     const computedWidth = parseFloat(getComputedStyle(prompt.domElement, null).width.replace("px", ""));
     const computedHeight = parseFloat(getComputedStyle(prompt.domElement, null).height.replace("px", ""));
     prompt.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
     prompt.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
+    return {
+        prompt,
+        promise: new Promise((resolve, reject) => {
+            yes_button.addEventListener('click', () => {
+                removePrompt();
+                return resolve();
+            })
+            no_button.addEventListener('click', () => {
+                removePrompt();
+                return reject();
+            })
+        })
+    }
+}
+
+
+export const showPrompt = function (message, positivePrompt, negativePrompt) {
+    removePrompt();
+
+    const generatedPrompt = generatePrompt(message, positivePrompt, negativePrompt, customGUIContainer);
+
+    prompt = generatedPrompt.prompt;
+
     registerDragWindow(prompt);
 
     setHighestWindow(prompt.domElement);
 
-    return new Promise((resolve, reject) => {
-        yes_button.addEventListener('click', () => {
-            removePrompt();
-            return resolve();
-        })
-        no_button.addEventListener('click', () => {
-            removePrompt();
-            return reject();
-        })
-    });
+    return generatedPrompt.promise;
 }
 
-export const showHelp = function(i){
+export const showHelp = function (i) {
     removeShowHelp();
 
-    if(helpClosed[i]) return;
+    if (helpClosed[i]) return;
 
     const loginGUIWidth = 320;
 
@@ -1761,8 +1780,8 @@ export const showHelp = function(i){
 
     return false;
 }
-const removeShowHelp = ()=>{
-    if(helpScreen){
+const removeShowHelp = () => {
+    if (helpScreen) {
         helpScreen.domElement.parentNode.removeChild(helpScreen.domElement);
         helpScreen = null;
     }
@@ -1815,23 +1834,23 @@ export const showGradientsEditor = function (name, oldGradientData) {
 
     // adding fields
     let gradientData = oldGradientData;
-    if(!gradientData){
-        if(name === Settings.DEFAULT_TEXTS.newGradient){
-            if(oldGradientData){}
-            let gradientCount = game.editor.levelGradients.length+1;
-            while(game.editor.levelGradients.find(el=>el.n === `gradient${gradientCount}`)){
+    if (!gradientData) {
+        if (name === Settings.DEFAULT_TEXTS.newGradient) {
+            if (oldGradientData) {}
+            let gradientCount = game.editor.levelGradients.length + 1;
+            while (game.editor.levelGradients.find(el => el.n === `gradient${gradientCount}`)) {
                 gradientCount++;
             }
             gradientData = {
-                n:`gradient${gradientCount}`,
-                c:['#FFFFFF', '#000000'],
-                a:[1, 1],
-                p:[0, 1],
-                r:0,
-                l:true
+                n: `gradient${gradientCount}`,
+                c: ['#FFFFFF', '#000000'],
+                a: [1, 1],
+                p: [0, 1],
+                r: 0,
+                l: true
             }
-        }else{
-            gradientData = game.editor.levelGradients.find(el=>el.n === name) || {};
+        } else {
+            gradientData = game.editor.levelGradients.find(el => el.n === name) || {};
             gradientData = JSON.parse(JSON.stringify(gradientData)); // clone
         }
     }
@@ -1842,7 +1861,7 @@ export const showGradientsEditor = function (name, oldGradientData) {
 
     const gradientNames = [Settings.DEFAULT_TEXTS.newGradient, ...game.editor.levelGradientsNames];
     folder.add(gradientEditData, "selectedGradient", gradientNames).onChange(function (value) {
-        if(name !== value) showGradientsEditor(value);
+        if (name !== value) showGradientsEditor(value);
     });
 
     const gradientTypes = ['linear', 'radial'];
@@ -1863,46 +1882,46 @@ export const showGradientsEditor = function (name, oldGradientData) {
         const colorName = `color${index}`
         gradientEditData[colorName] = color;
         const colorFolder = folder.addFolder(`Color ${index+1}`);
-        colorFolder.addColor(gradientEditData, colorName).name('color').onChange(value=>{
+        colorFolder.addColor(gradientEditData, colorName).name('color').onChange(value => {
             gradientData.c[index] = value;
             drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
         });
 
         const alphaName = `alpha${index}`;
         gradientEditData[alphaName] = gradientData.a[index];
-        colorFolder.add(gradientEditData, alphaName, 0, 1).name('alpha').step(0.01).onChange(value=>{
+        colorFolder.add(gradientEditData, alphaName, 0, 1).name('alpha').step(0.01).onChange(value => {
             gradientData.a[index] = value;
             drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
         });
 
         const posName = `pos${index}`;
-         gradientEditData[posName] = gradientData.p[index];
-        colorFolder.add(gradientEditData, posName, 0, 1).name('position').step(0.01).onChange(value=>{
+        gradientEditData[posName] = gradientData.p[index];
+        colorFolder.add(gradientEditData, posName, 0, 1).name('position').step(0.01).onChange(value => {
             gradientData.p[index] = value;
             drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
         });
     })
 
-    if(gradientData.l){
+    if (gradientData.l) {
         gradientEditData.rotation = gradientData.r * game.editor.RAD2DEG;
-        folder.add(gradientEditData, 'rotation', 0, 360).step(0.1).onChange(value=>{
+        folder.add(gradientEditData, 'rotation', 0, 360).step(0.1).onChange(value => {
             gradientData.r = value * game.editor.DEG2RAD;
             drawing.drawGradient(gradientBox, gradientData, gradientBox.width);
         });
     }
 
-    if(gradientData.c.length<8){
-        gradientEditData.addColor = ()=>{
-            gradientData.c.push(gradientData.c[gradientData.c.length-1]);
-            gradientData.a.push(gradientData.a[gradientData.a.length-1]);
-            gradientData.p.push(gradientData.p[gradientData.p.length-1]);
+    if (gradientData.c.length < 8) {
+        gradientEditData.addColor = () => {
+            gradientData.c.push(gradientData.c[gradientData.c.length - 1]);
+            gradientData.a.push(gradientData.a[gradientData.a.length - 1]);
+            gradientData.p.push(gradientData.p[gradientData.p.length - 1]);
             showGradientsEditor(name, gradientData);
         }
         folder.add(gradientEditData, "addColor").name('add color');
     }
 
-    if(gradientData.c.length>2){
-        gradientEditData.removeColor = ()=>{
+    if (gradientData.c.length > 2) {
+        gradientEditData.removeColor = () => {
             gradientData.c.pop();
             gradientData.a.pop();
             gradientData.p.pop();
@@ -1911,8 +1930,8 @@ export const showGradientsEditor = function (name, oldGradientData) {
         folder.add(gradientEditData, "removeColor").name('remove color');
     }
 
-    if(name !== Settings.DEFAULT_TEXTS.newGradient){
-        gradientEditData.deleteGradient = ()=>{
+    if (name !== Settings.DEFAULT_TEXTS.newGradient) {
+        gradientEditData.deleteGradient = () => {
             const gradientIndex = game.editor.levelGradientsNames.indexOf(name);
             game.editor.levelGradients.splice(gradientIndex, 1);
             game.editor.levelGradientsNames.splice(gradientIndex, 1);
@@ -1921,12 +1940,12 @@ export const showGradientsEditor = function (name, oldGradientData) {
         folder.add(gradientEditData, "deleteGradient").name('delete gradient');
     }
 
-    gradientEditData.saveGradient = ()=>{
-        if(name === Settings.DEFAULT_TEXTS.newGradient){
+    gradientEditData.saveGradient = () => {
+        if (name === Settings.DEFAULT_TEXTS.newGradient) {
             //force unique name;
             let gradientName = gradientData.n;
             let gradientNameCount = 0;
-            while(game.editor.levelGradientsNames.includes(gradientName) || gradientName === ''){
+            while (game.editor.levelGradientsNames.includes(gradientName) || gradientName === '') {
                 gradientNameCount++;
                 gradientName = `${gradientData.n}${gradientNameCount}`;
             }
@@ -1934,17 +1953,17 @@ export const showGradientsEditor = function (name, oldGradientData) {
 
             game.editor.levelGradients.push(gradientData);
             game.editor.levelGradientsNames.push(gradientData.n);
-            game.editor.parseLevelGradient(game.editor.levelGradientsNames.length-1);
+            game.editor.parseLevelGradient(game.editor.levelGradientsNames.length - 1);
 
             showGradientsEditor(gradientData.n);
-        }else{
+        } else {
             // find index
             const gradientIndex = game.editor.levelGradientsNames.indexOf(name);
 
-            if(name !== gradientData.n){
+            if (name !== gradientData.n) {
                 let gradientName = gradientData.n;
                 let gradientNameCount = 0;
-                while(game.editor.levelGradientsNames.includes(gradientName) || gradientName === ''){
+                while (game.editor.levelGradientsNames.includes(gradientName) || gradientName === '') {
                     gradientNameCount++;
                     gradientName = `${gradientData.n}${gradientNameCount}`;
                 }
@@ -1975,8 +1994,8 @@ export const showGradientsEditor = function (name, oldGradientData) {
 
     return false;
 }
-const removeGradientEditor = ()=>{
-    if(gradientEditor){
+const removeGradientEditor = () => {
+    if (gradientEditor) {
         gradientEditor.domElement.parentNode.removeChild(gradientEditor.domElement);
         gradientEditor = null;
         game.editor.updateSelection();
@@ -2002,7 +2021,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
     let textarea = document.createElement('textarea');
     textarea.value = `${Settings.DEFAULT_TEXTS.error_message}\n\n ${msg},\n ${url},\n ${lineNo},\n ${columnNo},\n ${(error && error.stack) ? error.stack : ''}`
     textarea.style.width = '500px';
-    textarea.style.height ='90vh';
+    textarea.style.height = '90vh';
     textWrapper.appendChild(textarea);
 
     mainFolderDomElement.appendChild(textWrapper);
@@ -2018,7 +2037,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
     setHighestWindow(errorScreen.domElement);
 
-    window.onerror = ()=>{};
+    window.onerror = () => {};
 
     return false;
 }
@@ -2040,24 +2059,24 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
     const imageDropDown = document.createElement('div');
     imageDropDown.classList.add('imageDropDown', 'c');
 
-    imageDropDown.onmouseup = imageDropDownContainer.ontouchend = ()=>{
-        if(imageDropDown.classList.contains('open')){
+    imageDropDown.onmouseup = imageDropDownContainer.ontouchend = () => {
+        if (imageDropDown.classList.contains('open')) {
             // else we close the dropdown before we select an item
-            setTimeout(()=>{
+            setTimeout(() => {
                 imageDropDown.classList.remove('open');
                 const elementIndex = Array.from(imageDropDown.children).find(element => element.checked).value;
                 clickCallback(elementIndex);
             }, 0);
-        }else{
+        } else {
             imageDropDown.classList.add('open');
         }
     }
 
     imageDropDownContainer.appendChild(imageDropDown);
 
-    for(let i = 0; i<textureNames.length; i++){
+    for (let i = 0; i < textureNames.length; i++) {
         const input = document.createElement('input');
-        if(i === selectedIndex) input.setAttribute('checked', 'checked');
+        if (i === selectedIndex) input.setAttribute('checked', 'checked');
         input.setAttribute('type', 'radio');
         const idName = `idd${i}`;
         input.setAttribute('id', idName);
@@ -2066,13 +2085,12 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
 
         const label = document.createElement('label');
         label.setAttribute('for', idName)
-        if(i === 0){
+        if (i === 0) {
             label.style.background = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 100'><path d='M100 0 L0 100 ' stroke='black' stroke-width='1'/><path d='M0 0 L100 100 ' stroke='black' stroke-width='1'/></svg>")`;
             label.style.backgroundRepeat = 'no-repeat';
             label.style.backgroundPosition = 'center center';
             label.style.backgroundSize = '100% 100%, auto';
-        }
-        else{
+        } else {
             const base64Image = PIXI.utils.BaseTextureCache[Settings.textureNames[i]].source.src;
             label.style.background = `url(${base64Image})`;
             label.style.backgroundSize = 'contain';
@@ -2114,7 +2132,9 @@ export const initDrag = function (event, _window) {
 }
 export const endDrag = function (event, _window) {
     document.removeEventListener('mousemove', _window.mouseMoveFunction);
-    setTimeout(()=>{_window.domElement.querySelector('.title').removeAttribute('moved');}, 0);
+    setTimeout(() => {
+        _window.domElement.querySelector('.title').removeAttribute('moved');
+    }, 0);
 }
 export const doDrag = function (event, _window) {
     var difX = event.pageX - startDragMouse.x;
@@ -2129,8 +2149,8 @@ export const doDrag = function (event, _window) {
 }
 
 const setHighestWindow = domElement => {
-    setTimeout(()=>{
-        if(!domElement || !domElement.parentNode) return;
+    setTimeout(() => {
+        if (!domElement || !domElement.parentNode) return;
         if ([...domElement.parentNode.children].indexOf(domElement) !== domElement.parentNode.children.length - 1) {
             domElement.parentNode.appendChild(domElement);
         }
@@ -2165,7 +2185,7 @@ export const registerDragWindow = (_window) => {
             else tarFolder.close();
         }
         endDrag(event, _window);
-        if(!_window.domElement.parentNode) document.removeEventListener('click', clickFunction);
+        if (!_window.domElement.parentNode) document.removeEventListener('click', clickFunction);
     }
 
     document.addEventListener('click', clickFunction);

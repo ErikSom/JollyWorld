@@ -129,6 +129,7 @@ const patchServiceWorker = async () => {
 	files.length = 0;
 	getAllFiles('./build/assets');
 	files = files.filter(file => file.indexOf('.DS_Store') < 0);
+	files = files.map(file => file.replace('build/', './'));
 
 	const md5Index = await md5File(htmlPath);
 
@@ -149,8 +150,6 @@ const patchServiceWorker = async () => {
 		});
 	});
 }
-
-
 
 
 hashFileNames()

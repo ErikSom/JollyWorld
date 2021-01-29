@@ -4,6 +4,9 @@ var filesToCache = '{{{SERVICE_WORKER_FILES}}}';
 self.addEventListener('install', function (event) {
 	event.waitUntil(
 		caches.open(cacheName).then(function (cache) {
+			console.log(cacheName);
+			console.log(cache);
+			console.log(filesToCache);
 			return cache.addAll(filesToCache);
 		}).catch(function (err) {
 			console.log(err);
@@ -31,4 +34,10 @@ self.addEventListener('activate', function (event) {
 			}));
 		})
 	);
+});
+
+self.addEventListener('message', function (event) {
+	if (event.data.action === 'skipWaiting') {
+		self.skipWaiting();
+	}
 });
