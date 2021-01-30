@@ -243,6 +243,7 @@ const showApplePWAInstall = () => {
 	const thumb = document.createElement('div');
 	iconContainer.appendChild(thumb);
 	thumb.classList.add('ios-pwa-icon-thumb');
+	thumb.style.backgroundImage = 'url(./android-chrome-60x60.png)'
 
 	const cross = document.createElement('div');
 	cross.classList.add('ios-pwa-cross');
