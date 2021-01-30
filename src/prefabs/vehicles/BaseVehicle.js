@@ -113,7 +113,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                                 const spriteB = game.editor.textures.getChildAt(sprite.data.bodyB_ID);
                                 if(spriteA.myBody && game.editor.retrieveClassFromBody(spriteA.myBody) && game.editor.retrieveClassFromBody(spriteA.myBody).isVehicle){
                                     jointsToDelete.push(sprite);
-                                }else if(spriteB.myBody && game.editor.retrieveClassFromBody(spriteB.myBody) && game.editor.retrieveClassFromBody(spriteB.myBody).isVehicle){
+                                }else if(spriteB && spriteB.myBody && game.editor.retrieveClassFromBody(spriteB.myBody) && game.editor.retrieveClassFromBody(spriteB.myBody).isVehicle){
                                     jointsToDelete.push(sprite);
                                 }
 
