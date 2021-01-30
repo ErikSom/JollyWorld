@@ -55,7 +55,7 @@ body .dg.main::-webkit-scrollbar-thumb {
  
 body .dg li:not(.folder) {
     background: #666666;
-    border-bottom: 1px solid #666666;
+    border-bottom: none;
 }
  
 body .dg li.save-row .button {
@@ -160,6 +160,7 @@ body .dg .cr.function:active {
     border-radius: 5px;
     box-shadow: 2px 2px 0px #000000;
     max-height:90vh;
+    max-width: 90vw;
     overflow:auto;
 }
 .dg.main {

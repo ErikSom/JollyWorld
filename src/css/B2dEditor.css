@@ -241,7 +241,7 @@ body .dg .cr.function {
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 5px solid #00FF00;
-    position: absolute;
+    position: initial;
     margin-top: 10px;
     margin-left: 3px;
 }
@@ -272,6 +272,7 @@ body .dg .cr.function {
 
 #mainMenuLogo {
     width: 400px;
+    max-width:80vw;
 }
 
 .menuButton {
@@ -293,6 +294,7 @@ body .dg .cr.function {
     margin-right: auto;
     font-family: 'Lily Script One', cursive;
     text-shadow: 2px 2px black;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .menuButton::after {
@@ -341,11 +343,10 @@ body .dg .cr.function {
 .moreLevels {
     height: 40px;
     line-height: 36px;
-    width: unset;
-    padding: 0px 30px;
+    width: 160px;
     font-size: 24px;
     float: left;
-    margin-left: 20px;
+    margin: 10px;
 }
 
 .sortByButton {
@@ -511,6 +512,8 @@ body .dg .cr.function {
     cursor: pointer;
     line-height: 30px;
     padding: 0px 10px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .filterButton {
@@ -577,7 +580,7 @@ body .dg .cr.function {
 
 .filterBar {
     font-size: 10px;
-    width: 100%;
+    width: 640px;
     height: 30px;
     background-color: #1C1C1C;
     margin-top: -2px;
@@ -713,6 +716,7 @@ body .dg .cr.function {
 }
 
 .itemList {
+    width:640px;
     min-height: 200px;
     max-height: 50vh;
     overflow: auto;
@@ -1172,6 +1176,7 @@ body .dg .cr.function {
 
 *::-webkit-scrollbar {
     width: 5px;
+    height:5px;
     background: #FFF;
 }
 
@@ -1346,6 +1351,30 @@ body .dg .cr.function {
     50%, 100% {
         transform: scale3d(1, 1, 1);
     }
+}
+
+/* Fix smaller screens */
+@media  only screen and (max-width: 640px) and (max-height: 360px) and (orientation: landscape),
+        only screen and (max-width: 360px) and (max-height: 640px) and (orientation: portrait){
+            .menuButton{
+                font-size: 18px;
+                width: 122px;
+                height: 50px;
+                line-height: 40px;
+            }
+            .menuButton.disable:before{
+                font-size: 8px;
+                top: 16px;
+            }
+            .menuButton.disable{
+                line-height: 36px;
+            }
+            .discordButton{
+                width: 140px;
+                height: 50px;
+                background-size: 120px;
+                background-position-y: 2px;
+            }
 }
 
 @font-face {

@@ -10,8 +10,12 @@ import * as dat from '../../libs/dat.gui';
 import * as uiHelper from '../b2Editor/utils/uiHelper';
 import * as format from '../b2Editor/utils/formatString';
 import anime from 'animejs/lib/anime.es';
-import { Settings } from '../Settings'
-import { hashName } from '../AssetList';
+import {
+    Settings
+} from '../Settings'
+import {
+    hashName
+} from '../AssetList';
 import * as MobileController from '../utils/MobileController';
 
 
@@ -72,7 +76,7 @@ function UIManager() {
             button.classList.add('menuButton');
             button.innerHTML = 'Editor';
 
-            if(MobileController.isMobile()){
+            if (MobileController.isMobile()) {
                 button.classList.add('disable');
             }
 
@@ -88,12 +92,14 @@ function UIManager() {
             span.setAttribute('id', 'versionNumber')
             span.innerText = __VERSION__;
             mainMenu.appendChild(span);
-            setTimeout(()=>{span.style.opacity = 1}, 1800);
+            setTimeout(() => {
+                span.style.opacity = 1
+            }, 1800);
 
             discordButton = document.createElement('button');
-            discordButton.classList.add('menuButton','discordButton');
+            discordButton.classList.add('menuButton', 'discordButton');
             discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discord.svg')})`;
-            discordButton.onclick = ()=>{
+            discordButton.onclick = () => {
                 window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
             }
             customGUIContainer.appendChild(discordButton);
@@ -105,8 +111,8 @@ function UIManager() {
         this.show();
 
     }
-    this.disableMainMenu = disable=> {
-        if(disable) mainMenu.classList.add('disable');
+    this.disableMainMenu = disable => {
+        if (disable) mainMenu.classList.add('disable');
         else mainMenu.classList.remove('disable');
     }
     this.doLogoAnimation = function (baseDelay) {
@@ -239,7 +245,7 @@ function UIManager() {
                 range: this.FILTER_RANGE_ANYTIME
             };
 
-            const loginGUIWidth = 640;
+            const loginGUIWidth = '640px';
 
             levelLoader = new dat.GUI({
                 autoPlace: false,
@@ -255,7 +261,7 @@ function UIManager() {
 
             const titleElement = levelLoader.domElement.querySelector('.title');
 
-            this.setLevelLoaderTitle = ()=>{
+            this.setLevelLoaderTitle = () => {
                 titleElement.innerHTML = `${filter.by} levels  -  ${filter.range}`;
             };
             this.setLevelLoaderTitle();
@@ -267,7 +273,8 @@ function UIManager() {
 
             let divWrapper = document.createElement('div');
             divWrapper.setAttribute('id', 'levelList');
-            divWrapper.style.padding = '0px 5px';
+            divWrapper.style.width = '100%';
+            divWrapper.style.overflowX = 'auto';
 
             targetDomElement.appendChild(divWrapper);
 
@@ -299,7 +306,23 @@ function UIManager() {
         levelLoader.domElement.style.display = 'unset';
 
 
+
+
         this.generateFilteredPublishLevelList();
+
+        setTimeout(()=>{
+        const levelList = levelLoader.domElement.querySelector('#levelList');
+        levelList.scrollTo({
+            left: 640,
+            behavior: 'smooth'
+        });
+        setTimeout(() => {
+            levelList.scrollTo({
+                left: 0,
+                behavior: 'smooth'
+            });
+        }, 500);
+        }, 500);
 
         levelLoader.domElement.style.left = '50%';
         levelLoader.domElement.style.top = '50%';
@@ -449,7 +472,7 @@ function UIManager() {
 
     }
     this.hideFilterMenu = function () {
-        if(filterMenu){
+        if (filterMenu) {
             filterMenu.domElement.style.visibility = 'hidden';
         }
     }
@@ -561,7 +584,7 @@ function UIManager() {
         if (!characterSelect) {
             characterSelect = new dat.GUI({
                 autoPlace: false,
-                width:438,
+                width: 438,
             });
             characterSelect.domElement.setAttribute('id', 'characterSelect');
 
@@ -577,13 +600,13 @@ function UIManager() {
 
             const characterImages = ['character1.png', 'character2.png', 'character3.png', 'character4.png'];
 
-            for(let i = 0; i<Settings.availableCharacters; i++){
-                const portrait =  document.createElement('img');
+            for (let i = 0; i < Settings.availableCharacters; i++) {
+                const portrait = document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(characterImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';
                 portrait.style.backgroundColor = 'black';
                 characterHolder.appendChild(portrait);
-                portrait.onclick = ()=>{
+                portrait.onclick = () => {
                     game.selectedCharacter = i;
                     this.hideCharacterSelect();
                     this.showVehicleSelect();
@@ -614,7 +637,7 @@ function UIManager() {
         if (!vehicleSelect) {
             vehicleSelect = new dat.GUI({
                 autoPlace: false,
-                width:438,
+                width: 438,
             });
             vehicleSelect.domElement.setAttribute('id', 'vehicleSelect');
 
@@ -631,17 +654,17 @@ function UIManager() {
 
             const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png'];
 
-            for(let i = 0; i<Settings.availableVehicles.length; i++){
-                const portrait =  document.createElement('img');
+            for (let i = 0; i < Settings.availableVehicles.length; i++) {
+                const portrait = document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(vehicleImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';
                 portrait.style.backgroundColor = 'black';
                 vehicleHolder.appendChild(portrait);
 
-                portrait.onclick = ()=>{
-                    if(!game.currentLevelData.forced_vehicle || (i+1) === game.currentLevelData.forced_vehicle){
+                portrait.onclick = () => {
+                    if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
                         this.hideVehicleSelect();
-                        game.selectedVehicle = i+1;
+                        game.selectedVehicle = i + 1;
                         game.initLevel(game.currentLevelData);
                         game.playWorld();
                         backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
@@ -662,11 +685,11 @@ function UIManager() {
         }
 
         const vehicleHolderDiv = vehicleSelect.domElement.querySelector('.vehicleHolder');
-        [...vehicleHolderDiv.children].forEach((portrait, index)=> {
-            if(game.currentLevelData.forced_vehicle && (index+1) !== game.currentLevelData.forced_vehicle){
+        [...vehicleHolderDiv.children].forEach((portrait, index) => {
+            if (game.currentLevelData.forced_vehicle && (index + 1) !== game.currentLevelData.forced_vehicle) {
                 portrait.style.cursor = 'not-allowed';
                 portrait.style.filter = 'grayscale(1) brightness(0.5)';
-            }else{
+            } else {
                 portrait.style.cursor = 'pointer';
                 portrait.style.filter = 'unset';
             }
@@ -735,10 +758,10 @@ function UIManager() {
 
 
             const sumVotes = game.currentLevelData.upvotes + game.currentLevelData.downvotes;
-            const rating = game.currentLevelData.upvotes/sumVotes;
+            const rating = game.currentLevelData.upvotes / sumVotes;
 
             span = document.createElement('span');
-            span.innerText = (!sumVotes || sumVotes < 10) ? '??' : Math.round(rating*100)+'%';
+            span.innerText = (!sumVotes || sumVotes < 10) ? '??' : Math.round(rating * 100) + '%';
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -762,12 +785,12 @@ function UIManager() {
             ratingHolder.appendChild(downvoteButton);
 
             upvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, 1).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, 1).then(() => {
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
             downvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, -1).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, -1).then(() => {
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
@@ -900,10 +923,10 @@ function UIManager() {
 
 
             const sumVotes = game.currentLevelData.upvotes + game.currentLevelData.downvotes;
-            const rating = game.currentLevelData.upvotes/sumVotes;
+            const rating = game.currentLevelData.upvotes / sumVotes;
 
             span = document.createElement('span');
-            span.innerText = (!sumVotes || sumVotes < 10) ? '??' : Math.round(rating*100)+'%';
+            span.innerText = (!sumVotes || sumVotes < 10) ? '??' : Math.round(rating * 100) + '%';
             span.classList.add('greenSpan');
             ratingText.appendChild(span);
 
@@ -927,13 +950,13 @@ function UIManager() {
             ratingHolder.appendChild(downvoteButton);
 
             upvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, 1).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, 1).then(() => {
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
 
             downvoteButton.addEventListener('click', () => {
-                backendManager.voteLevel(game.currentLevelData.id, -1).then(()=>{
+                backendManager.voteLevel(game.currentLevelData.id, -1).then(() => {
                     shouldShowVoteButton(upvoteButton, downvoteButton)
                 });
             });
@@ -1018,7 +1041,7 @@ function UIManager() {
     this.hideWinScreen = function () {
         winScreen.domElement.style.visibility = 'hidden';
     }
-    this.buildSocialShare = targetContainer =>{
+    this.buildSocialShare = targetContainer => {
         const levelEditGUIWidth = 400;
         const socialShareGUI = new dat.GUI({
             autoPlace: false,
@@ -1058,18 +1081,18 @@ function UIManager() {
         embedDiv.appendChild(inputURL);
 
         const copyButton = document.createElement('button');
-        copyButton.innerHTML='<div></div>';
+        copyButton.innerHTML = '<div></div>';
         embedDiv.appendChild(copyButton);
 
-        copyButton.addEventListener('click', ()=> {
+        copyButton.addEventListener('click', () => {
             const copyText = '(copied) ';
-            if(inputURL.value.startsWith(copyText)){
+            if (inputURL.value.startsWith(copyText)) {
                 inputURL.value = inputURL.value.substr(copyText.length);
             }
             inputURL.select();
             inputURL.setSelectionRange(0, 99999);
             document.execCommand("copy");
-            inputURL.value = copyText+inputURL.value;
+            inputURL.value = copyText + inputURL.value;
         })
 
 
@@ -1084,12 +1107,12 @@ function UIManager() {
 
         divWrapper.appendChild(socialMediaPlaceHolder);
 
-        socialShareGUI.setSocialMediaHTML = level =>{
+        socialShareGUI.setSocialMediaHTML = level => {
 
             const url = encodeURIComponent(`${Settings.GAMEURI}/#${level.id}`);
             const body = encodeURIComponent('Check out this level in JollyWorld! ' + level.description);
 
-            const socialHTML =`
+            const socialHTML = `
                 <a class="resp-sharing-button__link" href="https://facebook.com/sharer/sharer.php?u=${url}" target="_blank" rel="noopener" aria-label="Share on Facebook">
                 <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--large"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg>
@@ -1129,7 +1152,7 @@ function UIManager() {
             socialMediaPlaceHolder.innerHTML = socialHTML;
         }
 
-        socialShareGUI.hide = ()=>{
+        socialShareGUI.hide = () => {
             socialShareGUI.domElement.style.visibility = 'hidden';
         }
 
@@ -1139,13 +1162,13 @@ function UIManager() {
 
         return socialShareGUI;
     }
-    this.hideSocialShareMenu = function(){
-        if(socialShareScreen) socialShareScreen.hide();
+    this.hideSocialShareMenu = function () {
+        if (socialShareScreen) socialShareScreen.hide();
     }
 
     this.showSocialShare = function (level) {
-        if(!socialShareScreen){
-           socialShareScreen = this.buildSocialShare(customGUIContainer);
+        if (!socialShareScreen) {
+            socialShareScreen = this.buildSocialShare(customGUIContainer);
         }
         socialShareScreen.domElement.style.visibility = 'visible';
         socialShareScreen.domElement.style.left = '50%';
@@ -1197,6 +1220,7 @@ function UIManager() {
         span.innerText = 'Author';
         levelAuthorFilter.appendChild(span);
 
+
         // Plays Filter
         var levelPlaysFilter = document.createElement('div');
         levelPlaysFilter.setAttribute('class', 'levelPlaysFilter');
@@ -1210,6 +1234,7 @@ function UIManager() {
         span.setAttribute('class', 'filterTitle');
         span.innerText = 'Plays';
         levelPlaysFilter.appendChild(span);
+
 
         // Ratings Filter
         var levelRatingsFilter = document.createElement('div');
@@ -1266,8 +1291,6 @@ function UIManager() {
         levelDateFilter.style.width = '13%';
         levelShare.style.width = '7%';
         levelPlay.style.width = '13%';
-
-
 
         divWrapper.appendChild(filterBar);
 
@@ -1388,8 +1411,6 @@ function UIManager() {
 
         const buildLevelList = (levels) => {
 
-            console.log("RECEIVED LEVELS:", levels);
-
             itemListDotShell.style.visibility = 'hidden';
             levels.forEach(level => {
 
@@ -1404,16 +1425,18 @@ function UIManager() {
                 itemDescription.innerText = level.description;
                 uiHelper.clampDot(itemDescription, 3, 12);
 
-                itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.created_at);
+                const itemDate = itemBarClone.querySelector('.itemDate');
+                itemDate.innerText = format.formatDMY(level.created_at);
                 itemBarClone.querySelector('.itemAuthor').innerText = level.author.username;
 
 
                 const sumVotes = level.upvotes + level.downvotes;
-                const rating = level.upvotes/sumVotes;
+                const rating = level.upvotes / sumVotes;
 
-                itemBarClone.querySelector('.itemRating').innerText = (!sumVotes || sumVotes) < 10 ? '??' : Math.round(rating*100)+'%';
+                itemBarClone.querySelector('.itemRating').innerText = (!sumVotes || sumVotes) < 10 ? '??' : Math.round(rating * 100) + '%';
 
-                itemBarClone.querySelector('.itemPlays').innerText = format.formatNumber(level.playcount);
+                const itemPlays = itemBarClone.querySelector('.itemPlays')
+                itemPlays.innerText = format.formatNumber(level.playcount);
 
                 itemBarClone.querySelector('#thumbImage').src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
 
@@ -1422,7 +1445,7 @@ function UIManager() {
                 });
 
                 itemBarClone.querySelector('.menuButton').addEventListener('click', () => {
-                    if(game.gameState != game.GAMESTATE_MENU) return;
+                    if (game.gameState != game.GAMESTATE_MENU) return;
                     game.gameState = game.GAMESTATE_LOADINGDATA;
                     itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
                     itemBarClone.querySelector('.dot-shell').style.visibility = 'visible';
@@ -1456,13 +1479,13 @@ function UIManager() {
 export var ui = new UIManager();
 
 
-const shouldShowVoteButton = (up, down)=>{
+const shouldShowVoteButton = (up, down) => {
     const vote = BackendCache.voteDataCache[game.currentLevelData.id];
-    if(vote){
-        if(vote > 0){
+    if (vote) {
+        if (vote > 0) {
             up.style.filter = '';
             down.style.filter = 'brightness(0.3)';
-        }else {
+        } else {
             up.style.filter = 'brightness(0.3)';
             down.style.filter = '';
         }
