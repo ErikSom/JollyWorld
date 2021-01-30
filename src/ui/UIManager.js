@@ -632,6 +632,7 @@ function UIManager() {
             const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png'];
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
+                if(i == 2) continue;
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(vehicleImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';

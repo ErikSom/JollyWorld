@@ -578,6 +578,9 @@ function Game() {
     }
     this.openMainMenu = function (showLevelList) {
         //if(this.run) this.stopWorld();
+
+        this.resetGameSelection();
+
         this.initLevel(levelsData.mainMenuLevel);
         ui.showMainMenu();
         ui.hideGameOverMenu();
@@ -592,6 +595,11 @@ function Game() {
             ui.showLevelLoader();
         }
     }
+    this.resetGameSelection = function(){
+        this.selectedCharacter = 0;
+        this.selectedVehicle = 0;
+    }
+
     this.runWorld = function () {
         this.editor.runWorld();
         this.run = true;
@@ -673,6 +681,7 @@ function Game() {
 		}
     }
     this.initLevel = function (data) {
+
         this.stopWorld();
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
@@ -828,21 +837,10 @@ function Game() {
         });
     }
     this.previewLevel = function(){
-        self.initLevel(self.currentLevelData);
         ui.hideMainMenu();
         ui.showLevelBanner();
         this.editor.ui.hide();
         this.resetGame();
-
-        for (var key in this.editor.activePrefabs) {
-            if (this.editor.activePrefabs.hasOwnProperty(key)) {
-                if (this.editor.activePrefabs[key].class.constructor.playableCharacter) {
-                    const lookup = editor.lookupGroups[key];
-                    const allObjects = [].concat(lookup._bodies, lookup._textures, lookup._joints);
-                    this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, {x:-100000, y:-100000}, allObjects)
-                }
-            }
-        }
 
         game.gameState = game.GAMESTATE_PREVIEW;
     }
