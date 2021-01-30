@@ -547,6 +547,7 @@ function Game() {
                 if (this.run) {
                     if (e.shiftKey && e.ctrlKey) this.editor.breakPrefabs = true; //TODO: REMOVE
                     this.stopTestingWorld(e);
+                    return;
                 } else if(e.keyCode !== 27){
                     this.testWorld();
                 }
@@ -660,8 +661,8 @@ function Game() {
         }
     }
     this.stopWorld = function () {
-        this.editor.resetEditor();
         emitterManager.reset();
+        this.editor.resetEditor();
         this.run = false;
         this.resetGame();
         ui.hideGameOverMenu();

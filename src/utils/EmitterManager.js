@@ -228,6 +228,7 @@ export const reset = function () {
         let emitter = emitters[i];
         emitter.body = undefined;
         emitter.cleanup();
+        emitter.emit = false;
         if(emitter.container){
             emitter.parent = game.editor.textures;
             delete emitter.container;
