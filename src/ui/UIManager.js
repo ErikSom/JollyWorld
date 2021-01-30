@@ -306,23 +306,8 @@ function UIManager() {
         levelLoader.domElement.style.display = 'unset';
 
 
-
-
         this.generateFilteredPublishLevelList();
 
-        setTimeout(()=>{
-        const levelList = levelLoader.domElement.querySelector('#levelList');
-        levelList.scrollTo({
-            left: 640,
-            behavior: 'smooth'
-        });
-        setTimeout(() => {
-            levelList.scrollTo({
-                left: 0,
-                behavior: 'smooth'
-            });
-        }, 500);
-        }, 500);
 
         levelLoader.domElement.style.left = '50%';
         levelLoader.domElement.style.top = '50%';
@@ -1459,8 +1444,20 @@ function UIManager() {
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
                     });
                 });
-
             });
+
+            setTimeout(()=>{
+                levelListDiv.scrollTo({
+                    left: 640,
+                    behavior: 'smooth'
+                });
+                setTimeout(() => {
+                    levelListDiv.scrollTo({
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                }, 500);
+                }, 500);
         }
         backendManager.getPublishedLevels(filter).then((levels) => {
             buildLevelList(levels);
