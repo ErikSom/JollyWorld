@@ -346,12 +346,12 @@ function Game() {
                     break;
                 }
             }
-            // if (!allowed) {
-            //     const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
-            //     const url = atob(targetURL);
-            //     window.location.href = url;
-            //     window.top.location !== window.location && (window.top.location = window.location);
-            // }
+            if (!allowed) {
+                const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
+                const url = atob(targetURL);
+                window.location.href = url;
+                window.top.location !== window.location && (window.top.location = window.location);
+            }
         }());
 
         const preloader = document.getElementById('preloader');
