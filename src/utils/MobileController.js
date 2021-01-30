@@ -114,7 +114,7 @@ export const isMobile = () => {
 }
 
 const isIpad = () => {
-	return (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) && !window.MSStream;
+	return ((navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) && !window.MSStream) || navigator.userAgent.match(/(iPad)/);
 }
 
 const isIos = () => {
@@ -274,6 +274,11 @@ const showApplePWAInstall = () => {
 	prompt.style.visibility = 'hidden';
 	pwa.style.opacity = 0;
 
+	if(isIpad()){
+		pwa.classList.add('ipad');
+		prompt.classList.add('ipad');
+	}
+
 	setTimeout(() => {
 		pwa.style.opacity = 1.0;
 		prompt.style.visibility = 'visible';
@@ -311,13 +316,13 @@ const doServiceWorker = () => {
 					console.log('ServiceWorker registration failed: ', err);
 				};
 		});
-	}
 
-	 navigator.serviceWorker.addEventListener('controllerchange', function () {
-	   if (serviceWorkerRefreshing) return;
-	   window.location.reload();
-	   serviceWorkerRefreshing = true;
-	 });
+		navigator.serviceWorker.addEventListener('controllerchange', function () {
+			if (serviceWorkerRefreshing) return;
+			window.location.reload();
+			serviceWorkerRefreshing = true;
+		  });
+	}
 }
 
 const showServiceWorkerUpdate = ()=>{

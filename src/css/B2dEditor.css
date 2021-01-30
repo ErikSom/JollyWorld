@@ -1201,6 +1201,9 @@ body .dg .cr.function {
     width: 100%;
     z-index: 100000;
 }
+.ios-pwa-container.ipad{
+    align-items: flex-start;
+}
 .ios-pwa{
     background: #FFF;
     border-radius: 16px;
@@ -1215,6 +1218,9 @@ body .dg .cr.function {
     text-align: center;
     transition: opacity 0.15s, transform 0.15s ease-in-out;
     z-index: 1;
+}
+.ios-pwa.ipad{
+    margin-left:60vw;
 }
 
 .ios-pwa-cross{
@@ -1243,6 +1249,20 @@ body .dg .cr.function {
     border-top: solid 23px #FFF;
     border-left: solid 24px transparent;
     border-right: solid 24px transparent;
+}
+.ios-pwa.ipad:after{
+    content: '';
+    position: absolute;
+    top:unset;
+    bottom:100%;
+    left: 60%;
+    margin-top:1px;
+    margin-left: -24px;
+    width: 0;
+    height: 0;
+    border-left: solid 24px transparent;
+    border-right: solid 24px transparent;
+    border-bottom: solid 23px #FFF;
 }
 
 .ios-pwa-icon-container{
