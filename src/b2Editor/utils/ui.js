@@ -1087,6 +1087,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
     //fill here
     var filterBar = document.createElement('div');
     filterBar.setAttribute('class', 'filterBar');
+    filterBar.style.width = '100%';
 
     var levelNameFilter = document.createElement('div');
     levelNameFilter.setAttribute('class', 'levelNameFilter');
@@ -1184,6 +1185,8 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
     let itemList = document.createElement('div');
     itemList.setAttribute('class', 'itemList');
     divWrapper.appendChild(itemList);
+    itemList.style.width = '100%';
+
 
     const buildLevelList = (levels) => {
         for (let level_id in levels) {
