@@ -1942,12 +1942,14 @@ const _B2dEditor = function () {
 			const cameraRealHeight = Settings.targetResolution.y * camera.scale.x;
 
 			const playerPosition = this.getPlayerPosition();
-			playerPosition.x *= camera.scale.x;
-			playerPosition.x += camera.x;
-			playerPosition.y *= camera.scale.x;
-			playerPosition.y += camera.y;
 
 			if(playerPosition){
+
+				playerPosition.x *= camera.scale.x;
+				playerPosition.x += camera.x;
+				playerPosition.y *= camera.scale.x;
+				playerPosition.y += camera.y;
+
 				this.debugGraphics.lineStyle(lineWidth, colorLight, lineAlpha);
 				this.debugGraphics.drawRect(playerPosition.x - cameraRealWidth / 2, playerPosition.y - cameraRealHeight / 2, cameraRealWidth, cameraRealHeight);
 
