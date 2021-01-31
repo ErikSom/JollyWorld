@@ -607,6 +607,7 @@ function Game() {
         this.findPlayableCharacter();
     }
     this.playWorld = function () {
+        this.movementBuffer = [];
         MobileController.openFullscreen();
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
@@ -614,6 +615,7 @@ function Game() {
     }
 
     this.testWorld = function () {
+        this.movementBuffer = [];
         this.editor.stringifyWorldJSON();
         this.editor.testWorld();
         this.run = true;
@@ -661,6 +663,7 @@ function Game() {
         }
     }
     this.stopWorld = function () {
+        this.movementBuffer = [];
         emitterManager.reset();
         this.editor.resetEditor();
         this.run = false;
@@ -690,6 +693,7 @@ function Game() {
         //this.editor.buildJSON(PIXI.loader.resources["characterData1"].data);
     }
     this.pauseGame = function(){
+        if(this.gameOver) return;
         this.pause = true;
         this.run = false;
         ui.showPauseMenu();

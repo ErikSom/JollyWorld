@@ -179,6 +179,7 @@ function UIManager() {
         mainMenu.style.display = "none";
     }
 
+    this.goingToShowGameOver = false;
     this.showGameOver = function () {
         if (!gameOver) {
             gameOver = document.createElement('div');
@@ -205,7 +206,7 @@ function UIManager() {
 
             let button = document.createElement('div');
             button.setAttribute('class', 'headerButton checkpoint buttonOverlay dark');
-            button.innerHTML = "CHECKPOINT";
+            button.innerHTML = "RETRY";
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
@@ -214,7 +215,8 @@ function UIManager() {
 
             button = document.createElement('div');
             button.setAttribute('class', 'headerButton restart buttonOverlay dark');
-            button.innerHTML = "RESTART";
+            button.innerHTML = "RESET";
+            button.style.marginTop = '5px';
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
@@ -224,17 +226,26 @@ function UIManager() {
             button = document.createElement('div');
             button.setAttribute('class', 'headerButton exit buttonOverlay dark');
             button.innerHTML = "EXIT";
+            button.style.marginTop = '5px';
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
                 game.openMainMenu();
             });
         }
-        gameOver.style.display = 'block';
+        setTimeout(()=>{
+            if(gameOver){
+                gameOver.style.opacity = 1;
+                gameOver.style.display = 'block';
+            }
+        },
+        Settings.gameOverDelay);
     }
     this.hideGameOverMenu = function () {
         if (gameOver && gameOver.style.display == 'block') {
             gameOver.style.display = 'none';
+            gameOver.style.opacity = 0;
+            this.goingToShowGameOver = false;
         }
     }
     this.showLevelLoader = function () {
@@ -790,7 +801,7 @@ function UIManager() {
 
             let checkPointButton = document.createElement('div');
             checkPointButton.setAttribute('class', 'startButton menuButton')
-            checkPointButton.innerHTML = 'Checkpoint';
+            checkPointButton.innerHTML = 'Retry';
             divWrapper.appendChild(checkPointButton);
 
             checkPointButton.addEventListener('click', () => {
@@ -800,7 +811,7 @@ function UIManager() {
 
             let restartButton = document.createElement('div');
             restartButton.setAttribute('class', 'startButton menuButton')
-            restartButton.innerHTML = 'Restart';
+            restartButton.innerHTML = 'Reset';
             divWrapper.appendChild(restartButton);
 
             restartButton.addEventListener('click', () => {

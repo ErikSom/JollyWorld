@@ -1208,10 +1208,6 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.created_at);
                 // using %2F because '/' does not work for private urls
 
-                if (level.title.indexOf('checkpoint') > 0) {
-                    console.log('***************', level);
-                }
-
                 if (level.thumb_small_md5) itemBarClone.querySelector('#thumbImage').src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
 
                 let saveButton = itemBarClone.querySelector('.headerButton.save');

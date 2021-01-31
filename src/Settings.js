@@ -13,6 +13,7 @@ export var Settings = {
     allowMouseMovement:true,
     defaultCameraZoom:1.0,
     lineWidthCorrection:1.0,
+    gameOverDelay:1000,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
     PTM:30,

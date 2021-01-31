@@ -366,6 +366,8 @@ body .dg .cr.function {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
 }
 
 #gameOverScreen .gameOverText {

@@ -2020,7 +2020,7 @@ const _B2dEditor = function () {
 		if (game.gameState == game.GAMESTATE_EDITOR) {
 			if(this.editing){
 				this.doEditor();
-			} else{
+			} else if(!game.pause){
 				this.recordPlayerHistoryTime -= this.deltaTime;
 				if(this.editorSettingsObject.showPlayerHistory && game.character && (this.recordPlayerHistoryTime<0 || this.playerHistory.length == 0)){
 					const recordPerSecond = 4;
@@ -2052,7 +2052,7 @@ const _B2dEditor = function () {
 
 		//update objects
 		game.canvas.style.cursor = 'unset';
-		if (!this.editing) {
+		if (!this.editing && !game.pause) {
 			var key;
 			for (key in this.activePrefabs) {
 				if (this.activePrefabs.hasOwnProperty(key)) {
