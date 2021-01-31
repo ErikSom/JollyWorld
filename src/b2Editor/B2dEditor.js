@@ -3652,22 +3652,36 @@ const _B2dEditor = function () {
 				this.spaceCameraDrag = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
-					this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-					this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld, 0);
 
-					for(let i = 0; i<this.selectedTextures.length; i++){
-						const texture = this.selectedTextures[i];
-						if(texture.myBody){
-							if(!this.selectedPhysicsBodies.includes(texture.myBody)){
-								this.selectedPhysicsBodies.push(texture.myBody);
+
+					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <=3 && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<=3){
+						let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
+
+						if (highestObject) {
+							if ([this.object_BODY, this.object_TRIGGER].includes(highestObject.data.type)) {
+								this.selectedPhysicsBodies.push(highestObject.myBody);
+							}else{
+								this.selectedTextures.push(highestObject);
 							}
-							this.selectedTextures.splice(i, 1);
-							i--;
+						}
+					}else{
+
+						this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
+						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
+
+						for(let i = 0; i<this.selectedTextures.length; i++){
+							const texture = this.selectedTextures[i];
+							if(texture.myBody){
+								if(!this.selectedPhysicsBodies.includes(texture.myBody)){
+									this.selectedPhysicsBodies.push(texture.myBody);
+								}
+								this.selectedTextures.splice(i, 1);
+								i--;
+							}
 						}
 					}
 
 					this.applyToSelectedObjects(this.TRANSFORM_UPDATE);
-
 					this.filterSelectionForPrefabs();
 					this.updateSelection();
 				}
@@ -4165,7 +4179,7 @@ const _B2dEditor = function () {
 
 		return this.queryPhysicsBodies;
 	}
-	this.queryWorldForGraphics = function (lowerBound, upperBound, limitResult) {
+	this.queryWorldForGraphics = function (lowerBound, upperBound) {
 		const aabb = new b2AABB();
 		aabb.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
 		aabb.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
@@ -4188,7 +4202,6 @@ const _B2dEditor = function () {
 					((spriteRect.x + spriteRect.width) < selectionRect.x) ||
 					(spriteRect.x > (selectionRect.x + selectionRect.width)))) {
 				queryGraphics.push(sprite);
-				if (queryGraphics.length == limitResult && limitResult != 0) break;
 			}
 		}
 
@@ -5728,7 +5741,7 @@ const _B2dEditor = function () {
 		let i;
 		let body;
 		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
-		const selectedTextures = this.queryWorldForGraphics(lowerBound, upperBound, 1);
+		const selectedTextures = this.queryWorldForGraphics(lowerBound, upperBound);
 
 		if (selectedPhysicsBodies.length > 0) {
 
