@@ -1,4 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
+import * as Box2D from '../../../libs/Box2D'
 import {
     game
 } from "../../Game";
@@ -9,6 +10,27 @@ class Checkpoint extends PrefabManager.basePrefab {
     }
     init() {
         super.init();
+        this.base = this.lookupObject['base'];
+
+        if(this.prefabObject.settings.isFixed){
+            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+        }else{
+            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
+        }
+
+
+		const fixDef = new Box2D.b2FixtureDef;
+		fixDef.density = 0.001;
+
+        const shape = new Box2D.b2PolygonShape;
+        const plateauSize = 5.3;
+        shape.SetAsBox(plateauSize, plateauSize, new Box2D.b2Vec2(0, -plateauSize));
+        fixDef.shape = shape;
+        fixDef.isSensor = true;
+
+		this.hitCheck = this.base.CreateFixture(fixDef);
+
+
     }
     update() {
         super.update();
@@ -26,8 +48,15 @@ class Checkpoint extends PrefabManager.basePrefab {
     }
 }
 
+Checkpoint.settings = Object.assign({}, Checkpoint.settings, {
+    "isFixed": false,
+});
+Checkpoint.settingsOptions = Object.assign({}, Checkpoint.settingsOptions, {
+	"isFixed": false,
+});
+
 PrefabManager.prefabLibrary.Checkpoint = {
-    json: '{"objects":[[0,8.35833303181125,-5.103651116991235,0,"","",0,["#999999"],["#000"],[0],false,true,[[[{"x":-6.103477081189789,"y":0.46654276250101745},{"x":-5.225278940011403,"y":-0.4555652857362884},{"x":5.2252789400114,"y":-0.4775202392657478},{"x":6.103477081189789,"y":0.46654276250101745}]]],[1],0,[0],"",[1]],[1,252.39661246904768,-153.450884903853,0,"","",1,"CheckPoint0000",0,1.6816311090638565,0.20440876851649906,0,false,"#FFFFFF",1,1,1,0,0,0]]}',
+    json: '{"objects":[[0,-0.027,0.006,0,"checkpoint","base",0,["#999999"],["#000"],[0],false,true,[[[{"x":-6.103,"y":0.467},{"x":-5.225,"y":-0.456},{"x":5.225,"y":-0.478},{"x":6.103,"y":0.467}]]],[1],0,[0],"",[1],true,false,false,[0.5],[0.2]],[1,0.824,-0.171,0,"","",1,"CheckPoint0000",0,1.682,0.204,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
     class: Checkpoint,
     library: PrefabManager.LIBRARY_LEVEL
 }

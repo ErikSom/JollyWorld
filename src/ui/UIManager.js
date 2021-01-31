@@ -1028,7 +1028,12 @@ function UIManager() {
 
         winScreen.domElement.querySelector('#winScreen_time').innerText = time;
         winScreen.domElement.querySelector('#winScreen_title').innerText = game.currentLevelData.title;
-        winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = game.currentLevelData.author.username;
+
+        if(game.gameState == game.GAMESTATE_NORMALPLAY){
+            winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = game.currentLevelData.author.username;
+        }else {
+            winScreen.domElement.querySelector('#winScreen_creatorSpan').innerText = 'User';
+        }
 
         winScreen.domElement.style.left = '50%';
         winScreen.domElement.style.top = '50%';

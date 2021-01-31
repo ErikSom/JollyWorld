@@ -1,4 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
+import * as Box2D from '../../../libs/Box2D'
 import {
     game
 } from "../../Game";
@@ -9,6 +10,13 @@ class Finish extends PrefabManager.basePrefab {
     }
     init() {
         super.init();
+        this.base = this.lookupObject['base'];
+
+        if(this.prefabObject.settings.isFixed){
+            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+        }else{
+            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
+        }
     }
     update() {
         super.update();
@@ -30,8 +38,15 @@ class Finish extends PrefabManager.basePrefab {
     }
 }
 
+Finish.settings = Object.assign({}, Finish.settings, {
+    "isFixed": false,
+});
+Finish.settingsOptions = Object.assign({}, Finish.settingsOptions, {
+	"isFixed": false,
+});
+
 PrefabManager.prefabLibrary.Finish = {
-    json: '{"objects":[[0,8.094873589457737,-2.254995896543842,0,"","",0,["#999999"],["#000"],[0],false,true,[[[{"x":-6.103477081189789,"y":0.46654276250101745},{"x":-5.225278940011403,"y":-0.4555652857362884},{"x":5.2252789400114,"y":-0.4775202392657478},{"x":6.103477081189789,"y":0.46654276250101745}]]],[1],0,[0],"",[1]],[1,243.40620988967476,-68.04271954341813,0,"","",1,"Finish0000",0,0.6840524950933171,0.6117332825421953,0,false,"#FFFFFF",1,1,1,0,0,0]]}',
+    json: '{"objects":[[0,-0.009,0.007,0,"finish","base",0,["#999999"],["#000"],[0],false,true,[[[{"x":-6.103,"y":0.467},{"x":-5.225,"y":-0.456},{"x":5.225,"y":-0.478},{"x":6.103,"y":0.467}]]],[1],0,[0],"",[1],true,false,false,[0.5],[0.2]],[1,0.28,-0.197,0,"","",1,"Finish0000",0,0.684,0.612,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
     class: Finish,
     library: PrefabManager.LIBRARY_LEVEL
 }

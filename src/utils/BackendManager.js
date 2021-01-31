@@ -52,6 +52,7 @@ function BackendManager() {
     this.userData;
 
     this.init = function () {
+		if(this.isLoggedIn()) this.getUserData();
     }
 
     this.claimUsername = function (username) {
