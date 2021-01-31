@@ -1218,9 +1218,19 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
         }
     }
 
-    backendManager.getUserLevels().then((levels) => {
-        buildLevelList(levels);
-    })
+
+    if(!Settings.admin){
+        backendManager.getUserLevels().then((levels) => {
+            buildLevelList(levels);
+        })
+    }else{
+        backendManager.getPublishedLevels({
+            by: 'Featured',
+            range: 'Anytime'
+        }).then((levels) => {
+            buildLevelList(levels);
+        })
+    }
 
     return divWrapper;
 }

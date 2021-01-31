@@ -3852,21 +3852,25 @@ const _B2dEditor = function () {
 		// detect mouse on gui
 		let uiScroll = false;
 		guiToHaveMouseWheel.forEach( gui => {
+
 			if(gui && gui.domElement && gui.domElement.offsetParent !== null){
-				if(!gui.cachedBounds){
-					gui.cachedBounds = gui.domElement.getBoundingClientRect();
-				}
-				const itemList = e.path.find(el => el.classList && el.classList.contains('itemList'));
-				if(itemList){
-					itemList.scrollBy(e.deltaX, e.deltaY);
-					uiScroll = true;
-				}else if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown') && e.target.parentNode.classList.contains('open')){
-					e.target.parentNode.scrollBy(e.deltaX, e.deltaY);
-					uiScroll = true;
-				}else  if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
-					&& this.mouseDocumentPosPixel.y > gui.cachedBounds.y && this.mouseDocumentPosPixel.y < gui.cachedBounds.y+gui.cachedBounds.height ){
-					gui.domElement.scrollBy(e.deltaX, e.deltaY);
-					uiScroll = true;
+				const guiOpacity = window.getComputedStyle(gui.domElement).getPropertyValue("opacity");
+				if(guiOpacity > 0){
+					if(!gui.cachedBounds){
+						gui.cachedBounds = gui.domElement.getBoundingClientRect();
+					}
+					const itemList = e.path.find(el => el.classList && el.classList.contains('itemList'));
+					if(itemList){
+						itemList.scrollBy(e.deltaX, e.deltaY);
+						uiScroll = true;
+					}else if(e.target.parentNode && e.target.parentNode.classList.contains('imageDropDown') && e.target.parentNode.classList.contains('open')){
+						e.target.parentNode.scrollBy(e.deltaX, e.deltaY);
+						uiScroll = true;
+					}else  if(this.mouseDocumentPosPixel.x > gui.cachedBounds.x && this.mouseDocumentPosPixel.x < gui.cachedBounds.x+gui.cachedBounds.width 
+						&& this.mouseDocumentPosPixel.y > gui.cachedBounds.y && this.mouseDocumentPosPixel.y < gui.cachedBounds.y+gui.cachedBounds.height ){
+						gui.domElement.scrollBy(e.deltaX, e.deltaY);
+						uiScroll = true;
+					}
 				}
 			}
 		});

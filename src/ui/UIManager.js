@@ -1471,6 +1471,7 @@ function UIManager() {
             demoScroll(levelListDiv);
         }
         backendManager.getPublishedLevels(filter).then((levels) => {
+            console.log(levels);
             buildLevelList(levels);
         })
     }
