@@ -651,6 +651,14 @@ function Game() {
                 positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
                 positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
 
+                if(this.playerPrefabObject.class.character.hat){
+                    const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
+                    const position = hatBody.GetPosition();
+                    position.x += positionDiff.x / Settings.PTM;
+                    position.y += positionDiff.y / Settings.PTM;
+                    hatBody.SetPosition(position);
+                }
+
                 this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
                 this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
 

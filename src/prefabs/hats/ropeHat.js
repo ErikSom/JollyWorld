@@ -36,7 +36,7 @@ export class RopeHat extends Hat {
 	}
 	activate() {
 		if (this.ropeFired){
-			this.detach();
+			this.detachRope();
 			return;
 		}
 
@@ -58,7 +58,7 @@ export class RopeHat extends Hat {
 			this.ropeFired = false;
 		}
 	}
-	detach() {
+	detachRope() {
 		this.ropeFired = false;
 		this.releaseRope();
 		this.clearTilingRope();
@@ -67,7 +67,6 @@ export class RopeHat extends Hat {
 			this.anchorTexture.parent.removeChild(this.anchorTexture);
 		}
 		this.anchorTexture = null;
-		super.detach();
 	}
 	attachRope(point, body, precise) {
 		this.ropeActive = true;
