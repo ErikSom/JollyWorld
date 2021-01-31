@@ -63,11 +63,13 @@ export class RopeHat extends Hat {
 		this.releaseRope();
 		this.clearTilingRope();
 		this.ropePoints = [];
-		this.anchorTexture.parent.removeChild(this.anchorTexture);
+		if(this.anchorTexture){
+			this.anchorTexture.parent.removeChild(this.anchorTexture);
+		}
 		this.anchorTexture = null;
+		super.detach();
 	}
 	attachRope(point, body, precise) {
-		console.log("ATTACH ROPE!!");
 		this.ropeActive = true;
 
 		const bd = new Box2D.b2BodyDef();
@@ -165,7 +167,6 @@ export class RopeHat extends Hat {
 
 	releaseRope() {
 		if (this.ropeEnd) {
-			console.log("RELEASE ROPE");
 			this.head.GetWorld().DestroyBody(this.ropeEnd);
 			if(this.pulleyJoint) this.head.GetWorld().DestroyJoint(this.pulleyJoint);
 			if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
@@ -175,8 +176,6 @@ export class RopeHat extends Hat {
 		}
 	}
 	bendRope(point, body) {
-		console.log("BEND ROPE");
-
 		const diff = this.head.GetPosition().Clone().SelfSub(point);
 		let angle = Math.atan2(diff.y, diff.x);
 		if(this.bendSpeed > 0){
@@ -206,8 +205,6 @@ export class RopeHat extends Hat {
 
 	}
 	unBendRope() {
-		console.log("UNBEND ROPE");
-
 		const bendData = this.ropePoints.pop();
 		this.bendRopeLength -= bendData.bendLength;
 
