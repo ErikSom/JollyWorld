@@ -7505,7 +7505,7 @@ const _B2dEditor = function () {
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
 			revoluteJointDef.collideConnected = jointPlaceHolder.collideConnected;
-			revoluteJointDef.referenceAngle = 0.0;
+			revoluteJointDef.referenceAngle = bodyB.GetAngle()-bodyA.GetAngle();
 			revoluteJointDef.lowerAngle = jointPlaceHolder.lowerAngle * this.DEG2RAD;
 			revoluteJointDef.upperAngle = jointPlaceHolder.upperAngle * this.DEG2RAD;
 			revoluteJointDef.maxMotorTorque = jointPlaceHolder.maxMotorTorque;

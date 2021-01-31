@@ -197,9 +197,9 @@ function BackendManager() {
 
 			const userData = await this.getUserData();
 
-			const serverLevelData = userData.my_levels.find(level => level.id === details.id);
+			const serverLevelData = Settings.admin ? details : userData.my_levels.find(level => level.id === details.id);
 
-			if(!serverLevelData) return reject({error:'Level not found in userdata'});
+			if(!serverLevelData && !Settings.admin) return reject({error:'Level not found in userdata'});
 
 			const publishLevelId = serverLevelData.published_id || nanoid();
 
