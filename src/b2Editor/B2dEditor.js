@@ -2536,25 +2536,35 @@ const _B2dEditor = function () {
 						this.selectedPrefabs = oldSelectedPrefabs;
 					}
 					this.updateSelection();
-				}else if(clickInsideSelection && Date.now() < this.doubleClickTime){
+				}else if(clickInsideSelection){
 
-					if(this.selectedTextures.length + this.selectedPhysicsBodies.length === 1){
-						if(this.selectedTextures.length > 0){
-							// editing sprite
-							const targetSprite = this.selectedTextures[0];
-							if(targetSprite.data.type === this.object_GRAPHIC && !targetSprite.data.radius){
-								this.verticeEditingSprite = targetSprite;
-								this.selectTool(this.tool_VERTICEEDITING);
+					if(Date.now() < this.doubleClickTime){
+						if(this.selectedTextures.length + this.selectedPhysicsBodies.length === 1){
+							if(this.selectedTextures.length > 0){
+								// editing sprite
+								const targetSprite = this.selectedTextures[0];
+								if(targetSprite.data.type === this.object_GRAPHIC && !targetSprite.data.radius){
+									this.verticeEditingSprite = targetSprite;
+									this.selectTool(this.tool_VERTICEEDITING);
+								}
+							}else{
+								// editing body
+								const targetSprite = this.selectedPhysicsBodies[0].mySprite;
+								if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0]){
+									this.verticeEditingSprite = targetSprite;
+									this.selectTool(this.tool_VERTICEEDITING);
+								}
 							}
-						}else{
-							// editing body
-							const targetSprite = this.selectedPhysicsBodies[0].mySprite;
-							if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0]){
-								this.verticeEditingSprite = targetSprite;
-								this.selectTool(this.tool_VERTICEEDITING);
-							}
+							this.doubleClickTime = 0;
 						}
-						this.doubleClickTime = 0;
+					}else{
+						let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
+						if(!highestObject){
+							this.selectedPrefabs = {};
+							this.selectedTextures.length = 0;
+							this.selectedPhysicsBodies.length = 0;
+							this.updateSelection();
+						}
 					}
 
 				}
