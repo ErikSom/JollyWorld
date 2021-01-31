@@ -7,19 +7,9 @@ import {
 class Checkpoint extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
-    }
-    init() {
-        super.init();
         this.base = this.lookupObject['base'];
 
-        if(this.prefabObject.settings.isFixed){
-            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
-        }else{
-            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
-        }
-
-
-		const fixDef = new Box2D.b2FixtureDef;
+        const fixDef = new Box2D.b2FixtureDef;
 		fixDef.density = 0.001;
 
         const shape = new Box2D.b2PolygonShape;
@@ -29,20 +19,28 @@ class Checkpoint extends PrefabManager.basePrefab {
         fixDef.isSensor = true;
 
 		this.hitCheck = this.base.CreateFixture(fixDef);
+    }
+    init() {
+        super.init();
 
-
+        if(this.prefabObject.settings.isFixed){
+            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+        }else{
+            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
+        }
     }
     update() {
         super.update();
     }
     initContactListener() {
         super.initContactListener();
-        this.contactListener.PostSolve = function (contact, impulse) {
-            const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            let body = bodies[0].mainCharacter ? bodies[0] : bodies[1];
-            let checkpoint = bodies[0].mainCharacter ? bodies[1] : bodies[0];
-            if(body.mainCharacter){
-                game.checkpoint(checkpoint);
+        const self = this;
+        this.contactListener.BeginContact = function(contact){
+            if(contact.GetFixtureA() != self.hitCheck && contact.GetFixtureB() != self.hitCheck) return;
+
+            const otherBody = contact.GetFixtureA() == self.hitCheck ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
+            if(otherBody.mainCharacter){
+                game.checkpoint(self.base);
             }
         }
     }

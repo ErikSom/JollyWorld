@@ -224,6 +224,28 @@ const doSaveLevelData = async function (saveButton) {
         saveButton.innerText = 'SAVE';
     });
 }
+
+export const showConfetti = ()=>{
+    const jollyConfetti = ['#c5291c', '#66a03d'];
+    let getStagePosition = new PIXI.Point(window.innerWidth / 2, window.innerHeight * 0.75);
+    getStagePosition.x *= 1 / Settings.PTM;
+    getStagePosition.y *= 1 / Settings.PTM;
+
+    emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, jollyConfetti);
+
+    let getStagePosition1 = new PIXI.Point(window.innerWidth / 4, window.innerHeight / 2);
+    getStagePosition1.x *= 1 / Settings.PTM;
+    getStagePosition1.y *= 1 / Settings.PTM;
+
+    setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition1, 0, jollyConfetti), 200);
+
+    let getStagePosition2 = new PIXI.Point(window.innerWidth * 0.75, window.innerHeight / 2);
+    getStagePosition2.x *= 1 / Settings.PTM;
+    getStagePosition2.y *= 1 / Settings.PTM;
+
+    setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
+}
+
 const doPublishLevelData = function (publishButton) {
 
     if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
@@ -242,24 +264,7 @@ const doPublishLevelData = function (publishButton) {
                 publishButton.style.backgroundColor = '';
                 publishButton.innerText = 'PUBLISH';
 
-                const jollyConfetti = ['#c5291c', '#66a03d'];
-                let getStagePosition = new PIXI.Point(window.innerWidth / 2, window.innerHeight * 0.75);
-                getStagePosition.x *= 1 / Settings.PTM;
-                getStagePosition.y *= 1 / Settings.PTM;
-
-                emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, jollyConfetti);
-
-                let getStagePosition1 = new PIXI.Point(window.innerWidth / 4, window.innerHeight / 2);
-                getStagePosition1.x *= 1 / Settings.PTM;
-                getStagePosition1.y *= 1 / Settings.PTM;
-
-                setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition1, 0, jollyConfetti), 200);
-
-                let getStagePosition2 = new PIXI.Point(window.innerWidth * 0.75, window.innerHeight / 2);
-                getStagePosition2.x *= 1 / Settings.PTM;
-                getStagePosition2.y *= 1 / Settings.PTM;
-
-                setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
+                showConfetti();
 
                 showPublishSocialShareScreen(game.currentLevelData);
                 hidePanel(levelEditScreen);

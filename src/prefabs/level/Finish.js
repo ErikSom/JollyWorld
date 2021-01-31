@@ -7,35 +7,47 @@ import {
 class Finish extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
+        this.base = this.lookupObject['base'];
+
+        const fixDef = new Box2D.b2FixtureDef;
+		fixDef.density = 0.001;
+
+        const shape = new Box2D.b2PolygonShape;
+        const plateauSize = 5.3;
+        shape.SetAsBox(plateauSize, plateauSize, new Box2D.b2Vec2(0, -plateauSize));
+        fixDef.shape = shape;
+        fixDef.isSensor = true;
+
+		this.hitCheck = this.base.CreateFixture(fixDef);
     }
     init() {
         super.init();
-        this.base = this.lookupObject['base'];
 
         if(this.prefabObject.settings.isFixed){
             this.base.SetType(Box2D.b2BodyType.b2_staticBody);
         }else{
             this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
         }
+
     }
     update() {
         super.update();
     }
+
     initContactListener() {
         super.initContactListener();
-        var self = this;
-        this.contactListener.PostSolve = function (contact, impulse) {
-            if(game.levelWon) return;
-            var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-            var body;
-            for (var i = 0; i < bodies.length; i++) {
-                body = bodies[i];
-                if(body.mainCharacter){
-                     game.win();
-                }
+        const self = this;
+        this.contactListener.BeginContact = function(contact){
+            if(contact.GetFixtureA() != self.hitCheck && contact.GetFixtureB() != self.hitCheck) return;
+
+            const otherBody = contact.GetFixtureA() == self.hitCheck ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
+            if(otherBody.mainCharacter){
+                game.win();
             }
         }
     }
+
+
 }
 
 Finish.settings = Object.assign({}, Finish.settings, {

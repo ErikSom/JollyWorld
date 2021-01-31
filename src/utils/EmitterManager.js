@@ -193,6 +193,14 @@ export const getEmitter = function (type, pool = true) {
                 emitterData[type]
             );
             break;
+        case "confetti":
+            emitter = new PIXI.particles.Emitter(
+                game.editor.textures,
+                emitterData.confettiFrames,
+                emitterData['confetti']
+            );
+            emitter.particleConstructor = PIXI.particles.AnimatedParticle;
+            break;
         case "screenConfetti":
             emitter = new PIXI.particles.Emitter(
                 game.stage,

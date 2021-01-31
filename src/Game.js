@@ -771,6 +771,15 @@ function Game() {
     }
     this.checkpoint = function (object) {
         if(!this.checkPointData || this.checkPointData.object !== object){
+            const confettiPosition = object.GetPosition().Clone();
+            const confettiOffset = 3.0;
+            const offsetAngle = object.GetAngle() - Settings.pihalve;
+
+            confettiPosition.x += confettiOffset * Math.cos(offsetAngle);
+            confettiPosition.y += confettiOffset * Math.sin(offsetAngle);
+
+            emitterManager.playOnceEmitter("confetti", object, confettiPosition, 0, ['#27cdcb', '#333333']);
+
             this.checkPointData = {
                 x:object.GetPosition().x,
                 y:object.GetPosition().y,
@@ -790,6 +799,7 @@ function Game() {
             }else if(this.gameState == this.GAMESTATE_NORMALPLAY){;
                 ui.showWinScreen(s);
             }
+            this.editor.ui.showConfetti();
 
         }
     }
