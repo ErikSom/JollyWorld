@@ -771,6 +771,7 @@ body .dg .cr.function {
 .listPlayModeItem #thumbImage {
     width: 100%;
     height: 100%;
+    cursor: pointer;
 }
 
 .listPlayModeItem .levelNameDiv {
@@ -1200,6 +1201,7 @@ body .dg .cr.function {
     position: fixed;
     width: 100%;
     z-index: 100000;
+    pointer-events: none;
 }
 .ios-pwa-container.ipad{
     align-items: flex-start;
@@ -1236,6 +1238,7 @@ body .dg .cr.function {
     color: #dedede;
     cursor:pointer;
     user-select: none;
+    pointer-events: all;
 }
 
 .ios-pwa:after {

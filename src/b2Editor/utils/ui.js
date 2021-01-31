@@ -1160,7 +1160,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
 
     span = document.createElement('span');
     span.setAttribute('class', 'itemDescription');
-    span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
+    span.innerHTML = '';
     levelNameDiv.appendChild(span);
 
     var levelDateDiv = document.createElement('div');

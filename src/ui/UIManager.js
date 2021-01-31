@@ -17,6 +17,7 @@ import {
     hashName
 } from '../AssetList';
 import * as MobileController from '../utils/MobileController';
+import * as SaveManager from "../utils/SaveManager"
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -66,9 +67,9 @@ function UIManager() {
             mainMenu.appendChild(button);
 
             button.addEventListener("click", () => {
+                MobileController.openFullscreen();
                 self.hideMainMenu();
                 this.showLevelLoader();
-                MobileController.openFullscreen();
             });
 
             button = document.createElement('div');
@@ -1424,13 +1425,15 @@ function UIManager() {
                 const itemPlays = itemBarClone.querySelector('.itemPlays')
                 itemPlays.innerText = format.formatNumber(level.playcount);
 
-                itemBarClone.querySelector('#thumbImage').src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
+                const thumbImage = itemBarClone.querySelector('#thumbImage');
+                thumbImage.src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
 
                 itemBarClone.querySelector('.levelShareDiv').addEventListener('click', () => {
                     this.showSocialShare(level);
                 });
 
-                itemBarClone.querySelector('.menuButton').addEventListener('click', () => {
+
+                const playLevelFunction = () => {
                     if (game.gameState != game.GAMESTATE_MENU) return;
                     game.gameState = game.GAMESTATE_LOADINGDATA;
                     itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
@@ -1443,21 +1446,13 @@ function UIManager() {
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
                     });
-                });
+                }
+
+                itemBarClone.querySelector('.menuButton').addEventListener('click', playLevelFunction);
+                thumbImage.addEventListener('click', playLevelFunction);
             });
 
-            setTimeout(()=>{
-                levelListDiv.scrollTo({
-                    left: 640,
-                    behavior: 'smooth'
-                });
-                setTimeout(() => {
-                    levelListDiv.scrollTo({
-                        left: 0,
-                        behavior: 'smooth'
-                    });
-                }, 500);
-                }, 500);
+            demoScroll(levelListDiv);
         }
         backendManager.getPublishedLevels(filter).then((levels) => {
             buildLevelList(levels);
@@ -1475,6 +1470,32 @@ function UIManager() {
     this.FILTER_RANGE_ANYTIME = "Anytime";
 }
 export var ui = new UIManager();
+
+
+const demoScroll = element=>{
+    let demoScrolls = SaveManager.getLocalUserdata().demoScrolls;
+    if(demoScrolls>=3) return;
+
+    setTimeout(()=>{
+        try{
+            element.scrollTo({
+                left: 640,
+                behavior: 'smooth'
+            });
+            setTimeout(() => {
+                try{
+                    element.scrollTo({
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                    let userData = SaveManager.getLocalUserdata();
+                    userData.demoScrolls++;
+                    SaveManager.updateLocaluserData(userData);
+                }catch(e){}
+            }, 500);
+        }catch(e){}
+    }, 1000);
+}
 
 
 const shouldShowVoteButton = (up, down) => {

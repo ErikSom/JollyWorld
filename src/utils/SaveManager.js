@@ -16,6 +16,7 @@ export const getLocalUserdata = function(){
     if(userData) return userData;
     const defaultData = {
         applePWAModals:0,
+        demoScrolls:0,
     }
     saveData(SAVEKEYS.userData, defaultData);
     return defaultData;
