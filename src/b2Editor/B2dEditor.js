@@ -1327,6 +1327,12 @@ const _B2dEditor = function () {
 			this.humanUpdate = true;
 			this.targetValue = value
 		});
+		if (dataJoint.jointType == this.jointObject_TYPE_PIN){
+			_folder.add(ui.editorGUI.editData, "autoReferenceAngle").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value
+			});
+		}
 
 		if (dataJoint.jointType == this.jointObject_TYPE_PIN || dataJoint.jointType == this.jointObject_TYPE_SLIDE || dataJoint.jointType == this.jointObject_TYPE_WHEEL) {
 
@@ -2272,6 +2278,7 @@ const _B2dEditor = function () {
 		this.upperLimit = 0.0;
 		this.lowerLimit = 0.0;
 		this.lockselection = false;
+		this.autoReferenceAngle = true;
 	}
 	this.triggerObject = function () {
 		this.type = self.object_TRIGGER;
@@ -4793,6 +4800,13 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							if (this.selectedTextures[j].data.type == this.object_JOINT) {
 								this.selectedTextures[j].data.collideConnected = controller.targetValue;
+							}
+						}
+					} else if (controller.property == "autoReferenceAngle") {
+						//joint
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+								this.selectedTextures[j].data.autoReferenceAngle = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "enableMotor") {
@@ -7504,7 +7518,7 @@ const _B2dEditor = function () {
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
 			revoluteJointDef.collideConnected = jointPlaceHolder.collideConnected;
-			revoluteJointDef.referenceAngle = bodyB.GetAngle()-bodyA.GetAngle();
+			revoluteJointDef.referenceAngle = jointPlaceHolder.autoReferenceAngle ? bodyB.GetAngle()-bodyA.GetAngle() : 0;
 			revoluteJointDef.lowerAngle = jointPlaceHolder.lowerAngle * this.DEG2RAD;
 			revoluteJointDef.upperAngle = jointPlaceHolder.upperAngle * this.DEG2RAD;
 			revoluteJointDef.maxMotorTorque = jointPlaceHolder.maxMotorTorque;
@@ -8266,6 +8280,7 @@ const _B2dEditor = function () {
 			arr[18] = obj.frequencyHz;
 			arr[19] = obj.upperLimit;
 			arr[20] = obj.lowerLimit;
+			arr[21] = obj.autoReferenceAngle;
 		} else if (obj.type == this.object_PREFAB) {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
@@ -8407,6 +8422,7 @@ const _B2dEditor = function () {
 			obj.frequencyHz = arr[18];
 			obj.upperLimit = arr[19] !== undefined ? arr[19] : obj.upperLimit;
 			obj.lowerLimit = arr[20] !== undefined ? arr[20] : obj.lowerLimit;
+			obj.autoReferenceAngle = arr[21] !== undefined ? arr[21] : false;
 		} else if (arr[0] == this.object_PREFAB) {
 			obj = new this.prefabObject();
 			obj.settings = arr[4];

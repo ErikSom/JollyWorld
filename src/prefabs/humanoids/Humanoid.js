@@ -15,6 +15,8 @@ export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_OPEN = 3100;
     static TIME_EXPRESSION_PAIN = 500;
     static TIME_EXPRESSION_SPECIAL = 1000;
+    static TIME_EXPRESSION_SPECIAL_MIN = 3000;
+    static TIME_EXPRESSION_SPECIAL_MAX = 15000;
     static EXPRESSION_IDLE = 'Idle';
     static EXPRESSION_SPECIAL = 'Special';
     static EXPRESSION_PAIN = 'Pain';
@@ -46,6 +48,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.expression = Humanoid.EXPRESSION_IDLE;
         this.expressionTimer = 0;
         this.targetExpressionTimer = 0;
+        this.specialExpressionTimer = 0;
+        this.targetSpecialExpressionTimer = Humanoid.TIME_EXPRESSION_SPECIAL_MIN + (Humanoid.TIME_EXPRESSION_SPECIAL_MAX-Humanoid.TIME_EXPRESSION_SPECIAL_MIN) * Math.random();
 
         this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].noDamage = true;
@@ -76,7 +80,6 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
 
     setExpression(expression){
-        console.log(expression)
         if(this.expression === expression) return;
 
         const textureName = this.mouth.texture.textureCacheIds[0];
@@ -91,6 +94,8 @@ export class Humanoid extends PrefabManager.basePrefab {
             this.targetExpressionTimer = Humanoid.TIME_EXPRESSION_PAIN;
         }else if(expression === Humanoid.EXPRESSION_SPECIAL){
             this.targetExpressionTimer = Humanoid.TIME_EXPRESSION_PAIN;
+            this.targetSpecialExpressionTimer = Humanoid.TIME_EXPRESSION_SPECIAL_MIN + (Humanoid.TIME_EXPRESSION_SPECIAL_MAX-Humanoid.TIME_EXPRESSION_SPECIAL_MIN) * Math.random();
+            this.specialExpressionTimer = 0;
         }
         this.expression = expression;
 
@@ -138,7 +143,9 @@ export class Humanoid extends PrefabManager.basePrefab {
             this.setExpression(Humanoid.EXPRESSION_IDLE);
         }
 
-
+        if (PrefabManager.timerReady(this.specialExpressionTimer, this.targetSpecialExpressionTimer, true) && this.alive) {
+            this.setExpression(Humanoid.EXPRESSION_SPECIAL);
+        }
 
         this.processJointDamage();
 
@@ -148,6 +155,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         }
         this.eyesTimer += game.editor.deltaTime;
         this.expressionTimer += game.editor.deltaTime;
+        this.specialExpressionTimer += game.editor.deltaTime;
 
         if (this.bleedTimer >= 0) {
             if (this.bleedTimer == 0) {
