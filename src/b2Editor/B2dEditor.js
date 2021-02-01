@@ -7151,13 +7151,12 @@ const _B2dEditor = function () {
 		return bodies;
 	}
 	this.groupGraphicObjects = function (graphicObjects) {
-		var graphicGroup = new this.graphicGroup();
-		var sortArray = [];
+		const graphicGroup = new this.graphicGroup();
 
 		//sort by childIndex
-		var graphic;
-		var i;
-		var centerPoint = {
+		let graphic;
+		let i;
+		const centerPoint = {
 			x: 0,
 			y: 0
 		}
@@ -7184,9 +7183,9 @@ const _B2dEditor = function () {
 			this.deleteObjects([graphicObjects[i]]);
 		}
 
-		var graphic = this.buildGraphicGroupFromObj(graphicGroup);
+		graphic = this.buildGraphicGroupFromObj(graphicGroup);
 
-		var container = graphic.parent;
+		const container = graphic.parent;
 		container.removeChild(graphic);
 		container.addChildAt(graphic, graphicObjects[0].data.ID);
 
@@ -7195,7 +7194,7 @@ const _B2dEditor = function () {
 
 	}
 	this.ungroupGraphicObjects = function (graphicGroup) {
-		var graphicObjects = [];
+		const graphicObjects = [];
 
 		this.updateObject(graphicGroup, graphicGroup.data);
 
@@ -7236,16 +7235,16 @@ const _B2dEditor = function () {
 	}
 	this.createAnimationGroup = function(){
 
-		var graphicGroup = new this.animationGroup();
+		const graphicGroup = new this.animationGroup();
 
 		//sort by childIndex
-		var graphic;
-		var i;
-		var centerPoint = {
+		let graphic;
+		let i;
+		const centerPoint = {
 			x: 0,
 			y: 0
 		}
-		
+
 		const graphicObjects = [];
 		for(i = 0; i<this.selectedTextures.length; i++){
 			graphicObjects.push(this.selectedTextures[i]);
@@ -7274,9 +7273,9 @@ const _B2dEditor = function () {
 			this.deleteObjects([graphicObjects[i]]);
 		}
 
-		var graphic = this.buildGraphicGroupFromObj(graphicGroup);
+		graphic = this.buildGraphicGroupFromObj(graphicGroup);
 
-		var container = graphic.parent;
+		const container = graphic.parent;
 		container.removeChild(graphic);
 		container.addChildAt(graphic, graphicObjects[0].data.ID);
 
@@ -7591,13 +7590,15 @@ const _B2dEditor = function () {
 		});
 
 		obj.class = new PrefabManager.prefabLibrary[obj.prefabName].class(obj);
-
-		if(obj.settings) Object.keys(obj.settings).forEach(key=>obj.class.set(key, obj.settings[key]));
+		obj.class.postConstructor();
 
 		obj.class.subPrefabClasses = this.createdSubPrefabClasses;
-		this.createdSubPrefabClasses.map((prefab) => {
-			prefab.mainPrefabClass = obj.class
+		this.createdSubPrefabClasses.forEach(subClass => {
+			subClass.postConstructor();
+			subClass.mainPrefabClass = obj.class
 		});
+
+		if(obj.settings) Object.keys(obj.settings).forEach(key=>obj.class.set(key, obj.settings[key]));
 
 		return prefabLookupObject;
 	}

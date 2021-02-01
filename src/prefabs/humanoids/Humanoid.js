@@ -21,6 +21,16 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.life = 300;
         this.flipped = false;
     }
+    postConstructor(){
+        console.log("POST CONSTRUCTOR!!!", this.mouth)
+        if(!this.mouth){
+            this.mouth = new PIXI.Sprite(PIXI.Texture.fromFrame('Mouth_Idle0000'))
+            this.mouth.x = 41; // magic numbers
+            this.mouth.y = 59;
+            this.lookupObject[Humanoid.BODY_PARTS.HEAD].myTexture.addChild(this.mouth);
+            console.log("CREATED MOUTHHH");
+        }
+    }
 
     init() {
         super.init();
@@ -69,6 +79,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             body.myTexture.data.textureName = targetTexture;
             body.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetTexture);
         }
+        this.mouth.texture = PIXI.Texture.fromFrame(`Mouth_Idle${targetFrame}`);
     }
     flip(){
         this.flipped = !this.flipped;

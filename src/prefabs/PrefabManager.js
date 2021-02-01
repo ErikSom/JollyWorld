@@ -12,6 +12,8 @@ export class basePrefab {
         this.lookupObject = game.editor.lookupGroups[this.prefabObject.prefabName + "_" + this.prefabObject.instanceID];
         this.contactListener;
     }
+    postConstructor(){
+    }
     init() {
         this.lookupObject = game.editor.lookupGroups[this.prefabObject.prefabName + "_" + this.prefabObject.instanceID];
         this.initContactListener();

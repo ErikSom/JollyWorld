@@ -1,12 +1,15 @@
-import {Humanoid} from '../humanoids/Humanoid'
+import * as PrefabManager from '../PrefabManager';
 import { startAddingJoint, startPositioningLimb } from '../vehicles/NoVehicle';
+import {Humanoid} from '../humanoids/Humanoid'
 import {
     game
 } from "../../Game";
 
-export class NPC extends Humanoid {
+export class NPC extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
+		this.flipped = false;
+		this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
 		if(this.prefabObject.settings){
 			this.flip(this.prefabObject.settings.isFlipped);
 			if(this.prefabObject.settings?.limbs){
@@ -35,7 +38,7 @@ export class NPC extends Humanoid {
         x += this.prefabObject.x / game.editor.PTM;
         y += this.prefabObject.y / game.editor.PTM;
 
-        super.positionLimb(limb, x, y);
+        this.character.positionLimb(limb, x, y);
     }
 	set(property, value) {
 		super.set(property, value);
@@ -44,7 +47,7 @@ export class NPC extends Humanoid {
                 this.flip(value);
 				break;
 			case 'skin':
-				this.setSkin(value-1);
+				this.character.setSkin(value-1);
 				break;
 			case "selectJointTarget":
 				this.prefabObject.class.jointTarget = value;
@@ -102,12 +105,13 @@ export class NPC extends Humanoid {
 			if(this.initialized && this.prefabObject.settings?.limbs){
 				this.flipLimbs();
 			}
-			super.flip();
+			this.character.flip();
 			if(this.initialized && this.prefabObject.settings?.limbs){
 				for(let key in this.prefabObject.settings.limbs){
 					this.positionLimb(key);
 				}
 			}
+			this.flipped = flipped;
 		}
 	}
 }
@@ -128,7 +132,7 @@ NPC.settingsOptions = Object.assign({}, NPC.settingsOptions, {
     "isFlipped": false,
     "skin": {
         min: 1,
-        max: 4,
+        max: 7,
         step: 1
     },
     "life": {
