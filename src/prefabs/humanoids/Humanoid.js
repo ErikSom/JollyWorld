@@ -22,13 +22,11 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.flipped = false;
     }
     postConstructor(){
-        console.log("POST CONSTRUCTOR!!!", this.mouth)
         if(!this.mouth){
             this.mouth = new PIXI.Sprite(PIXI.Texture.fromFrame('Mouth_Idle0000'))
             this.mouth.x = 41; // magic numbers
             this.mouth.y = 59;
             this.lookupObject[Humanoid.BODY_PARTS.HEAD].myTexture.addChild(this.mouth);
-            console.log("CREATED MOUTHHH");
         }
     }
 
