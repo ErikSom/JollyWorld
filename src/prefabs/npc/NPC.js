@@ -22,7 +22,7 @@ export class NPC extends PrefabManager.basePrefab {
 	}
 	init(){
 		super.init();
-        this.life = this.prefabObject.settings.life;
+        this.character.life = this.prefabObject.settings.life;
 	}
 	positionLimb(limb){
         let x = this.prefabObject.settings.limbs[limb][0];

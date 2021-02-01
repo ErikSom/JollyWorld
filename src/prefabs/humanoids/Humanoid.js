@@ -13,6 +13,11 @@ import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils
 export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
     static TIME_EYES_OPEN = 3100;
+    static TIME_EXPRESSION_PAIN = 500;
+    static TIME_EXPRESSION_SPECIAL = 1000;
+    static EXPRESSION_IDLE = 'Idle';
+    static EXPRESSION_SPECIAL = 'Special';
+    static EXPRESSION_PAIN = 'Pain';
 
     static JSON_ADULT = '{"objects":[[0,-0.101,1.398,-0.069,".character#Humanoid , .flesh","thigh_left",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.132,3.393,-0.087,".character#Humanoid , .flesh","leg_left",1,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,-3.298,42.261,-0.069,"","",2,"Normal_Thigh0000",0,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,0.281,4.556,0.14,".character#Humanoid , .flesh","feet_left",3,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,3.75,101.822,-0.087,"","",4,"Normal_Leg0000",1,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-0.182,73.189,-0.558,".character#Humanoid","leg_left_joint",5,1,0,0,false,false,1,10,true,0,-149,0,0,0,0],[1,9.149,135.34,0.14,"","",6,"Normal_Feet0000",3,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,4.087,129.062,-0.558,".character#Humanoid","feet_left_joint",7,3,1,0,false,false,1,10,true,0,0,0,0,0,0],[0,-0.025,-1.823,-0.087,".character#Humanoid , .flesh","shoulder_left",8,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.267,-0.321,-0.314,".character#Humanoid , .flesh","arm_left",9,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,-0.175,-54.652,-0.087,"","",10,"Normal_Shoulder0000",8,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,8.261,-9.47,-0.314,"","",11,"Normal_Arm0000",9,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,2.477,-31.084,-0.279,".character#Humanoid","arm_left_joint",12,9,8,0,false,false,1,10,true,152,0,0,0,0,0],[0,0.402,0.541,-0.157,".character#Humanoid , .flesh","hand_left",13,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false,false,[0.5],[0.2]],[1,10.274,16.109,-0.157,"","",14,"Normal_Hand0000",13,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,14.99,8.191,1.344,".character#Humanoid","hand_left_joint",15,13,9,0,false,false,1,10,true,60,-60,0,0,0,0],[0,-0.372,0.236,-0.279,".character#Humanoid , .flesh","belly",16,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[14.181],"",[1],true,false,false,[0.5],[0.2]],[0,-0.255,-4.116,-0.279,".character#Humanoid , .flesh","head",17,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[30.393],"",[1],true,false,false,[0.5],[0.2]],[0,-0.282,-1.561,0.07,".character#Humanoid , .flesh","body",18,["#999999"],["#000"],[0],false,true,[[{"x":-0.537,"y":1.202},{"x":-0.432,"y":-1.37},{"x":-0.15,"y":-1.828},{"x":0.132,"y":-1.793},{"x":0.555,"y":-1.123},{"x":0.555,"y":1.308},{"x":0.097,"y":1.801},{"x":-0.22,"y":1.801}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,-10.005,-1.6,-0.079,"","",19,"Normal_Belly0000",16,8.747,1.158,-0.2,false,"#FFFFFF",1,1,1,0,0,0,true],[2,-3.345,14.084,-0.279,".character#Humanoid","thigh_left_joint",20,0,16,0,false,false,1,10,true,142,-16,0,0,0,0],[1,-7.394,-50.875,0.07,"","",21,"Normal_Core0000",18,4.169,1.384,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-2.531,-77.904,-0.279,".character#Humanoid","shoulder_left_joint",22,8,18,0,false,false,1,10,true,180,-19,0,0,0,0],[1,-6.184,-126.087,-0.279,"","",23,"Normal_Head_Idle0000",17,2.99,0.785,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-3.244,-95.724,-0.279,".character#Humanoid","head_joint",24,17,18,0,false,false,1,10,true,58,-64,0,0,0,0],[0,-0.298,1.448,-0.017,".character#Humanoid , .flesh","thigh_right",25,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,-0.196,3.414,-0.069,".character#Humanoid , .flesh","leg_right",26,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,-0.099,-4.26,-0.279,".character#Humanoid","eye_left",27,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false,false,[0.5],[0.2]],[1,-9.221,43.728,-0.017,"","",28,"Normal_Thigh0000",25,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-6.066,102.425,-0.069,"","",29,"Normal_Leg0000",26,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-2.956,-128.368,-0.279,"","",30,"Normal_Eye0000",27,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,-7.92,75.367,-0.279,".character#Humanoid","leg_right_joint",31,26,25,0,false,false,1,10,true,0,-149,0,0,0,0],[0,0.046,4.564,0,".character#Humanoid , .flesh","feet_right",32,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[1,1.901,135.511,0,"","",33,"Normal_Feet0000",32,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-4.429,129.892,-0.453,".character#Humanoid","feet_right_joint",34,32,26,0,false,false,1,10,true,0,0,0,0,0,0],[0,-0.143,-1.648,-0.104,".character#Humanoid , .flesh","shoulder_right",35,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.097,-0.143,-0.192,".character#Humanoid , .flesh","arm_right",36,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],7,[null],"",[1],true,false,false,[0.5],[0.2]],[0,0.562,-4.44,-0.279,".character#Humanoid","eye_right",37,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.534],"",[1],true,false,false,[0.5],[0.2]],[1,16.878,-133.748,-0.279,"","",38,"Normal_Eye0000",37,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[2,16.934,-132.725,-0.279,".character#Humanoid","eye_right_joint",39,37,17,0,false,false,1,10,true,0,0,0,0,0,0],[1,-3.729,-49.407,-0.104,"","",40,"Normal_Shoulder0000",35,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,3.143,-4.084,-0.192,"","",41,"Normal_Arm0000",36,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,-1.292,-25.07,-0.279,".character#Humanoid","arm_right_joint",42,36,35,0,false,false,1,10,true,152,0,0,0,0,0],[0,0.105,0.751,-0.226,".character#Humanoid , .flesh","hand_right",43,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],7,[7.513],"",[1],true,false,false,[0.5],[0.2]],[1,1.348,22.526,-0.226,"","",44,"Normal_Hand0000",43,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[2,5.692,15.019,1.519,".character#Humanoid","hand_right_joint",45,43,36,0,false,false,1,10,true,60,-60,0,0,0,0],[2,-6.55,-71.951,-0.279,".character#Humanoid","shoulder_right_joint",46,35,18,0,false,false,1,10,true,180,-19,0,0,0,0],[2,-3.232,-127.974,-0.279,".character#Humanoid","eye_left_joint",47,27,17,0,false,false,1,10,true,0,0,0,0,0,0],[2,-10.891,1.001,-0.279,".character#Humanoid","belly_joint",48,18,16,0,false,false,1,10,true,10,-10,0,0,0,0],[2,-9.878,15.503,-0.279,".character#Humanoid","thigh_right_joint",49,25,16,0,false,false,1,10,true,142,-16,0,0,0,0]]}';
 
@@ -37,6 +42,10 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.collisionUpdates = [];
         this.alive = true;
         this.bleedTimer = -1;
+
+        this.expression = Humanoid.EXPRESSION_IDLE;
+        this.expressionTimer = 0;
+        this.targetExpressionTimer = 0;
 
         this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].noDamage = true;
@@ -65,6 +74,28 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
         }
     }
+
+    setExpression(expression){
+        console.log(expression)
+        if(this.expression === expression) return;
+
+        const textureName = this.mouth.texture.textureCacheIds[0];
+        const textureSkin = textureName.substr(textureName.length - 4);
+        this.mouth.texture = PIXI.Texture.fromFrame(`Mouth_${expression}${textureSkin}`);
+
+        this.expressionTimer = 0;
+
+        if(expression === Humanoid.EXPRESSION_PAIN){
+            // close eyes as well
+            this.eyesTimer = Humanoid.TIME_EYES_CLOSE-1;
+            this.targetExpressionTimer = Humanoid.TIME_EXPRESSION_PAIN;
+        }else if(expression === Humanoid.EXPRESSION_SPECIAL){
+            this.targetExpressionTimer = Humanoid.TIME_EXPRESSION_PAIN;
+        }
+        this.expression = expression;
+
+    }
+
     setSkin(skin){
         const targetFrame = String(skin).padStart(4, '0');
         for (let i = 0; i < this.lookupObject._bodies.length; i++) {
@@ -103,6 +134,12 @@ export class Humanoid extends PrefabManager.basePrefab {
             this.eyesTimer = -game.editor.deltaTime;
         }
 
+        if (PrefabManager.timerReady(this.expressionTimer, this.targetExpressionTimer, true) && this.alive) {
+            this.setExpression(Humanoid.EXPRESSION_IDLE);
+        }
+
+
+
         this.processJointDamage();
 
         if (this.collisionUpdates.length > 0) {
@@ -110,6 +147,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             this.collisionUpdates.shift();
         }
         this.eyesTimer += game.editor.deltaTime;
+        this.expressionTimer += game.editor.deltaTime;
 
         if (this.bleedTimer >= 0) {
             if (this.bleedTimer == 0) {
@@ -150,6 +188,8 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     dealDamage(damage){
         this.life -= damage;
+
+        this.setExpression(Humanoid.EXPRESSION_PAIN);
 
         if(damage >= 10000){
             for(let part in Humanoid.BODY_PARTS){
