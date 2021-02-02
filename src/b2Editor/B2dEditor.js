@@ -34,6 +34,32 @@ import { copyStringToClipboard } from "./utils/copyToClipboard";
 import { removeGraphicFromCells } from '../utils/PIXICuller';
 import { hashName } from "../AssetList";
 
+
+import {MaxRectsPacker} from 'maxrects-packer';
+
+// const options = {
+//     smart: true,
+//     pot: true,
+//     square: false,
+//     allowRotation: true,
+//     tag: false,
+//     border: 5
+// }; // Set packing options
+// let packer = new MaxRectsPacker(1024, 1024, 2, options); // width, height, padding, options
+
+// let input = [ // any object with width & height is OK since v2.1.0
+//     {width: 600, height: 20, name: "tree", foo: "bar"},
+//     {width: 600, height: 20, name: "flower"},
+//     {width: 2000, height: 2000, name: "oversized background"},
+//     {width: 1000, height: 1000, name: "background", color: 0x000000ff},
+//     {width: 1000, height: 1000, name: "overlay", allowRotation: true}
+// ];
+
+// packer.addArray(input); // Start packing with input array
+// packer.bins.forEach(bin => {
+//     console.log(bin.rects);
+// });
+
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
@@ -50,6 +76,7 @@ var b2Vec2 = Box2D.b2Vec2,
 	b2CircleShape = Box2D.b2CircleShape,
 	b2DebugDraw = Box2D.b2DebugDraw,
 	b2MouseJointDef = Box2D.b2MouseJointDef;
+
 
 const _B2dEditor = function () {
 
