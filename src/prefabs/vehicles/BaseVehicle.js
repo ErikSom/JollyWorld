@@ -18,6 +18,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.isVehicle = true;
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
         this.vehicleName = '';
+        this.inverseEngines = false;
     }
 
     init() {
@@ -66,6 +67,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 }
             }
         }
+        console.log(this.engines.length, 'FOUND ENGINES');
         if (this.lookupObject.frame) this.lookupObject.frame.SetAngularDamping(0.8);
         this.stopAccelerateWheels();
     }
@@ -133,6 +135,8 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     accelerate(dir) {
         if(this.flipped) dir*= -1;
         if((dir < 0 && !this.flipped) || (dir>0 && this.flipped)) dir *= .6; // only 60% backwards speed
+
+        if(this.inverseEngines) dir *= -1;
 
         this.accelerateWheels(dir);
         let i;

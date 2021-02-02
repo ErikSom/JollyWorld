@@ -34,6 +34,7 @@ export class Character extends Humanoid {
         if(this.hat) this.hat.detach();
         this.hat = new hatClass(this, this.lookupObject.head, this.lookupObject.body);
         if(this.flipped) this.hat.flip();
+        this.setExpression(Humanoid.EXPRESSION_SPECIAL);
     }
     update() {
         super.update();

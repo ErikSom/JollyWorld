@@ -3660,8 +3660,8 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 
-
-					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <=3 && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<=3){
+					const minSelectPixi = 3/Settings.PTM;
+					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
 						let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 
 						if (highestObject) {
@@ -3672,7 +3672,6 @@ const _B2dEditor = function () {
 							}
 						}
 					}else{
-
 						this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
 
@@ -4767,7 +4766,6 @@ const _B2dEditor = function () {
 							x: controller.targetValue,
 							y: 0
 						});
-						
 					} else if (controller.property == "y") {
 						//bodies & sprites & prefabs
 
