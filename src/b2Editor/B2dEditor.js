@@ -38,6 +38,7 @@ const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
 let TMP_DECAL = null;
+const TMP_MATRIX = new PIXI.Matrix();
 
 var b2Vec2 = Box2D.b2Vec2,
 	b2AABB = Box2D.b2AABB,
@@ -7661,47 +7662,99 @@ const _B2dEditor = function () {
 		texture.myBody = null;
 	}
 
+	this.getDecalTextureById = function (id = '') {
+		if (!this._cacheMap)
+			return null;
+
+		return this._cacheMap.get(id);
+	}
+
+	this.setDecalTextureById = function (id = '', decalTextureCache) {
+		if (!this._cacheMap) {
+			this._cacheMap = new Map();
+		}
+
+		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.maskRTBase));
+		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.decalRTBase));
+		
+		this._cacheMap.set(id, decalTextureCache);
+
+		return decalTextureCache;
+	}
+
 	this.prepareBodyForDecals = function (body) {
 		if (body.myDecalSprite)
 			return;
 //		return;
 
+		/**
+		 * @type {PIXI.Texture}
+		 */
 		const tex = PIXI.Texture.fromFrame(body.myTexture.data.textureName);
+		const base = tex.baseTexture;
+		
+		const key = body.myTexture.data.prefabInstanceName + '_' + base.uid;
+
+		/**
+		 * @type {{maskRTBase: PIXI.RenderTexture, decalRTBase: PIXI.RenderTexture, usage: number }}
+		 */
+		let cache = this.getDecalTextureById(key);
+
+		if (!cache) {
+			cache = {
+				maskRTBase: PIXI.RenderTexture.create(base.width, base.height),
+				decalRTBase: PIXI.RenderTexture.create(base.width, base.height),
+				usage: 0,
+			}
+
+			
+			// trash 
+			const graphics = new PIXI.Graphics();
+				graphics.beginFill(0x000000);
+				graphics.drawRect(0, 0, base.width, base.height);
+			
+			game.app.renderer.render(graphics, cache.maskRTBase, false);
+
+			this.setDecalTextureById(key, cache);
+		}
+
+		cache.usage ++;
+
+		const maskRT = new PIXI.RenderTexture(cache.maskRTBase.baseTexture, tex.frame.clone());
+		maskRT.rotate = tex.rotate;
+
+		const decalRT = new PIXI.RenderTexture(cache.decalRTBase.baseTexture, tex.frame.clone());
+		decalRT.rotate = tex.rotate;
+
+
 		// prepare mask
 		const template = TMP_DECAL || (TMP_DECAL = new PIXI.heaven.Sprite(tex));
-		
+
+		// reset cache
 		template.texture = tex;
 		template.pivot.set(0);
 		template.scale.set(1);
-		template.position.set(0);
-	
-		/*
-		template.tint = 0xffffff;
-		template.color.dark[0] = template.color.light[0];
-		template.color.dark[1] = template.color.light[1];
-		template.color.dark[2] = template.color.light[2];
-		template.color.invalidate();
-		*/
+
+		template.position = tex.frame;
+
+		// i don't know why, but not render to cache by relative offsets
+		// but should
+		//template.position.set(tex.frame.x, tex.frame.y);
 
 		template.color.setLight(1, 1, 1);
-		template.color.setDark(1, 1, 1);
-
-		// trash 
-		/*
-		let graphics = new PIXI.Graphics();
-		graphics.beginFill(0x000000);
-		graphics.drawRect(0, 0, template.width, template.height);
-		*/
+		template.color.setDark(1, 1, 1);		
 
 		// RT aleready is empty
-		body.myMaskRT = PIXI.RenderTexture.create(template.width, template.height, 1);
-		//game.app.renderer.render(graphics, body.myMaskRT, true);
-		game.app.renderer.render(template, body.myMaskRT, false);
-		body.myMask = new PIXI.heaven.Sprite(body.myMaskRT);
+		body.myMaskRT = maskRT ;// = PIXI.RenderTexture.create(tex.width, tex.height, 1);
+
+		//game.app.renderer.render(graphics, cache.maskRTBase, false);
+		game.app.renderer.render(template, maskRT, false);
+
+		body.myMask = new PIXI.heaven.Sprite(maskRT);
 		body.myMask.renderable = false;
 
-		body.myDecalSpriteRT = PIXI.RenderTexture.create(template.width, template.height, 1);
-		body.myDecalSprite = new PIXI.heaven.Sprite(body.myDecalSpriteRT);
+		body.myDecalSpriteRT = decalRT;// PIXI.RenderTexture.create(tex.width, tex.height, 1);
+		body.myDecalSprite = new PIXI.heaven.Sprite(decalRT);
 		body.myTexture.addChild(body.myDecalSprite);
 
 		body.myDecalSprite.maskSprite = body.myMask;
@@ -7730,6 +7783,7 @@ const _B2dEditor = function () {
 
 		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 		const tex = PIXI.Texture.fromFrame(textureName);
+		// exist after preparation
 		const template = TMP_DECAL;
 
 		template.texture = tex;
@@ -7741,10 +7795,10 @@ const _B2dEditor = function () {
 		template.pivot.set(tex.width / 2, tex.height / 2);
 
 		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
+		//rest
 		template.position = localPosition;
 		template.rotation = rotation;
-
-		template.scale.set(size)
+		template.scale.set(size);
 
 		game.app.renderer.render(template, body.myDecalSpriteRT, false);
 
@@ -7765,21 +7819,14 @@ const _B2dEditor = function () {
 		if (carving) {
 
 			template.scale.set(size * 0.6);
-		
 			template.color.setLight(0, 0, 0);
 			template.color.setDark(0, 0, 0);
-
-		/*
-			template.tint = 0x000000;
-			template.color.dark[0] = template.color.light[0];
-			template.color.dark[1] = template.color.light[1];
-			template.color.dark[2] = template.color.light[2];
-			template.color.invalidate();*/
 
 			game.app.renderer.render(template, body.myMaskRT, false);
 		}
 
 	}
+
 	this.updateBodyFixtures = function (body) {
 		//build fixtures
 
@@ -8824,6 +8871,14 @@ const _B2dEditor = function () {
 		Object.keys(this.activePrefabs).forEach(prefab =>{
 			this.activePrefabs[prefab].class.reset();
 		})
+
+		if (this._cacheMap) {
+			this._cacheMap.forEach((e) => {
+				e.maskRTBase.destroy();
+				e.decalRTBase.destroy();
+			});
+			this._cacheMap = null;
+		}
 
 		this.activePrefabs = {};
 		this.lookupGroups = {};
