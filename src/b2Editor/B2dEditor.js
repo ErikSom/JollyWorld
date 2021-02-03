@@ -37,6 +37,7 @@ import { hashName } from "../AssetList";
 const camera = require("./utils/camera");
 const PIXI = require('pixi.js');
 const PIXIFILTERS = require('pixi-filters')
+let TMP_DECAL = null;
 
 var b2Vec2 = Box2D.b2Vec2,
 	b2AABB = Box2D.b2AABB,
@@ -7649,6 +7650,7 @@ const _B2dEditor = function () {
 		//body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
+
 	this.removeTextureFromBody = function (body, texture) {
 		body.myTexture = null;
 		texture.data.bodyID = null;
@@ -7658,96 +7660,125 @@ const _B2dEditor = function () {
 		body.mySprite.renderable = true;
 		texture.myBody = null;
 	}
+
 	this.prepareBodyForDecals = function (body) {
-		if (!body.myDecalSprite) {
-			//prepare mask
-			let drawGraphic = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(body.myTexture.data.textureName));
-			drawGraphic.tint = 0xffffff;
-			drawGraphic.color.dark[0] = drawGraphic.color.light[0];
-			drawGraphic.color.dark[1] = drawGraphic.color.light[1];
-			drawGraphic.color.dark[2] = drawGraphic.color.light[2];
-			drawGraphic.color.invalidate();
+		if (body.myDecalSprite)
+			return;
+//		return;
 
-			let graphics = new PIXI.Graphics();
-			graphics.beginFill(0x000000);
-			graphics.drawRect(0, 0, drawGraphic.width, drawGraphic.height);
+		const tex = PIXI.Texture.fromFrame(body.myTexture.data.textureName);
+		// prepare mask
+		const template = TMP_DECAL || (TMP_DECAL = new PIXI.heaven.Sprite(tex));
+		
+		template.texture = tex;
+		template.pivot.set(0);
+		template.scale.set(1);
+		template.position.set(0);
+	
+		/*
+		template.tint = 0xffffff;
+		template.color.dark[0] = template.color.light[0];
+		template.color.dark[1] = template.color.light[1];
+		template.color.dark[2] = template.color.light[2];
+		template.color.invalidate();
+		*/
 
-			body.myMaskRT = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
-			game.app.renderer.render(graphics, body.myMaskRT, true);
-			game.app.renderer.render(drawGraphic, body.myMaskRT, false);
-			body.myMask = new PIXI.heaven.Sprite(body.myMaskRT);
-			body.myMask.renderable = false;
+		template.color.setLight(1, 1, 1);
+		template.color.setDark(1, 1, 1);
 
-			body.myDecalSpriteRT = PIXI.RenderTexture.create(drawGraphic.width, drawGraphic.height, 1);
-			body.myDecalSprite = new PIXI.heaven.Sprite(body.myDecalSpriteRT);
-			body.myTexture.addChild(body.myDecalSprite);
+		// trash 
+		/*
+		let graphics = new PIXI.Graphics();
+		graphics.beginFill(0x000000);
+		graphics.drawRect(0, 0, template.width, template.height);
+		*/
 
-			body.myDecalSprite.maskSprite = body.myMask;
-			body.myDecalSprite.pluginName = 'spriteMasked';
+		// RT aleready is empty
+		body.myMaskRT = PIXI.RenderTexture.create(template.width, template.height, 1);
+		//game.app.renderer.render(graphics, body.myMaskRT, true);
+		game.app.renderer.render(template, body.myMaskRT, false);
+		body.myMask = new PIXI.heaven.Sprite(body.myMaskRT);
+		body.myMask.renderable = false;
 
-			body.myTexture.addChild(body.myMask);
+		body.myDecalSpriteRT = PIXI.RenderTexture.create(template.width, template.height, 1);
+		body.myDecalSprite = new PIXI.heaven.Sprite(body.myDecalSpriteRT);
+		body.myTexture.addChild(body.myDecalSprite);
 
-			body.myTexture.originalSprite.pluginName = 'spriteMasked';
-			body.myTexture.originalSprite.maskSprite = body.myMask;
-		}
+		body.myDecalSprite.maskSprite = body.myMask;
+		body.myDecalSprite.pluginName = 'spriteMasked';
+
+		body.myTexture.addChild(body.myMask);
+
+		body.myTexture.originalSprite.pluginName = 'spriteMasked';
+		body.myTexture.originalSprite.maskSprite = body.myMask;
+	
 	}
+
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size, rotation, optional) {
-		if(body.destroyed) return;
-		if (!size) size = 1;
-		if(!rotation) rotation = 0;
+		if (body.destroyed)
+			return;
+
+//		return;
+
+		size = size || 1;
+		rotation = rotation || 0;
+
 		// size = 1;
-		if (!body.myDecalSprite) this.prepareBodyForDecals(body);
+		if (!body.myDecalSprite) {
+			this.prepareBodyForDecals(body);
+		}
 
-		let pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
+		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
+		const tex = PIXI.Texture.fromFrame(textureName);
+		const template = TMP_DECAL;
 
-		let decal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
-		decal.pivot.set(decal.width / 2, decal.height / 2);
+		template.texture = tex;
+		//template.anchor.set(0.5);
+		template.scale.set(1);
+		template.color.setLight(1, 1, 1);
+		template.color.setDark(0, 0, 0);
+
+		template.pivot.set(tex.width / 2, tex.height / 2);
 
 		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
-		decal.x = localPosition.x;
-		decal.y = localPosition.y;
-		decal.rotation = rotation;
+		template.position = localPosition;
+		template.rotation = rotation;
 
-		decal.scale.x = size;
-		decal.scale.y = size;
+		template.scale.set(size)
 
-		game.app.renderer.render(decal, body.myDecalSpriteRT, false);
+		game.app.renderer.render(template, body.myDecalSpriteRT, false);
 
-		if(optional){
-			if(optional.burn){
-				if(body.isFlesh){
-					const targetFlesh = body.myTexture.myFlesh;
-					if(targetFlesh.burn === undefined) targetFlesh.burn = 0.0;
-					targetFlesh.burn += Math.min(1.0, optional.burn);
+		if(optional && optional.burn && body.isFlesh) {
+			const targetFlesh = body.myTexture.myFlesh;
 
-					const burnRate = 0.7*(1-targetFlesh.burn);
-					targetFlesh.color.setLight(0.3+burnRate, 0.3+burnRate, 0.3+burnRate);
-					targetFlesh.color.invalidate();
-				}
-			}
+			if (targetFlesh.burn === undefined) 
+				targetFlesh.burn = 0.0;
+			
+			targetFlesh.burn += Math.min(1.0, optional.burn);
+
+			const burnRate = 0.7 * ( 1 - targetFlesh.burn);
+
+			targetFlesh.color.setLight(0.3+burnRate, 0.3+burnRate, 0.3+burnRate);
+			targetFlesh.color.invalidate();
 		}
 
 		if (carving) {
-			let carveDecal = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
-			carveDecal.pivot.set(carveDecal.width / 2, carveDecal.height / 2);
 
-			carveDecal.scale.x = size * 0.6;
-			carveDecal.scale.y = size * 0.6;
+			template.scale.set(size * 0.6);
+		
+			template.color.setLight(0, 0, 0);
+			template.color.setDark(0, 0, 0);
 
-			carveDecal.y = decal.y;
-			carveDecal.x = decal.x;
-			carveDecal.rotation = rotation;
+		/*
+			template.tint = 0x000000;
+			template.color.dark[0] = template.color.light[0];
+			template.color.dark[1] = template.color.light[1];
+			template.color.dark[2] = template.color.light[2];
+			template.color.invalidate();*/
 
-			carveDecal.tint = 0x000000;
-			carveDecal.color.dark[0] = carveDecal.color.light[0];
-			carveDecal.color.dark[1] = carveDecal.color.light[1];
-			carveDecal.color.dark[2] = carveDecal.color.light[2];
-			carveDecal.color.invalidate();
-
-			game.app.renderer.render(carveDecal, body.myMaskRT, false);
-
-
+			game.app.renderer.render(template, body.myMaskRT, false);
 		}
+
 	}
 	this.updateBodyFixtures = function (body) {
 		//build fixtures
