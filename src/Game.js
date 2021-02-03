@@ -626,6 +626,7 @@ function Game() {
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
+        ui.hideWinScreen();
         var worldJSON = JSON.parse(this.editor.worldJSON);
         this.editor.buildJSON(worldJSON);
         this.doAutoSave();
