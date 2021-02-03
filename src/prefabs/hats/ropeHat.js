@@ -366,6 +366,13 @@ export class RopeHat extends Hat {
 		this.oldDir = dir;
 	}
 
+	detach(){
+		super.detach();
+		if (this.ropeFired){
+			this.detachRope();
+		}
+	}
+
 	detachFromVehicle(){
 		if(this.frameJoint)	this.head.GetWorld().DestroyJoint(this.frameJoint);
 		if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);

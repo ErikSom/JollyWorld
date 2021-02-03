@@ -973,7 +973,7 @@ body .dg .cr.function {
     height: 17vw;
     background-size: contain;
     left: 50%;
-    transform: translate(-50%, -160%);
+    transform: translate(-50%, max(-50vh, -160%));
     top: 50%;
     z-index: 1;
     min-width: 250px;

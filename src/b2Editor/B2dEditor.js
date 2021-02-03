@@ -7720,12 +7720,9 @@ const _B2dEditor = function () {
 					if(targetFlesh.burn === undefined) targetFlesh.burn = 0.0;
 					targetFlesh.burn += Math.min(1.0, optional.burn);
 
-
 					const burnRate = 0.7*(1-targetFlesh.burn);
 					targetFlesh.color.setLight(0.3+burnRate, 0.3+burnRate, 0.3+burnRate);
 					targetFlesh.color.invalidate();
-
-
 				}
 			}
 		}

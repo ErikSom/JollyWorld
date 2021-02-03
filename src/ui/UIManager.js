@@ -531,16 +531,7 @@ function UIManager() {
             divWrapper.appendChild(flexButtonHolder);
             flexButtonHolder.classList.add('flexButtonWrap');
 
-            let playButton = document.createElement('div');
-            playButton.setAttribute('class', 'moreLevels menuButton')
-            playButton.innerHTML = 'Play';
-            flexButtonHolder.appendChild(playButton);
 
-            playButton.addEventListener('click', () => {
-                this.hideLevelBanner();
-                this.showCharacterSelect();
-                MobileController.openFullscreen();
-            })
 
             let backButton = document.createElement('div');
             backButton.setAttribute('class', 'backButton menuButton')
@@ -550,6 +541,17 @@ function UIManager() {
             backButton.addEventListener('click', () => {
                 this.hideLevelBanner();
                 game.openMainMenu(true);
+                MobileController.openFullscreen();
+            })
+
+            let playButton = document.createElement('div');
+            playButton.setAttribute('class', 'moreLevels menuButton')
+            playButton.innerHTML = 'Play';
+            flexButtonHolder.appendChild(playButton);
+
+            playButton.addEventListener('click', () => {
+                this.hideLevelBanner();
+                this.showCharacterSelect();
                 MobileController.openFullscreen();
             })
 
