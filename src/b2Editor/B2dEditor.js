@@ -7,6 +7,8 @@ import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 
+import * as DS from './utils/DecalSystem';
+
 import {
 	lineIntersect,
 	flatten,
@@ -2021,6 +2023,11 @@ const _B2dEditor = function () {
 	this.run = function () {
 		//update textures
 
+		// update decal task
+		const all = DS.getAllSystems();
+		all.forEach((e) => {
+			e.flushDecalTasks();
+		});
 
 		this.deltaTime = Date.now() - this.currentTime;
 		this.currentTime = Date.now();
@@ -7663,29 +7670,30 @@ const _B2dEditor = function () {
 	}
 
 	this.getDecalTextureById = function (id = '') {
-		if (!this._cacheMap)
-			return null;
-
-		return this._cacheMap.get(id);
+		return DS.getDecalSystem(id);
 	}
 
+	/**
+	 * 
+	 * @param {string} id 
+	 * @param {DS.DecalSystem} decalTextureCache 
+	 */
 	this.setDecalTextureById = function (id = '', decalTextureCache) {
-		if (!this._cacheMap) {
-			this._cacheMap = new Map();
-		}
-
-		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.maskRTBase));
-		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.decalRTBase));
 		
-		this._cacheMap.set(id, decalTextureCache);
+		DS.setDecalSystem(id, decalTextureCache);
 
+		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.maskRT));
+		const p = new PIXI.Sprite(decalTextureCache.maskRT);
+
+		p.scale.set(0.5);
+		//game.app.stage.addChild(p);
+	
 		return decalTextureCache;
 	}
 
 	this.prepareBodyForDecals = function (body) {
-		if (body.myDecalSprite)
+		if (body.myRTCache)
 			return;
-//		return;
 
 		/**
 		 * @type {PIXI.Texture}
@@ -7696,74 +7704,24 @@ const _B2dEditor = function () {
 		const key = body.myTexture.data.prefabInstanceName + '_' + base.uid;
 
 		/**
-		 * @type {{maskRTBase: PIXI.RenderTexture, decalRTBase: PIXI.RenderTexture, usage: number }}
+		 * @type {DS.DecalSystem}
 		 */
 		let cache = this.getDecalTextureById(key);
 
 		if (!cache) {
-			cache = {
-				maskRTBase: PIXI.RenderTexture.create(base.width, base.height),
-				decalRTBase: PIXI.RenderTexture.create(base.width, base.height),
-				usage: 0,
-			}
-
+			cache = new DS.DecalSystem(base, key, game.app);
 			
-			// trash 
-			const graphics = new PIXI.Graphics();
-				graphics.beginFill(0x000000);
-				graphics.drawRect(0, 0, base.width, base.height);
-			
-			game.app.renderer.render(graphics, cache.maskRTBase, false);
-
 			this.setDecalTextureById(key, cache);
 		}
 
 		cache.usage ++;
 
-		const maskRT = new PIXI.RenderTexture(cache.maskRTBase.baseTexture, tex.frame.clone());
-		maskRT.rotate = tex.rotate;
+		const decal = cache.createDecalEntry(tex);
 
-		const decalRT = new PIXI.RenderTexture(cache.decalRTBase.baseTexture, tex.frame.clone());
-		decalRT.rotate = tex.rotate;
+		body.myRTCache = cache;
+		body.myDecalEntry = decal;
 
-
-		// prepare mask
-		const template = TMP_DECAL || (TMP_DECAL = new PIXI.heaven.Sprite(tex));
-
-		// reset cache
-		template.texture = tex;
-		template.pivot.set(0);
-		template.scale.set(1);
-
-		template.position = tex.frame;
-
-		// i don't know why, but not render to cache by relative offsets
-		// but should
-		//template.position.set(tex.frame.x, tex.frame.y);
-
-		template.color.setLight(1, 1, 1);
-		template.color.setDark(1, 1, 1);		
-
-		// RT aleready is empty
-		body.myMaskRT = maskRT ;// = PIXI.RenderTexture.create(tex.width, tex.height, 1);
-
-		//game.app.renderer.render(graphics, cache.maskRTBase, false);
-		game.app.renderer.render(template, maskRT, false);
-
-		body.myMask = new PIXI.heaven.Sprite(maskRT);
-		body.myMask.renderable = false;
-
-		body.myDecalSpriteRT = decalRT;// PIXI.RenderTexture.create(tex.width, tex.height, 1);
-		body.myDecalSprite = new PIXI.heaven.Sprite(decalRT);
-		body.myTexture.addChild(body.myDecalSprite);
-
-		body.myDecalSprite.maskSprite = body.myMask;
-		body.myDecalSprite.pluginName = 'spriteMasked';
-
-		body.myTexture.addChild(body.myMask);
-
-		body.myTexture.originalSprite.pluginName = 'spriteMasked';
-		body.myTexture.originalSprite.maskSprite = body.myMask;
+		body.myTexture.originalSprite.texture = decal.decalRT;
 	
 	}
 
@@ -7777,30 +7735,49 @@ const _B2dEditor = function () {
 		rotation = rotation || 0;
 
 		// size = 1;
-		if (!body.myDecalSprite) {
+		if (!body.myDecalRT) {
 			this.prepareBodyForDecals(body);
 		}
+		
+		/**
+		 * @type {DS.DecalSystem}
+		 */
+		const cache = body.myRTCache;
+
+		/**
+		 * @type {DS.Decal}
+		 */
+		const entry = body.myDecalEntry;
+
 
 		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 		const tex = PIXI.Texture.fromFrame(textureName);
 		// exist after preparation
-		const template = TMP_DECAL;
+		const template = new PIXI.heaven.Sprite(tex);
 
 		template.texture = tex;
-		//template.anchor.set(0.5);
+		template.anchor.set(0.5);
 		template.scale.set(1);
+
+		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
+		const texFrame = body.myTexture.originalSprite.texture.frame;
+
+		//rest		
+		localPosition.x += texFrame.x;
+		localPosition.y += texFrame.y;
+
+		template.position = localPosition;
+		template.rotation = rotation;
+		
+		template.carving = carving;
+		template.carvingSize = size * 0.6;
+
+		template.scale.set(size);
 		template.color.setLight(1, 1, 1);
 		template.color.setDark(0, 0, 0);
 
-		template.pivot.set(tex.width / 2, tex.height / 2);
-
-		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
-		//rest
-		template.position = localPosition;
-		template.rotation = rotation;
-		template.scale.set(size);
-
-		game.app.renderer.render(template, body.myDecalSpriteRT, false);
+		cache.pushDecalUpdateTask(template);
+		cache.flushDecalTexture();
 
 		if(optional && optional.burn && body.isFlesh) {
 			const targetFlesh = body.myTexture.myFlesh;
@@ -7815,16 +7792,6 @@ const _B2dEditor = function () {
 			targetFlesh.color.setLight(0.3+burnRate, 0.3+burnRate, 0.3+burnRate);
 			targetFlesh.color.invalidate();
 		}
-
-		if (carving) {
-
-			template.scale.set(size * 0.6);
-			template.color.setLight(0, 0, 0);
-			template.color.setDark(0, 0, 0);
-
-			game.app.renderer.render(template, body.myMaskRT, false);
-		}
-
 	}
 
 	this.updateBodyFixtures = function (body) {
@@ -8872,13 +8839,7 @@ const _B2dEditor = function () {
 			this.activePrefabs[prefab].class.reset();
 		})
 
-		if (this._cacheMap) {
-			this._cacheMap.forEach((e) => {
-				e.maskRTBase.destroy();
-				e.decalRTBase.destroy();
-			});
-			this._cacheMap = null;
-		}
+		DS.dropSystems();
 
 		this.activePrefabs = {};
 		this.lookupGroups = {};
