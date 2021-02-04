@@ -91,6 +91,11 @@ export class Camera extends PIXI.DisplayObject {
 
         _activeRenderTarget.save()
 
+		const t = this.listen.worldTransform;
+		
+		t.tx = Math.round(t.tx);
+		t.ty = Math.round(t.ty);
+
 		// apply matrix
 		_activeRenderTarget.transform = this.listen.worldTransform;
 
