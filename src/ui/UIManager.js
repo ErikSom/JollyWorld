@@ -18,7 +18,7 @@ import {
 } from '../AssetList';
 import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
-import { YouTubePlayer } from '../../../gametube/src/players/YouTubePlayer';
+import { YouTubePlayer } from '../utils/YouTubePlayer';
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -29,6 +29,7 @@ let gameOver;
 let levelLoader;
 let levelBanner;
 let levelBannerYTFeed;
+let youtubePlayer;
 let characterSelect;
 let vehicleSelect;
 let pauseMenu;
@@ -571,9 +572,14 @@ function UIManager() {
                 levelBannerYTFeed.appendChild(youtubeFrame);
 
                 const playButtonIcon = document.createElement('button');
-                playButtonIcon.innerHTML = `<svg height="100%" version="1.1" viewBox="0 0 68 48" width="100%"><path class="play" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#212121" fill-opacity="0.8"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>`;
+                playButtonIcon.innerHTML = YouTubePlayer.playButtonHTML;
                 playButtonIcon.classList.add('youtubePlayButton');
                 youtubeFrame.appendChild(playButtonIcon);
+
+                youtubeFrame.onclick = () => {
+                    this.showYouTubePlayer(youtubeFrame.getAttribute('yt-video-id'));
+                }
+
             }
             customGUIContainer.appendChild(levelBannerYTFeed);
 
@@ -598,6 +604,7 @@ function UIManager() {
         const youtubeVideos = ['PGbAWTqUuxQ', 'oB3V5SkssYg', 'jUu3Z0T8hpE'];
         let youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
         youtubeFrames.forEach( (frame, i)=>{
+            frame.setAttribute('yt-video-id', youtubeVideos[i]);
             frame.style.backgroundImage = `url(https://i.ytimg.com/vi/${youtubeVideos[i]}/mqdefault.jpg)`;
 
         })
@@ -1235,6 +1242,86 @@ function UIManager() {
         socialShareScreen.domElement.style.transform = 'translate(-50%, -50%)';
 
         socialShareScreen.setSocialMediaHTML(level);
+    }
+    this.showYouTubePlayer = function(id){
+        if(!youtubePlayer){
+            const levelEditGUIWidth = 500;
+            youtubePlayer = new dat.GUI({
+                autoPlace: false,
+                width: levelEditGUIWidth
+            });
+            youtubePlayer.domElement.style.position = 'absolute';
+
+            let folder = youtubePlayer.addFolder('YouTube Player');
+            folder.domElement.classList.add('custom');
+
+            folder.open();
+
+            const closeButton = document.createElement('div');
+            closeButton.setAttribute('class', 'closeWindowIcon');
+            folder.domElement.append(closeButton);
+            closeButton.addEventListener('click', () => {
+                self.hideYouTubePlayer();
+            });
+
+
+            const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+            const divWrapper = document.createElement('div');
+            // divWrapper.innerText = 'Youtube player:'+id
+
+
+            const youtubePlayerHolder = document.createElement('div');
+            youtubePlayerHolder.setAttribute('id', 'YTPlayerHolder');
+            divWrapper.appendChild(youtubePlayerHolder);
+
+            const subscribeHolder = document.createElement('div');
+            subscribeHolder.classList.add('youtubeSubscribeHolder');
+            divWrapper.appendChild(subscribeHolder);
+
+            const authorSpan = document.createElement('div');
+            authorSpan.classList.add('youtubeAuthor');
+            subscribeHolder.appendChild(authorSpan);
+
+
+            const subscribeButton = document.createElement('button');
+            subscribeButton.innerHTML = YouTubePlayer.subscribeButtonHTML;
+            subscribeHolder.appendChild(subscribeButton);
+            subscribeButton.classList.add('youtubeSubscribe');
+
+            subscribeButton.onclick = ()=>{
+                const channelID = subscribeButton.getAttribute('yt-channel');
+                if(channelID){
+                    window.open(`https://www.youtube.com/channel/${channelID}?view_as=subscriber&sub_confirmation=1`);
+                }
+            }
+
+
+            const ytSpinner = document.createElement('div');
+            ytSpinner.classList.add('youtubeSpinner');
+            ytSpinner.innerHTML = YouTubePlayer.spinnerHTML;
+            divWrapper.appendChild(ytSpinner)
+
+            divWrapper.classList.add('divWrapper');
+
+            targetDomElement.appendChild(divWrapper);
+
+            customGUIContainer.appendChild(youtubePlayer.domElement);
+        }
+
+        const authorSpanEl = youtubePlayer.domElement.querySelector('.youtubeAuthor');
+        const subscribeButtonEl = youtubePlayer.domElement.querySelector('.youtubeSubscribe');
+        const spinnerEl = youtubePlayer.domElement.querySelector('.youtubeSpinner');
+        
+        YouTubePlayer.loadVideo('YTPlayerHolder', id, authorSpanEl, subscribeButtonEl,spinnerEl);
+
+        youtubePlayer.domElement.style.visibility = 'visible';
+        youtubePlayer.domElement.style.left = '50%';
+        youtubePlayer.domElement.style.top = '50%';
+        youtubePlayer.domElement.style.transform = 'translate(-50%, -50%)';
+    }
+    this.hideYouTubePlayer = function(){
+        youtubePlayer.domElement.style.visibility = 'hidden';
+        YouTubePlayer.stopVideo();
     }
 
     this.generateFilteredPublishLevelList = function () {

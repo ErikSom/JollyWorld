@@ -36,6 +36,7 @@ import * as EffectsComposer from './utils/EffectsComposer';
 import * as MobileController from './utils/MobileController';
 
 import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
+import { YouTubePlayer } from "./utils/YouTubePlayer";
 
 
 
@@ -175,6 +176,7 @@ function Game() {
         this.stage.filterArea = this.app.screen;
 
         if(MobileController.isMobile()) MobileController.init();
+        YouTubePlayer.preload();
 
     };
 
