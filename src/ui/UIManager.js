@@ -18,6 +18,7 @@ import {
 } from '../AssetList';
 import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
+import { YouTubePlayer } from '../../../gametube/src/players/YouTubePlayer';
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -27,6 +28,7 @@ let discordButton;
 let gameOver;
 let levelLoader;
 let levelBanner;
+let levelBannerYTFeed;
 let characterSelect;
 let vehicleSelect;
 let pauseMenu;
@@ -561,8 +563,24 @@ function UIManager() {
 
             game.editor.ui.registerDragWindow(levelBanner);
 
+            levelBannerYTFeed = document.createElement('div');
+            levelBannerYTFeed.classList.add('youtubeFeed');
+            for(let i = 0; i<3; i++){
+                const youtubeFrame = document.createElement('div');
+                youtubeFrame.classList.add('youtubeFrame');
+                levelBannerYTFeed.appendChild(youtubeFrame);
+
+                const playButtonIcon = document.createElement('button');
+                playButtonIcon.innerHTML = `<svg height="100%" version="1.1" viewBox="0 0 68 48" width="100%"><path class="play" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#212121" fill-opacity="0.8"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>`;
+                playButtonIcon.classList.add('youtubePlayButton');
+                youtubeFrame.appendChild(playButtonIcon);
+            }
+            customGUIContainer.appendChild(levelBannerYTFeed);
+
+
         }
         levelBanner.domElement.style.visibility = 'visible';
+        levelBannerYTFeed.style.visibility = 'visible';
         // set values
 
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
@@ -576,12 +594,22 @@ function UIManager() {
         levelBanner.domElement.style.top = '50%';
         levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
 
+
+        const youtubeVideos = ['PGbAWTqUuxQ', 'oB3V5SkssYg', 'jUu3Z0T8hpE'];
+        let youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
+        youtubeFrames.forEach( (frame, i)=>{
+            frame.style.backgroundImage = `url(https://i.ytimg.com/vi/${youtubeVideos[i]}/mqdefault.jpg)`;
+
+        })
+
+
         window.location.hash = `${game.currentLevelData.id}/`
 
     }
 
     this.hideLevelBanner = function () {
         levelBanner.domElement.style.visibility = 'hidden';
+        levelBannerYTFeed.style.visibility = 'hidden';
     }
 
     this.showCharacterSelect = function () {
@@ -671,7 +699,7 @@ function UIManager() {
                         this.hideVehicleSelect();
                         game.selectedVehicle = i + 1;
                         game.initLevel(game.currentLevelData);
-                        game.playWorld();
+                        game.playWorld(true);
                         backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
                     }
                 }

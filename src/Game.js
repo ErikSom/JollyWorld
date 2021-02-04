@@ -606,11 +606,12 @@ function Game() {
         this.run = true;
         this.findPlayableCharacter();
     }
-    this.playWorld = function () {
+    this.playWorld = function (firstEntry) {
         this.movementBuffer = [];
         MobileController.openFullscreen();
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
+        if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
     }
 
@@ -639,7 +640,7 @@ function Game() {
             this.testWorld();
         }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
             this.initLevel(this.currentLevelData);
-            this.playWorld();
+            this.playWorld(!doCheckpoint);
 
             if(doCheckpoint && checkPointData){
                 const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
