@@ -603,6 +603,9 @@ function UIManager() {
 
         const youtubeVideos = game.currentLevelData.youtubelinks || [];
 
+        if(youtubeVideos.length > 0) levelBannerYTFeed.classList.remove('hideLogo');
+        else  levelBannerYTFeed.classList.add('hideLogo');
+
         const youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
         youtubeFrames.forEach( (frame, i)=>{
             frame.setAttribute('yt-video-id', youtubeVideos[i]);
