@@ -601,14 +601,13 @@ function UIManager() {
         levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
 
 
-        const youtubeVideos = ['PGbAWTqUuxQ', 'oB3V5SkssYg', 'jUu3Z0T8hpE'];
+        const youtubeVideos = ['Ycd6IfJUNbg', 'U-63LW3swGs', 'UaBnMj5Yw-U'];
         let youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
         youtubeFrames.forEach( (frame, i)=>{
             frame.setAttribute('yt-video-id', youtubeVideos[i]);
             frame.style.backgroundImage = `url(https://i.ytimg.com/vi/${youtubeVideos[i]}/mqdefault.jpg)`;
 
         })
-
 
         window.location.hash = `${game.currentLevelData.id}/`
 

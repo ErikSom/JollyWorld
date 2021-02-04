@@ -173,8 +173,7 @@ const checkLevelDataForErrors = async function () {
                 idElement.style.backgroundColor = textAreaErrorColor;
                 errorStack.push(`YouTube ID ${i+1} must be 11 characters`)
             } else {
-                const API_KEY = 'AIzaSyB1Lxy9TPif3lZyPRw6IZeWxMXvN5XK9p0'
-                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${idElement.value}&key=${API_KEY}
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${idElement.value}&key=${Settings.YTAPIKEY}
                 &part=status`)
                 const json = await response.json();
                 if (!json.items || json.items.length === 0) {

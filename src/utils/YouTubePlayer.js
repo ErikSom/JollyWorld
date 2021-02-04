@@ -1,3 +1,7 @@
+import {
+    Settings
+} from "../Settings";
+
 let player;
 let lastAuthorSpan;
 let lastSubscribeButton;
@@ -43,7 +47,7 @@ export class YouTubePlayer {
 
                 spinner.style.display = 'none';
 
-                const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=AIzaSyDjy-Fw9ocqXRL2Axjj5zvBhgIXTJLcLY0`;
+                const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${Settings.YTAPIKEY}`;
                 fetch(url)
                 .then(response => response.json())
                 .then(data => {
