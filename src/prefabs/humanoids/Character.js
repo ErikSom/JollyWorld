@@ -112,10 +112,15 @@ export class Character extends Humanoid {
     }
 
     detachFromVehicle(force) {
+        console.log("DIE!!");
         if (!force) force = 0;
         if (!this.attachedToVehicle) return;
 
+        console.log(this.lookupObject);
+
         const vehicleJoints = this.mainPrefabClass.destroyConnectedJoints['head'];
+
+        console.log(vehicleJoints);
 
         if(vehicleJoints){
             vehicleJoints.forEach((jointName) => {
