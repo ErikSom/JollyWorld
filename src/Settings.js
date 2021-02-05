@@ -64,6 +64,7 @@ export var Settings = {
     // REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
     REDIRECT:'https://jollyworld.app/login.html',
     GAMEURI: 'https://jollyworld.app',
+    YTAPIKEY:'AIzaSyDjy-Fw9ocqXRL2Axjj5zvBhgIXTJLcLY0',
     levelsPerRequest:100,
 
 

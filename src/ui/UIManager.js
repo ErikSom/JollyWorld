@@ -18,6 +18,7 @@ import {
 } from '../AssetList';
 import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
+import { YouTubePlayer } from '../utils/YouTubePlayer';
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -27,6 +28,8 @@ let discordButton;
 let gameOver;
 let levelLoader;
 let levelBanner;
+let levelBannerYTFeed;
+let youtubePlayer;
 let characterSelect;
 let vehicleSelect;
 let pauseMenu;
@@ -531,16 +534,7 @@ function UIManager() {
             divWrapper.appendChild(flexButtonHolder);
             flexButtonHolder.classList.add('flexButtonWrap');
 
-            let playButton = document.createElement('div');
-            playButton.setAttribute('class', 'moreLevels menuButton')
-            playButton.innerHTML = 'Play';
-            flexButtonHolder.appendChild(playButton);
 
-            playButton.addEventListener('click', () => {
-                this.hideLevelBanner();
-                this.showCharacterSelect();
-                MobileController.openFullscreen();
-            })
 
             let backButton = document.createElement('div');
             backButton.setAttribute('class', 'backButton menuButton')
@@ -553,14 +547,46 @@ function UIManager() {
                 MobileController.openFullscreen();
             })
 
+            let playButton = document.createElement('div');
+            playButton.setAttribute('class', 'moreLevels menuButton')
+            playButton.innerHTML = 'Play';
+            flexButtonHolder.appendChild(playButton);
+
+            playButton.addEventListener('click', () => {
+                this.hideLevelBanner();
+                this.showCharacterSelect();
+                MobileController.openFullscreen();
+            })
+
             targetDomElement.appendChild(divWrapper);
             customGUIContainer.appendChild(levelBanner.domElement);
             levelBanner.domElement.style.position = 'absolute';
 
             game.editor.ui.registerDragWindow(levelBanner);
 
+            levelBannerYTFeed = document.createElement('div');
+            levelBannerYTFeed.classList.add('youtubeFeed');
+            for(let i = 0; i<3; i++){
+                const youtubeFrame = document.createElement('div');
+                youtubeFrame.classList.add('youtubeFrame');
+                levelBannerYTFeed.appendChild(youtubeFrame);
+
+                const playButtonIcon = document.createElement('button');
+                playButtonIcon.innerHTML = YouTubePlayer.playButtonHTML;
+                playButtonIcon.classList.add('youtubePlayButton');
+                youtubeFrame.appendChild(playButtonIcon);
+
+                youtubeFrame.onclick = () => {
+                    this.showYouTubePlayer(youtubeFrame.getAttribute('yt-video-id'));
+                }
+
+            }
+            customGUIContainer.appendChild(levelBannerYTFeed);
+
+
         }
         levelBanner.domElement.style.visibility = 'visible';
+        levelBannerYTFeed.style.visibility = 'visible';
         // set values
 
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
@@ -574,12 +600,31 @@ function UIManager() {
         levelBanner.domElement.style.top = '50%';
         levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
 
+
+        const youtubeVideos = game.currentLevelData.youtubelinks || [];
+
+        if(youtubeVideos.length > 0) levelBannerYTFeed.classList.remove('hideLogo');
+        else  levelBannerYTFeed.classList.add('hideLogo');
+
+        const youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
+        youtubeFrames.forEach( (frame, i)=>{
+            frame.setAttribute('yt-video-id', youtubeVideos[i]);
+            if(youtubeVideos[i]){
+                frame.style.backgroundImage = `url(https://i.ytimg.com/vi/${youtubeVideos[i]}/mqdefault.jpg)`;
+                frame.style.opacity = 1.0;
+            }else{
+                frame.style.opacity = 0.0;
+            }
+
+        })
+
         window.location.hash = `${game.currentLevelData.id}/`
 
     }
 
     this.hideLevelBanner = function () {
         levelBanner.domElement.style.visibility = 'hidden';
+        levelBannerYTFeed.style.visibility = 'hidden';
     }
 
     this.showCharacterSelect = function () {
@@ -669,7 +714,7 @@ function UIManager() {
                         this.hideVehicleSelect();
                         game.selectedVehicle = i + 1;
                         game.initLevel(game.currentLevelData);
-                        game.playWorld();
+                        game.playWorld(true);
                         backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
                     }
                 }
@@ -1205,6 +1250,86 @@ function UIManager() {
         socialShareScreen.domElement.style.transform = 'translate(-50%, -50%)';
 
         socialShareScreen.setSocialMediaHTML(level);
+    }
+    this.showYouTubePlayer = function(id){
+        if(!youtubePlayer){
+            const levelEditGUIWidth = 500;
+            youtubePlayer = new dat.GUI({
+                autoPlace: false,
+                width: levelEditGUIWidth
+            });
+            youtubePlayer.domElement.style.position = 'absolute';
+
+            let folder = youtubePlayer.addFolder('YouTube Player');
+            folder.domElement.classList.add('custom');
+
+            folder.open();
+
+            const closeButton = document.createElement('div');
+            closeButton.setAttribute('class', 'closeWindowIcon');
+            folder.domElement.append(closeButton);
+            closeButton.addEventListener('click', () => {
+                self.hideYouTubePlayer();
+            });
+
+
+            const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+            const divWrapper = document.createElement('div');
+            // divWrapper.innerText = 'Youtube player:'+id
+
+
+            const youtubePlayerHolder = document.createElement('div');
+            youtubePlayerHolder.setAttribute('id', 'YTPlayerHolder');
+            divWrapper.appendChild(youtubePlayerHolder);
+
+            const subscribeHolder = document.createElement('div');
+            subscribeHolder.classList.add('youtubeSubscribeHolder');
+            divWrapper.appendChild(subscribeHolder);
+
+            const authorSpan = document.createElement('div');
+            authorSpan.classList.add('youtubeAuthor');
+            subscribeHolder.appendChild(authorSpan);
+
+
+            const subscribeButton = document.createElement('button');
+            subscribeButton.innerHTML = YouTubePlayer.subscribeButtonHTML;
+            subscribeHolder.appendChild(subscribeButton);
+            subscribeButton.classList.add('youtubeSubscribe');
+
+            subscribeButton.onclick = ()=>{
+                const channelID = subscribeButton.getAttribute('yt-channel');
+                if(channelID){
+                    window.open(`https://www.youtube.com/channel/${channelID}?view_as=subscriber&sub_confirmation=1`);
+                }
+            }
+
+
+            const ytSpinner = document.createElement('div');
+            ytSpinner.classList.add('youtubeSpinner');
+            ytSpinner.innerHTML = YouTubePlayer.spinnerHTML;
+            divWrapper.appendChild(ytSpinner)
+
+            divWrapper.classList.add('divWrapper');
+
+            targetDomElement.appendChild(divWrapper);
+
+            customGUIContainer.appendChild(youtubePlayer.domElement);
+        }
+
+        const authorSpanEl = youtubePlayer.domElement.querySelector('.youtubeAuthor');
+        const subscribeButtonEl = youtubePlayer.domElement.querySelector('.youtubeSubscribe');
+        const spinnerEl = youtubePlayer.domElement.querySelector('.youtubeSpinner');
+        
+        YouTubePlayer.loadVideo('YTPlayerHolder', id, authorSpanEl, subscribeButtonEl,spinnerEl);
+
+        youtubePlayer.domElement.style.visibility = 'visible';
+        youtubePlayer.domElement.style.left = '50%';
+        youtubePlayer.domElement.style.top = '50%';
+        youtubePlayer.domElement.style.transform = 'translate(-50%, -50%)';
+    }
+    this.hideYouTubePlayer = function(){
+        youtubePlayer.domElement.style.visibility = 'hidden';
+        YouTubePlayer.stopVideo();
     }
 
     this.generateFilteredPublishLevelList = function () {
