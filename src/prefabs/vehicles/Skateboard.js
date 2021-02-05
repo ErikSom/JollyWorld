@@ -44,6 +44,7 @@ class Skateboard extends BaseVehicle {
         this.desiredVehicleSpeeds = [120, 120];
         const bodyDef = new Box2D.b2BodyDef();
         this.m_groundBody = game.world.CreateBody(bodyDef);
+        this.m_groundBody.mySprite = {data:{prefabInstanceName:this.lookupObject.body.mySprite.data.prefabInstanceName}} // hack to not get deleted on mirroring
 
         const md = new Box2D.b2MouseJointDef();
         md.bodyA = this.m_groundBody;
