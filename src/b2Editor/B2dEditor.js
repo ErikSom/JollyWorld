@@ -1902,7 +1902,7 @@ const _B2dEditor = function () {
 
 		if(this.editorSettingsObject.showPlayerHistory) this.drawPlayerHistory();
 
-		if(this.editorSettingsObject.showCameraLines){
+		if(this.editorSettingsObject.showCameraLines && this.selectedTool !== this.tool_VERTICEEDITING){
 			const camera = this.cameraHolder;
 			// Draw 0,0 reference
 
@@ -2464,6 +2464,7 @@ const _B2dEditor = function () {
 	}
 
 	this.onMouseDown = function (evt) {
+		const camera = B2dEditor.container.camera || B2dEditor.container;
 		if (this.editing) {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
@@ -2737,7 +2738,7 @@ const _B2dEditor = function () {
 						const verticeY = this.verticeEditingSprite.y + vy;
 						const difX = verticeX-mousePixiPos.x;
 						const difY = verticeY-mousePixiPos.y;
-						const minDistance = 5;
+						const minDistance = 5 / camera.scale.x;
 						if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
 							clickVerticeIndex = index;
 						}
