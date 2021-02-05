@@ -3969,11 +3969,7 @@ const _B2dEditor = function () {
 			this.customDebugDraw = null;
 			this.activeVertices = [];
 			this.updateSelection();
-
-			if([this.tool_VERTICEEDITING, this.tool_CAMERA].includes(this.selectedTool)){
-				this.selectTool(this.tool_SELECT);
-			}
-
+			this.selectTool(this.tool_SELECT);
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
 				if(this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN){
