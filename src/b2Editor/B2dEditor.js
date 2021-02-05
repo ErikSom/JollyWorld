@@ -6485,6 +6485,8 @@ const _B2dEditor = function () {
 		container.rotation = obj.rotation;
 		container.visible = obj.visible;
 
+		container.alpha = obj.transparancy;
+
 		var originalGraphic = new PIXI.Graphics();
 		container.addChild(originalGraphic);
 		container.originalGraphic = originalGraphic;
