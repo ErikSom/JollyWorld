@@ -62,18 +62,21 @@ export class Character extends Humanoid {
 
     lean(dir) {
         const velocity = Settings.characterLeanSpeed * dir;
+        if(this.hat && this.hat.isRopeHat && this.hat.blockControls){
 
-        if(!this.attachedToVehicle){
-            this.lookupObject['body'].SetAngularVelocity(velocity);
         }else{
-            const leanedBodies = [];
-            this.vehicleJoints.forEach(joint=> {
-                const vehicleBody = joint.GetBodyB();
-                if(!leanedBodies.includes(vehicleBody)){
-                    vehicleBody.SetAngularVelocity(velocity);
-                    leanedBodies.push(vehicleBody);
-                }
-            });
+            if(!this.attachedToVehicle){
+                this.lookupObject['body'].SetAngularVelocity(velocity);
+            }else{
+                const leanedBodies = [];
+                this.vehicleJoints.forEach(joint=> {
+                    const vehicleBody = joint.GetBodyB();
+                    if(!leanedBodies.includes(vehicleBody)){
+                        vehicleBody.SetAngularVelocity(velocity);
+                        leanedBodies.push(vehicleBody);
+                    }
+                });
+            }
         }
     }
 

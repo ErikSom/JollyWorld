@@ -699,7 +699,7 @@ function UIManager() {
             vehicleHolder.classList.add('vehicleHolder');
             vehicleHolder.style.padding = '10px';
 
-            const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png'];
+            const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png'];
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 if(i == 2) continue;

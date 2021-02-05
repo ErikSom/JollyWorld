@@ -19,6 +19,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
         this.vehicleName = '';
         this.inverseEngines = false;
+        this.accel = 0;
     }
 
     init() {
@@ -133,7 +134,9 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
 
     accelerate(dir) {
+        if(this.character && this.character.hat && this.character.hat.blockControls) return;
         if(this.flipped) dir*= -1;
+        this.accel = dir;
         if((dir < 0 && !this.flipped) || (dir>0 && this.flipped)) dir *= .6; // only 60% backwards speed
 
         if(this.inverseEngines) dir *= -1;
@@ -208,6 +211,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         }
     }
     stopAccelerate() {
+        this.accel = 0;
         this.stopAccelerateWheels();
     }
     flip(){
@@ -216,8 +220,13 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
     lean(dir) {
         if (this.lookupObject.frame) {
-            let velocity = this.leanSpeed * dir;
-            this.lookupObject.frame.SetAngularVelocity(velocity * 10);
+            // push towards the other side when attached to a rope with more force
+            if(this.character && this.character.hat && this.character.hat.isRopeHat && this.character.hat.blockControls){
+                // don't do anything for now
+            }else{
+                let velocity = this.leanSpeed * dir;
+                this.lookupObject.frame.SetAngularVelocity(velocity * 10);
+            }
         }
     }
 }

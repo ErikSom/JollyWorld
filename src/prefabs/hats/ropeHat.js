@@ -10,6 +10,7 @@ export class RopeHat extends Hat {
 		this.texture = 'RopeHelmet0000';
 		this.hatOffsetLength = 45;
 		this.hatOffsetAngle = Math.PI/2;
+		this.minRopeLength = 7;
 		this.rayCastCallback = function () {
 			this.m_hit = false;
 		};
@@ -32,6 +33,7 @@ export class RopeHat extends Hat {
 		this.bendSpeed = null;
 		this.bendBody = null;
 		this.tilingSprites = [];
+		this.isRopeHat = true;
 		this.attach();
 	}
 	activate() {
@@ -60,6 +62,7 @@ export class RopeHat extends Hat {
 	}
 	detachRope() {
 		this.ropeFired = false;
+		this.blockControls = false;
 		this.releaseRope();
 		this.clearTilingRope();
 		this.ropePoints = [];
@@ -70,6 +73,7 @@ export class RopeHat extends Hat {
 	}
 	attachRope(point, body, precise) {
 		this.ropeActive = true;
+		this.blockControls = true;
 
 		const bd = new Box2D.b2BodyDef();
 		bd.type = Box2D.b2BodyType.b2_dynamicBody;
@@ -336,7 +340,7 @@ export class RopeHat extends Hat {
 		if (!this.revoluteJoint) return;
 
 		const angle = this.body.GetAngle();
-		const force = 50 * dir;
+		const force = 100 * dir;
 		const xForce = force * Math.cos(angle);
 		const yForce = force * Math.sin(angle);
 
@@ -345,8 +349,15 @@ export class RopeHat extends Hat {
 		this.body.ApplyForce(new Box2D.b2Vec2(xForce, yForce), this.body.GetPosition(), true);
 	}
 	accelerate(dir) {
-		if(this.oldDir == dir) return;
 		if (!this.pulleyJoint) return;
+
+		const ropeLength = this.ropeEnd.GetPosition().Clone().SelfSub(this.hatBody.GetPosition()).Length();
+		// stop pulling when we are below min length
+		if(dir<0 && ropeLength<this.minRopeLength){
+			dir = 0;
+		}
+
+		if(this.oldDir == dir) return;
 		if(dir === 0){
 			this.pulleyJoint.EnableMotor(false);
 			if(this.pulleyFrameJoint) this.pulleyFrameJoint.EnableMotor(false);
