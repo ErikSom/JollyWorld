@@ -36,6 +36,7 @@ import * as EffectsComposer from './utils/EffectsComposer';
 import * as MobileController from './utils/MobileController';
 
 import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
+import { YouTubePlayer } from "./utils/YouTubePlayer";
 
 
 
@@ -175,6 +176,7 @@ function Game() {
         this.stage.filterArea = this.app.screen;
 
         if(MobileController.isMobile()) MobileController.init();
+        YouTubePlayer.preload();
 
     };
 
@@ -606,11 +608,12 @@ function Game() {
         this.run = true;
         this.findPlayableCharacter();
     }
-    this.playWorld = function () {
+    this.playWorld = function (firstEntry) {
         this.movementBuffer = [];
         MobileController.openFullscreen();
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
+        if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
     }
 
@@ -639,7 +642,7 @@ function Game() {
             this.testWorld();
         }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
             this.initLevel(this.currentLevelData);
-            this.playWorld();
+            this.playWorld(!doCheckpoint);
 
             if(doCheckpoint && checkPointData){
                 const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
