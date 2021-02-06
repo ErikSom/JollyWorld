@@ -105,6 +105,7 @@ const _B2dEditor = function () {
 	this.ui = ui;
 
 	this.mouseDown = false;
+	this.middleMouseDown = false;
 	this.doubleClickTime = 0;
 	this.shiftDown = false;
 	this.spaceDown = false;
@@ -2845,6 +2846,7 @@ const _B2dEditor = function () {
 		}
 		this.updateMousePosition(evt);
 		this.mouseDown = true;
+		if(evt.which === 2) this.middleMouseDown = true;
 	}
 	this.onMouseMove = function (evt) {
 		this.updateMousePosition(evt);
@@ -2855,7 +2857,7 @@ const _B2dEditor = function () {
 				this.customPrefabMouseMove();
 			}else if (this.mouseDown) {
 				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
-				if (this.spaceCameraDrag) {
+				if (this.spaceCameraDrag || evt.which === 2) {
 					move.SelfMul(this.cameraHolder.scale.x);
 					camera.pan(move);
 					scrollBars.update();
@@ -3697,6 +3699,7 @@ const _B2dEditor = function () {
 	}
 
 	this.onMouseUp = function (evt) {
+		const camera = B2dEditor.container.camera || B2dEditor.container;
 		if (this.editing) {
 			if(this.customPrefabMouseDown){
 				// dont do any mouse up action if we are doing a custom prefab action
@@ -3741,7 +3744,10 @@ const _B2dEditor = function () {
 				if(ui.editorGUI.editData.isPhysicsObject){
 					let bodyObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
-						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.cameraHolder.scale.x * this.PTM;
+						let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+						if(this.shiftDown){
+							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
+						}
 						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
 							bodyObject = new this.bodyObject;
 							bodyObject.x = this.startSelectionPoint.x;
@@ -3769,7 +3775,10 @@ const _B2dEditor = function () {
 				}else{
 					let graphicObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
-						var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() / this.cameraHolder.scale.x * this.PTM;
+						let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+						if(this.shiftDown){
+							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
+						}
 						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
 							graphicObject = new this.graphicObject;
 							graphicObject.x = this.startSelectionPoint.x*Settings.PTM;
@@ -3908,10 +3917,13 @@ const _B2dEditor = function () {
 			this.storeUndoMovementDebounced();
 		}
 		this.mouseDown = false;
+		this.middleMouseDown = false;
 		this.doubleClickTime = Date.now()+Settings.doubleClickTime;
 
 	}
 	this.onMouseWheel = function(e){
+
+		if(this.middleMouseDown) return;
 
 		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI, ui.loadScreen, ui.saveScreen, ui.levelEditScreen];
 		// detect mouse on gui
@@ -5699,14 +5711,22 @@ const _B2dEditor = function () {
 	}
 
 	this.doGeometryDrawing = function () {
+		const camera = B2dEditor.container.camera || B2dEditor.container;
+
 		if (this.mouseDown && !this.spaceCameraDrag) {
 			this.debugGraphics.lineStyle(1, this.verticesLineColor, 1);
 			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
 			if (ui.editorGUI.editData.shape == "Circle") {
-				var radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
-				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.cameraHolder.scale.x + this.cameraHolder.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.cameraHolder.scale.y + this.cameraHolder.y);
-				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * this.cameraHolder.scale.y + this.cameraHolder.y, radius, 0, 2 * Math.PI, false);
+				let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+				if(this.shiftDown){
+					radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
+				}
+
+				radius *= camera.scale.x;
+
+				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * camera.scale.x + camera.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * camera.scale.y + camera.y );
+				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * camera.scale.x + camera.x , this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * camera.scale.y + camera.y, radius, 0, 2 * Math.PI, false);
 			} else if (ui.editorGUI.editData.shape == "Box") {
 				this.activeVertices = [];
 				this.activeVertices.push({
@@ -8843,6 +8863,7 @@ const _B2dEditor = function () {
 		this.startSelectionPoint = null;
 		this.oldMousePosWorld = null;
 		this.mouseDown = false;
+		this.middleMouseDown = false;
 		this.prefabCounter = 0;
 
 		this.editorIcons = [];
