@@ -5728,13 +5728,23 @@ const _B2dEditor = function () {
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * camera.scale.x + camera.x + radius, this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * camera.scale.y + camera.y );
 				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * camera.scale.x + camera.x , this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * camera.scale.y + camera.y, radius, 0, 2 * Math.PI, false);
 			} else if (ui.editorGUI.editData.shape == "Box") {
+
+				let difX = this.mousePosWorld.x - this.startSelectionPoint.x;
+				let difY = this.mousePosWorld.y - this.startSelectionPoint.y;
+
+				if(this.shiftDown){
+					const geometrySnapScaleWorld = Settings.geometrySnapScale / Settings.PTM;
+					difX = Math.floor(difX/geometrySnapScaleWorld) * geometrySnapScaleWorld;
+					difY = Math.floor(difY/geometrySnapScaleWorld) * geometrySnapScaleWorld;
+				}
+
 				this.activeVertices = [];
 				this.activeVertices.push({
-					x: this.mousePosWorld.x,
-					y: this.mousePosWorld.y
+					x: this.startSelectionPoint.x+difX,
+					y: this.startSelectionPoint.y+difY
 				});
 				this.activeVertices.push({
-					x: this.mousePosWorld.x,
+					x: this.startSelectionPoint.x+difX,
 					y: this.startSelectionPoint.y
 				});
 				this.activeVertices.push({
@@ -5743,7 +5753,7 @@ const _B2dEditor = function () {
 				});
 				this.activeVertices.push({
 					x: this.startSelectionPoint.x,
-					y: this.mousePosWorld.y
+					y: this.startSelectionPoint.y+difY
 				});
 
 				if (this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
@@ -5755,14 +5765,23 @@ const _B2dEditor = function () {
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
 			} else if (ui.editorGUI.editData.shape == "Triangle") {
 				this.activeVertices = [];
-				var difX = this.mousePosWorld.x - this.startSelectionPoint.x;
+	
+				let difX = this.mousePosWorld.x - this.startSelectionPoint.x;
+				let difY = this.mousePosWorld.y - this.startSelectionPoint.y;
+
+				if(this.shiftDown){
+					const geometrySnapScaleWorld = Settings.geometrySnapScale / Settings.PTM;
+					difX = Math.floor(difX/geometrySnapScaleWorld) * geometrySnapScaleWorld;
+					difY = Math.floor(difY/geometrySnapScaleWorld) * geometrySnapScaleWorld;
+				}
+
 				this.activeVertices.push({
-					x: this.mousePosWorld.x,
+					x: this.startSelectionPoint.x+difX,
 					y: this.startSelectionPoint.y
 				});
 				this.activeVertices.push({
-					x: this.mousePosWorld.x - difX / 2,
-					y: this.mousePosWorld.y
+					x: this.startSelectionPoint.x+difX/2,
+					y: this.startSelectionPoint.y+difY
 				});
 				this.activeVertices.push({
 					x: this.startSelectionPoint.x,
