@@ -433,7 +433,20 @@ const _B2dEditor = function () {
 				break
 			case this.tool_POLYDRAWING:
 			case this.tool_PEN:
-				ui.destroyEditorGUI();
+				ui.editorGUI.editData = this.editorGeometryObject;
+
+				if(i === this.tool_POLYDRAWING) targetFolder = ui.editorGUI.addFolder('draw poly shapes');
+				if(i === this.tool_PEN) targetFolder = ui.editorGUI.addFolder('draw bezier graphics');
+				targetFolder.open();
+
+				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
+				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				if(i === this.tool_POLYDRAWING) targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
+
+				ui.editorGUI.domElement.style.minHeight = '200px';
+
 				break
 			case this.tool_JOINTS:
 				ui.editorGUI.editData = this.editorJointObject;
@@ -2597,8 +2610,26 @@ const _B2dEditor = function () {
 					if(this.selectedTool == this.tool_POLYDRAWING){
 						this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
 						if (this.activeVertices && this.activeVertices.length > 2) {
-							var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
-							if (bodyObject) this.buildBodyFromObj(bodyObject);
+							if(ui.editorGUI.editData.isPhysicsObject){
+								const bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
+								if (bodyObject){
+									bodyObject.colorFill = [ui.editorGUI.editData.colorFill];
+									bodyObject.colorLine = [ui.editorGUI.editData.colorLine];
+									bodyObject.lineWidth = [ui.editorGUI.editData.lineWidth];
+									bodyObject.transparancy = [ui.editorGUI.editData.transparancy];
+									console.log(bodyObject);
+									this.buildBodyFromObj(bodyObject);
+								}
+							}else{
+								const graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+								if (graphicObject) {
+									graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+									graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+									graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
+									graphicObject.transparancy = ui.editorGUI.editData.transparancy;
+									this.buildGraphicFromObj(graphicObject);
+								}
+							}
 						}
 					}else{
 						if(this.activeVertices[0].tempPoint2){
@@ -2611,6 +2642,10 @@ const _B2dEditor = function () {
 						}
 						const graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 						if (graphicObject) {
+							graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+							graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+							graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
+							graphicObject.transparancy = ui.editorGUI.editData.transparancy;
 							this.buildGraphicFromObj(graphicObject);
 						}
 
