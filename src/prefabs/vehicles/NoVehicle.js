@@ -6,6 +6,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import * as MobileController from '../../utils/MobileController'
 
 
 export class NoVehicle extends BaseVehicle {
@@ -53,6 +54,7 @@ export class NoVehicle extends BaseVehicle {
 
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
         this.character.attachedToVehicle = false;
+        MobileController.showCharacterControls();
     }
     patchJoints(){
         const calculateJointDistance = (joint1, joint2, joint3) =>{

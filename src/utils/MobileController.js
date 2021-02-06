@@ -9,10 +9,19 @@ import * as SaveManager from "./SaveManager";
 let layoutHolder;
 let arrowLeft;
 let arrowRight;
+let accelerateButtons;
 let accelDown;
 let accelUp;
 let flip;
 let pauseButton;
+let actionButton;
+let ejectButton;
+
+let dpadHolder;
+let dpadLeft;
+let dpadRight;
+let dpadUp;
+let dpadDown;
 
 export const init = () => {
 
@@ -50,7 +59,7 @@ export const init = () => {
 	`;
 	layoutHolder.appendChild(rotateButtons);
 
-	const accelerateButtons = document.createElement('div');
+	accelerateButtons = document.createElement('div');
 	accelDown = createButton('accel', buttonSize, accelerateButtons, buttonMargin, true);
 	accelUp = createButton('accel', buttonSize, accelerateButtons, buttonMargin);
 	accelUp.style.marginBottom = verticalAngularOffset;
@@ -67,6 +76,36 @@ export const init = () => {
 	pauseButton.style.margin = '20px';
 
 	layoutHolder.appendChild(accelerateButtons);
+
+	ejectButton = createButton('eject', buttonSize * .5, layoutHolder, buttonMargin);
+	ejectButton.style.position = 'absolute';
+	ejectButton.style.bottom = '120px';
+	ejectButton.style.left = '0';
+	ejectButton.style.margin = '60px';
+
+	actionButton = createButton('action', buttonSize * .5, layoutHolder, buttonMargin);
+	actionButton.style.position = 'absolute';
+	actionButton.style.bottom = '120px';
+	actionButton.style.right = '0';
+	actionButton.style.margin = '60px';
+
+	dpadHolder = document.createElement('div');
+
+	const dpadSpread = 40;
+	const dpadScale = .8;
+	dpadUp = createButton('dpad', buttonSize * dpadScale, dpadHolder, buttonMargin, false, `translate(0, -${dpadSpread}px)`);
+	dpadDown = createButton('dpad', buttonSize * dpadScale, dpadHolder, buttonMargin, false, `rotate(180deg) translate(0, -${dpadSpread}px)`);
+	dpadLeft = createButton('dpad', buttonSize * dpadScale, dpadHolder, buttonMargin, false, `rotate(90deg) translate(0, -${dpadSpread}px)`);
+	dpadRight = createButton('dpad', buttonSize * dpadScale, dpadHolder, buttonMargin, false, `rotate(270deg) translate(0, -${dpadSpread}px)`);
+
+	dpadHolder.style = `
+	position:absolute;
+	right:150px;
+	bottom:120px;
+	`;
+	layoutHolder.appendChild(dpadHolder);
+
+
 	resize();
 	hide();
 
@@ -99,12 +138,32 @@ export const resize = () => {
 	pauseButton.style.width = `${pauseButonSize}px`
 	pauseButton.style.height = `${pauseButonSize}px`
 }
+export const showActionButton = () => {
+	actionButton.style.display = 'block'
+}
+export const hideActionButton = () => {
+	actionButton.style.display = 'none'
+}
+export const showCharacterControls = () => {
+	accelerateButtons.style.display = 'none';
+	dpadHolder.style.display = 'block';
+	ejectButton.style.display = 'none';
+}
+export const showVehicleControls = () => {
+	accelerateButtons.style.display = 'block';
+	dpadHolder.style.display = 'none';
+	ejectButton.style.display = 'block';
+}
 
 export const hide = () => {
 	if (layoutHolder) layoutHolder.style.display = 'none';
 }
 export const show = () => {
 	if (layoutHolder) layoutHolder.style.display = 'block';
+}
+export const reset = ()=>{
+	hideActionButton();
+	showVehicleControls();
 }
 
 export const isMobile = () => {
@@ -124,13 +183,14 @@ const isIos = () => {
 const isIOSStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
 
-const createButton = (type, size, target, margin, mirrorX) => {
+const createButton = (type, size, target, margin, mirrorX, transform) => {
 	const box = 100;
 	const svgElement = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
 	svgElement.setAttributeNS(null, "viewBox", `0 0 ${box} ${box}`);
 	svgElement.setAttributeNS(null, "width", `${size}`);
 	svgElement.setAttributeNS(null, "height", `${size}`);
-	const generatedHTML =
+
+	let generatedHTML =
 		`
 	<style>.mc5 {display: inline;fill-rule: evenodd;clip-rule: evenodd;fill: #fff}	</style><linearGradient id="edge_1_" gradientUnits="userSpaceOnUse" x1="7599.08" y1="7903.88" x2="9647.08" y2="7903.88"	gradientTransform="matrix(0 -.04883 -.04883 0 435.932 471.049)"><stop offset="0" stop-color="#383838" /><stop offset="1" stop-color="#585858" /></linearGradient><path id="edge" d="M80.3 80.3C88.7 72 92.9 61.9 92.9 50c0-11.8-4.2-21.9-12.6-30.3C72 11.3 61.9 7.1 50 7.1c-11.9 0-22 4.2-30.3 12.6C11.3 28.1 7.1 38.2 7.1 50c0 11.9 4.2 22 12.6 30.3C28 88.7 38.1 92.9 50 92.9c11.9 0 22-4.2 30.3-12.6m5-65.7C95.1 24.4 100 36.2 100 50s-4.9 25.6-14.7 35.3C75.6 95.1 63.8 100 50 100c-13.9 0-25.7-4.9-35.4-14.7C4.9 75.6 0 63.8 0 50s4.9-25.6 14.6-35.4C24.3 4.9 36.1 0 50 0c13.8 0 25.6 4.9 35.3 14.6" fill="url(#edge_1_)" /><path id="bg"	d="M80.3 80.3C72 88.7 61.9 92.9 50 92.9c-11.9 0-22-4.2-30.3-12.6C11.3 72 7.1 61.9 7.1 50c0-11.8 4.2-21.9 12.6-30.3C28 11.3 38.1 7.1 50 7.1c11.9 0 22 4.2 30.3 12.6 8.4 8.4 12.6 18.5 12.6 30.3 0 11.9-4.2 22-12.6 30.3"	fill="#383838" />
 	${type === 'arrow'  ? `
@@ -148,9 +208,24 @@ const createButton = (type, size, target, margin, mirrorX) => {
 	${type === 'exit' ? `
 	<g id="exit"><path class="mc5"d="M31.3 74.6c-3.5 0-6.3-2.8-6.3-6.3V56.8h7.3v10.5h34.9V32.4H32.3V43H25V31.4c0-3.5 2.8-6.3 6.3-6.3h36.9c3.5 0 6.3 2.8 6.3 6.3v36.9c0 3.5-2.8 6.3-6.3 6.3H31.3zm12.1-15.2l5.9-5.9H25.1v-7.3h24.2l-5.9-5.9 5.1-5.1 14.6 14.6-14.6 14.7-5.1-5.1z" id="exit-to-app_6_" /></g>
 	` : ''}
+	${type === 'action' ? `
+	<path class="mc5" d="M58.9 63.1l-2-5.4H43.1l-2 5.4h-7.7l12.3-32h8.5l12.3 32h-7.6zM50 37.9l-5 13.8h10l-5-13.8z" id="action"/>
+	` : ''}
+	${type === 'eject' ? `
+	<g id="eject"><circle class="mc5" cx="56.6" cy="20.1" r="5.3"/><path class="mc5" d="M41.6 66.2l15.6 3.7-12.1 16.3-3.5-20zm5.2 13.6l5.8-7.8-7.5-1.8 1.7 9.6zM31 55.8l5.2 1.2 3.2-13.4 13.4 3.2 4.4-18.7-5.3-1.2-3.1 13.4-13.4-3.2z"/><path class="mc5" d="M59.9 39.8l5.2 1.2-5.6 23.9-18.7-4.4L43.3 50l13.4 3.2z"/></g>
+	` : ''}
 	`;
+
+	if(type === 'dpad'){
+		generatedHTML = `<svg version="1.1" id="l" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 61 75.5" xml:space="preserve"><style>.mc6{fill:#383838}</style><linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="652.814" y1="13141.685" x2="2291.214" y2="13141.685" gradientTransform="matrix(0 -.04608 -.04608 0 636.09 105.583)"><stop offset="0" stop-color="#383838"/><stop offset="1" stop-color="#585858"/></linearGradient><path d="M56 0c3.3 0 5 1.7 5 5v40L30.5 75.5 0 45V5c0-3.3 1.7-5 5-5h51m1 5c0-.7-.3-1-1-1H5c-.7 0-1 .3-1 1v38.3l26.5 26.5L57 43.3V5" fill="url(#SVGID_1_)"/><path class="mc6" d="M57 5v38.3L30.5 69.9 4 43.3V5c0-.7.3-1 1-1h51c.7 0 1 .3 1 1"/><path class="mc6" d="M31 15c-.3 0-.5.1-.7.3l-5 5c-.3.2-.3.5-.3.7v.4c.2.4.5.6.9.6h10c.4 0 .7-.2.9-.6.2-.4.1-.8-.2-1.1l-5-5c-.1-.2-.4-.3-.6-.3"/><path d="M31 15c.2 0 .5.1.7.3l5 5c.3.3.4.7.2 1.1-.2.4-.5.6-.9.6H26c-.4 0-.7-.2-.9-.6V21c0-.2 0-.5.2-.7l5-5c.2-.2.4-.3.7-.3" fill="#666"/></svg>`;
+	}
+
 	if (mirrorX) svgElement.style.transform = 'scale(-1, 1)';
 	if (margin) svgElement.style.margin = margin;
+	if (transform){
+		svgElement.style.position = 'absolute';
+		svgElement.style.transform = transform;
+	}
 	svgElement.innerHTML = generatedHTML
 	svgElement.style.pointerEvents = 'all';
 	svgElement.style.cursor = 'pointer';
@@ -190,6 +265,24 @@ const handleButton = event => {
 			break
 		case pauseButton:
 			fireKeyboardEvent(buttonDown, 80);
+			break
+		case dpadUp:
+			fireKeyboardEvent(buttonDown, charFlipped ? 83 : 87);
+			break
+		case dpadDown:
+			fireKeyboardEvent(buttonDown, charFlipped ? 87 : 83);
+			break
+		case dpadLeft:
+			fireKeyboardEvent(buttonDown, charFlipped ? 65 : 68);
+			break
+		case dpadRight:
+			fireKeyboardEvent(buttonDown, charFlipped ? 68 : 65);
+			break
+		case ejectButton:
+			fireKeyboardEvent(buttonDown, 90);
+			break
+		case actionButton:
+			fireKeyboardEvent(buttonDown, 69);
 			break
 	}
 

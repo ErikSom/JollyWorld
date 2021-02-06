@@ -8,6 +8,7 @@ import {
 } from '../../Settings';
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
 import {Humanoid} from './Humanoid'
+import * as MobileController from '../../utils/MobileController'
 
 export class Character extends Humanoid {
     constructor(target) {
@@ -34,6 +35,13 @@ export class Character extends Humanoid {
         if(this.hat) this.hat.detach();
         this.hat = new hatClass(this, this.lookupObject.head, this.lookupObject.body);
         if(this.flipped) this.hat.flip();
+
+        if(this.hat.isRopeHat){
+            MobileController.showActionButton();
+        }else{
+            MobileController.hideActionButton();
+        }
+
         this.setExpression(Humanoid.EXPRESSION_SPECIAL);
     }
     update() {
@@ -112,15 +120,12 @@ export class Character extends Humanoid {
     }
 
     detachFromVehicle(force) {
-        console.log("DIE!!");
         if (!force) force = 0;
         if (!this.attachedToVehicle) return;
 
-        console.log(this.lookupObject);
-
         const vehicleJoints = this.mainPrefabClass.destroyConnectedJoints['head'];
 
-        console.log(vehicleJoints);
+        MobileController.showCharacterControls();
 
         if(vehicleJoints){
             vehicleJoints.forEach((jointName) => {

@@ -611,6 +611,7 @@ function Game() {
     this.playWorld = function (firstEntry) {
         this.movementBuffer = [];
         MobileController.openFullscreen();
+        MobileController.showVehicleControls();
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
         if(firstEntry) this.levelStartTime = Date.now();
@@ -709,11 +710,13 @@ function Game() {
         this.pause = true;
         this.run = false;
         ui.showPauseMenu();
+        MobileController.hide();
     }
     this.unpauseGame = function(){
         this.pause = false;
         this.run = true;
         ui.hidePauseMenu();
+        MobileController.show();
     }
     this.resetGame = function(){
         this.levelWon = false;
@@ -812,12 +815,13 @@ function Game() {
                 ui.showWinScreen(s);
             }
             this.editor.ui.showConfetti();
-
+            MobileController.hide();
         }
     }
     this.lose = function () {
         if (!this.gameOver && !this.levelWon && this.gameState === this.GAMESTATE_NORMALPLAY) {
             ui.showGameOver();
+            MobileController.hide();
             this.gameOver = true;
         }
     }
@@ -868,6 +872,8 @@ function Game() {
         ui.showLevelBanner();
         this.editor.ui.hide();
         this.resetGame();
+
+        MobileController.hide();
 
         game.gameState = game.GAMESTATE_PREVIEW;
     }

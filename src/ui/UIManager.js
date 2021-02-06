@@ -855,8 +855,8 @@ function UIManager() {
             divWrapper.appendChild(checkPointButton);
 
             checkPointButton.addEventListener('click', () => {
-                game.resetWorld(true);
                 game.unpauseGame();
+                game.resetWorld(true);
             })
 
             let restartButton = document.createElement('div');
@@ -1076,6 +1076,7 @@ function UIManager() {
             customGUIContainer.appendChild(winScreen.domElement);
             winScreen.domElement.style.position = 'absolute';
         }
+
         winScreen.domElement.style.visibility = 'visible';
         winLogo.style.visibility = 'visible';
 
