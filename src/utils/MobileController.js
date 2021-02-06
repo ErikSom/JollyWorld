@@ -139,17 +139,21 @@ export const resize = () => {
 	pauseButton.style.height = `${pauseButonSize}px`
 }
 export const showActionButton = () => {
+	if (!layoutHolder) return;
 	actionButton.style.display = 'block'
 }
 export const hideActionButton = () => {
+	if (!layoutHolder) return;
 	actionButton.style.display = 'none'
 }
 export const showCharacterControls = () => {
+	if (!layoutHolder) return;
 	accelerateButtons.style.display = 'none';
 	dpadHolder.style.display = 'block';
 	ejectButton.style.display = 'none';
 }
 export const showVehicleControls = () => {
+	if (!layoutHolder) return;
 	accelerateButtons.style.display = 'block';
 	dpadHolder.style.display = 'none';
 	ejectButton.style.display = 'block';
