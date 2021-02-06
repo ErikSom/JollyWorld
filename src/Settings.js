@@ -31,8 +31,8 @@ export var Settings = {
     detachForce:300,
     characterLeanSpeed:2,
     availableCharacters:4,
-    availableVehicles:['Bike', 'DirtBike', 'NoVehicle'],
-    vehicleLayers:{'Bike':68, 'DirtBike':74, 'NoVehicle':50}, // we need the layers if we want to be able to switch vehicles, so we can correct the level
+    availableVehicles:['Bike', 'DirtBike', 'NoVehicle', 'Skateboard'],
+    vehicleLayers:{'Bike':68, 'DirtBike':74, 'NoVehicle':50, 'Skateboard':67}, // we need the layers if we want to be able to switch vehicles, so we can correct the level
     /*EDITOR*/
     autoSaveInterval:5000,
     availableFonts:["Lily Script One", "Karla","Squada One","Arapey","Economica","Erica One","Trochut","Spinnaker"],
@@ -48,6 +48,7 @@ export var Settings = {
     /*MOBILE*/
     touchButtonSize:80,
     touchControlsAlpha:0.6,
+    iosReflowInterval:500,
 
     /*LIMITS*/
     motorSpeedLimit:100,
@@ -64,6 +65,7 @@ export var Settings = {
     // REDIRECT:'https://newbackend--jollyworld.netlify.app/login.html', // TODO change
     REDIRECT:'https://jollyworld.app/login.html',
     GAMEURI: 'https://jollyworld.app',
+    YTAPIKEY:'AIzaSyDjy-Fw9ocqXRL2Axjj5zvBhgIXTJLcLY0',
     levelsPerRequest:100,
 
 

@@ -433,7 +433,20 @@ const _B2dEditor = function () {
 				break
 			case this.tool_POLYDRAWING:
 			case this.tool_PEN:
-				ui.destroyEditorGUI();
+				ui.editorGUI.editData = this.editorGeometryObject;
+
+				if(i === this.tool_POLYDRAWING) targetFolder = ui.editorGUI.addFolder('draw poly shapes');
+				if(i === this.tool_PEN) targetFolder = ui.editorGUI.addFolder('draw bezier graphics');
+				targetFolder.open();
+
+				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
+				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				if(i === this.tool_POLYDRAWING) targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
+
+				ui.editorGUI.domElement.style.minHeight = '200px';
+
 				break
 			case this.tool_JOINTS:
 				ui.editorGUI.editData = this.editorJointObject;
@@ -1902,7 +1915,7 @@ const _B2dEditor = function () {
 
 		if(this.editorSettingsObject.showPlayerHistory) this.drawPlayerHistory();
 
-		if(this.editorSettingsObject.showCameraLines){
+		if(this.editorSettingsObject.showCameraLines && this.selectedTool !== this.tool_VERTICEEDITING){
 			const camera = this.cameraHolder;
 			// Draw 0,0 reference
 
@@ -2464,6 +2477,7 @@ const _B2dEditor = function () {
 	}
 
 	this.onMouseDown = function (evt) {
+		const camera = B2dEditor.container.camera || B2dEditor.container;
 		if (this.editing) {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
@@ -2596,8 +2610,26 @@ const _B2dEditor = function () {
 					if(this.selectedTool == this.tool_POLYDRAWING){
 						this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
 						if (this.activeVertices && this.activeVertices.length > 2) {
-							var bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
-							if (bodyObject) this.buildBodyFromObj(bodyObject);
+							if(ui.editorGUI.editData.isPhysicsObject){
+								const bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
+								if (bodyObject){
+									bodyObject.colorFill = [ui.editorGUI.editData.colorFill];
+									bodyObject.colorLine = [ui.editorGUI.editData.colorLine];
+									bodyObject.lineWidth = [ui.editorGUI.editData.lineWidth];
+									bodyObject.transparancy = [ui.editorGUI.editData.transparancy];
+									console.log(bodyObject);
+									this.buildBodyFromObj(bodyObject);
+								}
+							}else{
+								const graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
+								if (graphicObject) {
+									graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+									graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+									graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
+									graphicObject.transparancy = ui.editorGUI.editData.transparancy;
+									this.buildGraphicFromObj(graphicObject);
+								}
+							}
 						}
 					}else{
 						if(this.activeVertices[0].tempPoint2){
@@ -2610,6 +2642,10 @@ const _B2dEditor = function () {
 						}
 						const graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
 						if (graphicObject) {
+							graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+							graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+							graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
+							graphicObject.transparancy = ui.editorGUI.editData.transparancy;
 							this.buildGraphicFromObj(graphicObject);
 						}
 
@@ -2737,7 +2773,7 @@ const _B2dEditor = function () {
 						const verticeY = this.verticeEditingSprite.y + vy;
 						const difX = verticeX-mousePixiPos.x;
 						const difY = verticeY-mousePixiPos.y;
-						const minDistance = 5;
+						const minDistance = 5 / camera.scale.x;
 						if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
 							clickVerticeIndex = index;
 						}
@@ -3669,8 +3705,8 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_SELECT) {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 
-
-					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <=3 && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<=3){
+					const minSelectPixi = 3/Settings.PTM;
+					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
 						let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 
 						if (highestObject) {
@@ -3681,7 +3717,6 @@ const _B2dEditor = function () {
 							}
 						}
 					}else{
-
 						this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
 						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
 
@@ -3969,11 +4004,7 @@ const _B2dEditor = function () {
 			this.customDebugDraw = null;
 			this.activeVertices = [];
 			this.updateSelection();
-
-			if([this.tool_VERTICEEDITING, this.tool_CAMERA].includes(this.selectedTool)){
-				this.selectTool(this.tool_SELECT);
-			}
-
+			this.selectTool(this.tool_SELECT);
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
 				if(this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN){
@@ -4776,7 +4807,6 @@ const _B2dEditor = function () {
 							x: controller.targetValue,
 							y: 0
 						});
-						
 					} else if (controller.property == "y") {
 						//bodies & sprites & prefabs
 
@@ -6487,6 +6517,8 @@ const _B2dEditor = function () {
 		container.y = obj.y;
 		container.rotation = obj.rotation;
 		container.visible = obj.visible;
+
+		container.alpha = obj.transparancy;
 
 		var originalGraphic = new PIXI.Graphics();
 		container.addChild(originalGraphic);

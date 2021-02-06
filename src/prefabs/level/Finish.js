@@ -3,6 +3,7 @@ import * as Box2D from '../../../libs/Box2D'
 import {
     game
 } from "../../Game";
+import { Humanoid } from '../humanoids/Humanoid';
 
 class Finish extends PrefabManager.basePrefab {
     constructor(target) {
@@ -42,6 +43,9 @@ class Finish extends PrefabManager.basePrefab {
 
             const otherBody = contact.GetFixtureA() == self.hitCheck ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
             if(otherBody.mainCharacter){
+                const prefabClass = game.editor.retrieveClassFromBody(otherBody);
+                if(prefabClass && prefabClass.character) prefabClass.character.setExpression(Humanoid.EXPRESSION_SPECIAL);
+
                 game.win();
             }
         }

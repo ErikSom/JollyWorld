@@ -13,6 +13,7 @@ export default class Hat {
 		this.hatOffsetLength = 0;
 		this.hatOffsetAngle = 0;
 		this.texture = "";
+		this.blockControls = false;
 	}
 	attach(){
 		const bd = new Box2D.b2BodyDef();

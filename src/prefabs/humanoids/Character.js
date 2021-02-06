@@ -8,6 +8,7 @@ import {
 } from '../../Settings';
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
 import {Humanoid} from './Humanoid'
+import * as MobileController from '../../utils/MobileController'
 
 export class Character extends Humanoid {
     constructor(target) {
@@ -34,6 +35,14 @@ export class Character extends Humanoid {
         if(this.hat) this.hat.detach();
         this.hat = new hatClass(this, this.lookupObject.head, this.lookupObject.body);
         if(this.flipped) this.hat.flip();
+
+        if(this.hat.isRopeHat){
+            MobileController.showActionButton();
+        }else{
+            MobileController.hideActionButton();
+        }
+
+        this.setExpression(Humanoid.EXPRESSION_SPECIAL);
     }
     update() {
         super.update();
@@ -61,18 +70,21 @@ export class Character extends Humanoid {
 
     lean(dir) {
         const velocity = Settings.characterLeanSpeed * dir;
+        if(this.hat && this.hat.isRopeHat && this.hat.blockControls){
 
-        if(!this.attachedToVehicle){
-            this.lookupObject['body'].SetAngularVelocity(velocity);
         }else{
-            const leanedBodies = [];
-            this.vehicleJoints.forEach(joint=> {
-                const vehicleBody = joint.GetBodyB();
-                if(!leanedBodies.includes(vehicleBody)){
-                    vehicleBody.SetAngularVelocity(velocity);
-                    leanedBodies.push(vehicleBody);
-                }
-            });
+            if(!this.attachedToVehicle){
+                this.lookupObject['body'].SetAngularVelocity(velocity);
+            }else{
+                const leanedBodies = [];
+                this.vehicleJoints.forEach(joint=> {
+                    const vehicleBody = joint.GetBodyB();
+                    if(!leanedBodies.includes(vehicleBody)){
+                        vehicleBody.SetAngularVelocity(velocity);
+                        leanedBodies.push(vehicleBody);
+                    }
+                });
+            }
         }
     }
 
@@ -112,6 +124,8 @@ export class Character extends Humanoid {
         if (!this.attachedToVehicle) return;
 
         const vehicleJoints = this.mainPrefabClass.destroyConnectedJoints['head'];
+
+        MobileController.showCharacterControls();
 
         if(vehicleJoints){
             vehicleJoints.forEach((jointName) => {
