@@ -281,6 +281,14 @@ function Game() {
 
         window.addEventListener('wheel', this.onMouseWheel.bind(this), {passive:false});
         window.addEventListener('resize', this.handleResize.bind(this));
+
+        if(MobileController.isMobile() && MobileController.isIos()){
+            // ios reflow fix
+            setInterval(()=>{
+                this.handleResize();
+            }, Settings.iosReflowInterval);
+        }
+
         window.addEventListener('hashchange', ()=>{
             const id = location.hash.split('/')[0].substr(1);
             if(id.length === 21  && this.currentLevelData && id !== this.currentLevelData.id){
@@ -417,6 +425,8 @@ function Game() {
         const w = window.innerWidth;
         const h = window.innerHeight;
 
+        if(w === this.oldInnerWidth && h === this.oldInnerHeight) return;
+
         this.canvas.style.width = `${w}px`;
         this.canvas.style.height = `${h}px`;
         this.app.renderer.resize(w, h);
@@ -442,6 +452,9 @@ function Game() {
             }
         }
         MobileController.resize();
+
+        this.oldInnerWidth = window.innerWidth;
+        this.oldInnerHeight = window.innerHeight;
     }
 
     this.getBodyAtMouse = function () {

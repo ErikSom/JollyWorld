@@ -48,6 +48,7 @@ export var Settings = {
     /*MOBILE*/
     touchButtonSize:80,
     touchControlsAlpha:0.6,
+    iosReflowInterval:500,
 
     /*LIMITS*/
     motorSpeedLimit:100,

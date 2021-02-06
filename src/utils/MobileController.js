@@ -176,7 +176,7 @@ const isIpad = () => {
 	return ((navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) && !window.MSStream) || navigator.userAgent.match(/(iPad)/);
 }
 
-const isIos = () => {
+export const isIos = () => {
 	const userAgent = window.navigator.userAgent.toLowerCase();
 	return (/iphone|ipad|ipod/.test(userAgent) || isIpad());
 }
