@@ -7721,6 +7721,13 @@ const _B2dEditor = function () {
 		body.myRTCache = cache;
 		body.myDecalEntry = decal;
 
+		if (body.isFlesh && body.myFlesh) {
+			body.myFlesh.pluginName = 'spriteMasked';
+		}
+
+		// change plugin, this is workground for bugged devices
+		// should solve
+		body.myTexture.originalSprite.pluginName = 'spriteMasked';
 		body.myTexture.originalSprite.texture = decal.decalRT;
 	
 	}
