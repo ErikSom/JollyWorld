@@ -6845,11 +6845,15 @@ const _B2dEditor = function () {
 	}
 
  	this.mirrorPrefab = function(prefabClass, centerObjectName){
-		const objects = [].concat(prefabClass.lookupObject._bodies, prefabClass.lookupObject._textures);
+		let objects = [].concat(prefabClass.lookupObject._bodies, prefabClass.lookupObject._textures);
 
 		prefabClass.lookupObject._joints.forEach(joint=>{
 			if(joint instanceof PIXI.Sprite) objects.push(joint);
 		})
+
+		if(prefabClass.isCharacter){
+			objects = objects.concat(prefabClass.vehicleParts);
+		}
 
 		const centerObject = prefabClass.lookupObject[centerObjectName];
 		const flippedJoints = [];
@@ -6923,7 +6927,19 @@ const _B2dEditor = function () {
 					let keyA = joint.GetBodyA().mySprite ? joint.GetBodyA().mySprite.data.prefabInstanceName : joint.GetBodyA().key;
 					let keyB = joint.GetBodyB().mySprite ? joint.GetBodyB().mySprite.data.prefabInstanceName : joint.GetBodyB().key;
 
-					if(keyA !== keyB){
+
+					let shouldDestroy = keyA !== keyB;
+
+					if(prefabClass.isCharacter){
+						shouldDestroy = false;
+						if(joint.GetBodyA().mainCharacter){
+							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVehiclePart) || joint.GetBodyB().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+						}else{
+							if((!joint.GetBodyA().mainCharacter && !joint.GetBodyA().isVehiclePart) || joint.GetBodyA().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+						}
+					}
+
+					if(shouldDestroy){
 						destroyJoints.push(joint);
 					}else if(!flippedJoints.includes(joint)){
 

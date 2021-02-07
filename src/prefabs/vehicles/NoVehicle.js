@@ -183,7 +183,7 @@ export class NoVehicle extends BaseVehicle {
         })
     }
     flip(){
-        
+        this.character.flip(true);
     }
     update() {
         super.update();

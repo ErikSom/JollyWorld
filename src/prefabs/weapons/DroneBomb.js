@@ -173,7 +173,7 @@ class DroneBomb extends Explosive {
 					}
 					break;
 
-				}else if(this.prefabObject.settings.chase === DroneBomb.chaseTypes.anyCharacter && body.isCharacter){
+				}else if(this.prefabObject.settings.chase === DroneBomb.chaseTypes.anyCharacter && body.isHumanoid){
 
 					game.world.RayCast(this.rayCallback, this.body.GetPosition(), body.GetPosition());
 					if (this.rayCallback.m_hit){
@@ -283,7 +283,7 @@ class DroneBomb extends Explosive {
 						self.set('active', true);
 					}
 				}else if(self.activateOn == Explosive.activateOnTypes.anyCharacter){
-					if(otherFixture.GetBody().isCharacter){
+					if(otherFixture.GetBody().isHumanoid){
 						self.set('active', true);
 					}
 				}

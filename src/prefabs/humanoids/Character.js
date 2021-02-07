@@ -16,14 +16,16 @@ export class Character extends Humanoid {
         this.hat = undefined;
         this.attachedToVehicle = true;
         this.vehicleJoints = [];
+        this.vehicleParts = [];
+        this.isCharacter = true;
     }
 
     init() {
         super.init();
     }
 
-    flip(){
-        if(this.attachedToVehicle){
+    flip(noVehicleOverride){
+        if(this.attachedToVehicle && !noVehicleOverride){
             game.vehicle.flip();
             this.flipped = !this.flipped;
         }
@@ -96,6 +98,9 @@ export class Character extends Humanoid {
     addJoint(joint, bodyB){
         if(bodyB.isVehiclePart){
             this.vehicleJoints.push(joint);
+            if(!bodyB.mySprite.data.prefabInstanceName && bodyB.GetType() != Box2D.b2BodyType.b2_staticBody){
+                this.vehicleParts.push(bodyB);
+            }
         }
     }
     doCollisionUpdate(update) {

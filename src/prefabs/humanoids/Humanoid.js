@@ -62,7 +62,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             if (body.mySprite.data.groups.indexOf('.flesh') >= 0) {
 
                 body.isFlesh = true;
-                body.isCharacter = true;
+                body.isHumanoid = true;
                 game.editor.prepareBodyForDecals(body);
 
                 var texture = body.myTexture;
