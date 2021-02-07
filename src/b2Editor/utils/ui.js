@@ -22,6 +22,7 @@ import {
     hashName
 } from "../../AssetList";
 import * as emitterManager from '../../utils/EmitterManager';
+import * as SaveManager from '../../utils/SaveManager'
 
 
 let toolGUI;
@@ -44,8 +45,6 @@ export let helpScreen;
 
 let uiContainer = document.getElementById('editor-ui-container');
 let customGUIContainer = document.getElementById('custom-gui');
-
-export let helpClosed = [];
 
 export const hide = function () {
     hideEditorPanels();
@@ -1752,7 +1751,8 @@ export const showPrompt = function (message, positivePrompt, negativePrompt) {
 export const showHelp = function (i) {
     removeShowHelp();
 
-    if (helpClosed[i]) return;
+    const userData = SaveManager.getLocalUserdata();
+    if (userData.helpClosed[i]) return;
 
     const loginGUIWidth = 320;
 
@@ -1771,7 +1771,9 @@ export const showHelp = function (i) {
     closeButton.setAttribute('class', 'closeWindowIcon');
     targetFolder.domElement.append(closeButton);
     closeButton.addEventListener('click', () => {
-        helpClosed[i] = true;
+        const userData = SaveManager.getLocalUserdata();
+        userData.helpClosed[i] = true;
+        SaveManager.updateLocaluserData(userData);
         removeShowHelp();
     });
 

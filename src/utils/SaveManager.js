@@ -12,12 +12,19 @@ export const SAVEKEYS = {
 }
 
 export const getLocalUserdata = function(){
-    const userData = loadData(SAVEKEYS.userData);
-    if(userData) return userData;
+    let userData = loadData(SAVEKEYS.userData);
+
     const defaultData = {
         applePWAModals:0,
         demoScrolls:0,
+        helpClosed:[],
     }
+
+    if(userData){
+        userData = Object.assign(defaultData, userData);
+        return userData;
+    }
+
     saveData(SAVEKEYS.userData, defaultData);
     return defaultData;
 }

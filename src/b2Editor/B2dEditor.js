@@ -6,6 +6,8 @@ import * as ui from "./utils/ui";
 import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
+import * as SaveManager from "../utils/SaveManager";
+
 
 import * as DS from './utils/DecalSystem';
 
@@ -532,7 +534,9 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'showCameraLines').onChange(onChange('showCameraLines'));
 
 				ui.editorGUI.editData.resetHelp = ()=>{
-					ui.helpClosed.length = 0;
+					const userData = SaveManager.getLocalUserdata();
+					userData.helpClosed = [];
+					SaveManager.updateLocaluserData(userData);
 				}
 				targetFolder.add(ui.editorGUI.editData, "resetHelp").name('reset help');
 
@@ -928,6 +932,16 @@ const _B2dEditor = function () {
 						this.humanUpdate = true;
 						this.targetValue = value
 					}.bind(controller));
+
+					// is Character is an admin feature
+					const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
+					if(Settings.admin) collisionTypes.push("Is character");
+					ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
+					targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
+						this.humanUpdate = true;
+						this.targetValue = collisionTypes.indexOf(value);
+					});
+
 				}
 				targetFolder.add(ui.editorGUI.editData, "fixed").onChange(function (value) {
 					this.humanUpdate = true;
@@ -944,14 +958,6 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "isVehiclePart").name("Is vehicle part").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
-				});
-				// is Character is an admin feature
-				const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
-				if(Settings.admin) collisionTypes.push("Is character");
-				ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
-				targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = collisionTypes.indexOf(value);
 				});
 
 				let bodyIsGroup = false;
@@ -5135,8 +5141,8 @@ const _B2dEditor = function () {
 						//body
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.collision = controller.targetValue;
-							this.setBodyCollision(body, controller.targetValue);
+							body.mySprite.data.collision[0] = controller.targetValue;
+							this.setBodyCollision(body, body.mySprite.data.collision);
 						}
 					} else if(controller.property == "instaKill"){
 						//body
@@ -6514,6 +6520,7 @@ const _B2dEditor = function () {
 		// backwards fix for restitution and friction
 		obj.restitution = [].concat(obj.restitution);
 		obj.friction = [].concat(obj.friction);
+		obj.collision = [].concat(obj.collision);
 
 		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
 		body.SetAngle(obj.rotation);
@@ -7060,6 +7067,7 @@ const _B2dEditor = function () {
 		groupedBodyObject.density = [];
 		groupedBodyObject.friction = [];
 		groupedBodyObject.restitution = [];
+		groupedBodyObject.collision = [];
 
 		// let bounds = {l:Number.POSITIVE_INFINITY, r:-Number.POSITIVE_INFINITY, u:-Number.POSITIVE_INFINITY, d:Number.POSITIVE_INFINITY};
 		let centerPoint = {
@@ -7136,10 +7144,13 @@ const _B2dEditor = function () {
 			groupedBodyObject.density = groupedBodyObject.density.concat(bodyObjects[i].mySprite.data.density);
 			groupedBodyObject.friction = groupedBodyObject.friction.concat(bodyObjects[i].mySprite.data.friction);
 			groupedBodyObject.restitution = groupedBodyObject.restitution.concat(bodyObjects[i].mySprite.data.restitution);
+			groupedBodyObject.collision = groupedBodyObject.collision.concat(bodyObjects[i].mySprite.data.collision);
 
 		}
+		groupedBodyObject.fixed = bodyObjects[0].mySprite.data.fixed;
+		groupedBodyObject.awake = bodyObjects[0].mySprite.data.awake;
 
-		var groupedBody = this.buildBodyFromObj(groupedBodyObject);
+		const groupedBody = this.buildBodyFromObj(groupedBodyObject);
 
 		groupedBody.mySprite.parent.swapChildren(groupedBody.mySprite, bodyObjects[0].mySprite);
 
@@ -7161,6 +7172,7 @@ const _B2dEditor = function () {
 		var density = bodyGroup.mySprite.data.density;
 		var friction = bodyGroup.mySprite.data.friction;
 		var restitution = bodyGroup.mySprite.data.restitution;
+		var collision = bodyGroup.mySprite.data.collision;
 
 		for (var i = 0; i < verts.length; i++) {
 			var bodyObject = new this.bodyObject;
@@ -7216,6 +7228,9 @@ const _B2dEditor = function () {
 			bodyObject.density = density[i];
 			bodyObject.friction = friction[i];
 			bodyObject.restitution = restitution[i];
+			bodyObject.collision = collision[i];
+			bodyObject.fixed = bodyGroup.mySprite.data.fixed;
+			bodyObject.awake = bodyGroup.mySprite.data.awake;
 
 			if (innerVerts[0] instanceof Array == true) { // a fix for earcut bodies being ungrouped
 				bodyObject.colorFill = [bodyObject.colorFill];
@@ -7225,14 +7240,15 @@ const _B2dEditor = function () {
 				bodyObject.density = [bodyObject.density];
 				bodyObject.friction = [bodyObject.friction];
 				bodyObject.restitution = [bodyObject.restitution];
+				bodyObject.collision = [bodyObject.collision];
 			}
 
 
 			bodyObject.radius = radius[i];
 
-			var body = this.buildBodyFromObj(bodyObject);
+			const body = this.buildBodyFromObj(bodyObject);
 
-			var container = body.mySprite.parent;
+			const container = body.mySprite.parent;
 			container.removeChild(body.mySprite);
 			container.addChildAt(body.mySprite, bodyGroup.mySprite.data.ID + i);
 
@@ -7385,7 +7401,7 @@ const _B2dEditor = function () {
 	}
 
 
-	this.setBodyCollision = function (body, collision) {
+	this.setBodyCollision = function (body, collisions) {
 		// COLLISION HELP
 		/*0) collides with everything
 		- nothing
@@ -7424,12 +7440,15 @@ const _B2dEditor = function () {
 
 		//TODO Bug when selection collision 4 and reset - body falls through fixtures
 
-		var fixture = body.GetFixtureList();
+		let fixture = body.GetFixtureList();
+		let index = collisions.length-1;
+
+		console.log("Set body collisions:", collisions);
 
 		while (fixture) {
+			const collision = collisions[index];
 			//TODO: Set collision for all fixtures
-			var filterData = fixture.GetFilterData();
-
+			const filterData = fixture.GetFilterData();
 
 			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 			else filterData.categoryBits = this.MASKBIT_NORMAL;
@@ -7456,8 +7475,10 @@ const _B2dEditor = function () {
 			}
 
 			fixture.SetFilterData(filterData);
-			
+
 			fixture = fixture.GetNext();
+
+			if(index>0) index--;
 			//
 		}
 	}
