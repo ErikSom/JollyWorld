@@ -390,7 +390,7 @@ export class RopeHat extends Hat {
 		if(this.frameJoint)	this.head.GetWorld().DestroyJoint(this.frameJoint);
 		if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
 		this.frameJoint = this.pulleyFrameJoint = null;
-		this.setDistanceJointEnabled(true);
+		if(this.ropeFired) this.setDistanceJointEnabled(true);
 	}
 
 	update() {
