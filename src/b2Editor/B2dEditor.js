@@ -5739,10 +5739,16 @@ const _B2dEditor = function () {
 				let difY = this.mousePosWorld.y - this.startSelectionPoint.y;
 
 				if(this.shiftDown){
-					const geometrySnapScaleWorld = Settings.geometrySnapScale / Settings.PTM;
-					difX = Math.floor(difX/geometrySnapScaleWorld) * geometrySnapScaleWorld;
-					difY = Math.floor(difY/geometrySnapScaleWorld) * geometrySnapScaleWorld;
+					difX *= Settings.PTM;
+					difX = Math.floor(difX/Settings.geometrySnapScale) * Settings.geometrySnapScale-1;
+					difX /= Settings.PTM;
+
+					difY *= Settings.PTM;
+					difY = Math.floor(difY/Settings.geometrySnapScale) * Settings.geometrySnapScale-1;
+					difY /= Settings.PTM;
 				}
+
+				console.log('new difx:', difX * Settings.PTM)
 
 				this.activeVertices = [];
 				this.activeVertices.push({
@@ -5776,9 +5782,13 @@ const _B2dEditor = function () {
 				let difY = this.mousePosWorld.y - this.startSelectionPoint.y;
 
 				if(this.shiftDown){
-					const geometrySnapScaleWorld = Settings.geometrySnapScale / Settings.PTM;
-					difX = Math.floor(difX/geometrySnapScaleWorld) * geometrySnapScaleWorld;
-					difY = Math.floor(difY/geometrySnapScaleWorld) * geometrySnapScaleWorld;
+					difX *= Settings.PTM;
+					difX = Math.floor(difX/Settings.geometrySnapScale) * Settings.geometrySnapScale-1;
+					difX /= Settings.PTM;
+
+					difY *= Settings.PTM;
+					difY = Math.floor(difY/Settings.geometrySnapScale) * Settings.geometrySnapScale-1;
+					difY /= Settings.PTM;
 				}
 
 				this.activeVertices.push({
@@ -7442,8 +7452,6 @@ const _B2dEditor = function () {
 
 		let fixture = body.GetFixtureList();
 		let index = collisions.length-1;
-
-		console.log("Set body collisions:", collisions);
 
 		while (fixture) {
 			const collision = collisions[index];
