@@ -220,7 +220,7 @@ function Game() {
         this.render();
 
         this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
-        this.editor.assetLists.vehicles = Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures);
+        this.editor.assetLists.vehicles = [].concat(Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures), Object.keys(PIXI.loader.resources["Mech.json"].textures));
         this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
         this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);
         this.editor.assetLists.nature = Object.keys(PIXI.loader.resources["Nature.json"].textures);
