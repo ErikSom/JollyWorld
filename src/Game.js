@@ -520,8 +520,10 @@ function Game() {
                     else if (Key.isDown(Key.D)  || Key.isDown(Key.RIGHT)) this.character.lean(1);
                 } else if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) {
                     this.character.positionBody('left');
+                    this.character.lean(-0.3);
                 } else if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) {
                     this.character.positionBody('right');
+                    this.character.lean(0.3);
                 }
 
                 if(Key.isPressed(Key.SPACE)){

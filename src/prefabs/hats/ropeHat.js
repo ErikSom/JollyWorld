@@ -61,6 +61,8 @@ export class RopeHat extends Hat {
 		}
 	}
 	detachRope() {
+		if(!this.ropeFired) return;
+
 		this.ropeFired = false;
 		this.blockControls = false;
 		this.releaseRope();
@@ -71,6 +73,7 @@ export class RopeHat extends Hat {
 		}
 		this.anchorTexture = null;
 	}
+	
 	attachRope(point, body, precise) {
 		this.ropeActive = true;
 		this.blockControls = true;
@@ -147,23 +150,19 @@ export class RopeHat extends Hat {
 			this.head.GetWorld().DestroyJoint(this.frameJoint);
 		}
 		if(enabled){
-			let distanceJointDef = new Box2D.b2DistanceJointDef();
-			distanceJointDef.Initialize(this.head, this.ropeEnd, this.head.GetPosition(), this.ropeEnd.GetPosition());
-			distanceJointDef.frequencyHz = 60;
-			distanceJointDef.dampingRatio = 1.0;
-			this.ropeHeadJoint = this.head.GetWorld().CreateJoint(distanceJointDef);
-
 			if(this.character.attachedToVehicle){
 				const frame = this.character.mainPrefabClass.lookupObject['frame'];
 				if(frame){
 					let ropeJointDef = new Box2D.b2RopeJointDef();
 					ropeJointDef.Initialize(frame, this.ropeEnd, frame.GetPosition(), this.ropeEnd.GetPosition());
-					const xd = frame.GetPosition().x - this.ropeEnd.GetPosition().x;
-					const yd = frame.GetPosition().y - this.ropeEnd.GetPosition().y;
-					ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
-
 					this.frameJoint = frame.GetWorld().CreateJoint(ropeJointDef);
 				}
+			}else{
+				let distanceJointDef = new Box2D.b2DistanceJointDef();
+				distanceJointDef.Initialize(this.head, this.ropeEnd, this.head.GetPosition(), this.ropeEnd.GetPosition());
+				distanceJointDef.frequencyHz = 60;
+				distanceJointDef.dampingRatio = 1.0;
+				 this.ropeHeadJoint = this.head.GetWorld().CreateJoint(distanceJointDef);
 			}
 		}
 	}
@@ -340,11 +339,12 @@ export class RopeHat extends Hat {
 		if (!this.revoluteJoint) return;
 
 		const angle = this.body.GetAngle();
-		const force = 100 * dir;
+
+		let baseForce = this.character.attachedToVehicle ? 100 : 20;
+
+		const force = baseForce * dir;
 		const xForce = force * Math.cos(angle);
 		const yForce = force * Math.sin(angle);
-
-		const drawPos = this.body.GetPosition().Clone().SelfAdd(new Box2D.b2Vec2(xForce/force, yForce/force));
 
 		this.body.ApplyForce(new Box2D.b2Vec2(xForce, yForce), this.body.GetPosition(), true);
 	}
@@ -376,18 +376,21 @@ export class RopeHat extends Hat {
 		}
 		this.oldDir = dir;
 	}
+	flip(){
+		this.detachRope();
+		super.flip();
+	}
 
 	detach(){
 		super.detach();
-		if (this.ropeFired){
-			this.detachRope();
-		}
+		this.detachRope();
 	}
 
 	detachFromVehicle(){
 		if(this.frameJoint)	this.head.GetWorld().DestroyJoint(this.frameJoint);
 		if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
-		this.frameJoint = this.pulleyJoint = null;
+		this.frameJoint = this.pulleyFrameJoint = null;
+		this.setDistanceJointEnabled(true);
 	}
 
 	update() {

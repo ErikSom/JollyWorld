@@ -69,6 +69,10 @@ export class Character extends Humanoid {
         }
         super.die();
     }
+    positionBody(direction){
+        if(this.hat && this.hat.blockControls) return;
+        super.positionBody(direction);
+    }
 
     lean(dir) {
         const velocity = Settings.characterLeanSpeed * dir;
@@ -148,8 +152,6 @@ export class Character extends Humanoid {
             })
         }
 
-        if(this.hat) this.hat.detachFromVehicle();
-
         //var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
         for (var i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -183,6 +185,8 @@ export class Character extends Humanoid {
         }
 
         this.attachedToVehicle = false;
+        if(this.hat) this.hat.detachFromVehicle();
+
     }
 }
 
