@@ -5,14 +5,17 @@ import {
 } from "../../Game";
 import {RopeHat} from '../hats/ropeHat'
 import {DirtBikeHelmet} from '../hats/dirtBikeHelmet'
+import {SkateHelmet} from '../hats/skateHelmet'
 
 const HAT_TYPES = {
 	ROPE:'Rope',
 	DIRTBIKEHELMET:'DirtBike',
+	SKATE:'Skate',
 }
 const HAT_VISUAL_OFFSET = {
     [HAT_TYPES.ROPE]:-75,
     [HAT_TYPES.DIRTBIKEHELMET]: 0,
+    [HAT_TYPES.SKATE]: 0,
 }
 
 const HAT_TYPES_ARR = Object.values(HAT_TYPES);
@@ -20,6 +23,7 @@ const HAT_TYPES_ARR = Object.values(HAT_TYPES);
 const hatTypeToClass = {
     [HAT_TYPES.ROPE]:RopeHat,
 	[HAT_TYPES.DIRTBIKEHELMET]:DirtBikeHelmet,
+	[HAT_TYPES.SKATE]:SkateHelmet,
 }
 
 class HatUpgrade extends PrefabManager.basePrefab {

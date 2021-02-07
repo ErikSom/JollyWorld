@@ -3,6 +3,8 @@ import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
 
 import {Humanoid} from '../humanoids/Humanoid';
+import { SkateHelmet } from '../hats/skateHelmet'
+
 
 import {
     game
@@ -60,10 +62,12 @@ class Skateboard extends BaseVehicle {
         this.legAnimator = game.world.CreateJoint(md);
         footRight.SetAwake(true);
 
+        this.character.setHat(SkateHelmet);
+
     }
     update() {
         super.update();
-        
+
         let globalFrame;
         if(this.character.alive){
             if(this.accel != 0){

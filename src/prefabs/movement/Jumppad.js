@@ -1,4 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
+import * as Box2D from '../../../libs/Box2D';
 import {
     game
 } from "../../Game";
@@ -12,18 +13,29 @@ class Jumppad extends PrefabManager.basePrefab {
     }
     init() {
         super.init();
-        this.jumppadTimer = Jumppad.settingsOptions["delay"].max * 1000.0;
+        this.jumppadTimer = Number.POSITIVE_INFINITY;
         this.jumppadDelay = this.prefabObject.settings.delay * 1000.0;
         this.ready = true;
+        this.pad = this.lookupObject.pad;
+        this.padEngine = this.lookupObject["pad_engine"];
+        this.padEngine.EnableMotor(false);
+
+
+        if(this.prefabObject.settings.isFixed){
+            this.lookupObject.platform.SetType(Box2D.b2BodyType.b2_staticBody);
+        }else{
+            this.lookupObject.platform.SetType(Box2D.b2BodyType.b2_dynamicBody);
+        }
+        console.log(this.lookupObject);
     }
     update() {
         super.update();
         if (PrefabManager.timerReady(this.jumppadTimer, this.jumppadDelay, true)) {
-            this.lookupObject["pad_engine"].EnableMotor(true);
-            this.lookupObject["pad_engine"].SetMaxMotorForce(this.prefabObject.settings.force * 10.0);
-            this.lookupObject["pad_engine"].SetMotorSpeed(50.0);
+            this.padEngine.EnableMotor(true);
+            this.padEngine.SetMaxMotorForce(this.prefabObject.settings.force * 10.0);
+            this.padEngine.SetMotorSpeed(50.0);
         } else if (PrefabManager.timerReady(this.jumppadTimer, this.jumppadDelay + Jumppad.JUMPPAD_RELEASE, true)) {
-            this.lookupObject["pad_engine"].EnableMotor(false);
+            this.padEngine.EnableMotor(false);
         } else if (PrefabManager.timerReady(this.jumppadTimer, this.jumppadDelay + Jumppad.JUMPPAD_RELEASED, false)) {
             this.ready = true;
         }
@@ -45,7 +57,7 @@ class Jumppad extends PrefabManager.basePrefab {
             if (self.ready) {
                 for (var i = 0; i < bodies.length; i++) {
                     body = bodies[i];
-                    if (body === self.lookupObject["pad"]) {
+                    if (body === self.pad) {
                         self.jumppadTimer = -0.001;
                         self.ready = false;
                     }
@@ -56,19 +68,21 @@ class Jumppad extends PrefabManager.basePrefab {
 }
 Jumppad.settings = Object.assign({}, Jumppad.settings, {
     "delay": 0.0,
-    "force": 0.0
+    "force": 1000,
+    "isFixed": false
 });
 Jumppad.settingsOptions = Object.assign({}, Jumppad.settingsOptions, {
     "delay": {
-        min: 0.0,
+        min: 0.1,
         max: 3.0,
         step: 0.1
     },
     "force": {
         min: 100,
-        max: 5000,
-        step: 100
-    }
+        max: 100000,
+        step: 1
+    },
+    "isFixed": false
 });
 
 PrefabManager.prefabLibrary.Jumppad = {
