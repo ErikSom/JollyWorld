@@ -1103,7 +1103,7 @@ function Game() {
         }
         if (this.run) {
             this.inputUpdate();
-            this.world.Step(Settings.physicsTimeStep, 4, 3);
+            this.world.Step(Settings.physicsTimeStep * game.editor.editorSettingsObject.gameSpeed, 4, 3);
             this.world.ClearForces();
             this.camera();
             PhysicsParticleEmitter.update();

@@ -93,7 +93,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetGameSpeed"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -225,6 +225,9 @@ export const doAction = function (actionData, target) {
             break;
         case "SetCameraZoom":
             game.editor.editorSettingsObject.cameraZoom = actionData.zoom;
+            break;
+        case "SetGameSpeed":
+            game.editor.editorSettingsObject.gameSpeed = actionData.gameSpeed;
             break;
         case "DealDamage":
             prefab.class.character.dealDamage(actionData.damage);
@@ -579,6 +582,20 @@ export const actionDictionary = {
             min: 0.1,
             max: 2.0,
             value: Settings.defaultCameraZoom,
+            step: 0.1,
+        },
+    },
+    /******************/
+    actionObject_SetGameSpeed: {
+        type: "SetGameSpeed",
+        gameSpeed: 1.0,
+    },
+    actionOptions_SetGameSpeed: {
+        gameSpeed: {
+            type: guitype_MINMAX,
+            min: 0.1,
+            max: 2.0,
+            value: 1.0,
             step: 0.1,
         },
     },

@@ -530,6 +530,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
+				targetFolder.add(ui.editorGUI.editData, 'gameSpeed', 0.1, 2.0).step(0.1).onChange(onChange('gameSpeed'));
 				targetFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
 				targetFolder.add(ui.editorGUI.editData, 'showCameraLines').onChange(onChange('showCameraLines'));
 
@@ -2049,7 +2050,7 @@ const _B2dEditor = function () {
 			e.flushDecalTasks();
 		});
 
-		this.deltaTime = Date.now() - this.currentTime;
+		this.deltaTime = (Date.now() - this.currentTime) * this.editorSettingsObject.gameSpeed;
 		this.currentTime = Date.now();
 
 		if (game.gameState == game.GAMESTATE_EDITOR) {
@@ -2388,6 +2389,7 @@ const _B2dEditor = function () {
 		this.showCameraLines = true;
 		this.backgroundColor = 0xD4D4D4;
 		this.cameraZoom = Settings.defaultCameraZoom;
+		this.gameSpeed = 1.0;
 	}
 	this.editorJointObject = new this.jointObject();
 
@@ -8515,6 +8517,7 @@ const _B2dEditor = function () {
 			arr[2] = obj.gravityY;
 			arr[3] = obj.backgroundColor;
 			arr[4] = obj.cameraZoom;
+			arr[5] = obj.gameSpeed;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -8660,6 +8663,7 @@ const _B2dEditor = function () {
 			obj.gravityY = arr[2];
 			obj.backgroundColor = arr[3] || 0xD4D4D4;
 			obj.cameraZoom = arr[4] !== undefined ? arr[4] : Settings.defaultCameraZoom;
+			obj.gameSpeed = arr[5] !== undefined ? arr[5] : 1.0;
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();
