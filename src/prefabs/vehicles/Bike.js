@@ -32,13 +32,15 @@ class Bike extends BaseVehicle {
     update() {
         super.update();
 
-        const wheelRotationSpeed = Math.abs(this.lookupObject.wheel_back.GetAngularVelocity())/4;
+        const wheelRotationSpeed = Math.abs(this.lookupObject.wheel_back.GetAngularVelocity())/10;
+        console.log("Wheel speed:");
         if(this.accel == 0){
-            console.log(wheelRotationSpeed, 'speeeed');
             AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
-            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop', 0.1, wheelRotationSpeed*1.5);
+            let idleVolume = Math.min(wheelRotationSpeed/15, 0.1);
+            if(idleVolume< 0.002) idleVolume = 0;
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop', idleVolume, Math.max(0.3, wheelRotationSpeed*1.5));
         }else{
-            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop', 0.5, wheelRotationSpeed);
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop', 0.3, Math.max(0.5, wheelRotationSpeed));
             AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
         }
     }

@@ -19,7 +19,6 @@ export const init = ()=>{
 		  `./assets/audio/${hashName('sfx.ac3')}`
 		],
 		sprite:sfxJSON.sprite,
-		html5:true,
 	  });
 
 	  sfx.once('load', function () {
@@ -34,27 +33,21 @@ export const init = ()=>{
 
 export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=0) => {
 	if(!sfxLoaded) return;
-	if(pitch<0.5){
-		 stopPrefabUniqueLoopSFX(prefabName, sfxName);
-		 return;
-	}
 
 	let soundId = null;
 	if(activeSounds[prefabName] && activeSounds[prefabName][sfxName]){
-		console.log("Play ref sound", prefabName, sfxName);
 		soundId = activeSounds[prefabName][sfxName];
 	}else {
 		soundId = sfx.play(sfxName);
 		sfx.loop(true, soundId);
 		if(!activeSounds[prefabName]) activeSounds[prefabName] = {};
 		activeSounds[prefabName][sfxName] = soundId;
-		console.log("Play ***new*** sound", prefabName, sfxName);
 	}
 
 	console.log(prefabName, sfxName, volume, pitch);
 
 	sfx.volume(volume, soundId);
-	sfx.rate(Math.min(4, pitch), soundId);
+	sfx.rate(Math.min(16, pitch), soundId);
 }
 export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 	if(!sfxLoaded) return;
@@ -67,11 +60,22 @@ export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 		sfx.loop(false, soundId);
 		sfx.stop(soundId);
 		delete activeSounds[prefabName][sfxName];
-		console.log("STOP ref sound", prefabName, sfxName);
 	}
 }
 export const stopAllSounds = ()=>{
 	if(!sfxLoaded) return;
+
+	Object.keys(activeSounds).forEach( key => {
+		const innerKeys = Object.keys(activeSounds[key]);
+		if(innerKeys){
+			innerKeys.forEach(innerKey => {
+				const soundId = activeSounds[key][innerKey];
+				sfx.loop(false, soundId);
+				sfx.stop(soundId);
+			})
+		}
+	})
+
 	sfx.stop();
 	activeSounds = {}
 }
