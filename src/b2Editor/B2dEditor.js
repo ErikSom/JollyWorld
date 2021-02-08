@@ -5710,8 +5710,6 @@ const _B2dEditor = function () {
 					difY /= Settings.PTM;
 				}
 
-				console.log('new difx:', difX * Settings.PTM)
-
 				this.activeVertices = [];
 				this.activeVertices.push({
 					x: this.startSelectionPoint.x+difX,
@@ -6276,7 +6274,6 @@ const _B2dEditor = function () {
 					var prefabName = subGroup.substr(1, subGroup.length);
 					var instanceID = this.activePrefabs[data.prefabInstanceName].instanceID;
 					var key = prefabName + "_" + instanceID;
-					console.log(key);
 					if (!this.activePrefabs[key]) {
 						var newPrefabObj = new this.prefabObject();
 						newPrefabObj.prefabName = prefabName;
