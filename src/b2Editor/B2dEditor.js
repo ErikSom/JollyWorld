@@ -74,6 +74,9 @@ const _B2dEditor = function () {
 	this.animationGroups = [];
 	this.prefabCounter = 0; //to ensure uniquenesss
 
+	this.uniqueCollisions = -3;
+	this.uniqueCollisionPrefabs = {};
+
 	this.container = null;
 	this.selectedTool = -1;
 	this.breakPrefabs = false;
@@ -3364,7 +3367,6 @@ const _B2dEditor = function () {
 
 			}
 		} else if (transformType == this.TRANSFORM_DEPTH) {
-			let tarDepthIndexes = [];
 			let depthArray = [];
 			let jointArray = []
 
@@ -3375,97 +3377,60 @@ const _B2dEditor = function () {
 
 				if (objects[i].mySprite != undefined) {
 					depthArray.push(objects[i].mySprite);
-					tarDepthIndexes.push(objects[i].mySprite.parent.getChildIndex(objects[i].mySprite));
 					if (objects[i].myTexture != undefined) {
 						depthArray.push(objects[i].myTexture);
-						tarDepthIndexes.push(objects[i].mySprite.parent.getChildIndex(objects[i].myTexture));
 					}
 
 					if (objects[i].myJoints) objects[i].myJoints.forEach(joint => {
 						if (!(objects.includes(joint))) {
 							depthArray.push(joint);
-							tarDepthIndexes.push(joint.parent.getChildIndex(joint));
 						}
 						if (!(jointArray.includes(joint))) jointArray.push(joint);
 					});
 
 				} else {
 					depthArray.push(objects[i]);
-					tarDepthIndexes.push(objects[i].parent.getChildIndex(objects[i]));
 				}
 			}
 
 			depthArray.sort(function (a, b) {
 				return a.parent.getChildIndex(a) - b.parent.getChildIndex(b);
 			});
-			tarDepthIndexes.sort(function (a, b) {
-				return a - b;
-			});
-			if (!obj) {
-				depthArray = depthArray.reverse();
-				tarDepthIndexes = tarDepthIndexes.reverse();
+
+
+			let lowestIndex;
+			let highestIndex;
+
+			let nextIndex = null;
+			if(obj){
+				nextIndex = depthArray[depthArray.length-1].parent.getChildIndex(depthArray[depthArray.length-1])+1;
+				lowestIndex = depthArray[0].parent.getChildIndex(depthArray[0]);
+				if(nextIndex >= depthArray[0].parent.children.length) return;
+			}else{
+				nextIndex = depthArray[0].parent.getChildIndex(depthArray[0])-1;
+				highestIndex = depthArray[depthArray.length-1].parent.getChildIndex(depthArray[depthArray.length-1]);
+				if(nextIndex < 0) return;
 			}
 
-			let neighbour;
-			let child;
+			let nextChild = depthArray[0].parent.children[nextIndex];
 
-			//while depthArray[i]+1 difference == 1 && [i] != d, check next depthArray, if distance > 1, swapChildren
-
-			for (i = 0; i < depthArray.length; i++) {
-				child = depthArray[i];
-				if ((obj && tarDepthIndexes[i] + 1 < child.parent.children.length) || (!obj && tarDepthIndexes[i] - 1 >= 0)) {
-					if (obj) neighbour = child.parent.getChildAt(tarDepthIndexes[i] + 1);
-					else neighbour = child.parent.getChildAt(tarDepthIndexes[i] - 1);
-
-					if(neighbour.data.prefabInstanceName){
-						// we got a prefab, find the lowest or highest clip
-						let targetIndex = neighbour.parent.getChildIndex(neighbour);
-						const prefab = this.activePrefabs[neighbour.data.prefabInstanceName];
-						const lookup = prefab.class ? prefab.class.lookupObject : null;
-						if(lookup){
-							const allSprites = [].concat(lookup._bodies, lookup._joints, lookup._textures);
-							allSprites.forEach(spriteObject => {
-								const sprite = spriteObject.mySprite ? spriteObject.mySprite : spriteObject;
-								let spriteIndex = sprite.parent.getChildIndex(sprite);
-								if(obj){
-									if(spriteIndex > targetIndex){
-										neighbour = sprite;
-										targetIndex = spriteIndex;
-									}
-								}else{
-									if(spriteIndex < targetIndex){
-										neighbour = sprite;
-										targetIndex = spriteIndex;
-									}
-								}
-							})
-						}
-					}
-
-					var allowed = true;
-					var j;
-					if (obj) {
-						for (j = i + 1; j < depthArray.length; j++) {
-							if (j < depthArray.length && tarDepthIndexes[j] - tarDepthIndexes[j - 1] > 1) {
-								break;
-							}
-							if (j == depthArray.length - 1 && tarDepthIndexes[j] == depthArray[depthArray.length - 1].parent.children.length - 1) allowed = false;
-						}
-					} else {
-						for (j = i + 1; j < depthArray.length; j++) {
-							if (j < depthArray.length && tarDepthIndexes[j] - tarDepthIndexes[j - 1] > 1) {
-								break;
-							}
-							if (j == depthArray.length - 1 && tarDepthIndexes[j] == 0) allowed = false
-						}
-					}
-
-					if (allowed) {
-						child.parent.swapChildren(child, neighbour);
-					}
-				}
+			if(nextChild.data.prefabInstanceName){
+				nextChild = this.retreivePrefabChildAt(nextChild, obj);
+			}else if(nextChild.data.type === this.object_BODY){
+				if(nextChild.myBody.myTexture) nextChild = nextChild.myBody.myTexture;
 			}
 
+			nextIndex = nextChild.parent.getChildIndex(nextChild);
+
+
+			if(obj){
+				highestIndex = nextIndex;
+			}else{
+				depthArray.reverse();
+				lowestIndex = nextIndex;
+			}
+
+			depthArray.forEach(child=> depthArray[0].parent.addChildAt(child, nextIndex));
 
 			// post process joints to make sure they are always on top
 			for (i = 0; i < jointArray.length; i++) {
@@ -5748,8 +5713,6 @@ const _B2dEditor = function () {
 					difY /= Settings.PTM;
 				}
 
-				console.log('new difx:', difX * Settings.PTM)
-
 				this.activeVertices = [];
 				this.activeVertices.push({
 					x: this.startSelectionPoint.x+difX,
@@ -5905,6 +5868,35 @@ const _B2dEditor = function () {
 			}
 		}
 		return highestObject;
+	}
+
+	this.retreivePrefabChildAt = function(initialSprite, highest){
+		let targetIndex = initialSprite.parent.getChildIndex(initialSprite);
+		let targetSprite = initialSprite;
+		if(initialSprite.data.prefabInstanceName){
+			// we got a prefab, find the lowest or highest clip
+			const prefab = this.activePrefabs[initialSprite.data.prefabInstanceName];
+			const lookup = prefab.class ? prefab.class.lookupObject : null;
+			if(lookup){
+				const allSprites = [].concat(lookup._bodies, lookup._joints, lookup._textures);
+				allSprites.forEach(spriteObject => {
+					const sprite = spriteObject.mySprite ? spriteObject.mySprite : spriteObject;
+					let spriteIndex = sprite.parent.getChildIndex(sprite);
+					if(highest){
+						if(spriteIndex > targetIndex){
+							targetIndex = spriteIndex;
+							targetSprite = sprite;
+						}
+					}else{
+						if(spriteIndex < targetIndex){
+							targetIndex = spriteIndex;
+							targetSprite = sprite;
+						}
+					}
+				})
+			}
+		}
+		return targetSprite;
 	}
 
 	this.createBodyObjectFromVerts = function (verts) {
@@ -7494,8 +7486,18 @@ const _B2dEditor = function () {
 			} else if (collision == 6) {
 				filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 7) {
+
+				let targetGroup;
+				if(body.mySprite.data.prefabInstanceName){
+					if(this.uniqueCollisionPrefabs[body.mySprite.data.prefabInstanceName] !== undefined){
+						targetGroup = this.uniqueCollisionPrefabs[body.mySprite.data.prefabInstanceName]
+					}else{
+						targetGroup = this.uniqueCollisions--;
+						this.uniqueCollisionPrefabs[body.mySprite.data.prefabInstanceName] = targetGroup;
+					}
+				}
 				filterData.categoryBits = this.MASKBIT_CHARACTER;
-				filterData.groupIndex = this.GROUPINDEX_CHARACTER;
+				filterData.groupIndex = targetGroup;
 			}
 
 			fixture.SetFilterData(filterData);
@@ -8938,6 +8940,9 @@ const _B2dEditor = function () {
 		this.customPrefabMouseMove = null;
 		this.customDebugDraw = null;
 
+		this.uniqueCollisions = -3;
+		this.uniqueCollisionPrefabs = {};
+
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
 		var i = 0
@@ -9379,7 +9384,6 @@ const _B2dEditor = function () {
 	this.MASKBIT_CHARACTER = 0x0004;
 	this.MASKBIT_EVERYTHING_BUT_US = 0x0008;
 	this.MASKBIT_ONLY_US = 0x0010;
-	this.GROUPINDEX_CHARACTER = -3;
 
 	this.tool_SELECT = 0;
 	this.tool_GEOMETRY = 1;

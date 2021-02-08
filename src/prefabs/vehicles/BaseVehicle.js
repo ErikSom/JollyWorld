@@ -44,7 +44,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             this.m_hit = false;
         }
         this.RaycastCallbackWheel.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-            if (fixture.GetFilterData().groupIndex == game.editor.GROUPINDEX_CHARACTER) return -1;
+            if(fixture.GetBody().mainCharacter) return -1;
             if (fixture.IsSensor()) return -1;
             this.m_hit = true;
             this.m_point = point.Clone();
