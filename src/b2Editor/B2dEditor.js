@@ -74,6 +74,9 @@ const _B2dEditor = function () {
 	this.animationGroups = [];
 	this.prefabCounter = 0; //to ensure uniquenesss
 
+	this.uniqueCollisions = -3;
+	this.uniqueCollisionPrefabs = {};
+
 	this.container = null;
 	this.selectedTool = -1;
 	this.breakPrefabs = false;
@@ -7483,8 +7486,18 @@ const _B2dEditor = function () {
 			} else if (collision == 6) {
 				filterData.maskBits = this.MASKBIT_CHARACTER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 7) {
+
+				let targetGroup;
+				if(body.mySprite.data.prefabInstanceName){
+					if(this.uniqueCollisionPrefabs[body.mySprite.data.prefabInstanceName] !== undefined){
+						targetGroup = this.uniqueCollisionPrefabs[body.mySprite.data.prefabInstanceName]
+					}else{
+						targetGroup = this.uniqueCollisions--;
+						this.uniqueCollisionPrefabs[body.mySprite.data.prefabInstanceName] = targetGroup;
+					}
+				}
 				filterData.categoryBits = this.MASKBIT_CHARACTER;
-				filterData.groupIndex = this.GROUPINDEX_CHARACTER;
+				filterData.groupIndex = targetGroup;
 			}
 
 			fixture.SetFilterData(filterData);
@@ -8927,6 +8940,9 @@ const _B2dEditor = function () {
 		this.customPrefabMouseMove = null;
 		this.customDebugDraw = null;
 
+		this.uniqueCollisions = -3;
+		this.uniqueCollisionPrefabs = {};
+
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
 		var i = 0
@@ -9368,7 +9384,6 @@ const _B2dEditor = function () {
 	this.MASKBIT_CHARACTER = 0x0004;
 	this.MASKBIT_EVERYTHING_BUT_US = 0x0008;
 	this.MASKBIT_ONLY_US = 0x0010;
-	this.GROUPINDEX_CHARACTER = -3;
 
 	this.tool_SELECT = 0;
 	this.tool_GEOMETRY = 1;
