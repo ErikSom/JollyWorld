@@ -1,7 +1,7 @@
 import {Howl, Howler} from '../../libs/howler';
 import {hashName} from '../AssetList'
 
-Howler.mobileAutoEnable = true;
+Howler.autoUnlock = true;
 
 let sfx;
 let sfxLoaded = false;
