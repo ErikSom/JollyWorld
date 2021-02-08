@@ -103,6 +103,7 @@ function Game() {
 
     this.ui = ui;
 
+    PIXI.settings.SPRITE_MAX_TEXTURES = 8;
     // path pixi for camera support
     PathRenderTarget();
 
