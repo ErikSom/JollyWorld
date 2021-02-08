@@ -34,6 +34,7 @@ import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
 import * as MobileController from './utils/MobileController';
+import * as AudioManager from './utils/AudioManager';
 
 import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -177,6 +178,7 @@ function Game() {
 
         if(MobileController.isMobile()) MobileController.init();
         YouTubePlayer.preload();
+        AudioManager.init();
 
     };
 

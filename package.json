@@ -29,6 +29,7 @@
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.12.7",
     "animejs": "^3.0.1",
+    "audiosprite": "^0.7.2",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^6.0.2",
     "core-js": "^3.8.3",

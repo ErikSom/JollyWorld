@@ -1,4 +1,6 @@
 import * as PrefabManager from '../PrefabManager';
+import * as AudioManager from '../../utils/AudioManager';
+
 import { BaseVehicle } from './BaseVehicle';
 
 class Bike extends BaseVehicle {
@@ -29,6 +31,16 @@ class Bike extends BaseVehicle {
     }
     update() {
         super.update();
+    }
+    accelerate(dir){
+        AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop', 0.5);
+        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
+
+        super.accelerate(dir);
+    }
+    stopAccelerate(){
+        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
+        AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop', 0.5);
     }
 }
 
