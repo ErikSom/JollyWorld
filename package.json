@@ -21,6 +21,9 @@
     "blueprints:deleteold": "rm -rf ./static/assets/blueprints",
     "blueprints:makenew": "mkdir ./static/assets/blueprints",
     "blueprints:build": "node generateBlueprints.js",
+    "audiosprites": "npm-run-all audiosprites:*",
+    "audiosprites:sfx" : "audiosprite --output ./static/assets/audio/sfx --format howler2  ./asset_src/audio/sfx/*.ogg",
+    "audiosprites:copy": "cp -R ./static/assets/audio ./build/assets",
     "server": "http-server build"
   },
   "dependencies": {

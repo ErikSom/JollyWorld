@@ -1,0 +1,22 @@
+{
+  "src": [
+    "./static/assets/audio/sfx.ogg",
+    "./static/assets/audio/sfx.m4a",
+    "./static/assets/audio/sfx.mp3",
+    "./static/assets/audio/sfx.ac3"
+  ],
+  "sprite": {
+    "bike_idle_loop": [
+      0,
+      2014.331065759637
+    ],
+    "bike_pedal_loop": [
+      4000,
+      1957.7324263038545
+    ],
+    "dirtbike_idle_loop": [
+      7000,
+      1631.2018140589562
+    ]
+  }
+}

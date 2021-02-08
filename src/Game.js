@@ -701,6 +701,7 @@ function Game() {
         ui.hideGameOverMenu();
         PhysicsParticleEmitter.update(true);
         MobileController.hide();
+        AudioManager.stopAllSounds();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;

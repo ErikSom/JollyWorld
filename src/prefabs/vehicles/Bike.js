@@ -31,16 +31,16 @@ class Bike extends BaseVehicle {
     }
     update() {
         super.update();
-    }
-    accelerate(dir){
-        AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop', 0.5);
-        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
 
-        super.accelerate(dir);
-    }
-    stopAccelerate(){
-        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
-        AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop', 0.5);
+        const wheelRotationSpeed = Math.abs(this.lookupObject.wheel_back.GetAngularVelocity())/4;
+        if(this.accel == 0){
+            console.log(wheelRotationSpeed, 'speeeed');
+            AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop', 0.1, wheelRotationSpeed*1.5);
+        }else{
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop', 0.5, wheelRotationSpeed);
+            AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
+        }
     }
 }
 
