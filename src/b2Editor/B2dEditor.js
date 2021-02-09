@@ -2514,6 +2514,7 @@ const _B2dEditor = function () {
 				var aabb = new b2AABB;
 				aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
 				aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
+				if(!this.selectedBoundingBox) return;
 
 				const clickInsideSelection = this.selectedBoundingBox.Contains(aabb);
 
@@ -6566,8 +6567,6 @@ const _B2dEditor = function () {
 		container.rotation = obj.rotation;
 		container.visible = obj.visible;
 
-		container.alpha = obj.transparancy;
-
 		var originalGraphic = new PIXI.Graphics();
 		container.addChild(originalGraphic);
 		container.originalGraphic = originalGraphic;
@@ -8000,7 +7999,7 @@ const _B2dEditor = function () {
 			let colorFill = body.mySprite.data.colorFill[i];
 			let colorLine = body.mySprite.data.colorLine[i];
 			let lineWidth = body.mySprite.data.lineWidth[i];
-			let transparancy = body.mySprite.data.transparancy[i + 1]; //TODO:what is this?
+			let transparancy = 1.0;
 
 			if (body.mySprite.data.type == this.object_TRIGGER) {
 				//color trigger
