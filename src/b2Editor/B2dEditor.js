@@ -9361,6 +9361,91 @@ const _B2dEditor = function () {
 		this._bounds.maxY = maxY;
 	}
 
+	// mesh circular texture fix
+	const matrixIdentity = PIXI.Matrix.IDENTITY;
+	PIXI.mesh.MeshRenderer.prototype.render = function (mesh) {
+		const renderer = this.renderer;
+		const gl = renderer.gl;
+		const texture = mesh._texture;
+		const glCore = PIXI.glCore;
+
+		if (!texture.valid) {
+			return;
+		}
+
+		let glData = mesh._glDatas[renderer.CONTEXT_UID];
+
+		if (!glData) {
+			renderer.bindVao(null);
+
+			glData = {
+				shader: mesh.shader || this.shader,
+				vertexBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.vertices, gl.STREAM_DRAW),
+				uvBuffer: glCore.GLBuffer.createVertexBuffer(gl, mesh.uvs, gl.STREAM_DRAW),
+				indexBuffer: glCore.GLBuffer.createIndexBuffer(gl, mesh.indices, gl.STATIC_DRAW),
+				// build the vao object that will render..
+				vao: null,
+				dirty: mesh.dirty,
+				indexDirty: mesh.indexDirty,
+				vertexDirty: mesh.vertexDirty,
+			};
+
+			// build the vao object that will render..
+			glData.vao = new glCore.VertexArrayObject(gl)
+				.addIndex(glData.indexBuffer)
+				.addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 2 * 4, 0)
+				.addAttribute(glData.uvBuffer, glData.shader.attributes.aTextureCoord, gl.FLOAT, false, 2 * 4, 0);
+
+			mesh._glDatas[renderer.CONTEXT_UID] = glData;
+		}
+
+		renderer.bindVao(glData.vao);
+
+		if (mesh.dirty !== glData.dirty) {
+			glData.dirty = mesh.dirty;
+			glData.uvBuffer.upload(mesh.uvs);
+		}
+
+		if (mesh.indexDirty !== glData.indexDirty) {
+			glData.indexDirty = mesh.indexDirty;
+			glData.indexBuffer.upload(mesh.indices);
+		}
+
+		if (mesh.vertexDirty !== glData.vertexDirty) {
+			glData.vertexDirty = mesh.vertexDirty;
+			glData.vertexBuffer.upload(mesh.vertices);
+		}
+
+		renderer.bindShader(glData.shader);
+
+		glData.shader.uniforms.uSampler = renderer.bindTexture(texture);
+
+		renderer.state.setBlendMode(PIXI.utils.correctBlendMode(mesh.blendMode, texture.baseTexture.premultipliedAlpha));
+
+		if (glData.shader.uniforms.uTransform) {
+			if (mesh.uploadUvTransform) {
+				glData.shader.uniforms.uTransform = mesh._uvTransform.mapCoord.toArray(true);
+			} else {
+				glData.shader.uniforms.uTransform = matrixIdentity.toArray(true);
+			}
+		}
+		glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true);
+
+		glData.shader.uniforms.uColor = PIXI.utils.premultiplyRgba(mesh.tintRgb,
+			mesh.worldAlpha, glData.shader.uniforms.uColor, texture.baseTexture.premultipliedAlpha);
+
+		const drawMode = mesh.drawMode === PIXI.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+
+		glData.vao.draw(drawMode, mesh.indices.length, 0);
+	}
+
+
+
+
+
+
+
+	
 	//CONSTS
 	this.object_typeToName = ["Physics Body", "Texture", "Joint"];
 
