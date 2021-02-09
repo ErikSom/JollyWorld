@@ -39,7 +39,7 @@ class Bike extends BaseVehicle {
             AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
             let idleVolume = Math.min(wheelRotationSpeed/15, 0.1);
             if(idleVolume< 0.002) idleVolume = 0;
-            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop', idleVolume, Math.max(0.5, wheelRotationSpeed*1.5));
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop', idleVolume, Math.max(0.8, wheelRotationSpeed*1.5));
         }else{
             AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop', 0.3, Math.max(0.8, pedalSpeed));
             AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');

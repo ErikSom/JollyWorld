@@ -5,8 +5,8 @@ Howler.autoUnlock = true;
 
 let sfx;
 let sfxLoaded = false;
-
 let activeSounds = {};
+const maxPitch = 20;
 
 const sfxJSON = require('../../static/assets/audio/sfx.json');
 
@@ -43,11 +43,8 @@ export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=0) =>
 		if(!activeSounds[prefabName]) activeSounds[prefabName] = {};
 		activeSounds[prefabName][sfxName] = soundId;
 	}
-
-	console.log(prefabName, sfxName, volume, pitch);
-
 	sfx.volume(volume, soundId);
-	sfx.rate(Math.min(16, pitch), soundId);
+	sfx.rate(Math.min(maxPitch, pitch), soundId);
 }
 export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 	if(!sfxLoaded) return;
@@ -61,6 +58,13 @@ export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 		sfx.stop(soundId);
 		delete activeSounds[prefabName][sfxName];
 	}
+}
+export const playSFX = (sfxName, volume, pitch=0) => {
+	if(!sfxLoaded) return;
+
+	const soundId = sfx.play(sfxName);
+	sfx.volume(volume, soundId);
+	sfx.rate(Math.min(maxPitch, pitch), soundId);
 }
 export const stopAllSounds = ()=>{
 	if(!sfxLoaded) return;
