@@ -15,15 +15,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 		this.forceField.myTileSprite.fixTextureRotation = true;
 		this.forceField.ignoreCasts = true;
 		this.width = this.height = 200;
-
-
-		if(!circularTextureMaterial){
-			circularTextureMaterial = new PIXI.Shader(
-				game.app.renderer.gl,
-				CIRCULAR_TEXTURE_VERT_SHADER, CIRCULAR_TEXTURE_FRAG_SHADER
-			);
-		}
-		this.forceField.myTileSprite.shader = circularTextureMaterial;
+		this.forceField.myTileSprite.pluginName = 'meshCircleTexture';
 
 		this.fieldBodies = [];
     }
@@ -236,45 +228,68 @@ PrefabManager.prefabLibrary.GravitationalField = {
 }
 
 
+class MeshCircleTextureRenderer extends PIXI.heaven.mesh.MeshHeavenRenderer {
+	onContextChange = function () {
+		const gl = this.renderer.gl;
+		this.shader = new PIXI.Shader(gl, CIRCULAR_TEXTURE_VERT_SHADER, CIRCULAR_TEXTURE_FRAG_SHADER);
+		this.shaderTrim = new PIXI.Shader(gl, PIXI.heaven.mesh.MeshHeavenRenderer.vert, PIXI.heaven.mesh.MeshHeavenRenderer.fragTrim);
+	};
+}
+PIXI.WebGLRenderer.registerPlugin('meshCircleTexture', MeshCircleTextureRenderer);
+
+
 const CIRCULAR_TEXTURE_VERT_SHADER =
 `
 attribute vec2 aVertexPosition;
 attribute vec2 aTextureCoord;
+attribute vec4 aDark;
+attribute vec4 aLight;
 
 uniform mat3 projectionMatrix;
 uniform mat3 translationMatrix;
 uniform mat3 uTransform;
+uniform vec4 uLight, uDark;
 
 varying vec2 vTextureCoord;
+varying vec4 vDark;
+varying vec4 vLight;
 
 void main(void)
 {
-    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+	gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
 
-    vTextureCoord = (uTransform * vec3(aTextureCoord, 1.0)).xy;
+	vTextureCoord = (uTransform * vec3(aTextureCoord, 1.0)).xy;
+
+	vLight.a = uLight.a * aLight.a;
+	vDark.a = uDark.a;
+
+	vLight.rgb = ((aLight.a - 1.0) * uDark.a + 1.0 - aLight.rgb) * uDark.rgb + aLight.rgb * uLight.rgb;
+	vDark.rgb = ((aDark.a - 1.0) * uDark.a + 1.0 - aDark.rgb) * uDark.rgb + aDark.rgb * uLight.rgb;
 }
-`;
+`
 
 const CIRCULAR_TEXTURE_FRAG_SHADER =
 `
 #define M_PI 3.1415926535897932384626433832795
 
 varying vec2 vTextureCoord;
-uniform vec4 uColor;
-uniform vec2 uCenter;
+varying vec4 vLight, vDark;
 
 uniform sampler2D uSampler;
 
 void main(void)
 {
     vec2 pos = vTextureCoord;
-    vec2 center = vec2(0.5, 0.5);//uCenter;
+    vec2 center = vec2(0.5, 0.5);
     vec2 delta = pos - center;
 
     float d = length(delta) * 5.;
     float a = 5. * atan(-delta.y, delta.x) / M_PI;
 
-    vec2 rad = vec2(d, a);
-    gl_FragColor = texture2D(uSampler, rad) * uColor;
+	vec2 rad = vec2(d, a);
+
+	vec4 texColor = texture2D(uSampler, rad);
+	gl_FragColor.a = texColor.a * uLight.a;
+	gl_FragColor.rgb = ((texColor.a - 1.0) * vDark.a + 1.0 - texColor.rgb) * vDark.rgb + texColor.rgb * vLight.rgb;
 }
 `;
