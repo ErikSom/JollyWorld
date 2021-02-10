@@ -702,7 +702,6 @@ function UIManager() {
             const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png'];
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
-                if(i == 2) continue;
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(vehicleImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';
@@ -734,6 +733,15 @@ function UIManager() {
 
         const vehicleHolderDiv = vehicleSelect.domElement.querySelector('.vehicleHolder');
         [...vehicleHolderDiv.children].forEach((portrait, index) => {
+
+            if(game.currentLevelData.forced_vehicle === 3){
+                if((index+1) !== 3) portrait.style.display = 'none';
+                else portrait.style.display = 'inline-block';
+            }else{
+                if((index+1) === 3) portrait.style.display = 'none';
+                else portrait.style.display = 'inline-block';
+            }
+
             if (game.currentLevelData.forced_vehicle && (index + 1) !== game.currentLevelData.forced_vehicle) {
                 portrait.style.cursor = 'not-allowed';
                 portrait.style.filter = 'grayscale(1) brightness(0.5)';
