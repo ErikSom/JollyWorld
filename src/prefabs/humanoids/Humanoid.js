@@ -676,22 +676,22 @@ export class Humanoid extends PrefabManager.basePrefab {
                     clockwise: 1
                 },
                 shoulder_right: {
-                    angle: -20,
+                    angle: 190,
                     reference: "body",
                     clockwise: -1
                 },
                 shoulder_left: {
-                    angle: -20,
+                    angle: 190,
                     reference: "body",
                     clockwise: -1
                 },
                 arm_right: {
-                    angle: 0,
+                    angle: 90,
                     reference: "shoulder_right",
                     clockwise: -1
                 },
                 arm_left: {
-                    angle: 0,
+                    angle: 90,
                     reference: "shoulder_left",
                     clockwise: -1
                 },
@@ -774,7 +774,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                         }
                     }
                 }
-                const torqueLimiter = .2;
+                const torqueLimiter = .15;
                 let desiredAngularVelocity = totalRotation * 60;
                 let torque = body.GetInertia() * desiredAngularVelocity / (1/30.0);
                 if(Math.abs(torque) > 1) body.ApplyTorque(torque * torqueLimiter);
@@ -830,10 +830,33 @@ export class Humanoid extends PrefabManager.basePrefab {
     };
 
     stabalizeJoints(){
-        // stabalize shoulders 
+        // stabalize shoulders
         this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_left_joint']);
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_left_joint']);
+
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_right_joint']);
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_right_joint']);
+
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_left_joint']);
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_left_joint']);
+
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_right_joint']);
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_right_joint']);
     }
     stabalizeJoint(target, base, baseRefJoint){
+
+        let anchor = null;
+        if(baseRefJoint.GetBodyA() === base){
+            anchor = baseRefJoint.GetAnchorA(new Box2D.b2Vec2());
+        }else{
+            anchor = baseRefJoint.GetAnchorB(new Box2D.b2Vec2());
+        }
+
+        const ropeJointDef = new Box2D.b2RopeJointDef();
+        ropeJointDef.Initialize(target, base, target.GetPosition(), anchor);
+        game.world.CreateJoint(ropeJointDef);
+
+        console.log("Stabalized joint");
 
     }
 
