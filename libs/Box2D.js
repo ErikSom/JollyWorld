@@ -19820,9 +19820,19 @@
         /// @warning This function is locked during callbacks.
         DestroyJoint(j) {
             if(!j || j.destroyed) return;
-            if(j.grabJoint){
-                this.DestroyJoint(j.grabJoint);
-                delete j.grabJoint;
+            if(j.linkedJoints){
+                j.linkedJoints.forEach(joint => {
+                    this.DestroyJoint(joint);
+                    delete j.linkedJoints;
+                });
+            }
+            if(j.connectedJoints){
+                j.connectedJoints.forEach(joint => {
+                    if(joint.linkedJoints){
+                        joint.linkedJoints = joint.linkedJoints.filter(_j=>_j != j);
+                        if(joint.linkedJoints.length === 0) delete joint.linkedJoints
+                    }
+                });
             }
 
             j.destroyed = true;

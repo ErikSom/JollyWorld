@@ -419,15 +419,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
                     if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
 
-                    const targetBody = this.lookupObject[update.target];
-                    if(targetBody.grabJoints){
-                        targetBody.grabJoints.forEach(grabJoint=>{
-                            game.world.DestroyJoint(grabJoint);
-                            delete targetBody.grabJoints;
-                        })
-                    }
-
-
                     game.world.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];
 
@@ -831,19 +822,22 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     stabalizeJoints(){
         // stabalize shoulders
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_left_joint']);
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_left_joint']);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_LEFT, [Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.ARM_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.ARM_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_LEFT, [Humanoid.BODY_PARTS.ARM_LEFT]);
 
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_right_joint']);
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_right_joint']);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]); // add stabalize joints to bodies delete on snap 
+        this.stabalizeJoint(Humanoid.BODY_PARTS.ARM_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]);
 
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_left_joint']);
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_left_joint']);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.LEG_LEFT]);
 
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_right_joint']);
-        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['thigh_right_joint']);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT,[Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT, [Humanoid.BODY_PARTS.LEG_RIGHT]);
     }
-    stabalizeJoint(target, base, baseRefJoint){
+    stabalizeJoint(target, base, baseRefJoint, linkedBodies){
+        target = this.lookupObject[target];
+        base = this.lookupObject[base];
+        baseRefJoint = this.lookupObject[`${baseRefJoint}_joint`]
 
         let anchor = null;
         if(baseRefJoint.GetBodyA() === base){
@@ -854,10 +848,13 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         const ropeJointDef = new Box2D.b2RopeJointDef();
         ropeJointDef.Initialize(target, base, target.GetPosition(), anchor);
-        game.world.CreateJoint(ropeJointDef);
+        const newJoint = game.world.CreateJoint(ropeJointDef);
 
-        console.log("Stabalized joint");
-
+        linkedBodies.forEach(linkedBodyKey => {
+            const linkedJoint = `${linkedBodyKey}_joint`;
+            if(!linkedJoint.linkedJoints) linkedJoint.linkedJoints = [];
+            linkedJoint.linkedJoints.push(newJoint);
+        });
     }
 
     positionLimb(limb, x, y){
