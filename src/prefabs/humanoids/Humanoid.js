@@ -57,6 +57,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
 
+        console.log(this.collisionUpdates);
+
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -851,7 +853,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         const newJoint = game.world.CreateJoint(ropeJointDef);
 
         linkedBodies.forEach(linkedBodyKey => {
-            const linkedJoint = `${linkedBodyKey}_joint`;
+            const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]
             if(!linkedJoint.linkedJoints) linkedJoint.linkedJoints = [];
             linkedJoint.linkedJoints.push(newJoint);
         });
