@@ -8179,7 +8179,6 @@ const _B2dEditor = function () {
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
 
-
 				//console.log(mesh);
 				// SCROLLING TEXTURE
 				// setInterval(()=>{
