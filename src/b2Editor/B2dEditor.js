@@ -3895,6 +3895,18 @@ const _B2dEditor = function () {
 	}
 	this.onMouseWheel = function(e){
 
+		const getPath = e => {
+			const path = [];
+			let currentElem = e.target;
+			while (currentElem) {
+				path.push(currentElem);
+				currentElem = currentElem.parentElement;
+			}
+			if (path.indexOf(window) === -1 && path.indexOf(document) === -1) path.push(document);
+			if (path.indexOf(window) === -1) path.push(window);
+			return path;
+		}
+
 		if(this.middleMouseDown) return;
 
 		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI, ui.loadScreen, ui.saveScreen, ui.levelEditScreen];
@@ -3908,7 +3920,8 @@ const _B2dEditor = function () {
 					if(!gui.cachedBounds){
 						gui.cachedBounds = gui.domElement.getBoundingClientRect();
 					}
-					const itemList = e.path.find(el => el.classList && el.classList.contains('itemList'));
+					const path = getPath(e)
+					const itemList = path.find(el => el.classList && el.classList.contains('itemList'));
 					if(itemList){
 						itemList.scrollBy(e.deltaX, e.deltaY);
 						uiScroll = true;
@@ -4084,7 +4097,7 @@ const _B2dEditor = function () {
 			if(Date.now() < this.doubleSpaceTime) this.findPlayer();
 		} else if (e.keyCode == 18) { // alt
 			this.altDown = true;
-		} else if (e.keyCode == 187 || e.keyCode == 61 || e.keyCode == 107) { // +
+		} else if (e.keyCode == 187 || e.keyCode == 61 || e.keyCode == 107 || e.keyCode == 171) { // +
 			//zoomin
 			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
