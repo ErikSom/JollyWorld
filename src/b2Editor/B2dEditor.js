@@ -3419,11 +3419,10 @@ const _B2dEditor = function () {
 			if(nextChild.data.prefabInstanceName){
 				nextChild = this.retreivePrefabChildAt(nextChild, obj);
 			}else if(nextChild.data.type === this.object_BODY){
-				if(nextChild.myBody.myTexture) nextChild = nextChild.myBody.myTexture;
+				if(obj> 0 && nextChild.myBody.myTexture) nextChild = nextChild.myBody.myTexture;
 			}
 
 			nextIndex = nextChild.parent.getChildIndex(nextChild);
-
 
 			if(obj){
 				highestIndex = nextIndex;
