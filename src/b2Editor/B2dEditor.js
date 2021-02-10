@@ -2053,6 +2053,7 @@ const _B2dEditor = function () {
 		});
 
 		this.deltaTime = Date.now() - this.currentTime;
+		this.deltaTimeSeconds = this.deltaTime / 1000;
 		this.currentTime = Date.now();
 
 		if (game.gameState == game.GAMESTATE_EDITOR) {
@@ -9058,6 +9059,7 @@ const _B2dEditor = function () {
 		this.lookupGroups = {};
 		this.currentTime = Date.now();
 		this.deltaTime = 0;
+		this.deltaTimeSeconds = 0;
 
 		this.world.SetContactListener(this.B2dEditorContactListener);
 

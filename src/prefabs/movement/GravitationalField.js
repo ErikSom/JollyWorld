@@ -174,6 +174,11 @@ class GravitationalField extends PrefabManager.basePrefab {
 
 			body.ApplyLinearImpulse(force, body.GetPosition(), true);
 		})
+
+		const rotationSpeed = 2.0;
+		const rotationForce = this.push ? -rotationSpeed : rotationSpeed;
+		this.forceField.SetAngle(this.forceField.GetAngle()+rotationForce * game.editor.deltaTimeSeconds);
+
 	}
 }
 
