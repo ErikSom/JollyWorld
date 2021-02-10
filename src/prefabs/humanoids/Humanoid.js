@@ -40,6 +40,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     init() {
         super.init();
         this.patchJointAngles();
+        this.stabalizeJoints();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
         this.alive = true;
@@ -773,10 +774,10 @@ export class Humanoid extends PrefabManager.basePrefab {
                         }
                     }
                 }
-
+                const torqueLimiter = .2;
                 let desiredAngularVelocity = totalRotation * 60;
                 let torque = body.GetInertia() * desiredAngularVelocity / (1/30.0);
-                if(Math.abs(torque) > 1) body.ApplyTorque(torque * .6);
+                if(Math.abs(torque) > 1) body.ApplyTorque(torque * torqueLimiter);
             }
         }
     }
@@ -827,6 +828,14 @@ export class Humanoid extends PrefabManager.basePrefab {
             linkedBody.SetAngle(linkedBody.GetAngle()-angleCorrection);
         });
     };
+
+    stabalizeJoints(){
+        // stabalize shoulders 
+        this.stabalizeJoint(this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT], this.lookupObject[Humanoid.BODY_PARTS.BODY], this.lookupObject['shoulder_left_joint']);
+    }
+    stabalizeJoint(target, base, baseRefJoint){
+
+    }
 
     positionLimb(limb, x, y){
         let baseJoint,
