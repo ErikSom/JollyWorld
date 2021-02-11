@@ -31,6 +31,7 @@ export default class Hat {
 		fixDef.shape = new Box2D.b2CircleShape;
 		fixDef.shape.SetRadius(1.2);
 		this.hatBody.CreateFixture(fixDef);
+		this.hatBody.GetFixtureList().SetSensor(true);
 
 		const hatWeldJointDef = new Box2D.b2WeldJointDef();
 		hatWeldJointDef.Initialize(this.hatBody, this.head, this.hatBody.GetPosition());
@@ -61,6 +62,7 @@ export default class Hat {
 	}
 	detach(){
 		this.hatBody.GetWorld().DestroyJoint(this.hatWeldJoint);
+		this.hatBody.GetFixtureList().SetSensor(false);
 		this.hatWeldJoint = null;
 	}
 	activate(){
