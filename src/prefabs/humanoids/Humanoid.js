@@ -81,6 +81,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     setExpression(expression){
         if(this.expression === expression) return;
+        if(!this.lookupObject.head) return;
 
         const textureName = this.mouth.texture.textureCacheIds[0];
         const textureSkin = textureName.substr(textureName.length - 4);

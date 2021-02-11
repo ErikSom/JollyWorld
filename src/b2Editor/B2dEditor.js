@@ -1538,6 +1538,10 @@ const _B2dEditor = function () {
 					}
 				}
 
+				if (sprite.data && sprite.data.type == this.object_ANIMATIONGROUP) {
+					this.animationGroups = this.animationGroups.filter(animation => animation != sprite);
+				}
+
 
 				sprite.parent.removeChild(sprite);
 				sprite.destroy({
@@ -6447,12 +6451,13 @@ const _B2dEditor = function () {
 		return container;
 	}
 	this.buildTriggerFromObj = function (obj) {
-		var bodyObject = JSON.parse(JSON.stringify(obj));
+		const bodyObject = JSON.parse(JSON.stringify(obj));
 		bodyObject.trigger = true;
 		bodyObject.density = 1;
 		bodyObject.collision = 2;
 
-		var body = this.buildBodyFromObj(bodyObject);
+		const body = this.buildBodyFromObj(bodyObject);
+		body.ignoreCasts = true;
 
 		body.SetSleepingAllowed(false);
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);

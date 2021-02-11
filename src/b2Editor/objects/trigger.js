@@ -90,7 +90,9 @@ export const getActionsForObject = function (object) {
     if (object.data.type != B2dEditor.object_JOINT) {
         actions.push("SetPosition", "SetRotation", "SetVisibility")
     }
-    actions.push("Destroy");
+
+    console.log(object);
+    if(!(object.data.prefabInstanceName && B2dEditor.activePrefabs[object.data.prefabInstanceName].class.isVehicle)) actions.push("Destroy");
     return actions;
 }
 const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget"];
