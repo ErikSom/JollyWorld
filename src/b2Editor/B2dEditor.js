@@ -5864,7 +5864,7 @@ const _B2dEditor = function () {
 		for(let i = 0; i<selectedTextures.length; i++){
 			const texture = selectedTextures[i];
 			if(texture.myBody){
-				if(!this.selectedPhysicsBodies.includes(texture.myBody)){
+				if(!selectedPhysicsBodies.includes(texture.myBody)){
 					selectedPhysicsBodies.push(texture.myBody);
 				}
 				selectedTextures.splice(i, 1);
