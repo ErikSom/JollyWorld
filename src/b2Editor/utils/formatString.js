@@ -35,6 +35,6 @@ export const formatNumber = (number) => {
 
 export const JSONStringify = json=>{
     return JSON.stringify(json, function(key, val) {
-        return (val && val.toFixed) ? Number(val.toFixed(3)) : val;
+        return (val && val.toFixed) ? Number(val.toFixed(4)) : val;
     })
 }

@@ -4017,11 +4017,7 @@ const _B2dEditor = function () {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
 		}else if ((e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
-			const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
-			const currentSize = {
-				width: aabb.GetExtents().x * 2 * this.PTM,
-				height: aabb.GetExtents().y * 2 * this.PTM
-			}
+
 
 			let xInc = 0;
 			let yInc = 0;
@@ -4042,13 +4038,20 @@ const _B2dEditor = function () {
 				yInc *= 10;
 			}
 
-			let targetWidth = Math.max(1, currentSize.width+xInc);
-			let targetHeight = Math.max(1, currentSize.height+yInc);
+			for(let p = 0; p<Settings.scalePrecision; p++){
+				const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+				const currentSize = {
+					width: aabb.GetExtents().x * 2 * this.PTM,
+					height: aabb.GetExtents().y * 2 * this.PTM
+				}
+				let targetWidth = Math.max(1, currentSize.width+xInc);
+				let targetHeight = Math.max(1, currentSize.height+yInc);
 
-			const scaleX = targetWidth / currentSize.width;
-			const scaleY = targetHeight / currentSize.height;
+				const scaleX = targetWidth / currentSize.width;
+				const scaleY = targetHeight / currentSize.height;
 
-			this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
+				this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
+			}
 
 			this.updateSelection()
 
@@ -4407,7 +4410,9 @@ const _B2dEditor = function () {
 				if (origin) body.SetAngle(0);
 				let fixture = body.GetFixtureList();
 				while (fixture != null) {
-					aabb.Combine1(fixture.GetAABB(0));
+					const bAABB = new b2AABB;
+					fixture.GetShape().ComputeAABB(bAABB, body.GetTransform());
+					aabb.Combine1(bAABB);
 					fixture = fixture.GetNext();
 				}
 				if (origin) body.SetAngle(oldRot);
@@ -4818,23 +4823,25 @@ const _B2dEditor = function () {
 
 					} else if ((controller.property == "width" || controller.property == "height") && this.selectedPhysicsBodies.length+this.selectedTextures.length>0) {
 						//bodies & sprites & ??prefabs
-						var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
-						var currentSize = {
-							width: aabb.GetExtents().x * 2 * this.PTM,
-							height: aabb.GetExtents().y * 2 * this.PTM
+
+						for(let p = 0; p<Settings.scalePrecision; p++){
+							const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+							const currentSize = {
+								width: aabb.GetExtents().x * 2 * this.PTM,
+								height: aabb.GetExtents().y * 2 * this.PTM
+							}
+
+							let targetWidth = currentSize.width;
+							let targetHeight = currentSize.height;
+
+							if (controller.property == "width") targetWidth = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.width);
+							else targetHeight = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.height);
+
+							const scaleX = targetWidth / currentSize.width;
+							const scaleY = targetHeight / currentSize.height;
+
+							this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
 						}
-
-						let targetWidth = currentSize.width;
-						let targetHeight = currentSize.height;
-
-						if (controller.property == "width") targetWidth = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.width);
-						else targetHeight = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.height);
-
-						const scaleX = targetWidth / currentSize.width;
-						const scaleY = targetHeight / currentSize.height;
-
-						this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
-
 					} else if (controller.property == "collideConnected") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
@@ -6686,6 +6693,7 @@ const _B2dEditor = function () {
 	}
 
 	this.setScale = function (obj, scaleX, scaleY) {
+
 
 		//do we include a circle?
 		let data;
