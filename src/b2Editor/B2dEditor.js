@@ -6464,7 +6464,6 @@ const _B2dEditor = function () {
 		bodyObject.collision = 2;
 
 		const body = this.buildBodyFromObj(bodyObject);
-		body.ignoreCasts = true;
 
 		body.SetSleepingAllowed(false);
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
