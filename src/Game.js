@@ -324,6 +324,7 @@ function Game() {
                             game.editor.selectedTool = -1;
                             game.editor.selectTool(game.editor.tool_SETTINGS);
                         }
+                        game.editor.camera.set({ x:window.innerWidth/2, y:window.innerHeight/2 });
                     });
                 }
             })

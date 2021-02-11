@@ -18,6 +18,7 @@ export const getLocalUserdata = function(){
         applePWAModals:0,
         demoScrolls:0,
         helpClosed:[],
+        editorGuiPos:{x:50, y:50},
     }
 
     if(userData){

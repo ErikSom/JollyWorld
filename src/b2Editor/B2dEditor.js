@@ -1705,6 +1705,10 @@ const _B2dEditor = function () {
 			}
 		}
 
+
+		const onlyJoints = !copyArray.find(el=> el.data.type !== this.object_JOINT);
+
+
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
 		});
@@ -1715,40 +1719,44 @@ const _B2dEditor = function () {
 			data = copyArray[i].data;
 			if (data.type == this.object_JOINT) {
 				//searching object A
-				var foundBodyA = false;
-				let realIndex = 0;
+				if(!onlyJoints){
+					var foundBodyA = false;
+					let realIndex = 0;
 
-				for (j = 0; j < copyArray.length; j++) {
-
-					if (copyArray[j].ID == data.bodyA_ID) {
-						foundBodyA = true;
-						data.bodyA_ID = realIndex;
-						break;
-					}
-					realIndex += copyArray[j].childCount || 1;
-
-				}
-				var foundBodyB = false;
-				realIndex = 0;
-				if (data.bodyB_ID != undefined) {
 					for (j = 0; j < copyArray.length; j++) {
 
-						if (copyArray[j].ID == data.bodyB_ID) {
-							foundBodyB = true;
-							data.bodyB_ID = realIndex;
+						if (copyArray[j].ID == data.bodyA_ID) {
+							foundBodyA = true;
+							data.bodyA_ID = realIndex;
 							break;
 						}
 						realIndex += copyArray[j].childCount || 1;
 
 					}
+					var foundBodyB = false;
+					realIndex = 0;
+					if (data.bodyB_ID != undefined) {
+						for (j = 0; j < copyArray.length; j++) {
 
-				} else {
-					foundBodyB = true;
-				}
+							if (copyArray[j].ID == data.bodyB_ID) {
+								foundBodyB = true;
+								data.bodyB_ID = realIndex;
+								break;
+							}
+							realIndex += copyArray[j].childCount || 1;
 
-				if (!foundBodyA || !foundBodyB) {
-					copyArray.splice(i, 1);
-					i--;
+						}
+
+					} else {
+						foundBodyB = true;
+					}
+
+					if (!foundBodyA || !foundBodyB) {
+						copyArray.splice(i, 1);
+						i--;
+					}
+				}else{
+					data.groups = Settings.jsonDuplicateText+data.groups;
 				}
 			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT || data.type == this.object_ANIMATIONGROUP) {
 				let realIndex = 0;
@@ -8812,8 +8820,18 @@ const _B2dEditor = function () {
 					worldObject = this.buildTextureFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_JOINT) {
-					obj.bodyA_ID += startChildIndex - vehicleOffset;
-					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex - vehicleOffset;
+
+					let duplicateJoint = false;
+
+					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
+						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
+						duplicateJoint = true;
+					}
+
+					if(!duplicateJoint){
+						obj.bodyA_ID += startChildIndex - vehicleOffset;
+						if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex - vehicleOffset;
+					}
 
 					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
 					else worldObject = this.attachJoint(obj);
