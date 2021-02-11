@@ -115,7 +115,11 @@ function Game() {
 
         this.canvas = document.getElementById("canvas");
 
-        if(Settings.HDR && window.devicePixelRatio >= 2) Settings.pixelRatio = 2;
+        if(Settings.HDR && window.devicePixelRatio >= 2){
+            // max 2K
+            if(window.innerHeight * 2 > 1440) Settings.pixelRatio = 1.5;
+            else Settings.pixelRatio = 2;
+        }
 
         this.app = new PIXI.Application({
             view: this.canvas,
@@ -236,7 +240,6 @@ function Game() {
 
 
         const uidHash = location.hash.split('/')[0].substr(1);
-
 
         this.openMainMenu();
 
