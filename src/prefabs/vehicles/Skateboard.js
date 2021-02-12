@@ -38,7 +38,7 @@ class Skateboard extends BaseVehicle {
             {x:1.5, y:7.0, l:0.25},
             {x:-2.1, y:5.5, l:0.25}], 1000
         );
-        this.limbsObserver = [Humanoid.BODY_PARTS.BELLY, Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_RIGHT, Humanoid.BODY_PARTS.THIGH_LEFT]
+        this.limbsObserver = [Humanoid.BODY_PARTS.BELLY, Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_RIGHT, Humanoid.BODY_PARTS.THIGH_LEFT];
     }
     init() {
 		super.init();
@@ -70,7 +70,7 @@ class Skateboard extends BaseVehicle {
         super.update();
 
         let globalFrame;
-        if(this.character.alive){
+        if(this.character.alive && this.character.attachedToVehicle){
             if(this.accel != 0){
                 this.legAnimation.update(game.editor.deltaTime*this.accel);
                 const frame = this.legAnimation.getFrame();
