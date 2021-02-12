@@ -103,6 +103,8 @@ function Game() {
 
     this.ui = ui;
 
+    this.preloader = document.getElementById('preloader');
+
     // path pixi for camera support
     PathRenderTarget();
 
@@ -368,8 +370,7 @@ function Game() {
             }
         }());
 
-        const preloader = document.getElementById('preloader');
-        if(preloader)preloader.parentNode.removeChild(preloader);
+        this.preloader.classList.add('hide');
 
         //this.myContainer.updateTransform = function() {};
     }
@@ -655,44 +656,49 @@ function Game() {
         this.doAutoSave();
     }
     this.resetWorld = function (doCheckpoint) {
-        const checkPointData = this.checkPointData;
-        this.resetGame();
-        if (this.gameState == this.GAMESTATE_EDITOR) {
-            this.stopTestingWorld();
-            this.testWorld();
-        }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
-            this.initLevel(this.currentLevelData);
-            this.playWorld(!doCheckpoint);
+        game.preloader.classList.remove('hide');
+        setTimeout(()=>{
+            const checkPointData = this.checkPointData;
+            this.resetGame();
+            if (this.gameState == this.GAMESTATE_EDITOR) {
+                this.stopTestingWorld();
+                this.testWorld();
+            }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
+                this.initLevel(this.currentLevelData);
+                this.playWorld(!doCheckpoint);
 
-            if(doCheckpoint && checkPointData){
-                const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
-                const allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints);
+                if(doCheckpoint && checkPointData){
+                    const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
+                    const allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints);
 
-                const positionDiff = {x:checkPointData.x*this.editor.PTM-this.playerPrefabObject.x, y:checkPointData.y*this.editor.PTM-this.playerPrefabObject.y, }
+                    const positionDiff = {x:checkPointData.x*this.editor.PTM-this.playerPrefabObject.x, y:checkPointData.y*this.editor.PTM-this.playerPrefabObject.y, }
 
-                const perpendularAngle = checkPointData.rotation - Math.PI/2;
-                const checkPointOffset = 200;
-                positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
-                positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
+                    const perpendularAngle = checkPointData.rotation - Math.PI/2;
+                    const checkPointOffset = 200;
+                    positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
+                    positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
 
-                if(this.playerPrefabObject.class.character.hat){
-                    const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
-                    const position = hatBody.GetPosition();
-                    position.x += positionDiff.x / Settings.PTM;
-                    position.y += positionDiff.y / Settings.PTM;
-                    hatBody.SetPosition(position);
+                    if(this.playerPrefabObject.class.character.hat){
+                        const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
+                        const position = hatBody.GetPosition();
+                        position.x += positionDiff.x / Settings.PTM;
+                        position.y += positionDiff.y / Settings.PTM;
+                        hatBody.SetPosition(position);
+                    }
+
+                    this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
+                    this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
+
+                    prefabLookupObject._bodies.forEach(body =>{
+                        this.editor.updateBodyPosition(body);
+                    });
+                    this.checkPointData = checkPointData;
                 }
-
-                this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
-                this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
-
-                prefabLookupObject._bodies.forEach(body =>{
-                    this.editor.updateBodyPosition(body);
-                });
-                this.checkPointData = checkPointData;
             }
-
-        }
+            setTimeout(()=>{
+                game.preloader.classList.add('hide');
+            }, Settings.levelBuildDelayTime);
+        }, Settings.levelBuildDelayTime);
     }
     this.stopWorld = function () {
         this.movementBuffer = [];
@@ -867,23 +873,49 @@ function Game() {
             })
         });
     }
-    this.loadPublishedLevelData = function (levelData) {
-        return new Promise((resolve, reject) => {
+    this.loadPublishedLevelData = function (levelData, progressFunction) {
+        return new Promise(async (resolve, reject) => {
             game.currentLevelData = levelData;
             const self = this;
-           fetch(`${Settings.STATIC}/${levelData.level_md5}.json`)
-           .then(response => response.json())
-           .then((data) =>{
-                self.currentLevelData.json = JSONStringify(data);
+            try{
+                let response = await fetch(`${Settings.STATIC}/${levelData.level_md5}.json`);
+                const reader = response.body.getReader();
+                const contentLength = +response.headers.get('Content-Length') || 1000000; // TODO: x-compressed-content-length
+                let receivedLength = 0;
+                let chunks = [];
+                if(progressFunction) progressFunction(0);
+
+                while(true) {
+                    const {done, value} = await reader.read();
+                    if (done) {
+                        break;
+                    }
+
+                    chunks.push(value);
+                    receivedLength += value.length;
+                    const progress = receivedLength/contentLength
+                    if(progressFunction) progressFunction(progress);
+                }
+                let chunksAll = new Uint8Array(receivedLength); // (4.1)
+                let position = 0;
+                for(let chunk of chunks) {
+                    chunksAll.set(chunk, position); // (4.2)
+                    position += chunk.length;
+                }
+                let result = new TextDecoder("utf-8").decode(chunksAll);
+
+                if(progressFunction) progressFunction(0);
+
+                self.currentLevelData.json = result;
                 this.previewLevel();
                 return resolve();
-            }).catch((err) => {
+            }catch(err){
                 console.log('fail', err);
                 game.gameState = game.GAMESTATE_MENU;
                 return reject({
                     message: err
                 });
-            });
+            }
         });
     }
     this.previewLevel = function(){
