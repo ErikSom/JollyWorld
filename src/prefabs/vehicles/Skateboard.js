@@ -70,7 +70,7 @@ class Skateboard extends BaseVehicle {
         super.update();
 
         let globalFrame;
-        if(this.character.alive){
+        if(this.character.alive && this.character.attachedToVehicle){
             if(this.accel != 0){
                 this.legAnimation.update(game.editor.deltaTime*this.accel);
                 const frame = this.legAnimation.getFrame();

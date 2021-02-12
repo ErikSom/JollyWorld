@@ -156,6 +156,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         if (this.collisionUpdates.length > 0) {
             this.doCollisionUpdate(this.collisionUpdates[0]);
             this.collisionUpdates.shift();
+            this.checkLimbs();
         }
         this.eyesTimer += game.editor.deltaTime;
         this.expressionTimer += game.editor.deltaTime;
@@ -858,6 +859,10 @@ export class Humanoid extends PrefabManager.basePrefab {
             if(!linkedJoint.linkedJoints) linkedJoint.linkedJoints = [];
             linkedJoint.linkedJoints.push(newJoint);
         });
+    }
+
+    checkLimbs(){
+        // only intereresting for character
     }
 
     positionLimb(limb, x, y){
