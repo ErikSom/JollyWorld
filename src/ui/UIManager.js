@@ -702,7 +702,6 @@ function UIManager() {
             const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png'];
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
-                if(i == 2) continue;
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(vehicleImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';
@@ -713,9 +712,16 @@ function UIManager() {
                     if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
                         this.hideVehicleSelect();
                         game.selectedVehicle = i + 1;
-                        game.initLevel(game.currentLevelData);
-                        game.playWorld(true);
-                        backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+
+                        game.preloader.classList.remove('hide');
+                        setTimeout(()=>{
+                            game.initLevel(game.currentLevelData);
+                            game.playWorld(true);
+                            backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+                            setTimeout(()=>{
+                                game.preloader.classList.add('hide');
+                            }, Settings.levelBuildDelayTime);
+                        }, Settings.levelBuildDelayTime);
                     }
                 }
             }
@@ -734,6 +740,15 @@ function UIManager() {
 
         const vehicleHolderDiv = vehicleSelect.domElement.querySelector('.vehicleHolder');
         [...vehicleHolderDiv.children].forEach((portrait, index) => {
+
+            if(game.currentLevelData.forced_vehicle === 3){
+                if((index+1) !== 3) portrait.style.display = 'none';
+                else portrait.style.display = 'inline-block';
+            }else{
+                if((index+1) === 3) portrait.style.display = 'none';
+                else portrait.style.display = 'inline-block';
+            }
+
             if (game.currentLevelData.forced_vehicle && (index + 1) !== game.currentLevelData.forced_vehicle) {
                 portrait.style.cursor = 'not-allowed';
                 portrait.style.filter = 'grayscale(1) brightness(0.5)';
@@ -1546,6 +1561,10 @@ function UIManager() {
         button.setAttribute('class', 'menuButton');
         levelLoadDiv.appendChild(button);
 
+        let progressBackFill = document.createElement('div');
+        progressBackFill.classList.add('progressBackFill');
+        button.appendChild(progressBackFill)
+
         let playButtonTriangle = document.createElement('div');
         playButtonTriangle.setAttribute('class', 'playButtonTriangleIcon')
         button.appendChild(playButtonTriangle)
@@ -1606,13 +1625,26 @@ function UIManager() {
                     game.gameState = game.GAMESTATE_LOADINGDATA;
                     itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
                     itemBarClone.querySelector('.dot-shell').style.visibility = 'visible';
-                    game.loadPublishedLevelData(level).then(() => {
+
+                    const progressBar = itemBarClone.querySelector('.progressBackFill');
+                    progressBar.style.visibility = 'visible';
+                    const progressFunction = progress => {
+
+                        console.log("PROGRESSS:", progress);
+
+                        const progressRounded = (progress*100).toFixed(2);
+                        progressBar.style.clipPath = `inset(0px ${100-progressRounded}% 0px 0px)`;
+                    }
+
+                    game.loadPublishedLevelData(level, progressFunction).then(() => {
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
+                        progressBar.style.visibility = 'hidden';
                         self.hideLevelLoader();
                     }).catch((error) => {
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
+                        progressBar.style.visibility = 'hidden';
                     });
                 }
 

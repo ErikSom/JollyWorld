@@ -14,7 +14,6 @@ class GravitationalField extends PrefabManager.basePrefab {
 		this.forceField = this.lookupObject['forcefield_body'];
 		this.forceField.myTileSprite.fixTextureRotation = true;
 		this.forceField.myTileSprite.pluginName = 'meshCircleTexture';
-		this.forceField.ignoreCasts = true;
 
 		this.width = this.height = 200;
 		this.fieldBodies = [];
@@ -168,7 +167,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 			const diff = body.GetPosition().Clone().SelfSub(this.forceField.GetPosition());
 			const rad = Math.max(1.0, diff.LengthSquared()*2);
 
-			const forceScalar = Math.sqrt(this.force);
+			const forceScalar = this.force;
 			const forceValue = this.push ? forceScalar : -forceScalar;
 			const force = new Box2D.b2Vec2((forceValue*diff.x)/rad, (forceValue*diff.y)/rad);
 
@@ -193,7 +192,7 @@ GravitationalField.settings = Object.assign({}, GravitationalField.settings, {
 GravitationalField.settingsOptions = Object.assign({}, GravitationalField.settingsOptions, {
 	"radius":{
 		min:10.0,
-		max:3000.0,
+		max:10000.0,
 		step:1.0
 	},
 	"disableGravity": true,

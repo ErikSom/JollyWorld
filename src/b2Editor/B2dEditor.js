@@ -1538,6 +1538,10 @@ const _B2dEditor = function () {
 					}
 				}
 
+				if (sprite.data && sprite.data.type == this.object_ANIMATIONGROUP) {
+					this.animationGroups = this.animationGroups.filter(animation => animation != sprite);
+				}
+
 
 				sprite.parent.removeChild(sprite);
 				sprite.destroy({
@@ -1701,6 +1705,10 @@ const _B2dEditor = function () {
 			}
 		}
 
+
+		const onlyJoints = !copyArray.find(el=> el.data.type !== this.object_JOINT);
+
+
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
 		});
@@ -1711,40 +1719,44 @@ const _B2dEditor = function () {
 			data = copyArray[i].data;
 			if (data.type == this.object_JOINT) {
 				//searching object A
-				var foundBodyA = false;
-				let realIndex = 0;
+				if(!onlyJoints){
+					var foundBodyA = false;
+					let realIndex = 0;
 
-				for (j = 0; j < copyArray.length; j++) {
-
-					if (copyArray[j].ID == data.bodyA_ID) {
-						foundBodyA = true;
-						data.bodyA_ID = realIndex;
-						break;
-					}
-					realIndex += copyArray[j].childCount || 1;
-
-				}
-				var foundBodyB = false;
-				realIndex = 0;
-				if (data.bodyB_ID != undefined) {
 					for (j = 0; j < copyArray.length; j++) {
 
-						if (copyArray[j].ID == data.bodyB_ID) {
-							foundBodyB = true;
-							data.bodyB_ID = realIndex;
+						if (copyArray[j].ID == data.bodyA_ID) {
+							foundBodyA = true;
+							data.bodyA_ID = realIndex;
 							break;
 						}
 						realIndex += copyArray[j].childCount || 1;
 
 					}
+					var foundBodyB = false;
+					realIndex = 0;
+					if (data.bodyB_ID != undefined) {
+						for (j = 0; j < copyArray.length; j++) {
 
-				} else {
-					foundBodyB = true;
-				}
+							if (copyArray[j].ID == data.bodyB_ID) {
+								foundBodyB = true;
+								data.bodyB_ID = realIndex;
+								break;
+							}
+							realIndex += copyArray[j].childCount || 1;
 
-				if (!foundBodyA || !foundBodyB) {
-					copyArray.splice(i, 1);
-					i--;
+						}
+
+					} else {
+						foundBodyB = true;
+					}
+
+					if (!foundBodyA || !foundBodyB) {
+						copyArray.splice(i, 1);
+						i--;
+					}
+				}else{
+					data.groups = Settings.jsonDuplicateText+data.groups;
 				}
 			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT || data.type == this.object_ANIMATIONGROUP) {
 				let realIndex = 0;
@@ -3419,11 +3431,10 @@ const _B2dEditor = function () {
 			if(nextChild.data.prefabInstanceName){
 				nextChild = this.retreivePrefabChildAt(nextChild, obj);
 			}else if(nextChild.data.type === this.object_BODY){
-				if(nextChild.myBody.myTexture) nextChild = nextChild.myBody.myTexture;
+				if(obj> 0 && nextChild.myBody.myTexture) nextChild = nextChild.myBody.myTexture;
 			}
 
 			nextIndex = nextChild.parent.getChildIndex(nextChild);
-
 
 			if(obj){
 				highestIndex = nextIndex;
@@ -3896,6 +3907,18 @@ const _B2dEditor = function () {
 	}
 	this.onMouseWheel = function(e){
 
+		const getPath = e => {
+			const path = [];
+			let currentElem = e.target;
+			while (currentElem) {
+				path.push(currentElem);
+				currentElem = currentElem.parentElement;
+			}
+			if (path.indexOf(window) === -1 && path.indexOf(document) === -1) path.push(document);
+			if (path.indexOf(window) === -1) path.push(window);
+			return path;
+		}
+
 		if(this.middleMouseDown) return;
 
 		const guiToHaveMouseWheel = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI, ui.loadScreen, ui.saveScreen, ui.levelEditScreen];
@@ -3909,7 +3932,8 @@ const _B2dEditor = function () {
 					if(!gui.cachedBounds){
 						gui.cachedBounds = gui.domElement.getBoundingClientRect();
 					}
-					const itemList = e.path.find(el => el.classList && el.classList.contains('itemList'));
+					const path = getPath(e)
+					const itemList = path.find(el => el.classList && el.classList.contains('itemList'));
 					if(itemList){
 						itemList.scrollBy(e.deltaX, e.deltaY);
 						uiScroll = true;
@@ -4001,11 +4025,7 @@ const _B2dEditor = function () {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
 		}else if ((e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
-			const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
-			const currentSize = {
-				width: aabb.GetExtents().x * 2 * this.PTM,
-				height: aabb.GetExtents().y * 2 * this.PTM
-			}
+
 
 			let xInc = 0;
 			let yInc = 0;
@@ -4026,13 +4046,20 @@ const _B2dEditor = function () {
 				yInc *= 10;
 			}
 
-			let targetWidth = Math.max(1, currentSize.width+xInc);
-			let targetHeight = Math.max(1, currentSize.height+yInc);
+			for(let p = 0; p<Settings.scalePrecision; p++){
+				const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+				const currentSize = {
+					width: aabb.GetExtents().x * 2 * this.PTM,
+					height: aabb.GetExtents().y * 2 * this.PTM
+				}
+				let targetWidth = Math.max(1, currentSize.width+xInc);
+				let targetHeight = Math.max(1, currentSize.height+yInc);
 
-			const scaleX = targetWidth / currentSize.width;
-			const scaleY = targetHeight / currentSize.height;
+				const scaleX = targetWidth / currentSize.width;
+				const scaleY = targetHeight / currentSize.height;
 
-			this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
+				this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
+			}
 
 			this.updateSelection()
 
@@ -4085,7 +4112,7 @@ const _B2dEditor = function () {
 			if(Date.now() < this.doubleSpaceTime) this.findPlayer();
 		} else if (e.keyCode == 18) { // alt
 			this.altDown = true;
-		} else if (e.keyCode == 187 || e.keyCode == 61 || e.keyCode == 107) { // +
+		} else if (e.keyCode == 187 || e.keyCode == 61 || e.keyCode == 107 || e.keyCode == 171) { // +
 			//zoomin
 			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
@@ -4391,7 +4418,9 @@ const _B2dEditor = function () {
 				if (origin) body.SetAngle(0);
 				let fixture = body.GetFixtureList();
 				while (fixture != null) {
-					aabb.Combine1(fixture.GetAABB(0));
+					const bAABB = new b2AABB;
+					fixture.GetShape().ComputeAABB(bAABB, body.GetTransform());
+					aabb.Combine1(bAABB);
 					fixture = fixture.GetNext();
 				}
 				if (origin) body.SetAngle(oldRot);
@@ -4802,23 +4831,25 @@ const _B2dEditor = function () {
 
 					} else if ((controller.property == "width" || controller.property == "height") && this.selectedPhysicsBodies.length+this.selectedTextures.length>0) {
 						//bodies & sprites & ??prefabs
-						var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
-						var currentSize = {
-							width: aabb.GetExtents().x * 2 * this.PTM,
-							height: aabb.GetExtents().y * 2 * this.PTM
+
+						for(let p = 0; p<Settings.scalePrecision; p++){
+							const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+							const currentSize = {
+								width: aabb.GetExtents().x * 2 * this.PTM,
+								height: aabb.GetExtents().y * 2 * this.PTM
+							}
+
+							let targetWidth = currentSize.width;
+							let targetHeight = currentSize.height;
+
+							if (controller.property == "width") targetWidth = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.width);
+							else targetHeight = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.height);
+
+							const scaleX = targetWidth / currentSize.width;
+							const scaleY = targetHeight / currentSize.height;
+
+							this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
 						}
-
-						let targetWidth = currentSize.width;
-						let targetHeight = currentSize.height;
-
-						if (controller.property == "width") targetWidth = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.width);
-						else targetHeight = Math.min(Math.max(1, Math.abs(controller.targetValue)), editorSettings.worldSize.height);
-
-						const scaleX = targetWidth / currentSize.width;
-						const scaleY = targetHeight / currentSize.height;
-
-						this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
-
 					} else if (controller.property == "collideConnected") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
@@ -5021,7 +5052,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue;
-							if ([this.object_GRAPHIC, this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP, this.object_TEXT].includes(sprite.data.type)) {
+							if ([this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP, this.object_TEXT].includes(sprite.data.type)) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
 								this.updateGraphicShapes(sprite);
@@ -5841,7 +5872,7 @@ const _B2dEditor = function () {
 		for(let i = 0; i<selectedTextures.length; i++){
 			const texture = selectedTextures[i];
 			if(texture.myBody){
-				if(!this.selectedPhysicsBodies.includes(texture.myBody)){
+				if(!selectedPhysicsBodies.includes(texture.myBody)){
 					selectedPhysicsBodies.push(texture.myBody);
 				}
 				selectedTextures.splice(i, 1);
@@ -6435,12 +6466,12 @@ const _B2dEditor = function () {
 		return container;
 	}
 	this.buildTriggerFromObj = function (obj) {
-		var bodyObject = JSON.parse(JSON.stringify(obj));
+		const bodyObject = JSON.parse(JSON.stringify(obj));
 		bodyObject.trigger = true;
 		bodyObject.density = 1;
 		bodyObject.collision = 2;
 
-		var body = this.buildBodyFromObj(bodyObject);
+		const body = this.buildBodyFromObj(bodyObject);
 
 		body.SetSleepingAllowed(false);
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
@@ -6669,6 +6700,7 @@ const _B2dEditor = function () {
 	}
 
 	this.setScale = function (obj, scaleX, scaleY) {
+
 
 		//do we include a circle?
 		let data;
@@ -8240,7 +8272,7 @@ const _B2dEditor = function () {
 					}
 				}
 			}
-
+			target.myTileSprite.alpha = targetSprite.data.transparancy;
 			target.myTileSprite.texture = tex;
 			this.updateTileSpriteOutline(target, targetSprite.data);
 			targetGraphic.alpha = 0;
@@ -8741,6 +8773,22 @@ const _B2dEditor = function () {
 
 		let jsonString = null;
 		let vehicleOffset = 0;
+		let characterStartLayer = 0;
+		let characterOldEndLayer = 0;
+		let characterNewEndLayer = 0;
+
+		const vehicleCorrectLayer = (id, trigger) =>{
+			if(id < characterStartLayer) return id;
+			if(vehicleOffset > 0){
+				if(id<characterNewEndLayer){
+					// we are inside character range
+					return characterNewEndLayer-1;
+				}
+			}else{
+				if(id > characterOldEndLayer) return id - vehicleOffset;
+			}
+			return id - vehicleOffset;
+		}
 
 		if (json != null) {
 			if (typeof json == 'string'){
@@ -8788,8 +8836,18 @@ const _B2dEditor = function () {
 					worldObject = this.buildTextureFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_JOINT) {
-					obj.bodyA_ID += startChildIndex - vehicleOffset;
-					if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex - vehicleOffset;
+
+					let duplicateJoint = false;
+
+					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
+						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
+						duplicateJoint = true;
+					}
+
+					if(!duplicateJoint){
+						obj.bodyA_ID = vehicleCorrectLayer(obj.bodyA_ID+startChildIndex);
+						if (obj.bodyB_ID != undefined) obj.bodyB_ID = vehicleCorrectLayer(obj.bodyB_ID + startChildIndex);
+					}
 
 					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
 					else worldObject = this.attachJoint(obj);
@@ -8797,10 +8855,13 @@ const _B2dEditor = function () {
 				} else if (obj.type == this.object_PREFAB) {
 					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
 						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
+						characterStartLayer = this.textures.children.length;
+						characterOldEndLayer = this.textures.children.length + vehicleOffset;
 						obj.prefabName = Settings.availableVehicles[game.selectedVehicle-1];
 						obj.settings.selectedVehicle = obj.prefabName;
 						// we get the difference between the old vehicleOffset and the new one
 						vehicleOffset -= Settings.vehicleLayers[obj.prefabName];
+						characterNewEndLayer = this.textures.children.length + vehicleOffset;
 					}
 					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
@@ -8831,7 +8892,7 @@ const _B2dEditor = function () {
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
 					for (var j = 0; j < obj.triggerObjects.length; j++) {
-						obj.triggerObjects[j] += startChildIndex - vehicleOffset;
+						obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);

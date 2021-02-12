@@ -150,6 +150,8 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         let wheel;
         const offset = 0.5;
 
+        this.grounded = false;
+
         for (i = 0; i < this.wheels.length; i++) {
             wheel = this.wheels[i];
 
@@ -168,6 +170,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 if (callback.m_hit) {
                     let forceDir = extramath.rotateVector(callback.m_normal, 90);
                     this.applyImpulse(this.desiredVehicleSpeeds[i] * dir, forceDir);
+                    this.grounded = true;
                     break;
                 }
             }

@@ -50,16 +50,42 @@
             box-sizing: inherit;
         }
         #preloader{
-            background: #3d7d1e;
             z-index: 999;
             position: absolute;
             width: 100%;
             height: 100%;
+            pointer-events: all;
+        }
+        #preloader.hide{
+            pointer-events: none;
+        }
+        #preloader.hide > .preloaderDoor{
+            transition: transform 0.5s ease-in;
+            transform:translate(0, 120%);
+        }
+        #preloader.hide > .preloaderDoor.upper{
+            transform:translate(0, -120%);
+        }
+        .preloaderDoor{
+            background: #3d7d1e;
+            width:100%;
+            height:50vh;
+            position:absolute;
+            top:unset;
+            bottom:0;
+            left:0;
+            transition: transform 0.3s ease-in;
+            will-change: transform;
+        }
+        .preloaderDoor.upper{
+            top:0;
+            border-bottom: 2px solid darkgreen;
+            box-shadow: 0px 2px 4px 0px #111;
         }
         #preloader .preloaderBar{
             width:200px;
             height:20px;
-            top: 50%;
+            top: 100%;
             left: 50%;
             transform: translate(-50%, -50%);
             border: 2px solid white;
@@ -128,9 +154,12 @@
 
 
     <div id="preloader">
-        <div class="preloaderBar">
-            <div class="preloaderFill"></div>
-            <div class="innerBorder"></div>
+        <div class="preloaderDoor"></div>
+        <div class="preloaderDoor upper">
+            <div class="preloaderBar">
+                <div class="preloaderFill"></div>
+                <div class="innerBorder"></div>
+            </div>
         </div>
     </div>
 
@@ -139,20 +168,19 @@
     <script>
         var __assetHashNames = '{{{ASSET_HASH_NAMES}}}';
         var preloaderFill = document.getElementsByClassName('preloaderFill')[0];
-
-        function loadJS(url, onError) {
-            var setProgress = function(percent){
+        var setLoaderProgress = function(percent){
                 var sp = 7;
                 preloaderFill.style.width = (sp+percent*(100-sp)).toFixed(2)+'%';
             }
-            setProgress(0);
+        function loadJS(url, onError) {
+            setLoaderProgress(0);
             if (!onError) onError = function () {};
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200 || xhr.status == 0) {
                         try {
-                            setProgress(1);
+                            setLoaderProgress(1);
                             setTimeout(function(){
                                 eval(xhr.responseText);
                             }, 100);
@@ -179,7 +207,7 @@
                     var total = 550000*4;
                     percentComplete = event.loaded / total;
                 }
-                setProgress(Math.min(1.0, percentComplete));
+                setLoaderProgress(Math.min(1.0, percentComplete));
             }
         }
         loadJS('./assets/awesome-game.js');
