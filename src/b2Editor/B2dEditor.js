@@ -8773,6 +8773,22 @@ const _B2dEditor = function () {
 
 		let jsonString = null;
 		let vehicleOffset = 0;
+		let characterStartLayer = 0;
+		let characterOldEndLayer = 0;
+		let characterNewEndLayer = 0;
+
+		const vehicleCorrectLayer = (id, trigger) =>{
+			if(id < characterStartLayer) return id;
+			if(vehicleOffset > 0){
+				if(id<characterNewEndLayer){
+					// we are inside character range
+					return characterNewEndLayer-1;
+				}
+			}else{
+				if(id > characterOldEndLayer) return id - vehicleOffset;
+			}
+			return id - vehicleOffset;
+		}
 
 		if (json != null) {
 			if (typeof json == 'string'){
@@ -8829,8 +8845,8 @@ const _B2dEditor = function () {
 					}
 
 					if(!duplicateJoint){
-						obj.bodyA_ID += startChildIndex - vehicleOffset;
-						if (obj.bodyB_ID != undefined) obj.bodyB_ID += startChildIndex - vehicleOffset;
+						obj.bodyA_ID = vehicleCorrectLayer(obj.bodyA_ID+startChildIndex);
+						if (obj.bodyB_ID != undefined) obj.bodyB_ID = vehicleCorrectLayer(obj.bodyB_ID + startChildIndex);
 					}
 
 					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
@@ -8839,10 +8855,13 @@ const _B2dEditor = function () {
 				} else if (obj.type == this.object_PREFAB) {
 					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
 						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
+						characterStartLayer = this.textures.children.length;
+						characterOldEndLayer = this.textures.children.length + vehicleOffset;
 						obj.prefabName = Settings.availableVehicles[game.selectedVehicle-1];
 						obj.settings.selectedVehicle = obj.prefabName;
 						// we get the difference between the old vehicleOffset and the new one
 						vehicleOffset -= Settings.vehicleLayers[obj.prefabName];
+						characterNewEndLayer = this.textures.children.length + vehicleOffset;
 					}
 					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
@@ -8873,7 +8892,7 @@ const _B2dEditor = function () {
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
 					for (var j = 0; j < obj.triggerObjects.length; j++) {
-						obj.triggerObjects[j] += startChildIndex - vehicleOffset;
+						obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
