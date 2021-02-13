@@ -6553,6 +6553,7 @@ const _B2dEditor = function () {
 			obj.density = [obj.density];
 		}
 		// backwards fix for restitution and friction
+
 		obj.restitution = [].concat(obj.restitution);
 		obj.friction = [].concat(obj.friction);
 		obj.collision = [].concat(obj.collision);
@@ -8272,7 +8273,9 @@ const _B2dEditor = function () {
 					}
 				}
 			}
-			target.myTileSprite.alpha = targetSprite.data.transparancy;
+
+			const transparency = Array.isArray(targetSprite.data.transparancy) ? targetSprite.data.transparancy[0] : targetSprite.data.transparancy;
+			target.myTileSprite.alpha = transparency;
 			target.myTileSprite.texture = tex;
 			this.updateTileSpriteOutline(target, targetSprite.data);
 			targetGraphic.alpha = 0;
