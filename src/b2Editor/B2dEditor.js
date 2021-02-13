@@ -3586,6 +3586,7 @@ const _B2dEditor = function () {
 						})
 						if(obj) graphicObject.x *= -1;
 						else graphicObject.y *= -1;
+						graphicObject.rotation = -graphicObject.rotation;
 						return this.stringifyObject(graphicObject);
 					})
 					this.updateGraphicGroupShapes(object);
