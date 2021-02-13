@@ -7,7 +7,7 @@ import * as verticeOptimize from "./utils/verticeOptimize";
 import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import * as SaveManager from "../utils/SaveManager";
-
+import * as FPSManager from '../utils/FPSManager';
 
 import * as DS from './utils/DecalSystem';
 
@@ -690,7 +690,7 @@ const _B2dEditor = function () {
 				currentCase = case_JUST_JOINTS;
 			}
 
-			if((_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0)){
+			if((_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0) + (_selectedAnimationGroups.length > 0 ? 1 : 0) + (_selectedGraphicGroups.length > 0 ? 1 : 0)){
 				hideMirrorTransformGui = true;
 			}
 
@@ -1123,6 +1123,11 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "mirrored", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -1146,6 +1151,11 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "mirrored", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -2031,14 +2041,16 @@ const _B2dEditor = function () {
 		// if(Settings.admin && this.shiftDown) return;
 		this.debugGraphics.clear();
 		while (this.debugGraphics.children.length > 0) {
-			var child = this.debugGraphics.getChildAt(0);
+			const child = this.debugGraphics.getChildAt(0);
 			this.debugGraphics.removeChild(child);
 		}
 	}
 	this.updateBodyPosition = function (body) {
 		if (body.myTexture) {
 
-			var angle = body.GetAngle() - body.myTexture.data.texturePositionOffsetAngle;
+			const textureOffsetAngle = body.myTexture.data.mirrored ? (Settings.pihalve+(body.myTexture.data.texturePositionOffsetAngle)) : body.myTexture.data.texturePositionOffsetAngle;
+
+			const angle = body.GetAngle() - textureOffsetAngle;
 			body.myTexture.x = body.GetPosition().x * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
 			body.myTexture.y = body.GetPosition().y * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
 			// body.mySprite.x = body.GetPosition().x * this.PTM;
@@ -2063,10 +2075,12 @@ const _B2dEditor = function () {
 		all.forEach((e) => {
 			e.flushDecalTasks();
 		});
-
-		this.deltaTime = Date.now() - this.currentTime;
+		const deltaTime = performance.now() - this.currentTime;
+		this.deltaTime = deltaTime;
 		this.deltaTimeSeconds = this.deltaTime / 1000;
-		this.currentTime = Date.now();
+		this.currentTime = performance.now();
+
+		FPSManager.update(deltaTime);
 
 		if (game.gameState == game.GAMESTATE_EDITOR) {
 			if(this.editing){
@@ -2244,6 +2258,7 @@ const _B2dEditor = function () {
 		this.repeatTeleportX = 0;
 		this.repeatTeleportY = 0;
 		this.visible = true;
+		this.mirrored = false;
 	}
 	this.animationGroup = function () {
 		this.type = self.object_ANIMATIONGROUP;
@@ -2267,6 +2282,7 @@ const _B2dEditor = function () {
 		this.fps = 12;
 		this.playing = true;
 		this.visible = true;
+		this.mirrored = false;
 	}
 	this.graphicObject = function () {
 		this.type = self.object_GRAPHIC;
@@ -2522,7 +2538,7 @@ const _B2dEditor = function () {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 
 				// detect click on transformGUI
-				if(this.clickOnTransformGUI()) return;
+				if(this.transformGUI && this.transformGUI.visible && this.clickOnTransformGUI()) return;
 
 				var aabb = new b2AABB;
 				aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
@@ -2641,7 +2657,6 @@ const _B2dEditor = function () {
 									bodyObject.colorLine = [ui.editorGUI.editData.colorLine];
 									bodyObject.lineWidth = [ui.editorGUI.editData.lineWidth];
 									bodyObject.transparancy = [ui.editorGUI.editData.transparancy];
-									console.log(bodyObject);
 									this.buildBodyFromObj(bodyObject);
 								}
 							}else{
@@ -2846,7 +2861,7 @@ const _B2dEditor = function () {
 					delete this.verticeEditingSprite.highlightVerticeIndex;
 				}
 
-			}else if(this.selectedTool == this.tool_SPECIALS){
+			}else if([this.tool_SPECIALS, this.tool_SETTINGS].includes(this.selectedTool)){
 
 				const ignoreClickOnGUI = [ui.editorGUI, ui.helpScreen, ui.gradientEditor, ui.assetGUI];
 				// detect mouse on gui
@@ -3125,7 +3140,7 @@ const _B2dEditor = function () {
 
 		if(!dataTooltip){
 			const transformGUIElement = this.collidingWithTransformGui();
-			if(transformGUIElement){
+			if(transformGUIElement && this.transformGUI && this.transformGUI.visible){
 				if([this.transformGUI.layerUp, this.transformGUI.layerDown].includes(transformGUIElement)){
 
 					const prefabKeys = Object.keys(this.selectedPrefabs);
@@ -4203,6 +4218,7 @@ const _B2dEditor = function () {
 		}
 		this.storeUndoMovementDebounced();
 	}
+
 	this.onKeyUp = function (e) {
 
 		if (e.keyCode == 16) { // ctrl
@@ -4217,7 +4233,6 @@ const _B2dEditor = function () {
 			this.altDown = false;
 		}
 	}
-
 
 	this.queryPhysicsBodies = [];
 	this.queryWorldForBodies = function (lowerBound, upperBound) {
@@ -4239,6 +4254,7 @@ const _B2dEditor = function () {
 
 		return this.queryPhysicsBodies;
 	}
+
 	this.queryWorldForGraphics = function (lowerBound, upperBound) {
 		const aabb = new b2AABB();
 		aabb.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
@@ -5072,6 +5088,13 @@ const _B2dEditor = function () {
 							sprite = this.selectedTextures[j];
 							sprite.data.visible = controller.targetValue;
 							sprite.visible = controller.targetValue;
+						}
+					} else if(controller.property == "mirrored"){
+						for (j = 0; j < this.selectedTextures.length; j++) {
+							const graphicGroup = this.selectedTextures[j];
+							const currentScale = Math.abs(graphicGroup.scale.x);
+							graphicGroup.scale.x = controller.targetValue ? -currentScale : currentScale;
+							graphicGroup.data.mirrored = controller.targetValue;
 						}
 					} else if (controller.property == "fixed") {
 						//body
@@ -6627,6 +6650,7 @@ const _B2dEditor = function () {
 		graphic.x = obj.x;
 		graphic.y = obj.y;
 		graphic.rotation = obj.rotation;
+		graphic.scale.x = obj.mirrored ? -1 : 1;
 
 
 		this.updateGraphicGroupShapes(graphic);
@@ -6661,6 +6685,7 @@ const _B2dEditor = function () {
 
 		graphic.alpha = obj.transparancy;
 		graphic.visible = obj.visible;
+		graphic.scale.x = obj.mirrored ? -1 : 1;
 
 		this.initAnimation(graphic);
 
@@ -8517,6 +8542,7 @@ const _B2dEditor = function () {
 			arr[14] = obj.repeatTeleportX;
 			arr[15] = obj.repeatTeleportY;
 			arr[16] = obj.visible;
+			arr[17] = obj.mirrored;
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -8566,6 +8592,7 @@ const _B2dEditor = function () {
 			arr[16] = obj.fps;
 			arr[17] = obj.playing;
 			arr[18] = obj.visible;
+			arr[19] = obj.mirrored;
 		}
 		return JSONStringify(arr);
 	}
@@ -8661,6 +8688,7 @@ const _B2dEditor = function () {
 			obj.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
 			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
 			obj.visible = typeof arr[16] === "boolean" ? arr[16] : true;
+			obj.mirrored = typeof arr[17] === "boolean" ? arr[17] : false;
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
@@ -8713,6 +8741,7 @@ const _B2dEditor = function () {
 			obj.fps = arr[16] !== undefined ? arr[16] : 12;
 			obj.playing = arr[17] !== undefined ? arr[17] : true;
 			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
+			obj.mirrored = typeof arr[19] === "boolean" ? arr[19] : false;
 		}
 
 		obj.type = arr[0];
@@ -9122,7 +9151,7 @@ const _B2dEditor = function () {
 		var sprite;
 
 		this.lookupGroups = {};
-		this.currentTime = Date.now();
+		this.currentTime = performance.now();
 		this.deltaTime = 0;
 		this.deltaTimeSeconds = 0;
 

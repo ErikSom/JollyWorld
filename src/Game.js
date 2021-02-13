@@ -1153,7 +1153,10 @@ function Game() {
         if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
             this.world.DrawDebugData();
         }
-        this.app.render();
+
+        if(!Settings.FPSLimiter || (Settings.FPSLimiter && !Settings.FPSFrameLimit)) this.app.render();
+        Settings.FPSFrameLimit = !Settings.FPSFrameLimit;
+
         if(this.needScreenshot) this.screenShotData = game.app.renderer.plugins.extract.canvas();
         PIXICuller.update();
         Key.update();
