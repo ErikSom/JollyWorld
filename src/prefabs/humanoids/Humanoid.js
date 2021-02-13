@@ -839,20 +839,35 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT, [Humanoid.BODY_PARTS.LEG_RIGHT]);
     }
     stabalizeJoint(target, base, baseRefJoint, linkedBodies){
-        target = this.lookupObject[target];
+        const targetBody = this.lookupObject[target];
         base = this.lookupObject[base];
-        baseRefJoint = this.lookupObject[`${baseRefJoint}_joint`]
+        const refJoint = this.lookupObject[`${baseRefJoint}_joint`]
 
         let anchor = null;
-        if(baseRefJoint.GetBodyA() === base){
-            anchor = baseRefJoint.GetAnchorA(new Box2D.b2Vec2());
+        if(refJoint.GetBodyA() === base){
+            anchor = refJoint.GetAnchorA(new Box2D.b2Vec2());
         }else{
-            anchor = baseRefJoint.GetAnchorB(new Box2D.b2Vec2());
+            anchor = refJoint.GetAnchorB(new Box2D.b2Vec2());
         }
 
         const ropeJointDef = new Box2D.b2RopeJointDef();
-        ropeJointDef.Initialize(target, base, target.GetPosition(), anchor);
+
+        const targetAnchor = this.lookupObject[`${target}_joint`].GetAnchorA(new Box2D.b2Vec2());
+
+        ropeJointDef.Initialize(targetBody, base, targetAnchor, anchor);
         const newJoint = game.world.CreateJoint(ropeJointDef);
+
+        let maxLength = 0;
+        linkedBodies.forEach((linkedBody, index)=>{
+
+            let nextLinkedBody = index+1 === linkedBodies.length ? baseRefJoint : linkedBodies[index+1];
+            const j1 = this.lookupObject[linkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
+            const j2 = this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
+
+            maxLength += j1.SelfSub(j2).Length();
+
+        });
+        newJoint.SetMaxLength(maxLength);
 
         linkedBodies.forEach(linkedBodyKey => {
             const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]
