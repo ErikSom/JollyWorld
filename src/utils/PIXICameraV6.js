@@ -77,10 +77,11 @@ export class Camera extends PIXI.DisplayObject {
     projection.transform = this.listen.worldTransform;
 
     if (this.pixelSnapping) {
-      projection.transform.tx =
-        Math.round(projection.transform.tx * this.scale.x) / this.scale.x;
-      projection.transform.ty =
-        Math.round(projection.transform.ty * this.scale.y) / this.scale.y;
+      const sx = 1;//this.scale.x;
+      const sy = 1;//this.scale.y;
+
+      projection.transform.tx = Math.round(projection.transform.tx * sx) / sx;
+      projection.transform.ty = Math.round(projection.transform.ty * sy) / sy;
     }
 
     projection.update(

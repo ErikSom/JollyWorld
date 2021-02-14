@@ -36,7 +36,7 @@ class Bike extends BaseVehicle {
 
         const wheelRotationSpeed = Math.abs(this.lookupObject.wheel_back.GetAngularVelocity())/10;
         const pedalSpeed = Math.abs(this.lookupObject.pedal.GetAngularVelocity())/8;
-        console.log("Wheel speed:");
+        //console.log("Wheel speed:");
         if(this.accel == 0){
             AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
             let idleVolume = Math.min(wheelRotationSpeed/15, 0.1);

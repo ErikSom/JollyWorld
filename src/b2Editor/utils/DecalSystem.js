@@ -1,5 +1,4 @@
-import { game } from "../../Game";
-
+import * as PIXI from 'pixi.js';
 export class Decal {
     /**
      * 
@@ -45,19 +44,24 @@ export class DecalSystem {
         // but, instead of decal RT we can collect DECAL pool, and render it with mask when invalidating a texture
         // and how result will only a mask texture + result texture
  
-        this.maskRT = PIXI.RenderTexture.create(baseTexture.width, baseTexture.height);
-        this.decalRT = PIXI.RenderTexture.create(baseTexture.width, baseTexture.height);
-        this.resultRT = PIXI.RenderTexture.create(baseTexture.width, baseTexture.height);
+        const dimensions = {
+            width: baseTexture.width,
+            height: baseTexture.height
+        };
+
+        this.maskRT = PIXI.RenderTexture.create(dimensions);
+        this.decalRT = PIXI.RenderTexture.create(dimensions);
+        this.resultRT = PIXI.RenderTexture.create(dimensions);
 
         this.container = new PIXI.Container();
 
         this._combain = new PIXI.Container();
 
-        const decal = new PIXI.heaven.Sprite(this.decalRT);
-        const mask = new PIXI.heaven.Sprite(this.maskRT);
+        const decal = new self.PIXI.heaven.Sprite(this.decalRT);
+        const mask = new self.PIXI.heaven.Sprite(this.maskRT);
         mask.renderable = false;
 
-        const sourseSprite = new PIXI.heaven.Sprite(new PIXI.Texture(baseTexture));
+        const sourseSprite = new self.PIXI.heaven.Sprite(new PIXI.Texture(baseTexture));
 
         this.container.pluginName = 'batchMasked';
         decal.pluginName = sourseSprite.pluginName = 'batchMasked';
@@ -70,10 +74,10 @@ export class DecalSystem {
     }
 
     refill () {                
-        console.warn("NOT SUPPORTED YET IN V6");
-        return;
+        //console.warn("NOT SUPPORTED YET IN V6");
+        //return;
 
-        const g = new PIXI.heaven.Sprite(PIXI.Texture.WHITE);
+        const g = new self.PIXI.heaven.Sprite(PIXI.Texture.WHITE);
         g.tint = 0;
         g.width = this.maskRT.width;
         g.height = this.maskRT.height;
@@ -122,8 +126,8 @@ export class DecalSystem {
 
     flushDecalTasks () {      
         
-        console.warn("NOT SUPPORTED YET IN V6");
-        return;
+        //console.warn("NOT SUPPORTED YET IN V6");
+        //return;
 
         this.frameId ++;
 
@@ -141,7 +145,7 @@ export class DecalSystem {
         this.app.renderer.render(this.container, this.decalRT, false);    
         // flush current REAL CURRENT
         // becuase a main renderer can swap renderer
-        this.app.renderer.currentRenderer.flush();
+        //this.app.renderer.currentRenderer.flush();
 
         if (carversTask.length > 0) {
             this.container.removeChildren();
@@ -157,7 +161,7 @@ export class DecalSystem {
             
 			// flush current REAL CURRENT
 			// becuase a main renderer can swap renderer
-			this.app.renderer.currentRenderer.flush();
+			//this.app.renderer.currentRenderer.flush();
         }
 
         this.tasks.length = 0;

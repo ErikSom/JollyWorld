@@ -1,3 +1,7 @@
+import {
+	b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape
+} from "../../libs/Box2D";
+
 import * as Box2D from "../../libs/Box2D";
 import * as PrefabManager from "../prefabs/PrefabManager";
 import * as drawing from "./utils/drawing";
@@ -8,8 +12,10 @@ import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import * as SaveManager from "../utils/SaveManager";
 import * as FPSManager from '../utils/FPSManager';
-
 import * as DS from './utils/DecalSystem';
+
+import * as camera from './utils/camera';
+import * as PIXI from 'pixi.js';
 
 import {
 	lineIntersect,
@@ -31,31 +37,15 @@ import {
 import {
 	Settings
 } from "../Settings";
-import { spine } from "pixi.js";
 import { JSONStringify } from "./utils/formatString";
 import LZString from 'lz-string'
 import { copyStringToClipboard } from "./utils/copyToClipboard";
 import { removeGraphicFromCells } from '../utils/PIXICuller';
 import { hashName } from "../AssetList";
 
-const camera = require("./utils/camera");
-const PIXI = require('pixi.js');
-const PIXIFILTERS = require('pixi-filters')
-let TMP_DECAL = null;
-const TMP_MATRIX = new PIXI.Matrix();
-
-var b2Vec2 = Box2D.b2Vec2,
-	b2AABB = Box2D.b2AABB,
-	b2BodyDef = Box2D.b2BodyDef,
-	b2Body = Box2D.b2Body,
-	b2FixtureDef = Box2D.b2FixtureDef,
-	b2Fixture = Box2D.b2Fixture,
-	b2World = Box2D.b2World,
-	b2MassData = Box2D.b2MassData,
-	b2PolygonShape = Box2D.b2PolygonShape,
-	b2CircleShape = Box2D.b2CircleShape,
-	b2DebugDraw = Box2D.b2DebugDraw,
-	b2MouseJointDef = Box2D.b2MouseJointDef;
+import { attachGraphicsAPIMixin } from './pixiHack'
+ 
+const PIXIHeaven = self.PIXI.heaven;
 
 const _B2dEditor = function () {
 
@@ -4725,24 +4715,24 @@ const _B2dEditor = function () {
 		const scale = 0.8;
 		if(!this.transformGUI){
 			this.transformGUI = new PIXI.Container();
-			this.transformGUI.layerDown = new PIXI.heaven.Sprite(PIXI.Texture.from('layerDown'));
+			this.transformGUI.layerDown = new PIXIHeaven.Sprite(PIXI.Texture.from('layerDown'));
 			this.transformGUI.layerDown.pivot.set(this.transformGUI.layerDown.width / 2, this.transformGUI.layerDown.height / 2);
 			this.transformGUI.layerDown.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.layerDown);
 
-			this.transformGUI.layerUp = new PIXI.heaven.Sprite(PIXI.Texture.from('layerUp'));
+			this.transformGUI.layerUp = new PIXIHeaven.Sprite(PIXI.Texture.from('layerUp'));
 			this.transformGUI.layerUp.pivot.set(this.transformGUI.layerUp.width / 2, this.transformGUI.layerUp.height / 2);
 			this.transformGUI.layerUp.scale.set(scale);
 			this.transformGUI.layerUp.y-=iconHeight;
 			this.transformGUI.addChild(this.transformGUI.layerUp);
 
-			this.transformGUI.mirrorX = new PIXI.heaven.Sprite(PIXI.Texture.from('mirrorIcon'));
+			this.transformGUI.mirrorX = new PIXIHeaven.Sprite(PIXI.Texture.from('mirrorIcon'));
 			this.transformGUI.mirrorX.pivot.set(this.transformGUI.mirrorX.width / 2, this.transformGUI.mirrorX.height / 2);
 			this.transformGUI.mirrorX.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.mirrorX);
 			this.transformGUI.mirrorX.y-=iconHeight*2;
 
-			this.transformGUI.mirrorY = new PIXI.heaven.Sprite(PIXI.Texture.from('mirrorIcon'));
+			this.transformGUI.mirrorY = new PIXIHeaven.Sprite(PIXI.Texture.from('mirrorIcon'));
 			this.transformGUI.mirrorY.pivot.set(this.transformGUI.mirrorY.width / 2, this.transformGUI.mirrorY.height / 2);
 			this.transformGUI.mirrorY.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.mirrorY);
@@ -6455,7 +6445,7 @@ const _B2dEditor = function () {
 	this.buildTextureFromObj = function (obj) {
 
 		var container;
-		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.from(obj.textureName));
+		var sprite = new PIXIHeaven.Sprite(PIXI.Texture.from(obj.textureName));
 
 		container = new PIXI.Container();
 		container.pivot.set(sprite.width / 2, sprite.height / 2);
@@ -7937,7 +7927,7 @@ const _B2dEditor = function () {
 		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 		const tex = PIXI.Texture.from(textureName);
 		// exist after preparation
-		const template = new PIXI.heaven.Sprite(tex);
+		const template = new PIXIHeaven.Sprite(tex);
 
 		template.texture = tex;
 		template.anchor.set(0.5);
@@ -8106,7 +8096,7 @@ const _B2dEditor = function () {
 				this.updateTileSprite(g);
 				g.data = null;
 			} else if (gObj instanceof this.textureObject) {
-				g = new PIXI.heaven.Sprite(PIXI.Texture.from(gObj.textureName));
+				g = new PIXIHeaven.Sprite(PIXI.Texture.from(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
 			}else if(gObj instanceof this.textObject) {
 				g = this.buildTextGraphicFromObj(gObj);
@@ -8238,7 +8228,7 @@ const _B2dEditor = function () {
 					});
 				}
 
-				const mesh = new PIXI.heaven.mesh.Mesh(tex, vertices, uvs, indices);
+				const mesh = new PIXIHeaven.mesh.Mesh(tex, vertices, uvs, indices);
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
 
@@ -9270,196 +9260,6 @@ const _B2dEditor = function () {
 
 		return image;
 	}
-	PIXI.Graphics.prototype.drawDashedCircle = function (radius, x, y, rotation, dash, gap, offsetPercentage) {
-		var circum = radius * 2 * Math.PI;
-		var stepSize = dash + gap;
-		var chunks = Math.ceil(circum / stepSize);
-		var chunkAngle = (2 * Math.PI) / chunks;
-		var dashAngle = (dash / stepSize) * chunkAngle;
-		var offsetAngle = offsetPercentage * chunkAngle;
-		var a = offsetAngle;
-		var p = {
-			x: radius * Math.cos(a),
-			y: radius * Math.sin(a)
-		};
-		this.moveTo(x + p.x, y + p.y);
-		for (var i = 0; i < chunks; i++) {
-			a = chunkAngle * i + offsetAngle;
-			this.arc(x, y, radius, a, a + dashAngle);
-			p = {
-				x: radius * Math.cos(a + chunkAngle),
-				y: radius * Math.sin(a + chunkAngle)
-			};
-			this.moveTo(x + p.x, y + p.y);
-		}
-	}
-	PIXI.Graphics.prototype.drawDashedPolygon = function (polygons, x, y, rotation, dash, gap, offsetPercentage) {
-		offsetPercentage = 1-offsetPercentage;
-		var i;
-		var p1;
-		var p2;
-		var dashLeft = 0;
-		var gapLeft = 0;
-		if (offsetPercentage > 0) {
-			var progressOffset = (dash + gap) * offsetPercentage;
-			if (progressOffset <= dash) dashLeft = dash - progressOffset;
-			else gapLeft = gap - (progressOffset - dash);
-		}
-		var rotatedPolygons = [];
-		for (i = 0; i < polygons.length; i++) {
-			var p = {
-				x: polygons[i].x,
-				y: polygons[i].y
-			};
-			var cosAngle = Math.cos(rotation);
-			var sinAngle = Math.sin(rotation);
-			var dx = p.x;
-			var dy = p.y;
-			p.x = (dx * cosAngle - dy * sinAngle);
-			p.y = (dx * sinAngle + dy * cosAngle);
-			rotatedPolygons.push(p);
-		}
-		for (i = 0; i < rotatedPolygons.length; i++) {
-			p1 = rotatedPolygons[i];
-			if (i == rotatedPolygons.length - 1) p2 = rotatedPolygons[0];
-			else p2 = rotatedPolygons[i + 1];
-			var dx = p2.x - p1.x;
-			var dy = p2.y - p1.y;
-			var len = Math.sqrt(dx * dx + dy * dy);
-			var normal = {
-				x: dx / len,
-				y: dy / len
-			};
-			var progressOnLine = 0;
-			this.moveTo(x + p1.x + gapLeft * normal.x, y + p1.y + gapLeft * normal.y);
-			while (progressOnLine <= len) {
-				progressOnLine += gapLeft;
-				if (dashLeft > 0) progressOnLine += dashLeft;
-				else progressOnLine += dash;
-				if (progressOnLine > len) {
-					dashLeft = progressOnLine - len;
-					progressOnLine = len;
-				} else {
-					dashLeft = 0;
-				}
-				this.lineTo(x + p1.x + progressOnLine * normal.x, y + p1.y + progressOnLine * normal.y);
-				progressOnLine += gap;
-				if (progressOnLine > len && dashLeft == 0) {
-					gapLeft = progressOnLine - len;
-				} else {
-					gapLeft = 0;
-					this.moveTo(x + p1.x + progressOnLine * normal.x, y + p1.y + progressOnLine * normal.y);
-				}
-			}
-		}
-	}
-	/*
-	PIXI.Graphics.prototype._calculateBounds = function () {
-		var minX = Infinity;
-		var maxX = -Infinity;
-		var minY = Infinity;
-		var maxY = -Infinity;
-
-		//this.rotation = 0;
-		if (this.graphicsData.length) {
-			this._recursivePostUpdateTransform();
-			var mat = this.transform.worldTransform;
-
-			for (var i = 0; i < this.graphicsData.length; i++) {
-				var data = this.graphicsData[i];
-				var type = data.type;
-				var shape = data.shape;
-
-				if (type === PIXI.SHAPES.RECT || type === PIXI.SHAPES.RREC) {
-					x = shape.x - lineWidth / 2;
-					y = shape.y - lineWidth / 2;
-					w = shape.width + lineWidth;
-					h = shape.height + lineWidth;
-
-					minX = x < minX ? x : minX;
-					maxX = x + w > maxX ? x + w : maxX;
-
-					minY = y < minY ? y : minY;
-					maxY = y + h > maxY ? y + h : maxY;
-				} else if (type === PIXI.SHAPES.CIRC) {
-					x = shape.x;
-					y = shape.y;
-					w = shape.radius + lineWidth / 2;
-					h = shape.radius + lineWidth / 2;
-
-					minX = x - w < minX ? x - w : minX;
-					maxX = x + w > maxX ? x + w : maxX;
-
-					minY = y - h < minY ? y - h : minY;
-					maxY = y + h > maxY ? y + h : maxY;
-				} else if (type === PIXI.SHAPES.ELIP) {
-					x = shape.x;
-					y = shape.y;
-					w = shape.width + lineWidth / 2;
-					h = shape.height + lineWidth / 2;
-
-					minX = x - w < minX ? x - w : minX;
-					maxX = x + w > maxX ? x + w : maxX;
-
-					minY = y - h < minY ? y - h : minY;
-					maxY = y + h > maxY ? y + h : maxY;
-				} else if (type === PIXI.SHAPES.POLY) {
-					var lineWidth = data.lineWidth;
-					var points = shape.points;
-
-					for (var j = 0; j + 2 < points.length; j += 2) {
-						var u1 = points[j];
-						var v1 = points[j + 1];
-						var u2 = points[j + 2];
-						var v2 = points[j + 3];
-
-						var x = u1 * mat.a + v1 * mat.c + mat.tx;
-						var y = u1 * mat.b + v1 * mat.d + mat.ty;
-						var x2 = u2 * mat.a + v2 * mat.c + mat.tx;
-						var y2 = u2 * mat.b + v2 * mat.d + mat.ty;
-
-						var dx = Math.abs(x2 - x);
-						var dy = Math.abs(y2 - y);
-						var h = lineWidth;
-						var w = Math.sqrt((dx * dx) + (dy * dy));
-
-						if (w < 1e-9) {
-							continue;
-						}
-
-						var rw = ((h / w * dy) + dx) / 2;
-						var rh = ((h / w * dx) + dy) / 2;
-						var cx = (x2 + x) / 2;
-						var cy = (y2 + y) / 2;
-
-						minX = cx - rw < minX ? cx - rw : minX;
-						maxX = cx + rw > maxX ? cx + rw : maxX;
-
-						minY = cy - rh < minY ? cy - rh : minY;
-						maxY = cy + rh > maxY ? cy + rh : maxY;
-
-					}
-				}
-			}
-		} else {
-			minX = 0;
-			maxX = 0;
-			minY = 0;
-			maxY = 0;
-		}
-
-		var padding = this.boundsPadding;
-		minX = minX - padding;
-		maxX = maxX + padding;
-		minY = minY - padding;
-		maxY = maxY + padding;
-
-		this._bounds.minX = minX;
-		this._bounds.maxX = maxX;
-		this._bounds.minY = minY;
-		this._bounds.maxY = maxY;
-	}*/
-
 	// mesh circular texture fix
 
 	//CONSTS
@@ -9500,6 +9300,8 @@ const _B2dEditor = function () {
 
 	this.minimumBodySurfaceArea = 0.3;
 }
+
+attachGraphicsAPIMixin();
 export const B2dEditor = new _B2dEditor();
 
 window.editor = B2dEditor;
