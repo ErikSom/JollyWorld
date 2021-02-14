@@ -31,7 +31,7 @@ export const init = ()=>{
 	//   });
 }
 
-export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=0) => {
+export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=1) => {
 	if(!sfxLoaded) return;
 
 	let soundId = null;
@@ -59,8 +59,10 @@ export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 		delete activeSounds[prefabName][sfxName];
 	}
 }
-export const playSFX = (sfxName, volume, pitch=0) => {
+export const playSFX = (sfxName, volume, pitch=1) => {
 	if(!sfxLoaded) return;
+
+	console.log("PLAYING SFX");
 
 	const soundId = sfx.play(sfxName);
 	sfx.volume(volume, soundId);

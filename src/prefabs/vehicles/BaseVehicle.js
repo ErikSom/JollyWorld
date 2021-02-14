@@ -18,7 +18,6 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.isVehicle = true;
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
         this.vehicleName = '';
-        this.inverseEngines = false;
         this.accel = 0;
         this.limbsObserver = [];
     }
@@ -141,8 +140,6 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         if(this.flipped) dir*= -1;
         this.accel = dir;
         if((dir < 0 && !this.flipped) || (dir>0 && this.flipped)) dir *= .6; // only 60% backwards speed
-
-        if(this.inverseEngines) dir *= -1;
 
         this.accelerateWheels(dir);
         let i;
