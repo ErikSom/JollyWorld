@@ -3,7 +3,9 @@ import {
 } from "../Game";
 import * as emitterData from "../data/emitterData";
 import { Settings } from "../Settings";
-import { Emitter, AnimatedParticle } from 'pixi-particles';
+import { AnimatedParticle } from 'pixi-particles';
+import { SuperEmitter as Emitter } from './SuperEmitter';
+
 import * as PIXI from 'pixi.js';
 
 
@@ -77,8 +79,8 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
     emitter.maxStartRotation = angle + angleOffset;
 
     if(randomColors) {
-        console.warn("v5 + version of pixi particle remove this method");
-        //emitter.setRandomColors(randomColors);
+        //console.warn("v5 + version of pixi particle remove this method");
+        emitter.setRandomColors(randomColors);
     }
 
     emitter.playOnce(returnToPool);
