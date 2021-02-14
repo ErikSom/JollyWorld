@@ -1108,7 +1108,7 @@ function Game() {
                         const worldManifold = new Box2D.b2WorldManifold();
                         contact.GetWorldManifold(worldManifold);
                         const worldCollisionPoint = worldManifold.points[0];
-                        
+
                         const slidingDecalSlider = 50;
                         const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
                         self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
@@ -1159,6 +1159,7 @@ function Game() {
         emitterManager.update();
 
         EffectsComposer.update();
+        AudioManager.update();
         this.editor.run();
 
         this.newDebugGraphics.clear();

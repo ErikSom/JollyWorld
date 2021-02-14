@@ -2,12 +2,20 @@ import {Howl, Howler} from '../../libs/howler';
 import {hashName} from '../AssetList'
 import { Settings } from '../Settings';
 
+import {
+    game
+} from "../Game"
+
 Howler.autoUnlock = true;
 
 let sfx;
 let sfxLoaded = false;
 let activeSounds = {};
+let activePlayingSounds = 0;
+let currentQueueReleaseTime = 0;
 const maxPitch = 20;
+const maxPlayingSounds = 6;
+const soundQueueReleaseInterval = 50;
 
 const sfxJSON = require('../../static/assets/audio/sfx.json');
 
@@ -32,8 +40,38 @@ export const init = ()=>{
 	//   });
 }
 
-export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=1) => {
+const determineVolumeAndPan = pos => {
+	const effectMargin = 300;
+	let pixiPoint = game.editor.getPIXIPointFromWorldPoint(pos);
+	pixiPoint = game.editor.container.toGlobal(pixiPoint);
+
+	if (game.editor.container.camera) {
+		game.editor.container.camera.toScreenPoint(pixiPoint, pixiPoint);
+	}
+
+	const dx = window.innerWidth/2 - pixiPoint.x;
+	const dy = window.innerHeight/2 - pixiPoint.y;
+	const distance = Math.sqrt(dx*dx + dy*dy);
+
+	let maxDistance = window.innerWidth > window.innerHeight ? window.innerWidth/2 : window.innerHeight/2;
+	maxDistance += effectMargin;
+
+	const vl = Math.max(0, 1-(distance / maxDistance))
+	const pan = -dx / maxDistance;
+
+	return {vl, pan}
+}
+
+export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=1, position) => {
 	if(!sfxLoaded || !Settings.sfxOn) return;
+	if(activePlayingSounds>=maxPlayingSounds) return;
+
+	pitch = Math.max(0.1, pitch);
+	const {vl, pan} = determineVolumeAndPan(position);
+	if(vl === 0){
+		stopPrefabUniqueLoopSFX(prefabName, sfxName);
+		return;
+	}
 
 	let soundId = null;
 	if(activeSounds[prefabName] && activeSounds[prefabName][sfxName]){
@@ -44,8 +82,10 @@ export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=1) =>
 		if(!activeSounds[prefabName]) activeSounds[prefabName] = {};
 		activeSounds[prefabName][sfxName] = soundId;
 	}
-	sfx.volume(volume, soundId);
+
+	sfx.volume(volume*vl, soundId);
 	sfx.rate(Math.min(maxPitch, pitch), soundId);
+	sfx.stereo(pan, soundId);
 }
 export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 	if(!sfxLoaded) return;
@@ -60,12 +100,22 @@ export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 		delete activeSounds[prefabName][sfxName];
 	}
 }
-export const playSFX = (sfxName, volume, pitch=1) => {
+export const playSFX = (sfxName, volume, pitch=1, position) => {
 	if(!sfxLoaded || !Settings.sfxOn) return;
+	if(activePlayingSounds>=maxPlayingSounds) return;
+
+	pitch = Math.max(0.1, pitch);
+
+	const {vl, pan} = determineVolumeAndPan(position);
+	if(vl === 0) return;
+
+	if(Array.isArray(sfxName)) sfxName = sfxName[Math.floor(Math.random() * sfxName.length)];
 
 	const soundId = sfx.play(sfxName);
-	sfx.volume(volume, soundId);
+	sfx.volume(volume*vl, soundId);
 	sfx.rate(Math.min(maxPitch, pitch), soundId);
+	sfx.stereo(pan, soundId);
+	activePlayingSounds++;
 }
 export const stopAllSounds = ()=>{
 	if(!sfxLoaded) return;
@@ -83,4 +133,9 @@ export const stopAllSounds = ()=>{
 
 	sfx.stop();
 	activeSounds = {}
+}
+export const update = ()=> {
+	currentQueueReleaseTime += game.editor.deltaTime;
+	if(currentQueueReleaseTime > soundQueueReleaseInterval) activePlayingSounds--;
+	while(currentQueueReleaseTime > soundQueueReleaseInterval) currentQueueReleaseTime -= soundQueueReleaseInterval;
 }

@@ -8,6 +8,7 @@ import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import * as SaveManager from "../utils/SaveManager";
 import * as FPSManager from '../utils/FPSManager';
+import * as AudioManager from '../utils/AudioManager';
 
 import * as DS from './utils/DecalSystem';
 

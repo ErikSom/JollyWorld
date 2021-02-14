@@ -47,10 +47,9 @@ class DirtBike extends BaseVehicle {
 
         if(this.accel == 0){
             this.refAccel = Math.max(0, this.refAccel - (game.editor.deltaTime / 500));
-            console.log(this.refAccel, wheelRotationSpeed, this.airOffset);
-            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'dirtbike_gas_loop', 0.1 * this.refAccel+0.05, Math.max(0.6, wheelRotationSpeed *.6 + this.refAccel/2));
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'dirtbike_gas_loop', 0.1 * this.refAccel+0.05, Math.max(0.6, wheelRotationSpeed *.6 + this.refAccel/2), this.lookupObject.frame.GetPosition());
         }else{
-            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'dirtbike_gas_loop', 0.3, Math.max(0.6, wheelRotationSpeed)+this.airOffset);
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'dirtbike_gas_loop', 0.3, Math.max(0.6, wheelRotationSpeed)+this.airOffset, this.lookupObject.frame.GetPosition());
             this.refAccel = 1.0;
         }
 

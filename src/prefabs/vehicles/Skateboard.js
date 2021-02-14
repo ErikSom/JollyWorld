@@ -88,7 +88,7 @@ class Skateboard extends BaseVehicle {
 
                 if(this.grounded && this.legAnimation.currentFrame === 1 && this.lastLegFrame !== 1){
                     const pitchOffset = 0.3;
-                    AudioManager.playSFX ('skateboard_pedle', idleVolume, 1.0 + (Math.random()*pitchOffset - pitchOffset/2))
+                    AudioManager.playSFX ('skateboard_pedle', idleVolume, 1.0 + (Math.random()*pitchOffset - pitchOffset/2), this.lookupObject.frame.GetPosition())
                 }
                 this.lastLegFrame = this.legAnimation.currentFrame;
 
@@ -109,7 +109,7 @@ class Skateboard extends BaseVehicle {
             this.legAnimator = null;
         }
 
-        AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'skateboard_idle_loop', idleVolume, Math.max(0.8, wheelRotationSpeed * 0.5));
+        AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'skateboard_idle_loop', idleVolume, Math.max(0.8, wheelRotationSpeed * 0.5), this.lookupObject.frame.GetPosition());
 
     }
     initContactListener() {

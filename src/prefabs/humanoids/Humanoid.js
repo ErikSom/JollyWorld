@@ -7,6 +7,7 @@ import {
     Settings
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
+import * as AudioManager from '../../utils/AudioManager';
 import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
 
 
@@ -320,6 +321,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     this.generateGoreParticles(update.target);
                     emitterManager.playOnceEmitter("gorecloud", targetBody, targetBody.GetPosition());
+                    AudioManager.playSFX(['bash1', 'bash2', 'bash3', 'bash4'], 0.3, 1.0+Math.random()*.2-.1, targetBody.GetPosition());
 
                     let connectedJointEdge = targetBody.GetJointList();
                     while(connectedJointEdge){
@@ -371,7 +373,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 break;
             case Humanoid.GORE_SNAP:
-
+                debugger;
                 const targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
 
@@ -425,6 +427,8 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     game.world.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];
+
+                    AudioManager.playSFX(['snap1', 'snap2', 'snap3', 'snap4'], 0.3, 1.0+Math.random()*.2-.1, targetJoint.GetBodyA().GetPosition());
 
                     //fix display positions:
                     const swapBodies = vainBodies._bodies.concat().reverse();

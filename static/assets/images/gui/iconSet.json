@@ -2,7 +2,7 @@
 
 "distanceJoint":
 {
-	"frame": {"x":1,"y":103,"w":50,"h":50},
+	"frame": {"x":2,"y":2,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -10,7 +10,7 @@
 },
 "layerDown":
 {
-	"frame": {"x":52,"y":36,"w":34,"h":34},
+	"frame": {"x":54,"y":54,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -18,7 +18,7 @@
 },
 "layerUp":
 {
-	"frame": {"x":52,"y":71,"w":34,"h":34},
+	"frame": {"x":54,"y":90,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -26,7 +26,7 @@
 },
 "mirrorIcon":
 {
-	"frame": {"x":52,"y":1,"w":34,"h":34},
+	"frame": {"x":54,"y":126,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -34,7 +34,7 @@
 },
 "pinJoint":
 {
-	"frame": {"x":1,"y":1,"w":50,"h":50},
+	"frame": {"x":2,"y":54,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -42,7 +42,7 @@
 },
 "ropeJoint":
 {
-	"frame": {"x":1,"y":154,"w":50,"h":50},
+	"frame": {"x":2,"y":106,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -50,7 +50,7 @@
 },
 "slidingJoint":
 {
-	"frame": {"x":1,"y":52,"w":50,"h":50},
+	"frame": {"x":2,"y":158,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -58,7 +58,7 @@
 },
 "wheelJoint":
 {
-	"frame": {"x":1,"y":205,"w":50,"h":50},
+	"frame": {"x":54,"y":2,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -68,7 +68,7 @@
 	"app": "Adobe Animate",
 	"version": "20.0.3.25487",
 	"image": "iconSet.png",
-	"format": "RGB8",
+	"format": "RGBA8888",
 	"size": {"w":128,"h":256},
 	"scale": "1"
 }

@@ -103,10 +103,10 @@ export const getActionsForObject = function (object) {
     }
 
     console.log(object);
-    if(!(object.data.prefabInstanceName && B2dEditor.activePrefabs[object.data.prefabInstanceName].class.isVehicle)) actions.push("Destroy");
+    actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -303,6 +303,12 @@ export const doAction = function (actionData, target) {
             animation.data.mirrored = actionData.setMirrored;
             if(actionData.toggle) actionData.setMirrored = !actionData.setMirrored;
             break;
+        case "SetWin":
+            game.win();
+        break;
+        case "SetLose":
+            game.lose();
+        break;
     }
 }
 export const guitype_MINMAX = 0;
@@ -741,6 +747,16 @@ export const actionDictionary = {
             type: guitype_BOOL,
         },
     },
+    /*******************/
+       actionObject_SetWin: {
+        type: 'SetWin',
+    },
+    actionOptions_SetWin: {},
+    /*******************/
+    actionObject_SetLose: {
+        type: 'SetLose',
+    },
+    actionOptions_SetLose: {},
     /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
