@@ -43,14 +43,19 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 actions.push("SetCameraTarget");
 
-                if(object.myBody.myTexture && object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
-                    actions.push("Pause");
-                    actions.push("Play");
-                    actions.push("GotoAndPlay");
-                    actions.push("GotoAndStop");
-                    actions.push("Nextframe");
-                    actions.push("Prevframe");
-                    actions.push("animationFPS");
+                if(object.myBody.myTexture){
+                    if(object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
+                        actions.push("Pause");
+                        actions.push("Play");
+                        actions.push("GotoAndPlay");
+                        actions.push("GotoAndStop");
+                        actions.push("Nextframe");
+                        actions.push("Prevframe");
+                        actions.push("animationFPS");
+                        actions.push("SetMirrored");
+                    }else if(object.myBody.myTexture.data.type === B2dEditor.object_GRAPHICGROUP){
+                        actions.push("SetMirrored");
+                    }
                 }
 
                 break;
@@ -75,6 +80,7 @@ export const getActionsForObject = function (object) {
                 actions.push("SetEnabled");
                 actions.push("SetFollowPlayer");
                 actions.push("Trigger");
+                break
             case B2dEditor.object_ANIMATIONGROUP:
                 actions.push("Pause");
                 actions.push("Play");
@@ -83,6 +89,11 @@ export const getActionsForObject = function (object) {
                 actions.push("Nextframe");
                 actions.push("Prevframe");
                 actions.push("animationFPS");
+                actions.push("SetMirrored");
+                break;
+            case B2dEditor.object_GRAPHICGROUP:
+                actions.push("SetMirrored");
+                break;
             default:
                 break;
         }
@@ -90,7 +101,9 @@ export const getActionsForObject = function (object) {
     if (object.data.type != B2dEditor.object_JOINT) {
         actions.push("SetPosition", "SetRotation", "SetVisibility")
     }
-    actions.push("Destroy");
+
+    console.log(object);
+    if(!(object.data.prefabInstanceName && B2dEditor.activePrefabs[object.data.prefabInstanceName].class.isVehicle)) actions.push("Destroy");
     return actions;
 }
 const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget"];
@@ -282,6 +295,14 @@ export const doAction = function (actionData, target) {
         case "SetWayPoint":
             prefab.class.wayPoint = new Box2D.b2Vec2(actionData.x, actionData.y).SelfMul(1/game.editor.PTM);
         break;
+        case "SetMirrored":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            const currentScale = Math.abs(animation.scale.x);
+            animation.scale.x = actionData.setMirrored ? -currentScale : currentScale;
+            animation.data.mirrored = actionData.setMirrored;
+            if(actionData.toggle) actionData.setMirrored = !actionData.setMirrored;
+            break;
     }
 }
 export const guitype_MINMAX = 0;
@@ -704,6 +725,20 @@ export const actionDictionary = {
             max: editorSettings.worldSize.width,
             value: 0,
             step: 0.1,
+        },
+    },
+    /*******************/
+    actionObject_SetMirrored: {
+        type: 'SetMirrored',
+        toggle: false,
+        setMirrored: true,
+    },
+    actionOptions_SetMirrored: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setMirrored: {
+            type: guitype_BOOL,
         },
     },
     /*******************/

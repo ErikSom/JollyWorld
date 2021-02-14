@@ -40,6 +40,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     init() {
         super.init();
         this.patchJointAngles();
+        this.stabalizeJoints();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
         this.alive = true;
@@ -55,6 +56,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
+
+        console.log(this.collisionUpdates);
 
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
@@ -81,6 +84,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     setExpression(expression){
         if(this.expression === expression) return;
+        if(!this.lookupObject.head) return;
 
         const textureName = this.mouth.texture.textureCacheIds[0];
         const textureSkin = textureName.substr(textureName.length - 4);
@@ -152,6 +156,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         if (this.collisionUpdates.length > 0) {
             this.doCollisionUpdate(this.collisionUpdates[0]);
             this.collisionUpdates.shift();
+            this.checkLimbs();
         }
         this.eyesTimer += game.editor.deltaTime;
         this.expressionTimer += game.editor.deltaTime;
@@ -418,15 +423,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
                     if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
 
-                    const targetBody = this.lookupObject[update.target];
-                    if(targetBody.grabJoints){
-                        targetBody.grabJoints.forEach(grabJoint=>{
-                            game.world.DestroyJoint(grabJoint);
-                            delete targetBody.grabJoints;
-                        })
-                    }
-
-
                     game.world.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];
 
@@ -675,22 +671,22 @@ export class Humanoid extends PrefabManager.basePrefab {
                     clockwise: 1
                 },
                 shoulder_right: {
-                    angle: -20,
+                    angle: 190,
                     reference: "body",
                     clockwise: -1
                 },
                 shoulder_left: {
-                    angle: -20,
+                    angle: 190,
                     reference: "body",
                     clockwise: -1
                 },
                 arm_right: {
-                    angle: 0,
+                    angle: 90,
                     reference: "shoulder_right",
                     clockwise: -1
                 },
                 arm_left: {
-                    angle: 0,
+                    angle: 90,
                     reference: "shoulder_left",
                     clockwise: -1
                 },
@@ -773,10 +769,10 @@ export class Humanoid extends PrefabManager.basePrefab {
                         }
                     }
                 }
-
+                const torqueLimiter = .15;
                 let desiredAngularVelocity = totalRotation * 60;
                 let torque = body.GetInertia() * desiredAngularVelocity / (1/30.0);
-                if(Math.abs(torque) > 1) body.ApplyTorque(torque * .6);
+                if(Math.abs(torque) > 1) body.ApplyTorque(torque * torqueLimiter);
             }
         }
     }
@@ -827,6 +823,62 @@ export class Humanoid extends PrefabManager.basePrefab {
             linkedBody.SetAngle(linkedBody.GetAngle()-angleCorrection);
         });
     };
+
+    stabalizeJoints(){
+        // stabalize shoulders
+        this.stabalizeJoint(Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_LEFT, [Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.ARM_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.ARM_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_LEFT, [Humanoid.BODY_PARTS.ARM_LEFT]);
+
+        this.stabalizeJoint(Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]); // add stabalize joints to bodies delete on snap 
+        this.stabalizeJoint(Humanoid.BODY_PARTS.ARM_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]);
+
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.LEG_LEFT]);
+
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT,[Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT, [Humanoid.BODY_PARTS.LEG_RIGHT]);
+    }
+    stabalizeJoint(target, base, baseRefJoint, linkedBodies){
+        const targetBody = this.lookupObject[target];
+        base = this.lookupObject[base];
+        const refJoint = this.lookupObject[`${baseRefJoint}_joint`]
+
+        let anchor = null;
+        if(refJoint.GetBodyA() === base){
+            anchor = refJoint.GetAnchorA(new Box2D.b2Vec2());
+        }else{
+            anchor = refJoint.GetAnchorB(new Box2D.b2Vec2());
+        }
+
+        const ropeJointDef = new Box2D.b2RopeJointDef();
+
+        const targetAnchor = this.lookupObject[`${target}_joint`].GetAnchorA(new Box2D.b2Vec2());
+
+        ropeJointDef.Initialize(targetBody, base, targetAnchor, anchor);
+        const newJoint = game.world.CreateJoint(ropeJointDef);
+
+        let maxLength = 0;
+        linkedBodies.forEach((linkedBody, index)=>{
+
+            let nextLinkedBody = index+1 === linkedBodies.length ? baseRefJoint : linkedBodies[index+1];
+            const j1 = this.lookupObject[linkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
+            const j2 = this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
+
+            maxLength += j1.SelfSub(j2).Length();
+
+        });
+        newJoint.SetMaxLength(maxLength);
+
+        linkedBodies.forEach(linkedBodyKey => {
+            const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]
+            if(!linkedJoint.linkedJoints) linkedJoint.linkedJoints = [];
+            linkedJoint.linkedJoints.push(newJoint);
+        });
+    }
+
+    checkLimbs(){
+        // only intereresting for character
+    }
 
     positionLimb(limb, x, y){
         let baseJoint,

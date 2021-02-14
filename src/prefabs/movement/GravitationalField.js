@@ -5,29 +5,27 @@ import {
     game
 } from "../../Game";
 
+let circularTextureMaterial;
 
-class ForceField extends PrefabManager.basePrefab {
+class GravitationalField extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
+
 		this.forceField = this.lookupObject['forcefield_body'];
 		this.forceField.myTileSprite.fixTextureRotation = true;
-		this.width = this.height = 200;
+		this.forceField.myTileSprite.pluginName = 'meshCircleTexture';
 
+		this.width = this.height = 200;
 		this.fieldBodies = [];
     }
     init() {
 		super.init();
-		this.setDirection(this.prefabObject.settings.direction);
 		this.setDisableGravity(this.prefabObject.settings.disableGravity);
 		this.disableGravity = this.prefabObject.settings.disableGravity;
 		this.direction = this.prefabObject.settings.direction;
 		this.force = this.prefabObject.settings.force;
+		this.push = this.prefabObject.settings.push;
 		this.damping = this.prefabObject.settings.damping;
-
-	}
-	setDirection(direction){
-		this.forceField.myTileSprite.fixedTextureRotationOffset = (360-direction)*game.editor.DEG2RAD;
-		this.forceField.myTileSprite.updateMeshVerticeRotation(true);
 	}
 	setDisableGravity(disabled){
 		if(disabled) this.forceField.myTileSprite.tint = 0x00d8ff;
@@ -112,24 +110,20 @@ class ForceField extends PrefabManager.basePrefab {
 
 		game.editor.updateBodyShapes(body);
 		game.editor.updateTileSprite(body, true);
-		this.setDirection(this.prefabObject.settings.direction);
+
+		body.myTileSprite.pluginName = 'meshCircleTexture';
+
 		this.setDisableGravity(this.prefabObject.settings.disableGravity);
 
 	}
 	set(property, value) {
 		super.set(property, value);
         switch (property) {
-            case 'direction':
-                this.setDirection(value);
-				break;
 			case 'disableGravity':
 				this.setDisableGravity(value);
 				break;
-			case 'width':
-				this.setWidthHeight(value, this.height);
-			break
-			case 'height':
-				this.setWidthHeight(this.width, value);
+			case 'radius':
+				this.setWidthHeight(value, value);
 			break
 			case 'isVisible':
 			case 'visible':
@@ -164,45 +158,45 @@ class ForceField extends PrefabManager.basePrefab {
 	}
 
     update() {
-		const direction = this.direction*game.editor.DEG2RAD;
 		this.fieldBodies.forEach(body=>{
 
 			if(this.disableGravity) body.SetGravityScale(0.0);
 			body.SetLinearDamping(this.damping);
 			body.SetAngularDamping(this.damping);
 
-			const force = new Box2D.b2Vec2(this.force*Math.cos(direction), this.force*Math.sin(direction));
-			body.ApplyForceToCenter(force, true);
+			const diff = body.GetPosition().Clone().SelfSub(this.forceField.GetPosition());
+			const rad = Math.max(1.0, diff.LengthSquared()*2);
+
+			const forceScalar = this.force;
+			const forceValue = this.push ? forceScalar : -forceScalar;
+			const force = new Box2D.b2Vec2((forceValue*diff.x)/rad, (forceValue*diff.y)/rad);
+
+			body.ApplyLinearImpulse(force, body.GetPosition(), true);
 		})
+
+		const rotationSpeed = 2.0;
+		const rotationForce = this.push ? -rotationSpeed : rotationSpeed;
+		this.forceField.SetAngle(this.forceField.GetAngle()+rotationForce * game.editor.deltaTimeSeconds);
+
 	}
 }
 
-ForceField.settings = Object.assign({}, ForceField.settings, {
+GravitationalField.settings = Object.assign({}, GravitationalField.settings, {
     "disableGravity": true,
-	"direction": 0,
+	"push": false,
 	"force": 3.0,
 	"damping": 1.0,
-	"width": 200,
-	"height": 200,
+	"radius": 200,
 	"isVisible": true,
 });
-ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
-	"width":{
+GravitationalField.settingsOptions = Object.assign({}, GravitationalField.settingsOptions, {
+	"radius":{
 		min:10.0,
-		max:3000.0,
-		step:1.0
-	},
-	"height":{
-		min:10.0,
-		max:3000.0,
+		max:10000.0,
 		step:1.0
 	},
 	"disableGravity": true,
-	"direction": {
-        min: 0.0,
-        max: 360.0,
-        step: 1.0
-    },
+	"push": false,
     "force": {
         min: 0.0,
         max: 1000.0,
@@ -217,8 +211,43 @@ ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 });
 
 
-PrefabManager.prefabLibrary.ForceField = {
-    json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#FFFFFF"],["#FFFFFF"],[0.6],true,true,[[{"x":-3.3230424036184223,"y":3.319249149419366},{"x":-3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":3.319249149419366}]],[1],2,[0],"TileArrow",[0]]]}',
-    class: ForceField,
+PrefabManager.prefabLibrary.GravitationalField = {
+	json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#999999"],["#000"],[0.6],true,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[2],[100],"Ice1",[0],true,false,false,[0.5],[0.2]]]}',
+    class: GravitationalField,
     library: PrefabManager.LIBRARY_MOVEMENT
 }
+
+const CIRCULAR_TEXTURE_FRAG_SHADER =
+`
+#define M_PI 3.1415926535897932384626433832795
+
+varying vec2 vTextureCoord;
+uniform vec4 uLight, uDark;
+
+uniform sampler2D uSampler;
+
+void main(void)
+{
+    vec2 pos = vTextureCoord;
+    vec2 center = vec2(0.5, 0.5);
+    vec2 delta = pos - center;
+
+    float d = length(delta) * 3.;
+    float a = 3. * atan(-delta.y, delta.x) / M_PI;
+
+	vec2 rad = vec2(1.-d, a);
+
+	vec4 texColor = texture2D(uSampler, rad);
+	gl_FragColor.a = texColor.a * uLight.a;
+	gl_FragColor.rgb = ((texColor.a - 1.0) * uDark.a + 1.0 - texColor.rgb) * uDark.rgb + texColor.rgb * uLight.rgb;
+}
+`;
+
+class MeshCircleTextureRenderer extends PIXI.heaven.mesh.MeshHeavenRenderer {
+	onContextChange() {
+		const gl = this.renderer.gl;
+		this.shader = new PIXI.Shader(gl, PIXI.heaven.mesh.MeshHeavenRenderer.vert, CIRCULAR_TEXTURE_FRAG_SHADER);
+		this.shaderTrim = new PIXI.Shader(gl, PIXI.heaven.mesh.MeshHeavenRenderer.vert, PIXI.heaven.mesh.MeshHeavenRenderer.fragTrim);
+	};
+}
+PIXI.WebGLRenderer.registerPlugin('meshCircleTexture', MeshCircleTextureRenderer);

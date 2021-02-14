@@ -165,14 +165,15 @@ export class NoVehicle extends BaseVehicle {
                                 ropeJointDef.maxLength = maxLength ? maxLength : ropeJointDef.maxLength;
                             }
                             const newJoint = game.editor.world.CreateJoint(ropeJointDef);
+                            newJoint.connectedJoints = [];
 
                             linkedBodies.forEach(linkedBodyKey => {
-                                const linkedBody = this.lookupObject[linkedBodyKey];
-                                if(!linkedBody.grabJoints) linkedBody.grabJoints = [];
-                                linkedBody.grabJoints.push(joint);
-                            })
- 
-                            joint.grabJoint = newJoint;
+                                const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]
+
+                                if(!linkedJoint.linkedJoints) linkedJoint.linkedJoints = [];
+                                linkedJoint.linkedJoints.push(newJoint);
+                                newJoint.connectedJoints.push(linkedJoint)
+                            });
                         }
                     }
 

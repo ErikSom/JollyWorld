@@ -20,6 +20,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.vehicleName = '';
         this.inverseEngines = false;
         this.accel = 0;
+        this.limbsObserver = [];
     }
 
     init() {

@@ -127,6 +127,19 @@ export class Character extends Humanoid {
             }
         });
     }
+    checkLimbs(){
+        if(this.attachedToVehicle){
+            this.mainPrefabClass.limbsObserver.forEach(observe=>{
+                const limbs = [].concat(observe);
+                let brokenLimbsCount = 0;
+                limbs.forEach(limb=> {
+                    const targetObject = this.lookupObject[limb]
+                    if(!targetObject || targetObject.snapped) brokenLimbsCount++;
+                });
+                if(brokenLimbsCount === limbs.length) this.detachFromVehicle();
+            })
+        }
+    }
 
     detachFromVehicle(force) {
         if (!force) force = 0;

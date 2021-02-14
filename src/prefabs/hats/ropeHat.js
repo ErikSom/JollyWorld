@@ -15,7 +15,8 @@ export class RopeHat extends Hat {
 			this.m_hit = false;
 		};
 		this.rayCastCallback.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-			// if(fixture.GetBody() !== self.lookupObject['portal']) return -1;
+			if(fixture.IsSensor()) return -1;
+
 			this.m_hit = true;
 			this.m_point = point.Clone();
 			this.m_normal = normal;

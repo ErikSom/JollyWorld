@@ -421,6 +421,7 @@ body .dg .cr.function {
     background-color: #666666;
     margin: -10px;
     min-width: 640px;
+    box-shadow: 0px 2px 0px #000000;
 }
 
 .editorHeader div,
@@ -866,6 +867,18 @@ body .dg .cr.function {
 .levelLoadDiv .playButtonTriangleIcon {
     margin-left: 24px;
     margin-top: 6px;
+}
+.levelLoadDiv .progressBackFill{
+    width: 100%;
+    background: #51a328;
+    height: 100%;
+    border-radius: inherit;
+    clip-path: inset(0px 100% 0px 0px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    visibility: hidden;
 }
 
 .closeWindowIcon {
