@@ -13,7 +13,6 @@ import * as dat from "../../libs/dat.gui";
 import * as SaveManager from "../utils/SaveManager";
 import * as FPSManager from '../utils/FPSManager';
 import * as DS from './utils/DecalSystem';
-
 import * as camera from './utils/camera';
 import * as PIXI from 'pixi.js';
 
@@ -44,6 +43,7 @@ import { removeGraphicFromCells } from '../utils/PIXICuller';
 import { hashName } from "../AssetList";
 
 import { attachGraphicsAPIMixin } from './pixiHack'
+import { TiledMesh } from './classes/TiledMesh';
  
 const PIXIHeaven = self.PIXI.heaven;
 
@@ -2054,9 +2054,13 @@ const _B2dEditor = function () {
 			body.mySprite.y = body.GetPosition().y * this.PTM;
 			//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
 			body.mySprite.rotation = body.GetAngle();
-			if(body.myTileSprite && body.myTileSprite.fixTextureRotation && body.myTileSprite.updateMeshVerticeRotation) body.myTileSprite.updateMeshVerticeRotation();
+
+			if(body.myTileSprite && body.myTileSprite.fixTextureRotation) {
+				body.myTileSprite.updateMeshVerticeRotation();
+			}
 		}
 	}
+
 	this.run = function () {
 		//update textures
 
@@ -8125,10 +8129,11 @@ const _B2dEditor = function () {
 	}
 
 	this.updateTileSprite = function (target, forceNew = false) {
-		console.warn("METHOD NOT ALLOWED IN V6");
-		return;
+		//console.warn("METHOD NOT ALLOWED IN V6");
+		//return;
 
 		let tileTexture;
+
 		let targetGraphic;
 		let targetSprite;
 
@@ -8193,27 +8198,24 @@ const _B2dEditor = function () {
 			}
 
 			if (!target.myTileSprite) {
-				game.app.renderer.plugins.graphics.updateGraphics(targetGraphic);
+				//game.app.renderer.plugins.graphics.updateGraphics(targetGraphic);
 
-				const verticesColor = targetGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glPoints;
-				let vertices = new Float32Array(verticesColor.length / 3);
+				/**
+				 * @type {PIXI.GraphicsGeometry}
+				 */
+				const g = targetGraphic.geometry;
+				g.updateBatches();
 
-				let i;
-				let j = 0;
-				for (i = 0; i < verticesColor.length; i += 6) {
-					vertices[j] = verticesColor[i];
-					vertices[j + 1] = verticesColor[i + 1];
-					j += 2;
-				}
-
-				const indices = targetGraphic._webGL[game.app.renderer.CONTEXT_UID].data[0].glIndices;
-				let uvs = new Float32Array(vertices.length);
+				const vertices = new Float32Array(g.points);
+				const indices = new Int16Array(g.indices);
+				const uvs = new Float32Array(vertices.length);
 
 				let minX = Number.POSITIVE_INFINITY;
 				let maxX = -Number.POSITIVE_INFINITY;
 				let minY = Number.POSITIVE_INFINITY;
 				let maxY = -Number.POSITIVE_INFINITY;
-				for (i = 0; i < vertices.length; i+=2) {
+
+				for (let i = 0; i < vertices.length; i+=2) {
 					uvs[i] = vertices[i] * 2.0 / tex.width+0.5;
 					uvs[i+1] = vertices[i+1] * 2.0 / tex.width + 0.5;
 
@@ -8222,13 +8224,16 @@ const _B2dEditor = function () {
 					minY = Math.min(uvs[i+1], minY);
 					maxY = Math.max(uvs[i+1], maxY);
 				}
+
 				if(gradientMode){
-					uvs.forEach((uv, i) => {
-						uvs[i] = (i & 1) ? (uv - minY) / (maxY - minY) : (uv - minX) / (maxX - minX)
-					});
+					for (let i = 0; i < uvs.length; i += 2) {
+						uvs[i * 2 + 1] = (uvs[i * 2 + 1] - minY) / (maxY - minY);
+						uvs[i * 2 + 0] = (uvs[i * 2 + 0] - minX) / (maxX - minX);
+					}
 				}
 
-				const mesh = new PIXIHeaven.mesh.Mesh(tex, vertices, uvs, indices);
+				const mesh = new TiledMesh(tex, vertices, uvs, indices);
+				mesh.targetSprite = targetSprite;
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
 
@@ -8246,51 +8251,6 @@ const _B2dEditor = function () {
 				target.myTileSpriteOutline = outline;
 
 				this.updateTileSpriteOutline(target, targetSprite.data);
-
-				// find center vertice
-				mesh.cachedSpriteRotation = 0;
-				mesh.verticesClone = Float32Array.from(mesh.vertices);
-				// mesh.fixedTextureRotationOffset = Math.PI/2;
-				mesh.updateMeshVerticeRotation = force=>{
-					if(mesh.cachedSpriteRotation != targetSprite.rotation || force){
-						for(let i = 0; i<vertices.length; i+=2){
-							let x = mesh.verticesClone[i];
-							let y = mesh.verticesClone[i+1];
-							let l = Math.sqrt(x*x+y*y);
-							let a = Math.atan2(y, x);
-							a += targetSprite.rotation;
-							a += mesh.fixedTextureRotationOffset;
-							mesh.vertices[i] = l*Math.cos(a);
-							mesh.vertices[i+1] = l*Math.sin(a);
-						}
-
-						let minX = Number.POSITIVE_INFINITY;
-						let maxX = -Number.POSITIVE_INFINITY;
-						let minY = Number.POSITIVE_INFINITY;
-						let maxY = -Number.POSITIVE_INFINITY;
-						const uvs = new Float32Array(mesh.vertices.length);
-						for (i = 0; i < mesh.vertices.length; i+=2) {
-							uvs[i] = mesh.vertices[i] * 2.0 / tex.width + 0.5;
-							uvs[i+1] = mesh.vertices[i+1] * 2.0 / tex.width + 0.5;
-
-							minX = Math.min(uvs[i], minX);
-							maxX = Math.max(uvs[i], maxX);
-							minY = Math.min(uvs[i+1], minY);
-							maxY = Math.max(uvs[i+1], maxY);
-						}
-
-						if(gradientMode){
-							uvs.forEach((uv, i) => {
-								uvs[i] = (i & 1) ? (uv - minY) / (maxY - minY) : (uv - minX) / (maxX - minX)
-							});
-						}
-
-						mesh.uvs = uvs;
-						mesh.rotation = -targetSprite.rotation-mesh.fixedTextureRotationOffset;
-						mesh.cachedSpriteRotation = targetSprite.rotation
-						mesh.dirty++;
-					}
-				}
 			}
 
 			const transparency = Array.isArray(targetSprite.data.transparancy) ? targetSprite.data.transparancy[0] : targetSprite.data.transparancy;

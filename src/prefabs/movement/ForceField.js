@@ -5,7 +5,7 @@ import {
     game
 } from "../../Game";
 
-import { SimpleMesh } from 'pixi.js'
+import { TiledMesh } from './../../b2Editor/classes/TiledMesh';
 
 
 class ForceField extends PrefabManager.basePrefab {
@@ -13,7 +13,7 @@ class ForceField extends PrefabManager.basePrefab {
 		super(target);
 		this.forceField = this.lookupObject['forcefield_body'];
 		
-		this.forceField.myTileSprite = new SimpleMesh();
+		//this.forceField.myTileSprite = new TiledMesh();
 		this.forceField.myTileSprite.fixTextureRotation = true;
 		this.width = this.height = 200;
 
