@@ -2064,7 +2064,7 @@ const _B2dEditor = function () {
 			body.mySprite.y = body.GetPosition().y * this.PTM;
 			//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
 			body.mySprite.rotation = body.GetAngle();
-			if(body.myTileSprite && body.myTileSprite.fixTextureRotation) body.myTileSprite.updateMeshVerticeRotation();
+			if(body.myTileSprite && body.myTileSprite.fixTextureRotation && body.myTileSprite.updateMeshVerticeRotation) body.myTileSprite.updateMeshVerticeRotation();
 		}
 	}
 	this.run = function () {
@@ -4725,24 +4725,24 @@ const _B2dEditor = function () {
 		const scale = 0.8;
 		if(!this.transformGUI){
 			this.transformGUI = new PIXI.Container();
-			this.transformGUI.layerDown = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('layerDown'));
+			this.transformGUI.layerDown = new PIXI.heaven.Sprite(PIXI.Texture.from('layerDown'));
 			this.transformGUI.layerDown.pivot.set(this.transformGUI.layerDown.width / 2, this.transformGUI.layerDown.height / 2);
 			this.transformGUI.layerDown.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.layerDown);
 
-			this.transformGUI.layerUp = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('layerUp'));
+			this.transformGUI.layerUp = new PIXI.heaven.Sprite(PIXI.Texture.from('layerUp'));
 			this.transformGUI.layerUp.pivot.set(this.transformGUI.layerUp.width / 2, this.transformGUI.layerUp.height / 2);
 			this.transformGUI.layerUp.scale.set(scale);
 			this.transformGUI.layerUp.y-=iconHeight;
 			this.transformGUI.addChild(this.transformGUI.layerUp);
 
-			this.transformGUI.mirrorX = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('mirrorIcon'));
+			this.transformGUI.mirrorX = new PIXI.heaven.Sprite(PIXI.Texture.from('mirrorIcon'));
 			this.transformGUI.mirrorX.pivot.set(this.transformGUI.mirrorX.width / 2, this.transformGUI.mirrorX.height / 2);
 			this.transformGUI.mirrorX.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.mirrorX);
 			this.transformGUI.mirrorX.y-=iconHeight*2;
 
-			this.transformGUI.mirrorY = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame('mirrorIcon'));
+			this.transformGUI.mirrorY = new PIXI.heaven.Sprite(PIXI.Texture.from('mirrorIcon'));
 			this.transformGUI.mirrorY.pivot.set(this.transformGUI.mirrorY.width / 2, this.transformGUI.mirrorY.height / 2);
 			this.transformGUI.mirrorY.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.mirrorY);
@@ -4806,19 +4806,19 @@ const _B2dEditor = function () {
 							for (let j = 0; j < this.selectedTextures.length; j++) {
 								if (controller.targetValue == "Pin") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_PIN;
-									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('pinJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('pinJoint');
 								} else if (controller.targetValue == "Slide") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_SLIDE;
-									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('slidingJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('slidingJoint');
 								} else if (controller.targetValue == "Distance") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_DISTANCE;
-									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('distanceJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('distanceJoint');
 								} else if (controller.targetValue == "Rope") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_ROPE;
-									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('ropeJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('ropeJoint');
 								} else if (controller.targetValue == "Wheel") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_WHEEL;
-									this.selectedTextures[j].texture = PIXI.Texture.fromFrame('wheelJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('wheelJoint');
 								}
 
 								if (this.selectedTextures[j].myTriggers) {
@@ -6455,7 +6455,7 @@ const _B2dEditor = function () {
 	this.buildTextureFromObj = function (obj) {
 
 		var container;
-		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(obj.textureName));
+		var sprite = new PIXI.heaven.Sprite(PIXI.Texture.from(obj.textureName));
 
 		container = new PIXI.Container();
 		container.pivot.set(sprite.width / 2, sprite.height / 2);
@@ -7611,11 +7611,11 @@ const _B2dEditor = function () {
 		}
 
 		var jointGraphics;
-		if(tarObj.jointType === this.jointObject_TYPE_PIN) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('pinJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_DISTANCE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('distanceJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_SLIDE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('slidingJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_ROPE) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('ropeJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_WHEEL) jointGraphics = new PIXI.Sprite(PIXI.Texture.fromFrame('wheelJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_PIN) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('pinJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_DISTANCE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('distanceJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_SLIDE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('slidingJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_ROPE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('ropeJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_WHEEL) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('wheelJoint'));
 
 		this.textures.addChild(jointGraphics);
 
@@ -7875,7 +7875,7 @@ const _B2dEditor = function () {
 		/**
 		 * @type {PIXI.Texture}
 		 */
-		const tex = PIXI.Texture.fromFrame(body.myTexture.data.textureName);
+		const tex = PIXI.Texture.from(body.myTexture.data.textureName);
 		const base = tex.baseTexture;
 		
 		const key = body.myTexture.data.prefabInstanceName + '_' + base.uid;
@@ -7899,12 +7899,12 @@ const _B2dEditor = function () {
 		body.myDecalEntry = decal;
 
 		if (body.isFlesh && body.myFlesh) {
-			body.myFlesh.pluginName = 'spriteMasked';
+			body.myFlesh.pluginName = 'batchMasked';
 		}
 
 		// change plugin, this is workground for bugged devices
 		// should solve
-		body.myTexture.originalSprite.pluginName = 'spriteMasked';
+		body.myTexture.originalSprite.pluginName = 'batchMasked';
 		body.myTexture.originalSprite.texture = decal.decalRT;
 	
 	}
@@ -7935,7 +7935,7 @@ const _B2dEditor = function () {
 
 
 		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
-		const tex = PIXI.Texture.fromFrame(textureName);
+		const tex = PIXI.Texture.from(textureName);
 		// exist after preparation
 		const template = new PIXI.heaven.Sprite(tex);
 
@@ -8106,7 +8106,7 @@ const _B2dEditor = function () {
 				this.updateTileSprite(g);
 				g.data = null;
 			} else if (gObj instanceof this.textureObject) {
-				g = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(gObj.textureName));
+				g = new PIXI.heaven.Sprite(PIXI.Texture.from(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
 			}else if(gObj instanceof this.textObject) {
 				g = this.buildTextGraphicFromObj(gObj);
@@ -8133,7 +8133,10 @@ const _B2dEditor = function () {
 		if (!dontUpdateTileTexture && (target.data.tileTexture != "" || target.data.gradient != "")) this.updateTileSprite(target, true);
 
 	}
+
 	this.updateTileSprite = function (target, forceNew = false) {
+		console.warn("METHOD NOT ALLOWED IN V6");
+		return;
 
 		let tileTexture;
 		let targetGraphic;
@@ -8182,13 +8185,13 @@ const _B2dEditor = function () {
 			}
 			let tex;
 			if(!gradientMode){
-				if(!PIXI.loader.resources[tileTexture]){
+				if(!game.app.loader.resources[tileTexture]){
 					// legacy tile texture fix
 					tileTexture = tileTexture.split('.')[0];
 					if(!PIXI.utils.BaseTextureCache[tileTexture]) tileTexture = 'Sand';
 				}
 
-				tex = PIXI.Texture.fromImage(tileTexture);
+				tex = PIXI.Texture.from(tileTexture);
 				tex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 			}else{
 				const gradientIndex = this.levelGradientsNames.indexOf(tileTexture);
@@ -9350,6 +9353,7 @@ const _B2dEditor = function () {
 			}
 		}
 	}
+	/*
 	PIXI.Graphics.prototype._calculateBounds = function () {
 		var minX = Infinity;
 		var maxX = -Infinity;
@@ -9454,7 +9458,7 @@ const _B2dEditor = function () {
 		this._bounds.maxX = maxX;
 		this._bounds.minY = minY;
 		this._bounds.maxY = maxY;
-	}
+	}*/
 
 	// mesh circular texture fix
 

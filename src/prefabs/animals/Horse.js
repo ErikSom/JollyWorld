@@ -27,7 +27,7 @@ class Horse extends PrefabManager.basePrefab {
             //     var fleshName = texture.data.textureName.split('0000')[0];
             //     if (fleshName.indexOf('Head') > 0) fleshName = fleshName.substr(0, fleshName.indexOf('_')) + "_Head";
 
-            //     var sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(fleshName + "_Flesh0000"));
+            //     var sprite = new PIXI.Sprite(PIXI.Texture.from(fleshName + "_Flesh0000"));
             //     texture.addChildAt(sprite, 0);
             // }
         }
@@ -35,9 +35,9 @@ class Horse extends PrefabManager.basePrefab {
     update() {
         super.update();
         if (PrefabManager.timerReady(this.eyesTimer, Horse.TIME_EYES_CLOSE, true)) {
-            //this.lookupObject.eye.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye.myTexture.data.textureName.replace("0000", "_Closed0000"));
+            //this.lookupObject.eye.myTexture.originalSprite.texture = PIXI.Texture.from(this.lookupObject.eye.myTexture.data.textureName.replace("0000", "_Closed0000"));
         } else if (PrefabManager.timerReady(this.eyesTimer, Horse.TIME_EYES_OPEN, false)) {
-            //this.lookupObject.eye.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye.myTexture.data.textureName);
+            //this.lookupObject.eye.myTexture.originalSprite.texture = PIXI.Texture.from(this.lookupObject.eye.myTexture.data.textureName);
             this.eyesTimer = -game.editor.deltaTime;
         }
 

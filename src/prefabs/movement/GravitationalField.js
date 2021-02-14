@@ -13,7 +13,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 
 		this.forceField = this.lookupObject['forcefield_body'];
 		this.forceField.myTileSprite.fixTextureRotation = true;
-		this.forceField.myTileSprite.pluginName = 'meshCircleTexture';
+		//this.forceField.myTileSprite.pluginName = 'meshCircleTexture';
 
 		this.width = this.height = 200;
 		this.fieldBodies = [];
@@ -111,7 +111,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 		game.editor.updateBodyShapes(body);
 		game.editor.updateTileSprite(body, true);
 
-		body.myTileSprite.pluginName = 'meshCircleTexture';
+		//body.myTileSprite.pluginName = 'meshCircleTexture';
 
 		this.setDisableGravity(this.prefabObject.settings.disableGravity);
 
@@ -242,7 +242,7 @@ void main(void)
 	gl_FragColor.rgb = ((texColor.a - 1.0) * uDark.a + 1.0 - texColor.rgb) * uDark.rgb + texColor.rgb * uLight.rgb;
 }
 `;
-
+/*
 class MeshCircleTextureRenderer extends PIXI.heaven.mesh.MeshHeavenRenderer {
 	onContextChange() {
 		const gl = this.renderer.gl;
@@ -251,3 +251,4 @@ class MeshCircleTextureRenderer extends PIXI.heaven.mesh.MeshHeavenRenderer {
 	};
 }
 PIXI.WebGLRenderer.registerPlugin('meshCircleTexture', MeshCircleTextureRenderer);
+*/

@@ -59,8 +59,8 @@ export class DecalSystem {
 
         const sourseSprite = new PIXI.heaven.Sprite(new PIXI.Texture(baseTexture));
 
-        this.container.pluginName = 'spriteMasked';
-        decal.pluginName = sourseSprite.pluginName = 'spriteMasked';
+        this.container.pluginName = 'batchMasked';
+        decal.pluginName = sourseSprite.pluginName = 'batchMasked';
         decal.maskSprite = sourseSprite.maskSprite =  mask;
         decal.addChild(mask);
 
@@ -69,7 +69,10 @@ export class DecalSystem {
         this.refill();
     }
 
-    refill () {
+    refill () {                
+        console.warn("NOT SUPPORTED YET IN V6");
+        return;
+
         const g = new PIXI.heaven.Sprite(PIXI.Texture.WHITE);
         g.tint = 0;
         g.width = this.maskRT.width;
@@ -117,7 +120,11 @@ export class DecalSystem {
         this.tasks.push(task);
     }
 
-    flushDecalTasks () {        
+    flushDecalTasks () {      
+        
+        console.warn("NOT SUPPORTED YET IN V6");
+        return;
+
         this.frameId ++;
 
         if (this.tasks.length  === 0 || (this.frameId - this.lastFrameId) < this.frameTrottle) {

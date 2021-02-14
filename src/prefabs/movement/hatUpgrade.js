@@ -55,7 +55,7 @@ class HatUpgrade extends PrefabManager.basePrefab {
 
     setHatType(type){
         this.hatType = type;
-        this.hatBody.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(type+'Helmet0000');
+        this.hatBody.myTexture.originalSprite.texture = PIXI.Texture.from(type+'Helmet0000');
         this.hatBody.myTexture.originalSprite.y = HAT_VISUAL_OFFSET[type];
     }
 

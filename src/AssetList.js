@@ -30,28 +30,40 @@ export const LoadCoreAssets = function (loader){
         .add(`assets/images/gui/${hashName('iconSet.json')}`);
 }
 
-export const ExtractTextureAssets = async () => {
-    const textureSheet = PIXI.loader.resources["textures.json"];
-    const sheetImage = textureSheet.spritesheet.baseTexture.source;
+export const ExtractTextureAssets = async (loader) => {
+    const textureSheet = loader.resources["textures.json"];
+    const sheetImage = textureSheet.spritesheet.baseTexture.resource.source;
 
     const tempCanvas = document.createElement('canvas');
     const tempCTX = tempCanvas.getContext('2d');
     const textureSize = 128;
     tempCanvas.width = tempCanvas.height = textureSize;
     const keys = Object.keys(textureSheet.textures);
+    
     for(let i = 0; i< keys.length; i++){
         const key = keys[i];
         const texture = textureSheet.textures[key];
         tempCTX.clearRect(0, 0, textureSize, textureSize);
-        tempCTX.drawImage(sheetImage, texture._frame.x, texture._frame.y, textureSize, textureSize, 0, 0, textureSize, textureSize);
+        tempCTX.drawImage(
+            sheetImage, 
+            texture._frame.x, 
+            texture._frame.y, 
+            textureSize, 
+            textureSize, 
+            0, 
+            0, 
+            textureSize, 
+            textureSize
+        );
 
+        /*
         const image = await new Promise(resolve => {
             const image = new Image();
             image.alt = Settings.textureNames[i+1];
             image.src = tempCanvas.toDataURL();
             image.onload = ()=>{resolve(image)};
-        })
-        const baseTexture = new PIXI.BaseTexture(image);
+        })*/
+        const baseTexture = new PIXI.BaseTexture(tempCanvas);
         PIXI.BaseTexture.addToCache(baseTexture, Settings.textureNames[i+1])
     };
 }

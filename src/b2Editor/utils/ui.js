@@ -1428,7 +1428,7 @@ export const initGuiAssetSelection = function () {
 
         for (var i = 0; i < B2dEditor.assetLists[assetSelection.assetSelectedGroup].length; i++) {
             var textureName = B2dEditor.assetLists[assetSelection.assetSelectedGroup][i];
-            var texture = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
+            var texture = new PIXI.heaven.Sprite(PIXI.Texture.from(textureName));
             let image = game.app.renderer.plugins.extract.image(texture);
             const guiFunction = document.createElement('li');
             guiFunction.classList.add('cr', 'function');

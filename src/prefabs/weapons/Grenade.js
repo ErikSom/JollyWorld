@@ -29,9 +29,9 @@ class Grenade extends Explosive {
 		super.setActive(active);
 		const grenadeTexture = this.lookupObject['grenadeTexture'];
 		if(active){
-			grenadeTexture.originalSprite.texture = PIXI.Texture.fromFrame(grenadeTexture.data.textureName.replace("off", "on"));
+			grenadeTexture.originalSprite.texture = PIXI.Texture.from(grenadeTexture.data.textureName.replace("off", "on"));
 		}else{
-			grenadeTexture.originalSprite.texture = PIXI.Texture.fromFrame(grenadeTexture.data.textureName.replace("on", "off"));
+			grenadeTexture.originalSprite.texture = PIXI.Texture.from(grenadeTexture.data.textureName.replace("on", "off"));
 		}
 	}
 	set(property, value) {

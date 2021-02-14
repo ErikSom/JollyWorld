@@ -40,7 +40,7 @@ class Sun extends PrefabManager.basePrefab {
 		}
 	}
 	setSunTexture(texture){
-		this.sunTexture.children[0].texture = PIXI.Texture.fromFrame(texture+'0000');
+		this.sunTexture.children[0].texture = PIXI.Texture.from(texture+'0000');
 	}
 	reset(){
 		globalEvents.removeEventListener(GLOBAL_EVENTS.CHARACTER_DAMAGE, this.lookAtDamageFunction)

@@ -138,8 +138,8 @@ class DroneBomb extends Explosive {
 
 		if(this.active){
 			if (PrefabManager.timerReady(this.blinkTimer, this.blinkDelay, true)) {
-				if(!this.blink) this.droneTexture.texture = PIXI.Texture.fromFrame(this.droneTexture.texture.textureCacheIds[0].replace("_off", "_on"));
-				else this.droneTexture.texture = PIXI.Texture.fromFrame(this.droneTexture.texture.textureCacheIds[0].replace("_on", "_off"));
+				if(!this.blink) this.droneTexture.texture = PIXI.Texture.from(this.droneTexture.texture.textureCacheIds[0].replace("_off", "_on"));
+				else this.droneTexture.texture = PIXI.Texture.from(this.droneTexture.texture.textureCacheIds[0].replace("_on", "_off"));
 				this.blink = !this.blink;
 				this.blinkDelay = (this.explodeDelay-this.explodeTimer) * 0.1;
 				this.blinkTimer = 0;

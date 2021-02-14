@@ -30,7 +30,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
     postConstructor(){
         if(!this.mouth){
-            this.mouth = new PIXI.Sprite(PIXI.Texture.fromFrame('Mouth_Idle0000'))
+            this.mouth = new PIXI.Sprite(PIXI.Texture.from('Mouth_Idle0000'))
             this.mouth.x = 41; // magic numbers
             this.mouth.y = 59;
             this.lookupObject[Humanoid.BODY_PARTS.HEAD].myTexture.addChild(this.mouth);
@@ -75,7 +75,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 if (fleshName.indexOf('Head') > 0) fleshName = fleshName.substr(0, fleshName.indexOf('_')) + "_Head";
 
-                var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(fleshName + "_Flesh0000"));
+                var sprite = new PIXI.heaven.Sprite(PIXI.Texture.from(fleshName + "_Flesh0000"));
                 texture.myFlesh = sprite;
                 texture.addChildAt(sprite, 0);
             }
@@ -88,7 +88,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         const textureName = this.mouth.texture.textureCacheIds[0];
         const textureSkin = textureName.substr(textureName.length - 4);
-        this.mouth.texture = PIXI.Texture.fromFrame(`Mouth_${expression}${textureSkin}`);
+        this.mouth.texture = PIXI.Texture.from(`Mouth_${expression}${textureSkin}`);
 
         this.expressionTimer = 0;
 
@@ -115,9 +115,9 @@ export class Humanoid extends PrefabManager.basePrefab {
 
 
             body.myTexture.data.textureName = targetTexture;
-            body.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetTexture);
+            body.myTexture.originalSprite.texture = PIXI.Texture.from(targetTexture);
         }
-        this.mouth.texture = PIXI.Texture.fromFrame(`Mouth_Idle${targetFrame}`);
+        this.mouth.texture = PIXI.Texture.from(`Mouth_Idle${targetFrame}`);
     }
     flip(){
         this.flipped = !this.flipped;
@@ -130,16 +130,16 @@ export class Humanoid extends PrefabManager.basePrefab {
             if (this.lookupObject.eye_left){
                 const textureIndex = this.lookupObject.eye_left.myTexture.data.textureName.substr(this.lookupObject.eye_left.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_left.myTexture.data.textureName.split(textureIndex)[0];
-                this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(`${baseTextureName}_Closed${textureIndex}`);
+                this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
             }
             if (this.lookupObject.eye_right){
                 const textureIndex = this.lookupObject.eye_right.myTexture.data.textureName.substr(this.lookupObject.eye_right.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_right.myTexture.data.textureName.split(textureIndex)[0];
-                this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(`${baseTextureName}_Closed${textureIndex}`);
+                this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
             }
         } else if (PrefabManager.timerReady(this.eyesTimer, Humanoid.TIME_EYES_OPEN, false)) {
-            if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName);
-            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName);
+            if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.from(this.lookupObject.eye_left.myTexture.data.textureName);
+            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.from(this.lookupObject.eye_right.myTexture.data.textureName);
             this.eyesTimer = -game.editor.deltaTime;
         }
 
@@ -483,7 +483,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             if(particle == 'Gore_Meat'){
                 const ranId = Math.floor(Math.random()*4)+1;
-                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.fromFrame(particle+ranId+'0000');
+                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+ranId+'0000');
             }
         });
     }
