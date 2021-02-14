@@ -118,11 +118,14 @@ function Game() {
 
         this.canvas = document.getElementById("canvas");
 
+        const userData = SaveManager.getLocalUserdata();
+
         if(Settings.HDR && window.devicePixelRatio >= 2){
             // max 2K
             if(window.innerHeight * 2 > 1440) Settings.pixelRatio = 1.5;
             else Settings.pixelRatio = 2;
         }
+        Settings.sfxOn = userData.sfxOn;
 
         this.app = new PIXI.Application({
             view: this.canvas,
@@ -246,6 +249,8 @@ function Game() {
         const uidHash = location.hash.split('/')[0].substr(1);
 
         this.openMainMenu();
+        this.ui.showSettingsButtons();
+
 
         if(uidHash && uidHash.length===21){
             ui.disableMainMenu(true);
@@ -695,6 +700,8 @@ function Game() {
                         this.editor.updateBodyPosition(body);
                     });
                     this.checkPointData = checkPointData;
+
+                    if(this.checkPointData.flipped) this.character.flip();
                 }
             }
             setTimeout(()=>{
@@ -738,6 +745,7 @@ function Game() {
         this.pause = true;
         this.run = false;
         ui.showPauseMenu();
+        AudioManager.stopAllSounds();
         MobileController.hide();
     }
     this.unpauseGame = function(){
@@ -827,7 +835,8 @@ function Game() {
                 x:object.GetPosition().x,
                 y:object.GetPosition().y,
                 rotation:object.GetAngle(),
-                object
+                object,
+                flipped:this.character.flipped,
             }
         }
     }

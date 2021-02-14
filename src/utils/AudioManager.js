@@ -1,5 +1,6 @@
 import {Howl, Howler} from '../../libs/howler';
 import {hashName} from '../AssetList'
+import { Settings } from '../Settings';
 
 Howler.autoUnlock = true;
 
@@ -24,7 +25,7 @@ export const init = ()=>{
 	  sfx.once('load', function () {
 		sfxLoaded = true;
 		// download next
-		console.log("AUDIO LOADED");
+		// console.log("AUDIO LOADED");
 	  });
 	//   sfx.on('loadprogress', function (e) {
 	// 	  console.log("PROGRESSS");
@@ -32,7 +33,7 @@ export const init = ()=>{
 }
 
 export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=1) => {
-	if(!sfxLoaded) return;
+	if(!sfxLoaded || !Settings.sfxOn) return;
 
 	let soundId = null;
 	if(activeSounds[prefabName] && activeSounds[prefabName][sfxName]){
@@ -60,9 +61,7 @@ export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 	}
 }
 export const playSFX = (sfxName, volume, pitch=1) => {
-	if(!sfxLoaded) return;
-
-	console.log("PLAYING SFX");
+	if(!sfxLoaded || !Settings.sfxOn) return;
 
 	const soundId = sfx.play(sfxName);
 	sfx.volume(volume, soundId);

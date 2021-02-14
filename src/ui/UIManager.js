@@ -19,6 +19,8 @@ import {
 import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
 import { YouTubePlayer } from '../utils/YouTubePlayer';
+import * as AudioManager from "../utils/AudioManager"
+
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -37,6 +39,7 @@ let filterMenu;
 let winScreen;
 let winLogo;
 let socialShareScreen;
+let settingsMenu;
 let logo;
 
 let filter = {
@@ -170,6 +173,28 @@ function UIManager() {
             }
         });
 
+    }
+    this.showSettingsButtons = function(){
+        const targetElement = document.querySelector('#settings-ui');
+        const volumeButton = document.createElement('button');
+        volumeButton.classList.add('audioButton');
+
+        volumeButton.onclick = ()=>{
+
+            const userData = SaveManager.getLocalUserdata();
+            userData.sfxOn = !userData.sfxOn;
+            SaveManager.updateLocaluserData(userData);
+
+            Settings.sfxOn = userData.sfxOn;
+
+            if(!Settings.sfxOn){
+                volumeButton.classList.add('mute');
+                AudioManager.stopAllSounds();
+            }else{
+                volumeButton.classList.remove('mute');
+            }
+        }
+        targetElement.appendChild(volumeButton);
     }
     this.hide = function () {
         customGUIContainer.style.display = 'none';

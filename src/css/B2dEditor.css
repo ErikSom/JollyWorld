@@ -335,6 +335,26 @@ body .dg .cr.function {
     left: 50%;
     transform: translate(-50%, 0%);
 }
+#settings-ui{
+    position:absolute;
+    z-index: 1;
+    right:0;
+    top:0;
+    margin:10px;
+}
+.audioButton{
+    background: url('../../static/assets/images/gui/SoundOn_Icon.svg');
+    background-size: contain;
+    width: 32px;
+    padding-top: 100%;
+    border: none;
+    outline:none;
+    cursor:pointer;
+}
+.audioButton.mute{
+    background: url('../../static/assets/images/gui/SoundOff_Icon.svg');
+    background-size: contain;
+}
 
 #editorButton,
 #acceptButton,

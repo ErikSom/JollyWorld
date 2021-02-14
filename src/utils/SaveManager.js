@@ -19,6 +19,7 @@ export const getLocalUserdata = function(){
         demoScrolls:0,
         helpClosed:[],
         editorGuiPos:{x:50, y:50},
+        sfxOn:true,
     }
 
     if(userData){

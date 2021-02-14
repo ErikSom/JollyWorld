@@ -17,6 +17,8 @@ export var Settings = {
     defaultCameraZoom:1.0,
     lineWidthCorrection:1.0,
     gameOverDelay:1000,
+    /*SOUND*/
+    sfxOn:true,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
     PTM:30,
