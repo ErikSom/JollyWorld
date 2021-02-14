@@ -1,6 +1,6 @@
 {
   "name": "jollywheels",
-  "version": "0.9.19",
+  "version": "0.9.20",
   "description": "This game is not for kids, its physics / gore and fun!",
   "main": "./build/index.html",
   "repository": "https://smerik@bitbucket.org/smerik/jollywheels.git",
@@ -22,7 +22,7 @@
     "blueprints:makenew": "mkdir ./static/assets/blueprints",
     "blueprints:build": "node generateBlueprints.js",
     "audiosprites": "npm-run-all audiosprites:*",
-    "audiosprites:sfx" : "audiosprite --output ./static/assets/audio/sfx --format howler2  ./asset_src/audio/sfx/*.ogg",
+    "audiosprites:sfx": "audiosprite --output ./static/assets/audio/sfx --format howler2  ./asset_src/audio/sfx/*.ogg",
     "audiosprites:copy": "cp -R ./static/assets/audio ./build/assets",
     "server": "http-server build"
   },
