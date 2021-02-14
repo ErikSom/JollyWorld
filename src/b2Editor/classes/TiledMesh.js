@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-export class TiledMesh extends self.PIXI.heaven.SimpleMesh {
+export class TiledMesh extends PIXI.SimpleMesh {
 	/**
 	 * 
 	 * @param {PIXI.Texture} texture 

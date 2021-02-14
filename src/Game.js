@@ -50,6 +50,16 @@ var b2Vec2 = Box2D.b2Vec2,
     b2World = Box2D.b2World,
     b2MouseJointDef = Box2D.b2MouseJointDef;
 
+
+// chech WebGL support
+(function () {
+    if(!document.createElement('canvas').getContext('webgl')) {
+        alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
+        window.location.reload();
+    }
+})();
+
+
 function Game() {
 
     this.editor;
@@ -126,10 +136,6 @@ function Game() {
         });
         this.handleResize();
 
-        if(this.app.renderer.context instanceof CanvasRenderingContext2D){
-            alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
-            window.location.reload();
-        }
         this.app.view.addEventListener('webglcontextlost', (_event) => {
             alert("Jolly Goodness! I almost fried your PC, Sorry.. (kidding) Something stressed out the browser and I'm forced to restart the game! Click OK to restart.");
             window.location.reload();
@@ -179,7 +185,10 @@ function Game() {
         // rectangle should updates automatically
         this.stage.filterArea = this.app.screen;
 
-        if(MobileController.isMobile()) MobileController.init();
+        if(MobileController.isMobile()) {
+            MobileController.init();
+        }
+
         YouTubePlayer.preload();
         AudioManager.init();
 
@@ -319,14 +328,14 @@ function Game() {
                 }else if(el.type.indexOf("image")>=0){
                     const imageFile =  el.getAsFile();
                     const src = URL.createObjectURL(imageFile);
-                    const texture = PIXI.Texture.fromImage(src);
+                    const texture = PIXI.Texture.from(src);
                     texture.baseTexture.addListener('loaded', ()=> {
 
                         if(game.editor.tracingTexture){
                             game.editor.tracingTexture.destroy({texture:true, baseTexture:true});
                         }
 
-                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.fromImage(src));
+                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.from(src));
                         game.editor.tracingTexture.pivot.set(game.editor.tracingTexture.width/2, game.editor.tracingTexture.height/2);
                         game.editor.container.addChildAt(game.editor.tracingTexture, 0);
                         if(game.editor.selectedTool === game.editor.tool_SETTINGS){

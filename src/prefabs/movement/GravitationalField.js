@@ -4,6 +4,7 @@ import * as Box2D from '../../../libs/Box2D';
 import {
     game
 } from "../../Game";
+import { CircleMaterial } from './CircleShaders';
 
 let circularTextureMaterial;
 
@@ -13,7 +14,10 @@ class GravitationalField extends PrefabManager.basePrefab {
 
 		this.forceField = this.lookupObject['forcefield_body'];
 		this.forceField.myTileSprite.fixTextureRotation = true;
+
 		//this.forceField.myTileSprite.pluginName = 'meshCircleTexture';
+		const t = this.forceField.myTileSprite.material.texture;
+		this.forceField.myTileSprite.material = new CircleMaterial(t);
 
 		this.width = this.height = 200;
 		this.fieldBodies = [];
@@ -112,6 +116,10 @@ class GravitationalField extends PrefabManager.basePrefab {
 		game.editor.updateTileSprite(body, true);
 
 		//body.myTileSprite.pluginName = 'meshCircleTexture';
+
+		if (!(body.myTileSprite.material instanceof CircleMaterial)) {
+			body.myTileSprite.material = new CircleMaterial(body.myTileSprite.material.texture);
+		}
 
 		this.setDisableGravity(this.prefabObject.settings.disableGravity);
 
@@ -216,39 +224,3 @@ PrefabManager.prefabLibrary.GravitationalField = {
     class: GravitationalField,
     library: PrefabManager.LIBRARY_MOVEMENT
 }
-
-const CIRCULAR_TEXTURE_FRAG_SHADER =
-`
-#define M_PI 3.1415926535897932384626433832795
-
-varying vec2 vTextureCoord;
-uniform vec4 uLight, uDark;
-
-uniform sampler2D uSampler;
-
-void main(void)
-{
-    vec2 pos = vTextureCoord;
-    vec2 center = vec2(0.5, 0.5);
-    vec2 delta = pos - center;
-
-    float d = length(delta) * 3.;
-    float a = 3. * atan(-delta.y, delta.x) / M_PI;
-
-	vec2 rad = vec2(1.-d, a);
-
-	vec4 texColor = texture2D(uSampler, rad);
-	gl_FragColor.a = texColor.a * uLight.a;
-	gl_FragColor.rgb = ((texColor.a - 1.0) * uDark.a + 1.0 - texColor.rgb) * uDark.rgb + texColor.rgb * uLight.rgb;
-}
-`;
-/*
-class MeshCircleTextureRenderer extends PIXI.heaven.mesh.MeshHeavenRenderer {
-	onContextChange() {
-		const gl = this.renderer.gl;
-		this.shader = new PIXI.Shader(gl, PIXI.heaven.mesh.MeshHeavenRenderer.vert, CIRCULAR_TEXTURE_FRAG_SHADER);
-		this.shaderTrim = new PIXI.Shader(gl, PIXI.heaven.mesh.MeshHeavenRenderer.vert, PIXI.heaven.mesh.MeshHeavenRenderer.fragTrim);
-	};
-}
-PIXI.WebGLRenderer.registerPlugin('meshCircleTexture', MeshCircleTextureRenderer);
-*/

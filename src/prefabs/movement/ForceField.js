@@ -5,9 +5,6 @@ import {
     game
 } from "../../Game";
 
-import { TiledMesh } from './../../b2Editor/classes/TiledMesh';
-
-
 class ForceField extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);

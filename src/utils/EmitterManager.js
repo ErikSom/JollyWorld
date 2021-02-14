@@ -76,7 +76,11 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
     emitter.minStartRotation = angle - angleOffset;
     emitter.maxStartRotation = angle + angleOffset;
 
-    if(randomColors) emitter.setRandomColors(randomColors);
+    if(randomColors) {
+        console.warn("v5 + version of pixi particle remove this method");
+        //emitter.setRandomColors(randomColors);
+    }
+
     emitter.playOnce(returnToPool);
 
 }

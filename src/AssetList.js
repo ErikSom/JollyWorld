@@ -56,14 +56,19 @@ export const ExtractTextureAssets = async (loader) => {
             textureSize
         );
 
-        /*
+
         const image = await new Promise(resolve => {
             const image = new Image();
             image.alt = Settings.textureNames[i+1];
             image.src = tempCanvas.toDataURL();
             image.onload = ()=>{resolve(image)};
-        })*/
-        const baseTexture = new PIXI.BaseTexture(tempCanvas);
-        PIXI.BaseTexture.addToCache(baseTexture, Settings.textureNames[i+1])
+        });
+
+        const base = new PIXI.BaseTexture(image);
+        const tex = new PIXI.Texture(base);
+
+        PIXI.BaseTexture.addToCache(base, Settings.textureNames[i+1]);
+        PIXI.Texture.addToCache(tex, Settings.textureNames[i+1]);
+
     };
 }
