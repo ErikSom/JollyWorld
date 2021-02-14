@@ -1654,12 +1654,14 @@ const _B2dEditor = function () {
 
 	this.copySelection = function () {
 
-		var i;
-		var body;
-		var copyArray = [];
-		var cloneObject;
+		let i;
+		let body;
+		const copyArray = [];
+		let cloneObject;
 
-		if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0) return;
+		const prefabKeys = Object.keys(this.selectedPrefabs);
+
+		if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && prefabKeys.length == 0) return;
 
 		// sort all objects based on childIndex
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -1682,7 +1684,7 @@ const _B2dEditor = function () {
 				});
 			}
 		}
-		var sprite;
+		let sprite;
 		for (i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
 			this.updateObject(sprite, sprite.data);
@@ -1693,7 +1695,6 @@ const _B2dEditor = function () {
 				data: cloneObject
 			})
 		}
-		var prefabKeys = Object.keys(this.selectedPrefabs);
 		for (i = 0; i < prefabKeys.length; i++) {
 			const prefab = this.activePrefabs[prefabKeys[i]];
 			if (!PrefabManager.prefabLibrary[prefab.prefabName].class.forceUnique) {
@@ -1710,7 +1711,8 @@ const _B2dEditor = function () {
 				copyArray.push({
 					ID: prefab.ID,
 					childCount,
-					data: cloneObject
+					data: cloneObject,
+					key: prefab.key
 				});
 			}
 		}
@@ -1723,19 +1725,26 @@ const _B2dEditor = function () {
 			return a.ID - b.ID;
 		});
 		// Fix copied joints (make sure no anchor body is null)
-		var data;
-		var j;
+		let data, j;
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
 			if (data.type == this.object_JOINT) {
 				//searching object A
 				if(!onlyJoints){
-					var foundBodyA = false;
+					let foundBodyA = false;
 					let realIndex = 0;
 
 					for (j = 0; j < copyArray.length; j++) {
 
-						if (copyArray[j].ID == data.bodyA_ID) {
+						const targetSprite = this.textures.children[data.bodyA_ID];
+						const isPrefab = targetSprite.data.prefabInstanceName;
+						if(isPrefab && copyArray[j].key === targetSprite.data.prefabInstanceName){
+							const lowestChild = this.textures.getChildIndex(this.retreivePrefabChildAt(targetSprite, false));
+							const relativeChild = data.bodyA_ID-lowestChild;
+							foundBodyA = true;
+							data.bodyA_ID = realIndex+relativeChild;
+							break;
+						}else if (copyArray[j].ID == data.bodyA_ID) {
 							foundBodyA = true;
 							data.bodyA_ID = realIndex;
 							break;
@@ -1743,12 +1752,20 @@ const _B2dEditor = function () {
 						realIndex += copyArray[j].childCount || 1;
 
 					}
-					var foundBodyB = false;
+					let foundBodyB = false;
 					realIndex = 0;
 					if (data.bodyB_ID != undefined) {
 						for (j = 0; j < copyArray.length; j++) {
 
-							if (copyArray[j].ID == data.bodyB_ID) {
+							const targetSprite = this.textures.children[data.bodyB_ID];
+							const isPrefab = targetSprite.data.prefabInstanceName;
+							if(isPrefab && copyArray[j].key === targetSprite.data.prefabInstanceName){
+								const lowestChild = this.textures.getChildIndex(this.retreivePrefabChildAt(targetSprite, false));
+								const relativeChild = data.bodyB_ID-lowestChild;
+								foundBodyB = true;
+								data.bodyB_ID = realIndex+relativeChild;
+								break;
+							}else if (copyArray[j].ID == data.bodyB_ID) {
 								foundBodyB = true;
 								data.bodyB_ID = realIndex;
 								break;
@@ -1806,7 +1823,7 @@ const _B2dEditor = function () {
 			}
 		}
 
-		var copyJSON = '{"objects":[';
+		let copyJSON = '{"objects":[';
 		const copyCenterPoint = {
 			x: 0,
 			y: 0
