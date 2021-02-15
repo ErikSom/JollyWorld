@@ -2656,8 +2656,7 @@ const _B2dEditor = function () {
 				if (!this.closeDrawing) {
 					if (!this.checkVerticeDrawingHasErrors()) {
 						const newVertice = this.getCurrentMouseVertice();
-						this.activeVertices.push(newVertice);
-						if (this.activeVertices.length > editorSettings.maxLineVertices) this.activeVertices.shift();
+						if (this.activeVertices.length < editorSettings.maxVertices) this.activeVertices.push(newVertice);
 					}
 				} else {
 					if(this.selectedTool == this.tool_POLYDRAWING){
@@ -2960,7 +2959,7 @@ const _B2dEditor = function () {
 
 					const camera = B2dEditor.container.camera || B2dEditor.container;
 
-					let canPlace = true;
+					let canPlace = this.activeVertices.length < editorSettings.maxVertices;
 
 					const previousVertice = this.activeVertices[this.activeVertices.length-1];
 
@@ -2981,7 +2980,6 @@ const _B2dEditor = function () {
 					}
 					this.preOptimizeArtVertices();
 
-					if (this.activeVertices.length > editorSettings.maxVertices) this.activeVertices.shift();
 				}else if(this.selectedTool === this.tool_VERTICEEDITING){
 					if(this.verticeEditingSprite.selectedVertice){
 						const difX = (this.mousePosWorld.x-this.oldMousePosWorld.x)*this.PTM;
@@ -5567,7 +5565,8 @@ const _B2dEditor = function () {
 	}
 
 	this.checkVerticeDrawingHasErrors = function () {
-		const minimumAngleDif = 0.2;
+		if(this.selectedTool === this.tool_PEN) return false;
+		const minimumAngleDif = 0.05;
 		const newVertice = this.getCurrentMouseVertice();
 		const activeVertice = this.activeVertices[this.activeVertices.length - 1];
 		let previousVertice;

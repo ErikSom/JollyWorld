@@ -8,7 +8,8 @@ class CannonBall extends PrefabManager.basePrefab {
 		super(target);
 		this.lifeTime = 8000;
         this.lifeTimer = 0;
-		this.lookupObject['body'].SetBullet(true);
+        this.body = this.lookupObject.body;
+		this.body.SetBullet(true);
 	}
 	update(){
 		if (PrefabManager.timerReady(this.lifeTimer, this.lifeTime, true)) {

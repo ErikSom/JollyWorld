@@ -1574,6 +1574,13 @@ export const showTextEditor = function (startValue, callBack) {
 
     folder.open();
 
+    const closeButton = document.createElement('div');
+    closeButton.setAttribute('class', 'closeWindowIcon');
+    folder.domElement.append(closeButton);
+    closeButton.addEventListener('click', () => {
+        removeTextEditor();
+    });
+
     var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
     let divWrapper = document.createElement('div');
@@ -1614,6 +1621,11 @@ export const showTextEditor = function (startValue, callBack) {
     textEditor.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
     registerDragWindow(textEditor);
+    setHighestWindow(textEditor.domElement);
+
+    setTimeout(()=>{
+        if(textarea && textarea.parentNode) textarea.focus();
+    }, 0);
 
     return false;
 }

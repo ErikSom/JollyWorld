@@ -17,6 +17,8 @@ export class RopeHat extends Hat {
 		};
 		this.rayCastCallback.prototype.ReportFixture = function (fixture, point, normal, fraction) {
 			if(fixture.IsSensor()) return -1;
+			if(fixture.GetBody().mainCharacter) return -1;
+
 
 			this.m_hit = true;
 			this.m_point = point.Clone();

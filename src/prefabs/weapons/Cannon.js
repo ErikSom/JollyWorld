@@ -23,7 +23,7 @@ class Cannon extends PrefabManager.basePrefab {
 		this.reloadTimer = 0;
 		this.shootDelay = this.prefabObject.settings.shootDelay*1000;
 		this.shootTimer = 0;
-		this.shootForce = this.prefabObject.settings.shootForce;
+		this.shootForce = this.prefabObject.settings.shootForce*3;
 		this.cannonBody = this.lookupObject["barrol"];
 		this.cannonBody.isCannon = true;
 		this.autoShoot = this.prefabObject.settings.autoShoot;
@@ -111,6 +111,9 @@ class Cannon extends PrefabManager.basePrefab {
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
+
+		console.log(this.shootForce);
+
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, body.GetPosition());
 

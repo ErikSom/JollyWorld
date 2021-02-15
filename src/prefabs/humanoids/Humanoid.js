@@ -58,6 +58,10 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
 
+
+        game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
+        game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
+
         console.log(this.collisionUpdates);
 
         var i;
@@ -218,6 +222,15 @@ export class Humanoid extends PrefabManager.basePrefab {
     initContactListener() {
         super.initContactListener();
         var self = this;
+        this.contactListener.PreSolve = function (contact, impulse) {
+            const bodyA = contact.GetFixtureA().GetBody();
+            const bodyB = contact.GetFixtureB().GetBody();
+            bodyA.preSolveVelicity = bodyA.GetLinearVelocity().Clone();
+            bodyA.preSolveVelicityCounter = bodyA.preSolveVelicityCounter !== undefined ? bodyA.preSolveVelicityCounter + 1 : 1;
+            bodyB.preSolveVelicity = bodyB.GetLinearVelocity().Clone();
+            bodyB.preSolveVelicityCounter = bodyB.preSolveVelicityCounter !== undefined ? bodyB.preSolveVelicityCounter + 1 : 1;
+
+        }
         this.contactListener.PostSolve = function (contact, impulse) {
 
             if(!contact.GetFixtureA().GetBody().mySprite || !contact.GetFixtureB().GetBody().mySprite) return;
@@ -252,16 +265,16 @@ export class Humanoid extends PrefabManager.basePrefab {
                 let forceDamage = 0;
 
                 const charOtherBodyDiff = characterBody.GetPosition().Clone().SelfSub(otherBody.GetPosition());
-                const dotProductChar = characterBody.GetLinearVelocity().Dot(charOtherBodyDiff)*-1;
+                const dotProductChar = characterBody.preSolveVelicity.Dot(charOtherBodyDiff)*-1;
 
                 const otherBodyCharDiff = otherBody.GetPosition().Clone().SelfSub(characterBody.GetPosition());
-                const dotProductOther = otherBody.GetLinearVelocity().Dot(otherBodyCharDiff)*-1;
+                const dotProductOther = otherBody.preSolveVelicity.Dot(otherBodyCharDiff)*-1;
 
                 if(dotProductChar>0){
-                    forceDamage += characterBody.GetLinearVelocity().LengthSquared() * characterBody.GetMass();
+                    forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
                 }
                 if(dotProductOther>0){
-                    forceDamage += otherBody.GetLinearVelocity().LengthSquared() * otherBody.GetMass();
+                    forceDamage += otherBody.preSolveVelicity.LengthSquared() * otherBody.GetMass();
                 }
 
                 if (forceDamage > Settings.bashForce / 2) {
@@ -283,6 +296,16 @@ export class Humanoid extends PrefabManager.basePrefab {
                         target: characterBody.mySprite.data.refName,
                     });
                 }
+            }
+            characterBody.preSolveVelicityCounter--;
+            if(characterBody.preSolveVelicityCounter === 0){
+                delete characterBody.preSolveVelicity;
+                delete characterBody.preSolveVelicityCounter;
+            }
+            otherBody.preSolveVelicityCounter--;
+            if(otherBody.preSolveVelicityCounter === 0){
+                delete otherBody.preSolveVelicity;
+                delete otherBody.preSolveVelicityCounter;
             }
         }
     }
@@ -726,7 +749,8 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 if (targetPosition[body_part].reference != 'body' && !this.lookupObject[targetPosition[body_part].reference + '_joint']) continue;
 
-                let desiredAngle = refBody.GetAngle() - targetPosition[body_part].angle * game.editor.DEG2RAD;
+                let limbAngle = this.flipped ? targetPosition[body_part].angle : - targetPosition[body_part].angle;
+                let desiredAngle = refBody.GetAngle() + limbAngle * game.editor.DEG2RAD;
                 let nextAngle = body.GetAngle() + body.GetAngularVelocity() / 15;
                 let totalRotation = desiredAngle - nextAngle;
 

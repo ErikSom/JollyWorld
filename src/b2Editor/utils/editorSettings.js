@@ -3,7 +3,6 @@ export const editorSettings = {
     pathSimplificationTolerance:2.0,
     pathSmoothTolerance:2.5,
     pathSimplificationMaxVertices:100,
-    maxLineVertices:100,
     maxVertices:5000,
     physicsDebug:true,
     gravityX:0,
