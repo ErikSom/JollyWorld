@@ -8210,7 +8210,7 @@ const _B2dEditor = function () {
 			}else{
 				const gradientIndex = this.levelGradientsNames.indexOf(tileTexture);
 				if(gradientIndex >= 0){
-					tex = PIXI.Texture.from(this.levelGradientBaseTextures[gradientIndex]);
+					tex = new PIXI.Texture(this.levelGradientBaseTextures[gradientIndex]);
 				}else{
 					return;
 				}
@@ -8246,8 +8246,8 @@ const _B2dEditor = function () {
 
 				if(gradientMode){
 					for (let i = 0; i < uvs.length; i += 2) {
-						uvs[i * 2 + 1] = (uvs[i * 2 + 1] - minY) / (maxY - minY);
-						uvs[i * 2 + 0] = (uvs[i * 2 + 0] - minX) / (maxX - minX);
+						uvs[i + 1] = (uvs[i + 1] - minY) / (maxY - minY);
+						uvs[i + 0] = (uvs[i + 0] - minX) / (maxX - minX);
 					}
 				}
 
@@ -8976,7 +8976,7 @@ const _B2dEditor = function () {
 			baseTexture = new PIXI.BaseTexture(gradientCanvas);
 			this.levelGradientBaseTextures[index] = baseTexture;
 		}
-		drawing.drawGradient(baseTexture.source, this.levelGradients[index], Settings.gradientTextureSize);
+		drawing.drawGradient(baseTexture.resource.source, this.levelGradients[index], Settings.gradientTextureSize);
 		baseTexture.update();
 	}
 
