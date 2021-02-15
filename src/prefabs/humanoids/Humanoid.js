@@ -373,7 +373,6 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 break;
             case Humanoid.GORE_SNAP:
-                debugger;
                 const targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
 

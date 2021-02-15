@@ -47,7 +47,6 @@
     "npm-run-all": "^4.1.2",
     "pixi-filters": "^2.6.1",
     "pixi-particles": "^4.3.0",
-    "pixi-spine": "^1.5.13",
     "pixi.js": "6.0.0-rc.2",
     "regenerator-runtime": "^0.13.7",
     "self": "^1.0.0",

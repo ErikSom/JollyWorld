@@ -64,6 +64,7 @@ export const simplifyPath = function (vertices, smooth, zoom) {
 
 
 export const combineShapes = sprites => {
+    debugger;
     let combinedPath = null;
 
     const succesfullyMerged = [];

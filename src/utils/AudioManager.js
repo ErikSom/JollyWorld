@@ -28,7 +28,12 @@ export const init = ()=>{
 		  `./assets/audio/${hashName('sfx.ac3')}`
 		],
 		sprite:sfxJSON.sprite,
+		autoplay:false,
 	  });
+
+	  sfx.once('unlock', ()=>{
+		  sfx.stop();
+	  })
 
 	  sfx.once('load', function () {
 		sfxLoaded = true;
