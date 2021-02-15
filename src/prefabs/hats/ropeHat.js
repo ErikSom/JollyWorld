@@ -4,6 +4,9 @@ import {
 } from "../../Game";
 import * as Box2D from '../../../libs/Box2D'
 import * as PIXI from 'pixi.js';
+import { Settings } from '../../Settings';
+
+const ANIMATION_TRAVEL_SPEED = 100 / Settings.PTM;
 
 export class RopeHat extends Hat {
 	constructor(character, head, body) {
@@ -27,6 +30,11 @@ export class RopeHat extends Hat {
 			return fraction;
 		}
 		this.ropeFired = false;
+		this.showAnimation = false;
+		this.ropeAttached = false;
+		this.ropeGoingOut = false;
+		this.targetAnimationPoint = null;
+		this.currentAnimationPoint = null;
 		this.ropeActive = false;
 		this.pulleyJoint = null;
 		this.pulleyFrameJoint = null;
@@ -46,22 +54,35 @@ export class RopeHat extends Hat {
 			return;
 		}
 
-		this.ropeFired = true;
-		const rayStart = this.head.GetPosition();
-		const angle = this.head.GetAngle() - Math.PI / 2;
-		const rayEnd = rayStart.Clone();
-		const length = 100;
-		rayEnd.x += length * Math.cos(angle);
-		rayEnd.y += length * Math.sin(angle);
-		let callback = new this.rayCastCallback();
-		this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
-		if (callback.m_hit) {
+		if(!this.anchorTexture){
+			this.ropeFired = true;
+			const rayStart = this.head.GetPosition();
+			const angle = this.head.GetAngle() - Math.PI / 2;
+			const rayEnd = rayStart.Clone();
+			const length = 100;
+			rayEnd.x += length * Math.cos(angle);
+			rayEnd.y += length * Math.sin(angle);
+			let callback = new this.rayCastCallback();
+			this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
+
 			this.anchorTexture = new self.PIXI.heaven.Sprite(PIXI.Texture.from("RopePartAndHook0000"));
 			this.anchorTexture.pivot.set(this.anchorTexture.width/2, this.anchorTexture.height / 2);
 			this.hatBody.myTexture.parent.addChildAt(this.anchorTexture, this.hatBody.myTexture.parent.getChildIndex(this.hatBody.myTexture));
-			this.attachRope(callback.m_point, callback.m_fixture.GetBody());
-		} else {
-			this.ropeFired = false;
+			this.anchorTexture.rotation = angle;
+
+			this.ropeGoingOut = true;
+
+			if (callback.m_hit) {
+				this.attachRope(callback.m_point, callback.m_fixture.GetBody());
+				this.targetAnimationPoint = callback.m_point;
+				this.ropeAttached = true;
+			} else {
+				this.ropeFired = false;
+				this.targetAnimationPoint = rayEnd;
+				this.ropeAttached = false;
+			}
+			this.currentAnimationPoint = this.getGunStartPosition();
+			this.showAnimation = true;
 		}
 	}
 	detachRope() {
@@ -69,13 +90,13 @@ export class RopeHat extends Hat {
 
 		this.ropeFired = false;
 		this.blockControls = false;
+		this.ropeAttached = false;
 		this.releaseRope();
 		this.clearTilingRope();
 		this.ropePoints = [];
-		if(this.anchorTexture){
-			this.anchorTexture.parent.removeChild(this.anchorTexture);
-		}
-		this.anchorTexture = null;
+
+		this.showAnimation = true;
+		this.ropeGoingOut = false;
 	}
 	
 	attachRope(point, body, precise) {
@@ -262,6 +283,16 @@ export class RopeHat extends Hat {
 			this.tilingSprites.length = 0;
 		}
 	}
+
+	getGunStartPosition(){
+		const gunStartPosition = this.head.GetPosition().Clone();
+		const gunAngle = this.hatBody.GetAngle()+90*game.editor.DEG2RAD;
+		const gunlength = 3.5;
+		gunStartPosition.x -= gunlength * Math.cos(gunAngle);
+		gunStartPosition.y -= gunlength * Math.sin(gunAngle);
+		return gunStartPosition;
+	}
+
 	updateRopeFixture() {
 		this.clearTilingRope();
 
@@ -269,15 +300,7 @@ export class RopeHat extends Hat {
 		this.ropePoints.forEach(rope=>tilingPoints.push(rope.point));
 		tilingPoints.push(this.ropeEnd.GetPosition());
 
-
-		const gunStartPosition = this.head.GetPosition().Clone();
-		const gunAngle = this.hatBody.GetAngle()+90*game.editor.DEG2RAD;
-		const gunlength = 3.5;
-		gunStartPosition.x -= gunlength * Math.cos(gunAngle);
-		gunStartPosition.y -= gunlength * Math.sin(gunAngle);
-
-		tilingPoints.push(gunStartPosition);
-
+		tilingPoints.push(this.getGunStartPosition());
 
 		for(let i = 1; i<tilingPoints.length; i++){
 			const point = tilingPoints[i];
@@ -339,6 +362,65 @@ export class RopeHat extends Hat {
 
 		this.ropeEnd.CreateFixture(fixDef);
 	}
+
+	clearRope(){
+		if(this.anchorTexture){
+			this.anchorTexture.parent.removeChild(this.anchorTexture);
+			this.clearTilingRope();
+		}
+	}
+
+	showRopeAnimation(){
+		this.clearTilingRope();
+
+		this.animationTime += game.editor.deltaTime;
+
+		const point = this.currentAnimationPoint;
+		const previousPoint = this.ropeGoingOut ? this.targetAnimationPoint : this.getGunStartPosition();
+		const diff = point.Clone().SelfSub(previousPoint);
+		const dir = diff.Clone().SelfNormalize();
+		const angle = Math.atan2(diff.y, diff.x);
+
+		this.currentAnimationPoint.x -= dir.x * ANIMATION_TRAVEL_SPEED;
+		this.currentAnimationPoint.y -= dir.y * ANIMATION_TRAVEL_SPEED;
+
+		this.anchorTexture.x = point.x*game.editor.PTM;
+		this.anchorTexture.y = point.y*game.editor.PTM;
+
+		const ropeDiff = this.currentAnimationPoint.Clone().SelfSub(this.getGunStartPosition())
+		const ropeAngle = Math.atan2(ropeDiff.y, ropeDiff.x);
+
+		const tilingSprite = new PIXI.TilingSprite(
+			PIXI.Texture.from("rope.png"),
+			4,
+			ropeDiff.Length()*game.editor.PTM,
+		);
+		tilingSprite.x = point.x*game.editor.PTM;
+		tilingSprite.y = point.y*game.editor.PTM;
+
+		tilingSprite.rotation = ropeAngle + 90 * game.editor.DEG2RAD;
+		this.anchorTexture.parent.addChildAt(tilingSprite, this.anchorTexture.parent.getChildIndex(this.anchorTexture));
+
+		this.tilingSprites.push(tilingSprite);
+
+
+		const endDiff = point.Clone().SelfSub(previousPoint);
+		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED){
+			if(this.ropeGoingOut && !this.ropeAttached){
+				// ?
+			}else{
+				this.showAnimation = false;
+
+				if(!this.ropeAttached){
+					this.clearRope();
+					this.anchorTexture = null;
+				}
+
+			}
+			this.ropeGoingOut = false;
+		}
+	}
+
 	lean(dir) {
 		if (!this.revoluteJoint) return;
 
@@ -388,6 +470,7 @@ export class RopeHat extends Hat {
 	detach(){
 		super.detach();
 		this.detachRope();
+		this.clearRope();
 	}
 
 	detachFromVehicle(){
@@ -398,8 +481,17 @@ export class RopeHat extends Hat {
 	}
 
 	update() {
+
+		if(this.showAnimation){
+			this.showRopeAnimation();
+		}
+
+
 		if (this.ropeActive) {
-			this.updateRopeFixture();
+			
+			if(!this.showAnimation){
+				this.updateRopeFixture();
+			}
 			if (this.bendBody) {
 				this.bendRope(this.bendPoint, this.bendBody);
 			}
