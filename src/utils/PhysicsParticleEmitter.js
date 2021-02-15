@@ -25,7 +25,7 @@ export const init = ()=> {
 	fixDef.filter.categoryBits = game.editor.MASKBIT_EVERYTHING_BUT_US;
 	fixDef.filter.maskBits = game.editor.MASKBIT_NORMAL | game.editor.MASKBIT_FIXED | game.editor.MASKBIT_CHARACTER; //game.editor.MASKBIT_EVERYTHING_BUT_US | game.editor.MASKBIT_ONLY_US;
 	for(let i = 0; i<poolSize; i++){
-		const sprite = new PIXI.Sprite(PIXI.Texture.fromFrame('Gore_Meat10000'));
+		const sprite = new PIXI.Sprite(PIXI.Texture.from('Gore_Meat10000'));
 		sprite.data = {};
 		spritePool.push(sprite);
 	}
@@ -57,9 +57,9 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		}
 
 		if(!randomTexture){
-			sprite.texture = PIXI.Texture.fromFrame(textures[i%textures.length]+'0000');
+			sprite.texture = PIXI.Texture.from(textures[i%textures.length]+'0000');
 		}else{
-			sprite.texture = PIXI.Texture.fromFrame(textures[Math.round(Math.random()*textures.length)]+'0000');
+			sprite.texture = PIXI.Texture.from(textures[Math.round(Math.random()*textures.length)]+'0000');
 		}
 
 		sprite.lifeTime = Settings.physicsParticleLifeTime + Math.round(Settings.physicsParticleLifeTimeRandomOffset*Math.random());

@@ -3,6 +3,7 @@ import {
 	game
 } from "../../Game";
 import * as Box2D from '../../../libs/Box2D'
+import * as PIXI from 'pixi.js';
 
 export class RopeHat extends Hat {
 	constructor(character, head, body) {
@@ -53,7 +54,7 @@ export class RopeHat extends Hat {
 		let callback = new this.rayCastCallback();
 		this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
 		if (callback.m_hit) {
-			this.anchorTexture = new PIXI.heaven.Sprite(PIXI.Texture.fromImage("RopePartAndHook0000"));
+			this.anchorTexture = new self.PIXI.heaven.Sprite(PIXI.Texture.from("RopePartAndHook0000"));
 			this.anchorTexture.pivot.set(this.anchorTexture.width/2, this.anchorTexture.height / 2);
 			this.hatBody.myTexture.parent.addChildAt(this.anchorTexture, this.hatBody.myTexture.parent.getChildIndex(this.hatBody.myTexture));
 			this.attachRope(callback.m_point, callback.m_fixture.GetBody());
@@ -281,8 +282,8 @@ export class RopeHat extends Hat {
 			const previousPoint = tilingPoints[i-1];
 			const diff = point.Clone().SelfSub(previousPoint);
 
-			const tilingSprite = new PIXI.extras.TilingSprite(
-				PIXI.Texture.fromImage("rope.png"),
+			const tilingSprite = new PIXI.TilingSprite(
+				PIXI.Texture.from("rope.png"),
 				4,
 				diff.Length()*game.editor.PTM,
 			);

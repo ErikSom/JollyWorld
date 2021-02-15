@@ -5,11 +5,12 @@ import {
     game
 } from "../../Game";
 
-
 class ForceField extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
 		this.forceField = this.lookupObject['forcefield_body'];
+		
+		//this.forceField.myTileSprite = new TiledMesh();
 		this.forceField.myTileSprite.fixTextureRotation = true;
 		this.width = this.height = 200;
 
@@ -27,7 +28,7 @@ class ForceField extends PrefabManager.basePrefab {
 	}
 	setDirection(direction){
 		this.forceField.myTileSprite.fixedTextureRotationOffset = (360-direction)*game.editor.DEG2RAD;
-		this.forceField.myTileSprite.updateMeshVerticeRotation(true);
+		//this.forceField.myTileSprite.updateMeshVerticeRotation(true);
 	}
 	setDisableGravity(disabled){
 		if(disabled) this.forceField.myTileSprite.tint = 0x00d8ff;

@@ -146,7 +146,7 @@ class Arrow extends PrefabManager.basePrefab {
 
 						self.arrowBody.myTexture.addChild(self.arrowBody.myMask);
 
-						self.arrowBody.myTexture.originalSprite.pluginName = 'spriteMasked';
+						self.arrowBody.myTexture.originalSprite.pluginName = 'batchMasked';
 						self.arrowBody.myTexture.originalSprite.maskSprite = self.arrowBody.myMask;
 
 					}

@@ -36,27 +36,29 @@ import * as EffectsComposer from './utils/EffectsComposer';
 import * as MobileController from './utils/MobileController';
 import * as AudioManager from './utils/AudioManager';
 
-import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
+import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
 
 
 
 const nanoid = require('nanoid');
-const particles = require('../libs/pixi-particles');
 const Stats = require('stats.js');
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
-    b2BodyDef = Box2D.b2BodyDef,
     b2Body = Box2D.b2Body,
-    b2FixtureDef = Box2D.b2FixtureDef,
-    b2Fixture = Box2D.b2Fixture,
     b2World = Box2D.b2World,
-    b2MassData = Box2D.b2MassData,
-    b2PolygonShape = Box2D.b2PolygonShape,
-    b2CircleShape = Box2D.b2CircleShape,
-    b2DebugDraw = Box2D.b2DebugDraw,
     b2MouseJointDef = Box2D.b2MouseJointDef;
+
+
+// chech WebGL support
+(function () {
+    if(!document.createElement('canvas').getContext('webgl')) {
+        alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
+        window.location.reload();
+    }
+})();
+
 
 function Game() {
 
@@ -107,7 +109,7 @@ function Game() {
     this.preloader = document.getElementById('preloader');
 
     // path pixi for camera support
-    PathRenderTarget();
+    // PathRenderTarget();
 
     this.init = function () {
         this.stats = new Stats();
@@ -134,11 +136,7 @@ function Game() {
         });
         this.handleResize();
 
-        if(this.app.renderer.context instanceof CanvasRenderingContext2D){
-            alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
-            window.location.reload();
-        }
-        this.app.view.addEventListener('webglcontextlost', (event) => {
+        this.app.view.addEventListener('webglcontextlost', (_event) => {
             alert("Jolly Goodness! I almost fried your PC, Sorry.. (kidding) Something stressed out the browser and I'm forced to restart the game! Click OK to restart.");
             window.location.reload();
         });
@@ -146,7 +144,7 @@ function Game() {
 
         window.__pixiScreenshot = ()=>{
             this.needScreenshot = true;
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, _reject) => {
                 let interval = setInterval(()=>{
                     if(this.screenShotData){
                         clearInterval(interval);
@@ -161,17 +159,19 @@ function Game() {
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
         this.app.renderer.plugins.interaction.removeEvents();
-        PIXI.ticker.shared.stop();
+
+        PIXI.Ticker.shared.stop();
+
         this.stage.interactiveChildren=false;
         this.app.renderer.plugins.accessibility.destroy();
 
-        LoadCoreAssets(PIXI.loader);
+        LoadCoreAssets(this.app.loader);
 
         this.editor = B2dEditor;
 
-        PIXI.loader.load(
+        this.app.loader.load(
             async ()=> {
-                await ExtractTextureAssets();
+                await ExtractTextureAssets(this.app.loader);
                 this.setup();
             }
         );
@@ -185,7 +185,10 @@ function Game() {
         // rectangle should updates automatically
         this.stage.filterArea = this.app.screen;
 
-        if(MobileController.isMobile()) MobileController.init();
+        if(MobileController.isMobile()) {
+            MobileController.init();
+        }
+
         YouTubePlayer.preload();
         AudioManager.init();
 
@@ -230,14 +233,17 @@ function Game() {
 
         this.render();
 
-        this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
-        this.editor.assetLists.vehicles = [].concat(Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures), Object.keys(PIXI.loader.resources["Mech.json"].textures));
-        this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
-        this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);
-        this.editor.assetLists.nature = Object.keys(PIXI.loader.resources["Nature.json"].textures);
-        this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
-        this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
-        this.editor.assetLists.gore = Object.keys(PIXI.loader.resources["Characters_Gore.json"].textures);
+        const res = this.app.loader.resources;
+        const assets = this.editor.assetLists;
+
+        assets.characters = Object.keys(res["Characters_1.json"].textures);
+        assets.vehicles = [].concat(Object.keys(res["Vehicles_1.json"].textures), Object.keys(res["Mech.json"].textures));
+        assets.movement = Object.keys(res["Movement.json"].textures);
+        assets.construction = Object.keys(res["Construction.json"].textures);
+        assets.nature = Object.keys(res["Nature.json"].textures);
+        assets.weapons = Object.keys(res["Weapons.json"].textures);
+        assets.level = Object.keys(res["Level.json"].textures);
+        assets.gore = Object.keys(res["Characters_Gore.json"].textures);
 
         this.editor.tileLists = Settings.textureNames;
         this.editor.init(this.stage, this.myContainer, this.world, Settings.PTM);
@@ -257,7 +263,7 @@ function Game() {
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
 
                 this.loadPublishedLevelData(levelData);
-            }).catch(err =>{
+            }).catch(_err =>{
                 location.hash = '';
                 ui.disableMainMenu(false);
             });
@@ -322,14 +328,14 @@ function Game() {
                 }else if(el.type.indexOf("image")>=0){
                     const imageFile =  el.getAsFile();
                     const src = URL.createObjectURL(imageFile);
-                    const texture = PIXI.Texture.fromImage(src);
+                    const texture = PIXI.Texture.from(src);
                     texture.baseTexture.addListener('loaded', ()=> {
 
                         if(game.editor.tracingTexture){
                             game.editor.tracingTexture.destroy({texture:true, baseTexture:true});
                         }
 
-                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.fromImage(src));
+                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.from(src));
                         game.editor.tracingTexture.pivot.set(game.editor.tracingTexture.width/2, game.editor.tracingTexture.height/2);
                         game.editor.container.addChildAt(game.editor.tracingTexture, 0);
                         if(game.editor.selectedTool === game.editor.tool_SETTINGS){
@@ -738,7 +744,7 @@ function Game() {
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
-        //this.editor.buildJSON(PIXI.loader.resources["characterData1"].data);
+        //this.editor.buildJSON(this.app.resources["characterData1"].data);
     }
     this.pauseGame = function(){
         if(this.gameOver) return;

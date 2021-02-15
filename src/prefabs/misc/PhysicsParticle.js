@@ -35,7 +35,7 @@ class PhysicsParticle extends PrefabManager.basePrefab {
         body.DestroyFixture(oldFixture);
 
         // set correct texture
-        body.myTexture.children[0].texture = PIXI.Texture.fromFrame(`${this.texture}0000`);
+        body.myTexture.children[0].texture = PIXI.Texture.from(`${this.texture}0000`);
 
     }
     update() {
