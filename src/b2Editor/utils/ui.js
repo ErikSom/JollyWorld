@@ -2113,7 +2113,7 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
             label.style.backgroundPosition = 'center center';
             label.style.backgroundSize = '100% 100%, auto';
         } else {
-            const base64Image = PIXI.utils.BaseTextureCache[Settings.textureNames[i]].source.src;
+            const base64Image = PIXI.utils.BaseTextureCache[Settings.textureNames[i]].resource.source.src;
             label.style.background = `url(${base64Image})`;
             label.style.backgroundSize = 'contain';
         }
