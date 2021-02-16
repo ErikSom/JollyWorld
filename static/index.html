@@ -148,6 +148,25 @@
 </head>
 
 <body>
+    <script>
+        var uidHash = location.hash.split('/')[0].substr(1);
+        if(uidHash && uidHash.length===21){
+			fetch('https://api.jollyworld.app/level/'+uidHash, {method: 'GET'})
+			.then(result => result.json())
+			.then(data => {
+				if(data.error) return;
+                 if(document.querySelector){
+                    document.querySelector('meta[name="description"]').setAttribute("content", data.description);
+                    document.querySelector('meta[property="og:description"]').setAttribute("content", data.description);
+                    document.querySelector('meta[name="description"]').setAttribute("content", data.description);
+                    document.title = 'JollyWorld - '+data.title;
+                    document.querySelector('meta[property="og:title"]').setAttribute("content", data.title);
+                    var thumb_url = 'https://static.jollyworld.app/'+data.thumb_big_md5+'.png';
+                    document.querySelector('meta[property="og:image"]').setAttribute("content", thumb_url);
+                 }
+			});
+        }
+    </script>
     <div id="editor-ui-container">
         <div id="custom-gui"></div>
     </div>

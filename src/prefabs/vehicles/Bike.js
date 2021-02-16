@@ -1,5 +1,6 @@
 import * as PrefabManager from '../PrefabManager';
 import * as AudioManager from '../../utils/AudioManager';
+import {Humanoid} from '../humanoids/Humanoid';
 
 import { BaseVehicle } from './BaseVehicle';
 
@@ -23,8 +24,11 @@ class Bike extends BaseVehicle {
             hand_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
         }
         this.vehicleName = 'Bike';
-        this.limbsObserver = [];
-
+        this.limbsObserver = [
+                                [[Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_LEFT],
+                                 [Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.THIGH_RIGHT]
+                                ]
+                            ]
     }
     init() {
         super.init();

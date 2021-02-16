@@ -130,13 +130,33 @@ export class Character extends Humanoid {
     checkLimbs(){
         if(this.attachedToVehicle){
             this.mainPrefabClass.limbsObserver.forEach(observe=>{
-                const limbs = [].concat(observe);
-                let brokenLimbsCount = 0;
-                limbs.forEach(limb=> {
+                if(!this.attachedToVehicle) return;
+                if(Array.isArray(observe)){
+
+                    let leftBroken = false;
+                    let rightBroken = false;
+
+                    observe.forEach((side, index)=> {
+                        side.forEach(limb=>{
+                            const targetObject = this.lookupObject[limb]
+                            if(!targetObject || targetObject.snapped){
+                                if(index === 0) leftBroken = true;
+                                else rightBroken = true;
+                            }
+                        });
+                    });
+                    if(leftBroken && rightBroken){
+                        this.detachFromVehicle();
+                        return;
+                    }
+                }else{
+                    const limb = observe;
                     const targetObject = this.lookupObject[limb]
-                    if(!targetObject || targetObject.snapped) brokenLimbsCount++;
-                });
-                if(brokenLimbsCount === limbs.length) this.detachFromVehicle();
+                    if(!targetObject || targetObject.snapped){
+                        this.detachFromVehicle();
+                        return;
+                    }
+                }
             })
         }
     }
