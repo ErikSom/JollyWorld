@@ -1121,6 +1121,8 @@ function Game() {
 
                         emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 
+                        AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.1, 1.4 + 0.4 * Math.random()-0.2, body.GetPosition());
+
                         const bodyClass = self.editor.retrieveSubClassFromBody(body);
                         if(bodyClass && bodyClass.dealDamage && !body.noDamage){
                             const slidingDamageScalar = 50;

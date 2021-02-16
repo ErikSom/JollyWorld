@@ -260,6 +260,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 if(force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
                     self.dealDamage(force/forceToDamageDivider);
+                    AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.3, 1.0 + 0.4 * Math.random()-0.2, characterBody.GetPosition());
                 }
 
                 let forceDamage = 0;
