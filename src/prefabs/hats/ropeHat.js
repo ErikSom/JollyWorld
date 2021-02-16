@@ -6,7 +6,7 @@ import * as Box2D from '../../../libs/Box2D'
 import * as PIXI from 'pixi.js';
 import { Settings } from '../../Settings';
 
-const ANIMATION_TRAVEL_SPEED = 100 / Settings.PTM;
+const ANIMATION_TRAVEL_SPEED = 4000 / Settings.PTM;
 
 export class RopeHat extends Hat {
 	constructor(character, head, body) {
@@ -373,7 +373,6 @@ export class RopeHat extends Hat {
 	showRopeAnimation(){
 		this.clearTilingRope();
 
-		this.animationTime += game.editor.deltaTime;
 
 		const point = this.currentAnimationPoint;
 		const previousPoint = this.ropeGoingOut ? this.targetAnimationPoint : this.getGunStartPosition();
@@ -381,11 +380,15 @@ export class RopeHat extends Hat {
 		const dir = diff.Clone().SelfNormalize();
 		const angle = Math.atan2(diff.y, diff.x);
 
-		this.currentAnimationPoint.x -= dir.x * ANIMATION_TRAVEL_SPEED;
-		this.currentAnimationPoint.y -= dir.y * ANIMATION_TRAVEL_SPEED;
+
+		this.currentAnimationPoint.x -= dir.x * ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds;
+		this.currentAnimationPoint.y -= dir.y * ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds;
 
 		this.anchorTexture.x = point.x*game.editor.PTM;
 		this.anchorTexture.y = point.y*game.editor.PTM;
+		if(!this.ropeGoingOut){
+			this.anchorTexture.rotation = angle;
+		}
 
 		const ropeDiff = this.currentAnimationPoint.Clone().SelfSub(this.getGunStartPosition())
 		const ropeAngle = Math.atan2(ropeDiff.y, ropeDiff.x);
@@ -405,7 +408,7 @@ export class RopeHat extends Hat {
 
 
 		const endDiff = point.Clone().SelfSub(previousPoint);
-		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED){
+		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5){
 			if(this.ropeGoingOut && !this.ropeAttached){
 				// ?
 			}else{
