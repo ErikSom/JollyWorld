@@ -1,4 +1,4 @@
-export var Key = {
+export const Key = {
     _down:{},
     _pressed: {},
     _released: {},
@@ -122,6 +122,7 @@ export var Key = {
         this.update();
     },
 };
+
 export const KeyNames = [
     'ENTER',
     'SHIFT',
@@ -169,5 +170,11 @@ export const KeyNames = [
     'Y',
     'Z',
 ]
+
+export const KeyValLookup = {};
+KeyNames.forEach( key => {
+    const val = Key[key];
+    KeyValLookup[val] = key;
+})
 
 // custom name keys

@@ -929,7 +929,7 @@ const _B2dEditor = function () {
 					}.bind(controller));
 
 					// is Character is an admin feature
-					const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
+					const collisionTypes = [...Settings.collisionTypes];
 					if(Settings.admin) collisionTypes.push("Is character");
 					ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
 					targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
@@ -1711,7 +1711,7 @@ const _B2dEditor = function () {
 
 
 		const onlyJoints = !copyArray.find(el=> el.data.type !== this.object_JOINT);
-
+		const onlyTriggers = !copyArray.find(el=> el.data.type !== this.object_TRIGGER);
 
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
@@ -1794,23 +1794,27 @@ const _B2dEditor = function () {
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
 			if (data.type == this.object_TRIGGER) {
-				for (j = 0; j < data.triggerObjects.length; j++) {
-					var foundBody = -1;
-					let realIndex = 0;
-					for (k = 0; k < copyArray.length; k++) {
-						if (data.triggerObjects[j] == copyArray[k].ID) {
-							// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
-							foundBody = realIndex;
-							break;
+				if(!onlyTriggers){
+					for (j = 0; j < data.triggerObjects.length; j++) {
+						var foundBody = -1;
+						let realIndex = 0;
+						for (k = 0; k < copyArray.length; k++) {
+							if (data.triggerObjects[j] == copyArray[k].ID) {
+								// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
+								foundBody = realIndex;
+								break;
+							}
+							realIndex += copyArray[k].childCount || 1;
 						}
-						realIndex += copyArray[k].childCount || 1;
+						if (foundBody >= 0) data.triggerObjects[j] = foundBody;
+						else {
+							data.triggerObjects.splice(j, 1);
+							data.triggerActions.splice(j, 1);
+							j--;
+						}
 					}
-					if (foundBody >= 0) data.triggerObjects[j] = foundBody;
-					else {
-						data.triggerObjects.splice(j, 1);
-						data.triggerActions.splice(j, 1);
-						j--;
-					}
+				}else{
+					data.groups = Settings.jsonDuplicateText+data.groups;
 				}
 			}
 		}
@@ -2040,6 +2044,12 @@ const _B2dEditor = function () {
 				this.debugGraphics.lineTo(playerPosition.x + cameraRealWidth / 2, playerPosition.y + cameraRealHeight / 2 - cameraCornerSize * camera.scale.x);
 
 			}
+		}
+
+		if(this.selectedTool === this.tool_TRIGGER){
+			this.triggerObjects.forEach(obj=>{
+				trigger.drawEditorTriggerTargets(obj);
+			})
 		}
 
 		trigger.drawEditorTriggers();
@@ -8898,8 +8908,15 @@ const _B2dEditor = function () {
 					worldObject = this.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
-					for (var j = 0; j < obj.triggerObjects.length; j++) {
-						obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
+					let duplicateJoint = false;
+					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
+						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
+						duplicateJoint = true;
+					}
+					if(!duplicateJoint){
+						for (var j = 0; j < obj.triggerObjects.length; j++) {
+							obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
+						}
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);

@@ -7,7 +7,7 @@ import {
     Settings
 } from "../../Settings";
 import {
-    Key, KeyNames
+    Key, KeyNames, KeyValLookup
 } from "../../../libs/Key";
 import {
     game
@@ -42,6 +42,7 @@ export const getActionsForObject = function (object) {
             case B2dEditor.object_BODY:
                 actions.push("Impulse") //, "SetAwake");
                 actions.push("SetCameraTarget");
+                actions.push("SetCollision");
 
                 if(object.myBody.myTexture){
                     if(object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
@@ -101,8 +102,6 @@ export const getActionsForObject = function (object) {
     if (object.data.type != B2dEditor.object_JOINT) {
         actions.push("SetPosition", "SetRotation", "SetVisibility")
     }
-
-    console.log(object);
     actions.push("Destroy");
     return actions;
 }
@@ -308,6 +307,10 @@ export const doAction = function (actionData, target) {
         break;
         case "SetLose":
             game.lose();
+        break;
+        case "SetCollision":
+            if(target.myBody) game.editor.setBodyCollision(target.myBody, [Settings.collisionTypes.indexOf(actionData.collision)]);
+            target.myBody.SetAwake(true);
         break;
     }
 }
@@ -757,6 +760,17 @@ export const actionDictionary = {
         type: 'SetLose',
     },
     actionOptions_SetLose: {},
+    /*******************/
+    actionObject_SetCollision: {
+        type: 'SetCollision',
+        collision: Settings.collisionTypes[0],
+    },
+    actionOptions_SetCollision: {
+        collision: {
+            type: guitype_LIST,
+            items: Settings.collisionTypes,
+        },
+    },
     /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
@@ -1329,6 +1343,8 @@ export const drawEditorTriggerTargets = body=>{
         let myPos = body.GetPosition();
         myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
         game.levelCamera.matrix.apply(myPos,myPos);
+
+
         for(let j = 0; j<body.mySprite.targets.length; j++){
             let target = body.mySprite.targets[j];
             let tarPos;
@@ -1346,7 +1362,16 @@ export const drawEditorTriggerTargets = body=>{
             }
 
             game.levelCamera.matrix.apply(tarPos,tarPos);
-            drawing.drawLine(myPos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
+
+            const lineOffsetSize = -20 * game.levelCamera.scale.x;
+            const linePos = myPos.Clone().SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
+            drawing.drawLine(linePos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
         };
+
+        if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
+            const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
+            drawing.addText(keyName, B2dEditor.debugGraphics, myPos.Clone().SelfAdd({x:1, y:1}), {fill:0x000});
+            drawing.addText(keyName, B2dEditor.debugGraphics, myPos);
+        }
     }
 }
