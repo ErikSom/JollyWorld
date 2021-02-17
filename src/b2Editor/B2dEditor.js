@@ -3061,6 +3061,9 @@ const _B2dEditor = function () {
 						}else{
 							this.updateGraphicShapes(this.verticeEditingSprite);
 						}
+						this.verticeEditingSprite._cullingSizeDirty = true;
+						this.verticeEditingSprite.position.x++;
+						this.verticeEditingSprite.position.x--;
 					}
 				}
 			}else if(!this.mouseDown){
