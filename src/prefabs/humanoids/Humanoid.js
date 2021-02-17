@@ -258,9 +258,16 @@ export class Humanoid extends PrefabManager.basePrefab {
                 const minForceForDamage = 10.0;
                 const forceToDamageDivider = 50.0;
 
-                if(force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
+                const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
+                const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
+                impactAngle *= game.editor.RAD2DEG + 180;
+                const velocitySum = velocityA + velocityB;
+
+                if(velocitySum > 10 && force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
                     self.dealDamage(force/forceToDamageDivider);
                     AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.3, 1.0 + 0.4 * Math.random()-0.2, characterBody.GetPosition());
+                    console.log("PLAY SOUND!!!");
                 }
 
                 let forceDamage = 0;

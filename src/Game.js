@@ -679,37 +679,39 @@ function Game() {
             }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
                 this.initLevel(this.currentLevelData);
                 this.playWorld(!doCheckpoint);
-
-                if(doCheckpoint && checkPointData){
-                    const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
-                    const allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints);
-
-                    const positionDiff = {x:checkPointData.x*this.editor.PTM-this.playerPrefabObject.x, y:checkPointData.y*this.editor.PTM-this.playerPrefabObject.y, }
-
-                    const perpendularAngle = checkPointData.rotation - Math.PI/2;
-                    const checkPointOffset = 200;
-                    positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
-                    positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
-
-                    if(this.playerPrefabObject.class.character.hat){
-                        const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
-                        const position = hatBody.GetPosition();
-                        position.x += positionDiff.x / Settings.PTM;
-                        position.y += positionDiff.y / Settings.PTM;
-                        hatBody.SetPosition(position);
-                    }
-
-                    this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
-                    this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
-
-                    prefabLookupObject._bodies.forEach(body =>{
-                        this.editor.updateBodyPosition(body);
-                    });
-                    this.checkPointData = checkPointData;
-
-                    if(this.checkPointData.flipped) this.character.flip();
-                }
             }
+
+            if(doCheckpoint && checkPointData){
+                const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
+                const allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints);
+
+                const positionDiff = {x:checkPointData.x*this.editor.PTM-this.playerPrefabObject.x, y:checkPointData.y*this.editor.PTM-this.playerPrefabObject.y, }
+
+                const perpendularAngle = checkPointData.rotation - Math.PI/2;
+                const checkPointOffset = 200;
+                positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
+                positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
+
+                if(this.playerPrefabObject.class.character.hat){
+                    const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
+                    const position = hatBody.GetPosition();
+                    position.x += positionDiff.x / Settings.PTM;
+                    position.y += positionDiff.y / Settings.PTM;
+                    hatBody.SetPosition(position);
+                }
+
+                this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
+                this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
+
+                prefabLookupObject._bodies.forEach(body =>{
+                    this.editor.updateBodyPosition(body);
+                });
+                this.checkPointData = checkPointData;
+
+                if(this.checkPointData.flipped) this.character.flip();
+            }
+
+
             setTimeout(()=>{
                 game.preloader.classList.add('hide');
             }, Settings.levelBuildDelayTime);
@@ -862,7 +864,8 @@ function Game() {
         }
     }
     this.lose = function () {
-        if (!this.gameOver && !this.levelWon && this.gameState === this.GAMESTATE_NORMALPLAY) {
+        if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
+            ui.show();
             ui.showGameOver();
             MobileController.hide();
             this.gameOver = true;

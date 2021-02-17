@@ -841,14 +841,14 @@ const _B2dEditor = function () {
 				this.targetValue = value;
 			});
 		}
-		if (prefabKeys.length == 0) {
+		if (prefabKeys.length == 0 && Settings.admin) {
 			targetFolder.add(ui.editorGUI.editData, "groups").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
 		}
 		if (this.selectedTextures.length + this.selectedPhysicsBodies.length == 1 && prefabKeys.length == 0) {
-			targetFolder.add(ui.editorGUI.editData, "refName").onChange(function (value) {
+			targetFolder.add(ui.editorGUI.editData, "refName").name("name").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
