@@ -849,7 +849,7 @@ function Game() {
         }
     }
     this.win = function () {
-        if (!this.levelWon) {
+        if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(Date.now(), this.levelStartTime);
             const s = `${d.hh}:${d.mm}:${d.ss}:${d.ms}`;

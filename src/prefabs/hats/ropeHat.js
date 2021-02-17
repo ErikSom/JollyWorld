@@ -118,6 +118,7 @@ export class RopeHat extends Hat {
 		bd.angle =angle;
 
 		this.ropeEnd = this.head.GetWorld().CreateBody(bd);
+		game.editor.setBodyCollision(this.ropeEnd, 7);
 		this.ropeEnd.key = this.head.mySprite.data.prefabInstanceName
 		this.ropeEnd.SetBullet(true);
 
@@ -128,7 +129,9 @@ export class RopeHat extends Hat {
 			const bodyA = contact.GetFixtureA().GetBody();
 			const bodyB = contact.GetFixtureB().GetBody();
 			const targetBody = bodyA === this.ropeEnd ? bodyB : bodyA;
+			const targetFixture = bodyA === this.ropeEnd ? contact.GetFixtureB() : contact.GetFixtureA();
 			if (targetBody.GetType() !== Box2D.b2BodyType.b2_staticBody) return;
+			if (!(targetFixture.GetFilterData().maskBits & game.editor.MASKBIT_CHARACTER)) return;
 			const worldManifold = new Box2D.b2WorldManifold();
 			contact.GetWorldManifold(worldManifold);
 			const worldCollisionPoint = worldManifold.points[0];

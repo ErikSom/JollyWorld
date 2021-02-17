@@ -59,10 +59,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
 
 
-        game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
-        game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
-
-        console.log(this.collisionUpdates);
+        // game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
+        // game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
 
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
