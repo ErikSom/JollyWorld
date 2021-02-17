@@ -267,6 +267,7 @@ function UIManager() {
         setTimeout(()=>{
             if(gameOver && game.run){
                 gameOver.style.opacity = 1;
+                AudioManager.playSFX('lose', 0.3, 1.0);
             }
         },
         Settings.gameOverDelay);
@@ -1147,6 +1148,8 @@ function UIManager() {
         winScreen.domElement.style.left = '50%';
         winScreen.domElement.style.top = '65%';
         winScreen.domElement.style.transform = 'translate(-50%, -50%)';
+
+        AudioManager.playSFX('win', 0.5, 1.0);
 
     }
 
