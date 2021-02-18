@@ -134,8 +134,8 @@ export class Explosive extends PrefabManager.basePrefab {
 						const count = contact.GetManifold().pointCount;
 						let force = 0;
 						for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
-						force *= body.GetMass();
-						console.log(force);
+						force *= Math.min(body.GetMass(), 50);
+
 						if(force > self.impactForExplosion){
 							self.set('active', true);
 						}

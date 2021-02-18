@@ -5,6 +5,7 @@ import {
 import * as Box2D from '../../../libs/Box2D'
 import * as PIXI from 'pixi.js';
 import { Settings } from '../../Settings';
+import * as AudioManager from '../../utils/AudioManager';
 
 const ANIMATION_TRAVEL_SPEED = 4000 / Settings.PTM;
 
@@ -83,6 +84,7 @@ export class RopeHat extends Hat {
 			}
 			this.currentAnimationPoint = this.getGunStartPosition();
 			this.showAnimation = true;
+			AudioManager.playSFX('rope-out', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
 		}
 	}
 	detachRope() {
@@ -97,8 +99,9 @@ export class RopeHat extends Hat {
 
 		this.showAnimation = true;
 		this.ropeGoingOut = false;
+		AudioManager.playSFX('rope-in', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
 	}
-	
+
 	attachRope(point, body, precise) {
 		this.ropeActive = true;
 		this.blockControls = true;
@@ -414,12 +417,15 @@ export class RopeHat extends Hat {
 		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5){
 			if(this.ropeGoingOut && !this.ropeAttached){
 				// ?
+				AudioManager.playSFX('rope-in', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
 			}else{
 				this.showAnimation = false;
 
 				if(!this.ropeAttached){
 					this.clearRope();
 					this.anchorTexture = null;
+				}else{
+					AudioManager.playSFX('rope-ground', 0.3, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
 				}
 
 			}
