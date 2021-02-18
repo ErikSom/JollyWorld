@@ -2067,7 +2067,14 @@ const _B2dEditor = function () {
 	this.updateBodyPosition = function (body) {
 		if (body.myTexture) {
 
-			const textureOffsetAngle = body.myTexture.data.mirrored ? (Settings.pihalve+(body.myTexture.data.texturePositionOffsetAngle)) : body.myTexture.data.texturePositionOffsetAngle;
+			let textureOffsetAngle = body.myTexture.data.texturePositionOffsetAngle;
+
+ 			if(body.myTexture.data.mirrored){
+				let x = 1*Math.cos(textureOffsetAngle);
+				let y = 1*Math.sin(textureOffsetAngle);
+				x *= -1;
+				textureOffsetAngle = Math.atan2(y, x);
+			}
 
 			const angle = body.GetAngle() - textureOffsetAngle;
 			body.myTexture.x = body.GetPosition().x * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
