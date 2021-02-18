@@ -18,6 +18,9 @@ import * as DS from './utils/DecalSystem';
 import * as camera from './utils/camera';
 import * as PIXI from 'pixi.js';
 
+import { BodyObject } from './objects/BodyObject';
+import { TextureObject } from './objects/TextureObject';
+
 import {
 	lineIntersect,
 	flatten,
@@ -2180,8 +2183,8 @@ const _B2dEditor = function () {
 		}
 	}
 
-	this.object_BODY = 0;
-	this.object_TEXTURE = 1;
+	this.object_BODY = BodyObject.type;
+	this.object_TEXTURE = TextureObject.type;
 	this.object_JOINT = 2;
 	this.object_PREFAB = 4;
 	this.object_MULTIPLE = 5;
@@ -2193,64 +2196,7 @@ const _B2dEditor = function () {
 	this.object_ANIMATIONGROUP = 11;
 
 	const self = this;
-	this.bodyObject = function () {
-		this.type = self.object_BODY;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		//
-		this.ID = 0;
-		this.colorFill = "#999999";
-		this.colorLine = "#000";
-		this.transparancy = 1.0;
-		this.fixed = true;
-		this.awake = true;
-		this.vertices = [{
-			x: 0,
-			y: 0
-		}, {
-			x: 0,
-			y: 0
-		}];
-		this.density = 1;
-		this.collision = 0;
-		this.radius = 0;
-		this.tileTexture = "";
-		this.lockselection = false;
-		this.lineWidth = 1.0;
-		this.visible = true;
-		this.instaKill = false;
-		this.isVehiclePart = false;
-		this.restitution = Settings.defaultRestitution;
-		this.friction = Settings.defaultFriction;
-	}
-	this.textureObject = function () {
-		this.type = self.object_TEXTURE;
-		this.x = null;
-		this.y = null;
-		this.scaleX = 1.0;
-		this.scaleY = 1.0;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		//
-		this.ID = 0;
-		this.textureName = null;
-		this.bodyID = null;
-		this.texturePositionOffsetLength = null;
-		this.texturePositionOffsetAngle = null;
-		this.textureAngleOffset = null;
-		this.isCarvable = false;
-		this.tint = '#FFFFFF';
-		this.transparancy = 1.0;
-		this.lockselection = false;
-		this.parallax = 0.0;
-		this.repeatTeleportX = 0;
-		this.repeatTeleportY = 0;
-		this.visible = true;
-	}
+
 	this.graphicGroup = function () {
 		this.type = self.object_GRAPHICGROUP;
 		this.x = null;
@@ -6522,6 +6468,8 @@ const _B2dEditor = function () {
 		return body;
 	}
 	this.buildTextFromObj = function (obj) {
+		console.error('Legacy, use a buildTextFromObj from ObjectFabric');
+
 		let container;
 		let text = this.buildTextGraphicFromObj(obj);
 
@@ -6551,7 +6499,10 @@ const _B2dEditor = function () {
 
 		return container;
 	}
+
 	this.buildTextGraphicFromObj = function (obj) {
+		console.error('Legacy, use a buildTextGraphicFromObj from ObjectFabric');
+
 		let text = new PIXI.Text();
 		let style = new PIXI.TextStyle();
 		style.fontFamily = obj.fontName;
@@ -6564,6 +6515,8 @@ const _B2dEditor = function () {
 		return text;
 	}
 	this.buildBodyFromObj = function (obj) {
+
+		console.error("Use a buildBodyFromObj from ObjectFabric");
 
 		var bd = new b2BodyDef();
 		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
@@ -6629,6 +6582,8 @@ const _B2dEditor = function () {
 
 	}
 	this.buildGraphicFromObj = function (obj) {
+		console.error('Legacy, use buildGraphicFromObj from ObjectFabric');
+
 		var container = new PIXI.Container();
 		container.data = obj;
 		container.x = obj.x;
@@ -6681,6 +6636,8 @@ const _B2dEditor = function () {
 		return graphic;
 	}
 	this.buildAnimationGroupFromObject = function (obj) {
+		console.error('Legacy, use a buildAnimationGroupFromObject from ObjectFabric');
+
 		var graphic = new PIXI.Container();
 		graphic.data = obj;
 		graphic.x = obj.x;
@@ -7926,7 +7883,7 @@ const _B2dEditor = function () {
 			return;
 
 //		return;
-
+		debugger;
 		size = size || 1;
 		rotation = rotation || 0;
 
@@ -8934,6 +8891,7 @@ const _B2dEditor = function () {
 		return createdObjects;
 		//console.log("END HERE");
 	}
+
 	this.drawBox = function (target, x, y, width, height, lineColor, lineSize, lineAlpha, fillColor, fillAlpha) {
 
 		if (lineSize == undefined) lineSize = 1;
