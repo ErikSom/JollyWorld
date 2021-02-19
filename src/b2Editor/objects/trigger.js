@@ -1097,6 +1097,8 @@ export class triggerCore {
         this.data = trigger.mySprite.data;
         this.actions = trigger.mySprite.data.triggerActions;
         this.targets = trigger.mySprite.targets;
+        this.delay = trigger.mySprite.data.delay;
+        this.repeatDelay = trigger.mySprite.data.repeatDelay;
 
         this.followTarget = null;
         if(this.data.followFirstTarget){

@@ -2402,6 +2402,8 @@ const _B2dEditor = function () {
 		this.triggerKey = 32;
 		this.followFirstTarget = false;
 		this.lockselection = false;
+		this.delay = 0;
+		this.repeatDelay = 0;
 	}
 	this.textObject = function () {
 		this.type = self.object_TEXT;
@@ -4536,6 +4538,8 @@ const _B2dEditor = function () {
 			const data = selectedPhysicsBody.mySprite.data;
 			if(data.type === this.object_TRIGGER) continue;
 
+			const pos = selectedPhysicsBody.GetPosition().Clone().SelfMul(Settings.PTM);
+
 			for (let j = 0; j < data.vertices.length; j++) {
 				if (data.radius[j]) {
 
@@ -4551,7 +4555,7 @@ const _B2dEditor = function () {
 					p.y = (dx * sinAngle + dy * cosAngle);
 
 
-					this.debugGraphics.drawDashedCircle(data.radius[j] * this.cameraHolder.scale.x * selectedPhysicsBody.mySprite.scale.x, (selectedPhysicsBody.mySprite.x + p.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (selectedPhysicsBody.mySprite.y + p.y) * this.cameraHolder.scale.y + this.cameraHolder.y, selectedPhysicsBody.mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedCircle(data.radius[j] * this.cameraHolder.scale.x * selectedPhysicsBody.mySprite.scale.x, (pos.x + p.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (pos.y + p.y) * this.cameraHolder.scale.y + this.cameraHolder.y, selectedPhysicsBody.mySprite.rotation, 20, 10, offset);
 				} else {
 					var polygons = [];
 					let innerVertices;
@@ -4566,7 +4570,7 @@ const _B2dEditor = function () {
 
 
 					}
-					this.debugGraphics.drawDashedPolygon(polygons, selectedPhysicsBody.mySprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, selectedPhysicsBody.mySprite.y * this.cameraHolder.scale.y + this.cameraHolder.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedPolygon(polygons, pos.x * this.cameraHolder.scale.x + this.cameraHolder.x, pos.y * this.cameraHolder.scale.y + this.cameraHolder.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 				}
 			}
 		}
@@ -8559,6 +8563,8 @@ const _B2dEditor = function () {
 			arr[14] = obj.worldActions;
 			arr[15] = obj.triggerKey;
 			arr[16] = obj.followFirstTarget;
+			arr[17] = obj.delay;
+			arr[18] = obj.repeatDelay;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -8706,6 +8712,8 @@ const _B2dEditor = function () {
 			obj.worldActions = arr[14] || [];
 			obj.triggerKey = arr[15] || 32;
 			obj.followFirstTarget = typeof arr[16] === "boolean" ? arr[16] : false;
+			obj.delay = typeof arr[17] === "number" ? arr[17] : 0;
+			obj.repeatDelay = typeof arr[18] === "number" ? arr[18] : 0;
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];
