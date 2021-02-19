@@ -1,5 +1,4 @@
 
-import * as Box2D from "../libs/Box2D";
 import {
     Key
 } from "../libs/Key";
@@ -7,7 +6,7 @@ import {
     B2dEditor
 } from "./b2Editor/B2dEditor";
 import {
-    getPIXIDebugDraw
+    makeDebugDraw
 } from "../libs/debugdraw";
 import * as PIXI from 'pixi.js'
 import {
@@ -45,12 +44,6 @@ import { YouTubePlayer } from "./utils/YouTubePlayer";
 const nanoid = require('nanoid');
 const Stats = require('stats.js');
 
-var b2Vec2 = Box2D.b2Vec2,
-    b2AABB = Box2D.b2AABB,
-    b2Body = Box2D.b2Body,
-    b2World = Box2D.b2World,
-    b2MouseJointDef = Box2D.b2MouseJointDef;
-
 
 // chech WebGL support
 (function () {
@@ -60,6 +53,7 @@ var b2Vec2 = Box2D.b2Vec2,
     }
 })();
 
+const { b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef } = Box2D;
 
 function Game() {
 
@@ -231,8 +225,9 @@ function Game() {
 
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
-        this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
-        this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
+
+        this.myDebugDraw = makeDebugDraw(this.newDebugGraphics, Settings.PTM, Box2D);
+        this.myDebugDraw.SetFlags(Box2D.b2Draw.e_shapeBit | Box2D.b2Draw.e_jointBit);
         this.world.SetDebugDraw(this.myDebugDraw);
 
         this.render();
@@ -1026,7 +1021,7 @@ function Game() {
     }
 
     var self = this;
-    this.gameContactListener = new Box2D.b2ContactListener();
+    this.gameContactListener = new Box2D.JSContactListener();
     this.gameContactListener.BeginContact = function (contact) {
 
         const currentTime = Date.now();

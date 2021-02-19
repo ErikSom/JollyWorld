@@ -1,7 +1,4 @@
 import {
-    b2Vec2
-} from "../../../libs/Box2D";
-import {
     game
 } from "../../Game";
 
@@ -11,13 +8,13 @@ export const rotateVector = function (vector, degrees) {
     const cos = Math.cos(radians);
     const tx = vector.x;
     const ty = vector.y;
-    return new b2Vec2(cos * tx - sin * ty, sin * tx + cos * ty);
+    return new Box2D.b2Vec2(cos * tx - sin * ty, sin * tx + cos * ty);
 }
 
 export const rotateVectorAroundPoint = function(vector, point, degrees, log){
     const vec = vector.Clone().SelfSub(point);
     // if(log) console.log(vec.x, vec.y, 'diff', vec.Length());
-    const newvec = new b2Vec2(vec.Length(), 0);
+    const newvec = new Box2D.b2Vec2(vec.Length(), 0);
     const rotatedVector = rotateVector(newvec, degrees);
     return rotatedVector.SelfAdd(point);
 }

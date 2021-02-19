@@ -187,52 +187,61 @@
 
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
 
-    <script>
-        var __assetHashNames = '{{{ASSET_HASH_NAMES}}}';
-        var preloaderFill = document.getElementsByClassName('preloaderFill')[0];
-        var setLoaderProgress = function(percent){
-                var sp = 7;
-                preloaderFill.style.width = (sp+percent*(100-sp)).toFixed(2)+'%';
-            }
-        function loadJS(url, onError) {
-            setLoaderProgress(0);
-            if (!onError) onError = function () {};
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200 || xhr.status == 0) {
-                        try {
-                            setLoaderProgress(1);
-                            setTimeout(function(){
-                                eval(xhr.responseText);
-                            }, 100);
-                        } catch (e) {
-                            onError(e);
-                            return;
+
+    <script type="module">
+        import Box2DFactory from './scripts/Box2D.js';
+        Box2DFactory().then(Box2D => {
+            // finished downloading Box2D.wasm
+            window.Box2D = Box2D;
+
+            var __assetHashNames = '{{{ASSET_HASH_NAMES}}}';
+            var preloaderFill = document.getElementsByClassName('preloaderFill')[0];
+            var setLoaderProgress = function(percent){
+                    var sp = 7;
+                    preloaderFill.style.width = (sp+percent*(100-sp)).toFixed(2)+'%';
+                }
+            function loadJS(url, onError) {
+                setLoaderProgress(0);
+                if (!onError) onError = function () {};
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200 || xhr.status == 0) {
+                            try {
+                                setLoaderProgress(1);
+                                setTimeout(function(){
+                                    eval(xhr.responseText);
+                                }, 100);
+                            } catch (e) {
+                                onError(e);
+                                return;
+                            }
+                        } else {
+                            onError(xhr.status);
                         }
-                    } else {
-                        onError(xhr.status);
                     }
+                }.bind(this);
+                try {
+                    xhr.open("GET", url, true);
+                    xhr.send();
+                } catch (e) {
+                    onError(e);
                 }
-            }.bind(this);
-            try {
-                xhr.open("GET", url, true);
-                xhr.send();
-            } catch (e) {
-                onError(e);
-            }
-            xhr.onprogress = function (event) {
-                var percentComplete = 0;
-                if (event.lengthComputable) {
-                    percentComplete = event.loaded / event.total;
-                } else {
-                    var total = 550000*4;
-                    percentComplete = event.loaded / total;
+                xhr.onprogress = function (event) {
+                    var percentComplete = 0;
+                    if (event.lengthComputable) {
+                        percentComplete = event.loaded / event.total;
+                    } else {
+                        var total = 550000*4;
+                        percentComplete = event.loaded / total;
+                    }
+                    setLoaderProgress(Math.min(1.0, percentComplete));
                 }
-                setLoaderProgress(Math.min(1.0, percentComplete));
             }
-        }
-        loadJS('./assets/awesome-game.js');
+            loadJS('./assets/awesome-game.js');
+
+
+        });
     </script>
 
 </body>

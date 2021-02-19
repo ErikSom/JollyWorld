@@ -1,6 +1,6 @@
 import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
-import * as Box2D from '../../../libs/Box2D'
+
 import { Humanoid } from '../humanoids/Humanoid'
 import {
     game

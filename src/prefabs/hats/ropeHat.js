@@ -2,7 +2,7 @@ import Hat from './hat'
 import {
 	game
 } from "../../Game";
-import * as Box2D from '../../../libs/Box2D'
+
 import * as PIXI from 'pixi.js';
 import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';
@@ -112,7 +112,7 @@ export class RopeHat extends Hat {
 		this.blockControls = true;
 
 		const bd = new Box2D.b2BodyDef();
-		bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		bd.type = Box2D.b2_dynamicBody;
 		bd.angularDamping = 0.85;
 		bd.linearDamping = 0.85;
 
@@ -130,7 +130,7 @@ export class RopeHat extends Hat {
 		this.ropeEnd.key = this.head.mySprite.data.prefabInstanceName
 		this.ropeEnd.SetBullet(true);
 
-		this.ropeEnd.contactListener = new Box2D.b2ContactListener();
+		this.ropeEnd.contactListener = new Box2D.JSContactListener();
 		this.ropeEnd.contactListener.PreSolve = contact => {
 			contact.SetEnabled(false);
 			if (this.bendBody || !this.revoluteJoint || Math.abs(this.revoluteJoint.GetJointSpeed())<0.01) return;
@@ -138,7 +138,7 @@ export class RopeHat extends Hat {
 			const bodyB = contact.GetFixtureB().GetBody();
 			const targetBody = bodyA === this.ropeEnd ? bodyB : bodyA;
 			const targetFixture = bodyA === this.ropeEnd ? contact.GetFixtureB() : contact.GetFixtureA();
-			if (targetBody.GetType() !== Box2D.b2BodyType.b2_staticBody) return;
+			if (targetBody.GetType() !== Box2D.b2_staticBody) return;
 			if (!(targetFixture.GetFilterData().maskBits & game.editor.MASKBIT_CHARACTER)) return;
 			const worldManifold = new Box2D.b2WorldManifold();
 			contact.GetWorldManifold(worldManifold);

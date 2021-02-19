@@ -1,5 +1,4 @@
 import * as PrefabBuilder from './PrefabBuilder';
-import * as Box2D from '../../libs/Box2D';
 import {
 	game
 } from "../Game";
@@ -10,7 +9,7 @@ const spritePool = [];
 const activeParticles = [];
 
 const bodyDef = new Box2D.b2BodyDef();
-bodyDef.type = Box2D.b2BodyType.b2_dynamicBody;
+bodyDef.type = Box2D.b2_dynamicBody;
 bodyDef.angularDamping = 0.9;
 
 const fixDef = new Box2D.b2FixtureDef;

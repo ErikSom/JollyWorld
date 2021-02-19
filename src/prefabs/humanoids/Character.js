@@ -1,5 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D'
+
 import {
     game
 } from "../../Game";
@@ -102,7 +102,7 @@ export class Character extends Humanoid {
     addJoint(joint, bodyB){
         if(bodyB.isVehiclePart){
             this.vehicleJoints.push(joint);
-            if(!bodyB.mySprite.data.prefabInstanceName && bodyB.GetType() != Box2D.b2BodyType.b2_staticBody){
+            if(!bodyB.mySprite.data.prefabInstanceName && bodyB.GetType() != Box2D.b2_staticBody){
                 this.vehicleParts.push(bodyB);
             }
         }

@@ -2,7 +2,7 @@ import {
     B2dEditor
 } from "../B2dEditor";
 import * as ui from "../utils/ui";
-import * as Box2D from "../../../libs/Box2D";
+
 import {
     Settings
 } from "../../Settings";
@@ -1171,7 +1171,7 @@ export class triggerCore {
     }
     initContactListener() {
         var self = this;
-        this.contactListener = new Box2D.b2ContactListener();
+        this.contactListener = new Box2D.JSContactListener();
         this.contactListener.BeginContact = function (contact, target) {
             if (self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];

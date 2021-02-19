@@ -1,4 +1,4 @@
-import * as Box2D from "../../libs/Box2D";
+
 import {
     game
 } from "../Game";
@@ -23,7 +23,7 @@ export class basePrefab {
     }
     update() {}
     initContactListener() {
-        this.contactListener = new Box2D.b2ContactListener();
+        this.contactListener = new Box2D.JSContactListener();
         this.contactListener.BeginContact = function (contact, target) {}
         this.contactListener.EndContact = function (contact, target) {}
         this.contactListener.PreSolve = function (contact, oldManifold) {}

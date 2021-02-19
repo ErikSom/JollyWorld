@@ -2,7 +2,7 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
-import * as Box2D from "../../../libs/Box2D";
+
 import {
     Settings
 } from '../../Settings';
@@ -27,7 +27,7 @@ class Portal extends PrefabManager.basePrefab {
             if (!self.connectedPortal) return;
             const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             const target = (bodies[0] === self.lookupObject['portal']) ? bodies[1] : bodies[0];
-            if (target.GetType() == Box2D.b2BodyType.b2_staticBody) return;
+            if (target.GetType() == Box2D.b2_staticBody) return;
 
             contact.SetEnabled(false);
 
@@ -146,7 +146,7 @@ class Portal extends PrefabManager.basePrefab {
             var jointEdge = _target.GetJointList();
             while (jointEdge) {
                 let targetBody = (jointEdge.joint.GetBodyA() == _target) ? jointEdge.joint.GetBodyB() : jointEdge.joint.GetBodyA();
-                if (targetBody.GetType() == Box2D.b2BodyType.b2_staticBody) {
+                if (targetBody.GetType() == Box2D.b2_staticBody) {
                     targetBody = undefined;
                     self.jointsToDestroy.push(jointEdge.joint);
                 }

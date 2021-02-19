@@ -1,6 +1,6 @@
 
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
+;
 import {
     game
 } from "../../Game";

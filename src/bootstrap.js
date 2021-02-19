@@ -12,7 +12,7 @@ import "regenerator-runtime/runtime";
 
 import 'AssetList.js'
 import '../libs/pixi-heaven.js'
-import './b2Editor/B2dEditor.js'
+// import './b2Editor/B2dEditor.js'
 import 'Settings.js'
 import 'Game.js'
 

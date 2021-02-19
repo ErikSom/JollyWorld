@@ -1,8 +1,4 @@
-import {
-	b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape
-} from "../../libs/Box2D";
 
-import * as Box2D from "../../libs/Box2D";
 import * as PrefabManager from "../prefabs/PrefabManager";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
@@ -48,6 +44,9 @@ import { attachGraphicsAPIMixin } from './pixiHack'
 import { TiledMesh } from './classes/TiledMesh';
  
 const PIXIHeaven = self.PIXI.heaven;
+
+const { b2Vec2 } = Box2D;
+
 
 const _B2dEditor = function () {
 
@@ -5137,8 +5136,8 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.fixed = controller.targetValue;
-							if (body.mySprite.data.fixed) body.SetType(Box2D.b2BodyType.b2_staticBody);
-							else body.SetType(Box2D.b2BodyType.b2_dynamicBody);
+							if (body.mySprite.data.fixed) body.SetType(Box2D.b2_staticBody);
+							else body.SetType(Box2D.b2_dynamicBody);
 
 							var oldPosition = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
 							body.SetPosition(new b2Vec2(1000, 1000));
@@ -5148,7 +5147,7 @@ const _B2dEditor = function () {
 							this.setBodyCollision(body, body.mySprite.data.collision);
 
 							//awake fix
-							if (body.GetType() == Box2D.b2BodyType.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
+							if (body.GetType() == Box2D.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
 						}
 
 					} else if (controller.property == "awake") {
@@ -6591,9 +6590,9 @@ const _B2dEditor = function () {
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
-		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
-		else if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
-		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		if(obj.trigger) bd.type = Box2D.b2_kinematicBody;
+		else if (obj.fixed) bd.type = Box2D.b2_staticBody;
+		else bd.type = Box2D.b2_dynamicBody;
 		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
@@ -7021,9 +7020,9 @@ const _B2dEditor = function () {
 					if(prefabClass.isCharacter){
 						shouldDestroy = false;
 						if(joint.GetBodyA().mainCharacter){
-							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2_staticBody) shouldDestroy = true;
 						}else{
-							if((!joint.GetBodyA().mainCharacter && !joint.GetBodyA().isVehiclePart && !joint.GetBodyA().isHat) || joint.GetBodyA().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+							if((!joint.GetBodyA().mainCharacter && !joint.GetBodyA().isVehiclePart && !joint.GetBodyA().isHat) || joint.GetBodyA().GetType() == Box2D.b2_staticBody) shouldDestroy = true;
 						}
 					}
 
@@ -7562,7 +7561,7 @@ const _B2dEditor = function () {
 			//TODO: Set collision for all fixtures
 			const filterData = fixture.GetFilterData();
 
-			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+			if (body.GetType() == Box2D.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 			else filterData.categoryBits = this.MASKBIT_NORMAL;
 			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US; //this.MASKBIT_ONLY_US;
 			fixture.SetSensor(false);
@@ -7721,7 +7720,7 @@ const _B2dEditor = function () {
 			fixDef.restitution = Settings.defaultRestitution;
 
 			let bd = new b2BodyDef();
-			bd.type = Box2D.b2BodyType.b2_staticBody;
+			bd.type = Box2D.b2_staticBody;
 			bodyB = this.world.CreateBody(bd);
 			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
@@ -9081,7 +9080,7 @@ const _B2dEditor = function () {
         if(this.tracingTexture) this.tracingTexture.renderable = true;
 	}
 
-	this.B2dEditorContactListener = new Box2D.b2ContactListener();
+	this.B2dEditorContactListener = new Box2D.JSContactListener();
 	this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
 		if (self.contactCallBackListener) {
 			if (secondParam) self.contactCallBackListener[name](contact, secondParam);

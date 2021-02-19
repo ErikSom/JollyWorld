@@ -1,6 +1,6 @@
 import * as PrefabManager from '../PrefabManager'
 import * as PrefabBuilder from '../../utils/PrefabBuilder'
-import * as Box2D from '../../../libs/Box2D';
+;
 import * as EffectsComposer from '../../utils/EffectsComposer';
 import * as emitterManager from '../../utils/EmitterManager';
 import * as AudioManager from '../../utils/AudioManager';
@@ -35,9 +35,9 @@ class Cannon extends PrefabManager.basePrefab {
 		this.positionCannonEmitter();
 
 		if(this.prefabObject.settings.isFixed){
-            this.cannonBody.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.cannonBody.SetType(Box2D.b2_staticBody);
         }else{
-            this.cannonBody.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.cannonBody.SetType(Box2D.b2_dynamicBody);
 		}
 		this.lastCannonBalls = [];
 

@@ -3,7 +3,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
-import * as Box2D from "../../../libs/Box2D";
+
 
 
 class PortalGun extends PrefabManager.basePrefab {

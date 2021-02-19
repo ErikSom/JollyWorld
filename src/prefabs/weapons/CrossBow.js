@@ -1,6 +1,6 @@
 import * as PrefabManager from '../PrefabManager'
 import * as PrefabBuilder from '../../utils/PrefabBuilder'
-import * as Box2D from '../../../libs/Box2D';
+;
 
 import { drawCircle } from '../../b2Editor/utils/drawing';
 
@@ -30,9 +30,9 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.shouldShoot = false;
 
 		if(this.prefabObject.settings.isFixed){
-            this.crossbowBody.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.crossbowBody.SetType(Box2D.b2_staticBody);
         }else{
-            this.crossbowBody.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.crossbowBody.SetType(Box2D.b2_dynamicBody);
 		}
 
 		this.lastArrows = [];

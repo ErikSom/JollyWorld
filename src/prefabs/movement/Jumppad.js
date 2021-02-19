@@ -1,5 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
+;
 import {
     game
 } from "../../Game";
@@ -22,9 +22,9 @@ class Jumppad extends PrefabManager.basePrefab {
 
 
         if(this.prefabObject.settings.isFixed){
-            this.lookupObject.platform.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.lookupObject.platform.SetType(Box2D.b2_staticBody);
         }else{
-            this.lookupObject.platform.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.lookupObject.platform.SetType(Box2D.b2_dynamicBody);
         }
         console.log(this.lookupObject);
     }

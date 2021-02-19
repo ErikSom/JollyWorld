@@ -1,5 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
+;
 import {
     game
 } from "../../Game";
@@ -16,9 +16,9 @@ class Booster extends PrefabManager.basePrefab {
         this.velocityBoost = 0.5 / Settings.timeStep;
 
         if(this.prefabObject.settings.isFixed){
-            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.base.SetType(Box2D.b2_staticBody);
         }else{
-            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.base.SetType(Box2D.b2_dynamicBody);
         }
 
     }
@@ -39,7 +39,7 @@ class Booster extends PrefabManager.basePrefab {
             const velocityInc = new Box2D.b2Vec2(deltaVelocityInc*Math.cos(direction), deltaVelocityInc*Math.sin(direction));
 
             bodies.forEach(body=> {
-                if(body.GetType() !== Box2D.b2BodyType.b2_staticBody){
+                if(body.GetType() !== Box2D.b2_staticBody){
                     const velocity = body.GetLinearVelocity();
                     velocity.x += velocityInc.x;
                     velocity.y += velocityInc.y;

@@ -1,5 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
+;
 import {
     game
 } from "../../Game";
@@ -175,9 +175,9 @@ class Treadmill extends PrefabManager.basePrefab {
     init(){
         super.init();
         if(this.prefabObject.settings.isFixed){
-            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.base.SetType(Box2D.b2_staticBody);
         }else{
-            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.base.SetType(Box2D.b2_dynamicBody);
 		}
 		this.targetSpeedPTM = this.prefabObject.settings.wheelSpeed / Settings.PTM;
 	}
@@ -280,7 +280,7 @@ class Treadmill extends PrefabManager.basePrefab {
 
 			targetVelocities.forEach((targetVelocity, index) => {
 
-				if(otherBody.GetType() == Box2D.b2BodyType.b2_staticBody && !self.prefabObject.settings.isFixed) {
+				if(otherBody.GetType() == Box2D.b2_staticBody && !self.prefabObject.settings.isFixed) {
 
 
 					const direction = targetDirections[index];

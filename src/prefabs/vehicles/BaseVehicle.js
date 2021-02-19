@@ -1,5 +1,5 @@
 import * as PrefabManager from '../PrefabManager'
-import * as Box2D from '../../../libs/Box2D'
+
 import * as extramath from '../../b2Editor/utils/extramath';
 import {
     game

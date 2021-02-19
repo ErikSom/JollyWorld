@@ -1,5 +1,5 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
+;
 import * as EffectsComposer from '../../utils/EffectsComposer';
 
 import {
@@ -194,7 +194,7 @@ Explosive.RaycastCallbackExplosive = function () {
 Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture,	point, normal, fraction) {
 	const body = fixture.GetBody();
 	if(!this.target){
-		if(body.GetType() !== Box2D.b2BodyType.b2_staticBody) return -1;
+		if(body.GetType() !== Box2D.b2_staticBody) return -1;
 		if (fixture.IsSensor()) return -1;
 	}else{
 		if(body !== this.target) return -1;
