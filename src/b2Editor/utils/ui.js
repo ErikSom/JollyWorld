@@ -1792,7 +1792,7 @@ export const showHelp = function (i) {
     closeButton.addEventListener('click', () => {
         const userData = SaveManager.getLocalUserdata();
         userData.helpClosed[i] = true;
-        SaveManager.updateLocaluserData(userData);
+        SaveManager.updateLocalUserData(userData);
         removeShowHelp();
     });
 
@@ -2172,7 +2172,7 @@ export const endDrag = function (event, _window) {
     const userData = SaveManager.getLocalUserdata();
     userData.editorGuiPos.x = computedLeft;
     userData.editorGuiPos.y = computedTop;
-    SaveManager.updateLocaluserData(userData);
+    SaveManager.updateLocalUserData(userData);
 
     document.removeEventListener('mousemove', _window.mouseMoveFunction);
     setTimeout(() => {

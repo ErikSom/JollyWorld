@@ -35,6 +35,7 @@ import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
 import * as MobileController from './utils/MobileController';
 import * as AudioManager from './utils/AudioManager';
+import * as TutorialManager from './utils/TutorialManager';
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -191,6 +192,7 @@ function Game() {
 
         YouTubePlayer.preload();
         AudioManager.init();
+        TutorialManager.init();
 
     };
 
@@ -660,6 +662,7 @@ function Game() {
         this.stopAutoSave();
         this.levelStartTime = Date.now();
         MobileController.show();
+        TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -714,6 +717,7 @@ function Game() {
 
             setTimeout(()=>{
                 game.preloader.classList.add('hide');
+                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
             }, Settings.levelBuildDelayTime);
         }, Settings.levelBuildDelayTime);
     }

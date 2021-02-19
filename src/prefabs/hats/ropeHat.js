@@ -6,6 +6,7 @@ import * as Box2D from '../../../libs/Box2D'
 import * as PIXI from 'pixi.js';
 import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';
+import * as TutorialManager from '../../utils/TutorialManager';
 
 const ANIMATION_TRAVEL_SPEED = 4000 / Settings.PTM;
 
@@ -48,6 +49,10 @@ export class RopeHat extends Hat {
 		this.tilingSprites = [];
 		this.isRopeHat = true;
 		this.attach();
+	}
+	attach(){
+		TutorialManager.showTutorial(TutorialManager.TUTORIALS.ROPEHELMET);
+		super.attach();
 	}
 	activate() {
 		if (this.ropeFired){
@@ -300,6 +305,8 @@ export class RopeHat extends Hat {
 	}
 
 	updateRopeFixture() {
+		if(!this.ropeEnd) return;
+
 		this.clearTilingRope();
 
 		const tilingPoints = [];

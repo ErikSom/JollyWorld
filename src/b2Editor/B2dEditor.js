@@ -531,7 +531,7 @@ const _B2dEditor = function () {
 				ui.editorGUI.editData.resetHelp = ()=>{
 					const userData = SaveManager.getLocalUserdata();
 					userData.helpClosed = [];
-					SaveManager.updateLocaluserData(userData);
+					SaveManager.updateLocalUserData(userData);
 				}
 				targetFolder.add(ui.editorGUI.editData, "resetHelp").name('reset help');
 
