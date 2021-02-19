@@ -842,6 +842,7 @@ function Game() {
             confettiPosition.y += confettiOffset * Math.sin(offsetAngle);
 
             emitterManager.playOnceEmitter("confetti", object, confettiPosition, 0, ['#27cdcb', '#333333']);
+		    AudioManager.playSFX('checkpoint', 0.2, 1.0 + 0.4 * Math.random()-0.2, object.GetPosition());
 
             this.checkPointData = {
                 x:object.GetPosition().x,

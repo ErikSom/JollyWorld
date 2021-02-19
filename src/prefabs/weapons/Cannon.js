@@ -3,6 +3,7 @@ import * as PrefabBuilder from '../../utils/PrefabBuilder'
 import * as Box2D from '../../../libs/Box2D';
 import * as EffectsComposer from '../../utils/EffectsComposer';
 import * as emitterManager from '../../utils/EmitterManager';
+import * as AudioManager from '../../utils/AudioManager';
 
 import { drawCircle } from '../../b2Editor/utils/drawing';
 
@@ -112,7 +113,7 @@ class Cannon extends PrefabManager.basePrefab {
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
 
-		console.log(this.shootForce);
+		AudioManager.playSFX('cannon', 0.2, 1.0 + 0.4 * Math.random()-0.2, body.GetPosition());
 
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, body.GetPosition());
