@@ -2762,7 +2762,7 @@ const _B2dEditor = function () {
 				triggerObject.y = this.startSelectionPoint.y;
 				const triggerStartSizeWidth = this.editorTriggerObject.width / game.editor.PTM;
 				const triggerStartSizeHeight = this.editorTriggerObject.height / game.editor.PTM;
-				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = this.editorTriggerObject.radius / game.editor.PTM;
+				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = this.editorTriggerObject.radius;
 				else triggerObject.vertices = [{
 						x: -triggerStartSizeWidth,
 						y: -triggerStartSizeHeight
