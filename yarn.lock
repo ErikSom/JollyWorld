@@ -1393,11 +1393,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.0.tgz#692dfdecd6c97f5380c42dd50f19261f9f604deb"
   integrity sha512-0/41wHcurotvSOTHQUFkgL702c3pyWR1mToSrrX3pGPvGfpHTv3Ksx0M4UVuU5VJfjVb62Eyr1eKO1tWNUCg2Q==
 
-"@types/pixi.js@^4.8.8":
-  version "4.8.9"
-  resolved "https://registry.yarnpkg.com/@types/pixi.js/-/pixi.js-4.8.9.tgz#207d8719f655d84eaa28adcfb3c62e414450dc56"
-  integrity sha512-PCqd9/TaGOAqg73u8cQKH2sg8pdkRzU6VKu8lWrV+/+p5QiDRtrT8chY5yveVM8A/hWLNtvIQlWpojDomTSNQQ==
-
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"
@@ -4511,13 +4506,6 @@ pixi-particles@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/pixi-particles/-/pixi-particles-4.3.0.tgz#bd27f54c3af480e0cab5ea50573bb06200137a5e"
   integrity sha512-3G66vSFMbp+LnD3P6SYIxOo3f1X3yxkPbP1Tr2o+o18ZkkT6mePpCvsPUrM8s+xCW7oK816/wDYZXMtKzJ61CQ==
-
-pixi-spine@^1.5.13:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/pixi-spine/-/pixi-spine-1.6.1.tgz#c5417ff45a383104bf7ea52c09b1fc4ea1889692"
-  integrity sha512-PjnabwkUOzkdJIURiyW6fswXYZlLCarddFoS4HPGoTR93RBrYMSoTtt5EoQWm727Qw/qD9KxaJHYOvti/Hii9g==
-  dependencies:
-    "@types/pixi.js" "^4.8.8"
 
 pixi.js@6.0.0-rc.2:
   version "6.0.0-rc.2"

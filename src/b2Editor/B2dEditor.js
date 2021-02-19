@@ -2886,9 +2886,11 @@ const _B2dEditor = function () {
 						vertices.splice(this.verticeEditingSprite.highlightVerticeIndex+1, 0, vertice);
 						this.updateBodyFixtures(this.verticeEditingSprite.myBody);
 						this.updateBodyShapes(this.verticeEditingSprite.myBody);
+						this.verticeEditingSprite.selectedVertice = [this.verticeEditingSprite.highlightVerticeIndex+1];
 					}else{
 						vertices.splice(this.verticeEditingSprite.highlightVerticeIndex+1, 0, this.verticeEditingSprite.highlightVertice);
 						this.updateGraphicShapes(this.verticeEditingSprite);
+						this.verticeEditingSprite.selectedVertice = [this.verticeEditingSprite.highlightVerticeIndex+1];
 					}
 
 					delete this.verticeEditingSprite.highlightVertice;
@@ -3044,9 +3046,10 @@ const _B2dEditor = function () {
 								pB.y = vertice.y + pBL*Math.sin(pAA);
 							}
 
-							const nextVerticeIndex = this.verticeEditingSprite.selectedVerticePointIndex === this.verticeEditingSprite.data.vertices.length -1 ? 0 : this.verticeEditingSprite.selectedVerticePointIndex+1;
-							const nextVertice = this.verticeEditingSprite.data.vertices[nextVerticeIndex];
-							if(Math.abs(vertice.point1.x-vertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point1.y-vertice.y) < Settings.handleClosestDistance && Math.abs(vertice.point2.x-nextVertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point2.y-nextVertice.y) < Settings.handleClosestDistance){
+							const canClosePoint1 = !vertice.point1 || (Math.abs(vertice.point1.x-vertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point1.y-vertice.y) < Settings.handleClosestDistance);
+							const canClosePoint2 = !previousVertice.point2 || (Math.abs(previousVertice.point2.x-vertice.x) < Settings.handleClosestDistance && Math.abs(previousVertice.point2.y-vertice.y) < Settings.handleClosestDistance);
+
+							if(canClosePoint1  && canClosePoint2){
 								delete vertice.point1;
 								delete vertice.point2;
 								delete this.verticeEditingSprite.selectedVerticePoint;
@@ -3889,16 +3892,21 @@ const _B2dEditor = function () {
 							const vertice = this.verticeEditingSprite.data.vertices[mouseVertice];
 							const angle = Math.atan2(vertice.y, vertice.x) - Math.PI/2
 
+
+							let previousVertice = this.verticeEditingSprite.data.vertices[mouseVertice-1];
+							if(mouseVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
+
+							let nextVertice = this.verticeEditingSprite.data.vertices[mouseVertice+1];
+							if(mouseVertice === this.verticeEditingSprite.data.vertices.length-1) nextVertice = this.verticeEditingSprite.data.vertices[0];
+
+
 							const defaultDistance = Settings.handleClosestDistance*4;
 							if(!vertice.point1 || (Math.abs(vertice.x-vertice.point1.x < Settings.handleClosestDistance) && Math.abs(vertice.y-vertice.point1.y < Settings.handleClosestDistance))){
 								vertice.point1 = {x:vertice.x+defaultDistance*Math.cos(angle), y:vertice.y+defaultDistance*Math.sin(angle)}
 								if(!vertice.point2){
-									vertice.point2 = {x:vertice.x, y:vertice.y}
+									vertice.point2 = {x:nextVertice.x, y:nextVertice.y}
 								}
 							}
-
-							let previousVertice = this.verticeEditingSprite.data.vertices[mouseVertice-1];
-							if(mouseVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
 
 							if(!previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x < Settings.handleClosestDistance) && Math.abs(vertice.y-previousVertice.point2.y < Settings.handleClosestDistance))){
 								previousVertice.point2 = {x:vertice.x-defaultDistance*Math.cos(angle), y:vertice.y-defaultDistance*Math.sin(angle)}
@@ -5689,7 +5697,6 @@ const _B2dEditor = function () {
 					this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
 
 					if(vertice.point1){
-
 						if(Math.abs(vertice.x-vertice.point1.x) * this.cameraHolder.scale.x  > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) * this.cameraHolder.scale.x > Settings.handleClosestDistance){
 							const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
 							const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
@@ -5704,22 +5711,22 @@ const _B2dEditor = function () {
 
 							this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, Settings.verticeBoxSize/2);
 						}
+					}
 
-						let previousVertice = vertices[index-1];
-						if(index === 0) previousVertice = vertices[vertices.length-1];
-						if(previousVertice.point2){
-							if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
-								const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
-								const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
-								const vp2x = vp2l*Math.cos(vp2a);
-								const vp2y = vp2l*Math.sin(vp2a);
-								const verticeP2X = this.cameraHolder.x + (this.verticeEditingSprite.x + vp2x) * this.cameraHolder.scale.x;
-								const verticeP2Y = this.cameraHolder.y + (this.verticeEditingSprite.y + vp2y) * this.cameraHolder.scale.y;
+					let previousVertice = vertices[index-1];
+					if(index === 0) previousVertice = vertices[vertices.length-1];
+					if(previousVertice.point2){
+						if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
+							const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
+							const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
+							const vp2x = vp2l*Math.cos(vp2a);
+							const vp2y = vp2l*Math.sin(vp2a);
+							const verticeP2X = this.cameraHolder.x + (this.verticeEditingSprite.x + vp2x) * this.cameraHolder.scale.x;
+							const verticeP2Y = this.cameraHolder.y + (this.verticeEditingSprite.y + vp2y) * this.cameraHolder.scale.y;
 
-								this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
-								this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
-								this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
-							}
+							this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
+							this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
+							this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
 						}
 					}
 				}
