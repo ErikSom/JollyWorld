@@ -1,6 +1,7 @@
 
 import * as PrefabManager from '../PrefabManager';
 import * as Box2D from '../../../libs/Box2D';
+import { removeGraphicFromCells } from '../../utils/PIXICuller';
 import {
     game
 } from "../../Game";
@@ -30,6 +31,9 @@ class GravitationalField extends PrefabManager.basePrefab {
 		this.force = this.prefabObject.settings.force;
 		this.push = this.prefabObject.settings.push;
 		this.damping = this.prefabObject.settings.damping;
+
+		this.forceField.mySprite.ignoreCulling = true;
+		removeGraphicFromCells(this.forceField.mySprite);
 	}
 	setDisableGravity(disabled){
 		if(disabled) this.forceField.myTileSprite.tint = 0x00d8ff;
@@ -123,6 +127,9 @@ class GravitationalField extends PrefabManager.basePrefab {
 
 		this.setDisableGravity(this.prefabObject.settings.disableGravity);
 
+		body.mySprite.ignoreCulling = true;
+		removeGraphicFromCells(body.mySprite);
+
 	}
 	set(property, value) {
 		super.set(property, value);
@@ -146,6 +153,9 @@ class GravitationalField extends PrefabManager.basePrefab {
 			const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 			const otherBody = (bodies[0] == self.forceField) ? bodies[1] : bodies[0];
 
+			if(otherBody.GetType() !== Box2D.b2BodyType.b2_dynamicBody) return;
+			if(!otherBody.IsAwake()) return;
+
 			if(!otherBody.isAffectedByForcefield){
 				otherBody.oldLinearDamping = otherBody.GetLinearDamping();
 				otherBody.oldAngularDamping = otherBody.GetAngularDamping();
@@ -157,11 +167,14 @@ class GravitationalField extends PrefabManager.basePrefab {
         this.contactListener.EndContact = function (contact) {
 			const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 			const otherBody = (bodies[0] == self.forceField) ? bodies[1] : bodies[0];
-			if(self.disableGravity) otherBody.SetGravityScale(1.0);
-			otherBody.SetLinearDamping(otherBody.oldLinearDamping);
-			otherBody.SetAngularDamping(otherBody.oldAngularDamping);
-			self.fieldBodies = self.fieldBodies.filter(body => body !== otherBody);
-			otherBody.isAffectedByForcefield--;
+
+			if(otherBody.isAffectedByForcefield){
+				if(self.disableGravity) otherBody.SetGravityScale(1.0);
+				otherBody.SetLinearDamping(otherBody.oldLinearDamping);
+				otherBody.SetAngularDamping(otherBody.oldAngularDamping);
+				self.fieldBodies = self.fieldBodies.filter(body => body !== otherBody);
+				otherBody.isAffectedByForcefield--;
+			}
 		}
 	}
 
@@ -185,7 +198,6 @@ class GravitationalField extends PrefabManager.basePrefab {
 		const rotationSpeed = 2.0;
 		const rotationForce = this.push ? -rotationSpeed : rotationSpeed;
 		this.forceField.SetAngle(this.forceField.GetAngle()+rotationForce * game.editor.deltaTimeSeconds);
-
 	}
 }
 

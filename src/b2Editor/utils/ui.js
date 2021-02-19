@@ -1222,7 +1222,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
     }
 
 
-    if(!Settings.admin){
+    if(!Settings.userAdmin || window.location.search.indexOf('levelAdmin=true')<0){
         backendManager.getUserLevels().then((levels) => {
             buildLevelList(levels);
         })

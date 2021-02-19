@@ -24,7 +24,6 @@ class ForceField extends PrefabManager.basePrefab {
 		this.direction = this.prefabObject.settings.direction;
 		this.force = this.prefabObject.settings.force;
 		this.damping = this.prefabObject.settings.damping;
-
 	}
 	setDirection(direction){
 		this.forceField.myTileSprite.fixedTextureRotationOffset = (360-direction)*game.editor.DEG2RAD;
@@ -145,6 +144,9 @@ class ForceField extends PrefabManager.basePrefab {
 			const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 			const otherBody = (bodies[0] == self.forceField) ? bodies[1] : bodies[0];
 
+			if(otherBody.GetType() !== Box2D.b2BodyType.b2_dynamicBody) return;
+			if(!otherBody.IsAwake()) return;
+
 			if(!otherBody.isAffectedByForcefield){
 				otherBody.oldLinearDamping = otherBody.GetLinearDamping();
 				otherBody.oldAngularDamping = otherBody.GetAngularDamping();
@@ -156,23 +158,27 @@ class ForceField extends PrefabManager.basePrefab {
         this.contactListener.EndContact = function (contact) {
 			const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 			const otherBody = (bodies[0] == self.forceField) ? bodies[1] : bodies[0];
-			if(self.disableGravity) otherBody.SetGravityScale(1.0);
-			otherBody.SetLinearDamping(otherBody.oldLinearDamping);
-			otherBody.SetAngularDamping(otherBody.oldAngularDamping);
-			self.fieldBodies = self.fieldBodies.filter(body => body !== otherBody);
-			otherBody.isAffectedByForcefield--;
+
+			if(otherBody.isAffectedByForcefield){
+				if(self.disableGravity) otherBody.SetGravityScale(1.0);
+				otherBody.SetLinearDamping(otherBody.oldLinearDamping);
+				otherBody.SetAngularDamping(otherBody.oldAngularDamping);
+				self.fieldBodies = self.fieldBodies.filter(body => body !== otherBody);
+				otherBody.isAffectedByForcefield--;
+			}
 		}
 	}
 
     update() {
 		const direction = this.direction*game.editor.DEG2RAD;
+		const force = new Box2D.b2Vec2(this.force*Math.cos(direction), this.force*Math.sin(direction));
+
 		this.fieldBodies.forEach(body=>{
 
 			if(this.disableGravity) body.SetGravityScale(0.0);
 			body.SetLinearDamping(this.damping);
 			body.SetAngularDamping(this.damping);
 
-			const force = new Box2D.b2Vec2(this.force*Math.cos(direction), this.force*Math.sin(direction));
 			body.ApplyForceToCenter(force, true);
 		})
 	}

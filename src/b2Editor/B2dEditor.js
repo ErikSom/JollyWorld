@@ -9234,7 +9234,7 @@ const _B2dEditor = function () {
 				sprite.parallaxStartPosition = sprite.position.clone();
 				// disable cull for this sprite.
 				sprite.ignoreCulling = true;
-				removeGraphicFromCells(sprite); // <--- this line was missing
+				removeGraphicFromCells(sprite);
 				this.parallaxObject.push(sprite);
 			}
 

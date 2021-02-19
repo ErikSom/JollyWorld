@@ -11,6 +11,7 @@ export var Settings = {
     FPSLimitTarget:45,
     pixelRatio: 1,
     admin:(window.location.search.indexOf('editorAdmin=true')>=0),
+    userAdmin:false,
     targetFPS,
     timeStep:1000 / targetFPS,
     allowMouseMovement:true,
