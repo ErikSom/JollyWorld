@@ -377,7 +377,7 @@ export class RopeHat extends Hat {
 	}
 
 	clearRope(){
-		if(this.anchorTexture){
+		if(this.anchorTexture && this.anchorTexture.parent){
 			this.anchorTexture.parent.removeChild(this.anchorTexture);
 			this.clearTilingRope();
 		}
@@ -386,6 +386,7 @@ export class RopeHat extends Hat {
 	showRopeAnimation(){
 		this.clearTilingRope();
 
+		if(!this.anchorTexture.parent) return;
 
 		const point = this.currentAnimationPoint;
 		const previousPoint = this.ropeGoingOut ? this.targetAnimationPoint : this.getGunStartPosition();
