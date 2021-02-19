@@ -421,13 +421,15 @@ const _B2dEditor = function () {
 				targetFolder.open();
 
 				var shapes = ["Box", "Circle", "Triangle"];
-				ui.editorGUI.editData.shape = shapes[0];
+				ui.editorGUI.editData.shape = ui.editorGUI.editData.shape || shapes[0];
 				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
 				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
+				ui.editorGUI.domElement.style.minHeight = '220px';
+
 				break
 			case this.tool_POLYDRAWING:
 			case this.tool_PEN:
@@ -496,6 +498,8 @@ const _B2dEditor = function () {
 
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				targetFolder.add(ui.editorGUI.editData, "smoothen");
+				ui.editorGUI.domElement.style.minHeight = '200px';
+
 				break
 			case this.tool_TRIGGER:
 				ui.editorGUI.editData = this.editorTriggerObject;
@@ -504,8 +508,18 @@ const _B2dEditor = function () {
 				targetFolder.open();
 
 				var shapes = ["Circle", "Box"];
-				ui.editorGUI.editData.shape = shapes[0];
-				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
+				ui.editorGUI.editData.shape = ui.editorGUI.editData.shape || shapes[0];
+				targetFolder.add(ui.editorGUI.editData, "shape", shapes).onChange(()=>{
+					this.selectedTool = -1;
+					this.selectTool(this.tool_TRIGGER);
+				});
+
+				if(ui.editorGUI.editData.shape === shapes[0]){
+					targetFolder.add(ui.editorGUI.editData, "radius", 1.0, editorSettings.worldSize.width).step(0.1);
+				}else{
+					targetFolder.add(ui.editorGUI.editData, "width", 1.0, editorSettings.worldSize.width).step(0.1);
+					targetFolder.add(ui.editorGUI.editData, "height", 1.0, editorSettings.worldSize.width).step(0.1);
+				}
 
 				break
 			case this.tool_SETTINGS:
@@ -2484,6 +2498,9 @@ const _B2dEditor = function () {
 	}
 	this.editorTriggerObject = new function () {
 		this.shape = 0;
+		this.radius = 50;
+		this.width = 50;
+		this.height = 50;
 	}
 	this.cameraShotCallBack;
 	this.takeCameraShot = function () {
@@ -2737,39 +2754,30 @@ const _B2dEditor = function () {
 					y: this.mousePosWorld.y
 				});
 			} else if (this.selectedTool == this.tool_JOINTS) {
-				var joint = this.attachJointPlaceHolder();
-				if (joint) {
-					var jointData = JSON.parse(JSON.stringify(ui.editorGUI.editData))
-					delete jointData.bodyA_ID;
-					delete jointData.bodyB_ID;
-					delete jointData.x;
-					delete jointData.y;
-					delete jointData.rotation;
-					Object.assign(joint.data, jointData);
-					this.selectedTextures.push(joint);
-				}
+				this.attachJointPlaceHolder();
 			} else if (this.selectedTool == this.tool_TRIGGER) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 				var triggerObject = new this.triggerObject;
 				triggerObject.x = this.startSelectionPoint.x;
 				triggerObject.y = this.startSelectionPoint.y;
-				const triggerStartSize = 50 / game.editor.PTM;
-				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize * game.editor.PTM;
+				const triggerStartSizeWidth = this.editorTriggerObject.width / game.editor.PTM;
+				const triggerStartSizeHeight = this.editorTriggerObject.height / game.editor.PTM;
+				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = this.editorTriggerObject.radius / game.editor.PTM;
 				else triggerObject.vertices = [{
-						x: -triggerStartSize,
-						y: -triggerStartSize
+						x: -triggerStartSizeWidth,
+						y: -triggerStartSizeHeight
 					},
 					{
-						x: triggerStartSize,
-						y: -triggerStartSize
+						x: triggerStartSizeWidth,
+						y: -triggerStartSizeHeight
 					},
 					{
-						x: triggerStartSize,
-						y: triggerStartSize
+						x: triggerStartSizeWidth,
+						y: triggerStartSizeHeight
 					},
 					{
-						x: -triggerStartSize,
-						y: triggerStartSize
+						x: -triggerStartSizeWidth,
+						y: triggerStartSizeHeight
 					}
 				]
 				var _trigger = this.buildTriggerFromObj(triggerObject);
@@ -3964,6 +3972,7 @@ const _B2dEditor = function () {
 		}
 		this.mouseDown = false;
 		this.middleMouseDown = false;
+		this.startSelectionPoint = null;
 		this.doubleClickTime = Date.now()+Settings.doubleClickTime;
 
 	}
@@ -4051,8 +4060,7 @@ const _B2dEditor = function () {
 			this.selectTool(this.tool_SELECT);
 		} else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
-				const newJoint = this.attachJointPlaceHolder();
-				if(newJoint) this.selectedTextures.push(newJoint);
+				this.attachJointPlaceHolder();
 			} else this.selectTool(this.tool_JOINTS);
 		} else if (e.keyCode == 88) { // x
 			if (e.ctrlKey || e.metaKey) {
@@ -5282,6 +5290,19 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.repeatType = trigger.triggerRepeatType[controller.targetValue];
+						}
+						trigger.updateTriggerGUI();
+					}else if (controller.property == "delay") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.delay = controller.targetValue;
+						}
+					}else if (controller.property == "repeatDelay") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.repeatDelay = controller.targetValue;
 						}
 					} else if (controller.property == "enabled") {
 						//trigger
@@ -7633,6 +7654,14 @@ const _B2dEditor = function () {
 		} else {
 			tarObj = new this.jointObject;
 
+			var jointData = JSON.parse(JSON.stringify(ui.editorGUI.editData))
+			delete jointData.bodyA_ID;
+			delete jointData.bodyB_ID;
+			delete jointData.x;
+			delete jointData.y;
+			delete jointData.rotation;
+			Object.assign(tarObj, jointData);
+
 			if (this.selectedPhysicsBodies.length < 2) {
 				bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);
 			} else {
@@ -7653,7 +7682,6 @@ const _B2dEditor = function () {
 				tarObj.bodyB_ID = bodies[1].mySprite.parent.getChildIndex(bodies[1].mySprite);
 			}
 
-			tarObj.jointType = this.jointObject_TYPE_PIN;
 			tarObj.x = this.mousePosWorld.x * this.PTM;
 			tarObj.y = this.mousePosWorld.y * this.PTM;
 		}
