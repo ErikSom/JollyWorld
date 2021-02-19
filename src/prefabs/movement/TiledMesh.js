@@ -20,11 +20,9 @@ export class TiledMesh extends PIXI.SimpleMesh {
 		this.verticesClone = Float32Array.from(vertices);
 		this.dirty = 0;
 		this.fixedTextureRotationOffset = Math.PI / 2;
-		this.gradientMode = false;
 	}
 
-	updateMeshVerticeRotation (force = false) {
-		console.log("UPDATE!", this);
+	updateLocalUserData (force = false) {
 		const targetSprite = this.targetSprite;
 		const tex = this.tex;
 
@@ -60,7 +58,7 @@ export class TiledMesh extends PIXI.SimpleMesh {
 				maxY = Math.max(uvs[i + 1], maxY);
 			}
 
-			if (this.gradientMode) {
+			if (gradientMode) {
 				for (let i = 0; i < uvs.length; i += 2) {
 					uvs[i * 2 + 1] = (uvs[i * 2 + 1] - minY) / (maxY - minY);
 					uvs[i * 2 + 0] = (uvs[i * 2 + 0] - minX) / (maxX - minX);

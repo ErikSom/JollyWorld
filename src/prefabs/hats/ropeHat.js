@@ -431,6 +431,7 @@ export class RopeHat extends Hat {
 				if(!this.ropeAttached){
 					this.clearRope();
 					this.anchorTexture = null;
+					AudioManager.playSFX('rope-helmet', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
 				}else{
 					AudioManager.playSFX('rope-ground', 0.3, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
 				}

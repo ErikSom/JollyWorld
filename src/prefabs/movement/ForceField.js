@@ -28,7 +28,7 @@ class ForceField extends PrefabManager.basePrefab {
 	}
 	setDirection(direction){
 		this.forceField.myTileSprite.fixedTextureRotationOffset = (360-direction)*game.editor.DEG2RAD;
-		//this.forceField.myTileSprite.updateMeshVerticeRotation(true);
+		this.forceField.myTileSprite.updateMeshVerticeRotation(true);
 	}
 	setDisableGravity(disabled){
 		if(disabled) this.forceField.myTileSprite.tint = 0x00d8ff;

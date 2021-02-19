@@ -8210,7 +8210,7 @@ const _B2dEditor = function () {
 		if (tileTexture && tileTexture != "") {
 
 			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) {
-
+				target.myTileSprite.gradientMode = gradientMode;
 				// REDRAW OUTLINE
 				this.updateTileSpriteOutline(target, targetSprite.data);
 				targetGraphic.alpha = 0;
@@ -8274,6 +8274,7 @@ const _B2dEditor = function () {
 				mesh.targetSprite = targetSprite;
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
+				target.myTileSprite.gradientMode = gradientMode;
 
 				//console.log(mesh);
 				// SCROLLING TEXTURE
