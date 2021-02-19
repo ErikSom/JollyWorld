@@ -522,6 +522,10 @@ const _B2dEditor = function () {
 					game.app.renderer.backgroundColor = val;
 				});
 				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
+				targetFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
+					editorSettings.stats=val;
+					game.stats.dom.style.display = val ? 'block' : 'none';
+				});
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
@@ -2444,6 +2448,7 @@ const _B2dEditor = function () {
 	this.editorSettingsObject = new function () {
 		this.type = self.object_SETTINGS;
 		this.physicsDebug = (window.location.search.indexOf('physicsDebug=true')>=0);
+		this.stats = (window.location.search.indexOf('stats=true')>=0);
 		this.gravityX = 0;
 		this.gravityY = 10;
 		this.showPlayerHistory = false;

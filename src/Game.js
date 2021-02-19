@@ -118,6 +118,8 @@ function Game() {
         document.body.appendChild(this.stats.dom);
         this.stats.dom.style.left = '0px';
         this.stats.dom.style.top = '420px';
+        const showStats = (window.location.search.indexOf('stats=true')>=0)
+        this.stats.dom.style.display = showStats ? 'block' : 'none';
 
         this.canvas = document.getElementById("canvas");
 

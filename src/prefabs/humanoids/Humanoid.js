@@ -280,46 +280,48 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 let forceDamage = 0;
 
-                const charOtherBodyDiff = characterBody.GetPosition().Clone().SelfSub(otherBody.GetPosition());
-                const dotProductChar = characterBody.preSolveVelicity.Dot(charOtherBodyDiff)*-1;
+                if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
+                    const charOtherBodyDiff = characterBody.GetPosition().Clone().SelfSub(otherBody.GetPosition());
+                    const dotProductChar = characterBody.preSolveVelicity.Dot(charOtherBodyDiff)*-1;
 
-                const otherBodyCharDiff = otherBody.GetPosition().Clone().SelfSub(characterBody.GetPosition());
-                const dotProductOther = otherBody.preSolveVelicity.Dot(otherBodyCharDiff)*-1;
+                    const otherBodyCharDiff = otherBody.GetPosition().Clone().SelfSub(characterBody.GetPosition());
+                    const dotProductOther = otherBody.preSolveVelicity.Dot(otherBodyCharDiff)*-1;
 
-                if(dotProductChar>0){
-                    forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
-                }
-                if(dotProductOther>0){
-                    forceDamage += otherBody.preSolveVelicity.LengthSquared() * otherBody.GetMass();
-                }
+                    if(dotProductChar>0){
+                        forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
+                    }
+                    if(dotProductOther>0){
+                        forceDamage += otherBody.preSolveVelicity.LengthSquared() * otherBody.GetMass();
+                    }
 
-                if (forceDamage > Settings.bashForce / 2) {
-                    if (characterBody == self.lookupObject["head"]) {
-                        if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                            type: Humanoid.GORE_SNAP,
-                            target: "eye_right"
-                        });
-                        if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                            type: Humanoid.GORE_SNAP,
-                            target: "eye_left"
+                    if (forceDamage > Settings.bashForce / 2) {
+                        if (characterBody == self.lookupObject["head"]) {
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Humanoid.GORE_SNAP,
+                                target: "eye_right"
+                            });
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Humanoid.GORE_SNAP,
+                                target: "eye_left"
+                            });
+                        }
+                    }
+
+                    if (characterBody.mySprite.data.refName != "" && forceDamage > Settings.bashForce) {
+                        self.collisionUpdates.push({
+                            type: Humanoid.GORE_BASH,
+                            target: characterBody.mySprite.data.refName,
                         });
                     }
                 }
-
-                if (characterBody.mySprite.data.refName != "" && forceDamage > Settings.bashForce) {
-                    self.collisionUpdates.push({
-                        type: Humanoid.GORE_BASH,
-                        target: characterBody.mySprite.data.refName,
-                    });
-                }
             }
             characterBody.preSolveVelicityCounter--;
-            if(characterBody.preSolveVelicityCounter === 0){
+            if(characterBody.preSolveVelicityCounter <= 0){
                 delete characterBody.preSolveVelicity;
                 delete characterBody.preSolveVelicityCounter;
             }
             otherBody.preSolveVelicityCounter--;
-            if(otherBody.preSolveVelicityCounter === 0){
+            if(otherBody.preSolveVelicityCounter <= 0){
                 delete otherBody.preSolveVelicity;
                 delete otherBody.preSolveVelicityCounter;
             }
