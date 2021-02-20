@@ -7654,7 +7654,7 @@ const _B2dEditor = function () {
 		} else {
 			tarObj = new this.jointObject;
 
-			var jointData = JSON.parse(JSON.stringify(ui.editorGUI.editData))
+			const jointData = JSON.parse(JSON.stringify(this.editorJointObject));
 			delete jointData.bodyA_ID;
 			delete jointData.bodyB_ID;
 			delete jointData.x;
