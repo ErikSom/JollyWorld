@@ -300,16 +300,7 @@ function BackendManager() {
     }
     this.getUserLevels = async () => {
 		const userData = await this.getUserData();
-
-
-		const titleCounts = {};
-
-		userData.my_levels.forEach(level=> {
-			if(titleCounts[level.title] === undefined) titleCounts[level.title] = 0;
-			titleCounts[level.title]++;
-		})
-
-		const levels = userData.my_levels.filter(level=>(!level.published || titleCounts[level.title] === 1));
+		const levels = userData.my_levels.filter(level=>!level.published);
 		return levels;
     }
     this.getPublishedLevels = function (filter) {

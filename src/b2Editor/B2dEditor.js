@@ -3481,13 +3481,12 @@ const _B2dEditor = function () {
 
 			let nextIndex = null;
 			if(obj){
-				nextIndex = depthArray[depthArray.length-1].parent.getChildIndex(depthArray[depthArray.length-1])+1;
+				const lastItem = depthArray[depthArray.length-1];
+				nextIndex = Math.min(lastItem.parent.getChildIndex(lastItem)+1, lastItem.parent.children.length-1);
 				lowestIndex = depthArray[0].parent.getChildIndex(depthArray[0]);
-				if(nextIndex >= depthArray[0].parent.children.length) return;
 			}else{
-				nextIndex = depthArray[0].parent.getChildIndex(depthArray[0])-1;
+				nextIndex = Math.max(0, depthArray[0].parent.getChildIndex(depthArray[0])-1);
 				highestIndex = depthArray[depthArray.length-1].parent.getChildIndex(depthArray[depthArray.length-1]);
-				if(nextIndex < 0) return;
 			}
 
 			let nextChild = depthArray[0].parent.children[nextIndex];
@@ -3507,7 +3506,13 @@ const _B2dEditor = function () {
 				lowestIndex = nextIndex;
 			}
 
-			depthArray.forEach(child=> depthArray[0].parent.addChildAt(child, nextIndex));
+			depthArray.forEach(child=> {
+				if(obj) depthArray[0].parent.addChildAt(child, nextIndex);
+				if(child.myBody && child.myBody.myTexture){
+					depthArray[0].parent.addChildAt(child.myBody.myTexture, nextIndex);
+				}
+				if(!obj) depthArray[0].parent.addChildAt(child, nextIndex);
+			});
 
 			// post process joints to make sure they are always on top
 			for (i = 0; i < jointArray.length; i++) {
