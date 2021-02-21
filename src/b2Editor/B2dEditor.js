@@ -6283,6 +6283,8 @@ const _B2dEditor = function () {
 		this.updateSelection();
 	}
 	this.convertBodiesToGraphics = function (arr) {
+
+		debugger;
 		var body;
 		var graphic;
 		var graphicsCreated = [];
@@ -6317,7 +6319,7 @@ const _B2dEditor = function () {
 				graphicObject.colorFill = colorFill[j];
 				graphicObject.colorLine = colorLine[j];
 				graphicObject.lineWidth = lineWidth[j];
-				graphicObject.transparancy = transparancy[j + 1];
+				graphicObject.transparancy = transparancy[j];
 				graphicObject.radius = radius[j];
 
 				graphicObject.x += body.mySprite.data.x * this.PTM;
