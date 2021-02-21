@@ -8,7 +8,9 @@ import {
     game
 } from "../../Game";
 
-const buildTextures = {};
+const cachedTextures = {};
+const bypass = true;
+
 export const optimiseGroup = (container, graphicGroupData) => {
 
 	if(!graphicGroupData.hash) graphicGroupData.hash = MD5(graphicGroupData.graphicObjects);
@@ -16,29 +18,26 @@ export const optimiseGroup = (container, graphicGroupData) => {
 	console.log(graphicGroupData.hash);
 
 
-	if(buildTextures[graphicGroupData.hash]){
-		// we han image, use it
-	}else{
-
-		const newContainer = new PIXI.Container();
-		newContainer.data = graphicGroupData;
-		game.editor.updateGraphicGroupShapes(newContainer);
+	if(bypass){
 		game.editor.updateGraphicGroupShapes(container);
+	}else{
+		if(!cachedTextures[graphicGroupData.hash]){
+			const newContainer = new PIXI.Container();
+			newContainer.data = graphicGroupData;
+			game.editor.updateGraphicGroupShapes(newContainer);
+			const padding = 4;
+			const bounds = newContainer.getLocalBounds(null, true).clone();
+			newContainer.pivot.set(-bounds.width/2-padding/2, -bounds.height/2-padding/2);
+			const cachedBitmap = PIXI.RenderTexture.create({ width: bounds.width + padding, height: bounds.height + padding });
+			game.app.renderer.render(newContainer, cachedBitmap);
+			cachedTextures[graphicGroupData.hash] = cachedBitmap;
+		}
 
-		// check if we should make this
-		console.log(Settings.pixelRatio, 'RATIO');
-		const cachedBitmap = PIXI.RenderTexture.create({ width: newContainer.width * Settings.pixelRatio, height: newContainer.height * Settings.pixelRatio});
-        game.app.renderer.render(newContainer, cachedBitmap);
-	
-		const sprite = new PIXI.Sprite(cachedBitmap);
-		sprite.anchor.set(0.5, 0.5);
-
+		const sprite = new PIXI.Sprite(cachedTextures[graphicGroupData.hash]);
+		sprite.anchor.set(0.5,0.5);
 		container.addChild(sprite);
-
 	}
 
-
-	
 	game.editor.textures.addChild(container);
 
 	if (container.data.bodyID != undefined) {

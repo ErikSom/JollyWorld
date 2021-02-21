@@ -1228,7 +1228,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
         })
     }else{
         backendManager.getPublishedLevels({
-            by: 'Featured',
+            by: 'Newest',
             range: 'Anytime'
         }).then((levels) => {
             buildLevelList(levels);
