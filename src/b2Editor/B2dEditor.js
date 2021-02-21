@@ -46,6 +46,7 @@ import { hashName } from "../AssetList";
 
 import { attachGraphicsAPIMixin } from './pixiHack'
 import { TiledMesh } from './classes/TiledMesh';
+import { optimiseGroup } from "./utils/graphicGroupOptimiser";
  
 const PIXIHeaven = self.PIXI.heaven;
 
@@ -2307,6 +2308,7 @@ const _B2dEditor = function () {
 		this.repeatTeleportY = 0;
 		this.visible = true;
 		this.mirrored = false;
+		this.hash = '';
 	}
 	this.animationGroup = function () {
 		this.type = self.object_ANIMATIONGROUP;
@@ -6719,21 +6721,15 @@ const _B2dEditor = function () {
 
 	}
 	this.buildGraphicGroupFromObj = function (obj) {
-		var graphic = new PIXI.Container();
+		const graphic = new PIXI.Container();
 		graphic.data = obj;
 		graphic.x = obj.x;
 		graphic.y = obj.y;
 		graphic.rotation = obj.rotation;
 		graphic.scale.x = obj.mirrored ? -1 : 1;
 
+		optimiseGroup(graphic, obj);
 
-		this.updateGraphicGroupShapes(graphic);
-		this.textures.addChild(graphic);
-
-		if (graphic.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
-			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-		}
 
 		graphic.alpha = obj.transparancy;
 		graphic.visible = obj.visible;
@@ -8584,6 +8580,7 @@ const _B2dEditor = function () {
 			arr[15] = obj.repeatTeleportY;
 			arr[16] = obj.visible;
 			arr[17] = obj.mirrored;
+			arr[18] = obj.hash;
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -8732,6 +8729,7 @@ const _B2dEditor = function () {
 			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
 			obj.visible = typeof arr[16] === "boolean" ? arr[16] : true;
 			obj.mirrored = typeof arr[17] === "boolean" ? arr[17] : false;
+			obj.hash = typeof arr[18] === "string" ? arr[18] : '';
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];

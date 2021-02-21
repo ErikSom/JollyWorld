@@ -859,7 +859,7 @@ function Game() {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(Date.now(), this.levelStartTime);
-            const s = `${d.hh}:${d.mm}:${d.ss}:${d.ms}`;
+            const s = `${d.hh}:${d.mm}:${d.ss}.${d.ms}`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();
                 ui.showWinScreen(s);
