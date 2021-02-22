@@ -2,8 +2,8 @@ import { BaseObject } from './BaseObject';
 
 export class JointObject extends BaseObject {
 	static TYPE = 2;
+	type = 2;
 
-	type = 0;
 	bodyA_ID = -1;
 	bodyB_ID = -1;
 	jointType = 0;

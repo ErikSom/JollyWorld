@@ -3,6 +3,7 @@ import { BaseObject } from './BaseObject';
 
 export class BodyObject extends BaseObject {
 	static TYPE = 0;
+	type = 0;
 	//
 	colorFill = "#999999";
 	colorLine = "#000";

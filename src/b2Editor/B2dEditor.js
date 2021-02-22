@@ -711,38 +711,38 @@ const _B2dEditor = function () {
 		//Init edit data;
 		switch (currentCase) {
 			case case_JUST_BODIES:
-				ui.editorGUI.editData = new this.bodyObject;
+				ui.editorGUI.editData = new OBJ.BodyObject();
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
 				if (this.selectedPhysicsBodies.length > 1) targetFolder = ui.editorGUI.addFolder('multiple bodies');
 				else targetFolder = ui.editorGUI.addFolder('body');
 				break;
 			case case_JUST_TEXTURES:
 				dataJoint = _selectedTextures[0].data;
-				ui.editorGUI.editData = new this.textureObject;
+				ui.editorGUI.editData = new OBJ.TextureObject();
 				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple textures');
 				else targetFolder = ui.editorGUI.addFolder('texture');
 				break;
 			case case_JUST_GRAPHICS:
 				dataJoint = _selectedGraphics[0].data;
-				ui.editorGUI.editData = new this.graphicObject;
+				ui.editorGUI.editData = new OBJ.GraphicsObject();
 				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple graphics');
 				else targetFolder = ui.editorGUI.addFolder('graphic');
 				break;
 			case case_JUST_GRAPHICGROUPS:
 				dataJoint = _selectedGraphicGroups[0].data;
-				ui.editorGUI.editData = new this.graphicGroup;
+				ui.editorGUI.editData = new OBJ.GraphicsGroupObject();;
 				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple graphicGroups');
 				else targetFolder = ui.editorGUI.addFolder('graphicGroup');
 				break;
 			case case_JUST_ANIMATIONGROUPS:
 				dataJoint = _selectedAnimationGroups[0].data;
-				ui.editorGUI.editData = new this.animationGroup;
+				ui.editorGUI.editData = new OBJ.AnimationGroupObject();
 				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple animations');
 				else targetFolder = ui.editorGUI.addFolder('animation');
 				break;
 			case case_JUST_JOINTS:
 				var selectedType = ""
-				ui.editorGUI.editData = new this.jointObject;
+				ui.editorGUI.editData = new OBJ.JointObject();
 				if (_selectedPinJoints.length > 0) {
 					dataJoint = _selectedPinJoints[0].data;
 					selectedType = "Pin";
@@ -763,13 +763,13 @@ const _B2dEditor = function () {
 				else targetFolder = ui.editorGUI.addFolder(`${selectedType} joint`);
 				break;
 			case case_JUST_PREFABS:
-				ui.editorGUI.editData = new this.prefabObject;
+				ui.editorGUI.editData = new OBJ.PrefabObject();
 				dataJoint = this.activePrefabs[prefabKeys[0]];
 				if (prefabKeys.length > 1) targetFolder = ui.editorGUI.addFolder('multiple prefabs');
 				else targetFolder = ui.editorGUI.addFolder('prefab ' + dataJoint.prefabName);
 				break;
 			case case_MULTIPLE:
-				ui.editorGUI.editData = new this.multiObject;
+				ui.editorGUI.editData = new OBJ.MultiObject();
 
 				if (this.selectedTextures.length > 0) dataJoint = this.selectedTextures[0].data;
 				else if (this.selectedPhysicsBodies.length > 0) dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
@@ -778,14 +778,14 @@ const _B2dEditor = function () {
 				targetFolder = ui.editorGUI.addFolder('multiple objects');
 				break;
 			case case_JUST_TRIGGERS:
-				ui.editorGUI.editData = new this.triggerObject;
+				ui.editorGUI.editData = new OBJ.TriggerObject();
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
 				if (this.selectedPhysicsBodies.length > 1) targetFolder = ui.editorGUI.addFolder('multiple triggers');
 				else targetFolder = ui.editorGUI.addFolder('trigger');
 				break;
 			case case_JUST_TEXTS:
 				dataJoint = _selectedTexts[0].data;
-				ui.editorGUI.editData = new this.textObject;
+				ui.editorGUI.editData = new OBJ.TextObject();
 				if (this.selectedTextures.length > 1) targetFolder = ui.editorGUI.addFolder('multiple texts');
 				else targetFolder = ui.editorGUI.addFolder('text');
 				break;
@@ -2527,7 +2527,7 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_TEXT) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 
-				var textObject = new this.textObject;
+				var textObject = new OBJ.TextObject();
 				textObject.x = this.startSelectionPoint.x * this.PTM;
 				textObject.y = this.startSelectionPoint.y * this.PTM;
 				textObject.fontName = ui.editorGUI.editData.fontName;
@@ -6121,7 +6121,7 @@ const _B2dEditor = function () {
 					var instanceID = this.activePrefabs[data.prefabInstanceName].instanceID;
 					var key = prefabName + "_" + instanceID;
 					if (!this.activePrefabs[key]) {
-						var newPrefabObj = new this.prefabObject();
+						var newPrefabObj = new OBJ.PrefabObject();
 						newPrefabObj.prefabName = prefabName;
 						newPrefabObj.instanceID = instanceID;
 						createdPrefabObject = newPrefabObj;
@@ -8850,7 +8850,7 @@ const _B2dEditor = function () {
 		return point;
 	}
 	this.renderPrefabToImage = function (prefabName) {
-		var prefabObject = new this.prefabObject;
+		var prefabObject = new OBJ.PrefabObject();
 		prefabObject.prefabName = prefabName;
 		prefabObject.instanceID = -1;
 		var objects = this.buildPrefabFromObj(prefabObject);
