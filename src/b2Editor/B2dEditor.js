@@ -18,8 +18,7 @@ import * as DS from './utils/DecalSystem';
 import * as camera from './utils/camera';
 import * as PIXI from 'pixi.js';
 
-import { BodyObject } from './objects/BodyObject';
-import { TextureObject } from './objects/TextureObject';
+import * as OBJ from './objects'
 
 import {
 	lineIntersect,
@@ -2183,230 +2182,59 @@ const _B2dEditor = function () {
 		}
 	}
 
-	this.object_BODY = BodyObject.type;
-	this.object_TEXTURE = TextureObject.type;
-	this.object_JOINT = 2;
-	this.object_PREFAB = 4;
-	this.object_MULTIPLE = 5;
-	this.object_GRAPHIC = 6;
-	this.object_GRAPHICGROUP = 7;
-	this.object_TRIGGER = 8;
-	this.object_TEXT = 9;
-	this.object_SETTINGS = 10;
-	this.object_ANIMATIONGROUP = 11;
+	this.object_BODY = OBJ.BodyObject.TYPE;
+	this.object_TEXTURE = OBJ.TextureObject.TYPE;
+	this.object_JOINT = OBJ.JointObject.TYPE;
+	this.object_PREFAB = OBJ.PrefabObject.TYPE;
+	this.object_MULTIPLE = OBJ.MultiObject.TYPE;
+	this.object_GRAPHIC = OBJ.GraphicsObject.TYPE;
+	this.object_GRAPHICGROUP = OBJ.GraphicsGroupObject.TYPE;
+	this.object_TRIGGER = OBJ.TriggerObject.TYPE;
+	this.object_TEXT = OBJ.TextObject.TYPE;
+	this.object_SETTINGS = OBJ.EditorSettingsObject.TYPE;
+	this.object_ANIMATIONGROUP = OBJ.AnimationGroupObject.TYPE;
 
 	const self = this;
 
-	this.graphicGroup = function () {
-		this.type = self.object_GRAPHICGROUP;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		this.ID = 0;
-		this.graphicObjects = [];
-		this.bodyID = null;
-		this.texturePositionOffsetLength = null;
-		this.texturePositionOffsetAngle = null;
-		this.textureAngleOffset = null;
-		this.transparancy = 1;
-		this.tileTexture = '';
-		this.lockselection = false;
-		this.parallax = 0.0;
-		this.repeatTeleportX = 0;
-		this.repeatTeleportY = 0;
-		this.visible = true;
-		this.mirrored = false;
-	}
-	this.animationGroup = function () {
-		this.type = self.object_ANIMATIONGROUP;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		this.ID = 0;
-		this.graphicObjects = [];
-		this.bodyID = null;
-		this.texturePositionOffsetLength = null;
-		this.texturePositionOffsetAngle = null;
-		this.textureAngleOffset = null;
-		this.transparancy = 1;
-		this.tileTexture = '';
-		this.lockselection = false;
-		this.parallax = 0.0;
-		this.repeatTeleportX = 0;
-		this.repeatTeleportY = 0;
-		this.fps = 12;
-		this.playing = true;
-		this.visible = true;
-		this.mirrored = false;
-	}
-	this.graphicObject = function () {
-		this.type = self.object_GRAPHIC;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		this.ID = 0;
-		this.colorFill = "#999999";
-		this.colorLine = "#000";
-		this.transparancy = 1.0;
-		this.radius;
-		this.vertices = [{
-			x: 0,
-			y: 0
-		}, {
-			x: 0,
-			y: 0
-		}];
-		this.bodyID = null;
-		this.texturePositionOffsetLength = null;
-		this.texturePositionOffsetAngle = null;
-		this.textureAngleOffset = null;
-		this.tileTexture = "";
-		this.lockselection = false;
-		this.lineWidth = 1.0;
-		this.parallax = 0.0;
-		this.repeatTeleportX = 0;
-		this.repeatTeleportY = 0;
-		this.gradient = '';
-		this.visible = true;
-	}
-	this.jointObject = function () {
-		this.type = self.object_JOINT;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		//
-		this.bodyA_ID;
-		this.bodyB_ID;
-		this.jointType = 0;
-		this.collideConnected = false;
-		this.enableMotor = false;
-		this.maxMotorTorque = 1.0;
-		this.motorSpeed = 10.0;
-		this.enableLimit = false;
-		this.upperAngle = 0.0;
-		this.lowerAngle = 0.0;
-		this.dampingRatio = 0.0;
-		this.frequencyHz = 0.0;
-		this.upperLimit = 0.0;
-		this.lowerLimit = 0.0;
-		this.lockselection = false;
-		this.autoReferenceAngle = true;
-	}
-	this.triggerObject = function () {
-		this.type = self.object_TRIGGER;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		this.ID = 0;
-		//
-		this.vertices = [{
-			x: 0,
-			y: 0
-		}, {
-			x: 0,
-			y: 0
-		}];
-		this.radius;
-		this.enabled = true;
-		this.targetType = 0;
-		this.repeatType = 0;
-		this.triggerObjects = [];
-		this.triggerActions = [];
-		this.followPlayer = false;
-		this.worldActions = [];
-		this.triggerKey = 32;
-		this.followFirstTarget = false;
-		this.lockselection = false;
-	}
-	this.textObject = function () {
-		this.type = self.object_TEXT;
-		this.x = null;
-		this.y = null;
-		this.rotation = 0;
-		this.groups = "";
-		this.refName = "";
-		this.ID = 0;
-		this.text = 'Write your text here';
-		this.textColor = "#FFF";
-		this.transparancy = 1.0;
-		this.fontSize = 12;
-		this.fontName = "Arial";
-		this.textAlign = 'left';
-		this.lockselection = false;
-		this.parallax = 0.0;
-		this.repeatTeleportX = 0;
-		this.repeatTeleportY = 0;
-		this.visible = true;
-	}
-	this.multiObject = function () {
-		this.type = self.object_MULTIPLE;
-		this.x = 0;
-		this.y = 0;
-		this.rotation = 0;
-		this.groups = "";
-		this.lockselection = false;
-	}
 	this.lookupObject = function () {
 		this._bodies = [];
 		this._textures = [];
 		this._joints = [];
 	}
 
-	this.prefabObject = function () {
-		this.x = 0;
-		this.y = 0;
-		this.rotation = 0;
-		this.type = self.object_PREFAB;
-		this.settings;
-		this.prefabName;
-	}
-	this.editorSettingsObject = new function () {
-		this.type = self.object_SETTINGS;
-		this.physicsDebug = (window.location.search.indexOf('physicsDebug=true')>=0);
-		this.gravityX = 0;
-		this.gravityY = 10;
-		this.showPlayerHistory = false;
-		this.showCameraLines = true;
-		this.backgroundColor = 0xD4D4D4;
-		this.cameraZoom = Settings.defaultCameraZoom;
-	}
-	this.editorJointObject = new this.jointObject();
+	this.editorSettingsObject = new OBJ.EditorSettingsObject();
 
-	this.editorGraphicDrawingObject = new function () {
-		this.colorFill = "#999999";
-		this.colorLine = "#000";
-		this.lineWidth = 1;
-		this.transparancy = 1.0;
-		this.smoothen = true;
+	this.editorJointObject = new OBJ.JointObject();
+
+	this.editorGraphicDrawingObject = {
+		colorFill: "#999999",
+		colorLine: "#000",
+		lineWidth: 1,
+		transparancy: 1.0,
+		smoothen: true,
 	}
-	this.editorGeometryObject = new function () {
-		this.shape = 0;
-		this.colorFill = "#999999";
-		this.colorLine = "#000";
-		this.lineWidth = 1;
-		this.transparancy = 1.0;
-		this.isPhysicsObject = true;
+
+	this.editorGeometryObject = {
+		shape: 0,
+		colorFill: "#999999",
+		colorLine: "#000",
+		lineWidth: 1,
+		transparancy: 1.0,
+		isPhysicsObject: true,
 	}
-	this.editorTextObject = new function () {
-		this.textColor = "#999999";
-		this.transparancy = 1.0;
-		this.fontSize = 12;
-		this.fontName = "Arial";
-		this.textAlign = 'left';
+
+	this.editorTextObject = {
+		textColor: "#999999",
+		transparancy: 1.0,
+		fontSize: 12,
+		fontName: "Arial",
+		textAlign: "left",
 	}
-	this.editorTriggerObject = new function () {
-		this.shape = 0;
+
+	this.editorTriggerObject = {
+		shape: 0
 	}
+
 	this.cameraShotCallBack;
 	this.takeCameraShot = function () {
 		//first clean up screen
@@ -8524,164 +8352,14 @@ const _B2dEditor = function () {
 		}
 		return JSONStringify(arr);
 	}
+
 	this.parseArrObject = function (arr) {
-		var obj;
-		if (arr[0] == this.object_BODY) {
-			obj = new this.bodyObject();
-			obj.ID = arr[6];
-			obj.colorFill = arr[7];
-			obj.colorLine = arr[8];
-			obj.transparancy = arr[9];
-			obj.fixed = arr[10];
-			obj.awake = arr[11];
-			obj.vertices = arr[12];
-			obj.density = arr[13];
-			obj.collision = arr[14];
-			obj.radius = arr[15];
-			obj.tileTexture = arr[16] || "";
-			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
-			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
-			obj.instaKill = typeof arr[19] === "boolean" ? arr[19] : false;
-			obj.isVehiclePart = typeof arr[20] === "boolean" ? arr[20] : false;
-			obj.friction = arr[21] !== undefined ? arr[21] : Settings.defaultFriction;
-			obj.restitution = arr[22] !== undefined  ? arr[22] : Settings.defaultRestitution;
-		} else if (arr[0] == this.object_TEXTURE) {
-			obj = new this.textureObject();
-			obj.ID = arr[6];
-			obj.textureName = arr[7];
-			obj.bodyID = arr[8];
-			obj.texturePositionOffsetLength = arr[9];
-			obj.texturePositionOffsetAngle = arr[10];
-			obj.textureAngleOffset = arr[11];
-			obj.isCarvable = arr[12];
-			obj.tint = arr[13] !== undefined ? arr[13] : '#FFFFFF';
-			obj.scaleX = arr[14] || 1;
-			obj.scaleY = arr[15] || 1;
-			obj.transparancy = arr[16] !== undefined ? arr[16] : 1;
-			obj.parallax = arr[17] !== undefined ? arr[17] : 0;
-			obj.repeatTeleportX = arr[18] !== undefined ? arr[18] : 0;
-			obj.repeatTeleportY = arr[19] !== undefined ? arr[19] : 0;
-			obj.visible = typeof arr[20] === "boolean" ? arr[20] : true;
-		} else if (arr[0] == this.object_JOINT) {
-			obj = new this.jointObject();
-			obj.ID = arr[6];
-			obj.bodyA_ID = arr[7];
-			obj.bodyB_ID = arr[8];
-			obj.jointType = arr[9];
-			obj.collideConnected = arr[10];
-			obj.enableMotor = arr[11];
-			obj.maxMotorTorque = arr[12];
-			obj.motorSpeed = arr[13];
-			obj.enableLimit = arr[14];
-			obj.upperAngle = arr[15];
-			obj.lowerAngle = arr[16];
-			obj.dampingRatio = arr[17];
-			obj.frequencyHz = arr[18];
-			obj.upperLimit = arr[19] !== undefined ? arr[19] : obj.upperLimit;
-			obj.lowerLimit = arr[20] !== undefined ? arr[20] : obj.lowerLimit;
-			obj.autoReferenceAngle = arr[21] !== undefined ? arr[21] : false;
-		} else if (arr[0] == this.object_PREFAB) {
-			obj = new this.prefabObject();
-			obj.settings = arr[4];
-			obj.prefabName = arr[5];
-		} else if (arr[0] == this.object_GRAPHIC) {
-			obj = new this.graphicObject();
-			obj.ID = arr[6];
-			obj.colorFill = arr[7];
-			obj.colorLine = arr[8];
-			obj.transparancy = arr[9];
-			obj.radius = arr[10];
-			obj.vertices = arr[11];
-			obj.bodyID = arr[12];
-			obj.texturePositionOffsetLength = arr[13];
-			obj.texturePositionOffsetAngle = arr[14];
-			obj.textureAngleOffset = arr[15];
-			obj.tileTexture = arr[16] || "";
-			obj.lineWidth = arr[17] !== undefined ? arr[17] : 1.0;
-			obj.parallax = arr[18] !== undefined ? arr[18] : 0;
-			obj.repeatTeleportX = arr[19] !== undefined ? arr[19] : 0;
-			obj.repeatTeleportY = arr[20] !== undefined ? arr[20] : 0;
-			obj.gradient = arr[21] !== undefined ? (this.levelGradientsNames[arr[21]] || '') : '';
-			obj.visible = typeof arr[22] === "boolean" ? arr[22] : true;
-		} else if (arr[0] == this.object_GRAPHICGROUP) {
-			obj = new this.graphicGroup();
-			obj.ID = arr[6];
-			obj.graphicObjects = arr[7];
-			obj.bodyID = arr[8];
-			obj.texturePositionOffsetLength = arr[9];
-			obj.texturePositionOffsetAngle = arr[10];
-			obj.textureAngleOffset = arr[11];
-			obj.transparancy = arr[12] !== undefined ? arr[12] : 1;
-			obj.parallax = arr[13] !== undefined ? arr[13] : 0;
-			obj.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
-			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
-			obj.visible = typeof arr[16] === "boolean" ? arr[16] : true;
-			obj.mirrored = typeof arr[17] === "boolean" ? arr[17] : false;
-		} else if (arr[0] == this.object_TRIGGER) {
-			obj = new this.triggerObject();
-			obj.vertices = arr[6];
-			obj.radius = arr[7];
-			obj.enabled = typeof arr[8] === "boolean" ? arr[8] : true;
-			obj.targetType = arr[9];
-			obj.repeatType = arr[10];
-			obj.triggerObjects = arr[11];
-			obj.triggerActions = arr[12];
-			obj.followPlayer = typeof arr[13] === "boolean" ? arr[13] : false;
-			obj.worldActions = arr[14] || [];
-			obj.triggerKey = arr[15] || 32;
-			obj.followFirstTarget = typeof arr[16] === "boolean" ? arr[16] : false;
-		} else if (arr[0] == this.object_TEXT) {
-			obj = new this.textObject();
-			obj.ID = arr[6];
-			obj.text = arr[7];
-			obj.textColor = arr[8];
-			obj.transparancy = arr[9];
-			obj.fontSize = arr[10];
-			obj.fontName = arr[11];
-			obj.textAlign = arr[12];
-			obj.bodyID = arr[13];
-			obj.texturePositionOffsetLength = arr[14];
-			obj.texturePositionOffsetAngle = arr[15];
-			obj.textureAngleOffset = arr[16];
-			obj.parallax = arr[17] !== undefined ? arr[17] : 0;
-			obj.repeatTeleportX = arr[18] !== undefined ? arr[18] : 0;
-			obj.repeatTeleportY = arr[19] !== undefined ? arr[19] : 0;
-			obj.visible = typeof arr[20] === "boolean" ? arr[20] : true;
-		}else if (arr[0] == this.object_SETTINGS){
-			obj = this.editorSettingsObject;
-			obj.gravityX = arr[1];
-			obj.gravityY = arr[2];
-			obj.backgroundColor = arr[3] || 0xD4D4D4;
-			obj.cameraZoom = arr[4] !== undefined ? arr[4] : Settings.defaultCameraZoom;
-			return obj;
-		}else if (arr[0] == this.object_ANIMATIONGROUP) {
-			obj = new this.animationGroup();
-			obj.ID = arr[6];
-			obj.graphicObjects = arr[7];
-			obj.bodyID = arr[8];
-			obj.texturePositionOffsetLength = arr[9];
-			obj.texturePositionOffsetAngle = arr[10];
-			obj.textureAngleOffset = arr[11];
-			obj.transparancy = arr[12] !== undefined ? arr[12] : 1;
-			obj.parallax = arr[13] !== undefined ? arr[13] : 0;
-			obj.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
-			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
-			obj.fps = arr[16] !== undefined ? arr[16] : 12;
-			obj.playing = arr[17] !== undefined ? arr[17] : true;
-			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
-			obj.mirrored = typeof arr[19] === "boolean" ? arr[19] : false;
-		}
+		const obj = OBJ.parseFromArray(arr);
 
-		obj.type = arr[0];
-
-		//shared vars
-		obj.x = arr[1];
-		obj.y = arr[2];
-		obj.rotation = arr[3] || 0;
-
-		if (arr[0] != this.object_PREFAB) {
-			obj.groups = arr[4];
-			obj.refName = arr[5];
+		if (obj.type === OBJ.GraphicsObject.TYPE && 
+			obj.gradientId !== undefined) 
+		{
+			obj.gradient = this.levelGradientsNames[obj.gradientId] || ''
 		}
 
 		return obj;
