@@ -1306,9 +1306,11 @@ const _B2dEditor = function () {
 		if(prefabKeys.length === 0){
 			const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
 			const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
+			const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
 
 			if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
 				let canGroup = true;
+				if(hasTriggers) canGroup = false;
 				if(hasAnimation && hasOthers) canGroup = false; // we cant group when we have mixed animations and other graphics
 				if(canGroup && hasAnimation && this.selectedTextures.length > 1) canGroup = false; // we cant group multiple animations
 
@@ -1954,6 +1956,7 @@ const _B2dEditor = function () {
 				this.activePrefabs[prefabKeys[i]].y -= movY;
 			}
 
+			this.selectTool(this.tool_SELECT);
 			this.updateSelection();
 		}
 	}
@@ -7131,6 +7134,14 @@ const _B2dEditor = function () {
 	this.groupObjects = function () {
 		var combinedGraphics;
 		var combinedBodies;
+
+		const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
+		const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
+		const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
+
+		if(hasTriggers) return;
+		if(hasAnimation && hasOthers) return;
+
 		if (this.selectedPhysicsBodies.length > 0) {
 			combinedBodies = this.selectedPhysicsBodies[0];
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -7377,11 +7388,11 @@ const _B2dEditor = function () {
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
-			bodyObject.transparancy = transparancy[i + 1];
+			bodyObject.transparancy = transparancy[i];
 			bodyObject.density = density[i];
 			bodyObject.friction = friction[i];
 			bodyObject.restitution = restitution[i];
-			bodyObject.collision = collision[i];
+			bodyObject.collision = collision[i] || collision;
 			bodyObject.fixed = bodyGroup.mySprite.data.fixed;
 			bodyObject.awake = bodyGroup.mySprite.data.awake;
 
