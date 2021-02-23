@@ -8799,7 +8799,7 @@ const _B2dEditor = function () {
 		ui.destroyEditorGUI();
 		ui.show();
 
-        if(this.tracingTexture) this.tracingTexture.renderable = true;
+		if(this.tracingTexture) this.tracingTexture.renderable = true;
 	}
 
 	this.B2dEditorContactListener = new Box2D.b2ContactListener();
@@ -8830,7 +8830,7 @@ const _B2dEditor = function () {
 					else selectedSubPrefab.contactListener[name](contact);
 				}
 			}
-			if (body.mySprite && body.mySprite.data.type == self.object_TRIGGER) {
+			if (body.mySprite && body.mySprite.data.type == OBJ.TriggerObject.TYPE) {
 				if (secondParam) body.class.contactListener[name](contact, secondParam);
 				else body.class.contactListener[name](contact);
 			}
