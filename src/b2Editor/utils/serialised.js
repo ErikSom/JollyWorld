@@ -9,10 +9,7 @@ export const SCHEME = Symbol("Scheme for serialisation");
  */
 export function serialise(offset, mapper, def = void 0) {
 	return function (object, name) {
-		if (!object[SCHEME]) {
-			object[SCHEME] = [];
-		}
-
+		object[SCHEME] = [].concat(object[SCHEME] || []);
 		object[SCHEME].push({
 			name,
 			offset,
@@ -28,6 +25,8 @@ export function serialise(offset, mapper, def = void 0) {
  */
 
 export function serialisable(_class) {
+	//for prevent collision of prototype scheme, every time overwrite it
+	_class.prototype[SCHEME] = [].concat(_class.prototype[SCHEME] || []);
 	_class.prototype[IS_SERIALISABLE] = true;
 	_class.prototype.toArray = function () {
 		const data = [];
