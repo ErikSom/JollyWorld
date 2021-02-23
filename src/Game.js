@@ -40,10 +40,9 @@ import * as TutorialManager from './utils/TutorialManager';
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
 
-
-
 const nanoid = require('nanoid');
-const Stats = require('stats.js');
+
+import JSGraphy from '../../js-graphy/build/jsgraphy'; //TO DO PUBLISH NPM
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
@@ -113,13 +112,12 @@ function Game() {
     // PathRenderTarget();
 
     this.init = function () {
-        this.stats = new Stats();
-        this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+        this.stats = new JSGraphy()
         document.body.appendChild(this.stats.dom);
         this.stats.dom.style.left = '0px';
         this.stats.dom.style.top = '420px';
         const showStats = (window.location.search.indexOf('stats=true')>=0)
-        this.stats.dom.style.display = showStats ? 'block' : 'none';
+        this.stats.show(showStats);
 
         this.canvas = document.getElementById("canvas");
 
@@ -1222,6 +1220,7 @@ function Game() {
                 this.mouseJoint = null;
             }
         }
+        this.stats.begin('physics', '#ecbc4d');
         if (this.run) {
             this.inputUpdate();
             this.world.Step(Settings.physicsTimeStep, 4, 3);
@@ -1229,6 +1228,7 @@ function Game() {
             this.camera();
             PhysicsParticleEmitter.update();
         }
+        this.stats.end('physics');
         emitterManager.update();
 
         EffectsComposer.update();
@@ -1240,8 +1240,10 @@ function Game() {
             this.world.DrawDebugData();
         }
 
+        this.stats.begin('render', '#4399fa');
         if(!Settings.FPSLimiter || (Settings.FPSLimiter && !Settings.FPSFrameLimit)) this.app.render();
         Settings.FPSFrameLimit = !Settings.FPSFrameLimit;
+        this.stats.end('render');
 
         if(this.needScreenshot) this.screenShotData = game.app.renderer.plugins.extract.canvas();
         PIXICuller.update();
