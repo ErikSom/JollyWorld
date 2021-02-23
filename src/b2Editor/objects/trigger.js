@@ -14,6 +14,7 @@ import {
 } from "../../Game";
 import { editorSettings } from "../utils/editorSettings";
 import * as drawing from '../utils/drawing'
+import * as OBJ from './';
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -1275,7 +1276,14 @@ export const addTargetToTrigger = function (_trigger, target) {
         target = game.editor.textures.getChildAt(prefab.ID);
     }
 
-    if([B2dEditor.object_TEXTURE, B2dEditor.object_GRAPHIC, B2dEditor.object_GRAPHICGROUP, B2dEditor.object_ANIMATIONGROUP].includes(target.data.type) && target.myBody) target = target.myBody.mySprite;
+    if([
+        OBJ.TextureObject.TYPE,
+        OBJ.GraphicsObject.TYPE,
+        OBJ.GraphicsGroupObject.TYPE, 
+        OBJ.AnimationGroupObject.TYPE
+    ].includes(target.data.type) && target.myBody) {
+        target = target.myBody.mySprite;
+    }
 
     if (_trigger.mySprite == target) return;
     if (_trigger.mySprite.targets.includes(target)) return;
