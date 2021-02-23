@@ -4175,7 +4175,7 @@ const _B2dEditor = function () {
 					if(this.verticeEditingSprite.selectedVertice[0] === vertices.length) this.verticeEditingSprite.selectedVertice[0] = this.verticeEditingSprite.selectedVertice[0]-1;
 				}
 			}
-			this.deleteSelection();
+			if(this.selectedTool === this.tool_SELECT) this.deleteSelection();
 		} else if (e.keyCode == 16) { // shift
 			this.shiftDown = true;
 			e.preventDefault();
