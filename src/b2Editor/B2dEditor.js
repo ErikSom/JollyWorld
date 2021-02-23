@@ -8936,12 +8936,14 @@ const _B2dEditor = function () {
 						obj.bodyA_ID = vehicleCorrectLayer(obj.bodyA_ID+startChildIndex);
 					}
 
-					if(obj.bodyB_ID.length === 10){
-						const foundSprite = findObjectWithCopyHash(obj.bodyB_ID);
-						if(!foundSprite) destroyMe = true;
-						else obj.bodyB_ID = foundSprite.parent.getChildIndex(foundSprite);
-					}else{
-						obj.bodyB_ID = vehicleCorrectLayer(obj.bodyB_ID + startChildIndex);
+					if(obj.bodyB_ID != undefined){
+						if(obj.bodyB_ID.length === 10){
+							const foundSprite = findObjectWithCopyHash(obj.bodyB_ID);
+							if(!foundSprite) destroyMe = true;
+							else obj.bodyB_ID = foundSprite.parent.getChildIndex(foundSprite);
+						}else{
+							obj.bodyB_ID = vehicleCorrectLayer(obj.bodyB_ID + startChildIndex);
+						}
 					}
 
 					if(destroyMe){

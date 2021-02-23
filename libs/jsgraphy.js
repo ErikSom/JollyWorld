@@ -126,9 +126,13 @@
         COLOR_BG: '#333333'
       };
       this.config = Object.assign(defaultConfig, options);
-      this.currentTime = null;
-      this.prevTime = null;
-      this.lastMSAverage = null;
+      this.dom;
+      this.canvas;
+      this.ctx;
+      this.currentTime;
+      this.prevTime;
+      this.shown = true;
+      this.lastMSAverage;
       this.lastMemoryMeasure = -Number.POSITIVE_INFINITY;
       this.labels = {};
       this.labelColors = {
@@ -158,22 +162,22 @@
       key: "init",
       value: function init() {
         this.canvas = document.createElement('canvas');
+        this.canvas.setAttribute('data', 'js-graphy');
         this.canvas.width = this.config.baseCanvasWidth;
         this.canvas.height = this.config.baseCanvasHeight;
+        this.canvas.style.cssText = "position:fixed;left:0;top:0;width:".concat(this.config.baseCanvasWidth * this.config.scale, "px;height:").concat(this.config.baseCanvasHeight * this.config.scale, "px;background-color:").concat(this.config.COLOR_BG);
 
         if (this.config.autoPlace) {
           document.body.appendChild(this.canvas);
         }
 
         this.ctx = this.canvas.getContext('2d');
-        this.canvas.style.backgroundColor = this.config.COLOR_BG;
+        this.dom = this.canvas;
 
         if (performance && performance.memory) {
           this.labels['memory'] = [];
         }
 
-        this.canvas.style.width = "".concat(this.config.baseCanvasWidth * this.config.scale, "px");
-        this.canvas.style.height = "".concat(this.config.baseCanvasHeight * this.config.scale, "px");
         this.update = this.update.bind(this);
         this.update();
       }
@@ -207,6 +211,12 @@
         }
       }
     }, {
+      key: "show",
+      value: function show(visible) {
+        this.shown = visible;
+        this.dom.style.display = visible ? 'block' : 'none';
+      }
+    }, {
       key: "end",
       value: function end() {
         var label = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ms';
@@ -220,7 +230,7 @@
     }, {
       key: "update",
       value: function update() {
-        this.draw();
+        if (this.shown) this.draw(); // don't draw if we are not shown
 
         if (performance && performance.memory && performance.now() - this.lastMemoryMeasure > this.config.memoryUpdateInterval) {
           var memoryMeasures = this.labels['memory'];
