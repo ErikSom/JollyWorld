@@ -1732,8 +1732,6 @@ const _B2dEditor = function () {
 			}
 		}
 
-		const onlyTriggers = !copyArray.find(el=> el.data.type !== this.object_TRIGGER);
-
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
 		});
@@ -1820,27 +1818,23 @@ const _B2dEditor = function () {
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
 			if (data.type == this.object_TRIGGER) {
-				if(!onlyTriggers){
-					for (j = 0; j < data.triggerObjects.length; j++) {
-						var foundBody = -1;
-						let realIndex = 0;
-						for (k = 0; k < copyArray.length; k++) {
-							if (data.triggerObjects[j] == copyArray[k].ID) {
-								// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
-								foundBody = realIndex;
-								break;
-							}
-							realIndex += copyArray[k].childCount || 1;
+				for (j = 0; j < data.triggerObjects.length; j++) {
+					var foundBody = -1;
+					let realIndex = 0;
+					for (k = 0; k < copyArray.length; k++) {
+						if (data.triggerObjects[j] == copyArray[k].ID) {
+							// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
+							foundBody = realIndex;
+							break;
 						}
-						if (foundBody >= 0) data.triggerObjects[j] = foundBody;
-						else {
-							data.triggerObjects.splice(j, 1);
-							data.triggerActions.splice(j, 1);
-							j--;
-						}
+						realIndex += copyArray[k].childCount || 1;
 					}
-				}else{
-					data.groups = Settings.jsonDuplicateText+data.groups;
+					if (foundBody >= 0) data.triggerObjects[j] = foundBody;
+					else {
+						const attachedSprite = this.textures.getChildAt(data.triggerObjects[j]);
+						if(!attachedSprite.copyHash) attachedSprite.copyHash = nanoid(10);
+						data.triggerObjects[j] = attachedSprite.copyHash;
+					}
 				}
 			}
 		}
@@ -8934,7 +8928,6 @@ const _B2dEditor = function () {
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == this.object_JOINT) {
 					let destroyMe = false;
-					console.log(obj);
 					if(obj.bodyA_ID.length === 10){
 						const foundSprite = findObjectWithCopyHash(obj.bodyA_ID);
 						if(!foundSprite) destroyMe = true;
@@ -8997,13 +8990,18 @@ const _B2dEditor = function () {
 					worldObject = this.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
-					let duplicateJoint = false;
-					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
-						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
-						duplicateJoint = true;
-					}
-					if(!duplicateJoint){
-						for (var j = 0; j < obj.triggerObjects.length; j++) {
+
+					for (var j = 0; j < obj.triggerObjects.length; j++) {
+						if(obj.triggerObjects[j].length === 10){
+							const foundSprite = findObjectWithCopyHash(obj.triggerObjects[j]);
+							if(!foundSprite){
+								obj.triggerObjects.splice(j, 1);
+								obj.triggerActions.splice(j, 1);
+								j--;
+							}else{
+								obj.triggerObjects[j] = foundSprite.parent.getChildIndex(foundSprite);
+							}
+						}else{
 							obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
 						}
 					}
