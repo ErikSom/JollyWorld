@@ -6576,6 +6576,11 @@ const _B2dEditor = function () {
 
 		const body = this.buildBodyFromObj(bodyObject);
 
+		const fixture = body.GetFixtureList();
+		const filterData = fixture.GetFilterData();
+		filterData.groupIndex = this.triggerGroupIndex;
+		fixture.SetFilterData(filterData);
+
 		body.SetSleepingAllowed(false);
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
 
@@ -7627,6 +7632,7 @@ const _B2dEditor = function () {
 			} else if (collision == 4) {
 				filterData.categoryBits = this.MASKBIT_ONLY_US;
 				filterData.maskBits = this.MASKBIT_ONLY_US; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
+				filterData.groupIndex = this.triggerGroupIndex;
 			} else if (collision == 5) {
 				filterData.maskBits = this.MASKBIT_FIXED; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 6) {
@@ -9113,6 +9119,7 @@ const _B2dEditor = function () {
 		this.customPrefabMouseMove = null;
 		this.customDebugDraw = null;
 
+		this.triggerGroupIndex = 1;
 		this.uniqueCollisions = -3;
 		this.uniqueCollisionPrefabs = {};
 
