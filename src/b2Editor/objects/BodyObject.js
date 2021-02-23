@@ -1,29 +1,68 @@
 import { Settings } from '../../Settings';
 import { BaseObject } from './BaseObject';
+import { serialisable, serialise, MAP } from './../utils/serialised';
 
 export class BodyObject extends BaseObject {
 	static TYPE = 0;
 	type = 0;
-	//
+	
+	@serialise(6, MAP.NUMBER, 0)
+	ID = 0;
+
+	@serialise(7)
 	colorFill = "#999999";
+
+	@serialise(8)
 	colorLine = "#000";
+
+	@serialise(9)
 	transparancy = 1.0;
+
+	@serialise(10)
 	fixed = true;
+
+	@serialise(11)
 	awake = true;
+
+	@serialise(12)
 	vertices = [{x: 0,y: 0}, {x: 0,y: 0}];
-	density = 1;
+
+	@serialise(13)
+	density = 0;
+
+	@serialise(14)
 	collision = 0;
+
+	@serialise(15)
 	radius = 0;
-	tileTexture = "";
-	lockselection = false;
+
+	@serialise(16, MAP.STRING, '')
+	tileTexture = '';
+
+	@serialise(17, MAP.DEFINED, 1)
 	lineWidth = 1.0;
+
+	@serialise(18, MAP.BOOL, true)
 	visible = true;
+
+	@serialise(19, MAP.BOOL, false)
 	instaKill = false;
+
+	@serialise(20, MAP.BOOL, false)
 	isVehiclePart = false;
+
+	@serialise(21, MAP.DEFINED, () => Settings.defaultRestitution)
 	restitution = Settings.defaultRestitution;
+
+	@serialise(22, MAP.DEFINED, () => Settings.defaultFriction)
 	friction = Settings.defaultFriction;
 
+	lockselection = false;
+
 	initFromArray(arr) {
+		this.fromArray(arr);
+		return this;
+		//
 		super.initFromArray(arr);
 
 		this.ID = arr[6];
@@ -47,10 +86,4 @@ export class BodyObject extends BaseObject {
 		return this;
 	}
 
-	/**
-	 * @param {Array<any>} arr 
-	 */
-	static fromFlat(arr) {
-		return new BodyObject().initFromArray(arr);
-	}
 }
