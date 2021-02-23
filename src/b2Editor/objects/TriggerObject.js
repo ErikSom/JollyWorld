@@ -1,25 +1,55 @@
 import { BaseObject } from './BaseObject';
+import { serialisable, serialise, MAP } from './../utils/serialised';
 
+@serialisable
 export class TriggerObject extends BaseObject {
 	static TYPE = 8;
 	type = 8;
-	//
+	
+	@serialise(6)
 	vertices = [{ x: 0, y: 0 }, { x: 0, y: 0 }];
+
+	@serialise(7)
 	radius = 0;
+
+	@serialise(8, MAP.BOOL, true)
 	enabled = true;
+
+	@serialise(9)
 	targetType = 0;
+	
+	@serialise(10)
 	repeatType = 0;
+	
+	@serialise(11)
 	triggerObjects = [];
+	
+	@serialise(12)
 	triggerActions = [];
+	
+	@serialise(13, MAP.BOOL, false)
 	followPlayer = false;
+
+	@serialise(14, MAP.ARRAY, [])
 	worldActions = [];
+	
+	@serialise(15, MAP.NUMBER, 32)
 	triggerKey = 32;
+
+	@serialise(16, MAP.BOOL, false)
 	followFirstTarget = false;
-	lockselection = false;
+	
+	@serialise(17, MAP.NUMBER, 0)
 	delay = 0; 
+	
+	@serialise(18, MAP.NUMBER, 0)
 	repeatDelay = 0; 
 
+	lockselection = false;
+	
 	initFromArray(arr) {
+		return this.fromArray(arr);
+
 		super.initFromArray(arr);
 
 		this.vertices = arr[6];

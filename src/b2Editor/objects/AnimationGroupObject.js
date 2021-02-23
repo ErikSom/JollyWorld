@@ -1,26 +1,59 @@
 import { BaseObject } from './BaseObject';
 
+import { serialisable, serialise, MAP } from './../utils/serialised';
+
+@serialisable
 export class AnimationGroupObject extends BaseObject {
 	static TYPE = 11;
 	type = 11;
 
+	@serialise(6)
+	ID = 0;
+
+	@serialise(7)
 	graphicObjects = [];
+
+	@serialise(8)
 	bodyID = null;
+
+	@serialise(9)
 	texturePositionOffsetLength = null;
+
+	@serialise(10)
 	texturePositionOffsetAngle = null;
+
+	@serialise(11)
 	textureAngleOffset = null;
+
+	@serialise(12, MAP.DEFINED, 1)
 	transparancy = 1;
-	tileTexture = '';
-	lockselection = false;
+
+	@serialise(13, MAP.DEFINED, 0)
 	parallax = 0.0;
+
+	@serialise(14, MAP.DEFINED, 1)
 	repeatTeleportX = 0;
+
+	@serialise(15, MAP.DEFINED, 1)
 	repeatTeleportY = 0;
+
+	@serialise(16, MAP.DEFINED, 12)
 	fps = 12;
+
+	@serialise(17, MAP.DEFINED, true)
 	playing = true;
+
+	@serialise(18, MAP.BOOL, true)
 	visible = true;
+
+	@serialise(19, MAP.BOOL, false)
 	mirrored = false;
 
+	lockselection = false;
+
 	initFromArray(arr) {
+		return this.fromArray(arr);
+
 		super.initFromArray(arr);
 
 		this.ID = arr[6];

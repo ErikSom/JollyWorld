@@ -1,29 +1,68 @@
 import { BaseObject } from './BaseObject';
+import { serialisable, serialise, MAP } from './../utils/serialised';
 
+@serialisable
 export class GraphicsObject extends BaseObject {
 	static TYPE = 6;
 	type = 6;
 
+	@serialise(6)
+	ID = 0;
+
+	@serialise(7)
 	colorFill = "#999999";
+
+	@serialise(8)
 	colorLine = "#000";
+
+	@serialise(9)
 	transparancy = 1.0;
+
+	@serialise(10)
 	radius = 0;
+
+	@serialise(11)
 	vertices = [{x: 0, y: 0}, { x: 0, y: 0}];
+
+	@serialise(12)
 	bodyID = null;
+
+	@serialise(13)
 	texturePositionOffsetLength = null;
+
+	@serialise(14)
 	texturePositionOffsetAngle = null;
+
+	@serialise(15)
 	textureAngleOffset = null;
-	tileTexture = "";
-	lockselection = false;
+
+	@serialise(16, MAP.STRING, '')
+	tileTexture = '';
+
+	@serialise(17, MAP.DEFINED, 1.0)
 	lineWidth = 1.0;
+
+	@serialise(18, MAP.DEFINED, 0)
 	parallax = 0.0;
+
+	@serialise(19, MAP.DEFINED, 0)
 	repeatTeleportX = 0;
+
+	@serialise(20, MAP.DEFINED, 0)
 	repeatTeleportY = 0;
+
+	@serialise(21)
 	gradientId = void 0;
-	gradient = '';
+
+	@serialise(22, MAP.BOOL, true)
 	visible = true;
 
+	gradient = '';
+	lockselection = false;
+
 	initFromArray(arr) {
+		return this.fromArray(arr);
+
 		super.initFromArray(arr);
 
 		this.ID = arr[6];

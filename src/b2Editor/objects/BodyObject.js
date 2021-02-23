@@ -2,6 +2,7 @@ import { Settings } from '../../Settings';
 import { BaseObject } from './BaseObject';
 import { serialisable, serialise, MAP } from './../utils/serialised';
 
+@serialisable
 export class BodyObject extends BaseObject {
 	static TYPE = 0;
 	type = 0;
@@ -60,8 +61,8 @@ export class BodyObject extends BaseObject {
 	lockselection = false;
 
 	initFromArray(arr) {
-		this.fromArray(arr);
-		return this;
+		return this.fromArray(arr);
+
 		//
 		super.initFromArray(arr);
 

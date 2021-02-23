@@ -1,22 +1,61 @@
 import { BaseObject } from './BaseObject';
+import { serialisable, serialise, MAP } from './../utils/serialised';
 
+@serialisable
 export class TextObject extends BaseObject {
 	static TYPE = 9;
 	type = 9;
 
+	@serialise(6, MAP.NUMBER, 0)
+	ID = 0;
+
+	@serialise(7, MAP.STRING, '')
 	text = 'Write your text here';
+
+	@serialise(8)
 	textColor = "#FFF";
+
+	@serialise(9, MAP.NUMBER, 1)
 	transparancy = 1.0;
+
+	@serialise(10)
 	fontSize = 12;
+
+	@serialise(11)
 	fontName = "Arial";
+
+	@serialise(12)
 	textAlign = 'left';
-	lockselection = false;
+
+	@serialise(13)
+	bodyID = null;
+
+	@serialise(14)
+	texturePositionOffsetLength = null;
+
+	@serialise(15)
+	texturePositionOffsetAngle = null;
+
+	@serialise(16)
+	textureAngleOffset = null;
+
+	@serialise(17, MAP.DEFINED, 0)
 	parallax = 0.0;
+
+	@serialise(18, MAP.DEFINED, 0)
 	repeatTeleportX = 0;
+
+	@serialise(19, MAP.DEFINED, 0)
 	repeatTeleportY = 0;
+
+	@serialise(20, MAP.BOOL, true)
 	visible = true;
 
+	lockselection = false;
+
 	initFromArray(arr) {
+		return this.fromArray(arr);
+
 		super.initFromArray(arr);
 
 		this.ID = arr[6];
