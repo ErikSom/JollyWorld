@@ -182,7 +182,6 @@ const _B2dEditor = function () {
 			.declareLegacy('textureObject', OBJ.TextureObject, 'OBJ.TextureObject')
 			.declareLegacy('textObject', OBJ.TextObject, 'OBJ.TextObject')
 			.declareLegacy('graphicGroup', OBJ.GraphicsGroupObject, 'OBJ.GraphicsGroupObject')
-			.declareLegacy('graphicGroup', OBJ.GraphicsGroupObject, 'OBJ.GraphicsGroupObject')
 
 			.declareLegacy('object_BODY', OBJ.BodyObject.TYPE, 'OBJ.BodyObject.TYPE')
 			.declareLegacy('object_TEXTURE', OBJ.TextureObject.TYPE, 'OBJ.TextureObject.TYPE')
