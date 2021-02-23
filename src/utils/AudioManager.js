@@ -46,6 +46,8 @@ export const init = ()=>{
 }
 
 const determineVolumeAndPan = pos => {
+	if(!pos) return {vl:1.0, pan:0};
+
 	const effectMargin = 300;
 	let pixiPoint = game.editor.getPIXIPointFromWorldPoint(pos);
 	pixiPoint = game.editor.container.toGlobal(pixiPoint);

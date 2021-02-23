@@ -208,7 +208,6 @@ function UIManager() {
         mainMenu.style.display = "none";
     }
 
-    this.goingToShowGameOver = false;
     this.showGameOver = function () {
         if (!gameOver) {
             gameOver = document.createElement('div');
@@ -245,7 +244,6 @@ function UIManager() {
             button = document.createElement('div');
             button.setAttribute('class', 'headerButton restart buttonOverlay dark');
             button.innerHTML = "RESET";
-            button.style.marginTop = '5px';
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
@@ -255,26 +253,29 @@ function UIManager() {
             button = document.createElement('div');
             button.setAttribute('class', 'headerButton exit buttonOverlay dark');
             button.innerHTML = "EXIT";
-            button.style.marginTop = '5px';
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
-                game.openMainMenu();
+                if(game.gameState === game.GAMESTATE_EDITOR){
+                    game.stopTestingWorld();
+                }else{
+                    game.openMainMenu();
+                }
             });
         }
+        if(gameOver && game.run) gameOver.style.display = 'flex';
         setTimeout(()=>{
-            if(gameOver){
+            if(gameOver && game.run){
                 gameOver.style.opacity = 1;
-                gameOver.style.display = 'block';
+                AudioManager.playSFX('lose', 0.3, 1.0);
             }
         },
         Settings.gameOverDelay);
     }
     this.hideGameOverMenu = function () {
-        if (gameOver && gameOver.style.display == 'block') {
+        if (gameOver && gameOver.style.display == 'flex') {
             gameOver.style.display = 'none';
             gameOver.style.opacity = 0;
-            this.goingToShowGameOver = false;
         }
     }
     this.showLevelLoader = function () {
@@ -1147,6 +1148,8 @@ function UIManager() {
         winScreen.domElement.style.left = '50%';
         winScreen.domElement.style.top = '65%';
         winScreen.domElement.style.transform = 'translate(-50%, -50%)';
+
+        AudioManager.playSFX('win', 0.5, 1.0);
 
     }
 

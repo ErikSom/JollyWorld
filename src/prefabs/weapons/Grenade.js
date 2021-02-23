@@ -13,6 +13,7 @@ class Grenade extends Explosive {
     init() {
 		this.setActive(this.prefabObject.settings.active);
         super.init();
+		this.impactForExplosion = 3;
 	}
 	explode(){
 		if(this.exploded) return;

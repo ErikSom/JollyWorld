@@ -19,7 +19,7 @@ class ExplosiveBarrel extends Explosive {
 		this.explosiveRadius = 600;
 		this.activateOn = Explosive.activateOnTypes.impact;
 		this.explodeDelay = 0;
-		this.impactForExplosion = 270;
+		this.impactForExplosion = 10000;
 	}
 	explode(){
 		if(this.exploded) return;

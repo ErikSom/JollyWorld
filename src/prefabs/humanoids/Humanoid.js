@@ -59,10 +59,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
 
 
-        game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
-        game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
-
-        console.log(this.collisionUpdates);
+        // game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
+        // game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
 
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
@@ -258,9 +256,26 @@ export class Humanoid extends PrefabManager.basePrefab {
                 const minForceForDamage = 10.0;
                 const forceToDamageDivider = 50.0;
 
-                if(force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
+                const bodyA = contact.GetFixtureA().GetBody();
+                const bodyB = contact.GetFixtureB().GetBody();
+                const velocityA = bodyA.GetLinearVelocity().Length();
+                const velocityB = bodyB.GetLinearVelocity().Length();
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().y, bodyA.GetLinearVelocity().x) : Math.atan2(bodyB.GetLinearVelocity().y, bodyB.GetLinearVelocity().x);
+                impactAngle *= game.editor.RAD2DEG + 180;
+                const velocitySum = velocityA + velocityB;
+
+
+                let allowSound = true;
+                if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+
+                if(velocitySum > 10 && force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
                     self.dealDamage(force/forceToDamageDivider);
-                    AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.3, 1.0 + 0.4 * Math.random()-0.2, characterBody.GetPosition());
+
+                    if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                    bodyA.recentlyImpactedBodies.push(bodyB);
+
+                    if(allowSound) AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.3, 1.0 + 0.4 * Math.random()-0.2, characterBody.GetPosition());
                 }
 
                 let forceDamage = 0;

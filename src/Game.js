@@ -679,37 +679,39 @@ function Game() {
             }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
                 this.initLevel(this.currentLevelData);
                 this.playWorld(!doCheckpoint);
-
-                if(doCheckpoint && checkPointData){
-                    const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
-                    const allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints);
-
-                    const positionDiff = {x:checkPointData.x*this.editor.PTM-this.playerPrefabObject.x, y:checkPointData.y*this.editor.PTM-this.playerPrefabObject.y, }
-
-                    const perpendularAngle = checkPointData.rotation - Math.PI/2;
-                    const checkPointOffset = 200;
-                    positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
-                    positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
-
-                    if(this.playerPrefabObject.class.character.hat){
-                        const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
-                        const position = hatBody.GetPosition();
-                        position.x += positionDiff.x / Settings.PTM;
-                        position.y += positionDiff.y / Settings.PTM;
-                        hatBody.SetPosition(position);
-                    }
-
-                    this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
-                    this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
-
-                    prefabLookupObject._bodies.forEach(body =>{
-                        this.editor.updateBodyPosition(body);
-                    });
-                    this.checkPointData = checkPointData;
-
-                    if(this.checkPointData.flipped) this.character.flip();
-                }
             }
+
+            if(doCheckpoint && checkPointData){
+                const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
+                const allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints);
+
+                const positionDiff = {x:checkPointData.x*this.editor.PTM-this.playerPrefabObject.x, y:checkPointData.y*this.editor.PTM-this.playerPrefabObject.y, }
+
+                const perpendularAngle = checkPointData.rotation - Math.PI/2;
+                const checkPointOffset = 200;
+                positionDiff.x += checkPointOffset*Math.cos(perpendularAngle);
+                positionDiff.y += checkPointOffset*Math.sin(perpendularAngle);
+
+                if(this.playerPrefabObject.class.character.hat){
+                    const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
+                    const position = hatBody.GetPosition();
+                    position.x += positionDiff.x / Settings.PTM;
+                    position.y += positionDiff.y / Settings.PTM;
+                    hatBody.SetPosition(position);
+                }
+
+                this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
+                this.editor.applyToObjects(this.editor.TRANSFORM_ROTATE, checkPointData.rotation, allObjects);
+
+                prefabLookupObject._bodies.forEach(body =>{
+                    this.editor.updateBodyPosition(body);
+                });
+                this.checkPointData = checkPointData;
+
+                if(this.checkPointData.flipped) this.character.flip();
+            }
+
+
             setTimeout(()=>{
                 game.preloader.classList.add('hide');
             }, Settings.levelBuildDelayTime);
@@ -847,7 +849,7 @@ function Game() {
         }
     }
     this.win = function () {
-        if (!this.levelWon) {
+        if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(Date.now(), this.levelStartTime);
             const s = `${d.hh}:${d.mm}:${d.ss}:${d.ms}`;
@@ -862,7 +864,8 @@ function Game() {
         }
     }
     this.lose = function () {
-        if (!this.gameOver && !this.levelWon && this.gameState === this.GAMESTATE_NORMALPLAY) {
+        if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
+            ui.show();
             ui.showGameOver();
             MobileController.hide();
             this.gameOver = true;
@@ -1028,7 +1031,20 @@ function Game() {
         if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
         else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
     }
-    this.gameContactListener.EndContact = function (contact) {}
+    this.gameContactListener.EndContact = function (contact) {
+        const bodyA = contact.GetFixtureA().GetBody();
+        const bodyB = contact.GetFixtureB().GetBody();
+
+        if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)){
+            if(bodyA.recentlyImpactedBodies.length === 1) delete bodyA.recentlyImpactedBodies;
+            else bodyA.recentlyImpactedBodies = bodyA.recentlyImpactedBodies.filter(body=>body != bodyB);
+        }
+        if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)){
+            if(bodyB.recentlyImpactedBodies.length === 1) delete bodyB.recentlyImpactedBodies;
+            else bodyB.recentlyImpactedBodies = bodyB.recentlyImpactedBodies.filter(body=>body != bodyA);
+        }
+    }
+
     this.gameContactListener.PreSolve = function (contact, oldManifold) {
         const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         let body;
@@ -1105,11 +1121,20 @@ function Game() {
                     for (let j = 0; j < impulse.normalImpulses.length; j++)
                         if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
 
+                    const bodyA = contact.GetFixtureA().GetBody();
+                    const bodyB = contact.GetFixtureB().GetBody();
+
                     const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
                     const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
                     let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
                     impactAngle *= game.editor.RAD2DEG + 180;
                     const velocitySum = velocityA + velocityB;
+
+                    let allowSound = true;
+                    if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                    if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+
+
                     if (velocitySum > 10.0) {
                         const worldManifold = new Box2D.b2WorldManifold();
                         contact.GetWorldManifold(worldManifold);
@@ -1121,7 +1146,10 @@ function Game() {
 
                         emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 
-                        AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.1, 1.4 + 0.4 * Math.random()-0.2, body.GetPosition());
+                        if(allowSound) AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.1, 1.4 + 0.4 * Math.random()-0.2, body.GetPosition());
+
+                        if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                        bodyA.recentlyImpactedBodies.push(bodyB);
 
                         const bodyClass = self.editor.retrieveSubClassFromBody(body);
                         if(bodyClass && bodyClass.dealDamage && !body.noDamage){
@@ -1129,6 +1157,36 @@ function Game() {
                             bodyClass.dealDamage(velocitySum/slidingDamageScalar);
                         }
                     }
+                }
+            }else{
+                let force = 0;
+                for (let j = 0; j < impulse.normalImpulses.length; j++)
+                    if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+                const bodyA = contact.GetFixtureA().GetBody();
+                const bodyB = contact.GetFixtureB().GetBody();
+
+                const velocityA = bodyA.GetLinearVelocity().Length();
+                const velocityB = bodyB.GetLinearVelocity().Length();
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().y, bodyA.GetLinearVelocity().x) : Math.atan2(bodyB.GetLinearVelocity().y, bodyB.GetLinearVelocity().x);
+                impactAngle *= game.editor.RAD2DEG + 180;
+
+                const fastestBody = velocityA > velocityB ? bodyA : bodyB;
+
+                const velocitySum = velocityA + velocityB;
+
+                let allowSound = true;
+                if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+
+                if (velocitySum > 10.0 && force > 10 * fastestBody.GetMass() && allowSound) {
+                    let targetSounds = ['impact-small1', 'impact-small2'];
+
+                    if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                    bodyA.recentlyImpactedBodies.push(bodyB);
+
+                    if(fastestBody.GetMass() > 1000) targetSounds = ['impact-heavy1', 'impact-heavy2'];
+                    if(fastestBody.GetMass() > 100) targetSounds = ['impact-medium1', 'impact-medium2'];
+                    AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, fastestBody.GetPosition());
                 }
             }
         }

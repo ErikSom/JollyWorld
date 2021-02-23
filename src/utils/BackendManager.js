@@ -300,7 +300,7 @@ function BackendManager() {
     }
     this.getUserLevels = async () => {
 		const userData = await this.getUserData();
-		const levels = userData.my_levels;
+		const levels = userData.my_levels.filter(level=>!level.published);
 		return levels;
     }
     this.getPublishedLevels = function (filter) {
