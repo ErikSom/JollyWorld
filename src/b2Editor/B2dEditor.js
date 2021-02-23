@@ -17,8 +17,8 @@ import * as AudioManager from '../utils/AudioManager';
 import * as DS from './utils/DecalSystem';
 import * as camera from './utils/camera';
 import * as PIXI from 'pixi.js';
-
-import * as OBJ from './objects'
+import * as OBJ from './objects';
+import { ObjectFabric } from './fabric/ObjectFabric';
 
 import {
 	lineIntersect,
@@ -146,6 +146,10 @@ const _B2dEditor = function () {
 	this.customDebugDraw = null;
 
 	this.cameraHolder;
+	/**
+	 * @type {ObjectFabric}
+	 */
+	this.fabric;
 
 	Object.defineProperty(this, 'cameraHolder', {
 		get: () => {
@@ -218,6 +222,8 @@ const _B2dEditor = function () {
 
 		ui.initGui();
 		this.selectTool(this.tool_SELECT);
+
+		this.fabric = new ObjectFabric(this, game);
 	}
 
 	this.prefabListGuiState = {};
@@ -2505,7 +2511,7 @@ const _B2dEditor = function () {
 									bodyObject.colorLine = [ui.editorGUI.editData.colorLine];
 									bodyObject.lineWidth = [ui.editorGUI.editData.lineWidth];
 									bodyObject.transparancy = [ui.editorGUI.editData.transparancy];
-									this.buildBodyFromObj(bodyObject);
+									this.fabric.buildBodyFromObj(bodyObject);
 								}
 							}else{
 								const graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
@@ -2514,7 +2520,7 @@ const _B2dEditor = function () {
 									graphicObject.colorLine = ui.editorGUI.editData.colorLine;
 									graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
 									graphicObject.transparancy = ui.editorGUI.editData.transparancy;
-									this.buildGraphicFromObj(graphicObject);
+									this.fabric.buildGraphicFromObj(graphicObject);
 								}
 							}
 						}
@@ -2533,7 +2539,7 @@ const _B2dEditor = function () {
 							graphicObject.colorLine = ui.editorGUI.editData.colorLine;
 							graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
 							graphicObject.transparancy = ui.editorGUI.editData.transparancy;
-							this.buildGraphicFromObj(graphicObject);
+							this.fabric.buildGraphicFromObj(graphicObject);
 						}
 
 					}
@@ -2590,7 +2596,7 @@ const _B2dEditor = function () {
 				textObject.textAlign = ui.editorGUI.editData.textAlign;
 				textObject.transparancy = ui.editorGUI.editData.transparancy;
 
-				var _text = this.buildTextFromObj(textObject);
+				var _text = this.fabric.buildTextFromObj(textObject);
 			} else if(this.selectedTool === this.tool_VERTICEEDITING){
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 
@@ -3609,7 +3615,7 @@ const _B2dEditor = function () {
 							bodyObject.transparancy = ui.editorGUI.editData.transparancy;
 
 							bodyObject.radius = radius;
-							this.buildBodyFromObj(bodyObject);
+							this.fabric.buildBodyFromObj(bodyObject);
 						}
 					} else {
 						bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
@@ -3618,7 +3624,7 @@ const _B2dEditor = function () {
 							bodyObject.colorLine = ui.editorGUI.editData.colorLine;
 							bodyObject.lineWidth = ui.editorGUI.editData.lineWidth;
 							bodyObject.transparancy = ui.editorGUI.editData.transparancy;
-							this.buildBodyFromObj(bodyObject);
+							this.fabric.buildBodyFromObj(bodyObject);
 						}
 					}
 				}else{
@@ -6027,7 +6033,7 @@ const _B2dEditor = function () {
 					bodyObject.tileTexture = graphic.tileTexture;
 
 					bodyObject.rotation = 0;
-					innerBodies.push(this.buildBodyFromObj(bodyObject));
+					innerBodies.push(this.fabric.buildBodyFromObj(bodyObject));
 				}
 			}
 
@@ -6324,6 +6330,7 @@ const _B2dEditor = function () {
 	}
 
 	this.buildTextureFromObj = function (obj) {
+		console.warn('Legacy, use a buildTextureFromObj from ObjectFabric');
 
 		var container;
 		var sprite = new PIXIHeaven.Sprite(PIXI.Texture.from(obj.textureName));
@@ -6361,12 +6368,14 @@ const _B2dEditor = function () {
 		return container;
 	}
 	this.buildTriggerFromObj = function (obj) {
+		console.warn('Legacy, use a buildTriggerFromObj from ObjectFabric');
+
 		const bodyObject = JSON.parse(JSON.stringify(obj));
 		bodyObject.trigger = true;
 		bodyObject.density = 1;
 		bodyObject.collision = 2;
 
-		const body = this.buildBodyFromObj(bodyObject);
+		const body = this.fabric.buildBodyFromObj(bodyObject);
 
 		body.SetSleepingAllowed(false);
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
@@ -6380,11 +6389,12 @@ const _B2dEditor = function () {
 
 		return body;
 	}
+
 	this.buildTextFromObj = function (obj) {
 		console.warn('Legacy, use a buildTextFromObj from ObjectFabric');
 
 		let container;
-		let text = this.buildTextGraphicFromObj(obj);
+		let text = this.fabric.buildTextGraphicFromObj(obj);
 
 		container = new PIXI.Container();
 		container.pivot.set(text.width / 2, text.height / 2);
@@ -6427,7 +6437,7 @@ const _B2dEditor = function () {
 		text.style = style;
 		return text;
 	}
-	this.buildBodyFromObj = function (obj) {
+	this.fabric.buildBodyFromObj = function (obj) {
 
 		console.warn("Use a buildBodyFromObj from ObjectFabric");
 
@@ -6525,6 +6535,8 @@ const _B2dEditor = function () {
 
 	}
 	this.buildGraphicGroupFromObj = function (obj) {
+		console.warn('Legacy, use a buildGraphicGroupFromObj from ObjectFabric');
+
 		var graphic = new PIXI.Container();
 		graphic.data = obj;
 		graphic.x = obj.x;
@@ -6548,6 +6560,7 @@ const _B2dEditor = function () {
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
+
 	this.buildAnimationGroupFromObject = function (obj) {
 		console.warn('Legacy, use a buildAnimationGroupFromObject from ObjectFabric');
 
@@ -6574,6 +6587,7 @@ const _B2dEditor = function () {
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
 	}
+
 	this.initAnimation = function(container){
 		container.frameTime = 1000/container.data.fps;
 		container.playing = container.data.playing;
@@ -7117,7 +7131,7 @@ const _B2dEditor = function () {
 		groupedBodyObject.fixed = bodyObjects[0].mySprite.data.fixed;
 		groupedBodyObject.awake = bodyObjects[0].mySprite.data.awake;
 
-		const groupedBody = this.buildBodyFromObj(groupedBodyObject);
+		const groupedBody = this.fabric.buildBodyFromObj(groupedBodyObject);
 
 		groupedBody.mySprite.parent.swapChildren(groupedBody.mySprite, bodyObjects[0].mySprite);
 
@@ -7213,7 +7227,7 @@ const _B2dEditor = function () {
 
 			bodyObject.radius = radius[i];
 
-			const body = this.buildBodyFromObj(bodyObject);
+			const body = this.fabric.buildBodyFromObj(bodyObject);
 
 			const container = body.mySprite.parent;
 			container.removeChild(body.mySprite);
@@ -7289,17 +7303,8 @@ const _B2dEditor = function () {
 			graphicObject.y += graphicGroup.y;
 			graphicObject.rotation = graphicGroup.rotation + graphicObject.rotation;
 
-			let graphic;
-			if(graphicObject.type == OBJ.GraphicsObject.TYPE){
-				graphic = this.buildGraphicFromObj(graphicObject);
-			}else if(graphicObject.type == OBJ.TextureObject.TYPE){
-				graphic = this.buildTextureFromObj(graphicObject);
-			}else if(graphicObject.type == OBJ.TextObject.TYPE){
-				graphic = this.buildTextFromObj(graphicObject);
-			}else if(graphicObject.type == OBJ.GraphicsGroupObject.TYPE){
-				graphic = this.buildGraphicGroupFromObj(graphicObject);
-			}
-
+			const graphic = this.fabric.buildObjFromType(graphicObject.type, graphicObject);
+		
 			const container = graphic.parent;
 			container.removeChild(graphic);
 			container.addChildAt(graphic, graphicGroup.data.ID + i);
@@ -8004,7 +8009,7 @@ const _B2dEditor = function () {
 				g = new PIXIHeaven.Sprite(PIXI.Texture.from(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
 			}else if(gObj instanceof OBJ.TextObject) {
-				g = this.buildTextGraphicFromObj(gObj);
+				g = this.fabric.buildTextGraphicFromObj(gObj);
 				g.pivot.set(g.width / 2, g.height / 2);
 			}else if (gObj instanceof OBJ.GraphicsGroupObject) {
 				g = new PIXI.Container();
@@ -8512,11 +8517,7 @@ const _B2dEditor = function () {
 
 	this.buildJSON = function (json, prefabInstanceName) {
 		//console.log(json);
-		let createdObjects = {
-			_bodies: [],
-			_textures: [],
-			_joints: [],
-		};
+		let createdObjects = new Lookup();
 
 		let startChildIndex = this.textures.children.length;
 		let prefabOffset = 0;
@@ -8577,13 +8578,13 @@ const _B2dEditor = function () {
 				if (obj.type != OBJ.PrefabObject.TYPE) obj.ID += startChildIndex + prefabOffset - vehicleOffset;
 
 				if (obj.type == OBJ.BodyObject.TYPE) {
-					worldObject = this.buildBodyFromObj(obj);
+					worldObject = this.fabric.buildBodyFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == OBJ.TextureObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
-					worldObject = this.buildTextureFromObj(obj);
+					worldObject = this.fabric.buildTextureFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == OBJ.JointObject.TYPE) {
 
@@ -8614,7 +8615,7 @@ const _B2dEditor = function () {
 						characterNewEndLayer = this.textures.children.length + vehicleOffset;
 					}
 					const prefabStartChildIndex = this.textures.children.length;
-					const prefabObjects = this.buildPrefabFromObj(obj);
+					const prefabObjects = this.fabric.buildPrefabFromObj(obj);
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
 						createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);
@@ -8626,19 +8627,19 @@ const _B2dEditor = function () {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
-					worldObject = this.buildGraphicFromObj(obj);
+					worldObject = this.fabric.buildGraphicFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == OBJ.GraphicsGroupObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
-					worldObject = this.buildGraphicGroupFromObj(obj);
+					worldObject = this.fabric.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}else if (obj.type == OBJ.AnimationGroupObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
-					worldObject = this.buildAnimationGroupFromObject(obj);
+					worldObject = this.fabric.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == OBJ.TriggerObject.TYPE) {
 					let duplicateJoint = false;
@@ -8651,13 +8652,13 @@ const _B2dEditor = function () {
 							obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
 						}
 					}
-					worldObject = this.buildTriggerFromObj(obj);
+					worldObject = this.fabric.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == OBJ.TextObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
-					worldObject = this.buildTextFromObj(obj);
+					worldObject = this.fabric.buildTextFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				}
 			}
