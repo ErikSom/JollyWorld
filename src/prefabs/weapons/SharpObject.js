@@ -98,6 +98,8 @@ export class SharpObject extends PrefabManager.basePrefab {
 
         // this.debugDraw();
 
+        if(this.bodiesToStick.length>0) this.bodiesToStick = this.bodiesToStick.filter(data => !data.body.destroyed);
+
         if(this.bodiesToStick.length>0){
             const sharpBody = this.sharpBody;
 

@@ -13,9 +13,7 @@ const bypass = true;
 
 export const optimiseGroup = (container, graphicGroupData) => {
 
-	if(!graphicGroupData.hash) graphicGroupData.hash = MD5(graphicGroupData.graphicObjects);
-
-	console.log(graphicGroupData.hash);
+	if(!graphicGroupData.hash) graphicGroupData.hash = MD5(JSON.stringify(graphicGroupData.graphicObjects));
 
 
 	if(bypass){

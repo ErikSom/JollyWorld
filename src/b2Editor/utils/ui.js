@@ -1316,8 +1316,8 @@ export const showLoadScreen = function () {
 
 const userData = SaveManager.getLocalUserdata();
 const editorGUIPos = {
-    x: Math.min(userData.editorGuiPos.x, window.innerWidth-300),
-    y: Math.min(userData.editorGuiPos.y, window.innerHeight-300)
+    x: Math.max(-10, Math.min(userData.editorGuiPos.x, window.innerWidth-300)),
+    y: Math.max(-10, Math.min(userData.editorGuiPos.y, window.innerHeight-300))
 };
 
 console.log(userData.editorGuiPos, window.innerWidth-300);
@@ -2169,10 +2169,17 @@ export const endDrag = function (event, _window) {
     const computedLeft = parseFloat(getComputedStyle(_window.domElement, null).left.replace("px", ""));
     const computedTop = parseFloat(getComputedStyle(_window.domElement, null).top.replace("px", ""));
 
-    const userData = SaveManager.getLocalUserdata();
-    userData.editorGuiPos.x = computedLeft;
-    userData.editorGuiPos.y = computedTop;
-    SaveManager.updateLocalUserData(userData);
+    if(_window.domElement.getAttribute('editorGui')){
+        const userData = SaveManager.getLocalUserdata();
+
+        userData.editorGuiPos.x = Math.max(-10, Math.min(computedLeft, window.innerWidth-300));
+        userData.editorGuiPos.y = Math.max(-10, Math.min(computedTop, window.innerHeight-300));
+        editorGUIPos.x = userData.editorGuiPos.x;
+        editorGUIPos.y = userData.editorGuiPos.y;
+        SaveManager.updateLocalUserData(userData);
+
+        console.log("STORE THAT SHITTT");
+    }
 
     document.removeEventListener('mousemove', _window.mouseMoveFunction);
     setTimeout(() => {
@@ -2185,11 +2192,6 @@ export const doDrag = function (event, _window) {
 
     if (Math.abs(difX) + Math.abs(difY) > 5 && !_window.domElement.querySelector('.title').getAttribute('moved') !== null) {
         _window.domElement.querySelector('.title').setAttribute('moved', '');
-    }
-
-    if(_window.domElement.getAttribute('editorGui')){
-        editorGUIPos.x = startDragPos.x + difX;
-        editorGUIPos.y = startDragPos.y + difY;
     }
 
     _window.domElement.style.left = `${startDragPos.x + difX}px`;
@@ -2215,16 +2217,20 @@ export const registerDragWindow = (_window) => {
 
     titleBar.addEventListener('mousedown', (event) => {
         initDrag(event, _window);
+
+        const mouseUp = (event) => {
+            endDrag(event, _window);
+            setHighestWindow(domElement);
+            document.removeEventListener('mouseup', mouseUp);
+        }
+        document.addEventListener('mouseup', mouseUp);
+
         event.stopPropagation();
     });
 
     domElement.addEventListener('mouseup', (event) => {
         setHighestWindow(domElement);
     })
-    titleBar.addEventListener('mouseup', (event) => {
-        endDrag(event, _window);
-        setHighestWindow(domElement);
-    });
 
     const clickFunction = (event) => {
         if (domElement.querySelector('.title').getAttribute('moved') !== null) {
@@ -2232,7 +2238,6 @@ export const registerDragWindow = (_window) => {
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
-        endDrag(event, _window);
         if (!_window.domElement.parentNode) document.removeEventListener('click', clickFunction);
     }
 

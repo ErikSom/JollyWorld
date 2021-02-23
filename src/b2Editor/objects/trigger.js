@@ -1119,7 +1119,7 @@ export class triggerCore {
         this.repeatWaitDelay = 0;
 
         this.followTarget = null;
-        if(this.data.followFirstTarget){
+        if(this.data.followFirstTarget && this.targets[0]){
 
             const target = this.targets[0];
             const targetX = target.mySprite ? target.GetPosition().x : target.x / Settings.PTM;
