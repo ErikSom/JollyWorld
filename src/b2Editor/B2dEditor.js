@@ -48,6 +48,9 @@ import { hashName } from "../AssetList";
 
 import { attachGraphicsAPIMixin } from './pixiHack'
 import { TiledMesh } from './classes/TiledMesh';
+import nanoid from "nanoid";
+import { findObjectWithCopyHash } from "./utils/finder";
+ 
 
 class Lookup {
 	_bodies = [];
@@ -592,7 +595,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
 				targetFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
 					editorSettings.stats=val;
-					game.stats.dom.style.display = val ? 'block' : 'none';
+					game.stats.show(val);
 				});
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
@@ -1718,6 +1721,7 @@ const _B2dEditor = function () {
 		this.updateSelection();
 	}
 
+	this.markedForUnidentifiedPasting = [];
 	this.copySelection = function () {
 
 		let i;
@@ -1783,10 +1787,6 @@ const _B2dEditor = function () {
 			}
 		}
 
-
-		const onlyJoints = !copyArray.find(el=> el.data.type !== OBJ.JointObject.TYPE);
-		const onlyTriggers = !copyArray.find(el=> el.data.type !== OBJ.TriggerObject.TYPE);
-
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
 		});
@@ -1796,60 +1796,65 @@ const _B2dEditor = function () {
 			data = copyArray[i].data;
 			if (data.type == OBJ.JointObject.TYPE) {
 				//searching object A
-				if(!onlyJoints){
-					let foundBodyA = false;
-					let realIndex = 0;
+				let foundBodyA = false;
+				let realIndex = 0;
 
+				for (j = 0; j < copyArray.length; j++) {
+
+					const targetSprite = this.textures.children[data.bodyA_ID];
+					const isPrefab = targetSprite.data.prefabInstanceName;
+					if(isPrefab && copyArray[j].key === targetSprite.data.prefabInstanceName){
+						const lowestChild = this.textures.getChildIndex(this.retreivePrefabChildAt(targetSprite, false));
+						const relativeChild = data.bodyA_ID-lowestChild;
+						foundBodyA = true;
+						data.bodyA_ID = realIndex+relativeChild;
+						break;
+					}else if (copyArray[j].ID == data.bodyA_ID) {
+						foundBodyA = true;
+						data.bodyA_ID = realIndex;
+						break;
+					}
+					realIndex += copyArray[j].childCount || 1;
+
+				}
+				let foundBodyB = false;
+				realIndex = 0;
+				if (data.bodyB_ID != undefined) {
 					for (j = 0; j < copyArray.length; j++) {
 
-						const targetSprite = this.textures.children[data.bodyA_ID];
+						const targetSprite = this.textures.children[data.bodyB_ID];
 						const isPrefab = targetSprite.data.prefabInstanceName;
 						if(isPrefab && copyArray[j].key === targetSprite.data.prefabInstanceName){
 							const lowestChild = this.textures.getChildIndex(this.retreivePrefabChildAt(targetSprite, false));
-							const relativeChild = data.bodyA_ID-lowestChild;
-							foundBodyA = true;
-							data.bodyA_ID = realIndex+relativeChild;
+							const relativeChild = data.bodyB_ID-lowestChild;
+							foundBodyB = true;
+							data.bodyB_ID = realIndex+relativeChild;
 							break;
-						}else if (copyArray[j].ID == data.bodyA_ID) {
-							foundBodyA = true;
-							data.bodyA_ID = realIndex;
+						}else if (copyArray[j].ID == data.bodyB_ID) {
+							foundBodyB = true;
+							data.bodyB_ID = realIndex;
 							break;
 						}
 						realIndex += copyArray[j].childCount || 1;
 
 					}
-					let foundBodyB = false;
-					realIndex = 0;
-					if (data.bodyB_ID != undefined) {
-						for (j = 0; j < copyArray.length; j++) {
 
-							const targetSprite = this.textures.children[data.bodyB_ID];
-							const isPrefab = targetSprite.data.prefabInstanceName;
-							if(isPrefab && copyArray[j].key === targetSprite.data.prefabInstanceName){
-								const lowestChild = this.textures.getChildIndex(this.retreivePrefabChildAt(targetSprite, false));
-								const relativeChild = data.bodyB_ID-lowestChild;
-								foundBodyB = true;
-								data.bodyB_ID = realIndex+relativeChild;
-								break;
-							}else if (copyArray[j].ID == data.bodyB_ID) {
-								foundBodyB = true;
-								data.bodyB_ID = realIndex;
-								break;
-							}
-							realIndex += copyArray[j].childCount || 1;
+				} else {
+					foundBodyB = true;
+				}
 
-						}
+				if (!foundBodyA){
+					// nullify incorrect pastes
+					const attachedBody = this.textures.getChildAt(data.bodyA_ID).myBody;
+					if(!attachedBody.copyHash) attachedBody.copyHash = nanoid(10);
 
-					} else {
-						foundBodyB = true;
-					}
+					data.bodyA_ID = attachedBody.copyHash;
+				}
+				if (!foundBodyB){
+					const attachedBody = this.textures.getChildAt(data.bodyB_ID).myBody;
+					if(!attachedBody.copyHash) attachedBody.copyHash = nanoid(10);
 
-					if (!foundBodyA || !foundBodyB) {
-						copyArray.splice(i, 1);
-						i--;
-					}
-				}else{
-					data.groups = Settings.jsonDuplicateText+data.groups;
+					data.bodyB_ID = attachedBody.copyHash;
 				}
 			} else if (data.type == OBJ.TextureObject.TYPE || data.type == OBJ.GraphicsObject.TYPE || data.type == OBJ.GraphicsGroupObject.TYPE || data.type == OBJ.TextObject.TYPE || data.type == OBJ.AnimationGroupObject.TYPE) {
 				let realIndex = 0;
@@ -1868,27 +1873,23 @@ const _B2dEditor = function () {
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
 			if (data.type == OBJ.TriggerObject.TYPE) {
-				if(!onlyTriggers){
-					for (j = 0; j < data.triggerObjects.length; j++) {
-						var foundBody = -1;
-						let realIndex = 0;
-						for (k = 0; k < copyArray.length; k++) {
-							if (data.triggerObjects[j] == copyArray[k].ID) {
-								// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
-								foundBody = realIndex;
-								break;
-							}
-							realIndex += copyArray[k].childCount || 1;
+				for (j = 0; j < data.triggerObjects.length; j++) {
+					var foundBody = -1;
+					let realIndex = 0;
+					for (k = 0; k < copyArray.length; k++) {
+						if (data.triggerObjects[j] == copyArray[k].ID) {
+							// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
+							foundBody = realIndex;
+							break;
 						}
-						if (foundBody >= 0) data.triggerObjects[j] = foundBody;
-						else {
-							data.triggerObjects.splice(j, 1);
-							data.triggerActions.splice(j, 1);
-							j--;
-						}
+						realIndex += copyArray[k].childCount || 1;
 					}
-				}else{
-					data.groups = Settings.jsonDuplicateText+data.groups;
+					if (foundBody >= 0) data.triggerObjects[j] = foundBody;
+					else {
+						const attachedSprite = this.textures.getChildAt(data.triggerObjects[j]);
+						if(!attachedSprite.copyHash) attachedSprite.copyHash = nanoid(10);
+						data.triggerObjects[j] = attachedSprite.copyHash;
+					}
 				}
 			}
 		}
@@ -7223,8 +7224,8 @@ const _B2dEditor = function () {
 
 		if (obj) {
 			tarObj = obj;
-			bodies.push(this.textures.getChildAt(tarObj.bodyA_ID).myBody);
 
+			bodies.push(this.textures.getChildAt(tarObj.bodyA_ID).myBody);
 			if (tarObj.bodyB_ID != undefined) {
 				bodies.push(this.textures.getChildAt(tarObj.bodyB_ID).myBody);
 			}
@@ -8339,22 +8340,32 @@ const _B2dEditor = function () {
 					worldObject = this.fabric.buildTextureFromObj(obj);
 					createdObjects._textures.push(worldObject);
 				} else if (obj.type == OBJ.JointObject.TYPE) {
-
-					let duplicateJoint = false;
-
-					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
-						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
-						duplicateJoint = true;
-					}
-
-					if(!duplicateJoint){
+					let destroyMe = false;
+					if(obj.bodyA_ID.length === 10){
+						const foundSprite = findObjectWithCopyHash(obj.bodyA_ID);
+						if(!foundSprite) destroyMe = true;
+						else obj.bodyA_ID = foundSprite.parent.getChildIndex(foundSprite);
+					}else{
 						obj.bodyA_ID = vehicleCorrectLayer(obj.bodyA_ID+startChildIndex);
-						if (obj.bodyB_ID != undefined) obj.bodyB_ID = vehicleCorrectLayer(obj.bodyB_ID + startChildIndex);
 					}
 
-					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
-					else worldObject = this.attachJoint(obj);
-					createdObjects._joints.push(worldObject);
+					if(obj.bodyB_ID != undefined){
+						if(obj.bodyB_ID.length === 10){
+							const foundSprite = findObjectWithCopyHash(obj.bodyB_ID);
+							if(!foundSprite) destroyMe = true;
+							else obj.bodyB_ID = foundSprite.parent.getChildIndex(foundSprite);
+						}else{
+							obj.bodyB_ID = vehicleCorrectLayer(obj.bodyB_ID + startChildIndex);
+						}
+					}
+
+					if(destroyMe){
+						prefabOffset++;
+					}else{
+						if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
+						else worldObject = this.attachJoint(obj);
+						createdObjects._joints.push(worldObject);
+					}
 				} else if (obj.type == OBJ.PrefabObject.TYPE) {
 					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
 						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
@@ -8394,13 +8405,18 @@ const _B2dEditor = function () {
 					worldObject = this.fabric.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == OBJ.TriggerObject.TYPE) {
-					let duplicateJoint = false;
-					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
-						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
-						duplicateJoint = true;
-					}
-					if(!duplicateJoint){
-						for (var j = 0; j < obj.triggerObjects.length; j++) {
+
+					for (var j = 0; j < obj.triggerObjects.length; j++) {
+						if(obj.triggerObjects[j].length === 10){
+							const foundSprite = findObjectWithCopyHash(obj.triggerObjects[j]);
+							if(!foundSprite){
+								obj.triggerObjects.splice(j, 1);
+								obj.triggerActions.splice(j, 1);
+								j--;
+							}else{
+								obj.triggerObjects[j] = foundSprite.parent.getChildIndex(foundSprite);
+							}
+						}else{
 							obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
 						}
 					}

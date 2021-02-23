@@ -46,7 +46,6 @@ export var Settings = {
     minimumArtToolAngle: Math.PI/45,
     maxAnimationFrames:120,
     geometrySnapScale:10,
-    jsonDuplicateText:"__duplicate__",
     scalePrecision:5,
     levelBuildDelayTime:500,
     /* first texture name is empty so that in the editor you can select no tile texture as index */
