@@ -2291,7 +2291,10 @@ const _B2dEditor = function () {
 	}
 
 	this.editorTriggerObject = {
-		shape: 0
+		shape: 0,
+		radius: 50, 
+		width: 50, 
+		height: 50,
 	}
 
 	this.cameraShotCallBack;
