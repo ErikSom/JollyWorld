@@ -6317,7 +6317,7 @@ const _B2dEditor = function () {
 		return body;
 	}
 	this.buildTextFromObj = function (obj) {
-		console.error('Legacy, use a buildTextFromObj from ObjectFabric');
+		console.warn('Legacy, use a buildTextFromObj from ObjectFabric');
 
 		let container;
 		let text = this.buildTextGraphicFromObj(obj);
@@ -6350,7 +6350,7 @@ const _B2dEditor = function () {
 	}
 
 	this.buildTextGraphicFromObj = function (obj) {
-		console.error('Legacy, use a buildTextGraphicFromObj from ObjectFabric');
+		console.warn('Legacy, use a buildTextGraphicFromObj from ObjectFabric');
 
 		let text = new PIXI.Text();
 		let style = new PIXI.TextStyle();
@@ -6365,7 +6365,7 @@ const _B2dEditor = function () {
 	}
 	this.buildBodyFromObj = function (obj) {
 
-		console.error("Use a buildBodyFromObj from ObjectFabric");
+		console.warn("Use a buildBodyFromObj from ObjectFabric");
 
 		var bd = new b2BodyDef();
 		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
@@ -6431,7 +6431,7 @@ const _B2dEditor = function () {
 
 	}
 	this.buildGraphicFromObj = function (obj) {
-		console.error('Legacy, use buildGraphicFromObj from ObjectFabric');
+		console.warn('Legacy, use buildGraphicFromObj from ObjectFabric');
 
 		var container = new PIXI.Container();
 		container.data = obj;
@@ -6485,7 +6485,7 @@ const _B2dEditor = function () {
 		return graphic;
 	}
 	this.buildAnimationGroupFromObject = function (obj) {
-		console.error('Legacy, use a buildAnimationGroupFromObject from ObjectFabric');
+		console.warn('Legacy, use a buildAnimationGroupFromObject from ObjectFabric');
 
 		var graphic = new PIXI.Container();
 		graphic.data = obj;
