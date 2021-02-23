@@ -42,7 +42,7 @@ import { YouTubePlayer } from "./utils/YouTubePlayer";
 
 const nanoid = require('nanoid');
 
-import JSGraphy from '../../js-graphy/build/jsgraphy'; //TO DO PUBLISH NPM
+import JSGraphy from '../lib/jsgraphy'; //TO DO PUBLISH NPM
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
