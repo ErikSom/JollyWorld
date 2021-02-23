@@ -199,6 +199,14 @@ const _B2dEditor = function () {
 			.declareLegacy('object_SETTINGS', OBJ.EditorSettingsObject.TYPE, 'OBJ.EditorSettingsObject.TYPE')
 			.declareLegacy('object_ANIMATIONGROUP', OBJ.AnimationGroupObject.TYPE, 'OBJ.AnimationGroupObject.TYPE')
 
+			.declareLegacy('buildBodyFromObj', this.fabric.buildBodyFromObj.bind(this.fabric), 'ObjectFabric::buildBodyFromObj')
+			.declareLegacy('buildGraphicFromObj', this.fabric.buildGraphicFromObj.bind(this.fabric), 'ObjectFabric::buildGraphicFromObj')
+			.declareLegacy('buildGraphicGroupFromObj', this.fabric.buildGraphicGroupFromObj.bind(this.fabric), 'ObjectFabric::buildGraphicGroupFromObj')
+			.declareLegacy('buildAnimationGroupFromObject', this.fabric.buildAnimationGroupFromObject.bind(this.fabric), 'ObjectFabric::buildAnimationGroupFromObject')
+			.declareLegacy('buildTextGraphicFromObj', this.fabric.buildTextGraphicFromObj.bind(this.fabric), 'ObjectFabric::buildTextGraphicFromObj')
+			.declareLegacy('buildTextFromObj', this.fabric.buildTextFromObj.bind(this.fabric), 'ObjectFabric::buildTextFromObj')
+			.declareLegacy('buildTriggerFromObj', this.fabric.buildTriggerFromObj.bind(this.fabric), 'ObjectFabric::buildTriggerFromObj')
+
 		this.root = _root;
 		this.container = _container;
 		this.world = _world;
@@ -5890,6 +5898,7 @@ const _B2dEditor = function () {
 
 		return bodyObject;
 	}
+
 	this.createGraphicObjectFromVerts = function (verts) {
 		var graphicObject = new OBJ.GraphicsObject();
 		for (var i = 0; i < verts.length; i++) {
@@ -5934,6 +5943,7 @@ const _B2dEditor = function () {
 
 		return graphicObject;
 	}
+
 	this.convertGlobalVertsToLocalVerts = function (verts) {
 		var i = 0;
 		var centerPoint = {
@@ -6075,12 +6085,14 @@ const _B2dEditor = function () {
 		}
 		return bodiesCreated;
 	}
+
 	this.convertSelectedBodiesToGraphics = function () {
 		var graphicsCreated = this.convertBodiesToGraphics(this.selectedPhysicsBodies);
 		this.deleteSelection();
 		this.selectedTextures = graphicsCreated;
 		this.updateSelection();
 	}
+
 	this.convertBodiesToGraphics = function (arr) {
 
 		debugger;
@@ -6325,267 +6337,6 @@ const _B2dEditor = function () {
 				if (this.lookupGroups[group]._bodies.length + this.lookupGroups[group]._textures.length + this.lookupGroups[group]._joints.length == 0) delete this.lookupGroups[group];
 			}
 		}
-	}
-
-	this.buildTextureFromObj = function (obj) {
-		console.warn('Legacy, use a buildTextureFromObj from ObjectFabric');
-
-		var container;
-		var sprite = new PIXIHeaven.Sprite(PIXI.Texture.from(obj.textureName));
-
-		container = new PIXI.Container();
-		container.pivot.set(sprite.width / 2, sprite.height / 2);
-		container.addChild(sprite);
-
-		container.originalSprite = sprite;
-
-		this.textures.addChild(container);
-
-		container.x = obj.x;
-		container.y = obj.y;
-		container.rotation = obj.rotation;
-		container.data = obj;
-		container.alpha = obj.transparancy;
-		container.visible = obj.visible;
-
-		container.width = container.width * obj.scaleX;
-		container.height = container.height * obj.scaleY;
-
-		var color = obj.tint;
-		color = color.slice(1);
-		container.originalSprite.tint = parseInt(color, 16);
-
-		if (container.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(container.data.bodyID).myBody;
-			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-			this.updateBodyPosition(body);
-		}
-		//handle groups and ref names
-		this.addObjectToLookupGroups(container, container.data);
-
-		return container;
-	}
-
-	this.buildTriggerFromObj = function (obj) {
-		console.warn('Legacy, use a buildTriggerFromObj from ObjectFabric');
-
-		const bodyObject = JSON.parse(JSON.stringify(obj));
-		bodyObject.trigger = true;
-		bodyObject.density = 1;
-		bodyObject.collision = 2;
-
-		const body = this.fabric.buildBodyFromObj(bodyObject);
-
-		body.SetSleepingAllowed(false);
-		this.removeObjectFromLookupGroups(body, body.mySprite.data);
-
-		body.mySprite.data = obj;
-		body.mySprite.targets = [];
-		body.mySprite.targetPrefabs = [];
-		this.addObjectToLookupGroups(body, body.mySprite.data);
-
-		this.triggerObjects.push(body);
-
-		return body;
-	}
-
-	this.buildTextFromObj = function (obj) {
-		console.warn('Legacy, use a buildTextFromObj from ObjectFabric');
-
-		let container;
-		let text = this.fabric.buildTextGraphicFromObj(obj);
-
-		container = new PIXI.Container();
-		container.pivot.set(text.width / 2, text.height / 2);
-		container.addChild(text);
-
-		container.textSprite = text;
-
-		this.textures.addChild(container);
-
-		container.x = obj.x;
-		container.y = obj.y;
-		container.rotation = obj.rotation;
-		container.data = obj;
-
-		container.alpha = obj.transparancy;
-		container.visible = obj.visible;
-
-		if (container.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(container.data.bodyID).myBody;
-			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-		}
-
-		//handle groups and ref names
-		this.addObjectToLookupGroups(container, container.data);
-
-		return container;
-	}
-
-	this.buildTextGraphicFromObj = function (obj) {
-		console.warn('Legacy, use a buildTextGraphicFromObj from ObjectFabric');
-
-		let text = new PIXI.Text();
-		let style = new PIXI.TextStyle();
-		style.fontFamily = obj.fontName;
-		style.fontSize = obj.fontSize;
-		style.fill = obj.textColor;
-		style.align = obj.textAlign;
-
-		text.text = obj.text;
-		text.style = style;
-		return text;
-	}
-
-	this.buildBodyFromObj = function (obj) {
-
-		console.warn("Use a buildBodyFromObj from ObjectFabric");
-
-		var bd = new b2BodyDef();
-		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
-		else if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
-		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
-		bd.angularDamping = 0.9;
-
-		var body = this.world.CreateBody(bd);
-		body.SetAwake(obj.awake);
-
-		var graphic = new PIXI.Graphics();
-		body.originalGraphic = graphic;
-
-
-		if (obj.vertices[0] instanceof Array == false) {
-			// A fix for backwards compatibility with old vertices system
-			obj.vertices = [obj.vertices];
-			obj.radius = [obj.radius];
-			obj.colorFill = [obj.colorFill];
-			obj.colorLine = [obj.colorLine];
-			obj.lineWidth = [obj.lineWidth];
-			obj.transparancy = [obj.transparancy];
-			obj.density = [obj.density];
-		}
-		// backwards fix for restitution and friction
-
-		obj.restitution = [].concat(obj.restitution);
-		obj.friction = [].concat(obj.friction);
-		obj.collision = [].concat(obj.collision);
-
-		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
-		body.SetAngle(obj.rotation);
-
-
-		body.mySprite = new PIXI.Sprite();
-		this.textures.addChild(body.mySprite);
-
-		body.mySprite.addChild(body.originalGraphic);
-
-		body.mySprite.myBody = body;
-		body.mySprite.data = obj;
-
-		body.mySprite.alpha = obj.transparancy[0];
-		body.mySprite.visible = obj.visible;
-
-		this.updateBodyFixtures(body);
-		this.updateBodyShapes(body);
-
-		body.mySprite.x = body.GetPosition().x * this.PTM;
-		body.mySprite.y = body.GetPosition().y * this.PTM;
-		body.mySprite.rotation = body.GetAngle();
-
-		if (obj.tileTexture != "") this.updateTileSprite(body);
-
-		this.setBodyCollision(body, obj.collision);
-
-		this.addObjectToLookupGroups(body, body.mySprite.data);
-
-		body.instaKill = obj.instaKill;
-		body.isVehiclePart = obj.isVehiclePart;
-
-		return body;
-
-	}
-	this.buildGraphicFromObj = function (obj) {
-		console.warn('Legacy, use buildGraphicFromObj from ObjectFabric');
-
-		var container = new PIXI.Container();
-		container.data = obj;
-		container.x = obj.x;
-		container.y = obj.y;
-		container.rotation = obj.rotation;
-		container.visible = obj.visible;
-
-		var originalGraphic = new PIXI.Graphics();
-		container.addChild(originalGraphic);
-		container.originalGraphic = originalGraphic;
-
-		if (!obj.radius) this.updatePolyGraphic(originalGraphic, obj.vertices, obj.colorFill, obj.colorLine, obj.lineWidth, obj.transparancy);
-		else this.updateCircleGraphic(originalGraphic, obj.radius, obj.vertices[0], obj.colorFill, obj.colorLine, obj.lineWidth, obj.transparancy);
-
-		this.textures.addChild(container);
-
-		if (container.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(container.data.bodyID).myBody;
-			this.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-		}
-
-		if (obj.tileTexture != "" || obj.gradient != "") this.updateTileSprite(container);
-
-		this.addObjectToLookupGroups(container, container.data);
-		return container;
-
-	}
-	this.buildGraphicGroupFromObj = function (obj) {
-		console.warn('Legacy, use a buildGraphicGroupFromObj from ObjectFabric');
-
-		var graphic = new PIXI.Container();
-		graphic.data = obj;
-		graphic.x = obj.x;
-		graphic.y = obj.y;
-		graphic.rotation = obj.rotation;
-		graphic.scale.x = obj.mirrored ? -1 : 1;
-
-
-		this.updateGraphicGroupShapes(graphic);
-		this.textures.addChild(graphic);
-
-		if (graphic.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
-			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-		}
-
-		graphic.alpha = obj.transparancy;
-		graphic.visible = obj.visible;
-
-
-		this.addObjectToLookupGroups(graphic, graphic.data);
-		return graphic;
-	}
-
-	this.buildAnimationGroupFromObject = function (obj) {
-		console.warn('Legacy, use a buildAnimationGroupFromObject from ObjectFabric');
-
-		var graphic = new PIXI.Container();
-		graphic.data = obj;
-		graphic.x = obj.x;
-		graphic.y = obj.y;
-		graphic.rotation = obj.rotation;
-
-		this.updateGraphicGroupShapes(graphic);
-		this.textures.addChild(graphic);
-
-		if (graphic.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
-			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-		}
-
-		graphic.alpha = obj.transparancy;
-		graphic.visible = obj.visible;
-		graphic.scale.x = obj.mirrored ? -1 : 1;
-
-		this.initAnimation(graphic);
-
-		this.addObjectToLookupGroups(graphic, graphic.data);
-		return graphic;
 	}
 
 	this.initAnimation = function(container){
