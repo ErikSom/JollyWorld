@@ -19,11 +19,13 @@ export class GraphicsObject extends BaseObject {
 	parallax = 0.0;
 	repeatTeleportX = 0;
 	repeatTeleportY = 0;
-	gradientId = 0;
+	gradientId = void 0;
 	gradient = '';
 	visible = true;
 
 	initFromArray(arr) {
+		super.initFromArray(arr);
+
 		this.ID = arr[6];
 		this.colorFill = arr[7];
 		this.colorLine = arr[8];

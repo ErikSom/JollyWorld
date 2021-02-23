@@ -4,8 +4,8 @@ export class JointObject extends BaseObject {
 	static TYPE = 2;
 	type = 2;
 
-	bodyA_ID = -1;
-	bodyB_ID = -1;
+	bodyA_ID = void 0;
+	bodyB_ID = void 0;
 	jointType = 0;
 	collideConnected = false;
 	enableMotor = false;

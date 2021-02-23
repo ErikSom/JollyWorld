@@ -6,7 +6,7 @@ export class MultiObject extends BaseObject {
 
 	lockselection = false;
 
-	static fromFlat(arr) {
-		return new MultiObject().initFromArray(arr);
+	initFromArray(arr) {
+		return this;
 	}
 }

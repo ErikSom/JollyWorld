@@ -48,7 +48,13 @@ import { hashName } from "../AssetList";
 
 import { attachGraphicsAPIMixin } from './pixiHack'
 import { TiledMesh } from './classes/TiledMesh';
- 
+
+class Lookup {
+	_bodies = [];
+	_textures = []; 
+	_joints = [];
+}
+
 const PIXIHeaven = self.PIXI.heaven;
 
 const _B2dEditor = function () {
@@ -96,7 +102,7 @@ const _B2dEditor = function () {
 
 	this.editorIcons = [];
 	this.triggerObjects = [];
-
+ 
 	this.worldJSON;
 	this.lastValidWorldJSON;
 
@@ -155,7 +161,28 @@ const _B2dEditor = function () {
 	this.selectionBoxColor = "0x5294AE";
 	this.jointLineColor = "0x888888";
 
+	this.declareLegacy = function (filedName, alternate, message) {
+		Object.defineProperty(this, filedName, {
+			get: function() {
+				console.error('Legacy, plz, use a ' + message);
+				return alternate;
+			}
+		});
+
+		console.log('Define legacy:', filedName);
+		return this;
+	}
+
+
 	this.init = function (_root, _container, _world, _PTM) {
+
+		this
+			.declareLegacy('prefabObject', OBJ.PrefabObject, 'OBJ.PrefabObject')
+			.declareLegacy('graphicObject', OBJ.GraphicsObject, 'OBJ.GraphicsObject')
+			.declareLegacy('textureObject', OBJ.TextureObject, 'OBJ.TextureObject')
+			.declareLegacy('textObject', OBJ.TextObject, 'OBJ.TextObject')
+			.declareLegacy('graphicGroup', OBJ.GraphicsGroupObject, 'OBJ.GraphicsGroupObject')
+
 		this.root = _root;
 		this.container = _container;
 		this.world = _world;
@@ -1488,7 +1515,7 @@ const _B2dEditor = function () {
 				//TODO: remove joints from lookup object???
 
 
-			} else if (obj instanceof this.prefabObject) {
+			} else if (obj instanceof OBJ.PrefabObject) {
 				arr = arr.concat(this.lookupGroups[obj.key]._bodies, this.lookupGroups[obj.key]._textures, this.lookupGroups[obj.key]._joints);
 				arr.forEach(arrEl=>{
 					const sprite = arrEl.mySprite ? arrEl.mySprite : arrEl;
@@ -2196,12 +2223,6 @@ const _B2dEditor = function () {
 
 	const self = this;
 
-	this.lookupObject = function () {
-		this._bodies = [];
-		this._textures = [];
-		this._joints = [];
-	}
-
 	this.editorSettingsObject = new OBJ.EditorSettingsObject();
 
 	this.editorJointObject = new OBJ.JointObject();
@@ -2500,7 +2521,7 @@ const _B2dEditor = function () {
 				}
 			} else if (this.selectedTool == this.tool_TRIGGER) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-				var triggerObject = new this.triggerObject;
+				var triggerObject = new OBJ.TriggerObject();
 				triggerObject.x = this.startSelectionPoint.x;
 				triggerObject.y = this.startSelectionPoint.y;
 				const triggerStartSize = 50 / game.editor.PTM;
@@ -3534,7 +3555,7 @@ const _B2dEditor = function () {
 							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 						}
 						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
-							bodyObject = new this.bodyObject;
+							bodyObject = new OBJ.BodyObject();
 							bodyObject.x = this.startSelectionPoint.x;
 							bodyObject.y = this.startSelectionPoint.y;
 
@@ -3565,7 +3586,7 @@ const _B2dEditor = function () {
 							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 						}
 						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
-							graphicObject = new this.graphicObject;
+							graphicObject = new OBJ.GraphicsObject();
 							graphicObject.x = this.startSelectionPoint.x*Settings.PTM;
 							graphicObject.y = this.startSelectionPoint.y*Settings.PTM;
 
@@ -4188,7 +4209,7 @@ const _B2dEditor = function () {
 		//add elements from prefabs to selection
 		for (var key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key)) {
-				if (this.lookupGroups[key] instanceof this.lookupObject) {
+				if (this.lookupGroups[key] instanceof Lookup) {
 					computeBodies = computeBodies.concat(this.lookupGroups[key]._bodies);
 					computeTextures = computeTextures.concat(this.lookupGroups[key]._textures);
 				}
@@ -5743,7 +5764,7 @@ const _B2dEditor = function () {
 	}
 
 	this.createBodyObjectFromVerts = function (verts) {
-		var bodyObject = new this.bodyObject;
+		var bodyObject = new OBJ.BodyObject();
 
 		var vertsConversion = this.convertGlobalVertsToLocalVerts(verts);
 		verts = vertsConversion[0];
@@ -5769,7 +5790,7 @@ const _B2dEditor = function () {
 		return bodyObject;
 	}
 	this.createBodyFromEarcutResult = function (verts) {
-		var bodyObject = new this.bodyObject;
+		var bodyObject = new OBJ.BodyObject();
 
 		var vertsConversion = this.convertGlobalVertsToLocalVerts(verts);
 		verts = vertsConversion[0];
@@ -5804,7 +5825,7 @@ const _B2dEditor = function () {
 		return bodyObject;
 	}
 	this.createGraphicObjectFromVerts = function (verts) {
-		var graphicObject = new this.graphicObject;
+		var graphicObject = new OBJ.GraphicsObject();
 		for (var i = 0; i < verts.length; i++) {
 			verts[i].x = verts[i].x * this.PTM;
 			verts[i].y = verts[i].y * this.PTM;
@@ -5917,7 +5938,7 @@ const _B2dEditor = function () {
 				}
 				let bodyObject;
 				if (graphic.radius) {
-					bodyObject = new this.bodyObject;
+					bodyObject = new OBJ.BodyObject();
 					bodyObject.vertices = [{
 						x: 0,
 						y: 0
@@ -6015,7 +6036,7 @@ const _B2dEditor = function () {
 
 				var graphicObject;
 				if (radius[j]) {
-					graphicObject = new this.graphicObject();
+					graphicObject = new OBJ.GraphicsObject();
 					graphicObject.vertices = verts[j];
 				} else {
 
@@ -6142,7 +6163,7 @@ const _B2dEditor = function () {
 			group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 			if (group == "") continue;
 			if (this.lookupGroups[group] == undefined) {
-				this.lookupGroups[group] = new this.lookupObject;
+				this.lookupGroups[group] = new Lookup();
 			}
 
 			if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
@@ -6157,9 +6178,9 @@ const _B2dEditor = function () {
 				subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
 				if (subGroup == "") continue;
 				if (this.lookupGroups[group][subGroup] == undefined) {
-					this.lookupGroups[group][subGroup] = new this.lookupObject;
+					this.lookupGroups[group][subGroup] = new Lookup();
 				}
-				if (this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
+				if (this.lookupGroups[group][subGroup] instanceof Lookup) {
 					if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group][subGroup]._textures.push(obj);
 					else if (data.type == this.object_BODY) this.lookupGroups[group][subGroup]._bodies.push(obj);
 					else if (data.type == this.object_JOINT) this.lookupGroups[group][subGroup]._joints.push(obj);
@@ -6220,7 +6241,7 @@ const _B2dEditor = function () {
 				}
 				for (j = 0; j < subGroups; j++) {
 					subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
-					if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof this.lookupObject) {
+					if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof Lookup) {
 						if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup]._textures;
 						else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup]._bodies;
 						else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group][subGroup]._joints;
@@ -6931,7 +6952,7 @@ const _B2dEditor = function () {
 			return a.mySprite.data.ID - b.mySprite.data.ID;
 		});
 
-		var groupedBodyObject = new this.bodyObject;
+		var groupedBodyObject = new OBJ.BodyObject();
 		groupedBodyObject.vertices = [];
 		groupedBodyObject.colorFill = [];
 		groupedBodyObject.colorLine = [];
@@ -7049,7 +7070,7 @@ const _B2dEditor = function () {
 		var collision = bodyGroup.mySprite.data.collision;
 
 		for (var i = 0; i < verts.length; i++) {
-			var bodyObject = new this.bodyObject;
+			var bodyObject = new OBJ.BodyObject();
 
 			let innerVerts;
 
@@ -7135,7 +7156,7 @@ const _B2dEditor = function () {
 		return bodies;
 	}
 	this.groupGraphicObjects = function (graphicObjects) {
-		const graphicGroup = new this.graphicGroup();
+		const graphicGroup = new OBJ.GraphicsGroupObject();
 
 		//sort by childIndex
 		let graphic;
@@ -7219,7 +7240,7 @@ const _B2dEditor = function () {
 	}
 	this.createAnimationGroup = function(){
 
-		const graphicGroup = new this.animationGroup();
+		const graphicGroup = new OBJ.AnimationGroupObject();
 
 		//sort by childIndex
 		let graphic;
@@ -7380,7 +7401,7 @@ const _B2dEditor = function () {
 			}
 
 		} else {
-			tarObj = new this.jointObject;
+			tarObj = new OBJ.JointObject();
 
 			if (this.selectedPhysicsBodies.length < 2) {
 				bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);
@@ -7710,8 +7731,6 @@ const _B2dEditor = function () {
 		if (body.destroyed)
 			return;
 
-//		return;
-		debugger;
 		size = size || 1;
 		rotation = rotation || 0;
 
@@ -7892,7 +7911,7 @@ const _B2dEditor = function () {
 		for (var i = 0; i < graphic.data.graphicObjects.length; i++) {
 			const gObj = this.parseArrObject(JSON.parse(graphic.data.graphicObjects[i]));
 
-			if (gObj instanceof this.graphicObject) {
+			if (gObj instanceof OBJ.GraphicsObject) {
 				g = new PIXI.Container();
 				let inner_graphic = new PIXI.Graphics();
 				if (!gObj.radius) this.updatePolyGraphic(inner_graphic, gObj.vertices, gObj.colorFill, gObj.colorLine, gObj.lineWidth, gObj.transparancy, true);
@@ -7902,13 +7921,13 @@ const _B2dEditor = function () {
 				g.originalGraphic = inner_graphic;
 				this.updateTileSprite(g);
 				g.data = null;
-			} else if (gObj instanceof this.textureObject) {
+			} else if (gObj instanceof OBJ.TextureObject) {
 				g = new PIXIHeaven.Sprite(PIXI.Texture.from(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
 			}else if(gObj instanceof this.textObject) {
 				g = this.buildTextGraphicFromObj(gObj);
 				g.pivot.set(g.width / 2, g.height / 2);
-			}else if (gObj instanceof this.graphicGroup) {
+			}else if (gObj instanceof OBJ.GraphicsGroupObject) {
 				g = new PIXI.Container();
 				g.data = gObj;
 				this.updateGraphicGroupShapes(g);
@@ -8388,8 +8407,12 @@ const _B2dEditor = function () {
 
 			data.triggerObjects = [];
 			for (var i = 0; i < sprite.targets.length; i++) {
-				if (sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);
-				else data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
+				if (sprite.targets[i] instanceof OBJ.PrefabObject) {
+					data.triggerObjects.push(sprite.targets[i].key);
+				}
+				else {
+					data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
+				}
 			}
 		}
 
@@ -8400,12 +8423,18 @@ const _B2dEditor = function () {
 			var jointIndex = (prefabGroup._joints.length > 0) ? prefabGroup._joints[0].parent.getChildIndex(prefabGroup._joints[0]) : Number.POSITIVE_INFINITY;
 			//to do add body, sprite and joint and compare childIndexes...
 			data.ID = Math.min(bodyIndex, spriteIndex, jointIndex);
-		} else data.ID = sprite.parent.getChildIndex(sprite);
+		} else {
+			data.ID = sprite.parent.getChildIndex(sprite);
+		}
 	}
 
 	this.buildJSON = function (json, prefabInstanceName) {
 		//console.log(json);
-		let createdObjects = new this.lookupObject();
+		let createdObjects = {
+			_bodies: [],
+			_textures: [],
+			_joints: [],
+		};
 
 		let startChildIndex = this.textures.children.length;
 		let prefabOffset = 0;

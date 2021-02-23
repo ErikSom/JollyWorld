@@ -30,7 +30,7 @@ export class GraphicsGroupObject extends BaseObject {
 		this.transparancy = arr[12] !== undefined ? arr[12] : 1;
 		this.parallax = arr[13] !== undefined ? arr[13] : 0;
 		this.repeatTeleportX = arr[14] !== undefined ? arr[14] : 0;
-		thisrepeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
+		this.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
 		this.visible = typeof arr[16] === "boolean" ? arr[16] : true;
 		this.mirrored = typeof arr[17] === "boolean" ? arr[17] : false;
 

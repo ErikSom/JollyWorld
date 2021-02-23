@@ -1,11 +1,11 @@
 export class BaseObject {
 	type = -1;
 
-	x = - Infinity;
-	y = - Infinity;
-	type = -1;
-	ID = 0;
+	x = null;
+	y = null;
 	rotation = 0;
+
+	ID = 0;
 	groups = '';
 	refName = '';
 
