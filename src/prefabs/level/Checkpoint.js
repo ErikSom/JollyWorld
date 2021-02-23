@@ -4,6 +4,7 @@ import {
     game
 } from "../../Game";
 import { Humanoid } from '../humanoids/Humanoid';
+import * as AudioManager from '../../utils/AudioManager';
 
 class Checkpoint extends PrefabManager.basePrefab {
     constructor(target) {

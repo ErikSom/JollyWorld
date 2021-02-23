@@ -4,6 +4,7 @@ import * as emitterManager from '../../utils/EmitterManager';
 import * as PhysicsParticleEmitter from '../../utils/PhysicsParticleEmitter';
 import * as PrefabBuilder from '../../utils/PrefabBuilder';
 import * as Box2D from '../../../libs/Box2D';
+import * as AudioManager from '../../utils/AudioManager';
 
 
 import {
@@ -41,6 +42,8 @@ class ExplosiveBarrel extends Explosive {
 		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x+(Math.random()*(offset*2)-offset), body.GetPosition().y+(Math.random()*(offset*2)-offset)));
 
 		PhysicsParticleEmitter.emit(['Cardboard_1', 'Cardboard_2', 'Cardboard_3'], pos, 20, 5, 20, false, [0x752E00, 0x98440D]);
+
+		AudioManager.playSFX('barrel-explosion', 0.3, 1.0 + 0.4 * Math.random()-0.2, body.GetPosition());
 
 		this.destroy();
 	}

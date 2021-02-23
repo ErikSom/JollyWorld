@@ -96,8 +96,8 @@ function BackendManager() {
 			fetch(`${Settings.API}/me`, body)
 			.then(result => result.json())
 			.then(data => {
-				console.log("Userdata:", data);
 				this.userData = data;
+				if(this.userData.is_admin) Settings.userAdmin = true;
 				resolve(data);
 			});
 		})

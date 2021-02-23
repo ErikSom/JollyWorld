@@ -450,13 +450,15 @@ const _B2dEditor = function () {
 				targetFolder.open();
 
 				var shapes = ["Box", "Circle", "Triangle"];
-				ui.editorGUI.editData.shape = shapes[0];
+				ui.editorGUI.editData.shape = ui.editorGUI.editData.shape || shapes[0];
 				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
 				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
+				ui.editorGUI.domElement.style.minHeight = '220px';
+
 				break
 			case this.tool_POLYDRAWING:
 			case this.tool_PEN:
@@ -525,6 +527,8 @@ const _B2dEditor = function () {
 
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				targetFolder.add(ui.editorGUI.editData, "smoothen");
+				ui.editorGUI.domElement.style.minHeight = '200px';
+
 				break
 			case this.tool_TRIGGER:
 				ui.editorGUI.editData = this.editorTriggerObject;
@@ -533,8 +537,18 @@ const _B2dEditor = function () {
 				targetFolder.open();
 
 				var shapes = ["Circle", "Box"];
-				ui.editorGUI.editData.shape = shapes[0];
-				targetFolder.add(ui.editorGUI.editData, "shape", shapes);
+				ui.editorGUI.editData.shape = ui.editorGUI.editData.shape || shapes[0];
+				targetFolder.add(ui.editorGUI.editData, "shape", shapes).onChange(()=>{
+					this.selectedTool = -1;
+					this.selectTool(this.tool_TRIGGER);
+				});
+
+				if(ui.editorGUI.editData.shape === shapes[0]){
+					targetFolder.add(ui.editorGUI.editData, "radius", 1.0, editorSettings.worldSize.width).step(0.1);
+				}else{
+					targetFolder.add(ui.editorGUI.editData, "width", 1.0, editorSettings.worldSize.width).step(0.1);
+					targetFolder.add(ui.editorGUI.editData, "height", 1.0, editorSettings.worldSize.width).step(0.1);
+				}
 
 				break
 			case this.tool_SETTINGS:
@@ -551,6 +565,10 @@ const _B2dEditor = function () {
 					game.app.renderer.backgroundColor = val;
 				});
 				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
+				targetFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
+					editorSettings.stats=val;
+					game.stats.dom.style.display = val ? 'block' : 'none';
+				});
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
@@ -560,7 +578,7 @@ const _B2dEditor = function () {
 				ui.editorGUI.editData.resetHelp = ()=>{
 					const userData = SaveManager.getLocalUserdata();
 					userData.helpClosed = [];
-					SaveManager.updateLocaluserData(userData);
+					SaveManager.updateLocalUserData(userData);
 				}
 				targetFolder.add(ui.editorGUI.editData, "resetHelp").name('reset help');
 
@@ -958,7 +976,7 @@ const _B2dEditor = function () {
 					}.bind(controller));
 
 					// is Character is an admin feature
-					const collisionTypes = ["Everything", "Everything but characters", "Nothing", "Everything but similar", "Only similar", "Only fixed objects", "Only characters"];
+					const collisionTypes = [...Settings.collisionTypes];
 					if(Settings.admin) collisionTypes.push("Is character");
 					ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
 					targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
@@ -1023,17 +1041,17 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1080,17 +1098,17 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1149,17 +1167,17 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1181,17 +1199,17 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1296,17 +1314,17 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.1);
+				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1317,9 +1335,11 @@ const _B2dEditor = function () {
 		if(prefabKeys.length === 0){
 			const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
 			const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
+			const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
 
 			if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
 				let canGroup = true;
+				if(hasTriggers) canGroup = false;
 				if(hasAnimation && hasOthers) canGroup = false; // we cant group when we have mixed animations and other graphics
 				if(canGroup && hasAnimation && this.selectedTextures.length > 1) canGroup = false; // we cant group multiple animations
 
@@ -1740,7 +1760,7 @@ const _B2dEditor = function () {
 
 
 		const onlyJoints = !copyArray.find(el=> el.data.type !== this.object_JOINT);
-
+		const onlyTriggers = !copyArray.find(el=> el.data.type !== this.object_TRIGGER);
 
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
@@ -1823,23 +1843,27 @@ const _B2dEditor = function () {
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
 			if (data.type == this.object_TRIGGER) {
-				for (j = 0; j < data.triggerObjects.length; j++) {
-					var foundBody = -1;
-					let realIndex = 0;
-					for (k = 0; k < copyArray.length; k++) {
-						if (data.triggerObjects[j] == copyArray[k].ID) {
-							// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
-							foundBody = realIndex;
-							break;
+				if(!onlyTriggers){
+					for (j = 0; j < data.triggerObjects.length; j++) {
+						var foundBody = -1;
+						let realIndex = 0;
+						for (k = 0; k < copyArray.length; k++) {
+							if (data.triggerObjects[j] == copyArray[k].ID) {
+								// NEED TO ACCOUNT FOR EXTRA BODIES BEING CREATED
+								foundBody = realIndex;
+								break;
+							}
+							realIndex += copyArray[k].childCount || 1;
 						}
-						realIndex += copyArray[k].childCount || 1;
+						if (foundBody >= 0) data.triggerObjects[j] = foundBody;
+						else {
+							data.triggerObjects.splice(j, 1);
+							data.triggerActions.splice(j, 1);
+							j--;
+						}
 					}
-					if (foundBody >= 0) data.triggerObjects[j] = foundBody;
-					else {
-						data.triggerObjects.splice(j, 1);
-						data.triggerActions.splice(j, 1);
-						j--;
-					}
+				}else{
+					data.groups = Settings.jsonDuplicateText+data.groups;
 				}
 			}
 		}
@@ -1961,6 +1985,7 @@ const _B2dEditor = function () {
 				this.activePrefabs[prefabKeys[i]].y -= movY;
 			}
 
+			this.selectTool(this.tool_SELECT);
 			this.updateSelection();
 		}
 	}
@@ -2071,6 +2096,12 @@ const _B2dEditor = function () {
 			}
 		}
 
+		if(this.selectedTool === this.tool_TRIGGER){
+			this.triggerObjects.forEach(obj=>{
+				trigger.drawEditorTriggerTargets(obj);
+			})
+		}
+
 		trigger.drawEditorTriggers();
 
 		this.doEditorGUI();
@@ -2086,7 +2117,14 @@ const _B2dEditor = function () {
 	this.updateBodyPosition = function (body) {
 		if (body.myTexture) {
 
-			const textureOffsetAngle = body.myTexture.data.mirrored ? (Settings.pihalve+(body.myTexture.data.texturePositionOffsetAngle)) : body.myTexture.data.texturePositionOffsetAngle;
+			let textureOffsetAngle = body.myTexture.data.texturePositionOffsetAngle;
+
+ 			if(body.myTexture.data.mirrored){
+				let x = 1*Math.cos(textureOffsetAngle);
+				let y = 1*Math.sin(textureOffsetAngle);
+				x *= -1;
+				textureOffsetAngle = Math.atan2(y, x);
+			}
 
 			const angle = body.GetAngle() - textureOffsetAngle;
 			body.myTexture.x = body.GetPosition().x * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
@@ -2508,39 +2546,30 @@ const _B2dEditor = function () {
 					y: this.mousePosWorld.y
 				});
 			} else if (this.selectedTool == this.tool_JOINTS) {
-				var joint = this.attachJointPlaceHolder();
-				if (joint) {
-					var jointData = JSON.parse(JSON.stringify(ui.editorGUI.editData))
-					delete jointData.bodyA_ID;
-					delete jointData.bodyB_ID;
-					delete jointData.x;
-					delete jointData.y;
-					delete jointData.rotation;
-					Object.assign(joint.data, jointData);
-					this.selectedTextures.push(joint);
-				}
+				this.attachJointPlaceHolder();
 			} else if (this.selectedTool == this.tool_TRIGGER) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 				var triggerObject = new OBJ.TriggerObject();
 				triggerObject.x = this.startSelectionPoint.x;
 				triggerObject.y = this.startSelectionPoint.y;
-				const triggerStartSize = 50 / game.editor.PTM;
-				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = triggerStartSize * game.editor.PTM;
+				const triggerStartSizeWidth = this.editorTriggerObject.width / game.editor.PTM;
+				const triggerStartSizeHeight = this.editorTriggerObject.height / game.editor.PTM;
+				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = this.editorTriggerObject.radius;
 				else triggerObject.vertices = [{
-						x: -triggerStartSize,
-						y: -triggerStartSize
+						x: -triggerStartSizeWidth,
+						y: -triggerStartSizeHeight
 					},
 					{
-						x: triggerStartSize,
-						y: -triggerStartSize
+						x: triggerStartSizeWidth,
+						y: -triggerStartSizeHeight
 					},
 					{
-						x: triggerStartSize,
-						y: triggerStartSize
+						x: triggerStartSizeWidth,
+						y: triggerStartSizeHeight
 					},
 					{
-						x: -triggerStartSize,
-						y: triggerStartSize
+						x: -triggerStartSizeWidth,
+						y: triggerStartSizeHeight
 					}
 				]
 				var _trigger = this.buildTriggerFromObj(triggerObject);
@@ -2659,9 +2688,11 @@ const _B2dEditor = function () {
 						vertices.splice(this.verticeEditingSprite.highlightVerticeIndex+1, 0, vertice);
 						this.updateBodyFixtures(this.verticeEditingSprite.myBody);
 						this.updateBodyShapes(this.verticeEditingSprite.myBody);
+						this.verticeEditingSprite.selectedVertice = [this.verticeEditingSprite.highlightVerticeIndex+1];
 					}else{
 						vertices.splice(this.verticeEditingSprite.highlightVerticeIndex+1, 0, this.verticeEditingSprite.highlightVertice);
 						this.updateGraphicShapes(this.verticeEditingSprite);
+						this.verticeEditingSprite.selectedVertice = [this.verticeEditingSprite.highlightVerticeIndex+1];
 					}
 
 					delete this.verticeEditingSprite.highlightVertice;
@@ -2817,9 +2848,10 @@ const _B2dEditor = function () {
 								pB.y = vertice.y + pBL*Math.sin(pAA);
 							}
 
-							const nextVerticeIndex = this.verticeEditingSprite.selectedVerticePointIndex === this.verticeEditingSprite.data.vertices.length -1 ? 0 : this.verticeEditingSprite.selectedVerticePointIndex+1;
-							const nextVertice = this.verticeEditingSprite.data.vertices[nextVerticeIndex];
-							if(Math.abs(vertice.point1.x-vertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point1.y-vertice.y) < Settings.handleClosestDistance && Math.abs(vertice.point2.x-nextVertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point2.y-nextVertice.y) < Settings.handleClosestDistance){
+							const canClosePoint1 = !vertice.point1 || (Math.abs(vertice.point1.x-vertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point1.y-vertice.y) < Settings.handleClosestDistance);
+							const canClosePoint2 = !previousVertice.point2 || (Math.abs(previousVertice.point2.x-vertice.x) < Settings.handleClosestDistance && Math.abs(previousVertice.point2.y-vertice.y) < Settings.handleClosestDistance);
+
+							if(canClosePoint1  && canClosePoint2){
 								delete vertice.point1;
 								delete vertice.point2;
 								delete this.verticeEditingSprite.selectedVerticePoint;
@@ -2856,6 +2888,9 @@ const _B2dEditor = function () {
 						}else{
 							this.updateGraphicShapes(this.verticeEditingSprite);
 						}
+						this.verticeEditingSprite._cullingSizeDirty = true;
+						this.verticeEditingSprite.position.x++;
+						this.verticeEditingSprite.position.x--;
 					}
 				}
 			}else if(!this.mouseDown){
@@ -3238,13 +3273,12 @@ const _B2dEditor = function () {
 
 			let nextIndex = null;
 			if(obj){
-				nextIndex = depthArray[depthArray.length-1].parent.getChildIndex(depthArray[depthArray.length-1])+1;
+				const lastItem = depthArray[depthArray.length-1];
+				nextIndex = Math.min(lastItem.parent.getChildIndex(lastItem)+1, lastItem.parent.children.length-1);
 				lowestIndex = depthArray[0].parent.getChildIndex(depthArray[0]);
-				if(nextIndex >= depthArray[0].parent.children.length) return;
 			}else{
-				nextIndex = depthArray[0].parent.getChildIndex(depthArray[0])-1;
+				nextIndex = Math.max(0, depthArray[0].parent.getChildIndex(depthArray[0])-1);
 				highestIndex = depthArray[depthArray.length-1].parent.getChildIndex(depthArray[depthArray.length-1]);
-				if(nextIndex < 0) return;
 			}
 
 			let nextChild = depthArray[0].parent.children[nextIndex];
@@ -3264,7 +3298,13 @@ const _B2dEditor = function () {
 				lowestIndex = nextIndex;
 			}
 
-			depthArray.forEach(child=> depthArray[0].parent.addChildAt(child, nextIndex));
+			depthArray.forEach(child=> {
+				if(obj) depthArray[0].parent.addChildAt(child, nextIndex);
+				if(child.myBody && child.myBody.myTexture){
+					depthArray[0].parent.addChildAt(child.myBody.myTexture, nextIndex);
+				}
+				if(!obj) depthArray[0].parent.addChildAt(child, nextIndex);
+			});
 
 			// post process joints to make sure they are always on top
 			for (i = 0; i < jointArray.length; i++) {
@@ -3659,16 +3699,21 @@ const _B2dEditor = function () {
 							const vertice = this.verticeEditingSprite.data.vertices[mouseVertice];
 							const angle = Math.atan2(vertice.y, vertice.x) - Math.PI/2
 
+
+							let previousVertice = this.verticeEditingSprite.data.vertices[mouseVertice-1];
+							if(mouseVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
+
+							let nextVertice = this.verticeEditingSprite.data.vertices[mouseVertice+1];
+							if(mouseVertice === this.verticeEditingSprite.data.vertices.length-1) nextVertice = this.verticeEditingSprite.data.vertices[0];
+
+
 							const defaultDistance = Settings.handleClosestDistance*4;
 							if(!vertice.point1 || (Math.abs(vertice.x-vertice.point1.x < Settings.handleClosestDistance) && Math.abs(vertice.y-vertice.point1.y < Settings.handleClosestDistance))){
 								vertice.point1 = {x:vertice.x+defaultDistance*Math.cos(angle), y:vertice.y+defaultDistance*Math.sin(angle)}
 								if(!vertice.point2){
-									vertice.point2 = {x:vertice.x, y:vertice.y}
+									vertice.point2 = {x:nextVertice.x, y:nextVertice.y}
 								}
 							}
-
-							let previousVertice = this.verticeEditingSprite.data.vertices[mouseVertice-1];
-							if(mouseVertice === 0) previousVertice = this.verticeEditingSprite.data.vertices[this.verticeEditingSprite.data.vertices.length-1];
 
 							if(!previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x < Settings.handleClosestDistance) && Math.abs(vertice.y-previousVertice.point2.y < Settings.handleClosestDistance))){
 								previousVertice.point2 = {x:vertice.x-defaultDistance*Math.cos(angle), y:vertice.y-defaultDistance*Math.sin(angle)}
@@ -3724,6 +3769,7 @@ const _B2dEditor = function () {
 		}
 		this.mouseDown = false;
 		this.middleMouseDown = false;
+		this.startSelectionPoint = null;
 		this.doubleClickTime = Date.now()+Settings.doubleClickTime;
 
 	}
@@ -3811,8 +3857,7 @@ const _B2dEditor = function () {
 			this.selectTool(this.tool_SELECT);
 		} else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
-				const newJoint = this.attachJointPlaceHolder();
-				if(newJoint) this.selectedTextures.push(newJoint);
+				this.attachJointPlaceHolder();
 			} else this.selectTool(this.tool_JOINTS);
 		} else if (e.keyCode == 88) { // x
 			if (e.ctrlKey || e.metaKey) {
@@ -4298,6 +4343,8 @@ const _B2dEditor = function () {
 			const data = selectedPhysicsBody.mySprite.data;
 			if(data.type === this.object_TRIGGER) continue;
 
+			const pos = selectedPhysicsBody.GetPosition().Clone().SelfMul(Settings.PTM);
+
 			for (let j = 0; j < data.vertices.length; j++) {
 				if (data.radius[j]) {
 
@@ -4313,7 +4360,7 @@ const _B2dEditor = function () {
 					p.y = (dx * sinAngle + dy * cosAngle);
 
 
-					this.debugGraphics.drawDashedCircle(data.radius[j] * this.cameraHolder.scale.x * selectedPhysicsBody.mySprite.scale.x, (selectedPhysicsBody.mySprite.x + p.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (selectedPhysicsBody.mySprite.y + p.y) * this.cameraHolder.scale.y + this.cameraHolder.y, selectedPhysicsBody.mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedCircle(data.radius[j] * this.cameraHolder.scale.x * selectedPhysicsBody.mySprite.scale.x, (pos.x + p.x) * this.cameraHolder.scale.x + this.cameraHolder.x, (pos.y + p.y) * this.cameraHolder.scale.y + this.cameraHolder.y, selectedPhysicsBody.mySprite.rotation, 20, 10, offset);
 				} else {
 					var polygons = [];
 					let innerVertices;
@@ -4328,7 +4375,7 @@ const _B2dEditor = function () {
 
 
 					}
-					this.debugGraphics.drawDashedPolygon(polygons, selectedPhysicsBody.mySprite.x * this.cameraHolder.scale.x + this.cameraHolder.x, selectedPhysicsBody.mySprite.y * this.cameraHolder.scale.y + this.cameraHolder.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedPolygon(polygons, pos.x * this.cameraHolder.scale.x + this.cameraHolder.x, pos.y * this.cameraHolder.scale.y + this.cameraHolder.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 				}
 			}
 		}
@@ -5041,6 +5088,19 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.repeatType = trigger.triggerRepeatType[controller.targetValue];
 						}
+						trigger.updateTriggerGUI();
+					}else if (controller.property == "delay") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.delay = controller.targetValue;
+						}
+					}else if (controller.property == "repeatDelay") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.repeatDelay = controller.targetValue;
+						}
 					} else if (controller.property == "enabled") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
@@ -5459,7 +5519,6 @@ const _B2dEditor = function () {
 					this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
 
 					if(vertice.point1){
-
 						if(Math.abs(vertice.x-vertice.point1.x) * this.cameraHolder.scale.x  > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) * this.cameraHolder.scale.x > Settings.handleClosestDistance){
 							const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
 							const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
@@ -5474,22 +5533,22 @@ const _B2dEditor = function () {
 
 							this.debugGraphics.drawCircle(verticeP1X, verticeP1Y, Settings.verticeBoxSize/2);
 						}
+					}
 
-						let previousVertice = vertices[index-1];
-						if(index === 0) previousVertice = vertices[vertices.length-1];
-						if(previousVertice.point2){
-							if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
-								const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
-								const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
-								const vp2x = vp2l*Math.cos(vp2a);
-								const vp2y = vp2l*Math.sin(vp2a);
-								const verticeP2X = this.cameraHolder.x + (this.verticeEditingSprite.x + vp2x) * this.cameraHolder.scale.x;
-								const verticeP2Y = this.cameraHolder.y + (this.verticeEditingSprite.y + vp2y) * this.cameraHolder.scale.y;
+					let previousVertice = vertices[index-1];
+					if(index === 0) previousVertice = vertices[vertices.length-1];
+					if(previousVertice.point2){
+						if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
+							const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
+							const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
+							const vp2x = vp2l*Math.cos(vp2a);
+							const vp2y = vp2l*Math.sin(vp2a);
+							const verticeP2X = this.cameraHolder.x + (this.verticeEditingSprite.x + vp2x) * this.cameraHolder.scale.x;
+							const verticeP2Y = this.cameraHolder.y + (this.verticeEditingSprite.y + vp2y) * this.cameraHolder.scale.y;
 
-								this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
-								this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
-								this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
-							}
+							this.debugGraphics.moveTo(verticeX+Settings.verticeBoxSize/2, verticeY+Settings.verticeBoxSize/2);
+							this.debugGraphics.lineTo(verticeP2X, verticeP2Y);
+							this.debugGraphics.drawCircle(verticeP2X, verticeP2Y, Settings.verticeBoxSize/2);
 						}
 					}
 				}
@@ -6016,6 +6075,8 @@ const _B2dEditor = function () {
 		this.updateSelection();
 	}
 	this.convertBodiesToGraphics = function (arr) {
+
+		debugger;
 		var body;
 		var graphic;
 		var graphicsCreated = [];
@@ -6050,7 +6111,7 @@ const _B2dEditor = function () {
 				graphicObject.colorFill = colorFill[j];
 				graphicObject.colorLine = colorLine[j];
 				graphicObject.lineWidth = lineWidth[j];
-				graphicObject.transparancy = transparancy[j + 1];
+				graphicObject.transparancy = transparancy[j];
 				graphicObject.radius = radius[j];
 
 				graphicObject.x += body.mySprite.data.x * this.PTM;
@@ -6873,6 +6934,14 @@ const _B2dEditor = function () {
 	this.groupObjects = function () {
 		var combinedGraphics;
 		var combinedBodies;
+
+		const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
+		const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
+		const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
+
+		if(hasTriggers) return;
+		if(hasAnimation && hasOthers) return;
+
 		if (this.selectedPhysicsBodies.length > 0) {
 			combinedBodies = this.selectedPhysicsBodies[0];
 			for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -7119,11 +7188,11 @@ const _B2dEditor = function () {
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
 			bodyObject.lineWidth = lineWidth[i];
-			bodyObject.transparancy = transparancy[i + 1];
+			bodyObject.transparancy = transparancy[i];
 			bodyObject.density = density[i];
 			bodyObject.friction = friction[i];
 			bodyObject.restitution = restitution[i];
-			bodyObject.collision = collision[i];
+			bodyObject.collision = collision[i] || collision;
 			bodyObject.fixed = bodyGroup.mySprite.data.fixed;
 			bodyObject.awake = bodyGroup.mySprite.data.awake;
 
@@ -7403,6 +7472,14 @@ const _B2dEditor = function () {
 		} else {
 			tarObj = new OBJ.JointObject();
 
+			const jointData = JSON.parse(JSON.stringify(this.editorJointObject));
+			delete jointData.bodyA_ID;
+			delete jointData.bodyB_ID;
+			delete jointData.x;
+			delete jointData.y;
+			delete jointData.rotation;
+			Object.assign(tarObj, jointData);
+
 			if (this.selectedPhysicsBodies.length < 2) {
 				bodies = this.queryWorldForBodies(this.mousePosWorld, this.mousePosWorld);
 			} else {
@@ -7423,7 +7500,6 @@ const _B2dEditor = function () {
 				tarObj.bodyB_ID = bodies[1].mySprite.parent.getChildIndex(bodies[1].mySprite);
 			}
 
-			tarObj.jointType = this.jointObject_TYPE_PIN;
 			tarObj.x = this.mousePosWorld.x * this.PTM;
 			tarObj.y = this.mousePosWorld.y * this.PTM;
 		}
@@ -7994,7 +8070,7 @@ const _B2dEditor = function () {
 		if (tileTexture && tileTexture != "") {
 
 			if (target.myTileSprite && target.myTileSprite.texture && tileTexture == target.myTileSprite.texture.textureCacheIds[0]) {
-
+				target.myTileSprite.gradientMode = gradientMode;
 				// REDRAW OUTLINE
 				this.updateTileSpriteOutline(target, targetSprite.data);
 				targetGraphic.alpha = 0;
@@ -8058,6 +8134,7 @@ const _B2dEditor = function () {
 				mesh.targetSprite = targetSprite;
 				targetSprite.addChild(mesh);
 				target.myTileSprite = mesh;
+				target.myTileSprite.gradientMode = gradientMode;
 
 				//console.log(mesh);
 				// SCROLLING TEXTURE
@@ -8330,6 +8407,8 @@ const _B2dEditor = function () {
 			arr[14] = obj.worldActions;
 			arr[15] = obj.triggerKey;
 			arr[16] = obj.followFirstTarget;
+			arr[17] = obj.delay;
+			arr[18] = obj.repeatDelay;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -8559,8 +8638,15 @@ const _B2dEditor = function () {
 					worldObject = this.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
-					for (var j = 0; j < obj.triggerObjects.length; j++) {
-						obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
+					let duplicateJoint = false;
+					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
+						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
+						duplicateJoint = true;
+					}
+					if(!duplicateJoint){
+						for (var j = 0; j < obj.triggerObjects.length; j++) {
+							obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
+						}
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
@@ -8823,7 +8909,7 @@ const _B2dEditor = function () {
 				sprite.parallaxStartPosition = sprite.position.clone();
 				// disable cull for this sprite.
 				sprite.ignoreCulling = true;
-				removeGraphicFromCells(sprite); // <--- this line was missing
+				removeGraphicFromCells(sprite);
 				this.parallaxObject.push(sprite);
 			}
 

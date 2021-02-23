@@ -20,6 +20,7 @@ import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
 import { YouTubePlayer } from '../utils/YouTubePlayer';
 import * as AudioManager from "../utils/AudioManager"
+import * as TutorialManager from "../utils/TutorialManager"
 
 
 
@@ -183,7 +184,7 @@ function UIManager() {
 
             const userData = SaveManager.getLocalUserdata();
             userData.sfxOn = !userData.sfxOn;
-            SaveManager.updateLocaluserData(userData);
+            SaveManager.updateLocalUserData(userData);
 
             Settings.sfxOn = userData.sfxOn;
 
@@ -746,6 +747,7 @@ function UIManager() {
                             backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
                             setTimeout(()=>{
                                 game.preloader.classList.add('hide');
+                                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
                             }, Settings.levelBuildDelayTime);
                         }, Settings.levelBuildDelayTime);
                     }
@@ -1719,7 +1721,7 @@ const demoScroll = element=>{
                     });
                     let userData = SaveManager.getLocalUserdata();
                     userData.demoScrolls++;
-                    SaveManager.updateLocaluserData(userData);
+                    SaveManager.updateLocalUserData(userData);
                 }catch(e){}
             }, 500);
         }catch(e){}

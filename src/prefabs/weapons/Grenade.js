@@ -1,6 +1,7 @@
 import * as PrefabManager from '../PrefabManager'
 import { Explosive } from './Explosive';
 import * as emitterManager from '../../utils/EmitterManager';
+import * as AudioManager from '../../utils/AudioManager';
 
 import {
     game
@@ -24,6 +25,8 @@ class Grenade extends Explosive {
 		const pos = this.explodeTarget.GetPosition();
 		emitterManager.playOnceEmitter("explosion_layer1", this.explodeTarget, pos, 0);
 		emitterManager.playOnceEmitter("explosion_layer2", this.explodeTarget, pos, 0);
+		AudioManager.playSFX('grenade-explosion', 0.3, 1.0 + 0.4 * Math.random()-0.2, pos);
+
 		this.destroy();
 	}
 	setActive(active){
@@ -31,6 +34,7 @@ class Grenade extends Explosive {
 		const grenadeTexture = this.lookupObject['grenadeTexture'];
 		if(active){
 			grenadeTexture.originalSprite.texture = PIXI.Texture.from(grenadeTexture.data.textureName.replace("off", "on"));
+			AudioManager.playSFX('grenade-pin', 0.3, 1.0 + 0.4 * Math.random()-0.2, this.lookupObject['grenadeBody'].GetPosition());
 		}else{
 			grenadeTexture.originalSprite.texture = PIXI.Texture.from(grenadeTexture.data.textureName.replace("on", "off"));
 		}

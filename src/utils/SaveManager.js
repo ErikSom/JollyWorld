@@ -20,6 +20,7 @@ export const getLocalUserdata = function(){
         helpClosed:[],
         editorGuiPos:{x:50, y:50},
         sfxOn:true,
+        tutorials:[],
     }
 
     if(userData){
@@ -30,7 +31,7 @@ export const getLocalUserdata = function(){
     saveData(SAVEKEYS.userData, defaultData);
     return defaultData;
 }
-export const updateLocaluserData = function(data){
+export const updateLocalUserData = function(data){
     saveData(SAVEKEYS.userData, data);
     return data;
 }
