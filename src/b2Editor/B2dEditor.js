@@ -8003,7 +8003,7 @@ const _B2dEditor = function () {
 			} else if (gObj instanceof OBJ.TextureObject) {
 				g = new PIXIHeaven.Sprite(PIXI.Texture.from(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
-			}else if(gObj instanceof this.textObject) {
+			}else if(gObj instanceof OBJ.TextObject) {
 				g = this.buildTextGraphicFromObj(gObj);
 				g.pivot.set(g.width / 2, g.height / 2);
 			}else if (gObj instanceof OBJ.GraphicsGroupObject) {
