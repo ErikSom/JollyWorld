@@ -66,9 +66,9 @@ export class ObjectFabric {
 		}
 
 		// backwards fix for restitution and friction
-		obj.restitution = obj.restitution.slice();
-		obj.friction = obj.friction.slice();
-		obj.collision = obj.collision.slice();
+		obj.restitution = [].concat(obj.restitution);
+		obj.friction = [].concat(obj.friction);
+		obj.collision = [].concat(obj.collision);
 
 		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
 		body.SetAngle(obj.rotation);
@@ -103,6 +103,49 @@ export class ObjectFabric {
 		body.isVehiclePart = obj.isVehiclePart;
 
 		return body;
+	}
+
+	buildTextureFromObj (obj) {
+		const sprite = new self.PIXI.heaven.Sprite(PIXI.Texture.from(obj.textureName));
+
+		const container = new PIXI.Container();
+		container.pivot.set(sprite.width / 2, sprite.height / 2);
+		container.addChild(sprite);
+
+		//@ts-ignore
+		container.originalSprite = sprite;
+
+		this.editor.textures.addChild(container);
+
+		container.x = obj.x;
+		container.y = obj.y;
+		container.rotation = obj.rotation;
+		//@ts-ignore
+		container.data = obj;
+		container.alpha = obj.transparancy;
+		container.visible = obj.visible;
+
+		container.width = container.width * obj.scaleX;
+		container.height = container.height * obj.scaleY;
+
+		var color = obj.tint;
+		color = color.slice(1);
+		//@ts-ignore
+		container.originalSprite.tint = parseInt(color, 16);
+
+		//@ts-ignore
+		if (container.data.bodyID != undefined) {
+			//@ts-ignore
+			const body = this.editor.textures.getChildAt(container.data.bodyID).myBody;
+			this.editor.setTextureToBody(body, container, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+			this.editor.updateBodyPosition(body);
+		}
+
+		//@ts-ignore
+		//handle groups and ref names
+		this.editor.addObjectToLookupGroups(container, container.data);
+
+		return container;
 	}
 
 	buildTextGraphicFromObj (obj) {

@@ -149,7 +149,7 @@ const _B2dEditor = function () {
 	/**
 	 * @type {ObjectFabric}
 	 */
-	this.fabric;
+	this.fabric = new ObjectFabric(this, game);
 
 	Object.defineProperty(this, 'cameraHolder', {
 		get: () => {
@@ -222,8 +222,6 @@ const _B2dEditor = function () {
 
 		ui.initGui();
 		this.selectTool(this.tool_SELECT);
-
-		this.fabric = new ObjectFabric(this, game);
 	}
 
 	this.prefabListGuiState = {};
@@ -372,12 +370,12 @@ const _B2dEditor = function () {
 						const y = domy / camera.scale.y - camera.y / camera.scale.x;
 
 						if(folderName === 'Prefabs'){
-							const data = new self.prefabObject;
+							const data = new OBJ.PrefabObject();
 							data.x = x;
 							data.y = y;
 							data.prefabName = guiFunction.getAttribute('prefabName');
 							data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
-							self.buildPrefabFromObj(data);
+							self.fabric.buildPrefabFromObj(data);
 						}else if(folderName === 'Blueprints'){
 							const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[prefabName].json));
 							const buildPrefabs = [];
@@ -6367,6 +6365,7 @@ const _B2dEditor = function () {
 
 		return container;
 	}
+
 	this.buildTriggerFromObj = function (obj) {
 		console.warn('Legacy, use a buildTriggerFromObj from ObjectFabric');
 
@@ -6437,7 +6436,8 @@ const _B2dEditor = function () {
 		text.style = style;
 		return text;
 	}
-	this.fabric.buildBodyFromObj = function (obj) {
+
+	this.buildBodyFromObj = function (obj) {
 
 		console.warn("Use a buildBodyFromObj from ObjectFabric");
 
