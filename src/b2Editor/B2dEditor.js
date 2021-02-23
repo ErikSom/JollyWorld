@@ -200,6 +200,7 @@ const _B2dEditor = function () {
 			.declareLegacy('object_ANIMATIONGROUP', OBJ.AnimationGroupObject.TYPE, 'OBJ.AnimationGroupObject.TYPE')
 
 			.declareLegacy('buildBodyFromObj', this.fabric.buildBodyFromObj.bind(this.fabric), 'ObjectFabric::buildBodyFromObj')
+			.declareLegacy('buildTextureFromObj', this.fabric.buildTextureFromObj.bind(this.fabric), 'ObjectFabric::buildTextureFromObj')
 			.declareLegacy('buildGraphicFromObj', this.fabric.buildGraphicFromObj.bind(this.fabric), 'ObjectFabric::buildGraphicFromObj')
 			.declareLegacy('buildGraphicGroupFromObj', this.fabric.buildGraphicGroupFromObj.bind(this.fabric), 'ObjectFabric::buildGraphicGroupFromObj')
 			.declareLegacy('buildAnimationGroupFromObject', this.fabric.buildAnimationGroupFromObject.bind(this.fabric), 'ObjectFabric::buildAnimationGroupFromObject')
