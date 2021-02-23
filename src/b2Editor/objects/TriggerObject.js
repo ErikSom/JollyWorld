@@ -16,6 +16,8 @@ export class TriggerObject extends BaseObject {
 	triggerKey = 32;
 	followFirstTarget = false;
 	lockselection = false;
+	delay = 0; 
+	repeatDelay = 0; 
 
 	initFromArray(arr) {
 		super.initFromArray(arr);
@@ -31,6 +33,8 @@ export class TriggerObject extends BaseObject {
 		this.worldActions = arr[14] || [];
 		this.triggerKey = arr[15] || 32;
 		this.followFirstTarget = typeof arr[16] === "boolean" ? arr[16] : false;
+		this.delay = typeof arr[17] === "number" ? arr[17] : 0; 
+		this.repeatDelay = typeof arr[18] === "number" ? arr[18] : 0; 
 
 		return this;
 	}
