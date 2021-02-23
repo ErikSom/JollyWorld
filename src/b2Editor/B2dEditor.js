@@ -182,6 +182,19 @@ const _B2dEditor = function () {
 			.declareLegacy('textureObject', OBJ.TextureObject, 'OBJ.TextureObject')
 			.declareLegacy('textObject', OBJ.TextObject, 'OBJ.TextObject')
 			.declareLegacy('graphicGroup', OBJ.GraphicsGroupObject, 'OBJ.GraphicsGroupObject')
+			.declareLegacy('graphicGroup', OBJ.GraphicsGroupObject, 'OBJ.GraphicsGroupObject')
+
+			.declareLegacy('object_BODY', OBJ.BodyObject.TYPE, 'OBJ.BodyObject.TYPE')
+			.declareLegacy('object_TEXTURE', OBJ.TextureObject.TYPE, 'OBJ.TextureObject.TYPE')
+			.declareLegacy('object_JOINT', OBJ.JointObject.TYPE, 'OBJ.JointObject.TYPE')
+			.declareLegacy('object_PREFAB', OBJ.PrefabObject.TYPE, 'OBJ.PrefabObject.TYPE')
+			.declareLegacy('object_MULTIPLE', OBJ.MultiObject.TYPE, 'OBJ.MultiObject.TYPE')
+			.declareLegacy('object_GRAPHIC', OBJ.GraphicsObject.TYPE, 'OBJ.GraphicsObject.TYPE')
+			.declareLegacy('object_GRAPHICGROUP', OBJ.GraphicsGroupObject.TYPE, 'OBJ.GraphicsGroupObject.TYPE')
+			.declareLegacy('object_TRIGGER', OBJ.TriggerObject.TYPE, 'OBJ.TriggerObject.TYPE')
+			.declareLegacy('object_TEXT', OBJ.TextObject.TYPE, 'OBJ.TextObject.TYPE')
+			.declareLegacy('object_SETTINGS', OBJ.EditorSettingsObject.TYPE, 'OBJ.EditorSettingsObject.TYPE')
+			.declareLegacy('object_ANIMATIONGROUP', OBJ.AnimationGroupObject.TYPE, 'OBJ.AnimationGroupObject.TYPE')
 
 		this.root = _root;
 		this.container = _container;
@@ -665,8 +678,8 @@ const _B2dEditor = function () {
 			var _body;
 			for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 				_body = this.selectedPhysicsBodies[i];
-				if (_body.mySprite.data.type == this.object_BODY) _bodies.push(_body);
-				else if (_body.mySprite.data.type == this.object_TRIGGER) _triggers.push(_body);
+				if (_body.mySprite.data.type == OBJ.BodyObject.TYPE) _bodies.push(_body);
+				else if (_body.mySprite.data.type == OBJ.TriggerObject.TYPE) _triggers.push(_body);
 			}
 			if(_triggers.length>0) hideMirrorTransformGui = true;
 			var editingMultipleObjects = (_bodies.length > 0 ? 1 : 0) + (_triggers.length > 0 ? 1 : 0);
@@ -688,7 +701,7 @@ const _B2dEditor = function () {
 			for (i = 0; i < this.selectedTextures.length; i++) {
 				_texture = this.selectedTextures[i];
 
-				if (_texture.data && _texture.data.type == this.object_JOINT) {
+				if (_texture.data && _texture.data.type == OBJ.JointObject.TYPE) {
 					if (_texture.data.jointType == this.jointObject_TYPE_PIN) {
 						_selectedPinJoints.push(_texture);
 					} else if (_texture.data.jointType == this.jointObject_TYPE_SLIDE) {
@@ -700,13 +713,13 @@ const _B2dEditor = function () {
 					} else if (_texture.data.jointType == this.jointObject_TYPE_WHEEL) {
 						_selectedWheelJoints.push(_texture);
 					}
-				} else if (_texture.data && _texture.data.type == this.object_GRAPHIC) {
+				} else if (_texture.data && _texture.data.type == OBJ.GraphicsObject.TYPE) {
 					_selectedGraphics.push(_texture);
-				} else if (_texture.data && _texture.data.type == this.object_GRAPHICGROUP) {
+				} else if (_texture.data && _texture.data.type == OBJ.GraphicsGroupObject.TYPE) {
 					_selectedGraphicGroups.push(_texture);
-				} else if (_texture.data && _texture.data.type == this.object_ANIMATIONGROUP) {
+				} else if (_texture.data && _texture.data.type == OBJ.AnimationGroupObject.TYPE) {
 					_selectedAnimationGroups.push(_texture);
-				}else if (_texture.data && _texture.data.type == this.object_TEXT) {
+				}else if (_texture.data && _texture.data.type == OBJ.TextObject.TYPE) {
 					_selectedTexts.push(_texture);
 				} else {
 					_selectedTextures.push(_texture);
@@ -841,7 +854,7 @@ const _B2dEditor = function () {
 			if (ui.editorGUI.editData.hasOwnProperty(key)) {
 				ui.editorGUI.editData[key] = dataJoint[key];
 
-				if (dataJoint.type == this.object_BODY && (key == "x" || key == "y")) {
+				if (dataJoint.type == OBJ.BodyObject.TYPE && (key == "x" || key == "y")) {
 					ui.editorGUI.editData[key] *= this.PTM;
 				}
 				if (key == "groups") {
@@ -1333,9 +1346,9 @@ const _B2dEditor = function () {
 		}
 
 		if(prefabKeys.length === 0){
-			const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
-			const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
-			const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
+			const hasAnimation = this.selectedTextures.find(obj => obj.data.type === OBJ.AnimationGroupObject.TYPE);
+			const hasOthers = this.selectedTextures.find(obj => obj.data.type !== OBJ.AnimationGroupObject.TYPE);
+			const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === OBJ.TriggerObject.TYPE);
 
 			if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
 				let canGroup = true;
@@ -1358,12 +1371,12 @@ const _B2dEditor = function () {
 						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
 					}
 				} else if (this.selectedTextures.length == 1) {
-					if (this.selectedTextures[0].data.type == this.object_GRAPHICGROUP) {
+					if (this.selectedTextures[0].data.type == OBJ.GraphicsGroupObject.TYPE) {
 						ui.editorGUI.editData.ungroupObjects = () => {
 							self.ungroupObjects();
 						};
 						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
-					}else if (this.selectedTextures[0].data.type == this.object_ANIMATIONGROUP) {
+					}else if (this.selectedTextures[0].data.type == OBJ.AnimationGroupObject.TYPE) {
 						ui.editorGUI.editData.breakAnimation = () => {
 							self.ungroupObjects();
 						};
@@ -1551,7 +1564,7 @@ const _B2dEditor = function () {
 				//graphic object
 				var sprite = obj;
 				this.removeObjectFromLookupGroups(sprite, sprite.data);
-				if (sprite.data && sprite.data.type == this.object_JOINT) {
+				if (sprite.data && sprite.data.type == OBJ.JointObject.TYPE) {
 					var j;
 					var myJoint;
 					if (sprite.bodies[0] != undefined) {
@@ -1589,7 +1602,7 @@ const _B2dEditor = function () {
 					}
 				}
 
-				if (sprite.data && sprite.data.type == this.object_ANIMATIONGROUP) {
+				if (sprite.data && sprite.data.type == OBJ.AnimationGroupObject.TYPE) {
 					this.animationGroups = this.animationGroups.filter(animation => animation != sprite);
 				}
 
@@ -1604,7 +1617,7 @@ const _B2dEditor = function () {
 				var b = obj;
 				this.removeObjectFromLookupGroups(b, b.mySprite.data);
 
-				if (b.mySprite.data && b.mySprite.data.type == this.object_TRIGGER) {
+				if (b.mySprite.data && b.mySprite.data.type == OBJ.TriggerObject.TYPE) {
 					var j;
 					var k;
 					var myTrigger;
@@ -1759,8 +1772,8 @@ const _B2dEditor = function () {
 		}
 
 
-		const onlyJoints = !copyArray.find(el=> el.data.type !== this.object_JOINT);
-		const onlyTriggers = !copyArray.find(el=> el.data.type !== this.object_TRIGGER);
+		const onlyJoints = !copyArray.find(el=> el.data.type !== OBJ.JointObject.TYPE);
+		const onlyTriggers = !copyArray.find(el=> el.data.type !== OBJ.TriggerObject.TYPE);
 
 		copyArray.sort(function (a, b) {
 			return a.ID - b.ID;
@@ -1769,7 +1782,7 @@ const _B2dEditor = function () {
 		let data, j;
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
-			if (data.type == this.object_JOINT) {
+			if (data.type == OBJ.JointObject.TYPE) {
 				//searching object A
 				if(!onlyJoints){
 					let foundBodyA = false;
@@ -1826,7 +1839,7 @@ const _B2dEditor = function () {
 				}else{
 					data.groups = Settings.jsonDuplicateText+data.groups;
 				}
-			} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT || data.type == this.object_ANIMATIONGROUP) {
+			} else if (data.type == OBJ.TextureObject.TYPE || data.type == OBJ.GraphicsObject.TYPE || data.type == OBJ.GraphicsGroupObject.TYPE || data.type == OBJ.TextObject.TYPE || data.type == OBJ.AnimationGroupObject.TYPE) {
 				let realIndex = 0;
 				for (j = 0; j < copyArray.length; j++) {
 					if (copyArray[j].ID == data.bodyID) {
@@ -1842,7 +1855,7 @@ const _B2dEditor = function () {
 		let k;
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
-			if (data.type == this.object_TRIGGER) {
+			if (data.type == OBJ.TriggerObject.TYPE) {
 				if(!onlyTriggers){
 					for (j = 0; j < data.triggerObjects.length; j++) {
 						var foundBody = -1;
@@ -1876,7 +1889,7 @@ const _B2dEditor = function () {
 		// find center
 		for (i = 0; i < copyArray.length; i++) {
 			data = copyArray[i].data;
-			if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
+			if (data.type == OBJ.BodyObject.TYPE || data.type == OBJ.TriggerObject.TYPE) {
 				copyCenterPoint.x += data.x * this.PTM;
 				copyCenterPoint.y += data.y * this.PTM;
 
@@ -1894,7 +1907,7 @@ const _B2dEditor = function () {
 			if (i != 0) copyJSON += ',';
 			data = copyArray[i].data;
 			data.ID = i;
-			if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
+			if (data.type == OBJ.BodyObject.TYPE || data.type == OBJ.TriggerObject.TYPE) {
 				data.x -= copyCenterPoint.x / this.PTM;
 				data.y -= copyCenterPoint.y / this.PTM;
 			}else {
@@ -1960,7 +1973,7 @@ const _B2dEditor = function () {
 
 			for (i = startChildIndex; i < this.textures.children.length; i++) {
 				sprite = this.textures.getChildAt(i);
-				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP && sprite.data.type != this.object_TEXT && sprite.data.type != this.object_ANIMATIONGROUP) {
+				if (sprite.myBody != undefined && sprite.data.type != OBJ.TextureObject.TYPE && sprite.data.type != OBJ.GraphicsObject.TYPE && sprite.data.type != OBJ.GraphicsGroupObject.TYPE && sprite.data.type != OBJ.TextObject.TYPE && sprite.data.type != OBJ.AnimationGroupObject.TYPE) {
 					var pos = sprite.myBody.GetPosition();
 					pos.x -= movX / this.PTM;
 					pos.y -= movY / this.PTM;
@@ -2247,18 +2260,6 @@ const _B2dEditor = function () {
 		}
 	}
 
-	this.object_BODY = OBJ.BodyObject.TYPE;
-	this.object_TEXTURE = OBJ.TextureObject.TYPE;
-	this.object_JOINT = OBJ.JointObject.TYPE;
-	this.object_PREFAB = OBJ.PrefabObject.TYPE;
-	this.object_MULTIPLE = OBJ.MultiObject.TYPE;
-	this.object_GRAPHIC = OBJ.GraphicsObject.TYPE;
-	this.object_GRAPHICGROUP = OBJ.GraphicsGroupObject.TYPE;
-	this.object_TRIGGER = OBJ.TriggerObject.TYPE;
-	this.object_TEXT = OBJ.TextObject.TYPE;
-	this.object_SETTINGS = OBJ.EditorSettingsObject.TYPE;
-	this.object_ANIMATIONGROUP = OBJ.AnimationGroupObject.TYPE;
-
 	const self = this;
 
 	this.editorSettingsObject = new OBJ.EditorSettingsObject();
@@ -2374,7 +2375,7 @@ const _B2dEditor = function () {
 				if (highestObject) {
 					for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
 						var body = this.selectedPhysicsBodies[i];
-						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+						if (body.mySprite && body.mySprite.data.type == OBJ.TriggerObject.TYPE) {
 							trigger.addTargetToTrigger(body, highestObject);
 							trigger.updateTriggerGUI();
 						}
@@ -2418,7 +2419,7 @@ const _B2dEditor = function () {
 						if (highestObject.data.prefabInstanceName) {
 							this.selectedPrefabs[highestObject.data.prefabInstanceName] = true;
 						} else {
-							if (highestObject.data.type == this.object_BODY || highestObject.myBody) {
+							if (highestObject.data.type == OBJ.BodyObject.TYPE || highestObject.myBody) {
 								if (highestObject.myBody) this.selectedPhysicsBodies = [highestObject.myBody];
 								else this.selectedPhysicsBodies = [highestObject];
 							} else {
@@ -2462,7 +2463,7 @@ const _B2dEditor = function () {
 							if(this.selectedTextures.length > 0){
 								// editing sprite
 								const targetSprite = this.selectedTextures[0];
-								if(targetSprite.data.type === this.object_GRAPHIC && !targetSprite.data.radius){
+								if(targetSprite.data.type === OBJ.GraphicsObject.TYPE && !targetSprite.data.radius){
 									this.verticeEditingSprite = targetSprite;
 									this.selectTool(this.tool_VERTICEEDITING);
 								}
@@ -2597,7 +2598,7 @@ const _B2dEditor = function () {
 				delete this.verticeEditingSprite.selectedVerticePoint;
 				const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
 
-				if(this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.data.type !== this.object_BODY){
+				if(this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.data.type !== OBJ.BodyObject.TYPE){
 
 					this.verticeEditingSprite.selectedVertice.forEach(verticeIndex => {
 						const vertice = this.verticeEditingSprite.data.vertices[verticeIndex];
@@ -2635,8 +2636,8 @@ const _B2dEditor = function () {
 					// delete this.verticeEditingSprite.selectedVertice;
 
 					const spriteData = this.verticeEditingSprite.data;
-					let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
-					if(spriteData.type === this.object_BODY){
+					let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
+					if(spriteData.type === OBJ.BodyObject.TYPE){
 						vertices = vertices.flat(2).map(point=> ({x:point.x*Settings.PTM, y:point.y*Settings.PTM}));
 					}
 
@@ -2681,10 +2682,10 @@ const _B2dEditor = function () {
 					// add a new vertice
 
 					const spriteData = this.verticeEditingSprite.data;
-					let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+					let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
 					if(Array.isArray(vertices[0])) vertices = vertices[0];
 
-					if(spriteData.type === this.object_BODY){
+					if(spriteData.type === OBJ.BodyObject.TYPE){
 						const vertice = this.verticeEditingSprite.highlightVertice;
 						vertice.x /= Settings.PTM;
 						vertice.y /= Settings.PTM;
@@ -2819,9 +2820,9 @@ const _B2dEditor = function () {
 						const movY = dL*Math.sin(dA);
 
 						const spriteData = this.verticeEditingSprite.data;
-						let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+						let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
 
-						if(spriteData.type === this.object_BODY){
+						if(spriteData.type === OBJ.BodyObject.TYPE){
 							if(Array.isArray(vertices[0])) vertices = vertices[0]
 						}
 
@@ -2867,7 +2868,7 @@ const _B2dEditor = function () {
 								let previousVertice = vertices[verticeIndex-1];
 								if(verticeIndex === 0) previousVertice = vertices[vertices.length-1];
 
-								if(spriteData.type === this.object_BODY){
+								if(spriteData.type === OBJ.BodyObject.TYPE){
 									vertice.x += movX / Settings.PTM;
 									vertice.y += movY / Settings.PTM;
 								}else{
@@ -2885,7 +2886,7 @@ const _B2dEditor = function () {
 								}
 							});
 						}
-						if(spriteData.type === this.object_BODY){
+						if(spriteData.type === OBJ.BodyObject.TYPE){
 							this.updateBodyFixtures(this.verticeEditingSprite.myBody);
 							this.updateBodyShapes(this.verticeEditingSprite.myBody);
 						}else{
@@ -2904,9 +2905,9 @@ const _B2dEditor = function () {
 
 
 					const spriteData = this.verticeEditingSprite.data;
-					let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+					let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
 
-					if(spriteData.type === this.object_BODY){
+					if(spriteData.type === OBJ.BodyObject.TYPE){
 						vertices = vertices.flat(2).map(point=> ({x:point.x*Settings.PTM, y:point.y*Settings.PTM}));
 					}
 
@@ -3244,7 +3245,7 @@ const _B2dEditor = function () {
 			let jointArray = []
 
 			// filter joints, we dont want to change depth with them
-			objects = objects.filter(object => (object.mySprite || object.data.type != this.object_JOINT));
+			objects = objects.filter(object => (object.mySprite || object.data.type != OBJ.JointObject.TYPE));
 
 			for (i = 0; i < objects.length; i++) {
 
@@ -3288,7 +3289,7 @@ const _B2dEditor = function () {
 
 			if(nextChild.data.prefabInstanceName){
 				nextChild = this.retreivePrefabChildAt(nextChild, obj);
-			}else if(nextChild.data.type === this.object_BODY){
+			}else if(nextChild.data.type === OBJ.BodyObject.TYPE){
 				if(obj> 0 && nextChild.myBody.myTexture) nextChild = nextChild.myBody.myTexture;
 			}
 
@@ -3400,13 +3401,13 @@ const _B2dEditor = function () {
 						else y *= -1;
 						object.myTexture.data.texturePositionOffsetAngle = Math.atan2(y, x);
 
-						if([this.object_GRAPHICGROUP, this.object_GRAPHIC].includes(object.myTexture.data.type)) objects.push(object.myTexture);
+						if([OBJ.GraphicsGroupObject.TYPE, OBJ.GraphicsObject.TYPE].includes(object.myTexture.data.type)) objects.push(object.myTexture);
 					}
 				} else {
 					data = object.data;
 				}
 
-				if([this.object_GRAPHIC, this.object_BODY].includes(data.type)){
+				if([OBJ.GraphicsObject.TYPE, OBJ.BodyObject.TYPE].includes(data.type)){
 
 					vertices = data.vertices.flat(4);
 
@@ -3432,7 +3433,7 @@ const _B2dEditor = function () {
 					}
 				}
 
-				if([this.object_GRAPHICGROUP].includes(data.type)){
+				if([OBJ.GraphicsGroupObject.TYPE].includes(data.type)){
 					data.graphicObjects = data.graphicObjects.map(graphicObjectString=>{
 						const graphicObject = this.parseArrObject(JSON.parse(graphicObjectString));
 						graphicObject.vertices.forEach(vertice=>{
@@ -3562,7 +3563,7 @@ const _B2dEditor = function () {
 						let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 
 						if (highestObject) {
-							if ([this.object_BODY, this.object_TRIGGER].includes(highestObject.data.type)) {
+							if ([OBJ.BodyObject.TYPE, OBJ.TriggerObject.TYPE].includes(highestObject.data.type)) {
 								this.selectedPhysicsBodies.push(highestObject.myBody);
 							}else{
 								this.selectedTextures.push(highestObject);
@@ -3678,7 +3679,7 @@ const _B2dEditor = function () {
 				if(!this.mouseDown) return;
 				if(Date.now() < this.doubleClickTime){
 
-					if(this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.data.type !== this.object_BODY){
+					if(this.verticeEditingSprite.selectedVertice && this.verticeEditingSprite.data.type !== OBJ.BodyObject.TYPE){
 						const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
 
 						let mouseVertice = -1;
@@ -3744,8 +3745,8 @@ const _B2dEditor = function () {
 						const bottomBound = mousePixiPos.y < mousePixiStartPos.y ? mousePixiStartPos.y : mousePixiPos.y;
 
 						const spriteData = this.verticeEditingSprite.data;
-						let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
-						if(spriteData.type === this.object_BODY){
+						let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
+						if(spriteData.type === OBJ.BodyObject.TYPE){
 							vertices = vertices.flat(2).map(point=> ({x:point.x*Settings.PTM, y:point.y*Settings.PTM}));
 						}
 
@@ -3940,13 +3941,13 @@ const _B2dEditor = function () {
 			if(this.selectedTool === this.tool_VERTICEEDITING && this.verticeEditingSprite.selectedVertice){
 
 				const spriteData = this.verticeEditingSprite.data;
-				let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+				let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
 				if(Array.isArray(vertices[0])) vertices = vertices[0];
 
 				const verticesToDelete = this.verticeEditingSprite.selectedVertice.map(verticeIndex => vertices[verticeIndex]);
 
 				for(let i = 0; i< vertices.length; i++){
-					if((spriteData.type === this.object_BODY && vertices.length>3) || (spriteData.type !== this.object_BODY && vertices.length>2)){
+					if((spriteData.type === OBJ.BodyObject.TYPE && vertices.length>3) || (spriteData.type !== OBJ.BodyObject.TYPE && vertices.length>2)){
 						// delete vertice
 						const vertice = vertices[i];
 						if(verticesToDelete.includes(vertice)){
@@ -3955,7 +3956,7 @@ const _B2dEditor = function () {
 						}
 					}
 				}
-				if(spriteData.type === this.object_BODY){
+				if(spriteData.type === OBJ.BodyObject.TYPE){
 					this.updateBodyFixtures(this.verticeEditingSprite.myBody);
 					this.updateBodyShapes(this.verticeEditingSprite.myBody);
 				}else{
@@ -4032,9 +4033,9 @@ const _B2dEditor = function () {
 				const aMovY = dL*Math.sin(dA);
 
 				const spriteData = this.verticeEditingSprite.data;
-				let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+				let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
 
-				if(spriteData.type === this.object_BODY){
+				if(spriteData.type === OBJ.BodyObject.TYPE){
 					if(Array.isArray(vertices[0])) vertices = vertices[0]
 				}
 
@@ -4043,7 +4044,7 @@ const _B2dEditor = function () {
 					let previousVertice = vertices[verticeIndex-1];
 					if(verticeIndex === 0) previousVertice = vertices[vertices.length-1];
 
-					if(spriteData.type === this.object_BODY){
+					if(spriteData.type === OBJ.BodyObject.TYPE){
 						vertice.x += aMovX / Settings.PTM;
 						vertice.y += aMovY / Settings.PTM;
 					}else{
@@ -4061,7 +4062,7 @@ const _B2dEditor = function () {
 					}
 				});
 
-				if(spriteData.type === this.object_BODY){
+				if(spriteData.type === OBJ.BodyObject.TYPE){
 					this.updateBodyFixtures(this.verticeEditingSprite.myBody);
 					this.updateBodyShapes(this.verticeEditingSprite.myBody);
 				}else{
@@ -4139,7 +4140,7 @@ const _B2dEditor = function () {
 		let graphic;
 		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
-			if (!graphic.data || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
+			if (!graphic.data || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === OBJ.TriggerObject.TYPE) {
 				queryGraphics.splice(i, 1);
 				i--;
 			}
@@ -4150,7 +4151,7 @@ const _B2dEditor = function () {
 		if(Math.abs(lowerBoundPixi.x-upperBoundPixi.x) <=3 && Math.abs(lowerBoundPixi.y-upperBoundPixi.y)<=3){
 			for(let i = 0; i<queryGraphics.length; i++){
 				const graphic = queryGraphics[i];
-				if(graphic.data.type === this.object_TEXTURE){
+				if(graphic.data.type === OBJ.TextureObject.TYPE){
 					// pixel perfect detection
 					let pixels;
 					try{
@@ -4172,7 +4173,7 @@ const _B2dEditor = function () {
 						continue;
 					}
 
-					if(graphic.data.type === this.object_TEXT) continue; // we dont want pixel detection on text
+					if(graphic.data.type === OBJ.TextObject.TYPE) continue; // we dont want pixel detection on text
 
 					const x = Math.round(localPosition.x)*4;
 					const y = Math.round(Math.round(localPosition.y)*Math.floor(graphic.width)*4);
@@ -4182,7 +4183,7 @@ const _B2dEditor = function () {
 						queryGraphics.splice(i, 1);
 						i--;
 					}
-				}else if(graphic.data.type !== this.object_JOINT && graphic.data.type !== this.object_ANIMATIONGROUP){
+				}else if(graphic.data.type !== OBJ.JointObject.TYPE && graphic.data.type !== OBJ.AnimationGroupObject.TYPE){
 					const screenPosition = this.cameraHolder.toGlobal(lowerBoundPixi);
 					game.levelCamera.matrix.applyInverse(screenPosition,screenPosition)
 					let containsPoint = false;
@@ -4344,7 +4345,7 @@ const _B2dEditor = function () {
 		for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 			const selectedPhysicsBody = this.selectedPhysicsBodies[i];
 			const data = selectedPhysicsBody.mySprite.data;
-			if(data.type === this.object_TRIGGER) continue;
+			if(data.type === OBJ.TriggerObject.TYPE) continue;
 
 			const pos = selectedPhysicsBody.GetPosition().Clone().SelfMul(Settings.PTM);
 
@@ -4416,7 +4417,7 @@ const _B2dEditor = function () {
 		let sprite;
 		for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
 			sprite = this.selectedPhysicsBodies[i].mySprite;
-			if (sprite.data.type == this.object_TRIGGER) {
+			if (sprite.data.type == OBJ.TriggerObject.TYPE) {
 				trigger.drawEditorTriggerTargets(this.selectedPhysicsBodies[i]);
 			}
 		}
@@ -4429,7 +4430,7 @@ const _B2dEditor = function () {
 		var sprite;
 		for (var i = 0; i < this.selectedTextures.length; i++) {
 			sprite = this.selectedTextures[i];
-			if (sprite.data.type == this.object_JOINT) {
+			if (sprite.data.type == OBJ.JointObject.TYPE) {
 				var tarSprite;
 
 				if (sprite.data.jointType == this.jointObject_TYPE_PIN) {
@@ -4513,7 +4514,7 @@ const _B2dEditor = function () {
 						let lineAlpha = 1;
 
 
-						if(tarSprite.data.type == this.object_JOINT || tarSprite.data.fixed) lineAlpha = 0;
+						if(tarSprite.data.type == OBJ.JointObject.TYPE || tarSprite.data.fixed) lineAlpha = 0;
 
 						if (sprite.data.enableLimit) {
 							const upperLengthVec = {
@@ -4608,7 +4609,7 @@ const _B2dEditor = function () {
 		this.transformGUI.visible = false;
 
 		if(Object.keys(this.selectedPrefabs).length === 0 && this.selectedTextures.length === 0 && this.selectedPhysicsBodies.length === 0) return;
-		if(this.selectedTextures.find(texture=>texture.data.type == this.object_JOINT)) return;
+		if(this.selectedTextures.find(texture=>texture.data.type == OBJ.JointObject.TYPE)) return;
 
 		this.transformGUI.visible = true;
 
@@ -4726,84 +4727,84 @@ const _B2dEditor = function () {
 					} else if (controller.property == "collideConnected") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.collideConnected = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "autoReferenceAngle") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.autoReferenceAngle = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "enableMotor") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.enableMotor = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "maxMotorTorque") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.maxMotorTorque = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "motorSpeed") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.motorSpeed = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "enableLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.enableLimit = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "upperAngle") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.upperAngle = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "lowerAngle") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.lowerAngle = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "frequencyHz") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.frequencyHz = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "dampingRatio") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.dampingRatio = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "upperLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.upperLimit = controller.targetValue;
 							}
 						}
 					} else if (controller.property == "lowerLimit") {
 						//joint
 						for (j = 0; j < this.selectedTextures.length; j++) {
-							if (this.selectedTextures[j].data.type == this.object_JOINT) {
+							if (this.selectedTextures[j].data.type == OBJ.JointObject.TYPE) {
 								this.selectedTextures[j].data.lowerLimit = controller.targetValue;
 							}
 						}
@@ -4925,7 +4926,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.transparancy = controller.targetValue;
-							if ([this.object_GRAPHICGROUP, this.object_TEXTURE, this.object_ANIMATIONGROUP, this.object_TEXT].includes(sprite.data.type)) {
+							if ([OBJ.GraphicsGroupObject.TYPE, OBJ.TextureObject.TYPE, OBJ.AnimationGroupObject.TYPE, OBJ.TextObject.TYPE].includes(sprite.data.type)) {
 								sprite.alpha = sprite.data.transparancy;
 							} else {
 								this.updateGraphicShapes(sprite);
@@ -5228,12 +5229,12 @@ const _B2dEditor = function () {
 			}
 			// DO SYNCING
 			var syncObject;
-			if (ui.editorGUI.editData.type == this.object_BODY || ui.editorGUI.editData.type == this.object_TRIGGER) {
+			if (ui.editorGUI.editData.type == OBJ.BodyObject.TYPE || ui.editorGUI.editData.type == OBJ.TriggerObject.TYPE) {
 				syncObject = this.selectedPhysicsBodies[0];
-			}  else if (ui.editorGUI.editData.type == this.object_PREFAB) {
+			}  else if (ui.editorGUI.editData.type == OBJ.PrefabObject.TYPE) {
 				var key = Object.keys(this.selectedPrefabs)[0];
 				syncObject = this.activePrefabs[key];
-			} else if (ui.editorGUI.editData.type == this.object_MULTIPLE) {
+			} else if (ui.editorGUI.editData.type == OBJ.MultiObject.TYPE) {
 				if (this.selectedTextures.length > 0) syncObject = this.selectedTextures[0];
 				else if (this.selectedPhysicsBodies.length > 0) syncObject = this.selectedPhysicsBodies[0];
 				else syncObject = this.activePrefabs[key];
@@ -5249,10 +5250,10 @@ const _B2dEditor = function () {
 				} else {
 					ui.editorGUI.editData.x = syncObject.x;
 					ui.editorGUI.editData.y = syncObject.y;
-					if(ui.editorGUI.editData.type == this.object_PREFAB) ui.editorGUI.editData.rotation = syncObject.rotation;
+					if(ui.editorGUI.editData.type == OBJ.PrefabObject.TYPE) ui.editorGUI.editData.rotation = syncObject.rotation;
 					else ui.editorGUI.editData.rotation = syncObject.rotation * this.RAD2DEG;
 
-					if(ui.editorGUI.editData.type == this.object_TEXT){
+					if(ui.editorGUI.editData.type == OBJ.TextObject.TYPE){
 						ui.editorGUI.editData.width = syncObject.width;
 						ui.editorGUI.editData.height = syncObject.height;
 					}
@@ -5498,9 +5499,9 @@ const _B2dEditor = function () {
 	this.doVerticeEditing = function () {
 
 		const spriteData = this.verticeEditingSprite.data;
-		let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
+		let vertices = spriteData.type === OBJ.BodyObject.TYPE ? spriteData.vertices[0] : spriteData.vertices;
 
-		if(spriteData.type === this.object_BODY){
+		if(spriteData.type === OBJ.BodyObject.TYPE){
 			vertices = vertices.flat(2).map(point=> ({x:point.x*Settings.PTM, y:point.y*Settings.PTM}));
 		}
 
@@ -5710,7 +5711,7 @@ const _B2dEditor = function () {
 			if (highestObject.data.prefabInstanceName) {
 				const tarPrefab = this.activePrefabs[highestObject.data.prefabInstanceName];
 				tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
-			} else if ([this.object_BODY, this.object_TRIGGER].includes(highestObject.data.type)) {
+			} else if ([OBJ.BodyObject.TYPE, OBJ.TriggerObject.TYPE].includes(highestObject.data.type)) {
 				tarPos = highestObject.myBody.GetPosition().Clone();
 				tarPos.x *= this.PTM;
 				tarPos.y *= this.PTM;
@@ -5981,7 +5982,7 @@ const _B2dEditor = function () {
 
 			var graphicContainer = arr[i];
 
-			if (graphicContainer.data.type == this.object_GRAPHIC) innerGraphics.push(graphicContainer.data);
+			if (graphicContainer.data.type == OBJ.GraphicsObject.TYPE) innerGraphics.push(graphicContainer.data);
 			else graphicContainer.data.graphicObjects.forEach(g => {
 				innerGraphics.push(this.parseArrObject(JSON.parse(g)));
 			});
@@ -6042,7 +6043,7 @@ const _B2dEditor = function () {
 
 			if (body) {
 				body.mySprite.parent.swapChildren(graphicContainer, body.mySprite);
-				if (graphicContainer.data.type == this.object_GRAPHICGROUP) {
+				if (graphicContainer.data.type == OBJ.GraphicsGroupObject.TYPE) {
 					body.mySprite.alpha = graphicContainer.data.transparancy;
 					body.mySprite.data.transparancy[0] = graphicContainer.data.transparancy;
 				}
@@ -6230,9 +6231,9 @@ const _B2dEditor = function () {
 				this.lookupGroups[group] = new Lookup();
 			}
 
-			if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
-			else if (data.type == this.object_BODY) this.lookupGroups[group]._bodies.push(obj);
-			else if (data.type == this.object_JOINT) this.lookupGroups[group]._joints.push(obj);
+			if (data.type == OBJ.TextureObject.TYPE && obj.myBody == undefined) this.lookupGroups[group]._textures.push(obj);
+			else if (data.type == OBJ.BodyObject.TYPE) this.lookupGroups[group]._bodies.push(obj);
+			else if (data.type == OBJ.JointObject.TYPE) this.lookupGroups[group]._joints.push(obj);
 
 			if (data.refName && data.refName != "") {
 				this.lookupGroups[group][data.refName] = obj;
@@ -6245,9 +6246,9 @@ const _B2dEditor = function () {
 					this.lookupGroups[group][subGroup] = new Lookup();
 				}
 				if (this.lookupGroups[group][subGroup] instanceof Lookup) {
-					if (data.type == this.object_TEXTURE && obj.myBody == undefined) this.lookupGroups[group][subGroup]._textures.push(obj);
-					else if (data.type == this.object_BODY) this.lookupGroups[group][subGroup]._bodies.push(obj);
-					else if (data.type == this.object_JOINT) this.lookupGroups[group][subGroup]._joints.push(obj);
+					if (data.type == OBJ.TextureObject.TYPE && obj.myBody == undefined) this.lookupGroups[group][subGroup]._textures.push(obj);
+					else if (data.type == OBJ.BodyObject.TYPE) this.lookupGroups[group][subGroup]._bodies.push(obj);
+					else if (data.type == OBJ.JointObject.TYPE) this.lookupGroups[group][subGroup]._joints.push(obj);
 					if (data.refName && data.refName != "") {
 						this.lookupGroups[group][subGroup][data.refName] = obj;
 					}
@@ -6292,9 +6293,9 @@ const _B2dEditor = function () {
 			group = arr[i].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 			if (this.lookupGroups[group] != undefined) {
 				let tarArray = [];
-				if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group]._textures;
-				else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group]._bodies;
-				else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group]._joints;
+				if (data.type == OBJ.TextureObject.TYPE && obj.myBody == undefined) tarArray = this.lookupGroups[group]._textures;
+				else if (data.type == OBJ.BodyObject.TYPE) tarArray = this.lookupGroups[group]._bodies;
+				else if (data.type == OBJ.JointObject.TYPE) tarArray = this.lookupGroups[group]._joints;
 
 
 				var tarIndex = tarArray.indexOf(obj);
@@ -6306,9 +6307,9 @@ const _B2dEditor = function () {
 				for (j = 0; j < subGroups; j++) {
 					subGroup = subGroups[j].replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?,.\/]/g, '');
 					if (this.lookupGroups[group][subGroup] != undefined && this.lookupGroups[group][subGroup] instanceof Lookup) {
-						if (data.type == this.object_TEXTURE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup]._textures;
-						else if (data.type == this.object_BODY) tarArray = this.lookupGroups[group][subGroup]._bodies;
-						else if (data.type == this.object_JOINT) tarArray = this.lookupGroups[group][subGroup]._joints;
+						if (data.type == OBJ.TextureObject.TYPE && obj.myBody == undefined) tarArray = this.lookupGroups[group][subGroup]._textures;
+						else if (data.type == OBJ.BodyObject.TYPE) tarArray = this.lookupGroups[group][subGroup]._bodies;
+						else if (data.type == OBJ.JointObject.TYPE) tarArray = this.lookupGroups[group][subGroup]._joints;
 
 						tarIndex = tarArray.indexOf(obj);
 						if (tarIndex > 0) tarArray.splice(tarIndex, 1);
@@ -6618,7 +6619,7 @@ const _B2dEditor = function () {
 
 		// if (Math.round(scaleX * 100) / 100 == 1 && Math.round(scaleY * 100) / 100 == 1) return;
 
-		if (data.type == this.object_BODY || data.type == this.object_TRIGGER) {
+		if (data.type == OBJ.BodyObject.TYPE || data.type == OBJ.TriggerObject.TYPE) {
 
 			let oldFixtures = []
 			const body = obj;
@@ -6650,7 +6651,7 @@ const _B2dEditor = function () {
 					}
 					shape.Set(oldVertices);
 
-					if(data.type === this.object_TRIGGER){
+					if(data.type === OBJ.TriggerObject.TYPE){
 						obj.mySprite.data.vertices = oldVertices.map(vertice =>({x:vertice.x, y:vertice.y}));
 					}
 				} else if (shape instanceof Box2D.b2CircleShape) {
@@ -6677,7 +6678,7 @@ const _B2dEditor = function () {
 
 			}
 
-			if(data.type !== this.object_TRIGGER){
+			if(data.type !== OBJ.TriggerObject.TYPE){
 				this.updateBodyShapes(body);
 				this.updateTileSprite(body, true);
 				// needed to update the culling engine
@@ -6691,7 +6692,7 @@ const _B2dEditor = function () {
 		} else {
 			var sprite = obj;
 
-			if (sprite.data.type == this.object_GRAPHICGROUP) {
+			if (sprite.data.type == OBJ.GraphicsGroupObject.TYPE) {
 
 				let centerPoint = {
 					x: 0,
@@ -6741,7 +6742,7 @@ const _B2dEditor = function () {
 				}
 				this.updateGraphicGroupShapes(sprite);
 				// needed to update the culling engine
-			} else if (sprite.data.type == this.object_GRAPHIC) {
+			} else if (sprite.data.type == OBJ.GraphicsObject.TYPE) {
 				for (let j = 0; j < sprite.data.vertices.length; j++) {
 					sprite.data.vertices[j].x *= scaleX;
 					sprite.data.vertices[j].y *= scaleY;
@@ -6757,7 +6758,7 @@ const _B2dEditor = function () {
 				if (!sprite.data.radius) this.updatePolyGraphic(sprite.originalGraphic, sprite.data.vertices, sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
 				else this.updateCircleGraphic(sprite.originalGraphic, sprite.data.radius, sprite.data.vertices[0], sprite.data.colorFill, sprite.data.colorLine, sprite.data.lineWidth, sprite.data.transparancy);
 				this.updateTileSprite(sprite, true);
-			} else if (sprite.data.type == this.object_TEXTURE) {
+			} else if (sprite.data.type == OBJ.TextureObject.TYPE) {
 				sprite.width = sprite.width * scaleX;
 				sprite.height = sprite.height * scaleY;
 
@@ -6897,7 +6898,7 @@ const _B2dEditor = function () {
 				// sprite or joint
 				object.scale.x *= -1;
 
-				if(object.data.type === this.object_JOINT){
+				if(object.data.type === OBJ.JointObject.TYPE){
 					if(object.data.lowerAngle !== undefined && object.data.upperAngle !== undefined) {
 						const oldLower = object.data.lowerAngle;
 						object.data.lowerAngle = -object.data.upperAngle;
@@ -6938,9 +6939,9 @@ const _B2dEditor = function () {
 		var combinedGraphics;
 		var combinedBodies;
 
-		const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
-		const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
-		const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
+		const hasAnimation = this.selectedTextures.find(obj => obj.data.type === OBJ.AnimationGroupObject.TYPE);
+		const hasOthers = this.selectedTextures.find(obj => obj.data.type !== OBJ.AnimationGroupObject.TYPE);
+		const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === OBJ.TriggerObject.TYPE);
 
 		if(hasTriggers) return;
 		if(hasAnimation && hasOthers) return;
@@ -7011,7 +7012,7 @@ const _B2dEditor = function () {
 			}
 			if(this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
 		}
-		if (this.selectedTextures.length == 1 && [this.object_GRAPHICGROUP, this.object_ANIMATIONGROUP].includes(this.selectedTextures[0].data.type)) {
+		if (this.selectedTextures.length == 1 && [OBJ.GraphicsGroupObject.TYPE, OBJ.AnimationGroupObject.TYPE].includes(this.selectedTextures[0].data.type)) {
 			this.ungroupGraphicObjects(this.selectedTextures[0]);
 		}
 		this.selectedTextures = [];
@@ -7290,13 +7291,13 @@ const _B2dEditor = function () {
 			graphicObject.rotation = graphicGroup.rotation + graphicObject.rotation;
 
 			let graphic;
-			if(graphicObject.type == this.object_GRAPHIC){
+			if(graphicObject.type == OBJ.GraphicsObject.TYPE){
 				graphic = this.buildGraphicFromObj(graphicObject);
-			}else if(graphicObject.type == this.object_TEXTURE){
+			}else if(graphicObject.type == OBJ.TextureObject.TYPE){
 				graphic = this.buildTextureFromObj(graphicObject);
-			}else if(graphicObject.type == this.object_TEXT){
+			}else if(graphicObject.type == OBJ.TextObject.TYPE){
 				graphic = this.buildTextFromObj(graphicObject);
-			}else if(graphicObject.type == this.object_GRAPHICGROUP){
+			}else if(graphicObject.type == OBJ.GraphicsGroupObject.TYPE){
 				graphic = this.buildGraphicGroupFromObj(graphicObject);
 			}
 
@@ -7956,7 +7957,7 @@ const _B2dEditor = function () {
 			let lineWidth = body.mySprite.data.lineWidth[i];
 			let transparancy = 1.0;
 
-			if (body.mySprite.data.type == this.object_TRIGGER) {
+			if (body.mySprite.data.type == OBJ.TriggerObject.TYPE) {
 				//color trigger
 				colorFill = '#FFFFFF';
 				colorLine = '#FFFFFF';
@@ -8177,7 +8178,7 @@ const _B2dEditor = function () {
 
 		const oldOriginalGraphic = target.originalGraphic;
 		target.originalGraphic = target.myTileSpriteOutline;
-		if(data.type === this.object_BODY){
+		if(data.type === OBJ.BodyObject.TYPE){
 			this.updateBodyShapes(target, true);
 		}else{
 			this.updateGraphicShapes(target, true);
@@ -8307,12 +8308,12 @@ const _B2dEditor = function () {
 		arr[2] = obj.y;
 		arr[3] = obj.rotation;
 
-		if (obj.type != this.object_PREFAB) {
+		if (obj.type != OBJ.PrefabObject.TYPE) {
 			arr[4] = obj.groups;
 			arr[5] = obj.refName;
 		}
 
-		if (obj.type == this.object_BODY) {
+		if (obj.type == OBJ.BodyObject.TYPE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.colorFill;
 			arr[8] = obj.colorLine;
@@ -8330,7 +8331,7 @@ const _B2dEditor = function () {
 			arr[20] = obj.isVehiclePart;
 			arr[21] = obj.friction;
 			arr[22] = obj.restitution;
-		} else if (obj.type == this.object_TEXTURE) {
+		} else if (obj.type == OBJ.TextureObject.TYPE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
 			arr[8] = obj.bodyID;
@@ -8346,7 +8347,7 @@ const _B2dEditor = function () {
 			arr[18] = obj.repeatTeleportX;
 			arr[19] = obj.repeatTeleportY;
 			arr[20] = obj.visible;
-		} else if (obj.type == this.object_JOINT) {
+		} else if (obj.type == OBJ.JointObject.TYPE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.bodyA_ID;
 			arr[8] = obj.bodyB_ID;
@@ -8363,10 +8364,10 @@ const _B2dEditor = function () {
 			arr[19] = obj.upperLimit;
 			arr[20] = obj.lowerLimit;
 			arr[21] = obj.autoReferenceAngle;
-		} else if (obj.type == this.object_PREFAB) {
+		} else if (obj.type == OBJ.PrefabObject.TYPE) {
 			arr[4] = obj.settings
 			arr[5] = obj.prefabName
-		} else if (obj.type == this.object_GRAPHIC) {
+		} else if (obj.type == OBJ.GraphicsObject.TYPE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.colorFill;
 			arr[8] = obj.colorLine;
@@ -8385,7 +8386,7 @@ const _B2dEditor = function () {
 			const gradientIndex = this.levelGradientsNames.indexOf(obj.gradient);
 			arr[21] = gradientIndex >= 0 ? gradientIndex : '';
 			arr[22] = obj.visible;
-		} else if (arr[0] == this.object_GRAPHICGROUP) {
+		} else if (arr[0] == OBJ.GraphicsGroupObject.TYPE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
 			arr[8] = obj.bodyID;
@@ -8398,7 +8399,7 @@ const _B2dEditor = function () {
 			arr[15] = obj.repeatTeleportY;
 			arr[16] = obj.visible;
 			arr[17] = obj.mirrored;
-		} else if (arr[0] == this.object_TRIGGER) {
+		} else if (arr[0] == OBJ.TriggerObject.TYPE) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
 			arr[8] = obj.enabled;
@@ -8412,7 +8413,7 @@ const _B2dEditor = function () {
 			arr[16] = obj.followFirstTarget;
 			arr[17] = obj.delay;
 			arr[18] = obj.repeatDelay;
-		} else if (arr[0] == this.object_TEXT) {
+		} else if (arr[0] == OBJ.TextObject.TYPE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
 			arr[8] = obj.textColor;
@@ -8428,14 +8429,14 @@ const _B2dEditor = function () {
 			arr[18] = obj.repeatTeleportX;
 			arr[19] = obj.repeatTeleportY;
 			arr[20] = obj.visible;
-		}else if(arr[0] == this.object_SETTINGS){
+		}else if(arr[0] == OBJ.EditorSettingsObject.TYPE){
 			arr = [];
 			arr[0] = obj.type;
 			arr[1] = obj.gravityX;
 			arr[2] = obj.gravityY;
 			arr[3] = obj.backgroundColor;
 			arr[4] = obj.cameraZoom;
-		}else if (arr[0] == this.object_ANIMATIONGROUP) {
+		}else if (arr[0] == OBJ.AnimationGroupObject.TYPE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
 			arr[8] = obj.bodyID;
@@ -8467,22 +8468,22 @@ const _B2dEditor = function () {
 	}
 
 	this.updateObject = function (sprite, data) {
-		if (data.type == this.object_BODY) {
+		if (data.type == OBJ.BodyObject.TYPE) {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
-		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT || data.type == this.object_ANIMATIONGROUP) {
+		} else if (data.type == OBJ.TextureObject.TYPE || data.type == OBJ.GraphicsObject.TYPE || data.type == OBJ.GraphicsGroupObject.TYPE || data.type == OBJ.TextObject.TYPE || data.type == OBJ.AnimationGroupObject.TYPE) {
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation;
 			if (data.bodyID != undefined) data.bodyID = sprite.myBody.mySprite.parent.getChildIndex(sprite.myBody.mySprite);
-		} else if (data.type == this.object_JOINT) {
+		} else if (data.type == OBJ.JointObject.TYPE) {
 			data.bodyA_ID = sprite.bodies[0].mySprite.parent.getChildIndex(sprite.bodies[0].mySprite);
 			if (sprite.bodies.length > 1) data.bodyB_ID = sprite.bodies[1].mySprite.parent.getChildIndex(sprite.bodies[1].mySprite);
 			data.x = sprite.x;
 			data.y = sprite.y;
 			data.rotation = sprite.rotation
-		} else if (data.type == this.object_TRIGGER) {
+		} else if (data.type == OBJ.TriggerObject.TYPE) {
 			data.x = sprite.myBody.GetPosition().x;
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
@@ -8498,7 +8499,7 @@ const _B2dEditor = function () {
 			}
 		}
 
-		if (!sprite && data.type == this.object_PREFAB) {
+		if (!sprite && data.type == OBJ.PrefabObject.TYPE) {
 			var prefabGroup = this.lookupGroups[data.key];
 			var bodyIndex = (prefabGroup._bodies.length > 0) ? prefabGroup._bodies[0].mySprite.parent.getChildIndex(prefabGroup._bodies[0].mySprite) : Number.POSITIVE_INFINITY;
 			var spriteIndex = (prefabGroup._textures.length > 0) ? prefabGroup._textures[0].parent.getChildIndex(prefabGroup._textures[0]) : Number.POSITIVE_INFINITY;
@@ -8566,7 +8567,7 @@ const _B2dEditor = function () {
 					let offsetX = this.activePrefabs[prefabInstanceName].x;
 					let offsetY = this.activePrefabs[prefabInstanceName].y;
 
-					if (obj.type == this.object_BODY) {
+					if (obj.type == OBJ.BodyObject.TYPE) {
 						offsetX /= this.PTM;
 						offsetY /= this.PTM;
 					}
@@ -8574,18 +8575,18 @@ const _B2dEditor = function () {
 					obj.x += offsetX;
 					obj.y += offsetY;
 				}
-				if (obj.type != this.object_PREFAB) obj.ID += startChildIndex + prefabOffset - vehicleOffset;
+				if (obj.type != OBJ.PrefabObject.TYPE) obj.ID += startChildIndex + prefabOffset - vehicleOffset;
 
-				if (obj.type == this.object_BODY) {
+				if (obj.type == OBJ.BodyObject.TYPE) {
 					worldObject = this.buildBodyFromObj(obj);
 					createdObjects._bodies.push(worldObject);
-				} else if (obj.type == this.object_TEXTURE) {
+				} else if (obj.type == OBJ.TextureObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildTextureFromObj(obj);
 					createdObjects._textures.push(worldObject);
-				} else if (obj.type == this.object_JOINT) {
+				} else if (obj.type == OBJ.JointObject.TYPE) {
 
 					let duplicateJoint = false;
 
@@ -8602,7 +8603,7 @@ const _B2dEditor = function () {
 					if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
 					else worldObject = this.attachJoint(obj);
 					createdObjects._joints.push(worldObject);
-				} else if (obj.type == this.object_PREFAB) {
+				} else if (obj.type == OBJ.PrefabObject.TYPE) {
 					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
 						vehicleOffset = Settings.vehicleLayers[obj.prefabName];
 						characterStartLayer = this.textures.children.length;
@@ -8622,25 +8623,25 @@ const _B2dEditor = function () {
 						createdObjects._joints = createdObjects._joints.concat(prefabObjects._joints);
 						prefabOffset = this.textures.children.length - prefabOffset;
 					}
-				} else if (obj.type == this.object_GRAPHIC) {
+				} else if (obj.type == OBJ.GraphicsObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildGraphicFromObj(obj);
 					createdObjects._textures.push(worldObject);
-				} else if (obj.type == this.object_GRAPHICGROUP) {
+				} else if (obj.type == OBJ.GraphicsGroupObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildGraphicGroupFromObj(obj);
 					createdObjects._textures.push(worldObject);
-				}else if (obj.type == this.object_ANIMATIONGROUP) {
+				}else if (obj.type == OBJ.AnimationGroupObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
 					worldObject = this.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
-				}  else if (obj.type == this.object_TRIGGER) {
+				}  else if (obj.type == OBJ.TriggerObject.TYPE) {
 					let duplicateJoint = false;
 					if(obj.groups.startsWith(Settings.jsonDuplicateText)){
 						obj.groups = obj.groups.substr(Settings.jsonDuplicateText.length);
@@ -8653,7 +8654,7 @@ const _B2dEditor = function () {
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 					createdObjects._bodies.push(worldObject);
-				} else if (obj.type == this.object_TEXT) {
+				} else if (obj.type == OBJ.TextObject.TYPE) {
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
@@ -8885,7 +8886,7 @@ const _B2dEditor = function () {
 		var i;
 		for (i = 0; i < this.textures.children.length; i++) {
 			sprite = this.textures.getChildAt(i);
-			if (sprite.data.type == this.object_JOINT) {
+			if (sprite.data.type == OBJ.JointObject.TYPE) {
 
 				sprite.data.bodyA_ID = sprite.bodies[0].mySprite.parent.getChildIndex(sprite.bodies[0].mySprite);
 				if (sprite.bodies.length > 1) sprite.data.bodyB_ID = sprite.bodies[1].mySprite.parent.getChildIndex(sprite.bodies[1].mySprite);
@@ -8902,9 +8903,9 @@ const _B2dEditor = function () {
 				spritesToDestroy.push(sprite);
 				this.addObjectToLookupGroups(joint, sprite.data);
 				joint.spriteData = sprite.data;
-			} else if (sprite.data.type == this.object_BODY) {
+			} else if (sprite.data.type == OBJ.BodyObject.TYPE) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
-			} else if (sprite.data.type == this.object_TEXTURE) {
+			} else if (sprite.data.type == OBJ.TextureObject.TYPE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);
 			}
 
@@ -8916,7 +8917,7 @@ const _B2dEditor = function () {
 				this.parallaxObject.push(sprite);
 			}
 
-			if(sprite.data.type === this.object_ANIMATIONGROUP){
+			if(sprite.data.type === OBJ.AnimationGroupObject.TYPE){
 				this.animationGroups.push(sprite);
 			}
 
@@ -8985,7 +8986,7 @@ const _B2dEditor = function () {
 
 
 		// a hack to delete blueprint triggers
-		const prefabTriggersCreated = objects.filter(obj=> obj.mySprite && obj.mySprite.data.type == this.object_TRIGGER);
+		const prefabTriggersCreated = objects.filter(obj=> obj.mySprite && obj.mySprite.data.type == OBJ.TriggerObject.TYPE);
 		if(prefabTriggersCreated) this.deleteObjects(prefabTriggersCreated);
 
 		this.deleteObjects([prefabObject]);
