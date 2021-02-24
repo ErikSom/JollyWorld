@@ -28,12 +28,15 @@ export class Humanoid extends PrefabManager.basePrefab {
         super(target);
         this.life = 300;
         this.flipped = false;
+        this.mouthTextureName = 'Mouth';
+        this.mouthPos = {x:41, y:59};
     }
+
     postConstructor(){
         if(!this.mouth){
-            this.mouth = new PIXI.Sprite(PIXI.Texture.from('Mouth_Idle0000'))
-            this.mouth.x = 41; // magic numbers
-            this.mouth.y = 59;
+            this.mouth = new PIXI.Sprite(PIXI.Texture.from(`${this.mouthTextureName}_Idle0000`))
+            this.mouth.x = this.mouthPos.x; // magic numbers
+            this.mouth.y = this.mouthPos.y;
             this.lookupObject[Humanoid.BODY_PARTS.HEAD].myTexture.addChild(this.mouth);
         }
     }
@@ -91,7 +94,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         const textureName = this.mouth.texture.textureCacheIds[0];
         const textureSkin = textureName.substr(textureName.length - 4);
-        this.mouth.texture = PIXI.Texture.from(`Mouth_${expression}${textureSkin}`);
+        this.mouth.texture = PIXI.Texture.from(`${this.mouthTextureName}_${expression}${textureSkin}`);
 
         this.expressionTimer = 0;
 
@@ -120,7 +123,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             body.myTexture.data.textureName = targetTexture;
             body.myTexture.originalSprite.texture = PIXI.Texture.from(targetTexture);
         }
-        this.mouth.texture = PIXI.Texture.from(`Mouth_Idle${targetFrame}`);
+        this.mouth.texture = PIXI.Texture.from(`${this.mouthTextureName}_Idle${targetFrame}`);
     }
     flip(){
         this.flipped = !this.flipped;

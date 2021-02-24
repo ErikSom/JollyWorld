@@ -3060,6 +3060,11 @@ function-bind@^1.1.1:
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
   integrity sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
 
+gamestats.js@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/gamestats.js/-/gamestats.js-0.9.1.tgz#7ccaed5cb04dd97062096208d1a0fb1fd5f51f39"
+  integrity sha512-TrWW9eEilEHpYCXqLo2LuNVcq/dXZLcv1+zfx+TBKF7Amxfo1sExyy+nG2DV14LCL16jkOX1FIUyV+kjJruojQ==
+
 gensync@^1.0.0-beta.1:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"

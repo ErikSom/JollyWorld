@@ -42,7 +42,7 @@ import { YouTubePlayer } from "./utils/YouTubePlayer";
 
 const nanoid = require('nanoid');
 
-import JSGraphy from '../libs/jsgraphy'; //TO DO PUBLISH NPM
+import GameStats from 'gamestats.js'; //TO DO PUBLISH NPM
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
@@ -112,7 +112,7 @@ function Game() {
     // PathRenderTarget();
 
     this.init = function () {
-        this.stats = new JSGraphy()
+        this.stats = new GameStats()
         document.body.appendChild(this.stats.dom);
         this.stats.dom.style.left = '0px';
         this.stats.dom.style.top = 'unset';

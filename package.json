@@ -39,6 +39,7 @@
     "css-loader": "^0.28.9",
     "extend": "^3.0.2",
     "file-loader": "^6.0.0",
+    "gamestats.js": "^0.9.1",
     "html-minifier": "^4.0.0",
     "http-server": "^0.11.1",
     "lz-string": "^1.4.4",
