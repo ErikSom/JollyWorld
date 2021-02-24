@@ -15,6 +15,7 @@ export class NoVehicle extends BaseVehicle {
         this.character;
         this.vehicleName = 'NoVehicle';
 
+		this.character.calculateJointOffsets();
         if(this.prefabObject.settings.limbs){
             for(let key in this.prefabObject.settings.limbs){
                 this.positionLimb(key);

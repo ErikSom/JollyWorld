@@ -1053,17 +1053,36 @@ export class Humanoid extends PrefabManager.basePrefab {
             lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
             lowerPart.SetAngle(lowerAngle-Settings.pihalve);
 
-            const anchorDistanceEnd = endJointPos.Clone().SelfSub(endPart.GetPosition()).Length();
-
             const endJointPosRotated = rotateVectorAroundPoint(new Box2D.b2Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, lowerAngle*game.editor.RAD2DEG);
             endJointPos.x = endJointPosRotated.x;
             endJointPos.y = endJointPosRotated.y;
             endJoint.position.x = endJointPos.x*Settings.PTM;
             endJoint.position.y = endJointPos.y*Settings.PTM;
 
-            endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
+            const endPos = new Box2D.b2Vec2(endJointPos.x, endJointPos.y);
+            const targetOffsetAngle = lowerPart.GetAngle()+endPart.jointOffsetAngle;
+            endPos.x += endPart.jointOffsetLength * Math.cos(targetOffsetAngle);
+            endPos.y += endPart.jointOffsetLength * Math.sin(targetOffsetAngle);
+
+            console.log(endPart.jointOffsetLength, endPart.jointOffsetAngle);
+
+            endPart.SetPosition(endPos);
             endPart.SetAngle(lowerAngle-Settings.pihalve);
         }
+    }
+
+    calculateJointOffsets(){
+        [Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.FEET_RIGHT].forEach(part => {
+            const joint = this.lookupObject[part+"_joint"];
+            const jointWorldPos = new Box2D.b2Vec2(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
+
+            console.log("CALCULATE JOINT OFFSETS", part, this.lookupObject[part])
+
+            const bodyPart = this.lookupObject[part];
+            const jointOffset = bodyPart.GetPosition().Clone().SelfSub(jointWorldPos);
+            bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x);
+            bodyPart.jointOffsetLength = jointOffset.Length();
+        });
     }
 }
 
