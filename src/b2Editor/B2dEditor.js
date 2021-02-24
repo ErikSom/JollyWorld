@@ -5300,7 +5300,7 @@ const _B2dEditor = function () {
 							body.mySprite.data.repeatType = trigger.triggerRepeatType[controller.targetValue];
 						}
 						trigger.updateTriggerGUI();
-					}else if (controller.property == "delay") {
+					}else if (controller.property == "delay" && this.selectedPhysicsBodies.length>0) { // prefabs also use delay ..
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];

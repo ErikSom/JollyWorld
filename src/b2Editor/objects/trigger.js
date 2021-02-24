@@ -1178,9 +1178,12 @@ export class triggerCore {
 
                 this.trigger.SetPosition(new Box2D.b2Vec2(targetX, targetY));
             }
-            if (this.runTriggerOnce) {
+            if (this.runTriggerOnce && !this.destroy) {
                 this.actionQueue.push(this.delay*1000);
                 this.runTriggerOnce = false;
+                if (this.data.repeatType == triggerRepeatType.once) {
+                    this.destroy = true;
+                }
             }
 
             for(let i = 0; i<this.actionQueue.length; i++){
@@ -1192,11 +1195,14 @@ export class triggerCore {
                     i--;
                 }
             }
+
+            if(this.actionQueue.length === 0 && this.destroy){
+                B2dEditor.deleteObjects([this.trigger]);
+            }
+
             this.repeatWaitDelay -= game.editor.deltaTime;
 
-            if(this.destroy){
-                B2dEditor.deleteObjects([this.trigger]);
-            }else if(this.repeatWaitDelay <= 0){
+            if(this.repeatWaitDelay <= 0){
                 if (this.touchingTarget && this.data.repeatType === triggerRepeatType.continuesOnContact) {
                     this.doTrigger();
                     this.repeatWaitDelay = this.repeatDelay * 1000;
@@ -1219,9 +1225,6 @@ export class triggerCore {
                     if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
                         if (self.touchingObjects.length == 1) {
                             self.runTriggerOnce = true;
-                            if (self.data.repeatType == triggerRepeatType.once) {
-                                self.destroy = true;
-                            }
                         }
                     }
                 }
