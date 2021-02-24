@@ -1075,9 +1075,6 @@ export class Humanoid extends PrefabManager.basePrefab {
         [Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.FEET_RIGHT].forEach(part => {
             const joint = this.lookupObject[part+"_joint"];
             const jointWorldPos = new Box2D.b2Vec2(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
-
-            console.log("CALCULATE JOINT OFFSETS", part, this.lookupObject[part])
-
             const bodyPart = this.lookupObject[part];
             const jointOffset = bodyPart.GetPosition().Clone().SelfSub(jointWorldPos);
             bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x);

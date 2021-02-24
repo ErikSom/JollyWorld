@@ -246,7 +246,7 @@ export const doAction = function (actionData, target) {
             if(actionData.toggle) actionData.engineOn = !actionData.engineOn;
             break;
         case "Trigger":
-            target.myBody.class.doTrigger();
+            target.myBody.class.activateTrigger();
             break;
         case "ResetCameraTarget":
             game.cameraFocusObject = game.cameraFocusCharacterObject;
@@ -1148,7 +1148,7 @@ export class triggerCore {
                 while (fixture != null) {
                     if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
                         if(Key.isPressed(Key.MOUSE)){
-                            this.actionQueue.push(this.delay*1000);
+                            this.activateTrigger();
                         }
                         game.canvas.style.cursor = 'pointer';
                         break;
@@ -1157,11 +1157,11 @@ export class triggerCore {
                 }
             } else if(this.data.targetType == triggerTargetType.keydown){
                 if(Key.isPressed(this.data.triggerKey)){
-                    this.actionQueue.push(this.delay*1000);
+                    this.activateTrigger();
                 }
             } else if(this.data.targetType == triggerTargetType.keyup){
                 if(Key.isReleased(this.data.triggerKey)){
-                    this.actionQueue.push(this.delay*1000);
+                    this.activateTrigger();
                 }
             }
             if(this.data.followPlayer){
@@ -1179,7 +1179,7 @@ export class triggerCore {
                 this.trigger.SetPosition(new Box2D.b2Vec2(targetX, targetY));
             }
             if (this.runTriggerOnce && !this.destroy) {
-                this.actionQueue.push(this.delay*1000);
+                this.activateTrigger();
                 this.runTriggerOnce = false;
                 if (this.data.repeatType == triggerRepeatType.once) {
                     this.destroy = true;
@@ -1248,6 +1248,9 @@ export class triggerCore {
         }
         this.contactListener.PreSolve = function (contact, oldManifold) {}
         this.contactListener.PostSolve = function (contact, impulse) {}
+    }
+    activateTrigger(){
+        this.actionQueue.push(this.delay*1000);
     }
     doTrigger() {
         let i, actionData;
