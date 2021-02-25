@@ -211,7 +211,7 @@ function UIManager() {
         smallLogo.style.display = 'block';
     }
     this.hideSmallLogo = function(){
-        smallLogo.style.display = 'none';
+        if(smallLogo) smallLogo.style.display = 'none';
     }
 
     this.hide = function () {
