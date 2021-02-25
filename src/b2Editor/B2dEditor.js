@@ -2421,6 +2421,7 @@ const _B2dEditor = function () {
 		this.lockselection = false;
 		this.delay = 0;
 		this.repeatDelay = 0;
+		this.randomTarget = false;
 	}
 	this.textObject = function () {
 		this.type = self.object_TEXT;
@@ -2495,7 +2496,7 @@ const _B2dEditor = function () {
 	this.editorTextObject = new function () {
 		this.textColor = "#999999";
 		this.transparancy = 1.0;
-		this.fontSize = 12;
+		this.fontSize = 50;
 		this.fontName = "Arial";
 		this.textAlign = 'left';
 	}
@@ -2673,6 +2674,8 @@ const _B2dEditor = function () {
 								if(targetSprite.data.type === this.object_GRAPHIC && !targetSprite.data.radius){
 									this.verticeEditingSprite = targetSprite;
 									this.selectTool(this.tool_VERTICEEDITING);
+								}else if(targetSprite.data.type === this.object_TEXT){
+									this.openTextEditor();
 								}
 							}else{
 								// editing body
@@ -5332,7 +5335,13 @@ const _B2dEditor = function () {
 							body.mySprite.data.followFirstTarget = controller.targetValue;
 							if(controller.targetValue) body.mySprite.data.followPlayer = false;
 						}
-					} else if (controller.property == "triggerKey") {
+					} else if (controller.property == "randomTarget") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.randomTarget = controller.targetValue;
+						}
+					}else if (controller.property == "triggerKey") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -8617,6 +8626,7 @@ const _B2dEditor = function () {
 			arr[16] = obj.followFirstTarget;
 			arr[17] = obj.delay;
 			arr[18] = obj.repeatDelay;
+			arr[19] = obj.randomTarget;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -8766,6 +8776,7 @@ const _B2dEditor = function () {
 			obj.followFirstTarget = typeof arr[16] === "boolean" ? arr[16] : false;
 			obj.delay = typeof arr[17] === "number" ? arr[17] : 0;
 			obj.repeatDelay = typeof arr[18] === "number" ? arr[18] : 0;
+			obj.randomTarget = typeof arr[19] === "boolean" ? arr[19] : false;
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];

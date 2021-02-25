@@ -80,7 +80,7 @@ export const getActionsForObject = function (object) {
             case B2dEditor.object_TRIGGER:
                 actions.push("SetEnabled");
                 actions.push("SetFollowPlayer");
-                actions.push("Trigger");
+                actions.unshift("Trigger");
                 break
             case B2dEditor.object_ANIMATIONGROUP:
                 actions.push("Pause");
@@ -842,6 +842,10 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.humanUpdate = true;
         this.targetValue = value
     });
+    _folder.add(ui.editorGUI.editData, "randomTarget").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
     let label;
     ui.editorGUI.editData.selectTarget = function () {};
     label = "Add Target";
@@ -1108,6 +1112,7 @@ export class triggerCore {
         this.contactListener;
         this.runTriggerOnce = false;
         this.actionQueue = [];
+        this.triggeredThisTick = false;
     }
     init(trigger) {
         this.trigger = trigger;
@@ -1209,6 +1214,7 @@ export class triggerCore {
                 }
             }
         }
+        this.triggeredThisTick = false;
     }
     initContactListener() {
         var self = this;
@@ -1253,6 +1259,10 @@ export class triggerCore {
         this.actionQueue.push(this.delay*1000);
     }
     doTrigger() {
+        if(this.triggeredThisTick) return;
+
+        const randomTargetIndex = Math.floor(Math.random() * this.targets.length);
+
         let i, actionData;
         for(i = 0; i<this.data.worldActions.length; i++){
             actionData = this.data.worldActions[i];
@@ -1260,17 +1270,20 @@ export class triggerCore {
         }
         if (!this.targets) return;
         for (i = 0; i < this.targets.length; i++) {
-            let targetObject = this.targets[i];
-            const triggerLength = this.data.triggerActions[i].length;
-            for (var j = 0; j < triggerLength; j++) {
-                actionData = this.data.triggerActions[i][j];
-                doAction(actionData, targetObject);
-                if(targetObject.destroyed){
-                    i--;
-                    j = triggerLength;
+            if(!this.data.randomTarget || (this.data.randomTarget && randomTargetIndex === i)){
+                let targetObject = this.targets[i];
+                const triggerLength = this.data.triggerActions[i].length;
+                for (var j = 0; j < triggerLength; j++) {
+                    actionData = this.data.triggerActions[i][j];
+                    doAction(actionData, targetObject);
+                    if(targetObject.destroyed){
+                        i--;
+                        j = triggerLength;
+                    }
                 }
             }
         }
+        this.triggeredThisTick = true;
     }
 }
 export const addTargetToTrigger = function (_trigger, target) {

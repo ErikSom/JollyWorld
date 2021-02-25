@@ -652,6 +652,7 @@ function Game() {
         this.gameState = this.GAMESTATE_NORMALPLAY;
         if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
+        ui.showSmallLogo();
     }
 
     this.testWorld = function () {
@@ -732,6 +733,7 @@ function Game() {
         PhysicsParticleEmitter.update(true);
         MobileController.hide();
         AudioManager.stopAllSounds();
+        ui.hideSmallLogo();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;

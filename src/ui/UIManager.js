@@ -42,6 +42,7 @@ let winLogo;
 let socialShareScreen;
 let settingsMenu;
 let logo;
+let smallLogo;
 
 let filter = {
     by: '',
@@ -197,6 +198,22 @@ function UIManager() {
         }
         targetElement.appendChild(volumeButton);
     }
+    this.showSmallLogo = function(){
+        if(!smallLogo){
+            smallLogo = document.createElement('div');
+            smallLogo.classList.add('logoSmall');
+            smallLogo.style.position = 'absolute';
+            smallLogo.style.top = '0px';
+            smallLogo.style.left = '0px';
+            smallLogo.style.margin = '4px';
+            customGUIContainer.appendChild(smallLogo);
+        }
+        smallLogo.style.display = 'block';
+    }
+    this.hideSmallLogo = function(){
+        smallLogo.style.display = 'none';
+    }
+
     this.hide = function () {
         customGUIContainer.style.display = 'none';
     }
