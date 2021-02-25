@@ -4403,11 +4403,14 @@ const _B2dEditor = function () {
 					const screenPosition = this.cameraHolder.toGlobal(lowerBoundPixi);
 					game.levelCamera.matrix.applyInverse(screenPosition,screenPosition)
 					let containsPoint = false;
+
 					graphic.children.forEach(child=>{
+						if(!child._fillStyle.visible) containsPoint = true;
 						if(child.containsPoint && child.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
 							containsPoint = true;
 						}else{
 							let innerChild = child.children[0];
+							if(innerChild && !innerChild._fillStyle.visible) containsPoint = true;
 							if(innerChild && innerChild.containsPoint && innerChild.containsPoint(new PIXI.Point(screenPosition.x, screenPosition.y))){
 								containsPoint = true;
 							}
@@ -4419,7 +4422,6 @@ const _B2dEditor = function () {
 						i--;
 					}
 				}
-
 			}
 		}
 
