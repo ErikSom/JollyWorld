@@ -1197,6 +1197,11 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+				controller = targetFolder.add(ui.editorGUI.editData, "loop");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
 				break;
 			case case_JUST_JOINTS:
 				this.addJointGUI(dataJoint, targetFolder);
@@ -2332,6 +2337,7 @@ const _B2dEditor = function () {
 		this.repeatTeleportY = 0;
 		this.fps = 12;
 		this.playing = true;
+		this.loop = true;
 		this.visible = true;
 		this.mirrored = false;
 	}
@@ -5421,7 +5427,7 @@ const _B2dEditor = function () {
 							const textContainer = this.selectedTextures[j];
 							textContainer.data[controller.property] = controller.targetValue;
 						}
-					}else if(controller.property == "fps" || controller.property == "playing"){
+					}else if(controller.property == "fps" || controller.property == "playing" || controller.property == "loop"){
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							const animationGraphic = this.selectedTextures[j];
 							animationGraphic.data[controller.property] = controller.targetValue;
@@ -6788,6 +6794,7 @@ const _B2dEditor = function () {
 	this.initAnimation = function(container){
 		container.frameTime = 1000/container.data.fps;
 		container.playing = container.data.playing;
+		container.loop = container.data.loop;
 		if(!container.isAnimation){
 			container.isAnimation = true;
 			container.totalFrames = container.children.length;
@@ -6804,7 +6811,14 @@ const _B2dEditor = function () {
 				}
 			}
 			container.setFrame = index=>{
-				if(index>container.totalFrames) index = 1;
+				if(index>container.totalFrames){
+					if(container.loop){
+						index = 1;
+					}else{
+						container.playing = false;
+						return;
+					}
+				}
 				if(index<1) index = container.totalFrames;
 				container.children[container.currentFrame-1].visible = false;
 				container.children[index-1].visible = true;
@@ -8665,6 +8679,7 @@ const _B2dEditor = function () {
 			arr[17] = obj.playing;
 			arr[18] = obj.visible;
 			arr[19] = obj.mirrored;
+			arr[20] = obj.loop;
 		}
 		return JSONStringify(arr);
 	}
@@ -8817,6 +8832,7 @@ const _B2dEditor = function () {
 			obj.playing = arr[17] !== undefined ? arr[17] : true;
 			obj.visible = typeof arr[18] === "boolean" ? arr[18] : true;
 			obj.mirrored = typeof arr[19] === "boolean" ? arr[19] : false;
+			obj.loop = typeof arr[20] === "boolean" ? arr[20] : true;
 		}
 
 		obj.type = arr[0];

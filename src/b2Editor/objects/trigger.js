@@ -56,6 +56,8 @@ export const getActionsForObject = function (object) {
                         actions.push("SetMirrored");
                     }else if(object.myBody.myTexture.data.type === B2dEditor.object_GRAPHICGROUP){
                         actions.push("SetMirrored");
+                    }else if(object.myBody.myTexture.data.type === B2dEditor.object_GRAPHIC){
+                        actions.push("SetMirrored");
                     }
                 }
 
@@ -92,6 +94,7 @@ export const getActionsForObject = function (object) {
                 actions.push("animationFPS");
                 actions.push("SetMirrored");
                 break;
+            case B2dEditor.object_GRAPHIC:
             case B2dEditor.object_GRAPHICGROUP:
                 actions.push("SetMirrored");
                 break;
