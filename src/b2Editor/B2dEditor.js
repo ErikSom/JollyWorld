@@ -7422,7 +7422,7 @@ const _B2dEditor = function () {
 			bodyObject.density = density[i];
 			bodyObject.friction = friction[i];
 			bodyObject.restitution = restitution[i];
-			bodyObject.collision = collision[i] || collision;
+			bodyObject.collision = collision[i] == undefined ? collision : collision[i];
 			bodyObject.fixed = bodyGroup.mySprite.data.fixed;
 			bodyObject.awake = bodyGroup.mySprite.data.awake;
 
