@@ -118,12 +118,14 @@ export class Character extends Humanoid {
                             const bodyA = joint.GetBodyA();
                             if(!bodyA.mainCharacter && !bodyA.jointCrawled){
                                 bodyA.jointCrawled = true;
+                                bodyA.isVehiclePart = true;
                                 this.vehicleParts.push(bodyA);
                                 crawlJoints(bodyA);
                             }
                             const bodyB = joint.GetBodyB();
                             if(!bodyB.mainCharacter && !bodyB.jointCrawled){
                                 bodyB.jointCrawled = true;
+                                bodyB.isVehiclePart = true;
                                 this.vehicleParts.push(bodyB);
                                 crawlJoints(bodyB);
                             }

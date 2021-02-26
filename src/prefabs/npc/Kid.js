@@ -7,7 +7,7 @@ class Kid extends NPC {
         super(target);
     }
 }
-
+Kid.settingsOptions = Object.assign({}, NPC.settingsOptions);
 delete Kid.settingsOptions.skin
 
 PrefabManager.prefabLibrary.Kid = {

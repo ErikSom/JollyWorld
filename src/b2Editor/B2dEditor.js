@@ -6304,7 +6304,6 @@ const _B2dEditor = function () {
 	}
 	this.convertBodiesToGraphics = function (arr) {
 
-		debugger;
 		var body;
 		var graphic;
 		var graphicsCreated = [];
@@ -7040,6 +7039,7 @@ const _B2dEditor = function () {
 					fixture = fixture.GetNext();
 				}
 				object.ResetMassData();
+				object.mySprite.scale.x *= -1;
 
 				if(object != centerObject){
 
@@ -7051,7 +7051,7 @@ const _B2dEditor = function () {
 					const cdy = object.GetPosition().y-centerObject.GetPosition().y;
 					const cda = Math.atan2(cdy, cdx);
 					const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
-					
+
 					let reflectAngle = cda-centerObject.GetAngle();
 					let nx = - cdl * Math.cos(reflectAngle);
 					let ny = cdl * Math.sin(reflectAngle);
