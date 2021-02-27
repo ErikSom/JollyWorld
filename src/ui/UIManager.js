@@ -821,7 +821,7 @@ function UIManager() {
             });
             pauseMenu.domElement.setAttribute('id', 'pauseMenu');
 
-            let folder = pauseMenu.addFolder('Level Settings');
+            let folder = pauseMenu.addFolder('Pause Screen');
             folder.domElement.classList.add('custom');
 
             folder.open();

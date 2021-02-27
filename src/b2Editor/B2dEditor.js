@@ -2531,10 +2531,10 @@ const _B2dEditor = function () {
 		const self = this;
 		image.onload = function () {
 			//highRes;
-			const scale = 1.0;
+			const scale = Settings.pixelRatio;
 			canvas.width = self.cameraSize.w * scale;
 			canvas.height = self.cameraSize.h * scale;
-			context.drawImage(image, self.mousePosPixel.x - self.cameraSize.w / 2, self.mousePosPixel.y - self.cameraSize.h / 2, self.cameraSize.w, self.cameraSize.h, 0, 0, canvas.width, canvas.height);
+			context.drawImage(image, (self.mousePosPixel.x - self.cameraSize.w / 2) * Settings.pixelRatio, (self.mousePosPixel.y - self.cameraSize.h / 2) * Settings.pixelRatio, self.cameraSize.w*Settings.pixelRatio, self.cameraSize.h*Settings.pixelRatio, 0, 0, canvas.width, canvas.height);
 			const highResThumb = canvas.toDataURL('image/png', 1.0);
 
 			self.cameraShotData = highResThumb;
@@ -5607,7 +5607,7 @@ const _B2dEditor = function () {
 
 			this.debugGraphics.moveTo(currentScreenPoint.x, currentScreenPoint.y);
 
-			if(!currentPoint.point1){
+			if(!currentPoint.point1 || !currentPoint.point2){
 				this.debugGraphics.bezierCurveTo(currentScreenPoint.x, currentScreenPoint.y, nextScreenPoint.x, nextScreenPoint.y, nextScreenPoint.x, nextScreenPoint.y);
 			}else{
 
