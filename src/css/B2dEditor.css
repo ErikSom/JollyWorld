@@ -294,7 +294,6 @@ body .dg .cr.function {
     margin-right: auto;
     font-family: 'Lily Script One', cursive;
     text-shadow: 2px 2px black;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .menuButton::after {
@@ -552,7 +551,6 @@ body .dg .cr.function {
     line-height: 30px;
     padding: 0px 10px;
     user-select: none;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .filterButton {
@@ -1557,6 +1555,10 @@ body .dg .cr.function {
 	margin-bottom: -20px;
 }
 
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
 @keyframes ytp-spinner-linspin{to{transform:rotate(360deg)}}
 @keyframes ytp-spinner-easespin{12.5%{transform:rotate(135deg)}25%{transform:rotate(270deg)}37.5%{transform:rotate(405deg)}50%{transform:rotate(540deg)}62.5%{transform:rotate(675deg)}75%{transform:rotate(810deg)}87.5%{transform:rotate(945deg)}to{transform:rotate(1080deg)}}
 @keyframes ytp-spinner-left-spin{0%{transform:rotate(130deg)}50%{transform:rotate(-5deg)}to{transform:rotate(130deg)}}
@@ -1694,6 +1696,9 @@ only screen and (max-width: 360px) and (max-height: 640px) and (orientation: por
         padding-top: 10%;
         min-width: 100px;
     }
+    #levelBanner{
+        margin-top: -60px;
+    }
 }
 @media only screen and (max-width: 390px){
     #gameOverScreen .buttonGroup {
@@ -1760,4 +1765,48 @@ only screen and (max-width: 360px) and (max-height: 640px) and (orientation: por
     src: url('./fonts/Trochut-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+}
+
+
+
+select {
+	display: block;
+	font-size: 12px;
+	font-family: sans-serif;
+	font-weight: 700;
+	color: #fff;
+	line-height: 1.0;
+	padding: .6em 1.4em .5em .8em;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	border: 1px solid #aaa;
+	box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+	border-radius: .5em;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+	background-color: #fff;
+	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300FFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+	  linear-gradient(to bottom, #4F4F4F 0%,#4F4F4F 100%);
+	background-repeat: no-repeat, repeat;
+	background-position: right .7em top 50%, 0 0;
+	background-size: .65em auto, 100%;
+}
+.select::-ms-expand {
+	display: none;
+}
+.select:hover {
+	border-color: #888;
+}
+.select:focus {
+	border-color: #aaa;
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
+}
+.select option {
+	font-weight:normal;
 }

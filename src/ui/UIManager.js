@@ -406,6 +406,7 @@ function UIManager() {
             divWrapper.style.padding = '20px';
             divWrapper.style.display = 'flex';
             divWrapper.style.flexDirection = 'column';
+            divWrapper.style.alignItems = 'center';
 
             let span = document.createElement('span');
             span.innerText = 'Date range:';
@@ -430,9 +431,8 @@ function UIManager() {
             select.appendChild(option);
 
             select.setAttribute('id', 'filter_uploadedselect');
+            select.style.marginTop = '10px';
             divWrapper.appendChild(select);
-
-
 
             select.addEventListener("change", () => {
                 filter.range = select.value;
@@ -441,7 +441,6 @@ function UIManager() {
 
 
             divWrapper.appendChild(document.createElement('br'));
-
 
             span = document.createElement('span');
             span.innerText = 'Sort by:';
@@ -515,10 +514,13 @@ function UIManager() {
         filterMenu.domElement.style.top = '50%';
         filterMenu.domElement.style.transform = 'translate(-50%, -50%)';
 
+        if(levelLoader) levelLoader.domElement.style.filter = 'brightness(0.5)';
+
     }
     this.hideFilterMenu = function () {
         if (filterMenu) {
             filterMenu.domElement.style.visibility = 'hidden';
+            if(levelLoader) levelLoader.domElement.style.filter = 'unset';
         }
     }
 
@@ -1291,6 +1293,7 @@ function UIManager() {
 
         socialShareGUI.hide = () => {
             socialShareGUI.domElement.style.visibility = 'hidden';
+            if(levelLoader && levelLoader.domElement) levelLoader.domElement.style.filter = 'unset';
         }
 
         targetDomElement.appendChild(divWrapper);
@@ -1301,6 +1304,7 @@ function UIManager() {
     }
     this.hideSocialShareMenu = function () {
         if (socialShareScreen) socialShareScreen.hide();
+        if(levelLoader) levelLoader.domElement.style.filter = 'unset';
     }
 
     this.showSocialShare = function (level) {
@@ -1313,6 +1317,8 @@ function UIManager() {
         socialShareScreen.domElement.style.transform = 'translate(-50%, -50%)';
 
         socialShareScreen.setSocialMediaHTML(level);
+
+        if(levelLoader) levelLoader.domElement.style.filter = 'brightness(0.5)';
     }
     this.showYouTubePlayer = function(id){
         if(!youtubePlayer){
