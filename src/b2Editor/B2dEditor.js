@@ -470,7 +470,7 @@ const _B2dEditor = function () {
 
 				targetFolder.addColor(ui.editorGUI.editData, "textColor");
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
-				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100);
+				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 1000);
 
 				const fonts = Settings.availableFonts;
 				ui.editorGUI.editData.fontName = fonts[0];
@@ -1278,7 +1278,7 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 
-				controller = targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 100).step(1.0);
+				controller = targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 1000).step(1.0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;

@@ -151,7 +151,7 @@ function BackendManager() {
 		bodyLevelData.game_build = __VERSION__;
 		if(cameraShotData) bodyLevelData.thumbnail = cameraShotData.replace('data:image/png;base64,', '') // kan ik hier ook geen data sturen? overschrijf ik het dan niet?
         if(details.youtubelinks)  bodyLevelData.youtubelinks = details.youtubelinks;
-		bodyLevelData.data = window.btoa(levelJSON);
+		bodyLevelData.data = levelJSON;
 		// creation data, is dat de date van eerste keer opslaan?
 		// minimum string length title & description = 3;
 
