@@ -2948,11 +2948,25 @@ const _B2dEditor = function () {
 		this.updateMousePosition(evt);
 		if (this.oldMousePosWorld == null) this.oldMousePosWorld = this.mousePosWorld;
 
+		let clearMousePos = true;
+
 		if (this.editing) {
 			if(this.customPrefabMouseMove){
 				this.customPrefabMouseMove();
 			}else if (this.mouseDown) {
 				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
+
+				if(this.shiftDown){
+					move.x = Math.round((move.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
+					move.y = Math.round((move.y * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
+
+					if(Math.abs(move.x) < Settings.positionGridSize && Math.abs(move.y) < Settings.positionGridSize){
+						clearMousePos = false;
+					}
+					move.x /= Settings.PTM;
+					move.y /= Settings.PTM;
+				}
+
 				if (this.spaceCameraDrag || evt.which === 2) {
 					move.SelfMul(this.cameraHolder.scale.x);
 					camera.pan(move);
@@ -3167,7 +3181,7 @@ const _B2dEditor = function () {
 				}
 			}
 		}
-		this.oldMousePosWorld = this.mousePosWorld;
+		if(clearMousePos) this.oldMousePosWorld = this.mousePosWorld;
 	}
 	this.onDocumentMouseMove = function(e){
 		if(!this.editing) return;
@@ -3410,6 +3424,14 @@ const _B2dEditor = function () {
 					body = objects[i];
 					if (transformType == this.TRANSFORM_MOVE) {
 						const oldPosition = body.GetPosition();
+
+						if(this.shiftDown){
+							oldPosition.x = Math.round((oldPosition.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
+							oldPosition.y = Math.round((oldPosition.y * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
+							oldPosition.x /= Settings.PTM;
+							oldPosition.y /= Settings.PTM;
+						}
+
 						body.SetPosition(new b2Vec2(oldPosition.x + obj.x / this.PTM, oldPosition.y + obj.y / this.PTM));
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						//split between per object / group rotation
@@ -3435,8 +3457,16 @@ const _B2dEditor = function () {
 				} else {
 					sprite = objects[i];
 					if (transformType == this.TRANSFORM_MOVE) {
+
+						if(this.shiftDown){
+							sprite.x = Math.round(sprite.x / Settings.positionGridSize) * Settings.positionGridSize;
+							sprite.y = Math.round(sprite.y / Settings.positionGridSize) * Settings.positionGridSize;
+						}
+
+
 						sprite.x += obj.x;
 						sprite.y += obj.y;
+
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						sprite.rotation += obj * this.DEG2RAD;
 
