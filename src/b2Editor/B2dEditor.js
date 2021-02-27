@@ -38,7 +38,7 @@ import {
 import {
 	Settings
 } from "../Settings";
-import { JSONStringify } from "./utils/formatString";
+import { hexToNumberHex, JSONStringify } from "./utils/formatString";
 import LZString from 'lz-string'
 import { copyStringToClipboard } from "./utils/copyToClipboard";
 import { removeGraphicFromCells } from '../utils/PIXICuller';
@@ -535,7 +535,7 @@ const _B2dEditor = function () {
 				}
 				targetFolder.addColor(ui.editorGUI.editData, "backgroundColor").onChange(val=>{
 					this.editorSettingsObject.backgroundColor = val;
-					game.app.renderer.backgroundColor = val;
+					game.app.renderer.backgroundColor = hexToNumberHex(val);
 				});
 				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
 				targetFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
@@ -8845,7 +8845,7 @@ const _B2dEditor = function () {
 			obj = this.editorSettingsObject;
 			obj.gravityX = arr[1];
 			obj.gravityY = arr[2];
-			obj.backgroundColor = arr[3] || 0xD4D4D4;
+			obj.backgroundColor = arr[3] || '#D4D4D4';
 			obj.cameraZoom = arr[4] !== undefined ? arr[4] : Settings.defaultCameraZoom;
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
@@ -9085,7 +9085,7 @@ const _B2dEditor = function () {
 			if(worldObjects.settings){
 				worldObjects.settings = this.parseArrObject(worldObjects.settings);
 				Object.keys(worldObjects.settings).forEach(key=> {
-					if(key === 'backgroundColor') game.app.renderer.backgroundColor = worldObjects.settings[key];
+					if(key === 'backgroundColor') game.app.renderer.backgroundColor = hexToNumberHex(worldObjects.settings[key]);
 					editorSettings[key] = worldObjects.settings[key]
 				})
 				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);

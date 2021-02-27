@@ -1189,9 +1189,6 @@ export class triggerCore {
             if (this.runTriggerOnce && !this.destroy) {
                 this.activateTrigger();
                 this.runTriggerOnce = false;
-                if (this.data.repeatType == triggerRepeatType.once) {
-                    this.destroy = true;
-                }
             }
 
             for(let i = 0; i<this.actionQueue.length; i++){
@@ -1259,7 +1256,12 @@ export class triggerCore {
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
     activateTrigger(){
-        this.actionQueue.push(this.delay*1000);
+        if(!this.destroy){
+            this.actionQueue.push(this.delay*1000);
+            if (this.data.repeatType == triggerRepeatType.once) {
+                this.destroy = true;
+            }
+        }
     }
     doTrigger() {
         if(this.triggeredThisTick) return;

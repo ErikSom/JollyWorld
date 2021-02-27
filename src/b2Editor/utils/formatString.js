@@ -22,6 +22,10 @@ export const dateDiff = (d1, d2, padded=true) => {
     }
     return {dd, hh, mm, ss, ms};
 }
+export const hexToNumberHex = hex => {
+    if(typeof hex === 'string') hex = hex.replace('#', '0x');
+    return parseInt(Number(hex), 10)
+}
 
 const SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"];
 export const formatNumber = (number) => {
