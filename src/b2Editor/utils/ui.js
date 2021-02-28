@@ -244,7 +244,7 @@ export const showConfetti = ()=>{
     setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
 }
 
-const doPublishLevelData = function (publishButton) {
+const doPublishLevelData = function (publishButton, preview) {
 
     if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
@@ -254,28 +254,31 @@ const doPublishLevelData = function (publishButton) {
         if (!game.currentLevelData.thumb_small_md5) return showNotice(Settings.DEFAULT_TEXTS.publish_noThumbnail);
         if (!game.currentLevelData.description) return showNotice(Settings.DEFAULT_TEXTS.publish_noDescription);
 
+        if(preview){
+            window.open(`https://jollyworld.app/#${game.currentLevelData.id}`, "_blank");
+        }else{
+            showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+                publishButton.style.backgroundColor = 'grey';
+                publishButton.innerText = '...';
+                game.publishLevelData().then(() => {
+                    publishButton.style.backgroundColor = '';
+                    publishButton.innerText = 'PUBLISH';
 
-        showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
-            publishButton.style.backgroundColor = 'grey';
-            publishButton.innerText = '...';
-            game.publishLevelData().then(() => {
-                publishButton.style.backgroundColor = '';
-                publishButton.innerText = 'PUBLISH';
+                    showConfetti();
 
-                showConfetti();
+                    showPublishSocialShareScreen(game.currentLevelData);
+                    hidePanel(levelEditScreen);
 
-                showPublishSocialShareScreen(game.currentLevelData);
-                hidePanel(levelEditScreen);
-
-                console.log("PUBLISH SUCCESSSSSS");
+                    console.log("PUBLISH SUCCESSSSSS");
+                }).catch(error => {
+                    console.log(error);
+                    publishButton.style.backgroundColor = '';
+                    publishButton.innerText = 'PUBLISH';
+                });
             }).catch(error => {
                 console.log(error);
-                publishButton.style.backgroundColor = '';
-                publishButton.innerText = 'PUBLISH';
             });
-        }).catch(error => {
-            console.log(error);
-        });
+        }
     }
 
     if (hasUnsavedChanges()) {
@@ -808,6 +811,7 @@ export const showLevelEditScreen = function (dontReplace) {
         description.style.color = '#00FF00';
         description.style.fontFamily = 'arial';
         description.style.padding = '5px';
+        description.style.resize = 'none';
 
         span = document.createElement('span');
         span.innerText = 'Characters left: 300';
@@ -887,24 +891,30 @@ export const showLevelEditScreen = function (dontReplace) {
             showSaveScreen.bind(this)();
         });
 
+        let deleteButton = document.createElement('div');
+        deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
+        deleteButton.innerHTML = "DELETE";
+        targetDomElement.appendChild(deleteButton);
+
+        let previewButton = document.createElement('div');
+        previewButton.setAttribute('class', 'headerButton preview buttonOverlay dark');
+        previewButton.innerHTML = "PREVIEW";
+        targetDomElement.appendChild(previewButton);
+
+        previewButton.addEventListener('click', () => {
+            doPublishLevelData(publishButton, true);
+        });
+
         let publishButton = document.createElement('div');
         publishButton.setAttribute('class', 'headerButton publish buttonOverlay dark');
         publishButton.innerHTML = "PUBLISH";
+        publishButton.style.float = 'right';
+        publishButton.style.marginRight = '10px';
         targetDomElement.appendChild(publishButton);
-
 
         publishButton.addEventListener('click', () => {
             doPublishLevelData(publishButton);
         });
-
-
-
-        let deleteButton = document.createElement('div');
-        deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
-        deleteButton.innerHTML = "DELETE";
-        deleteButton.style.float = 'right';
-        deleteButton.style.marginRight = '10px';
-        targetDomElement.appendChild(deleteButton);
 
         deleteButton.addEventListener('click', () => {
             showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {

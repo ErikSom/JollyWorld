@@ -46,6 +46,7 @@ import { hashName } from "../AssetList";
 
 import { attachGraphicsAPIMixin } from './pixiHack'
 import { TiledMesh } from './classes/TiledMesh';
+import  * as physicsCullCamera from './utils/physicsCullCamera';
 import nanoid from "nanoid";
 import { findObjectWithCopyHash } from "./utils/finder";
  
@@ -140,6 +141,7 @@ const _B2dEditor = function () {
 	this.customDebugDraw = null;
 
 	this.cameraHolder;
+	this.physicsCamera;
 
 	Object.defineProperty(this, 'cameraHolder', {
 		get: () => {
@@ -769,7 +771,7 @@ const _B2dEditor = function () {
 					selectedType = "Slide";
 				} else if (_selectedDistanceJoints.length > 0) {
 					dataJoint = _selectedDistanceJoints[0].data;
-					selectedType = "Distance";
+					selectedType = "Spring";
 				} else if (_selectedRopeJoints.length > 0) {
 					dataJoint = _selectedRopeJoints[0].data;
 					selectedType = "Rope";
@@ -1373,7 +1375,7 @@ const _B2dEditor = function () {
 		var self = this;
 		var controller;
 		var folder;
-		var jointTypes = ["Pin", "Slide", "Distance", "Rope", "Wheel"];
+		var jointTypes = ["Pin", "Slide", "Spring", "Rope", "Wheel"];
 		ui.editorGUI.editData.typeName = jointTypes[dataJoint.jointType];
 		_folder.add(ui.editorGUI.editData, "typeName", jointTypes).onChange(function (value) {
 			this.humanUpdate = true;
@@ -2188,7 +2190,7 @@ const _B2dEditor = function () {
 			this.animationGroups.forEach(animationGroup=>{
 				if(animationGroup.playing) animationGroup.updateAnimation(this.deltaTime);
 			})
-
+			physicsCullCamera.update();
 		}
 	}
 
@@ -2481,6 +2483,7 @@ const _B2dEditor = function () {
 		this.showCameraLines = true;
 		this.backgroundColor = 0xD4D4D4;
 		this.cameraZoom = Settings.defaultCameraZoom;
+		this.physicsCameraSize = Settings.defaultPhysicsCameraSize;
 	}
 	this.editorJointObject = new this.jointObject();
 
@@ -4890,7 +4893,7 @@ const _B2dEditor = function () {
 								oldData.jointType = this.jointObject_TYPE_PIN;
 							} else if (controller.targetValue == "Slide") {
 								oldData.jointType = this.jointObject_TYPE_SLIDE;
-							} else if (controller.targetValue == "Distance") {
+							} else if (controller.targetValue == "Spring") {
 								oldData.jointType = this.jointObject_TYPE_DISTANCE;
 							} else if (controller.targetValue == "Rope") {
 								oldData.jointType = this.jointObject_TYPE_ROPE;
@@ -4915,7 +4918,7 @@ const _B2dEditor = function () {
 								} else if (controller.targetValue == "Slide") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_SLIDE;
 									this.selectedTextures[j].texture = PIXI.Texture.from('slidingJoint');
-								} else if (controller.targetValue == "Distance") {
+								} else if (controller.targetValue == "Spring") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_DISTANCE;
 									this.selectedTextures[j].texture = PIXI.Texture.from('distanceJoint');
 								} else if (controller.targetValue == "Rope") {
@@ -6690,7 +6693,7 @@ const _B2dEditor = function () {
 		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
-		body.SetAwake(obj.awake);
+		body.SetAwake(false);
 
 		var graphic = new PIXI.Graphics();
 		body.originalGraphic = graphic;
@@ -7854,7 +7857,7 @@ const _B2dEditor = function () {
 		let joint;
 
 		if (jointPlaceHolder.jointType == this.jointObject_TYPE_PIN) {
-			let revoluteJointDef = new Box2D.b2RevoluteJointDef;
+			const revoluteJointDef = new Box2D.b2RevoluteJointDef;
 
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
@@ -9182,6 +9185,8 @@ const _B2dEditor = function () {
 		this.uniqueCollisions = -3;
 		this.uniqueCollisionPrefabs = {};
 
+		this.physicsCamera = null;
+
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
 		var i = 0
@@ -9263,10 +9268,14 @@ const _B2dEditor = function () {
 		}
 	}
 	this.B2dEditorContactListener.BeginContact = function (contact) {
-		this.BubbleEvent("BeginContact", contact);
+		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+			physicsCullCamera.beginContact(contact);
+		}else this.BubbleEvent("BeginContact", contact);
 	}
 	this.B2dEditorContactListener.EndContact = function (contact) {
-		this.BubbleEvent("EndContact", contact);
+		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+			physicsCullCamera.endContact(contact);
+		}else this.BubbleEvent("EndContact", contact);
 	}
 	this.B2dEditorContactListener.PreSolve = function (contact, oldManifold) {
 		this.BubbleEvent("PreSolve", contact, oldManifold);
@@ -9325,6 +9334,7 @@ const _B2dEditor = function () {
 				joint.spriteData = sprite.data;
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
+				sprite.myBody.SetAwake(false);
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);
 			}
@@ -9366,9 +9376,12 @@ const _B2dEditor = function () {
 
 		game.world.SetGravity(new b2Vec2(this.editorSettingsObject.gravityX, this.editorSettingsObject.gravityY));
 
+		physicsCullCamera.init();
+
         if(this.tracingTexture) this.tracingTexture.renderable = false;
 
 	}
+
 	this.resize = function () {
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;

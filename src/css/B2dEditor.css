@@ -602,6 +602,14 @@ body .dg .cr.function {
     margin-left: 10px;
 }
 
+#levelEditScreen .preview{
+    float: right;
+    margin: 5px 0px;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 75px;
+}
+
 #levelEditScreen .saveas {
     background-color: #FF6600;
 }

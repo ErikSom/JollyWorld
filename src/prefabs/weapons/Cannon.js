@@ -63,16 +63,19 @@ class Cannon extends PrefabManager.basePrefab {
 	update() {
 		if(this.destroyed) return;
 		super.update();
-		if(!this.loaded){
-			if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
-				this.reload();
+
+		if(this.lookupObject.barrol.InCameraView){
+			if(!this.loaded){
+				if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
+					this.reload();
+				}
+				this.reloadTimer += game.editor.deltaTime;
+			}else if(this.autoShoot || this.shouldShoot){
+				if (PrefabManager.timerReady(this.shootTimer, this.shootDelay, true)) {
+					this.shoot();
+				}
+				this.shootTimer += game.editor.deltaTime;
 			}
-			this.reloadTimer += game.editor.deltaTime;
-		}else if(this.autoShoot || this.shouldShoot){
-			if (PrefabManager.timerReady(this.shootTimer, this.shootDelay, true)) {
-				this.shoot();
-			}
-			this.shootTimer += game.editor.deltaTime;
 		}
 		this.positionCannonEmitter();
 		this.emitter.update(game.editor.deltaTime * 0.001);

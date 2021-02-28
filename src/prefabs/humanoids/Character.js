@@ -18,6 +18,7 @@ export class Character extends Humanoid {
         this.vehicleJoints = [];
         this.vehicleParts = [];
         this.isCharacter = true;
+
     }
 
     init() {

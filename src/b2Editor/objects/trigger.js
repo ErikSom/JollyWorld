@@ -313,7 +313,6 @@ export const doAction = function (actionData, target) {
         break;
         case "SetCollision":
             if(target.myBody) game.editor.setBodyCollision(target.myBody, [Settings.collisionTypes.indexOf(actionData.collision)]);
-            target.myBody.SetAwake(true);
         break;
     }
 }

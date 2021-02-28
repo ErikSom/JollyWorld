@@ -64,7 +64,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         // game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
         // game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
-
+        const humanoidDamping = 0.9;
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -72,6 +72,10 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 body.isFlesh = true;
                 body.isHumanoid = true;
+
+                body.SetLinearDamping(humanoidDamping);
+                body.SetAngularDamping(humanoidDamping);
+
                 game.editor.prepareBodyForDecals(body);
 
                 var texture = body.myTexture;

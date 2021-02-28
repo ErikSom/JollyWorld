@@ -56,16 +56,18 @@ class CrossBow extends PrefabManager.basePrefab {
     }
 	update() {
 		super.update();
-		if(!this.loaded){
-			if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
-				this.reload();
+		if(this.lookupObject.body.InCameraView){
+			if(!this.loaded){
+				if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
+					this.reload();
+				}
+				this.reloadTimer += game.editor.deltaTime;
+			}else if(this.autoShoot || this.shouldShoot){
+				if (PrefabManager.timerReady(this.shootTimer, this.shootDelay, true)) {
+					this.shoot();
+				}
+				this.shootTimer += game.editor.deltaTime;
 			}
-			this.reloadTimer += game.editor.deltaTime;
-		}else if(this.autoShoot || this.shouldShoot){
-			if (PrefabManager.timerReady(this.shootTimer, this.shootDelay, true)) {
-				this.shoot();
-			}
-			this.shootTimer += game.editor.deltaTime;
 		}
 	}
 	setShouldShoot() {

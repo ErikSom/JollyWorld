@@ -561,7 +561,6 @@ function UIManager() {
 
             divWrapper.appendChild(creator);
 
-
             let thumbNail;
             thumbNail = document.createElement('div');
             thumbNail.setAttribute('id', 'levelbanner_levelThumbnail');
@@ -579,8 +578,6 @@ function UIManager() {
             const flexButtonHolder = document.createElement('div');
             divWrapper.appendChild(flexButtonHolder);
             flexButtonHolder.classList.add('flexButtonWrap');
-
-
 
             let backButton = document.createElement('div');
             backButton.setAttribute('class', 'backButton menuButton')
@@ -638,7 +635,9 @@ function UIManager() {
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
         thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_big_md5}.png`;
 
-        levelBanner.domElement.querySelector('.levelbanner_title').innerText = game.currentLevelData.title;
+
+        let levelTitle = game.currentLevelData.published ? game.currentLevelData.title : '(preview)'+game.currentLevelData.title;
+        levelBanner.domElement.querySelector('.levelbanner_title').innerText = levelTitle;
         levelBanner.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
         levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;
 
