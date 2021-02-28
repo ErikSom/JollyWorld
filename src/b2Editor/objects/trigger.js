@@ -1257,7 +1257,7 @@ export class triggerCore {
     activateTrigger(){
         if(!this.destroy){
             this.actionQueue.push(this.delay*1000);
-            if (this.data.repeatType == triggerRepeatType.once) {
+            if (this.data.repeatType == triggerRepeatType.once && ![triggerTargetType.keydown, triggerTargetType.keyup, triggerTargetType.click].includes(this.data.targetType)) {
                 this.destroy = true;
             }
         }
