@@ -82,15 +82,6 @@ export class Character extends Humanoid {
         }else{
             if(!this.attachedToVehicle){
                 this.lookupObject['body'].SetAngularVelocity(velocity);
-            }else{
-                const leanedBodies = [];
-                this.vehicleJoints.forEach(joint=> {
-                    const vehicleBody = joint.GetBodyB();
-                    if(!leanedBodies.includes(vehicleBody)){
-                        vehicleBody.SetAngularVelocity(velocity);
-                        leanedBodies.push(vehicleBody);
-                    }
-                });
             }
         }
     }
