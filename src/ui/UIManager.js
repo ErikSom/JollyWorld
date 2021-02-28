@@ -636,7 +636,7 @@ function UIManager() {
         thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_big_md5}.png`;
 
 
-        let levelTitle = game.currentLevelData.published ? game.currentLevelData.title : '(preview)'+game.currentLevelData.title;
+        let levelTitle = game.currentLevelData.published ? game.currentLevelData.title : game.currentLevelData.title+' (PREVIEW)';
         levelBanner.domElement.querySelector('.levelbanner_title').innerText = levelTitle;
         levelBanner.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
         levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;

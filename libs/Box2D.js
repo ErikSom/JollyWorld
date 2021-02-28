@@ -13831,8 +13831,6 @@
                         continue;
                     }
 
-                    if(b.mySprite && b.mySprite.data.refName === 'feet_left') console.log('sleep?', b.m_sleepTime,  b.m_angularVelocity * b.m_angularVelocity, b2Vec2.DotVV(b.m_linearVelocity, b.m_linearVelocity))
-
                     if (!b.m_autoSleepFlag ||
                         b.m_angularVelocity * b.m_angularVelocity > angTolSqr ||
                         b2Vec2.DotVV(b.m_linearVelocity, b.m_linearVelocity) > linTolSqr) {
