@@ -4833,24 +4833,24 @@ const _B2dEditor = function () {
 		const scale = 0.8;
 		if(!this.transformGUI){
 			this.transformGUI = new PIXI.Container();
-			this.transformGUI.layerDown = new PIXIHeaven.Sprite(PIXI.Texture.from('layerDown'));
+			this.transformGUI.layerDown = new PIXIHeaven.Sprite(PIXI.Texture.from('layerDown0000'));
 			this.transformGUI.layerDown.pivot.set(this.transformGUI.layerDown.width / 2, this.transformGUI.layerDown.height / 2);
 			this.transformGUI.layerDown.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.layerDown);
 
-			this.transformGUI.layerUp = new PIXIHeaven.Sprite(PIXI.Texture.from('layerUp'));
+			this.transformGUI.layerUp = new PIXIHeaven.Sprite(PIXI.Texture.from('layerUp0000'));
 			this.transformGUI.layerUp.pivot.set(this.transformGUI.layerUp.width / 2, this.transformGUI.layerUp.height / 2);
 			this.transformGUI.layerUp.scale.set(scale);
 			this.transformGUI.layerUp.y-=iconHeight;
 			this.transformGUI.addChild(this.transformGUI.layerUp);
 
-			this.transformGUI.mirrorX = new PIXIHeaven.Sprite(PIXI.Texture.from('mirrorIcon'));
+			this.transformGUI.mirrorX = new PIXIHeaven.Sprite(PIXI.Texture.from('mirrorIcon0000'));
 			this.transformGUI.mirrorX.pivot.set(this.transformGUI.mirrorX.width / 2, this.transformGUI.mirrorX.height / 2);
 			this.transformGUI.mirrorX.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.mirrorX);
 			this.transformGUI.mirrorX.y-=iconHeight*2;
 
-			this.transformGUI.mirrorY = new PIXIHeaven.Sprite(PIXI.Texture.from('mirrorIcon'));
+			this.transformGUI.mirrorY = new PIXIHeaven.Sprite(PIXI.Texture.from('mirrorIcon0000'));
 			this.transformGUI.mirrorY.pivot.set(this.transformGUI.mirrorY.width / 2, this.transformGUI.mirrorY.height / 2);
 			this.transformGUI.mirrorY.scale.set(scale);
 			this.transformGUI.addChild(this.transformGUI.mirrorY);
@@ -4914,19 +4914,19 @@ const _B2dEditor = function () {
 							for (let j = 0; j < this.selectedTextures.length; j++) {
 								if (controller.targetValue == "Pin") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_PIN;
-									this.selectedTextures[j].texture = PIXI.Texture.from('pinJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('pinJoint0000');
 								} else if (controller.targetValue == "Slide") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_SLIDE;
-									this.selectedTextures[j].texture = PIXI.Texture.from('slidingJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('slidingJoint0000');
 								} else if (controller.targetValue == "Spring") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_DISTANCE;
-									this.selectedTextures[j].texture = PIXI.Texture.from('distanceJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('distanceJoint0000');
 								} else if (controller.targetValue == "Rope") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_ROPE;
-									this.selectedTextures[j].texture = PIXI.Texture.from('ropeJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('ropeJoint0000');
 								} else if (controller.targetValue == "Wheel") {
 									this.selectedTextures[j].data.jointType = this.jointObject_TYPE_WHEEL;
-									this.selectedTextures[j].texture = PIXI.Texture.from('wheelJoint');
+									this.selectedTextures[j].texture = PIXI.Texture.from('wheelJoint0000');
 								}
 
 								if (this.selectedTextures[j].myTriggers) {
@@ -7769,11 +7769,11 @@ const _B2dEditor = function () {
 		}
 
 		var jointGraphics;
-		if(tarObj.jointType === this.jointObject_TYPE_PIN) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('pinJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_DISTANCE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('distanceJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_SLIDE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('slidingJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_ROPE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('ropeJoint'));
-		if(tarObj.jointType === this.jointObject_TYPE_WHEEL) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('wheelJoint'));
+		if(tarObj.jointType === this.jointObject_TYPE_PIN) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('pinJoint0000'));
+		if(tarObj.jointType === this.jointObject_TYPE_DISTANCE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('distanceJoint0000'));
+		if(tarObj.jointType === this.jointObject_TYPE_SLIDE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('slidingJoint0000'));
+		if(tarObj.jointType === this.jointObject_TYPE_ROPE) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('ropeJoint0000'));
+		if(tarObj.jointType === this.jointObject_TYPE_WHEEL) jointGraphics = new PIXI.Sprite(PIXI.Texture.from('wheelJoint0000'));
 
 		this.textures.addChild(jointGraphics);
 
