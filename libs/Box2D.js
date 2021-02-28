@@ -13822,11 +13822,15 @@
                 let minSleepTime = b2_maxFloat;
                 const linTolSqr = b2_linearSleepTolerance * b2_linearSleepTolerance;
                 const angTolSqr = b2_angularSleepTolerance * b2_angularSleepTolerance;
+
+
+                
                 for (let i = 0; i < this.m_bodyCount; ++i) {
                     const b = this.m_bodies[i];
                     if (b.GetType() === exports.b2BodyType.b2_staticBody) {
                         continue;
                     }
+
                     if (!b.m_autoSleepFlag ||
                         b.m_angularVelocity * b.m_angularVelocity > angTolSqr ||
                         b2Vec2.DotVV(b.m_linearVelocity, b.m_linearVelocity) > linTolSqr) {
@@ -19820,9 +19824,19 @@
         /// @warning This function is locked during callbacks.
         DestroyJoint(j) {
             if(!j || j.destroyed) return;
-            if(j.grabJoint){
-                this.DestroyJoint(j.grabJoint);
-                delete j.grabJoint;
+            if(j.linkedJoints){
+                j.linkedJoints.forEach(joint => {
+                    this.DestroyJoint(joint);
+                    delete j.linkedJoints;
+                });
+            }
+            if(j.connectedJoints){
+                j.connectedJoints.forEach(joint => {
+                    if(joint.linkedJoints){
+                        joint.linkedJoints = joint.linkedJoints.filter(_j=>_j != j);
+                        if(joint.linkedJoints.length === 0) delete joint.linkedJoints
+                    }
+                });
             }
 
             j.destroyed = true;
@@ -20030,7 +20044,10 @@
                     const xf = b.m_xf;
                     this.m_debugDraw.PushTransform(xf);
                     for (let f = b.GetFixtureList(); f; f = f.m_next) {
-                        if (!b.IsActive()) {
+                        if(f.isPhysicsCamera){
+                            color.SetRGB(0.0, 0.5, 0.0);
+                            this.DrawShape(f, color);
+                        }else if (!b.IsActive()) {
                             color.SetRGB(0.5, 0.5, 0.3);
                             this.DrawShape(f, color);
                         }

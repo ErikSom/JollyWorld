@@ -18,6 +18,7 @@ export class Character extends Humanoid {
         this.vehicleJoints = [];
         this.vehicleParts = [];
         this.isCharacter = true;
+
     }
 
     init() {
@@ -81,15 +82,6 @@ export class Character extends Humanoid {
         }else{
             if(!this.attachedToVehicle){
                 this.lookupObject['body'].SetAngularVelocity(velocity);
-            }else{
-                const leanedBodies = [];
-                this.vehicleJoints.forEach(joint=> {
-                    const vehicleBody = joint.GetBodyB();
-                    if(!leanedBodies.includes(vehicleBody)){
-                        vehicleBody.SetAngularVelocity(velocity);
-                        leanedBodies.push(vehicleBody);
-                    }
-                });
             }
         }
     }
@@ -103,7 +95,43 @@ export class Character extends Humanoid {
         if(bodyB.isVehiclePart){
             this.vehicleJoints.push(joint);
             if(!bodyB.mySprite.data.prefabInstanceName && bodyB.GetType() != Box2D.b2BodyType.b2_staticBody){
+                // find all vehicle parts
+                joint.jointCrawled = true;
+                bodyB.jointCrawled = true;
                 this.vehicleParts.push(bodyB);
+
+                const crawlJoints = body => {
+                    let jointEdge = body.GetJointList();
+                    while (jointEdge) {
+                        const joint = jointEdge.joint;
+                        if(!joint.jointCrawled){
+                            joint.jointCrawled = true;
+                            this.vehicleJoints.push(joint);
+                            const bodyA = joint.GetBodyA();
+                            if(!bodyA.mainCharacter && !bodyA.jointCrawled){
+                                bodyA.jointCrawled = true;
+                                bodyA.isVehiclePart = true;
+                                this.vehicleParts.push(bodyA);
+                                crawlJoints(bodyA);
+                            }
+                            const bodyB = joint.GetBodyB();
+                            if(!bodyB.mainCharacter && !bodyB.jointCrawled){
+                                bodyB.jointCrawled = true;
+                                bodyB.isVehiclePart = true;
+                                this.vehicleParts.push(bodyB);
+                                crawlJoints(bodyB);
+                            }
+                        }
+                        jointEdge = jointEdge.next;
+                    }
+                }
+
+                crawlJoints(bodyB);
+
+                this.vehicleParts.forEach(part => delete part.jointCrawled);
+                this.vehicleJoints.forEach(part => delete part.jointCrawled);
+                this.vehicleParts = [...new Set(this.vehicleParts)];
+                this.vehicleJoints = [...new Set(this.vehicleJoints)];
             }
         }
     }
@@ -126,6 +154,39 @@ export class Character extends Humanoid {
                 });
             }
         });
+    }
+    checkLimbs(){
+        if(this.attachedToVehicle){
+            this.mainPrefabClass.limbsObserver.forEach(observe=>{
+                if(!this.attachedToVehicle) return;
+                if(Array.isArray(observe)){
+
+                    let leftBroken = false;
+                    let rightBroken = false;
+
+                    observe.forEach((side, index)=> {
+                        side.forEach(limb=>{
+                            const targetObject = this.lookupObject[limb]
+                            if(!targetObject || targetObject.snapped){
+                                if(index === 0) leftBroken = true;
+                                else rightBroken = true;
+                            }
+                        });
+                    });
+                    if(leftBroken && rightBroken){
+                        this.detachFromVehicle();
+                        return;
+                    }
+                }else{
+                    const limb = observe;
+                    const targetObject = this.lookupObject[limb]
+                    if(!targetObject || targetObject.snapped){
+                        this.detachFromVehicle();
+                        return;
+                    }
+                }
+            })
+        }
     }
 
     detachFromVehicle(force) {

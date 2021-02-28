@@ -24,7 +24,7 @@ export class Explosive extends PrefabManager.basePrefab {
 		this.explodeTarget = null;
 		this.active = this.prefabObject.settings.active;
 		this.activateOn = this.prefabObject.settings.activateOn;
-		this.impactForExplosion = 200;
+		this.impactForExplosion = 10000;
 		this.exploded = false;
 		// this.clipWalls = false;
 		// this.exploded = false;
@@ -134,7 +134,8 @@ export class Explosive extends PrefabManager.basePrefab {
 						const count = contact.GetManifold().pointCount;
 						let force = 0;
 						for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
-						force *= body.GetMass();
+						force *= Math.min(body.GetMass(), 50);
+
 						if(force > self.impactForExplosion){
 							self.set('active', true);
 						}

@@ -19,6 +19,9 @@ import {
 import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
 import { YouTubePlayer } from '../utils/YouTubePlayer';
+import * as AudioManager from "../utils/AudioManager"
+import * as TutorialManager from "../utils/TutorialManager"
+
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -37,7 +40,9 @@ let filterMenu;
 let winScreen;
 let winLogo;
 let socialShareScreen;
+let settingsMenu;
 let logo;
+let smallLogo;
 
 let filter = {
     by: '',
@@ -171,6 +176,44 @@ function UIManager() {
         });
 
     }
+    this.showSettingsButtons = function(){
+        const targetElement = document.querySelector('#settings-ui');
+        const volumeButton = document.createElement('button');
+        volumeButton.classList.add('audioButton');
+
+        volumeButton.onclick = ()=>{
+
+            const userData = SaveManager.getLocalUserdata();
+            userData.sfxOn = !userData.sfxOn;
+            SaveManager.updateLocalUserData(userData);
+
+            Settings.sfxOn = userData.sfxOn;
+
+            if(!Settings.sfxOn){
+                volumeButton.classList.add('mute');
+                AudioManager.stopAllSounds();
+            }else{
+                volumeButton.classList.remove('mute');
+            }
+        }
+        targetElement.appendChild(volumeButton);
+    }
+    this.showSmallLogo = function(){
+        if(!smallLogo){
+            smallLogo = document.createElement('div');
+            smallLogo.classList.add('logoSmall');
+            smallLogo.style.position = 'absolute';
+            smallLogo.style.top = '0px';
+            smallLogo.style.left = '0px';
+            smallLogo.style.margin = '4px';
+            customGUIContainer.appendChild(smallLogo);
+        }
+        smallLogo.style.display = 'block';
+    }
+    this.hideSmallLogo = function(){
+        if(smallLogo) smallLogo.style.display = 'none';
+    }
+
     this.hide = function () {
         customGUIContainer.style.display = 'none';
     }
@@ -183,7 +226,6 @@ function UIManager() {
         mainMenu.style.display = "none";
     }
 
-    this.goingToShowGameOver = false;
     this.showGameOver = function () {
         if (!gameOver) {
             gameOver = document.createElement('div');
@@ -220,7 +262,6 @@ function UIManager() {
             button = document.createElement('div');
             button.setAttribute('class', 'headerButton restart buttonOverlay dark');
             button.innerHTML = "RESET";
-            button.style.marginTop = '5px';
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
@@ -230,26 +271,29 @@ function UIManager() {
             button = document.createElement('div');
             button.setAttribute('class', 'headerButton exit buttonOverlay dark');
             button.innerHTML = "EXIT";
-            button.style.marginTop = '5px';
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
-                game.openMainMenu();
+                if(game.gameState === game.GAMESTATE_EDITOR){
+                    game.stopTestingWorld();
+                }else{
+                    game.openMainMenu();
+                }
             });
         }
+        if(gameOver && game.run) gameOver.style.display = 'flex';
         setTimeout(()=>{
-            if(gameOver){
+            if(gameOver && game.run){
                 gameOver.style.opacity = 1;
-                gameOver.style.display = 'block';
+                AudioManager.playSFX('lose', 0.3, 1.0);
             }
         },
         Settings.gameOverDelay);
     }
     this.hideGameOverMenu = function () {
-        if (gameOver && gameOver.style.display == 'block') {
+        if (gameOver && gameOver.style.display == 'flex') {
             gameOver.style.display = 'none';
             gameOver.style.opacity = 0;
-            this.goingToShowGameOver = false;
         }
     }
     this.showLevelLoader = function () {
@@ -362,6 +406,7 @@ function UIManager() {
             divWrapper.style.padding = '20px';
             divWrapper.style.display = 'flex';
             divWrapper.style.flexDirection = 'column';
+            divWrapper.style.alignItems = 'center';
 
             let span = document.createElement('span');
             span.innerText = 'Date range:';
@@ -386,9 +431,8 @@ function UIManager() {
             select.appendChild(option);
 
             select.setAttribute('id', 'filter_uploadedselect');
+            select.style.marginTop = '10px';
             divWrapper.appendChild(select);
-
-
 
             select.addEventListener("change", () => {
                 filter.range = select.value;
@@ -397,7 +441,6 @@ function UIManager() {
 
 
             divWrapper.appendChild(document.createElement('br'));
-
 
             span = document.createElement('span');
             span.innerText = 'Sort by:';
@@ -471,10 +514,13 @@ function UIManager() {
         filterMenu.domElement.style.top = '50%';
         filterMenu.domElement.style.transform = 'translate(-50%, -50%)';
 
+        if(levelLoader) levelLoader.domElement.style.filter = 'brightness(0.5)';
+
     }
     this.hideFilterMenu = function () {
         if (filterMenu) {
             filterMenu.domElement.style.visibility = 'hidden';
+            if(levelLoader) levelLoader.domElement.style.filter = 'unset';
         }
     }
 
@@ -515,7 +561,6 @@ function UIManager() {
 
             divWrapper.appendChild(creator);
 
-
             let thumbNail;
             thumbNail = document.createElement('div');
             thumbNail.setAttribute('id', 'levelbanner_levelThumbnail');
@@ -533,8 +578,6 @@ function UIManager() {
             const flexButtonHolder = document.createElement('div');
             divWrapper.appendChild(flexButtonHolder);
             flexButtonHolder.classList.add('flexButtonWrap');
-
-
 
             let backButton = document.createElement('div');
             backButton.setAttribute('class', 'backButton menuButton')
@@ -592,7 +635,9 @@ function UIManager() {
         let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
         thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_big_md5}.png`;
 
-        levelBanner.domElement.querySelector('.levelbanner_title').innerText = game.currentLevelData.title;
+
+        let levelTitle = game.currentLevelData.published ? game.currentLevelData.title : game.currentLevelData.title+' (PREVIEW)';
+        levelBanner.domElement.querySelector('.levelbanner_title').innerText = levelTitle;
         levelBanner.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
         levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;
 
@@ -702,7 +747,6 @@ function UIManager() {
             const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png'];
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
-                if(i == 2) continue;
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(vehicleImages[i])}`
                 portrait.style.width = portrait.style.height = '100px';
@@ -713,9 +757,17 @@ function UIManager() {
                     if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
                         this.hideVehicleSelect();
                         game.selectedVehicle = i + 1;
-                        game.initLevel(game.currentLevelData);
-                        game.playWorld(true);
-                        backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+
+                        game.preloader.classList.remove('hide');
+                        setTimeout(()=>{
+                            game.initLevel(game.currentLevelData);
+                            game.playWorld(true);
+                            backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+                            setTimeout(()=>{
+                                game.preloader.classList.add('hide');
+                                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
+                            }, Settings.levelBuildDelayTime);
+                        }, Settings.levelBuildDelayTime);
                     }
                 }
             }
@@ -734,6 +786,15 @@ function UIManager() {
 
         const vehicleHolderDiv = vehicleSelect.domElement.querySelector('.vehicleHolder');
         [...vehicleHolderDiv.children].forEach((portrait, index) => {
+
+            if(game.currentLevelData.forced_vehicle === 3){
+                if((index+1) !== 3) portrait.style.display = 'none';
+                else portrait.style.display = 'inline-block';
+            }else{
+                if((index+1) === 3) portrait.style.display = 'none';
+                else portrait.style.display = 'inline-block';
+            }
+
             if (game.currentLevelData.forced_vehicle && (index + 1) !== game.currentLevelData.forced_vehicle) {
                 portrait.style.cursor = 'not-allowed';
                 portrait.style.filter = 'grayscale(1) brightness(0.5)';
@@ -759,7 +820,7 @@ function UIManager() {
             });
             pauseMenu.domElement.setAttribute('id', 'pauseMenu');
 
-            let folder = pauseMenu.addFolder('Level Settings');
+            let folder = pauseMenu.addFolder('Pause Screen');
             folder.domElement.classList.add('custom');
 
             folder.open();
@@ -1108,6 +1169,8 @@ function UIManager() {
         winScreen.domElement.style.top = '65%';
         winScreen.domElement.style.transform = 'translate(-50%, -50%)';
 
+        AudioManager.playSFX('win', 0.5, 1.0);
+
     }
 
     this.hideWinScreen = function () {
@@ -1229,6 +1292,7 @@ function UIManager() {
 
         socialShareGUI.hide = () => {
             socialShareGUI.domElement.style.visibility = 'hidden';
+            if(levelLoader && levelLoader.domElement) levelLoader.domElement.style.filter = 'unset';
         }
 
         targetDomElement.appendChild(divWrapper);
@@ -1239,6 +1303,7 @@ function UIManager() {
     }
     this.hideSocialShareMenu = function () {
         if (socialShareScreen) socialShareScreen.hide();
+        if(levelLoader) levelLoader.domElement.style.filter = 'unset';
     }
 
     this.showSocialShare = function (level) {
@@ -1251,6 +1316,8 @@ function UIManager() {
         socialShareScreen.domElement.style.transform = 'translate(-50%, -50%)';
 
         socialShareScreen.setSocialMediaHTML(level);
+
+        if(levelLoader) levelLoader.domElement.style.filter = 'brightness(0.5)';
     }
     this.showYouTubePlayer = function(id){
         if(!youtubePlayer){
@@ -1546,6 +1613,10 @@ function UIManager() {
         button.setAttribute('class', 'menuButton');
         levelLoadDiv.appendChild(button);
 
+        let progressBackFill = document.createElement('div');
+        progressBackFill.classList.add('progressBackFill');
+        button.appendChild(progressBackFill)
+
         let playButtonTriangle = document.createElement('div');
         playButtonTriangle.setAttribute('class', 'playButtonTriangleIcon')
         button.appendChild(playButtonTriangle)
@@ -1606,13 +1677,26 @@ function UIManager() {
                     game.gameState = game.GAMESTATE_LOADINGDATA;
                     itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
                     itemBarClone.querySelector('.dot-shell').style.visibility = 'visible';
-                    game.loadPublishedLevelData(level).then(() => {
+
+                    const progressBar = itemBarClone.querySelector('.progressBackFill');
+                    progressBar.style.visibility = 'visible';
+                    const progressFunction = progress => {
+
+                        console.log("PROGRESSS:", progress);
+
+                        const progressRounded = (progress*100).toFixed(2);
+                        progressBar.style.clipPath = `inset(0px ${100-progressRounded}% 0px 0px)`;
+                    }
+
+                    game.loadPublishedLevelData(level, progressFunction).then(() => {
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
+                        progressBar.style.visibility = 'hidden';
                         self.hideLevelLoader();
                     }).catch((error) => {
                         itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
                         itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
+                        progressBar.style.visibility = 'hidden';
                     });
                 }
 
@@ -1659,7 +1743,7 @@ const demoScroll = element=>{
                     });
                     let userData = SaveManager.getLocalUserdata();
                     userData.demoScrolls++;
-                    SaveManager.updateLocaluserData(userData);
+                    SaveManager.updateLocalUserData(userData);
                 }catch(e){}
             }, 500);
         }catch(e){}

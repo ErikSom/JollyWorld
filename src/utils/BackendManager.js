@@ -96,8 +96,8 @@ function BackendManager() {
 			fetch(`${Settings.API}/me`, body)
 			.then(result => result.json())
 			.then(data => {
-				console.log("Userdata:", data);
 				this.userData = data;
+				if(this.userData.is_admin) Settings.userAdmin = true;
 				resolve(data);
 			});
 		})
@@ -151,7 +151,7 @@ function BackendManager() {
 		bodyLevelData.game_build = __VERSION__;
 		if(cameraShotData) bodyLevelData.thumbnail = cameraShotData.replace('data:image/png;base64,', '') // kan ik hier ook geen data sturen? overschrijf ik het dan niet?
         if(details.youtubelinks)  bodyLevelData.youtubelinks = details.youtubelinks;
-		bodyLevelData.data = window.btoa(levelJSON);
+		bodyLevelData.data = levelJSON;
 		// creation data, is dat de date van eerste keer opslaan?
 		// minimum string length title & description = 3;
 
@@ -300,7 +300,7 @@ function BackendManager() {
     }
     this.getUserLevels = async () => {
 		const userData = await this.getUserData();
-		const levels = userData.my_levels;
+		const levels = userData.my_levels.filter(level=>!level.published);
 		return levels;
     }
     this.getPublishedLevels = function (filter) {

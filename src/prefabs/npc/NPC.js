@@ -10,6 +10,7 @@ export class NPC extends PrefabManager.basePrefab {
 		super(target);
 		this.flipped = false;
 		this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+		this.character.calculateJointOffsets();
 		if(this.prefabObject.settings){
 			this.flip(this.prefabObject.settings.isFlipped);
 			if(this.prefabObject.settings?.limbs){

@@ -145,7 +145,7 @@ class Treadmill extends PrefabManager.basePrefab {
 		this.wheelTextures.length = 3;
 
 		for(let i = 0; i< wheels; i++){
-			const duplicatedCenter = new PIXI.Sprite(PIXI.Texture.fromImage(this.textureEdgeCenter.texture.textureCacheIds[0]));
+			const duplicatedCenter = new PIXI.Sprite(PIXI.Texture.from(this.textureEdgeCenter.texture.textureCacheIds[0]));
 			this.textureEdgeCenter.addChild(duplicatedCenter);
 			duplicatedCenter.x = -2+this.textureEdgeCenter.x + (i+1) * this.wheelSize;
 			duplicatedCenter.y = this.textureEdgeCenter.y;
@@ -153,7 +153,7 @@ class Treadmill extends PrefabManager.basePrefab {
 			this.createdTextures.push(duplicatedCenter);
 
 
-			const duplicatedWheel = new PIXI.Sprite(PIXI.Texture.fromImage(this.textureWheel.texture.textureCacheIds[0]));
+			const duplicatedWheel = new PIXI.Sprite(PIXI.Texture.from(this.textureWheel.texture.textureCacheIds[0]));
 			duplicatedWheel.pivot.set(duplicatedWheel.width / 2, duplicatedWheel.height / 2);
 			this.textureContainer.addChild(duplicatedWheel);
 			duplicatedWheel.x = this.textureWheel.x + (i+startingWheels) * this.wheelSize;

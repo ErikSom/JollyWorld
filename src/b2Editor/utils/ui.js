@@ -244,7 +244,7 @@ export const showConfetti = ()=>{
     setTimeout(() => emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition2, 0, jollyConfetti), 400);
 }
 
-const doPublishLevelData = function (publishButton) {
+const doPublishLevelData = function (publishButton, preview) {
 
     if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
 
@@ -254,28 +254,31 @@ const doPublishLevelData = function (publishButton) {
         if (!game.currentLevelData.thumb_small_md5) return showNotice(Settings.DEFAULT_TEXTS.publish_noThumbnail);
         if (!game.currentLevelData.description) return showNotice(Settings.DEFAULT_TEXTS.publish_noDescription);
 
+        if(preview){
+            window.open(`https://jollyworld.app/#${game.currentLevelData.id}`, "_blank");
+        }else{
+            showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
+                publishButton.style.backgroundColor = 'grey';
+                publishButton.innerText = '...';
+                game.publishLevelData().then(() => {
+                    publishButton.style.backgroundColor = '';
+                    publishButton.innerText = 'PUBLISH';
 
-        showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
-            publishButton.style.backgroundColor = 'grey';
-            publishButton.innerText = '...';
-            game.publishLevelData().then(() => {
-                publishButton.style.backgroundColor = '';
-                publishButton.innerText = 'PUBLISH';
+                    showConfetti();
 
-                showConfetti();
+                    showPublishSocialShareScreen(game.currentLevelData);
+                    hidePanel(levelEditScreen);
 
-                showPublishSocialShareScreen(game.currentLevelData);
-                hidePanel(levelEditScreen);
-
-                console.log("PUBLISH SUCCESSSSSS");
+                    console.log("PUBLISH SUCCESSSSSS");
+                }).catch(error => {
+                    console.log(error);
+                    publishButton.style.backgroundColor = '';
+                    publishButton.innerText = 'PUBLISH';
+                });
             }).catch(error => {
                 console.log(error);
-                publishButton.style.backgroundColor = '';
-                publishButton.innerText = 'PUBLISH';
             });
-        }).catch(error => {
-            console.log(error);
-        });
+        }
     }
 
     if (hasUnsavedChanges()) {
@@ -808,6 +811,7 @@ export const showLevelEditScreen = function (dontReplace) {
         description.style.color = '#00FF00';
         description.style.fontFamily = 'arial';
         description.style.padding = '5px';
+        description.style.resize = 'none';
 
         span = document.createElement('span');
         span.innerText = 'Characters left: 300';
@@ -887,24 +891,30 @@ export const showLevelEditScreen = function (dontReplace) {
             showSaveScreen.bind(this)();
         });
 
+        let deleteButton = document.createElement('div');
+        deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
+        deleteButton.innerHTML = "DELETE";
+        targetDomElement.appendChild(deleteButton);
+
+        let previewButton = document.createElement('div');
+        previewButton.setAttribute('class', 'headerButton preview buttonOverlay dark');
+        previewButton.innerHTML = "PREVIEW";
+        targetDomElement.appendChild(previewButton);
+
+        previewButton.addEventListener('click', () => {
+            doPublishLevelData(publishButton, true);
+        });
+
         let publishButton = document.createElement('div');
         publishButton.setAttribute('class', 'headerButton publish buttonOverlay dark');
         publishButton.innerHTML = "PUBLISH";
+        publishButton.style.float = 'right';
+        publishButton.style.marginRight = '10px';
         targetDomElement.appendChild(publishButton);
-
 
         publishButton.addEventListener('click', () => {
             doPublishLevelData(publishButton);
         });
-
-
-
-        let deleteButton = document.createElement('div');
-        deleteButton.setAttribute('class', 'headerButton delete buttonOverlay dark');
-        deleteButton.innerHTML = "DELETE";
-        deleteButton.style.float = 'right';
-        deleteButton.style.marginRight = '10px';
-        targetDomElement.appendChild(deleteButton);
 
         deleteButton.addEventListener('click', () => {
             showPrompt(`Are you sure you want to delete level ${game.currentLevelData.title}?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
@@ -1222,13 +1232,13 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
     }
 
 
-    if(!Settings.admin){
+    if(!Settings.userAdmin || window.location.search.indexOf('levelAdmin=true')<0){
         backendManager.getUserLevels().then((levels) => {
             buildLevelList(levels);
         })
     }else{
         backendManager.getPublishedLevels({
-            by: 'Featured',
+            by: 'Newest',
             range: 'Anytime'
         }).then((levels) => {
             buildLevelList(levels);
@@ -1313,18 +1323,25 @@ export const showLoadScreen = function () {
     loadScreen.domElement.style.top = '10px';
     loadScreen.domElement.style.left = `${window.innerWidth-400-20}px`
 }
-let editorGUIPos = {
-    x: 0,
-    y: 0
+
+const userData = SaveManager.getLocalUserdata();
+const editorGUIPos = {
+    x: Math.max(-10, Math.min(userData.editorGuiPos.x, window.innerWidth-300)),
+    y: Math.max(-10, Math.min(userData.editorGuiPos.y, window.innerHeight-300))
 };
+
+console.log(userData.editorGuiPos, window.innerWidth-300);
+
+
 export const buildEditorGUI = function () {
     const editorGUIWidth = 270;
     editorGUI = new dat.GUI({
         autoPlace: false,
         width: editorGUIWidth
     });
-    editorGUI.domElement.style.top = '50px';
-    editorGUI.domElement.style.left = '50px';
+    editorGUI.domElement.setAttribute('editorGUI', 'true');
+    editorGUI.domElement.style.top = `${editorGUIPos.y}px`;
+    editorGUI.domElement.style.left = `${editorGUIPos.x}px`;
     customGUIContainer.appendChild(editorGUI.domElement);
 }
 export const destroyEditorGUI = function () {
@@ -1421,7 +1438,7 @@ export const initGuiAssetSelection = function () {
 
         for (var i = 0; i < B2dEditor.assetLists[assetSelection.assetSelectedGroup].length; i++) {
             var textureName = B2dEditor.assetLists[assetSelection.assetSelectedGroup][i];
-            var texture = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(textureName));
+            var texture = new PIXI.heaven.Sprite(PIXI.Texture.from(textureName));
             let image = game.app.renderer.plugins.extract.image(texture);
             const guiFunction = document.createElement('li');
             guiFunction.classList.add('cr', 'function');
@@ -1567,6 +1584,13 @@ export const showTextEditor = function (startValue, callBack) {
 
     folder.open();
 
+    const closeButton = document.createElement('div');
+    closeButton.setAttribute('class', 'closeWindowIcon');
+    folder.domElement.append(closeButton);
+    closeButton.addEventListener('click', () => {
+        removeTextEditor();
+    });
+
     var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
     let divWrapper = document.createElement('div');
@@ -1607,6 +1631,11 @@ export const showTextEditor = function (startValue, callBack) {
     textEditor.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
 
     registerDragWindow(textEditor);
+    setHighestWindow(textEditor.domElement);
+
+    setTimeout(()=>{
+        if(textarea && textarea.parentNode) textarea.focus();
+    }, 0);
 
     return false;
 }
@@ -1773,7 +1802,7 @@ export const showHelp = function (i) {
     closeButton.addEventListener('click', () => {
         const userData = SaveManager.getLocalUserdata();
         userData.helpClosed[i] = true;
-        SaveManager.updateLocaluserData(userData);
+        SaveManager.updateLocalUserData(userData);
         removeShowHelp();
     });
 
@@ -2106,7 +2135,7 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
             label.style.backgroundPosition = 'center center';
             label.style.backgroundSize = '100% 100%, auto';
         } else {
-            const base64Image = PIXI.utils.BaseTextureCache[Settings.textureNames[i]].source.src;
+            const base64Image = PIXI.utils.BaseTextureCache[Settings.textureNames[i]].resource.source.src;
             label.style.background = `url(${base64Image})`;
             label.style.backgroundSize = 'contain';
         }
@@ -2146,6 +2175,22 @@ export const initDrag = function (event, _window) {
     startDragPos.y = parseInt(computedTop, 10) || 0;
 }
 export const endDrag = function (event, _window) {
+
+    const computedLeft = parseFloat(getComputedStyle(_window.domElement, null).left.replace("px", ""));
+    const computedTop = parseFloat(getComputedStyle(_window.domElement, null).top.replace("px", ""));
+
+    if(_window.domElement.getAttribute('editorGui')){
+        const userData = SaveManager.getLocalUserdata();
+
+        userData.editorGuiPos.x = Math.max(-10, Math.min(computedLeft, window.innerWidth-300));
+        userData.editorGuiPos.y = Math.max(-10, Math.min(computedTop, window.innerHeight-300));
+        editorGUIPos.x = userData.editorGuiPos.x;
+        editorGUIPos.y = userData.editorGuiPos.y;
+        SaveManager.updateLocalUserData(userData);
+
+        console.log("STORE THAT SHITTT");
+    }
+
     document.removeEventListener('mousemove', _window.mouseMoveFunction);
     setTimeout(() => {
         _window.domElement.querySelector('.title').removeAttribute('moved');
@@ -2182,16 +2227,20 @@ export const registerDragWindow = (_window) => {
 
     titleBar.addEventListener('mousedown', (event) => {
         initDrag(event, _window);
+
+        const mouseUp = (event) => {
+            endDrag(event, _window);
+            setHighestWindow(domElement);
+            document.removeEventListener('mouseup', mouseUp);
+        }
+        document.addEventListener('mouseup', mouseUp);
+
         event.stopPropagation();
     });
 
     domElement.addEventListener('mouseup', (event) => {
         setHighestWindow(domElement);
     })
-    titleBar.addEventListener('mouseup', (event) => {
-        endDrag(event, _window);
-        setHighestWindow(domElement);
-    });
 
     const clickFunction = (event) => {
         if (domElement.querySelector('.title').getAttribute('moved') !== null) {
@@ -2199,7 +2248,6 @@ export const registerDragWindow = (_window) => {
             if (tarFolder.closed) tarFolder.open();
             else tarFolder.close();
         }
-        endDrag(event, _window);
         if (!_window.domElement.parentNode) document.removeEventListener('click', clickFunction);
     }
 

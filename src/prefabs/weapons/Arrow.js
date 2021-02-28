@@ -146,8 +146,17 @@ class Arrow extends PrefabManager.basePrefab {
 
 						self.arrowBody.myTexture.addChild(self.arrowBody.myMask);
 
-						self.arrowBody.myTexture.originalSprite.pluginName = 'spriteMasked';
+						self.arrowBody.myTexture.originalSprite.pluginName = 'batchMasked';
 						self.arrowBody.myTexture.originalSprite.maskSprite = self.arrowBody.myMask;
+
+						let damage = 30;
+						if(body.mySprite.data.refName === 'head') damage = 150;
+						if(body.mySprite.data.refName === 'body') damage = 100;
+
+						const bodyClass = game.editor.retrieveSubClassFromBody(body);
+						if(bodyClass && bodyClass.dealDamage){
+							bodyClass.dealDamage(damage);
+						}
 
 					}
 				}

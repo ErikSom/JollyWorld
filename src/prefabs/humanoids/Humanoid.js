@@ -7,6 +7,7 @@ import {
     Settings
 } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
+import * as AudioManager from '../../utils/AudioManager';
 import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
 
 
@@ -27,12 +28,15 @@ export class Humanoid extends PrefabManager.basePrefab {
         super(target);
         this.life = 300;
         this.flipped = false;
+        this.mouthTextureName = 'Mouth';
+        this.mouthPos = {x:41, y:59};
     }
+
     postConstructor(){
         if(!this.mouth){
-            this.mouth = new PIXI.Sprite(PIXI.Texture.fromFrame('Mouth_Idle0000'))
-            this.mouth.x = 41; // magic numbers
-            this.mouth.y = 59;
+            this.mouth = new PIXI.Sprite(PIXI.Texture.from(`${this.mouthTextureName}_Idle0000`))
+            this.mouth.x = this.mouthPos.x; // magic numbers
+            this.mouth.y = this.mouthPos.y;
             this.lookupObject[Humanoid.BODY_PARTS.HEAD].myTexture.addChild(this.mouth);
         }
     }
@@ -40,6 +44,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     init() {
         super.init();
         this.patchJointAngles();
+        this.stabalizeJoints();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
         this.alive = true;
@@ -56,6 +61,9 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
 
+
+        // game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
+        // game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -63,6 +71,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 body.isFlesh = true;
                 body.isHumanoid = true;
+
                 game.editor.prepareBodyForDecals(body);
 
                 var texture = body.myTexture;
@@ -72,7 +81,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 if (fleshName.indexOf('Head') > 0) fleshName = fleshName.substr(0, fleshName.indexOf('_')) + "_Head";
 
-                var sprite = new PIXI.heaven.Sprite(PIXI.Texture.fromFrame(fleshName + "_Flesh0000"));
+                var sprite = new PIXI.heaven.Sprite(PIXI.Texture.from(fleshName + "_Flesh0000"));
                 texture.myFlesh = sprite;
                 texture.addChildAt(sprite, 0);
             }
@@ -81,10 +90,11 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     setExpression(expression){
         if(this.expression === expression) return;
+        if(!this.lookupObject.head) return;
 
         const textureName = this.mouth.texture.textureCacheIds[0];
         const textureSkin = textureName.substr(textureName.length - 4);
-        this.mouth.texture = PIXI.Texture.fromFrame(`Mouth_${expression}${textureSkin}`);
+        this.mouth.texture = PIXI.Texture.from(`${this.mouthTextureName}_${expression}${textureSkin}`);
 
         this.expressionTimer = 0;
 
@@ -111,9 +121,9 @@ export class Humanoid extends PrefabManager.basePrefab {
 
 
             body.myTexture.data.textureName = targetTexture;
-            body.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(targetTexture);
+            body.myTexture.originalSprite.texture = PIXI.Texture.from(targetTexture);
         }
-        this.mouth.texture = PIXI.Texture.fromFrame(`Mouth_Idle${targetFrame}`);
+        this.mouth.texture = PIXI.Texture.from(`${this.mouthTextureName}_Idle${targetFrame}`);
     }
     flip(){
         this.flipped = !this.flipped;
@@ -126,16 +136,16 @@ export class Humanoid extends PrefabManager.basePrefab {
             if (this.lookupObject.eye_left){
                 const textureIndex = this.lookupObject.eye_left.myTexture.data.textureName.substr(this.lookupObject.eye_left.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_left.myTexture.data.textureName.split(textureIndex)[0];
-                this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(`${baseTextureName}_Closed${textureIndex}`);
+                this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
             }
             if (this.lookupObject.eye_right){
                 const textureIndex = this.lookupObject.eye_right.myTexture.data.textureName.substr(this.lookupObject.eye_right.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_right.myTexture.data.textureName.split(textureIndex)[0];
-                this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(`${baseTextureName}_Closed${textureIndex}`);
+                this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
             }
         } else if (PrefabManager.timerReady(this.eyesTimer, Humanoid.TIME_EYES_OPEN, false)) {
-            if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_left.myTexture.data.textureName);
-            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.fromFrame(this.lookupObject.eye_right.myTexture.data.textureName);
+            if (this.lookupObject.eye_left) this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.from(this.lookupObject.eye_left.myTexture.data.textureName);
+            if (this.lookupObject.eye_right) this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.from(this.lookupObject.eye_right.myTexture.data.textureName);
             this.eyesTimer = -game.editor.deltaTime;
         }
 
@@ -152,6 +162,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         if (this.collisionUpdates.length > 0) {
             this.doCollisionUpdate(this.collisionUpdates[0]);
             this.collisionUpdates.shift();
+            this.checkLimbs();
         }
         this.eyesTimer += game.editor.deltaTime;
         this.expressionTimer += game.editor.deltaTime;
@@ -212,6 +223,15 @@ export class Humanoid extends PrefabManager.basePrefab {
     initContactListener() {
         super.initContactListener();
         var self = this;
+        this.contactListener.PreSolve = function (contact, impulse) {
+            const bodyA = contact.GetFixtureA().GetBody();
+            const bodyB = contact.GetFixtureB().GetBody();
+            bodyA.preSolveVelicity = bodyA.GetLinearVelocity().Clone();
+            bodyA.preSolveVelicityCounter = bodyA.preSolveVelicityCounter !== undefined ? bodyA.preSolveVelicityCounter + 1 : 1;
+            bodyB.preSolveVelicity = bodyB.GetLinearVelocity().Clone();
+            bodyB.preSolveVelicityCounter = bodyB.preSolveVelicityCounter !== undefined ? bodyB.preSolveVelicityCounter + 1 : 1;
+
+        }
         this.contactListener.PostSolve = function (contact, impulse) {
 
             if(!contact.GetFixtureA().GetBody().mySprite || !contact.GetFixtureB().GetBody().mySprite) return;
@@ -239,44 +259,74 @@ export class Humanoid extends PrefabManager.basePrefab {
                 const minForceForDamage = 10.0;
                 const forceToDamageDivider = 50.0;
 
-                if(force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
+                const bodyA = contact.GetFixtureA().GetBody();
+                const bodyB = contact.GetFixtureB().GetBody();
+                const velocityA = bodyA.GetLinearVelocity().Length();
+                const velocityB = bodyB.GetLinearVelocity().Length();
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().y, bodyA.GetLinearVelocity().x) : Math.atan2(bodyB.GetLinearVelocity().y, bodyB.GetLinearVelocity().x);
+                impactAngle *= game.editor.RAD2DEG + 180;
+                const velocitySum = velocityA + velocityB;
+
+
+                let allowSound = true;
+                if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+
+                if(velocitySum > 10 && force> characterBody.GetMass() * minForceForDamage && !characterBody.noDamage){
                     self.dealDamage(force/forceToDamageDivider);
+
+                    if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                    bodyA.recentlyImpactedBodies.push(bodyB);
+
+                    if(allowSound) AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.3, 1.0 + 0.4 * Math.random()-0.2, characterBody.GetPosition());
                 }
 
                 let forceDamage = 0;
 
-                const charOtherBodyDiff = characterBody.GetPosition().Clone().SelfSub(otherBody.GetPosition());
-                const dotProductChar = characterBody.GetLinearVelocity().Dot(charOtherBodyDiff)*-1;
+                if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
+                    const charOtherBodyDiff = characterBody.GetPosition().Clone().SelfSub(otherBody.GetPosition());
+                    const dotProductChar = characterBody.preSolveVelicity.Dot(charOtherBodyDiff)*-1;
 
-                const otherBodyCharDiff = otherBody.GetPosition().Clone().SelfSub(characterBody.GetPosition());
-                const dotProductOther = otherBody.GetLinearVelocity().Dot(otherBodyCharDiff)*-1;
+                    const otherBodyCharDiff = otherBody.GetPosition().Clone().SelfSub(characterBody.GetPosition());
+                    const dotProductOther = otherBody.preSolveVelicity.Dot(otherBodyCharDiff)*-1;
 
-                if(dotProductChar>0){
-                    forceDamage += characterBody.GetLinearVelocity().LengthSquared() * characterBody.GetMass();
-                }
-                if(dotProductOther>0){
-                    forceDamage += otherBody.GetLinearVelocity().LengthSquared() * otherBody.GetMass();
-                }
+                    if(dotProductChar>0){
+                        forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
+                    }
+                    if(dotProductOther>0){
+                        forceDamage += otherBody.preSolveVelicity.LengthSquared() * otherBody.GetMass();
+                    }
 
-                if (forceDamage > Settings.bashForce / 2) {
-                    if (characterBody == self.lookupObject["head"]) {
-                        if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                            type: Humanoid.GORE_SNAP,
-                            target: "eye_right"
-                        });
-                        if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
-                            type: Humanoid.GORE_SNAP,
-                            target: "eye_left"
+                    if (forceDamage > Settings.bashForce / 2) {
+                        if (characterBody == self.lookupObject["head"]) {
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Humanoid.GORE_SNAP,
+                                target: "eye_right"
+                            });
+                            if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
+                                type: Humanoid.GORE_SNAP,
+                                target: "eye_left"
+                            });
+                        }
+                    }
+
+                    if (characterBody.mySprite.data.refName != "" && forceDamage > Settings.bashForce) {
+                        self.collisionUpdates.push({
+                            type: Humanoid.GORE_BASH,
+                            target: characterBody.mySprite.data.refName,
                         });
                     }
                 }
-
-                if (characterBody.mySprite.data.refName != "" && forceDamage > Settings.bashForce) {
-                    self.collisionUpdates.push({
-                        type: Humanoid.GORE_BASH,
-                        target: characterBody.mySprite.data.refName,
-                    });
-                }
+            }
+            characterBody.preSolveVelicityCounter--;
+            if(characterBody.preSolveVelicityCounter <= 0){
+                delete characterBody.preSolveVelicity;
+                delete characterBody.preSolveVelicityCounter;
+            }
+            otherBody.preSolveVelicityCounter--;
+            if(otherBody.preSolveVelicityCounter <= 0){
+                delete otherBody.preSolveVelicity;
+                delete otherBody.preSolveVelicityCounter;
             }
         }
     }
@@ -315,6 +365,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     this.generateGoreParticles(update.target);
                     emitterManager.playOnceEmitter("gorecloud", targetBody, targetBody.GetPosition());
+                    AudioManager.playSFX(['bash1', 'bash2', 'bash3', 'bash4'], 0.3, 1.0+Math.random()*.2-.1, targetBody.GetPosition());
 
                     let connectedJointEdge = targetBody.GetJointList();
                     while(connectedJointEdge){
@@ -366,7 +417,6 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 break;
             case Humanoid.GORE_SNAP:
-
                 const targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
 
@@ -418,17 +468,10 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
                     if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
 
-                    const targetBody = this.lookupObject[update.target];
-                    if(targetBody.grabJoints){
-                        targetBody.grabJoints.forEach(grabJoint=>{
-                            game.world.DestroyJoint(grabJoint);
-                            delete targetBody.grabJoints;
-                        })
-                    }
-
-
                     game.world.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];
+
+                    AudioManager.playSFX(['snap1', 'snap2', 'snap3', 'snap4'], 0.3, 1.0+Math.random()*.2-.1, targetJoint.GetBodyA().GetPosition());
 
                     //fix display positions:
                     const swapBodies = vainBodies._bodies.concat().reverse();
@@ -487,7 +530,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             if(particle == 'Gore_Meat'){
                 const ranId = Math.floor(Math.random()*4)+1;
-                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.fromFrame(particle+ranId+'0000');
+                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+ranId+'0000');
             }
         });
     }
@@ -675,22 +718,22 @@ export class Humanoid extends PrefabManager.basePrefab {
                     clockwise: 1
                 },
                 shoulder_right: {
-                    angle: -20,
+                    angle: 190,
                     reference: "body",
                     clockwise: -1
                 },
                 shoulder_left: {
-                    angle: -20,
+                    angle: 190,
                     reference: "body",
                     clockwise: -1
                 },
                 arm_right: {
-                    angle: 0,
+                    angle: 90,
                     reference: "shoulder_right",
                     clockwise: -1
                 },
                 arm_left: {
-                    angle: 0,
+                    angle: 90,
                     reference: "shoulder_left",
                     clockwise: -1
                 },
@@ -727,7 +770,8 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 if (targetPosition[body_part].reference != 'body' && !this.lookupObject[targetPosition[body_part].reference + '_joint']) continue;
 
-                let desiredAngle = refBody.GetAngle() - targetPosition[body_part].angle * game.editor.DEG2RAD;
+                let limbAngle = this.flipped ? targetPosition[body_part].angle : - targetPosition[body_part].angle;
+                let desiredAngle = refBody.GetAngle() + limbAngle * game.editor.DEG2RAD;
                 let nextAngle = body.GetAngle() + body.GetAngularVelocity() / 15;
                 let totalRotation = desiredAngle - nextAngle;
 
@@ -773,10 +817,10 @@ export class Humanoid extends PrefabManager.basePrefab {
                         }
                     }
                 }
-
+                const torqueLimiter = .15;
                 let desiredAngularVelocity = totalRotation * 60;
                 let torque = body.GetInertia() * desiredAngularVelocity / (1/30.0);
-                if(Math.abs(torque) > 1) body.ApplyTorque(torque * .6);
+                if(Math.abs(torque) > 1) body.ApplyTorque(torque * torqueLimiter);
             }
         }
     }
@@ -827,6 +871,62 @@ export class Humanoid extends PrefabManager.basePrefab {
             linkedBody.SetAngle(linkedBody.GetAngle()-angleCorrection);
         });
     };
+
+    stabalizeJoints(){
+        // stabalize shoulders
+        this.stabalizeJoint(Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_LEFT, [Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.ARM_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.ARM_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_LEFT, [Humanoid.BODY_PARTS.ARM_LEFT]);
+
+        this.stabalizeJoint(Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]); // add stabalize joints to bodies delete on snap 
+        this.stabalizeJoint(Humanoid.BODY_PARTS.ARM_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]);
+
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.LEG_LEFT]);
+
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT,[Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT, [Humanoid.BODY_PARTS.LEG_RIGHT]);
+    }
+    stabalizeJoint(target, base, baseRefJoint, linkedBodies){
+        const targetBody = this.lookupObject[target];
+        base = this.lookupObject[base];
+        const refJoint = this.lookupObject[`${baseRefJoint}_joint`]
+
+        let anchor = null;
+        if(refJoint.GetBodyA() === base){
+            anchor = refJoint.GetAnchorA(new Box2D.b2Vec2());
+        }else{
+            anchor = refJoint.GetAnchorB(new Box2D.b2Vec2());
+        }
+
+        const ropeJointDef = new Box2D.b2RopeJointDef();
+
+        const targetAnchor = this.lookupObject[`${target}_joint`].GetAnchorA(new Box2D.b2Vec2());
+
+        ropeJointDef.Initialize(targetBody, base, targetAnchor, anchor);
+        const newJoint = game.world.CreateJoint(ropeJointDef);
+
+        let maxLength = 0;
+        linkedBodies.forEach((linkedBody, index)=>{
+
+            let nextLinkedBody = index+1 === linkedBodies.length ? baseRefJoint : linkedBodies[index+1];
+            const j1 = this.lookupObject[linkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
+            const j2 = this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
+
+            maxLength += j1.SelfSub(j2).Length();
+
+        });
+        newJoint.SetMaxLength(maxLength);
+
+        linkedBodies.forEach(linkedBodyKey => {
+            const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]
+            if(!linkedJoint.linkedJoints) linkedJoint.linkedJoints = [];
+            linkedJoint.linkedJoints.push(newJoint);
+        });
+    }
+
+    checkLimbs(){
+        // only intereresting for character
+    }
 
     positionLimb(limb, x, y){
         let baseJoint,
@@ -953,17 +1053,33 @@ export class Humanoid extends PrefabManager.basePrefab {
             lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
             lowerPart.SetAngle(lowerAngle-Settings.pihalve);
 
-            const anchorDistanceEnd = endJointPos.Clone().SelfSub(endPart.GetPosition()).Length();
-
             const endJointPosRotated = rotateVectorAroundPoint(new Box2D.b2Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, lowerAngle*game.editor.RAD2DEG);
             endJointPos.x = endJointPosRotated.x;
             endJointPos.y = endJointPosRotated.y;
             endJoint.position.x = endJointPos.x*Settings.PTM;
             endJoint.position.y = endJointPos.y*Settings.PTM;
 
-            endPart.SetPosition(new Box2D.b2Vec2(endJointPos.x+anchorDistanceEnd*Math.cos(lowerAngle), endJointPos.y+anchorDistanceEnd*Math.sin(lowerAngle)));
+            const endPos = new Box2D.b2Vec2(endJointPos.x, endJointPos.y);
+            const targetOffsetAngle = lowerPart.GetAngle()+endPart.jointOffsetAngle;
+            endPos.x += endPart.jointOffsetLength * Math.cos(targetOffsetAngle);
+            endPos.y += endPart.jointOffsetLength * Math.sin(targetOffsetAngle);
+
+            console.log(endPart.jointOffsetLength, endPart.jointOffsetAngle);
+
+            endPart.SetPosition(endPos);
             endPart.SetAngle(lowerAngle-Settings.pihalve);
         }
+    }
+
+    calculateJointOffsets(){
+        [Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.FEET_RIGHT].forEach(part => {
+            const joint = this.lookupObject[part+"_joint"];
+            const jointWorldPos = new Box2D.b2Vec2(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
+            const bodyPart = this.lookupObject[part];
+            const jointOffset = bodyPart.GetPosition().Clone().SelfSub(jointWorldPos);
+            bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x);
+            bodyPart.jointOffsetLength = jointOffset.Length();
+        });
     }
 }
 

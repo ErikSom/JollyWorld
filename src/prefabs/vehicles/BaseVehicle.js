@@ -18,8 +18,8 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.isVehicle = true;
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
         this.vehicleName = '';
-        this.inverseEngines = false;
         this.accel = 0;
+        this.limbsObserver = [];
     }
 
     init() {
@@ -44,7 +44,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             this.m_hit = false;
         }
         this.RaycastCallbackWheel.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-            if (fixture.GetFilterData().groupIndex == game.editor.GROUPINDEX_CHARACTER) return -1;
+            if(fixture.GetBody().mainCharacter) return -1;
             if (fixture.IsSensor()) return -1;
             this.m_hit = true;
             this.m_point = point.Clone();
@@ -141,13 +141,13 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.accel = dir;
         if((dir < 0 && !this.flipped) || (dir>0 && this.flipped)) dir *= .6; // only 60% backwards speed
 
-        if(this.inverseEngines) dir *= -1;
-
         this.accelerateWheels(dir);
         let i;
         let j;
         let wheel;
         const offset = 0.5;
+
+        this.grounded = false;
 
         for (i = 0; i < this.wheels.length; i++) {
             wheel = this.wheels[i];
@@ -167,6 +167,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 if (callback.m_hit) {
                     let forceDir = extramath.rotateVector(callback.m_normal, 90);
                     this.applyImpulse(this.desiredVehicleSpeeds[i] * dir, forceDir);
+                    this.grounded = true;
                     break;
                 }
             }

@@ -5,6 +5,7 @@ import { Settings } from '../../Settings';
 import { normalizePI } from '../../b2Editor/utils/extramath';
 import * as emitterManager from '../../utils/EmitterManager';
 import { Explosive } from './Explosive';
+import * as AudioManager from '../../utils/AudioManager';
 
 import {
     game
@@ -82,6 +83,8 @@ class DroneBomb extends Explosive {
 		const pos = this.body.GetPosition();
 		emitterManager.playOnceEmitter("explosion_layer1", this.explodeTarget, pos, 0);
 		emitterManager.playOnceEmitter("explosion_layer2", this.explodeTarget, pos, 0);
+		AudioManager.playSFX('drone-explosion', 0.3, 1.0 + 0.4 * Math.random()-0.2, pos);
+
 		this.destroy();
 	}
 
@@ -138,8 +141,11 @@ class DroneBomb extends Explosive {
 
 		if(this.active){
 			if (PrefabManager.timerReady(this.blinkTimer, this.blinkDelay, true)) {
-				if(!this.blink) this.droneTexture.texture = PIXI.Texture.fromFrame(this.droneTexture.texture.textureCacheIds[0].replace("_off", "_on"));
-				else this.droneTexture.texture = PIXI.Texture.fromFrame(this.droneTexture.texture.textureCacheIds[0].replace("_on", "_off"));
+				if(!this.blink) this.droneTexture.texture = PIXI.Texture.from(this.droneTexture.texture.textureCacheIds[0].replace("_off", "_on"));
+				else{
+					this.droneTexture.texture = PIXI.Texture.from(this.droneTexture.texture.textureCacheIds[0].replace("_on", "_off"));
+					AudioManager.playSFX('drone-beep', 0.1, 1.0, this.body.GetPosition());
+				}
 				this.blink = !this.blink;
 				this.blinkDelay = (this.explodeDelay-this.explodeTimer) * 0.1;
 				this.blinkTimer = 0;
@@ -267,6 +273,8 @@ class DroneBomb extends Explosive {
 					self.body.ApplyForce(angleVector.Clone().SelfMul(-pushForce/4), pos, true);
 					self.body.ApplyForce(angleVector.Clone().SelfMul(-pushForce), self.body.GetPosition(), true);
 
+					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
+
 				} else if(sideFixture === self.sides[SIDE_LEFT]){
 					const pos = new Box2D.b2Vec2().Copy(self.emitterLeft.spawnPos).SelfMul(1/Settings.PTM);
 					if(isFlesh){
@@ -276,6 +284,8 @@ class DroneBomb extends Explosive {
 
 					self.body.ApplyForce(angleVector.Clone().SelfMul(pushForce/4), pos, true);
 					self.body.ApplyForce(angleVector.Clone().SelfMul(pushForce), self.body.GetPosition(), true);
+
+					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
 				}
 
 				if(self.activateOn == Explosive.activateOnTypes.mainCharacter){

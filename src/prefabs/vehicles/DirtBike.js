@@ -1,7 +1,12 @@
 import * as PrefabManager from '../PrefabManager';
-import { BaseVehicle } from './BaseVehicle';
+import * as AudioManager from '../../utils/AudioManager';
 
+import { BaseVehicle } from './BaseVehicle';
 import { DirtBikeHelmet } from '../hats/dirtBikeHelmet'
+
+import {
+    game
+} from "../../Game";
 
 class DirtBike extends BaseVehicle {
     constructor(target) {
@@ -30,9 +35,31 @@ class DirtBike extends BaseVehicle {
         this.desiredVehicleSpeeds = [20, 20];
 
         this.character.setHat(DirtBikeHelmet);
+
+        this.refAccel = 0;
     }
     update() {
         super.update();
+
+        const wheelRotationSpeed = Math.abs(this.lookupObject.wheel_back.GetAngularVelocity())/24;
+
+        this.airOffset = this.grounded ? 0 : 0.2;
+
+        if(this.accel == 0){
+            this.refAccel = Math.max(0, this.refAccel - (game.editor.deltaTime / 500));
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'dirtbike_gas_loop', 0.1 * this.refAccel+0.05, Math.max(0.6, wheelRotationSpeed *.6 + this.refAccel/2), this.lookupObject.frame.GetPosition());
+        }else{
+            AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'dirtbike_gas_loop', 0.3, Math.max(0.6, wheelRotationSpeed)+this.airOffset, this.lookupObject.frame.GetPosition());
+            this.refAccel = 1.0;
+        }
+
+    }
+
+    accelerate(dir){
+        super.accelerate(dir);
+    }
+    stopAccelerate(){
+        super.stopAccelerate();
     }
 }
 

@@ -115,7 +115,7 @@ export const init = () => {
 		if (userData.applePWAModals < 3) {
 			showApplePWAInstall();
 			userData.applePWAModals++;
-			SaveManager.updateLocaluserData(userData);
+			SaveManager.updateLocalUserData(userData);
 		}
 	}
 

@@ -34,28 +34,31 @@ import * as SaveManager from "./utils/SaveManager";
 import * as PIXICuller from "./utils/PIXICuller";
 import * as EffectsComposer from './utils/EffectsComposer';
 import * as MobileController from './utils/MobileController';
+import * as AudioManager from './utils/AudioManager';
+import * as TutorialManager from './utils/TutorialManager';
 
-import { Camera as PIXICamera, PathRenderTarget } from './utils/PIXICamera';
+import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
 
-
-
 const nanoid = require('nanoid');
-const particles = require('../libs/pixi-particles');
-const Stats = require('stats.js');
+
+import GameStats from 'gamestats.js'; //TO DO PUBLISH NPM
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
-    b2BodyDef = Box2D.b2BodyDef,
     b2Body = Box2D.b2Body,
-    b2FixtureDef = Box2D.b2FixtureDef,
-    b2Fixture = Box2D.b2Fixture,
     b2World = Box2D.b2World,
-    b2MassData = Box2D.b2MassData,
-    b2PolygonShape = Box2D.b2PolygonShape,
-    b2CircleShape = Box2D.b2CircleShape,
-    b2DebugDraw = Box2D.b2DebugDraw,
     b2MouseJointDef = Box2D.b2MouseJointDef;
+
+
+// chech WebGL support
+(function () {
+    if(!document.createElement('canvas').getContext('webgl')) {
+        alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
+        window.location.reload();
+    }
+})();
+
 
 function Game() {
 
@@ -103,19 +106,30 @@ function Game() {
 
     this.ui = ui;
 
+    this.preloader = document.getElementById('preloader');
+
     // path pixi for camera support
-    PathRenderTarget();
+    // PathRenderTarget();
 
     this.init = function () {
-        this.stats = new Stats();
-        this.stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+        this.stats = new GameStats()
         document.body.appendChild(this.stats.dom);
         this.stats.dom.style.left = '0px';
-        this.stats.dom.style.top = '420px';
+        this.stats.dom.style.top = 'unset';
+        this.stats.dom.style.bottom = '0px';
+        const showStats = (window.location.search.indexOf('stats=true')>=0)
+        this.stats.show(showStats);
 
         this.canvas = document.getElementById("canvas");
 
-        if(Settings.HDR && window.devicePixelRatio >= 2) Settings.pixelRatio = 2;
+        const userData = SaveManager.getLocalUserdata();
+
+        if(Settings.HDR && window.devicePixelRatio >= 2){
+            // max 2K
+            if(window.innerHeight * 2 > 1440) Settings.pixelRatio = 1.5;
+            else Settings.pixelRatio = 2;
+        }
+        Settings.sfxOn = userData.sfxOn;
 
         this.app = new PIXI.Application({
             view: this.canvas,
@@ -124,11 +138,7 @@ function Game() {
         });
         this.handleResize();
 
-        if(this.app.renderer.context instanceof CanvasRenderingContext2D){
-            alert("Jolly! What happened!? WebGL could not be initialized. Please free up GPU/CPU resources by closing tabs and other software. Click OK to retry.");
-            window.location.reload();
-        }
-        this.app.view.addEventListener('webglcontextlost', (event) => {
+        this.app.view.addEventListener('webglcontextlost', (_event) => {
             alert("Jolly Goodness! I almost fried your PC, Sorry.. (kidding) Something stressed out the browser and I'm forced to restart the game! Click OK to restart.");
             window.location.reload();
         });
@@ -136,7 +146,7 @@ function Game() {
 
         window.__pixiScreenshot = ()=>{
             this.needScreenshot = true;
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, _reject) => {
                 let interval = setInterval(()=>{
                     if(this.screenShotData){
                         clearInterval(interval);
@@ -151,17 +161,19 @@ function Game() {
         this.app.stop(); // do custom render step
         this.stage = this.app.stage;
         this.app.renderer.plugins.interaction.removeEvents();
-        PIXI.ticker.shared.stop();
+
+        PIXI.Ticker.shared.stop();
+
         this.stage.interactiveChildren=false;
         this.app.renderer.plugins.accessibility.destroy();
 
-        LoadCoreAssets(PIXI.loader);
+        LoadCoreAssets(this.app.loader);
 
         this.editor = B2dEditor;
 
-        PIXI.loader.load(
+        this.app.loader.load(
             async ()=> {
-                await ExtractTextureAssets();
+                await ExtractTextureAssets(this.app.loader);
                 this.setup();
             }
         );
@@ -175,8 +187,13 @@ function Game() {
         // rectangle should updates automatically
         this.stage.filterArea = this.app.screen;
 
-        if(MobileController.isMobile()) MobileController.init();
+        if(MobileController.isMobile()) {
+            MobileController.init();
+        }
+
         YouTubePlayer.preload();
+        AudioManager.init();
+        TutorialManager.init();
 
     };
 
@@ -219,14 +236,17 @@ function Game() {
 
         this.render();
 
-        this.editor.assetLists.characters = Object.keys(PIXI.loader.resources["Characters_1.json"].textures);
-        this.editor.assetLists.vehicles = [].concat(Object.keys(PIXI.loader.resources["Vehicles_1.json"].textures), Object.keys(PIXI.loader.resources["Mech.json"].textures));
-        this.editor.assetLists.movement = Object.keys(PIXI.loader.resources["Movement.json"].textures);
-        this.editor.assetLists.construction = Object.keys(PIXI.loader.resources["Construction.json"].textures);
-        this.editor.assetLists.nature = Object.keys(PIXI.loader.resources["Nature.json"].textures);
-        this.editor.assetLists.weapons = Object.keys(PIXI.loader.resources["Weapons.json"].textures);
-        this.editor.assetLists.level = Object.keys(PIXI.loader.resources["Level.json"].textures);
-        this.editor.assetLists.gore = Object.keys(PIXI.loader.resources["Characters_Gore.json"].textures);
+        const res = this.app.loader.resources;
+        const assets = this.editor.assetLists;
+
+        assets.characters = Object.keys(res["Characters_1.json"].textures);
+        assets.vehicles = [].concat(Object.keys(res["Vehicles_1.json"].textures), Object.keys(res["Mech.json"].textures));
+        assets.movement = Object.keys(res["Movement.json"].textures);
+        assets.construction = Object.keys(res["Construction.json"].textures);
+        assets.nature = Object.keys(res["Nature.json"].textures);
+        assets.weapons = Object.keys(res["Weapons.json"].textures);
+        assets.level = Object.keys(res["Level.json"].textures);
+        assets.gore = Object.keys(res["Characters_Gore.json"].textures);
 
         this.editor.tileLists = Settings.textureNames;
         this.editor.init(this.stage, this.myContainer, this.world, Settings.PTM);
@@ -237,15 +257,16 @@ function Game() {
 
         const uidHash = location.hash.split('/')[0].substr(1);
 
-
         this.openMainMenu();
+        this.ui.showSettingsButtons();
+
 
         if(uidHash && uidHash.length===21){
             ui.disableMainMenu(true);
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
 
                 this.loadPublishedLevelData(levelData);
-            }).catch(err =>{
+            }).catch(_err =>{
                 location.hash = '';
                 ui.disableMainMenu(false);
             });
@@ -310,20 +331,21 @@ function Game() {
                 }else if(el.type.indexOf("image")>=0){
                     const imageFile =  el.getAsFile();
                     const src = URL.createObjectURL(imageFile);
-                    const texture = PIXI.Texture.fromImage(src);
+                    const texture = PIXI.Texture.from(src);
                     texture.baseTexture.addListener('loaded', ()=> {
 
                         if(game.editor.tracingTexture){
                             game.editor.tracingTexture.destroy({texture:true, baseTexture:true});
                         }
 
-                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.fromImage(src));
+                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.from(src));
                         game.editor.tracingTexture.pivot.set(game.editor.tracingTexture.width/2, game.editor.tracingTexture.height/2);
                         game.editor.container.addChildAt(game.editor.tracingTexture, 0);
                         if(game.editor.selectedTool === game.editor.tool_SETTINGS){
                             game.editor.selectedTool = -1;
                             game.editor.selectTool(game.editor.tool_SETTINGS);
                         }
+                        game.editor.camera.set({ x:window.innerWidth/2, y:window.innerHeight/2 });
                     });
                 }
             })
@@ -364,8 +386,7 @@ function Game() {
             }
         }());
 
-        const preloader = document.getElementById('preloader');
-        if(preloader)preloader.parentNode.removeChild(preloader);
+        this.preloader.classList.add('hide');
 
         //this.myContainer.updateTransform = function() {};
     }
@@ -631,6 +652,7 @@ function Game() {
         this.gameState = this.GAMESTATE_NORMALPLAY;
         if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
+        ui.showSmallLogo();
     }
 
     this.testWorld = function () {
@@ -642,6 +664,7 @@ function Game() {
         this.stopAutoSave();
         this.levelStartTime = Date.now();
         MobileController.show();
+        TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -651,14 +674,17 @@ function Game() {
         this.doAutoSave();
     }
     this.resetWorld = function (doCheckpoint) {
-        const checkPointData = this.checkPointData;
-        this.resetGame();
-        if (this.gameState == this.GAMESTATE_EDITOR) {
-            this.stopTestingWorld();
-            this.testWorld();
-        }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
-            this.initLevel(this.currentLevelData);
-            this.playWorld(!doCheckpoint);
+        game.preloader.classList.remove('hide');
+        setTimeout(()=>{
+            const checkPointData = this.checkPointData;
+            this.resetGame();
+            if (this.gameState == this.GAMESTATE_EDITOR) {
+                this.stopTestingWorld();
+                this.testWorld();
+            }else if(this.gameState == this.GAMESTATE_NORMALPLAY){
+                this.initLevel(this.currentLevelData);
+                this.playWorld(!doCheckpoint);
+            }
 
             if(doCheckpoint && checkPointData){
                 const prefabLookupObject = this.editor.lookupGroups[this.playerPrefabObject.key];
@@ -686,9 +712,16 @@ function Game() {
                     this.editor.updateBodyPosition(body);
                 });
                 this.checkPointData = checkPointData;
+
+                if(this.checkPointData.flipped) this.character.flip();
             }
 
-        }
+
+            setTimeout(()=>{
+                game.preloader.classList.add('hide');
+                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
+            }, Settings.levelBuildDelayTime);
+        }, Settings.levelBuildDelayTime);
     }
     this.stopWorld = function () {
         this.movementBuffer = [];
@@ -699,6 +732,8 @@ function Game() {
         ui.hideGameOverMenu();
         PhysicsParticleEmitter.update(true);
         MobileController.hide();
+        AudioManager.stopAllSounds();
+        ui.hideSmallLogo();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -718,13 +753,14 @@ function Game() {
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
-        //this.editor.buildJSON(PIXI.loader.resources["characterData1"].data);
+        //this.editor.buildJSON(this.app.resources["characterData1"].data);
     }
     this.pauseGame = function(){
         if(this.gameOver) return;
         this.pause = true;
         this.run = false;
         ui.showPauseMenu();
+        AudioManager.stopAllSounds();
         MobileController.hide();
     }
     this.unpauseGame = function(){
@@ -809,17 +845,19 @@ function Game() {
             confettiPosition.y += confettiOffset * Math.sin(offsetAngle);
 
             emitterManager.playOnceEmitter("confetti", object, confettiPosition, 0, ['#27cdcb', '#333333']);
+		    AudioManager.playSFX('checkpoint', 0.2, 1.0 + 0.4 * Math.random()-0.2, object.GetPosition());
 
             this.checkPointData = {
                 x:object.GetPosition().x,
                 y:object.GetPosition().y,
                 rotation:object.GetAngle(),
-                object
+                object,
+                flipped:this.character.flipped,
             }
         }
     }
     this.win = function () {
-        if (!this.levelWon) {
+        if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(Date.now(), this.levelStartTime);
             const s = `${d.hh}:${d.mm}:${d.ss}:${d.ms}`;
@@ -834,7 +872,8 @@ function Game() {
         }
     }
     this.lose = function () {
-        if (!this.gameOver && !this.levelWon && this.gameState === this.GAMESTATE_NORMALPLAY) {
+        if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
+            ui.show();
             ui.showGameOver();
             MobileController.hide();
             this.gameOver = true;
@@ -863,23 +902,49 @@ function Game() {
             })
         });
     }
-    this.loadPublishedLevelData = function (levelData) {
-        return new Promise((resolve, reject) => {
+    this.loadPublishedLevelData = function (levelData, progressFunction) {
+        return new Promise(async (resolve, reject) => {
             game.currentLevelData = levelData;
             const self = this;
-           fetch(`${Settings.STATIC}/${levelData.level_md5}.json`)
-           .then(response => response.json())
-           .then((data) =>{
-                self.currentLevelData.json = JSONStringify(data);
+            try{
+                let response = await fetch(`${Settings.STATIC}/${levelData.level_md5}.json`);
+                const reader = response.body.getReader();
+                const contentLength = +response.headers.get('Content-Length') || 1000000; // TODO: x-compressed-content-length
+                let receivedLength = 0;
+                let chunks = [];
+                if(progressFunction) progressFunction(0);
+
+                while(true) {
+                    const {done, value} = await reader.read();
+                    if (done) {
+                        break;
+                    }
+
+                    chunks.push(value);
+                    receivedLength += value.length;
+                    const progress = receivedLength/contentLength
+                    if(progressFunction) progressFunction(progress);
+                }
+                let chunksAll = new Uint8Array(receivedLength); // (4.1)
+                let position = 0;
+                for(let chunk of chunks) {
+                    chunksAll.set(chunk, position); // (4.2)
+                    position += chunk.length;
+                }
+                let result = new TextDecoder("utf-8").decode(chunksAll);
+
+                if(progressFunction) progressFunction(0);
+
+                self.currentLevelData.json = result;
                 this.previewLevel();
                 return resolve();
-            }).catch((err) => {
+            }catch(err){
                 console.log('fail', err);
                 game.gameState = game.GAMESTATE_MENU;
                 return reject({
                     message: err
                 });
-            });
+            }
         });
     }
     this.previewLevel = function(){
@@ -974,7 +1039,20 @@ function Game() {
         if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
         else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
     }
-    this.gameContactListener.EndContact = function (contact) {}
+    this.gameContactListener.EndContact = function (contact) {
+        const bodyA = contact.GetFixtureA().GetBody();
+        const bodyB = contact.GetFixtureB().GetBody();
+
+        if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)){
+            if(bodyA.recentlyImpactedBodies.length === 1) delete bodyA.recentlyImpactedBodies;
+            else bodyA.recentlyImpactedBodies = bodyA.recentlyImpactedBodies.filter(body=>body != bodyB);
+        }
+        if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)){
+            if(bodyB.recentlyImpactedBodies.length === 1) delete bodyB.recentlyImpactedBodies;
+            else bodyB.recentlyImpactedBodies = bodyB.recentlyImpactedBodies.filter(body=>body != bodyA);
+        }
+    }
+
     this.gameContactListener.PreSolve = function (contact, oldManifold) {
         const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         let body;
@@ -1051,21 +1129,35 @@ function Game() {
                     for (let j = 0; j < impulse.normalImpulses.length; j++)
                         if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
 
+                    const bodyA = contact.GetFixtureA().GetBody();
+                    const bodyB = contact.GetFixtureB().GetBody();
+
                     const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
                     const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
                     let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
                     impactAngle *= game.editor.RAD2DEG + 180;
                     const velocitySum = velocityA + velocityB;
+
+                    let allowSound = true;
+                    if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                    if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+
+
                     if (velocitySum > 10.0) {
                         const worldManifold = new Box2D.b2WorldManifold();
                         contact.GetWorldManifold(worldManifold);
                         const worldCollisionPoint = worldManifold.points[0];
-                        
+
                         const slidingDecalSlider = 50;
                         const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
                         self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
 
                         emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+
+                        if(allowSound) AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.1, 1.4 + 0.4 * Math.random()-0.2, body.GetPosition());
+
+                        if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                        bodyA.recentlyImpactedBodies.push(bodyB);
 
                         const bodyClass = self.editor.retrieveSubClassFromBody(body);
                         if(bodyClass && bodyClass.dealDamage && !body.noDamage){
@@ -1073,6 +1165,36 @@ function Game() {
                             bodyClass.dealDamage(velocitySum/slidingDamageScalar);
                         }
                     }
+                }
+            }else{
+                let force = 0;
+                for (let j = 0; j < impulse.normalImpulses.length; j++)
+                    if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+                const bodyA = contact.GetFixtureA().GetBody();
+                const bodyB = contact.GetFixtureB().GetBody();
+
+                const velocityA = bodyA.GetLinearVelocity().Length();
+                const velocityB = bodyB.GetLinearVelocity().Length();
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().y, bodyA.GetLinearVelocity().x) : Math.atan2(bodyB.GetLinearVelocity().y, bodyB.GetLinearVelocity().x);
+                impactAngle *= game.editor.RAD2DEG + 180;
+
+                const fastestBody = velocityA > velocityB ? bodyA : bodyB;
+
+                const velocitySum = velocityA + velocityB;
+
+                let allowSound = true;
+                if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+
+                if (velocitySum > 10.0 && force > 10 * fastestBody.GetMass() && allowSound) {
+                    let targetSounds = ['impact-small1', 'impact-small2'];
+
+                    if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                    bodyA.recentlyImpactedBodies.push(bodyB);
+
+                    if(fastestBody.GetMass() > 1000) targetSounds = ['impact-heavy1', 'impact-heavy2'];
+                    if(fastestBody.GetMass() > 100) targetSounds = ['impact-medium1', 'impact-medium2'];
+                    AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, fastestBody.GetPosition());
                 }
             }
         }
@@ -1101,6 +1223,7 @@ function Game() {
                 this.mouseJoint = null;
             }
         }
+        this.stats.begin('physics', '#ecbc4d');
         if (this.run) {
             this.inputUpdate();
             this.world.Step(Settings.physicsTimeStep * game.editor.editorSettingsObject.gameSpeed, 4, 3);
@@ -1108,16 +1231,23 @@ function Game() {
             this.camera();
             PhysicsParticleEmitter.update();
         }
+        this.stats.end('physics');
         emitterManager.update();
 
         EffectsComposer.update();
+        AudioManager.update();
         this.editor.run();
 
         this.newDebugGraphics.clear();
         if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
             this.world.DrawDebugData();
         }
-        this.app.render();
+
+        this.stats.begin('render', '#4399fa');
+        if(!Settings.FPSLimiter || (Settings.FPSLimiter && !Settings.FPSFrameLimit)) this.app.render();
+        Settings.FPSFrameLimit = !Settings.FPSFrameLimit;
+        this.stats.end('render');
+
         if(this.needScreenshot) this.screenShotData = game.app.renderer.plugins.extract.canvas();
         PIXICuller.update();
         Key.update();

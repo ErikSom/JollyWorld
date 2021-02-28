@@ -3,6 +3,7 @@ import * as PrefabBuilder from '../../utils/PrefabBuilder'
 import * as Box2D from '../../../libs/Box2D';
 import * as EffectsComposer from '../../utils/EffectsComposer';
 import * as emitterManager from '../../utils/EmitterManager';
+import * as AudioManager from '../../utils/AudioManager';
 
 import { drawCircle } from '../../b2Editor/utils/drawing';
 
@@ -23,7 +24,7 @@ class Cannon extends PrefabManager.basePrefab {
 		this.reloadTimer = 0;
 		this.shootDelay = this.prefabObject.settings.shootDelay*1000;
 		this.shootTimer = 0;
-		this.shootForce = this.prefabObject.settings.shootForce;
+		this.shootForce = this.prefabObject.settings.shootForce*3;
 		this.cannonBody = this.lookupObject["barrol"];
 		this.cannonBody.isCannon = true;
 		this.autoShoot = this.prefabObject.settings.autoShoot;
@@ -62,16 +63,19 @@ class Cannon extends PrefabManager.basePrefab {
 	update() {
 		if(this.destroyed) return;
 		super.update();
-		if(!this.loaded){
-			if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
-				this.reload();
+
+		if(this.lookupObject.barrol.InCameraView){
+			if(!this.loaded){
+				if (PrefabManager.timerReady(this.reloadTimer, this.reloadTime, true)) {
+					this.reload();
+				}
+				this.reloadTimer += game.editor.deltaTime;
+			}else if(this.autoShoot || this.shouldShoot){
+				if (PrefabManager.timerReady(this.shootTimer, this.shootDelay, true)) {
+					this.shoot();
+				}
+				this.shootTimer += game.editor.deltaTime;
 			}
-			this.reloadTimer += game.editor.deltaTime;
-		}else if(this.autoShoot || this.shouldShoot){
-			if (PrefabManager.timerReady(this.shootTimer, this.shootDelay, true)) {
-				this.shoot();
-			}
-			this.shootTimer += game.editor.deltaTime;
 		}
 		this.positionCannonEmitter();
 		this.emitter.update(game.editor.deltaTime * 0.001);
@@ -111,6 +115,9 @@ class Cannon extends PrefabManager.basePrefab {
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
+
+		AudioManager.playSFX('cannon', 0.2, 1.0 + 0.4 * Math.random()-0.2, body.GetPosition());
+
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, body.GetPosition());
 

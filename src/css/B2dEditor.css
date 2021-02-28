@@ -294,7 +294,6 @@ body .dg .cr.function {
     margin-right: auto;
     font-family: 'Lily Script One', cursive;
     text-shadow: 2px 2px black;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .menuButton::after {
@@ -335,6 +334,26 @@ body .dg .cr.function {
     left: 50%;
     transform: translate(-50%, 0%);
 }
+#settings-ui{
+    position:absolute;
+    z-index: 1;
+    right:0;
+    top:0;
+    margin:10px;
+}
+.audioButton{
+    background: url('../../static/assets/images/gui/SoundOn_Icon.svg');
+    background-size: contain;
+    width: 32px;
+    padding-top: 100%;
+    border: none;
+    outline:none;
+    cursor:pointer;
+}
+.audioButton.mute{
+    background: url('../../static/assets/images/gui/SoundOff_Icon.svg');
+    background-size: contain;
+}
 
 #editorButton,
 #acceptButton,
@@ -361,16 +380,18 @@ body .dg .cr.function {
 }
 
 #gameOverScreen {
-    display: block;
     background-color: #ff0000bd;
     width: 100%;
-    height: 120px;
+    height: 130px;
     z-index: 100;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     opacity: 0;
     transition: opacity 0.5s ease-in;
+    display: flex;
+    justify-content: space-around;
+    align-items: end;
 }
 
 #gameOverScreen .gameOverText {
@@ -382,22 +403,33 @@ body .dg .cr.function {
 }
 
 #gameOverScreen .textGroup {
-    float: left;
-    margin-left: 20px;
+    min-width:283px;
 }
 
 #gameOverScreen .buttonGroup {
+    font-size: 11px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+}
+
+/*
     float: right;
     font-size: 11px;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    margin-right: 40px;
-}
+    display: flex;
+    margin-top: -50px;
+    flex-direction: row;
+*/
 
 #gameOverScreen .headerButton {
     padding: 0px 10px;
     width: unset;
+    margin:2.5px;
 }
 
 #gameOverScreen .checkpoint {
@@ -421,6 +453,7 @@ body .dg .cr.function {
     background-color: #666666;
     margin: -10px;
     min-width: 640px;
+    box-shadow: 0px 2px 0px #000000;
 }
 
 .editorHeader div,
@@ -518,7 +551,6 @@ body .dg .cr.function {
     line-height: 30px;
     padding: 0px 10px;
     user-select: none;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .filterButton {
@@ -534,10 +566,9 @@ body .dg .cr.function {
 
 .logoSmall {
     background-image: url('../../static/assets/images/gui/Logo_Small.png');
-    width: calc(235px*0.4);
-    height: calc(73px*0.4);
-    background-size: contain;
-    margin-top: 8px !important;
+    width: 120px;
+    height: 33px;
+    margin-top: 4px !important;
 }
 
 #levelEditScreen #levelThumbnail {
@@ -569,6 +600,14 @@ body .dg .cr.function {
     float: left;
     margin: 5px 0px;
     margin-left: 10px;
+}
+
+#levelEditScreen .preview{
+    float: right;
+    margin: 5px 0px;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 75px;
 }
 
 #levelEditScreen .saveas {
@@ -866,6 +905,18 @@ body .dg .cr.function {
 .levelLoadDiv .playButtonTriangleIcon {
     margin-left: 24px;
     margin-top: 6px;
+}
+.levelLoadDiv .progressBackFill{
+    width: 100%;
+    background: #51a328;
+    height: 100%;
+    border-radius: inherit;
+    clip-path: inset(0px 100% 0px 0px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    visibility: hidden;
 }
 
 .closeWindowIcon {
@@ -1481,6 +1532,41 @@ body .dg .cr.function {
     animation: ytp-right-spin 1333ms cubic-bezier(0.4,0.0,0.2,1) infinite both;
 }
 
+.speech-bubble {
+    position: absolute;
+    background: #ffffff;
+    border-radius: .4em;
+    font-size: 14px;
+    padding: 10px;
+    max-width: 300px;
+    margin: 10px;
+    filter: drop-shadow(3px 3px 0px black) drop-shadow(-1px -1px 0px black);
+    left: 50%;
+    top: 50%;
+    margin-top: -120px;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease-in;
+}
+
+.speech-bubble:after{
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-top-color: #FFF;
+	border-bottom: 0;
+	border-left: 0;
+	margin-left: -10px;
+	margin-bottom: -20px;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
 @keyframes ytp-spinner-linspin{to{transform:rotate(360deg)}}
 @keyframes ytp-spinner-easespin{12.5%{transform:rotate(135deg)}25%{transform:rotate(270deg)}37.5%{transform:rotate(405deg)}50%{transform:rotate(540deg)}62.5%{transform:rotate(675deg)}75%{transform:rotate(810deg)}87.5%{transform:rotate(945deg)}to{transform:rotate(1080deg)}}
 @keyframes ytp-spinner-left-spin{0%{transform:rotate(130deg)}50%{transform:rotate(-5deg)}to{transform:rotate(130deg)}}
@@ -1618,6 +1704,19 @@ only screen and (max-width: 360px) and (max-height: 640px) and (orientation: por
         padding-top: 10%;
         min-width: 100px;
     }
+    #levelBanner{
+        margin-top: -60px;
+    }
+}
+@media only screen and (max-width: 390px){
+    #gameOverScreen .buttonGroup {
+        top:unset;
+        transform:unset;
+        flex-direction: row;
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+    }
 }
 
 @font-face {
@@ -1674,4 +1773,48 @@ only screen and (max-width: 360px) and (max-height: 640px) and (orientation: por
     src: url('./fonts/Trochut-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+}
+
+
+
+select {
+	display: block;
+	font-size: 12px;
+	font-family: sans-serif;
+	font-weight: 700;
+	color: #fff;
+	line-height: 1.0;
+	padding: .6em 1.4em .5em .8em;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	border: 1px solid #aaa;
+	box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+	border-radius: .5em;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+	background-color: #4F4F4F;
+	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300FFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+	  linear-gradient(to bottom, #4F4F4F 0%,#4F4F4F 100%);
+	background-repeat: no-repeat, repeat;
+	background-position: right .7em top 50%, 0 0;
+	background-size: .65em auto, 100%;
+}
+.select::-ms-expand {
+	display: none;
+}
+.select:hover {
+	border-color: #888;
+}
+.select:focus {
+	border-color: #aaa;
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
+}
+.select option {
+	font-weight:normal;
 }

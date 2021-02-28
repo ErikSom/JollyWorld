@@ -22,6 +22,10 @@ export const dateDiff = (d1, d2, padded=true) => {
     }
     return {dd, hh, mm, ss, ms};
 }
+export const hexToNumberHex = hex => {
+    if(typeof hex === 'string') hex = hex.replace('#', '0x');
+    return parseInt(Number(hex), 10)
+}
 
 const SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"];
 export const formatNumber = (number) => {
@@ -35,6 +39,6 @@ export const formatNumber = (number) => {
 
 export const JSONStringify = json=>{
     return JSON.stringify(json, function(key, val) {
-        return (val && val.toFixed) ? Number(val.toFixed(3)) : val;
+        return (val && val.toFixed) ? Number(val.toFixed(4)) : val;
     })
 }

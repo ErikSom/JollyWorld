@@ -7,7 +7,7 @@ import {
     Settings
 } from "../../Settings";
 import {
-    Key, KeyNames
+    Key, KeyNames, KeyValLookup
 } from "../../../libs/Key";
 import {
     game
@@ -42,15 +42,23 @@ export const getActionsForObject = function (object) {
             case B2dEditor.object_BODY:
                 actions.push("Impulse") //, "SetAwake");
                 actions.push("SetCameraTarget");
+                actions.push("SetCollision");
 
-                if(object.myBody.myTexture && object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
-                    actions.push("Pause");
-                    actions.push("Play");
-                    actions.push("GotoAndPlay");
-                    actions.push("GotoAndStop");
-                    actions.push("Nextframe");
-                    actions.push("Prevframe");
-                    actions.push("animationFPS");
+                if(object.myBody.myTexture){
+                    if(object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
+                        actions.push("Pause");
+                        actions.push("Play");
+                        actions.push("GotoAndPlay");
+                        actions.push("GotoAndStop");
+                        actions.push("Nextframe");
+                        actions.push("Prevframe");
+                        actions.push("animationFPS");
+                        actions.push("SetMirrored");
+                    }else if(object.myBody.myTexture.data.type === B2dEditor.object_GRAPHICGROUP){
+                        actions.push("SetMirrored");
+                    }else if(object.myBody.myTexture.data.type === B2dEditor.object_GRAPHIC){
+                        actions.push("SetMirrored");
+                    }
                 }
 
                 break;
@@ -74,7 +82,8 @@ export const getActionsForObject = function (object) {
             case B2dEditor.object_TRIGGER:
                 actions.push("SetEnabled");
                 actions.push("SetFollowPlayer");
-                actions.push("Trigger");
+                actions.unshift("Trigger");
+                break
             case B2dEditor.object_ANIMATIONGROUP:
                 actions.push("Pause");
                 actions.push("Play");
@@ -83,6 +92,12 @@ export const getActionsForObject = function (object) {
                 actions.push("Nextframe");
                 actions.push("Prevframe");
                 actions.push("animationFPS");
+                actions.push("SetMirrored");
+                break;
+            case B2dEditor.object_GRAPHIC:
+            case B2dEditor.object_GRAPHICGROUP:
+                actions.push("SetMirrored");
+                break;
             default:
                 break;
         }
@@ -93,7 +108,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetGameSpeed"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -237,7 +252,7 @@ export const doAction = function (actionData, target) {
             if(actionData.toggle) actionData.engineOn = !actionData.engineOn;
             break;
         case "Trigger":
-            target.myBody.class.doTrigger();
+            target.myBody.class.activateTrigger();
             break;
         case "ResetCameraTarget":
             game.cameraFocusObject = game.cameraFocusCharacterObject;
@@ -285,6 +300,23 @@ export const doAction = function (actionData, target) {
         case "SetWayPoint":
             prefab.class.wayPoint = new Box2D.b2Vec2(actionData.x, actionData.y).SelfMul(1/game.editor.PTM);
         break;
+        case "SetMirrored":
+            animation = target;
+            if (target.myBody && target.myBody.myTexture) animation = target.myBody.myTexture;
+            const currentScale = Math.abs(animation.scale.x);
+            animation.scale.x = actionData.setMirrored ? -currentScale : currentScale;
+            animation.data.mirrored = actionData.setMirrored;
+            if(actionData.toggle) actionData.setMirrored = !actionData.setMirrored;
+            break;
+        case "SetWin":
+            game.win();
+        break;
+        case "SetLose":
+            game.lose();
+        break;
+        case "SetCollision":
+            if(target.myBody) game.editor.setBodyCollision(target.myBody, [Settings.collisionTypes.indexOf(actionData.collision)]);
+        break;
     }
 }
 export const guitype_MINMAX = 0;
@@ -303,8 +335,8 @@ export const actionDictionary = {
     actionOptions_Impulse: {
         impulseForce: {
             type: guitype_MINMAX,
-            min: -1000,
-            max: 1000,
+            min: -100000,
+            max: 100000,
             value: 0,
             step: 1,
         },
@@ -317,8 +349,8 @@ export const actionDictionary = {
         },
         rotationForce: {
             type: guitype_MINMAX,
-            min: -1000,
-            max: 1000,
+            min: -10000,
+            max: 10000,
             value: 0,
             step: 1
         },
@@ -724,6 +756,41 @@ export const actionDictionary = {
         },
     },
     /*******************/
+    actionObject_SetMirrored: {
+        type: 'SetMirrored',
+        toggle: false,
+        setMirrored: true,
+    },
+    actionOptions_SetMirrored: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setMirrored: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
+       actionObject_SetWin: {
+        type: 'SetWin',
+    },
+    actionOptions_SetWin: {},
+    /*******************/
+    actionObject_SetLose: {
+        type: 'SetLose',
+    },
+    actionOptions_SetLose: {},
+    /*******************/
+    actionObject_SetCollision: {
+        type: 'SetCollision',
+        collision: Settings.collisionTypes[0],
+    },
+    actionOptions_SetCollision: {
+        collision: {
+            type: guitype_LIST,
+            items: Settings.collisionTypes,
+        },
+    },
+    /*******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -765,6 +832,22 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         });
     }
 
+    let controller;
+
+    controller = _folder.add(ui.editorGUI.editData, "delay", 0, 60 * 10).step(0.1)
+    controller.onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    }.bind(controller));
+
+    if(![triggerTargetType.keydown, triggerTargetType.keyup, triggerTargetType.click].includes(dataJoint.targetType) && dataJoint.repeatType === triggerRepeatType.continuesOnContact){
+        controller = _folder.add(ui.editorGUI.editData, "repeatDelay", 0, 60).step(0.1);
+        controller.onChange(function (value) {
+            this.humanUpdate = true;
+            this.targetValue = value;
+        }.bind(controller));
+    }
+
     _folder.add(ui.editorGUI.editData, "enabled").onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
@@ -775,6 +858,10 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.targetValue = value
     });
     _folder.add(ui.editorGUI.editData, "followFirstTarget").onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
+    _folder.add(ui.editorGUI.editData, "randomTarget").onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
     });
@@ -801,7 +888,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             let actionVarString = `${actionString}_targetActionDropDown`;
 
             ui.editorGUI.editData[actionVarString] = action.type;
-            var controller;
+            controller;
             controller = actionFolder.add(ui.editorGUI.editData, actionVarString, getActionsForObject(targetObject)).onChange(function (value) {
                 this.humanUpdate = true;
                 this.targetValue = value;
@@ -873,7 +960,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         let actionVarString = `${actionString}_targetActionDropDown`;
 
         ui.editorGUI.editData[actionVarString] = action.type;
-        var controller;
+        controller;
         controller = actionFolder.add(ui.editorGUI.editData, actionVarString, getWorldActions()).onChange(function (value) {
             this.humanUpdate = true;
             this.targetValue = value;
@@ -1043,15 +1130,20 @@ export class triggerCore {
         this.destroy = false;
         this.contactListener;
         this.runTriggerOnce = false;
+        this.actionQueue = [];
+        this.triggeredThisTick = false;
     }
     init(trigger) {
         this.trigger = trigger;
         this.data = trigger.mySprite.data;
         this.actions = trigger.mySprite.data.triggerActions;
         this.targets = trigger.mySprite.targets;
+        this.delay = trigger.mySprite.data.delay;
+        this.repeatDelay = trigger.mySprite.data.repeatDelay;
+        this.repeatWaitDelay = 0;
 
         this.followTarget = null;
-        if(this.data.followFirstTarget){
+        if(this.data.followFirstTarget && this.targets[0]){
 
             const target = this.targets[0];
             const targetX = target.mySprite ? target.GetPosition().x : target.x / Settings.PTM;
@@ -1080,7 +1172,7 @@ export class triggerCore {
                 while (fixture != null) {
                     if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
                         if(Key.isPressed(Key.MOUSE)){
-                            this.doTrigger();
+                            this.activateTrigger();
                         }
                         game.canvas.style.cursor = 'pointer';
                         break;
@@ -1089,11 +1181,11 @@ export class triggerCore {
                 }
             } else if(this.data.targetType == triggerTargetType.keydown){
                 if(Key.isPressed(this.data.triggerKey)){
-                    this.doTrigger();
+                    this.activateTrigger();
                 }
             } else if(this.data.targetType == triggerTargetType.keyup){
                 if(Key.isReleased(this.data.triggerKey)){
-                    this.doTrigger();
+                    this.activateTrigger();
                 }
             }
             if(this.data.followPlayer){
@@ -1110,16 +1202,35 @@ export class triggerCore {
 
                 this.trigger.SetPosition(new Box2D.b2Vec2(targetX, targetY));
             }
-            if (this.runTriggerOnce) {
-                this.doTrigger();
+            if (this.runTriggerOnce && !this.destroy) {
+                this.activateTrigger();
                 this.runTriggerOnce = false;
             }
-            if (this.destroy) {
+
+            for(let i = 0; i<this.actionQueue.length; i++){
+                this.actionQueue[i] -= game.editor.deltaTime;
+                const time = this.actionQueue[i];
+                if(time<=0){
+                    this.doTrigger();
+                    this.actionQueue.splice(i, 1);
+                    i--;
+                }
+            }
+
+            if(this.actionQueue.length === 0 && this.destroy){
                 B2dEditor.deleteObjects([this.trigger]);
-            } else if (this.touchingTarget && this.data.repeatType == triggerRepeatType.continuesOnContact) {
-                this.doTrigger();
+            }
+
+            this.repeatWaitDelay -= game.editor.deltaTime;
+
+            if(this.repeatWaitDelay <= 0){
+                if (this.touchingTarget && this.data.repeatType === triggerRepeatType.continuesOnContact) {
+                    this.doTrigger();
+                    this.repeatWaitDelay = this.repeatDelay * 1000;
+                }
             }
         }
+        this.triggeredThisTick = false;
     }
     initContactListener() {
         var self = this;
@@ -1131,13 +1242,11 @@ export class triggerCore {
                 const body = bodies[i];
                 if (body !== self.trigger && containsTargetType(self, body)) {
                     if (!self.touchingObjects.includes(body)) self.touchingObjects.push(body);
+                    if(!self.touchingTarget) self.repeatWaitDelay = self.delay * 1000;
                     self.touchingTarget = true;
                     if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
                         if (self.touchingObjects.length == 1) {
                             self.runTriggerOnce = true;
-                            if (self.data.repeatType == triggerRepeatType.once) {
-                                self.destroy = true;
-                            }
                         }
                     }
                 }
@@ -1162,7 +1271,19 @@ export class triggerCore {
         this.contactListener.PreSolve = function (contact, oldManifold) {}
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
+    activateTrigger(){
+        if(!this.destroy){
+            this.actionQueue.push(this.delay*1000);
+            if (this.data.repeatType == triggerRepeatType.once && ![triggerTargetType.keydown, triggerTargetType.keyup, triggerTargetType.click].includes(this.data.targetType)) {
+                this.destroy = true;
+            }
+        }
+    }
     doTrigger() {
+        if(this.triggeredThisTick) return;
+
+        const randomTargetIndex = Math.floor(Math.random() * this.targets.length);
+
         let i, actionData;
         for(i = 0; i<this.data.worldActions.length; i++){
             actionData = this.data.worldActions[i];
@@ -1170,17 +1291,20 @@ export class triggerCore {
         }
         if (!this.targets) return;
         for (i = 0; i < this.targets.length; i++) {
-            let targetObject = this.targets[i];
-            const triggerLength = this.data.triggerActions[i].length;
-            for (var j = 0; j < triggerLength; j++) {
-                actionData = this.data.triggerActions[i][j];
-                doAction(actionData, targetObject);
-                if(targetObject.destroyed){
-                    i--;
-                    j = triggerLength;
+            if(!this.data.randomTarget || (this.data.randomTarget && randomTargetIndex === i)){
+                let targetObject = this.targets[i];
+                const triggerLength = this.data.triggerActions[i].length;
+                for (var j = 0; j < triggerLength; j++) {
+                    actionData = this.data.triggerActions[i][j];
+                    doAction(actionData, targetObject);
+                    if(targetObject.destroyed){
+                        i--;
+                        j = triggerLength;
+                    }
                 }
             }
         }
+        this.triggeredThisTick = true;
     }
 }
 export const addTargetToTrigger = function (_trigger, target) {
@@ -1295,6 +1419,8 @@ export const drawEditorTriggerTargets = body=>{
         let myPos = body.GetPosition();
         myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
         game.levelCamera.matrix.apply(myPos,myPos);
+
+
         for(let j = 0; j<body.mySprite.targets.length; j++){
             let target = body.mySprite.targets[j];
             let tarPos;
@@ -1312,7 +1438,16 @@ export const drawEditorTriggerTargets = body=>{
             }
 
             game.levelCamera.matrix.apply(tarPos,tarPos);
-            drawing.drawLine(myPos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
+
+            const lineOffsetSize = -20 * game.levelCamera.scale.x;
+            const linePos = myPos.Clone().SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
+            drawing.drawLine(linePos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
         };
+
+        if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
+            const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
+            drawing.addText(keyName, B2dEditor.debugGraphics, myPos.Clone().SelfAdd({x:1, y:1}), {fill:0x000});
+            drawing.addText(keyName, B2dEditor.debugGraphics, myPos);
+        }
     }
 }

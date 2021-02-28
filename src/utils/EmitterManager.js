@@ -2,9 +2,12 @@ import {
     game
 } from "../Game";
 import * as emitterData from "../data/emitterData";
-import {
-    Settings
-} from "../Settings";
+import { Settings } from "../Settings";
+import { AnimatedParticle } from 'pixi-particles';
+import { SuperEmitter as Emitter } from './SuperEmitter';
+
+import * as PIXI from 'pixi.js';
+
 
 let emitters = [];
 let emittersPool = {};
@@ -75,7 +78,11 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
     emitter.minStartRotation = angle - angleOffset;
     emitter.maxStartRotation = angle + angleOffset;
 
-    if(randomColors) emitter.setRandomColors(randomColors);
+    if(randomColors) {
+        //console.warn("v5 + version of pixi particle remove this method");
+        emitter.setRandomColors(randomColors);
+    }
+
     emitter.playOnce(returnToPool);
 
 }
@@ -101,7 +108,7 @@ const attachEmitter = (body, emitter)=>{
         // create container - postion container at right index
         // make sure to delete container on reset!!
         if(!emitter.container){
-            emitter.container = new PIXI.particles.ParticleContainer();
+            emitter.container = new PIXI.Container();//.particles.ParticleContainer();
             emitter.parent.addChild(emitter.container)
             emitter.parent = emitter.container;
         }
@@ -136,78 +143,81 @@ export const getEmitter = function (type, pool = true) {
     let emitter;
     switch (type) {
         case "blood":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-grey.png')],
+            emitter = new Emitter(
+                game.editor.textures, [
+                    PIXI.Texture.from('particle.png'), 
+                    PIXI.Texture.from('particle-grey.png')
+                ],
                 emitterData[type]
             );
             break;
         case "gorecloud":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('gore-cloud.png')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('gore-cloud.png')],
                 emitterData[type]
             );
             break;
         case "explosion_layer1":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('Smoke_1.png'), PIXI.Texture.fromImage('Smoke_2.png'), PIXI.Texture.fromImage('Smoke_3.png'), PIXI.Texture.fromImage('Smoke_4.png')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('Smoke_1.png'), PIXI.Texture.from('Smoke_2.png'), PIXI.Texture.from('Smoke_3.png'), PIXI.Texture.from('Smoke_4.png')],
                 emitterData[type]
             );
             break;
         case "explosion_layer2":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('Fire_1.png'), PIXI.Texture.fromImage('Fire_2.png'), PIXI.Texture.fromImage('Fire_3.png')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('Fire_1.png'), PIXI.Texture.from('Fire_2.png'), PIXI.Texture.from('Fire_3.png')],
                 emitterData[type]
             );
             break;
         case "explosion2_layer1":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('Smoke_Fire_10000'), PIXI.Texture.fromImage('Smoke_Fire_20000'), PIXI.Texture.fromImage('Smoke_Fire_30000'), PIXI.Texture.fromImage('Smoke_Fire_40000')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('Smoke_Fire_10000'), PIXI.Texture.from('Smoke_Fire_20000'), PIXI.Texture.from('Smoke_Fire_30000'), PIXI.Texture.from('Smoke_Fire_40000')],
                 emitterData['explosion_layer1']
             );
             emitter.minimumSpeedMultiplier = 6;
             emitter.frequency = 0.0005;
         break;
         case "explosion2_layer2":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('Fire_Fire_10000'), PIXI.Texture.fromImage('Fire_Fire_20000'), PIXI.Texture.fromImage('Fire_Fire_30000')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('Fire_Fire_10000'), PIXI.Texture.from('Fire_Fire_20000'), PIXI.Texture.from('Fire_Fire_30000')],
                 emitterData['explosion_layer2']
             );
             emitter.minimumSpeedMultiplier = 9;
             emitter.frequency = 0.0005;
          break;
          case "jetfire":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('particle.png'), PIXI.Texture.fromImage('particle-fire.png')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('particle.png'), PIXI.Texture.from('particle-fire.png')],
                 emitterData[type]
             );
             break;
         case "cannonShoot":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('particle.png')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('particle.png')],
                 emitterData[type]
             );
             break;
         case "sparksMetal":
-            emitter = new PIXI.particles.Emitter(
-                game.editor.textures, [PIXI.Texture.fromImage('particle-spark.png')],
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('particle-spark.png')],
                 emitterData[type]
             );
             break;
         case "confetti":
-            emitter = new PIXI.particles.Emitter(
+            emitter = new Emitter(
                 game.editor.textures,
                 emitterData.confettiFrames,
                 emitterData['confetti']
             );
-            emitter.particleConstructor = PIXI.particles.AnimatedParticle;
+            emitter.particleConstructor = AnimatedParticle;
             break;
         case "screenConfetti":
-            emitter = new PIXI.particles.Emitter(
+            emitter = new Emitter(
                 game.stage,
                 emitterData.confettiFrames,
                 emitterData['confetti']
             );
-            emitter.particleConstructor = PIXI.particles.AnimatedParticle;
+            emitter.particleConstructor = AnimatedParticle;
             break;
     }
     if(pool){

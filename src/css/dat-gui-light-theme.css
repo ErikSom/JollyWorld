@@ -178,4 +178,5 @@ body .dg .cr.function:active {
 
 .dg .c select {
     max-width: 130px;
+    margin-top: 0px;
 }

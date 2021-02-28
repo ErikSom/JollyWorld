@@ -1,5 +1,6 @@
 import * as PrefabManager from '../PrefabManager';
 import * as Box2D from '../../../libs/Box2D';
+import * as AudioManager from '../../utils/AudioManager';
 import {
     game
 } from "../../Game";
@@ -46,6 +47,10 @@ class Beartrap extends PrefabManager.basePrefab {
 		this.progressLights.forEach((light, index)=>{
 			light.visible = index<=lightsOn;
 		})
+
+		if(lightsOn != this.previousLightsOn) AudioManager.playSFX('drone-beep', 0.1, 1.0, this.base.GetPosition());
+
+		this.previousLightsOn = lightsOn;
 	}
 
 	update(){
@@ -59,6 +64,7 @@ class Beartrap extends PrefabManager.basePrefab {
 			this.lookupObject["spikeRight_joint"].EnableMotor(true);
             this.lookupObject["spikeRight_joint"].SetMaxMotorTorque(Beartrap.BEARTRAP_FORCE);
             this.lookupObject["spikeRight_joint"].SetMotorSpeed(-Beartrap.BEARTRAP_FORCE);
+			AudioManager.playSFX('bear-trap', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.base.GetPosition());
         } else if (PrefabManager.timerReady(this.beartrapTimer, this.beartrapDelay + Beartrap.BEARTRAP_RELEASE, true)) {
 			this.lookupObject["spikeLeft_joint"].EnableMotor(false);
 			this.lookupObject["spikeRight_joint"].EnableMotor(false);
