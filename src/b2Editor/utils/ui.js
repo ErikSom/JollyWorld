@@ -157,7 +157,11 @@ const checkLevelDataForErrors = async function () {
         title.style.backgroundColor = textAreaErrorColor;
         errorStack.push("Title must be at least 3 characters long");
     }
-
+    const youtube_parser = url => {
+        var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+        var match = url.match(regExp);
+        return (match&&match[7].length==11)? match[7] : false;
+    }
 
     // youtube ids
     const youtubeIds = levelEditScreen.domElement.querySelectorAll('.levelEdit_youtubeLink');
@@ -168,6 +172,12 @@ const checkLevelDataForErrors = async function () {
         const idElement = youtubeIds[i];
         idElement.style.backgroundColor = textAreaDefaultColor;
         if (idElement.value.length > 0) {
+
+            if(idElement.value.length !== 11){
+                const youtubeParsed = youtube_parser(idElement.value);
+                if(youtubeParsed) idElement.value = youtubeParsed
+            }
+
             if (idElement.value.length !== 11) {
                 idElement.style.backgroundColor = textAreaErrorColor;
                 errorStack.push(`YouTube ID ${i+1} must be 11 characters`)
