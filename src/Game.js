@@ -36,6 +36,7 @@ import * as EffectsComposer from './utils/EffectsComposer';
 import * as MobileController from './utils/MobileController';
 import * as AudioManager from './utils/AudioManager';
 import * as TutorialManager from './utils/TutorialManager';
+import * as SlowmoUI from './ui/Slomo';
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -74,6 +75,8 @@ function Game() {
     this.renderer;
     this.world;
     this.worldJSON;
+    this.slowmoUI;
+    this.slowmoUI_Text;
 
     this.selectedBody;
     this.mouseJoint;
@@ -387,6 +390,8 @@ function Game() {
         }());
 
         this.preloader.classList.add('hide');
+
+        SlowmoUI.init();
 
         //this.myContainer.updateTransform = function() {};
     }
@@ -733,6 +738,7 @@ function Game() {
         PhysicsParticleEmitter.update(true);
         MobileController.hide();
         AudioManager.stopAllSounds();
+        SlowmoUI.hide();
         ui.hideSmallLogo();
     }
     this.openEditor = function () {
@@ -1014,7 +1020,7 @@ function Game() {
             offsetY /= this.movementBufferSize;
         }
 
-        const offsetScale = 2.0;
+        const offsetScale = 2.0 * game.editor.editorSettingsObject.gameSpeed;
 
         camera.x += movX-offsetX*offsetScale*camera.scale.x;
         camera.y += movY-offsetY*offsetScale*camera.scale.x;
@@ -1024,6 +1030,10 @@ function Game() {
         this.myEffectsContainer.x = camera.x;
         this.myEffectsContainer.y = camera.y;
 
+        // position slowmotion UI
+        SlowmoUI.ui.x = (-this.myEffectsContainer.x + window.innerWidth / 2.0) / camera.scale.x;
+        SlowmoUI.ui.y = (-this.myEffectsContainer.y  + 20) / camera.scale.x;
+        SlowmoUI.ui.scale.x = SlowmoUI.ui.scale.y = (1/camera.scale.x) * 0.5;
     }
 
     var self = this;
@@ -1235,6 +1245,7 @@ function Game() {
         emitterManager.update();
 
         EffectsComposer.update();
+        SlowmoUI.update();
         AudioManager.update();
         this.editor.run();
 

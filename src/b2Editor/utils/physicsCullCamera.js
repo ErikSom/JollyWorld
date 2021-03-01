@@ -15,6 +15,8 @@ export const init = ()=>{
 
 export const update = ()=>{
 	if(game.editor.physicsCamera.cameraZoom != game.editor.editorSettingsObject.cameraZoom){
+		game.editor.physicsCamera.reFixture = true;
+
 		let fixture = game.editor.physicsCamera.GetFixtureList();
 		if(fixture) game.editor.physicsCamera.DestroyFixture(fixture);
 
@@ -27,6 +29,7 @@ export const update = ()=>{
 		fixture = game.editor.physicsCamera.CreateFixture(fixDef);
 		fixture.isPhysicsCamera = true;
 		game.editor.physicsCamera.cameraZoom = game.editor.editorSettingsObject.cameraZoom;
+		delete game.editor.physicsCamera.reFixture;
 	}
 
 	if(game.cameraFocusObject){
@@ -50,8 +53,9 @@ export const endContact = contact => {
 	const otherFixture = contact.GetFixtureA().isPhysicsCamera ? contact.GetFixtureB() : contact.GetFixtureA();
 	const otherBody = otherFixture.GetBody();
 
-	if(otherBody.mySprite){
+	if(otherBody.mySprite && game.editor.physicsCamera && !game.editor.physicsCamera.reFixture){
 		if(otherBody.mySprite.data.awake && otherBody.IsAwake()){
+			console.log(otherBody);
 			otherBody.SetAwake(false);
 			delete otherBody.InCameraView;
 

@@ -166,7 +166,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
                 if (callback.m_hit) {
                     let forceDir = extramath.rotateVector(callback.m_normal, 90);
-                    this.applyImpulse(this.desiredVehicleSpeeds[i] * dir, forceDir);
+
+                    const impulse = (this.desiredVehicleSpeeds[i] * dir / Settings.timeStep) * game.editor.deltaTime;
+
+                    this.applyImpulse(impulse, forceDir);
                     this.grounded = true;
                     break;
                 }

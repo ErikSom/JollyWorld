@@ -73,7 +73,7 @@ export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=1, po
 	if(!sfxLoaded || !Settings.sfxOn) return;
 	if(activePlayingSounds>=maxPlayingSounds) return;
 
-	pitch = Math.max(0.1, pitch);
+	pitch = Math.max(0.1, pitch * game.editor.editorSettingsObject.gameSpeed);
 	const {vl, pan} = determineVolumeAndPan(position);
 	if(vl === 0){
 		stopPrefabUniqueLoopSFX(prefabName, sfxName);
@@ -111,7 +111,7 @@ export const playSFX = (sfxName, volume, pitch=1, position) => {
 	if(!sfxLoaded || !Settings.sfxOn) return;
 	if(activePlayingSounds>=maxPlayingSounds) return;
 
-	pitch = Math.max(0.1, pitch);
+	pitch = Math.max(0.1, pitch * game.editor.editorSettingsObject.gameSpeed);
 
 	const {vl, pan} = determineVolumeAndPan(position);
 	if(vl === 0) return;

@@ -1236,6 +1236,7 @@ export class triggerCore {
         var self = this;
         this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
+            console.log("CONTACT BEGIN!!");
             if (self.data.targetType == triggerTargetType.click) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
@@ -1268,7 +1269,10 @@ export class triggerCore {
                 }
             }
         }
-        this.contactListener.PreSolve = function (contact, oldManifold) {}
+        this.contactListener.PreSolve = function (contact, oldManifold) {
+            console.log("CONTACT!!");
+            contact.SetEnabled(false);
+        }
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
     activateTrigger(){

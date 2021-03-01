@@ -2134,7 +2134,7 @@ const _B2dEditor = function () {
 		all.forEach((e) => {
 			e.flushDecalTasks();
 		});
-		const deltaTime = (performance.now() - this.currentTime) * this.editorSettingsObject.gameSpeed;;
+		const deltaTime = (performance.now() - this.currentTime) * this.editorSettingsObject.gameSpeed;
 		this.deltaTime = deltaTime;
 		this.deltaTimeSeconds = this.deltaTime / 1000;
 		this.currentTime = performance.now();
@@ -6633,6 +6633,8 @@ const _B2dEditor = function () {
 		fixture.SetFilterData(filterData);
 
 		body.SetSleepingAllowed(false);
+		body.SetAwake(true);
+
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
 
 		body.mySprite.data = obj;
