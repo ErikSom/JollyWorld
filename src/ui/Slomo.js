@@ -2,7 +2,7 @@ import {
     game
 } from "../Game"
 import * as PIXI from 'pixi.js';
-import { color } from "../../libs/dat.gui";
+import * as AudioManager from '../utils/AudioManager'
 
 export let ui;
 let clock, arrows, text, textShadow;
@@ -62,6 +62,11 @@ export const hide = ()=> {
 }
 export const update = () => {
 	if(gameSpeed !== game.editor.editorSettingsObject.gameSpeed){
+		if(game.editor.editorSettingsObject.gameSpeed < gameSpeed){
+			AudioManager.playSFX('slowmo-enter', 0.2, 1.0);
+		}else{
+			AudioManager.playSFX('slowmo-exit', 0.2, 1.0);
+		}
 		gameSpeed = game.editor.editorSettingsObject.gameSpeed;
 		text.text = gameSpeed.toFixed(1);
 		textShadow.text = gameSpeed.toFixed(1);

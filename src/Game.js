@@ -1020,10 +1020,14 @@ function Game() {
             offsetY /= this.movementBufferSize;
         }
 
-        const offsetScale = 2.0 * game.editor.editorSettingsObject.gameSpeed;
+        const maxOffset = window.innerWidth * 0.03 / camera.scale.x;
+        offsetX = Math.min(Math.max(offsetX, -maxOffset), maxOffset);
+        offsetY = Math.min(Math.max(offsetY, -maxOffset), maxOffset)
 
-        camera.x += movX-offsetX*offsetScale*camera.scale.x;
-        camera.y += movY-offsetY*offsetScale*camera.scale.x;
+        const offsetScale = 1.5 * game.editor.editorSettingsObject.gameSpeed;
+
+        camera.x += (movX-offsetX*offsetScale);
+        camera.y += (movY-offsetY*offsetScale);
 
         this.myEffectsContainer.scale.x = camera.scale.x;
         this.myEffectsContainer.scale.y = camera.scale.y;
