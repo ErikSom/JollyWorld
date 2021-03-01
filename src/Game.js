@@ -1024,7 +1024,7 @@ function Game() {
         offsetX = Math.min(Math.max(offsetX, -maxOffset), maxOffset);
         offsetY = Math.min(Math.max(offsetY, -maxOffset), maxOffset)
 
-        const offsetScale = 1.5 * game.editor.editorSettingsObject.gameSpeed;
+        const offsetScale = 1.0 * game.editor.editorSettingsObject.gameSpeed;
 
         camera.x += (movX-offsetX*offsetScale);
         camera.y += (movY-offsetY*offsetScale);
