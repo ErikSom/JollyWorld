@@ -1192,7 +1192,7 @@ export class triggerCore {
                 if(game?.character.lookupObject.body){
                     this.trigger.SetPosition(game.character.lookupObject.body.GetPosition());
                 }
-            }else if(this.data.followFirstTarget && !this.followTarget.destroyed){
+            }else if(this.data.followFirstTarget && this.followTarget && !this.followTarget.destroyed){
                 let targetX = this.followTarget.mySprite ? this.followTarget.GetPosition().x : this.followTarget.x / Settings.PTM;
                 let targetY = this.followTarget.mySprite ? this.followTarget.GetPosition().y : this.followTarget.y / Settings.PTM;
                 let targetRot = this.followTarget.mySprite ? this.followTarget.GetAngle() : this.followTarget.rotation;
