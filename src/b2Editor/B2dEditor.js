@@ -431,7 +431,7 @@ const _B2dEditor = function () {
 				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
-				targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
+				targetFolder.add(ui.editorGUI.editData, "isBody");
 				ui.editorGUI.domElement.style.minHeight = '220px';
 
 				break
@@ -447,7 +447,7 @@ const _B2dEditor = function () {
 				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
-				if(i === this.tool_POLYDRAWING) targetFolder.add(ui.editorGUI.editData, "isPhysicsObject");
+				if(i === this.tool_POLYDRAWING) targetFolder.add(ui.editorGUI.editData, "isBody");
 
 				ui.editorGUI.domElement.style.minHeight = '200px';
 
@@ -878,29 +878,46 @@ const _B2dEditor = function () {
 		}
 		//Populate custom  fields
 		let tileTextureGUI, selectedTextureIndex;
+		let visualsFolder, advancedFolder
 		switch (currentCase) {
 			case case_JUST_BODIES:
+
+				targetFolder.add(ui.editorGUI.editData, "fixed").name("not moving").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value
+				});
+
 				tileTextureGUI = targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists);
 				tileTextureGUI.domElement.parentNode.parentNode.style.display = 'none';
 
 				selectedTextureIndex = Settings.textureNames.indexOf(ui.editorGUI.editData.tileTexture);
 
-				ui.createImageDropDown(targetFolder, Settings.textureNames, selectedTextureIndex, index => {
+				visualsFolder = targetFolder.addFolder('visuals');
+
+
+				ui.createImageDropDown(visualsFolder, Settings.textureNames, selectedTextureIndex, index => {
 					tileTextureGUI.humanUpdate = true;
 					tileTextureGUI.targetValue = Settings.textureNames[index];
 				});
-				if (ui.editorGUI.editData.colorFill.length > 1) {
+
+				const multiBodyColor = ui.editorGUI.editData.colorFill.length > 1;
+
+				if (multiBodyColor) {
+					
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
-					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+					controller = visualsFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
+
+
+					advancedFolder = targetFolder.addFolder('advanced');
 				} else {
 					ui.editorGUI.editData.colorFill = ui.editorGUI.editData.colorFill[0];
 					ui.editorGUI.editData.colorLine = ui.editorGUI.editData.colorLine[0];
@@ -910,42 +927,45 @@ const _B2dEditor = function () {
 					ui.editorGUI.editData.friction = ui.editorGUI.editData.friction[0];
 					ui.editorGUI.editData.restitution = ui.editorGUI.editData.restitution[0];
 
-					controller = targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+					controller = visualsFolder.addColor(ui.editorGUI.editData, "colorFill");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = targetFolder.addColor(ui.editorGUI.editData, "colorLine");
+					controller = visualsFolder.addColor(ui.editorGUI.editData, "colorLine");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+					controller = visualsFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+					controller = visualsFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
+
+					advancedFolder = targetFolder.addFolder('advanced');
+
+					controller = advancedFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "friction", 0, 1).name("roughness").step(0.01);
+					controller = advancedFolder.add(ui.editorGUI.editData, "friction", 0, 1).name("roughness").step(0.01);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value
 					}.bind(controller));
-					controller = targetFolder.add(ui.editorGUI.editData, "restitution", 0, 1).name("bouncy").step(0.01);
+					controller = advancedFolder.add(ui.editorGUI.editData, "restitution", 0, 1).name("bouncy").step(0.01);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value
@@ -955,25 +975,26 @@ const _B2dEditor = function () {
 					const collisionTypes = [...Settings.collisionTypes];
 					if(Settings.admin) collisionTypes.push("Is character");
 					ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
-					targetFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
+					advancedFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = collisionTypes.indexOf(value);
 					});
 
 				}
-				targetFolder.add(ui.editorGUI.editData, "fixed").onChange(function (value) {
+
+				advancedFolder.add(ui.editorGUI.editData, "awake").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				targetFolder.add(ui.editorGUI.editData, "awake").onChange(function (value) {
+				advancedFolder.add(ui.editorGUI.editData, "instaKill").name("kills player").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				targetFolder.add(ui.editorGUI.editData, "instaKill").name("kills player").onChange(function (value) {
+				advancedFolder.add(ui.editorGUI.editData, "isVehiclePart").name("Is vehicle part").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				targetFolder.add(ui.editorGUI.editData, "isVehiclePart").name("Is vehicle part").onChange(function (value) {
+				advancedFolder.add(ui.editorGUI.editData, "fixedRotation").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
@@ -987,12 +1008,12 @@ const _B2dEditor = function () {
 				}
 				if (!bodyIsGroup) {
 					ui.editorGUI.editData.convertToGraphic = function () {};
-					var label = this.selectedPhysicsBodies.length == 1 ? "Convert to Graphic" : "Convert to Graphics";
+					var label = this.selectedPhysicsBodies.length == 1 ? "convert to graphic" : "convert to graphics";
 					controller = targetFolder.add(ui.editorGUI.editData, "convertToGraphic").name(label);
 					ui.editorGUI.editData.convertToGraphic = (function (_c) {
 						return function () {
-							if (_c.domElement.previousSibling.innerText != "Click to Confirm") {
-								_c.name("Click to Confirm");
+							if (_c.domElement.previousSibling.innerText != "click to confirm") {
+								_c.name("click to confirm");
 							} else {
 								_c.name(label);
 								self.convertSelectedBodiesToGraphics();
@@ -1002,32 +1023,38 @@ const _B2dEditor = function () {
 				}
 				break;
 			case case_JUST_TEXTURES:
-				controller = targetFolder.addColor(ui.editorGUI.editData, "tint");
+
+				visualsFolder = targetFolder.addFolder('visuals');
+
+				controller = visualsFolder.addColor(ui.editorGUI.editData, "tint");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+				controller = visualsFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
+
+				advancedFolder = targetFolder.addFolder('visuals');
+
+				controller = advancedFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1035,68 +1062,74 @@ const _B2dEditor = function () {
 
 				break;
 			case case_JUST_GRAPHICS:
+
+				visualsFolder = targetFolder.addFolder('visuals');
+
 				tileTextureGUI = targetFolder.add(ui.editorGUI.editData, "tileTexture", this.tileLists);
 				tileTextureGUI.domElement.parentNode.parentNode.style.display = 'none';
 
 				selectedTextureIndex = Settings.textureNames.indexOf(ui.editorGUI.editData.tileTexture);
 				
-				ui.createImageDropDown(targetFolder, Settings.textureNames, selectedTextureIndex, index => {
+				ui.createImageDropDown(visualsFolder, Settings.textureNames, selectedTextureIndex, index => {
 					tileTextureGUI.humanUpdate = true;
 					tileTextureGUI.targetValue = Settings.textureNames[index];
 				});
 
-				targetFolder.add(ui.editorGUI.editData, "gradient", ['', Settings.DEFAULT_TEXTS.newGradient, ...this.levelGradientsNames]).onChange(function (value) {
+				visualsFolder.add(ui.editorGUI.editData, "gradient", ['', Settings.DEFAULT_TEXTS.newGradient, ...this.levelGradientsNames]).onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
-				controller = targetFolder.addColor(ui.editorGUI.editData, "colorFill");
+				controller = visualsFolder.addColor(ui.editorGUI.editData, "colorFill");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.addColor(ui.editorGUI.editData, "colorLine");
+				controller = visualsFolder.addColor(ui.editorGUI.editData, "colorLine");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
+				controller = visualsFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+				controller = visualsFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
+
+				advancedFolder = targetFolder.addFolder('advanced');
+
+				controller = advancedFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 
 				ui.editorGUI.editData.convertToBody = function () {};
-				var label = this.selectedTextures.length == 1 ? "Convert to PhysicsBody" : "Convert to PhysicsBodies";
+				var label = this.selectedTextures.length == 1 ? "convert to body" : "convert to bodies";
 				controller = targetFolder.add(ui.editorGUI.editData, "convertToBody").name(label);
 				ui.editorGUI.editData.convertToBody = (function (_c) {
 					return function () {
-						if (_c.domElement.previousSibling.innerText != "Click to Confirm") {
-							_c.name("Click to Confirm");
+						if (_c.domElement.previousSibling.innerText != "click to confirm") {
+							_c.name("click to confirm");
 						} else {
 							_c.name(label);
 							self.convertSelectedGraphicsToBodies();
@@ -1106,7 +1139,7 @@ const _B2dEditor = function () {
 
 				if(this.selectedTextures.length>1){
 					ui.editorGUI.editData.merge = function () {};
-					const label = "Merge Graphics";
+					const label = "merge graphics";
 					controller = targetFolder.add(ui.editorGUI.editData, "merge").name(label);
 					ui.editorGUI.editData.merge = (function (_c) {
 						return function () {
@@ -1121,6 +1154,7 @@ const _B2dEditor = function () {
 								combinedSprite.data.vertices = combinedVerticesData.vertices;
 								delete combinedSprite.data.radius;
 								self.updateGraphicShapes(combinedSprite);
+								self.updateSelection();
 							}
 						}
 					})(controller)
@@ -1128,68 +1162,44 @@ const _B2dEditor = function () {
 
 				break;
 			case case_JUST_GRAPHICGROUPS:
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				visualsFolder = targetFolder.addFolder('visuals');
+
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+				controller = visualsFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "mirrored", 0, 1);
+				controller = visualsFolder.add(ui.editorGUI.editData, "mirrored", 0, 1);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
+
+				advancedFolder = targetFolder.addFolder('advanced');
+
+				controller = advancedFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
 				break;
 			case case_JUST_ANIMATIONGROUPS:
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "visible", 0, 1);
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "mirrored", 0, 1);
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
-				controller = targetFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
-				controller.onChange(function (value) {
-					this.humanUpdate = true;
-					this.targetValue = value;
-				}.bind(controller));
+
 				controller = targetFolder.add(ui.editorGUI.editData, "fps", 1, 60).step(1.0);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -1205,6 +1215,43 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
+
+				visualsFolder = targetFolder.addFolder('visuals');
+
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = visualsFolder.add(ui.editorGUI.editData, "visible", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = visualsFolder.add(ui.editorGUI.editData, "mirrored", 0, 1);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
+				advancedFolder = targetFolder.addFolder('advanced');
+
+				controller = advancedFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportX").step(0.01);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+				controller = advancedFolder.add(ui.editorGUI.editData, "repeatTeleportY").step(0.01);
+				controller.onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				}.bind(controller));
+
 				break;
 			case case_JUST_JOINTS:
 				this.addJointGUI(dataJoint, targetFolder);
@@ -1328,7 +1375,7 @@ const _B2dEditor = function () {
 					ui.editorGUI.editData.groupObjects = () => {
 						self.groupObjects();
 					};
-					controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('Group Objects');
+					controller = targetFolder.add(ui.editorGUI.editData, "groupObjects").name('group objects');
 				}
 			} else {
 				if (this.selectedPhysicsBodies.length == 1) {
@@ -1336,19 +1383,19 @@ const _B2dEditor = function () {
 						ui.editorGUI.editData.ungroupObjects = () => {
 							self.ungroupObjects();
 						};
-						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('ungroup objects');
 					}
 				} else if (this.selectedTextures.length == 1) {
 					if (this.selectedTextures[0].data.type == this.object_GRAPHICGROUP) {
 						ui.editorGUI.editData.ungroupObjects = () => {
 							self.ungroupObjects();
 						};
-						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('UnGroup Objects');
+						controller = targetFolder.add(ui.editorGUI.editData, "ungroupObjects").name('ungroup objects');
 					}else if (this.selectedTextures[0].data.type == this.object_ANIMATIONGROUP) {
 						ui.editorGUI.editData.breakAnimation = () => {
 							self.ungroupObjects();
 						};
-						controller = targetFolder.add(ui.editorGUI.editData, "breakAnimation").name('Break Animation');
+						controller = targetFolder.add(ui.editorGUI.editData, "breakAnimation").name('break animation');
 					}
 				}
 			}
@@ -1358,7 +1405,7 @@ const _B2dEditor = function () {
 					ui.editorGUI.editData.animateObjects = () => {
 						self.createAnimationGroup();
 					};
-					controller = targetFolder.add(ui.editorGUI.editData, "animateObjects").name('Create Animation');
+					controller = targetFolder.add(ui.editorGUI.editData, "animateObjects").name('create animation');
 				}
 			}
 		}
@@ -2271,6 +2318,7 @@ const _B2dEditor = function () {
 		this.isVehiclePart = false;
 		this.restitution = Settings.defaultRestitution;
 		this.friction = Settings.defaultFriction;
+		this.fixedRotation = false;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -2502,7 +2550,7 @@ const _B2dEditor = function () {
 		this.colorLine = "#000";
 		this.lineWidth = 1;
 		this.transparancy = 1.0;
-		this.isPhysicsObject = true;
+		this.isBody = true;
 	}
 	this.editorTextObject = new function () {
 		this.textColor = "#999999";
@@ -2720,7 +2768,7 @@ const _B2dEditor = function () {
 					if(this.selectedTool == this.tool_POLYDRAWING){
 						this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
 						if (this.activeVertices && this.activeVertices.length > 2) {
-							if(ui.editorGUI.editData.isPhysicsObject){
+							if(ui.editorGUI.editData.isBody){
 								const bodyObject = this.createBodyFromEarcutResult(this.activeVertices);
 								if (bodyObject){
 									bodyObject.colorFill = [ui.editorGUI.editData.colorFill];
@@ -3842,7 +3890,7 @@ const _B2dEditor = function () {
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY) {
 				if(!this.mouseDown) return;
-				if(ui.editorGUI.editData.isPhysicsObject){
+				if(ui.editorGUI.editData.isBody){
 					let bodyObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
 						let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
@@ -5292,6 +5340,14 @@ const _B2dEditor = function () {
 							if(controller.targetValue) body.isVehiclePart = true;
 							else delete body.isVehiclePart;
 						}
+					}else if(controller.property == "fixedRotation"){
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.fixedRotation = controller.targetValue;
+							if(controller.targetValue) body.SetFixedRotation(true);
+							else body.SetFixedRotation(false);
+						}
 					}else if (controller.property == "tileTexture") {
 						//do tileTexture
 					} else if (controller.property == "lockselection") {
@@ -6698,6 +6754,8 @@ const _B2dEditor = function () {
 
 		var body = this.world.CreateBody(bd);
 		body.SetAwake(false);
+
+		body.SetFixedRotation(obj.fixedRotation);
 
 		var graphic = new PIXI.Graphics();
 		body.originalGraphic = graphic;
@@ -8597,6 +8655,7 @@ const _B2dEditor = function () {
 			arr[20] = obj.isVehiclePart;
 			arr[21] = obj.friction;
 			arr[22] = obj.restitution;
+			arr[23] = obj.fixedRotation;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -8744,6 +8803,7 @@ const _B2dEditor = function () {
 			obj.isVehiclePart = typeof arr[20] === "boolean" ? arr[20] : false;
 			obj.friction = arr[21] !== undefined ? arr[21] : Settings.defaultFriction;
 			obj.restitution = arr[22] !== undefined  ? arr[22] : Settings.defaultRestitution;
+			obj.fixedRotation = arr[23] !== undefined  ? arr[23] : false;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];

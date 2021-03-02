@@ -496,7 +496,7 @@ function Game() {
 
     this.getBodyCB = new function () {
         this.ReportFixture = function (fixture) {
-            if (fixture.GetBody().GetType() != b2Body.b2_staticBody) {
+            if (fixture.GetBody().GetType() != b2Body.b2_staticBody && !fixture.isPhysicsCamera) {
                 if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
                     self.selectedBody = fixture.GetBody();
                     return false;

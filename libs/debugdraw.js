@@ -229,10 +229,10 @@ export function getPIXIDebugDraw(graphics, scale) {
     }
   }
   function drawCircle(graphics, center, radius, axis, fill, color) {
-
     graphics.lineStyle(1, color, 1);
     if (fill) {
-      graphics.beginFill(color, 0.5);
+      const alpha = color === 32512 ? 0.2 : 0.5;
+      graphics.beginFill(color, alpha);
     }
     graphics.moveTo(center.x * scale+ radius*scale, center.y * scale);
     graphics.arc(center.x * scale, center.y * scale, radius * scale, 0, 2 * Math.PI, false);

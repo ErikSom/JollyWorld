@@ -2105,6 +2105,7 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
     listItem.classList.add('cr-string')
 
     const imageDropDownContainer = document.createElement('div');
+    imageDropDownContainer.style.marginTop = '5px';
     const span = document.createElement('span');
     span.classList.add('property-name');
     span.innerText = 'tileTexture';
