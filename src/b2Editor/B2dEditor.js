@@ -994,7 +994,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
-				advancedFolder.add(ui.editorGUI.editData, "fixedRotation").onChange(function (value) {
+				advancedFolder.add(ui.editorGUI.editData, "fixedRotation").name("fixed rotation").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});

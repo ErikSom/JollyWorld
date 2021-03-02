@@ -52,6 +52,7 @@ export const hide = function () {
     headerBar.style.display = 'none';
     scrollBars.hide();
     destroyEditorGUI();
+    removeGradientEditor();
 }
 export const show = function () {
     toolGUI.style.display = 'block';
