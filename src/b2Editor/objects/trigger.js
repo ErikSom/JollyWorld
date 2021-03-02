@@ -229,6 +229,7 @@ export const doAction = function (actionData, target) {
         case "SetEnabled":
             target.data.enabled = actionData.setEnabled;
             if(actionData.toggle) actionData.setEnabled = !actionData.setEnabled;
+            if(!target.data.enabled) target.myBody.class.actionQueue.length = 0;
             break;
         case "SetFollowPlayer":
             target.data.followPlayer = actionData.setFollowPlayer;
@@ -1100,7 +1101,6 @@ export const triggerRepeatType = {
     once: 0,
     onceEveryContact: 1,
     continuesOnContact: 2,
-    onActivation: 3,
 }
 export const containsTargetType = function (targetTrigger, body) {
     switch (targetTrigger.data.targetType) {
@@ -1124,7 +1124,6 @@ export const containsTargetType = function (targetTrigger, body) {
 export class triggerCore {
     constructor() {
         this.data;
-        this.activated = false;
         this.touchingObjects = [];
         this.touchingTarget = false;
         this.destroy = false;
@@ -1272,7 +1271,7 @@ export class triggerCore {
         this.contactListener.PostSolve = function (contact, impulse) {}
     }
     activateTrigger(){
-        if(!this.destroy){
+        if(!this.destroy && this.data.enabled){
             this.actionQueue.push(this.delay*1000);
             if (this.data.repeatType == triggerRepeatType.once && ![triggerTargetType.keydown, triggerTargetType.keyup, triggerTargetType.click].includes(this.data.targetType)) {
                 this.destroy = true;
