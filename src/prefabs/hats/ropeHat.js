@@ -48,6 +48,7 @@ export class RopeHat extends Hat {
 		this.bendBody = null;
 		this.tilingSprites = [];
 		this.isRopeHat = true;
+		this.touchedBodies = [];
 		this.attach();
 	}
 	attach(){
@@ -105,6 +106,11 @@ export class RopeHat extends Hat {
 		this.showAnimation = true;
 		this.ropeGoingOut = false;
 		AudioManager.playSFX('rope-in', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
+
+		// make sure we dont lose momentum when attached bodies go out of the screen
+		this.touchedBodies.forEach(body=> delete body.ignorePhysicsCuller);
+		this.touchedBodies.length = 0;
+
 	}
 
 	attachRope(point, body, precise) {
@@ -126,6 +132,11 @@ export class RopeHat extends Hat {
 		bd.angle =angle;
 
 		this.ropeEnd = this.head.GetWorld().CreateBody(bd);
+		this.ropeEnd.ignorePhysicsCuller = true;
+
+		body.ignorePhysicsCuller = true;
+		this.touchedBodies.push(body);
+
 		game.editor.setBodyCollision(this.ropeEnd, 7);
 		this.ropeEnd.key = this.head.mySprite.data.prefabInstanceName
 		this.ropeEnd.SetBullet(true);
@@ -221,6 +232,9 @@ export class RopeHat extends Hat {
 		}else{
 			angle +=  45 * game.editor.DEG2RAD;
 		}
+
+		body.ignorePhysicsCuller = true;
+		this.touchedBodies.push(body);
 
 		const offsetPoint = point.Clone();
 		const offsetLength = 0.5;

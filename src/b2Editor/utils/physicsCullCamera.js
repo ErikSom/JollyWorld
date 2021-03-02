@@ -54,8 +54,7 @@ export const endContact = contact => {
 	const otherBody = otherFixture.GetBody();
 
 	if(otherBody.mySprite && game.editor.physicsCamera && !game.editor.physicsCamera.reFixture){
-		if(otherBody.mySprite.data.awake && otherBody.IsAwake()){
-			console.log(otherBody);
+		if(otherBody.mySprite.data.awake && otherBody.IsAwake() && otherBody.GetType() !== Box2D.b2BodyType.b2_staticBody && !otherBody.ignorePhysicsCuller){
 			otherBody.SetAwake(false);
 			delete otherBody.InCameraView;
 
