@@ -106,9 +106,9 @@ function BackendManager() {
     this.isLoggedIn =  () => !!localStorage.getItem('oauth-token') && !localStorage.getItem('needsToRegister');
 
     this.login = function () {
+		// TODO: if logged in, do nothing
 		const oauthhandshake = localStorage.getItem('oauth-handshake');
 		if(!oauthhandshake) return;
-
 
 		fetch(`${Settings.API}/login?code=${encodeURIComponent(oauthhandshake)}&redirect=${encodeURIComponent(Settings.REDIRECT)}`)
 		.then(result => result.json())

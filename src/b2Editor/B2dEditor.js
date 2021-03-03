@@ -1042,7 +1042,7 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 
-				advancedFolder = targetFolder.addFolder('visuals');
+				advancedFolder = targetFolder.addFolder('advanced');
 
 				controller = advancedFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
