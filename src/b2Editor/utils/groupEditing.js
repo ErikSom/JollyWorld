@@ -148,6 +148,12 @@ export const stopEditingGroup = () => {
 			}else if(clonedTexture.data.type === editor.object_TEXT){
 				Object.assign(originalTexture.data, clonedTexture.data);
 				originalTexture.textSprite.text = originalTexture.data.text;
+
+				originalTexture.textSprite.style.fontFamily = originalTexture.data.fontName;
+				originalTexture.textSprite.style.fontSize = originalTexture.data.fontSize;
+				originalTexture.textSprite.style.fill = originalTexture.data.textColor;
+				originalTexture.textSprite.style.align = originalTexture.data.textAlign;
+
 				originalTexture.pivot.set(originalTexture.textSprite.width / 2, originalTexture.textSprite.height / 2);
 				originalTexture.visible = originalTexture.data.visible
 			}
