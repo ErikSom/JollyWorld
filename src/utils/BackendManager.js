@@ -52,7 +52,7 @@ function BackendManager() {
     this.userData;
 
     this.init = function () {
-		if(this.isLoggedIn()) this.getUserData();
+		if(this.isLoggedIn()) this.getUserData().catch(e=>{});
     }
 
     this.claimUsername = function (username) {
@@ -96,6 +96,15 @@ function BackendManager() {
 			fetch(`${Settings.API}/me`, body)
 			.then(result => result.json())
 			.then(data => {
+
+				const { error } = data;
+
+				if(error){
+					this.signout();
+					return reject();
+				}
+
+
 				this.userData = data;
 				if(this.userData.is_admin) Settings.userAdmin = true;
 				resolve(data);
@@ -106,7 +115,8 @@ function BackendManager() {
     this.isLoggedIn =  () => !!localStorage.getItem('oauth-token') && !localStorage.getItem('needsToRegister');
 
     this.login = function () {
-		// TODO: if logged in, do nothing
+		if(this.isLoggedIn()) return;
+
 		const oauthhandshake = localStorage.getItem('oauth-handshake');
 		if(!oauthhandshake) return;
 
