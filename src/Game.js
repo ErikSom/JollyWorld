@@ -785,7 +785,7 @@ function Game() {
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(() => {
-            if(self.editor.groupEditing){
+            if(!self.editor.groupEditing){
                 self.currentLevelData.json = this.editor.stringifyWorldJSON();
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
             }
@@ -1157,8 +1157,9 @@ function Game() {
                     if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
                     if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
 
+                    const skipBecauseToLight = contact.GetFixtureA().GetDensity() === 0.001 || contact.GetFixtureB().GetDensity() === 0.001;
 
-                    if (velocitySum > 10.0) {
+                    if (velocitySum > 10.0 && !skipBecauseToLight) {
                         const worldManifold = new Box2D.b2WorldManifold();
                         contact.GetWorldManifold(worldManifold);
                         const worldCollisionPoint = worldManifold.points[0];

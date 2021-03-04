@@ -238,15 +238,19 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             let characterBody;
             let otherBody;
+            let otherFixture;
 
             if(game.editor.retrieveSubClassFromBody(contact.GetFixtureA().GetBody()) === self){
                 characterBody = contact.GetFixtureA().GetBody();
                 otherBody = contact.GetFixtureB().GetBody();
+                otherFixture = contact.GetFixtureB();
             }else{
                 characterBody = contact.GetFixtureB().GetBody();
                 otherBody = contact.GetFixtureA().GetBody();
+                otherFixture = contact.GetFixtureA();
             }
 
+            if(otherFixture.GetDensity() <= 0.001) return;
             if(otherBody.GetMass()===0 || (otherBody.isVehiclePart && characterBody.mainHumanoid) || otherBody.noImpactDamage) return;
 
             if ((otherBody.mySprite.data.prefabID != characterBody.mySprite.data.prefabID || otherBody.mySprite.data.prefabID == undefined)) {
