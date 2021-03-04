@@ -390,6 +390,11 @@ const _B2dEditor = function () {
 	}
 
 	this.selectTool = function (i) {
+
+		if(this.groupEditing){
+			if(!this.allowed_editing_TOOLS.includes(i)) i = this.selectedTool;
+		}
+
 		if (game.gameState == game.GAMESTATE_EDITOR) ui.showHelp(i);
 
 		if(this.selectedTool === i) return;
@@ -1727,7 +1732,6 @@ const _B2dEditor = function () {
 		}
 	}
 	this.deleteSelection = function (force) {
-		if(this.groupEditing) return;
 
 		const toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
@@ -2766,7 +2770,7 @@ const _B2dEditor = function () {
 								if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0] && !targetSprite.myBody.myTexture){
 									this.verticeEditingSprite = targetSprite;
 									this.selectTool(this.tool_VERTICEEDITING);
-								} else {
+								} else if(targetSprite.data.vertices.length > 1 || targetSprite.myBody.myTexture){
 									startEditingGroup();
 								}
 							}
@@ -3619,6 +3623,10 @@ const _B2dEditor = function () {
 			}
 
 			nextIndex = nextChild.parent.getChildIndex(nextChild);
+
+			if(this.groupEditing){
+				nextIndex = Math.max(this.groupMinChildIndex+1, nextIndex);
+			}
 
 			if(obj){
 				highestIndex = nextIndex;
@@ -7856,6 +7864,8 @@ const _B2dEditor = function () {
 
 	this.attachJointPlaceHolder = function (obj) {
 
+		if(this.groupEditing) return;
+
 		var tarObj;
 		var bodies = [];
 
@@ -9422,6 +9432,7 @@ const _B2dEditor = function () {
 		this.BubbleEvent("PostSolve", contact, impulse);
 	}
 	this.testWorld = function () {
+		if(this.groupEditing) stopEditingGroup();
 		camera.storeCurrentPosition();
 		this.selectTool(this.tool_SELECT);
 		this.playerHistory.length = 0;
@@ -9601,6 +9612,7 @@ const _B2dEditor = function () {
 	this.tool_SETTINGS = 9;
 	this.tool_CAMERA = 10;
 	this.tool_VERTICEEDITING = 11;
+	this.allowed_editing_TOOLS = [-1, this.tool_SELECT, this.tool_GEOMETRY, this.tool_POLYDRAWING, this.tool_PEN, this.tool_TEXT, this.tool_ART, this.tool_SETTINGS, this.tool_VERTICEEDITING];
 
 	this.minimumBodySurfaceArea = 0.3;
 }

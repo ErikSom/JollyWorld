@@ -112,63 +112,83 @@ export const stopEditingGroup = () => {
 	// we find the grouped object assign its properties to the original and then delete it
 	let clonedSprite;
 	let isBody = false;
+	let groupDeleted = false;
 	if(editor.selectedPhysicsBodies.length > 0){
 		clonedSprite = editor.selectedPhysicsBodies[0].mySprite;
 		editor.updateBodyPosition(clonedSprite.myBody);
 		isBody = true;
-	}else{
+	}else if(editor.selectedPhysicsBodies.length > 0){
 		clonedSprite = editor.selectedTextures[0];
+	}else{
+		// everything got deleted
+		console.log("GROUP DELETED!!");
+		groupDeleted = true;
 	}
 
-	delete clonedSprite.data.ID;
+	if(!groupDeleted){
+		delete clonedSprite.data.ID;
 
-	const xDif = editor.groupEditingObject.data.x - clonedSprite.data.x;
-	const yDif = editor.groupEditingObject.data.y - clonedSprite.data.y;
+		const xDif = editor.groupEditingObject.data.x - clonedSprite.data.x;
+		const yDif = editor.groupEditingObject.data.y - clonedSprite.data.y;
 
-	Object.assign(editor.groupEditingObject.data, clonedSprite.data);
+		Object.assign(editor.groupEditingObject.data, clonedSprite.data);
 
-	// we then update the visuals for the group
+		// we then update the visuals for the group
 
-	if(isBody){
-		editor.updateBodyFixtures(editor.groupEditingObject.myBody);
-		editor.updateBodyShapes(editor.groupEditingObject.myBody);
-		editor.groupEditingObject.myBody.GetPosition().x -= xDif;
-		editor.groupEditingObject.myBody.GetPosition().y -= yDif;
-
-		const clonedTexture = clonedSprite.myBody.myTexture;
-		if(clonedTexture){
+		if(isBody){
+			editor.updateBodyFixtures(editor.groupEditingObject.myBody);
+			editor.updateBodyShapes(editor.groupEditingObject.myBody);
+			editor.groupEditingObject.myBody.GetPosition().x -= xDif;
+			editor.groupEditingObject.myBody.GetPosition().y -= yDif;
 			const originalTexture = editor.groupEditingObject.myBody.myTexture;
-			delete clonedTexture.data.ID;
+			const clonedTexture = clonedSprite.myBody.myTexture;
+			if(clonedTexture){
 
-			if(clonedTexture.data.type === editor.object_GRAPHICGROUP){
-				Object.assign(originalTexture.data, clonedTexture.data);
-				editor.updateGraphicGroupShapes(originalTexture); // is this a graphic group???
-			}else if(clonedTexture.data.type === editor.object_GRAPHIC){
-				Object.assign(originalTexture.data, clonedTexture.data);
-				editor.updateGraphicShapes(originalTexture);
-				originalTexture.visible = originalTexture.data.visible
-			}else if(clonedTexture.data.type === editor.object_TEXT){
-				Object.assign(originalTexture.data, clonedTexture.data);
-				originalTexture.textSprite.text = originalTexture.data.text;
+				// if(clonedTexture.data.type === editor.object_GRAPHICGROUP){
+				// 	Object.assign(originalTexture.data, clonedTexture.data);
+				// 	editor.updateGraphicGroupShapes(originalTexture); // is this a graphic group???
+				// }else if(clonedTexture.data.type === editor.object_GRAPHIC){
+				// 	Object.assign(originalTexture.data, clonedTexture.data);
+				// 	editor.updateGraphicShapes(originalTexture);
+				// 	originalTexture.visible = originalTexture.data.visible
+				// }else if(clonedTexture.data.type === editor.object_TEXT){
+				// 	Object.assign(originalTexture.data, clonedTexture.data);
+				// 	originalTexture.textSprite.text = originalTexture.data.text;
 
-				originalTexture.textSprite.style.fontFamily = originalTexture.data.fontName;
-				originalTexture.textSprite.style.fontSize = originalTexture.data.fontSize;
-				originalTexture.textSprite.style.fill = originalTexture.data.textColor;
-				originalTexture.textSprite.style.align = originalTexture.data.textAlign;
+				// 	originalTexture.textSprite.style.fontFamily = originalTexture.data.fontName;
+				// 	originalTexture.textSprite.style.fontSize = originalTexture.data.fontSize;
+				// 	originalTexture.textSprite.style.fill = originalTexture.data.textColor;
+				// 	originalTexture.textSprite.style.align = originalTexture.data.textAlign;
 
-				originalTexture.pivot.set(originalTexture.textSprite.width / 2, originalTexture.textSprite.height / 2);
-				originalTexture.visible = originalTexture.data.visible
+				// 	originalTexture.pivot.set(originalTexture.textSprite.width / 2, originalTexture.textSprite.height / 2);
+				// 	originalTexture.visible = originalTexture.data.visible
+				// }
+				delete clonedTexture.myBody.myTexture;
+				clonedTexture.data.ID = originalTexture.data.ID;
+				editor.groupEditingObject.myBody.myTexture = clonedTexture;
+				clonedTexture.data.bodyID = originalTexture.data.bodyID;
+				clonedTexture.myBody = editor.groupEditingObject.myBody;
+
+				originalTexture.parent.swapChildren(originalTexture, clonedTexture);
+				editor.deleteObjects([originalTexture]);
+			} else if(originalTexture){
+				editor.groupEditingObject.renderable = true;
+				editor.removeTextureFromBody(editor.groupEditingObject.myBody, originalTexture);
+				editor.deleteObjects([originalTexture]);
 			}
-
+		} else {
+			editor.updateGraphicGroupShapes(editor.groupEditingObject);
+			editor.groupEditingObject.x -= xDif;
+			editor.groupEditingObject.y -= yDif;
 		}
+	}else{
 
-
-	} else {
-		editor.updateGraphicGroupShapes(editor.groupEditingObject);
-		editor.groupEditingObject.x -= xDif;
-		editor.groupEditingObject.y -= yDif;
+		if(editor.groupEditingObject.data.type === editor.object_BODY){
+			editor.deleteObjects([editor.groupEditingObject.myBody]);
+		}else{
+			editor.deleteObjects([editor.groupEditingObject]);
+		}
 	}
-	editor.groupEditingObject.calculateBounds();
 
 	// we restore the editor
 	editor.groupEditingObject = null;
