@@ -527,10 +527,19 @@ const _B2dEditor = function () {
 				});
 
 				if(ui.editorGUI.editData.shape === shapes[0]){
-					targetFolder.add(ui.editorGUI.editData, "radius", 1.0, editorSettings.worldSize.width).step(0.1);
+					targetFolder.add(ui.editorGUI.editData, "radius", 1.0).onChange(val=>{
+						val = Math.min(Math.max(1, val), editorSettings.worldSize.width/2);
+						ui.editorGUI.editData.radius = val;
+					});
 				}else{
-					targetFolder.add(ui.editorGUI.editData, "width", 1.0, editorSettings.worldSize.width).step(0.1);
-					targetFolder.add(ui.editorGUI.editData, "height", 1.0, editorSettings.worldSize.width).step(0.1);
+					targetFolder.add(ui.editorGUI.editData, "width", 1.0).onChange(val=>{
+						val = Math.min(Math.max(1, val), editorSettings.worldSize.width/2);
+						ui.editorGUI.editData.width = val;
+					});
+					targetFolder.add(ui.editorGUI.editData, "height", 1.0).onChange(val=>{
+						val = Math.min(Math.max(1, val), editorSettings.worldSize.width/2);
+						ui.editorGUI.editData.height = val;
+					});
 				}
 
 				break

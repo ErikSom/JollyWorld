@@ -26,7 +26,10 @@ export const startEditingGroup = () => {
 	if(editor.groupEditingObject.myBody && editor.groupEditingObject.myBody.myTexture){
 		editor.groupEditingObject.myBody.myTexture.oldVisible = editor.groupEditingObject.myBody.myTexture.visible;
 		editor.groupEditingObject.myBody.myTexture.visible = true;
-		editor.groupEditingObject.myBody.myTexture.children.forEach(obj => obj.visible = false);
+		editor.groupEditingObject.myBody.myTexture.children.forEach(obj =>{
+			obj.oldVisible = obj.visible;
+			obj.visible = false
+		});
 	}
 
 
@@ -71,7 +74,10 @@ export const stopEditingGroup = () => {
 	if(editor.groupEditingObject.myBody && editor.groupEditingObject.myBody.myTexture){
 		editor.groupEditingObject.myBody.myTexture.visible = editor.groupEditingObject.myBody.myTexture.oldVisible;
 		delete editor.groupEditingObject.myBody.myTexture.oldVisible;
-		editor.groupEditingObject.myBody.myTexture.children.forEach(obj => obj.visible = true);
+		editor.groupEditingObject.myBody.myTexture.children.forEach(obj => {
+			obj.visible = obj.oldVisible;
+			delete obj.oldVisible;
+		});
 	}
 
 	editor.groupEditingBlackOverlay.parent.removeChild(editor.groupEditingBlackOverlay);
@@ -114,12 +120,8 @@ export const stopEditingGroup = () => {
 		clonedSprite = editor.selectedTextures[0];
 	}
 
-
-	console.log(clonedSprite.data.x, clonedSprite.data.y, editor.groupEditingObject.data.x, editor.groupEditingObject.data.y)
-
-
 	delete clonedSprite.data.ID;
-	
+
 	const xDif = editor.groupEditingObject.data.x - clonedSprite.data.x;
 	const yDif = editor.groupEditingObject.data.y - clonedSprite.data.y;
 
