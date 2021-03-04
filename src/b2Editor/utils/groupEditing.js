@@ -138,39 +138,30 @@ export const stopEditingGroup = () => {
 		if(isBody){
 			editor.updateBodyFixtures(editor.groupEditingObject.myBody);
 			editor.updateBodyShapes(editor.groupEditingObject.myBody);
-			editor.groupEditingObject.myBody.GetPosition().x -= xDif;
-			editor.groupEditingObject.myBody.GetPosition().y -= yDif;
+			editor.groupEditingObject.myBody.ResetMassData();
+
+			const position = editor.groupEditingObject.myBody.GetPosition();
+			position.x -= xDif;
+			position.y -= yDif;
+			editor.groupEditingObject.myBody.SetPosition(position);
 			const originalTexture = editor.groupEditingObject.myBody.myTexture;
 			const clonedTexture = clonedSprite.myBody.myTexture;
 			if(clonedTexture){
 
-				// if(clonedTexture.data.type === editor.object_GRAPHICGROUP){
-				// 	Object.assign(originalTexture.data, clonedTexture.data);
-				// 	editor.updateGraphicGroupShapes(originalTexture); // is this a graphic group???
-				// }else if(clonedTexture.data.type === editor.object_GRAPHIC){
-				// 	Object.assign(originalTexture.data, clonedTexture.data);
-				// 	editor.updateGraphicShapes(originalTexture);
-				// 	originalTexture.visible = originalTexture.data.visible
-				// }else if(clonedTexture.data.type === editor.object_TEXT){
-				// 	Object.assign(originalTexture.data, clonedTexture.data);
-				// 	originalTexture.textSprite.text = originalTexture.data.text;
+				if(originalTexture){
+					delete clonedTexture.myBody.myTexture;
+					clonedTexture.data.ID = originalTexture.data.ID;
+					editor.groupEditingObject.myBody.myTexture = clonedTexture;
+					clonedTexture.data.bodyID = originalTexture.data.bodyID;
+					clonedTexture.myBody = editor.groupEditingObject.myBody;
 
-				// 	originalTexture.textSprite.style.fontFamily = originalTexture.data.fontName;
-				// 	originalTexture.textSprite.style.fontSize = originalTexture.data.fontSize;
-				// 	originalTexture.textSprite.style.fill = originalTexture.data.textColor;
-				// 	originalTexture.textSprite.style.align = originalTexture.data.textAlign;
-
-				// 	originalTexture.pivot.set(originalTexture.textSprite.width / 2, originalTexture.textSprite.height / 2);
-				// 	originalTexture.visible = originalTexture.data.visible
-				// }
-				delete clonedTexture.myBody.myTexture;
-				clonedTexture.data.ID = originalTexture.data.ID;
-				editor.groupEditingObject.myBody.myTexture = clonedTexture;
-				clonedTexture.data.bodyID = originalTexture.data.bodyID;
-				clonedTexture.myBody = editor.groupEditingObject.myBody;
-
-				originalTexture.parent.swapChildren(originalTexture, clonedTexture);
-				editor.deleteObjects([originalTexture]);
+					originalTexture.parent.swapChildren(originalTexture, clonedTexture);
+					editor.deleteObjects([originalTexture]);
+				}else{
+					delete clonedTexture.myBody.myTexture;
+					editor.groupEditingObject.parent.addChildAt(clonedTexture, editor.groupMinChildIndex+1);
+					editor.setTextureToBody(editor.groupEditingObject.myBody, clonedTexture, clonedTexture.data.texturePositionOffsetLength, clonedTexture.data.texturePositionOffsetAngle, clonedTexture.data.textureAngleOffset);
+				}
 			} else if(originalTexture){
 				editor.groupEditingObject.renderable = true;
 				editor.removeTextureFromBody(editor.groupEditingObject.myBody, originalTexture);
@@ -181,6 +172,9 @@ export const stopEditingGroup = () => {
 			editor.groupEditingObject.x -= xDif;
 			editor.groupEditingObject.y -= yDif;
 		}
+
+		editor.updateObject(editor.groupEditingObject, editor.groupEditingObject.data);
+
 	}else{
 
 		if(editor.groupEditingObject.data.type === editor.object_BODY){
@@ -189,6 +183,7 @@ export const stopEditingGroup = () => {
 			editor.deleteObjects([editor.groupEditingObject]);
 		}
 	}
+
 
 	// we restore the editor
 	editor.groupEditingObject = null;

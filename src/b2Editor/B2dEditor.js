@@ -3831,6 +3831,7 @@ const _B2dEditor = function () {
 
 	this.storeUndoMovement = function () {
 		if(!this.editing) return;
+		if(this.groupEditing) return;
 
 		this.stringifyWorldJSON();
 		if(this.lastValidWorldJSON === this.worldJSON) return;
@@ -9432,7 +9433,10 @@ const _B2dEditor = function () {
 		this.BubbleEvent("PostSolve", contact, impulse);
 	}
 	this.testWorld = function () {
+
 		if(this.groupEditing) stopEditingGroup();
+        this.stringifyWorldJSON();
+
 		camera.storeCurrentPosition();
 		this.selectTool(this.tool_SELECT);
 		this.playerHistory.length = 0;

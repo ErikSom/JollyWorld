@@ -662,7 +662,6 @@ function Game() {
 
     this.testWorld = function () {
         this.movementBuffer = [];
-        this.editor.stringifyWorldJSON();
         this.editor.testWorld();
         this.run = true;
         this.findPlayableCharacter();
@@ -786,8 +785,10 @@ function Game() {
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(() => {
-            self.currentLevelData.json = this.editor.stringifyWorldJSON();
-            SaveManager.saveTempEditorWorld(self.currentLevelData);
+            if(self.editor.groupEditing){
+                self.currentLevelData.json = this.editor.stringifyWorldJSON();
+                SaveManager.saveTempEditorWorld(self.currentLevelData);
+            }
             self.doAutoSave();
         }, Settings.autoSaveInterval);
     }
