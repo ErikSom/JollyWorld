@@ -49,6 +49,7 @@ import { TiledMesh } from './classes/TiledMesh';
 import  * as physicsCullCamera from './utils/physicsCullCamera';
 import nanoid from "nanoid";
 import { findObjectWithCopyHash } from "./utils/finder";
+import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
  
 const PIXIHeaven = self.PIXI.heaven;
 
@@ -102,6 +103,7 @@ const _B2dEditor = function () {
 	this.lastValidWorldJSON;
 
 	this.copiedJSON = '';
+	this.copiedCenterPosition = new Box2D.b2Vec2();
 	this.ui = ui;
 
 	this.mouseDown = false;
@@ -114,6 +116,10 @@ const _B2dEditor = function () {
 	this.doubleSpaceTime = 0;
 	this.altDown = false;
 	this.editing = true;
+	this.groupEditing = false;
+	this.groupEditingObject = null;
+	this.groupMinChildIndex = -1;
+	this.groupEditingBlackOverlay;
 
 	this.lookupGroups = {};
 
@@ -374,6 +380,8 @@ const _B2dEditor = function () {
 				if (textContainer.textSprite) {
 					textContainer.data.text = value;
 					textContainer.textSprite.text = value;
+					textContainer.pivot.set(textContainer.textSprite.width / 2, textContainer.textSprite.height / 2);
+
 				}
 			}
 
@@ -593,6 +601,8 @@ const _B2dEditor = function () {
 				this.verticeEditingBlackOverlay.parent.removeChild(this.verticeEditingBlackOverlay);
 				delete this.verticeEditingBlackOverlay;
 				this.verticeEditingSprite.parent.addChildAt(this.verticeEditingSprite, this.verticeEditingSprite.oldIndex);
+				this.verticeEditingSprite._cullingSizeDirty = true; // ADD THIS
+				console.log(this.verticeEditingSprite);
 				delete this.verticeEditingSprite.selectedVertice;
 				delete this.verticeEditingSprite.oldIndex;
 				delete this.verticeEditingSprite;
@@ -1708,6 +1718,8 @@ const _B2dEditor = function () {
 		}
 	}
 	this.deleteSelection = function (force) {
+		if(this.groupEditing) return;
+
 		const toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
 			if (this.selectedPrefabs.hasOwnProperty(key) && (!this.activePrefabs[key].class.constructor.playableCharacter || (Settings.admin || force))) {
@@ -1723,7 +1735,6 @@ const _B2dEditor = function () {
 
 	this.markedForUnidentifiedPasting = [];
 	this.copySelection = function () {
-
 		let i;
 		let body;
 		const copyArray = [];
@@ -1915,6 +1926,8 @@ const _B2dEditor = function () {
 		copyCenterPoint.x = copyCenterPoint.x / copyArray.length;
 		copyCenterPoint.y = copyCenterPoint.y / copyArray.length;
 
+		this.copiedCenterPosition.Copy(copyCenterPoint).SelfMul(1/Settings.PTM);
+
 		//adjust center and build string
 		for (i = 0; i < copyArray.length; i++) {
 			if (i != 0) copyJSON += ',';
@@ -1964,7 +1977,9 @@ const _B2dEditor = function () {
 		}
 	}
 
-	this.pasteSelection = function () {
+	this.pasteSelection = function (oldPosition) {
+		if(this.groupEditing) return;
+
 		if (this.copiedJSON != null && this.copiedJSON != '') {
 			var startChildIndex = this.textures.children.length;
 
@@ -1974,15 +1989,14 @@ const _B2dEditor = function () {
 			this.selectedTextures = [];
 			this.selectedPrefabs = {};
 
+
+
+			const targetPosition = (oldPosition || this.shiftDown) ? this.copiedCenterPosition : this.mousePosWorld;
+
 			var i;
 			var sprite;
-			var movX = - this.mousePosWorld.x * this.PTM;
-			var movY = - this.mousePosWorld.y * this.PTM;
-
-			if (this.shiftDown) {
-				movX = 0;
-				movY = 0;
-			}
+			var movX = - targetPosition.x * this.PTM;
+			var movY = - targetPosition.y * this.PTM;
 
 			for (i = startChildIndex; i < this.textures.children.length; i++) {
 				sprite = this.textures.getChildAt(i);
@@ -2724,7 +2738,6 @@ const _B2dEditor = function () {
 					}
 					this.updateSelection();
 				}else if(clickInsideSelection){
-
 					if(Date.now() < this.doubleClickTime){
 						if(this.selectedTextures.length + this.selectedPhysicsBodies.length === 1){
 							if(this.selectedTextures.length > 0){
@@ -2735,13 +2748,17 @@ const _B2dEditor = function () {
 									this.selectTool(this.tool_VERTICEEDITING);
 								}else if(targetSprite.data.type === this.object_TEXT){
 									this.openTextEditor();
+								}else if(targetSprite.data.type === this.object_GRAPHICGROUP){
+									startEditingGroup();
 								}
 							}else{
 								// editing body
 								const targetSprite = this.selectedPhysicsBodies[0].mySprite;
-								if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0]){
+								if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0] && !targetSprite.myBody.myTexture){
 									this.verticeEditingSprite = targetSprite;
 									this.selectTool(this.tool_VERTICEEDITING);
+								} else {
+									startEditingGroup();
 								}
 							}
 							this.doubleClickTime = 0;
@@ -3822,6 +3839,11 @@ const _B2dEditor = function () {
 
 	this.undoMove = function (undo) {
 
+		if(this.groupEditing){
+			stopEditingGroup();
+			return;
+		}
+
 		if(!undo && this.undoIndex === 0) return;
 		if(!undo && this.undoIndex<0) this.undoIndex++;
 
@@ -3855,6 +3877,7 @@ const _B2dEditor = function () {
 			}else if (this.spaceCameraDrag) {
 				this.spaceCameraDrag = false;
 			} else if (this.selectedTool == this.tool_SELECT) {
+
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 
 					const minSelectPixi = 3/Settings.PTM;
@@ -3867,6 +3890,8 @@ const _B2dEditor = function () {
 							}else{
 								this.selectedTextures.push(highestObject);
 							}
+						}else if(this.groupEditing && Date.now() < this.doubleClickTime){
+							stopEditingGroup();
 						}
 					}else{
 						this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
@@ -4400,9 +4425,23 @@ const _B2dEditor = function () {
 		var body;
 		for (var i = 0; i < this.queryPhysicsBodies.length; i++) {
 			body = this.queryPhysicsBodies[i];
-			if (body.mySprite && body.mySprite.data && Boolean(body.mySprite.data.lockselection) != this.altDown) {
-				this.queryPhysicsBodies.splice(i, 1);
-				i--;
+
+			if(body.mySprite){
+
+				let skipBody = false;
+
+				if(this.groupEditing){
+					const bodyIndex = body.mySprite.parent.getChildIndex(body.mySprite);
+					if(bodyIndex<= this.groupMinChildIndex) skipBody = true;
+				}
+				if (body.mySprite.data && Boolean(body.mySprite.data.lockselection) != this.altDown) {
+					skipBody = true;
+				}
+
+				if(skipBody){
+					this.queryPhysicsBodies.splice(i, 1);
+					i--;
+				}
 			}
 		}
 
@@ -4439,7 +4478,17 @@ const _B2dEditor = function () {
 		let graphic;
 		for (let i = 0; i < queryGraphics.length; i++) {
 			graphic = queryGraphics[i];
+
+			let skipGraphic = false;
+			if(this.groupEditing){
+				const graphicIndex = graphic.parent.getChildIndex(graphic);
+				if(graphicIndex<= this.groupMinChildIndex) skipGraphic = true;
+			}
 			if (!graphic.data || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
+				skipGraphic = true;
+			}
+
+			if(skipGraphic){
 				queryGraphics.splice(i, 1);
 				i--;
 			}
@@ -7318,26 +7367,40 @@ const _B2dEditor = function () {
 			this.setTextureToBody(combinedBodies, combinedGraphics, dif.Length(), angleOffset, angle);
 		}
 
-		this.selectedTextures = [];
-		this.selectedPhysicsBodies = [];
+		if(combinedGraphics && !combinedBodies){
+			this.selectedTextures = [combinedGraphics];
+			this.selectedPhysicsBodies = [];
+		} else if(combinedBodies){
+			this.selectedTextures = [];
+			this.selectedPhysicsBodies = [combinedBodies];
+		}else{
+			this.selectedTextures = [];
+			this.selectedPhysicsBodies = [];
+		}
+
 		this.updateSelection();
 	}
 	this.ungroupObjects = function () {
+
+		let ungroupedBodies = [];
+		let ungroupedGraphics = [];
+
 		if (this.selectedPhysicsBodies.length == 1) {
 			var myTexture = this.selectedPhysicsBodies[0].myTexture;
 			if (myTexture) {
 				this.removeTextureFromBody(this.selectedPhysicsBodies[0], myTexture);
 				if (myTexture.data instanceof this.graphicGroup) {
-					this.ungroupGraphicObjects(myTexture);
-				}
+					ungroupedGraphics = ungroupedGraphics.concat(this.ungroupGraphicObjects(myTexture));
+				}else ungroupedGraphics = [myTexture];
 			}
-			if(this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
+			if(this.selectedPhysicsBodies[0].mySprite.data.vertices.length>1) ungroupedBodies = this.ungroupBodyObjects(this.selectedPhysicsBodies[0]);
+			else ungroupedBodies = [this.selectedPhysicsBodies[0]];
 		}
 		if (this.selectedTextures.length == 1 && [this.object_GRAPHICGROUP, this.object_ANIMATIONGROUP].includes(this.selectedTextures[0].data.type)) {
-			this.ungroupGraphicObjects(this.selectedTextures[0]);
+			ungroupedGraphics = ungroupedGraphics.concat(this.ungroupGraphicObjects(this.selectedTextures[0]));
 		}
-		this.selectedTextures = [];
-		this.selectedPhysicsBodies = [];
+		this.selectedTextures = ungroupedGraphics;
+		this.selectedPhysicsBodies = ungroupedBodies;
 		this.updateSelection();
 	}
 	this.groupBodyObjects = function (bodyObjects) {

@@ -101,6 +101,7 @@ const placeGraphicInCells = function (graphic) {
     } else {
         initGraphicForCulling(graphic);
     }
+
     if (graphic._cullingSizeDirty){
          getSizeInfoForGraphic(graphic);
          //"getSizeInfoForGraphic" calls "updateTransform" which calls recursive "place"  so its ok , but this is a bit hacky
@@ -154,9 +155,11 @@ const initGraphicForCulling = function (graphic) {
     graphic._cullingTransformID = graphic.transform._currentLocalID;
     const _pixiContainerUpdateSuper = graphic.updateTransform;
 
-    graphic.updateTransform = function updateTransform() {
+
+    graphic.updateTransform = function() {
         if (this._cullingTransformID != this.transform._currentLocalID && !this.ignoreCulling) {
             this._cullingTransformID = this.transform._currentLocalID;
+            if(window.tracingblabla) console.trace();
             placeGraphicInCells(graphic);
         }
         _pixiContainerUpdateSuper.apply(this);
