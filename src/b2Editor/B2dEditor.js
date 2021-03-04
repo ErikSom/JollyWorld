@@ -979,7 +979,7 @@ const _B2dEditor = function () {
 
 					advancedFolder = targetFolder.addFolder('advanced');
 
-					controller = advancedFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.1);
+					controller = advancedFolder.add(ui.editorGUI.editData, "density", 0, 1000).step(0.01);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value
