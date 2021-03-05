@@ -2675,7 +2675,7 @@ const _B2dEditor = function () {
 						}
 					}
 				}
-				this.selectingTriggerTarget = false;
+				this.stopTriggerTargetSelecting();
 			} else if(this.customPrefabMouseDown){
 				this.customPrefabMouseDown();
 			} else if (this.selectedTool == this.tool_SELECT) {
@@ -2770,7 +2770,7 @@ const _B2dEditor = function () {
 								if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0] && !targetSprite.myBody.myTexture){
 									this.verticeEditingSprite = targetSprite;
 									this.selectTool(this.tool_VERTICEEDITING);
-								} else if(targetSprite.data.vertices.length > 1 || targetSprite.myBody.myTexture){
+								} else if(targetSprite.data.type === this.object_BODY && (targetSprite.data.vertices.length > 1 || targetSprite.myBody.myTexture)){
 									startEditingGroup();
 								}
 							}
@@ -4220,7 +4220,7 @@ const _B2dEditor = function () {
 			this.selectedPrefabs = {};
 			this.selectedTextures.length = 0;
 			this.selectedPhysicsBodies.length = 0;
-			this.selectingTriggerTarget = false;
+			this.stopTriggerTargetSelecting();
 			this.customPrefabMouseDown = null;
 			this.customPrefabMouseMove = null;
 			this.customDebugDraw = null;
@@ -6089,6 +6089,12 @@ const _B2dEditor = function () {
 	this.doTriggerTargetSelection = function () {
 		let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 		if (highestObject) {
+
+			if(this.previousHighestTriggerTargetObject){
+				this.previousHighestTriggerTargetObject.alpha = this.previousHighestTriggerTargetObject.oldAlpha;
+				delete this.previousHighestTriggerTargetObject.oldAlpha;
+			}
+
 			let tarPos;
 			if (highestObject.data.prefabInstanceName) {
 				const tarPrefab = this.activePrefabs[highestObject.data.prefabInstanceName];
@@ -6115,7 +6121,67 @@ const _B2dEditor = function () {
 					});
 				}
 			}
+			this.markTargetSprite(highestObject);
+		}else {
+			this.unmarkTargetSprite();
 		}
+	}
+
+	this.markTargetSprite = function(targetSprite){
+
+		if(this.markedTargetSprite && this.markedTargetSprite === targetSprite) return;
+		if(this.markedTargetSprite) this.unmarkTargetSprite(this.markedTargetSprite);
+
+		const allSprites = this.getAllRelatedSprites(targetSprite);
+
+		allSprites.forEach(sprite => {
+			if(sprite.alpha > 0){
+				sprite.oldAlpha = sprite.alpha;
+				sprite.alpha *= 0.5;
+			}
+		});
+
+		this.markedTargetSprite = targetSprite;
+	}
+
+	this.unmarkTargetSprite = function(){
+
+		if(!this.markedTargetSprite) return;
+
+		const allSprites = this.getAllRelatedSprites(this.markedTargetSprite);
+
+		allSprites.forEach(sprite => {
+			if(sprite.oldAlpha){
+				sprite.alpha = sprite.oldAlpha;
+				delete sprite.oldAlpha;
+			}
+		});
+
+		delete this.markedTargetSprite;
+	}
+	this.getAllRelatedSprites = function(sprite){
+		let sprites = [sprite];
+
+		if(sprite.data.prefabInstanceName){
+			// we got a prefab, find the lowest or highest clip
+			const prefab = this.activePrefabs[sprite.data.prefabInstanceName];
+			const lookup = prefab.class ? prefab.class.lookupObject : null;
+			if(lookup){
+				sprites = [].concat(lookup._bodies, lookup._joints, lookup._textures);
+
+				lookup._bodies.forEach(body=>{
+					if(body.myTexture) sprites.push(body.myTexture);
+				})
+			}
+		}else if(sprite.data.type === this.object_BODY){
+			if(sprite.myBody.myTexture) sprites.push(sprite.myBody.myTexture);
+		}
+		return sprites;
+	}
+
+	this.stopTriggerTargetSelecting = function(){
+		this.unmarkTargetSprite();
+		this.selectingTriggerTarget = false;
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
 		let i;
@@ -6748,7 +6814,6 @@ const _B2dEditor = function () {
 		bodyObject.density = 1;
 		bodyObject.collision = 2;
 		bodyObject.transparancy = 1.0;
-		bodyObject.visible = false;
 
 		const body = this.buildBodyFromObj(bodyObject);
 
@@ -6763,6 +6828,7 @@ const _B2dEditor = function () {
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
 
 		body.mySprite.data = obj;
+
 		body.mySprite.targets = [];
 		body.mySprite.targetPrefabs = [];
 		this.addObjectToLookupGroups(body, body.mySprite.data);
@@ -8368,10 +8434,10 @@ const _B2dEditor = function () {
 
 			if (body.mySprite.data.type == this.object_TRIGGER) {
 				//color trigger
-				colorFill = '#FFFFFF';
+				colorFill = '#e0b300';
 				colorLine = '#FFFFFF';
-				lineWidth = 1;
-				transparancy = 0.2;
+				lineWidth = 0;
+				transparancy = 0.3;
 			}
 
 			let verts = [];
@@ -9329,7 +9395,7 @@ const _B2dEditor = function () {
 		this.editorIcons = [];
 		this.triggerObjects = [];
 
-		this.selectingTriggerTarget = false;
+		this.stopTriggerTargetSelecting();
 		this.customPrefabMouseDown = null;
 		this.customPrefabMouseMove = null;
 		this.customDebugDraw = null;

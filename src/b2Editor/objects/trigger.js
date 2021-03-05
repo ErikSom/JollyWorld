@@ -1373,10 +1373,13 @@ export const drawEditorTriggers = ()=>{
 	const camera = B2dEditor.container.camera || B2dEditor.container;
 
     game.editor.triggerObjects.forEach( trigger => {
-        game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8);
+
         const offsetInterval = 500;
         const offset = (Date.now() % offsetInterval + 1) / offsetInterval;
         const data = trigger.mySprite.data;
+
+        const alphaDecreaser = trigger.mySprite.oldAlpha !== undefined ? 0.5 : 1.0;
+
         if (data.radius) {
             let p = {
                 x: data.vertices[0].x * Settings.PTM,
@@ -1393,7 +1396,8 @@ export const drawEditorTriggers = ()=>{
             pixiPosition.y = trigger.GetPosition().y * Settings.PTM + p.y;
             game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
 
-
+            drawing.drawCircle(pixiPosition, data.radius * camera.scale.x * trigger.mySprite.scale.x, {alpha:0}, {color:0xe0b300, alpha:0.3*alphaDecreaser});
+            game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8*alphaDecreaser);
             game.editor.debugGraphics.drawDashedCircle(data.radius * camera.scale.x * trigger.mySprite.scale.x, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
         } else {
             const polygons = [];
@@ -1409,6 +1413,8 @@ export const drawEditorTriggers = ()=>{
             pixiPosition.y = trigger.GetPosition().y * Settings.PTM;
             game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
 
+            drawing.drawPolygon(polygons, pixiPosition, {alpha:0}, {color:0xe0b300, alpha:0.3*alphaDecreaser});
+            game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8*alphaDecreaser);
             game.editor.debugGraphics.drawDashedPolygon(polygons, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
         }
     })

@@ -51,10 +51,26 @@ export const drawCircle = function(point, radius, _lineOptions, _fillOptions){
     const lineOptions = Object.assign({}, lineOptionsBase, _lineOptions);
     const fillOptions = Object.assign({}, fillOptionsBase, _fillOptions);
     B2dEditor.debugGraphics.moveTo(radius+point.x * B2dEditor.container.scale.x + B2dEditor.container.x, point.y * B2dEditor.container.scale.y + B2dEditor.container.y);
-
-    B2dEditor.debugGraphics.lineStyle(lineOptions.size,  lineOptions.color, lineOptions.alpha);
     B2dEditor.debugGraphics.beginFill(fillOptions.color, fillOptions.alpha);
+    B2dEditor.debugGraphics.lineStyle(lineOptions.size,  lineOptions.color, lineOptions.alpha);
     B2dEditor.debugGraphics.arc(point.x * B2dEditor.container.scale.x + B2dEditor.container.x, point.y * B2dEditor.container.scale.y + B2dEditor.container.y, radius, 0, 2 * Math.PI, false);
+    B2dEditor.debugGraphics.endFill();
+}
+
+export const drawPolygon = function(polygons, point, _lineOptions, _fillOptions){
+    const lineOptions = Object.assign({}, lineOptionsBase, _lineOptions);
+    const fillOptions = Object.assign({}, fillOptionsBase, _fillOptions);
+
+    B2dEditor.debugGraphics.beginFill(fillOptions.color, fillOptions.alpha);
+    B2dEditor.debugGraphics.lineStyle(lineOptions.size,  lineOptions.color, lineOptions.alpha);
+
+    const firstPoly = polygons[0];
+    B2dEditor.debugGraphics.moveTo((point.x + firstPoly.x) * B2dEditor.container.scale.x + B2dEditor.container.x, (point.y + firstPoly.y) * B2dEditor.container.scale.y + B2dEditor.container.y);
+
+    polygons.forEach((polygon, index) => {
+        const nextPoly = index === polygons.length-1 ? polygons[0] : polygons[index+1];
+        B2dEditor.debugGraphics.lineTo((point.x + nextPoly.x) * B2dEditor.container.scale.x + B2dEditor.container.x, (point.y + nextPoly.y) * B2dEditor.container.scale.y + B2dEditor.container.y);
+    })
     B2dEditor.debugGraphics.endFill();
 }
 
