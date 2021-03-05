@@ -2057,6 +2057,9 @@ const removeGradientEditor = () => {
     }
 }
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
+
+    game.IS_ERROR = true;
+
     const loginGUIWidth = 500;
 
     const errorScreen = new dat.GUI({
@@ -2069,12 +2072,23 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
     targetFolder.open();
     const mainFolderDomElement = targetFolder.domElement.getElementsByTagName('ul')[0];
 
+    const titleElement = errorScreen.domElement.querySelector('.title');
+    titleElement.style.pointerEvents = 'none';
 
     const textWrapper = document.createElement('div');
     textWrapper.classList.add('textWrapper');
 
+    const warningMessage = document.createElement('div');
+    warningMessage.innerHTML = Settings.DEFAULT_TEXTS.error_message;
+    textWrapper.appendChild(warningMessage);
+    warningMessage.style = `
+        background: black;
+        color: red;
+        font-size: 20px;
+    `
+
     let textarea = document.createElement('textarea');
-    textarea.value = `${Settings.DEFAULT_TEXTS.error_message}\n\n ${msg},\n ${url},\n ${lineNo},\n ${columnNo},\n ${(error && error.stack) ? error.stack : ''}`
+    textarea.value = `${msg},\n ${url},\n ${lineNo},\n ${columnNo},\n ${(error && error.stack) ? error.stack : ''}`
     textarea.style.width = '500px';
     textarea.style.height = '90vh';
     textWrapper.appendChild(textarea);

@@ -148,6 +148,9 @@ function BackendManager() {
     }
 
     this.uploadUserLevelData = (details, levelJSON, cameraShotData) => {
+
+		if(game.IS_ERROR) return Promise.reject();
+
 		// posten van een level:
 		// (POST) /level/update/id
 		// JSON Data: title / description / forced_vehicle / game_build / thumbnail / data
@@ -193,6 +196,9 @@ function BackendManager() {
     }
 
     this.publishLevelData = (details) => {
+
+		if(game.IS_ERROR) return Promise.reject();
+
 		// (POST) /level/publish/old-id/new-id (or existing new)
 		return new Promise(async (resolve, reject) => {
 

@@ -98,7 +98,7 @@ export var Settings = {
         confirm:'Yes!',
         decline:'NOPE!',
         newGradient:'-new gradient-',
-        error_message:'A CRITICAL ERROR HAS OCCURRED, PLEASE COPY ALL THIS TEXT IN THE #BUGS CHANNEL OF THE JOLLY WORLD DISCORD INCLUDING A BRIEF EXPLANATION OF WHAT HAPPENED, REFRESH THE PAGE AFTERWARDS:',
+        error_message:`A <b>CRITICAL ERROR</b> HAS OCCURRED <br> PLEASE FOLLOW THESE STEPS: <br><br> 1) COPY THE ERROR TEXT BELOW <br> 2) PASTE IT IN THE DISCORD #BUGS CHANNEL<br> 3) EXPLAIN BRIEFLY WHAT YOU DID <br> 4) REFRESH THE PAGE AFTERWARDS</b>`,
         downloading_blueprints:'downloading...',
         publish_succes:'Your level is now LIVE!'
     },
