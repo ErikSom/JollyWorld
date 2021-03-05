@@ -25,7 +25,7 @@ export const update = ()=>{
 		fixDef.isSensor = true;
 
 		const targetRadius = (Settings.targetResolution.x / 2) / Settings.PTM * game.editor.editorSettingsObject.physicsCameraSize;
-		fixDef.shape.SetRadius(targetRadius);
+		fixDef.shape.SetRadius(targetRadius / game.editor.editorSettingsObject.cameraZoom);
 		fixture = game.editor.physicsCamera.CreateFixture(fixDef);
 		fixture.isPhysicsCamera = true;
 		game.editor.physicsCamera.cameraZoom = game.editor.editorSettingsObject.cameraZoom;
