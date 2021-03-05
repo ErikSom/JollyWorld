@@ -115,7 +115,7 @@ export const stopEditingGroup = () => {
 		clonedSprite = editor.selectedPhysicsBodies[0].mySprite;
 		editor.updateBodyPosition(clonedSprite.myBody);
 		isBody = true;
-	}else if(editor.selectedPhysicsBodies.length > 0){
+	}else if(editor.selectedTextures.length > 0){
 		clonedSprite = editor.selectedTextures[0];
 	}else{
 		// everything got deleted
@@ -166,12 +166,21 @@ export const stopEditingGroup = () => {
 				editor.deleteObjects([originalTexture]);
 			}
 		} else {
-			editor.updateGraphicGroupShapes(editor.groupEditingObject);
-			editor.groupEditingObject.x -= xDif;
-			editor.groupEditingObject.y -= yDif;
+			// in case we had a body in the group and we removed it so we are left with just a graphic group
+			if(editor.groupEditingObject.myBody){
+				const originalTexture = editor.groupEditingObject.myBody.myTexture;
+				originalTexture.parent.swapChildren(originalTexture, clonedSprite);
+				editor.deleteObjects([originalTexture.myBody]);
+
+				editor.selectedTextures = [];
+			}else{
+				editor.updateGraphicGroupShapes(editor.groupEditingObject);
+				editor.groupEditingObject.x -= xDif;
+				editor.groupEditingObject.y -= yDif;
+				editor.updateObject(editor.groupEditingObject, editor.groupEditingObject.data);
+			}
 		}
 
-		editor.updateObject(editor.groupEditingObject, editor.groupEditingObject.data);
 
 	}else{
 
