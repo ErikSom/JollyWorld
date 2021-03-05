@@ -4502,7 +4502,7 @@ const _B2dEditor = function () {
 				const graphicIndex = graphic.parent.getChildIndex(graphic);
 				if(graphicIndex<= this.groupMinChildIndex) skipGraphic = true;
 			}
-			if (!graphic.data || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
+			if (!graphic.visible || !graphic.data || graphic.data.type === undefined || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
 				skipGraphic = true;
 			}
 
@@ -6747,6 +6747,8 @@ const _B2dEditor = function () {
 		bodyObject.trigger = true;
 		bodyObject.density = 1;
 		bodyObject.collision = 2;
+		bodyObject.transparancy = 1.0;
+		bodyObject.visible = false;
 
 		const body = this.buildBodyFromObj(bodyObject);
 
@@ -7580,16 +7582,16 @@ const _B2dEditor = function () {
 			else innerVerts = [innerVerts];
 
 
-			var a = bodyGroup.mySprite.data.rotation;
+			var a = bodyGroup.GetAngle();
 			var atanO = Math.atan2(centerPoint.y, centerPoint.x);
 			var sqrtO = Math.sqrt(centerPoint.x * centerPoint.x + centerPoint.y * centerPoint.y);
 
 			centerPoint.x = sqrtO * Math.cos(a + atanO);
 			centerPoint.y = sqrtO * Math.sin(a + atanO);
 
-			bodyObject.x += bodyGroup.mySprite.x / this.PTM + centerPoint.x;
-			bodyObject.y += bodyGroup.mySprite.y / this.PTM + centerPoint.y;
-			bodyObject.rotation = bodyGroup.mySprite.rotation;
+			bodyObject.x += bodyGroup.GetPosition().x + centerPoint.x;
+			bodyObject.y += bodyGroup.GetPosition().y + centerPoint.y;
+			bodyObject.rotation = bodyGroup.GetAngle();
 			bodyObject.vertices = innerVerts;
 			bodyObject.colorFill = colorFill[i];
 			bodyObject.colorLine = colorLine[i];
@@ -9314,6 +9316,8 @@ const _B2dEditor = function () {
 		this.selectedPhysicsBodies = [];
 		this.selectedTextures = [];
 		this.selectedPrefabs = {};
+
+		if(this.groupEditing) stopEditingGroup();
 
 		this.selectedBoundingBox = null;
 		this.startSelectionPoint = null;

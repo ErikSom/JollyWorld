@@ -5,7 +5,6 @@ import {
 	editorSettings
 } from './editorSettings';
 
-
 export const startEditingGroup = () => {
 	const editor = game.editor;
 
@@ -32,14 +31,13 @@ export const startEditingGroup = () => {
 		});
 	}
 
-
 	// add black overlay
-	const highestChild = editor.textures.children[editor.groupMinChildIndex];
 	editor.groupEditingBlackOverlay = new PIXI.Graphics();
 	editor.groupEditingBlackOverlay.beginFill(0x000000);
 	editor.groupEditingBlackOverlay.drawRect(-editorSettings.worldSize.width/2, -editorSettings.worldSize.height/2, editorSettings.worldSize.width, editorSettings.worldSize.height);
 	editor.groupEditingBlackOverlay.alpha = 0.3;
-	highestChild.addChild(editor.groupEditingBlackOverlay);
+	editor.groupEditingBlackOverlay.data = {};
+	editor.textures.addChild(editor.groupEditingBlackOverlay);
 
 	// clone object and ungroup
 	editor.copiedJSON = editor.copySelection();

@@ -3512,7 +3512,7 @@
             // Perform tree queries for all moving proxies.
             for (let i = 0; i < this.m_moveCount; ++i) {
                 const queryProxy = this.m_moveBuffer[i];
-                if (queryProxy === null) {
+                if (queryProxy === null || queryProxy._userData === null) { // <----- checking queryProxy._userData === null here fixes my issue
                     continue;
                 }
                 // This is called from box2d.b2DynamicTree::Query when we are gathering pairs.
@@ -3615,7 +3615,7 @@
             ++this.m_moveCount;
         }
         UnBufferMove(proxy) {
-            const i = this.m_moveBuffer.indexOf(proxy);
+            const i = this.m_moveBuffer.findIndex(_proxy => (_proxy && _proxy.m_id === proxy.m_id));
             this.m_moveBuffer[i] = null;
         }
     }
