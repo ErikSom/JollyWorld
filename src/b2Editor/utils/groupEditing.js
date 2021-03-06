@@ -189,8 +189,14 @@ export const stopEditingGroup = () => {
 			// in case we had a body in the group and we removed it so we are left with just a graphic group
 			if(editor.groupEditingObject.myBody){
 				const originalTexture = editor.groupEditingObject.myBody.myTexture;
-				originalTexture.parent.swapChildren(originalTexture, clonedSprite);
-				editor.deleteObjects([originalTexture.myBody]);
+				if(originalTexture){
+					originalTexture.parent.swapChildren(originalTexture, clonedSprite);
+				}else{
+					editor.groupEditingObject.parent.swapChildren(editor.groupEditingObject, clonedSprite);
+				}
+
+				editor.deleteObjects([editor.groupEditingObject.myBody]);
+
 
 				editor.selectedTextures = [];
 			}else{
