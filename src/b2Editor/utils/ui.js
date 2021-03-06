@@ -23,6 +23,7 @@ import {
 } from "../../AssetList";
 import * as emitterManager from '../../utils/EmitterManager';
 import * as SaveManager from '../../utils/SaveManager'
+import * as AudioManager from "../../utils/AudioManager"
 
 
 let toolGUI;
@@ -2105,6 +2106,9 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
     registerDragWindow(errorScreen);
 
     setHighestWindow(errorScreen.domElement);
+
+
+    AudioManager.playSFX('fart', 0.5, 1.0 + 0.4 * Math.random()-0.2);
 
     window.onerror = () => {};
 

@@ -3576,6 +3576,8 @@ const _B2dEditor = function () {
 			// filter joints, we dont want to change depth with them
 			objects = objects.filter(object => (object.mySprite || object.data.type != this.object_JOINT));
 
+			if(objects.length === 0) return;
+
 			for (i = 0; i < objects.length; i++) {
 
 				if (objects[i].mySprite != undefined) {
