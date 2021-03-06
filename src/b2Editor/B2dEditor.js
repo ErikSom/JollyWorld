@@ -3807,8 +3807,10 @@ const _B2dEditor = function () {
 		var childIndex = Number.POSITIVE_INFINITY;
 		for (var i = 0; i < objects.length; i++) {
 			var sprite = (objects[i].mySprite) ? objects[i].mySprite : objects[i];
-			var spriteIndex = sprite.parent.getChildIndex(sprite);
-			if (spriteIndex < childIndex) childIndex = spriteIndex;
+			if(sprite.parent){
+				var spriteIndex = sprite.parent.getChildIndex(sprite);
+				if (spriteIndex < childIndex) childIndex = spriteIndex;
+			}
 		}
 		return childIndex;
 	}
