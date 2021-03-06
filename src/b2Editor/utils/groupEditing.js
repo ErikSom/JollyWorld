@@ -134,36 +134,56 @@ export const stopEditingGroup = () => {
 		// we then update the visuals for the group
 
 		if(isBody){
-			editor.updateBodyFixtures(editor.groupEditingObject.myBody);
-			editor.updateBodyShapes(editor.groupEditingObject.myBody);
-			editor.groupEditingObject.myBody.ResetMassData();
+			// if we go from a body to a body
+			if(editor.groupEditingObject.myBody){
+				editor.updateBodyFixtures(editor.groupEditingObject.myBody);
+				editor.updateBodyShapes(editor.groupEditingObject.myBody);
+				editor.groupEditingObject.myBody.ResetMassData();
 
-			const position = editor.groupEditingObject.myBody.GetPosition();
-			position.x -= xDif;
-			position.y -= yDif;
-			editor.groupEditingObject.myBody.SetPosition(position);
-			const originalTexture = editor.groupEditingObject.myBody.myTexture;
-			const clonedTexture = clonedSprite.myBody.myTexture;
-			if(clonedTexture){
+				const position = editor.groupEditingObject.myBody.GetPosition();
+				position.x -= xDif;
+				position.y -= yDif;
+				editor.groupEditingObject.myBody.SetPosition(position);
+				const originalTexture = editor.groupEditingObject.myBody.myTexture;
+				const clonedTexture = clonedSprite.myBody.myTexture;
+				if(clonedTexture){
 
-				if(originalTexture){
-					delete clonedTexture.myBody.myTexture;
-					clonedTexture.data.ID = originalTexture.data.ID;
-					editor.groupEditingObject.myBody.myTexture = clonedTexture;
-					clonedTexture.data.bodyID = originalTexture.data.bodyID;
-					clonedTexture.myBody = editor.groupEditingObject.myBody;
+					if(originalTexture){
+						delete clonedTexture.myBody.myTexture;
+						clonedTexture.data.ID = originalTexture.data.ID;
+						editor.groupEditingObject.myBody.myTexture = clonedTexture;
+						clonedTexture.data.bodyID = originalTexture.data.bodyID;
+						clonedTexture.myBody = editor.groupEditingObject.myBody;
 
-					originalTexture.parent.swapChildren(originalTexture, clonedTexture);
+						originalTexture.parent.swapChildren(originalTexture, clonedTexture);
+						editor.deleteObjects([originalTexture]);
+					}else{
+						delete clonedTexture.myBody.myTexture;
+						editor.groupEditingObject.parent.addChildAt(clonedTexture, editor.groupMinChildIndex+1);
+						editor.setTextureToBody(editor.groupEditingObject.myBody, clonedTexture, clonedTexture.data.texturePositionOffsetLength, clonedTexture.data.texturePositionOffsetAngle, clonedTexture.data.textureAngleOffset);
+					}
+				} else if(originalTexture){
+					editor.groupEditingObject.renderable = true;
+					editor.removeTextureFromBody(editor.groupEditingObject.myBody, originalTexture);
 					editor.deleteObjects([originalTexture]);
-				}else{
-					delete clonedTexture.myBody.myTexture;
-					editor.groupEditingObject.parent.addChildAt(clonedTexture, editor.groupMinChildIndex+1);
-					editor.setTextureToBody(editor.groupEditingObject.myBody, clonedTexture, clonedTexture.data.texturePositionOffsetLength, clonedTexture.data.texturePositionOffsetAngle, clonedTexture.data.textureAngleOffset);
 				}
-			} else if(originalTexture){
-				editor.groupEditingObject.renderable = true;
-				editor.removeTextureFromBody(editor.groupEditingObject.myBody, originalTexture);
+			}else{
+				// we go from a graphic to a body
+
+				const originalTexture = editor.groupEditingObject;
+				originalTexture.parent.swapChildren(originalTexture, clonedSprite);
 				editor.deleteObjects([originalTexture]);
+
+				editor.selectedPhysicsBodies = [];
+
+				const clonedTexture = clonedSprite.myBody.myTexture;
+
+				if(clonedTexture){
+					const targetIndex = clonedSprite.parent.getChildIndex(clonedSprite);
+					clonedSprite.parent.addChildAt(clonedTexture, targetIndex+1);
+				}
+
+
 			}
 		} else {
 			// in case we had a body in the group and we removed it so we are left with just a graphic group
@@ -181,6 +201,7 @@ export const stopEditingGroup = () => {
 			}
 		}
 
+		// TO DO GRAPHIC GROUP TO BODY GROUP WITH GRAPHIC
 
 	}else{
 
