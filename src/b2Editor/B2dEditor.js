@@ -3621,7 +3621,9 @@ const _B2dEditor = function () {
 			if(nextChild.data.prefabInstanceName){
 				nextChild = this.retreivePrefabChildAt(nextChild, obj);
 			}else if(nextChild.data.type === this.object_BODY){
-				if(obj> 0 && nextChild.myBody.myTexture) nextChild = nextChild.myBody.myTexture;
+				if(obj> 0 && nextChild.myBody.myTexture){
+					 nextChild = nextChild.myBody.myTexture;
+				}
 			}
 
 			nextIndex = nextChild.parent.getChildIndex(nextChild);
@@ -3639,22 +3641,31 @@ const _B2dEditor = function () {
 
 			depthArray.forEach(child=> {
 				if(obj) depthArray[0].parent.addChildAt(child, nextIndex);
-				if(child.myBody && child.myBody.myTexture){
-					depthArray[0].parent.addChildAt(child.myBody.myTexture, nextIndex);
-				}
 				if(!obj) depthArray[0].parent.addChildAt(child, nextIndex);
 			});
 
 			// post process joints to make sure they are always on top
 			for (i = 0; i < jointArray.length; i++) {
 				const joint = jointArray[i];
-				const jointIndex = joint.parent.getChildIndex(joint);
+				let jointIndex = joint.parent.getChildIndex(joint);
 				joint.bodies.forEach(body => {
-					if (body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite) > jointIndex) {
-						joint.parent.swapChildren(joint, body.mySprite);
-					}
-					if (body.myTexture && body.myTexture.parent.getChildIndex(body.myTexture) > jointIndex) {
-						joint.parent.swapChildren(joint, body.myTexture);
+					if(body.mySprite && body.mySprite.data.prefabInstanceName){
+						const highestSprite = this.retreivePrefabChildAt(body.mySprite, true);
+						const highestIndex = highestSprite.parent.getChildIndex(highestSprite);
+
+						if(jointIndex< highestIndex){
+							joint.parent.addChildAt(joint, highestIndex);
+							jointIndex = joint.parent.getChildIndex(joint);
+						}
+					}else{
+						if (body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite) > jointIndex) {
+							joint.parent.swapChildren(joint, body.mySprite);
+							jointIndex = joint.parent.getChildIndex(joint);
+						}
+						if (body.myTexture && body.myTexture.parent.getChildIndex(body.myTexture) > jointIndex) {
+							joint.parent.swapChildren(joint, body.myTexture);
+							jointIndex = joint.parent.getChildIndex(joint);
+						}
 					}
 				});
 			}
@@ -7967,7 +7978,11 @@ const _B2dEditor = function () {
 				bodies = [this.selectedPhysicsBodies[0], this.selectedPhysicsBodies[1]];
 			}
 
-			if (bodies.length == 0) return;
+			// filter anything that is not allowed
+			// NO TRIGGERS
+			if(bodies[0].mySprite.data.type !== this.object_BODY || (bodies[1] && bodies[1].mySprite.data.type !== this.object_BODY)) return;
+			// NO PREFABS WITH PREFABS
+			if(bodies[0].mySprite.data.prefabInstanceName &&  (bodies[1] && bodies[1].mySprite.data.prefabInstanceName)) return;
 
 			const bodyAVehicle = bodies[0] && this.retrieveClassFromBody(bodies[0]) && this.retrieveClassFromBody(bodies[0]).isVehicle;
 			const bodyBVehicle = bodies[1] && this.retrieveClassFromBody(bodies[1]) && this.retrieveClassFromBody(bodies[1]).isVehicle;
