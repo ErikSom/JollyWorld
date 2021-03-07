@@ -662,8 +662,8 @@ function UIManager() {
             }
 
         })
-
-        window.location.hash = `${game.currentLevelData.id}/`
+        document.title = 'JollyWorld - '+levelTitle;
+        history.replaceState({}, document.title, `?lvl=${game.currentLevelData.id}`)
 
     }
 

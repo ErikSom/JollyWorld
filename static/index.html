@@ -150,7 +150,10 @@
 
 <body>
     <script>
-        var uidHash = location.hash.split('/')[0].substr(1);
+        var urlParams = new URLSearchParams(window.location.search);
+        var uidHash = urlParams.get('lvl');
+
+
         if(uidHash && uidHash.length===21){
 			fetch('https://api.jollyworld.app/level/'+uidHash, {method: 'GET'})
 			.then(result => result.json())

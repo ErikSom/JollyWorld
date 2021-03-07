@@ -258,7 +258,9 @@ function Game() {
         this.editor.contactCallBackListener = this.gameContactListener;
 
 
-        const uidHash = location.hash.split('/')[0].substr(1);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const uidHash = urlParams.get('lvl');
 
         this.openMainMenu();
         this.ui.showSettingsButtons();
@@ -267,10 +269,10 @@ function Game() {
         if(uidHash && uidHash.length===21){
             ui.disableMainMenu(true);
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
-
                 this.loadPublishedLevelData(levelData);
             }).catch(_err =>{
                 location.hash = '';
+                history.replaceState({}, document.title, '')
                 ui.disableMainMenu(false);
             });
         }
@@ -313,12 +315,6 @@ function Game() {
             }, Settings.iosReflowInterval);
         }
 
-        window.addEventListener('hashchange', ()=>{
-            const id = location.hash.split('/')[0].substr(1);
-            if(id.length === 21  && this.currentLevelData && id !== this.currentLevelData.id){
-                location.reload();
-            }
-        })
         window.addEventListener('paste', (e)=> {
             try{
             if(e.clipboardData == false) return false;
