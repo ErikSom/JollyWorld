@@ -8,8 +8,8 @@ export var renderArea = {
     height: 400
 };
 export var cellSize = {
-    x: 200,
-    y: 200
+    x: 400,
+    y: 400
 };
 export const marginCells = 1;
 
@@ -42,6 +42,12 @@ export const setEnabled = (bool) => {
     })
 
     enabled = bool;
+}
+
+export const disableCulling = function(sprite){
+    sprite.ignoreCulling = true;
+    removeGraphicFromCells(sprite);
+    sprite.renderable = true;
 }
 
 export const init = function (_container, _camera) {

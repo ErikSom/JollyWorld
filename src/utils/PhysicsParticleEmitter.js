@@ -4,6 +4,8 @@ import {
 	game
 } from "../Game";
 import { Settings } from '../Settings';
+import { disableCulling } from '../utils/PIXICuller';
+
 
 const poolSize = 200;
 const spritePool = [];
@@ -26,6 +28,7 @@ export const init = ()=> {
 	fixDef.filter.maskBits = game.editor.MASKBIT_NORMAL | game.editor.MASKBIT_FIXED | game.editor.MASKBIT_CHARACTER; //game.editor.MASKBIT_EVERYTHING_BUT_US | game.editor.MASKBIT_ONLY_US;
 	for(let i = 0; i<poolSize; i++){
 		const sprite = new PIXI.Sprite(PIXI.Texture.from('Gore_Meat10000'));
+		disableCulling(sprite);
 		sprite.data = {};
 		spritePool.push(sprite);
 	}
@@ -47,6 +50,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 			body.mySprite = sprite;
 
 			game.myEffectsContainer.addChild(sprite);
+			disableCulling(sprite);
 			activeParticles.push(sprite);
 		}else{
 			// we grab a random active particle

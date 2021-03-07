@@ -42,7 +42,7 @@ import {
 import { hexToNumberHex, JSONStringify } from "./utils/formatString";
 import LZString from 'lz-string'
 import { copyStringToClipboard } from "./utils/copyToClipboard";
-import { removeGraphicFromCells } from '../utils/PIXICuller';
+import { disableCulling } from '../utils/PIXICuller';
 import { hashName } from "../AssetList";
 
 import { attachGraphicsAPIMixin } from './pixiHack'
@@ -6931,6 +6931,8 @@ const _B2dEditor = function () {
 		body.mySprite.y = body.GetPosition().y * this.PTM;
 		body.mySprite.rotation = body.GetAngle();
 
+		if(!obj.fixed) disableCulling(body.mySprite);
+
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
 		this.setBodyCollision(body, obj.collision);
@@ -8203,7 +8205,9 @@ const _B2dEditor = function () {
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
 
-
+		if(body.mySprite.ignoreCulling){
+			disableCulling(texture);
+		}
 		//body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
@@ -9577,8 +9581,7 @@ const _B2dEditor = function () {
 			if(!sprite.myBody && (sprite.data.parallax || sprite.data.repeatTeleportX || sprite.data.repeatTeleportY)){
 				sprite.parallaxStartPosition = sprite.position.clone();
 				// disable cull for this sprite.
-				sprite.ignoreCulling = true;
-				removeGraphicFromCells(sprite);
+				disableCulling(sprite);
 				this.parallaxObject.push(sprite);
 			}
 

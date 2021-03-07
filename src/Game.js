@@ -260,7 +260,9 @@ function Game() {
 
 
         const urlParams = new URLSearchParams(window.location.search);
-        const uidHash = urlParams.get('lvl');
+        let uidHash = urlParams.get('lvl');
+
+        if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 
         this.openMainMenu();
         this.ui.showSettingsButtons();
