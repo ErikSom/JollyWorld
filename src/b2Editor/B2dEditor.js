@@ -13,6 +13,7 @@ import * as dat from "../../libs/dat.gui";
 import * as SaveManager from "../utils/SaveManager";
 import * as FPSManager from '../utils/FPSManager';
 import * as AudioManager from '../utils/AudioManager';
+import * as jointTriggerLayer from './utils/jointTriggerLayer'
 
 import * as DS from './utils/DecalSystem';
 import * as camera from './utils/camera';
@@ -2849,7 +2850,8 @@ const _B2dEditor = function () {
 					y: this.mousePosWorld.y
 				});
 			} else if (this.selectedTool == this.tool_JOINTS) {
-				this.attachJointPlaceHolder();
+				const joint = this.attachJointPlaceHolder();
+				if(joint) jointTriggerLayer.add(joint);
 			} else if (this.selectedTool == this.tool_TRIGGER) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 				var triggerObject = new this.triggerObject;
@@ -3403,8 +3405,7 @@ const _B2dEditor = function () {
 	this.clickOnTransformGUI = function(){
 		const clickedChild =  this.collidingWithTransformGui();
 		if([this.transformGUI.layerUp, this.transformGUI.layerDown].includes(clickedChild)){
-			const depthTransforms = this.shiftDown ? this.textures.children.length : 1;
-			for(let i = 0; i<depthTransforms; i++) this.applyToSelectedObjects(this.TRANSFORM_DEPTH, clickedChild===this.transformGUI.layerUp);
+			this.applyToSelectedObjects(this.TRANSFORM_DEPTH, clickedChild===this.transformGUI.layerUp);
 			this.checkForTooltip();
 		} else if([this.transformGUI.mirrorX, this.transformGUI.mirrorY].includes(clickedChild)){
 			this.applyToSelectedObjects(this.TRANSFORM_MIRROR, clickedChild===this.transformGUI.mirrorX);
@@ -3627,6 +3628,8 @@ const _B2dEditor = function () {
 			}
 
 			nextIndex = nextChild.parent.getChildIndex(nextChild);
+			if(this.shiftDown && obj) nextIndex = this.textures.children.length;
+			else if(this.shiftDown && !obj) nextIndex = 0;
 
 			if(this.groupEditing){
 				nextIndex = Math.max(this.groupMinChildIndex+1, nextIndex);
@@ -3645,30 +3648,7 @@ const _B2dEditor = function () {
 			});
 
 			// post process joints to make sure they are always on top
-			for (i = 0; i < jointArray.length; i++) {
-				const joint = jointArray[i];
-				let jointIndex = joint.parent.getChildIndex(joint);
-				joint.bodies.forEach(body => {
-					if(body.mySprite && body.mySprite.data.prefabInstanceName){
-						const highestSprite = this.retreivePrefabChildAt(body.mySprite, true);
-						const highestIndex = highestSprite.parent.getChildIndex(highestSprite);
-
-						if(jointIndex< highestIndex){
-							joint.parent.addChildAt(joint, highestIndex);
-							jointIndex = joint.parent.getChildIndex(joint);
-						}
-					}else{
-						if (body.mySprite && body.mySprite.parent.getChildIndex(body.mySprite) > jointIndex) {
-							joint.parent.swapChildren(joint, body.mySprite);
-							jointIndex = joint.parent.getChildIndex(joint);
-						}
-						if (body.myTexture && body.myTexture.parent.getChildIndex(body.myTexture) > jointIndex) {
-							joint.parent.swapChildren(joint, body.myTexture);
-							jointIndex = joint.parent.getChildIndex(joint);
-						}
-					}
-				});
-			}
+			jointTriggerLayer.bringToFront();
 		} else if (transformType == this.TRANSFORM_FORCEDEPTH) {
 			objects = this.sortObjectsByIndex(objects);
 			for (i = 0; i < objects.length; i++) {
@@ -4218,7 +4198,8 @@ const _B2dEditor = function () {
 			this.selectTool(this.tool_SELECT);
 		} else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
-				this.attachJointPlaceHolder();
+				const joint = this.attachJointPlaceHolder();
+				if(joint) jointTriggerLayer.add(joint);
 			} else this.selectTool(this.tool_JOINTS);
 		} else if (e.keyCode == 88) { // x
 			if (e.ctrlKey || e.metaKey) {
@@ -4374,8 +4355,7 @@ const _B2dEditor = function () {
 			}
 			if(this.selectedTool === this.tool_SELECT){
 				if ((e.ctrlKey || e.metaKey) && (e.keyCode === 38 || e.keyCode === 40)) {
-					const depthTransforms = this.shiftDown ? this.textures.children.length : 1;
-					for(let i = 0; i<depthTransforms; i++) this.applyToSelectedObjects(this.TRANSFORM_DEPTH, e.keyCode === 38);
+					this.applyToSelectedObjects(this.TRANSFORM_DEPTH, e.keyCode === 38);
 				}else{
 					this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 						x: movX,
@@ -4427,6 +4407,8 @@ const _B2dEditor = function () {
 				}
 			}
 
+		} else if (e.keyCode == 9) { // TAB
+			jointTriggerLayer.toggleHide();
 		}
 		this.storeUndoMovementDebounced();
 	}
@@ -9253,9 +9235,15 @@ const _B2dEditor = function () {
 					if(destroyMe){
 						prefabOffset++;
 					}else{
-						if (this.editing) worldObject = this.attachJointPlaceHolder(obj);
+						if (this.editing){
+							worldObject = this.attachJointPlaceHolder(obj);
+							if(!prefabInstanceName) jointTriggerLayer.add(worldObject);
+						}
 						else worldObject = this.attachJoint(obj);
 						createdObjects._joints.push(worldObject);
+
+
+
 					}
 				} else if (obj.type == this.object_PREFAB) {
 					if(game.gameState != game.GAMESTATE_EDITOR && obj.settings.selectedVehicle && game.selectedVehicle){
@@ -9312,6 +9300,9 @@ const _B2dEditor = function () {
 						}
 					}
 					worldObject = this.buildTriggerFromObj(obj);
+
+					if(!prefabInstanceName) jointTriggerLayer.add(worldObject.mySprite);
+
 					createdObjects._bodies.push(worldObject);
 				} else if (obj.type == this.object_TEXT) {
 					if (obj.bodyID != undefined) {
@@ -9394,6 +9385,8 @@ const _B2dEditor = function () {
 
 	this.resetEditor = function () {
 		camera.resetToStoredPosition();
+
+		jointTriggerLayer.reset();
 
 		this.editing = true;
 		this.selectTool(this.tool_SELECT);
