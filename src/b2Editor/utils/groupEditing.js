@@ -84,13 +84,29 @@ export const stopEditingGroup = () => {
 	editor.selectedPhysicsBodies = [];
 	editor.selectedTextures = [];
 
+
+	// we ungroup any groups created
+	for(let i = editor.groupMinChildIndex+1; i< editor.textures.children.length; i++){
+		const sprite = editor.textures.children[i];
+		if(sprite.data.type === editor.object_BODY){
+			editor.selectedPhysicsBodies.push(sprite.myBody)
+		}else{
+			// dont push textures that are grouped inside a group -_-
+			if(!sprite.myBody) editor.selectedTextures.push(sprite);
+		}
+	}
+	// first ungroup any groups created
+	editor.ungroupObjects();
+
+
 	// we regroup all the ungrouped shapes
 	for(let i = editor.groupMinChildIndex+1; i< editor.textures.children.length; i++){
 		const sprite = editor.textures.children[i];
 		if(sprite.data.type === editor.object_BODY){
 			editor.selectedPhysicsBodies.push(sprite.myBody)
 		}else{
-			editor.selectedTextures.push(sprite);
+			// dont push textures that are grouped inside a group -_-
+			if(!sprite.myBody) editor.selectedTextures.push(sprite);
 		}
 	}
 	
