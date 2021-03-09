@@ -7962,6 +7962,7 @@ const _B2dEditor = function () {
 				bodies = [this.selectedPhysicsBodies[0], this.selectedPhysicsBodies[1]];
 			}
 
+			if(!bodies[0]) return;
 			// filter anything that is not allowed
 			// NO TRIGGERS
 			if(bodies[0].mySprite.data.type !== this.object_BODY || (bodies[1] && bodies[1].mySprite.data.type !== this.object_BODY)) return;
