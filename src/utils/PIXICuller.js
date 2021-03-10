@@ -48,6 +48,7 @@ export const disableCulling = function(sprite){
     sprite.ignoreCulling = true;
     removeGraphicFromCells(sprite);
     sprite.renderable = true;
+    if(!sprite.forceRenderable) sprite.renderable = false;
 }
 
 export const init = function (_container, _camera) {
@@ -278,6 +279,7 @@ const updateCells = function () {
 const setGraphicsVisible = function (arr) {
     for (let i = settingsIndexCount; i < arr.length; i++) {
         arr[i].renderable = (arr[i]._cullingVisibleCells > 0);
+        if(!arr[i].forceRenderable) arr[i].renderable = false;
     }
 }
 

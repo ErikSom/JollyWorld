@@ -4372,46 +4372,48 @@ const _B2dEditor = function () {
 				}
 			}else if (this.selectedTool === this.tool_VERTICEEDITING){
 		
-				const dA = Math.atan2(movY, movX)-this.verticeEditingSprite.rotation;
-				const dL = Math.sqrt(movX*movX+movY*movY);
-				const aMovX = dL*Math.cos(dA);
-				const aMovY = dL*Math.sin(dA);
+				if(this.verticeEditingSprite.selectedVertice){
+					const dA = Math.atan2(movY, movX)-this.verticeEditingSprite.rotation;
+					const dL = Math.sqrt(movX*movX+movY*movY);
+					const aMovX = dL*Math.cos(dA);
+					const aMovY = dL*Math.sin(dA);
 
-				const spriteData = this.verticeEditingSprite.data;
-				let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
-
-				if(spriteData.type === this.object_BODY){
-					if(Array.isArray(vertices[0])) vertices = vertices[0]
-				}
-
-				this.verticeEditingSprite.selectedVertice.forEach(verticeIndex=> {
-					const vertice = vertices[verticeIndex];
-					let previousVertice = vertices[verticeIndex-1];
-					if(verticeIndex === 0) previousVertice = vertices[vertices.length-1];
+					const spriteData = this.verticeEditingSprite.data;
+					let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
 
 					if(spriteData.type === this.object_BODY){
-						vertice.x += aMovX / Settings.PTM;
-						vertice.y += aMovY / Settings.PTM;
+						if(Array.isArray(vertices[0])) vertices = vertices[0]
+					}
+
+					this.verticeEditingSprite.selectedVertice.forEach(verticeIndex=> {
+						const vertice = vertices[verticeIndex];
+						let previousVertice = vertices[verticeIndex-1];
+						if(verticeIndex === 0) previousVertice = vertices[vertices.length-1];
+
+						if(spriteData.type === this.object_BODY){
+							vertice.x += aMovX / Settings.PTM;
+							vertice.y += aMovY / Settings.PTM;
+						}else{
+							vertice.x += aMovX;
+							vertice.y += aMovY;
+						}
+
+						if(vertice.point1){
+							vertice.point1.x += aMovX;
+							vertice.point1.y += aMovY;
+						}
+						if(previousVertice.point2){
+							previousVertice.point2.x += aMovX;
+							previousVertice.point2.y += aMovY;
+						}
+					});
+
+					if(spriteData.type === this.object_BODY){
+						this.updateBodyFixtures(this.verticeEditingSprite.myBody);
+						this.updateBodyShapes(this.verticeEditingSprite.myBody);
 					}else{
-						vertice.x += aMovX;
-						vertice.y += aMovY;
+						this.updateGraphicShapes(this.verticeEditingSprite);
 					}
-
-					if(vertice.point1){
-						vertice.point1.x += aMovX;
-						vertice.point1.y += aMovY;
-					}
-					if(previousVertice.point2){
-						previousVertice.point2.x += aMovX;
-						previousVertice.point2.y += aMovY;
-					}
-				});
-
-				if(spriteData.type === this.object_BODY){
-					this.updateBodyFixtures(this.verticeEditingSprite.myBody);
-					this.updateBodyShapes(this.verticeEditingSprite.myBody);
-				}else{
-					this.updateGraphicShapes(this.verticeEditingSprite);
 				}
 			}
 
@@ -4507,7 +4509,7 @@ const _B2dEditor = function () {
 				const graphicIndex = graphic.parent.getChildIndex(graphic);
 				if(graphicIndex<= this.groupMinChildIndex) skipGraphic = true;
 			}
-			if (!graphic.visible || !graphic.data || graphic.data.type === undefined || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
+			if (!graphic.data || graphic.data.type === undefined || Boolean(graphic.data.lockselection) != this.altDown || graphic.data.type === this.object_TRIGGER) {
 				skipGraphic = true;
 			}
 
@@ -5317,7 +5319,8 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.visible = controller.targetValue;
-							sprite.visible = controller.targetValue;
+							sprite.renderable = controller.targetValue;
+							sprite.forceRenderable = controller.targetValue;
 						}
 					} else if(controller.property == "mirrored"){
 						for (j = 0; j < this.selectedTextures.length; j++) {
@@ -6794,7 +6797,8 @@ const _B2dEditor = function () {
 		container.rotation = obj.rotation;
 		container.data = obj;
 		container.alpha = obj.transparancy;
-		container.visible = obj.visible;
+		container.renderable = obj.visible;
+		container.forceRenderable = obj.visible;
 
 		container.width = container.width * obj.scaleX;
 		container.height = container.height * obj.scaleY;
@@ -6860,7 +6864,8 @@ const _B2dEditor = function () {
 		container.data = obj;
 
 		container.alpha = obj.transparancy;
-		container.visible = obj.visible;
+		container.renderable = obj.visible;
+		container.forceRenderable = obj.visible;
 
 		if (container.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
@@ -6959,7 +6964,8 @@ const _B2dEditor = function () {
 		container.x = obj.x;
 		container.y = obj.y;
 		container.rotation = obj.rotation;
-		container.visible = obj.visible;
+		container.renderable = obj.visible;
+		container.forceRenderable = obj.visible;
 
 		var originalGraphic = new PIXI.Graphics();
 		container.addChild(originalGraphic);
@@ -6999,7 +7005,8 @@ const _B2dEditor = function () {
 		}
 
 		graphic.alpha = obj.transparancy;
-		graphic.visible = obj.visible;
+		graphic.renderable = obj.visible;
+		graphic.forceRenderable = obj.visible;
 
 
 		this.addObjectToLookupGroups(graphic, graphic.data);
@@ -7021,7 +7028,8 @@ const _B2dEditor = function () {
 		}
 
 		graphic.alpha = obj.transparancy;
-		graphic.visible = obj.visible;
+		graphic.renderable = obj.visible;
+		graphic.forceRenderable = obj.visible;
 		graphic.scale.x = obj.mirrored ? -1 : 1;
 
 		this.initAnimation(graphic);
