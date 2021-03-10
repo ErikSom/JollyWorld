@@ -178,9 +178,15 @@ export const doAction = function (actionData, target) {
             break;
         case "SetVisibility":
             if (target.myBody) {
-                if(target.myBody.myTexture) target.myBody.myTexture.visible = actionData.setVisible;
+                if(target.myBody.myTexture){
+                    target.myBody.myTexture.renderable = actionData.setVisible;
+                    target.myBody.myTexture.forceRenderable = actionData.setVisible;
+                }
+                target.visible = actionData.setVisible;
+            }else{
+                target.renderable = actionData.setVisible;
+                target.forceRenderable = actionData.setVisible;
             }
-            target.visible = actionData.setVisible;
             if(actionData.toggle) actionData.setVisible = !actionData.setVisible;
             break;
         case "MotorEnabled":
