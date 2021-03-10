@@ -14,6 +14,7 @@ import {
 } from "../../Game";
 import { editorSettings } from "../utils/editorSettings";
 import * as drawing from '../utils/drawing'
+import * as AudioManager from '../../utils/AudioManager'
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -108,7 +109,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed", "PlaySFX"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -318,12 +319,16 @@ export const doAction = function (actionData, target) {
         case "SetCollision":
             if(target.myBody) game.editor.setBodyCollision(target.myBody, [Settings.collisionTypes.indexOf(actionData.collision)]);
         break;
+        case "PlaySFX":
+            playTriggerSound(actionData, target.trigger.GetPosition());
+        break
     }
 }
 export const guitype_MINMAX = 0;
 export const guitype_LIST = 1;
 export const guitype_BOOL = 2;
 export const guitype_UNIQUE_BOOL = 3;
+export const guitype_FUNCTION = 4;
 
 export const actionDictionary = {
     //*** IMPULSE ***/
@@ -792,6 +797,55 @@ export const actionDictionary = {
         },
     },
     /*******************/
+    actionObject_PlaySFX: {
+        type: 'PlaySFX',
+        file: '',
+        test: 'function',
+        stop: 'function',
+        volume: 1.0,
+        local: false,
+        pitch:1.0,
+        randomPitchOffset:0,
+    },
+    actionOptions_PlaySFX: {
+        file: {
+            type: guitype_LIST,
+            items: AudioManager.getAvailableAudioSprites()
+        },
+        volume: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 2.0,
+            value: 1.0,
+            step: 0.1,
+        },
+        local: {
+            type: guitype_BOOL,
+        },
+        pitch: {
+            type: guitype_MINMAX,
+            min: 0.1,
+            max: 4.0,
+            value: 1.0,
+            step: 0.1,
+        },
+        randomPitchOffset: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 1.0,
+            value: 0,
+            step: 0.1,
+        },
+        test: {
+            type: guitype_FUNCTION,
+            function: action =>{playTriggerSound(action);}
+        },
+        stop: {
+            type: guitype_FUNCTION,
+            function: action =>{AudioManager.stopAllSounds()}
+        }
+    },
+    /******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -1001,11 +1055,15 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 const addActionGUIToFolder = (action, actionString, actionFolder, targetID, actionID) =>{
     let actionOptions = getActionOptions(action.type);
     let actionVarString;
+    console.log(actionOptions);
+
     for (let key in action) {
         let actionController;
+        console.log(key);
         if (action.hasOwnProperty(key) && key != "type") {
             actionVarString = `${actionString}_${key}`;
             ui.editorGUI.editData[actionVarString] = action[key];
+
 
             switch (actionOptions[key].type) {
                 case guitype_MINMAX:
@@ -1043,6 +1101,22 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         this.triggerActionID = actionID;
                         if(actionOptions[key].type === guitype_UNIQUE_BOOL) this.forceUniqueBool = true;
                     }.bind(actionController));
+                    break;
+                case guitype_FUNCTION:
+                    ui.editorGUI.editData[actionVarString] = ()=>{actionOptions[key].function(action)};
+                    actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
+
+
+                    switch(key){
+                        case 'test':
+                            actionController.name('test sound');
+                        break;
+                        case 'stop':
+                            actionController.name('stop sound');
+                        break;
+                        default:
+                            actionController.name(key);
+                    }
                     break;
             }
 
@@ -1365,6 +1439,12 @@ export const removeTargetFromTrigger = function (_trigger, target) {
             }
         }
     }
+}
+
+const playTriggerSound = (data, position) => {
+    const pos = data.local ? position : null;
+    const pitch = data.pitch + Math.random()*(data.randomPitchOffset)-data.randomPitchOffset/2;
+    AudioManager.playSFX(data.file, data.volume, pitch, pos);
 }
 
 const pixiPosition = new PIXI.Point();
