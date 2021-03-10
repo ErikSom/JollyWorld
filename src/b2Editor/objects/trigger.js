@@ -1444,7 +1444,7 @@ export const removeTargetFromTrigger = function (_trigger, target) {
 const playTriggerSound = (data, position) => {
     const pos = data.local ? position : null;
     const pitch = data.pitch + Math.random()*(data.randomPitchOffset)-data.randomPitchOffset/2;
-    AudioManager.playSFX(data.file, data.volume, pitch, pos);
+    AudioManager.playSFX(data.file, data.volume * 0.3, pitch, pos);
 }
 
 const pixiPosition = new PIXI.Point();

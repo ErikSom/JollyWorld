@@ -4038,7 +4038,6 @@ const _B2dEditor = function () {
 
 						if(mouseVertice>=0){
 							const vertice = this.verticeEditingSprite.data.vertices[mouseVertice];
-							const angle = Math.atan2(vertice.y, vertice.x) - Math.PI/2
 
 
 							let previousVertice = this.verticeEditingSprite.data.vertices[mouseVertice-1];
@@ -4047,16 +4046,23 @@ const _B2dEditor = function () {
 							let nextVertice = this.verticeEditingSprite.data.vertices[mouseVertice+1];
 							if(mouseVertice === this.verticeEditingSprite.data.vertices.length-1) nextVertice = this.verticeEditingSprite.data.vertices[0];
 
+							const dx = nextVertice.x-previousVertice.x;
+							const dy = nextVertice.y-previousVertice.y;
+							const angle = Math.atan2(dy, dx);
 
-							const defaultDistance = Settings.handleClosestDistance*4;
-							if(!vertice.point1 || (Math.abs(vertice.x-vertice.point1.x < Settings.handleClosestDistance) && Math.abs(vertice.y-vertice.point1.y < Settings.handleClosestDistance))){
+
+							console.log(nextVertice, previousVertice);
+
+							const defaultDistance = Settings.handleClosestDistance*8;
+
+							const noPoint1 = !vertice.point1 || (Math.abs(vertice.x-vertice.point1.x) < Settings.handleClosestDistance && Math.abs(vertice.y-vertice.point1.y) < Settings.handleClosestDistance);
+							const noPoint2 = !previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x) < Settings.handleClosestDistance && Math.abs(vertice.y-previousVertice.point2.y) < Settings.handleClosestDistance);
+
+							if(noPoint1 || noPoint2 || true){
 								vertice.point1 = {x:vertice.x+defaultDistance*Math.cos(angle), y:vertice.y+defaultDistance*Math.sin(angle)}
 								if(!vertice.point2){
 									vertice.point2 = {x:nextVertice.x, y:nextVertice.y}
 								}
-							}
-
-							if(!previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x < Settings.handleClosestDistance) && Math.abs(vertice.y-previousVertice.point2.y < Settings.handleClosestDistance))){
 								previousVertice.point2 = {x:vertice.x-defaultDistance*Math.cos(angle), y:vertice.y-defaultDistance*Math.sin(angle)}
 								if(!previousVertice.point1){
 									previousVertice.point1 = {x:previousVertice.x, y:previousVertice.y}
@@ -4304,6 +4310,8 @@ const _B2dEditor = function () {
 					delete this.verticeEditingSprite.selectedVertice;
 				}else{
 					if(this.verticeEditingSprite.selectedVertice[0] === vertices.length) this.verticeEditingSprite.selectedVertice[0] = this.verticeEditingSprite.selectedVertice[0]-1;
+					delete this.verticeEditingSprite.selectedVerticePoint;
+					delete this.verticeEditingSprite.selectedVerticePointIndex;
 				}
 			}
 			if(this.selectedTool === this.tool_SELECT) this.deleteSelection();
