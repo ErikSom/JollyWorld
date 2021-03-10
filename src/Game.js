@@ -575,7 +575,9 @@ function Game() {
 
         }
         if(this.gameState == this.GAMESTATE_NORMALPLAY){
-            if((Key.isPressed(Key.P) || Key.isPressed(Key.R) || Key.isPressed(Key.ESCAPE) || Key.isPressed(Key.TAB)) && this.run){
+            if(Key.isDown(Key.R) && Key.isDown(Key.SHIFT)){
+                this.resetWorld(false);
+            }else if((Key.isPressed(Key.P) || Key.isPressed(Key.R) || Key.isPressed(Key.ESCAPE) || Key.isPressed(Key.TAB)) && this.run){
                 if(!this.pause) this.pauseGame();
             }
         }
@@ -865,12 +867,12 @@ function Game() {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(Date.now(), this.levelStartTime);
-            const s = `${d.hh}:${d.mm}:${d.ss}:${d.ms}`;
+            const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();
-                ui.showWinScreen(s);
+                ui.showWinScreen(s, d.ms);
             }else if(this.gameState == this.GAMESTATE_NORMALPLAY){;
-                ui.showWinScreen(s);
+                ui.showWinScreen(s, d.ms);
             }
             this.editor.ui.showConfetti();
             MobileController.hide();

@@ -265,7 +265,8 @@ function UIManager() {
             buttonGroup.appendChild(button);
 
             button.addEventListener('click', () => {
-                game.resetWorld();
+                this.hideGameOverMenu();
+                game.previewLevel();
             });
 
             button = document.createElement('div');
@@ -688,8 +689,8 @@ function UIManager() {
             var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
             let characterHolder = document.createElement('div');
-            characterHolder.style.padding = '10px';
-
+            characterHolder.classList.add('imageHolder');
+    
             const characterImages = ['character1.png', 'character2.png', 'character3.png', 'character4.png'];
 
             for (let i = 0; i < Settings.availableCharacters; i++) {
@@ -712,6 +713,20 @@ function UIManager() {
             characterSelect.domElement.style.left = '50%';
             characterSelect.domElement.style.top = '50%';
             characterSelect.domElement.style.transform = 'translate(-50%, -50%)';
+
+            let backButton = document.createElement('div');
+            backButton.setAttribute('class', 'backButton menuButton')
+            backButton.innerHTML = 'Back';
+            backButton.style.marginTop = '0';
+            backButton.style.marginLeft = 'auto';
+            backButton.style.marginRight = 'auto';
+            backButton.style.float = 'unset';
+            targetDomElement.appendChild(backButton);
+
+            backButton.addEventListener('click', () => {
+                this.hideCharacterSelect();
+                this.showLevelBanner();
+            })
 
             game.editor.ui.registerDragWindow(characterSelect);
 
@@ -742,7 +757,7 @@ function UIManager() {
 
             const vehicleHolder = document.createElement('div');
             vehicleHolder.classList.add('vehicleHolder');
-            vehicleHolder.style.padding = '10px';
+            vehicleHolder.classList.add('imageHolder');
 
             const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png'];
 
@@ -773,6 +788,22 @@ function UIManager() {
             }
 
             targetDomElement.appendChild(vehicleHolder);
+
+
+            let backButton = document.createElement('div');
+            backButton.setAttribute('class', 'backButton menuButton')
+            backButton.innerHTML = 'Back';
+            backButton.style.marginTop = '0';
+            backButton.style.marginLeft = 'auto';
+            backButton.style.marginRight = 'auto';
+            backButton.style.float = 'unset';
+            targetDomElement.appendChild(backButton);
+
+            backButton.addEventListener('click', () => {
+                this.hideVehicleSelect();
+                this.showCharacterSelect();
+            })
+
             customGUIContainer.appendChild(vehicleSelect.domElement);
             vehicleSelect.domElement.style.position = 'absolute';
             vehicleSelect.domElement.style.left = '50%';
@@ -828,14 +859,14 @@ function UIManager() {
             var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
             let divWrapper = document.createElement('div');
-            divWrapper.style.padding = '20px';
+            divWrapper.style.padding = '10px';
 
             let title = document.createElement('div');
-            title.setAttribute('id', 'pauseMenu_title');
+            title.classList.add('levelbanner_title');
             divWrapper.appendChild(title);
 
             let creator = document.createElement('div');
-            creator.setAttribute('id', 'pauseMenu_creator');
+            creator.classList.add('levelbanner_creator');
 
             let span = document.createElement('span');
             span.innerText = 'By:';
@@ -843,14 +874,14 @@ function UIManager() {
 
             span = document.createElement('span');
             span.innerText = 'Creator';
-            span.setAttribute('id', 'pauseMenu_creatorSpan')
+            span.classList.add('levelbanner_creatorSpan');
             creator.appendChild(span);
 
             divWrapper.appendChild(creator);
 
             let ratingHolder = document.createElement('div');
             ratingHolder.setAttribute('class', 'ratingHolder');
-            ratingHolder.setAttribute('id', 'pauseMenu_ratingHolder');
+            ratingHolder.classList.add('pauseMenu_ratingHolder');
             divWrapper.appendChild(ratingHolder);
 
             let upvoteButton = document.createElement('div');
@@ -958,9 +989,8 @@ function UIManager() {
         pauseMenu.domElement.style.visibility = 'visible';
         // set values
 
-
-        pauseMenu.domElement.querySelector('#pauseMenu_title').innerText = game.currentLevelData.title;
-        pauseMenu.domElement.querySelector('#pauseMenu_creatorSpan').innerText = game.currentLevelData.author.username;
+        pauseMenu.domElement.querySelector('.levelbanner_title').innerText = game.currentLevelData.title;
+        pauseMenu.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
 
         pauseMenu.domElement.style.left = '50%';
         pauseMenu.domElement.style.top = '50%';
@@ -971,7 +1001,7 @@ function UIManager() {
         pauseMenu.domElement.style.visibility = 'hidden';
     }
 
-    this.showWinScreen = function (time) {
+    this.showWinScreen = function (time, mili) {
         if (!winScreen) {
             const levelEditGUIWidth = 340;
             winScreen = new dat.GUI({
@@ -995,7 +1025,6 @@ function UIManager() {
             divWrapperNormal.setAttribute('id', 'divWrapperNormal');
 
             divWrapperNormal.style.padding = '5px';
-
 
             let title = document.createElement('div');
             title.classList.add('levelbanner_title');
@@ -1077,11 +1106,17 @@ function UIManager() {
             thumbIcon.setAttribute('class', 'thumbsUpIcon');
             downvoteButton.appendChild(thumbIcon);
 
-
+            let timeDiv = document.createElement('div');
+            timeDiv.classList.add('winScreen_timeDiv');
             let timeSpan = document.createElement('span');
             timeSpan.innerText = time;
             timeSpan.classList.add('winScreen_time');
-            divWrapperNormal.appendChild(timeSpan);
+            timeDiv.appendChild(timeSpan);
+            let timeSpanMili = document.createElement('span');
+            timeSpanMili.innerText = mili;
+            timeSpanMili.classList.add('winScreen_timeMili');
+            timeDiv.appendChild(timeSpanMili);
+            divWrapperNormal.appendChild(timeDiv);
 
             const flexButtonHolder = document.createElement('div');
             divWrapperNormal.appendChild(flexButtonHolder);
@@ -1104,8 +1139,8 @@ function UIManager() {
             flexButtonHolder.appendChild(restartButton);
 
             restartButton.addEventListener('click', () => {
-                game.resetWorld();
                 this.hideWinScreen();
+                game.previewLevel();
             })
 
             targetDomElement.appendChild(divWrapperNormal);
@@ -1115,10 +1150,17 @@ function UIManager() {
 
             divWrapperEditor.style.padding = '20px';
 
+            timeDiv = document.createElement('div');
+            timeDiv.classList.add('winScreen_timeDiv');
             timeSpan = document.createElement('span');
             timeSpan.innerText = time;
             timeSpan.classList.add('winScreen_time');
-            divWrapperEditor.appendChild(timeSpan);
+            timeDiv.appendChild(timeSpan);
+            timeSpanMili = document.createElement('span');
+            timeSpanMili.innerText = mili;
+            timeSpanMili.classList.add('winScreen_timeMili');
+            timeDiv.appendChild(timeSpanMili);
+            divWrapperEditor.appendChild(timeDiv);
 
             let exitTest = document.createElement('div');
             exitTest.setAttribute('class', 'moreLevels menuButton')
@@ -1160,9 +1202,11 @@ function UIManager() {
         if(game.gameState == game.GAMESTATE_NORMALPLAY){
             winScreen.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
             divWrapperNormal.querySelector('.winScreen_time').innerText = time;
+            divWrapperNormal.querySelector('.winScreen_timeMili').innerText = mili;
         }else {
             winScreen.domElement.querySelector('.levelbanner_creatorSpan').innerText = 'User';
             divWrapperEditor.querySelector('.winScreen_time').innerText = time;
+            divWrapperEditor.querySelector('.winScreen_timeMili').innerText = mili;
         }
 
         winScreen.domElement.style.left = '50%';
@@ -1247,7 +1291,7 @@ function UIManager() {
 
         socialShareGUI.setSocialMediaHTML = level => {
 
-            const url = encodeURIComponent(`${Settings.GAMEURI}/#${level.id}`);
+            const url = encodeURIComponent(`${Settings.GAMEURI}/?lvl=${level.id}`);
             const body = encodeURIComponent('Check out this level in JollyWorld! ' + level.description);
 
             const socialHTML = `
@@ -1681,9 +1725,6 @@ function UIManager() {
                     const progressBar = itemBarClone.querySelector('.progressBackFill');
                     progressBar.style.visibility = 'visible';
                     const progressFunction = progress => {
-
-                        console.log("PROGRESSS:", progress);
-
                         const progressRounded = (progress*100).toFixed(2);
                         progressBar.style.clipPath = `inset(0px ${100-progressRounded}% 0px 0px)`;
                     }

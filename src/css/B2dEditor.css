@@ -1018,6 +1018,11 @@ body .dg .cr.function {
     margin-top: 5px;
     display: block;
 }
+.winScreen_timeDiv{
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
 
 .winLogo {
     background: url(../../static/assets/images/gui/WinScreen.png);
@@ -1188,6 +1193,13 @@ body .dg .cr.function {
     letter-spacing: .05em;
     font-family: sans-serif;
     color: #e8e8e8;
+}
+
+.imageHolder{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .textWrapper li {
