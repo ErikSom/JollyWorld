@@ -4371,7 +4371,7 @@ const _B2dEditor = function () {
 					});
 				}
 			}else if (this.selectedTool === this.tool_VERTICEEDITING){
-		
+
 				if(this.verticeEditingSprite.selectedVertice){
 					const dA = Math.atan2(movY, movX)-this.verticeEditingSprite.rotation;
 					const dL = Math.sqrt(movX*movX+movY*movY);
