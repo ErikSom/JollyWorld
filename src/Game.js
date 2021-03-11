@@ -895,6 +895,7 @@ function Game() {
 			const body = {
 				method: 'GET',
 			}
+
             fetch(`${Settings.STATIC}/${levelData.level_md5}.json`, body)
             .then(response => response.json())
             .then(data => {

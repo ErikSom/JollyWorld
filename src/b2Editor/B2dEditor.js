@@ -2778,6 +2778,8 @@ const _B2dEditor = function () {
 								const targetSprite = this.selectedPhysicsBodies[0].mySprite;
 								if(targetSprite.data.vertices.length === 1 && !targetSprite.data.radius[0] && !targetSprite.myBody.myTexture){
 									this.verticeEditingSprite = targetSprite;
+									// convert convex right away to concave
+									if(!Array.isArray(this.verticeEditingSprite.data.vertices[0][0])) this.verticeEditingSprite.data.vertices = [this.verticeEditingSprite.data.vertices];
 									this.selectTool(this.tool_VERTICEEDITING);
 								} else if(targetSprite.data.type === this.object_BODY && (targetSprite.data.vertices.length > 1 || targetSprite.myBody.myTexture)){
 									startEditingGroup();
@@ -7278,10 +7280,7 @@ const _B2dEditor = function () {
 
 		if(prefabClass.isCharacter){
 			objects = objects.concat(prefabClass.vehicleParts);
-
 			console.log(prefabClass.vehicleParts);
-
-
 		}
 
 		const centerObject = prefabClass.lookupObject[centerObjectName];
@@ -9559,6 +9558,7 @@ const _B2dEditor = function () {
 		this.BubbleEvent("PostSolve", contact, impulse);
 	}
 	this.testWorld = function () {
+		this.selectTool(this.tool_SELECT);
 
 		if(this.groupEditing) stopEditingGroup();
         this.stringifyWorldJSON();

@@ -95,9 +95,13 @@ export const stopEditingGroup = () => {
 			if(!sprite.myBody) editor.selectedTextures.push(sprite);
 		}
 	}
+
 	// first ungroup any groups created
 	editor.ungroupObjects();
 
+
+	editor.selectedPhysicsBodies = [];
+	editor.selectedTextures = [];
 
 	// we regroup all the ungrouped shapes
 	for(let i = editor.groupMinChildIndex+1; i< editor.textures.children.length; i++){
@@ -109,7 +113,7 @@ export const stopEditingGroup = () => {
 			if(!sprite.myBody) editor.selectedTextures.push(sprite);
 		}
 	}
-	
+
 	// TODO: fix graphics / texts / animations
 	// Remove Auto save when editing
 	// Reset editor when going in test mode or changing tools
