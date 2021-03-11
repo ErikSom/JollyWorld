@@ -718,6 +718,8 @@ function Game() {
                 this.checkPointData = checkPointData;
 
                 if(this.checkPointData.flipped) this.character.flip();
+            }else if(doCheckpoint){
+                this.levelStartTime = 0;
             }
 
 
@@ -893,7 +895,6 @@ function Game() {
 			const body = {
 				method: 'GET',
 			}
-
             fetch(`${Settings.STATIC}/${levelData.level_md5}.json`, body)
             .then(response => response.json())
             .then(data => {
@@ -978,6 +979,7 @@ function Game() {
                     var bodies = this.editor.lookupGroups[this.playerPrefabObject.key]._bodies;
                     bodies.forEach(body => {
                         body.mainCharacter = true;
+                        PIXICuller.disableCulling(body.mySprite);
                     });
                     break;
                 }

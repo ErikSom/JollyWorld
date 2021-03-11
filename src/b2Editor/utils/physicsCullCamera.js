@@ -33,7 +33,9 @@ export const update = ()=>{
 	}
 
 	if(game.cameraFocusObject){
-		game.editor.physicsCamera.SetPosition(game.cameraFocusObject.GetPosition());
+		const linearVelocity = game.cameraFocusObject.GetLinearVelocity().Clone().SelfMul(0);
+		const targetPosition = game.cameraFocusObject.GetPosition().Clone().SelfAdd(linearVelocity);
+		game.editor.physicsCamera.SetPosition(targetPosition);
 	}
 }
 

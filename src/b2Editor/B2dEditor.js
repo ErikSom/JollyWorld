@@ -1021,7 +1021,11 @@ const _B2dEditor = function () {
 				});
 				advancedFolder.add(ui.editorGUI.editData, "fixedRotation").name("fixed rotation").onChange(function (value) {
 					this.humanUpdate = true;
-					this.targetValue = value
+					this.targetValue = value 
+				});
+				advancedFolder.add(ui.editorGUI.editData, "optimizePhysics").name("optimize physics").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
 				});
 
 				let bodyIsGroup = false;
@@ -1721,6 +1725,9 @@ const _B2dEditor = function () {
 						texture: false,
 						baseTexture: false
 					});
+					if (sprite.data && sprite.data.type == this.object_ANIMATIONGROUP) {
+						this.animationGroups = this.animationGroups.filter(animation => animation != sprite);
+					}
 				}
 				if (b.connectedSpike) {
 					let tarIndex = b.connectedSpike.connectedBodies.indexOf(b);
@@ -2347,6 +2354,7 @@ const _B2dEditor = function () {
 		this.restitution = Settings.defaultRestitution;
 		this.friction = Settings.defaultFriction;
 		this.fixedRotation = false;
+		this.optimizePhysics = true;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -5423,6 +5431,17 @@ const _B2dEditor = function () {
 							if(controller.targetValue) body.SetFixedRotation(true);
 							else body.SetFixedRotation(false);
 						}
+					}else if(controller.property == "optimizePhysics"){
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.optimizePhysics = controller.targetValue;
+							if(!body.mySprite.data.optimizePhysics){
+								body.ignorePhysicsCuller = true;
+							}else{
+								delete body.ignorePhysicsCuller;
+							}
+						}
 					}else if (controller.property == "tileTexture") {
 						//do tileTexture
 					} else if (controller.property == "lockselection") {
@@ -6902,6 +6921,8 @@ const _B2dEditor = function () {
 
 		body.SetFixedRotation(obj.fixedRotation);
 
+		if(!obj.optimizePhysics) body.ignorePhysicsCuller = true;
+
 		var graphic = new PIXI.Graphics();
 		body.originalGraphic = graphic;
 
@@ -7257,6 +7278,10 @@ const _B2dEditor = function () {
 
 		if(prefabClass.isCharacter){
 			objects = objects.concat(prefabClass.vehicleParts);
+
+			console.log(prefabClass.vehicleParts);
+
+
 		}
 
 		const centerObject = prefabClass.lookupObject[centerObjectName];
@@ -8221,10 +8246,6 @@ const _B2dEditor = function () {
 		texture.data.texturePositionOffsetLength = positionOffsetLength;
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
-
-		if(body.mySprite.ignoreCulling){
-			disableCulling(texture);
-		}
 		//body.mySprite.renderable = false;
 		texture.myBody = body;
 	}
@@ -8829,6 +8850,7 @@ const _B2dEditor = function () {
 			arr[21] = obj.friction;
 			arr[22] = obj.restitution;
 			arr[23] = obj.fixedRotation;
+			arr[24] = obj.optimizePhysics;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -8977,6 +8999,7 @@ const _B2dEditor = function () {
 			obj.friction = arr[21] !== undefined ? arr[21] : Settings.defaultFriction;
 			obj.restitution = arr[22] !== undefined  ? arr[22] : Settings.defaultRestitution;
 			obj.fixedRotation = arr[23] !== undefined  ? arr[23] : false;
+			obj.optimizePhysics = arr[24] !== undefined  ? arr[24] : true;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
@@ -9591,6 +9614,7 @@ const _B2dEditor = function () {
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
 				sprite.myBody.SetAwake(false);
+				if(sprite.myBody.ignorePhysicsCuller && sprite.data.awake) sprite.myBody.SetAwake(true);
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);
 			}
