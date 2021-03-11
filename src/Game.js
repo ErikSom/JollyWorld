@@ -37,6 +37,7 @@ import * as MobileController from './utils/MobileController';
 import * as AudioManager from './utils/AudioManager';
 import * as TutorialManager from './utils/TutorialManager';
 import * as SlowmoUI from './ui/Slomo';
+import * as ReplayManager from './utils/ReplayManager';
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -650,6 +651,9 @@ function Game() {
         this.findPlayableCharacter();
     }
     this.playWorld = function (firstEntry) {
+        ReplayManager.startRecording();
+        ReplayManager.startReplay();
+
         this.movementBuffer = [];
         MobileController.openFullscreen();
         MobileController.showVehicleControls();
@@ -658,6 +662,7 @@ function Game() {
         if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
         ui.showSmallLogo();
+
     }
 
     this.testWorld = function () {
@@ -741,6 +746,7 @@ function Game() {
         AudioManager.stopAllSounds();
         SlowmoUI.hide();
         ui.hideSmallLogo();
+        ReplayManager.stopRecording();
     }
     this.openEditor = function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -1242,8 +1248,12 @@ function Game() {
                 this.mouseJoint = null;
             }
         }
+
+
         this.stats.begin('physics', '#ecbc4d');
         if (this.run) {
+            ReplayManager.update();
+
             this.inputUpdate();
             this.world.Step(Settings.physicsTimeStep * game.editor.editorSettingsObject.gameSpeed, 4, 3);
             this.world.ClearForces();
