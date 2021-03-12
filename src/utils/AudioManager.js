@@ -131,6 +131,9 @@ export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 	}
 }
 export const playSFX = (sfxName, volume, pitch=1, position) => {
+
+	if(Array.isArray(sfxName)) sfxName = sfxName[Math.floor(Math.random() * sfxName.length)];
+
 	const howl = getHowl(sfxName);
 
 	if(!howl || !Settings.sfxOn) return;
@@ -140,8 +143,6 @@ export const playSFX = (sfxName, volume, pitch=1, position) => {
 
 	const {vl, pan} = determineVolumeAndPan(position);
 	if(vl === 0) return;
-
-	if(Array.isArray(sfxName)) sfxName = sfxName[Math.floor(Math.random() * sfxName.length)];
 
 	const soundId = howl.play(sfxName);
 	howl.volume(volume*vl, soundId);
