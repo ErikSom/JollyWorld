@@ -158,6 +158,7 @@ export const stopEditingGroup = () => {
 			if(editor.groupEditingObject.myBody){
 				editor.updateBodyFixtures(editor.groupEditingObject.myBody);
 				editor.updateBodyShapes(editor.groupEditingObject.myBody);
+				editor.setBodyCollision(editor.groupEditingObject.myBody, editor.groupEditingObject.data.collision);
 				editor.groupEditingObject.myBody.ResetMassData();
 
 				const position = editor.groupEditingObject.myBody.GetPosition();

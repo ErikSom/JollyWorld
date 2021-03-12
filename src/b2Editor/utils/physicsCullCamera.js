@@ -28,6 +28,12 @@ export const update = ()=>{
 		fixDef.shape.SetRadius(targetRadius / game.editor.editorSettingsObject.cameraZoom);
 		fixture = game.editor.physicsCamera.CreateFixture(fixDef);
 		fixture.isPhysicsCamera = true;
+
+		// also collide with only similar objects
+		const filterData = fixture.GetFilterData();
+		filterData.groupIndex = game.editor.triggerGroupIndex;
+		fixture.SetFilterData(filterData);
+
 		game.editor.physicsCamera.cameraZoom = game.editor.editorSettingsObject.cameraZoom;
 		delete game.editor.physicsCamera.reFixture;
 	}

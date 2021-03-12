@@ -2921,9 +2921,11 @@ const _B2dEditor = function () {
 						if(vertice.point1) points.push(vertice.point1);
 						if(previousVertice.point2) points.push(previousVertice.point2);
 
+						const closeDistance = Settings.handleClosestDistance;
+
 						points.forEach( point => {
 
-							const ignore = Math.abs(vertice.x-point.x) * this.cameraHolder.scale.x <= Settings.handleClosestDistance && Math.abs(vertice.y-point.y) * this.cameraHolder.scale.x <= Settings.handleClosestDistance;
+							const ignore = Math.abs(vertice.x-point.x) * this.cameraHolder.scale.x <= closeDistance && Math.abs(vertice.y-point.y) * this.cameraHolder.scale.x <= closeDistance;
 							if(!ignore){
 								const vpl = Math.sqrt(point.x*point.x + point.y*point.y);
 								const vpa = this.verticeEditingSprite.rotation + Math.atan2(point.y, point.x);
@@ -2933,7 +2935,7 @@ const _B2dEditor = function () {
 								const verticePY = this.verticeEditingSprite.y + vpy;
 								const difX = verticePX-mousePixiPos.x;
 								const difY = verticePY-mousePixiPos.y;
-								const minDistance = 5;
+								const minDistance = 5 / camera.scale.x;
 								if(Math.abs(difX) < minDistance && Math.abs(difY) < minDistance){
 									this.verticeEditingSprite.selectedVerticePointIndex = verticeIndex;
 									this.verticeEditingSprite.selectedVerticePoint = point;
@@ -3177,8 +3179,10 @@ const _B2dEditor = function () {
 								pB.y = vertice.y + pBL*Math.sin(pAA);
 							}
 
-							const canClosePoint1 = !vertice.point1 || (Math.abs(vertice.point1.x-vertice.x) < Settings.handleClosestDistance && Math.abs(vertice.point1.y-vertice.y) < Settings.handleClosestDistance);
-							const canClosePoint2 = !previousVertice.point2 || (Math.abs(previousVertice.point2.x-vertice.x) < Settings.handleClosestDistance && Math.abs(previousVertice.point2.y-vertice.y) < Settings.handleClosestDistance);
+							const closeDistance = Settings.handleClosestDistance / this.cameraHolder.scale.x;
+
+							const canClosePoint1 = !vertice.point1 || (Math.abs(vertice.point1.x-vertice.x) < closeDistance && Math.abs(vertice.point1.y-vertice.y) < closeDistance);
+							const canClosePoint2 = !previousVertice.point2 || (Math.abs(previousVertice.point2.x-vertice.x) < closeDistance && Math.abs(previousVertice.point2.y-vertice.y) < closeDistance);
 
 							if(canClosePoint1  && canClosePoint2){
 								delete vertice.point1;
@@ -4060,13 +4064,11 @@ const _B2dEditor = function () {
 							const dy = nextVertice.y-previousVertice.y;
 							const angle = Math.atan2(dy, dx);
 
+							const defaultDistance = Settings.handleClosestDistance*8 / camera.scale.x ;
+							const closeDistance = Settings.handleClosestDistance / camera.scale.x;
 
-							console.log(nextVertice, previousVertice);
-
-							const defaultDistance = Settings.handleClosestDistance*8;
-
-							const noPoint1 = !vertice.point1 || (Math.abs(vertice.x-vertice.point1.x) < Settings.handleClosestDistance && Math.abs(vertice.y-vertice.point1.y) < Settings.handleClosestDistance);
-							const noPoint2 = !previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x) < Settings.handleClosestDistance && Math.abs(vertice.y-previousVertice.point2.y) < Settings.handleClosestDistance);
+							const noPoint1 = !vertice.point1 || (Math.abs(vertice.x-vertice.point1.x) < closeDistance && Math.abs(vertice.y-vertice.point1.y) < closeDistance);
+							const noPoint2 = !previousVertice.point2 || (Math.abs(vertice.x-previousVertice.point2.x) < closeDistance && Math.abs(vertice.y-previousVertice.point2.y) < closeDistance);
 
 							if(noPoint1 || noPoint2 || true){
 								vertice.point1 = {x:vertice.x+defaultDistance*Math.cos(angle), y:vertice.y+defaultDistance*Math.sin(angle)}
@@ -5908,6 +5910,7 @@ const _B2dEditor = function () {
 		}
 	}
 	this.doVerticeEditing = function () {
+		const camera = B2dEditor.container.camera || B2dEditor.container;
 
 		const spriteData = this.verticeEditingSprite.data;
 		let vertices = spriteData.type === this.object_BODY ? spriteData.vertices[0] : spriteData.vertices;
@@ -5929,12 +5932,15 @@ const _B2dEditor = function () {
 			const verticeX = this.cameraHolder.x + (this.verticeEditingSprite.x + vx) * this.cameraHolder.scale.x - Settings.verticeBoxSize/2;
 			const verticeY = this.cameraHolder.y + (this.verticeEditingSprite.y + vy) * this.cameraHolder.scale.y - Settings.verticeBoxSize/2;
 
+			const closeDistance = Settings.handleClosestDistance / camera.scale.x;
+
+
 			if(this.verticeEditingSprite.selectedVertice){
 				if(this.verticeEditingSprite.selectedVertice.includes(index)){
 					this.debugGraphics.beginFill(this.verticesFillColor, 1.0);
 
 					if(vertice.point1){
-						if(Math.abs(vertice.x-vertice.point1.x) * this.cameraHolder.scale.x  > Settings.handleClosestDistance || Math.abs(vertice.y-vertice.point1.y) * this.cameraHolder.scale.x > Settings.handleClosestDistance){
+						if(Math.abs(vertice.x-vertice.point1.x) * this.cameraHolder.scale.x  > closeDistance || Math.abs(vertice.y-vertice.point1.y) * this.cameraHolder.scale.x > closeDistance){
 							const vp1l = Math.sqrt(vertice.point1.x*vertice.point1.x + vertice.point1.y*vertice.point1.y);
 							const vp1a = this.verticeEditingSprite.rotation + Math.atan2(vertice.point1.y, vertice.point1.x);
 							const vp1x = vp1l*Math.cos(vp1a);
@@ -5953,7 +5959,7 @@ const _B2dEditor = function () {
 					let previousVertice = vertices[index-1];
 					if(index === 0) previousVertice = vertices[vertices.length-1];
 					if(previousVertice.point2){
-						if(Math.abs(vertice.x-previousVertice.point2.x) > Settings.handleClosestDistance || Math.abs(vertice.y-previousVertice.point2.y) > Settings.handleClosestDistance){
+						if(Math.abs(vertice.x-previousVertice.point2.x) > closeDistance || Math.abs(vertice.y-previousVertice.point2.y) > closeDistance){
 							const vp2l = Math.sqrt(previousVertice.point2.x*previousVertice.point2.x + previousVertice.point2.y*previousVertice.point2.y);
 							const vp2a = this.verticeEditingSprite.rotation + Math.atan2(previousVertice.point2.y, previousVertice.point2.x);
 							const vp2x = vp2l*Math.cos(vp2a);
@@ -7923,7 +7929,7 @@ const _B2dEditor = function () {
 		while (fixture) {
 			const collision = collisions[index];
 			//TODO: Set collision for all fixtures
-			const filterData = fixture.GetFilterData();
+			const filterData = new Box2D.b2Filter();
 
 			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 			else filterData.categoryBits = this.MASKBIT_NORMAL;
