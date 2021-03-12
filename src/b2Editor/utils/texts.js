@@ -10,7 +10,7 @@ export const HELP = {
 	</ul>
 	<p><strong>Bodies:</strong></p>
 	<ul>
-	<li><strong><em>groups</em>:</strong><br />You can give multiple objects the same group name. This will internally link these objects for future features of Jolly World.<br /><br /></li>
+	<li><strong><em>groups</em>:</strong><br />You can give multiple objects the same group name. This will internally link these objects for future features of JollyWorld.<br /><br /></li>
 	<li><strong><em>refName</em>:</strong><br />This is a unique name to identify an object<br /><br /></li>
 	<li><strong><em>density</em>:<br /></strong>Density is used to change how heavy an object is for its size. A balloon is bigger than a brick, but has a way lower density so its much lighter. The higher the density the heavier the object. When you encounter issues with joints, you can try tweaking the density to make the simulation more stable.<br /><br /></li>
 	<li><strong><em>fixed</em>:<br /></strong>Fixed objects will not move, they are used to layout your level. If you want an object to fall make sure to not have this toggled on!<br /><br /></li>
