@@ -42,6 +42,7 @@ let notice;
 let prompt;
 let textEditor;
 export let gradientEditor;
+export let colorMatrixEditor;
 export let helpScreen;
 
 let uiContainer = document.getElementById('editor-ui-container');
@@ -2057,6 +2058,80 @@ const removeGradientEditor = () => {
         game.editor.updateSelection();
     }
 }
+
+export const showColorMatrixEditor = function (colorMatrixData) {
+
+    if(colorMatrixEditor && colorMatrixData){
+        const computedLeft = parseFloat(getComputedStyle(colorMatrixEditor.domElement, null).left.replace("px", ""));
+        const computedTop = parseFloat(getComputedStyle(colorMatrixEditor.domElement, null).top.replace("px", ""));
+        colorMatrixData.x = computedLeft;
+        colorMatrixData.y = computedTop;
+    }
+
+    removeColorMatrixEditor();
+
+    const loginGUIWidth = 220;
+
+    colorMatrixEditor = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+
+    colorMatrixEditor.domElement.setAttribute('id', 'colorMatrixEditor');
+
+    const folder = colorMatrixEditor.addFolder('color matrix editor');
+    folder.domElement.classList.add('custom');
+    folder.domElement.querySelector('.title').style.width = `${loginGUIWidth}px`;
+
+    folder.open();
+
+    if(!colorMatrixData){
+        colorMatrixData = {};
+        colorMatrixData.selectedEffect = 'brightness';
+    }
+
+    const effects = ['blackAndWhite', 'brightness', 'brownie', 'colorTone', 'contrast', 'desaturate', 'grayscale', 'hue', 'kodaChrome', 'lsd', 'negative', 'night', 'polaroid', 'predator', 'saturate', 'sepia', 'vintage'];
+
+    folder.add(colorMatrixData, "selectedEffect", effects).onChange(function (value) {
+        showColorMatrixEditor(colorMatrixData);
+    });
+
+    const closeButton = document.createElement('div');
+    closeButton.setAttribute('class', 'closeWindowIcon');
+    folder.domElement.append(closeButton);
+    closeButton.addEventListener('click', () => {
+        removeColorMatrixEditor();
+    });
+
+    customGUIContainer.appendChild(colorMatrixEditor.domElement);
+
+    if(colorMatrixData.x == undefined){
+        const computedWidth = parseFloat(getComputedStyle(colorMatrixEditor.domElement, null).width.replace("px", ""));
+        const computedHeight = parseFloat(getComputedStyle(colorMatrixEditor.domElement, null).height.replace("px", ""));
+        colorMatrixEditor.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+        colorMatrixEditor.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
+    }else{
+        colorMatrixEditor.domElement.style.left = `${colorMatrixData.x}px`;
+        colorMatrixEditor.domElement.style.top = `${colorMatrixData.y}px`;
+    }
+
+    registerDragWindow(colorMatrixEditor);
+
+    return false;
+}
+
+const removeColorMatrixEditor = ()=>{
+    if (colorMatrixEditor) {
+        colorMatrixEditor.domElement.parentNode.removeChild(colorMatrixEditor.domElement);
+        colorMatrixEditor = null;
+        game.editor.updateSelection();
+    }
+}
+
+
+
+
+
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
     game.IS_ERROR = true;

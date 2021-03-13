@@ -1211,6 +1211,11 @@ const _B2dEditor = function () {
 
 				advancedFolder = targetFolder.addFolder('advanced');
 
+				ui.editorGUI.editData.openColorMatrixEditor = () => {
+					ui.showColorMatrixEditor();
+				};
+				controller = advancedFolder.add(ui.editorGUI.editData, "openColorMatrixEditor").name('edit color matrix');
+
 				controller = advancedFolder.add(ui.editorGUI.editData, "parallax", -3, 3).step(0.01);
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
@@ -2402,6 +2407,7 @@ const _B2dEditor = function () {
 		this.repeatTeleportY = 0;
 		this.visible = true;
 		this.mirrored = false;
+		this.colorMatrix = [];
 	}
 	this.animationGroup = function () {
 		this.type = self.object_ANIMATIONGROUP;
