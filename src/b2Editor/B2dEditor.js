@@ -3862,6 +3862,8 @@ const _B2dEditor = function () {
 		if(!this.editing) return;
 		if(this.groupEditing) return;
 
+		jointTriggerLayer.bringToFront();
+
 		this.stringifyWorldJSON();
 		if(this.lastValidWorldJSON === this.worldJSON) return;
 
@@ -6898,6 +6900,12 @@ const _B2dEditor = function () {
 		body.mySprite.targetPrefabs = [];
 		this.addObjectToLookupGroups(body, body.mySprite.data);
 
+		body.mySprite.debugGraphic = new PIXI.Graphics();
+		body.mySprite.addChild(body.mySprite.debugGraphic);
+		body.mySprite.visible = true;
+
+		this.updateTriggerShape(body.mySprite);
+
 		this.triggerObjects.push(body);
 
 		return body;
@@ -7214,6 +7222,8 @@ const _B2dEditor = function () {
 				body.mySprite._cullingSizeDirty = true;
 				body.mySprite.position.x++;
 				body.mySprite.position.x--;
+			}else{
+				this.updateTriggerShape(body.mySprite);
 			}
 
 			if (body.myTexture) this.setScale(body.myTexture, scaleX, scaleY);
@@ -8512,10 +8522,7 @@ const _B2dEditor = function () {
 
 			if (body.mySprite.data.type == this.object_TRIGGER) {
 				//color trigger
-				colorFill = '#e0b300';
-				colorLine = '#FFFFFF';
-				lineWidth = 0;
-				transparancy = 0.3;
+				continue
 			}
 
 			let verts = [];
@@ -8535,8 +8542,30 @@ const _B2dEditor = function () {
 			else this.updateCircleGraphic(body.originalGraphic, radius, innerVerts[0], colorFill, colorLine, lineWidth, transparancy, (i != 0));
 		}
 		if (!dontUpdateTileTexture && (body.mySprite.tileTexture != "" || body.mySprite.gradient != "")) this.updateTileSprite(body, true);
-
 	}
+
+	this.updateTriggerShape = function(sprite){
+		if(sprite.debugGraphic){
+			sprite.debugGraphic.clear();
+			sprite.debugGraphic.beginFill(0xe0b300, 0.3);
+
+			if(sprite.data.radius){
+				sprite.debugGraphic.drawCircle(0, 0, sprite.data.radius)
+			}else{
+				const width1 = Math.abs((sprite.data.vertices[1].x-sprite.data.vertices[0].x)/2 * Settings.PTM);
+				const width2 = Math.abs((sprite.data.vertices[2].x-sprite.data.vertices[1].x)/2 * Settings.PTM);
+				const width = Math.max(width1, width2);
+
+				const height1 = Math.abs((sprite.data.vertices[1].y-sprite.data.vertices[0].y)/2 * Settings.PTM);
+				const height2 = Math.abs((sprite.data.vertices[2].y-sprite.data.vertices[1].y)/2 * Settings.PTM);
+				const height = Math.max(height1, height2);
+
+				sprite.debugGraphic.drawRect(-width, -height, width*2, height*2);
+			}
+			sprite.debugGraphic.endFill();
+		}
+	}
+
 	this.updateGraphicGroupShapes = function (graphic) {
 		while (graphic.children.length > 0) graphic.removeChild(graphic.getChildAt(0));
 
@@ -9659,6 +9688,10 @@ const _B2dEditor = function () {
 				if(sprite.myBody.ignorePhysicsCuller && sprite.data.awake) sprite.myBody.SetAwake(true);
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);
+			} else if (sprite.data.type == this.object_TRIGGER) {
+				sprite.debugGraphic.parent.removeChild(sprite.debugGraphic);
+				delete sprite.debugGraphic;
+				sprite.visible = false;
 			}
 
 			if(!sprite.myBody && (sprite.data.parallax || sprite.data.repeatTeleportX || sprite.data.repeatTeleportY)){

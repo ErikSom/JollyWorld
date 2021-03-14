@@ -1526,55 +1526,58 @@ const pixiPosition = new PIXI.Point();
 export const drawEditorTriggers = ()=>{
 	const camera = B2dEditor.container.camera || B2dEditor.container;
 
-    game.editor.triggerObjects.forEach( trigger => {
+    game.editor.selectedPhysicsBodies.forEach(obj=>{
+        if(obj.mySprite && obj.mySprite.data.type == game.editor.object_TRIGGER){
+            const trigger = obj;
 
-        const offsetInterval = 500;
-        const offset = (Date.now() % offsetInterval + 1) / offsetInterval;
-        const data = trigger.mySprite.data;
+            const offsetInterval = 500;
+            const offset = (Date.now() % offsetInterval + 1) / offsetInterval;
+            const data = trigger.mySprite.data;
 
-        let alphaDecreaser = trigger.mySprite.oldAlpha !== undefined ? 0.5 : 1.0;
-        if(trigger.mySprite.alpha === 0.5) alphaDecreaser = 0.5;
+            let alphaDecreaser = trigger.mySprite.oldAlpha !== undefined ? 0.5 : 1.0;
+            if(trigger.mySprite.alpha === 0.5) alphaDecreaser = 0.5;
 
-        if(trigger.mySprite.alpha > 0){
-            if (data.radius) {
-                let p = {
-                    x: data.vertices[0].x * Settings.PTM,
-                    y: data.vertices[0].y * Settings.PTM
-                };
-                const cosAngle = Math.cos(data.rotation);
-                const sinAngle = Math.sin(data.rotation);
-                const dx = p.x;
-                const dy = p.y;
-                p.x = (dx * cosAngle - dy * sinAngle);
-                p.y = (dx * sinAngle + dy * cosAngle);
+            if(trigger.mySprite.alpha > 0){
+                if (data.radius) {
+                    let p = {
+                        x: data.vertices[0].x * Settings.PTM,
+                        y: data.vertices[0].y * Settings.PTM
+                    };
+                    const cosAngle = Math.cos(data.rotation);
+                    const sinAngle = Math.sin(data.rotation);
+                    const dx = p.x;
+                    const dy = p.y;
+                    p.x = (dx * cosAngle - dy * sinAngle);
+                    p.y = (dx * sinAngle + dy * cosAngle);
 
-                pixiPosition.x = trigger.GetPosition().x * Settings.PTM + p.x;
-                pixiPosition.y = trigger.GetPosition().y * Settings.PTM + p.y;
-                game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
+                    pixiPosition.x = trigger.GetPosition().x * Settings.PTM + p.x;
+                    pixiPosition.y = trigger.GetPosition().y * Settings.PTM + p.y;
+                    game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
 
-                drawing.drawCircle(pixiPosition, data.radius * camera.scale.x * trigger.mySprite.scale.x, {alpha:0}, {color:0xe0b300, alpha:0.3*alphaDecreaser});
-                game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8*alphaDecreaser);
-                game.editor.debugGraphics.drawDashedCircle(data.radius * camera.scale.x * trigger.mySprite.scale.x, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
-            } else {
-                const polygons = [];
-                let innerVertices = data.vertices
+                    game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8*alphaDecreaser);
+                    game.editor.debugGraphics.drawDashedCircle(data.radius * camera.scale.x * trigger.mySprite.scale.x, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
+                } else {
+                    const polygons = [];
+                    let innerVertices = data.vertices
 
-                for (let k = 0; k < innerVertices.length; k++) {
-                    const polygon = new PIXI.Point();
-                    polygon.x = innerVertices[k].x * Settings.PTM * camera.scale.x * trigger.mySprite.scale.x;
-                    polygon.y = innerVertices[k].y * Settings.PTM * camera.scale.x * trigger.mySprite.scale.x;
-                    polygons.push(polygon);
+                    for (let k = 0; k < innerVertices.length; k++) {
+                        const polygon = new PIXI.Point();
+                        polygon.x = innerVertices[k].x * Settings.PTM * camera.scale.x * trigger.mySprite.scale.x;
+                        polygon.y = innerVertices[k].y * Settings.PTM * camera.scale.x * trigger.mySprite.scale.x;
+                        polygons.push(polygon);
+                    }
+                    pixiPosition.x = trigger.GetPosition().x * Settings.PTM;
+                    pixiPosition.y = trigger.GetPosition().y * Settings.PTM;
+                    game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
+
+                    game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8*alphaDecreaser);
+                    game.editor.debugGraphics.drawDashedPolygon(polygons, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
                 }
-                pixiPosition.x = trigger.GetPosition().x * Settings.PTM;
-                pixiPosition.y = trigger.GetPosition().y * Settings.PTM;
-                game.levelCamera.matrix.apply(pixiPosition,pixiPosition);
-
-                drawing.drawPolygon(polygons, pixiPosition, {alpha:0}, {color:0xe0b300, alpha:0.3*alphaDecreaser});
-                game.editor.debugGraphics.lineStyle(3, 0xe0b300, 0.8*alphaDecreaser);
-                game.editor.debugGraphics.drawDashedPolygon(polygons, pixiPosition.x, pixiPosition.y, data.rotation, 20, 10, offset);
             }
+
         }
     })
+
 }
 export const drawEditorTriggerTargets = body=>{
     if(body.mySprite.targets){
