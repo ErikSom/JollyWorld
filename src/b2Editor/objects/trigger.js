@@ -1389,7 +1389,7 @@ export class triggerCore {
                     if (!self.touchingObjects.includes(body)) self.touchingObjects.push(body);
                     if(!self.touchingTarget) self.repeatWaitDelay = self.delay * 1000;
                     self.touchingTarget = true;
-                    if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.onceEveryContact) {
+                    if (self.data.repeatType == triggerRepeatType.once || self.data.repeatType == triggerRepeatType.multiple) {
                         if (self.touchingObjects.length == 1) {
                             self.runTriggerOnce = true;
                         }
