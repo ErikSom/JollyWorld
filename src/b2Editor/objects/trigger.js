@@ -956,13 +956,15 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.targetValue = value
     });
 
-    _folder.add(ui.editorGUI.editData, "followPlayer").onChange(function (value) {
+    const followFields = ['none', 'player', 'first target']
+
+    ui.editorGUI.editData.follow = followFields[0];
+    if(ui.editorGUI.editData.followPlayer) ui.editorGUI.editData.follow = followFields[1];
+    else if(ui.editorGUI.editData.followFirstTarget) ui.editorGUI.editData.follow = followFields[2];
+
+    _folder.add(ui.editorGUI.editData, "follow", followFields).onChange(function (value) {
         this.humanUpdate = true;
-        this.targetValue = value
-    });
-    _folder.add(ui.editorGUI.editData, "followFirstTarget").onChange(function (value) {
-        this.humanUpdate = true;
-        this.targetValue = value
+        this.targetValue = followFields.indexOf(value);
     });
     _folder.add(ui.editorGUI.editData, "randomTarget").onChange(function (value) {
         this.humanUpdate = true;

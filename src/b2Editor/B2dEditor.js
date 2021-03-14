@@ -5539,12 +5539,20 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.enabled = controller.targetValue;
 						}
-					} else if (controller.property == "followPlayer") {
+					} else if (controller.property == "follow") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.followPlayer = controller.targetValue;
-							if(controller.targetValue) body.mySprite.data.followFirstTarget = false;
+							if(controller.targetValue === 1){
+								body.mySprite.data.followPlayer = true;
+								body.mySprite.data.followFirstTarget = false;
+							} else if(controller.targetValue === 2){
+								body.mySprite.data.followPlayer = false;
+								body.mySprite.data.followFirstTarget = true;
+							} else{
+								body.mySprite.data.followPlayer = false;
+								body.mySprite.data.followFirstTarget = false;
+							}
 						}
 					} else if (controller.property == "followFirstTarget") {
 						//trigger
