@@ -670,8 +670,8 @@ const _B2dEditor = function () {
 			if (Object.keys(uniqueSelectedPrefabs).length == 1) currentCase = case_JUST_PREFABS;
 			else currentCase = case_MULTIPLE;
 		} else if (this.selectedPhysicsBodies.length > 0 && this.selectedTextures.length == 0 && prefabKeys.length == 0) {
-			var _triggers = []
-			var _bodies = []
+			var _triggers = [];
+			var _bodies = [];
 			var _body;
 			for (i = 0; i < this.selectedPhysicsBodies.length; i++) {
 				_body = this.selectedPhysicsBodies[i];
