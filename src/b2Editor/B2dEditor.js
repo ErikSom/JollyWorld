@@ -51,6 +51,7 @@ import  * as physicsCullCamera from './utils/physicsCullCamera';
 import nanoid from "nanoid";
 import { findObjectWithCopyHash } from "./utils/finder";
 import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
+import { applyColorMatrix } from "./utils/colorMatrixParser";
  
 const PIXIHeaven = self.PIXI.heaven;
 
@@ -567,6 +568,15 @@ const _B2dEditor = function () {
 					editorSettings.stats=val;
 					game.stats.show(val);
 				});
+
+				ui.editorGUI.editData.openColorMatrixEditor = () => {
+					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.container, colorMatrix=>{
+						this.editorSettingsObject.colorMatrix = colorMatrix;
+					})
+				};
+				targetFolder.add(ui.editorGUI.editData, "openColorMatrixEditor").name('edit camera color matrix');
+
+
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
@@ -633,7 +643,6 @@ const _B2dEditor = function () {
 		var i;
 
 		ui.destroyEditorGUI();
-
 
 		const case_NOTHING = 0;
 		const case_JUST_BODIES = 1;
@@ -1212,7 +1221,11 @@ const _B2dEditor = function () {
 				advancedFolder = targetFolder.addFolder('advanced');
 
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
-					ui.showColorMatrixEditor();
+					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.selectedTextures, colorMatrix=>{
+						this.selectedTextures.forEach(texture=>{
+							texture.data.colorMatrix = colorMatrix;
+						})
+					})
 				};
 				controller = advancedFolder.add(ui.editorGUI.editData, "openColorMatrixEditor").name('edit color matrix');
 
@@ -2576,6 +2589,7 @@ const _B2dEditor = function () {
 		this.cameraZoom = Settings.defaultCameraZoom;
 		this.gameSpeed = 1.0;
 		this.physicsCameraSize = Settings.defaultPhysicsCameraSize;
+		this.colorMatrix = [];
 	}
 	this.editorJointObject = new this.jointObject();
 
@@ -5503,7 +5517,8 @@ const _B2dEditor = function () {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.repeatType = trigger.triggerRepeatType[controller.targetValue];
+							const targetKeys = body.mySprite.data.targetType < trigger.triggerButtonIndex ? trigger.triggerRepeatType : trigger.triggerButtonRepeatType;
+							body.mySprite.data.repeatType = targetKeys[controller.targetValue];
 						}
 						trigger.updateTriggerGUI();
 					}else if (controller.property == "delay" && this.selectedPhysicsBodies.length>0) { // prefabs also use delay ..
@@ -7043,6 +7058,7 @@ const _B2dEditor = function () {
 		graphic.renderable = obj.visible;
 		graphic.forceRenderable = obj.visible;
 
+		applyColorMatrix(graphic, obj.colorMatrix);
 
 		this.addObjectToLookupGroups(graphic, graphic.data);
 		return graphic;
@@ -8930,6 +8946,7 @@ const _B2dEditor = function () {
 			arr[15] = obj.repeatTeleportY;
 			arr[16] = obj.visible;
 			arr[17] = obj.mirrored;
+			arr[18] = obj.colorMatrix;
 		} else if (arr[0] == this.object_TRIGGER) {
 			arr[6] = obj.vertices;
 			arr[7] = obj.radius;
@@ -8969,6 +8986,7 @@ const _B2dEditor = function () {
 			arr[3] = obj.backgroundColor;
 			arr[4] = obj.cameraZoom;
 			arr[5] = obj.gameSpeed;
+			arr[6] = obj.colorMatrix;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -9083,6 +9101,7 @@ const _B2dEditor = function () {
 			obj.repeatTeleportY = arr[15] !== undefined ? arr[15] : 0;
 			obj.visible = typeof arr[16] === "boolean" ? arr[16] : true;
 			obj.mirrored = typeof arr[17] === "boolean" ? arr[17] : false;
+			obj.colorMatrix = Array.isArray(arr[18]) ? arr[18] : [];
 		} else if (arr[0] == this.object_TRIGGER) {
 			obj = new this.triggerObject();
 			obj.vertices = arr[6];
@@ -9123,6 +9142,7 @@ const _B2dEditor = function () {
 			obj.backgroundColor = arr[3] || '#D4D4D4';
 			obj.cameraZoom = arr[4] !== undefined ? arr[4] : Settings.defaultCameraZoom;
 			obj.gameSpeed = arr[5] !== undefined ? arr[5] : 1.0;
+			obj.colorMatrix = Array.isArray(arr[6]) ? arr[6] : [];
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();
@@ -9370,8 +9390,10 @@ const _B2dEditor = function () {
 			if(worldObjects.settings){
 				worldObjects.settings = this.parseArrObject(worldObjects.settings);
 				Object.keys(worldObjects.settings).forEach(key=> {
-					if(key === 'backgroundColor') game.app.renderer.backgroundColor = hexToNumberHex(worldObjects.settings[key]);
-					editorSettings[key] = worldObjects.settings[key]
+					const val = worldObjects.settings[key];
+					if(key === 'backgroundColor') game.app.renderer.backgroundColor = hexToNumberHex(val);
+					if(key === 'colorMatrix') applyColorMatrix(this.container, val)
+					editorSettings[key] = val
 				})
 				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);
 			}

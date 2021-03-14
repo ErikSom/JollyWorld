@@ -24,6 +24,7 @@ import {
 import * as emitterManager from '../../utils/EmitterManager';
 import * as SaveManager from '../../utils/SaveManager'
 import * as AudioManager from "../../utils/AudioManager"
+import { applyColorMatrix, applyColorMatrixMultiple, colorMatrixEffects, guiToEffectProps, setEffectProperties } from "./colorMatrixParser";
 
 
 let toolGUI;
@@ -55,7 +56,9 @@ export const hide = function () {
     scrollBars.hide();
     destroyEditorGUI();
     removeGradientEditor();
+    removeColorMatrixEditor();
 }
+
 export const show = function () {
     toolGUI.style.display = 'block';
     headerBar.style.display = 'block';
@@ -1362,6 +1365,7 @@ export const destroyEditorGUI = function () {
         customGUIContainer.removeChild(editorGUI.domElement);
         editorGUI = undefined;
     }
+    removeColorMatrixEditor();
 }
 
 export const createEditorStyledGUI = function (name) {
@@ -2059,7 +2063,9 @@ const removeGradientEditor = () => {
     }
 }
 
-export const showColorMatrixEditor = function (colorMatrixData) {
+export const showColorMatrixEditor = function (colorMatrixData, targets, callback, refTarget) {
+
+    targets = [].concat(targets);
 
     if(colorMatrixEditor && colorMatrixData){
         const computedLeft = parseFloat(getComputedStyle(colorMatrixEditor.domElement, null).left.replace("px", ""));
@@ -2085,20 +2091,55 @@ export const showColorMatrixEditor = function (colorMatrixData) {
 
     folder.open();
 
-    if(!colorMatrixData){
-        colorMatrixData = {};
-        colorMatrixData.selectedEffect = 'brightness';
+    if(colorMatrixData === undefined) colorMatrixData = [0];
+    if(Array.isArray(colorMatrixData)){
+        const data = {};
+        const type = colorMatrixData[0] || 0;
+        data.selectedEffect = colorMatrixEffects[type];
+        data.intensity = colorMatrixData[1];
+        data.save = ()=>{
+            const colorMatrix = guiToEffectProps(data);
+            callback(colorMatrix);
+
+            delete colorMatrixEditor.restoreOld
+            removeColorMatrixEditor();
+        }
+        colorMatrixData = data;
     }
 
-    const effects = ['blackAndWhite', 'brightness', 'brownie', 'colorTone', 'contrast', 'desaturate', 'grayscale', 'hue', 'kodaChrome', 'lsd', 'negative', 'night', 'polaroid', 'predator', 'saturate', 'sepia', 'vintage'];
+    applyColorMatrixMultiple(targets, guiToEffectProps(colorMatrixData));
 
-    folder.add(colorMatrixData, "selectedEffect", effects).onChange(function (value) {
-        showColorMatrixEditor(colorMatrixData);
+    folder.add(colorMatrixData, "selectedEffect", colorMatrixEffects).name('effect').onChange(function (value) {
+        colorMatrixData.intensity = (value === 'hue?' ? 180 : 0.5);
+        showColorMatrixEditor(colorMatrixData, targets, callback, refTarget);
     });
+
+    const intensityBar = setEffectProperties(colorMatrixData.selectedEffect, folder, colorMatrixData);
+    if(intensityBar) intensityBar.onChange( value => {
+        colorMatrixData.intensity = value;
+        applyColorMatrixMultiple(targets, guiToEffectProps(colorMatrixData));
+    })
+
+    folder.add(colorMatrixData, 'save').name('apply effect');
 
     const closeButton = document.createElement('div');
     closeButton.setAttribute('class', 'closeWindowIcon');
     folder.domElement.append(closeButton);
+
+
+    colorMatrixEditor.restoreOld = ()=>{
+        targets.forEach(target=>{
+            let cm;
+            if(refTarget){
+                cm = refTarget.colorMatrix;
+            }else{
+                cm = target === game.editor.container ? game.editor.editorSettingsObject.colorMatrix : target.data.colorMatrix;
+            }
+            applyColorMatrix(target, cm);
+        })
+    }
+
+
     closeButton.addEventListener('click', () => {
         removeColorMatrixEditor();
     });
@@ -2116,21 +2157,18 @@ export const showColorMatrixEditor = function (colorMatrixData) {
     }
 
     registerDragWindow(colorMatrixEditor);
+    setHighestWindow(colorMatrixEditor.domElement);
 
     return false;
 }
 
 const removeColorMatrixEditor = ()=>{
     if (colorMatrixEditor) {
+        if(colorMatrixEditor.restoreOld) colorMatrixEditor.restoreOld();
         colorMatrixEditor.domElement.parentNode.removeChild(colorMatrixEditor.domElement);
         colorMatrixEditor = null;
-        game.editor.updateSelection();
     }
 }
-
-
-
-
 
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 

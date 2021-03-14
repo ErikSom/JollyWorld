@@ -15,6 +15,7 @@ import {
 import { editorSettings } from "../utils/editorSettings";
 import * as drawing from '../utils/drawing'
 import * as AudioManager from '../../utils/AudioManager'
+import { applyColorMatrix } from "../utils/colorMatrixParser";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -31,6 +32,7 @@ export const getActionsForObject = function (object) {
         }
         if(prefab.class.isVehicle){
             actions.push("DealDamage");
+            actions.push("SetColorMatrix");
         }
         if(prefab.class.isJet){
             actions.push("EngineOn");
@@ -98,6 +100,7 @@ export const getActionsForObject = function (object) {
             case B2dEditor.object_GRAPHIC:
             case B2dEditor.object_GRAPHICGROUP:
                 actions.push("SetMirrored");
+                actions.push("SetColorMatrix");
                 break;
             default:
                 break;
@@ -109,7 +112,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed", "PlaySFX"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed", "SetCameraColorMatrix", "PlaySFX"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -328,6 +331,13 @@ export const doAction = function (actionData, target) {
         case "PlaySFX":
             playTriggerSound(actionData, target.trigger.GetPosition());
         break
+        case "SetCameraColorMatrix":
+            applyColorMatrix(game.editor.container, actionData.colorMatrix);
+        break;
+        case "SetColorMatrix":
+            if(prefab) prefab.class.applyColorMatrix(actionData.colorMatrix);
+            else applyColorMatrix(target, actionData.colorMatrix);
+        break;
     }
 }
 export const guitype_MINMAX = 0;
@@ -335,6 +345,7 @@ export const guitype_LIST = 1;
 export const guitype_BOOL = 2;
 export const guitype_UNIQUE_BOOL = 3;
 export const guitype_FUNCTION = 4;
+export const guitype_UNLISTED = 5;
 
 export const actionDictionary = {
     //*** IMPULSE ***/
@@ -852,6 +863,40 @@ export const actionDictionary = {
         }
     },
     /******************/
+    actionObject_SetCameraColorMatrix: {
+        type: 'SetCameraColorMatrix',
+        colorMatrix: [0],
+        setColorMatrix: 'function',
+    },
+    actionOptions_SetCameraColorMatrix: {
+        colorMatrix: guitype_UNLISTED,
+        setColorMatrix: {
+            type: guitype_FUNCTION,
+            function: action =>{
+                game.editor.ui.showColorMatrixEditor(action.colorMatrix, [], cm =>{
+                    action.colorMatrix = cm;
+                })
+            }
+        },
+    },
+    /******************/
+    actionObject_SetColorMatrix: {
+        type: 'SetColorMatrix',
+        colorMatrix: [0],
+        setColorMatrix: 'function',
+    },
+    actionOptions_SetColorMatrix: {
+        colorMatrix: guitype_UNLISTED,
+        setColorMatrix: {
+            type: guitype_FUNCTION,
+            function: action =>{
+                game.editor.ui.showColorMatrixEditor(action.colorMatrix, [], cm =>{
+                    action.colorMatrix = cm;
+                })
+            }
+        },
+    },
+    /******************/
 }
 export const addTriggerGUI = function (dataJoint, _folder) {
     var targetTypes = Object.keys(triggerTargetType);
@@ -865,18 +910,17 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.targetValue = value
     });
 
-    if(![triggerTargetType.click, triggerTargetType.keydown, triggerTargetType.keyup].includes(dataJoint.targetType)){
-        var repeatTypes = Object.keys(triggerRepeatType);
-        repeatTypes.forEach(key => {
-            if (triggerRepeatType[key] == dataJoint.repeatType) {
-                ui.editorGUI.editData.repeatTypeDropDown = key;
-            }
-        })
-        _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).name('repeat').onChange(function (value) {
-            this.humanUpdate = true;
-            this.targetValue = value
-        });
-    }
+    var repeatTypesSource = dataJoint.targetType < triggerButtonIndex ? triggerRepeatType : triggerButtonRepeatType;
+    var repeatTypes =  Object.keys(repeatTypesSource);
+    repeatTypes.forEach(key => {
+        if (repeatTypesSource[key] == dataJoint.repeatType) {
+            ui.editorGUI.editData.repeatTypeDropDown = key;
+        }
+    })
+    _folder.add(ui.editorGUI.editData, "repeatTypeDropDown", repeatTypes).name('repeat').onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value
+    });
 
     if([triggerTargetType.keydown, triggerTargetType.keyup].includes(dataJoint.targetType)){
         ui.editorGUI.editData.triggerKey = KeyNames[0];
@@ -901,13 +945,11 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.targetValue = value;
     }.bind(controller));
 
-    if(![triggerTargetType.keydown, triggerTargetType.keyup, triggerTargetType.click].includes(dataJoint.targetType) && dataJoint.repeatType === triggerRepeatType.continuesOnContact){
-        controller = _folder.add(ui.editorGUI.editData, "repeatDelay", 0, 60).step(0.1);
-        controller.onChange(function (value) {
-            this.humanUpdate = true;
-            this.targetValue = value;
-        }.bind(controller));
-    }
+    controller = _folder.add(ui.editorGUI.editData, "repeatDelay", 0, 60).step(0.1);
+    controller.onChange(function (value) {
+        this.humanUpdate = true;
+        this.targetValue = value;
+    }.bind(controller));
 
     _folder.add(ui.editorGUI.editData, "enabled").onChange(function (value) {
         this.humanUpdate = true;
@@ -1061,11 +1103,9 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 const addActionGUIToFolder = (action, actionString, actionFolder, targetID, actionID) =>{
     let actionOptions = getActionOptions(action.type);
     let actionVarString;
-    console.log(actionOptions);
 
     for (let key in action) {
         let actionController;
-        console.log(key);
         if (action.hasOwnProperty(key) && key != "type") {
             actionVarString = `${actionString}_${key}`;
             ui.editorGUI.editData[actionVarString] = action[key];
@@ -1173,15 +1213,28 @@ export const triggerTargetType = {
     anyButMainCharacter: 2,
     allObjects: 3,
     attachedTargetsOnly: 4,
+    // below here are all the non collision targets, if you change this make sure to search for targetType > 4
     click: 5,
     keydown: 6,
-    keyup: 7
+    keyup: 7,
+    triggers: 8
 }
+
+export const triggerButtonIndex = 5;
+
 export const triggerRepeatType = {
     once: 0,
-    onceEveryContact: 1,
-    continuesOnContact: 2,
+    multiple: 1,
+    continuously: 2,
 }
+
+// this is needed to not break all levels before we allowed repeat types on button triggers
+export const triggerButtonRepeatType = {
+    once: 1,
+    multiple: 0,
+    continuously: 2,
+}
+
 export const containsTargetType = function (targetTrigger, body) {
     switch (targetTrigger.data.targetType) {
         case triggerTargetType.mainCharacter:
@@ -1251,20 +1304,31 @@ export class triggerCore {
                 while (fixture != null) {
                     if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
                         if(Key.isPressed(Key.MOUSE)){
-                            this.activateTrigger();
+                            if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;
+                            else this.touchingTarget = true;
                         }
                         game.canvas.style.cursor = 'pointer';
                         break;
                     }
                     fixture = fixture.GetNext();
                 }
+                if(Key.isReleased(Key.MOUSE)){
+                    this.touchingTarget = false;
+                }
+
             } else if(this.data.targetType == triggerTargetType.keydown){
                 if(Key.isPressed(this.data.triggerKey)){
-                    this.activateTrigger();
+                    if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;
+                    else this.touchingTarget = true;
+                }else if(Key.isReleased(this.data.triggerKey)){
+                    this.touchingTarget = false;
                 }
             } else if(this.data.targetType == triggerTargetType.keyup){
                 if(Key.isReleased(this.data.triggerKey)){
-                    this.activateTrigger();
+                    if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;
+                    else this.touchingTarget = true;
+                }else if(Key.isPressed(this.data.triggerKey)){
+                    this.touchingTarget = false;
                 }
             }
             if(this.data.followPlayer){
@@ -1303,7 +1367,7 @@ export class triggerCore {
             this.repeatWaitDelay -= game.editor.deltaTime;
 
             if(this.repeatWaitDelay <= 0){
-                if (this.touchingTarget && this.data.repeatType === triggerRepeatType.continuesOnContact) {
+                if (this.touchingTarget && this.data.repeatType === triggerRepeatType.continuously) {
                     this.doTrigger();
                     this.repeatWaitDelay = this.repeatDelay * 1000;
                 }
@@ -1315,7 +1379,7 @@ export class triggerCore {
         var self = this;
         this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
-            if (self.data.targetType == triggerTargetType.click) return;
+            if (self.data.targetType>=triggerButtonIndex) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 const body = bodies[i];
@@ -1332,7 +1396,7 @@ export class triggerCore {
             }
         }
         this.contactListener.EndContact = function (contact, target) {
-            if (self.data.targetType == triggerTargetType.click) return;
+            if (self.data.targetType>=triggerButtonIndex) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 const body = bodies[i];
@@ -1353,7 +1417,9 @@ export class triggerCore {
     activateTrigger(){
         if(!this.destroy && this.data.enabled){
             this.actionQueue.push(this.delay*1000);
-            if (this.data.repeatType == triggerRepeatType.once && ![triggerTargetType.keydown, triggerTargetType.keyup, triggerTargetType.click].includes(this.data.targetType)) {
+            if ((this.data.targetType <triggerButtonIndex && this.data.repeatType == triggerRepeatType.once)){
+                this.destroy = true;
+            }else if ((this.data.targetType >= triggerButtonIndex && this.data.repeatType == triggerButtonRepeatType.once)){
                 this.destroy = true;
             }
         }

@@ -5,6 +5,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import { applyColorMatrixMultiple } from '../../b2Editor/utils/colorMatrixParser';
 
 
 export class BaseVehicle extends PrefabManager.basePrefab {
@@ -20,6 +21,14 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.vehicleName = '';
         this.accel = 0;
         this.limbsObserver = [];
+        this.applyColorMatrix(this.prefabObject.settings.colorMatrix);
+    }
+
+    applyColorMatrix(cm){
+        if(!cm) return;
+        const textures = [];
+        this.lookupObject._bodies.map(body => body.myTexture && textures.push(body.myTexture));
+        applyColorMatrixMultiple(textures, cm)
     }
 
     init() {
@@ -236,12 +245,27 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         }
     }
 }
+
+const setColorMatrix = prefab =>{
+    console.log(prefab, 'check it out');
+    const callback = cm=>{
+        console.log("Color matrix", cm);
+        prefab.settings.colorMatrix = cm;
+    }
+
+    const textures = [];
+    prefab.class.lookupObject._bodies.map(body => body.myTexture && textures.push(body.myTexture));
+    game.editor.ui.showColorMatrixEditor(prefab.settings.colorMatrix, textures, callback, prefab.settings)
+}
+
 BaseVehicle.settings = Object.assign({}, BaseVehicle.settings, {
+    "setColorMatrix": prefab=>setColorMatrix(prefab),
     "life": 300,
     "selectedVehicle": "Bike",
     "forceVehicle": false
 });
 BaseVehicle.settingsOptions = Object.assign({}, BaseVehicle.settingsOptions, {
+    "setColorMatrix": '$function',
     "life": {
         min: 1.0,
         max: 10000.0,
