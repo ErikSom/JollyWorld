@@ -77,7 +77,7 @@ export const initGui = function () {
     handleLoginStatusChange();
 }
 export const hideEditorPanels = function () {
-    hidePanel(levelEditScreen);
+    destroyLevelEditScreen();
     hidePanel(loginScreen);
     hidePanel(registerScreen);
     hidePanel(saveScreen);
@@ -998,6 +998,14 @@ export const showLevelEditScreen = function (dontReplace) {
         }
     }
 }
+
+const destroyLevelEditScreen = ()=>{
+    if(levelEditScreen){
+        levelEditScreen.domElement.parentNode.removeChild(levelEditScreen.domElement);
+        levelEditScreen = null;
+    }
+}
+
 export const showSaveScreen = function () {
 
     if (!backendManager.isLoggedIn()) return showNotice(Settings.DEFAULT_TEXTS.save_notLoggedIn);
