@@ -99,7 +99,7 @@ export const endContact = contact => {
 			crawlJoints(otherBody);
 
 			connectedBodies.forEach(body => {
-				body.SetAwake(false);
+				if(!body.ignorePhysicsCuller) body.SetAwake(false);
 				delete body.jointCrawled;
 			});
 			crawledJoints.forEach(joint => {

@@ -755,15 +755,13 @@ function Game() {
 		}
     }
     this.initLevel = function (data) {
-
         this.stopWorld();
         this.currentLevelData = data;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
-        //this.editor.buildJSON(this.app.resources["characterData1"].data);
     }
     this.pauseGame = function(){
-        if(this.gameOver) return;
+        if(this.gameOver || this.levelWon) return;
         this.pause = true;
         this.run = false;
         ui.showPauseMenu();
@@ -1006,10 +1004,6 @@ function Game() {
         cameraTargetPosition.y *= camera.scale.y;
 
 
-        const movX = (-cameraTargetPosition.x - camera.x) * panEase;
-        const movY = (-cameraTargetPosition.y - camera.y) * panEase;
-
-
         let offsetX = 0;
         let offsetY = 0;
         this.movementBuffer.push(this.cameraFocusObject.GetLinearVelocity().Clone());
@@ -1023,15 +1017,20 @@ function Game() {
             offsetX /= this.movementBufferSize;
             offsetY /= this.movementBufferSize;
         }
+        if(!window.cameraSpeedBuffer) window.cameraSpeedBuffer = 14;
+        const movementBufferScale = window.cameraSpeedBuffer * camera.scale.x;
 
-        const maxOffset = window.innerWidth * 0.03 / camera.scale.x;
-        offsetX = Math.min(Math.max(offsetX, -maxOffset), maxOffset);
-        offsetY = Math.min(Math.max(offsetY, -maxOffset), maxOffset)
 
-        const offsetScale = 1.0 * game.editor.editorSettingsObject.gameSpeed;
+        console.log(movementBufferScale);
 
-        camera.x += (movX-offsetX*offsetScale);
-        camera.y += (movY-offsetY*offsetScale);
+        cameraTargetPosition.x += offsetX * movementBufferScale;
+        cameraTargetPosition.y += offsetY * movementBufferScale;
+
+        const movX = (-cameraTargetPosition.x - camera.x) * panEase;
+        const movY = (-cameraTargetPosition.y - camera.y) * panEase;
+
+        camera.x += movX;
+        camera.y += movY;
 
         this.myEffectsContainer.scale.x = camera.scale.x;
         this.myEffectsContainer.scale.y = camera.scale.y;
