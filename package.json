@@ -49,6 +49,7 @@
     "gamestats.js": "^0.9.1",
     "html-minifier": "^4.0.0",
     "http-server": "^0.11.1",
+    "idb-keyval": "^5.0.4",
     "lz-string": "^1.4.4",
     "md5-file": "^5.0.0",
     "nanoid": "^1.2.3",

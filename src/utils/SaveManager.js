@@ -2,9 +2,11 @@ import { JSONStringify } from "../b2Editor/utils/formatString";
 import {
     levelsData
 } from "../data/levelsData";
-const nanoid = require('nanoid');
+import * as idb from 'idb-keyval';
 
+const nanoid = require('nanoid');
 const saveKeyPrefix = 'JollyWorld';
+
 export const SAVEKEYS = {
     tempEditorWorld:"tempEditorWorld",
     levelsVoted:"levelsVoted",
@@ -36,16 +38,24 @@ export const updateLocalUserData = function(data){
     return data;
 }
 
-export const saveTempEditorWorld = function(data){
-    saveData(SAVEKEYS.tempEditorWorld, data);
+export const saveTempEditorWorld = async function(data){
+    try{
+        await idb.set(SAVEKEYS.tempEditorWorld, data);
+    }catch(err){
+        // db error
+    }
+    return data;
 }
 
-export const getTempEditorWorld = function(){
-    var tempWorld = loadData(SAVEKEYS.tempEditorWorld);
-    if(!tempWorld){
-        tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.mainMenuLevel);
+export const getTempEditorWorld = async function(){
+    let tempWorld;
+    try{
+        tempWorld = await idb.get(SAVEKEYS.tempEditorWorld);
+    } catch(err){
+        tempWorld = JSON.parse(JSON.stringify(levelsData.mainMenuLevel));
         tempWorld.id = nanoid();
         tempWorld.creationDate = Date.now();
+        saveTempEditorWorld(tempWorld);
     }
     return tempWorld;
 }
@@ -69,3 +79,5 @@ export const loadData = function(key){
         console.warn("Saving not working", err);
     }
 }
+
+

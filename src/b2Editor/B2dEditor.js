@@ -1797,7 +1797,7 @@ const _B2dEditor = function () {
 
 			if (body.myTexture) {
 				this.updateObject(body.myTexture, body.myTexture.data);
-				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(body.myTexture.data)));
+				cloneObject = this.parseArrObject(this.serializeObject(body.myTexture.data));
 				copyArray.push({
 					ID: cloneObject.ID,
 					data: cloneObject
@@ -1809,7 +1809,7 @@ const _B2dEditor = function () {
 			sprite = this.selectedTextures[i];
 			this.updateObject(sprite, sprite.data);
 
-			cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(sprite.data)), true);
+			cloneObject = this.parseArrObject(this.serializeObject(sprite.data));
 			copyArray.push({
 				ID: cloneObject.ID,
 				data: cloneObject
@@ -1827,7 +1827,7 @@ const _B2dEditor = function () {
 					if(body.myTexture) childCount++;
 				})
 
-				cloneObject = this.parseArrObject(JSON.parse(this.stringifyObject(prefab)));
+				cloneObject = this.parseArrObject(this.serializeObject(prefab));
 				copyArray.push({
 					ID: prefab.ID,
 					childCount,
@@ -1979,7 +1979,7 @@ const _B2dEditor = function () {
 				data.x -= copyCenterPoint.x;
 				data.y -= copyCenterPoint.y;
 			}
-			copyJSON += this.stringifyObject(data);
+			copyJSON += this.serializeObject(data, true);
 		}
 
 		copyJSON += ']}';
@@ -3794,8 +3794,7 @@ const _B2dEditor = function () {
 				}
 
 				if([this.object_GRAPHICGROUP].includes(data.type)){
-					data.graphicObjects = data.graphicObjects.map(graphicObjectString=>{
-						const graphicObject = this.parseArrObject(JSON.parse(graphicObjectString));
+					data.graphicObjects.forEach(graphicObject => {
 						graphicObject.vertices.forEach(vertice=>{
 							if(obj) vertice.x *= -1;
 							else vertice.y *= -1;
@@ -3812,7 +3811,6 @@ const _B2dEditor = function () {
 						if(obj) graphicObject.x *= -1;
 						else graphicObject.y *= -1;
 						graphicObject.rotation = -graphicObject.rotation;
-						return this.stringifyObject(graphicObject);
 					})
 					this.updateGraphicGroupShapes(object);
 				}
@@ -4454,7 +4452,6 @@ const _B2dEditor = function () {
 		} else if (e.keyCode == 9) { // TAB
 			jointTriggerLayer.toggleHide();
 		}
-		this.storeUndoMovementDebounced();
 	}
 
 	this.onKeyUp = function (e) {
@@ -4470,6 +4467,8 @@ const _B2dEditor = function () {
 		} else if (e.keyCode == 18) {
 			this.altDown = false;
 		}
+
+		this.storeUndoMovementDebounced();
 	}
 
 	this.queryPhysicsBodies = [];
@@ -6498,7 +6497,7 @@ const _B2dEditor = function () {
 
 			if (graphicContainer.data.type == this.object_GRAPHIC) innerGraphics.push(graphicContainer.data);
 			else graphicContainer.data.graphicObjects.forEach(g => {
-				innerGraphics.push(this.parseArrObject(JSON.parse(g)));
+				innerGraphics.push(this.parseArrObject(g));
 			});
 
 			this.updateObject(graphicContainer, graphicContainer.data);
@@ -7061,6 +7060,9 @@ const _B2dEditor = function () {
 		graphic.rotation = obj.rotation;
 		graphic.scale.x = obj.mirrored ? -1 : 1;
 
+		if(typeof obj.graphicObjects[0] === 'string'){
+			obj.graphicObjects = obj.graphicObjects.map(obj => JSON.parse(obj));
+		}
 
 		this.updateGraphicGroupShapes(graphic);
 		this.textures.addChild(graphic);
@@ -7085,6 +7087,10 @@ const _B2dEditor = function () {
 		graphic.x = obj.x;
 		graphic.y = obj.y;
 		graphic.rotation = obj.rotation;
+
+		if(typeof obj.graphicObjects[0] === 'string'){
+			obj.graphicObjects = obj.graphicObjects.map(obj => JSON.parse(obj));
+		}
 
 		this.updateGraphicGroupShapes(graphic);
 		this.textures.addChild(graphic);
@@ -7238,7 +7244,7 @@ const _B2dEditor = function () {
 					y: 0
 				};
 				for (let j = 0; j < sprite.data.graphicObjects.length; j++) {
-					const gObj = this.parseArrObject(JSON.parse(sprite.data.graphicObjects[j]));
+					const gObj = this.parseArrObject(sprite.data.graphicObjects[j]);
 
 					if (gObj instanceof this.graphicObject) {
 						if (gObj.radius) {
@@ -7257,7 +7263,7 @@ const _B2dEditor = function () {
 				centerPoint.y /= sprite.data.graphicObjects.length;
 
 				for (let j = 0; j < sprite.data.graphicObjects.length; j++) {
-					const gObj = this.parseArrObject(JSON.parse(sprite.data.graphicObjects[j]));
+					const gObj = this.parseArrObject(sprite.data.graphicObjects[j]);
 
 					if (gObj instanceof this.graphicObject) {
 						for (var k = 0; k < gObj.vertices.length; k++) {
@@ -7277,7 +7283,7 @@ const _B2dEditor = function () {
 					gObj.x = centerPoint.x + xDif * scaleX;
 					gObj.y = centerPoint.y + yDif * scaleY;
 
-					sprite.data.graphicObjects[j] = this.stringifyObject(gObj);
+					sprite.data.graphicObjects[j] = this.serializeObject(gObj);
 				}
 				this.updateGraphicGroupShapes(sprite);
 				// needed to update the culling engine
@@ -7812,7 +7818,7 @@ const _B2dEditor = function () {
 		for (i = 0; i < graphicObjects.length; i++) {
 			graphicObjects[i].data.x -= centerPoint.x;
 			graphicObjects[i].data.y -= centerPoint.y;
-			graphicGroup.graphicObjects.push(this.stringifyObject(graphicObjects[i].data));
+			graphicGroup.graphicObjects.push(this.serializeObject(graphicObjects[i].data));
 			this.deleteObjects([graphicObjects[i]]);
 		}
 
@@ -7832,7 +7838,7 @@ const _B2dEditor = function () {
 		this.updateObject(graphicGroup, graphicGroup.data);
 
 		for (let i = 0; i < graphicGroup.data.graphicObjects.length; i++) {
-			const graphicObject = this.parseArrObject(JSON.parse(graphicGroup.data.graphicObjects[i]));
+			const graphicObject = this.parseArrObject(graphicGroup.data.graphicObjects[i]);
 
 			const cosAngle = Math.cos(graphicGroup.rotation);
 			const sinAngle = Math.sin(graphicGroup.rotation);
@@ -7902,7 +7908,7 @@ const _B2dEditor = function () {
 		for (i = 0; i < graphicObjects.length; i++) {
 			graphicObjects[i].data.x -= centerPoint.x;
 			graphicObjects[i].data.y -= centerPoint.y;
-			graphicGroup.graphicObjects.push(this.stringifyObject(graphicObjects[i].data));
+			graphicGroup.graphicObjects.push(this.serializeObject(graphicObjects[i].data));
 			this.deleteObjects([graphicObjects[i]]);
 		}
 
@@ -8571,7 +8577,7 @@ const _B2dEditor = function () {
 
 		let g;
 		for (var i = 0; i < graphic.data.graphicObjects.length; i++) {
-			const gObj = this.parseArrObject(JSON.parse(graphic.data.graphicObjects[i]));
+			const gObj = this.parseArrObject(graphic.data.graphicObjects[i]);
 
 			if (gObj instanceof this.graphicObject) {
 				g = new PIXI.Container();
@@ -8592,6 +8598,11 @@ const _B2dEditor = function () {
 			}else if (gObj instanceof this.graphicGroup) {
 				g = new PIXI.Container();
 				g.data = gObj;
+
+				if(typeof gObj.graphicObjects[0] === 'string'){
+					gObj.graphicObjects = gObj.graphicObjects.map(obj => JSON.parse(obj));
+				}
+
 				this.updateGraphicGroupShapes(g);
 				g.data = null;
 			}
@@ -8846,45 +8857,41 @@ const _B2dEditor = function () {
 	}
 
 	this.stringifyWorldJSON = function () {
+
 		this.worldJSON = '{"objects":[';
 		var sprite;
 		var i;
 		var stringifiedPrefabs = {};
 
+		const objects = []
 		for (i = 0; i < this.textures.children.length; i++) {
-			if (i != 0) this.worldJSON += ',';
 			sprite = this.textures.children[i];
 			this.updateObject(sprite, sprite.data);
 			if (sprite.data.prefabInstanceName) {
 				if (stringifiedPrefabs[sprite.data.prefabInstanceName]) {
-					this.worldJSON = this.worldJSON.slice(0, -1);
 					continue;
 				}
-				this.worldJSON += this.stringifyObject(this.activePrefabs[sprite.data.prefabInstanceName]);
+				objects.push(this.serializeObject(this.activePrefabs[sprite.data.prefabInstanceName]));
 				stringifiedPrefabs[sprite.data.prefabInstanceName] = true;
 			} else {
-				this.worldJSON += this.stringifyObject(sprite.data);
+				objects.push(this.serializeObject(sprite.data));
 			}
 		}
-		this.worldJSON += '],'
-		this.worldJSON += '"settings":';
-		this.worldJSON += this.stringifyObject(this.editorSettingsObject);
-		this.worldJSON += ',';
-		this.worldJSON += '"gradients":';
-		this.worldJSON += JSONStringify(this.levelGradients);
-		this.worldJSON += ",";
-		this.worldJSON += '"colors":';
-		this.worldJSON += JSONStringify(window.__guiusercolors);
-		this.worldJSON += '}';
+		const settings = this.serializeObject(this.editorSettingsObject);
+		const gradients = this.levelGradients;
+		const colors = window.__guiusercolors;
+
+		const worldObject = {objects, settings, gradients, colors}
+
+		this.worldJSON = JSONStringify(worldObject);
 
 		// console.log("********************** World Data **********************");
 		// console.log(this.worldJSON);
 		// console.log("********************************************************");
 		return this.worldJSON;
 	}
-
-	this.stringifyObject = function (obj) {
-		var arr = [];
+	this.serializeObject = function (obj, stringify=false) {
+		const arr = [];
 		arr[0] = obj.type;
 		arr[1] = obj.x;
 		arr[2] = obj.y;
@@ -9016,7 +9023,7 @@ const _B2dEditor = function () {
 			arr[19] = obj.repeatTeleportY;
 			arr[20] = obj.visible;
 		}else if(arr[0] == this.object_SETTINGS){
-			arr = [];
+			arr.length = 0;
 			arr[0] = obj.type;
 			arr[1] = obj.gravityX;
 			arr[2] = obj.gravityY;
@@ -9041,7 +9048,7 @@ const _B2dEditor = function () {
 			arr[19] = obj.mirrored;
 			arr[20] = obj.loop;
 		}
-		return JSONStringify(arr);
+		return stringify ? JSONStringify(arr) : arr;
 	}
 	this.parseArrObject = function (arr) {
 		var obj;

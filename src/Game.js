@@ -624,7 +624,6 @@ function Game() {
         //if(this.run) this.stopWorld();
 
         this.resetGameSelection();
-
         this.initLevel(levelsData.mainMenuLevel);
         ui.showMainMenu();
         ui.hideGameOverMenu();
@@ -742,10 +741,24 @@ function Game() {
         SlowmoUI.hide();
         ui.hideSmallLogo();
     }
-    this.openEditor = function () {
+    this.openEditor = async function () {
         this.gameState = this.GAMESTATE_EDITOR;
         this.stopWorld();
-        this.initLevel(SaveManager.getTempEditorWorld());
+
+        let levelData;
+        try{
+            levelData = await SaveManager.getTempEditorWorld();
+        }catch(err){
+            // error
+            levelData = null;
+        }
+        if(!levelData){
+            levelData = JSON.parse(JSON.stringify(levelsData.mainMenuLevel));
+            levelData.id = nanoid();
+            levelData.creationDate = Date.now();
+        }
+
+        this.initLevel(levelData);
         this.doAutoSave();
         this.editor.editing = true;
         ui.hide();
@@ -757,6 +770,7 @@ function Game() {
     this.initLevel = function (data) {
         this.stopWorld();
         this.currentLevelData = data;
+        this.editor.worldJSON = data.json;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
     }
@@ -786,7 +800,7 @@ function Game() {
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(() => {
             if(!self.editor.groupEditing){
-                self.currentLevelData.json = this.editor.stringifyWorldJSON();
+                self.currentLevelData.json = game.editor.worldJSON;
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
             }
             self.doAutoSave();
@@ -1003,7 +1017,6 @@ function Game() {
         cameraTargetPosition.x *= camera.scale.x;
         cameraTargetPosition.y *= camera.scale.y;
 
-
         let offsetX = 0;
         let offsetY = 0;
         this.movementBuffer.push(this.cameraFocusObject.GetLinearVelocity().Clone());
@@ -1017,11 +1030,8 @@ function Game() {
             offsetX /= this.movementBufferSize;
             offsetY /= this.movementBufferSize;
         }
-        if(!window.cameraSpeedBuffer) window.cameraSpeedBuffer = 14;
+        if(!window.cameraSpeedBuffer) window.cameraSpeedBuffer = 20;
         const movementBufferScale = window.cameraSpeedBuffer * camera.scale.x;
-
-
-        console.log(movementBufferScale);
 
         cameraTargetPosition.x += offsetX * movementBufferScale;
         cameraTargetPosition.y += offsetY * movementBufferScale;
