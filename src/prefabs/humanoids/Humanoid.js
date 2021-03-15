@@ -46,7 +46,12 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.patchJointAngles();
         this.stabalizeJoints();
         this.eyesTimer = 0.0;
-        this.collisionUpdates = [];
+        this.collisionUpdates = [{type:1,
+            target:'leg_left'
+            }];
+
+
+        console.log(this.collisionUpdates);
         this.alive = true;
         this.bleedTimer = -1;
 
@@ -60,7 +65,9 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
-
+        
+        this.vains = [];
+        this.vainJoints = [];
 
         // game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
         // game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
@@ -118,7 +125,6 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             let targetTextureName = body.myTexture.data.textureName.substr(0, body.myTexture.data.textureName.length-4);
             let targetTexture = targetTextureName+targetFrame;
-
 
             body.myTexture.data.textureName = targetTexture;
             body.myTexture.originalSprite.texture = PIXI.Texture.from(targetTexture);
@@ -477,12 +483,16 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     AudioManager.playSFX(['snap1', 'snap2', 'snap3', 'snap4'], 0.3, 1.0+Math.random()*.2-.1, targetJoint.GetBodyA().GetPosition());
 
+                    this.vains.push(...vainBodies._bodies);
+
                     //fix display positions:
                     const swapBodies = vainBodies._bodies.concat().reverse();
                     let tarSprite;
                     const tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
                     for (var i = 0; i < swapBodies.length; i++) {
                         tarSprite = swapBodies[i].mySprite;
+                        swapBodies[i].mainCharacter = true;
+                        console.log(swapBodies[i], 'dafuuuq');
                         tarSprite.parent.removeChild(tarSprite);
                         this.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
                     }

@@ -244,6 +244,14 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             }
         }
     }
+
+    getCurrentActiveBodies(){
+        if(this.character && this.character.attachedToVehicle){
+            return [...this.lookupObject._bodies, ...this.character.vains];
+        }else{
+            return [...this.character.lookupObject._bodies, ...this.character.vains];
+        }
+    }
 }
 
 const setColorMatrix = prefab =>{

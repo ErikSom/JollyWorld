@@ -7411,7 +7411,8 @@ const _B2dEditor = function () {
 
 					let shouldDestroy = keyA !== keyB;
 
-					if(prefabClass.isCharacter){
+					if(prefabClass.isCharacter || prefabClass.isVehicle){
+						console.log(joint.GetBodyA().mainCharacter, joint.GetBodyA(), joint.GetBodyB().mainCharacter, joint.GetBodyB());
 						shouldDestroy = false;
 						if(joint.GetBodyA().mainCharacter){
 							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;

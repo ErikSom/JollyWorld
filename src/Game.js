@@ -120,6 +120,7 @@ function Game() {
         this.stats.dom.style.left = '0px';
         this.stats.dom.style.top = 'unset';
         this.stats.dom.style.bottom = '0px';
+        this.stats.dom.style.zIndex = '999';
         const showStats = (window.location.search.indexOf('stats=true')>=0)
         this.stats.show(showStats);
 
