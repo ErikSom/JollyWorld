@@ -46,12 +46,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.patchJointAngles();
         this.stabalizeJoints();
         this.eyesTimer = 0.0;
-        this.collisionUpdates = [{type:1,
-            target:'leg_left'
-            }];
+        this.collisionUpdates = [];
 
-
-        console.log(this.collisionUpdates);
         this.alive = true;
         this.bleedTimer = -1;
 
@@ -491,8 +487,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     const tarIndex = this.lookupObject[update.target].myTexture.parent.getChildIndex(this.lookupObject[update.target].myTexture);
                     for (var i = 0; i < swapBodies.length; i++) {
                         tarSprite = swapBodies[i].mySprite;
-                        swapBodies[i].mainCharacter = true;
-                        console.log(swapBodies[i], 'dafuuuq');
+                        swapBodies[i].isVain = true;
                         tarSprite.parent.removeChild(tarSprite);
                         this.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
                     }

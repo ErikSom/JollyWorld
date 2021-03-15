@@ -7416,9 +7416,9 @@ const _B2dEditor = function () {
 						console.log(joint.GetBodyA().mainCharacter, joint.GetBodyA(), joint.GetBodyB().mainCharacter, joint.GetBodyB());
 						shouldDestroy = false;
 						if(joint.GetBodyA().mainCharacter){
-							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVain && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
 						}else{
-							if((!joint.GetBodyA().mainCharacter && !joint.GetBodyA().isVehiclePart && !joint.GetBodyA().isHat) || joint.GetBodyA().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+							if((!joint.GetBodyA().mainCharacter && !joint.GetBodyB().isVain && !joint.GetBodyA().isVehiclePart && !joint.GetBodyA().isHat) || joint.GetBodyA().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
 						}
 					}
 
