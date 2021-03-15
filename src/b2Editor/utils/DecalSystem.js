@@ -10,6 +10,7 @@ export class Decal {
         this.maskRT = maskRT;
         this.decalRT = decalRT;
         this.owner = owner;
+        this.id = 0;
     }
 
     destroy() {
@@ -25,14 +26,25 @@ export class DecalSystem {
      * @param {PIXI.BaseTexture} baseTexture
      * @param {number} id
      * @param {PIXI.Application} app 
+     * @param {DecalSystem} owner 
+     * 
      */
-    constructor(baseTexture, id, app) {
+    constructor(baseTexture, id, app, owner) {
         this.source = baseTexture;
         this.id = id;
         this.app = app;
         this.frameId = 0;
         this.decals = [];
         this.tasks = [];
+
+        /**
+         * @type {DecalSystem}
+         */
+        this.next = null;
+
+        if(owner) {
+            this.next = owner;
+        }
 
         //update decals every 2 frame
         this.frameTrottle = 2;
@@ -102,14 +114,29 @@ export class DecalSystem {
     }
 
     /**
+     * Get strored decal for id
+     * @param {string} id 
+     */
+    getDecalFor(id) {
+        return this.decals.find((e) => e.id === id);
+    }
+    /**
      * 
      * @param {PIXI.Texture} source 
+     * @param {string} id
      */
-    createDecalEntry(source) {
+    createDecalEntry(source, id) {
+
+        if (id && this.decals.find((e) => e.id === id)) {
+            console.warn("[Decal] Doubling occurred for:", id);
+        }
+
         const decal = new PIXI.RenderTexture(this.resultRT.baseTexture, source.frame.clone());
         const mask = new PIXI.RenderTexture(this.maskRT.baseTexture, source.frame.clone());
 
         const d = new Decal(mask, decal, this);
+        d.id = id;
+
         this.decals.push(d);
 
         return d;
@@ -184,6 +211,12 @@ export class DecalSystem {
     }
 
     destroy() {
+
+        if (this.next) {
+            this.next.destroy();
+        }
+
+        this.next = null;
         this.decals.forEach((e) => e.destroy());
         this.maskRT.destroy();
         this.decalRT.destroy();

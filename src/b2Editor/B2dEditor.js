@@ -620,6 +620,7 @@ const _B2dEditor = function () {
 
 		if (ui.editorGUI) ui.registerDragWindow(ui.editorGUI);
 	}
+
 	this.deselectTool = function(i){
 		switch (i) {
 			case this.tool_VERTICEEDITING:
@@ -8312,8 +8313,19 @@ const _B2dEditor = function () {
 		texture.myBody = null;
 	}
 
-	this.getDecalTextureById = function (id = '') {
-		return DS.getDecalSystem(id);
+	this.getDecalTextureById = function (id = '', vacansion) {
+		let cache = DS.getDecalSystem(id);
+		let root = null;
+
+		while (cache && vacansion && cache.getDecalFor(vacansion)) {
+			root = cache;
+			cache = cache.next;
+		}
+
+		return {
+			cache,
+			root,
+		};
 	}
 
 	/**
@@ -8323,12 +8335,13 @@ const _B2dEditor = function () {
 	 */
 	this.setDecalTextureById = function (id = '', decalTextureCache) {
 		
-		DS.setDecalSystem(id, decalTextureCache);
+		if (!DS.getDecalSystem(id))
+			DS.setDecalSystem(id, decalTextureCache);
 
 		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.maskRT));
-		const p = new PIXI.Sprite(decalTextureCache.maskRT);
+		// const p = new PIXI.Sprite(decalTextureCache.maskRT);
 
-		p.scale.set(0.5);
+		//p.scale.set(0.5);
 		//game.app.stage.addChild(p);
 	
 		return decalTextureCache;
@@ -8349,17 +8362,17 @@ const _B2dEditor = function () {
 		/**
 		 * @type {DS.DecalSystem}
 		 */
-		let cache = this.getDecalTextureById(key);
+		let { cache, root } = this.getDecalTextureById(key, tex.textureCacheIds[0]);
 
 		if (!cache) {
-			cache = new DS.DecalSystem(base, key, game.app);
-			
+			cache = new DS.DecalSystem(base, key, game.app, root);
+
 			this.setDecalTextureById(key, cache);
 		}
 
 		cache.usage ++;
 
-		const decal = cache.createDecalEntry(tex);
+		const decal = cache.createDecalEntry(tex, tex.textureCacheIds[0]);
 
 		body.myRTCache = cache;
 		body.myDecalEntry = decal;
