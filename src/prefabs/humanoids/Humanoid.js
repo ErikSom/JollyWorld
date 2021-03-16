@@ -11,6 +11,10 @@ import * as AudioManager from '../../utils/AudioManager';
 import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
 
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
+
 export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
     static TIME_EYES_OPEN = 3100;
@@ -46,7 +50,10 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.patchJointAngles();
         this.stabalizeJoints();
         this.eyesTimer = 0.0;
-        this.collisionUpdates = [];
+        this.collisionUpdates = [{type:1,
+            target:'leg_left'
+            }];
+
 
         this.alive = true;
         this.bleedTimer = -1;
@@ -160,6 +167,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         }
 
         this.processJointDamage();
+        this.processBodySeparation();
 
         if (this.collisionUpdates.length > 0) {
             this.doCollisionUpdate(this.collisionUpdates[0]);
@@ -190,7 +198,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
 
-            let reactionForce = new Box2D.b2Vec2();
+            let reactionForce = vec1;
             targetJoint.GetReactionForce(1 / Settings.physicsTimeStep, reactionForce);
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
@@ -201,6 +209,86 @@ export class Humanoid extends PrefabManager.basePrefab {
                     target: jointsToAnalyse[i].split('_joint')[0],
                 });
             }
+        }
+    }
+    processBodySeparation(){
+        const snapSeperation = 0.2;
+        const maxSnapTicks = 30;
+        let i;
+        const jointsToAnalyse = ['leg_left_joint', 'leg_right_joint', 'head_joint', 'belly_joint', 'feet_left_joint', 'feet_right_joint', 'hand_left_joint', 'hand_right_joint', 'thigh_left_joint', 'thigh_right_joint', 'shoulder_left_joint', 'shoulder_right_joint'];
+
+        // check num frames
+        
+        for (i = 0; i < jointsToAnalyse.length; i++) {
+            let targetJoint = this.lookupObject[jointsToAnalyse[i]];
+            if (!targetJoint) continue;
+
+            const pos1 = vec1;
+            targetJoint.GetAnchorA(pos1);
+            const pos2 = vec2;
+            targetJoint.GetAnchorB(pos2);
+
+            const distance = pos1.SelfSub(pos2);
+
+            if(distance.Length() > snapSeperation){
+                if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
+                targetJoint.snapTick++;
+
+                if(targetJoint.snapTick>= maxSnapTicks){
+
+                    this.collisionUpdates.push({
+                        type: Humanoid.GORE_SNAP,
+                        target: jointsToAnalyse[i].split('_joint')[0],
+                    });
+
+                    targetJoint.snapTick = 0;
+
+
+                }
+            }else{
+                targetJoint.snapTick = 0;
+            }
+        }
+
+
+        for(i = 0; i<this.vains.length; i++){
+            const vain = this.vains[i];
+
+            let jointEdge = vain.GetJointList();
+
+            while(jointEdge){
+
+                let targetJoint = jointEdge.joint;
+
+                if(targetJoint.GetType() !== Box2D.b2JointType.e_ropeJoint){
+
+                    const pos1 = vec1;
+                    targetJoint.GetAnchorA(pos1);
+                    const pos2 = vec2;
+                    targetJoint.GetAnchorB(pos2);
+
+                    const distance = pos1.SelfSub(pos2);
+
+                    if(distance.Length() > snapSeperation){
+                        if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
+                        targetJoint.snapTick++;
+
+                        if(targetJoint.snapTick>= maxSnapTicks){
+                            game.editor.deleteObjects([targetJoint]);
+                            if(!vain.vainRopeJoint.destroyed){
+                                game.editor.deleteObjects([vain.vainRopeJoint]);
+                            }
+                        }
+                    }else{
+                        targetJoint.snapTick = 0;
+                    }
+
+                }
+
+
+                jointEdge = jointEdge.next;
+            }
+
         }
     }
 
@@ -428,28 +516,43 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
 
+
+                    const anchorAPos = targetJoint.GetAnchorA(vec1);
+                    const anchorBPos = targetJoint.GetAnchorB(vec2);
+
                     let revoluteJointDef, joint;
 
-                    let vainPrefab = '{"objects":[[4,' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).x * Settings.PTM + ',' + targetJoint.GetAnchorA(new Box2D.b2Vec2()).y * Settings.PTM + ',0,{},"Vain"]]}'
+                    let vainPrefab = '{"objects":[[4,' + anchorAPos.x * Settings.PTM + ',' + anchorAPos.y * Settings.PTM + ',0,{},"Vain"]]}'
 
                     let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
                     let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
 
+
                     revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                    revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+
+                    vainBodies._bodies[0].SetPosition(anchorAPos);
+
+                    revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], anchorAPos);
+
+
+
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
                     revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                    revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                    vainBodies._bodies[3].SetPosition(anchorBPos);
+                    revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], anchorBPos);
+
+
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
 
                     let ropeJointDef;
 
+
                     ropeJointDef = new Box2D.b2RopeJointDef;
-                    ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), targetJoint.GetAnchorA(new Box2D.b2Vec2()));
+                    ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), anchorAPos, anchorAPos);
                     ropeJointDef.maxLength = vainSize;
 
                     joint = game.world.CreateJoint(ropeJointDef);
@@ -471,8 +574,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                     })
                     //carve bodies
 
-                    if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                    if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), targetJoint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
+                    if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
+                    if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
 
                     game.world.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];
@@ -488,6 +591,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     for (var i = 0; i < swapBodies.length; i++) {
                         tarSprite = swapBodies[i].mySprite;
                         swapBodies[i].isVain = true;
+                        swapBodies[i].vainRopeJoint = joint;
                         tarSprite.parent.removeChild(tarSprite);
                         this.lookupObject[update.target].myTexture.parent.addChildAt(tarSprite, tarIndex);
                     }
@@ -926,7 +1030,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         });
         newJoint.SetMaxLength(maxLength);
 
-        linkedBodies.forEach(linkedBodyKey => {
+        [...linkedBodies, baseRefJoint].forEach(linkedBodyKey => {
             const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]
             if(!linkedJoint.linkedJoints) linkedJoint.linkedJoints = [];
             linkedJoint.linkedJoints.push(newJoint);
