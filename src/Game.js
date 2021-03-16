@@ -875,6 +875,7 @@ function Game() {
                 rotation:object.GetAngle(),
                 object,
                 flipped:this.character.flipped,
+                // save checkpoint time
             }
         }
     }
