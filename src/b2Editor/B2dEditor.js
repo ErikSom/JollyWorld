@@ -628,7 +628,6 @@ const _B2dEditor = function () {
 				delete this.verticeEditingBlackOverlay;
 				this.verticeEditingSprite.parent.addChildAt(this.verticeEditingSprite, this.verticeEditingSprite.oldIndex);
 				this.verticeEditingSprite._cullingSizeDirty = true; // ADD THIS
-				console.log(this.verticeEditingSprite);
 				delete this.verticeEditingSprite.selectedVertice;
 				delete this.verticeEditingSprite.oldIndex;
 				delete this.verticeEditingSprite;
@@ -7333,7 +7332,6 @@ const _B2dEditor = function () {
 
 		if(prefabClass.isCharacter){
 			objects = objects.concat(prefabClass.vehicleParts);
-			console.log(prefabClass.vehicleParts);
 		}
 
 		const centerObject = prefabClass.lookupObject[centerObjectName];
@@ -7413,7 +7411,6 @@ const _B2dEditor = function () {
 					let shouldDestroy = keyA !== keyB;
 
 					if(prefabClass.isCharacter || prefabClass.isVehicle){
-						console.log(joint.GetBodyA().mainCharacter, joint.GetBodyA(), joint.GetBodyB().mainCharacter, joint.GetBodyB());
 						shouldDestroy = false;
 						if(joint.GetBodyA().mainCharacter){
 							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVain && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;

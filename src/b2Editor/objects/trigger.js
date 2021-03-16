@@ -150,7 +150,6 @@ export const doAction = function (actionData, target) {
                     }else{
                         objects = [].concat(prefab.class.lookupObject._bodies, prefab.class.lookupObject._textures);
                     }
-                    console.log(objects);
                     targetPos = new Box2D.b2Vec2(target.x, target.y);
                 } else if (target.myBody) {
                     objects = [target.myBody];

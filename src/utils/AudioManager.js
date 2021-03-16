@@ -29,7 +29,7 @@ export const init = ()=>{
 	loadAudio('sfx', sfxJSON)
 	.then(()=> loadAudio('pack1', pack1JSON))
 	.then(()=>{
-		console.log("ALL AUDIO LOADED:", getAvailableAudioSprites());
+		// console.log("ALL AUDIO LOADED:", getAvailableAudioSprites());
 	})
 }
 

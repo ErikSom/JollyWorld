@@ -23,7 +23,6 @@ export const simplifyPath = function (vertices, smooth, zoom) {
             });
             path.closed = true;
             path.simplify(editorSettings.pathSmoothTolerance + toleranceIncreaser);
-            console.log(path);
             path.segments.forEach((p) => {
                 optimizedVertices.push({
                     x: p.point.x / precision,

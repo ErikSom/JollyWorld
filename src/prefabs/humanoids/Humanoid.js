@@ -50,10 +50,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.patchJointAngles();
         this.stabalizeJoints();
         this.eyesTimer = 0.0;
-        this.collisionUpdates = [{type:1,
-            target:'leg_left'
-            }];
-
+        this.collisionUpdates = [];
 
         this.alive = true;
         this.bleedTimer = -1;
@@ -68,7 +65,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].noDamage = true;
         this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].noDamage = true;
-        
+
         this.vains = [];
         this.vainJoints = [];
 
@@ -390,6 +387,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if(dotProductOther>0){
                         forceDamage += otherBody.preSolveVelicity.LengthSquared() * otherBody.GetMass();
                     }
+
+                    if(characterBody == self.lookupObject["belly"]) forceDamage /= 3;
 
                     if (forceDamage > Settings.bashForce / 2) {
                         if (characterBody == self.lookupObject["head"]) {

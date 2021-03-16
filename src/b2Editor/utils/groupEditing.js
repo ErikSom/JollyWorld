@@ -139,7 +139,6 @@ export const stopEditingGroup = () => {
 		clonedSprite = editor.selectedTextures[0];
 	}else{
 		// everything got deleted
-		console.log("GROUP DELETED!!");
 		groupDeleted = true;
 	}
 

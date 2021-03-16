@@ -184,8 +184,6 @@ function BackendManager() {
 				const {error} = data;
 				if(error) return reject(error);
 
-				console.log("SUCCESS :)");
-
 				// update local thumbnail cache
 				details.thumb_big_md5 = data.thumb_big_md5;
 				details.thumb_small_md5 = data.thumb_small_md5;
@@ -224,8 +222,6 @@ function BackendManager() {
 			.then(async data => {
 				const {error} = data;
 				if(error) return reject(error)
-	
-				console.log("PUBLISH SUCCESSS :)!");
 
 				// show level share screen
 
@@ -260,8 +256,6 @@ function BackendManager() {
 				const {error} = data;
 				if(error) return reject(error);
 
-				console.log("VOTE SUCCESS :)");
-
 				// update local thumbnail cache
 				BackendCache.voteDataCache[levelid] = vote;
 				BackendCache.save();
@@ -284,7 +278,6 @@ function BackendManager() {
 			if(error){
 				return console.log(error);
 			}
-			console.log("PLAYCOUNT INCREASE SUCCESS :)");
 		});
 
 	}
@@ -306,8 +299,6 @@ function BackendManager() {
 				const {error} = data;
 
 				if(error) return reject(error)
-
-				console.log("DELETE SUCCESSS :)!", data);
 
 				resolve();
 

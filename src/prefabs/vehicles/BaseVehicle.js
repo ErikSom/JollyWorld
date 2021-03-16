@@ -255,9 +255,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 }
 
 const setColorMatrix = prefab =>{
-    console.log(prefab, 'check it out');
     const callback = cm=>{
-        console.log("Color matrix", cm);
         prefab.settings.colorMatrix = cm;
     }
 
