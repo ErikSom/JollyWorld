@@ -1685,6 +1685,10 @@ only screen and (max-width: 360px) and (max-height: 640px) and (orientation: por
         height: 50px;
         line-height: 40px;
     }
+    .thumbsUpIcon {
+        width: 30px;
+        height: 29px;
+    }
 
     .menuButton.disable:before {
         font-size: 8px;
