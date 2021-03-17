@@ -62,7 +62,7 @@ export const simplifyPath = function (vertices, smooth, zoom) {
 
 
 
-export const combineShapes = sprites => {
+export const combineShapes = (sprites, action = 'unite') => {
     let combinedPath = null;
 
     const succesfullyMerged = [];
@@ -119,7 +119,7 @@ export const combineShapes = sprites => {
 
         if (i === 0) combinedPath = path;
         else {
-            const tryCombine = combinedPath.unite(path);
+            const tryCombine = combinedPath[action](path);
             if(tryCombine.segments){
                 succesfullyMerged.push(i);
                 combinedPath = tryCombine;

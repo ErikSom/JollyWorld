@@ -1181,7 +1181,10 @@ const _B2dEditor = function () {
 					controller = targetFolder.add(ui.editorGUI.editData, "merge").name(label);
 					ui.editorGUI.editData.merge = (function (_c) {
 						return function () {
-							const combinedVerticesData = verticeOptimize.combineShapes(self.selectedTextures);
+
+							const booleanOperation = self.altDown ? 'subtract' : 'unite';
+
+							const combinedVerticesData = verticeOptimize.combineShapes(self.selectedTextures, booleanOperation);
 
 							const objectsToDelete = combinedVerticesData.merged.map(i=>self.selectedTextures[i]);
 							self.selectedTextures = self.selectedTextures.filter((texture, i) => !combinedVerticesData.merged.includes(i));
