@@ -252,6 +252,11 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             return [...this.character.lookupObject._bodies, ...this.character.vains];
         }
     }
+
+    destroy(){
+        this.character.destroyed = true;
+        super.destroy();
+    }
 }
 
 const setColorMatrix = prefab =>{

@@ -1620,7 +1620,7 @@ const _B2dEditor = function () {
 						if(!sprite.myTriggers) break;
 						j--;
 					}
-				})
+				});
 				delete this.activePrefabs[obj.key];
 			} else if (obj.data) {
 				//graphic object

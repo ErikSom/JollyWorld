@@ -507,7 +507,7 @@ function Game() {
 
     this.inputUpdate = function () {
         if (this.gameState != this.GAMESTATE_MENU && this.character.alive && !this.pause && !this.levelWon) {
-            if (this.vehicle && this.character.attachedToVehicle) {
+            if (this.vehicle && !this.vehicle.destroyed && this.character.attachedToVehicle) {
 
                 if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
                     this.vehicle.accelerate(1);
@@ -534,7 +534,7 @@ function Game() {
                     this.character.flip();
                 }
 
-            } else if (this.character && !this.character.attachedToVehicle) {
+            } else if (this.character && !this.character.destroyed && !this.character.attachedToVehicle) {
                 if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
                     this.character.positionBody('up');
                     if (Key.isDown(Key.A)  || Key.isDown(Key.LEFT)) this.character.lean(-1);
@@ -909,7 +909,7 @@ function Game() {
 			const body = {
 				method: 'GET',
 			}
-
+            // fetch(`${Settings.STATIC}/c59d92b95a50333cd6b27d64f0393183.json`, body)
             fetch(`${Settings.STATIC}/${levelData.level_md5}.json`, body)
             .then(response => response.json())
             .then(data => {
