@@ -57,6 +57,17 @@ export const getTempEditorWorld = async function(){
         tempWorld.creationDate = Date.now();
         saveTempEditorWorld(tempWorld);
     }
+
+    // this can be removed later, backwars compatibility for old save system
+    if(window.location.search.indexOf('localstorage=true')>=0){
+        tempWorld = loadData(SAVEKEYS.tempEditorWorld);
+        if(!tempWorld){
+            tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.mainMenuLevel);
+            tempWorld.id = nanoid();
+            tempWorld.creationDate = Date.now();
+        }
+    }
+
     return tempWorld;
 }
 

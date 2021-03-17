@@ -1620,7 +1620,7 @@ const _B2dEditor = function () {
 						if(!sprite.myTriggers) break;
 						j--;
 					}
-				})
+				});
 				delete this.activePrefabs[obj.key];
 			} else if (obj.data) {
 				//graphic object
@@ -1666,6 +1666,10 @@ const _B2dEditor = function () {
 
 				if (sprite.data && sprite.data.type == this.object_ANIMATIONGROUP) {
 					this.animationGroups = this.animationGroups.filter(animation => animation != sprite);
+				}
+
+				if(sprite.data.parallax || sprite.data.repeatTeleportX || sprite.data.repeatTeleportY){
+					this.parallaxObject = this.parallaxObject.filter(obj=> obj !== sprite);
 				}
 
 
@@ -3511,7 +3515,7 @@ const _B2dEditor = function () {
 							y: 0,
 							n: 0
 						};
-						if(data.prefabInstanceName){
+						if(data.prefabInstanceName && this.editing){
 							const prefab = this.activePrefabs[data.prefabInstanceName];
 							centerPoints[group].x += prefab.x;
 							centerPoints[group].y += prefab.y;
