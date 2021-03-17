@@ -3221,21 +3221,42 @@ const _B2dEditor = function () {
 								let previousVertice = vertices[verticeIndex-1];
 								if(verticeIndex === 0) previousVertice = vertices[vertices.length-1];
 
+
+								let verticeChangeX = movX;
+								let verticeChangeY = movY;
+
 								if(spriteData.type === this.object_BODY){
 									vertice.x += movX / Settings.PTM;
 									vertice.y += movY / Settings.PTM;
+
+									if(this.shiftDown){
+										vertice.x = Math.round((vertice.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
+										vertice.y = Math.round((vertice.y * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
+										vertice.x /= Settings.PTM;
+										vertice.y /= Settings.PTM;
+									}
 								}else{
+									const oldX = vertice.x;
+									const oldY = vertice.y;
+
 									vertice.x += movX;
 									vertice.y += movY;
+
+									if(this.shiftDown){
+										vertice.x = Math.round(vertice.x / Settings.positionGridSize) * Settings.positionGridSize;
+										verticeChangeX = vertice.x - oldX;
+										vertice.y = Math.round(vertice.y / Settings.positionGridSize) * Settings.positionGridSize;
+										verticeChangeY = vertice.y - oldY;
+									}
 								}
 
 								if(vertice.point1){
-									vertice.point1.x += movX;
-									vertice.point1.y += movY;
+									vertice.point1.x += verticeChangeX;
+									vertice.point1.y += verticeChangeY;
 								}
 								if(previousVertice.point2){
-									previousVertice.point2.x += movX;
-									previousVertice.point2.y += movY;
+									previousVertice.point2.x += verticeChangeX;
+									previousVertice.point2.y += verticeChangeY;
 								}
 							});
 						}
