@@ -4,7 +4,7 @@ export const guiToEffectProps = data =>{
 
 	const index = colorMatrixEffects.indexOf(data.selectedEffect);
 	const intensity = data.intensity;
-	const alpha = data.alpha;
+	const alpha = data.alpha === undefined ? 1.0 : data.alpha;
 
 	return [index, intensity, alpha];
 
@@ -29,7 +29,7 @@ export const applyColorMatrix = (target, effect) =>{
 	const cf = new PIXI.filters.ColorMatrixFilter();
 	const type = colorMatrixEffects[effect[0]];
 	const intensity = effect[1];
-	const alpha = effect[2];
+	const alpha = effect[2] === undefined ? 1.0 : effect[2];
 
 	if(!Array.isArray(target.filters)) target.filters = [];
 

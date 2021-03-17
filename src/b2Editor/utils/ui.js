@@ -2105,7 +2105,7 @@ export const showColorMatrixEditor = function (colorMatrixData, targets, callbac
         const type = colorMatrixData[0] || 0;
         data.selectedEffect = colorMatrixEffects[type];
         data.intensity = colorMatrixData[1];
-        data.alpha = colorMatrixData[2];
+        data.alpha = colorMatrixData[2] === undefined ? 1.0 : colorMatrixData[2];
         data.save = ()=>{
             const colorMatrix = guiToEffectProps(data);
             callback(colorMatrix);
@@ -2346,8 +2346,6 @@ export const endDrag = function (event, _window) {
         editorGUIPos.x = userData.editorGuiPos.x;
         editorGUIPos.y = userData.editorGuiPos.y;
         SaveManager.updateLocalUserData(userData);
-
-        console.log("STORE THAT SHITTT");
     }
 
     document.removeEventListener('mousemove', _window.mouseMoveFunction);
