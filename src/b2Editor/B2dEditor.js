@@ -3515,7 +3515,7 @@ const _B2dEditor = function () {
 							y: 0,
 							n: 0
 						};
-						if(data.prefabInstanceName){
+						if(data.prefabInstanceName && this.editing){
 							const prefab = this.activePrefabs[data.prefabInstanceName];
 							centerPoints[group].x += prefab.x;
 							centerPoints[group].y += prefab.y;
