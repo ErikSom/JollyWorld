@@ -4,6 +4,7 @@ import {Humanoid} from '../humanoids/Humanoid'
 import {
     game
 } from "../../Game";
+import { applyColorMatrixMultiple } from '../../b2Editor/utils/colorMatrixParser';
 
 export class NPC extends PrefabManager.basePrefab {
     constructor(target) {
@@ -20,7 +21,16 @@ export class NPC extends PrefabManager.basePrefab {
 			}
 		}
 		this.initialized = true;
+        if(this.prefabObject.settings) this.applyColorMatrix(this.prefabObject.settings.colorMatrix);
 	}
+
+	applyColorMatrix(cm){
+        if(!cm) return;
+        const textures = [];
+        this.lookupObject._bodies.map(body => body.myTexture && textures.push(body.myTexture));
+        applyColorMatrixMultiple(textures, cm)
+    }
+
 	init(){
 		super.init();
         this.character.life = this.prefabObject.settings.life;
@@ -117,6 +127,16 @@ export class NPC extends PrefabManager.basePrefab {
 	}
 }
 
+const setColorMatrix = prefab =>{
+    const callback = cm=>{
+        prefab.settings.colorMatrix = cm;
+    }
+
+    const textures = [];
+    prefab.class.lookupObject._bodies.map(body => body.myTexture && textures.push(body.myTexture));
+    game.editor.ui.showColorMatrixEditor(prefab.settings.colorMatrix, textures, callback, prefab.settings)
+}
+
 NPC.settings = Object.assign({}, NPC.settings, {
     "isFlipped": false,
 	"skin": 1,
@@ -128,6 +148,7 @@ NPC.settings = Object.assign({}, NPC.settings, {
     "positionHead": prefab=>startPositioningLimb(prefab, Humanoid.BODY_PARTS.HEAD),
     "selectJointTarget": "body",
     "addJoint": prefab=>startAddingJoint(prefab),
+    "setColorMatrix": prefab=>setColorMatrix(prefab),
 });
 NPC.settingsOptions = Object.assign({}, NPC.settingsOptions, {
     "isFlipped": false,
@@ -148,4 +169,5 @@ NPC.settingsOptions = Object.assign({}, NPC.settingsOptions, {
     "positionHead": '$function',
     "selectJointTarget": [...Object.values(Humanoid.BODY_PARTS)],
     "addJoint": '$function',
+	"setColorMatrix": '$function',
 });

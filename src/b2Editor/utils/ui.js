@@ -2105,6 +2105,7 @@ export const showColorMatrixEditor = function (colorMatrixData, targets, callbac
         const type = colorMatrixData[0] || 0;
         data.selectedEffect = colorMatrixEffects[type];
         data.intensity = colorMatrixData[1];
+        data.alpha = colorMatrixData[2];
         data.save = ()=>{
             const colorMatrix = guiToEffectProps(data);
             callback(colorMatrix);
@@ -2119,12 +2120,19 @@ export const showColorMatrixEditor = function (colorMatrixData, targets, callbac
 
     folder.add(colorMatrixData, "selectedEffect", colorMatrixEffects).name('effect').onChange(function (value) {
         colorMatrixData.intensity = (value === 'hue?' ? 180 : 0.5);
+        colorMatrixData.alpha = 1.0;
         showColorMatrixEditor(colorMatrixData, targets, callback, refTarget);
     });
 
-    const intensityBar = setEffectProperties(colorMatrixData.selectedEffect, folder, colorMatrixData);
+    const [intensityBar, alphaBar] = setEffectProperties(colorMatrixData.selectedEffect, folder, colorMatrixData);
+
     if(intensityBar) intensityBar.onChange( value => {
         colorMatrixData.intensity = value;
+        applyColorMatrixMultiple(targets, guiToEffectProps(colorMatrixData));
+    })
+
+    if(alphaBar) alphaBar.onChange( value => {
+        colorMatrixData.alpha = value;
         applyColorMatrixMultiple(targets, guiToEffectProps(colorMatrixData));
     })
 

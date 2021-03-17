@@ -1327,7 +1327,7 @@ const _B2dEditor = function () {
 							}.bind(controller));
 						}else if (prefabClassOptions[key] instanceof Object && !(prefabClassOptions[key] instanceof Array)) {
 							argument = prefabClassOptions[key];
-							controller = targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step)
+							controller = targetFolder.add(ui.editorGUI.editData, key, argument.min, argument.max).step(argument.step);
 							controller.onChange(function (value) {
 								this.humanUpdate = true;
 								this.targetValue = value

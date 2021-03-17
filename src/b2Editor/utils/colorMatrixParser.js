@@ -1,11 +1,12 @@
-export const colorMatrixEffects = ['none', 'blackAndWhite', 'brightness', 'browni', 'contrast', 'grayscale', 'hue', 'lsd', 'negative', 'night', 'polaroid', 'predator', 'saturate', 'sepia'];
+export const colorMatrixEffects = ['none', 'blackAndWhite', 'brightness', 'contrast', 'grayscale', 'hue', 'lsd', 'negative', 'night', 'polaroid', 'predator', 'saturate', 'sepia'];
 
 export const guiToEffectProps = data =>{
 
 	const index = colorMatrixEffects.indexOf(data.selectedEffect);
 	const intensity = data.intensity;
+	const alpha = data.alpha;
 
-	return [index, intensity];
+	return [index, intensity, alpha];
 
 }
 
@@ -28,9 +29,9 @@ export const applyColorMatrix = (target, effect) =>{
 	const cf = new PIXI.filters.ColorMatrixFilter();
 	const type = colorMatrixEffects[effect[0]];
 	const intensity = effect[1];
+	const alpha = effect[2];
 
 	if(!Array.isArray(target.filters)) target.filters = [];
-
 
 	if(['brightness','contrast','grayscale','night','predator','saturate','hue'].includes(type)){
 		cf[type](intensity);
@@ -38,29 +39,34 @@ export const applyColorMatrix = (target, effect) =>{
 		cf[type]();
 	}
 
+	cf.alpha = alpha;
+
 	target.filters.push(cf);
 }
 
 
 export const setEffectProperties = (effect, folder, data) => {
-	let guiElement = null;
+	let intensityEl = null;
+	let alphaEl = null;
 	switch(effect){
 		case 'brightness':
-			guiElement = folder.add(data, 'intensity', 0, 2);
+			intensityEl = folder.add(data, 'intensity', 0, 2).step(0.01);
 			break;
 		case 'contrast':
 		case 'saturate':
-			guiElement = folder.add(data, 'intensity', -1, 1);
+			intensityEl = folder.add(data, 'intensity', -1, 1).step(0.01);
 			break;
 		case 'grayscale':
 		case 'night':
 		case 'predator':
-			guiElement = folder.add(data, 'intensity', 0, 1);
+			intensityEl = folder.add(data, 'intensity', 0, 1).step(0.01);
 		break;
 
 		case 'hue':
-			guiElement = folder.add(data, 'intensity', 0, 360);
+			intensityEl = folder.add(data, 'intensity', 0, 360).step(0.01);
 		break;
 	}
-	return guiElement;
+	if(effect !== 'none') alphaEl = folder.add(data, 'alpha', 0, 1).step(0.01);
+
+	return [intensityEl, alphaEl];
 }

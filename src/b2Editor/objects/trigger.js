@@ -351,13 +351,14 @@ export const guitype_BOOL = 2;
 export const guitype_UNIQUE_BOOL = 3;
 export const guitype_FUNCTION = 4;
 export const guitype_UNLISTED = 5;
+export const guitype_ROTATION = 6;
 
 export const actionDictionary = {
     //*** IMPULSE ***/
     actionObject_Impulse: {
         type: "Impulse",
         impulseForce: 0,
-        direction: 0,
+        direction: 270,
         rotationForce: 0,
     },
     actionOptions_Impulse: {
@@ -369,10 +370,10 @@ export const actionDictionary = {
             step: 1,
         },
         direction: {
-            type: guitype_MINMAX,
+            type: guitype_ROTATION,
             min: 0,
             max: 360,
-            value: 0,
+            value: 270,
             step: 0.1,
         },
         rotationForce: {
@@ -1120,6 +1121,7 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
 
             switch (actionOptions[key].type) {
                 case guitype_MINMAX:
+                case guitype_ROTATION:
                     actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].min, actionOptions[key].max)
                     actionController.step(actionOptions[key].step);
                     actionController.name(key);
@@ -1130,6 +1132,54 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         this.triggerTargetID = targetID;
                         this.triggerActionID = actionID;
                     }.bind(actionController));
+
+                    if(actionOptions[key].type === guitype_ROTATION){
+                        const slider = actionController.domElement.querySelector('.slider-fg');
+                        slider.style.position = 'relative';
+                        const rotDiv = document.createElement('div');
+                        slider.appendChild(rotDiv);
+                        rotDiv.style = `
+                            width: 14.5px;
+                            height: 14.5px;
+                            position: absolute;
+                            top: 50%;
+                            left: 5px;
+                            transform: translate(0, -50%);
+                            border-radius: 50%;
+                            border: 1px solid #c1c1c1;
+                        `;
+                        const rotArrow = document.createElement('div');
+                        rotArrow.style = `
+                            width: 7px;
+                            height: 1px;
+                            background: black;
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform-origin: left;
+                        `;
+                        rotDiv.appendChild(rotArrow);
+
+                        rotArrow.style.transform = `translate(0, -50%) rotate(${ui.editorGUI.editData[actionVarString]}deg)`;
+
+                        actionController.onChange(function (value) {
+                            this.humanUpdate = true;
+                            this.targetValue = value
+                            this.triggerActionKey = key;
+                            this.triggerTargetID = targetID;
+                            this.triggerActionID = actionID;
+                            rotArrow.style.transform = `translate(0, -50%) rotate(${value}deg)`;
+                        }.bind(actionController));
+                    }else{
+                        actionController.onChange(function (value) {
+                            this.humanUpdate = true;
+                            this.targetValue = value
+                            this.triggerActionKey = key;
+                            this.triggerTargetID = targetID;
+                            this.triggerActionID = actionID;
+                        }.bind(actionController));
+                    }
+
                     break
                 case guitype_LIST:
                     actionController = actionFolder.add(ui.editorGUI.editData, actionVarString, actionOptions[key].items)
@@ -1386,7 +1436,7 @@ export class triggerCore {
         var self = this;
         this.contactListener = new Box2D.b2ContactListener();
         this.contactListener.BeginContact = function (contact, target) {
-            if (self.data.targetType>=triggerButtonIndex) return;
+            if (self.data.targetType>=triggerButtonIndex || !self.data.enabled) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
                 const body = bodies[i];
