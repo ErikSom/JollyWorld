@@ -1668,6 +1668,10 @@ const _B2dEditor = function () {
 					this.animationGroups = this.animationGroups.filter(animation => animation != sprite);
 				}
 
+				if(sprite.data.parallax || sprite.data.repeatTeleportX || sprite.data.repeatTeleportY){
+					this.parallaxObject = this.parallaxObject.filter(obj=> obj !== sprite);
+				}
+
 
 				sprite.parent.removeChild(sprite);
 				sprite.destroy({
