@@ -1628,8 +1628,6 @@ export const showTextEditor = function (startValue, callBack) {
     textarea.style.height = '250px';
     divWrapper.appendChild(textarea);
 
-
-
     divWrapper.appendChild(document.createElement('br'));
     divWrapper.appendChild(document.createElement('br'));
 

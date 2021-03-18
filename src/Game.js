@@ -311,6 +311,14 @@ function Game() {
         window.addEventListener('wheel', this.onMouseWheel.bind(this), {passive:false});
         window.addEventListener('resize', this.handleResize.bind(this));
 
+        window.onbeforeunload = function(e) {
+            if(this.editor.editing){
+                const dialogText = 'Are you sure you want to close the editor?';
+                e.returnValue = dialogText;
+                return dialogText;
+            };
+        };
+
         if(MobileController.isMobile() && MobileController.isIos()){
             // ios reflow fix
             setInterval(()=>{
