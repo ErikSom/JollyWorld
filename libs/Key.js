@@ -171,6 +171,10 @@ export const KeyNames = [
     'Z',
 ]
 
+export const KeyboardEventKeys = {
+    ENTER: 'Enter',
+}
+
 export const KeyValLookup = {};
 KeyNames.forEach( key => {
     const val = Key[key];

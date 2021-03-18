@@ -1172,7 +1172,12 @@ export class Humanoid extends PrefabManager.basePrefab {
             endJoint.position.y = endJointPos.y*Settings.PTM;
 
             const endPos = new Box2D.b2Vec2(endJointPos.x, endJointPos.y);
-            const targetOffsetAngle = lowerPart.GetAngle()+endPart.jointOffsetAngle - this.lookupObject.body.GetAngle();
+
+
+            const offsetAngle = this.flipped ? Math.PI-endPart.jointOffsetAngle+this.lookupObject.body.GetAngle() : endPart.jointOffsetAngle-this.lookupObject.body.GetAngle();
+
+
+            let targetOffsetAngle = lowerPart.GetAngle()+offsetAngle;
             endPos.x += endPart.jointOffsetLength * Math.cos(targetOffsetAngle);
             endPos.y += endPart.jointOffsetLength * Math.sin(targetOffsetAngle);
 

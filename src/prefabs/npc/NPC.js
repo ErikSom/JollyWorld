@@ -139,6 +139,7 @@ const setColorMatrix = prefab =>{
 
 NPC.settings = Object.assign({}, NPC.settings, {
     "isFlipped": false,
+    "isAwake": true,
 	"skin": 1,
 	"life": 300,
 	"positionLeftArm": prefab=>startPositioningLimb(prefab, Humanoid.BODY_PARTS.ARM_LEFT),
@@ -152,6 +153,7 @@ NPC.settings = Object.assign({}, NPC.settings, {
 });
 NPC.settingsOptions = Object.assign({}, NPC.settingsOptions, {
     "isFlipped": false,
+	"isAwake": true,
     "skin": {
         min: 1,
         max: 7,

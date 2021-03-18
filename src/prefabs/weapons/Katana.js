@@ -1,14 +1,42 @@
 import * as PrefabManager from '../PrefabManager'
 import { SliceObject } from './SliceObject';
+import {
+    game
+} from "../../Game";
 
 class Katana extends SliceObject {
     constructor(target) {
         super(target);
+        this.flipped = false;
+        if(this.prefabObject.settings){
+			this.flip(this.prefabObject.settings.isFlipped);
+		}
     }
     init() {
 		super.init();
     }
+    flip(flipped){
+        if(this.flipped != flipped){
+            this.flipped = flipped;
+            game.editor.mirrorPrefab(this, 'sliceBody');
+        }
+    }
+    set(property, value) {
+		super.set(property, value);
+        switch (property) {
+            case 'isFlipped':
+                this.flip(value);
+            break
+        }
+    }
 }
+
+Katana.settings = Object.assign({}, Katana.settings, {
+	"isFlipped": false,
+});
+Katana.settingsOptions = Object.assign({}, Katana.settingsOptions, {
+	"isFlipped": false,
+});
 
 PrefabManager.prefabLibrary.Katana = {
     json: '{"objects":[[0,-0.08800712444386306,0.9331496389670001,0,"katana","sliceBody",0,["#999999","#999999"],["#000","#000"],[0,0,0],false,true,[[{"x":-0.21486975363413616,"y":2.104038819379681},{"x":-0.21486975363413616,"y":0.7378957174174422},{"x":0.33114027361590553,"y":0.7378957174174422},{"x":0.33114027361590553,"y":2.104038819379681}],[{"x":-0.06296855286917794,"y":-3.5736255664706107},{"x":0.386885132608228,"y":0.7064463482366499},{"x":-0.04669803288740827,"y":0.7316910296734873},{"x":-0.4031556525899976,"y":-3.5483808850337732}]],[1,1],0,[0,0],"",[1,1]],[1,-1.0959280721914406,3.5676797050588505,-3.141592653589792,"katana","sharpTexture",1,"Katana0000",0,24.475576373015777,1.5076594222935575,3.141592653589792,false,"#FFFFFF",1,1,1]]}',

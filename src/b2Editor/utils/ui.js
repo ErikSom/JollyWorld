@@ -25,6 +25,7 @@ import * as emitterManager from '../../utils/EmitterManager';
 import * as SaveManager from '../../utils/SaveManager'
 import * as AudioManager from "../../utils/AudioManager"
 import { applyColorMatrix, applyColorMatrixMultiple, colorMatrixEffects, guiToEffectProps, setEffectProperties } from "./colorMatrixParser";
+import { KeyboardEventKeys } from "../../../libs/Key";
 
 
 let toolGUI;
@@ -1628,6 +1629,7 @@ export const showTextEditor = function (startValue, callBack) {
     divWrapper.appendChild(textarea);
 
 
+
     divWrapper.appendChild(document.createElement('br'));
     divWrapper.appendChild(document.createElement('br'));
 
@@ -1637,10 +1639,18 @@ export const showTextEditor = function (startValue, callBack) {
     button.innerHTML = "SAVE";
     divWrapper.appendChild(button);
 
-    button.addEventListener('click', () => {
+    const saveText = () => {
         callBack(textarea.value);
         removeTextEditor();
-    })
+    }
+
+    textarea.onkeydown = e =>{
+        if(!e.shiftKey && e.key === KeyboardEventKeys.ENTER){
+            saveText();
+        }
+    }
+
+    button.addEventListener('click', saveText)
 
     targetDomElement.appendChild(divWrapper);
 

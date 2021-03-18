@@ -50,7 +50,21 @@ export const beginContact = contact => {
 	const otherBody = otherFixture.GetBody();
 
 	if(otherBody.mySprite){
-		if(otherBody.mySprite.data.awake){
+
+		const isPrefab = otherBody.mySprite.data.prefabInstanceName;
+
+		let allowAwake;
+		if(!isPrefab) allowAwake = otherBody.mySprite.data.awake;
+		else{
+			const prefab = game.editor.activePrefabs[otherBody.mySprite.data.prefabInstanceName];
+
+
+			console.log(prefab.settings);
+
+			allowAwake = (prefab.settings.isAwake === undefined || prefab.settings.isAwake);
+		}
+
+		if(allowAwake){
 			otherBody.SetAwake(true);
 			otherBody.InCameraView = true;
 		}
