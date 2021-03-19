@@ -596,11 +596,13 @@ const _B2dEditor = function () {
 					const file = event.target.files[0];
 					if(!file) return;
 					const fileReader = new FileReader();
-					fileReader.onload = function (progressEvent) {
+					fileReader.onload = progressEvent =>  {
 						const arrayBuffer = progressEvent.target.result;
 						const song = game.midiPlayer.serializeMIDI(arrayBuffer, file.name);
 						game.midiPlayer.startLoad(song);
-						console.log(game.midiPlayer, file, song);
+						game.currentLevelData.song = song;
+						this.selectedTool = -1;
+						this.selectTool(this.tool_SETTINGS);
 					};
 					fileReader.readAsArrayBuffer(file);
 				}
@@ -609,7 +611,16 @@ const _B2dEditor = function () {
 					this.fileUploadInput.click();
 				}
 				targetFolder.add(ui.editorGUI.editData, "uploadMidi").name('upload midi song');
-				// 
+				//
+				if(game.currentLevelData.song){
+					ui.editorGUI.editData.deleteSong = ()=>{
+						delete game.currentLevelData.song;
+						this.selectedTool = -1;
+						this.selectTool(this.tool_SETTINGS);
+					}
+					targetFolder.add(ui.editorGUI.editData, "deleteSong").name(`remove song ${game.currentLevelData.song[0].substr(0, 12)}...mid`);
+
+				}
 
 				const utilityFolder = ui.editorGUI.addFolder('utilities');
 				utilityFolder.open();

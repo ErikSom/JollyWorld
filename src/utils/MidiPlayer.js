@@ -40,6 +40,8 @@ class MidiPlayerClass {
 		this.setSpeed(1.0);
 		this.notes = [];
 		this.playing = true;
+		this.ready = false;
+		this.shouldPlay = false;
 		this.song = null;
 	}
 
@@ -50,19 +52,27 @@ class MidiPlayerClass {
 	}
 
 	play() {
-		this.currentSongTime = 0;
-		this.songStart = this.audioContext.currentTime;
-		this.nextStepTime = this.audioContext.currentTime;
-		this.tick();
-		this.playing = true;
+		console.log("PLAY",this.ready)
+		if(this.ready){
+			this.currentSongTime = 0;
+			this.songStart = this.audioContext.currentTime;
+			this.nextStepTime = this.audioContext.currentTime;
+			this.playing = true;
+			this.shouldPlay = false;
+			this.tick();
+		}else{
+			this.shouldPlay = true;
+		}
 	}
 
 	stop(){
+		console.log("STOP!!!!!")
 		this.playing = false;
 	}
 
 
 	tick() {
+		console.log('tick', this.playing);
 		if(!this.playing) return;
 		const duration = this.song[SONG_DURATION];
 
@@ -219,7 +229,15 @@ class MidiPlayerClass {
 		return serializedSong;
 	}
 
+	clean(){
+		if(this.audioContext) this.audioContext.close();
+		this.audioContext = null;
+	}
+
 	startLoad(song) {
+
+		if(this.song === song) return;
+		this.clean();
 
 		let AudioContextFunc = window.AudioContext || window.webkitAudioContext;
 		this.audioContext = new AudioContextFunc();
@@ -247,8 +265,10 @@ class MidiPlayerClass {
 		});
 
 		this.player.loader.waitLoad(() => {
-			// this.play();
-			console.log("READY!!!!")
+			this.ready = true;
+			if(this.shouldPlay){
+				this.play();
+			}
 		});
 
 		this.song = song;

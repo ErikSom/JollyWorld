@@ -668,10 +668,7 @@ function Game() {
         if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
         ui.showSmallLogo();
-
-        if(this.currentLevelData.midis){
-
-        }
+        if(this.currentLevelData.song) this.midiPlayer.play();
 
     }
 
@@ -684,6 +681,7 @@ function Game() {
         this.levelStartTime = Date.now();
         MobileController.show();
         TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
+        if(this.currentLevelData.song) this.midiPlayer.play();
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -756,6 +754,7 @@ function Game() {
         AudioManager.stopAllSounds();
         SlowmoUI.hide();
         ui.hideSmallLogo();
+        this.midiPlayer.stop();
     }
     this.openEditor = async function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -789,6 +788,7 @@ function Game() {
         this.editor.worldJSON = data.json;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
+        if(data.song) this.midiPlayer.startLoad(data.song);
     }
     this.pauseGame = function(){
         if(this.gameOver || this.levelWon) return;
