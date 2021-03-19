@@ -594,12 +594,13 @@ const _B2dEditor = function () {
 				this.fileUploadInput.setAttribute('accept', '.mid');
 				this.fileUploadInput.onchange = event =>{
 					const file = event.target.files[0];
+					if(!file) return;
 					const fileReader = new FileReader();
 					fileReader.onload = function (progressEvent) {
 						const arrayBuffer = progressEvent.target.result;
 						const song = game.midiPlayer.serializeMIDI(arrayBuffer, file.name);
-						console.log(file, song);
 						game.midiPlayer.startLoad(song);
+						console.log(game.midiPlayer, file, song);
 					};
 					fileReader.readAsArrayBuffer(file);
 				}
@@ -607,7 +608,7 @@ const _B2dEditor = function () {
 				ui.editorGUI.editData.uploadMidi = ()=>{
 					this.fileUploadInput.click();
 				}
-				targetFolder.add(ui.editorGUI.editData, "uploadMidi").name('upload midi (max 3)');
+				targetFolder.add(ui.editorGUI.editData, "uploadMidi").name('upload midi song');
 				// 
 
 				const utilityFolder = ui.editorGUI.addFolder('utilities');

@@ -1475,14 +1475,16 @@ MIDIFile.Track = MIDIFileTrack;
 				return 1;
 			}
 		};
-		this.waitLoad = function(onFinish) {
+		this.waitLoad = function(onFinish, onProgress) {
 			var me = this;
 			if (this.progress() >= 1) {
+				if(onProgress) onProgress(1);
 				onFinish();
 			} else {
 				setTimeout(function() {
 					me.waitLoad(onFinish);
-				}, 333);
+				}, 100);
+				if(onProgress) onProgress(this.progress());
 			}
 		};
 		this.instrumentTitles = function() {

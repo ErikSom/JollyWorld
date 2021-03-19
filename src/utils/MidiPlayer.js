@@ -39,6 +39,8 @@ class MidiPlayerClass {
 		this.nextPositionTime = 0;
 		this.setSpeed(1.0);
 		this.notes = [];
+		this.playing = true;
+		this.song = null;
 	}
 
 	setSpeed(speed){
@@ -47,23 +49,30 @@ class MidiPlayerClass {
 		this.speed = speed;
 	}
 
-	startPlay(song) {
+	play() {
 		this.currentSongTime = 0;
 		this.songStart = this.audioContext.currentTime;
 		this.nextStepTime = this.audioContext.currentTime;
-		this.tick(song);
-
+		this.tick();
+		this.playing = true;
 	}
-	tick(song) {
-		const duration = song[SONG_DURATION];
+
+	stop(){
+		this.playing = false;
+	}
+
+
+	tick() {
+		if(!this.playing) return;
+		const duration = this.song[SONG_DURATION];
 
 		if (this.audioContext.currentTime > this.nextStepTime - this.stepDuration) {
-			this.sendNotes(song, this.songStart, this.currentSongTime, this.currentSongTime + this.stepDuration, this.audioContext, this.input, this.player);
+			this.sendNotes(this.song, this.songStart, this.currentSongTime, this.currentSongTime + this.stepDuration, this.audioContext, this.input, this.player);
 			this.currentSongTime = this.currentSongTime + this.stepDuration;
 			this.nextStepTime = this.nextStepTime + this.stepDuration;
 			if (this.currentSongTime > duration) {
 				this.currentSongTime = this.currentSongTime - duration;
-				this.sendNotes(song, this.songStart, 0, this.currentSongTime, this.audioContext, this.input, this.player);
+				this.sendNotes(this.song, this.songStart, 0, this.currentSongTime, this.audioContext, this.input, this.player);
 				this.songStart = this.songStart + duration;
 			}
 		}
@@ -71,7 +80,7 @@ class MidiPlayerClass {
 			this.nextPositionTime = this.audioContext.currentTime + 3;
 		}
 		window.requestAnimationFrame(t => {
-			this.tick(song);
+			this.tick();
 		});
 	}
 
@@ -79,7 +88,7 @@ class MidiPlayerClass {
 		const startSecondIndex = Math.floor(start);
 		const endSecondIndex = Math.ceil(end);
 
-		const seconds = endSecondIndex-startSecondIndex+1;
+		const seconds = endSecondIndex-startSecondIndex;
 
 		const tracks = song[SONG_TRACKS];
 		const trackNotes = song[SONG_TRACK_NOTES];
@@ -126,6 +135,10 @@ class MidiPlayerClass {
 		const midiFile = new MIDIFile(arrayBuffer);
 		const song = midiFile.parseSong();
 
+
+		let lowestWhen = Number.POSITIVE_INFINITY;
+
+
 		const tracks = [];
 		for (let t = 0; t < song.tracks.length; t++) {
 			let trackRef = song.tracks[t];
@@ -133,28 +146,9 @@ class MidiPlayerClass {
 			track[TRACK_VOLUME] = trackRef.volume;
 			track[TRACK_PROGRAM] = trackRef.program;
 			track[TRACK_N] = trackRef.n;
+			const noteRef = trackRef.notes[0];
+			if(noteRef.when<lowestWhen) lowestWhen = noteRef.when;
 			tracks.push(track);
-		}
-
-		// indexed in seconds [0] = first second, [1] = second second
-		const trackNotes = [];
-		for (let t = 0; t < song.tracks.length; t++) {
-			let track = song.tracks[t];
-			for (let i = 0; i < track.notes.length; i++) {
-				const noteRef = track.notes[i];
-				const secondIndex = Math.floor(noteRef.when);
-
-				const note = [];
-				note[TRACK_NOTE_INDEX] = t;
-				note[TRACK_NOTE_WHEN] = noteRef.when;
-				note[TRACK_NOTE_DURATION] = noteRef.duration;
-				note[TRACK_NOTE_PITCH] = noteRef.pitch;
-				note[TRACK_NOTE_SLIDES] = noteRef.slides;
-
-				if(trackNotes[secondIndex] === undefined) trackNotes[secondIndex] = [];
-
-				trackNotes[secondIndex].push(note);
-			}
 		}
 
 		const beats = [];
@@ -163,7 +157,32 @@ class MidiPlayerClass {
 			const beat = [];
 			beat[BEAT_VOLUME] = beatRef.volume;
 			beat[BEAT_N] = beatRef.n;
+			const noteRef = beatRef.notes[0];
+			if(noteRef.when<lowestWhen) lowestWhen = noteRef.when;
 			beats.push(beat);
+		}
+
+
+		// indexed in seconds [0] = first second, [1] = second second
+		const trackNotes = [];
+		for (let t = 0; t < song.tracks.length; t++) {
+			let track = song.tracks[t];
+			for (let i = 0; i < track.notes.length; i++) {
+				const noteRef = track.notes[i];
+
+				const note = [];
+				note[TRACK_NOTE_INDEX] = t;
+				note[TRACK_NOTE_WHEN] = noteRef.when-lowestWhen;
+				note[TRACK_NOTE_DURATION] = noteRef.duration;
+				note[TRACK_NOTE_PITCH] = noteRef.pitch;
+				note[TRACK_NOTE_SLIDES] = noteRef.slides;
+
+				const secondIndex = Math.floor(note[TRACK_NOTE_WHEN]);
+
+				if(trackNotes[secondIndex] === undefined) trackNotes[secondIndex] = [];
+
+				trackNotes[secondIndex].push(note);
+			}
 		}
 
 		const beatNotes = [];
@@ -171,12 +190,12 @@ class MidiPlayerClass {
 			let beat = song.beats[b];
 			for (let i = 0; i < beat.notes.length; i++) {
 				const beatRef = beat.notes[i];
-				const secondIndex = Math.floor(beatRef.when);
 
 				const note = [];
 				note[BEAT_NOTE_INDEX] = b;
-				note[BEAT_NOTE_WHEN] = beatRef.when;
+				note[BEAT_NOTE_WHEN] = beatRef.when-lowestWhen;
 
+				const secondIndex = Math.floor(note[BEAT_NOTE_WHEN]);
 				if(beatNotes[secondIndex] === undefined) beatNotes[secondIndex] = [];
 
 				beatNotes[secondIndex].push(note);
@@ -228,8 +247,11 @@ class MidiPlayerClass {
 		});
 
 		this.player.loader.waitLoad(() => {
-			this.startPlay(song);
+			// this.play();
+			console.log("READY!!!!")
 		});
+
+		this.song = song;
 	}
 }
 
