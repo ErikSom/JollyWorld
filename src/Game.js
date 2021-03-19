@@ -25,6 +25,7 @@ import {
 import {
     levelsData
 } from "./data/levelsData";
+import {MidiPlayer} from './utils/MidiPlayer'
 
 import { dateDiff, JSONStringify } from "./b2Editor/utils/formatString";
 
@@ -174,6 +175,7 @@ function Game() {
         LoadCoreAssets(this.app.loader);
 
         this.editor = B2dEditor;
+        this.midiPlayer = MidiPlayer;
 
         this.app.loader.load(
             async ()=> {
@@ -312,7 +314,7 @@ function Game() {
         window.addEventListener('resize', this.handleResize.bind(this));
 
         window.onbeforeunload = function(e) {
-            if(this.editor.editing){
+            if(this.editor.editing && window.location.href.indexOf('localhost:') < 0){
                 const dialogText = 'Are you sure you want to close the editor?';
                 e.returnValue = dialogText;
                 return dialogText;
@@ -666,6 +668,11 @@ function Game() {
         if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
         ui.showSmallLogo();
+
+        if(this.currentLevelData.midis){
+
+        }
+
     }
 
     this.testWorld = function () {

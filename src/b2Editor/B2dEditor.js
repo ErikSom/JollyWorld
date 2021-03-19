@@ -141,6 +141,7 @@ const _B2dEditor = function () {
 	};
 	this.cameraShotData = null;
 	this.playerHistory = [];
+	this.fileUploadInput = null;
 
 	this.selectingTriggerTarget = false;
 
@@ -563,11 +564,10 @@ const _B2dEditor = function () {
 					this.editorSettingsObject.backgroundColor = val;
 					game.app.renderer.backgroundColor = hexToNumberHex(val);
 				});
-				targetFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
-				targetFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
-					editorSettings.stats=val;
-					game.stats.show(val);
-				});
+
+
+
+
 
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
 					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.container, colorMatrix=>{
@@ -581,25 +581,61 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
 				targetFolder.add(ui.editorGUI.editData, 'gameSpeed', 0.1, 2.0).step(0.1).onChange(onChange('gameSpeed'));
-				targetFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
-				targetFolder.add(ui.editorGUI.editData, 'showCameraLines').onChange(onChange('showCameraLines'));
+
+
+				// Handle MIDI file upload
+				if(!this.fileUploadInput){
+					this.fileUploadInput = document.createElement('input');
+					this.fileUploadInput.setAttribute('type', 'file');
+					this.fileUploadInput.style.visibility = 'hidden';
+					document.body.appendChild(this.fileUploadInput);
+				}
+
+				this.fileUploadInput.setAttribute('accept', '.mid');
+				this.fileUploadInput.onchange = event =>{
+					const file = event.target.files[0];
+					const fileReader = new FileReader();
+					fileReader.onload = function (progressEvent) {
+						const arrayBuffer = progressEvent.target.result;
+						const song = game.midiPlayer.serializeMIDI(arrayBuffer, file.name);
+						console.log(file, song);
+						game.midiPlayer.startLoad(song);
+					};
+					fileReader.readAsArrayBuffer(file);
+				}
+
+				ui.editorGUI.editData.uploadMidi = ()=>{
+					this.fileUploadInput.click();
+				}
+				targetFolder.add(ui.editorGUI.editData, "uploadMidi").name('upload midi (max 3)');
+				// 
+
+				const utilityFolder = ui.editorGUI.addFolder('utilities');
+				utilityFolder.open();
+
+				utilityFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
+				utilityFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
+					editorSettings.stats=val;
+					game.stats.show(val);
+				});
+				utilityFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
+				utilityFolder.add(ui.editorGUI.editData, 'showCameraLines').onChange(onChange('showCameraLines'));
 
 				ui.editorGUI.editData.resetHelp = ()=>{
 					const userData = SaveManager.getLocalUserdata();
 					userData.helpClosed = [];
 					SaveManager.updateLocalUserData(userData);
 				}
-				targetFolder.add(ui.editorGUI.editData, "resetHelp").name('reset help');
+				utilityFolder.add(ui.editorGUI.editData, "resetHelp").name('reset help');
 
 				ui.editorGUI.editData.findPlayer = ()=>{
 					this.findPlayer();
 				}
-				targetFolder.add(ui.editorGUI.editData, "findPlayer").name('find player');
-
+				utilityFolder.add(ui.editorGUI.editData, "findPlayer").name('find player');
 
 				if(this.tracingTexture){
 					ui.editorGUI.editData.traceTextureScale = this.tracingTexture.scale.x;
-					targetFolder.add(ui.editorGUI.editData, 'traceTextureScale', 0.1, 10.0).step(0.01).onChange(value=>{
+					utilityFolder.add(ui.editorGUI.editData, 'traceTextureScale', 0.1, 10.0).step(0.01).onChange(value=>{
 						this.tracingTexture.scale.x = this.tracingTexture.scale.y = value;
 					});
 					ui.editorGUI.editData.destroyTraceTexture = ()=>{
@@ -608,7 +644,7 @@ const _B2dEditor = function () {
 						this.selectedTool = -1;
 						this.selectTool(this.tool_SETTINGS);
 					}
-					targetFolder.add(ui.editorGUI.editData, 'destroyTraceTexture');
+					utilityFolder.add(ui.editorGUI.editData, 'destroyTraceTexture');
 				}
 
 				break
@@ -8252,7 +8288,6 @@ const _B2dEditor = function () {
 			wheelJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
 			wheelJointDef.enableMotor = jointPlaceHolder.enableMotor;
 
-
 			joint = this.world.CreateJoint(wheelJointDef);
 		}
 		joint.data = jointPlaceHolder.data;
@@ -9577,6 +9612,7 @@ const _B2dEditor = function () {
 		this.uniqueCollisionPrefabs = {};
 
 		this.physicsCamera = null;
+		window.__guiusercolors = [];
 
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
