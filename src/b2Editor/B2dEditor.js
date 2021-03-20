@@ -52,6 +52,7 @@ import nanoid from "nanoid";
 import { findObjectWithCopyHash } from "./utils/finder";
 import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
+import { MidiPlayer } from "../utils/MidiPlayer";
  
 const PIXIHeaven = self.PIXI.heaven;
 
@@ -446,7 +447,7 @@ const _B2dEditor = function () {
 				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
-				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				targetFolder.add(ui.editorGUI.editData, "isBody");
 				ui.editorGUI.domElement.style.minHeight = '220px';
 
@@ -462,7 +463,7 @@ const _B2dEditor = function () {
 				targetFolder.addColor(ui.editorGUI.editData, "colorFill");
 				targetFolder.addColor(ui.editorGUI.editData, "colorLine");
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
-				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				if(i === this.tool_POLYDRAWING) targetFolder.add(ui.editorGUI.editData, "isBody");
 
 				ui.editorGUI.domElement.style.minHeight = '200px';
@@ -487,7 +488,7 @@ const _B2dEditor = function () {
 				targetFolder.open();
 
 				targetFolder.addColor(ui.editorGUI.editData, "textColor");
-				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				targetFolder.add(ui.editorGUI.editData, "fontSize", 1, 1000);
 
 				const fonts = Settings.availableFonts;
@@ -516,7 +517,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				ui.editorGUI.editData.transparancy = realVal;
 
-				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				targetFolder.add(ui.editorGUI.editData, "smoothen");
 				ui.editorGUI.domElement.style.minHeight = '200px';
 
@@ -598,9 +599,9 @@ const _B2dEditor = function () {
 					const fileReader = new FileReader();
 					fileReader.onload = progressEvent =>  {
 						const arrayBuffer = progressEvent.target.result;
-						const song = game.midiPlayer.serializeMIDI(arrayBuffer, file.name);
-						game.midiPlayer.startLoad(song);
-						game.currentLevelData.song = song;
+						const song = MidiPlayer.serializeMIDI(arrayBuffer, file.name);
+						MidiPlayer.startLoad(song);
+						this.editorSettingsObject.song = song;
 						this.selectedTool = -1;
 						this.selectTool(this.tool_SETTINGS);
 					};
@@ -612,14 +613,15 @@ const _B2dEditor = function () {
 				}
 				targetFolder.add(ui.editorGUI.editData, "uploadMidi").name('upload midi song');
 				//
-				if(game.currentLevelData.song){
+				if(this.editorSettingsObject.song){
 					ui.editorGUI.editData.deleteSong = ()=>{
-						delete game.currentLevelData.song;
+						delete this.editorSettingsObject.song;
 						this.selectedTool = -1;
 						this.selectTool(this.tool_SETTINGS);
+						this.fileUploadInput.value = null;
 					}
-					targetFolder.add(ui.editorGUI.editData, "deleteSong").name(`remove song ${game.currentLevelData.song[0].substr(0, 12)}...mid`);
-
+					targetFolder.add(ui.editorGUI.editData, "deleteSong").name(`remove song ${this.editorSettingsObject.song[0].substr(0, 12)}...mid`);
+					targetFolder.add(ui.editorGUI.editData, 'autoPlayMidi').onChange(onChange('autoPlayMidi'));
 				}
 
 				const utilityFolder = ui.editorGUI.addFolder('utilities');
@@ -985,9 +987,8 @@ const _B2dEditor = function () {
 				const multiBodyColor = ui.editorGUI.editData.colorFill.length > 1;
 
 				if (multiBodyColor) {
-					
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
-					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
@@ -1024,7 +1025,7 @@ const _B2dEditor = function () {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
@@ -1117,7 +1118,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1180,7 +1181,7 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				}.bind(controller));
-				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1253,7 +1254,7 @@ const _B2dEditor = function () {
 			case case_JUST_GRAPHICGROUPS:
 				visualsFolder = targetFolder.addFolder('visuals');
 
-				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1316,7 +1317,7 @@ const _B2dEditor = function () {
 
 				visualsFolder = targetFolder.addFolder('visuals');
 
-				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -1414,7 +1415,7 @@ const _B2dEditor = function () {
 					this.targetValue = value;
 				}.bind(controller));
 
-				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("transparency");
+				controller = targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				controller.onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value;
@@ -2645,6 +2646,8 @@ const _B2dEditor = function () {
 		this.gameSpeed = 1.0;
 		this.physicsCameraSize = Settings.defaultPhysicsCameraSize;
 		this.colorMatrix = [];
+		this.song = undefined;
+		this.autoPlayMidi = true;
 	}
 	this.editorJointObject = new this.jointObject();
 
@@ -8966,8 +8969,9 @@ const _B2dEditor = function () {
 		const settings = this.serializeObject(this.editorSettingsObject);
 		const gradients = this.levelGradients;
 		const colors = window.__guiusercolors;
+		const song = this.editorSettingsObject.song;
 
-		const worldObject = {objects, settings, gradients, colors}
+		const worldObject = {objects, settings, gradients, colors, song}
 
 		this.worldJSON = JSONStringify(worldObject);
 
@@ -9117,6 +9121,7 @@ const _B2dEditor = function () {
 			arr[4] = obj.cameraZoom;
 			arr[5] = obj.gameSpeed;
 			arr[6] = obj.colorMatrix;
+			arr[7] = obj.autoPlayMidi;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -9273,6 +9278,7 @@ const _B2dEditor = function () {
 			obj.cameraZoom = arr[4] !== undefined ? arr[4] : Settings.defaultCameraZoom;
 			obj.gameSpeed = arr[5] !== undefined ? arr[5] : 1.0;
 			obj.colorMatrix = Array.isArray(arr[6]) ? arr[6] : [];
+			obj.autoPlayMidi = arr[7] !== undefined ? arr[7] : true;
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();
@@ -9527,6 +9533,7 @@ const _B2dEditor = function () {
 				})
 				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);
 			}
+			this.editorSettingsObject.song = worldObjects.song;
 		}
 
 		//Fix trigger object targets

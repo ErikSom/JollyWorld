@@ -16,6 +16,7 @@ import { editorSettings } from "../utils/editorSettings";
 import * as drawing from '../utils/drawing'
 import * as AudioManager from '../../utils/AudioManager'
 import { applyColorMatrix } from "../utils/colorMatrixParser";
+import { MidiPlayer } from '../../utils/MidiPlayer';
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -112,7 +113,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed", "SetCameraColorMatrix", "PlaySFX"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed", "SetCameraColorMatrix", "PlaySFX", "MidiControls", "PlayMidiInstrument"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -342,6 +343,19 @@ export const doAction = function (actionData, target) {
         case "SetColorMatrix":
             if(prefab) prefab.class.applyColorMatrix(actionData.colorMatrix);
             else applyColorMatrix(target, actionData.colorMatrix);
+        break;
+        case "MidiControls":
+            switch(actionData.action){
+                case 'play':
+                    MidiPlayer.play();
+                    break;
+                case 'stop':
+                    MidiPlayer.stop();
+                    break;
+            }
+            break;
+        case "PlayMidiInstrument":
+            playTriggerInstrument(actionData);
         break;
     }
 }
@@ -799,8 +813,8 @@ export const actionDictionary = {
         },
     },
     /*******************/
-       actionObject_SetWin: {
-        type: 'SetWin',
+    actionObject_SetWin: {
+    type: 'SetWin',
     },
     actionOptions_SetWin: {},
     /*******************/
@@ -900,6 +914,51 @@ export const actionDictionary = {
                     action.colorMatrix = cm;
                 })
             }
+        },
+    },
+    /******************/
+    actionObject_MidiControls: {
+        type: 'MidiControls',
+        action: 'play',
+    },
+    actionOptions_MidiControls: {
+        action:{
+            type: guitype_LIST,
+            items: ['play', 'stop'],
+        }
+    },
+    /*******************/
+    actionObject_PlayMidiInstrument: {
+        type: 'PlayMidiInstrument',
+        instrument: '',
+        test: 'function',
+        note: MidiPlayer.midiKeys[0],
+        bpm: 116,
+        length: '1',
+    },
+    actionOptions_PlayMidiInstrument: {
+        instrument: {
+            type: guitype_LIST,
+            items: MidiPlayer.instruments
+        },
+        note: {
+            type: guitype_LIST,
+            items: MidiPlayer.midiKeys
+        },
+        bpm: {
+            type: guitype_MINMAX,
+            min: 60,
+            max: 200,
+            value: 116,
+            step: 1,
+        },
+        length: {
+            type: guitype_LIST,
+            items: MidiPlayer.keyLengths
+        },
+        test: {
+            type: guitype_FUNCTION,
+            function: action =>{playTriggerInstrument(action);}
         },
     },
     /******************/
@@ -1574,6 +1633,12 @@ const playTriggerSound = (data, position) => {
     const pos = data.local ? position : null;
     const pitch = data.pitch + Math.random()*(data.randomPitchOffset)-data.randomPitchOffset/2;
     AudioManager.playSFX(data.file, data.volume * 0.3, pitch, pos);
+}
+
+const playTriggerInstrument = data => {
+    if(!data.instrument || !window[data.instrument]) return;
+    const beatLength = data.bpm / 60;
+    MidiPlayer.player.queueWaveTable(MidiPlayer.audioContext, MidiPlayer.input, window[data.instrument], 0, MidiPlayer.keyNoteMap[data.note], MidiPlayer.keyLengthMap[data.length]*beatLength);
 }
 
 const pixiPosition = new PIXI.Point();

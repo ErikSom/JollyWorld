@@ -61,7 +61,7 @@ export const hide = ()=> {
 	}
 }
 export const update = () => {
-	if(gameSpeed !== game.editor.editorSettingsObject.gameSpeed){
+	if(gameSpeed !== game.editor.editorSettingsObject.gameSpeed && !game.editor.editing){
 		if(game.editor.editorSettingsObject.gameSpeed < gameSpeed){
 			AudioManager.playSFX('slowmo-enter', 0.2, 1.0);
 		}else{

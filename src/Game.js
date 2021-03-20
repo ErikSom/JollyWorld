@@ -175,7 +175,6 @@ function Game() {
         LoadCoreAssets(this.app.loader);
 
         this.editor = B2dEditor;
-        this.midiPlayer = MidiPlayer;
 
         this.app.loader.load(
             async ()=> {
@@ -668,7 +667,7 @@ function Game() {
         if(firstEntry) this.levelStartTime = Date.now();
         MobileController.show();
         ui.showSmallLogo();
-        if(this.currentLevelData.song) this.midiPlayer.play();
+        this.playLevelMidi();
 
     }
 
@@ -681,7 +680,10 @@ function Game() {
         this.levelStartTime = Date.now();
         MobileController.show();
         TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
-        if(this.currentLevelData.song) this.midiPlayer.play();
+        this.playLevelMidi();
+    }
+    this.playLevelMidi = function (){
+        if(this.editor.editorSettingsObject.song && editor.editorSettingsObject.autoPlayMidi) MidiPlayer.play();
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -754,7 +756,7 @@ function Game() {
         AudioManager.stopAllSounds();
         SlowmoUI.hide();
         ui.hideSmallLogo();
-        this.midiPlayer.stop();
+        MidiPlayer.stop();
     }
     this.openEditor = async function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -788,7 +790,7 @@ function Game() {
         this.editor.worldJSON = data.json;
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
-        if(data.song) this.midiPlayer.startLoad(data.song);
+        if(this.editor.editorSettingsObject.song) MidiPlayer.startLoad(this.editor.editorSettingsObject.song);
     }
     this.pauseGame = function(){
         if(this.gameOver || this.levelWon) return;

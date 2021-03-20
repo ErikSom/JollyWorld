@@ -57,10 +57,6 @@ export const beginContact = contact => {
 		if(!isPrefab) allowAwake = otherBody.mySprite.data.awake;
 		else{
 			const prefab = game.editor.activePrefabs[otherBody.mySprite.data.prefabInstanceName];
-
-
-			console.log(prefab.settings);
-
 			allowAwake = (prefab.settings.isAwake === undefined || prefab.settings.isAwake);
 		}
 

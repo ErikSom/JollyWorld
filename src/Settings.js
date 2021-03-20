@@ -21,6 +21,7 @@ export var Settings = {
     gameOverDelay:1000,
     /*SOUND*/
     sfxOn:true,
+    midiMusicVolume: 1.0,
     /*PHYSICS*/
     physicsTimeStep:1 / 30,
     PTM:30,

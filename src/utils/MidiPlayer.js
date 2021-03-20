@@ -1,4 +1,5 @@
 import '../../libs/WebAudioFontPlayer'
+import { Settings } from '../Settings';
 
 // Serialization Enums
 const SONG_TITLE = 0;
@@ -43,6 +44,25 @@ class MidiPlayerClass {
 		this.ready = false;
 		this.shouldPlay = false;
 		this.song = null;
+		this.instruments = [];
+		this.midiKeys = ["c4","c_4","d4","d_4","e4","f4","f_4","g4","g_4","a4","a_4","b4","c5","c_5","d5","d_5","e5","f5","f_5","g5","g_5","a5","a_5","b5","c6"];
+		this.midiNotes = [4*12+0,4*12+1,4*12+2,4*12+3,4*12+4,4*12+5,4*12+6,4*12+7,4*12+8,4*12+9,4*12+10,4*12+11,5*12+0,5*12+1,5*12+2,5*12+3,5*12+4,5*12+5,5*12+6,5*12+7,5*12+8,5*12+9,5*12+10,5*12+11,6*12+0];
+		this.keyNoteMap = (()=>{
+			const obj = {};
+			this.midiKeys.forEach((key, i) =>{
+				obj[key] = this.midiNotes[i];
+			})
+			return obj;
+		})();
+		this.keyLengths = ['1','2','4','1/2','1/4','1/8','1/16','1/32','1/64','1 1/2','3','6','3/4', '3/8'];
+		this.keyLengthTime = [1,2,4,1/2,1/4,1/8,1/16,1/32,1/64,1.5,3,6,3/4,3/8];
+		this.keyLengthMap = (()=>{
+			const obj = {};
+			this.keyLengths.forEach((key, i) =>{
+				obj[key] = this.keyLengthTime[i];
+			})
+			return obj;
+		})();
 	}
 
 	setSpeed(speed){
@@ -52,11 +72,8 @@ class MidiPlayerClass {
 	}
 
 	play() {
-		console.log("PLAY",this.ready)
 		if(this.ready){
-			this.currentSongTime = 0;
-			this.songStart = this.audioContext.currentTime;
-			this.nextStepTime = this.audioContext.currentTime;
+			this.stop();
 			this.playing = true;
 			this.shouldPlay = false;
 			this.tick();
@@ -66,13 +83,15 @@ class MidiPlayerClass {
 	}
 
 	stop(){
-		console.log("STOP!!!!!")
 		this.playing = false;
+		if(this.ready){
+			this.currentSongTime = 0;
+			this.songStart = this.audioContext.currentTime;
+			this.nextStepTime = this.audioContext.currentTime;
+		}
 	}
 
-
 	tick() {
-		console.log('tick', this.playing);
 		if(!this.playing) return;
 		const duration = this.song[SONG_DURATION];
 
@@ -105,6 +124,8 @@ class MidiPlayerClass {
 		const beats = song[SONG_BEATS];
 		const beatNotes = song[SONG_BEAT_NOTES];
 
+		const volumeOffset = 0.2 * Settings.midiMusicVolume;
+
 		for(let i = 0; i<=seconds; i++){
 			const secondIndex = startSecondIndex+i;
 
@@ -117,7 +138,7 @@ class MidiPlayerClass {
 				const when = note[TRACK_NOTE_WHEN];
 				const pitch = note[TRACK_NOTE_PITCH];
 				let duration = Math.min(note[TRACK_NOTE_DURATION], 3);
-				const volume = track[TRACK_VOLUME] / 7;
+				const volume = track[TRACK_VOLUME] / 7 * volumeOffset;
 				const slides = note[TRACK_NOTE_SLIDES];
 				if (when >= start && when < end) {
 					player.queueWaveTable(audioContext, input, instrument, songStart + when, pitch*this.pitchMultiplier, duration*this.speed, volume, slides);
@@ -133,7 +154,7 @@ class MidiPlayerClass {
 				const when =  note[BEAT_NOTE_WHEN];
 				const n = beat[BEAT_N];
 				const duration = 1.5;
-				const volume = beat[BEAT_VOLUME] / 2;
+				const volume = beat[BEAT_VOLUME] / 2 * volumeOffset;
 				if (when >= start && when < end) {
 					player.queueWaveTable(audioContext, input, instrument, songStart + when, n, duration, volume);
 				}
@@ -253,6 +274,7 @@ class MidiPlayerClass {
 			let nn = this.player.loader.findInstrument(program);
 			let info = this.player.loader.instrumentInfo(nn);
 			track[TRACK_INSTRUMENT] = info.variable;
+			this.instruments.push(info.variable);
 			this.player.loader.startLoad(this.audioContext, info.url, info.variable);
 		});
 
@@ -261,6 +283,7 @@ class MidiPlayerClass {
 			let nn = this.player.loader.findDrum(beat[BEAT_N]);
 			let info = this.player.loader.drumInfo(nn);
 			beat[BEAT_INSTRUMENT] = info.variable;
+			this.instruments.push(info.variable);
 			this.player.loader.startLoad(this.audioContext, info.url, info.variable);
 		});
 
