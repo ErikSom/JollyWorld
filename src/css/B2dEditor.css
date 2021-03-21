@@ -1279,6 +1279,10 @@ body .dg .cr.function {
     border-radius: 5px;
     background: #000;
 }
+*{
+    scrollbar-width: thin;
+    scrollbar-color: white black;
+}
 
 .ios-pwa-container {
     align-items: flex-end;

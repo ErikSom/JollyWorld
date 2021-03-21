@@ -4289,13 +4289,15 @@ const _B2dEditor = function () {
     }
 	this.onKeyDown = function (e) {
 		if (e.keyCode == 86) { //v
-			this.selectTool(this.tool_POLYDRAWING);
+			if((e.ctrlKey || e.metaKey) && e.shiftKey){
+				this.pasteSelection();
+			}else this.selectTool(this.tool_POLYDRAWING);
 		}else if (e.keyCode == 80) { //p
 			this.selectTool(this.tool_PEN);
 		}
 		if (e.keyCode == 67) { //c
 			if (e.ctrlKey || e.metaKey) {
-				this.copySelection();
+				this.copiedJSON = this.copySelection();
 			} else {
 				this.copiedJSON = this.copySelection();
 				this.pasteSelection();

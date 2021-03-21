@@ -963,7 +963,25 @@ export const actionDictionary = {
     },
     /******************/
 }
+const actionScrollWatch = [];
+const positionActionsGUI = ()=>{
+    actionScrollWatch.forEach(el => {
+        positionAction(el);
+    })
+}
+const positionAction = el => {
+
+    const reference = el.parentNode;
+    const bounds = reference.getBoundingClientRect();
+    el.style.top = `${bounds.y}px`
+    el.style.left = `${bounds.x}px`
+
+
+}
 export const addTriggerGUI = function (dataJoint, _folder) {
+    console.log(_folder.domElement.parentNode.parentNode);
+    actionScrollWatch.length = 0;
+    _folder.domElement.parentNode.parentNode.parentNode.onscroll = positionActionsGUI;
     var targetTypes = Object.keys(triggerTargetType);
     targetTypes.forEach(key => {
         if (triggerTargetType[key] == dataJoint.targetType) {
@@ -1052,7 +1070,15 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         var actionString;
         var actionFolder;
         for (let j = 0; j < dataJoint.triggerActions[i].length; j++) {
+            ui.editorGUI.editData[actionsString] = '';
+            actionsFolder.add(ui.editorGUI.editData, actionsString);
             actionFolder = actionsFolder.addFolder(`-- Action ${j+1}`);
+            actionFolder.domElement.parentNode.style.position = 'absolute';
+            actionFolder.domElement.parentNode.style.left = '270px';
+            actionFolder.domElement.parentNode.style.marginTop = '-28px';
+            actionFolder.domElement.style.position = 'fixed';
+
+            actionScrollWatch.push(actionFolder.domElement);
             actionString = `${actionsString}_action_${j}`
             var action = dataJoint.triggerActions[i][j];
             let actionVarString = `${actionString}_targetActionDropDown`;

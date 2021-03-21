@@ -131,8 +131,8 @@ function Game() {
 
         if(Settings.HDR && window.devicePixelRatio >= 2){
             // max 2K
-            if(window.innerHeight * 2 > 1440) Settings.pixelRatio = 1.5;
-            else Settings.pixelRatio = 2;
+            // if(window.innerHeight * 2 > 1440) Settings.pixelRatio = 1.5;
+            // else Settings.pixelRatio = 2;
         }
         Settings.sfxOn = userData.sfxOn;
 
@@ -328,6 +328,7 @@ function Game() {
         }
 
         window.addEventListener('paste', (e)=> {
+            if(this.editor.shiftDown) return;
             try{
             if(e.clipboardData == false) return false;
             e.clipboardData.items.forEach( el => {
@@ -336,6 +337,7 @@ function Game() {
                         s = s.trim();
                         if(s && s.startsWith(Settings.jollyDataPrefix) && s.endsWith('>')){
                             const copyData = s.substr(Settings.jollyDataPrefix.length, s.length-Settings.jollyDataPrefix.length-1);
+                            console.log("PASTE!!!!")
                             this.editor.pasteData(copyData);
                         }
                     });
@@ -612,7 +614,7 @@ function Game() {
                 this.resetWorld(true);
             }
         }
-        if((this.editor.editing && !this.run) && (e.ctrlKey || e.metaKey) && e.keyCode == 86) { // v
+        if((this.editor.editing && !this.run) && ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.keyCode == 86 )) { // v
             return;
         }
 
