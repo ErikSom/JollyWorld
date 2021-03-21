@@ -911,22 +911,28 @@ const _B2dEditor = function () {
 		}
 
 		//Populate default GUI Fields
-		targetFolder.add(ui.editorGUI.editData, "x").onChange(function (value) {
+		const xController = targetFolder.add(ui.editorGUI.editData, "x").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
 		});
+		const xDiv = xController.domElement.parentNode;
 
-		targetFolder.add(ui.editorGUI.editData, "y").onChange(function (value) {
+		const yController = targetFolder.add(ui.editorGUI.editData, "y").onChange(function (value) {
 			this.humanUpdate = true;
 			this.targetValue = value - this.initialValue;
 			this.initialValue = value;
 		});
-		targetFolder.add(ui.editorGUI.editData, "rotation").onChange(function (value) {
-			this.humanUpdate = true;
-			this.targetValue = value - this.initialValue;
-			this.initialValue = value;
-		});
+		const yDiv = yController.domElement.parentNode
+		const oldYElement = yDiv.parentNode;
+
+		xDiv.parentNode.appendChild(yDiv);
+		oldYElement.parentNode.removeChild(oldYElement);
+		xDiv.style.display = 'inline-block';
+		xDiv.style.width = '50%';
+		yDiv.style.display = 'inline-block';
+		yDiv.style.width = '50%';
+
 		if (currentCase != case_MULTIPLE && currentCase != case_JUST_JOINTS && currentCase != case_JUST_ANIMATIONGROUPS && currentCase != case_JUST_PREFABS) {
 
 			var aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
@@ -938,16 +944,31 @@ const _B2dEditor = function () {
 			ui.editorGUI.editData.width = currentSize.width;
 			ui.editorGUI.editData.height = currentSize.height;
 
+			const widthController = targetFolder.add(ui.editorGUI.editData, "width").onChange(function (value) {
+				this.humanUpdate = true;
+				this.targetValue = value;
+			});
+			const widthDiv = widthController.domElement.parentNode;
 
-			targetFolder.add(ui.editorGUI.editData, "width").onChange(function (value) {
+			const heightController = targetFolder.add(ui.editorGUI.editData, "height").onChange(function (value) {
 				this.humanUpdate = true;
 				this.targetValue = value;
 			});
-			targetFolder.add(ui.editorGUI.editData, "height").onChange(function (value) {
-				this.humanUpdate = true;
-				this.targetValue = value;
-			});
+			const heightDiv = heightController.domElement.parentNode
+			const oldHeightElement = heightDiv.parentNode;
+
+			widthDiv.parentNode.appendChild(heightDiv);
+			oldHeightElement.parentNode.removeChild(oldHeightElement);
+			widthDiv.style.display = 'inline-block';
+			widthDiv.style.width = '50%';
+			heightDiv.style.display = 'inline-block';
+			heightDiv.style.width = '50%';
 		}
+		targetFolder.add(ui.editorGUI.editData, "rotation").onChange(function (value) {
+			this.humanUpdate = true;
+			this.targetValue = value - this.initialValue;
+			this.initialValue = value;
+		});
 		if (prefabKeys.length == 0 && Settings.admin) {
 			targetFolder.add(ui.editorGUI.editData, "groups").onChange(function (value) {
 				this.humanUpdate = true;
@@ -2652,22 +2673,22 @@ const _B2dEditor = function () {
 	this.editorJointObject = new this.jointObject();
 
 	this.editorGraphicDrawingObject = new function () {
-		this.colorFill = "#999999";
+		this.colorFill = "#000";
 		this.colorLine = "#000";
-		this.lineWidth = 1;
+		this.lineWidth = 0;
 		this.transparancy = 1.0;
 		this.smoothen = true;
 	}
 	this.editorGeometryObject = new function () {
 		this.shape = 0;
-		this.colorFill = "#999999";
+		this.colorFill = "#000";
 		this.colorLine = "#000";
-		this.lineWidth = 1;
+		this.lineWidth = 0;
 		this.transparancy = 1.0;
 		this.isBody = true;
 	}
 	this.editorTextObject = new function () {
-		this.textColor = "#999999";
+		this.textColor = "#000";
 		this.transparancy = 1.0;
 		this.fontSize = 50;
 		this.fontName = "Arial";
@@ -2981,6 +3002,10 @@ const _B2dEditor = function () {
 				textObject.transparancy = ui.editorGUI.editData.transparancy;
 
 				var _text = this.buildTextFromObj(textObject);
+
+				this.selectedTextures = [_text];
+				this.openTextEditor();
+
 			} else if(this.selectedTool === this.tool_VERTICEEDITING){
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 

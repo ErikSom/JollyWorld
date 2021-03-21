@@ -1667,7 +1667,10 @@ export const showTextEditor = function (startValue, callBack) {
     setHighestWindow(textEditor.domElement);
 
     setTimeout(()=>{
-        if(textarea && textarea.parentNode) textarea.focus();
+        if(textarea && textarea.parentNode){
+            textarea.focus();
+            textarea.select();
+        }
     }, 0);
 
     return false;
