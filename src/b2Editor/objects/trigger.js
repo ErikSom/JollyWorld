@@ -991,6 +991,11 @@ const hideActions = () => {
 
 export const addTriggerGUI = function (dataJoint, _folder) {
     actionScrollWatch.length = 0;
+
+    _folder.domElement.querySelector('.title').addEventListener('mousedown', ()=>{
+        hideActions();
+    });
+
     _folder.domElement.parentNode.parentNode.parentNode.onscroll = positionActionsGUI;
     var targetTypes = Object.keys(triggerTargetType);
     targetTypes.forEach(key => {
@@ -1099,9 +1104,15 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             let actionNameController = actionsFolder.add(ui.editorGUI.editData, actionsString).name(`${j+1}. ${action.type}`);
             actionNameController.domElement.querySelector('input').style.display = 'none';
 
+
+            const editIcon = document.createElement('div');
+            editIcon.classList.add('editIcon');
+            actionNameController.domElement.appendChild(editIcon);
+
             const deleteIcon = document.createElement('div');
             deleteIcon.classList.add('deleteIcon');
             actionNameController.domElement.appendChild(deleteIcon);
+
 
             deleteIcon.onclick = ()=> {
                 let targetIndex = i;
@@ -1113,10 +1124,6 @@ export const addTriggerGUI = function (dataJoint, _folder) {
                     }
                 }
             }
-
-            const editIcon = document.createElement('div');
-            editIcon.classList.add('editIcon');
-            actionNameController.domElement.appendChild(editIcon);
 
             const actionFolder = actionsFolder.addFolder(`-- Edit action ${j+1}`);
             actionFolder.domElement.parentNode.style.position = 'absolute';
