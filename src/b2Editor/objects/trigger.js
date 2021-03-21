@@ -1779,7 +1779,6 @@ export const drawEditorTriggers = ()=>{
 
 }
 export const drawEditorTriggerTargets = body=>{
-    return
     if(body.mySprite.targets){
         let myPos = body.GetPosition();
         myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
