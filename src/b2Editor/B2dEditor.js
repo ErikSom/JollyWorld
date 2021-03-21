@@ -535,22 +535,6 @@ const _B2dEditor = function () {
 					this.selectTool(this.tool_TRIGGER);
 				});
 
-				if(ui.editorGUI.editData.shape === shapes[0]){
-					targetFolder.add(ui.editorGUI.editData, "radius", 1.0).onChange(val=>{
-						val = Math.min(Math.max(1, val), editorSettings.worldSize.width/2);
-						ui.editorGUI.editData.radius = val;
-					});
-				}else{
-					targetFolder.add(ui.editorGUI.editData, "width", 1.0).onChange(val=>{
-						val = Math.min(Math.max(1, val), editorSettings.worldSize.width/2);
-						ui.editorGUI.editData.width = val;
-					});
-					targetFolder.add(ui.editorGUI.editData, "height", 1.0).onChange(val=>{
-						val = Math.min(Math.max(1, val), editorSettings.worldSize.width/2);
-						ui.editorGUI.editData.height = val;
-					});
-				}
-
 				break
 			case this.tool_SETTINGS:
 				ui.editorGUI.editData = this.editorSettingsObject;
@@ -565,10 +549,6 @@ const _B2dEditor = function () {
 					this.editorSettingsObject.backgroundColor = val;
 					game.app.renderer.backgroundColor = hexToNumberHex(val);
 				});
-
-
-
-
 
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
 					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.container, colorMatrix=>{
@@ -2153,7 +2133,7 @@ const _B2dEditor = function () {
 			else this.doSelection();
 		} else if (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN) {
 			this.doVerticesLineDrawing(this.selectedTool == this.tool_POLYDRAWING);
-		} else if (this.selectedTool == this.tool_GEOMETRY) {
+		} else if (this.selectedTool == this.tool_GEOMETRY || this.selectedTool == this.tool_TRIGGER) {
 			this.doGeometryDrawing();
 		} else if (this.selectedTool == this.tool_CAMERA) {
 			this.doCamera();
@@ -2949,7 +2929,7 @@ const _B2dEditor = function () {
 					}
 					this.activeVertices = [];
 				}
-			} else if (this.selectedTool == this.tool_GEOMETRY) {
+			} else if (this.selectedTool == this.tool_GEOMETRY || this.selectedTool == this.tool_TRIGGER) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 			} else if (this.selectedTool == this.tool_CAMERA) {
 				this.takeCameraShot();
@@ -2961,33 +2941,6 @@ const _B2dEditor = function () {
 			} else if (this.selectedTool == this.tool_JOINTS) {
 				const joint = this.attachJointPlaceHolder();
 				if(joint) jointTriggerLayer.add(joint);
-			} else if (this.selectedTool == this.tool_TRIGGER) {
-				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
-				var triggerObject = new this.triggerObject;
-				triggerObject.x = this.startSelectionPoint.x;
-				triggerObject.y = this.startSelectionPoint.y;
-				const triggerStartSizeWidth = this.editorTriggerObject.width / game.editor.PTM;
-				const triggerStartSizeHeight = this.editorTriggerObject.height / game.editor.PTM;
-				if (ui.editorGUI.editData.shape == "Circle") triggerObject.radius = this.editorTriggerObject.radius;
-				else triggerObject.vertices = [{
-						x: -triggerStartSizeWidth,
-						y: -triggerStartSizeHeight
-					},
-					{
-						x: triggerStartSizeWidth,
-						y: -triggerStartSizeHeight
-					},
-					{
-						x: triggerStartSizeWidth,
-						y: triggerStartSizeHeight
-					},
-					{
-						x: -triggerStartSizeWidth,
-						y: triggerStartSizeHeight
-					}
-				]
-				var _trigger = this.buildTriggerFromObj(triggerObject);
-				_trigger.mySprite.triggerInitialized = true;
 			} else if (this.selectedTool == this.tool_TEXT) {
 				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 
@@ -4073,7 +4026,7 @@ const _B2dEditor = function () {
 						if(this.shiftDown){
 							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 						}
-						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
+						if ((radius * 2 * Math.PI / Settings.PTM / 10) > this.minimumBodySurfaceArea) {
 							bodyObject = new this.bodyObject;
 							bodyObject.x = this.startSelectionPoint.x;
 							bodyObject.y = this.startSelectionPoint.y;
@@ -4104,20 +4057,18 @@ const _B2dEditor = function () {
 						if(this.shiftDown){
 							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 						}
-						if (radius * 2 * Math.PI > this.minimumBodySurfaceArea) {
-							graphicObject = new this.graphicObject;
-							graphicObject.x = this.startSelectionPoint.x*Settings.PTM;
-							graphicObject.y = this.startSelectionPoint.y*Settings.PTM;
+						graphicObject = new this.graphicObject;
+						graphicObject.x = this.startSelectionPoint.x*Settings.PTM;
+						graphicObject.y = this.startSelectionPoint.y*Settings.PTM;
 
 
-							graphicObject.colorFill = ui.editorGUI.editData.colorFill;
-							graphicObject.colorLine = ui.editorGUI.editData.colorLine;
-							graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
-							graphicObject.transparancy = ui.editorGUI.editData.transparancy;
+						graphicObject.colorFill = ui.editorGUI.editData.colorFill;
+						graphicObject.colorLine = ui.editorGUI.editData.colorLine;
+						graphicObject.lineWidth = ui.editorGUI.editData.lineWidth;
+						graphicObject.transparancy = ui.editorGUI.editData.transparancy;
 
-							graphicObject.radius = radius;
-							this.buildGraphicFromObj(graphicObject);
-						}
+						graphicObject.radius = radius;
+						this.buildGraphicFromObj(graphicObject);
 					}else{
 						// this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, false, this.cameraHolder.scale.x);
 						graphicObject = this.createGraphicObjectFromVerts(this.activeVertices);
@@ -4130,6 +4081,32 @@ const _B2dEditor = function () {
 						}
 					}
 
+				}
+			} else if(this.selectedTool == this.tool_TRIGGER){
+				if(!this.mouseDown) return;
+				const triggerObject = new this.triggerObject;
+				triggerObject.x = this.startSelectionPoint.x;
+				triggerObject.y = this.startSelectionPoint.y;
+				if (ui.editorGUI.editData.shape == "Circle"){
+					let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+					if(this.shiftDown){
+						radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
+					}
+					if ((radius * 2 * Math.PI / Settings.PTM / 10) > this.minimumBodySurfaceArea) {
+						console.log(radius * 2 * Math.PI, radius);
+						triggerObject.radius = radius;
+						const _trigger = this.buildTriggerFromObj(triggerObject);
+						_trigger.mySprite.triggerInitialized = true;
+					}
+				} else {
+					const bodyObject = this.createBodyObjectFromVerts(this.activeVertices);
+					if (bodyObject) {
+						triggerObject.vertices = bodyObject.vertices;
+						triggerObject.x = bodyObject.x;
+						triggerObject.y = bodyObject.y;
+						const _trigger = this.buildTriggerFromObj(triggerObject);
+						_trigger.mySprite.triggerInitialized = true;
+					}
 				}
 			} else if (this.selectedTool == this.tool_ART) {
 				if(!this.mouseDown) return;
@@ -6459,13 +6436,15 @@ const _B2dEditor = function () {
 
 		var area = 0
 		for (var i = 0; i < verts.length; i++) {
-			var x1 = verts[i].x;
-			var y1 = verts[i].y;
-			var x2 = verts[(i + 1) % verts.length].x;
-			var y2 = verts[(i + 1) % verts.length].y;
-			area += (x1 * y2 - x2 * y1);
+			const addX = verts[i].x;
+			const addY = verts[i === verts.length - 1 ? 0 : i + 1].y;
+			const subX = verts[i === verts.length - 1 ? 0 : i + 1].x;
+			const subY = verts[i].y;
+			area += (addX * addY * 0.5) - (subX * subY * 0.5);
 		}
-		if (Math.abs(area * this.PTM) < this.minimumBodySurfaceArea) return false;
+		if (Math.abs(area) < this.minimumBodySurfaceArea) return false;
+
+		console.log("AREA:", Math.abs(area));
 
 		bodyObject.vertices = area < 0 ? verts.reverse() : verts;
 
@@ -9947,7 +9926,7 @@ const _B2dEditor = function () {
 	this.tool_VERTICEEDITING = 11;
 	this.allowed_editing_TOOLS = [-1, this.tool_SELECT, this.tool_GEOMETRY, this.tool_POLYDRAWING, this.tool_PEN, this.tool_TEXT, this.tool_ART, this.tool_SETTINGS, this.tool_VERTICEEDITING];
 
-	this.minimumBodySurfaceArea = 0.3;
+	this.minimumBodySurfaceArea = 0.1;
 }
 
 attachGraphicsAPIMixin();
