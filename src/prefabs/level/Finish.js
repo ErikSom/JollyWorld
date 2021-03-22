@@ -43,10 +43,13 @@ class Finish extends PrefabManager.basePrefab {
 
             const otherBody = contact.GetFixtureA() == self.hitCheck ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
             if(otherBody.mainCharacter){
-                const prefabClass = game.editor.retrieveClassFromBody(otherBody);
-                if(prefabClass && prefabClass.character) prefabClass.character.setExpression(Humanoid.EXPRESSION_SPECIAL);
 
-                game.win();
+                if(crawlJointsUtility(otherBody, body => body.mySprite && body.mySprite.data && body.mySprite.data.refName === 'body').length>=1){
+                    const prefabClass = game.editor.retrieveClassFromBody(otherBody);
+                    if(prefabClass && prefabClass.character) prefabClass.character.setExpression(Humanoid.EXPRESSION_SPECIAL);
+
+                    game.win();
+                }
             }
         }
     }
@@ -65,4 +68,47 @@ PrefabManager.prefabLibrary.Finish = {
     json: '{"objects":[[0,-0.009,0.007,0,"finish","base",0,["#999999"],["#000"],[0],false,true,[[[{"x":-6.103,"y":0.467},{"x":-5.225,"y":-0.456},{"x":5.225,"y":-0.478},{"x":6.103,"y":0.467}]]],[1],0,[0],"",[1],true,false,false,[0.5],[0.2]],[1,0.28,-0.197,0,"","",1,"Finish0000",0,0.684,0.612,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
     class: Finish,
     library: PrefabManager.LIBRARY_LEVEL
+}
+
+
+export const crawlJointsUtility = (crawlBody, condition) => {
+    const bodiesFound = [];
+    const connectedBodies = [crawlBody];
+    crawlBody.jointCrawled = true;
+    const crawledJoints = [];
+    const crawlJoints = body => {
+        let jointEdge = body.GetJointList();
+        while (jointEdge) {
+            const joint = jointEdge.joint;
+            if(!joint.jointCrawled){
+                joint.jointCrawled = true;
+                crawledJoints.push(joint);
+                const bodyA = joint.GetBodyA();
+                if(!bodyA.jointCrawled){
+                    bodyA.jointCrawled = true;
+                    if(condition(bodyA)) bodiesFound.push(bodyA);
+                    connectedBodies.push(bodyA);
+                    crawlJoints(bodyA);
+                }
+                const bodyB = joint.GetBodyB();
+                if(!bodyB.jointCrawled){
+                    bodyB.jointCrawled = true;
+                    if(condition(bodyB)) bodiesFound.push(bodyB);
+                    connectedBodies.push(bodyB);
+                    crawlJoints(bodyB);
+                }
+            }
+            jointEdge = jointEdge.next;
+        }
+    }
+    crawlJoints(crawlBody);
+
+    connectedBodies.forEach(body => {
+        delete body.jointCrawled;
+    });
+    crawledJoints.forEach(joint => {
+        delete joint.jointCrawled;
+    });
+
+    return bodiesFound;
 }

@@ -220,9 +220,10 @@ export const doAction = function (actionData, target) {
         case "SetMaxMotorTorque":
             let targetMotorForce;
             if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
-            else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce() + actionData.force;
+            else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorTorque() + actionData.force;
             targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
-            target.SetMaxMotorForce(targetMotorForce);
+            console.log(target);
+            target.SetMaxMotorTorque(targetMotorForce);
             break;
         case "SetSpring":
             target.SetFrequency(actionData.frequencyHz);
