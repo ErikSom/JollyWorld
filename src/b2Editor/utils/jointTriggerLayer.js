@@ -16,6 +16,7 @@ export const add = el =>{
 
 export const bringToFront = ()=>{
 	if(!game.editor.editing) return;
+	if(game.editor.groupEditing) return;
 	for(let i = 0; i<elements.length; i++){
 
 		const el = elements[i];
