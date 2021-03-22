@@ -1081,7 +1081,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
     for (let i = 0; i < dataJoint.triggerActions.length; i++) {
         var targetObject = B2dEditor.selectedPhysicsBodies[0].mySprite.targets[i];
         actionsString = `_triggerActions_${i}`;
-        actionsFolder = _folder.addFolder(`Target ${i+1}`);
+        actionsFolder = _folder.addFolder(`Target ${i+1} Actions`);
 
         const deleteIcon = document.createElement('div');
         deleteIcon.classList.add('deleteIcon');
@@ -1109,18 +1109,20 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             editIcon.classList.add('editIcon');
             actionNameController.domElement.appendChild(editIcon);
 
-            const deleteIcon = document.createElement('div');
-            deleteIcon.classList.add('deleteIcon');
-            actionNameController.domElement.appendChild(deleteIcon);
+            if(dataJoint.triggerActions[i].length>1){
+                const deleteIcon = document.createElement('div');
+                deleteIcon.classList.add('deleteIcon');
+                actionNameController.domElement.appendChild(deleteIcon);
 
 
-            deleteIcon.onclick = ()=> {
-                let targetIndex = i;
-                let targetAction = j;
-                for (let i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
-                    if (B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length > 1) {
-                        B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].splice(targetAction, 1);
-                        updateTriggerGUI();
+                deleteIcon.onclick = ()=> {
+                    let targetIndex = i;
+                    let targetAction = j;
+                    for (let i = 0; i < B2dEditor.selectedPhysicsBodies.length; i++) {
+                        if (B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].length > 1) {
+                            B2dEditor.selectedPhysicsBodies[i].mySprite.data.triggerActions[targetIndex].splice(targetAction, 1);
+                            updateTriggerGUI();
+                        }
                     }
                 }
             }
@@ -1184,13 +1186,58 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         }
     }
 
-    const worldSettingsFolder = _folder.addFolder(`World Settings`);
+    const worldSettingsFolder = _folder.addFolder(`World Actions`);
 
 
     for (let i = 0; i < dataJoint.worldActions.length; i++) {
-        let actionFolder = worldSettingsFolder.addFolder(`-- Action ${i+1}`);
-        let actionString = `_worldActions_action_${i}`
         let action = dataJoint.worldActions[i];
+        let actionString = `_worldActions_action_${i}`;
+
+        ui.editorGUI.editData[actionString] = '';
+        let actionNameController = worldSettingsFolder.add(ui.editorGUI.editData, actionString).name(`${i+1}. ${action.type}`);
+        actionNameController.domElement.querySelector('input').style.display = 'none';
+
+        const editIcon = document.createElement('div');
+        editIcon.classList.add('editIcon');
+        actionNameController.domElement.appendChild(editIcon);
+
+        const deleteIcon = document.createElement('div');
+        deleteIcon.classList.add('deleteIcon');
+        actionNameController.domElement.appendChild(deleteIcon);
+
+        deleteIcon.onclick = ()=> {
+            let targetAction = i;
+            for (var j = 0; j < B2dEditor.selectedPhysicsBodies.length; j++) {
+                B2dEditor.selectedPhysicsBodies[j].mySprite.data.worldActions.splice(targetAction, 1);
+            }
+            updateTriggerGUI();
+        }
+
+        const actionFolder = worldSettingsFolder.addFolder(`-- Edit action ${i+1}`);
+        actionFolder.domElement.parentNode.style.position = 'absolute';
+        actionFolder.domElement.parentNode.style.left = '270px';
+        actionFolder.domElement.parentNode.style.marginTop = '-28px';
+        actionFolder.domElement.style.position = 'fixed';
+        actionFolder.domElement.style.display = 'none';
+
+        actionFolder.domElement.querySelector('.title').onclick = hideActions;
+
+        actionFolder.open();
+
+        editIcon.onclick = ()=>{
+            if(actionFolder.keepVisible){
+                hideActions();
+                return;
+            }
+            hideActions();
+            actionFolder.open();
+            actionFolder.domElement.style.display = 'block';
+            actionFolder.keepVisible = true;
+            positionAction(actionFolder);
+        }
+
+        actionScrollWatch.push(actionFolder);
+
         let actionVarString = `${actionString}_targetActionDropDown`;
 
         ui.editorGUI.editData[actionVarString] = action.type;
@@ -1203,20 +1250,9 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             this.triggerActionID = i;
         }.bind(controller));
 
-        controller.name('actionType');
+        controller.name('type');
 
         addActionGUIToFolder(action, actionString, actionFolder, -1, i)
-
-        ui.editorGUI.editData[`removeAction_${i}`] = function () {};
-        label = `Remove Action ${i+1}`;
-        let targetAction = i;
-        controller = actionFolder.add(ui.editorGUI.editData, `removeAction_${i}`).name(label);
-        ui.editorGUI.editData[`removeAction_${i}`] = function () {
-            for (var j = 0; j < B2dEditor.selectedPhysicsBodies.length; j++) {
-                B2dEditor.selectedPhysicsBodies[j].mySprite.data.worldActions.splice(targetAction, 1);
-                updateTriggerGUI();
-            }
-        }
     }
 
 
