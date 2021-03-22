@@ -1038,13 +1038,13 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 
     let controller;
 
-    controller = _folder.add(ui.editorGUI.editData, "delay", 0, 60 * 10).step(0.1)
+    controller = _folder.add(ui.editorGUI.editData, "delay", 0, 60 * 10).name("delay (sec)").step(0.1)
     controller.onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value;
     }.bind(controller));
 
-    controller = _folder.add(ui.editorGUI.editData, "repeatDelay", 0, 60).step(0.1);
+    controller = _folder.add(ui.editorGUI.editData, "repeatDelay", 0, 60).name("repeat delay (sec)").step(0.1);
     controller.onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value;

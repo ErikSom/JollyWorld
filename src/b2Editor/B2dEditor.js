@@ -2133,7 +2133,7 @@ const _B2dEditor = function () {
 
 		if (this.selectedTool == this.tool_SELECT || this.selectedTool == this.tool_JOINTS) {
 			if (this.selectingTriggerTarget) this.doTriggerTargetSelection();
-			else this.doSelection();
+			this.doSelection();
 		} else if (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN) {
 			this.doVerticesLineDrawing(this.selectedTool == this.tool_POLYDRAWING);
 		} else if (this.selectedTool == this.tool_GEOMETRY || this.selectedTool == this.tool_TRIGGER) {
@@ -2754,17 +2754,7 @@ const _B2dEditor = function () {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
 			} else if (this.selectingTriggerTarget) {
-				var highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
-				if (highestObject) {
-					for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-						var body = this.selectedPhysicsBodies[i];
-						if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-							trigger.addTargetToTrigger(body, highestObject);
-							trigger.updateTriggerGUI();
-						}
-					}
-				}
-				this.stopTriggerTargetSelecting();
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
 			} else if(this.customPrefabMouseDown){
 				this.customPrefabMouseDown();
 			} else if (this.selectedTool == this.tool_SELECT) {
@@ -3125,7 +3115,7 @@ const _B2dEditor = function () {
 					move.SelfMul(this.cameraHolder.scale.x);
 					camera.pan(move);
 					scrollBars.update();
-				} else if (this.selectedTool == this.tool_SELECT) {
+				} else if (this.selectedTool == this.tool_SELECT && !this.selectingTriggerTarget) {
 					if (this.mouseTransformType == this.mouseTransformType_Movement) {
 						this.applyToSelectedObjects(this.TRANSFORM_MOVE, {
 							x: move.x * this.PTM,
@@ -3982,7 +3972,45 @@ const _B2dEditor = function () {
 				// dont do any mouse up action if we are doing a custom prefab action
 			}else if (this.spaceCameraDrag) {
 				this.spaceCameraDrag = false;
-			} else if (this.selectedTool == this.tool_SELECT) {
+			} else if(this.selectingTriggerTarget){
+				const minSelectPixi = 3/Settings.PTM;
+				if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
+					const highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
+					if (highestObject) {
+						for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+							var body = this.selectedPhysicsBodies[i];
+							if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+								trigger.addTargetToTrigger(body, highestObject);
+								trigger.updateTriggerGUI();
+							}
+						}
+					}
+				}else{
+					let bodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
+					const textures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
+
+					for(let i = 0; i<textures.length; i++){
+						const texture = textures[i];
+						if(texture.myBody){
+							if(!bodies.includes(texture.myBody)){
+								bodies.push(texture.myBody);
+							}
+							textures.splice(i, 1);
+							i--;
+						}
+					}
+					[].concat(bodies.map(body => body.mySprite), textures).forEach(object =>{
+						for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+							var body = this.selectedPhysicsBodies[i];
+							if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+								trigger.addTargetToTrigger(body, object);
+							}
+						}
+					});
+					trigger.updateTriggerGUI();
+				}
+				this.stopTriggerTargetSelecting();
+			}else if (this.selectedTool == this.tool_SELECT) {
 
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 
@@ -4817,7 +4845,7 @@ const _B2dEditor = function () {
 		// DRAW outer selection lines
 		var i;
 		var aabb;
-		if (this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0 || Object.keys(this.selectedPrefabs).length > 0) {
+		if (!this.selectingTriggerTarget && this.selectedPhysicsBodies.length > 0 || this.selectedTextures.length > 0 || Object.keys(this.selectedPrefabs).length > 0) {
 
 			aabb = this.computeSelectionAABB();
 
