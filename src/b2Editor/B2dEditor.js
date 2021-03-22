@@ -3725,7 +3725,7 @@ const _B2dEditor = function () {
 			else if(this.shiftDown && !obj) nextIndex = 0;
 
 			if(this.groupEditing){
-				nextIndex = Math.max(this.groupMinChildIndex+1, nextIndex);
+				nextIndex = Math.max(this.groupMinChildIndex+2, nextIndex);
 			}
 
 			if(obj){
