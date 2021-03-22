@@ -1003,7 +1003,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
             ui.editorGUI.editData.targetTypeDropDown = key;
         }
     })
-    _folder.add(ui.editorGUI.editData, "targetTypeDropDown", targetTypes).name('target').onChange(function (value) {
+    _folder.add(ui.editorGUI.editData, "targetTypeDropDown", targetTypes).name('triggered by').onChange(function (value) {
         this.humanUpdate = true;
         this.targetValue = value
     });
