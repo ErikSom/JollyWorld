@@ -1778,40 +1778,63 @@ export const drawEditorTriggers = ()=>{
     })
 
 }
-export const drawEditorTriggerTargets = body=>{
-    if(body.mySprite.targets){
-        let myPos = body.GetPosition();
-        myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
-        game.levelCamera.matrix.apply(myPos,myPos);
+export const drawEditorTriggerTargets = targets=>{
 
-
-        for(let j = 0; j<body.mySprite.targets.length; j++){
-            let target = body.mySprite.targets[j];
-            let tarPos;
-            let tarPrefab;
-
-            if(target.data.prefabInstanceName){
-                tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
-                tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
-            } else if ([game.editor.object_BODY, game.editor.object_TRIGGER].includes(target.data.type)) {
-                tarPos = target.myBody.GetPosition().Clone();
-				tarPos.x *= game.editor.PTM;
-				tarPos.y *= game.editor.PTM;
-            } else{
-                tarPos = new PIXI.Point(target.x, target.y);
-            }
-
-            game.levelCamera.matrix.apply(tarPos,tarPos);
-
-            const lineOffsetSize = -20 * game.levelCamera.scale.x;
-            const linePos = myPos.Clone().SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
-            drawing.drawLine(linePos, tarPos, {color: "0x000", label:j+1, labelPosition:0.5, labelColor:"0x999"});
-        };
-
-        if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
-            const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
-            drawing.addText(keyName, B2dEditor.debugGraphics, myPos.Clone().SelfAdd({x:1, y:1}), {fill:0x000});
-            drawing.addText(keyName, B2dEditor.debugGraphics, myPos);
-        }
+    if(game.triggerDebugDraw.redrawTimer >= 0){
+        game.triggerDebugDraw.redrawTimer --;
     }
+
+    if(game.triggerDebugDraw.redrawTimer !== 0) return;
+
+    targets.forEach(body => {
+
+        if(body.mySprite.targets){
+            let myPos = body.GetPosition();
+            myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
+
+            for(let j = 0; j<body.mySprite.targets.length; j++){
+                let target = body.mySprite.targets[j];
+                let tarPos;
+                let tarPrefab;
+
+                if(target.data.prefabInstanceName){
+                    tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
+                    tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
+                } else if ([game.editor.object_BODY, game.editor.object_TRIGGER].includes(target.data.type)) {
+                    tarPos = target.myBody.GetPosition().Clone();
+                    tarPos.x *= game.editor.PTM;
+                    tarPos.y *= game.editor.PTM;
+                } else{
+                    tarPos = new PIXI.Point(target.x, target.y);
+                }
+
+                const lineOffsetSize = -20 * game.levelCamera.scale.x;
+                const linePos = myPos.Clone().SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
+
+                game.triggerDebugDraw.lineStyle(1.0 / game.editor.cameraHolder.scale.x, "0x000", 1.0);
+                game.triggerDebugDraw.moveTo(linePos.x, linePos.y);
+                game.triggerDebugDraw.lineTo(tarPos.x, tarPos.y);
+
+                const v = new Box2D.b2Vec2(tarPos.x-linePos.x, tarPos.y-linePos.y);
+                const l = v.Length();
+                v.SelfNormalize();
+                const tl = l*0.5;
+                v.SelfMul(tl);
+                const tp = linePos.Clone().SelfAdd(v);
+
+                game.triggerDebugDraw.beginFill("0x999", 1.0);
+                game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
+                game.triggerDebugDraw.endFill();
+
+                drawing.addText(j+1, game.triggerDebugDraw, tp, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+            };
+
+            if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
+                const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
+                drawing.addText(keyName, game.triggerDebugDraw, myPos.Clone().SelfAdd({x:1, y:1}), {fill:0x000, fontSize: 14 / game.editor.cameraHolder.scale.x});
+                drawing.addText(keyName, game.triggerDebugDraw, myPos, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+            }
+        }
+    });
+    game.triggerDebugDraw.dirtyTargets = false;
 }

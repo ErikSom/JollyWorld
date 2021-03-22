@@ -1578,6 +1578,7 @@ body .dg .cr.function {
     margin-top: -120px;
     transform: translate(-50%, -50%);
     transition: opacity 0.3s ease-in;
+    pointer-events: none;
 }
 
 .speech-bubble:after{

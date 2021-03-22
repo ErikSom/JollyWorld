@@ -233,6 +233,18 @@ function Game() {
         this.myEffectsContainer = new PIXI.Container();
         this.stage.addChild(this.myEffectsContainer);
 
+        this.triggerDebugDraw = new PIXI.Graphics();
+        this.triggerDebugDraw.debounceRedraw = ()=>{
+            while(game.triggerDebugDraw.children.length > 0){
+                var child = game.triggerDebugDraw.getChildAt(0);
+                game.triggerDebugDraw.removeChild(child);
+                child.destroy();
+            }
+            game.triggerDebugDraw.clear();
+            this.triggerDebugDraw.redrawTimer = 6;
+        }
+        this.stage.addChild(this.triggerDebugDraw);
+
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
         this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
@@ -649,6 +661,7 @@ function Game() {
             ui.hideMainMenu();
             ui.showLevelLoader();
         }
+        this.triggerDebugDraw.debounceRedraw();
     }
     this.resetGameSelection = function(){
         this.selectedCharacter = 0;
@@ -683,6 +696,7 @@ function Game() {
         MobileController.show();
         TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
         this.playLevelMidi();
+        this.triggerDebugDraw.debounceRedraw();
     }
     this.playLevelMidi = function (){
         if(this.editor.editorSettingsObject.song && editor.editorSettingsObject.autoPlayMidi) MidiPlayer.play();
@@ -1293,6 +1307,12 @@ function Game() {
         if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
             this.world.DrawDebugData();
         }
+
+        // move our trigger debug draw
+        this.triggerDebugDraw.x = this.editor.cameraHolder.x;
+        this.triggerDebugDraw.y = this.editor.cameraHolder.y;
+        this.triggerDebugDraw.scale.x = this.editor.cameraHolder.scale.x;
+        this.triggerDebugDraw.scale.y = this.editor.cameraHolder.scale.y;
 
         this.stats.begin('render', '#4399fa');
         if(!Settings.FPSLimiter || (Settings.FPSLimiter && !Settings.FPSFrameLimit)) this.app.render();

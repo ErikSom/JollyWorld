@@ -34,18 +34,18 @@ export const drawLine = function(sp, ep, _lineOptions){
     B2dEditor.debugGraphics.moveTo(sp.x * B2dEditor.container.scale.x + B2dEditor.container.x, sp.y * B2dEditor.container.scale.y + B2dEditor.container.y);
     B2dEditor.debugGraphics.lineTo(ep.x * B2dEditor.container.scale.x + B2dEditor.container.x, ep.y * B2dEditor.container.scale.y + B2dEditor.container.y);
 
-    if(lineOptions.label != undefined){
-        const v = new b2Vec2(ep.x-sp.x, ep.y-sp.y);
-        const l = v.Length();
-        v.SelfNormalize();
-        const tl = l*lineOptions.labelPosition;
-        v.SelfMul(tl);
-        const tp = sp.Clone().SelfAdd(v);
-        drawCircle(tp, 10, lineOptions, {color:lineOptions.labelColor});
-        tp.SelfMul(B2dEditor.container.scale.x);
-        tp.SelfAdd(B2dEditor.container.position);
-        addText(lineOptions.label, B2dEditor.debugGraphics, tp)
-    }
+    // if(lineOptions.label != undefined){
+    //     const v = new b2Vec2(ep.x-sp.x, ep.y-sp.y);
+    //     const l = v.Length();
+    //     v.SelfNormalize();
+    //     const tl = l*lineOptions.labelPosition;
+    //     v.SelfMul(tl);
+    //     const tp = sp.Clone().SelfAdd(v);
+    //     drawCircle(tp, 10, lineOptions, {color:lineOptions.labelColor});
+    //     tp.SelfMul(B2dEditor.container.scale.x);
+    //     tp.SelfAdd(B2dEditor.container.position);
+    //     addText(lineOptions.label, B2dEditor.debugGraphics, tp)
+    // }
 }
 export const drawCircle = function(point, radius, _lineOptions, _fillOptions){
     const lineOptions = Object.assign({}, lineOptionsBase, _lineOptions);

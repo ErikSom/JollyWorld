@@ -12,7 +12,6 @@ import * as trigger from "./objects/trigger";
 import * as dat from "../../libs/dat.gui";
 import * as SaveManager from "../utils/SaveManager";
 import * as FPSManager from '../utils/FPSManager';
-import * as AudioManager from '../utils/AudioManager';
 import * as jointTriggerLayer from './utils/jointTriggerLayer'
 
 import * as DS from './utils/DecalSystem';
@@ -534,6 +533,8 @@ const _B2dEditor = function () {
 					this.selectedTool = -1;
 					this.selectTool(this.tool_TRIGGER);
 				});
+
+				game.triggerDebugDraw.debounceRedraw();
 
 				break
 			case this.tool_SETTINGS:
@@ -1510,6 +1511,8 @@ const _B2dEditor = function () {
 			}
 		}
 
+		// we mark trigger targets as dirty for a redraw
+		game.triggerDebugDraw.debounceRedraw();
 
 		//TODO:Maybe add admin mode / pro mode for lockselection
 		if (ui.editorGUI.editData.lockselection == undefined) ui.editorGUI.editData.lockselection = false;
@@ -2233,9 +2236,7 @@ const _B2dEditor = function () {
 		}
 
 		if(this.selectedTool === this.tool_TRIGGER){
-			this.triggerObjects.forEach(obj=>{
-				trigger.drawEditorTriggerTargets(obj);
-			})
+			trigger.drawEditorTriggerTargets(this.triggerObjects);
 		}
 
 		trigger.drawEditorTriggers();
@@ -2653,7 +2654,7 @@ const _B2dEditor = function () {
 	this.editorJointObject = new this.jointObject();
 
 	this.editorGraphicDrawingObject = new function () {
-		this.colorFill = "#000";
+		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.lineWidth = 0;
 		this.transparancy = 1.0;
@@ -2661,7 +2662,7 @@ const _B2dEditor = function () {
 	}
 	this.editorGeometryObject = new function () {
 		this.shape = 0;
-		this.colorFill = "#000";
+		this.colorFill = "#999999";
 		this.colorLine = "#000";
 		this.lineWidth = 0;
 		this.transparancy = 1.0;
@@ -3303,6 +3304,7 @@ const _B2dEditor = function () {
 						this.verticeEditingSprite.position.x--;
 					}
 				}
+				game.triggerDebugDraw.debounceRedraw();
 			}else if(!this.mouseDown){
 				if(this.selectedTool === this.tool_VERTICEEDITING){
 					const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
@@ -4284,6 +4286,7 @@ const _B2dEditor = function () {
 				x: this.mousePosWorld.x * this.PTM,
 				y: this.mousePosWorld.y * this.PTM
 			}, zoom);
+			game.triggerDebugDraw.debounceRedraw();
 		}
 
         e.preventDefault();
@@ -4906,11 +4909,15 @@ const _B2dEditor = function () {
 
 	this.drawDebugTriggerHelpers = function () {
 		let sprite;
+		const selectedTriggers = [];
 		for(var i = 0; i<this.selectedPhysicsBodies.length; i++){
 			sprite = this.selectedPhysicsBodies[i].mySprite;
 			if (sprite.data.type == this.object_TRIGGER) {
-				trigger.drawEditorTriggerTargets(this.selectedPhysicsBodies[i]);
+				selectedTriggers.push(this.selectedPhysicsBodies[i]);
 			}
+		}
+		if(selectedTriggers.length>0){
+			trigger.drawEditorTriggerTargets(selectedTriggers);
 		}
 	}
 
@@ -9607,6 +9614,7 @@ const _B2dEditor = function () {
 		camera.resetToStoredPosition();
 
 		jointTriggerLayer.reset();
+        game.triggerDebugDraw.debounceRedraw();
 
 		this.editing = true;
 		this.selectTool(this.tool_SELECT);
