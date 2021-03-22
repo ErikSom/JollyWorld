@@ -3134,6 +3134,7 @@ const _B2dEditor = function () {
 					} else if (this.mouseTransformType == this.mouseTransformType_Rotation) {
 						this.applyToSelectedObjects(this.TRANSFORM_ROTATE, move.x * this.PTM / 10);
 					}
+					game.triggerDebugDraw.debounceRedraw();
 				} else if(this.selectedTool == this.tool_PEN && this.activeVertices.length){
 
 					const mouseVertice = this.getCurrentMouseVertice();
@@ -3304,7 +3305,6 @@ const _B2dEditor = function () {
 						this.verticeEditingSprite.position.x--;
 					}
 				}
-				game.triggerDebugDraw.debounceRedraw();
 			}else if(!this.mouseDown){
 				if(this.selectedTool === this.tool_VERTICEEDITING){
 					const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
@@ -4453,12 +4453,14 @@ const _B2dEditor = function () {
 				x: this.mousePosWorld.x * this.PTM,
 				y: this.mousePosWorld.y * this.PTM
 			}, true);
+			game.triggerDebugDraw.debounceRedraw();
 		} else if (e.keyCode == 189 || e.keyCode == 109 || e.keyCode == 173) { // -
 			//zoomout
 			camera.zoom({
 				x: this.mousePosWorld.x * this.PTM,
 				y: this.mousePosWorld.y * this.PTM
 			}, false);
+			game.triggerDebugDraw.debounceRedraw();
 		} else if (e.keyCode == 112) { // F1
 			if (ui.assetGUI == undefined) {
 				ui.initGuiAssetSelection();
@@ -4534,7 +4536,7 @@ const _B2dEditor = function () {
 					}
 				}
 			}
-
+			game.triggerDebugDraw.debounceRedraw();
 		} else if (e.keyCode == 9) { // TAB
 			jointTriggerLayer.toggleHide();
 		}
@@ -8694,9 +8696,11 @@ const _B2dEditor = function () {
 			} else if (gObj instanceof this.textureObject) {
 				g = new PIXIHeaven.Sprite(PIXI.Texture.from(gObj.textureName));
 				g.pivot.set(g.width / 2, g.height / 2);
+				g.alpha = gObj.transparancy;
 			}else if(gObj instanceof this.textObject) {
 				g = this.buildTextGraphicFromObj(gObj);
 				g.pivot.set(g.width / 2, g.height / 2);
+				g.alpha = gObj.transparancy;
 			}else if (gObj instanceof this.graphicGroup) {
 				g = new PIXI.Container();
 				g.data = gObj;
@@ -8707,12 +8711,12 @@ const _B2dEditor = function () {
 
 				this.updateGraphicGroupShapes(g);
 				g.data = null;
+				g.alpha = gObj.transparancy;
 			}
 			graphic.addChild(g);
 			g.x = gObj.x;
 			g.y = gObj.y;
 			g.rotation = gObj.rotation;
-			g.alpha = gObj.transparancy;
 		}
 	}
 	this.updateGraphicShapes = function(target, dontUpdateTileTexture){
