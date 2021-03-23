@@ -827,7 +827,7 @@ function Game() {
         this.gameOver = false;
         this.checkPointData = null;
     }
-    // playWorld/testWorld/editoWorld
+    
     this.autoSaveTimeOutID;
     this.doAutoSave = function () {
         let self = this;
