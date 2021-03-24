@@ -56,6 +56,14 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
     let emitter = getEmitter(type);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
 
+
+    if(type === 'blood'){
+        emitter.acceleration.x = game.world.GetGravity().x * 200;
+        emitter.acceleration.y = game.world.GetGravity().y * 200;
+
+    }
+
+
     attachEmitter(body, emitter);
 
     if (body) {
