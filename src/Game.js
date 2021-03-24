@@ -710,6 +710,7 @@ function Game() {
         var worldJSON = JSON.parse(this.editor.worldJSON);
         this.editor.buildJSON(worldJSON);
         this.doAutoSave();
+        GameTimer.show(false);
     }
     this.resetWorld = function (doCheckpoint) {
         game.preloader.classList.remove('hide');

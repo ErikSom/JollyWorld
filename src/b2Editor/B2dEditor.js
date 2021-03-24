@@ -968,7 +968,7 @@ const _B2dEditor = function () {
 		switch (currentCase) {
 			case case_JUST_BODIES:
 
-				targetFolder.add(ui.editorGUI.editData, "fixed").name("not moving").onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "fixed").name("static").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
