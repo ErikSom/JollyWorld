@@ -52,6 +52,9 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
 
+        console.log(this.collisionUpdates);
+        this.bloodSprays = [];
+
         this.alive = true;
         this.bleedTimer = -1;
 
@@ -165,6 +168,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         this.processJointDamage();
         this.processBodySeparation();
+        this.processBloodSprays();
 
         if (this.collisionUpdates.length > 0) {
             this.doCollisionUpdate(this.collisionUpdates[0]);
@@ -208,6 +212,38 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
         }
     }
+
+    processBloodSprays(){
+        for(let i = 0; i<this.bloodSprays.length; i++){
+            const spray = this.bloodSprays[i];
+
+
+            if(spray.body && !spray.body.destroyed){
+                const spawnPos = new Box2D.b2Vec2();
+                spray.body.GetWorldPoint(spray.anchor, spawnPos);
+
+                 if(!spray.initialized){
+                     console.log(spray.angle, "ANGLE?!");
+                     spray.emitter = emitterManager.playOnceEmitter("bloodSpray", spray.body, spawnPos, spray.body.GetAngle()+spray.angle);
+                     spray.initialized = true;
+                 } else if(spray.emitter){
+                    spray.emitter.spawnPos.set(spawnPos.x * Settings.PTM, spawnPos.y * Settings.PTM);
+
+                    const angle = spray.body.GetAngle()+spray.angle;
+                    const emitterAngleOffset = (spray.emitter.maxStartRotation - spray.emitter.minStartRotation) / 2;
+                    spray.emitter.minStartRotation = angle - emitterAngleOffset;
+                    spray.emitter.maxStartRotation = angle + emitterAngleOffset;
+                    spray.emitter.rotation = angle * game.editor.RAD2DEG;
+                 }
+
+                if(performance.now() > spray.time){
+                    this.bloodSprays.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+    }
+
     processBodySeparation(){
         const snapSeperation = 0.2;
         const maxSnapTicks = 30;
@@ -441,6 +477,41 @@ export class Humanoid extends PrefabManager.basePrefab {
         HAND_RIGHT: 'hand_right',
         BELLY: 'belly',
     }
+
+    addBloodEmitters(target, type){
+        const bloodTime = 3000;
+
+        if(type === Humanoid.GORE_SNAP){
+
+            const baseBody = this.lookupObject[target];
+            const targetJoint = this.lookupObject[target + "_joint"];
+            if(baseBody && targetJoint){
+
+
+                let targetAngle = 0;
+                if([Humanoid.BODY_PARTS.HEAD].includes(target)){
+                    targetAngle = -Settings.pihalve;
+                }else{
+                    targetAngle = Settings.pihalve;
+                }
+
+                const targetBody1 = targetJoint.GetBodyA() == baseBody ? targetJoint.GetBodyB() : targetJoint.GetBodyA();
+                const targetBody2 = targetJoint.GetBodyA() == baseBody ? targetJoint.GetBodyA() : targetJoint.GetBodyB();
+                const targetAnchor1 = targetJoint.GetBodyA() == baseBody ? targetJoint.GetLocalAnchorB() : targetJoint.GetLocalAnchorA();
+                const targetAnchor2 = targetJoint.GetBodyA() == baseBody ? targetJoint.GetLocalAnchorA() : targetJoint.GetLocalAnchorB();
+
+                this.bloodSprays.push({body:targetBody1, anchor:targetAnchor1, angle:targetAngle, time:performance.now()+bloodTime});
+                this.bloodSprays.push({body:targetBody2, anchor:targetAnchor2, angle:-targetAngle, time:performance.now()+bloodTime});
+            }
+
+        }else{
+
+            // find all joint in bodies that match BODY_PARTS + _joint
+        }
+
+
+
+    }
     doCollisionUpdate(update) {
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
         switch (update.type) {
@@ -449,6 +520,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 var targetBody = this.lookupObject[update.target];
                 if (targetBody) {
 
+                    this.addBloodEmitters(update.target, update.type);
                     for (var i = 1; i < this.collisionUpdates.length; i++) {
                         if (this.collisionUpdates[i].target === update.target) {
                             this.collisionUpdates.splice(i, 1);
@@ -512,6 +584,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             case Humanoid.GORE_SNAP:
                 const targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint) {
+                    this.addBloodEmitters(update.target, update.type);
 
                     if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
 
@@ -533,8 +606,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                     vainBodies._bodies[0].SetPosition(anchorAPos);
 
                     revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], anchorAPos);
-
-
 
                     revoluteJointDef.collideConnected = false;
                     joint = game.world.CreateJoint(revoluteJointDef);
