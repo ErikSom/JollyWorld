@@ -1297,7 +1297,7 @@ body .dg .cr.function {
 }
 *{
     scrollbar-width: thin;
-    scrollbar-color: white black;
+    scrollbar-color: black white;
 }
 
 .ios-pwa-container {
