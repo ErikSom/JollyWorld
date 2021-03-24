@@ -504,21 +504,17 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
 
         }else{
-            let angles = [Settings.pihalve, -Settings.pihalve];
-            if(baseBody === this.lookupObject[Humanoid.BODY_PARTS.HEAD]) angles = [-Settings.pihalve];
-            if(baseBody === this.lookupObject[Humanoid.BODY_PARTS.BELLY]) angles = [Settings.pihalve, -Settings.pihalve, Settings.pihalve];
-            if(baseBody === this.lookupObject[Humanoid.BODY_PARTS.BODY]) angles = [-Settings.pihalve, -Settings.pihalve, Settings.pihalve, -Settings.pihalve, -Settings.pihalve];
-
             let jointEdge = baseBody.GetJointList();
             while(jointEdge){
                 const joint = jointEdge.joint;
                 const body = joint.GetBodyA() === baseBody ? joint.GetBodyB() : joint.GetBodyA();
 
-                if(body.isFlesh && angles.length > 0 && joint.GetType() === Box2D.b2JointType.e_revoluteJoint && !['eye_left', 'eye_right'].includes(body.mySprite.data.refName)){
-
-
-                    console.log(body.mySprite.data.refName);
-                    const angle = angles.shift();
+                if(body.isFlesh && joint.GetType() === Box2D.b2JointType.e_revoluteJoint && !['eye_left', 'eye_right'].includes(body.mySprite.data.refName)){
+                    let angle = Settings.pihalve;
+                    if(joint === this.lookupObject[body.mySprite.data.refName+'_joint']){
+                        angle = -Settings.pihalve;
+                    }
+                    if(body.mySprite.data.refName === 'head') angle *= -1;
                     const anchor = joint.GetBodyA() === baseBody ? joint.GetLocalAnchorB() : joint.GetLocalAnchorA();
                     this.bloodSprays.push({body, anchor, angle, time:performance.now()+bloodTime});
                 }

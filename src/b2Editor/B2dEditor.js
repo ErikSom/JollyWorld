@@ -4324,11 +4324,8 @@ const _B2dEditor = function () {
 		if (e.keyCode == 86) { //v
 			if((e.ctrlKey || e.metaKey) && e.shiftKey){
 				this.pasteSelection();
-			}else this.selectTool(this.tool_POLYDRAWING);
-		}else if (e.keyCode == 80) { //p
-			this.selectTool(this.tool_PEN);
-		}
-		if (e.keyCode == 67) { //c
+			}
+		}else if (e.keyCode == 67) { //c
 			if (e.ctrlKey || e.metaKey) {
 				this.copiedJSON = this.copySelection();
 			} else {
@@ -4346,13 +4343,13 @@ const _B2dEditor = function () {
 			}
 		}else if (e.key >= 1 && e.key<=9) { // 1-9
 			this.selectTool(e.key-1);
-		}else if (e.keyCode == 77) { //m
-			this.selectTool(this.tool_SELECT);
-		} else if (e.keyCode == 74) { //j
+		} else if (e.key == 0) { // 1-9
+			this.selectTool(this.tool_SETTINGS);
+		}else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
 				const joint = this.attachJointPlaceHolder();
 				if(joint) jointTriggerLayer.add(joint);
-			} else this.selectTool(this.tool_JOINTS);
+			}
 		} else if (e.keyCode == 88) { // x
 			if (e.ctrlKey || e.metaKey) {
 				this.cutSelection();

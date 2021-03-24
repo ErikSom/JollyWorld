@@ -597,14 +597,6 @@ function Game() {
                     this.character.hat.lean(1);
                 }
             }
-
-        }
-        if(this.gameState == this.GAMESTATE_NORMALPLAY){
-            if(Key.isDown(Key.R) && Key.isDown(Key.SHIFT)){
-                this.resetWorld(false);
-            }else if((Key.isPressed(Key.P) || Key.isPressed(Key.R) || Key.isPressed(Key.ESCAPE) || Key.isPressed(Key.TAB)) && this.run){
-                if(!this.pause) this.pauseGame();
-            }
         }
     }
 
@@ -622,11 +614,28 @@ function Game() {
             }
         }
 
-        if (e.keyCode == 32) { //space
+        if (e.keyCode == Key.SPACE || e.keyCode == Key.R) { //space
             if (this.gameOver && this.run) {
                 this.resetWorld(true);
             }
         }
+
+        if(this.gameState == this.GAMESTATE_NORMALPLAY){
+            if(e.keyCode == Key.R && e.shiftDown){
+                this.resetWorld(false);
+            }else if((e.keyCode == Key.P || e.keyCode == Key.R || e.keyCode == Key.ESCAPE || e.keyCode == Key.TAB)){
+                if(!this.pause){
+                     this.pauseGame();
+                } else{
+                    this.unpauseGame();
+                    if(e.keyCode == Key.R){
+                        // retry
+                        game.resetWorld(true);
+                    }
+                }
+            }
+        }
+
         if((this.editor.editing && !this.run) && ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.keyCode == 86 )) { // v
             return;
         }
@@ -757,6 +766,9 @@ function Game() {
 
 
             setTimeout(()=>{
+                ui.hideWinScreen();
+                ui.hideGameOverMenu();
+
                 game.preloader.classList.add('hide');
                 TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
 

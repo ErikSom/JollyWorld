@@ -27,6 +27,7 @@ class DirtBike extends BaseVehicle {
             arm_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
             hand_left:['grip_left_joint', {ifno:'grip_right_joint', destroy:['back_joint']}],
             hand_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
+            belly:['pedal_left_joint', 'pedal_right_joint', 'sit_joint', 'back_joint']
         }
         this.limbsObserver = [
             [[Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_LEFT],

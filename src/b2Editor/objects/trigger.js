@@ -47,6 +47,7 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 actions.push("SetCameraTarget");
                 actions.push("SetCollision");
+                actions.push("SetFixed");
 
                 if(object.myBody.myTexture){
                     if(object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
@@ -334,6 +335,13 @@ export const doAction = function (actionData, target) {
         break;
         case "SetCollision":
             if(target.myBody) game.editor.setBodyCollision(target.myBody, [Settings.collisionTypes.indexOf(actionData.collision)]);
+        break;
+        case "SetFixed":
+            if(target.myBody){
+                const type = actionData.setFixed ? Box2D.b2BodyType.b2_staticBody : Box2D.b2BodyType.b2_dynamicBody;
+                target.myBody.SetType(type);
+                if(actionData.toggle) actionData.setFixed = !actionData.setFixed;
+            }
         break;
         case "PlaySFX":
             playTriggerSound(actionData, target.trigger.GetPosition());
@@ -832,6 +840,20 @@ export const actionDictionary = {
         collision: {
             type: guitype_LIST,
             items: Settings.collisionTypes,
+        },
+    },
+    /*******************/
+    actionObject_SetFixed: {
+        type: 'SetFixed',
+        toggle: false,
+        setFixed: true,
+    },
+    actionOptions_SetFixed: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setFixed: {
+            type: guitype_BOOL,
         },
     },
     /*******************/

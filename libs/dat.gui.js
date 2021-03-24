@@ -1047,7 +1047,8 @@ window.__guiusercolors = [];
       dom.bind(_this2.__input, 'blur', onBlur);
       dom.bind(_this2.__input, 'keydown', function (e) {
         if (e.keyCode === 13) {
-          this.blur();
+          // this.blur();
+          onBlur();
         }
       });
       _this2.updateDisplay();
@@ -1189,7 +1190,7 @@ window.__guiusercolors = [];
       dom.bind(_this2.__input, 'keydown', function (e) {
         if (e.keyCode === 13) {
           _this.__truncationSuspended = true;
-          this.blur();
+          onBlur()
           _this.__truncationSuspended = false;
           onFinish();
         }
