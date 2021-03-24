@@ -47,7 +47,7 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 actions.push("SetCameraTarget");
                 actions.push("SetCollision");
-                actions.push("SetFixed");
+                actions.push("SetStatic");
 
                 if(object.myBody.myTexture){
                     if(object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
@@ -336,11 +336,11 @@ export const doAction = function (actionData, target) {
         case "SetCollision":
             if(target.myBody) game.editor.setBodyCollision(target.myBody, [Settings.collisionTypes.indexOf(actionData.collision)]);
         break;
-        case "SetFixed":
+        case "SetStatic":
             if(target.myBody){
-                const type = actionData.setFixed ? Box2D.b2BodyType.b2_staticBody : Box2D.b2BodyType.b2_dynamicBody;
+                const type = actionData.setStatic ? Box2D.b2BodyType.b2_staticBody : Box2D.b2BodyType.b2_dynamicBody;
                 target.myBody.SetType(type);
-                if(actionData.toggle) actionData.setFixed = !actionData.setFixed;
+                if(actionData.toggle) actionData.setStatic = !actionData.setStatic;
             }
         break;
         case "PlaySFX":
@@ -843,16 +843,16 @@ export const actionDictionary = {
         },
     },
     /*******************/
-    actionObject_SetFixed: {
-        type: 'SetFixed',
+    actionObject_SetStatic: {
+        type: 'SetStatic',
         toggle: false,
-        setFixed: true,
+        setStatic: true,
     },
-    actionOptions_SetFixed: {
+    actionOptions_SetStatic: {
         toggle: {
             type: guitype_BOOL,
         },
-        setFixed: {
+        setStatic: {
             type: guitype_BOOL,
         },
     },
