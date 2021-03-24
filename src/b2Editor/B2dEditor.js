@@ -4343,7 +4343,7 @@ const _B2dEditor = function () {
 			}
 		}else if (e.key >= 1 && e.key<=9) { // 1-9
 			this.selectTool(e.key-1);
-		} else if (e.key == 0) { // 1-9
+		} else if (e.key === "0") { // 1-9
 			this.selectTool(this.tool_SETTINGS);
 		}else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
