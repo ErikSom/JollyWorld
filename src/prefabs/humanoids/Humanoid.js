@@ -480,13 +480,12 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     addBloodEmitters(target, type){
         const bloodTime = 3000;
+        const baseBody = this.lookupObject[target];
 
         if(type === Humanoid.GORE_SNAP){
 
-            const baseBody = this.lookupObject[target];
             const targetJoint = this.lookupObject[target + "_joint"];
             if(baseBody && targetJoint){
-
 
                 let targetAngle = 0;
                 if([Humanoid.BODY_PARTS.HEAD].includes(target)){
@@ -505,8 +504,24 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
 
         }else{
+            let angles = [Settings.pihalve, -Settings.pihalve];
+            if(baseBody === this.lookupObject[Humanoid.BODY_PARTS.HEAD]) angles = [-Settings.pihalve];
+            if(baseBody === this.lookupObject[Humanoid.BODY_PARTS.BELLY]) angles = [Settings.pihalve, -Settings.pihalve, Settings.pihalve];
 
-            // find all joint in bodies that match BODY_PARTS + _joint
+            let jointEdge = baseBody.GetJointList();
+            while(jointEdge){
+                const joint = jointEdge.joint;
+                const body = joint.GetBodyA() === baseBody ? joint.GetBodyB() : joint.GetBodyA();
+
+                if(body.isFlesh && angles.length > 0 && joint.GetType() === Box2D.b2JointType.e_revoluteJoint && !['eye_left', 'eye_right'].includes(body.mySprite.data.refName)){
+                    const angle = angles.shift();
+                    const anchor = joint.GetBodyA() === baseBody ? joint.GetLocalAnchorB() : joint.GetLocalAnchorA();
+                    this.bloodSprays.push({body, anchor, angle, time:performance.now()+bloodTime});
+                }
+
+                jointEdge = jointEdge.next;
+            }
+
         }
 
 
