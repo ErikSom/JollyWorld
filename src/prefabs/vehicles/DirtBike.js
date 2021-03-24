@@ -7,6 +7,7 @@ import { DirtBikeHelmet } from '../hats/dirtBikeHelmet'
 import {
     game
 } from "../../Game";
+import { Humanoid } from '../humanoids/Humanoid';
 
 class DirtBike extends BaseVehicle {
     constructor(target) {
@@ -27,6 +28,11 @@ class DirtBike extends BaseVehicle {
             hand_left:['grip_left_joint', {ifno:'grip_right_joint', destroy:['back_joint']}],
             hand_right:['grip_right_joint', {ifno:'grip_left_joint', destroy:['back_joint']}],
         }
+        this.limbsObserver = [
+            [[Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_LEFT],
+             [Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.THIGH_RIGHT]
+            ]
+        ]
         this.vehicleName = 'DirtBike';
     }
     init() {

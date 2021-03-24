@@ -38,6 +38,7 @@ import * as MobileController from './utils/MobileController';
 import * as AudioManager from './utils/AudioManager';
 import * as TutorialManager from './utils/TutorialManager';
 import * as SlowmoUI from './ui/Slomo';
+import * as GameTimer from './utils/GameTimer'
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -662,6 +663,7 @@ function Game() {
             ui.showLevelLoader();
         }
         this.triggerDebugDraw.debounceRedraw();
+        GameTimer.show(false);
     }
     this.resetGameSelection = function(){
         this.selectedCharacter = 0;
@@ -679,11 +681,11 @@ function Game() {
         MobileController.showVehicleControls();
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
-        if(firstEntry) this.levelStartTime = Date.now();
+        if(firstEntry) this.levelStartTime = performance.now();
         MobileController.show();
         ui.showSmallLogo();
         this.playLevelMidi();
-
+        GameTimer.show(true);
     }
 
     this.testWorld = function () {
@@ -692,11 +694,12 @@ function Game() {
         this.run = true;
         this.findPlayableCharacter();
         this.stopAutoSave();
-        this.levelStartTime = Date.now();
+        this.levelStartTime = performance.now();
         MobileController.show();
         TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
         this.playLevelMidi();
         this.triggerDebugDraw.debounceRedraw();
+        GameTimer.show(true);
     }
     this.playLevelMidi = function (){
         if(this.editor.editorSettingsObject.song && editor.editorSettingsObject.autoPlayMidi) MidiPlayer.play();
@@ -749,14 +752,19 @@ function Game() {
                 this.checkPointData = checkPointData;
 
                 if(this.checkPointData.flipped) this.character.flip();
-            }else if(doCheckpoint){
-                this.levelStartTime = 0;
             }
 
 
             setTimeout(()=>{
                 game.preloader.classList.add('hide');
                 TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
+
+                if(doCheckpoint && checkPointData){
+                    this.levelStartTime = performance.now() - checkPointData.time;
+                }else{
+                    this.levelStartTime = performance.now();
+                }
+
             }, Settings.levelBuildDelayTime);
         }, Settings.levelBuildDelayTime);
     }
@@ -891,7 +899,7 @@ function Game() {
         return false;
     }
     this.checkpoint = function (object) {
-        if(!this.checkPointData || this.checkPointData.object !== object){
+        if(!this.checkPointData || ( Math.abs(this.checkPointData.x - object.GetPosition().x) > 1 || Math.abs(this.checkPointData.y - object.GetPosition().y) > 1)){
             const confettiPosition = object.GetPosition().Clone();
             const confettiOffset = 3.0;
             const offsetAngle = object.GetAngle() - Settings.pihalve;
@@ -908,6 +916,7 @@ function Game() {
                 rotation:object.GetAngle(),
                 object,
                 flipped:this.character.flipped,
+                time: performance.now() - this.levelStartTime,
                 // save checkpoint time
             }
         }
@@ -915,7 +924,7 @@ function Game() {
     this.win = function () {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
-            const d = dateDiff(Date.now(), this.levelStartTime);
+            const d = dateDiff(performance.now(), this.levelStartTime);
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();
@@ -925,6 +934,7 @@ function Game() {
             }
             this.editor.ui.showConfetti();
             MobileController.hide();
+            GameTimer.show(false);
         }
     }
     this.lose = function () {
@@ -1294,6 +1304,7 @@ function Game() {
             this.world.ClearForces();
             this.camera();
             PhysicsParticleEmitter.update();
+            GameTimer.update();
         }
         this.stats.end('physics');
         emitterManager.update();

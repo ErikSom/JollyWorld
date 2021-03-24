@@ -4391,9 +4391,9 @@ const _B2dEditor = function () {
 			let xInc = 0;
 			let yInc = 0;
 			if(e.keyCode === 65){
-				xInc = 1;
-			}else if(e.keyCode === 68){
 				xInc = -1;
+			}else if(e.keyCode === 68){
+				xInc = 1;
 			}
 
 			if(e.keyCode === 87){
