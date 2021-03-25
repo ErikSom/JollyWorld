@@ -22,12 +22,14 @@ const soundQueueReleaseInterval = 50;
 
 const sfxJSON = require('../../static/assets/audio/sfx-hq.json');
 const pack1JSON = require('../../static/assets/audio/pack1-hq.json');
+const pack2JSON = require('../../static/assets/audio/pack2-hq.json');
 
-let audioSpriteKeys = [...Object.keys(pack1JSON.sprite)];
+let audioSpriteKeys = [...Object.keys(pack1JSON.sprite), ...Object.keys(pack2JSON.sprite)].sort();
 
 export const init = ()=>{
 	loadAudio('sfx', sfxJSON)
 	.then(()=> loadAudio('pack1', pack1JSON))
+	.then(()=> loadAudio('pack2', pack2JSON))
 	.then(()=>{
 		// console.log("ALL AUDIO LOADED:", getAvailableAudioSprites());
 	})

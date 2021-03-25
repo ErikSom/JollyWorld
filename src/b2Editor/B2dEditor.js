@@ -5656,6 +5656,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.enabled = controller.targetValue;
+							this.updateTriggerShape(body.mySprite);
 						}
 					} else if (controller.property == "follow") {
 						//trigger
@@ -8682,7 +8683,12 @@ const _B2dEditor = function () {
 	this.updateTriggerShape = function(sprite){
 		if(sprite.debugGraphic){
 			sprite.debugGraphic.clear();
-			sprite.debugGraphic.beginFill(0xe0b300, 0.3);
+
+			if(sprite.data.enabled){
+				sprite.debugGraphic.beginFill(0xe0b300, 0.3);
+			}else{
+				sprite.debugGraphic.beginFill(0xfc1500, 0.3);
+			}
 
 			if(sprite.data.radius){
 				sprite.debugGraphic.drawCircle(0, 0, sprite.data.radius)

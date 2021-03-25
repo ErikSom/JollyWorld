@@ -2248,7 +2248,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
     setHighestWindow(errorScreen.domElement);
 
 
-    AudioManager.playSFX('fart', 0.5, 1.0 + 0.4 * Math.random()-0.2);
+    AudioManager.playSFX('fart5', 0.5, 1.0 + 0.4 * Math.random()-0.2);
 
     window.onerror = () => {};
 

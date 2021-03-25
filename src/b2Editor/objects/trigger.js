@@ -248,6 +248,7 @@ export const doAction = function (actionData, target) {
             target.data.enabled = actionData.setEnabled;
             if(actionData.toggle) actionData.setEnabled = !actionData.setEnabled;
             if(!target.data.enabled) target.myBody.class.actionQueue.length = 0;
+            target.myBody.class.setEnabled(target.data.enabled);
             break;
         case "SetFollowPlayer":
             target.data.followPlayer = actionData.setFollowPlayer;
@@ -1528,6 +1529,8 @@ export class triggerCore {
         this.repeatDelay = trigger.mySprite.data.repeatDelay;
         this.repeatWaitDelay = 0;
 
+        this.setEnabled(this.data.enabled);
+
         this.followTarget = null;
         if(this.data.followFirstTarget && this.targets[0]){
 
@@ -1704,6 +1707,10 @@ export class triggerCore {
             }
         }
         this.triggeredThisTick = true;
+    }
+    setEnabled(enable) {
+        const type = enable ? Box2D.b2BodyType.b2_kinematicBody : Box2D.b2BodyType.b2_staticBody
+        this.trigger.SetType(type);
     }
 }
 export const addTargetToTrigger = function (_trigger, target) {

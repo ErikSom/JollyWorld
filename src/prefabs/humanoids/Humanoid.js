@@ -9,6 +9,7 @@ import {
 import * as emitterManager from '../../utils/EmitterManager';
 import * as AudioManager from '../../utils/AudioManager';
 import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
+import { editorSettings } from '../../b2Editor/utils/editorSettings';
 
 
 const vec1 = new Box2D.b2Vec2();
@@ -216,14 +217,11 @@ export class Humanoid extends PrefabManager.basePrefab {
     processBloodSprays(){
         for(let i = 0; i<this.bloodSprays.length; i++){
             const spray = this.bloodSprays[i];
-
-
             if(spray.body && !spray.body.destroyed){
                 const spawnPos = new Box2D.b2Vec2();
                 spray.body.GetWorldPoint(spray.anchor, spawnPos);
 
                  if(!spray.initialized){
-                     console.log(spray.angle, "ANGLE?!");
                      spray.emitter = emitterManager.playOnceEmitter("bloodSpray", spray.body, spawnPos, spray.body.GetAngle()+spray.angle);
                      spray.initialized = true;
                  } else if(spray.emitter){
@@ -235,11 +233,13 @@ export class Humanoid extends PrefabManager.basePrefab {
                     spray.emitter.maxStartRotation = angle + emitterAngleOffset;
                     spray.emitter.rotation = angle * game.editor.RAD2DEG;
                  }
+            }else if(spray.emitter){
+                spray.emitter.spawnPos.set(-editorSettings.worldSize.width, -editorSettings.worldSize.height);
+            }
 
-                if(performance.now() > spray.time){
-                    this.bloodSprays.splice(i, 1);
-                    i--;
-                }
+            if(performance.now() > spray.time){
+                this.bloodSprays.splice(i, 1);
+                i--;
             }
         }
     }
