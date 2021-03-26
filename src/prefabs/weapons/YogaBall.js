@@ -19,6 +19,7 @@ class YogaBall extends PrefabManager.basePrefab {
 		this.handleBack = null;
 		this.buildMesh();
 		this.updateHandles();
+
 	}
 
 	update(){
@@ -54,7 +55,6 @@ class YogaBall extends PrefabManager.basePrefab {
 		this.baseYOffset = 34;
 		this.handleFront.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
 		this.handleBack.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
-
 	}
 
 	getMeshData(){
