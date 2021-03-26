@@ -39,7 +39,7 @@ export var Settings = {
     detachForce:300,
     characterLeanSpeed:2,
     availableCharacters:4,
-    availableVehicles:['Bike', 'DirtBike', 'NoVehicle', 'Skateboard'],
+    availableVehicles:['Bike', 'DirtBike', 'NoVehicle', 'Skateboard', 'YogaBaller'],
     vehicleLayers:{'Bike':68, 'DirtBike':74, 'NoVehicle':50, 'Skateboard':67}, // we need the layers if we want to be able to switch vehicles, so we can correct the level
     /*EDITOR*/
     autoSaveInterval:5000,
