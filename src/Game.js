@@ -142,7 +142,6 @@ function Game() {
             backgroundColor: 0xD4D4D4,
             resolution: Settings.pixelRatio
         });
-        this.handleResize();
 
         this.app.view.addEventListener('webglcontextlost', (_event) => {
             alert("Jolly Goodness! I almost fried your PC, Sorry.. (kidding) Something stressed out the browser and I'm forced to restart the game! Click OK to restart.");
@@ -415,7 +414,7 @@ function Game() {
         this.preloader.classList.add('hide');
 
         SlowmoUI.init();
-
+        this.handleResize();
         //this.myContainer.updateTransform = function() {};
     }
 
