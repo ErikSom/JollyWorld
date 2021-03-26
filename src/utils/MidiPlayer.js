@@ -178,7 +178,7 @@ class MidiPlayerClass {
 			track[TRACK_PROGRAM] = trackRef.program;
 			track[TRACK_N] = trackRef.n;
 			const noteRef = trackRef.notes[0];
-			if(noteRef.when<lowestWhen) lowestWhen = noteRef.when;
+			if(noteRef && noteRef.when<lowestWhen) lowestWhen = noteRef.when;
 			tracks.push(track);
 		}
 
@@ -189,7 +189,7 @@ class MidiPlayerClass {
 			beat[BEAT_VOLUME] = beatRef.volume;
 			beat[BEAT_N] = beatRef.n;
 			const noteRef = beatRef.notes[0];
-			if(noteRef.when<lowestWhen) lowestWhen = noteRef.when;
+			if(noteRef && noteRef.when<lowestWhen) lowestWhen = noteRef.when;
 			beats.push(beat);
 		}
 

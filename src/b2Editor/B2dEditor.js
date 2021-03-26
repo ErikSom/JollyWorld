@@ -9581,7 +9581,9 @@ const _B2dEditor = function () {
 				})
 				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);
 			}
-			this.editorSettingsObject.song = worldObjects.song;
+			if(worldObjects.song){
+				this.editorSettingsObject.song = worldObjects.song;
+			}
 		}
 
 		//Fix trigger object targets
