@@ -388,7 +388,7 @@ export const actionDictionary = {
     actionOptions_Impulse: {
         impulseForce: {
             type: guitype_MINMAX,
-            min: -100000,
+            min: 0,
             max: 100000,
             value: 0,
             step: 1,

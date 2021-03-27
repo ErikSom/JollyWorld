@@ -148,13 +148,24 @@ export const stopEditingGroup = () => {
 		const xDif = editor.groupEditingObject.data.x - clonedSprite.data.x;
 		const yDif = editor.groupEditingObject.data.y - clonedSprite.data.y;
 
-		Object.assign(editor.groupEditingObject.data, clonedSprite.data);
+		// Object.assign(editor.groupEditingObject.data, clonedSprite.data);
 
 		// we then update the visuals for the group
 
 		if(isBody){
 			// if we go from a body to a body
 			if(editor.groupEditingObject.myBody){
+
+				editor.groupEditingObject.data.colorFill = clonedSprite.data.colorFill;
+				editor.groupEditingObject.data.colorLine = clonedSprite.data.colorLine;
+				editor.groupEditingObject.data.transparancy = clonedSprite.data.transparancy;
+				editor.groupEditingObject.data.vertices = clonedSprite.data.vertices;
+				editor.groupEditingObject.data.density = clonedSprite.data.density;
+				editor.groupEditingObject.data.collision = clonedSprite.data.collision;
+				editor.groupEditingObject.data.radius = clonedSprite.data.radius;
+				editor.groupEditingObject.data.restitution = clonedSprite.data.restitution;
+				editor.groupEditingObject.data.friction = clonedSprite.data.friction;
+
 				editor.updateBodyFixtures(editor.groupEditingObject.myBody);
 				editor.updateBodyShapes(editor.groupEditingObject.myBody);
 				editor.setBodyCollision(editor.groupEditingObject.myBody, editor.groupEditingObject.data.collision);
@@ -216,10 +227,10 @@ export const stopEditingGroup = () => {
 				}
 
 				editor.deleteObjects([editor.groupEditingObject.myBody]);
-
-
 				editor.selectedTextures = [];
 			}else{
+				editor.groupEditingObject.data.graphicObjects = clonedSprite.data.graphicObjects;
+
 				editor.updateGraphicGroupShapes(editor.groupEditingObject);
 				editor.groupEditingObject.x -= xDif;
 				editor.groupEditingObject.y -= yDif;
