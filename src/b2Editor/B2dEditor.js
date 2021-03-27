@@ -3973,41 +3973,43 @@ const _B2dEditor = function () {
 			}else if (this.spaceCameraDrag) {
 				this.spaceCameraDrag = false;
 			} else if(this.selectingTriggerTarget){
-				const minSelectPixi = 3/Settings.PTM;
-				if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
-					const highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
-					if (highestObject) {
-						for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-							var body = this.selectedPhysicsBodies[i];
-							if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-								trigger.addTargetToTrigger(body, highestObject);
-								trigger.updateTriggerGUI();
+				if(this.startSelectionPoint){
+					const minSelectPixi = 3/Settings.PTM;
+					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
+						const highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
+						if (highestObject) {
+							for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+								var body = this.selectedPhysicsBodies[i];
+								if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+									trigger.addTargetToTrigger(body, highestObject);
+									trigger.updateTriggerGUI();
+								}
 							}
 						}
-					}
-				}else{
-					let bodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-					const textures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
+					}else{
+						let bodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
+						const textures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
 
-					for(let i = 0; i<textures.length; i++){
-						const texture = textures[i];
-						if(texture.myBody){
-							if(!bodies.includes(texture.myBody)){
-								bodies.push(texture.myBody);
+						for(let i = 0; i<textures.length; i++){
+							const texture = textures[i];
+							if(texture.myBody){
+								if(!bodies.includes(texture.myBody)){
+									bodies.push(texture.myBody);
+								}
+								textures.splice(i, 1);
+								i--;
 							}
-							textures.splice(i, 1);
-							i--;
 						}
+						[].concat(bodies.map(body => body.mySprite), textures).forEach(object =>{
+							for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+								var body = this.selectedPhysicsBodies[i];
+								if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+									trigger.addTargetToTrigger(body, object);
+								}
+							}
+						});
+						trigger.updateTriggerGUI();
 					}
-					[].concat(bodies.map(body => body.mySprite), textures).forEach(object =>{
-						for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-							var body = this.selectedPhysicsBodies[i];
-							if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-								trigger.addTargetToTrigger(body, object);
-							}
-						}
-					});
-					trigger.updateTriggerGUI();
 				}
 				this.stopTriggerTargetSelecting();
 			}else if (this.selectedTool == this.tool_SELECT) {
