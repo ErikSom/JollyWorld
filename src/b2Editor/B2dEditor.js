@@ -9683,6 +9683,7 @@ const _B2dEditor = function () {
 
 		this.physicsCamera = null;
 		window.__guiusercolors = [];
+		delete this.editorSettingsObject.song;
 
 		//Destroy all bodies
 		var body = this.world.GetBodyList();
