@@ -151,6 +151,12 @@ export const playSFX = (sfxName, volume, pitch=1, position) => {
 	howl.rate(Math.min(maxPitch, pitch), soundId);
 	howl.stereo(pan, soundId);
 	activePlayingSounds++;
+	return soundId;
+}
+export const stopSFX = (sfxName, id) => {
+	const howl = getHowl(sfxName);
+	if(!howl) return;
+	howl.stop(id)
 }
 export const stopAllSounds = ()=>{
 	Object.keys(activeSounds).forEach( key => {

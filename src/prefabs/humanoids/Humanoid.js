@@ -53,7 +53,6 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
 
-        console.log(this.collisionUpdates);
         this.bloodSprays = [];
 
         this.alive = true;
@@ -72,6 +71,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         this.vains = [];
         this.vainJoints = [];
+        this.jointMaxForces = [1000000, 1000000, 800000, 800000];
 
         // game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
         // game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
@@ -194,8 +194,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.alive = false;
     }
     processJointDamage() {
-        var jointsToAnalyse = ['leg_left_joint', 'leg_right_joint','arm_left_joint', 'arm_right_joint'/*,'head_joint', 'belly_joint'*/ ];
-        var maxForce = [1000000, 1000000, 800000, 800000, /*,2000000000, 5000000*/];
+        const jointsToAnalyse = ['leg_left_joint', 'leg_right_joint','arm_left_joint', 'arm_right_joint'/*,'head_joint', 'belly_joint'*/ ];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
@@ -205,7 +204,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
-            if (reactionForce > maxForce[i] || Math.abs(reactionTorque) > 600) {
+            if (reactionForce > this.jointMaxForces[i] || Math.abs(reactionTorque) > 600) {
                 this.collisionUpdates.push({
                     type: Humanoid.GORE_SNAP,
                     target: jointsToAnalyse[i].split('_joint')[0],

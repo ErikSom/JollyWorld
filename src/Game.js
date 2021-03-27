@@ -1212,7 +1212,7 @@ function Game() {
                 }else if(!otherBody.isVehiclePart && !otherBody.noImpactDamage) {
                     let force = 0;
                     for (let j = 0; j < impulse.normalImpulses.length; j++)
-                        if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+                        if (impulse.normalImpulses[j] > force) force = impulse.normalImpulses[j];
 
                     const bodyA = contact.GetFixtureA().GetBody();
                     const bodyB = contact.GetFixtureB().GetBody();
