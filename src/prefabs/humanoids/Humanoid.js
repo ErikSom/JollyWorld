@@ -237,7 +237,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                 spray.emitter.spawnPos.set(-editorSettings.worldSize.width, -editorSettings.worldSize.height);
             }
 
-            if(performance.now() > spray.time){
+            spray.time -= game.editor.deltaTime;
+            if(spray.time<=0){
                 this.bloodSprays.splice(i, 1);
                 i--;
             }
@@ -499,8 +500,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                 const targetAnchor1 = targetJoint.GetBodyA() == baseBody ? targetJoint.GetLocalAnchorB() : targetJoint.GetLocalAnchorA();
                 const targetAnchor2 = targetJoint.GetBodyA() == baseBody ? targetJoint.GetLocalAnchorA() : targetJoint.GetLocalAnchorB();
 
-                this.bloodSprays.push({body:targetBody1, anchor:targetAnchor1, angle:targetAngle, time:performance.now()+bloodTime});
-                this.bloodSprays.push({body:targetBody2, anchor:targetAnchor2, angle:-targetAngle, time:performance.now()+bloodTime});
+                this.bloodSprays.push({body:targetBody1, anchor:targetAnchor1, angle:targetAngle, time:bloodTime});
+                this.bloodSprays.push({body:targetBody2, anchor:targetAnchor2, angle:-targetAngle, time:bloodTime});
             }
 
         }else{
@@ -516,7 +517,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     }
                     if(body.mySprite.data.refName === 'head') angle *= -1;
                     const anchor = joint.GetBodyA() === baseBody ? joint.GetLocalAnchorB() : joint.GetLocalAnchorA();
-                    this.bloodSprays.push({body, anchor, angle, time:performance.now()+bloodTime});
+                    this.bloodSprays.push({body, anchor, angle, time:bloodTime});
                 }
 
                 jointEdge = jointEdge.next;

@@ -22,6 +22,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.accel = 0;
         this.limbsObserver = [];
         this.applyColorMatrix(this.prefabObject.settings.colorMatrix);
+        this.leanTicks = 0;
     }
 
     applyColorMatrix(cm){
@@ -235,13 +236,17 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
     lean(dir) {
         if (this.lookupObject.frame) {
-            // push towards the other side when attached to a rope with more force
-            if(this.character && this.character.hat && this.character.hat.isRopeHat && this.character.hat.blockControls){
-                // don't do anything for now
-            }else{
-                let velocity = this.leanSpeed * dir;
-                this.lookupObject.frame.SetAngularVelocity(velocity * 10);
+            if(this.leanTicks <= 0){
+                // push towards the other side when attached to a rope with more force
+                if(this.character && this.character.hat && this.character.hat.isRopeHat && this.character.hat.blockControls){
+                    // don't do anything for now
+                }else{
+                    let velocity = this.leanSpeed * dir;
+                    this.lookupObject.frame.SetAngularVelocity(velocity * 10);
+                }
+                this.leanTicks = 1000/60;
             }
+            this.leanTicks -= game.editor.deltaTime;
         }
     }
 
