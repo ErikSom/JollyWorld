@@ -31,7 +31,8 @@ export const update = ()=>{
 
 		// also collide with only similar objects
 		const filterData = fixture.GetFilterData();
-		filterData.groupIndex = game.editor.triggerGroupIndex;
+		filterData.categoryBits = game.editor.MASKBIT_PHYSICS_CULL;
+		filterData.maskBits = game.editor.MASKBIT_NORMAL | game.editor.MASKBIT_FIXED | game.editor.MASKBIT_CHARACTER | game.editor.MASKBIT_EVERYTHING_BUT_US | game.editor.MASKBIT_ONLY_US | game.editor.MASKBIT_NOTHING | game.editor.MASKBIT_NPC;
 		fixture.SetFilterData(filterData);
 
 		game.editor.physicsCamera.cameraZoom = game.editor.editorSettingsObject.cameraZoom;

@@ -8054,8 +8054,7 @@ const _B2dEditor = function () {
 	this.MASKBIT_EVERYTHING_BUT_US = 0x00020;
 	this.MASKBIT_ONLY_US = 0x0040;
 	this.MASKBIT_TRIGGER = 0x0080;
-	// 0x0080
-	// 0x0100
+	this.MASKBIT_PHYSICS_CULL = 0x0100;
 	// 0x0200
 	// 0x0400
 	// 0x0800
@@ -8096,35 +8095,36 @@ const _B2dEditor = function () {
 
 			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 			else filterData.categoryBits = this.MASKBIT_NORMAL;
-			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER; //this.MASKBIT_ONLY_US;
+			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_ONLY_US;
 			fixture.SetSensor(false);
 
 			if (collision == 1) {
 				// 1) collides with mostly everything but characters
 				// - mask bit set to CHARACTER_MASKBIT
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
 			} else if (collision == 2) {
 				// 2) collides with nothing
 				// - setAsTrigger
 				filterData.categoryBits = this.MASKBIT_NOTHING;
+				filterData.maskBits = this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL;
 			} else if (collision == 3) {
 				// 3) collides with everything except other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
 				filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 4) {
 				// 4) collides only with other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
 				filterData.categoryBits = this.MASKBIT_ONLY_US;
-				filterData.maskBits = this.MASKBIT_ONLY_US | this.MASKBIT_TRIGGER; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
+				filterData.maskBits = this.MASKBIT_ONLY_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
 			} else if (collision == 5) {
 				// 5) collides only with fixed shapes
 		 		// - set mask to CHARACTER_MASKBIT, CUSTOM_MASKBIT, NORMAL_MASKBIT;
-				filterData.maskBits = this.MASKBIT_FIXED | this.MASKBIT_TRIGGER; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				filterData.maskBits = this.MASKBIT_FIXED | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 6) {
 				// 6) collides only with characters
 				// - set mask to CUSTOM_MASKBIT, FIXED_MASKBIT, NORMAL_MASKBIT
-				filterData.maskBits = this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				filterData.maskBits = this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_TRIGGER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 7) {
 				// 7) sets objects to be an character
 				// -
@@ -8145,6 +8145,8 @@ const _B2dEditor = function () {
 				filterData.categoryBits = this.MASKBIT_TRIGGER;
 				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER
 				fixture.SetSensor(true);
+			}else if(collision == 10){
+			// EVERYTHING
 			}
 
 			fixture.SetFilterData(filterData);
