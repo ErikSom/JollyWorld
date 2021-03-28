@@ -7004,7 +7004,7 @@ const _B2dEditor = function () {
 		bodyObject.transparancy = 1.0;
 
 		const body = this.buildBodyFromObj(bodyObject);
-		this.setBodyCollision(body, [8]);
+		this.setBodyCollision(body, [9]);
 
 		body.SetSleepingAllowed(false);
 		body.SetAwake(true);
@@ -8050,9 +8050,10 @@ const _B2dEditor = function () {
 	this.MASKBIT_FIXED = 0x0002;
 	this.MASKBIT_NOTHING = 0x0004;
 	this.MASKBIT_CHARACTER = 0x0008;
-	this.MASKBIT_EVERYTHING_BUT_US = 0x00010;
-	this.MASKBIT_ONLY_US = 0x0020;
-	this.MASKBIT_TRIGGER = 0x0040;
+	this.MASKBIT_NPC = 0x0010;
+	this.MASKBIT_EVERYTHING_BUT_US = 0x00020;
+	this.MASKBIT_ONLY_US = 0x0040;
+	this.MASKBIT_TRIGGER = 0x0080;
 	// 0x0080
 	// 0x0100
 	// 0x0200
@@ -8139,7 +8140,7 @@ const _B2dEditor = function () {
 				}
 				filterData.categoryBits = this.MASKBIT_CHARACTER;
 				filterData.groupIndex = targetGroup;
-			}else if(collision == 8){
+			}else if(collision == 9){
 				// 8) Trigger collisions
 				filterData.categoryBits = this.MASKBIT_TRIGGER;
 				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER
