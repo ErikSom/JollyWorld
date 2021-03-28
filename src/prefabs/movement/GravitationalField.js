@@ -74,6 +74,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 		let oldFixtures = []
 		fixture = body.GetFixtureList();
 		while (fixture != null) {
+			fixture.SetSensor(true);
 			oldFixtures.push(fixture);
 			if (fixture.GetShape() instanceof Box2D.b2CircleShape) {
 				//oh shit we have a circle, must scale with aspect ratio
@@ -232,7 +233,7 @@ GravitationalField.settingsOptions = Object.assign({}, GravitationalField.settin
 
 
 PrefabManager.prefabLibrary.GravitationalField = {
-	json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#999999"],["#000"],[0.6],true,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[2],[100],"Ice1",[0],true,false,false,[0.5],[0.2]]]}',
+	json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#999999"],["#000"],[0.6],true,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[0],[100],"Ice1",[0],true,false,false,[0.5],[0.2]]]}',
     class: GravitationalField,
     library: PrefabManager.LIBRARY_MOVEMENT
 }

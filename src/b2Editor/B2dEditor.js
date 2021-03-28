@@ -8106,7 +8106,7 @@ const _B2dEditor = function () {
 			} else if (collision == 2) {
 				// 2) collides with nothing
 				// - setAsTrigger
-				fixture.SetSensor(true);
+				filterData.categoryBits = this.MASKBIT_NOTHING;
 			} else if (collision == 3) {
 				// 3) collides with everything except other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
@@ -8144,6 +8144,7 @@ const _B2dEditor = function () {
 				// 8) Trigger collisions
 				filterData.categoryBits = this.MASKBIT_TRIGGER;
 				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER
+				fixture.SetSensor(true);
 			}
 
 			fixture.SetFilterData(filterData);
@@ -8294,7 +8295,8 @@ const _B2dEditor = function () {
 			fixDef.shape.SetAsBox(1, 1);
 
 			let fixture = bodyB.CreateFixture(fixDef);
-			fixture.SetSensor(true);
+
+			this.setBodyCollision(bodyB, [2]);
 
 		}
 		let joint;
