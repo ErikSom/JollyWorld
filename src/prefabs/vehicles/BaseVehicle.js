@@ -29,6 +29,8 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         if(!cm) return;
         const textures = [];
         this.lookupObject._bodies.map(body => body.myTexture && textures.push(body.myTexture));
+        this.lookupObject._bodies.map(body => body.mySprite && body.mySprite.isMesh && textures.push(body.mySprite));
+
         applyColorMatrixMultiple(textures, cm)
     }
 
@@ -271,6 +273,8 @@ const setColorMatrix = prefab =>{
 
     const textures = [];
     prefab.class.lookupObject._bodies.map(body => body.myTexture && textures.push(body.myTexture));
+    prefab.class.lookupObject._bodies.map(body => body.mySprite && body.mySprite.isMesh && textures.push(body.mySprite));
+    
     game.editor.ui.showColorMatrixEditor(prefab.settings.colorMatrix, textures, callback, prefab.settings)
 }
 

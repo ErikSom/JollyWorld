@@ -43,6 +43,9 @@ class Skippyball extends BaseVehicle {
 		this.forceIncrease = 0.02;
 		this.stretchSoundId = null;
 		this.bounceSoundTime = 0;
+
+		// we have to do this again because the mesh is build later
+        this.applyColorMatrix(this.prefabObject.settings.colorMatrix);
     }
     init() {
         super.init();
@@ -54,7 +57,12 @@ class Skippyball extends BaseVehicle {
 		this.yogaColorFilter = new PIXI.filters.ColorMatrixFilter();
 		this.yogaColorFilter.grayscale(1.0);
 		this.yogaColorFilter.alpha = 0;
-		this.base.mySprite.filters = [this.yogaColorFilter];
+
+		if(Array.isArray(this.base.mySprite.filters)){
+			this.base.mySprite.filters.push(this.yogaColorFilter);
+		}else{
+			this.base.mySprite.filters = [this.yogaColorFilter];
+		}
 
 		for(let i = 1; i<=this.steps; i++){
 			this.lookupObject['b'+i].skipPush = true;
@@ -121,6 +129,7 @@ class Skippyball extends BaseVehicle {
 		const t = PIXI.Texture.from('YogaBall0000')
 		this.mesh = new PIXI.SimpleMesh(t, ...this.getMeshData());
 		this.base.mySprite.addChild(this.mesh);
+		this.base.mySprite.isMesh = true;
 
 		this.handleFront = new PIXI.Sprite(PIXI.Texture.from('YogaBall_Handle_Front0000'));
 		this.handleBack = new PIXI.Sprite(PIXI.Texture.from('YogaBallHandle_Back0000'));
@@ -130,7 +139,6 @@ class Skippyball extends BaseVehicle {
 	}
 
 	updateMesh(){
-
 		const [vertices, uvs] = this.getMeshData();
 
 		this.mesh.verticesBuffer.update(vertices);

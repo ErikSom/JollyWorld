@@ -45,7 +45,6 @@ export class Humanoid extends PrefabManager.basePrefab {
             this.mouth.y = this.mouthPos.y;
             this.lookupObject[Humanoid.BODY_PARTS.HEAD].myTexture.addChild(this.mouth);
         }
-        this.setSkin(4);
     }
 
     init() {
