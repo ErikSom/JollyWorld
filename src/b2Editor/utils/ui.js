@@ -2248,7 +2248,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
     setHighestWindow(errorScreen.domElement);
 
 
-    AudioManager.playSFX('fart', 0.5, 1.0 + 0.4 * Math.random()-0.2);
+    AudioManager.playSFX('fart5', 0.5, 1.0 + 0.4 * Math.random()-0.2);
 
     window.onerror = () => {};
 
@@ -2273,8 +2273,8 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
     const imageDropDown = document.createElement('div');
     imageDropDown.classList.add('imageDropDown', 'c');
 
-    imageDropDown.onmouseup = imageDropDownContainer.ontouchend = () => {
-        if (imageDropDown.classList.contains('open')) {
+    imageDropDown.onmouseup = imageDropDownContainer.ontouchend = event => {
+        if (imageDropDown.classList.contains('open') && event.target.nodeName.toLowerCase() === 'label') {
             // else we close the dropdown before we select an item
             setTimeout(() => {
                 imageDropDown.classList.remove('open');

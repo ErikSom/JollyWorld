@@ -52,6 +52,60 @@ export const blood = {
 	},
 	"emit":false
 };
+export const bloodSpray = {
+	"alpha": {
+		"start": 0.73,
+		"end": 0.46
+	},
+	"scale": {
+		"start": 0.2,
+		"end": 0.05,
+		"minimumScaleMultiplier": 0.5
+	},
+	"color": {
+		"start": "#c90808",
+		"end": "#570101"
+	},
+	"speed": {
+		"start": 500,
+		"end": 0,
+		"minimumSpeedMultiplier": 0.3
+	},
+	"acceleration": {
+		"x": 0,
+		"y": 2000
+	},
+	"maxSpeed": 2000,
+	"startRotation": {
+		"min": -5,
+		"max": 5
+	},
+	"noRotation": false,
+	"rotationSpeed": {
+		"min": 0,
+		"max": 200
+	},
+	"lifetime": {
+		"min": 0.5,
+		"max": 1.0
+	},
+	"blendMode": "normal",
+	"frequency": 0.002,
+	"emitterLifetime": 3,
+	"maxParticles": 1000,
+	"pos": {
+		"x": 0,
+		"y": 0
+	},
+	"addAtBack": false,
+	"spawnType": "circle",
+	"spawnCircle": {
+		"x": 0,
+		"y": 0,
+		"r": 1
+	},
+	"emit":false
+};
 
 export const gorecloud = {
 	"alpha": {

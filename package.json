@@ -1,6 +1,6 @@
 {
   "name": "jollywheels",
-  "version": "0.9.41",
+  "version": "0.9.44",
   "description": "This game is not for kids, its physics / gore and fun!",
   "main": "./build/index.html",
   "repository": "https://smerik@bitbucket.org/smerik/jollywheels.git",
@@ -31,6 +31,11 @@
     "audiosprites-pack1:copy": "cp -R ./static/assets/audio ./build/assets",
     "audiosprites-pack1:compress": "ffmpeg -i ./static/assets/audio/pack1-hq.ogg -c:a libvorbis -ab 32k -ar 22050 ./static/assets/audio/pack1-lq.ogg",
     "audiosprites-pack1:compressmp3": "ffmpeg -i ./static/assets/audio/pack1-hq.mp3 -q:a 9 -ac 1 ./static/assets/audio/pack1-lq.mp3",
+    "audiosprites-pack2": "npm-run-all audiosprites-pack2:*",
+    "audiosprites-pack2:sfx": "audiosprite --output ./static/assets/audio/pack2-hq --format howler2  --export ogg,mp3 ./asset_src/audio/pack2-sfx/*.ogg",
+    "audiosprites-pack2:copy": "cp -R ./static/assets/audio ./build/assets",
+    "audiosprites-pack2:compress": "ffmpeg -i ./static/assets/audio/pack2-hq.ogg -c:a libvorbis -ab 32k -ar 22050 ./static/assets/audio/pack2-lq.ogg",
+    "audiosprites-pack2:compressmp3": "ffmpeg -i ./static/assets/audio/pack2-hq.mp3 -q:a 9 -ac 1 ./static/assets/audio/pack2-lq.mp3",
     "server": "http-server build"
   },
   "dependencies": {

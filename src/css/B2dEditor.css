@@ -1297,7 +1297,7 @@ body .dg .cr.function {
 }
 *{
     scrollbar-width: thin;
-    scrollbar-color: white black;
+    scrollbar-color: black white;
 }
 
 .ios-pwa-container {
@@ -1598,6 +1598,23 @@ body .dg .cr.function {
 
 * {
     -webkit-tap-highlight-color: transparent;
+}
+
+.game-timer{
+    position:fixed;
+    pointer-events: none;
+    bottom:0%;
+    left:50%;
+    transform: translate(-50%, 0);
+    margin:20px;
+    font-size: 20px;
+}
+.game-timer .milliseconds{
+    font-size:14px;
+}
+.game-timer span{
+    text-shadow: 1px 1px 1px white, -1px -1px 1px white, 1px -1px 1px white, -1px 1px 1px white;
+    font-weight: bold;
 }
 
 @keyframes ytp-spinner-linspin{to{transform:rotate(360deg)}}

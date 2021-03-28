@@ -22,12 +22,14 @@ const soundQueueReleaseInterval = 50;
 
 const sfxJSON = require('../../static/assets/audio/sfx-hq.json');
 const pack1JSON = require('../../static/assets/audio/pack1-hq.json');
+const pack2JSON = require('../../static/assets/audio/pack2-hq.json');
 
-let audioSpriteKeys = [...Object.keys(pack1JSON.sprite)];
+let audioSpriteKeys = [...Object.keys(pack1JSON.sprite), ...Object.keys(pack2JSON.sprite)].sort();
 
 export const init = ()=>{
 	loadAudio('sfx', sfxJSON)
 	.then(()=> loadAudio('pack1', pack1JSON))
+	.then(()=> loadAudio('pack2', pack2JSON))
 	.then(()=>{
 		// console.log("ALL AUDIO LOADED:", getAvailableAudioSprites());
 	})
@@ -149,6 +151,12 @@ export const playSFX = (sfxName, volume, pitch=1, position) => {
 	howl.rate(Math.min(maxPitch, pitch), soundId);
 	howl.stereo(pan, soundId);
 	activePlayingSounds++;
+	return soundId;
+}
+export const stopSFX = (sfxName, id) => {
+	const howl = getHowl(sfxName);
+	if(!howl) return;
+	howl.stop(id)
 }
 export const stopAllSounds = ()=>{
 	Object.keys(activeSounds).forEach( key => {

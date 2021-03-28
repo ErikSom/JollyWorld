@@ -968,7 +968,7 @@ const _B2dEditor = function () {
 		switch (currentCase) {
 			case case_JUST_BODIES:
 
-				targetFolder.add(ui.editorGUI.editData, "fixed").name("not moving").onChange(function (value) {
+				targetFolder.add(ui.editorGUI.editData, "fixed").name("static").onChange(function (value) {
 					this.humanUpdate = true;
 					this.targetValue = value
 				});
@@ -3973,41 +3973,43 @@ const _B2dEditor = function () {
 			}else if (this.spaceCameraDrag) {
 				this.spaceCameraDrag = false;
 			} else if(this.selectingTriggerTarget){
-				const minSelectPixi = 3/Settings.PTM;
-				if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
-					const highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
-					if (highestObject) {
-						for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-							var body = this.selectedPhysicsBodies[i];
-							if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-								trigger.addTargetToTrigger(body, highestObject);
-								trigger.updateTriggerGUI();
+				if(this.startSelectionPoint){
+					const minSelectPixi = 3/Settings.PTM;
+					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
+						const highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
+						if (highestObject) {
+							for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+								var body = this.selectedPhysicsBodies[i];
+								if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+									trigger.addTargetToTrigger(body, highestObject);
+									trigger.updateTriggerGUI();
+								}
 							}
 						}
-					}
-				}else{
-					let bodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-					const textures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
+					}else{
+						let bodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
+						const textures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
 
-					for(let i = 0; i<textures.length; i++){
-						const texture = textures[i];
-						if(texture.myBody){
-							if(!bodies.includes(texture.myBody)){
-								bodies.push(texture.myBody);
+						for(let i = 0; i<textures.length; i++){
+							const texture = textures[i];
+							if(texture.myBody){
+								if(!bodies.includes(texture.myBody)){
+									bodies.push(texture.myBody);
+								}
+								textures.splice(i, 1);
+								i--;
 							}
-							textures.splice(i, 1);
-							i--;
 						}
+						[].concat(bodies.map(body => body.mySprite), textures).forEach(object =>{
+							for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
+								var body = this.selectedPhysicsBodies[i];
+								if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
+									trigger.addTargetToTrigger(body, object);
+								}
+							}
+						});
+						trigger.updateTriggerGUI();
 					}
-					[].concat(bodies.map(body => body.mySprite), textures).forEach(object =>{
-						for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
-							var body = this.selectedPhysicsBodies[i];
-							if (body.mySprite && body.mySprite.data.type == this.object_TRIGGER) {
-								trigger.addTargetToTrigger(body, object);
-							}
-						}
-					});
-					trigger.updateTriggerGUI();
 				}
 				this.stopTriggerTargetSelecting();
 			}else if (this.selectedTool == this.tool_SELECT) {
@@ -4324,11 +4326,8 @@ const _B2dEditor = function () {
 		if (e.keyCode == 86) { //v
 			if((e.ctrlKey || e.metaKey) && e.shiftKey){
 				this.pasteSelection();
-			}else this.selectTool(this.tool_POLYDRAWING);
-		}else if (e.keyCode == 80) { //p
-			this.selectTool(this.tool_PEN);
-		}
-		if (e.keyCode == 67) { //c
+			}
+		}else if (e.keyCode == 67) { //c
 			if (e.ctrlKey || e.metaKey) {
 				this.copiedJSON = this.copySelection();
 			} else {
@@ -4346,13 +4345,13 @@ const _B2dEditor = function () {
 			}
 		}else if (e.key >= 1 && e.key<=9) { // 1-9
 			this.selectTool(e.key-1);
-		}else if (e.keyCode == 77) { //m
-			this.selectTool(this.tool_SELECT);
-		} else if (e.keyCode == 74) { //j
+		} else if (e.key === "0") { // 1-9
+			this.selectTool(this.tool_SETTINGS);
+		}else if (e.keyCode == 74) { //j
 			if (e.ctrlKey || e.metaKey) {
 				const joint = this.attachJointPlaceHolder();
 				if(joint) jointTriggerLayer.add(joint);
-			} else this.selectTool(this.tool_JOINTS);
+			}
 		} else if (e.keyCode == 88) { // x
 			if (e.ctrlKey || e.metaKey) {
 				this.cutSelection();
@@ -4391,9 +4390,9 @@ const _B2dEditor = function () {
 			let xInc = 0;
 			let yInc = 0;
 			if(e.keyCode === 65){
-				xInc = 1;
-			}else if(e.keyCode === 68){
 				xInc = -1;
+			}else if(e.keyCode === 68){
+				xInc = 1;
 			}
 
 			if(e.keyCode === 87){
@@ -5659,6 +5658,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.enabled = controller.targetValue;
+							this.updateTriggerShape(body.mySprite);
 						}
 					} else if (controller.property == "follow") {
 						//trigger
@@ -8697,7 +8697,12 @@ const _B2dEditor = function () {
 	this.updateTriggerShape = function(sprite){
 		if(sprite.debugGraphic){
 			sprite.debugGraphic.clear();
-			sprite.debugGraphic.beginFill(0xe0b300, 0.3);
+
+			if(sprite.data.enabled){
+				sprite.debugGraphic.beginFill(0xe0b300, 0.3);
+			}else{
+				sprite.debugGraphic.beginFill(0xfc1500, 0.3);
+			}
 
 			if(sprite.data.radius){
 				sprite.debugGraphic.drawCircle(0, 0, sprite.data.radius)
@@ -9590,7 +9595,9 @@ const _B2dEditor = function () {
 				})
 				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);
 			}
-			this.editorSettingsObject.song = worldObjects.song;
+			if(worldObjects.song){
+				this.editorSettingsObject.song = worldObjects.song;
+			}
 		}
 
 		//Fix trigger object targets
@@ -9689,6 +9696,7 @@ const _B2dEditor = function () {
 
 		this.physicsCamera = null;
 		window.__guiusercolors = [];
+		delete this.editorSettingsObject.song;
 
 		//Destroy all bodies
 		var body = this.world.GetBodyList();

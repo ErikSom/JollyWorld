@@ -12,12 +12,19 @@ class YogaBall extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
         this.base = this.lookupObject.base;
+		this.handlePoint = this.lookupObject.b1;
 		this.steps = 12;
+
+		this.handleFront = null;
+		this.handleBack = null;
 		this.buildMesh();
+		this.updateHandles();
+
 	}
 
 	update(){
 		this.updateMesh();
+		this.updateHandles();
 	}
 
 
@@ -25,6 +32,13 @@ class YogaBall extends PrefabManager.basePrefab {
 		const t = PIXI.Texture.from('YogaBall0000')
 		this.mesh = new PIXI.SimpleMesh(t, ...this.getMeshData());
 		this.base.mySprite.addChild(this.mesh);
+
+
+		this.handleFront = new PIXI.Sprite(PIXI.Texture.from('YogaBall_Handle_Front0000'));
+		this.handleBack = new PIXI.Sprite(PIXI.Texture.from('YogaBallHandle_Back0000'));
+
+		this.base.mySprite.addChild(this.handleFront);
+		this.base.mySprite.addChildAt(this.handleBack, 0);
 	}
 
 	updateMesh(){
@@ -33,6 +47,14 @@ class YogaBall extends PrefabManager.basePrefab {
 
 		this.mesh.verticesBuffer.update(vertices);
 		this.mesh.uvBuffer.update(uvs);
+	}
+
+	updateHandles(){
+		this.handleFront.position.x = -20;
+		this.handleBack.position.x = -6.5;
+		this.baseYOffset = 34;
+		this.handleFront.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
+		this.handleBack.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
 	}
 
 	getMeshData(){

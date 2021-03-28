@@ -47,6 +47,7 @@ export const getActionsForObject = function (object) {
                 actions.push("Impulse") //, "SetAwake");
                 actions.push("SetCameraTarget");
                 actions.push("SetCollision");
+                actions.push("SetStatic");
 
                 if(object.myBody.myTexture){
                     if(object.myBody.myTexture.data.type === B2dEditor.object_ANIMATIONGROUP){
@@ -247,6 +248,7 @@ export const doAction = function (actionData, target) {
             target.data.enabled = actionData.setEnabled;
             if(actionData.toggle) actionData.setEnabled = !actionData.setEnabled;
             if(!target.data.enabled) target.myBody.class.actionQueue.length = 0;
+            target.myBody.class.setEnabled(target.data.enabled);
             break;
         case "SetFollowPlayer":
             target.data.followPlayer = actionData.setFollowPlayer;
@@ -335,6 +337,13 @@ export const doAction = function (actionData, target) {
         case "SetCollision":
             if(target.myBody) game.editor.setBodyCollision(target.myBody, [Settings.collisionTypes.indexOf(actionData.collision)]);
         break;
+        case "SetStatic":
+            if(target.myBody){
+                const type = actionData.setStatic ? Box2D.b2BodyType.b2_staticBody : Box2D.b2BodyType.b2_dynamicBody;
+                target.myBody.SetType(type);
+                if(actionData.toggle) actionData.setStatic = !actionData.setStatic;
+            }
+        break;
         case "PlaySFX":
             playTriggerSound(actionData, target.trigger.GetPosition());
         break
@@ -379,7 +388,7 @@ export const actionDictionary = {
     actionOptions_Impulse: {
         impulseForce: {
             type: guitype_MINMAX,
-            min: -100000,
+            min: 0,
             max: 100000,
             value: 0,
             step: 1,
@@ -832,6 +841,20 @@ export const actionDictionary = {
         collision: {
             type: guitype_LIST,
             items: Settings.collisionTypes,
+        },
+    },
+    /*******************/
+    actionObject_SetStatic: {
+        type: 'SetStatic',
+        toggle: false,
+        setStatic: true,
+    },
+    actionOptions_SetStatic: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setStatic: {
+            type: guitype_BOOL,
         },
     },
     /*******************/
@@ -1506,6 +1529,8 @@ export class triggerCore {
         this.repeatDelay = trigger.mySprite.data.repeatDelay;
         this.repeatWaitDelay = 0;
 
+        this.setEnabled(this.data.enabled);
+
         this.followTarget = null;
         if(this.data.followFirstTarget && this.targets[0]){
 
@@ -1682,6 +1707,10 @@ export class triggerCore {
             }
         }
         this.triggeredThisTick = true;
+    }
+    setEnabled(enable) {
+        const type = enable ? Box2D.b2BodyType.b2_kinematicBody : Box2D.b2BodyType.b2_staticBody
+        this.trigger.SetType(type);
     }
 }
 export const addTargetToTrigger = function (_trigger, target) {

@@ -1,4 +1,10 @@
 {
     "git.ignoreLimitWarning": true,
-    "eslint.enable": false
+    "eslint.enable": false,
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/asset_src": true,
+        "**/build": true,
+        "**/static": true,
+       }
 }

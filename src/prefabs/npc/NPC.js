@@ -156,7 +156,7 @@ NPC.settingsOptions = Object.assign({}, NPC.settingsOptions, {
 	"isAwake": true,
     "skin": {
         min: 1,
-        max: 7,
+        max: 9,
         step: 1
     },
     "life": {

@@ -781,7 +781,7 @@ function UIManager() {
             vehicleHolder.classList.add('vehicleHolder');
             vehicleHolder.classList.add('imageHolder');
 
-            const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png'];
+            const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png', 'vehicle5.png'];
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 const portrait =  document.createElement('img');

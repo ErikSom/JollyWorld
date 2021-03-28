@@ -19,7 +19,13 @@ export const init = function () {
     const emitterPoolData = [{
         type: 'blood',
         poolSize: 30
-    }, {
+    },
+    {
+        type: 'bloodSpray',
+        poolSize: 10
+    },
+    
+    {
         type: 'gorecloud',
         poolSize: 15
     }, {
@@ -56,6 +62,13 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
     let emitter = getEmitter(type);
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
 
+
+    if(type === 'blood'){
+        emitter.acceleration.x = game.world.GetGravity().x * 200;
+        emitter.acceleration.y = game.world.GetGravity().y * 200;
+
+    }
+
     attachEmitter(body, emitter);
 
     if (body) {
@@ -85,6 +98,7 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
 
     emitter.playOnce(returnToPool);
 
+    return emitter;
 }
 
 export const getLoopingEmitter = function(type,body,point,angle){
@@ -143,6 +157,16 @@ export const getEmitter = function (type, pool = true) {
     let emitter;
     switch (type) {
         case "blood":
+            emitter = new Emitter(
+                game.editor.textures, [
+                    PIXI.Texture.from('particle.png'), 
+                    PIXI.Texture.from('particle-grey.png')
+                ],
+                emitterData[type]
+            );
+            break;
+
+        case "bloodSpray":
             emitter = new Emitter(
                 game.editor.textures, [
                     PIXI.Texture.from('particle.png'), 
