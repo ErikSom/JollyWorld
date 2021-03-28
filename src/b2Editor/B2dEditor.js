@@ -8124,7 +8124,7 @@ const _B2dEditor = function () {
 			} else if (collision == 6) {
 				// 6) collides only with characters
 				// - set mask to CUSTOM_MASKBIT, FIXED_MASKBIT, NORMAL_MASKBIT
-				filterData.maskBits = this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_TRIGGER; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				filterData.maskBits = this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 7) {
 				// 7) sets objects to be an character
 				// -
