@@ -120,7 +120,8 @@ function UIManager() {
 
         }
         discordButton.style.display = 'block';
-        mainMenu.style.display = 'block';
+        mainMenu.style.display = 'none';
+        // mainMenu.style.display = 'block';
         this.disableMainMenu(false);
         this.show();
     }
@@ -130,6 +131,11 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class = "header">
                     <div class = "logo"></div>
+                    <div class = "sun"></div>
+                    <div class = "clouds"></div>
+                    <div class = "clouds_alpha"></div>
+                    <div class = "grass1"></div>
+                    <div class = "grass2"></div>
                 </div>
                 <div class="games">
                     <div class="game_template game">
