@@ -1,3 +1,5 @@
+import '../css/MainMenu.scss'
+
 import {
     backendManager
 } from '../utils/BackendManager';
@@ -27,6 +29,7 @@ import * as TutorialManager from "../utils/TutorialManager"
 let customGUIContainer = document.getElementById('game-ui-container');
 
 let mainMenu;
+let mainMenu2;
 let discordButton;
 let gameOver;
 let levelLoader;
@@ -113,14 +116,67 @@ function UIManager() {
                 window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
             }
             customGUIContainer.appendChild(discordButton);
+            this.showMainMenu2();
 
         }
         discordButton.style.display = 'block';
         mainMenu.style.display = 'block';
         this.disableMainMenu(false);
         this.show();
+    }
+
+    this.showMainMenu2 = ()=>{
+        if(!mainMenu2){
+            const htmlStructure = /*html*/`
+                <div class = "header">
+                    <div class = "logo"></div>
+                </div>
+                <div class="games">
+                    <div class="game_template game">
+                        <div class="thumb"></div>
+                        <div class="footer">
+                            <div class="text_holder">
+                                <div class="text_level_name">Level Name Goes Here</div>
+                                <div class="level_author">
+                                    <div class="text_level_by">By:</div>
+                                    <div class="text_author">Author Name</div>
+                                </div>
+                                <div class="tags">
+                                    <div class="tag">#Racing</div>
+                                    <div class="tag">#Challenging</div>
+                                    <div class="tag">#Parkour</div>
+                                </div>
+                            </div>
+                            <div class="rating">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filters"></div>
+                <div class="footer"></div>
+            `
+            mainMenu2 = document.createElement('div');
+            mainMenu2.classList.add('mainmenu');
+            mainMenu2.innerHTML = htmlStructure;
+
+            const games = mainMenu2.querySelector('.games');
+            const game_template = mainMenu2.querySelector('.game_template');
+            game_template.classList.remove('game_template')
+            
+            for(let i = 0; i<50; i++){
+                const game = game_template.cloneNode(true)
+                games.appendChild(game);
+            }
+            game_template.parentNode.removeChild(game_template);
+
+
+            customGUIContainer.appendChild(mainMenu2);
+        }
+        mainMenu2.style.display = 'block';
 
     }
+
+
     this.disableMainMenu = disable => {
         if (disable) mainMenu.classList.add('disable');
         else mainMenu.classList.remove('disable');
@@ -132,8 +188,6 @@ function UIManager() {
         var blackOutlinePaths = logo.querySelectorAll('#BlackOutline path');
         var frontFacePaths = logo.querySelectorAll('#ColorMask path');
         var backBlackPaths = logo.querySelectorAll('#BlackMask path');
-
-
 
         var ease = 'easeOutQuad'
         const frontFaceAnim = anime({
