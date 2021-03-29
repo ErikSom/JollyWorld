@@ -12,6 +12,7 @@ class ForceField extends PrefabManager.basePrefab {
 		
 		//this.forceField.myTileSprite = new TiledMesh();
 		this.forceField.myTileSprite.fixTextureRotation = true;
+
 		this.width = this.height = 200;
 
 		this.fieldBodies = [];
@@ -68,6 +69,7 @@ class ForceField extends PrefabManager.basePrefab {
 		let oldFixtures = []
 		fixture = body.GetFixtureList();
 		while (fixture != null) {
+			fixture.SetSensor(true);
 			oldFixtures.push(fixture);
 			if (fixture.GetShape() instanceof Box2D.b2CircleShape) {
 				//oh shit we have a circle, must scale with aspect ratio
@@ -225,7 +227,7 @@ ForceField.settingsOptions = Object.assign({}, ForceField.settingsOptions, {
 
 
 PrefabManager.prefabLibrary.ForceField = {
-    json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#FFFFFF"],["#FFFFFF"],[0.6],true,true,[[{"x":-3.3230424036184223,"y":3.319249149419366},{"x":-3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":3.319249149419366}]],[1],2,[0],"TileArrow",[0]]]}',
+    json: '{"objects":[[0,0,0,0,"forcefield","forcefield_body",0,["#FFFFFF"],["#FFFFFF"],[0.6],true,true,[[{"x":-3.3230424036184223,"y":3.319249149419366},{"x":-3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":-3.3192491494193646},{"x":3.3230424036184223,"y":3.319249149419366}]],[1],0,[0],"TileArrow",[0]]]}',
     class: ForceField,
     library: PrefabManager.LIBRARY_MOVEMENT
 }
