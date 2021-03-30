@@ -24,6 +24,7 @@
 	.sun{
 		width: 63px;
 		height: 63px;
+		margin-left: 420px;
 		background-image: url(../../static/assets/images/gui/Sun_Small.png);
 	}
 	.grass1{
@@ -44,14 +45,87 @@
 		top: 0;
 		margin: 60px 0 0 280px;
 	}
+	.games-scroll{
+		height: calc(100vh - 188px);
+		overflow-x: hidden;
+		overflow-y: auto;
+		margin-top: 14px;
+		margin-right: 24px
+	}
 	.games{
 		display: grid;
 		grid-template-columns: repeat( auto-fit, minmax(210px, 1fr) );
 		grid-gap: 10px;
-		margin: 14px 0 0 0;
-		position: absolute;
+		padding: 0px 44px 0px 14px;
     	width: 100%;
 	}
+	.game-scroll-block{
+		background: linear-gradient(0deg, #e7b98a 25%, rgba(231, 185, 138, 0) 70%);
+		height: 80px;
+		width: 100%;
+		position: absolute;
+		bottom: 84px;
+		pointer-events: none;
+	}
+	.filters{
+		position: absolute;
+		z-index: 1;
+		display: flex;
+		bottom: 60px;
+		margin-left: 8px;
+		.button{
+			width: 116px !important;
+			margin-left: 8px;
+			@extend .base-button;
+		}
+		.featured-filter{
+			position: relative;
+			width: 146px !important;
+			padding-left: 24px;
+			.check{
+				width: 38px;
+				position: absolute;
+				top: -4px;
+				left: 6px;
+			}
+			&:not(.checked){
+				svg g{
+					display:none;
+				}
+			}
+		}
+		.best-filter, .mostplayed-filter{
+			font-size: 18px !important;
+		}
+		.date-filter{
+			width: 44px !important;
+		}
+		.other-filters{
+			display: flex;
+		}
+		.button{
+			&:not(.checked){
+				filter: brightness(0.5);
+			}
+		}
+	}
+}
+
+.base-button{
+	background-color: #51A328;
+	width: 200px;
+	height: 38px;
+	border-radius: 8px;
+	border: 2px solid black;
+	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white;
+	color: white;
+	font-family: "Lily Script One", cursive;
+	text-shadow: 1.2px 2px black;
+	text-align: center;
+	line-height: 38px;
+	font-size: 23px;
+	text-rendering: geometricPrecision;
+	cursor: pointer;
 }
 
 .game{
@@ -61,11 +135,18 @@
 	height: 210px;
 	margin: auto;
 	box-shadow: 2px 2px 2px black;
+	opacity:0;
+
+	&.loaded{
+		display: block;
+		animation: 0.3s ease-in opacityFade forwards;
+	}
 
 	.thumb{
 		width: 200px;
 		height: 150px;
-		background-image: url(https://static.jollyworld.app/7a0f1b8d79725b137f743b7c3fede3e3.png);
+		//background-image: url(https://static.jollyworld.app/7a0f1b8d79725b137f743b7c3fede3e3.png);
+		background-color:gray;
 		border: 2px solid black;
 		border-bottom-width: 4px;
 		border-left-width: 3px;
@@ -107,3 +188,11 @@
 	}
 }
 
+@keyframes opacityFade{
+	0%{
+		opacity:0;
+	}
+	100%{
+		opacity:1;
+	}
+}

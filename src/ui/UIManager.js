@@ -1,4 +1,5 @@
 import '../css/MainMenu.scss'
+import '../css/ScrollBar.scss'
 
 import {
     backendManager
@@ -23,11 +24,18 @@ import * as SaveManager from "../utils/SaveManager"
 import { YouTubePlayer } from '../utils/YouTubePlayer';
 import * as AudioManager from "../utils/AudioManager"
 import * as TutorialManager from "../utils/TutorialManager"
-
+import SimpleBar from 'simplebar'
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
-
+let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) {
+    const thumb = entry.target.querySelector('.thumb');
+    thumb.style.backgroundImage = `url(${thumb.getAttribute('data-src')})`;
+    entry.target.classList.add('loaded')
+    imageObserver.unobserve(entry.target);
+    }
+}));
 let mainMenu;
 let mainMenu2;
 let discordButton;
@@ -137,48 +145,68 @@ function UIManager() {
                     <div class = "grass1"></div>
                     <div class = "grass2"></div>
                 </div>
-                <div class="games">
-                    <div class="game_template game">
-                        <div class="thumb"></div>
-                        <div class="footer">
-                            <div class="text_holder">
-                                <div class="text_level_name">Level Name Goes Here</div>
-                                <div class="level_author">
-                                    <div class="text_level_by">By:</div>
-                                    <div class="text_author">Author Name</div>
+                <div class = "games-scroll">
+                    <div class="games">
+                        <div class="game_template game">
+                            <div class="thumb"></div>
+                            <div class="footer">
+                                <div class="text_holder">
+                                    <div class="text_level_name">Level Name Goes Here</div>
+                                    <div class="level_author">
+                                        <div class="text_level_by">By:</div>
+                                        <div class="text_author">Author Name</div>
+                                    </div>
+                                    <div class="tags">
+                                        <div class="tag">#Racing</div>
+                                        <div class="tag">#Challenging</div>
+                                        <div class="tag">#Parkour</div>
+                                    </div>
                                 </div>
-                                <div class="tags">
-                                    <div class="tag">#Racing</div>
-                                    <div class="tag">#Challenging</div>
-                                    <div class="tag">#Parkour</div>
+                                <div class="rating">
                                 </div>
-                            </div>
-                            <div class="rating">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="filters"></div>
+                <div class="filters">
+                    <div class="date-filter button">#</div>
+                    <div class="featured-filter button checked">
+                    <svg class="check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58.7 50.4"><path d="M5.2 16.5c-2.8 0-4.2 1.4-4.2 4.2v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2z" fill="#333"/><path d="M1 20.7v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2c-2.8 0-4.2 1.4-4.2 4.2z" fill="none" stroke="#66cd32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g><path d="M58.1 1.6c-.2-.1-.5-.1-.7-.1C41.7 6.9 29 16.2 19.5 29.4l-4.6-6.8-.3-.3c-.2-.1-.3-.1-.5-.1H2.2c-.2 0-.5.1-.7.2-.2.2-.3.4-.3.6s0 .4.2.6l15 22.5c.1.2.3.3.5.4.2.1.4.1.6 0s.4-.2.5-.4C29 29.3 42.5 15 58.2 3.2c.2-.1.3-.3.4-.5 0-.3 0-.5-.1-.7 0-.2-.2-.3-.4-.4z"/><path d="M18.2 29.6l-5.4-8H1l15 22.5C27.1 27.2 40.6 12.8 56.5 1c-16 5.5-28.7 15-38.3 28.6z" fill="red"/><path d="M18.2 29.6C27.8 16 40.5 6.5 56.5 1 40.6 12.8 27.1 27.2 16 44.1L1 21.6h11.9l5.3 8z" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+                    Featured
+                    </div>
+                    <div class="other-filters">
+                        <div class="best-filter button">Best Rated</div>
+                        <div class="mostplayed-filter button">Most Played</div>
+                        <div class="newest-filter button">Newest</div>
+                        <div class="oldest-filter button">Oldest</div>
+                    </div>
+                    <div class="search-filter"></div>
+                </div>
+                <div class="game-scroll-block"></div>
                 <div class="footer"></div>
             `
             mainMenu2 = document.createElement('div');
             mainMenu2.classList.add('mainmenu');
             mainMenu2.innerHTML = htmlStructure;
 
-            const games = mainMenu2.querySelector('.games');
-            const game_template = mainMenu2.querySelector('.game_template');
-            game_template.classList.remove('game_template')
-            
-            for(let i = 0; i<50; i++){
-                const game = game_template.cloneNode(true)
-                games.appendChild(game);
-            }
-            game_template.parentNode.removeChild(game_template);
-
+            new SimpleBar(mainMenu2.querySelector('.games-scroll'), { autoHide: false });
 
             customGUIContainer.appendChild(mainMenu2);
         }
         mainMenu2.style.display = 'block';
+
+        const games = mainMenu2.querySelector('.games');
+        const game_template = mainMenu2.querySelector('.game_template');
+        game_template.classList.remove('game_template')
+
+        for(let i = 0; i<50; i++){
+            const game = game_template.cloneNode(true)
+            const thumb = game.querySelector('.thumb');
+            thumb.setAttribute('data-src', 'https://static.jollyworld.app/7a0f1b8d79725b137f743b7c3fede3e3.png');
+            games.appendChild(game);
+            imageObserver.observe(game);
+        }
+        game_template.parentNode.removeChild(game_template);
 
     }
 

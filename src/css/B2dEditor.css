@@ -1280,7 +1280,7 @@ body .dg .cr.function {
     cursor: pointer;
 }
 
-*::-webkit-scrollbar {
+/* *::-webkit-scrollbar {
     width: 5px;
     height: 5px;
     background: #FFF;
@@ -1298,7 +1298,7 @@ body .dg .cr.function {
 *{
     scrollbar-width: thin;
     scrollbar-color: black white;
-}
+} */
 
 .ios-pwa-container {
     align-items: flex-end;
