@@ -141,20 +141,20 @@ function UIManager() {
                     <div class = "logo"></div>
                     <div class = "sun"></div>
                     <div class = "clouds"></div>
-                    <div class = "clouds_alpha"></div>
+                    <div class = "clouds-alpha"></div>
                     <div class = "grass1"></div>
                     <div class = "grass2"></div>
                 </div>
                 <div class = "games-scroll">
                     <div class="games">
-                        <div class="game_template game">
+                        <div class="game-template game">
                             <div class="thumb"></div>
                             <div class="footer">
-                                <div class="text_holder">
-                                    <div class="text_level_name">Level Name Goes Here</div>
-                                    <div class="level_author">
-                                        <div class="text_level_by">By:</div>
-                                        <div class="text_author">Author Name</div>
+                                <div class="text-holder">
+                                    <div class="text-level-name">Level Name Goes Here</div>
+                                    <div class="level-author">
+                                        <div class="text-level-by">By:</div>
+                                        <div class="text-author">Author Name</div>
                                     </div>
                                     <div class="tags">
                                         <div class="tag">#Racing</div>
@@ -163,6 +163,8 @@ function UIManager() {
                                     </div>
                                 </div>
                                 <div class="rating">
+                                    <div class="vote-thumb"></div>
+                                    85%
                                 </div>
                             </div>
                         </div>
@@ -196,17 +198,17 @@ function UIManager() {
         mainMenu2.style.display = 'block';
 
         const games = mainMenu2.querySelector('.games');
-        const game_template = mainMenu2.querySelector('.game_template');
-        game_template.classList.remove('game_template')
+        const gameTemplate = mainMenu2.querySelector('.game-template');
+        gameTemplate.classList.remove('game-template')
 
         for(let i = 0; i<50; i++){
-            const game = game_template.cloneNode(true)
+            const game = gameTemplate.cloneNode(true)
             const thumb = game.querySelector('.thumb');
             thumb.setAttribute('data-src', 'https://static.jollyworld.app/7a0f1b8d79725b137f743b7c3fede3e3.png');
             games.appendChild(game);
             imageObserver.observe(game);
         }
-        game_template.parentNode.removeChild(game_template);
+        gameTemplate.parentNode.removeChild(gameTemplate);
 
     }
 
