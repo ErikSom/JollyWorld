@@ -295,6 +295,20 @@ function UIManager() {
 
                     </div>
                 </div>
+                <div class="social-bar">
+                    <div class="share-button">
+                        <div class="share-icon"></div>
+                        Share
+                    </div>
+                    <div class="save-button">
+                        <div class="heart-icon"></div>
+                        Save
+                    </div>
+                    <div class="vote-buttons">
+                        <div class="vote-down button"></div>
+                        <div class="vote-up button"></div>
+                    </div>
+                </div>
             `;
 
             levelBanner = document.createElement('div');
