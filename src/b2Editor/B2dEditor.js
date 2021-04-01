@@ -4381,7 +4381,7 @@ const _B2dEditor = function () {
 			this.selectTool(this.tool_SELECT);
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
-				if(this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN){
+				if((this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN) && this.activeVertices.length > 0){
 					this.activeVertices.pop();
 				}else{
 					this.undoMove(true);
