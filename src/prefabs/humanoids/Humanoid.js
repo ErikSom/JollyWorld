@@ -1261,15 +1261,15 @@ export class Humanoid extends PrefabManager.basePrefab {
             const endPos = new Box2D.b2Vec2(endJointPos.x, endJointPos.y);
 
 
-            const offsetAngle = this.flipped ? Math.PI-endPart.jointOffsetAngle+this.lookupObject.body.GetAngle() : endPart.jointOffsetAngle-this.lookupObject.body.GetAngle();
+            // const offsetAngle = this.flipped ? Math.PI-endPart.jointOffsetAngle+this.lookupObject.body.GetAngle() : Math.PI-endPart.jointOffsetAngle-this.lookupObject.body.GetAngle();
 
+            endPart.SetAngle(lowerAngle-Settings.pihalve);
 
-            let targetOffsetAngle = lowerPart.GetAngle()+offsetAngle;
+            let targetOffsetAngle = this.flipped ? lowerAngle - endPart.jointOffsetAngle+Settings.pihalve : lowerAngle + endPart.jointOffsetAngle-Settings.pihalve;
             endPos.x += endPart.jointOffsetLength * Math.cos(targetOffsetAngle);
             endPos.y += endPart.jointOffsetLength * Math.sin(targetOffsetAngle);
 
             endPart.SetPosition(endPos);
-            endPart.SetAngle(lowerAngle-Settings.pihalve);
         }
     }
 
@@ -1279,7 +1279,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             const jointWorldPos = new Box2D.b2Vec2(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
             const bodyPart = this.lookupObject[part];
             const jointOffset = bodyPart.GetPosition().Clone().SelfSub(jointWorldPos);
-            bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x);
+            bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x) - this.lookupObject.body.GetAngle();
             bodyPart.jointOffsetLength = jointOffset.Length();
         });
     }
