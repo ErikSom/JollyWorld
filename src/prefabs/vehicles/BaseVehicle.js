@@ -261,7 +261,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
 
     destroy(){
-        this.character.destroyed = true;
+        this.character.destroy();
         super.destroy();
     }
 }

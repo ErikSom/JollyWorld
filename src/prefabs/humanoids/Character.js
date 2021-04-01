@@ -249,6 +249,15 @@ export class Character extends Humanoid {
         if(this.hat) this.hat.detachFromVehicle();
 
     }
+
+    destroy(){
+        this.destroyed = true;
+        if(this.hat){
+            console.log("DESTROY HAT!!");
+            this.hat.destroy();
+        }
+        super.destroy();
+    }
 }
 
 PrefabManager.prefabLibrary.Character = {
