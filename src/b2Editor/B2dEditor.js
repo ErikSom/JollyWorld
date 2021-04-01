@@ -3779,15 +3779,20 @@ const _B2dEditor = function () {
 
 					this.setScale(body, scaleX, scaleY);
 
-					body.SetPosition(new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM))
+					if(this.altDown){
+						body.SetPosition(new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM))
+					}
 				}else{
 					let sprite = objects[i];
 
 					var xDif = sprite.x - centerPoint.x;
 					var yDif = sprite.y - centerPoint.y;
 
-					sprite.x = centerPoint.x + xDif * scaleX;
-					sprite.y = centerPoint.y + yDif * scaleY;
+
+					if(this.altDown){
+						sprite.x = centerPoint.x + xDif * scaleX;
+						sprite.y = centerPoint.y + yDif * scaleY;
+					}
 
 					this.setScale(sprite, scaleX, scaleY);
 				}
