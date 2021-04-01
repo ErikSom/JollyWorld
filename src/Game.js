@@ -620,7 +620,7 @@ function Game() {
         }
 
         if(this.gameState == this.GAMESTATE_NORMALPLAY){
-            if(e.keyCode == Key.R && e.shiftDown){
+            if(e.keyCode == Key.R && e.shiftKey){
                 this.resetWorld(false);
             }else if((e.keyCode == Key.P || e.keyCode == Key.R || e.keyCode == Key.ESCAPE || e.keyCode == Key.TAB)){
                 if(!this.pause){
