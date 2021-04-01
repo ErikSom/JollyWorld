@@ -74,6 +74,12 @@ export default class Hat {
 		this.hatBody.myTexture.scale.x *= -1;
 	}
 	destroy(){
+		this.detach();
+		if(this.hatBody){
+			this.hatBody.myTexture.parent.removeChild(this.hatBody.myTexture);
+			game.world.DestroyBody(this.hatBody);
+			this.hatBody = null;
+		}
 	}
 	detachFromVehicle(){
 	}

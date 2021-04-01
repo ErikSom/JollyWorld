@@ -3779,15 +3779,20 @@ const _B2dEditor = function () {
 
 					this.setScale(body, scaleX, scaleY);
 
-					body.SetPosition(new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM))
+					if(this.altDown){
+						body.SetPosition(new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM))
+					}
 				}else{
 					let sprite = objects[i];
 
 					var xDif = sprite.x - centerPoint.x;
 					var yDif = sprite.y - centerPoint.y;
 
-					sprite.x = centerPoint.x + xDif * scaleX;
-					sprite.y = centerPoint.y + yDif * scaleY;
+
+					if(this.altDown){
+						sprite.x = centerPoint.x + xDif * scaleX;
+						sprite.y = centerPoint.y + yDif * scaleY;
+					}
 
 					this.setScale(sprite, scaleX, scaleY);
 				}
@@ -4376,7 +4381,7 @@ const _B2dEditor = function () {
 			this.selectTool(this.tool_SELECT);
 		}else if (e.keyCode == 90) { // z
 			if (e.ctrlKey || e.metaKey) {
-				if(this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN){
+				if((this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN) && this.activeVertices.length > 0){
 					this.activeVertices.pop();
 				}else{
 					this.undoMove(true);
@@ -5902,8 +5907,10 @@ const _B2dEditor = function () {
 
 				const point1Screen = this.getScreenPointFromWorldPoint(activeVertice.point1);
 				if(!this.closeDrawing) activeVertice.point2 = {x:newVertice.x, y:newVertice.y};
-				const point2Screen = this.getScreenPointFromWorldPoint(activeVertice.point2);
-				this.debugGraphics.bezierCurveTo(point1Screen.x, point1Screen.y, point2Screen.x, point2Screen.y, newVerticeScreen.x, newVerticeScreen.y);
+				if(activeVertice.point2){
+					const point2Screen = this.getScreenPointFromWorldPoint(activeVertice.point2);
+					this.debugGraphics.bezierCurveTo(point1Screen.x, point1Screen.y, point2Screen.x, point2Screen.y, newVerticeScreen.x, newVerticeScreen.y);
+				}
 			}
 		}
 
@@ -8971,7 +8978,7 @@ const _B2dEditor = function () {
 			currentPoint = verts[i - 1];
 			nextPoint = verts[i];
 
-			if(!currentPoint.point1){
+			if(!currentPoint.point1 || !currentPoint.point2){
 				graphic.bezierCurveTo(currentPoint.x, currentPoint.y, nextPoint.x, nextPoint.y, nextPoint.x, nextPoint.y);
 			}else{
 				graphic.bezierCurveTo(currentPoint.point1.x, currentPoint.point1.y, currentPoint.point2.x, currentPoint.point2.y, nextPoint.x, nextPoint.y);
@@ -8979,7 +8986,7 @@ const _B2dEditor = function () {
 
 		}
 
-		if(!nextPoint.point1){
+		if(!nextPoint.point1 || !nextPoint.point2){
 			graphic.bezierCurveTo(nextPoint.x, nextPoint.y, startPoint.x, startPoint.y, startPoint.x, startPoint.y);
 		}else{
 			graphic.bezierCurveTo(nextPoint.point1.x, nextPoint.point1.y, nextPoint.point2.x, nextPoint.point2.y, startPoint.x, startPoint.y);
