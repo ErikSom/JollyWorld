@@ -14,3 +14,14 @@
 	text-rendering: geometricPrecision;
 	cursor: pointer;
 }
+.base-button:hover{
+	filter:brightness(1.2);
+}
+.base-button:active{
+	filter:brightness(0.5);
+}
+
+.inactive{
+	filter:brightness(0.2);
+	pointer-events: none !important;
+}

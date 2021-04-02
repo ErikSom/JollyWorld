@@ -134,15 +134,12 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="filters">
-                    <div class="date-filter button checked">
-                    #
-                        <div class ='date-filters'>
-                            <div class="today-filter button">Today</div>
-                            <div class="week-filter button">This Week</div>
-                            <div class="month-filter button">This Month</div>
-                            <div class="anytime-filter button checked">Anytime</div>
-
-                        </div>
+                    <div class="date-filter button checked">#</div>
+                    <div class ='date-filters'>
+                        <div class="today-filter button">Today</div>
+                        <div class="week-filter button">This Week</div>
+                        <div class="month-filter button">This Month</div>
+                        <div class="anytime-filter button checked">Anytime</div>
                     </div>
                     <div class="featured-filter button checked">
                     <svg class="check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58.7 50.4"><path d="M5.2 16.5c-2.8 0-4.2 1.4-4.2 4.2v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2z" fill="#333"/><path d="M1 20.7v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2c-2.8 0-4.2 1.4-4.2 4.2z" fill="none" stroke="#66cd32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g><path d="M58.1 1.6c-.2-.1-.5-.1-.7-.1C41.7 6.9 29 16.2 19.5 29.4l-4.6-6.8-.3-.3c-.2-.1-.3-.1-.5-.1H2.2c-.2 0-.5.1-.7.2-.2.2-.3.4-.3.6s0 .4.2.6l15 22.5c.1.2.3.3.5.4.2.1.4.1.6 0s.4-.2.5-.4C29 29.3 42.5 15 58.2 3.2c.2-.1.3-.3.4-.5 0-.3 0-.5-.1-.7 0-.2-.2-.3-.4-.4z"/><path d="M18.2 29.6l-5.4-8H1l15 22.5C27.1 27.2 40.6 12.8 56.5 1c-16 5.5-28.7 15-38.3 28.6z" fill="red"/><path d="M18.2 29.6C27.8 16 40.5 6.5 56.5 1 40.6 12.8 27.1 27.2 16 44.1L1 21.6h11.9l5.3 8z" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
@@ -172,13 +169,15 @@ function UIManager() {
                         this.reloadMainMenuGames();
                     }
                 }else if(button.classList.contains('date-filter')){
-                    button.onclick = () => button.classList.toggle('open');
+                    const dateFilters = filters.querySelector('.date-filters');
+                    button.onclick = () => dateFilters.classList.toggle('open');
                 }else if(button.parentNode.classList.contains('date-filters')){
                     const dateFilters = filters.querySelector('.date-filters');
                     const buttons = Array.from(dateFilters.querySelectorAll('.button'));
                     button.onclick = ()=>{
                         buttons.forEach(button => button.classList.remove('checked'));
                         button.classList.add('checked');
+                        dateFilters.classList.remove('open');
                         this.reloadMainMenuGames();
                     }
                 }else{
@@ -305,9 +304,17 @@ function UIManager() {
                         Save
                     </div>
                     <div class="vote-buttons">
-                        <div class="vote-down button"></div>
-                        <div class="vote-up button"></div>
+                        <div class="vote-down button">
+                            <div class="vote-thumb"></div>
+                        </div>
+                        <div class="vote-up button">
+                            <div class="vote-thumb"></div>
+                        </div>
                     </div>
+                </div>
+                <div class="nav-buttons">
+                    <div class="back button">Back</div>
+                    <div class="play button">Play</div>
                 </div>
             `;
 
@@ -315,8 +322,17 @@ function UIManager() {
             levelBanner.classList.add('levelbanner');
             levelBanner.innerHTML = htmlStructure;
 
+
+            const navButtons = levelBanner.querySelector('.nav-buttons');
+            const backButton = navButtons.querySelector('.back');
+            backButton.onclick = ()=>{
+                this.hideLevelBanner2();
+            }
+
             customGUIContainer.appendChild(levelBanner);
         }
+        levelBanner.style.display = 'block';
+        mainMenu.classList.add('inactive');
 
         this.setLevelBannerData(levelData);
 
@@ -328,6 +344,21 @@ function UIManager() {
         const thumbSrc = `${Settings.STATIC}/${levelData.thumb_big_md5}.png`;
         thumb.style.backgroundImage = `url(${thumbSrc})`;
 
+
+        const title = levelBanner.querySelector('.text-level-name');
+        title.innerText = levelData.title;
+        const author = levelBanner.querySelector('.text-author');
+        author.innerText = levelData.author.username;
+
+        const description = levelBanner.querySelector('.description');
+        description.innerText = levelData.description;
+
+        const publishedDate = levelBanner.querySelector('.text-date');
+        publishedDate.innerText = format.formatDMY(levelData.updated_at);
+    }
+    this.hideLevelBanner2 = ()=>{
+        levelBanner.style.display = 'none';
+        mainMenu.classList.remove('inactive');
     }
 
     this.showSettingsButtons = function(){

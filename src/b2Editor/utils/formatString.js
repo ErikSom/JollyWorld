@@ -1,6 +1,14 @@
 export const formatDMY = timestamp => {
     const date = new Date(timestamp);
-    return `${date.getUTCMonth() + 1}-${date.getUTCDate()}-${date.getUTCFullYear()}`;
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const day = date.getDate();
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day} ${month} ${year}`;
 }
 export const dateDiff = (d1, d2, padded=true) => {
     let delta = Math.abs(d2 - d1) / 1000;

@@ -103,25 +103,26 @@
 		}
 		.date-filter{
 			width: 44px !important;
-			.date-filters{
-				position: absolute;
-				bottom: 100%;
-				left: 0;
-				margin: 10px 0px;
-				height: 0px;
-				transition: height 0.3s ease-in;
-				overflow: hidden;
-				will-change: height;
-				.button{
-					margin-top: 10px;
-				}
+		}
+
+		.date-filters{
+			position: absolute;
+			bottom: 100%;
+			left: 0;
+			margin: 10px 0px;
+			height: 0px;
+			transition: height 0.3s ease-in;
+			overflow: hidden;
+			will-change: height;
+			.button{
+				margin-top: 10px;
 			}
 			&.open{
-				.date-filters{
-					height: 200px;
-				}
+				height: 200px;
 			}
 		}
+
+
 		.other-filters{
 			display: flex;
 		}
@@ -150,7 +151,6 @@
 	.thumb{
 		width: 200px;
 		height: 150px;
-		//background-image: url(https://static.jollyworld.app/7a0f1b8d79725b137f743b7c3fede3e3.png);
 		background-color:gray;
 		border: 2px solid black;
 		border-bottom-width: 4px;
@@ -201,12 +201,15 @@
 
 			@extend .base-button;
 			.vote-thumb{
-				background-image: url(../../static/assets/images/gui/Thumb_Icon.png);
+				background-image: url(../../static/assets/images/gui/Thumb.png);
 				width: 30px;
 				height: 30px;
 				background-size: contain;
 				background-repeat: no-repeat;
 				background-position: 50%;
+				transform: scaleX(-1);
+				filter: drop-shadow(-2px 1px 0px black);
+				margin-right: 3px;
 			}
 		}
 	}
