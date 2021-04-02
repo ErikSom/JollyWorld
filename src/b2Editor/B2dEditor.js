@@ -8074,6 +8074,7 @@ const _B2dEditor = function () {
 	
 	this.setBodyCollision = function (body, collisions) {
 		// COLLISION HELP
+		// http://localhost:11009/?lvl=JxbDcyf_PVqzl9fEK6FkP
 
 		/*
 		all bits:
@@ -8118,8 +8119,8 @@ const _B2dEditor = function () {
 				// 3) collides with everything except other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
 
-				if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_FIXED | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL;
-				else filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL;
+				if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_FIXED;
+				else filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
 
 				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 4) {
