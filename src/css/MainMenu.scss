@@ -211,6 +211,19 @@
 				filter: drop-shadow(-2px 1px 0px black);
 				margin-right: 3px;
 			}
+
+			&.unknown{
+				background-color: #7B7B7B;
+			}
+			&.low{
+				background-color: #FF0000;
+				.vote-thumb{
+					transform: scaleX(-1) scaleY(-1);
+				}
+			}
+			&.ok{
+				background-color: #FF6600;
+			}
 		}
 	}
 }

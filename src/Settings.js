@@ -19,6 +19,7 @@ export var Settings = {
     defaultPhysicsCameraSize:1.5,
     lineWidthCorrection:1.0,
     gameOverDelay:1000,
+    minlevelVotes:10,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,

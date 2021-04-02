@@ -127,7 +127,7 @@ function UIManager() {
                                 </div>
                                 <div class="rating">
                                     <div class="vote-thumb"></div>
-                                    85%
+                                    <div class="text-rating">85%</div>
                                 </div>
                             </div>
                         </div>
@@ -201,6 +201,7 @@ function UIManager() {
     }
 
     this.setLevelDataOnGameTile = (game, levelData) => {
+        console.log(levelData);
         const thumb = game.querySelector('.thumb');
         const thumbSrc = `${Settings.STATIC}/${levelData.thumb_big_md5}.png`;
         thumb.setAttribute('data-src', thumbSrc);
@@ -210,6 +211,30 @@ function UIManager() {
         title.innerText = levelData.title;
         const author = game.querySelector('.text-author');
         author.innerText = levelData.author.username;
+
+        const rating = game.querySelector('.rating');
+
+        const sumVotes = levelData.upvotes + levelData.downvotes;
+        let scoreText = "??";
+
+        if(sumVotes<Settings.minlevelVotes){
+            rating.classList.add('unknown');
+        }else {
+            const voteScore = Math.round((levelData.upvotes / sumVotes) * 100);
+
+            if(voteScore<55){
+                rating.classList.add('low');
+            } else if(voteScore<70){
+                rating.classList.add('ok');
+            }else{
+                rating.classList.add('good');
+            }
+
+            scoreText =  `${voteScore}%`;
+        }
+
+        const ratingText = rating.querySelector('.text-rating');
+        ratingText.innerText = scoreText;
 
         // const tags = game.querySelector('.tags');
     }
