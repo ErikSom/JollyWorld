@@ -62,6 +62,7 @@
 		grid-gap: 10px;
 		padding: 0px 44px 0px 14px;
     	width: 100%;
+		margin-bottom: 100px;
 	}
 	.game-scroll-block{
 		background: linear-gradient(0deg, #e7b98a 25%, rgba(231, 185, 138, 0) 70%);
@@ -142,6 +143,11 @@
 	margin: auto;
 	box-shadow: 2px 2px 2px black;
 	opacity:0;
+	cursor: pointer;
+
+	&:hover{
+		background: #5d5d5d;
+	}
 
 	&.loaded{
 		display: block;
@@ -169,6 +175,9 @@
 			margin-left: 2px;
 			.text-level-name{
 				font-weight: 500;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
 			}
 			.level-author{
 				display: flex;
