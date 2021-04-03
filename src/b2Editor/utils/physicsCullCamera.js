@@ -14,6 +14,8 @@ export const init = ()=>{
 }
 
 export const update = ()=>{
+	if(!game.editor.physicsCamera) return;
+
 	if(game.editor.physicsCamera.cameraZoom != game.editor.editorSettingsObject.cameraZoom){
 		game.editor.physicsCamera.reFixture = true;
 
