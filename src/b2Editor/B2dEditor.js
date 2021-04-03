@@ -8074,6 +8074,7 @@ const _B2dEditor = function () {
 	
 	this.setBodyCollision = function (body, collisions) {
 		// COLLISION HELP
+		// http://localhost:11009/?lvl=JxbDcyf_PVqzl9fEK6FkP
 
 		/*
 		all bits:
@@ -8153,7 +8154,7 @@ const _B2dEditor = function () {
 			}else if(collision == 9){
 				// 8) Trigger collisions
 				filterData.categoryBits = this.MASKBIT_TRIGGER;
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US
 				fixture.SetSensor(true);
 			}else if(collision == 10){
 			// EVERYTHING
@@ -9412,6 +9413,7 @@ const _B2dEditor = function () {
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
 
+			// potential trigger issue here
 			data.triggerObjects = [];
 			for (var i = 0; i < sprite.targets.length; i++) {
 				if (sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);
