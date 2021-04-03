@@ -9413,6 +9413,7 @@ const _B2dEditor = function () {
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
 
+			// potential trigger issue here
 			data.triggerObjects = [];
 			for (var i = 0; i < sprite.targets.length; i++) {
 				if (sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);

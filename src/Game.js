@@ -143,7 +143,8 @@ function Game() {
             resolution: Settings.pixelRatio
         });
 
-        this.app.view.addEventListener('webglcontextlost', (_event) => {
+        this.app.view.addEventListener('webglcontextlost', _event => {
+            this.IS_ERROR = true;
             alert("Jolly Goodness! I almost fried your PC, Sorry.. (kidding) Something stressed out the browser and I'm forced to restart the game! Click OK to restart.");
             window.location.reload();
         });
