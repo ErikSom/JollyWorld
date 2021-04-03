@@ -122,6 +122,7 @@ function UIManager() {
                 <div class = "games-scroll">
                     <div class="games">
                         <div class="game-template game">
+                            <div class="vehicle-label"></div>
                             <div class="thumb"></div>
                             <div class="footer">
                                 <div class="text-holder">
@@ -260,6 +261,9 @@ function UIManager() {
 
         const ratingText = rating.querySelector('.text-rating');
         ratingText.innerText = scoreText;
+
+        const vehicleLabel = game.querySelector('.vehicle-label');
+        vehicleLabel.style.backgroundImage = `url(./assets/images/portraits/mini-vehicle${levelData.forced_vehicle}.png)`;
 
         // const tags = game.querySelector('.tags');
     }
@@ -407,16 +411,18 @@ function UIManager() {
 
                 game.loadPublishedLevelData(levelData, progressFunction).then(() => {
                     this.hideLevelBanner2();
-                    this.showVehicleSelect2();
-                    console.log("NO ERROR!!");
+                    if(levelData.forced_vehicle){
+                        game.selectedVehicle = levelData.forced_vehicle;
+                        this.playLevelFromMainMenu();
+                    }else{
+                        this.showVehicleSelect2();
+                    }
                     finishLoading();
                 }).catch(error => {
-                    console.log("ERROR!!", error);
                     finishLoading();
                 });
             }
             playButton.onclick = playLevelFunction;
-
 
             customGUIContainer.appendChild(levelBanner);
         }
@@ -928,17 +934,11 @@ function UIManager() {
         vehicleSelect.style.display = 'block';
         mainMenu.classList.add('inactive');
 
-        if(game.currentLevelData.forced_vehicle){
-            // skip vehicle select if not needed
-            this.hideVehicleSelect();
-            game.selectedVehicle = game.currentLevelData.forced_vehicle;
-            this.playLevelFromMainMenu();
-        }
-
         const back = vehicleSelect.querySelector('.back');
         back.onclick = ()=>{
             this.hideVehicleSelect();
-            this.showLevelBanner2();
+            game.gameState = game.GAMESTATE_MENU;
+            this.showLevelBanner2(game.currentLevelData);
         }
     }
 
