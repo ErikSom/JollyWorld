@@ -2,6 +2,7 @@ import '../css/MainMenu.scss'
 import '../css/LevelBanner.scss'
 import '../css/ScrollBar.scss'
 import '../css/VehicleSelect.scss'
+import '../css/CharacterSelect.scss'
 
 import {
     backendManager
@@ -205,6 +206,9 @@ function UIManager() {
 
             const header = mainMenu.querySelector('.header');
 
+            const characterSelect = header.querySelector('.character-select');
+            characterSelect.onclick = ()=>this.showCharacterSelect2();
+
             const volumeButton = header.querySelector('.volume');
             if(!Settings.sfxOn) volumeButton.classList.add('disabled');
 
@@ -221,9 +225,18 @@ function UIManager() {
 
             customGUIContainer.appendChild(mainMenu);
         }
+
+        this.setMainMenuCharacterImage();
+
         mainMenu.style.display = 'block';
 
         this.reloadMainMenuGames();
+    }
+
+    this.setMainMenuCharacterImage = ()=> {
+        const header = mainMenu.querySelector('.header');
+        const characterSelect = header.querySelector('.character-select');
+        characterSelect.style.backgroundImage = `url(./assets/images/portraits/${hashName(`character${game.selectedCharacter+1}.png`)})`;
     }
 
     this.setLevelDataOnGameTile = (game, levelData) => {
@@ -420,7 +433,7 @@ function UIManager() {
                     game.selectedVehicle = levelData.forced_vehicle;
                     this.playLevelFromMainMenu();
                 }else{
-                    this.showVehicleSelect2();
+                    this.showVehicleSelect();
                 }
                 finishLoading();
             }).catch(error => {
@@ -818,6 +831,57 @@ function UIManager() {
 
     // }hi
 
+    this.showCharacterSelect2 = function(){
+        if(!characterSelect){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Select a character</div>
+                <div class="characters">
+                </div>
+                <div class="back button">Back</div>
+            `;
+
+            characterSelect = document.createElement('div');
+            characterSelect.classList.add('characterSelect');
+            characterSelect.innerHTML = htmlStructure;
+
+            const characters = characterSelect.querySelector('.characters');
+
+            for(let i = 0; i<Settings.availableCharacters; i++){
+                const portrait =  document.createElement('img');
+                portrait.src = `./assets/images/portraits/${hashName(`character${i+1}.png`)}`
+                portrait.classList.add('portrait');
+                characters.appendChild(portrait);
+
+                portrait.onclick = () => {
+                    game.selectedCharacter = i;
+
+                    const userData = SaveManager.getLocalUserdata();
+                    userData.selectedCharacter = game.selectedCharacter;
+                    SaveManager.updateLocalUserData(userData);
+
+                    this.setMainMenuCharacterImage();
+                    this.hideCharacterSelect();
+                    this.showMainMenu();
+                }
+            }
+            customGUIContainer.appendChild(characterSelect);
+        }
+
+        characterSelect.style.display = 'block';
+        mainMenu.classList.add('inactive');
+
+        const back = characterSelect.querySelector('.back');
+        back.onclick = ()=>{
+            this.hideCharacterSelect();
+        }
+    }
+
+    this.hideCharacterSelect = function () {
+        mainMenu.classList.remove('inactive');
+        characterSelect.style.display = 'none';
+    }
+
     this.showCharacterSelect = function () {
         if (!characterSelect) {
             characterSelect = new dat.GUI({
@@ -881,9 +945,6 @@ function UIManager() {
         // set values
     }
 
-    this.hideCharacterSelect = function () {
-        characterSelect.domElement.style.visibility = 'hidden';
-    }
     this.playLevelFromMainMenu = function(){
         mainMenu.classList.remove('inactive');
         game.preloader.classList.remove('hide');
@@ -899,7 +960,7 @@ function UIManager() {
         }, Settings.levelBuildDelayTime);
     }
 
-    this.showVehicleSelect2 = function(){
+    this.showVehicleSelect = function(){
         if(!vehicleSelect){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>

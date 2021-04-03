@@ -279,6 +279,9 @@ function Game() {
 
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 
+        const userData = SaveManager.getLocalUserdata();
+        game.selectedCharacter = userData.selectedCharacter;
+
         this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
@@ -655,7 +658,6 @@ function Game() {
     this.openMainMenu = function (showLevelList) {
         //if(this.run) this.stopWorld();
 
-        this.resetGameSelection();
         this.initLevel(levelsData.mainMenuLevel);
         this.editor.ui.hide();
         ui.showMainMenu();
@@ -671,10 +673,6 @@ function Game() {
         }
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(false);
-    }
-    this.resetGameSelection = function(){
-        this.selectedCharacter = 0;
-        this.selectedVehicle = 0;
     }
 
     this.runWorld = function () {

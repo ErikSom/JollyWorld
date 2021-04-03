@@ -22,6 +22,7 @@ export const getLocalUserdata = function(){
         editorGuiPos:{x:50, y:50},
         sfxOn:true,
         tutorials:[],
+        selectedCharacter:0,
     }
 
     if(userData){
