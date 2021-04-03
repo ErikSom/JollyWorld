@@ -386,49 +386,48 @@ function UIManager() {
                 this.hideLevelBanner2();
             }
 
-            const playButton = navButtons.querySelector('.play');
-
-            const playLevelFunction = () => {
-                if (game.gameState != game.GAMESTATE_MENU) return;
-                game.gameState = game.GAMESTATE_LOADINGDATA;
-
-                playButton.classList.add('loading');
-
-                const playButtonText = playButton.querySelector('.text-play');
-                playButtonText.innerText = 'Loading';
-
-
-                const progressBar = playButton.querySelector('.progress');
-                const progressFunction = progress => {
-                    const progressRounded = (progress*100).toFixed(2);
-                    progressBar.style.clipPath = `inset(0px ${180-progressRounded}% 0px 0px)`;
-                }
-
-                const finishLoading = ()=>{
-                    playButton.classList.remove('loading');
-                    playButtonText.innerText = 'Play';
-                }
-
-                game.loadPublishedLevelData(levelData, progressFunction).then(() => {
-                    this.hideLevelBanner2();
-                    if(levelData.forced_vehicle){
-                        game.selectedVehicle = levelData.forced_vehicle;
-                        this.playLevelFromMainMenu();
-                    }else{
-                        this.showVehicleSelect2();
-                    }
-                    finishLoading();
-                }).catch(error => {
-                    finishLoading();
-                });
-            }
-            playButton.onclick = playLevelFunction;
-
             customGUIContainer.appendChild(levelBanner);
         }
 
         levelBanner.style.display = 'block';
         mainMenu.classList.add('inactive');
+
+        const navButtons = levelBanner.querySelector('.nav-buttons');
+        const playButton = navButtons.querySelector('.play');
+        const playLevelFunction = () => {
+            if (game.gameState != game.GAMESTATE_MENU) return;
+            game.gameState = game.GAMESTATE_LOADINGDATA;
+
+            playButton.classList.add('loading');
+
+            const playButtonText = playButton.querySelector('.text-play');
+            playButtonText.innerText = 'Loading';
+
+            const progressBar = playButton.querySelector('.progress');
+            const progressFunction = progress => {
+                const progressRounded = (progress*100).toFixed(2);
+                progressBar.style.clipPath = `inset(0px ${180-progressRounded}% 0px 0px)`;
+            }
+
+            const finishLoading = ()=>{
+                playButton.classList.remove('loading');
+                playButtonText.innerText = 'Play';
+            }
+
+            game.loadPublishedLevelData(levelData, progressFunction).then(() => {
+                this.hideLevelBanner2();
+                if(levelData.forced_vehicle){
+                    game.selectedVehicle = levelData.forced_vehicle;
+                    this.playLevelFromMainMenu();
+                }else{
+                    this.showVehicleSelect2();
+                }
+                finishLoading();
+            }).catch(error => {
+                finishLoading();
+            });
+        }
+        playButton.onclick = playLevelFunction;
 
         this.setLevelBannerData(levelData);
 
@@ -453,6 +452,10 @@ function UIManager() {
         publishedDate.innerText = format.formatDMY(levelData.updated_at);
     }
     this.hideLevelBanner2 = ()=>{
+
+        const thumb = levelBanner.querySelector('.thumb');
+        thumb.style.backgroundImage = 'none';
+
         levelBanner.style.display = 'none';
         mainMenu.classList.remove('inactive');
     }
