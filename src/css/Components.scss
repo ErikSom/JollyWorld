@@ -1,10 +1,21 @@
+.simple-button{
+	cursor:pointer
+}
+.simple-button:hover{
+	filter:brightness(1.2);
+}
+.simple-button:active{
+	filter:brightness(0.5);
+}
+
 .base-button{
+	@extend .simple-button;
 	background-color: #51A328;
 	width: 200px;
 	height: 38px;
 	border-radius: 8px;
 	border: 2px solid black;
-	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white;
+	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
 	color: white;
 	font-family: "Lily Script One", cursive;
 	text-shadow: 1.2px 2px black;
@@ -14,14 +25,46 @@
 	text-rendering: geometricPrecision;
 	cursor: pointer;
 }
-.base-button:hover{
-	filter:brightness(1.2);
-}
-.base-button:active{
-	filter:brightness(0.5);
+
+.back-button{
+	margin: 5px;
+	height: 52px;
+	font-size: 36px;
+	line-height: 48px;
+	background-color: #7B7B7B;
+
+	@extend .base-button;
 }
 
 .inactive{
 	filter:brightness(0.2);
 	pointer-events: none !important;
+}
+
+.main-window{
+	border-radius: 4px;
+    border: 2px solid black;
+    box-shadow: 2px 2px 0px black;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 400px;
+	background-color: #666666;
+	transform: translate(-50%, -50%);
+
+	.bar{
+		height: 20px;
+		width: 100%;
+		background-color: #4F4F4F;
+		background-image: url(../../static/assets/images/gui/DragableBar_Pattern.png);
+		border-bottom: 1px solid black;
+		border-top-left-radius: inherit;
+		border-top-right-radius: inherit;
+	}
+}
+
+.jollyfont{
+	color: white;
+	font-family: "Lily Script One", cursive;
+    text-shadow: 1.2px 2px black;
 }

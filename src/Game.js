@@ -280,8 +280,6 @@ function Game() {
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 
         this.openMainMenu();
-        this.ui.showSettingsButtons();
-
 
         if(uidHash && uidHash.length===21){
             ui.disableMainMenu(true);
@@ -1016,7 +1014,6 @@ function Game() {
                 if(progressFunction) progressFunction(0);
 
                 self.currentLevelData.json = result;
-                this.previewLevel();
                 return resolve();
             }catch(err){
                 console.log('fail', err);
@@ -1027,16 +1024,7 @@ function Game() {
             }
         });
     }
-    this.previewLevel = function(){
-        ui.hideMainMenu();
-        ui.showLevelBanner();
-        this.editor.ui.hide();
-        this.resetGame();
 
-        MobileController.hide();
-
-        game.gameState = game.GAMESTATE_PREVIEW;
-    }
 
     this.findPlayableCharacter = function () {
         for (var key in this.editor.activePrefabs) {
@@ -1366,10 +1354,22 @@ function Game() {
         }, 5000);
     }
 
+    this.toggleMute = function(){
+        const userData = SaveManager.getLocalUserdata();
+        userData.sfxOn = !userData.sfxOn;
+        SaveManager.updateLocalUserData(userData);
+
+        Settings.sfxOn = userData.sfxOn;
+
+        if(!Settings.sfxOn){
+            AudioManager.stopAllSounds();
+        }
+    }
+
+
     this.GAMESTATE_MENU = 'menu';
     this.GAMESTATE_EDITOR = 'editor';
     this.GAMESTATE_NORMALPLAY = 'play';
-    this.GAMESTATE_PREVIEW = 'preview';
     this.GAMESTATE_LOADINGDATA = 'loadingdata';
 }
 export var game = new Game();

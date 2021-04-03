@@ -1,6 +1,7 @@
 import '../css/MainMenu.scss'
 import '../css/LevelBanner.scss'
 import '../css/ScrollBar.scss'
+import '../css/VehicleSelect.scss'
 
 import {
     backendManager
@@ -100,13 +101,23 @@ function UIManager() {
     this.showMainMenu = ()=>{
         if(!mainMenu){
             const htmlStructure = /*html*/`
-                <div class = "header">
-                    <div class = "logo"></div>
-                    <div class = "sun"></div>
-                    <div class = "clouds"></div>
-                    <div class = "clouds-alpha"></div>
-                    <div class = "grass1"></div>
-                    <div class = "grass2"></div>
+                <div class="header">
+                    <div class="logo"></div>
+                    <div class="sun"></div>
+                    <div class="clouds"></div>
+                    <div class="clouds-alpha"></div>
+                    <div class="grass1"></div>
+                    <div class="grass2"></div>
+                    <div class=bg-hider></div>
+                    <div class="buttons">
+                        <div class="discord">Login</div>
+                        <div class="character-select">
+                            <div class="text-change">Change</div>
+                        </div>
+                        <div class="editor">Editor</div>
+                        <div class="volume"></div>
+                        <div class="settings"></div>
+                    </div>
                 </div>
                 <div class = "games-scroll">
                     <div class="games">
@@ -190,6 +201,20 @@ function UIManager() {
                     }
                 }
             })
+
+            const header = mainMenu.querySelector('.header');
+
+            const volumeButton = header.querySelector('.volume');
+            if(!Settings.sfxOn) volumeButton.classList.add('disabled');
+
+            volumeButton.onclick = ()=>{
+                game.toggleMute();
+                if(!Settings.sfxOn){
+                    volumeButton.classList.add('disabled');
+                }else{
+                    volumeButton.classList.remove('disabled');
+                }
+            }
 
             new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
 
@@ -339,7 +364,10 @@ function UIManager() {
                 </div>
                 <div class="nav-buttons">
                     <div class="back button">Back</div>
-                    <div class="play button">Play</div>
+                    <div class="play button">
+                        <div class="text-play">Play</div>
+                        <div class="progress"></div>
+                    </div>
                 </div>
             `;
 
@@ -354,8 +382,45 @@ function UIManager() {
                 this.hideLevelBanner2();
             }
 
+            const playButton = navButtons.querySelector('.play');
+
+            const playLevelFunction = () => {
+                if (game.gameState != game.GAMESTATE_MENU) return;
+                game.gameState = game.GAMESTATE_LOADINGDATA;
+
+                playButton.classList.add('loading');
+
+                const playButtonText = playButton.querySelector('.text-play');
+                playButtonText.innerText = 'Loading';
+
+
+                const progressBar = playButton.querySelector('.progress');
+                const progressFunction = progress => {
+                    const progressRounded = (progress*100).toFixed(2);
+                    progressBar.style.clipPath = `inset(0px ${180-progressRounded}% 0px 0px)`;
+                }
+
+                const finishLoading = ()=>{
+                    playButton.classList.remove('loading');
+                    playButtonText.innerText = 'Play';
+                }
+
+                game.loadPublishedLevelData(levelData, progressFunction).then(() => {
+                    this.hideLevelBanner2();
+                    this.showVehicleSelect2();
+                    console.log("NO ERROR!!");
+                    finishLoading();
+                }).catch(error => {
+                    console.log("ERROR!!", error);
+                    finishLoading();
+                });
+            }
+            playButton.onclick = playLevelFunction;
+
+
             customGUIContainer.appendChild(levelBanner);
         }
+
         levelBanner.style.display = 'block';
         mainMenu.classList.add('inactive');
 
@@ -386,28 +451,17 @@ function UIManager() {
         mainMenu.classList.remove('inactive');
     }
 
-    this.showSettingsButtons = function(){
-        const targetElement = document.querySelector('#settings-ui');
-        const volumeButton = document.createElement('button');
-        volumeButton.classList.add('audioButton');
+    // this.showSettingsButtons = function(){
+    //     const targetElement = document.querySelector('#settings-ui');
+    //     const volumeButton = document.createElement('button');
+    //     volumeButton.classList.add('audioButton');
 
-        volumeButton.onclick = ()=>{
+    //     volumeButton.onclick = ()=>{
 
-            const userData = SaveManager.getLocalUserdata();
-            userData.sfxOn = !userData.sfxOn;
-            SaveManager.updateLocalUserData(userData);
 
-            Settings.sfxOn = userData.sfxOn;
-
-            if(!Settings.sfxOn){
-                volumeButton.classList.add('mute');
-                AudioManager.stopAllSounds();
-            }else{
-                volumeButton.classList.remove('mute');
-            }
-        }
-        targetElement.appendChild(volumeButton);
-    }
+    //     }
+    //     targetElement.appendChild(volumeButton);
+    // }
     this.showSmallLogo = function(){
         if(!smallLogo){
             smallLogo = document.createElement('div');
@@ -432,7 +486,6 @@ function UIManager() {
     }
 
     this.hideMainMenu = function () {
-        discordButton.style.display = 'none';
         mainMenu.style.display = "none";
     }
 
@@ -612,298 +665,149 @@ function UIManager() {
         this.hideFilterMenu();
         this.hideSocialShareMenu();
     }
-    this.showFilterMenu = function () {
-        if (!filterMenu) {
-            const levelEditGUIWidth = 200;
-            filterMenu = new dat.GUI({
-                autoPlace: false,
-                width: levelEditGUIWidth
-            });
-            filterMenu.domElement.setAttribute('id', 'filterMenu');
-
-            let folder = filterMenu.addFolder('Filter Menu');
-            folder.domElement.classList.add('custom');
-
-            folder.open();
-
-            const closeButton = document.createElement('div');
-            closeButton.setAttribute('class', 'closeWindowIcon');
-            folder.domElement.append(closeButton);
-            closeButton.addEventListener('click', () => {
-                self.hideFilterMenu();
-            });
-
-            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-            let divWrapper = document.createElement('div');
-            divWrapper.style.padding = '20px';
-            divWrapper.style.display = 'flex';
-            divWrapper.style.flexDirection = 'column';
-            divWrapper.style.alignItems = 'center';
-
-            let span = document.createElement('span');
-            span.innerText = 'Date range:';
-            divWrapper.appendChild(span);
-
-            let select = document.createElement('select');
-
-            let option = document.createElement('option');
-            option.innerText = self.FILTER_RANGE_TODAY;
-            select.appendChild(option);
-
-            option = document.createElement('option');
-            option.innerText = self.FILTER_RANGE_THISWEEK;
-            select.appendChild(option);
-
-            option = document.createElement('option');
-            option.innerText = self.FILTER_RANGE_THISMONTH;
-            select.appendChild(option);
-
-            option = document.createElement('option');
-            option.innerText = self.FILTER_RANGE_ANYTIME;
-            select.appendChild(option);
-
-            select.setAttribute('id', 'filter_uploadedselect');
-            select.style.marginTop = '10px';
-            divWrapper.appendChild(select);
-
-            select.addEventListener("change", () => {
-                filter.range = select.value;
-            })
-            select.value = filter.range;
-
-
-            divWrapper.appendChild(document.createElement('br'));
-
-            span = document.createElement('span');
-            span.innerText = 'Sort by:';
-            divWrapper.appendChild(span);
-
-            let newestButton = document.createElement('div');
-            newestButton.setAttribute('class', 'sortByButton menuButton')
-            newestButton.innerHTML = 'Newest';
-            divWrapper.appendChild(newestButton);
-
-            newestButton.addEventListener('click', () => {
-                filter.by = self.FILTER_BY_NEWEST;
-                self.hideFilterMenu();
-                self.generateFilteredPublishLevelList();
-            })
-
-            let oldestButton = document.createElement('div');
-            oldestButton.setAttribute('class', 'sortByButton menuButton')
-            oldestButton.innerHTML = 'Oldest';
-            divWrapper.appendChild(oldestButton);
-
-            oldestButton.addEventListener('click', () => {
-                filter.by = self.FILTER_BY_OLDEST;
-                self.hideFilterMenu();
-                self.generateFilteredPublishLevelList();
-            })
-
-            let mostPlayed = document.createElement('div');
-            mostPlayed.setAttribute('class', 'sortByButton menuButton')
-            mostPlayed.innerHTML = 'Most played';
-            divWrapper.appendChild(mostPlayed);
-
-            mostPlayed.addEventListener('click', () => {
-                filter.by = self.FILTER_BY_PLAYCOUNT;
-                self.hideFilterMenu();
-                self.generateFilteredPublishLevelList();
-            })
-
-            let bestButton = document.createElement('div');
-            bestButton.setAttribute('class', 'sortByButton menuButton')
-            bestButton.innerHTML = 'Best';
-            divWrapper.appendChild(bestButton);
-
-            bestButton.addEventListener('click', () => {
-                filter.by = self.FILTER_BY_RATING;
-                self.hideFilterMenu();
-                self.generateFilteredPublishLevelList();
-            })
-
-            let featured = document.createElement('div');
-            featured.setAttribute('class', 'sortByButton menuButton')
-            featured.innerHTML = 'Featured';
-            divWrapper.appendChild(featured);
-
-            featured.addEventListener('click', () => {
-                filter.by = self.FILTER_BY_FEATURED;
-                self.hideFilterMenu();
-                self.generateFilteredPublishLevelList();
-            })
-
-            targetDomElement.appendChild(divWrapper);
-            customGUIContainer.appendChild(filterMenu.domElement);
-            filterMenu.domElement.style.position = 'absolute';
-
-
-        }
-        filterMenu.domElement.style.visibility = 'visible';
-        // set values
-
-        filterMenu.domElement.style.left = '50%';
-        filterMenu.domElement.style.top = '50%';
-        filterMenu.domElement.style.transform = 'translate(-50%, -50%)';
-
-        if(levelLoader) levelLoader.domElement.style.filter = 'brightness(0.5)';
-
-    }
-    this.hideFilterMenu = function () {
-        if (filterMenu) {
-            filterMenu.domElement.style.visibility = 'hidden';
-            if(levelLoader) levelLoader.domElement.style.filter = 'unset';
-        }
-    }
-
-    this.showLevelBanner = function () {
-        if (!levelBanner) {
-            const levelEditGUIWidth = 350;
-            levelBanner = new dat.GUI({
-                autoPlace: false,
-                width: levelEditGUIWidth
-            });
-            levelBanner.domElement.setAttribute('id', 'levelBanner');
-
-            let folder = levelBanner.addFolder('Level Info');
-            folder.domElement.classList.add('custom');
-
-            folder.open();
-
-            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-            let divWrapper = document.createElement('div');
-            divWrapper.style.padding = '10px';
-
-            let title = document.createElement('div');
-            title.classList.add('levelbanner_title');
-            divWrapper.appendChild(title);
-
-            let creator = document.createElement('div');
-            creator.classList.add('levelbanner_creator');
-
-            let span = document.createElement('span');
-            span.innerText = 'By:';
-            creator.appendChild(span);
-
-            span = document.createElement('span');
-            span.innerText = 'Creator';
-            span.classList.add('levelbanner_creatorSpan')
-            creator.appendChild(span);
-
-            divWrapper.appendChild(creator);
-
-            let thumbNail;
-            thumbNail = document.createElement('div');
-            thumbNail.setAttribute('id', 'levelbanner_levelThumbnail');
-            divWrapper.appendChild(thumbNail);
-
-            let thumbNailImage;
-            thumbNailImage = new Image();
-            thumbNailImage.setAttribute('id', 'levelbanner_levelThumbnailImage');
-            thumbNail.appendChild(thumbNailImage);
-
-            let description = document.createElement('div');
-            description.setAttribute('id', 'levelbanner_description');
-            divWrapper.appendChild(description);
-
-            const flexButtonHolder = document.createElement('div');
-            divWrapper.appendChild(flexButtonHolder);
-            flexButtonHolder.classList.add('flexButtonWrap');
-
-            let backButton = document.createElement('div');
-            backButton.setAttribute('class', 'backButton menuButton')
-            backButton.innerHTML = 'Back';
-            flexButtonHolder.appendChild(backButton);
-
-            backButton.addEventListener('click', () => {
-                this.hideLevelBanner();
-                game.openMainMenu(true);
-                MobileController.openFullscreen();
-            })
-
-            let playButton = document.createElement('div');
-            playButton.setAttribute('class', 'moreLevels menuButton')
-            playButton.innerHTML = 'Play';
-            flexButtonHolder.appendChild(playButton);
-
-            playButton.addEventListener('click', () => {
-                this.hideLevelBanner();
-                this.showCharacterSelect();
-                MobileController.openFullscreen();
-            })
-
-            targetDomElement.appendChild(divWrapper);
-            customGUIContainer.appendChild(levelBanner.domElement);
-            levelBanner.domElement.style.position = 'absolute';
-
-            game.editor.ui.registerDragWindow(levelBanner);
-
-            levelBannerYTFeed = document.createElement('div');
-            levelBannerYTFeed.classList.add('youtubeFeed');
-            for(let i = 0; i<3; i++){
-                const youtubeFrame = document.createElement('div');
-                youtubeFrame.classList.add('youtubeFrame');
-                levelBannerYTFeed.appendChild(youtubeFrame);
-
-                const playButtonIcon = document.createElement('button');
-                playButtonIcon.innerHTML = YouTubePlayer.playButtonHTML;
-                playButtonIcon.classList.add('youtubePlayButton');
-                youtubeFrame.appendChild(playButtonIcon);
-
-                youtubeFrame.onclick = () => {
-                    this.showYouTubePlayer(youtubeFrame.getAttribute('yt-video-id'));
-                }
-
-            }
-            customGUIContainer.appendChild(levelBannerYTFeed);
-
-
-        }
-        levelBanner.domElement.style.visibility = 'visible';
-        levelBannerYTFeed.style.visibility = 'visible';
-        // set values
-
-        let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
-        thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_big_md5}.png`;
-
-
-        let levelTitle = game.currentLevelData.published ? game.currentLevelData.title : game.currentLevelData.title+' (PREVIEW)';
-        levelBanner.domElement.querySelector('.levelbanner_title').innerText = levelTitle;
-        levelBanner.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
-        levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;
-
-        levelBanner.domElement.style.left = '50%';
-        levelBanner.domElement.style.top = '50%';
-        levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
-
-
-        const youtubeVideos = game.currentLevelData.youtubelinks || [];
-
-        if(youtubeVideos.length > 0) levelBannerYTFeed.classList.remove('hideLogo');
-        else  levelBannerYTFeed.classList.add('hideLogo');
-
-        const youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
-        youtubeFrames.forEach( (frame, i)=>{
-            frame.setAttribute('yt-video-id', youtubeVideos[i]);
-            if(youtubeVideos[i]){
-                frame.style.backgroundImage = `url(https://i.ytimg.com/vi/${youtubeVideos[i]}/mqdefault.jpg)`;
-                frame.style.opacity = 1.0;
-            }else{
-                frame.style.opacity = 0.0;
-            }
-
-        })
-        document.title = 'JollyWorld - '+levelTitle;
-        history.replaceState({}, document.title, `?lvl=${game.currentLevelData.id}`)
-
-    }
-
-    this.hideLevelBanner = function () {
-        levelBanner.domElement.style.visibility = 'hidden';
-        levelBannerYTFeed.style.visibility = 'hidden';
-    }
+
+    // this.showLevelBanner = function () {
+    //     if (!levelBanner) {
+    //         const levelEditGUIWidth = 350;
+    //         levelBanner = new dat.GUI({
+    //             autoPlace: false,
+    //             width: levelEditGUIWidth
+    //         });
+    //         levelBanner.domElement.setAttribute('id', 'levelBanner');
+
+    //         let folder = levelBanner.addFolder('Level Info');
+    //         folder.domElement.classList.add('custom');
+
+    //         folder.open();
+
+    //         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+    //         let divWrapper = document.createElement('div');
+    //         divWrapper.style.padding = '10px';
+
+    //         let title = document.createElement('div');
+    //         title.classList.add('levelbanner_title');
+    //         divWrapper.appendChild(title);
+
+    //         let creator = document.createElement('div');
+    //         creator.classList.add('levelbanner_creator');
+
+    //         let span = document.createElement('span');
+    //         span.innerText = 'By:';
+    //         creator.appendChild(span);
+
+    //         span = document.createElement('span');
+    //         span.innerText = 'Creator';
+    //         span.classList.add('levelbanner_creatorSpan')
+    //         creator.appendChild(span);
+
+    //         divWrapper.appendChild(creator);
+
+    //         let thumbNail;
+    //         thumbNail = document.createElement('div');
+    //         thumbNail.setAttribute('id', 'levelbanner_levelThumbnail');
+    //         divWrapper.appendChild(thumbNail);
+
+    //         let thumbNailImage;
+    //         thumbNailImage = new Image();
+    //         thumbNailImage.setAttribute('id', 'levelbanner_levelThumbnailImage');
+    //         thumbNail.appendChild(thumbNailImage);
+
+    //         let description = document.createElement('div');
+    //         description.setAttribute('id', 'levelbanner_description');
+    //         divWrapper.appendChild(description);
+
+    //         const flexButtonHolder = document.createElement('div');
+    //         divWrapper.appendChild(flexButtonHolder);
+    //         flexButtonHolder.classList.add('flexButtonWrap');
+
+    //         let backButton = document.createElement('div');
+    //         backButton.setAttribute('class', 'backButton menuButton')
+    //         backButton.innerHTML = 'Back';
+    //         flexButtonHolder.appendChild(backButton);
+
+    //         backButton.addEventListener('click', () => {
+    //             this.hideLevelBanner();
+    //             game.openMainMenu(true);
+    //             MobileController.openFullscreen();
+    //         })
+
+    //         let playButton = document.createElement('div');
+    //         playButton.setAttribute('class', 'moreLevels menuButton')
+    //         playButton.innerHTML = 'Play';
+    //         flexButtonHolder.appendChild(playButton);
+
+    //         playButton.addEventListener('click', () => {
+    //             this.hideLevelBanner();
+    //             this.showCharacterSelect();
+    //             MobileController.openFullscreen();
+    //         })
+
+    //         targetDomElement.appendChild(divWrapper);
+    //         customGUIContainer.appendChild(levelBanner.domElement);
+    //         levelBanner.domElement.style.position = 'absolute';
+
+    //         game.editor.ui.registerDragWindow(levelBanner);
+
+    //         levelBannerYTFeed = document.createElement('div');
+    //         levelBannerYTFeed.classList.add('youtubeFeed');
+    //         for(let i = 0; i<3; i++){
+    //             const youtubeFrame = document.createElement('div');
+    //             youtubeFrame.classList.add('youtubeFrame');
+    //             levelBannerYTFeed.appendChild(youtubeFrame);
+
+    //             const playButtonIcon = document.createElement('button');
+    //             playButtonIcon.innerHTML = YouTubePlayer.playButtonHTML;
+    //             playButtonIcon.classList.add('youtubePlayButton');
+    //             youtubeFrame.appendChild(playButtonIcon);
+
+    //             youtubeFrame.onclick = () => {
+    //                 this.showYouTubePlayer(youtubeFrame.getAttribute('yt-video-id'));
+    //             }
+
+    //         }
+    //         customGUIContainer.appendChild(levelBannerYTFeed);
+
+
+    //     }
+    //     levelBanner.domElement.style.visibility = 'visible';
+    //     levelBannerYTFeed.style.visibility = 'visible';
+    //     // set values
+
+    //     let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
+    //     thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_big_md5}.png`;
+
+
+    //     let levelTitle = game.currentLevelData.published ? game.currentLevelData.title : game.currentLevelData.title+' (PREVIEW)';
+    //     levelBanner.domElement.querySelector('.levelbanner_title').innerText = levelTitle;
+    //     levelBanner.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
+    //     levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;
+
+    //     levelBanner.domElement.style.left = '50%';
+    //     levelBanner.domElement.style.top = '50%';
+    //     levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
+
+
+    //     const youtubeVideos = game.currentLevelData.youtubelinks || [];
+
+    //     if(youtubeVideos.length > 0) levelBannerYTFeed.classList.remove('hideLogo');
+    //     else  levelBannerYTFeed.classList.add('hideLogo');
+
+    //     const youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
+    //     youtubeFrames.forEach( (frame, i)=>{
+    //         frame.setAttribute('yt-video-id', youtubeVideos[i]);
+    //         if(youtubeVideos[i]){
+    //             frame.style.backgroundImage = `url(https://i.ytimg.com/vi/${youtubeVideos[i]}/mqdefault.jpg)`;
+    //             frame.style.opacity = 1.0;
+    //         }else{
+    //             frame.style.opacity = 0.0;
+    //         }
+
+    //     })
+    //     document.title = 'JollyWorld - '+levelTitle;
+    //     history.replaceState({}, document.title, `?lvl=${game.currentLevelData.id}`)
+
+    // }hi
 
     this.showCharacterSelect = function () {
         if (!characterSelect) {
@@ -971,107 +875,75 @@ function UIManager() {
     this.hideCharacterSelect = function () {
         characterSelect.domElement.style.visibility = 'hidden';
     }
+    this.playLevelFromMainMenu = function(){
+        mainMenu.classList.remove('inactive');
+        game.preloader.classList.remove('hide');
+        setTimeout(()=>{
+            this.hideMainMenu();
+            game.initLevel(game.currentLevelData);
+            game.playWorld(true);
+            backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+            setTimeout(()=>{
+                game.preloader.classList.add('hide');
+                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
+            }, Settings.levelBuildDelayTime);
+        }, Settings.levelBuildDelayTime);
+    }
 
-    this.showVehicleSelect = function () {
-        if (!vehicleSelect) {
-            vehicleSelect = new dat.GUI({
-                autoPlace: false,
-                width: 438,
-            });
-            vehicleSelect.domElement.setAttribute('id', 'vehicleSelect');
+    this.showVehicleSelect2 = function(){
+        if(!vehicleSelect){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Select a vehicle</div>
+                <div class="vehicles">
+                </div>
+                <div class="back button">Back</div>
+            `;
 
-            let folder = vehicleSelect.addFolder('Select Vehicle');
-            folder.domElement.classList.add('custom');
+            vehicleSelect = document.createElement('div');
+            vehicleSelect.classList.add('vehicleselect');
+            vehicleSelect.innerHTML = htmlStructure;
 
-            folder.open();
-
-            const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-            const vehicleHolder = document.createElement('div');
-            vehicleHolder.classList.add('vehicleHolder');
-            vehicleHolder.classList.add('imageHolder');
-
-            const vehicleImages = ['vehicle1.png', 'vehicle2.png', 'vehicle3.png', 'vehicle4.png', 'vehicle5.png'];
+            const vehicles = vehicleSelect.querySelector('.vehicles');
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 const portrait =  document.createElement('img');
-                portrait.src = `./assets/images/portraits/${hashName(vehicleImages[i])}`
-                portrait.style.width = portrait.style.height = '100px';
-                portrait.style.backgroundColor = 'black';
-                vehicleHolder.appendChild(portrait);
+                portrait.src = `./assets/images/portraits/${hashName(`vehicle${i+1}.png`)}`
+                portrait.classList.add('portrait');
+                vehicles.appendChild(portrait);
 
                 portrait.onclick = () => {
                     if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
                         this.hideVehicleSelect();
                         game.selectedVehicle = i + 1;
-
-                        game.preloader.classList.remove('hide');
-                        setTimeout(()=>{
-                            game.initLevel(game.currentLevelData);
-                            game.playWorld(true);
-                            backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
-                            setTimeout(()=>{
-                                game.preloader.classList.add('hide');
-                                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
-                            }, Settings.levelBuildDelayTime);
-                        }, Settings.levelBuildDelayTime);
+                        this.playLevelFromMainMenu();
                     }
                 }
+                // hide no vehicle
+                if(i==2) portrait.style.display = 'none';
             }
-
-            targetDomElement.appendChild(vehicleHolder);
-
-
-            let backButton = document.createElement('div');
-            backButton.setAttribute('class', 'backButton menuButton')
-            backButton.innerHTML = 'Back';
-            backButton.style.marginTop = '0';
-            backButton.style.marginLeft = 'auto';
-            backButton.style.marginRight = 'auto';
-            backButton.style.float = 'unset';
-            targetDomElement.appendChild(backButton);
-
-            backButton.addEventListener('click', () => {
-                this.hideVehicleSelect();
-                this.showCharacterSelect();
-            })
-
-            customGUIContainer.appendChild(vehicleSelect.domElement);
-            vehicleSelect.domElement.style.position = 'absolute';
-            vehicleSelect.domElement.style.left = '50%';
-            vehicleSelect.domElement.style.top = '50%';
-            vehicleSelect.domElement.style.transform = 'translate(-50%, -50%)';
-
-            game.editor.ui.registerDragWindow(vehicleSelect);
-
-
+            customGUIContainer.appendChild(vehicleSelect);
         }
 
-        const vehicleHolderDiv = vehicleSelect.domElement.querySelector('.vehicleHolder');
-        [...vehicleHolderDiv.children].forEach((portrait, index) => {
+        vehicleSelect.style.display = 'block';
+        mainMenu.classList.add('inactive');
 
-            if(game.currentLevelData.forced_vehicle === 3){
-                if((index+1) !== 3) portrait.style.display = 'none';
-                else portrait.style.display = 'inline-block';
-            }else{
-                if((index+1) === 3) portrait.style.display = 'none';
-                else portrait.style.display = 'inline-block';
-            }
+        if(game.currentLevelData.forced_vehicle){
+            // skip vehicle select if not needed
+            this.hideVehicleSelect();
+            game.selectedVehicle = game.currentLevelData.forced_vehicle;
+            this.playLevelFromMainMenu();
+        }
 
-            if (game.currentLevelData.forced_vehicle && (index + 1) !== game.currentLevelData.forced_vehicle) {
-                portrait.style.cursor = 'not-allowed';
-                portrait.style.filter = 'grayscale(1) brightness(0.5)';
-            } else {
-                portrait.style.cursor = 'pointer';
-                portrait.style.filter = 'unset';
-            }
-        })
-
-        vehicleSelect.domElement.style.visibility = 'visible';
-        // set values
+        const back = vehicleSelect.querySelector('.back');
+        back.onclick = ()=>{
+            this.hideVehicleSelect();
+            this.showLevelBanner2();
+        }
     }
+
     this.hideVehicleSelect = function () {
-        vehicleSelect.domElement.style.visibility = 'hidden';
+        vehicleSelect.style.display = 'none';
     }
 
     this.showPauseMenu = function () {
@@ -1914,7 +1786,6 @@ function UIManager() {
                     this.showSocialShare(level);
                 });
 
-
                 const playLevelFunction = () => {
                     if (game.gameState != game.GAMESTATE_MENU) return;
                     game.gameState = game.GAMESTATE_LOADINGDATA;
@@ -1944,7 +1815,6 @@ function UIManager() {
                 thumbImage.addEventListener('click', playLevelFunction);
             });
 
-            demoScroll(levelListDiv);
         }
         backendManager.getPublishedLevels(filter).then((levels) => {
             buildLevelList(levels);
@@ -1961,33 +1831,6 @@ function UIManager() {
     this.FILTER_RANGE_ANYTIME = "anytime";
 }
 export var ui = new UIManager();
-
-
-const demoScroll = element=>{
-    let demoScrolls = SaveManager.getLocalUserdata().demoScrolls;
-    if(demoScrolls>=3) return;
-
-    setTimeout(()=>{
-        try{
-            element.scrollTo({
-                left: 640,
-                behavior: 'smooth'
-            });
-            setTimeout(() => {
-                try{
-                    element.scrollTo({
-                        left: 0,
-                        behavior: 'smooth'
-                    });
-                    let userData = SaveManager.getLocalUserdata();
-                    userData.demoScrolls++;
-                    SaveManager.updateLocalUserData(userData);
-                }catch(e){}
-            }, 500);
-        }catch(e){}
-    }, 1000);
-}
-
 
 const shouldShowVoteButton = (up, down) => {
     const vote = BackendCache.voteDataCache[game.currentLevelData.id];
