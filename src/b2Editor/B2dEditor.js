@@ -1057,12 +1057,15 @@ const _B2dEditor = function () {
 					}.bind(controller));
 
 					// is Character is an admin feature
-					const collisionTypes = [...Settings.collisionTypes];
-					if(Settings.admin) collisionTypes.push("Is character");
-					ui.editorGUI.editData.collisionTypes = collisionTypes[ui.editorGUI.editData.collision];
+					let collisionTypes = [...Settings.collisionTypes];
+					if(!Settings.admin) collisionTypes = collisionTypes.filter(collision => collision !=="Is character");
+
+					// is character is hidden
+					ui.editorGUI.editData.collisionTypes = Settings.collisionTypes[ui.editorGUI.editData.collision];
+
 					advancedFolder.add(ui.editorGUI.editData, "collisionTypes", collisionTypes).name("collision").onChange(function (value) {
 						this.humanUpdate = true;
-						this.targetValue = collisionTypes.indexOf(value);
+						this.targetValue = Settings.collisionTypes.indexOf(value);
 					});
 
 				}
@@ -8114,7 +8117,7 @@ const _B2dEditor = function () {
 				// 2) collides with nothing
 				// - setAsTrigger
 				filterData.categoryBits = this.MASKBIT_NOTHING;
-				filterData.maskBits = this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL;
+				filterData.maskBits = this.MASKBIT_PHYSICS_CULL;
 			} else if (collision == 3) {
 				// 3) collides with everything except other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
@@ -8151,10 +8154,14 @@ const _B2dEditor = function () {
 				}
 				filterData.categoryBits = this.MASKBIT_CHARACTER;
 				filterData.groupIndex = targetGroup;
+			}else if(collision == 8){
+				// 8) only triggers
+				filterData.categoryBits = this.MASKBIT_NOTHING;
+				filterData.maskBits = this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL;
 			}else if(collision == 9){
-				// 8) Trigger collisions
+				// 9) Trigger collisions
 				filterData.categoryBits = this.MASKBIT_TRIGGER;
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US
+				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_NOTHING
 				fixture.SetSensor(true);
 			}else if(collision == 10){
 			// EVERYTHING
