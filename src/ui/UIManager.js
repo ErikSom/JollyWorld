@@ -133,9 +133,6 @@ function UIManager() {
                                         <div class="text-author">Author Name</div>
                                     </div>
                                     <div class="tags">
-                                        <div class="tag">#Racing</div>
-                                        <div class="tag">#Challenging</div>
-                                        <div class="tag">#Parkour</div>
                                     </div>
                                 </div>
                                 <div class="rating">
