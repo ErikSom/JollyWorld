@@ -660,6 +660,7 @@ function Game() {
 
         this.initLevel(levelsData.mainMenuLevel);
         this.editor.ui.hide();
+        ui.show();
         ui.showMainMenu();
         ui.hideGameOverMenu();
         this.gameState = this.GAMESTATE_MENU;

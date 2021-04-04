@@ -209,6 +209,12 @@ function UIManager() {
             const characterSelect = header.querySelector('.character-select');
             characterSelect.onclick = ()=>this.showCharacterSelect2();
 
+            const editorButton = header.querySelector('.editor');
+            editorButton.onclick = ()=> {
+                this.hideMainMenu();
+                game.openEditor();
+            }
+
             const volumeButton = header.querySelector('.volume');
             if(!Settings.sfxOn) volumeButton.classList.add('disabled');
 
@@ -862,7 +868,6 @@ function UIManager() {
 
                     this.setMainMenuCharacterImage();
                     this.hideCharacterSelect();
-                    this.showMainMenu();
                 }
             }
             customGUIContainer.appendChild(characterSelect);
@@ -880,69 +885,6 @@ function UIManager() {
     this.hideCharacterSelect = function () {
         mainMenu.classList.remove('inactive');
         characterSelect.style.display = 'none';
-    }
-
-    this.showCharacterSelect = function () {
-        if (!characterSelect) {
-            characterSelect = new dat.GUI({
-                autoPlace: false,
-                width: 438,
-            });
-            characterSelect.domElement.setAttribute('id', 'characterSelect');
-
-            let folder = characterSelect.addFolder('Select Character');
-            folder.domElement.classList.add('custom');
-
-            folder.open();
-
-            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-            let characterHolder = document.createElement('div');
-            characterHolder.classList.add('imageHolder');
-    
-            const characterImages = ['character1.png', 'character2.png', 'character3.png', 'character4.png'];
-
-            for (let i = 0; i < Settings.availableCharacters; i++) {
-                const portrait = document.createElement('img');
-                portrait.src = `./assets/images/portraits/${hashName(characterImages[i])}`
-                portrait.style.width = portrait.style.height = '100px';
-                portrait.style.backgroundColor = 'black';
-                characterHolder.appendChild(portrait);
-                portrait.onclick = () => {
-                    game.selectedCharacter = i;
-                    this.hideCharacterSelect();
-                    this.showVehicleSelect();
-                    MobileController.openFullscreen();
-                }
-            }
-
-            targetDomElement.appendChild(characterHolder);
-            customGUIContainer.appendChild(characterSelect.domElement);
-            characterSelect.domElement.style.position = 'absolute';
-            characterSelect.domElement.style.left = '50%';
-            characterSelect.domElement.style.top = '50%';
-            characterSelect.domElement.style.transform = 'translate(-50%, -50%)';
-
-            let backButton = document.createElement('div');
-            backButton.setAttribute('class', 'backButton menuButton')
-            backButton.innerHTML = 'Back';
-            backButton.style.marginTop = '0';
-            backButton.style.marginLeft = 'auto';
-            backButton.style.marginRight = 'auto';
-            backButton.style.float = 'unset';
-            targetDomElement.appendChild(backButton);
-
-            backButton.addEventListener('click', () => {
-                this.hideCharacterSelect();
-                this.showLevelBanner();
-            })
-
-            game.editor.ui.registerDragWindow(characterSelect);
-
-
-        }
-        characterSelect.domElement.style.visibility = 'visible';
-        // set values
     }
 
     this.playLevelFromMainMenu = function(){
