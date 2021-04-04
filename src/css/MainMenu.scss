@@ -10,11 +10,13 @@
 		background-image: url(../../static/assets/images/gui/BG_Air.png);
 		.logo{
 			width: 260px;
-			height: 73px;
-			background-image: url(../../static/assets/images/gui/JollyWorld_Logo_Medium.png);
+			height: 68px;
+			background-repeat: no-repeat;
 			margin: 6px 20px;
 			position: absolute;
 			z-index: 1;
+			filter: drop-shadow(2px 2px 2px black);
+			background-image: url(../../static/assets/images/gui/Logo.svg);
 		}
 		.clouds{
 			height: 51px;
@@ -99,17 +101,19 @@
 			.volume{
 				width: 68px;
 				height: 55px;
-				background-image: url(../../static/assets/images/gui/Volume_Icon.png);
+				background-repeat: no-repeat;
+				background-image: url(../../static/assets/images/gui/Volume_Icon.svg);
 				&.disabled{
-					filter:brightness(0.2);
+					filter:brightness(0.4) drop-shadow(2px 2px 2px black);
 				}
-				@extend .simple-button;
+				@extend .simple-button-shadow;
 			}
 			.settings{
 				width: 61px;
 				height: 60px;
-				background-image: url(../../static/assets/images/gui/Settings_Icon.png);
-				@extend .simple-button;
+				background-repeat: no-repeat;
+				background-image: url(../../static/assets/images/gui/Settings_Icon.svg);
+				@extend .simple-button-shadow;
 			}
 		}
 	}
@@ -231,6 +235,7 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		box-shadow: inset 0px -2px 0px #0000003b;
+		image-rendering: pixelated;
 		border: 3px solid #343434;
 	}
 

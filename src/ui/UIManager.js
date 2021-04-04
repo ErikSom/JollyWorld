@@ -276,7 +276,7 @@ function UIManager() {
         ratingText.innerText = scoreText;
 
         const vehicleLabel = game.querySelector('.vehicle-label');
-        vehicleLabel.style.backgroundImage = `url(./assets/images/portraits/mini-vehicle${levelData.forced_vehicle}.png)`;
+        vehicleLabel.style.backgroundImage = `url(./assets/images/portraits/${hashName(`mini-vehicle${levelData.forced_vehicle}.png`)})`;
 
         // const tags = game.querySelector('.tags');
     }

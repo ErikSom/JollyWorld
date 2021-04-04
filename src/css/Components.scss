@@ -7,6 +7,16 @@
 .simple-button:active{
 	filter:brightness(0.5);
 }
+.simple-button-shadow{
+	cursor:pointer;
+	filter:drop-shadow(2px 2px 2px black)
+}
+.simple-button-shadow:hover{
+	filter:brightness(1.2) drop-shadow(2px 2px 2px black)
+}
+.simple-button-shadow:active{
+	filter:brightness(0.5) drop-shadow(2px 2px 2px black)
+}
 
 .base-button{
 	@extend .simple-button;
