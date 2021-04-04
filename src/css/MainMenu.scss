@@ -75,6 +75,11 @@
 				height: 54px;
 				font-size: 36px;
 				line-height: 54px;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				padding: 0px 10px;
+				font-size: 26px;
 				@extend .base-button;
 			}
 			.character-select{

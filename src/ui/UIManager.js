@@ -224,6 +224,9 @@ function UIManager() {
                 }
             }
 
+            backendManager.registerListener('login', ()=>this.handleLoginChange());
+            this.handleLoginChange();
+
             new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
 
             customGUIContainer.appendChild(mainMenu);
@@ -234,6 +237,20 @@ function UIManager() {
         mainMenu.style.display = 'block';
 
         this.reloadMainMenuGames();
+    }
+
+    this.handleLoginChange = ()=> {
+        console.log("LOGIN CHANGE");
+        const header = mainMenu.querySelector('.header');
+
+        const discordButton = header.querySelector('.discord');
+        if(backendManager.isLoggedIn()){
+            discordButton.innerText = backendManager.userData.username;
+            discordButton.style.fontSize = '26px';
+        }else{
+            discordButton.innerText = 'Login';
+            discordButton.style.fontSize = '36px';
+        }
     }
 
     this.setMainMenuCharacterImage = ()=> {
