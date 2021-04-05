@@ -1152,12 +1152,12 @@ function UIManager() {
 
         upvoteButton.addEventListener('click', () => {
             backendManager.voteLevel(game.currentLevelData.id, 1).then(() => {
-                shouldShowVoteButton(upvoteButton, downvoteButton)
+                shouldShowVoteButton(upvoteButton, downvoteButton, game.currentLevelData)
             });
         });
         downvoteButton.addEventListener('click', () => {
             backendManager.voteLevel(game.currentLevelData.id, -1).then(() => {
-                shouldShowVoteButton(upvoteButton, downvoteButton)
+                shouldShowVoteButton(upvoteButton, downvoteButton, game.currentLevelData)
             });
         });
 
@@ -1170,7 +1170,7 @@ function UIManager() {
         const upvoteButton = element.querySelector('.upvote');
         const downvoteButton = element.querySelector('.downvote');
 
-        shouldShowVoteButton(upvoteButton, downvoteButton);
+        shouldShowVoteButton(upvoteButton, downvoteButton, game.currentLevelData);
 
         const sumVotes = game.currentLevelData.upvotes + game.currentLevelData.downvotes;
         const rating = game.currentLevelData.upvotes / sumVotes;
