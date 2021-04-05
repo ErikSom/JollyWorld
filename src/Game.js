@@ -285,13 +285,10 @@ function Game() {
         this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
-            ui.disableMainMenu(true);
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
-                this.loadPublishedLevelData(levelData);
+                ui.showLevelBanner2(levelData);
             }).catch(_err =>{
-                location.hash = '';
                 history.replaceState({}, document.title, '')
-                ui.disableMainMenu(false);
             });
         }
 

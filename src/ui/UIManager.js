@@ -464,6 +464,9 @@ function UIManager() {
 
         shareButton.onclick = () => this.showSocialShare(levelData);
 
+        document.title = 'JollyWorld - '+levelData.title;
+        history.replaceState({}, document.title, `?lvl=${levelData.id}`);
+
         this.setLevelBannerData(levelData);
 
     }
@@ -493,6 +496,9 @@ function UIManager() {
 
         levelBanner.style.display = 'none';
         mainMenu.classList.remove('inactive');
+
+
+        history.replaceState({}, 'JollyWorld', '/');
     }
 
     // this.showSettingsButtons = function(){
