@@ -110,13 +110,15 @@
 		background-repeat: no-repeat;
 		background-position: 50%;
 		margin-right: 3px;
-		&.voted{
-			animation: .3s ease-in 1 forwards vote-up-anim;
-		}
+		
 	}
 	.vote-up{
 		.vote-thumb{
 			filter: drop-shadow(2px 1px 0px black);
+
+			&.voted{
+				animation: .3s ease-in 1 forwards vote-up-anim;
+			}
 		}
 	}
 	.vote-down{

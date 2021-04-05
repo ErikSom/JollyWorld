@@ -480,10 +480,12 @@ function UIManager() {
 
     this.enableVoteButtons = (voteUpButton, voteDownButton, levelData) => {
         [voteUpButton, voteDownButton].forEach(button => {
+            const thumb = button.querySelector('.vote-thumb');
+            thumb.classList.remove('voted')
+
             button.onclick = ()=>{
                 const vote = button === voteUpButton ? 1 : -1;
                 game.voteLevel(levelData, vote).then(()=>{
-                    const thumb = button.querySelector('.vote-thumb');
                     thumb.classList.remove('voted')
                     void thumb.offsetWidth;
                     thumb.classList.add('voted')
