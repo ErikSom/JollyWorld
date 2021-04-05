@@ -88,42 +88,8 @@
 			}
 			@extend .simple-button;
 		}
-		.vote-buttons{
-			display: flex;
-			margin-left: auto;
-
-			.vote-thumb{
-				background-image: url(../../static/assets/images/gui/Thumb.png);
-				width: 36px;
-				height: 36px;
-				background-size: contain;
-				background-repeat: no-repeat;
-				background-position: 50%;
-				margin-right: 3px;
-			}
-			.vote-up{
-				.vote-thumb{
-					filter: drop-shadow(2px 1px 0px black);
-				}
-			}
-			.vote-down{
-				background-color: #FF0000;
-				.vote-thumb{
-					transform: scaleX(-1) scaleY(-1);
-					filter: drop-shadow(-2px -1px 0px black);
-				}
-			}
-
-
-			.button{
-				width: 88px;
-				height: 52px;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				margin: 0px 10px;
-				@extend .base-button;
-			}
+		.voting{
+			@extend .vote-buttons;
 		}
 	}
 	.nav-buttons{

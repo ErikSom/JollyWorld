@@ -234,12 +234,6 @@ function BackendManager() {
     this.voteLevel = function (levelid, vote) {
 		// (POST) level/vote/id/up (or down)
 		return new Promise((resolve, reject) => {
-
-			if(!this.isLoggedIn()){
-                game.editor.ui.showLoginScreen();
-                return resolve(false);
-            }
-
 			const body = {
 				method: 'POST',
 				withCredentials: true,

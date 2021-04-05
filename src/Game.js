@@ -1334,6 +1334,18 @@ function Game() {
         this.stats.end();
     };
 
+    this.voteLevel = function(levelData, vote){
+
+        if(!backendManager.isLoggedIn()){
+            game.editor.ui.showLoginScreen();
+            return Promise.reject();
+        }
+
+
+        // have i even played this level?  //return Promise.reject()
+        return backendManager.voteLevel(levelData.id, vote);
+    }
+
     this.prepareGameFonts = function () {
         const container = document.createElement('div');
         document.body.appendChild(container);

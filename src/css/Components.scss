@@ -96,3 +96,70 @@
 	font-family: "Lily Script One", cursive;
     text-shadow: 1.2px 2px black;
 }
+
+
+.vote-buttons{
+	display: flex;
+	margin-left: auto;
+
+	.vote-thumb{
+		background-image: url(../../static/assets/images/gui/Thumb.png);
+		width: 36px;
+		height: 36px;
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: 50%;
+		margin-right: 3px;
+		&.voted{
+			animation: .3s ease-in 1 forwards vote-up-anim;
+		}
+	}
+	.vote-up{
+		.vote-thumb{
+			filter: drop-shadow(2px 1px 0px black);
+		}
+	}
+	.vote-down{
+		background-color: #FF0000;
+		.vote-thumb{
+			transform: scale(-1);
+			filter: drop-shadow(-2px -1px 0px black);
+
+			&.voted{
+				animation: .3s ease-in 1 forwards vote-down-anim;
+			}
+		}
+	}
+
+
+	.button{
+		width: 88px;
+		height: 52px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 0px 10px;
+		&.disabled{
+			filter: brightness(0.2);
+		}
+		@extend .base-button;
+	}
+}
+
+@keyframes vote-up-anim{
+	0%, 100%{
+		transform: unset;
+	}
+	50%{
+		transform: translate(0px, -19px) rotate(45deg) scale(1.3);
+	}
+}
+@keyframes vote-down-anim{
+	0%, 100%{
+		transform: scale(-1);
+	}
+	50%{
+		transform: translate(0px, 19px) rotate(45deg) scale(-1.3)
+	}
+}
+

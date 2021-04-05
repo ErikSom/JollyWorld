@@ -388,7 +388,7 @@ function UIManager() {
                         <div class="heart-icon"></div>
                         Save
                     </div>
-                    <div class="vote-buttons">
+                    <div class="voting">
                         <div class="vote-down button">
                             <div class="vote-thumb"></div>
                         </div>
@@ -467,9 +467,36 @@ function UIManager() {
         document.title = 'JollyWorld - '+levelData.title;
         history.replaceState({}, document.title, `?lvl=${levelData.id}`);
 
-        this.setLevelBannerData(levelData);
+        const voteButtons = levelBanner.querySelector('.voting');
+        const voteUpButton = voteButtons.querySelector('.vote-up');
+        const voteDownButton = voteButtons.querySelector('.vote-down');
 
+        shouldShowVoteButton(voteUpButton, voteDownButton, levelData);
+
+        this.enableVoteButtons(voteUpButton, voteDownButton, levelData);
+
+        this.setLevelBannerData(levelData);
     }
+
+    this.enableVoteButtons = (voteUpButton, voteDownButton, levelData) => {
+        [voteUpButton, voteDownButton].forEach(button => {
+            button.onclick = ()=>{
+                const vote = button === voteUpButton ? 1 : -1;
+                game.voteLevel(levelData, vote).then(()=>{
+                    const thumb = button.querySelector('.vote-thumb');
+                    thumb.classList.remove('voted')
+                    void thumb.offsetWidth;
+                    thumb.classList.add('voted')
+                    shouldShowVoteButton(voteUpButton, voteDownButton, levelData);
+                }).catch(err=>{
+                    // error
+                    console.log(err);
+                });
+
+            }
+        })
+    }
+
     this.setLevelBannerData = levelData => {
         console.log('levelData:', levelData)
 
@@ -1824,15 +1851,17 @@ function UIManager() {
 }
 export var ui = new UIManager();
 
-const shouldShowVoteButton = (up, down) => {
-    const vote = BackendCache.voteDataCache[game.currentLevelData.id];
+const shouldShowVoteButton = (up, down, levelData) => {
+    const vote = BackendCache.voteDataCache[levelData.id];
+
+    up.classList.remove('disabled');
+    down.classList.remove('disabled');
+
     if (vote) {
         if (vote > 0) {
-            up.style.filter = '';
-            down.style.filter = 'brightness(0.3)';
+            down.classList.add('disabled');
         } else {
-            up.style.filter = 'brightness(0.3)';
-            down.style.filter = '';
+            up.classList.add('disabled');
         }
     }
 }
