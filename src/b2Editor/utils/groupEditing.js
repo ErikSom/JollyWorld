@@ -158,6 +158,7 @@ export const stopEditingGroup = () => {
 
 				editor.groupEditingObject.data.colorFill = clonedSprite.data.colorFill;
 				editor.groupEditingObject.data.colorLine = clonedSprite.data.colorLine;
+				editor.groupEditingObject.data.lineWidth = clonedSprite.data.lineWidth;
 				editor.groupEditingObject.data.transparancy = clonedSprite.data.transparancy;
 				editor.groupEditingObject.data.vertices = clonedSprite.data.vertices;
 				editor.groupEditingObject.data.density = clonedSprite.data.density;
