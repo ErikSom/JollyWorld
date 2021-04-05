@@ -840,7 +840,7 @@ export const actionDictionary = {
     actionOptions_SetCollision: {
         collision: {
             type: guitype_LIST,
-            items: Settings.collisionTypes,
+            items: Settings.collisionTypes.filter(collision => collision !== "Is character"),
         },
     },
     /*******************/
