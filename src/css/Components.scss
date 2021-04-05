@@ -70,6 +70,24 @@
 		border-bottom: 1px solid black;
 		border-top-left-radius: inherit;
 		border-top-right-radius: inherit;
+		.close{
+			position: absolute;
+			width: 21px;
+			height: 21px;
+			right: 0;
+			top: 0;
+			margin: -1px -1px 0 0;
+			background-color: red;
+			border: 1px solid black;
+			border-radius: 4px;
+			&:after{
+				content: "✕";
+				margin: 0 0px 0px 6px;
+				vertical-align: middle;
+				font-size: 10px;
+			}
+			@extend .simple-button;
+		}
 	}
 }
 
