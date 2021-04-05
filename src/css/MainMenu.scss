@@ -342,3 +342,17 @@
 		opacity:1;
 	}
 }
+
+
+
+// MOBILE
+.mainmenu{
+	&.mobile{
+		.games-scroll{
+			margin-right: 0px;
+		}
+		.games{
+			padding: 0;
+		}
+	}
+}

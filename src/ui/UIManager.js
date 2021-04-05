@@ -172,6 +172,10 @@ function UIManager() {
             mainMenu.classList.add('mainmenu');
             mainMenu.innerHTML = htmlStructure;
 
+            if(MobileController.isMobile()){
+                mainMenu.classList.add('mobile');
+            }
+
             const filters = mainMenu.querySelector('.filters');
             Array.from(filters.querySelectorAll('.button')).forEach( button => {
                 if(button.classList.contains('featured-filter')){
@@ -228,7 +232,9 @@ function UIManager() {
             backendManager.registerListener('login', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
-            new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
+            if(!MobileController.isMobile()){
+                new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
+            }
 
             customGUIContainer.appendChild(mainMenu);
         }
