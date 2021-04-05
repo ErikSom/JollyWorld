@@ -52,7 +52,7 @@ import { findObjectWithCopyHash } from "./utils/finder";
 import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
- 
+
 const PIXIHeaven = self.PIXI.heaven;
 
 const _B2dEditor = function () {
@@ -122,6 +122,8 @@ const _B2dEditor = function () {
 	this.groupEditingObject = null;
 	this.groupMinChildIndex = -1;
 	this.groupEditingBlackOverlay;
+	this.deepClickDetection = null;
+	this.deepClickMinimumLayer = Number.POSITIVE_INFINITY;
 
 	this.lookupGroups = {};
 
@@ -1050,7 +1052,7 @@ const _B2dEditor = function () {
 						this.humanUpdate = true;
 						this.targetValue = value
 					}.bind(controller));
-					controller = advancedFolder.add(ui.editorGUI.editData, "restitution", 0, 1).name("bouncy").step(0.01);
+					controller = advancedFolder.add(ui.editorGUI.editData, "restitution", 0, 2).name("bouncy").step(0.01);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value
@@ -2789,7 +2791,8 @@ const _B2dEditor = function () {
 					this.selectedPhysicsBodies = [];
 					this.selectedTextures = [];
 
-					let i;
+					this.deepClickDetection = this.mousePosWorld.Clone();
+
 					let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
 					if (highestObject) {
 						if (highestObject.data.prefabInstanceName) {
@@ -2833,6 +2836,9 @@ const _B2dEditor = function () {
 					}
 					this.updateSelection();
 				}else if(clickInsideSelection){
+
+					const prefabKeys = Object.keys(this.selectedPrefabs);
+
 					if(Date.now() < this.doubleClickTime){
 						if(this.selectedTextures.length + this.selectedPhysicsBodies.length === 1){
 							if(this.selectedTextures.length > 0){
@@ -2859,6 +2865,44 @@ const _B2dEditor = function () {
 								}
 							}
 							this.doubleClickTime = 0;
+						}
+					}else if(this.deepClickDetection !== null && (prefabKeys.length + this.selectedTextures.length + this.selectedPhysicsBodies.length === 1)){
+						console.log(this.deepClickMinimumLayer);
+
+						if(prefabKeys.length){
+							const lookupObject = this.activePrefabs[prefabKeys[0]].class.lookupObject;
+							const childs  = [].concat(lookupObject._bodies, lookupObject._textures);
+							let targetSprite = childs[0].mySprite ? childs[0].mySprite : childs[0];
+
+							const lowestPrefabChild = this.retreivePrefabChildAt(targetSprite, 0);
+							const lowestIndex = lowestPrefabChild.parent.getChildIndex(lowestPrefabChild);
+
+							this.deepClickMinimumLayer = lowestIndex;
+						}else if(this.selectedPhysicsBodies.length > 0){
+							const targetSprite = this.selectedPhysicsBodies[0].mySprite;
+							this.deepClickMinimumLayer = targetSprite.parent.getChildIndex(targetSprite);
+						}else{
+							const targetSprite = this.selectedTextures[0];
+							this.deepClickMinimumLayer = targetSprite.parent.getChildIndex(targetSprite);
+						}
+
+						let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint, this.deepClickMinimumLayer);
+						if (highestObject) {
+
+							this.selectedPrefabs = {};
+							this.selectedTextures.length = 0;
+							this.selectedPhysicsBodies.length = 0;
+
+							if (highestObject.data.prefabInstanceName) {
+								this.selectedPrefabs[highestObject.data.prefabInstanceName] = true;
+							} else {
+								if (highestObject.data.type == this.object_BODY || highestObject.myBody) {
+									if (highestObject.myBody) this.selectedPhysicsBodies = [highestObject.myBody];
+									else this.selectedPhysicsBodies = [highestObject];
+								} else {
+									this.selectedTextures = [highestObject];
+								}
+							}
 						}
 					}else{
 						let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
@@ -3351,6 +3395,19 @@ const _B2dEditor = function () {
 					}
 				}
 			}
+
+			if(this.deepClickDetection !== null){
+
+				const distanceX = Math.abs(this.mousePosWorld.x - this.deepClickDetection.x);
+				const distanceY = Math.abs(this.mousePosWorld.y - this.deepClickDetection.y);
+
+				if(distanceX > Settings.deepClickDetectionMargin || distanceY > Settings.deepClickDetectionMargin){
+					this.deepClickDetection = null;
+					this.deepClickMinimumLayer = Number.POSITIVE_INFINITY;
+				}
+			}
+
+
 		}
 		if(clearMousePos) this.oldMousePosWorld = this.mousePosWorld;
 	}
@@ -6378,7 +6435,7 @@ const _B2dEditor = function () {
 		this.unmarkTargetSprite();
 		this.selectingTriggerTarget = false;
 	}
-	this.retrieveHighestSelectedObject = function (lowerBound, upperBound) {
+	this.retrieveHighestSelectedObject = function (lowerBound, upperBound, skipLayer=Number.POSITIVE_INFINITY) {
 		let i;
 		let body;
 		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
@@ -6424,17 +6481,24 @@ const _B2dEditor = function () {
 			body = selectedPhysicsBodies[i];
 			var texture = body.mySprite;
 			if (body.myTexture) texture = body.myTexture;
-			if (highestObject == undefined) highestObject = texture;
-			if (texture.parent.getChildIndex(texture) > highestObject.parent.getChildIndex(highestObject)) {
-				highestObject = texture;
+			const textureIndex = texture.parent.getChildIndex(texture);
+			if(textureIndex < skipLayer){
+				if (highestObject == undefined) highestObject = texture;
+				// deep click detection
+				if (textureIndex > highestObject.parent.getChildIndex(highestObject)) {
+					highestObject = texture;
+				}
 			}
 		}
 		var sprite;
 		for (i = 0; i < selectedTextures.length; i++) {
 			sprite = selectedTextures[i];
-			if (highestObject == undefined) highestObject = sprite;
-			if (sprite.parent.getChildIndex(sprite) > highestObject.parent.getChildIndex(highestObject)) {
-				highestObject = sprite;
+			const spriteIndex = sprite.parent.getChildIndex(sprite);
+			if(spriteIndex < skipLayer){
+				if (highestObject == undefined) highestObject = sprite;
+				if (spriteIndex > highestObject.parent.getChildIndex(highestObject)) {
+					highestObject = sprite;
+				}
 			}
 		}
 		return highestObject;
@@ -9706,6 +9770,8 @@ const _B2dEditor = function () {
 		this.mouseDown = false;
 		this.middleMouseDown = false;
 		this.prefabCounter = 0;
+		this.deepClickDetection = null;
+		this.deepClickMinimumLayer = Number.POSITIVE_INFINITY;
 
 		this.editorIcons = [];
 		this.triggerObjects = [];
