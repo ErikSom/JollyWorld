@@ -614,7 +614,7 @@ function UIManager() {
 
             button.addEventListener('click', () => {
                 this.hideGameOverMenu();
-                game.previewLevel();
+                game.openMainMenu(game.currentLevelData);
             });
 
             button = document.createElement('div');
@@ -1070,7 +1070,7 @@ function UIManager() {
 
             restartButton.addEventListener('click', () => {
                 game.unpauseGame();
-                game.previewLevel();
+                game.openMainMenu(game.currentLevelData);
             })
 
             let exitButton = document.createElement('div');
@@ -1274,7 +1274,7 @@ function UIManager() {
 
             restartButton.addEventListener('click', () => {
                 this.hideWinScreen();
-                game.previewLevel();
+                game.game.openMainMenu(game.currentLevelData);
             })
 
             targetDomElement.appendChild(divWrapperNormal);

@@ -356,3 +356,24 @@
 		}
 	}
 }
+
+@media only screen and (max-width: 440px){
+	.mainmenu{
+		.games{
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+			grid-gap: 10px 0px;
+		}
+	}
+	.game{
+		width: 150px;
+		height: 150px;
+
+		.thumb{
+			width: 140px;
+			height: 93px;
+		}
+		.footer{
+			height:40px;
+		}
+	}
+}

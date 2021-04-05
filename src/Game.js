@@ -652,7 +652,7 @@ function Game() {
         Key.onKeyUp(e);
         e.preventDefault();
     }
-    this.openMainMenu = function (showLevelList) {
+    this.openMainMenu = function (levelData) {
         //if(this.run) this.stopWorld();
 
         this.initLevel(levelsData.mainMenuLevel);
@@ -665,10 +665,10 @@ function Game() {
         this.editor.editing = false;
         this.stopAutoSave();
 
-        if(showLevelList && ui.hasLevelLoader){
-            ui.hideMainMenu();
-            ui.showLevelLoader();
+        if(levelData){
+            ui.showLevelBanner2(levelData);
         }
+
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(false);
     }
