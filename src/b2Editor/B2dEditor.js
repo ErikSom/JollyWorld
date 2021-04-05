@@ -2867,8 +2867,6 @@ const _B2dEditor = function () {
 							this.doubleClickTime = 0;
 						}
 					}else if(this.deepClickDetection !== null && (prefabKeys.length + this.selectedTextures.length + this.selectedPhysicsBodies.length === 1)){
-						console.log(this.deepClickMinimumLayer);
-
 						if(prefabKeys.length){
 							const lookupObject = this.activePrefabs[prefabKeys[0]].class.lookupObject;
 							const childs  = [].concat(lookupObject._bodies, lookupObject._textures);
@@ -4190,7 +4188,6 @@ const _B2dEditor = function () {
 						radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 					}
 					if ((radius * 2 * Math.PI / Settings.PTM / 10) > this.minimumBodySurfaceArea) {
-						console.log(radius * 2 * Math.PI, radius);
 						triggerObject.radius = radius;
 						const _trigger = this.buildTriggerFromObj(triggerObject);
 						_trigger.mySprite.triggerInitialized = true;
@@ -6554,8 +6551,6 @@ const _B2dEditor = function () {
 			area += (addX * addY * 0.5) - (subX * subY * 0.5);
 		}
 		if (Math.abs(area) < this.minimumBodySurfaceArea) return false;
-
-		console.log("AREA:", Math.abs(area));
 
 		bodyObject.vertices = area < 0 ? verts.reverse() : verts;
 
