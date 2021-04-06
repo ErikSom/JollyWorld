@@ -4,6 +4,7 @@ import '../css/ScrollBar.scss'
 import '../css/VehicleSelect.scss'
 import '../css/CharacterSelect.scss'
 import '../css/SocialShare.scss'
+import '../css/LoginScreen.scss'
 
 import {
     backendManager
@@ -54,6 +55,7 @@ let winScreen;
 let winLogo;
 let socialShareScreen;
 let settingsMenu;
+let loginScreen;
 let smallLogo;
 
 let filter = {
@@ -213,6 +215,15 @@ function UIManager() {
                     volumeButton.classList.add('disabled');
                 }else{
                     volumeButton.classList.remove('disabled');
+                }
+            }
+
+            const loginButton = header.querySelector('.discord');
+            loginButton.onclick = ()=>{
+                if(backendManager.isLoggedIn()){
+
+                }else{
+                    this.showLoginPrompt();
                 }
             }
 
@@ -529,6 +540,39 @@ function UIManager() {
 
 
         history.replaceState({}, 'JollyWorld', '/');
+    }
+
+    this.showLoginPrompt = ()=> {
+        const container = document.querySelector('#settings-ui');
+        if(!loginScreen){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Please login</div>
+                <div class="body"> Features like voting and cloud saving of levels require you to login. You can login using Discord via the button below. </div>
+                <div class="nav-buttons">
+                    <div class="back">Back</div>
+                    <div class="discord">Login</div>
+                </div>
+                <div class="powered-by">
+                    Login is powered by
+                    <div class="discord-logo">
+                </div>
+            `;
+
+            loginScreen = document.createElement('div');
+            loginScreen.classList.add('loginscreen');
+            loginScreen.innerHTML = htmlStructure;
+
+
+            const navButtons = loginScreen.querySelector('.nav-buttons');
+            const backButton = navButtons.querySelector('.back');
+            backButton.onclick = ()=>{
+                loginScreen.style.display = 'none';
+            }
+            container.appendChild(loginScreen);
+        }
+
+        loginScreen.style.display = 'block';
     }
 
     // this.showSettingsButtons = function(){
