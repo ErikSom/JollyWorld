@@ -75,21 +75,6 @@ function UIManager() {
         //     span.style.opacity = 1
         // }, 1800);
 
-
-        // // play
-        // button.addEventListener("click", () => {
-        //     MobileController.openFullscreen();
-        //     self.hideMainMenu();
-        //     this.showLevelLoader();
-        // });
-
-        // // editor
-        // button.addEventListener("click", () => {
-        //     MobileController.openFullscreen();
-        //     self.hideMainMenu();
-        //     game.openEditor();
-        // });
-
         // discordButton = document.createElement('button');
         // discordButton.classList.add('menuButton', 'discordButton');
         // discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discord.svg')})`;
@@ -111,6 +96,8 @@ function UIManager() {
                     <div class="grass1"></div>
                     <div class="grass2"></div>
                     <div class=bg-hider></div>
+                    <div class="mobile-bg"></div>
+                    <div class="hamburger"><span></span><span></span><span></span></div>
                     <div class="buttons">
                         <div class="discord">Login</div>
                         <div class="character-select">
@@ -234,6 +221,14 @@ function UIManager() {
 
             if(!MobileController.isMobile()){
                 new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
+            }
+
+            const hamburger = header.querySelector('.hamburger');
+            const mobileBG = header.querySelector('.mobile-bg');
+            const headerButtons = header.querySelector('.buttons');
+            hamburger.onclick = ()=>{
+                mobileBG.classList.toggle('open');
+                headerButtons.classList.toggle('open');
             }
 
             customGUIContainer.appendChild(mainMenu);
