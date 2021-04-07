@@ -2,8 +2,14 @@ html,
 body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
+    width: 100vw;
+    height: 100vh;
+}
+body{
+    overflow:hidden;
+    position:fixed;
+    top:0;
+    bottom: 0;
 }
 
 .dg .closed div:not(.arrow):not(.title):not(.deleteIcon),
