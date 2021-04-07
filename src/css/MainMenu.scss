@@ -176,8 +176,14 @@
 		.best-filter, .mostplayed-filter{
 			font-size: 18px !important;
 		}
-		.date-filter{
+		.date-filter, .more{
 			width: 44px !important;
+		}
+
+		.more{
+			font-size: 16px;
+			line-height: 34px;
+			display: none;
 		}
 
 		.date-filters{
@@ -186,7 +192,7 @@
 			left: 0;
 			margin: 10px 0px;
 			height: 0px;
-			transition: height 0.3s ease-in;
+			transition: height 0.2s ease-in;
 			overflow: hidden;
 			will-change: height;
 			.button{
@@ -447,6 +453,33 @@
 
 				&.open{
 					display: flex;
+				}
+			}
+		}
+		.games-scroll{
+			height: calc(100vh - 164px);
+		}
+		.filters{
+			.more{
+				display: block;
+			}
+			.other-filters{
+				flex-direction: column-reverse;
+				justify-content: flex-end;
+				position: absolute;
+				right: 0;
+				bottom: 100%;
+				margin: 10px 0px;
+				overflow: hidden;
+				height: 0;
+				transition: height 0.2s ease-in;
+				will-change: height;
+				.button {
+					margin-top : 10px
+				}
+
+				&.open{
+					height: 200px;
 				}
 			}
 		}
