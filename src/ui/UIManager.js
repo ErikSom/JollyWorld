@@ -249,6 +249,9 @@ function UIManager() {
                 headerButtons.classList.toggle('open');
             }
 
+            window.addEventListener('resize', ()=> {this.mainMenuResize()})
+            this.mainMenuResize();
+
             customGUIContainer.appendChild(mainMenu);
         }
 
@@ -257,6 +260,14 @@ function UIManager() {
         mainMenu.style.display = 'block';
 
         this.reloadMainMenuGames();
+    }
+
+    this.mainMenuResize = ()=> {
+        customGUIContainer.style.height = window.innerHeight+'px';
+        mainMenu.style.height = window.innerHeight+'px';
+
+        const gamesScroll = mainMenu.querySelector('.games-scroll');
+        gamesScroll.style.height = (window.innerHeight - 164)+'px';
     }
 
     this.handleLoginChange = ()=> {

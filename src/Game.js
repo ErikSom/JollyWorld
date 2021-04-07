@@ -388,27 +388,27 @@ function Game() {
         PIXICuller.init(this.editor.textures, this.levelCamera);
 
         // SITELOCK
-        (function checkInit() {
-            const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA==', 'am9sbHl3b3JsZC5hcHA='];
-            // localhost, .poki.com, .poki-gdn.com
+        // (function checkInit() {
+        //     const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA==', 'am9sbHl3b3JsZC5hcHA='];
+        //     // localhost, .poki.com, .poki-gdn.com
 
-            let allowed = false;
-            const liveHost = window.location.hostname;
+        //     let allowed = false;
+        //     const liveHost = window.location.hostname;
 
-            for (let i = 0; i < hosts.length; i++) {
-                const host = atob(hosts[i]);
-                if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
-                    allowed = true;
-                    break;
-                }
-            }
-            if (!allowed) {
-                const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
-                const url = atob(targetURL);
-                window.location.href = url;
-                window.top.location !== window.location && (window.top.location = window.location);
-            }
-        }());
+        //     for (let i = 0; i < hosts.length; i++) {
+        //         const host = atob(hosts[i]);
+        //         if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
+        //             allowed = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!allowed) {
+        //         const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
+        //         const url = atob(targetURL);
+        //         window.location.href = url;
+        //         window.top.location !== window.location && (window.top.location = window.location);
+        //     }
+        // }());
 
         this.preloader.classList.add('hide');
 
