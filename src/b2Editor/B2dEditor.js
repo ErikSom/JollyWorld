@@ -9614,6 +9614,9 @@ const _B2dEditor = function () {
 					}
 					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
+
+					// here i could potentially fix links
+
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
 						createdObjects._bodies = createdObjects._bodies.concat(prefabObjects._bodies);

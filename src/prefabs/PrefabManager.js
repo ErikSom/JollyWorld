@@ -47,6 +47,7 @@ export const LIBRARY_WEAPON = "weapon";
 export const LIBRARY_LEVEL = "level";
 export const LIBRARY_CHARACTERS = "characters";
 export const LIBRARY_BLUEPRINTS = "blueprints";
+export const LIBRARY_MISC = "misc";
 
 export var prefabLibrary = {
     libraryKeys: [],

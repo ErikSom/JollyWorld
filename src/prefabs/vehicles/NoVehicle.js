@@ -7,6 +7,7 @@ import {
 } from "../../Game";
 import { Settings } from '../../Settings';
 import * as MobileController from '../../utils/MobileController'
+import { stopCustomBehaviour } from '../misc/CustomEditorBehavior';
 
 
 export class NoVehicle extends BaseVehicle {
@@ -198,12 +199,6 @@ PrefabManager.prefabLibrary.NoVehicle = {
     library: PrefabManager.LIBRARY_ADMIN,
 }
 
-
-export const stopCustomBehaviour = () => {
-    game.editor.customPrefabMouseDown = null;
-    game.editor.customPrefabMouseMove = null;
-    game.editor.customDebugDraw = null;
-}
 export const setPositionLimb = (prefab, limb) => {
     let x = game.editor.mousePosWorld.x - prefab.x / game.editor.PTM;
     let y = game.editor.mousePosWorld.y - prefab.y / game.editor.PTM;
