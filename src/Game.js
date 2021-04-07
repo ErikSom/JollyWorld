@@ -279,18 +279,16 @@ function Game() {
 
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 
-        this.openMainMenu();
-        this.ui.showSettingsButtons();
+        const userData = SaveManager.getLocalUserdata();
+        game.selectedCharacter = userData.selectedCharacter;
 
+        this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
-            ui.disableMainMenu(true);
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
-                this.loadPublishedLevelData(levelData);
+                ui.showLevelBanner2(levelData);
             }).catch(_err =>{
-                location.hash = '';
                 history.replaceState({}, document.title, '')
-                ui.disableMainMenu(false);
             });
         }
 
@@ -390,27 +388,27 @@ function Game() {
         PIXICuller.init(this.editor.textures, this.levelCamera);
 
         // SITELOCK
-        (function checkInit() {
-            const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA==', 'am9sbHl3b3JsZC5hcHA='];
-            // localhost, .poki.com, .poki-gdn.com
+        // (function checkInit() {
+        //     const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA==', 'am9sbHl3b3JsZC5hcHA='];
+        //     // localhost, .poki.com, .poki-gdn.com
 
-            let allowed = false;
-            const liveHost = window.location.hostname;
+        //     let allowed = false;
+        //     const liveHost = window.location.hostname;
 
-            for (let i = 0; i < hosts.length; i++) {
-                const host = atob(hosts[i]);
-                if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
-                    allowed = true;
-                    break;
-                }
-            }
-            if (!allowed) {
-                const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
-                const url = atob(targetURL);
-                window.location.href = url;
-                window.top.location !== window.location && (window.top.location = window.location);
-            }
-        }());
+        //     for (let i = 0; i < hosts.length; i++) {
+        //         const host = atob(hosts[i]);
+        //         if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
+        //             allowed = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!allowed) {
+        //         const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
+        //         const url = atob(targetURL);
+        //         window.location.href = url;
+        //         window.top.location !== window.location && (window.top.location = window.location);
+        //     }
+        // }());
 
         this.preloader.classList.add('hide');
 
@@ -654,29 +652,25 @@ function Game() {
         Key.onKeyUp(e);
         e.preventDefault();
     }
-    this.openMainMenu = function (showLevelList) {
+    this.openMainMenu = function (levelData) {
         //if(this.run) this.stopWorld();
 
-        this.resetGameSelection();
         this.initLevel(levelsData.mainMenuLevel);
+        this.editor.ui.hide();
+        ui.show();
         ui.showMainMenu();
         ui.hideGameOverMenu();
         this.gameState = this.GAMESTATE_MENU;
-        this.runWorld();
         this.interactive = false;
         this.editor.editing = false;
         this.stopAutoSave();
 
-        if(showLevelList && ui.hasLevelLoader){
-            ui.hideMainMenu();
-            ui.showLevelLoader();
+        if(levelData){
+            ui.showLevelBanner2(levelData);
         }
+
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(false);
-    }
-    this.resetGameSelection = function(){
-        this.selectedCharacter = 0;
-        this.selectedVehicle = 0;
     }
 
     this.runWorld = function () {
@@ -1016,7 +1010,6 @@ function Game() {
                 if(progressFunction) progressFunction(0);
 
                 self.currentLevelData.json = result;
-                this.previewLevel();
                 return resolve();
             }catch(err){
                 console.log('fail', err);
@@ -1027,16 +1020,7 @@ function Game() {
             }
         });
     }
-    this.previewLevel = function(){
-        ui.hideMainMenu();
-        ui.showLevelBanner();
-        this.editor.ui.hide();
-        this.resetGame();
 
-        MobileController.hide();
-
-        game.gameState = game.GAMESTATE_PREVIEW;
-    }
 
     this.findPlayableCharacter = function () {
         for (var key in this.editor.activePrefabs) {
@@ -1350,6 +1334,17 @@ function Game() {
         this.stats.end();
     };
 
+    this.voteLevel = function(levelData, vote){
+
+        if(!backendManager.isLoggedIn()){
+            game.ui.showLoginPrompt();
+            return Promise.reject();
+        }
+
+        // have i even played this level?  //return Promise.reject()
+        return backendManager.voteLevel(levelData.id, vote);
+    }
+
     this.prepareGameFonts = function () {
         const container = document.createElement('div');
         document.body.appendChild(container);
@@ -1366,10 +1361,22 @@ function Game() {
         }, 5000);
     }
 
+    this.toggleMute = function(){
+        const userData = SaveManager.getLocalUserdata();
+        userData.sfxOn = !userData.sfxOn;
+        SaveManager.updateLocalUserData(userData);
+
+        Settings.sfxOn = userData.sfxOn;
+
+        if(!Settings.sfxOn){
+            AudioManager.stopAllSounds();
+        }
+    }
+
+
     this.GAMESTATE_MENU = 'menu';
     this.GAMESTATE_EDITOR = 'editor';
     this.GAMESTATE_NORMALPLAY = 'play';
-    this.GAMESTATE_PREVIEW = 'preview';
     this.GAMESTATE_LOADINGDATA = 'loadingdata';
 }
 export var game = new Game();

@@ -2,8 +2,14 @@ html,
 body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
+    width: 100vw;
+    height: 100vh;
+}
+body{
+    overflow:hidden;
+    position:fixed;
+    top:0;
+    bottom: 0;
 }
 
 .dg .closed div:not(.arrow):not(.title):not(.deleteIcon),
@@ -1151,46 +1157,6 @@ body .dg .cr.function {
     filter: brightness(70%);
 }
 
-#socialShareEmbed {
-    background: #0000005e;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-    margin: 5px 0px;
-}
-
-#socialShareEmbed button {
-    width: 30px;
-    height: 30px;
-    background-color: #999999;
-    border-radius: 5px;
-    margin: 0px 5px;
-    outline: none;
-    border: none;
-    cursor: pointer;
-}
-
-#socialShareEmbed input {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 14px;
-    font: inherit;
-}
-
-#socialShareEmbed button>div {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 115.77 122.88'%3E%3Cpath d='M89.62 13.96v7.73h12.2v.02c3.85.01 7.34 1.57 9.86 4.1 2.5 2.51 4.06 5.98 4.07 9.82h.02v73.3h-.02c-.01 3.84-1.57 7.33-4.1 9.86-2.51 2.5-5.98 4.06-9.82 4.07v.02H40.1v-.02c-3.84-.01-7.34-1.57-9.86-4.1-2.5-2.51-4.06-5.98-4.07-9.82h-.02V92.51h-12.2v-.02c-3.84-.01-7.34-1.57-9.86-4.1-2.5-2.51-4.06-5.98-4.07-9.82H0V13.95h.02c.01-3.85 1.58-7.34 4.1-9.86C6.63 1.59 10.1.03 13.94.02V0H75.67v.02c3.85.01 7.34 1.57 9.86 4.1 2.5 2.51 4.06 5.98 4.07 9.82h.02v.02zm-10.58 7.73v-7.75h.02c0-.91-.39-1.75-1.01-2.37-.61-.61-1.46-1-2.37-1v.02H13.95v-.02c-.91 0-1.75.39-2.37 1.01-.61.61-1 1.46-1 2.37h.02v64.62h-.02c0 .91.39 1.75 1.01 2.37.61.61 1.46 1 2.37 1v-.02h12.2V35.64h.02c.01-3.85 1.58-7.34 4.1-9.86 2.51-2.5 5.98-4.06 9.82-4.07v-.02H79.04zm26.14 87.23V35.63h.02c0-.91-.39-1.75-1.01-2.37-.61-.61-1.46-1-2.37-1v.02H40.09v-.02c-.91 0-1.75.39-2.37 1.01-.61.61-1 1.46-1 2.37h.02v73.3h-.02c0 .91.39 1.75 1.01 2.37.61.61 1.46 1 2.37 1v-.02H101.83v.02c.91 0 1.75-.39 2.37-1.01.61-.61 1-1.46 1-2.37h-.02v-.01z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/svg%3E");
-    width: 16px;
-    height: 17px;
-    background-size: cover;
-    margin-left: 1px;
-}
-
-#socialShareEmbed button:hover {
-    background-color: #bebebe
-}
-
 #helpScreen .textWrapper {
     margin: 10px;
 }
@@ -1280,7 +1246,7 @@ body .dg .cr.function {
     cursor: pointer;
 }
 
-*::-webkit-scrollbar {
+/* *::-webkit-scrollbar {
     width: 5px;
     height: 5px;
     background: #FFF;
@@ -1298,7 +1264,7 @@ body .dg .cr.function {
 *{
     scrollbar-width: thin;
     scrollbar-color: black white;
-}
+} */
 
 .ios-pwa-container {
     align-items: flex-end;

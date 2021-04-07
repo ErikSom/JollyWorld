@@ -18,11 +18,11 @@ export const getLocalUserdata = function(){
 
     const defaultData = {
         applePWAModals:0,
-        demoScrolls:0,
         helpClosed:[],
         editorGuiPos:{x:50, y:50},
         sfxOn:true,
         tutorials:[],
+        selectedCharacter:0,
     }
 
     if(userData){
@@ -52,17 +52,17 @@ export const getTempEditorWorld = async function(){
     try{
         tempWorld = await idb.get(SAVEKEYS.tempEditorWorld);
     } catch(err){
-        tempWorld = JSON.parse(JSON.stringify(levelsData.mainMenuLevel));
+        tempWorld = JSON.parse(JSON.stringify(levelsData.editorLevel));
         tempWorld.id = nanoid();
         tempWorld.creationDate = Date.now();
         saveTempEditorWorld(tempWorld);
     }
 
-    // this can be removed later, backwars compatibility for old save system
+    // this can be removed later, backwards compatibility for old save system
     if(window.location.search.indexOf('localstorage=true')>=0){
         tempWorld = loadData(SAVEKEYS.tempEditorWorld);
         if(!tempWorld){
-            tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.mainMenuLevel);
+            tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.editorLevel);
             tempWorld.id = nanoid();
             tempWorld.creationDate = Date.now();
         }

@@ -28,7 +28,11 @@ let audioSpriteKeys = [...Object.keys(pack1JSON.sprite), ...Object.keys(pack2JSO
 
 export const init = ()=>{
 	loadAudio('sfx', sfxJSON)
-	.then(()=> loadAudio('pack1', pack1JSON))
+	.then(()=> {
+		// kickstart howl context retrieval
+		playSFX('bike_idle_loop', 0.1);
+		return loadAudio('pack1', pack1JSON);
+	})
 	.then(()=> loadAudio('pack2', pack2JSON))
 	.then(()=>{
 		// console.log("ALL AUDIO LOADED:", getAvailableAudioSprites());

@@ -234,12 +234,6 @@ function BackendManager() {
     this.voteLevel = function (levelid, vote) {
 		// (POST) level/vote/id/up (or down)
 		return new Promise((resolve, reject) => {
-
-			if(!this.isLoggedIn()){
-                game.editor.ui.showLoginScreen();
-                return resolve(false);
-            }
-
 			const body = {
 				method: 'POST',
 				withCredentials: true,
@@ -323,40 +317,11 @@ function BackendManager() {
 				limit=nummer
 		*/
 
-		let timespan = 'anytime'
-        switch (filter.range) {
-            case game.ui.FILTER_RANGE_THISMONTH:
-                timespan='month';
-                break;
-            case game.ui.FILTER_RANGE_THISWEEK:
-                timespan='week';
-                break;
-            case game.ui.FILTER_RANGE_TODAY:
-				timespan='today';
-                break;
-		}
+		const {featured, sort, range} = filter;
 
         return new Promise((resolve, reject) => {
-			let query = '';
-
-            switch (filter.by) {
-                case game.ui.FILTER_BY_FEATURED:
-                    query = `sort=newest&timespan=${timespan}&featured=1&limit=${Settings.levelsPerRequest}`;
-                    break;
-                case game.ui.FILTER_BY_NEWEST:
-					query = `sort=newest&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
-                    break;
-                case game.ui.FILTER_BY_OLDEST:
-					query = `sort=oldest&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
-                    break;
-                case game.ui.FILTER_BY_PLAYCOUNT:
-					query = `sort=mostplayed&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
-                    break;
-                case game.ui.FILTER_BY_RATING:
-					query = `sort=best&timespan=${timespan}&limit=${Settings.levelsPerRequest}`;
-					break;
-			}
-
+			const featuredQuery = featured ? '&featured=1' : '';
+			const query = `sort=${sort}&timespan=${range}${featuredQuery}&limit=${Settings.levelsPerRequest}`
 			const body = {
 				method: 'GET',
 			}
@@ -370,7 +335,6 @@ function BackendManager() {
 				resolve(data);
 
 			});
-
         });
     }
     this.getPublishedLevelInfo = id =>{

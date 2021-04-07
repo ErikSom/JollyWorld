@@ -1,0 +1,29 @@
+@use 'Components';
+
+.vehicleselect{
+	@extend .main-window;
+
+	.header{
+		@extend .jollyfont;
+		font-size: 40px;
+		text-align: center;
+	}
+
+	.vehicles{
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		.portrait{
+			width: 160px;
+			height: 160px;
+        	background-color: black;
+			margin: 5px;
+			@extend .simple-button;
+		}
+	}
+	.back{
+		width: 180px;
+		margin: 20px auto;
+		@extend .back-button;
+	}
+}
