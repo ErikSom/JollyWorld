@@ -8,8 +8,26 @@ class SevenSegment extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
 
+        this.linkedSegment = null;
+
         this.base = this.lookupObject.base;
         this.base.isSevenSegment = true;
+    }
+    linkSevenSegment(target){
+        this.linkedSegment = target.mySprite;
+    }
+    serializeProps(){
+        if(this.linkedSegment && !this.linkedSegmentId.destroyed){
+            game.editor.updateObject(this.linkedSegment, this.linkedSegment.data);
+            // check if deleted
+            this.settings.linkedSegmentId = this.linkedSegment.parent.getChildIndex(this.linkedSegment);
+        } else {
+            this.settings.linkedSegmentId = null;
+        }
+        console.log("Serialize props!!!", this.settings.linkedSegmentId);
+    }
+    initializeProps(){
+        // set linkedSegment
     }
     init() {
         super.init();
@@ -47,6 +65,8 @@ export const drawObjectAdding = (prefab, type) => {
 const linkSegment = prefab => {
 
     // add prefab.class.linkObjectTarget
+
+    prefab.class.linkSevenSegment(prefab.class.linkObjectTarget);
 
     delete prefab.class.linkObjectTarget;
     stopCustomBehaviour();

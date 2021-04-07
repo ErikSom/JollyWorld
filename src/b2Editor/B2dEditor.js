@@ -9104,6 +9104,10 @@ const _B2dEditor = function () {
 				if (stringifiedPrefabs[sprite.data.prefabInstanceName]) {
 					continue;
 				}
+
+				const prefabClass = this.activePrefabs[sprite.data.prefabInstanceName].class;
+				if(prefabClass.serializeProps) prefabClass.serializeProps();
+
 				objects.push(this.serializeObject(this.activePrefabs[sprite.data.prefabInstanceName]));
 				stringifiedPrefabs[sprite.data.prefabInstanceName] = true;
 			} else {

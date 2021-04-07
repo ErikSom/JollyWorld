@@ -265,8 +265,6 @@ function UIManager() {
     this.mainMenuResize = ()=> {
         customGUIContainer.style.height = window.innerHeight+'px';
         mainMenu.style.height = window.innerHeight+'px';
-
-        
         const gamesScroll = mainMenu.querySelector('.games-scroll');
         if(window.innerWidth<820){
             gamesScroll.style.height = (window.innerHeight - 164)+'px';
