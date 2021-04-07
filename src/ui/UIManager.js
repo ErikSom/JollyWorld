@@ -228,9 +228,9 @@ function UIManager() {
             const loginButton = header.querySelector('.discord');
             loginButton.onclick = ()=>{
                 if(backendManager.isLoggedIn()){
-
+                    // show profile page
                 }else{
-                    this.showLoginPrompt();
+                    this.openDiscordOauth();
                 }
             }
 
@@ -260,7 +260,6 @@ function UIManager() {
     }
 
     this.handleLoginChange = ()=> {
-        console.log("LOGIN CHANGE");
         const header = mainMenu.querySelector('.header');
 
         const discordButton = header.querySelector('.discord');
@@ -576,10 +575,29 @@ function UIManager() {
             backButton.onclick = ()=>{
                 loginScreen.style.display = 'none';
             }
+
+            const loginButton = navButtons.querySelector('.discord');
+            loginButton.onclick = ()=>{
+                loginScreen.style.display = 'none';
+                this.openDiscordOauth();
+            }
+
             container.appendChild(loginScreen);
         }
 
         loginScreen.style.display = 'block';
+    }
+
+    this.openDiscordOauth = function(){
+        const shrink = .8;
+        const w = Math.min(Math.floor(window.innerWidth * shrink), 600);
+        const h = 800;
+        const leftPosition = (window.innerWidth - w) / 2;
+        const topPosition = (window.innerHeight - h) / 2;
+        const settings = `height=${h},width=${w},top=${topPosition},left=${leftPosition},scrollbars=yes,directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no`;
+
+        const url = `https://api.jollyworld.app/login?redirect=${encodeURIComponent(Settings.REDIRECT)}`;
+        window.open(url, 'oAuthLogin', settings);
     }
 
     // this.showSettingsButtons = function(){

@@ -1337,10 +1337,9 @@ function Game() {
     this.voteLevel = function(levelData, vote){
 
         if(!backendManager.isLoggedIn()){
-            game.editor.ui.showLoginScreen();
+            game.ui.showLoginPrompt();
             return Promise.reject();
         }
-
 
         // have i even played this level?  //return Promise.reject()
         return backendManager.voteLevel(levelData.id, vote);
