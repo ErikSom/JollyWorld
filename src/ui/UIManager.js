@@ -266,8 +266,13 @@ function UIManager() {
         customGUIContainer.style.height = window.innerHeight+'px';
         mainMenu.style.height = window.innerHeight+'px';
 
+        
         const gamesScroll = mainMenu.querySelector('.games-scroll');
-        gamesScroll.style.height = (window.innerHeight - 164)+'px';
+        if(window.innerWidth<820){
+            gamesScroll.style.height = (window.innerHeight - 164)+'px';
+        }else{
+            gamesScroll.style.height = (window.innerHeight - 188)+'px';
+        }
     }
 
     this.handleLoginChange = ()=> {
