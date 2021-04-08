@@ -1,0 +1,69 @@
+@use 'Components';
+
+.pausescreen{
+	@extend .main-window;
+	color: white;
+	font-size: 14px;
+	.header{
+		@extend .jollyfont;
+		font-size: 40px;
+		text-align: center;
+	}
+	.share{
+		position:absolute;
+		top: 30px;
+    	left: 10px;
+		@extend .share-button;
+	}
+	.save{
+		position: absolute;
+		top: 30px;
+		right: 10px;
+		@extend .save-button;
+	}
+	.text-level-name{
+		margin: auto;
+		text-align: center;
+		font-weight: 500;
+	}
+	.level-author{
+		display: flex;
+		justify-content: center;
+		.text-level-by{
+			font-weight: 200;
+		}
+		.text-author{
+			color: #00FF00;
+			margin: 1px 0 0 2px;
+		}
+	}
+	.vote-bar{
+		justify-content: center;
+		display: flex;
+		margin: 20px;
+
+		.voting{
+			margin:auto;
+			@extend .vote-buttons;
+		}
+	}
+
+	.buttons{
+		display: grid;
+		grid-gap: 10px;
+		grid-template-columns: 1fr 1fr;
+		padding: 10px;
+		.reset, .retry, .exit, .resume{
+			margin: 0;
+			width: 100%;
+			@extend .back-button;
+		}
+		.resume{
+			background-color: #51A328;
+		}
+		.exit{
+			background-color: red;
+			font-size: 30px;
+		}
+	}
+}

@@ -5,6 +5,7 @@ import '../css/VehicleSelect.scss'
 import '../css/CharacterSelect.scss'
 import '../css/SocialShare.scss'
 import '../css/LoginScreen.scss'
+import '../css/PauseScreen.scss'
 
 import {
     backendManager
@@ -49,7 +50,7 @@ let levelBannerYTFeed;
 let youtubePlayer;
 let characterSelect;
 let vehicleSelect;
-let pauseMenu;
+let pauseScreen;
 let filterMenu;
 let winScreen;
 let winLogo;
@@ -377,7 +378,7 @@ function UIManager() {
                 this.setLevelDataOnGameTile(game, level);
                 games.appendChild(game);
 
-                game.onclick = ()=> this.showLevelBanner2(level);
+                game.onclick = ()=> this.showLevelBanner(level);
 
                 imageObserver.observe(game);
 
@@ -386,7 +387,7 @@ function UIManager() {
         gameTemplate.style.display = 'none';
     }
 
-    this.showLevelBanner2 = levelData => {
+    this.showLevelBanner = levelData => {
         if(!levelBanner){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
@@ -414,11 +415,11 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="social-bar">
-                    <div class="share-button">
+                    <div class="share">
                         <div class="share-icon"></div>
                         Share
                     </div>
-                    <div class="save-button">
+                    <div class="save">
                         <div class="heart-icon"></div>
                         Save
                     </div>
@@ -448,7 +449,7 @@ function UIManager() {
             const navButtons = levelBanner.querySelector('.nav-buttons');
             const backButton = navButtons.querySelector('.back');
             backButton.onclick = ()=>{
-                this.hideLevelBanner2();
+                this.hideLevelBanner();
             }
             customGUIContainer.appendChild(levelBanner);
         }
@@ -479,7 +480,7 @@ function UIManager() {
             }
 
             game.loadPublishedLevelData(levelData, progressFunction).then(() => {
-                this.hideLevelBanner2();
+                this.hideLevelBanner();
                 if(levelData.forced_vehicle){
                     game.selectedVehicle = levelData.forced_vehicle;
                     this.playLevelFromMainMenu();
@@ -494,7 +495,7 @@ function UIManager() {
         playButton.onclick = playLevelFunction;
 
         const socialBar = levelBanner.querySelector('.social-bar');
-        const shareButton = socialBar.querySelector('.share-button')
+        const shareButton = socialBar.querySelector('.share')
 
         shareButton.onclick = () => this.showSocialShare(levelData);
 
@@ -552,7 +553,7 @@ function UIManager() {
         const publishedDate = levelBanner.querySelector('.text-date');
         publishedDate.innerText = format.formatDMY(levelData.updated_at);
     }
-    this.hideLevelBanner2 = ()=>{
+    this.hideLevelBanner = ()=>{
 
         const thumb = levelBanner.querySelector('.thumb');
         thumb.style.backgroundImage = 'none';
@@ -747,170 +748,9 @@ function UIManager() {
             gameOver.style.opacity = 0;
         }
     }
-    this.showLevelLoader = function () {
 
-        if (!levelLoader) {
-
-            filter = {
-                by: this.FILTER_BY_FEATURED,
-                range: this.FILTER_RANGE_ANYTIME
-            };
-
-            const loginGUIWidth = '640px';
-
-            levelLoader = new dat.GUI({
-                autoPlace: false,
-                width: loginGUIWidth
-            });
-            levelLoader.domElement.setAttribute('id', 'levelLoader');
-
-            let folder = levelLoader.addFolder('Featured levels');
-            folder.domElement.classList.add('custom');
-            folder.domElement.style.textAlign = 'center';
-
-            folder.open();
-
-            const titleElement = levelLoader.domElement.querySelector('.title');
-
-            this.setLevelLoaderTitle = () => {
-                titleElement.innerHTML = `${filter.by} levels  -  ${filter.range}`;
-            };
-            this.setLevelLoaderTitle();
-
-            levelLoader.domElement.querySelector('.arrow').style.visibility = 'hidden';
-
-
-            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-            let divWrapper = document.createElement('div');
-            divWrapper.setAttribute('id', 'levelList');
-            divWrapper.style.width = '100%';
-            divWrapper.style.overflowX = 'auto';
-
-            targetDomElement.appendChild(divWrapper);
-
-            let backButton = document.createElement('div');
-            backButton.setAttribute('class', 'backButton menuButton')
-            backButton.innerHTML = 'Back';
-            targetDomElement.appendChild(backButton);
-
-            backButton.addEventListener('click', () => {
-                self.hideLevelLoader();
-                self.showMainMenu();
-            })
-
-            let moreLevels = document.createElement('div');
-            moreLevels.setAttribute('class', 'moreLevels menuButton')
-            moreLevels.innerHTML = 'More levels';
-            targetDomElement.appendChild(moreLevels);
-
-            moreLevels.addEventListener('click', () => {
-                this.showFilterMenu();
-            })
-
-            customGUIContainer.appendChild(levelLoader.domElement);
-            levelLoader.domElement.style.position = 'absolute';
-
-            this.hasLevelLoader = true;
-
-        }
-        levelLoader.domElement.style.display = 'unset';
-
-
-        this.generateFilteredPublishLevelList();
-
-
-        levelLoader.domElement.style.left = '50%';
-        levelLoader.domElement.style.top = '50%';
-        levelLoader.domElement.style.transform = 'translate(-50%, -50%)';
-
-    }
-    this.hideLevelLoader = function () {
-        levelLoader.domElement.style.display = 'none';
-        this.hideFilterMenu();
-        this.hideSocialShareMenu();
-    }
-
-    // this.showLevelBanner = function () {
+    // this.showLevelBanner2 = function () {
     //     if (!levelBanner) {
-    //         const levelEditGUIWidth = 350;
-    //         levelBanner = new dat.GUI({
-    //             autoPlace: false,
-    //             width: levelEditGUIWidth
-    //         });
-    //         levelBanner.domElement.setAttribute('id', 'levelBanner');
-
-    //         let folder = levelBanner.addFolder('Level Info');
-    //         folder.domElement.classList.add('custom');
-
-    //         folder.open();
-
-    //         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-    //         let divWrapper = document.createElement('div');
-    //         divWrapper.style.padding = '10px';
-
-    //         let title = document.createElement('div');
-    //         title.classList.add('levelbanner_title');
-    //         divWrapper.appendChild(title);
-
-    //         let creator = document.createElement('div');
-    //         creator.classList.add('levelbanner_creator');
-
-    //         let span = document.createElement('span');
-    //         span.innerText = 'By:';
-    //         creator.appendChild(span);
-
-    //         span = document.createElement('span');
-    //         span.innerText = 'Creator';
-    //         span.classList.add('levelbanner_creatorSpan')
-    //         creator.appendChild(span);
-
-    //         divWrapper.appendChild(creator);
-
-    //         let thumbNail;
-    //         thumbNail = document.createElement('div');
-    //         thumbNail.setAttribute('id', 'levelbanner_levelThumbnail');
-    //         divWrapper.appendChild(thumbNail);
-
-    //         let thumbNailImage;
-    //         thumbNailImage = new Image();
-    //         thumbNailImage.setAttribute('id', 'levelbanner_levelThumbnailImage');
-    //         thumbNail.appendChild(thumbNailImage);
-
-    //         let description = document.createElement('div');
-    //         description.setAttribute('id', 'levelbanner_description');
-    //         divWrapper.appendChild(description);
-
-    //         const flexButtonHolder = document.createElement('div');
-    //         divWrapper.appendChild(flexButtonHolder);
-    //         flexButtonHolder.classList.add('flexButtonWrap');
-
-    //         let backButton = document.createElement('div');
-    //         backButton.setAttribute('class', 'backButton menuButton')
-    //         backButton.innerHTML = 'Back';
-    //         flexButtonHolder.appendChild(backButton);
-
-    //         backButton.addEventListener('click', () => {
-    //             this.hideLevelBanner();
-    //             game.openMainMenu(true);
-    //             MobileController.openFullscreen();
-    //         })
-
-    //         let playButton = document.createElement('div');
-    //         playButton.setAttribute('class', 'moreLevels menuButton')
-    //         playButton.innerHTML = 'Play';
-    //         flexButtonHolder.appendChild(playButton);
-
-    //         playButton.addEventListener('click', () => {
-    //             this.hideLevelBanner();
-    //             this.showCharacterSelect();
-    //             MobileController.openFullscreen();
-    //         })
-
-    //         targetDomElement.appendChild(divWrapper);
-    //         customGUIContainer.appendChild(levelBanner.domElement);
-    //         levelBanner.domElement.style.position = 'absolute';
 
     //         game.editor.ui.registerDragWindow(levelBanner);
 
@@ -1081,7 +921,7 @@ function UIManager() {
         back.onclick = ()=>{
             this.hideVehicleSelect();
             game.gameState = game.GAMESTATE_MENU;
-            this.showLevelBanner2(game.currentLevelData);
+            this.showLevelBanner(game.currentLevelData);
         }
     }
 
@@ -1089,108 +929,87 @@ function UIManager() {
         vehicleSelect.style.display = 'none';
     }
 
-    this.showPauseMenu = function () {
-        if (!pauseMenu) {
-            const levelEditGUIWidth = 350;
-            pauseMenu = new dat.GUI({
-                autoPlace: false,
-                width: levelEditGUIWidth
-            });
-            pauseMenu.domElement.setAttribute('id', 'pauseMenu');
+    this.showPauseMenu = function(){
+        if(!pauseScreen){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Pause</div>
+                <div class="text-level-name">Level Name Goes Here</div>
+                <div class="level-author">
+                    <div class="text-level-by">By:</div>
+                    <div class="text-author">Author Name</div>
+                </div>
+                <div class="share">
+                    <div class="share-icon"></div>
+                    Share
+                </div>
+                <div class="save">
+                    <div class="heart-icon"></div>
+                    Save
+                </div>
+                <div class="vote-bar">
+                    <div class ="voting">
+                        <div class="vote-down button">
+                            <div class="vote-thumb"></div>
+                        </div>
+                        <div class="vote-up button">
+                            <div class="vote-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div class="reset">Reset</div>
+                    <div class="retry">Retry</div>
+                    <div class="exit">Exit to Menu</div>
+                    <div class="resume">Resume</div>
+                </div>
+            `;
 
-            let folder = pauseMenu.addFolder('Pause Screen');
-            folder.domElement.classList.add('custom');
+            pauseScreen = document.createElement('div');
+            pauseScreen.classList.add('pausescreen');
+            pauseScreen.innerHTML = htmlStructure;
 
-            folder.open();
-
-            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-            let divWrapper = document.createElement('div');
-            divWrapper.style.padding = '10px';
-
-            let title = document.createElement('div');
-            title.classList.add('levelbanner_title');
-            divWrapper.appendChild(title);
-
-            let creator = document.createElement('div');
-            creator.classList.add('levelbanner_creator');
-
-            let span = document.createElement('span');
-            span.innerText = 'By:';
-            creator.appendChild(span);
-
-            span = document.createElement('span');
-            span.innerText = 'Creator';
-            span.classList.add('levelbanner_creatorSpan');
-            creator.appendChild(span);
-
-            divWrapper.appendChild(creator);
-
-            let ratingHolder = this.buildVoteGUI();
-            ratingHolder.setAttribute('class', 'ratingHolder');
-            ratingHolder.classList.add('pauseMenu_ratingHolder');
-            divWrapper.appendChild(ratingHolder);
-
-            pauseMenu.updateVoteGUI = ()=>{this.updateVoteGUI(ratingHolder)};
-
-            let checkPointButton = document.createElement('div');
-            checkPointButton.setAttribute('class', 'startButton menuButton')
-            checkPointButton.innerHTML = 'Retry';
-            divWrapper.appendChild(checkPointButton);
-
-            checkPointButton.addEventListener('click', () => {
-                game.unpauseGame();
-                game.resetWorld(true);
-            })
-
-            let restartButton = document.createElement('div');
-            restartButton.setAttribute('class', 'startButton menuButton')
-            restartButton.innerHTML = 'Reset';
-            divWrapper.appendChild(restartButton);
-
-            restartButton.addEventListener('click', () => {
+            const buttons = pauseScreen.querySelector('.buttons');
+            const resetButton = buttons.querySelector('.reset');
+            resetButton.onclick = () => {
                 game.unpauseGame();
                 game.openMainMenu(game.currentLevelData);
-            })
-
-            let exitButton = document.createElement('div');
-            exitButton.setAttribute('class', 'startButton menuButton')
-            exitButton.innerHTML = 'Exit to Menu';
-            divWrapper.appendChild(exitButton);
-
-            exitButton.addEventListener('click', () => {
+            };
+            const retryButton = buttons.querySelector('.retry');
+            retryButton.onclick = () => {
+                game.unpauseGame();
+                game.resetWorld(true);
+            };
+            const exitButton = buttons.querySelector('.exit');
+            exitButton.onclick = () => {
                 game.unpauseGame();
                 game.openMainMenu();
-            })
-
-            let resumeButton = document.createElement('div');
-            resumeButton.setAttribute('class', 'startButton menuButton')
-            resumeButton.innerHTML = 'Resume';
-            divWrapper.appendChild(resumeButton);
-
-            resumeButton.addEventListener('click', () => {
+            };
+            const resumeButton = buttons.querySelector('.resume');
+            resumeButton.onclick = () => {
                 game.unpauseGame();
-            })
+            };
 
-            targetDomElement.appendChild(divWrapper);
-            customGUIContainer.appendChild(pauseMenu.domElement);
-            pauseMenu.domElement.style.position = 'absolute';
-
+            customGUIContainer.appendChild(pauseScreen);
         }
-        pauseMenu.updateVoteGUI();
-        pauseMenu.domElement.style.visibility = 'visible';
-        // set values
 
-        pauseMenu.domElement.querySelector('.levelbanner_title').innerText = game.currentLevelData.title;
-        pauseMenu.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
+        const title = pauseScreen.querySelector('.text-level-name');
+        title.innerText = game.currentLevelData.title;
+        const author = pauseScreen.querySelector('.text-author');
+        author.innerText = game.currentLevelData.author.username;
 
-        pauseMenu.domElement.style.left = '50%';
-        pauseMenu.domElement.style.top = '50%';
-        pauseMenu.domElement.style.transform = 'translate(-50%, -50%)';
+        const voteButtons = pauseScreen.querySelector('.voting');
+        const voteUpButton = voteButtons.querySelector('.vote-up');
+        const voteDownButton = voteButtons.querySelector('.vote-down');
 
+        shouldShowVoteButton(voteUpButton, voteDownButton, game.currentLevelData);
+
+        this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
+
+        pauseScreen.style.display = 'block';
     }
     this.hidePauseMenu = function () {
-        pauseMenu.domElement.style.visibility = 'hidden';
+        pauseScreen.style.display = 'none';
     }
 
     this.buildVoteGUI = ()=>{
@@ -1562,11 +1381,9 @@ function UIManager() {
                 self.hideYouTubePlayer();
             });
 
-
             const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
             const divWrapper = document.createElement('div');
             // divWrapper.innerText = 'Youtube player:'+id
-
 
             const youtubePlayerHolder = document.createElement('div');
             youtubePlayerHolder.setAttribute('id', 'YTPlayerHolder');
@@ -1593,7 +1410,6 @@ function UIManager() {
                 }
             }
 
-
             const ytSpinner = document.createElement('div');
             ytSpinner.classList.add('youtubeSpinner');
             ytSpinner.innerHTML = YouTubePlayer.spinnerHTML;
@@ -1609,7 +1425,7 @@ function UIManager() {
         const authorSpanEl = youtubePlayer.domElement.querySelector('.youtubeAuthor');
         const subscribeButtonEl = youtubePlayer.domElement.querySelector('.youtubeSubscribe');
         const spinnerEl = youtubePlayer.domElement.querySelector('.youtubeSpinner');
-        
+
         YouTubePlayer.loadVideo('YTPlayerHolder', id, authorSpanEl, subscribeButtonEl,spinnerEl);
 
         youtubePlayer.domElement.style.visibility = 'visible';
@@ -1617,316 +1433,12 @@ function UIManager() {
         youtubePlayer.domElement.style.top = '50%';
         youtubePlayer.domElement.style.transform = 'translate(-50%, -50%)';
     }
+
     this.hideYouTubePlayer = function(){
         youtubePlayer.domElement.style.visibility = 'hidden';
         YouTubePlayer.stopVideo();
     }
 
-    this.generateFilteredPublishLevelList = function () {
-        const levelListDiv = levelLoader.domElement.querySelector('#levelList');
-        while (levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
-
-        const divWrapper = levelListDiv;
-        if (!divWrapper) return;
-
-        this.setLevelLoaderTitle();
-
-        //fill here
-        var filterBar = document.createElement('div');
-        filterBar.setAttribute('class', 'filterBar');
-
-
-        //Name Filter
-        var levelNameFilter = document.createElement('div');
-        levelNameFilter.setAttribute('class', 'levelNameFilter');
-        filterBar.appendChild(levelNameFilter);
-
-        let filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelNameFilter.appendChild(filterIcon);
-
-        let span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Title';
-        levelNameFilter.appendChild(span);
-
-        //Author Filter
-        var levelAuthorFilter = document.createElement('div');
-        levelAuthorFilter.setAttribute('class', 'levelAuthorFilter');
-        filterBar.appendChild(levelAuthorFilter);
-
-        filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelAuthorFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Author';
-        levelAuthorFilter.appendChild(span);
-
-
-        // Plays Filter
-        var levelPlaysFilter = document.createElement('div');
-        levelPlaysFilter.setAttribute('class', 'levelPlaysFilter');
-        filterBar.appendChild(levelPlaysFilter);
-
-        filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelPlaysFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Plays';
-        levelPlaysFilter.appendChild(span);
-
-
-        // Ratings Filter
-        var levelRatingsFilter = document.createElement('div');
-        levelRatingsFilter.setAttribute('class', 'levelRatingsFilter');
-        filterBar.appendChild(levelRatingsFilter);
-
-        filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelRatingsFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Rating';
-        levelRatingsFilter.appendChild(span);
-
-        // Date Filter
-        var levelDateFilter = document.createElement('div');
-        levelDateFilter.setAttribute('class', 'levelDateFilter');
-        filterBar.appendChild(levelDateFilter);
-
-        filterIcon = document.createElement('div');
-        filterIcon.setAttribute('class', 'filterIcon green arrow');
-        levelDateFilter.appendChild(filterIcon);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Created on';
-        levelDateFilter.appendChild(span);
-
-        // Share
-        var levelShare = document.createElement('div');
-        levelShare.setAttribute('class', 'levelShare');
-        filterBar.appendChild(levelShare);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Share';
-        levelShare.appendChild(span);
-
-        // Play
-        var levelPlay = document.createElement('div');
-        levelPlay.setAttribute('class', 'levelPlay');
-        filterBar.appendChild(levelPlay);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'filterTitle');
-        span.innerText = 'Play';
-        levelPlay.appendChild(span);
-
-        levelNameFilter.style.width = '37%';
-        levelAuthorFilter.style.width = '12%';
-        levelPlaysFilter.style.width = '10%';
-        levelRatingsFilter.style.width = '8%';
-        levelDateFilter.style.width = '13%';
-        levelShare.style.width = '7%';
-        levelPlay.style.width = '13%';
-
-        divWrapper.appendChild(filterBar);
-
-        //*********************************/
-        // Single item
-
-
-        //Level Name
-        var itemBar = document.createElement('div');
-        itemBar.setAttribute('class', 'listPlayModeItem');
-
-        var levelNameDiv = document.createElement('div');
-        levelNameDiv.setAttribute('class', 'levelNameDiv');
-        itemBar.appendChild(levelNameDiv);
-
-        var thumb = document.createElement('div');
-        thumb.setAttribute('class', 'thumb');
-        levelNameDiv.appendChild(thumb);
-
-        var thumbImage = new Image();
-        thumbImage.setAttribute('id', 'thumbImage');
-        thumb.appendChild(thumbImage);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemTitle');
-        span.innerText = 'Level Title';
-        levelNameDiv.appendChild(span);
-
-        levelNameDiv.appendChild(document.createElement('br'));
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemDescription');
-        span.innerHTML = 'This is a very tidious text blablabaa and its way to long blabla bla...';
-        levelNameDiv.appendChild(span);
-
-
-        //Level Author
-
-        var levelAuthorDiv = document.createElement('div');
-        levelAuthorDiv.setAttribute('class', 'levelAuthorDiv');
-        itemBar.appendChild(levelAuthorDiv);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemAuthor');
-        span.innerText = '';
-        levelAuthorDiv.appendChild(span);
-
-        //Level Plays
-
-        var levelPlaysDiv = document.createElement('div');
-        levelPlaysDiv.setAttribute('class', 'levelPlaysDiv');
-        itemBar.appendChild(levelPlaysDiv);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemPlays');
-        span.innerText = '';
-        levelPlaysDiv.appendChild(span);
-
-        //Level Ratings
-
-        var levelRatingsDiv = document.createElement('div');
-        levelRatingsDiv.setAttribute('class', 'levelRatingsDiv');
-        itemBar.appendChild(levelRatingsDiv);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemRating');
-        span.innerText = '88% upvote';
-        levelRatingsDiv.appendChild(span);
-
-        //Level Date
-
-        var levelDateDiv = document.createElement('div');
-        levelDateDiv.setAttribute('class', 'levelDateDiv');
-        itemBar.appendChild(levelDateDiv);
-
-        span = document.createElement('span');
-        span.setAttribute('class', 'itemDate');
-        span.innerText = '18-12-2019';
-        levelDateDiv.appendChild(span);
-
-        // Level Share Button
-
-        var levelShareDiv = document.createElement('div');
-        levelShareDiv.setAttribute('class', 'levelShareDiv');
-        itemBar.appendChild(levelShareDiv);
-
-        let button = document.createElement('div');
-        button.setAttribute('class', 'shareIcon');
-        levelShareDiv.appendChild(button);
-
-        // Level Play Button
-
-        var levelLoadDiv = document.createElement('div');
-        levelLoadDiv.setAttribute('class', 'levelLoadDiv');
-        itemBar.appendChild(levelLoadDiv);
-
-        button = document.createElement('div');
-        button.setAttribute('class', 'menuButton');
-        levelLoadDiv.appendChild(button);
-
-        let progressBackFill = document.createElement('div');
-        progressBackFill.classList.add('progressBackFill');
-        button.appendChild(progressBackFill)
-
-        let playButtonTriangle = document.createElement('div');
-        playButtonTriangle.setAttribute('class', 'playButtonTriangleIcon')
-        button.appendChild(playButtonTriangle)
-
-        const dotShell = uiHelper.buildDotShell(true);
-        button.appendChild(dotShell);
-        //*********************************/
-
-        // Level Load
-        let itemList = document.createElement('div');
-        itemList.setAttribute('class', 'itemList');
-        divWrapper.appendChild(itemList);
-
-        const itemListDotShell = uiHelper.buildDotShell(false);
-        itemList.appendChild(itemListDotShell);
-
-        let self = this;
-
-        const buildLevelList = (levels) => {
-
-            itemListDotShell.style.visibility = 'hidden';
-            levels.forEach(level => {
-
-                let itemBarClone = itemBar.cloneNode(true)
-                itemList.appendChild(itemBarClone);
-
-                const itemTitle = itemBarClone.querySelector('.itemTitle')
-                itemTitle.innerText = level.title;
-                uiHelper.clampDot(itemTitle, 1, 14);
-
-                const itemDescription = itemBarClone.querySelector('.itemDescription');
-                itemDescription.innerText = level.description;
-                uiHelper.clampDot(itemDescription, 3, 12);
-
-                const itemDate = itemBarClone.querySelector('.itemDate');
-                itemDate.innerText = format.formatDMY(level.created_at);
-                itemBarClone.querySelector('.itemAuthor').innerText = level.author.username;
-
-
-                const sumVotes = level.upvotes + level.downvotes;
-                const rating = level.upvotes / sumVotes;
-
-                itemBarClone.querySelector('.itemRating').innerText = (!sumVotes || sumVotes) < 10 ? '??' : Math.round(rating * 100) + '%';
-
-                const itemPlays = itemBarClone.querySelector('.itemPlays')
-                itemPlays.innerText = format.formatNumber(level.playcount);
-
-                const thumbImage = itemBarClone.querySelector('#thumbImage');
-                thumbImage.src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
-
-                itemBarClone.querySelector('.levelShareDiv').addEventListener('click', () => {
-                    this.showSocialShare(level);
-                });
-
-                const playLevelFunction = () => {
-                    if (game.gameState != game.GAMESTATE_MENU) return;
-                    game.gameState = game.GAMESTATE_LOADINGDATA;
-                    itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'hidden';
-                    itemBarClone.querySelector('.dot-shell').style.visibility = 'visible';
-
-                    const progressBar = itemBarClone.querySelector('.progressBackFill');
-                    progressBar.style.visibility = 'visible';
-                    const progressFunction = progress => {
-                        const progressRounded = (progress*100).toFixed(2);
-                        progressBar.style.clipPath = `inset(0px ${100-progressRounded}% 0px 0px)`;
-                    }
-
-                    game.loadPublishedLevelData(level, progressFunction).then(() => {
-                        itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
-                        itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
-                        progressBar.style.visibility = 'hidden';
-                        self.hideLevelLoader();
-                    }).catch((error) => {
-                        itemBarClone.querySelector('.playButtonTriangleIcon').style.visibility = 'visible';
-                        itemBarClone.querySelector('.dot-shell').style.visibility = 'hidden';
-                        progressBar.style.visibility = 'hidden';
-                    });
-                }
-
-                itemBarClone.querySelector('.menuButton').addEventListener('click', playLevelFunction);
-                thumbImage.addEventListener('click', playLevelFunction);
-            });
-
-        }
-        backendManager.getPublishedLevels(filter).then((levels) => {
-            buildLevelList(levels);
-        })
-    }
     this.FILTER_SORT_MOSTPLAYED = "mostplayed";
     this.FILTER_SORT_BEST = "best";
     this.FILTER_SORT_NEWEST = "newest";

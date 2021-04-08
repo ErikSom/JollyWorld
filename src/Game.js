@@ -286,7 +286,7 @@ function Game() {
 
         if(uidHash && uidHash.length===21){
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
-                ui.showLevelBanner2(levelData);
+                ui.showLevelBanner(levelData);
             }).catch(_err =>{
                 history.replaceState({}, document.title, '')
             });
@@ -666,7 +666,7 @@ function Game() {
         this.stopAutoSave();
 
         if(levelData){
-            ui.showLevelBanner2(levelData);
+            ui.showLevelBanner(levelData);
         }
 
         this.triggerDebugDraw.debounceRedraw();
