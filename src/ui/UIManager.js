@@ -452,6 +452,7 @@ function UIManager() {
             const navButtons = levelBanner.querySelector('.nav-buttons');
             const backButton = navButtons.querySelector('.back');
             backButton.onclick = ()=>{
+                history.replaceState({}, 'JollyWorld', '/');
                 this.hideLevelBanner();
             }
             customGUIContainer.appendChild(levelBanner);
@@ -574,9 +575,6 @@ function UIManager() {
 
         levelBanner.style.display = 'none';
         mainMenu.classList.remove('inactive');
-
-
-        history.replaceState({}, 'JollyWorld', '/');
     }
 
     this.showLoginPrompt = ()=> {

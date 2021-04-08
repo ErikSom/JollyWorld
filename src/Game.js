@@ -671,6 +671,8 @@ function Game() {
 
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(false);
+
+        history.replaceState({}, 'JollyWorld', '/');
     }
 
     this.runWorld = function () {
