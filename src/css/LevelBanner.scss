@@ -54,9 +54,20 @@
 			display: flex;
 			margin-top: 5px;
     		font-weight: bold;
-			.text-date{
+			font-size: 10px;
+			align-items: center;
+			.text-date-published, .text-date-updated{
 				color: #00FF00;
 				margin-left: 5px;
+				white-space: nowrap;
+			}
+			.text-updated{
+				margin-left: 5px;
+			}
+			&.no-update{
+				.text-date-updated, .text-updated{
+					display: none;
+				}
 			}
 		}
 	}

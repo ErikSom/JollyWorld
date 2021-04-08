@@ -409,8 +409,10 @@ function UIManager() {
                             Level description goes here</div>
                         </div>
                         <div class="level-published">
-                            <div class="text-published">Published:</div>
-                            <div class="text-date">10. March. 2020</div>
+                            <div class="text-published">Publ.</div>
+                            <div class="text-date-published">10. March. 2020</div>
+                            <div class="text-updated">Upd.</div>
+                            <div class="text-date-updated">10. March. 2020</div>
                         </div>
 
                     </div>
@@ -551,8 +553,19 @@ function UIManager() {
         const description = levelBanner.querySelector('.description');
         description.innerText = levelData.description;
 
-        const publishedDate = levelBanner.querySelector('.text-date');
-        publishedDate.innerText = format.formatDMY(levelData.updated_at);
+
+        const publishedDateDiv = levelBanner.querySelector('.level-published');
+
+        const publishedDate = publishedDateDiv.querySelector('.text-date-published');
+        publishedDate.innerText = format.formatDMY(levelData.created_at);
+
+        if(format.formatDMY(levelData.updated_at) === publishedDate.innerText){
+            publishedDateDiv.classList.add('no-update');
+        }else{
+            publishedDateDiv.classList.remove('no-update');
+            const updatedDate = publishedDateDiv.querySelector('.text-date-updated');
+            updatedDate.innerText = format.formatDMY(levelData.updated_at);
+        }
     }
     this.hideLevelBanner = ()=>{
 
