@@ -7,6 +7,9 @@ import '../css/SocialShare.scss'
 import '../css/LoginScreen.scss'
 import '../css/PauseScreen.scss'
 
+
+// https://github.com/catdad/canvas-confetti
+
 import {
     backendManager
 } from '../utils/BackendManager';
