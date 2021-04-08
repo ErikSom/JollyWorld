@@ -1308,8 +1308,8 @@ function Game() {
 
         EffectsComposer.update();
         SlowmoUI.update();
-        AudioManager.update();
         this.editor.run();
+        AudioManager.update();
 
         this.newDebugGraphics.clear();
         if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {

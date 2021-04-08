@@ -299,11 +299,9 @@ function UIManager() {
     }
 
     this.setLevelDataOnGameTile = (game, levelData) => {
-        console.log(levelData);
         const thumb = game.querySelector('.thumb');
         const thumbSrc = `${Settings.STATIC}/${levelData.thumb_big_md5}.png`;
         thumb.setAttribute('data-src', thumbSrc);
-
 
         const title = game.querySelector('.text-level-name');
         title.innerText = levelData.title;
@@ -1176,7 +1174,7 @@ function UIManager() {
 
             restartButton.addEventListener('click', () => {
                 this.hideWinScreen();
-                game.game.openMainMenu(game.currentLevelData);
+                game.openMainMenu(game.currentLevelData);
             })
 
             targetDomElement.appendChild(divWrapperNormal);
@@ -1347,7 +1345,6 @@ function UIManager() {
         const input = element.querySelector('input');
         input.value = decodeURIComponent(url);
 
-        console.log("UPDATE:", level);
     }
 
     this.showSocialShare = level =>{

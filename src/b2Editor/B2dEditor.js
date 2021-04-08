@@ -63,7 +63,7 @@ const _B2dEditor = function () {
 	this.debugGraphics = null;
 	this.tracingTexture = null;
 	this.textures = null;
-	this.currentTime;
+	this.currentTime = performance.now();
 	this.deltaTime;
 	this.contactCallBackListener;
 
