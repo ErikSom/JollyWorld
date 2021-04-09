@@ -1117,6 +1117,7 @@ function UIManager() {
                 </div>
                 <div class="buttons">
                     <div class="exit">Exit to Menu</div>
+                    <div class="test">Exit Test</div>
                     <div class="reset">Reset</div>
                     <div class="retry">Retry</div>
                 </div>
@@ -1137,22 +1138,36 @@ function UIManager() {
             const buttons = winScreen.querySelector('.buttons');
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
-                game.unpauseGame();
+                this.hideWinScreen();
                 game.openMainMenu(game.currentLevelData);
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
-                game.unpauseGame();
+                this.hideWinScreen();
                 game.resetWorld(true);
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
-                game.unpauseGame();
+                this.hideWinScreen();
                 game.openMainMenu();
             };
 
+            const testButton = buttons.querySelector('.test');
+            testButton.onclick = () => {
+                game.stopTestingWorld();
+                this.hideWinScreen();
+            }
+
             customGUIContainer.appendChild(winScreen);
         }
+
+
+        if (game.gameState == game.GAMESTATE_EDITOR) {
+            winScreen.classList.add('editor');
+        }else{
+            winScreen.classList.remove('editor');
+        }
+
 
         const timeText = winScreen.querySelector('.text-time');
         timeText.innerText = time;
@@ -1168,6 +1183,12 @@ function UIManager() {
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
 
         winScreen.style.display = 'block';
+    }
+
+    this.hideWinScreen = function () {
+        if(winScreen){
+            winScreen.style.display = 'none';
+        }
     }
 
     this.showWinScreen2 = function (time, mili) {
@@ -1330,13 +1351,6 @@ function UIManager() {
 
         AudioManager.playSFX('win', 0.5, 1.0);
 
-    }
-
-    this.hideWinScreen = function () {
-        if(winScreen){
-            winScreen.domElement.style.visibility = 'hidden';
-            winLogo.style.visibility = 'hidden';
-        }
     }
 
     this.buildSocialShare2 = ()=> {
