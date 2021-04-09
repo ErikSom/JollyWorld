@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { Settings } from '../Settings';
 
 export function attachGraphicsAPIMixin() {
 
@@ -84,5 +85,20 @@ export function attachGraphicsAPIMixin() {
                 }
             }
         }
+    }
+
+    PIXI.Graphics.prototype.drawRegularPoly = function (x, y, radius, sides, rotation) {
+
+       const x1 = x + radius * Math.cos(rotation);
+       const y1 = y + radius * Math.sin(rotation);
+       this.moveTo(x1, y1);
+
+       const angleOffset = Settings.pidouble / sides;
+       for(let i = 1; i<sides; i++){
+           const x2 = x + radius * Math.cos(rotation + angleOffset * i);
+           const y2 = y + radius * Math.sin(rotation + angleOffset * i);
+           this.lineTo(x2, y2);
+       }
+       this.lineTo(x1, y1);
     }
 }

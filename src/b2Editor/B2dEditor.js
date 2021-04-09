@@ -4973,6 +4973,7 @@ const _B2dEditor = function () {
 		this.drawTransformGui();
 		this.drawDebugJointHelpers();
 		this.drawDebugTriggerHelpers();
+		this.drawDebugPrefabs();
 		if(this.customDebugDraw) this.customDebugDraw();
 	}
 	this.drawPlayerHistory = function(){
@@ -5012,6 +5013,13 @@ const _B2dEditor = function () {
 		if(selectedTriggers.length>0){
 			trigger.drawEditorTriggerTargets(selectedTriggers);
 		}
+	}
+	this.drawDebugPrefabs = function () {
+		const keys = Object.keys(this.selectedPrefabs);
+		keys.forEach(key => {
+			const prefab = this.activePrefabs[key];
+			if(prefab.class && prefab.class.drawDebugEditor) prefab.class.drawDebugEditor();
+		})
 	}
 
 	this.drawDebugJointHelpers = function () {
@@ -9623,7 +9631,9 @@ const _B2dEditor = function () {
 					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
 
-					// here i could potentially fix links
+					if(obj.class && obj.class.initializeProps){
+						obj.class.initializeProps();
+					}
 
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;

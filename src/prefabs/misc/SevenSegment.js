@@ -17,17 +17,42 @@ class SevenSegment extends PrefabManager.basePrefab {
         this.linkedSegment = target.mySprite;
     }
     serializeProps(){
-        if(this.linkedSegment && !this.linkedSegmentId.destroyed){
+        if(this.linkedSegment && !this.linkedSegment.destroyed){
             game.editor.updateObject(this.linkedSegment, this.linkedSegment.data);
             // check if deleted
-            this.settings.linkedSegmentId = this.linkedSegment.parent.getChildIndex(this.linkedSegment);
+            this.prefabObject.settings.linkedSegmentId = this.linkedSegment.parent.getChildIndex(this.linkedSegment);
         } else {
-            this.settings.linkedSegmentId = null;
+            this.prefabObject.settings.linkedSegmentId = null;
         }
-        console.log("Serialize props!!!", this.settings.linkedSegmentId);
     }
     initializeProps(){
-        // set linkedSegment
+        if(this.prefabObject.settings.linkedSegmentId && this.prefabObject.settings.linkedSegmentId < game.editor.textures.children.length){
+            this.linkedSegment = game.editor.textures.getChildAt(this.prefabObject.settings.linkedSegmentId)
+        }
+    }
+    drawDebugEditor(){
+        // draw segment link
+        const bodyObject = this.base;
+        const sprite = bodyObject.mySprite;
+
+        if(this.linkedSegment){
+            editor.debugGraphics.lineStyle(1, "0x000000", 1);
+            editor.debugGraphics.moveTo(sprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, sprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
+            editor.debugGraphics.lineTo(this.linkedSegment.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, this.linkedSegment.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
+
+            const dx = this.linkedSegment.x - sprite.x;
+            const dy = this.linkedSegment.y - sprite.y;
+
+            const tx = sprite.x + dx /2;
+            const ty = sprite.y + dy /2;
+
+            const x = tx * editor.cameraHolder.scale.x + editor.cameraHolder.x;
+            const y = ty * editor.cameraHolder.scale.y + editor.cameraHolder.y;
+
+            const a = Math.atan2(dy, dx);
+            console.log(editor.debugGraphics)
+            editor.debugGraphics.drawRegularPoly(x, y, 10, 3, a);
+        }
     }
     init() {
         super.init();
