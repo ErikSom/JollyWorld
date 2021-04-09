@@ -44,6 +44,7 @@ class MidiPlayerClass {
 		this.ready = false;
 		this.shouldPlay = false;
 		this.song = null;
+		this.elapsed = 0;
 		this.instruments = [];
 		this.midiKeys = ["c4","c_4","d4","d_4","e4","f4","f_4","g4","g_4","a4","a_4","b4","c5","c_5","d5","d_5","e5","f5","f_5","g5","g_5","a5","a_5","b5","c6"];
 		this.midiNotes = [4*12+0,4*12+1,4*12+2,4*12+3,4*12+4,4*12+5,4*12+6,4*12+7,4*12+8,4*12+9,4*12+10,4*12+11,5*12+0,5*12+1,5*12+2,5*12+3,5*12+4,5*12+5,5*12+6,5*12+7,5*12+8,5*12+9,5*12+10,5*12+11,6*12+0];
@@ -63,6 +64,8 @@ class MidiPlayerClass {
 			})
 			return obj;
 		})();
+
+		console.log(this);
 	}
 
 	setSpeed(speed){
@@ -82,6 +85,17 @@ class MidiPlayerClass {
 		}
 	}
 
+	pause(){
+		this.elapsed = this.audioContext.currentTime-this.songStart;
+		this.playing = false;
+	}
+	resume(){
+		this.songStart = this.audioContext.currentTime-this.elapsed;
+		this.currentSongTime = this.elapsed;
+		this.nextStepTime = this.audioContext.currentTime;
+		this.playing = true;
+	}
+
 	stop(){
 		this.playing = false;
 		if(this.ready){
@@ -92,21 +106,22 @@ class MidiPlayerClass {
 	}
 
 	tick() {
-		if(!this.playing) return;
-		const duration = this.song[SONG_DURATION];
+		if(this.playing){
+			const duration = this.song[SONG_DURATION];
 
-		if (this.audioContext.currentTime > this.nextStepTime - this.stepDuration) {
-			this.sendNotes(this.song, this.songStart, this.currentSongTime, this.currentSongTime + this.stepDuration, this.audioContext, this.input, this.player);
-			this.currentSongTime = this.currentSongTime + this.stepDuration;
-			this.nextStepTime = this.nextStepTime + this.stepDuration;
-			if (this.currentSongTime > duration) {
-				this.currentSongTime = this.currentSongTime - duration;
-				this.sendNotes(this.song, this.songStart, 0, this.currentSongTime, this.audioContext, this.input, this.player);
-				this.songStart = this.songStart + duration;
+			if (this.audioContext.currentTime > this.nextStepTime - this.stepDuration) {
+				this.sendNotes(this.song, this.songStart, this.currentSongTime, this.currentSongTime + this.stepDuration, this.audioContext, this.input, this.player);
+				this.currentSongTime = this.currentSongTime + this.stepDuration;
+				this.nextStepTime = this.nextStepTime + this.stepDuration;
+				if (this.currentSongTime > duration) {
+					this.currentSongTime = this.currentSongTime - duration;
+					this.sendNotes(this.song, this.songStart, 0, this.currentSongTime, this.audioContext, this.input, this.player);
+					this.songStart = this.songStart + duration;
+				}
 			}
-		}
-		if (this.nextPositionTime < this.audioContext.currentTime) {
-			this.nextPositionTime = this.audioContext.currentTime + 3;
+			if (this.nextPositionTime < this.audioContext.currentTime) {
+				this.nextPositionTime = this.audioContext.currentTime + 3;
+			}
 		}
 		window.requestAnimationFrame(t => {
 			this.tick();
