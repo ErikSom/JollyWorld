@@ -7,6 +7,7 @@ import '../css/SocialShare.scss'
 import '../css/LoginScreen.scss'
 import '../css/PauseScreen.scss'
 import '../css/WinScreen.scss'
+import '../css/GameOver.scss'
 
 
 // https://github.com/catdad/canvas-confetti
@@ -668,7 +669,108 @@ function UIManager() {
         mainMenu.style.display = "none";
     }
 
-    this.showGameOver = function () {
+    this.showGameOver = function (time, mili){
+        if(!gameOver){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="sun"></div>
+                <div class="header"></div>
+                <div class="time">
+                    <div class="text-label">Time:</div>
+                    <div class="text-time">00:00</div>
+                    <div class="text-time-mili">00:00</div>
+                </div>
+                <div class="buttons">
+                    <div class="exit">Exit to Menu</div>
+                    <div class="test">Exit Test</div>
+                    <div class="reset">Reset</div>
+                    <div class="retry">Retry</div>
+                </div>
+                <div class="voting">
+                    <div class="vote-down button">
+                        <div class="vote-thumb"></div>
+                    </div>
+                    <div class="vote-up button">
+                        <div class="vote-thumb"></div>
+                    </div>
+                </div>
+            `;
+
+            gameOver = document.createElement('div');
+            gameOver.classList.add('gameover');
+            gameOver.innerHTML = htmlStructure;
+
+            const buttons = gameOver.querySelector('.buttons');
+            const resetButton = buttons.querySelector('.reset');
+            resetButton.onclick = () => {
+                this.hideGameOverMenu();
+                if(game.gameState == game.GAMESTATE_EDITOR){
+                    game.resetWorld();
+                }else{
+                    game.openMainMenu(game.currentLevelData);
+                }
+            };
+            const retryButton = buttons.querySelector('.retry');
+            retryButton.onclick = () => {
+                this.hideGameOverMenu();
+                game.resetWorld(true);
+            };
+            const exitButton = buttons.querySelector('.exit');
+            exitButton.onclick = () => {
+                this.hideGameOverMenu();
+                game.openMainMenu();
+            };
+
+            const testButton = buttons.querySelector('.test');
+            testButton.onclick = () => {
+                game.stopTestingWorld();
+                this.hideGameOverMenu();
+            }
+
+            customGUIContainer.appendChild(gameOver);
+        }
+
+
+        if (game.gameState == game.GAMESTATE_EDITOR) {
+            gameOver.classList.add('editor');
+        }else{
+            gameOver.classList.remove('editor');
+        }
+
+
+        const timeText = gameOver.querySelector('.text-time');
+        timeText.innerText = time;
+        const miliText = gameOver.querySelector('.text-time-mili');
+        miliText.innerText = mili;
+
+        const voteButtons = gameOver.querySelector('.voting');
+        const voteUpButton = voteButtons.querySelector('.vote-up');
+        const voteDownButton = voteButtons.querySelector('.vote-down');
+
+        shouldShowVoteButton(voteUpButton, voteDownButton, game.currentLevelData);
+
+        this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
+
+
+        if(gameOver && game.run) gameOver.style.display = 'block';
+        setTimeout(()=>{
+            if(gameOver && game.run){
+                gameOver.style.opacity = 1;
+                AudioManager.playSFX('lose', 0.3, 1.0);
+            }
+        },
+        Settings.gameOverDelay);
+
+    }
+
+    this.hideGameOverMenu = function () {
+        if (gameOver && gameOver.style.display == 'block') {
+            gameOver.style.display = 'none';
+            gameOver.style.opacity = 0;
+        }
+    }
+
+    this.showGameOver2 = function () {
         if (!gameOver) {
             gameOver = document.createElement('div');
             gameOver.setAttribute('id', 'gameOverScreen');
@@ -754,12 +856,6 @@ function UIManager() {
             }
         },
         Settings.gameOverDelay);
-    }
-    this.hideGameOverMenu = function () {
-        if (gameOver && gameOver.style.display == 'flex') {
-            gameOver.style.display = 'none';
-            gameOver.style.opacity = 0;
-        }
     }
 
     // this.showLevelBanner2 = function () {
@@ -1183,174 +1279,15 @@ function UIManager() {
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
 
         winScreen.style.display = 'block';
+
+        AudioManager.playSFX('win', 0.5, 1.0);
+
     }
 
     this.hideWinScreen = function () {
         if(winScreen){
             winScreen.style.display = 'none';
         }
-    }
-
-    this.showWinScreen2 = function (time, mili) {
-        if (!winScreen) {
-            const levelEditGUIWidth = 340;
-            winScreen = new dat.GUI({
-                autoPlace: false,
-                width: levelEditGUIWidth
-            });
-            winScreen.domElement.setAttribute('id', 'winScreen');
-
-            let folder = winScreen.addFolder('Win Screen');
-            folder.domElement.classList.add('custom');
-
-            folder.open();
-
-            var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-
-            winLogo = document.createElement('div');
-            winLogo.classList.add('winLogo');
-            customGUIContainer.appendChild(winLogo);
-
-            let divWrapperNormal = document.createElement('div');
-            divWrapperNormal.setAttribute('id', 'divWrapperNormal');
-
-            divWrapperNormal.style.padding = '5px';
-
-            let title = document.createElement('div');
-            title.classList.add('levelbanner_title');
-            divWrapperNormal.appendChild(title);
-
-            let creator = document.createElement('div');
-            creator.classList.add('levelbanner_creator');
-
-            let span = document.createElement('span');
-            span.innerText = 'By:';
-            creator.appendChild(span);
-
-            span = document.createElement('span');
-            span.innerText = 'Creator';
-            span.classList.add('levelbanner_creatorSpan')
-            creator.appendChild(span);
-
-            divWrapperNormal.appendChild(creator);
-
-            let ratingHolder = this.buildVoteGUI();
-            ratingHolder.setAttribute('class', 'ratingHolder');
-            ratingHolder.setAttribute('id', 'winScreen_ratingHolder');
-            divWrapperNormal.appendChild(ratingHolder);
-
-            winScreen.updateVoteGUI = ()=>{this.updateVoteGUI(ratingHolder)};
-
-
-            let timeDiv = document.createElement('div');
-            timeDiv.classList.add('winScreen_timeDiv');
-            let timeSpan = document.createElement('span');
-            timeSpan.innerText = time;
-            timeSpan.classList.add('winScreen_time');
-            timeDiv.appendChild(timeSpan);
-            let timeSpanMili = document.createElement('span');
-            timeSpanMili.innerText = mili;
-            timeSpanMili.classList.add('winScreen_timeMili');
-            timeDiv.appendChild(timeSpanMili);
-            divWrapperNormal.appendChild(timeDiv);
-
-            const flexButtonHolder = document.createElement('div');
-            divWrapperNormal.appendChild(flexButtonHolder);
-            flexButtonHolder.classList.add('flexButtonWrap');
-
-            let exitButton = document.createElement('div');
-            exitButton.setAttribute('class', 'backButton menuButton')
-            exitButton.innerHTML = 'Exit to Menu';
-            exitButton.style.marginLeft = '14px';
-            flexButtonHolder.appendChild(exitButton);
-
-            exitButton.addEventListener('click', () => {
-                this.hideWinScreen();
-                game.openMainMenu();
-            })
-
-            let restartButton = document.createElement('div');
-            restartButton.setAttribute('class', 'moreLevels menuButton')
-            restartButton.innerHTML = 'Restart';
-            flexButtonHolder.appendChild(restartButton);
-
-            restartButton.addEventListener('click', () => {
-                this.hideWinScreen();
-                game.openMainMenu(game.currentLevelData);
-            })
-
-            targetDomElement.appendChild(divWrapperNormal);
-
-            let divWrapperEditor = document.createElement('div');
-            divWrapperEditor.setAttribute('id', 'divWrapperEditor');
-
-            divWrapperEditor.style.padding = '20px';
-
-            timeDiv = document.createElement('div');
-            timeDiv.classList.add('winScreen_timeDiv');
-            timeSpan = document.createElement('span');
-            timeSpan.innerText = time;
-            timeSpan.classList.add('winScreen_time');
-            timeDiv.appendChild(timeSpan);
-            timeSpanMili = document.createElement('span');
-            timeSpanMili.innerText = mili;
-            timeSpanMili.classList.add('winScreen_timeMili');
-            timeDiv.appendChild(timeSpanMili);
-            divWrapperEditor.appendChild(timeDiv);
-
-            let exitTest = document.createElement('div');
-            exitTest.setAttribute('class', 'moreLevels menuButton')
-            exitTest.innerHTML = 'Exit Test';
-            exitTest.style.float = 'unset';
-            exitTest.style.margin = 'auto';
-            exitTest.style.marginTop = '20px';
-            divWrapperEditor.appendChild(exitTest);
-
-            exitTest.addEventListener('click', () => {
-                game.stopTestingWorld();
-                this.hideWinScreen();
-            })
-
-            targetDomElement.appendChild(divWrapperEditor);
-            customGUIContainer.appendChild(winScreen.domElement);
-            winScreen.domElement.style.position = 'absolute';
-        }
-
-        winScreen.domElement.style.visibility = 'visible';
-        winLogo.style.visibility = 'visible';
-
-        winLogo.classList.remove("winLogo");
-        void winLogo.offsetWidth;
-        winLogo.classList.add("winLogo");
-
-        // set values
-
-        if (game.gameState == game.GAMESTATE_EDITOR) {
-            winScreen.domElement.querySelector('#divWrapperNormal').style.display = 'none';
-            winScreen.domElement.querySelector('#divWrapperEditor').style.display = 'block';
-        } else {
-            winScreen.domElement.querySelector('#divWrapperNormal').style.display = 'block';
-            winScreen.domElement.querySelector('#divWrapperEditor').style.display = 'none';
-        }
-
-        winScreen.domElement.querySelector('.levelbanner_title').innerText = game.currentLevelData.title;
-
-        if(game.gameState == game.GAMESTATE_NORMALPLAY){
-            winScreen.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
-            divWrapperNormal.querySelector('.winScreen_time').innerText = time;
-            divWrapperNormal.querySelector('.winScreen_timeMili').innerText = mili;
-        }else {
-            winScreen.domElement.querySelector('.levelbanner_creatorSpan').innerText = 'User';
-            divWrapperEditor.querySelector('.winScreen_time').innerText = time;
-            divWrapperEditor.querySelector('.winScreen_timeMili').innerText = mili;
-        }
-
-        winScreen.domElement.style.left = '50%';
-        winScreen.domElement.style.top = '65%';
-        winScreen.domElement.style.transform = 'translate(-50%, -50%)';
-
-        AudioManager.playSFX('win', 0.5, 1.0);
-
     }
 
     this.buildSocialShare2 = ()=> {

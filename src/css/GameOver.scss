@@ -1,0 +1,37 @@
+@use 'WinScreen';
+
+.gameover{
+	@extend .winscreen;
+	opacity: 0;
+	transition: opacity 0.5s ease-in;
+
+	.bar{
+		background-image: url(../../static/assets/images/gui/BarGameOver.png);
+		width: 100%;
+		height: 218px;
+	}
+	.sun{
+		background-image: url(../../static/assets/images/gui/Moon_Big.png);
+	}
+
+	.header{
+		background-image: url(../../static/assets/images/gui/YouLose.png);
+		width: 405px;
+		height: 111px;
+	}
+
+	.time{
+		.text-time, .text-time-mili{
+			color: white;
+		}
+	}
+
+	&.editor{
+		.buttons{
+			.reset, .retry, .test{
+				display: block;
+			}
+		}
+
+	}
+}

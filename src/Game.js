@@ -948,8 +948,10 @@ function Game() {
     }
     this.lose = function () {
         if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
+            const d = dateDiff(performance.now(), this.levelStartTime);
+            const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             ui.show();
-            ui.showGameOver();
+            ui.showGameOver(s, d.ms);
             MobileController.hide();
             this.gameOver = true;
         }
