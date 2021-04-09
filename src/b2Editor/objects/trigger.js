@@ -206,7 +206,7 @@ export const doAction = function (actionData, target) {
             target.EnableLimit(actionData.enabled);
             break;
         case "SetAngleLimits":
-            target.SetLimits(actionData.lowerAngle, actionData.upperAngle);
+            target.SetLimits(actionData.lowerAngle * game.editor.DEG2RAD, actionData.upperAngle * game.editor.DEG2RAD);
             break;
         case "SetDistanceLimits":
             target.SetLimits(actionData.lowerLimit, actionData.upperLimit);

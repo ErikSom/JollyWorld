@@ -96,6 +96,7 @@ const determineVolumeAndPan = pos => {
 }
 
 export const playPrefabUniqueLoopSFX = (prefabName, sfxName, volume, pitch=1, position) => {
+
 	const howl = getHowl(sfxName);
 
 	if(!howl || !Settings.sfxOn) return;
@@ -182,6 +183,7 @@ export const stopAllSounds = ()=>{
 }
 export const update = ()=> {
 	currentQueueReleaseTime += game.editor.deltaTime;
+
 	if(currentQueueReleaseTime > soundQueueReleaseInterval) activePlayingSounds--;
 	while(currentQueueReleaseTime > soundQueueReleaseInterval) currentQueueReleaseTime -= soundQueueReleaseInterval;
 }

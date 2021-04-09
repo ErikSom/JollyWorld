@@ -63,7 +63,7 @@ const _B2dEditor = function () {
 	this.debugGraphics = null;
 	this.tracingTexture = null;
 	this.textures = null;
-	this.currentTime;
+	this.currentTime = performance.now();
 	this.deltaTime;
 	this.contactCallBackListener;
 
@@ -605,6 +605,7 @@ const _B2dEditor = function () {
 					}
 					targetFolder.add(ui.editorGUI.editData, "deleteSong").name(`remove song ${this.editorSettingsObject.song[0].substr(0, 12)}...mid`);
 					targetFolder.add(ui.editorGUI.editData, 'autoPlayMidi').onChange(onChange('autoPlayMidi'));
+					targetFolder.add(ui.editorGUI.editData, 'resetMidiOnRetry').onChange(onChange('resetMidiOnRetry'));
 				}
 
 				const utilityFolder = ui.editorGUI.addFolder('utilities');
@@ -2655,6 +2656,7 @@ const _B2dEditor = function () {
 		this.colorMatrix = [];
 		this.song = undefined;
 		this.autoPlayMidi = true;
+		this.resetMidiOnRetry = true;
 	}
 	this.editorJointObject = new this.jointObject();
 
@@ -9270,6 +9272,7 @@ const _B2dEditor = function () {
 			arr[5] = obj.gameSpeed;
 			arr[6] = obj.colorMatrix;
 			arr[7] = obj.autoPlayMidi;
+			arr[8] = obj.resetMidiOnRetry;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -9427,6 +9430,7 @@ const _B2dEditor = function () {
 			obj.gameSpeed = arr[5] !== undefined ? arr[5] : 1.0;
 			obj.colorMatrix = Array.isArray(arr[6]) ? arr[6] : [];
 			obj.autoPlayMidi = arr[7] !== undefined ? arr[7] : true;
+			obj.resetMidiOnRetry = arr[8] !== undefined ? arr[8] : true;
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();

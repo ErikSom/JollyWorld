@@ -286,7 +286,7 @@ function Game() {
 
         if(uidHash && uidHash.length===21){
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
-                ui.showLevelBanner2(levelData);
+                ui.showLevelBanner(levelData);
             }).catch(_err =>{
                 history.replaceState({}, document.title, '')
             });
@@ -666,11 +666,13 @@ function Game() {
         this.stopAutoSave();
 
         if(levelData){
-            ui.showLevelBanner2(levelData);
+            ui.showLevelBanner(levelData);
         }
 
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(false);
+
+        history.replaceState({}, 'JollyWorld', '/');
     }
 
     this.runWorld = function () {
@@ -801,7 +803,7 @@ function Game() {
             levelData = null;
         }
         if(!levelData){
-            levelData = JSON.parse(JSON.stringify(levelsData.mainMenuLevel));
+            levelData = JSON.parse(JSON.stringify(levelsData.editorLevel));
             levelData.id = nanoid();
             levelData.creationDate = Date.now();
         }
@@ -946,8 +948,10 @@ function Game() {
     }
     this.lose = function () {
         if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
+            const d = dateDiff(performance.now(), this.levelStartTime);
+            const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             ui.show();
-            ui.showGameOver();
+            ui.showGameOver(s, d.ms);
             MobileController.hide();
             this.gameOver = true;
         }
@@ -1308,8 +1312,8 @@ function Game() {
 
         EffectsComposer.update();
         SlowmoUI.update();
-        AudioManager.update();
         this.editor.run();
+        AudioManager.update();
 
         this.newDebugGraphics.clear();
         if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
