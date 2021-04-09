@@ -6,6 +6,7 @@ import '../css/CharacterSelect.scss'
 import '../css/SocialShare.scss'
 import '../css/LoginScreen.scss'
 import '../css/PauseScreen.scss'
+import '../css/WinScreen.scss'
 
 
 // https://github.com/catdad/canvas-confetti
@@ -975,6 +976,9 @@ function UIManager() {
                     <div class="exit">Exit to Menu</div>
                     <div class="resume">Resume</div>
                 </div>
+                <div class ="footer">
+                    <div class="rights"></div>
+                </div>
             `;
 
             pauseScreen = document.createElement('div');
@@ -1100,7 +1104,73 @@ function UIManager() {
 
     }
 
-    this.showWinScreen = function (time, mili) {
+    this.showWinScreen = function(time, mili){
+        if(!winScreen){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="sun"></div>
+                <div class="header"></div>
+                <div class="time">
+                    <div class="text-label">Time:</div>
+                    <div class="text-time">00:00</div>
+                    <div class="text-time-mili">00:00</div>
+                </div>
+                <div class="buttons">
+                    <div class="exit">Exit to Menu</div>
+                    <div class="reset">Reset</div>
+                    <div class="retry">Retry</div>
+                </div>
+                <div class="voting">
+                    <div class="vote-down button">
+                        <div class="vote-thumb"></div>
+                    </div>
+                    <div class="vote-up button">
+                        <div class="vote-thumb"></div>
+                    </div>
+                </div>
+            `;
+
+            winScreen = document.createElement('div');
+            winScreen.classList.add('winscreen');
+            winScreen.innerHTML = htmlStructure;
+
+            const buttons = winScreen.querySelector('.buttons');
+            const resetButton = buttons.querySelector('.reset');
+            resetButton.onclick = () => {
+                game.unpauseGame();
+                game.openMainMenu(game.currentLevelData);
+            };
+            const retryButton = buttons.querySelector('.retry');
+            retryButton.onclick = () => {
+                game.unpauseGame();
+                game.resetWorld(true);
+            };
+            const exitButton = buttons.querySelector('.exit');
+            exitButton.onclick = () => {
+                game.unpauseGame();
+                game.openMainMenu();
+            };
+
+            customGUIContainer.appendChild(winScreen);
+        }
+
+        const timeText = winScreen.querySelector('.text-time');
+        timeText.innerText = time;
+        const miliText = winScreen.querySelector('.text-time-mili');
+        miliText.innerText = mili;
+
+        const voteButtons = winScreen.querySelector('.voting');
+        const voteUpButton = voteButtons.querySelector('.vote-up');
+        const voteDownButton = voteButtons.querySelector('.vote-down');
+
+        shouldShowVoteButton(voteUpButton, voteDownButton, game.currentLevelData);
+
+        this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
+
+        winScreen.style.display = 'block';
+    }
+
+    this.showWinScreen2 = function (time, mili) {
         if (!winScreen) {
             const levelEditGUIWidth = 340;
             winScreen = new dat.GUI({
