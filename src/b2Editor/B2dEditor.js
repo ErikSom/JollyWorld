@@ -2010,6 +2010,40 @@ const _B2dEditor = function () {
 			}
 		}
 
+		// fixed copied prefabs
+		for (i = 0; i < copyArray.length; i++) {
+			data = copyArray[i].data;
+			if (data.type == this.object_PREFAB) {
+				const propertiesToFix = PrefabManager.copyFixProperties[data.prefabName] || [];
+				propertiesToFix.forEach( property => {
+					const targetObject = data.settings[property];
+					if(targetObject && Array.isArray(targetObject)){
+						const newArr = [];
+						targetObject.forEach(pid => {
+							let foundBody = -1;
+							let realIndex = 0;
+							for (k = 0; k < copyArray.length; k++) {
+								if (pid == copyArray[k].ID) {
+									foundBody = realIndex;
+									break;
+								}
+								realIndex += copyArray[k].childCount || 1;
+							}
+							if (foundBody >= 0){
+								newArr.push(foundBody);
+							};
+						});
+						if(newArr.length){
+							data.settings[property] = newArr;
+						}else{
+							console.log("DAFUQQQQQQ");
+							data.settings[property] = null;
+						}
+					}
+				})
+			}
+		}
+
 		let copyJSON = '{"objects":[';
 		const copyCenterPoint = {
 			x: 0,
@@ -9526,7 +9560,7 @@ const _B2dEditor = function () {
 		let characterOldEndLayer = 0;
 		let characterNewEndLayer = 0;
 
-		const vehicleCorrectLayer = (id, trigger) =>{
+		const vehicleCorrectLayer = id =>{
 			if(id < characterStartLayer) return id;
 			if(vehicleOffset > 0){
 				if(id<characterNewEndLayer){
@@ -9631,9 +9665,16 @@ const _B2dEditor = function () {
 					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
 
-					if(obj.class && obj.class.initializeProps){
-						obj.class.initializeProps();
-					}
+					// fix reference ids
+					const propertiesToFix = PrefabManager.copyFixProperties[obj.prefabName] || [];
+					propertiesToFix.forEach(property => {
+						const targetObject = obj.settings[property];
+						if(Array.isArray(targetObject)){
+							targetObject.forEach( (id, index) => {
+								targetObject[index] = vehicleCorrectLayer(id + startChildIndex);
+							})
+						}
+					})
 
 					if (!this.breakPrefabs) {
 						this.activePrefabs[obj.key].ID = prefabStartChildIndex;
@@ -9673,7 +9714,7 @@ const _B2dEditor = function () {
 								obj.triggerObjects[j] = foundSprite.parent.getChildIndex(foundSprite);
 							}
 						}else{
-							obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex, true);
+							obj.triggerObjects[j] = vehicleCorrectLayer(obj.triggerObjects[j] + startChildIndex);
 						}
 					}
 					worldObject = this.buildTriggerFromObj(obj);
@@ -9704,7 +9745,7 @@ const _B2dEditor = function () {
 			}
 		}
 
-		//Fix trigger object targets
+		//Fix trigger object targets & fix prefab object targets
 		if(!prefabInstanceName){
 			for (var i = 0; i < this.triggerObjects.length; i++) {
 				var _trigger = this.triggerObjects[i];
@@ -9715,6 +9756,15 @@ const _B2dEditor = function () {
 				}
 				_trigger.mySprite.triggerInitialized = true;
 			}
+
+			// fix prefabs
+			Object.values(this.activePrefabs).forEach(prefab => {
+				if(prefab.class && prefab.class.initializeProps){
+					prefab.class.initializeProps();
+				}
+			});
+
+
 		}
 
 		return createdObjects;

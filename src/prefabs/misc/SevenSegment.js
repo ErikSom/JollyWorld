@@ -20,14 +20,17 @@ class SevenSegment extends PrefabManager.basePrefab {
         if(this.linkedSegment && !this.linkedSegment.destroyed){
             game.editor.updateObject(this.linkedSegment, this.linkedSegment.data);
             // check if deleted
-            this.prefabObject.settings.linkedSegmentId = this.linkedSegment.parent.getChildIndex(this.linkedSegment);
+            this.prefabObject.settings.linkedSegmentId = [this.linkedSegment.parent.getChildIndex(this.linkedSegment)];
         } else {
             this.prefabObject.settings.linkedSegmentId = null;
         }
     }
     initializeProps(){
-        if(this.prefabObject.settings.linkedSegmentId && this.prefabObject.settings.linkedSegmentId < game.editor.textures.children.length){
-            this.linkedSegment = game.editor.textures.getChildAt(this.prefabObject.settings.linkedSegmentId)
+        if(Array.isArray(this.prefabObject.settings.linkedSegmentId)){
+            const linkedSegmentId = this.prefabObject.settings.linkedSegmentId[0];
+            if(linkedSegmentId && linkedSegmentId < game.editor.textures.children.length){
+                this.linkedSegment = game.editor.textures.getChildAt(linkedSegmentId)
+            }
         }
     }
     drawDebugEditor(){
@@ -35,22 +38,17 @@ class SevenSegment extends PrefabManager.basePrefab {
         const bodyObject = this.base;
         const sprite = bodyObject.mySprite;
 
-        if(this.linkedSegment){
+        if(this.linkedSegment && !this.linkedSegment.destroyed){
             editor.debugGraphics.lineStyle(1, "0x000000", 1);
             editor.debugGraphics.moveTo(sprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, sprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
             editor.debugGraphics.lineTo(this.linkedSegment.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, this.linkedSegment.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
-
             const dx = this.linkedSegment.x - sprite.x;
             const dy = this.linkedSegment.y - sprite.y;
-
             const tx = sprite.x + dx /2;
             const ty = sprite.y + dy /2;
-
             const x = tx * editor.cameraHolder.scale.x + editor.cameraHolder.x;
             const y = ty * editor.cameraHolder.scale.y + editor.cameraHolder.y;
-
             const a = Math.atan2(dy, dx);
-            console.log(editor.debugGraphics)
             editor.debugGraphics.drawRegularPoly(x, y, 10, 3, a);
         }
     }

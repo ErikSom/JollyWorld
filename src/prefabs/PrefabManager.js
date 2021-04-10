@@ -38,6 +38,8 @@ export class basePrefab {
     }
 }
 
+export const copyFixProperties = {'SevenSegment':['linkedSegmentId']};
+
 
 
 export const LIBRARY_ADMIN = "admin";
