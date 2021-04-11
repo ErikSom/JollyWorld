@@ -12,7 +12,65 @@ class SevenSegment extends PrefabManager.basePrefab {
 
         this.base = this.lookupObject.base;
         this.base.isSevenSegment = true;
+
+        this.number = this.prefabObject.settings.number;
+
+        this.updateNumber();
     }
+    updateNumber(){
+
+        const segments = this.base.myTexture.children;
+        segments.forEach(child => {
+            child.visible = true;
+        })
+        const number = this.number;
+
+        console.log("Start number:", number)
+
+        if(number === 0){
+            segments[5].visible = false;
+        }else if(number === 1){
+            [0, 1, 2, 3, 5].forEach(index => {
+                segments[index].visible = false;
+            })
+        }else if(number === 2){
+            [2, 6].forEach(index => {
+                segments[index].visible = false;
+            })
+        }else if(number === 3){
+            [4, 6].forEach(index => {
+                segments[index].visible = false;
+            })
+        }else if(number === 4){
+            [1, 3, 4].forEach(index => {
+                segments[index].visible = false;
+            })
+        }else if(number === 5){
+            [0, 4].forEach(index => {
+                segments[index].visible = false;
+            })
+        }else if(number === 6){
+            segments[0].visible = false;
+        }else if(number === 7){
+            [3, 4, 5, 6].forEach(index => {
+                segments[index].visible = false;
+            })
+        }else if(number === 8){
+            //
+        }else if(number === 9){
+            segments[4].visible = false;
+        }
+    }
+    set(property, value) {
+		super.set(property, value);
+        switch (property) {
+            case 'number':
+                this.number = value;
+                this.updateNumber();
+				break;
+        }
+	}
+
     linkSevenSegment(target){
         this.linkedSegment = target.mySprite;
     }
@@ -106,9 +164,15 @@ const selectLinkTarget = prefab=>{
 }
 
 SevenSegment.settings = Object.assign({}, SevenSegment.settings, {
+    "number": 0,
     "linkSevenSegment": prefab=>selectLinkTarget(prefab),
 });
 SevenSegment.settingsOptions = Object.assign({}, SevenSegment.settingsOptions, {
+    "number":{
+		min:0.0,
+		max:9.0,
+		step:1.0
+	},
 	"linkSevenSegment": '$function',
 });
 
