@@ -117,7 +117,7 @@ function Game() {
     // path pixi for camera support
     // PathRenderTarget();
 
-    this.init = function () {
+    this.gameInit = function () {
         this.stats = new GameStats()
         document.body.appendChild(this.stats.dom);
         this.stats.dom.style.left = '0px';
@@ -181,7 +181,7 @@ function Game() {
         this.app.loader.load(
             async ()=> {
                 await ExtractTextureAssets(this.app.loader);
-                this.setup();
+                this.gameSetup();
             }
         );
 
@@ -204,7 +204,7 @@ function Game() {
 
     };
 
-    this.setup = function () {
+    this.gameSetup = function () {
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
@@ -253,7 +253,7 @@ function Game() {
         this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
         this.world.SetDebugDraw(this.myDebugDraw);
 
-        this.render();
+        this.gameRender();
 
         const res = this.app.loader.resources;
         const assets = this.editor.assetLists;
@@ -387,29 +387,6 @@ function Game() {
         PhysicsParticleEmitter.init();
 
         PIXICuller.init(this.editor.textures, this.levelCamera);
-
-        // SITELOCK
-        // (function checkInit() {
-        //     const hosts = ['bG9jYWxob3N0', 'LnBva2kuY29t', 'LnBva2ktZ2RuLmNvbQ==', 'am9sbHl3b3JsZC5uZXRsaWZ5LmFwcA==', 'am9sbHl3b3JsZC5hcHA='];
-        //     // localhost, .poki.com, .poki-gdn.com
-
-        //     let allowed = false;
-        //     const liveHost = window.location.hostname;
-
-        //     for (let i = 0; i < hosts.length; i++) {
-        //         const host = atob(hosts[i]);
-        //         if (liveHost.indexOf(host, liveHost.length - host.length) !== -1) { // endsWith()
-        //             allowed = true;
-        //             break;
-        //         }
-        //     }
-        //     if (!allowed) {
-        //         const targetURL = 'aHR0cHM6Ly9wb2tpLmNvbS9zaXRlbG9jaw==';
-        //         const url = atob(targetURL);
-        //         window.location.href = url;
-        //         window.top.location !== window.location && (window.top.location = window.location);
-        //     }
-        // }());
 
         this.preloader.classList.add('hide');
 
@@ -929,7 +906,7 @@ function Game() {
         if (game.currentLevelData.json != game.editor.stringifyWorldJSON()) return true;
         return false;
     }
-    this.checkpoint = function (object) {
+    this.gameCheckpoint = function (object) {
         if(!this.checkPointData || ( Math.abs(this.checkPointData.x - object.GetPosition().x) > 1 || Math.abs(this.checkPointData.y - object.GetPosition().y) > 1)){
             const confettiPosition = object.GetPosition().Clone();
             const confettiOffset = 3.0;
@@ -952,7 +929,7 @@ function Game() {
             }
         }
     }
-    this.win = function () {
+    this.gameWin = function () {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(performance.now(), this.levelStartTime);
@@ -970,7 +947,7 @@ function Game() {
             backendManager.submitTime(game.currentLevelData.id);
         }
     }
-    this.lose = function () {
+    this.gameLose = function () {
         if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
             const d = dateDiff(performance.now(), this.levelStartTime);
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
@@ -1072,7 +1049,7 @@ function Game() {
     }
     this.movementBufferSize = 60;
     this.movementBuffer = [];
-    this.camera = function (instant) {
+    this.gameCamera = function (instant) {
         const panEase = !instant ? 0.1 : 1.0;
         const zoomEase = !instant ? 0.1 : 1.0;
         const camera = this.editor.cameraHolder;
@@ -1299,18 +1276,18 @@ function Game() {
         }
     }
     let then, now;
-    this.render = (newtime) => {
+    this.gameRender = (newtime) => {
         if (!then) then = window.performance.now();
-        requestAnimationFrame(self.render);
+        requestAnimationFrame(self.gameRender);
         now = newtime;
         const elapsed = now - then;
         if (elapsed > Settings.timeStep) {
             then = now - (elapsed % Settings.timeStep);
-            self.update();
+            self.gameUpdate();
         }
     }
 
-    this.update = function () {
+    this.gameUpdate = function () {
 
         this.stats.begin();
 
@@ -1331,7 +1308,7 @@ function Game() {
             this.inputUpdate();
             this.world.Step(Settings.physicsTimeStep * game.editor.editorSettingsObject.gameSpeed, 4, 3);
             this.world.ClearForces();
-            this.camera();
+            this.gameCamera();
             PhysicsParticleEmitter.update();
             GameTimer.update();
         }
@@ -1406,12 +1383,12 @@ function Game() {
     }
 
 
-    this.GAMESTATE_MENU = 'menu';
-    this.GAMESTATE_EDITOR = 'editor';
-    this.GAMESTATE_NORMALPLAY = 'play';
-    this.GAMESTATE_LOADINGDATA = 'loadingdata';
+    this.GAMESTATE_MENU = 0;
+    this.GAMESTATE_EDITOR = 1;
+    this.GAMESTATE_NORMALPLAY = 2;
+    this.GAMESTATE_LOADINGDATA = 3;
 }
 export var game = new Game();
 setTimeout(() => {
-    game.init();
+    game.gameInit();
 }, 1); // guarantee all context is loaded and fix webpack order issue

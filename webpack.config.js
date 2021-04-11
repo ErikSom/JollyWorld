@@ -79,6 +79,6 @@ module.exports = {
 		  new webpack.DefinePlugin({
 			__VERSION__: JSON.stringify(require("./package.json").version),
 		 }),
-		 new WebpackShellPlugin({onBuildEnd:[`node injectblackbox.js ${isProduction ? "true" : "false"}`]})
+		 new WebpackShellPlugin({onBuildExit:[`node injectblackbox.js ${isProduction ? "true" : "false"}`]})
 	]
 };

@@ -1,24 +1,13 @@
-const path = require("path");
 const fs = require("fs");
 
 const htmlPath = './build/index.html';
-const blackboxDebugPath = './libs/blackbox-debug.js';
+const blackboxPath = process.argv[2] === "true" ? './libs/blackbox.js' : './libs/blackbox.js';
 
-fs.readFile(htmlPath, 'utf8', function (err, data) {
-	if (err) {
-		return console.log(err);
-	}
+const html =  fs.readFileSync(htmlPath, 'utf8');
 
-	const targetPath = blackboxDebugPath;
-	fs.readFile(targetPath, 'utf8', function (err, blackboxText) {
-		const regexBlackbox = new RegExp("{{{BLACKBOX}}}", 'g');
-		const newData = data.replace(regexBlackbox, blackboxText);
+const blackbox = fs.readFileSync(blackboxPath, 'utf8');
 
-		fs.writeFile(htmlPath, newData, 'utf8', function (err) {
-			if (err) return console.log(err);
-			console.log("Injected black box");
-		});
+const parts = html.split('{{{BLACKBOX}}}');
+const newData = parts[0] + blackbox.substr(0, blackbox.length - 1) + parts[1];
 
-	});
-});
-
+fs.writeFileSync(htmlPath, newData, 'utf8');

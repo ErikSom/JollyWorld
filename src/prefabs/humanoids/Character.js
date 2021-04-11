@@ -66,7 +66,7 @@ export class Character extends Humanoid {
     die(){
         if(this.alive){
             this.detachFromVehicle();
-            game.lose();
+            game.gameLose();
         }
         super.die();
     }
