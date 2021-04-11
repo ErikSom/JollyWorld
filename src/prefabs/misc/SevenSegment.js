@@ -17,6 +17,35 @@ class SevenSegment extends PrefabManager.basePrefab {
 
         this.updateNumber();
     }
+    increase(){
+        this.number++;
+        if(this.number === 10){
+            this.rollover(true);
+            this.number = 0;
+        }
+        this.updateNumber();
+    }
+    decrease(){
+        this.number--;
+        if(this.number === -1){
+            this.rollover(false);
+            this.number = 9;
+        }
+    }
+
+    rollover(positive){
+        if(this.linkedSegment && !this.linkedSegment.destroyed){
+            const linkedSegmentClass = game.editor.activePrefabs[this.linkedSegment.data.prefabInstanceName].class;
+
+            if(positive){
+                linkedSegmentClass.increase();
+            }else{
+                linkedSegmentClass.decrease();
+            }
+
+        }
+
+    }
     updateNumber(){
 
         const segments = this.base.myTexture.children;
