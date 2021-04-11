@@ -691,6 +691,7 @@ function Game() {
         ui.showSmallLogo();
         this.playLevelMidi();
         GameTimer.show(true);
+        window.SVGCache[1]();
     }
 
     this.testWorld = function () {
@@ -772,6 +773,7 @@ function Game() {
                     this.levelStartTime = performance.now() - checkPointData.time;
                 }else{
                     this.levelStartTime = performance.now();
+                    window.SVGCache[1]();
                 }
 
             }, Settings.levelBuildDelayTime);
@@ -824,6 +826,22 @@ function Game() {
         this.editor.ui.setLevelSpecifics();
         this.editor.buildJSON(data.json);
         if(this.editor.editorSettingsObject.song) MidiPlayer.startLoad(this.editor.editorSettingsObject.song);
+
+        if(backendManager.isLoggedIn() && data.id){
+
+            console.log(backendManager.userData, data);
+
+
+            backendManager.getLeaderboardPosition(data.id).then(json => {
+                console.log("My position:", json)
+            })
+
+            backendManager.getLeaderboard(data.id, 10).then(json => {
+                console.log("All positions:", json)
+            })
+
+            window.SVGCache[0](backendManager.userData.id, data.id)
+        }
     }
     this.pauseGame = function(){
         if(this.gameOver || this.levelWon) return;
@@ -944,6 +962,8 @@ function Game() {
             this.editor.ui.showConfetti();
             MobileController.hide();
             GameTimer.show(false);
+
+            backendManager.submitTime(game.currentLevelData.id);
         }
     }
     this.lose = function () {

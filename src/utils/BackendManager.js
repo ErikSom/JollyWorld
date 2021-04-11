@@ -377,6 +377,73 @@ function BackendManager() {
 			this.callBacks[type][i](data);
 		}
 	}
+
+	this.submitTime = async levelid => {
+        const data = await window.SVGCache[2]();
+
+		// POST /leaderboard/:id/entry (encrypted body)
+		const body = {
+			method: 'POST',
+			withCredentials: true,
+			headers: {
+			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Content-Type': 'application/json'
+			},
+			body: data
+		}
+
+		fetch(`${Settings.API}/leaderboard/${levelid}/entry`, body)
+		.then(result => result.json())
+		.then(async data => {
+			const {error} = data;
+
+			console.log("Score submitted", data, "Posted data:", data);
+			if(error){
+				return console.log(error);
+			}
+		});
+	}
+	this.getLeaderboardPosition = async levelid => {
+		// GET /leaderboard/:id/my
+		const body = {
+			method: 'GET',
+			withCredentials: true,
+			headers: {
+			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Content-Type': 'application/json'
+			},
+		}
+
+		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/my`, body);
+		const json = await result.json();
+
+		console.log("JSON:", json)
+
+		const {error} = json;
+		if(error){
+			return null
+		}else{
+			return json
+		}
+
+	}
+	this.getLeaderboard = async (levelid, limit) => {
+		// GET /leaderboard/:id/get ?limit=10
+		const body = {
+			method: 'GET',
+		}
+
+		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/get?limit=${limit}`, body);
+		const json = await result.json();
+
+		const {error} = json;
+		if(error){
+			return null
+		}else{
+			return json
+		}
+
+	}
 }
 
 export const backendManager = new BackendManager();
