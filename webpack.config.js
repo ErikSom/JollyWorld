@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const WebpackShellPlugin = require('webpack-shell-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -77,6 +78,7 @@ module.exports = {
 		  }),
 		  new webpack.DefinePlugin({
 			__VERSION__: JSON.stringify(require("./package.json").version),
-		 })
+		 }),
+		 new WebpackShellPlugin({onBuildEnd:[`node injectblackbox.js ${isProduction ? "true" : "false"}`]})
 	]
 };
