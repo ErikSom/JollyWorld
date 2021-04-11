@@ -2298,10 +2298,9 @@ const _B2dEditor = function () {
 		all.forEach((e) => {
 			e.flushDecalTasks();
 		});
-		const deltaTime = (performance.now() - this.currentTime) * this.editorSettingsObject.gameSpeed;
+		const deltaTime = Settings.timeStep * this.editorSettingsObject.gameSpeed;
 		this.deltaTime = deltaTime;
 		this.deltaTimeSeconds = this.deltaTime / 1000;
-		this.currentTime = performance.now();
 
 		FPSManager.update(deltaTime);
 
@@ -9911,7 +9910,6 @@ const _B2dEditor = function () {
 		var sprite;
 
 		this.lookupGroups = {};
-		this.currentTime = performance.now();
 		this.deltaTime = 0;
 		this.deltaTimeSeconds = 0;
 
