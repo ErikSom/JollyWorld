@@ -444,7 +444,7 @@ function UIManager() {
                     </div>
                     <div class="entries offcharts">
                         <div class="entry-info">Loading...</div>
-                        <div class="entry-template">
+                        <div class="entry entry-template">
                             <div class="position">
                                 <div class="profile"></div>
                                 <div class="text-position">1st</div>
@@ -553,6 +553,9 @@ function UIManager() {
         info.innerText = 'Loading...';
         info.style.display = 'block';
 
+        while(entries.children.length>2){
+            entries.removeChild(entries.children[2]);
+        }
 
         const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, 3)];
         const [myPosition, leaderboardData] = await Promise.all(promises);
@@ -562,6 +565,28 @@ function UIManager() {
             info.innerText = 'No entries';
         }else{
             info.style.display = 'none';
+
+            leaderboardData.forEach( (entryData, i) => {
+                const entry = template.cloneNode(true);
+                entry.style.display = 'flex';
+                entry.classList.remove('entry-template');
+                entry.classList.add('entry');
+
+                const username = entry.querySelector('.text-player-name')
+                username.innerText = entryData.username;
+
+                const d = format.dateDiff(entryData.time, 0);
+                const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
+
+                const timeText = entry.querySelector('.text-time');
+                timeText.innerText = s;
+
+                const timeTextMili = entry.querySelector('.text-time-mili');
+                timeTextMili.innerText = d.ms;
+
+                entries.appendChild(entry);
+            })
+
         }
 
         console.log(myPosition, leaderboardData);
