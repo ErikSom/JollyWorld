@@ -8,6 +8,7 @@ import '../css/LoginScreen.scss'
 import '../css/PauseScreen.scss'
 import '../css/WinScreen.scss'
 import '../css/GameOver.scss'
+import '../css/Leaderboard.scss'
 
 
 // https://github.com/catdad/canvas-confetti
@@ -62,6 +63,7 @@ let winLogo;
 let socialShareScreen;
 let settingsMenu;
 let loginScreen;
+let leaderboard;
 let smallLogo;
 
 let filter = {
@@ -439,7 +441,7 @@ function UIManager() {
                 </div>
                 <div class="leaderboard-bar">
                     <div class="header-bar">
-                        <div class="text-header">High Scores</div>
+                        <div class="text-header">Leaderboard</div>
                         <div class="viewall">View All</div>
                     </div>
                     <div class="entries offcharts">
@@ -536,14 +538,18 @@ function UIManager() {
         shouldShowVoteButton(voteUpButton, voteDownButton, levelData);
 
         const leaderboardBar = levelBanner.querySelector('.leaderboard-bar');
-        this.fillLeaderboard(leaderboardBar, levelData.id);
+
+        const showAllButton = leaderboardBar.querySelector('.viewall')
+        showAllButton.onclick = ()=> this.showLeaderboard(levelData);
+
+        this.fillLeaderboard(leaderboardBar, levelData.id, 3);
 
         this.enableVoteButtons(voteUpButton, voteDownButton, levelData);
 
         this.setLevelBannerData(levelData);
     }
 
-    this.fillLeaderboard = async (element, levelid) => {
+    this.fillLeaderboard = async (element, levelid, limit) => {
 
         const entries = element.querySelector('.entries');
         const template = entries.querySelector('.entry-template');
@@ -557,16 +563,29 @@ function UIManager() {
             entries.removeChild(entries.children[2]);
         }
 
-        const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, 3)];
+        const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, limit)];
         let [myPosition, leaderboardData] = await Promise.all(promises);
 
-        const inRankings = leaderboardData.find(entry => entry.username === backendManager.userData.username);
+        // const usernames = ["Goku", "Vegeta", "Krillin", "Gohan", "Freeza", "Cell", "Goten", "Gotenks", "Trunks"];
+        // leaderboardData = [];
+        // let fill = Math.round(Math.random()*100)+1
+        // for(let i = 0; i<fill; i++){
+        //     leaderboardData.push(
+        //         {
+        //             character: Math.round(Math.random()*10)+1,
+        //             time: Math.random()*50000,
+        //             username: usernames[Math.floor(Math.random() * usernames.length)],
+        //         }
+        //     )
+        // }
+
+        const inRankings = backendManager.isLoggedIn() && leaderboardData.find(entry => entry.username === backendManager.userData.username);
 
         entries.classList.remove('offcharts');
         let offcharts = false;
         if(!inRankings && myPosition){
             myPosition.username = backendManager.userData.username;
-            leaderboardData[2] = myPosition;
+            leaderboardData[limit-1] = myPosition;
             entries.classList.add('offcharts');
             offcharts = true;
         }
@@ -584,7 +603,7 @@ function UIManager() {
 
                 const position = entry.querySelector('.text-position');
 
-                if(i<2 || !offcharts){
+                if(i<(limit-1) || !offcharts){
                     position.innerText = format.makeOrdinal(i+1);
                 }else{
                     position.innerText = "??"
@@ -592,6 +611,10 @@ function UIManager() {
 
                 const username = entry.querySelector('.text-player-name')
                 username.innerText = entryData.username;
+
+                if(backendManager.isLoggedIn() && entryData.username === backendManager.userData.username){
+                    entry.classList.add('me');
+                }
 
                 const d = format.dateDiff(entryData.time, 0);
                 const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
@@ -609,6 +632,57 @@ function UIManager() {
             })
 
         }
+    }
+
+    this.showLeaderboard = levelData => {
+        if(!leaderboard){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Leaderboard</div>
+                <div class="leaderboard-bar">
+                    <div class="entries offcharts">
+                        <div class="entry-info">Loading...</div>
+                        <div class="entry entry-template">
+                            <div class="position">
+                                <div class="profile"></div>
+                                <div class="text-position">1st</div>
+                            </div>
+                            <div class="text-player-name">Smerik</div>
+                            <div class="time">
+                                <div class="text-time-label">Time:</div>
+                                <div class="text-time">01:38</div>
+                                <div class="text-time-mili">456</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <div class="back button">Back</div>
+                </div>
+            `;
+
+            leaderboard = document.createElement('div');
+            leaderboard.classList.add('leaderboard');
+            leaderboard.innerHTML = htmlStructure;
+
+            const navButtons = leaderboard.querySelector('.nav-buttons');
+            const backButton = navButtons.querySelector('.back');
+            backButton.onclick = ()=>{
+                this.hideLeaderboard();
+            }
+            customGUIContainer.appendChild(leaderboard);
+        }
+
+        leaderboard.style.display = 'block';
+
+        const leaderboardBar = leaderboard.querySelector('.leaderboard-bar');
+        this.fillLeaderboard(leaderboardBar, levelData.id, 100);
+
+        console.log("SHOW LEADERBOARD!!");
+    }
+
+    this.hideLeaderboard = ()=>{
+        leaderboard.style.display = 'none';
     }
 
     this.enableVoteButtons = (voteUpButton, voteDownButton, levelData) => {
