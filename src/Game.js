@@ -815,7 +815,7 @@ function Game() {
         if(this.editor.editorSettingsObject.song) MidiPlayer.startLoad(this.editor.editorSettingsObject.song);
 
         if(backendManager.isLoggedIn() && data.id){
-            window.SVGCache[0](backendManager.userData.id, data.id)
+            window.SVGCache[0](backendManager.userData.id, data.id, game.selectedCharacter)
         }
     }
     this.pauseGame = function(){
@@ -929,10 +929,9 @@ function Game() {
     this.gameWin = function () {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
-            const d = dateDiff(performance.now(), this.levelStartTime);
+            backendManager.submitTime(game.currentLevelData.id);
 
-            console.log("**** Time won:", performance.now(), this.levelStartTime)
-
+            const d = dateDiff(window.wqhjfu, 0);
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();
@@ -944,7 +943,6 @@ function Game() {
             MobileController.hide();
             GameTimer.show(false);
 
-            backendManager.submitTime(game.currentLevelData.id);
         }
     }
     this.gameLose = function () {

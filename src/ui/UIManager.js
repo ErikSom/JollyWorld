@@ -558,8 +558,18 @@ function UIManager() {
         }
 
         const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, 3)];
-        const [myPosition, leaderboardData] = await Promise.all(promises);
+        let [myPosition, leaderboardData] = await Promise.all(promises);
 
+        const inRankings = leaderboardData.find(entry => entry.username === backendManager.userData.username);
+
+        entries.classList.remove('offcharts');
+        let offcharts = false;
+        if(!inRankings && myPosition){
+            myPosition.username = backendManager.userData.username;
+            leaderboardData[2] = myPosition;
+            entries.classList.add('offcharts');
+            offcharts = true;
+        }
 
         if(!leaderboardData || leaderboardData.length == 0){
             info.innerText = 'No entries';
@@ -573,7 +583,12 @@ function UIManager() {
                 entry.classList.add('entry');
 
                 const position = entry.querySelector('.text-position');
-                position.innerText = format.makeOrdinal(i+1);
+
+                if(i<2 || !offcharts){
+                    position.innerText = format.makeOrdinal(i+1);
+                }else{
+                    position.innerText = "??"
+                }
 
                 const username = entry.querySelector('.text-player-name')
                 username.innerText = entryData.username;
@@ -594,16 +609,6 @@ function UIManager() {
             })
 
         }
-
-        console.log(myPosition, leaderboardData);
-
-        // 1st = first (She won first prize.)
-        // 2nd = second (I live on the 2nd floor.)
-        // 3rd = third (Take the third turning on the left.)
-        // 4th = fourth (It's his fourth birthday.)
-        // 5th = fifth (This is the 5th time I've taken my driving test.)
-
-
     }
 
     this.enableVoteButtons = (voteUpButton, voteDownButton, levelData) => {
