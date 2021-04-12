@@ -7,8 +7,13 @@ class Kid extends NPC {
         super(target);
     }
 }
-Kid.settingsOptions = Object.assign({}, NPC.settingsOptions);
-delete Kid.settingsOptions.skin
+Kid.settingsOptions = Object.assign({}, Kid.settingsOptions, {
+    "skin": {
+        min: 1.0,
+        max: 3.0,
+        step: 1.0
+	},
+});
 
 PrefabManager.prefabLibrary.Kid = {
     json: KidHumanoid.JSON_KID,

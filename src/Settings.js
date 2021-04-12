@@ -39,7 +39,7 @@ export var Settings = {
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,
-    availableCharacters:4,
+    availableCharacters:16,
     availableVehicles:['Bike', 'DirtBike', 'NoVehicle', 'Skateboard', 'Skippyball'],
     vehicleLayers:{'Bike':68, 'DirtBike':74, 'NoVehicle':50, 'Skateboard':67, 'Skippyball':90}, // we need the layers if we want to be able to switch vehicles, so we can correct the level
     /*EDITOR*/
