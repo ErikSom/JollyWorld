@@ -415,9 +415,12 @@ function BackendManager() {
 		}
 
 		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/my`, body);
+
+		if(result.status === 404) return null;
+
 		const json = await result.json();
 
-		console.log("JSON:", json)
+		
 
 		const {error} = json;
 		if(error){
@@ -434,6 +437,8 @@ function BackendManager() {
 		}
 
 		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/get?limit=${limit}`, body);
+		if(result.status === 404) return null;
+
 		const json = await result.json();
 
 		const {error} = json;

@@ -88,6 +88,82 @@
 			@extend .vote-buttons;
 		}
 	}
+	.leaderboard-bar{
+		color: white;
+		font-weight: 500;
+		font-size: 12px;
+
+		.header-bar{
+			display: flex;
+			justify-content: space-between;
+			padding: 0px 10px;
+			margin: 10px 0px;
+			.text-header{
+				@extend .jollyfont;
+			}
+			.viewall{
+				width: 75px;
+				height: 24px;
+				font-size: 14px;
+				line-height: 24px;
+				@extend .base-button
+			}
+		}
+		.entries{
+			display:flex;
+			flex-direction: column;
+			margin: 10px;
+			.entry-info{
+				height: 32px;
+				line-height: 32px;
+				border-top: 1px dashed #333333;
+				border-bottom: 1px dashed #333333;
+			}
+			.entry{
+				display: flex;
+				justify-content: space-between;
+    			padding: 5px;
+				border-top: 1px solid #333333;
+				height: 32px;
+    			align-items: center;
+
+				.position{
+					width:50px;
+				}
+
+				.text-player-name{
+					color: #00FF00;
+				}
+
+				.time{
+					display:flex;
+					align-items: baseline;
+					.text-time-label{
+						margin: 0 5px 0 0;
+					}
+					.text-time, .text-time-mili{
+						color: #00FF00;
+					}
+					.text-time-mili{
+						font-size: 9px;
+						margin: 0 0 0 2px;
+					}
+				}
+				&:last-child{
+					border-bottom: 1px solid #333333;
+				}
+			}
+
+			&.offcharts{
+				.entry{
+					&:last-child{
+						border-top: 1px dashed #333333;
+						border-bottom: 1px dashed #333333;
+					}
+				}
+			}
+		}
+	}
 	.nav-buttons{
 		display: flex;
 		padding: 5px;

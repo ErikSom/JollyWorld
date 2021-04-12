@@ -437,6 +437,27 @@ function UIManager() {
                         </div>
                     </div>
                 </div>
+                <div class="leaderboard-bar">
+                    <div class="header-bar">
+                        <div class="text-header">High Scores</div>
+                        <div class="viewall">View All</div>
+                    </div>
+                    <div class="entries offcharts">
+                        <div class="entry-info">Loading...</div>
+                        <div class="entry-template">
+                            <div class="position">
+                                <div class="profile"></div>
+                                <div class="text-position">1st</div>
+                            </div>
+                            <div class="text-player-name">Smerik</div>
+                            <div class="time">
+                                <div class="text-time-label">Time:</div>
+                                <div class="text-time">01:38</div>
+                                <div class="text-time-mili">456</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="nav-buttons">
                     <div class="back button">Back</div>
                     <div class="play button">
@@ -514,9 +535,44 @@ function UIManager() {
 
         shouldShowVoteButton(voteUpButton, voteDownButton, levelData);
 
+        const leaderboardBar = levelBanner.querySelector('.leaderboard-bar');
+        this.fillLeaderboard(leaderboardBar, levelData.id);
+
         this.enableVoteButtons(voteUpButton, voteDownButton, levelData);
 
         this.setLevelBannerData(levelData);
+    }
+
+    this.fillLeaderboard = async (element, levelid) => {
+
+        const entries = element.querySelector('.entries');
+        const template = entries.querySelector('.entry-template');
+        template.style.display = 'none';
+
+        const info = entries.querySelector('.entry-info');
+        info.innerText = 'Loading...';
+        info.style.display = 'block';
+
+
+        const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, 3)];
+        const [myPosition, leaderboardData] = await Promise.all(promises);
+
+
+        if(!leaderboardData || leaderboardData.length == 0){
+            info.innerText = 'No entries';
+        }else{
+            info.style.display = 'none';
+        }
+
+        console.log(myPosition, leaderboardData);
+
+        // 1st = first (She won first prize.)
+        // 2nd = second (I live on the 2nd floor.)
+        // 3rd = third (Take the third turning on the left.)
+        // 4th = fourth (It's his fourth birthday.)
+        // 5th = fifth (This is the 5th time I've taken my driving test.)
+
+
     }
 
     this.enableVoteButtons = (voteUpButton, voteDownButton, levelData) => {
