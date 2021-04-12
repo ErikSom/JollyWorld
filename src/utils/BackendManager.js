@@ -51,8 +51,8 @@ function BackendManager() {
     this.user;
     this.userData;
 
-    this.init = function () {
-		if(this.isLoggedIn()) this.getUserData().catch(e=>{});
+    this.backendInit = function () {
+		if(this.isLoggedIn()) this.getBackendUserData().catch(e=>{});
     }
 
     this.claimUsername = function (username) {
@@ -84,7 +84,7 @@ function BackendManager() {
 		})
     }
 
-    this.getUserData = () => {
+    this.getBackendUserData = () => {
 		return new Promise((resolve, reject) => {
 			const body = {
 				method: 'GET',
@@ -100,7 +100,7 @@ function BackendManager() {
 				const { error } = data;
 
 				if(error){
-					this.signout();
+					this.backendSignout();
 					return reject();
 				}
 
@@ -114,7 +114,7 @@ function BackendManager() {
 
     this.isLoggedIn =  () => !!localStorage.getItem('oauth-token') && !localStorage.getItem('needsToRegister');
 
-    this.login = function () {
+    this.backendLogin = function () {
 		if(this.isLoggedIn()) return;
 
 		const oauthhandshake = localStorage.getItem('oauth-handshake');
@@ -135,12 +135,12 @@ function BackendManager() {
 				this.dispatchEvent('username');
 			}else{
 				this.dispatchEvent('login');
-				this.getUserData();
+				this.getBackendUserData();
 			}
 		})
 	}
 
-    this.signout = function () {
+    this.backendSignout = function () {
 		localStorage.removeItem('oauth-handshake');
 		localStorage.removeItem('oauth-token');
 		localStorage.removeItem('needsToRegister');
@@ -209,7 +209,7 @@ function BackendManager() {
 				},
 			}
 
-			const userData = await this.getUserData();
+			const userData = await this.getBackendUserData();
 
 			const serverLevelData = Settings.admin ? details : userData.my_levels.find(level => level.id === details.id);
 
@@ -300,7 +300,7 @@ function BackendManager() {
 		})
     }
     this.getUserLevels = async () => {
-		const userData = await this.getUserData();
+		const userData = await this.getBackendUserData();
 		const levels = userData.my_levels.filter(level=>!level.published);
 		return levels;
     }
@@ -447,4 +447,4 @@ function BackendManager() {
 }
 
 export const backendManager = new BackendManager();
-backendManager.init();
+backendManager.backendInit();

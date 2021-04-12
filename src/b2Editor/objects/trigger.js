@@ -114,7 +114,7 @@ export const getActionsForObject = function (object) {
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", "SetWin", "SetLose", "SetGameSpeed", "SetCameraColorMatrix", "PlaySFX", "MidiControls", "PlayMidiInstrument"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", ACTION_GAME_WIN, ACTION_GAME_LOSE, "SetGameSpeed", "SetCameraColorMatrix", "PlaySFX", "MidiControls", "PlayMidiInstrument"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -328,10 +328,10 @@ export const doAction = function (actionData, target) {
             animation.data.mirrored = actionData.setMirrored;
             if(actionData.toggle) actionData.setMirrored = !actionData.setMirrored;
             break;
-        case "SetWin":
+        case ACTION_GAME_WIN:
             game.gameWin();
         break;
-        case "SetLose":
+        case ACTION_GAME_LOSE:
             game.gameLose();
         break;
         case "SetCollision":
@@ -1910,3 +1910,7 @@ export const drawEditorTriggerTargets = targets=>{
     });
     game.triggerDebugDraw.dirtyTargets = false;
 }
+
+
+const ACTION_GAME_WIN = window.atob("U2V0V2lu");
+const ACTION_GAME_LOSE = window.atob("U2V0TG9zZQ==");

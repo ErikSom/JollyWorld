@@ -424,7 +424,7 @@ export const showProfileScreen = async () => {
         const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
 
 
-        const userData = await backendManager.getUserData();
+        const userData = await backendManager.getBackendUserData();
         const username = document.createElement('div');
         username.innerText = `${userData.username}`;
         username.style.color = '#00FF00';
@@ -444,7 +444,7 @@ export const showProfileScreen = async () => {
         targetDomElement.appendChild(signOut);
 
         signOut.addEventListener('click', () => {
-            backendManager.signout();
+            backendManager.backendSignout();
             hidePanel(profileScreen);
         });
 

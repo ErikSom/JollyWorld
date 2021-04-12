@@ -380,7 +380,7 @@ function Game() {
         })
 
         window.addEventListener('focus', ()=>{
-            backendManager.login();
+            backendManager.backendLogin();
         })
 
         emitterManager.init();
@@ -809,18 +809,6 @@ function Game() {
         if(this.editor.editorSettingsObject.song) MidiPlayer.startLoad(this.editor.editorSettingsObject.song);
 
         if(backendManager.isLoggedIn() && data.id){
-
-            console.log(backendManager.userData, data);
-
-
-            backendManager.getLeaderboardPosition(data.id).then(json => {
-                console.log("My position:", json)
-            })
-
-            backendManager.getLeaderboard(data.id, 10).then(json => {
-                console.log("All positions:", json)
-            })
-
             window.SVGCache[0](backendManager.userData.id, data.id)
         }
     }
