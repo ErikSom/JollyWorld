@@ -572,6 +572,9 @@ function UIManager() {
                 entry.classList.remove('entry-template');
                 entry.classList.add('entry');
 
+                const position = entry.querySelector('.text-position');
+                position.innerText = format.makeOrdinal(i+1);
+
                 const username = entry.querySelector('.text-player-name')
                 username.innerText = entryData.username;
 
@@ -583,6 +586,9 @@ function UIManager() {
 
                 const timeTextMili = entry.querySelector('.text-time-mili');
                 timeTextMili.innerText = d.ms;
+
+                const profile = entry.querySelector('.profile');
+                profile.style.backgroundImage = `url(./assets/images/portraits/${hashName(`profile${entryData.character+1}.png`)})`;
 
                 entries.appendChild(entry);
             })

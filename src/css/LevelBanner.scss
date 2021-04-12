@@ -100,6 +100,8 @@
 			margin: 10px 0px;
 			.text-header{
 				@extend .jollyfont;
+				font-size: 20px;
+				margin-top: 4px;
 			}
 			.viewall{
 				width: 75px;
@@ -114,8 +116,8 @@
 			flex-direction: column;
 			margin: 10px;
 			.entry-info{
-				height: 32px;
-				line-height: 32px;
+				height: 42px;
+				line-height: 42px;
 				border-top: 1px dashed #333333;
 				border-bottom: 1px dashed #333333;
 			}
@@ -124,15 +126,26 @@
 				justify-content: space-between;
     			padding: 5px;
 				border-top: 1px solid #333333;
-				height: 32px;
+				height: 42px;
     			align-items: center;
 
 				.position{
-					width:50px;
+					display: flex;
+					align-items: center;
+					width: 72px;
+					.profile{
+						width: 38px;
+						height: 38px;
+						background-size: cover;
+					}
+					.text-position{
+						margin: 0 0 0 2px;
+					}
 				}
 
 				.text-player-name{
 					color: #00FF00;
+					width: 112px;
 				}
 
 				.time{
