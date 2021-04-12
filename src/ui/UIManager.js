@@ -565,6 +565,7 @@ function UIManager() {
 
         const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, limit)];
         let [myPosition, leaderboardData] = await Promise.all(promises);
+        leaderboardData = leaderboardData.reverse();
 
         // const usernames = ["Goku", "Vegeta", "Krillin", "Gohan", "Freeza", "Cell", "Goten", "Gotenks", "Trunks"];
         // leaderboardData = [];
@@ -1105,11 +1106,23 @@ function UIManager() {
 
             const characters = characterSelect.querySelector('.characters');
 
+            const customOrder = [1,2,3,4,11,16,8,9,10,6,12,15,5,13,7,14];
+            const charNames = ["Billy Joel", "Jeroen", "Marique", "Damien", "The Zuck!", "Bob Zombie", "Xenot", "Ronda", "Jack Lee", "Col. Jackson", "Hank", "Mrs. Kat", "Sean Bro", "Crashy", "Brittany", "Machote"]
+
             for(let i = 0; i<Settings.availableCharacters; i++){
+                const portraitHolder = document.createElement('div');
+                portraitHolder.style.order = customOrder[i];
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(`character${i+1}.png`)}`
                 portrait.classList.add('portrait');
-                characters.appendChild(portrait);
+                portraitHolder.appendChild(portrait)
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('name');
+                nameDiv.innerText = charNames[i];
+                portraitHolder.appendChild(nameDiv);
+
+                characters.appendChild(portraitHolder);
 
                 portrait.onclick = () => {
                     game.selectedCharacter = i;
