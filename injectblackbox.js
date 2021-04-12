@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 const htmlPath = './build/index.html';
-const blackboxPath = process.argv[2] === "true" ? './libs/blackbox.js' : './libs/blackbox.js';
+const blackboxPath = process.argv[2] === "true" ? './libs/blackbox.js' : './libs/blackbox-debug.js';
 
 const html =  fs.readFileSync(htmlPath, 'utf8');
 

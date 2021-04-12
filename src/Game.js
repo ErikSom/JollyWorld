@@ -666,12 +666,14 @@ function Game() {
         MobileController.showVehicleControls();
         this.runWorld();
         this.gameState = this.GAMESTATE_NORMALPLAY;
-        if(firstEntry) this.levelStartTime = performance.now();
+        if(firstEntry){
+            this.levelStartTime = performance.now();
+            window.SVGCache[1]();
+        }
         MobileController.show();
         ui.showSmallLogo();
         this.playLevelMidi();
         GameTimer.show(true);
-        window.SVGCache[1]();
     }
 
     this.testWorld = function () {
@@ -753,8 +755,12 @@ function Game() {
                     this.levelStartTime = performance.now() - checkPointData.time;
                 }else{
                     this.levelStartTime = performance.now();
-                    window.SVGCache[1]();
                 }
+
+                console.log("**** Time reset:", this.levelStartTime-performance.now())
+
+
+                window.SVGCache[1](doCheckpoint);
 
             }, Settings.levelBuildDelayTime);
         }, Settings.levelBuildDelayTime);
@@ -915,12 +921,18 @@ function Game() {
                 time: performance.now() - this.levelStartTime,
                 // save checkpoint time
             }
+            console.log("**** Time checkpoint:", this.checkPointData.time)
+
+            window.SVGCache[3]();
         }
     }
     this.gameWin = function () {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             const d = dateDiff(performance.now(), this.levelStartTime);
+
+            console.log("**** Time won:", performance.now(), this.levelStartTime)
+
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();
