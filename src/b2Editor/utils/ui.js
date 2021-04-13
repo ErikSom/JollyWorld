@@ -95,7 +95,7 @@ export const showPanel = panel => {
     if (panel) {
         panel.domElement.classList.remove('fadedHide');
         setTimeout(() => {
-            if (!panel) return;
+            if (!panel || !panel.domElement.parentNode) return;
             panel.domElement.parentNode.appendChild(panel.domElement);
             panel.domElement.focus();
         }, 1);
