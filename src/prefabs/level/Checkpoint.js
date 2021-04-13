@@ -46,7 +46,7 @@ class Checkpoint extends PrefabManager.basePrefab {
                 const prefabClass = game.editor.retrieveClassFromBody(otherBody);
                 if(prefabClass && prefabClass.character) prefabClass.character.setExpression(Humanoid.EXPRESSION_SPECIAL);
 
-                game.checkpoint(self.base);
+                game.gameCheckpoint(self.base);
             }
         }
     }

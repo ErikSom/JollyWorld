@@ -51,8 +51,8 @@ function BackendManager() {
     this.user;
     this.userData;
 
-    this.init = function () {
-		if(this.isLoggedIn()) this.getUserData().catch(e=>{});
+    this.backendInit = function () {
+		if(this.isLoggedIn()) this.getBackendUserData().catch(e=>{});
     }
 
     this.claimUsername = function (username) {
@@ -84,7 +84,7 @@ function BackendManager() {
 		})
     }
 
-    this.getUserData = () => {
+    this.getBackendUserData = () => {
 		return new Promise((resolve, reject) => {
 			const body = {
 				method: 'GET',
@@ -100,7 +100,7 @@ function BackendManager() {
 				const { error } = data;
 
 				if(error){
-					this.signout();
+					this.backendSignout();
 					return reject();
 				}
 
@@ -114,7 +114,7 @@ function BackendManager() {
 
     this.isLoggedIn =  () => !!localStorage.getItem('oauth-token') && !localStorage.getItem('needsToRegister');
 
-    this.login = function () {
+    this.backendLogin = function () {
 		if(this.isLoggedIn()) return;
 
 		const oauthhandshake = localStorage.getItem('oauth-handshake');
@@ -135,12 +135,12 @@ function BackendManager() {
 				this.dispatchEvent('username');
 			}else{
 				this.dispatchEvent('login');
-				this.getUserData();
+				this.getBackendUserData();
 			}
 		})
 	}
 
-    this.signout = function () {
+    this.backendSignout = function () {
 		localStorage.removeItem('oauth-handshake');
 		localStorage.removeItem('oauth-token');
 		localStorage.removeItem('needsToRegister');
@@ -209,7 +209,7 @@ function BackendManager() {
 				},
 			}
 
-			const userData = await this.getUserData();
+			const userData = await this.getBackendUserData();
 
 			const serverLevelData = Settings.admin ? details : userData.my_levels.find(level => level.id === details.id);
 
@@ -300,7 +300,7 @@ function BackendManager() {
 		})
     }
     this.getUserLevels = async () => {
-		const userData = await this.getUserData();
+		const userData = await this.getBackendUserData();
 		const levels = userData.my_levels.filter(level=>!level.published);
 		return levels;
     }
@@ -377,7 +377,79 @@ function BackendManager() {
 			this.callBacks[type][i](data);
 		}
 	}
+
+	this.submitTime = async levelid => {
+        const data = await window.SVGCache[2]();
+
+		// POST /leaderboard/:id/entry (encrypted body)
+		const body = {
+			method: 'POST',
+			withCredentials: true,
+			headers: {
+			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Content-Type': 'application/json'
+			},
+			body: data
+		}
+
+		fetch(`${Settings.API}/leaderboard/${levelid}/entry`, body)
+		.then(result => result.json())
+		.then(async data => {
+			const {error} = data;
+
+			console.log("Score submitted", data, "Posted data:", data);
+			if(error){
+				return console.log(error);
+			}
+		});
+	}
+	this.getLeaderboardPosition = async levelid => {
+		// GET /leaderboard/:id/my
+		const body = {
+			method: 'GET',
+			withCredentials: true,
+			headers: {
+			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Content-Type': 'application/json'
+			},
+		}
+
+		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/my`, body);
+
+		if(result.status === 404) return null;
+
+		const json = await result.json();
+
+		
+
+		const {error} = json;
+		if(error){
+			return null
+		}else{
+			return json
+		}
+
+	}
+	this.getLeaderboard = async (levelid, limit) => {
+		// GET /leaderboard/:id/get ?limit=10
+		const body = {
+			method: 'GET',
+		}
+
+		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/get?limit=${limit}`, body);
+		if(result.status === 404) return null;
+
+		const json = await result.json();
+
+		const {error} = json;
+		if(error){
+			return null
+		}else{
+			return json
+		}
+
+	}
 }
 
 export const backendManager = new BackendManager();
-backendManager.init();
+backendManager.backendInit();

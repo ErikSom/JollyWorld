@@ -1,0 +1,27 @@
+@use 'Components';
+
+.leaderboard{
+	@extend .main-window;
+	.header{
+		@extend .jollyfont;
+		font-size: 40px;
+		text-align: center;
+	}
+
+	.leaderboard-bar{
+		@extend .leaderboard-entries;
+		display: flex;
+		flex-direction: column;
+		max-height: 60vh;
+		.entries{
+			overflow-y: scroll;
+		}
+	}
+	.nav-buttons{
+		display: flex;
+		padding: 5px;
+		.back{
+			@extend .back-button;
+		}
+	}
+}

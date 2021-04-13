@@ -50,3 +50,13 @@ export const JSONStringify = json=>{
         return (val && val.toFixed) ? Number(val.toFixed(4)) : val;
     })
 }
+
+export const makeOrdinal = number => {
+    const string = ''+number;
+    const lastChar = string.charAt(string.length - 1);
+    let ordinal = 'th';
+    if(lastChar === "1") ordinal = "st";
+    if(lastChar === "2") ordinal = "nd";
+    if(lastChar === "3") ordinal = "rd";
+    return string + ordinal;
+}

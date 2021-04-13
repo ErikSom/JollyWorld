@@ -8,6 +8,7 @@ import '../css/LoginScreen.scss'
 import '../css/PauseScreen.scss'
 import '../css/WinScreen.scss'
 import '../css/GameOver.scss'
+import '../css/Leaderboard.scss'
 
 
 // https://github.com/catdad/canvas-confetti
@@ -62,6 +63,7 @@ let winLogo;
 let socialShareScreen;
 let settingsMenu;
 let loginScreen;
+let leaderboard;
 let smallLogo;
 
 let filter = {
@@ -435,6 +437,27 @@ function UIManager() {
                         </div>
                     </div>
                 </div>
+                <div class="leaderboard-bar">
+                    <div class="header-bar">
+                        <div class="text-header">Leaderboard</div>
+                        <div class="viewall">View All</div>
+                    </div>
+                    <div class="entries offcharts">
+                        <div class="entry-info">Loading...</div>
+                        <div class="entry entry-template">
+                            <div class="position">
+                                <div class="profile"></div>
+                                <div class="text-position">1st</div>
+                            </div>
+                            <div class="text-player-name">Smerik</div>
+                            <div class="time">
+                                <div class="text-time-label">Time:</div>
+                                <div class="text-time">01:38</div>
+                                <div class="text-time-mili">456</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="nav-buttons">
                     <div class="back button">Back</div>
                     <div class="play button">
@@ -512,9 +535,153 @@ function UIManager() {
 
         shouldShowVoteButton(voteUpButton, voteDownButton, levelData);
 
+        const leaderboardBar = levelBanner.querySelector('.leaderboard-bar');
+
+        const showAllButton = leaderboardBar.querySelector('.viewall')
+        showAllButton.onclick = ()=> this.showLeaderboard(levelData);
+
+        this.fillLeaderboard(leaderboardBar, levelData.id, 3);
+
         this.enableVoteButtons(voteUpButton, voteDownButton, levelData);
 
         this.setLevelBannerData(levelData);
+    }
+
+    this.fillLeaderboard = async (element, levelid, limit) => {
+
+        const entries = element.querySelector('.entries');
+        const template = entries.querySelector('.entry-template');
+        template.style.display = 'none';
+
+        const info = entries.querySelector('.entry-info');
+        info.innerText = 'Loading...';
+        info.style.display = 'block';
+
+        while(entries.children.length>2){
+            entries.removeChild(entries.children[2]);
+        }
+
+        const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, limit)];
+        let [myPosition, leaderboardData] = await Promise.all(promises);
+        leaderboardData = leaderboardData.reverse();
+
+        // const usernames = ["Goku", "Vegeta", "Krillin", "Gohan", "Freeza", "Cell", "Goten", "Gotenks", "Trunks"];
+        // leaderboardData = [];
+        // let fill = Math.round(Math.random()*100)+1
+        // for(let i = 0; i<fill; i++){
+        //     leaderboardData.push(
+        //         {
+        //             character: Math.round(Math.random()*10)+1,
+        //             time: Math.random()*50000,
+        //             username: usernames[Math.floor(Math.random() * usernames.length)],
+        //         }
+        //     )
+        // }
+
+        const inRankings = backendManager.isLoggedIn() && leaderboardData.find(entry => entry.username === backendManager.userData.username);
+
+        entries.classList.remove('offcharts');
+        let offcharts = false;
+        if(!inRankings && myPosition){
+            myPosition.username = backendManager.userData.username;
+            leaderboardData[limit-1] = myPosition;
+            entries.classList.add('offcharts');
+            offcharts = true;
+        }
+
+        if(!leaderboardData || leaderboardData.length == 0){
+            info.innerText = 'No entries';
+        }else{
+            info.style.display = 'none';
+
+            leaderboardData.forEach( (entryData, i) => {
+                const entry = template.cloneNode(true);
+                entry.style.display = 'flex';
+                entry.classList.remove('entry-template');
+                entry.classList.add('entry');
+
+                const position = entry.querySelector('.text-position');
+
+                if(i<(limit-1) || !offcharts){
+                    position.innerText = format.makeOrdinal(i+1);
+                }else{
+                    position.innerText = "??"
+                }
+
+                const username = entry.querySelector('.text-player-name')
+                username.innerText = entryData.username;
+
+                if(backendManager.isLoggedIn() && entryData.username === backendManager.userData.username){
+                    entry.classList.add('me');
+                }
+
+                const d = format.dateDiff(entryData.time, 0);
+                const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
+
+                const timeText = entry.querySelector('.text-time');
+                timeText.innerText = s;
+
+                const timeTextMili = entry.querySelector('.text-time-mili');
+                timeTextMili.innerText = d.ms;
+
+                const profile = entry.querySelector('.profile');
+                profile.style.backgroundImage = `url(./assets/images/portraits/${hashName(`profile${entryData.character+1}.png`)})`;
+
+                entries.appendChild(entry);
+            })
+
+        }
+    }
+
+    this.showLeaderboard = levelData => {
+        if(!leaderboard){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Leaderboard</div>
+                <div class="leaderboard-bar">
+                    <div class="entries offcharts">
+                        <div class="entry-info">Loading...</div>
+                        <div class="entry entry-template">
+                            <div class="position">
+                                <div class="profile"></div>
+                                <div class="text-position">1st</div>
+                            </div>
+                            <div class="text-player-name">Smerik</div>
+                            <div class="time">
+                                <div class="text-time-label">Time:</div>
+                                <div class="text-time">01:38</div>
+                                <div class="text-time-mili">456</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <div class="back button">Back</div>
+                </div>
+            `;
+
+            leaderboard = document.createElement('div');
+            leaderboard.classList.add('leaderboard');
+            leaderboard.innerHTML = htmlStructure;
+
+            const navButtons = leaderboard.querySelector('.nav-buttons');
+            const backButton = navButtons.querySelector('.back');
+            backButton.onclick = ()=>{
+                this.hideLeaderboard();
+            }
+            customGUIContainer.appendChild(leaderboard);
+        }
+
+        leaderboard.style.display = 'block';
+
+        const leaderboardBar = leaderboard.querySelector('.leaderboard-bar');
+        this.fillLeaderboard(leaderboardBar, levelData.id, 100);
+
+        console.log("SHOW LEADERBOARD!!");
+    }
+
+    this.hideLeaderboard = ()=>{
+        leaderboard.style.display = 'none';
     }
 
     this.enableVoteButtons = (voteUpButton, voteDownButton, levelData) => {
@@ -937,11 +1104,23 @@ function UIManager() {
 
             const characters = characterSelect.querySelector('.characters');
 
+            const customOrder = [1,2,3,4,11,16,8,9,10,6,12,15,5,13,7,14];
+            const charNames = ["Billy Joel", "Jeroen", "Marique", "Damien", "The Zuck!", "Bob Zombie", "Xenot", "Ronda", "Jack Lee", "Col. Jackson", "Hank", "Mrs. Kat", "Sean Bro", "Crashy", "Brittany", "Machote"]
+
             for(let i = 0; i<Settings.availableCharacters; i++){
+                const portraitHolder = document.createElement('div');
+                portraitHolder.style.order = customOrder[i];
                 const portrait =  document.createElement('img');
                 portrait.src = `./assets/images/portraits/${hashName(`character${i+1}.png`)}`
                 portrait.classList.add('portrait');
-                characters.appendChild(portrait);
+                portraitHolder.appendChild(portrait)
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('name');
+                nameDiv.innerText = charNames[i];
+                portraitHolder.appendChild(nameDiv);
+
+                characters.appendChild(portraitHolder);
 
                 portrait.onclick = () => {
                     game.selectedCharacter = i;
@@ -1111,6 +1290,9 @@ function UIManager() {
         const voteButtons = pauseScreen.querySelector('.voting');
         const voteUpButton = voteButtons.querySelector('.vote-up');
         const voteDownButton = voteButtons.querySelector('.vote-down');
+
+        const shareButton = pauseScreen.querySelector('.share')
+        shareButton.onclick = () => this.showSocialShare(game.currentLevelData);
 
         shouldShowVoteButton(voteUpButton, voteDownButton, game.currentLevelData);
 
@@ -1288,7 +1470,7 @@ function UIManager() {
         }
     }
 
-    this.buildSocialShare2 = ()=> {
+    this.buildSocialShare = ()=> {
         const htmlStructure = /*html*/`
             <div class="bar"><div class="close"></div></div>
             <div class="header">Jolly Sharing</div>
@@ -1379,7 +1561,7 @@ function UIManager() {
 
     this.showSocialShare = level =>{
         if(!socialShareScreen){
-            socialShareScreen = this.buildSocialShare2();
+            socialShareScreen = this.buildSocialShare();
             customGUIContainer.appendChild(socialShareScreen);
         }
         this.updateSocialShareLinks(socialShareScreen, level);

@@ -11,7 +11,7 @@ class Baby extends NPC {
 Baby.settingsOptions = Object.assign({}, Baby.settingsOptions, {
     "skin": {
         min: 1.0,
-        max: 2.0,
+        max: 3.0,
         step: 1.0
 	},
 });

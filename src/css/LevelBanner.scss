@@ -88,6 +88,9 @@
 			@extend .vote-buttons;
 		}
 	}
+	.leaderboard-bar{
+		@extend .leaderboard-entries
+	}
 	.nav-buttons{
 		display: flex;
 		padding: 5px;

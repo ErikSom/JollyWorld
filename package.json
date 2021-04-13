@@ -1,6 +1,6 @@
 {
   "name": "jollywheels",
-  "version": "0.9.48",
+  "version": "0.9.49",
   "description": "This game is not for kids, its physics / gore and fun!",
   "main": "./build/index.html",
   "repository": "https://smerik@bitbucket.org/smerik/jollywheels.git",
@@ -11,6 +11,7 @@
     "build": "npm-run-all build:*",
     "build:deleteold": "rm -rf ./build",
     "build:webpack": "env NODE_ENV=production yarn webpack",
+    "build:obfuscate": "node obfuscateScript.js",
     "build:hash": "node hashfiles.js",
     "watch": "npm-run-all --parallel watch:*",
     "watch:webpack": "webpack --watch",
@@ -72,7 +73,8 @@
     "terser-webpack-plugin": "^3.0.6",
     "url-loader": "^4.1.0",
     "web-social-share": "^6.4.1",
-    "webpack": "^4.43.0"
+    "webpack": "^4.43.0",
+    "webpack-shell-plugin": "^0.5.0"
   },
   "devDependencies": {
     "webpack-cli": "^3.3.12"

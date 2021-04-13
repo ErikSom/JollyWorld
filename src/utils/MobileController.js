@@ -296,7 +296,7 @@ const handleButton = event => {
 }
 
 
-const fireKeyboardEvent = (down, key) => {
+export const fireKeyboardEvent = (down, key) => {
 	const keyEvent = down ? 'keydown' : 'keyup'
 	document.body.dispatchEvent(new KeyboardEvent(keyEvent, {
 		keyCode: key,
