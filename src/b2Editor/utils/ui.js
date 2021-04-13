@@ -82,7 +82,7 @@ export const hideEditorPanels = function () {
     hidePanel(saveScreen);
     hidePanel(loadScreen);
     hidePanel(profileScreen);
-    if (publishSocialShareScreen) publishSocialShareScreen.hide();
+    hidePublishSocialShareScreen();
     removeNotice();
     removePrompt();
     removeTextEditor();
@@ -275,16 +275,15 @@ const doPublishLevelData = function (publishButton, preview) {
             showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 publishButton.style.backgroundColor = 'grey';
                 publishButton.innerText = '...';
-                game.publishLevelData().then(() => {
+                game.publishLevelData().then(publishedId => {
                     publishButton.style.backgroundColor = '';
                     publishButton.innerText = 'PUBLISH';
 
                     showConfetti();
 
-                    showPublishSocialShareScreen(game.currentLevelData);
+                    showPublishSocialShareScreen(game.currentLevelData, publishedId);
                     hidePanel(levelEditScreen);
 
-                    console.log("PUBLISH SUCCESSSSSS");
                 }).catch(error => {
                     console.log(error);
                     publishButton.style.backgroundColor = '';
@@ -1611,32 +1610,32 @@ const removePrompt = () => {
     }
 }
 
-const showPublishSocialShareScreen = level => {
+const showPublishSocialShareScreen = (level, publishedId) => {
     if (!publishSocialShareScreen) {
-        publishSocialShareScreen = game.ui.buildSocialShare(customGUIContainer);
+        publishSocialShareScreen = game.ui.buildSocialShare();
 
-        const targetElement = publishSocialShareScreen.domElement.querySelector('.folder .divWrapper');
-        const span = document.createElement('span');
-        span.style.fontSize = '22px';
-        span.style.marginBottom = '10px';
-        publishSocialShareScreen.setTitle = title => span.innerHTML = title;
-        targetElement.prepend(span);
+        const header = publishSocialShareScreen.querySelector('.header');
+        header.innerHTML = '<div class="header">Publish Succes!<div style="font-size: 20px;">Feel free to share your awesome creation</div></div>';
 
-        registerDragWindow(publishSocialShareScreen);
-
+        customGUIContainer.appendChild(publishSocialShareScreen);
     }
-    publishSocialShareScreen.domElement.style.visibility = 'visible';
+    publishSocialShareScreen.style.display = 'block';
 
-    const computedWidth = parseFloat(getComputedStyle(publishSocialShareScreen.domElement, null).width.replace("px", ""));
-    const computedHeight = parseFloat(getComputedStyle(publishSocialShareScreen.domElement, null).height.replace("px", ""));
-    publishSocialShareScreen.domElement.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
-    publishSocialShareScreen.domElement.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
+    const computedWidth = parseFloat(getComputedStyle(publishSocialShareScreen, null).width.replace("px", ""));
+    const computedHeight = parseFloat(getComputedStyle(publishSocialShareScreen, null).height.replace("px", ""));
+    publishSocialShareScreen.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
+    publishSocialShareScreen.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
+    publishSocialShareScreen.style.transform = 'unset';
 
+    const publishData = {description:level.description, id:publishedId};
 
-    publishSocialShareScreen.setTitle(Settings.DEFAULT_TEXTS.publish_succes.replace('%title%', level.title));
-    publishSocialShareScreen.setSocialMediaHTML(level);
+    game.ui.updateSocialShareLinks(publishSocialShareScreen, publishData);
 
-    setHighestWindow(publishSocialShareScreen.domElement);
+    setHighestWindow(publishSocialShareScreen);
+}
+
+const hidePublishSocialShareScreen = ()=>{
+    if (publishSocialShareScreen) publishSocialShareScreen.style.display = 'none';
 }
 
 export const fetchControllersFromGUI = function (gui) {

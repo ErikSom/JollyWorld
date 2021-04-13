@@ -886,8 +886,8 @@ function Game() {
     }
     this.publishLevelData = function () {
         return new Promise((resolve, reject) => {
-            backendManager.publishLevelData(game.currentLevelData).then((levelData) => {
-                resolve();
+            backendManager.publishLevelData(game.currentLevelData).then(levelData => {
+                resolve(levelData);
             }).catch((error) => {
                 reject(error);
             });

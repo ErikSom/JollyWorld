@@ -1293,6 +1293,9 @@ function UIManager() {
         const voteUpButton = voteButtons.querySelector('.vote-up');
         const voteDownButton = voteButtons.querySelector('.vote-down');
 
+        const shareButton = pauseScreen.querySelector('.share')
+        shareButton.onclick = () => this.showSocialShare(game.currentLevelData);
+
         shouldShowVoteButton(voteUpButton, voteDownButton, game.currentLevelData);
 
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
@@ -1469,7 +1472,7 @@ function UIManager() {
         }
     }
 
-    this.buildSocialShare2 = ()=> {
+    this.buildSocialShare = ()=> {
         const htmlStructure = /*html*/`
             <div class="bar"><div class="close"></div></div>
             <div class="header">Jolly Sharing</div>
@@ -1560,7 +1563,7 @@ function UIManager() {
 
     this.showSocialShare = level =>{
         if(!socialShareScreen){
-            socialShareScreen = this.buildSocialShare2();
+            socialShareScreen = this.buildSocialShare();
             customGUIContainer.appendChild(socialShareScreen);
         }
         this.updateSocialShareLinks(socialShareScreen, level);
