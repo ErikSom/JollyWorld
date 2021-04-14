@@ -1,19 +1,24 @@
+import {
+    B2dEditor
+} from "../../b2Editor/B2dEditor"
+import * as Box2D from '../../../libs/Box2D'
 import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
 import { stopCustomBehaviour } from './CustomEditorBehavior';
+import * as drawing from '../../b2Editor/utils/drawing';
 
 class SevenSegment extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
 
         this.linkedSegment = null;
+        this.linkedTriggers = [];
 
         this.base = this.lookupObject.base;
         this.base.isSevenSegment = true;
 
-        this.number = this.prefabObject.settings.number;
 
         this.updateNumber();
     }
@@ -54,8 +59,6 @@ class SevenSegment extends PrefabManager.basePrefab {
         })
         const number = this.number;
 
-        console.log("Start number:", number)
-
         if(number === 0){
             segments[5].visible = false;
         }else if(number === 1){
@@ -90,6 +93,7 @@ class SevenSegment extends PrefabManager.basePrefab {
             segments[4].visible = false;
         }
     }
+
     set(property, value) {
 		super.set(property, value);
         switch (property) {
@@ -103,21 +107,50 @@ class SevenSegment extends PrefabManager.basePrefab {
     linkSevenSegment(target){
         this.linkedSegment = target.mySprite;
     }
+    linkTrigger(target){
+        
+        if(this.linkedTriggers.includes(target.mySprite)){
+            // resort
+        }else{
+            this.linkedTriggers.push(target.mySprite);
+        }
+
+    }
     serializeProps(){
         if(this.linkedSegment && !this.linkedSegment.destroyed){
             game.editor.updateObject(this.linkedSegment, this.linkedSegment.data);
-            // check if deleted
             this.prefabObject.settings.linkedSegmentId = [this.linkedSegment.parent.getChildIndex(this.linkedSegment)];
         } else {
             this.prefabObject.settings.linkedSegmentId = null;
+        }
+
+        if(this.linkedTriggers.length > 0){
+            this.prefabObject.settings.linkedTriggerIds = []
+            this.linkedTriggers.forEach(trigger => {
+                if(!trigger.destroyed){
+                    game.editor.updateObject(trigger, trigger.data);
+                    this.prefabObject.settings.linkedTriggerIds.push(trigger.parent.getChildIndex(trigger));
+                }
+            })
+        }else{
+            this.prefabObject.settings.linkedTriggerIds = [];
         }
     }
     initializeProps(){
         if(Array.isArray(this.prefabObject.settings.linkedSegmentId)){
             const linkedSegmentId = this.prefabObject.settings.linkedSegmentId[0];
-            if(linkedSegmentId && linkedSegmentId < game.editor.textures.children.length){
+            if(linkedSegmentId !== undefined && linkedSegmentId < game.editor.textures.children.length){
                 this.linkedSegment = game.editor.textures.getChildAt(linkedSegmentId)
             }
+        }
+        const triggerIds = this.prefabObject.settings.linkedTriggerIds;
+        if(Array.isArray(triggerIds) && triggerIds.length > 0){
+            this.linkedTriggers.length = 0;
+            triggerIds.forEach(id => {
+                if(id !== undefined && id < game.editor.textures.children.length){
+                    this.linkedTriggers.push(game.editor.textures.getChildAt(id));
+                }
+            })
         }
     }
     drawDebugEditor(){
@@ -138,7 +171,53 @@ class SevenSegment extends PrefabManager.basePrefab {
             const a = Math.atan2(dy, dx);
             editor.debugGraphics.drawRegularPoly(x, y, 10, 3, a);
         }
+
+        if(this.linkedTriggers.length > 0){
+            this.drawDebugTriggerLink()
+        }
     }
+
+    drawDebugTriggerLink(){
+        if(game.triggerDebugDraw.redrawTimer >= 0){
+            game.triggerDebugDraw.redrawTimer --;
+        }
+    
+        if(game.triggerDebugDraw.redrawTimer !== 0) return;
+    
+        const body = this.base;
+
+        this.linkedTriggers.forEach((target, i) => {
+            let myPos = body.GetPosition();
+            myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
+
+            let tarPos;
+
+            tarPos = target.myBody.GetPosition().Clone();
+            tarPos.x *= game.editor.PTM;
+            tarPos.y *= game.editor.PTM;
+
+            const lineOffsetSize = -20 * game.levelCamera.scale.x;
+            const linePos = myPos.Clone().SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
+
+            game.triggerDebugDraw.lineStyle(1.0 / game.editor.cameraHolder.scale.x, "0x000", 1.0);
+            game.triggerDebugDraw.moveTo(linePos.x, linePos.y);
+            game.triggerDebugDraw.lineTo(tarPos.x, tarPos.y);
+
+            const v = new Box2D.b2Vec2(tarPos.x-linePos.x, tarPos.y-linePos.y);
+            const l = v.Length();
+            v.SelfNormalize();
+            const tl = l*0.5;
+            v.SelfMul(tl);
+            const tp = linePos.Clone().SelfAdd(v);
+
+            game.triggerDebugDraw.beginFill("0x999", 1.0);
+            game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
+            game.triggerDebugDraw.endFill();
+            drawing.addText(i+1, game.triggerDebugDraw, tp, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+        });
+        game.triggerDebugDraw.dirtyTargets = false;
+    }
+
     init() {
         super.init();
     }
@@ -161,7 +240,7 @@ export const drawObjectAdding = (prefab, type) => {
     const worldQuery = editor.queryWorldForBodies(editor.mousePosWorld, editor.mousePosWorld);
     prefab.class.linkObjectTarget = null;
     worldQuery.forEach(body => {
-        if(body.mySprite && body[type]){
+        if(body.mySprite && (body[type] || body.mySprite.data.type === type)){
             tarSprite = body.mySprite;
             prefab.class.linkObjectTarget = body;
             editor.debugGraphics.lineStyle(1, "0xFFFF00", 1);
@@ -192,9 +271,28 @@ const selectLinkTarget = prefab=>{
     game.editor.customPrefabMouseMove = null;
 }
 
+const linkTrigger = prefab => {
+
+    prefab.class.linkTrigger(prefab.class.linkObjectTarget);
+
+    delete prefab.class.linkObjectTarget;
+    stopCustomBehaviour();
+}
+
+const selectTriggerTarget = prefab=>{
+    game.editor.customPrefabMouseDown = ()=>{
+        linkTrigger(prefab);
+    }
+    game.editor.customDebugDraw = ()=>{
+        drawObjectAdding(prefab, game.editor.object_TRIGGER);
+    }
+    game.editor.customPrefabMouseMove = null;
+}
+
 SevenSegment.settings = Object.assign({}, SevenSegment.settings, {
     "number": 0,
     "linkSevenSegment": prefab=>selectLinkTarget(prefab),
+    "linkTrigger": prefab=>selectTriggerTarget(prefab),
 });
 SevenSegment.settingsOptions = Object.assign({}, SevenSegment.settingsOptions, {
     "number":{
@@ -203,6 +301,7 @@ SevenSegment.settingsOptions = Object.assign({}, SevenSegment.settingsOptions, {
 		step:1.0
 	},
 	"linkSevenSegment": '$function',
+	"linkTrigger": '$function',
 });
 
 PrefabManager.prefabLibrary.SevenSegment = {
