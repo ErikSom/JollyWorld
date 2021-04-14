@@ -9,7 +9,7 @@ import '../css/PauseScreen.scss'
 import '../css/WinScreen.scss'
 import '../css/GameOver.scss'
 import '../css/Leaderboard.scss'
-
+import '../css/SettingsMenu.scss'
 
 // https://github.com/catdad/canvas-confetti
 
@@ -75,25 +75,6 @@ let filter = {
 function UIManager() {
 
     var self = this;
-
-    this.showMainMenuOld = function () {
-        // const span = document.createElement('span');
-        // span.setAttribute('id', 'versionNumber')
-        // span.innerText = __VERSION__;
-        // mainMenu.appendChild(span);
-        // setTimeout(() => {
-        //     span.style.opacity = 1
-        // }, 1800);
-
-        // discordButton = document.createElement('button');
-        // discordButton.classList.add('menuButton', 'discordButton');
-        // discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discord.svg')})`;
-        // discordButton.onclick = () => {
-        //     window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
-        // }
-        // customGUIContainer.appendChild(discordButton);
-        this.showMainMenu();
-    }
 
     this.showMainMenu = ()=>{
         if(!mainMenu){
@@ -163,7 +144,21 @@ function UIManager() {
                     <div class="search-filter"></div>
                 </div>
                 <div class="game-scroll-block"></div>
-                <div class="footer"></div>
+                <div class="page-footer">
+                    <div class="text">
+                        <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
+                        <button class="privacy">Privacy Policy</button>
+                        &
+                        <button class="terms">Terms of Services</button>
+                        .
+                        <button class="contact">Contact</button>
+                    </div>
+                    <div class="social-channels">
+                        <div class="jolly-discord"></div>
+                        <div class="jolly-youtube"></div>
+                        <div class="jolly-facebook"></div>
+                    </div>
+                </div>
             `
 
             mainMenu = document.createElement('div');
@@ -212,8 +207,20 @@ function UIManager() {
 
             const header = mainMenu.querySelector('.header');
 
+            const hamburger = header.querySelector('.hamburger');
+            const mobileBG = header.querySelector('.mobile-bg');
+            const headerButtons = header.querySelector('.buttons');
+            hamburger.onclick = ()=>{
+                mobileBG.classList.toggle('open');
+                headerButtons.classList.toggle('open');
+            }
+
             const characterSelect = header.querySelector('.character-select');
-            characterSelect.onclick = ()=>this.showCharacterSelect2();
+            characterSelect.onclick = ()=> {
+                mobileBG.classList.remove('open');
+                headerButtons.classList.remove('open');
+                this.showCharacterSelect2();
+            }
 
             const editorButton = header.querySelector('.editor');
             editorButton.onclick = ()=> {
@@ -232,7 +239,6 @@ function UIManager() {
                     volumeButton.classList.remove('disabled');
                 }
             }
-
             const loginButton = header.querySelector('.discord');
             loginButton.onclick = ()=>{
                 if(backendManager.isLoggedIn()){
@@ -249,12 +255,42 @@ function UIManager() {
                 new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
             }
 
-            const hamburger = header.querySelector('.hamburger');
-            const mobileBG = header.querySelector('.mobile-bg');
-            const headerButtons = header.querySelector('.buttons');
-            hamburger.onclick = ()=>{
-                mobileBG.classList.toggle('open');
-                headerButtons.classList.toggle('open');
+            const settingsButton = header.querySelector('.settings');
+            settingsButton.onclick = ()=> {
+                mobileBG.classList.remove('open');
+                headerButtons.classList.remove('open');
+                this.showSettingsMenu()
+            }
+
+            const footer = mainMenu.querySelector('.page-footer');
+            const privacyButton = footer.querySelector('.privacy');
+            privacyButton.onclick = ()=>{
+                window.location.href = 'https://jollyworld.app/privacy-policy/';
+            }
+
+            const termsButton = footer.querySelector('.terms');
+            termsButton.onclick = ()=>{
+                window.location.href = 'https://jollyworld.app/terms-and-conditions/';
+            }
+
+            const contactButton = footer.querySelector('.contact');
+            contactButton.onclick = ()=> {
+                window.location.href = "mailto:terminarchgames@gmail.com";
+            }
+
+            const jollyDiscordButton = footer.querySelector('.jolly-discord');
+            jollyDiscordButton.onclick = ()=> {
+                window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
+            }
+
+            const jollyYouTubeButton = footer.querySelector('.jolly-youtube');
+            jollyYouTubeButton.onclick = ()=> {
+                window.open("https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw", "_blank");
+            }
+
+            const jollyFacebookButton = footer.querySelector('.jolly-facebook');
+            jollyFacebookButton.onclick = ()=> {
+                window.open("https://www.facebook.com/jolly.world.game/", "_blank");
             }
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
@@ -745,6 +781,30 @@ function UIManager() {
         mainMenu.classList.remove('inactive');
     }
 
+    this.showTextWall = (label, text) => {
+        const container = document.querySelector('#settings-ui');
+
+        if(!textWall){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">${label}</div>
+                <div class="text">${text}</div>
+                <div class="back">Back</div>
+            `;
+
+            textWall = document.createElement('div');
+            textWall.classList.add('textwall');
+            textWall.innerHTML = htmlStructure;
+
+            container.appendChild(textWall)
+        }
+
+        textWall.style.display = 'block';
+    }
+    this.hideTextWall = ()=>{
+        if(textWall) textWall.style.display = 'none';
+    }
+
     this.showLoginPrompt = ()=> {
         const container = document.querySelector('#settings-ui');
         if(!loginScreen){
@@ -797,7 +857,7 @@ function UIManager() {
         window.open(url, 'oAuthLogin', settings);
     }
 
-    // this.showSettingsButtons = function(){
+    // this.showSettingsMenuButtons = function(){
     //     const targetElement = document.querySelector('#settings-ui');
     //     const volumeButton = document.createElement('button');
     //     volumeButton.classList.add('audioButton');
@@ -1022,6 +1082,40 @@ function UIManager() {
             }
         },
         Settings.gameOverDelay);
+    }
+
+    this.showSettingsMenu = function (){
+        if(!settingsMenu){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Settings</div>
+                <div class="buttons">
+                    <div class="fullscreen">Fullscreen</div>
+                    <div class="back">Back</div>
+                </div>
+            `;
+
+            settingsMenu = document.createElement('div');
+            settingsMenu.classList.add('settingsmenu');
+            settingsMenu.innerHTML = htmlStructure;
+
+            const buttons = settingsMenu.querySelector('.buttons');
+            const backButton = buttons.querySelector('.back');
+            backButton.onclick = ()=>{
+                this.hideSettingsMenu();
+            }
+            const fullscreenButton = buttons.querySelector('.fullscreen');
+            fullscreenButton.onclick = ()=>{
+                MobileController.toggleFullscreen(true);
+            }
+            customGUIContainer.appendChild(settingsMenu);
+        }
+        mainMenu.classList.add('inactive');
+        settingsMenu.style.display = 'block';
+    }
+    this.hideSettingsMenu = ()=> {
+        mainMenu.classList.remove('inactive');
+        settingsMenu.style.display = 'none';
     }
 
     // this.showLevelBanner2 = function () {

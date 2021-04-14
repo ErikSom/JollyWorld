@@ -305,8 +305,8 @@ export const fireKeyboardEvent = (down, key) => {
 }
 
 
-export const openFullscreen = () => {
-	if (isMobile() && window.location.hostname !== 'localhost') {
+export const openFullscreen = userTriggered => {
+	if ((isMobile() && window.location.hostname !== 'localhost') || userTriggered) {
 		const fullscreenElement = document.body;
 		if (fullscreenElement.requestFullscreen) {
 			fullscreenElement.requestFullscreen();
@@ -320,6 +320,23 @@ export const openFullscreen = () => {
 			/* IE/Edge */
 			fullscreenElement.msRequestFullscreen();
 		}
+	}
+}
+export const exitFullscreen = ()=> {
+	/* Close fullscreen */
+	if (document.exitFullscreen) {
+	  document.exitFullscreen();
+	} else if (document.webkitExitFullscreen) { /* Safari */
+	  document.webkitExitFullscreen();
+	} else if (document.msExitFullscreen) { /* IE11 */
+	  document.msExitFullscreen();
+	}
+}
+export const toggleFullscreen = userTriggered =>{
+	if(window.fullscreenElement){
+		exitFullscreen();
+	}else{
+		openFullscreen(userTriggered);
 	}
 }
 

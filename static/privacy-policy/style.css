@@ -1,0 +1,45 @@
+h1, h2{
+	color: white;
+	font-family: "Lily Script One", cursive;
+    text-shadow: 1.2px 2px black;
+}
+h3{
+	font-family: "Lily Script One", cursive;
+}
+html{
+	background-color: #e7b98a;
+	padding: 20px;
+}
+.logo{
+	width: 260px;
+	height: 68px;
+	background-repeat: no-repeat;
+	filter: drop-shadow(2px 2px 2px black);
+	background-image: url(../assets/images/gui/Logo.svg);
+}
+a{
+	text-decoration: none;
+}
+.back-button{
+	width: 200px;
+	height: 52px;
+	border-radius: 8px;
+	border: 2px solid black;
+	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+	color: white;
+	font-family: "Lily Script One", cursive;
+	text-shadow: 1.2px 2px black;
+	text-align: center;
+	text-rendering: geometricPrecision;
+	line-height: 48px;
+	font-size: 36px;
+	cursor: pointer;
+	margin: 32px 0 0 0;
+	background-color: #7B7B7B;
+}
+.back-button:hover{
+	filter:brightness(1.2);
+}
+.back-button:active{
+	filter:brightness(0.5);
+}
