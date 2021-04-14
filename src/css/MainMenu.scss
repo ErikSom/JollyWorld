@@ -234,14 +234,38 @@
 		bottom: 0px;
 		width: 100%;
 		display: flex;
-		justify-content: center;
-		margin: 10px 0px;
+		flex-direction: column;
+		align-items: center;
+		margin: 4px 0px;
 		.text{
 			display: flex;
 			font-size: 12px;
+			white-space: nowrap;
 			button{
 				margin:0px 4px;
 				@extend .clean-text-button
+			}
+		}
+		.social-channels{
+			display: flex;
+			& > div{
+				margin: 2px 2px;
+				border-radius: 4px;
+				@extend .simple-button;
+			}
+			.jolly-discord{
+				width: 72px;
+				height: 24px;
+				background-image: url(../../static/assets/images/misc/discord.svg)
+			}
+			.jolly-youtube, .jolly-facebook{
+				width: 24px;
+				height: 24px;
+				background-color: white;
+				background-image: url(../../static/assets/images/misc/youtube-icon.svg)
+			}
+			.jolly-facebook{
+				background-image: url(../../static/assets/images/misc/facebook-icon.svg)
 			}
 		}
 	}
@@ -401,6 +425,14 @@
 		.games{
 			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 			grid-gap: 10px 0px;
+		}
+		.page-footer{
+			.text{
+				font-size: 8px;
+				button{
+					margin:0px;
+				}
+			}
 		}
 	}
 	.game{

@@ -170,7 +170,12 @@ function UIManager() {
                         &
                         <button class="terms">Terms of Services</button>
                         .
-                        <button class="contact">Contact</div>
+                        <button class="contact">Contact</button>
+                    </div>
+                    <div class="social-channels">
+                        <div class="jolly-discord"></div>
+                        <div class="jolly-youtube"></div>
+                        <div class="jolly-facebook"></div>
                     </div>
                 </div>
             `
@@ -278,6 +283,11 @@ function UIManager() {
             const termsButton = footer.querySelector('.terms');
             termsButton.onclick = ()=>{
                 window.location.href = 'https://jollyworld.app/terms-and-conditions/';
+            }
+
+            const contactButton = footer.querySelector('.contact');
+            contactButton.onclick = ()=> {
+                window.location.href = "mailto:terminarchgames@gmail.com";
             }
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
