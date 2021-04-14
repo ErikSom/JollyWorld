@@ -149,7 +149,7 @@ function UIManager() {
                         <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
                         <button class="privacy">Privacy Policy</button>
                         &
-                        <button class="terms">Terms of Services</button>
+                        <button class="terms">Terms of Service</button>
                         .
                         <button class="contact">Contact</button>
                     </div>
@@ -270,7 +270,7 @@ function UIManager() {
 
             const termsButton = footer.querySelector('.terms');
             termsButton.onclick = ()=>{
-                window.location.href = 'https://jollyworld.app/terms-and-conditions/';
+                window.location.href = 'https://jollyworld.app/terms/';
             }
 
             const contactButton = footer.querySelector('.contact');
