@@ -76,25 +76,6 @@ function UIManager() {
 
     var self = this;
 
-    this.showMainMenuOld = function () {
-        // const span = document.createElement('span');
-        // span.setAttribute('id', 'versionNumber')
-        // span.innerText = __VERSION__;
-        // mainMenu.appendChild(span);
-        // setTimeout(() => {
-        //     span.style.opacity = 1
-        // }, 1800);
-
-        // discordButton = document.createElement('button');
-        // discordButton.classList.add('menuButton', 'discordButton');
-        // discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discord.svg')})`;
-        // discordButton.onclick = () => {
-        //     window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
-        // }
-        // customGUIContainer.appendChild(discordButton);
-        this.showMainMenu();
-    }
-
     this.showMainMenu = ()=>{
         if(!mainMenu){
             const htmlStructure = /*html*/`
@@ -226,8 +207,20 @@ function UIManager() {
 
             const header = mainMenu.querySelector('.header');
 
+            const hamburger = header.querySelector('.hamburger');
+            const mobileBG = header.querySelector('.mobile-bg');
+            const headerButtons = header.querySelector('.buttons');
+            hamburger.onclick = ()=>{
+                mobileBG.classList.toggle('open');
+                headerButtons.classList.toggle('open');
+            }
+
             const characterSelect = header.querySelector('.character-select');
-            characterSelect.onclick = ()=>this.showCharacterSelect2();
+            characterSelect.onclick = ()=> {
+                mobileBG.classList.remove('open');
+                headerButtons.classList.remove('open');
+                this.showCharacterSelect2();
+            }
 
             const editorButton = header.querySelector('.editor');
             editorButton.onclick = ()=> {
@@ -246,10 +239,6 @@ function UIManager() {
                     volumeButton.classList.remove('disabled');
                 }
             }
-
-            const settingsButton = header.querySelector('.settings');
-            settingsButton.onclick = ()=> this.showSettingsMenu()
-
             const loginButton = header.querySelector('.discord');
             loginButton.onclick = ()=>{
                 if(backendManager.isLoggedIn()){
@@ -266,12 +255,11 @@ function UIManager() {
                 new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
             }
 
-            const hamburger = header.querySelector('.hamburger');
-            const mobileBG = header.querySelector('.mobile-bg');
-            const headerButtons = header.querySelector('.buttons');
-            hamburger.onclick = ()=>{
-                mobileBG.classList.toggle('open');
-                headerButtons.classList.toggle('open');
+            const settingsButton = header.querySelector('.settings');
+            settingsButton.onclick = ()=> {
+                mobileBG.classList.remove('open');
+                headerButtons.classList.remove('open');
+                this.showSettingsMenu()
             }
 
             const footer = mainMenu.querySelector('.page-footer');
@@ -288,6 +276,21 @@ function UIManager() {
             const contactButton = footer.querySelector('.contact');
             contactButton.onclick = ()=> {
                 window.location.href = "mailto:terminarchgames@gmail.com";
+            }
+
+            const jollyDiscordButton = footer.querySelector('.jolly-discord');
+            jollyDiscordButton.onclick = ()=> {
+                window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
+            }
+
+            const jollyYouTubeButton = footer.querySelector('.jolly-youtube');
+            jollyYouTubeButton.onclick = ()=> {
+                window.open("https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw", "_blank");
+            }
+
+            const jollyFacebookButton = footer.querySelector('.jolly-facebook');
+            jollyFacebookButton.onclick = ()=> {
+                window.open("https://www.facebook.com/jolly.world.game/", "_blank");
             }
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
@@ -1108,9 +1111,11 @@ function UIManager() {
             }
             customGUIContainer.appendChild(settingsMenu);
         }
+        mainMenu.classList.add('inactive');
         settingsMenu.style.display = 'block';
     }
     this.hideSettingsMenu = ()=> {
+        mainMenu.classList.remove('inactive');
         settingsMenu.style.display = 'none';
     }
 

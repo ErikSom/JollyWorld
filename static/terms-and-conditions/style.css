@@ -15,7 +15,7 @@ html{
 	height: 68px;
 	background-repeat: no-repeat;
 	filter: drop-shadow(2px 2px 2px black);
-	background-image: url(../images/gui/Logo.svg);
+	background-image: url(../assets/images/gui/Logo.svg);
 }
 a{
 	text-decoration: none;
