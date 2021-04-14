@@ -289,10 +289,15 @@ const selectTriggerTarget = prefab=>{
     game.editor.customPrefabMouseMove = null;
 }
 
+const addCustomTriggerConditionGUI = (prefabObject, editData, targetFolder) => {
+    console.log("ADDING GUI FOR", prefabObject, editData, targetFolder)
+}
+
 SevenSegment.settings = Object.assign({}, SevenSegment.settings, {
     "number": 0,
     "linkSevenSegment": prefab=>selectLinkTarget(prefab),
     "linkTrigger": prefab=>selectTriggerTarget(prefab),
+    "triggerConditions": addCustomTriggerConditionGUI
 });
 SevenSegment.settingsOptions = Object.assign({}, SevenSegment.settingsOptions, {
     "number":{
@@ -302,6 +307,7 @@ SevenSegment.settingsOptions = Object.assign({}, SevenSegment.settingsOptions, {
 	},
 	"linkSevenSegment": '$function',
 	"linkTrigger": '$function',
+	"triggerConditions": '$custom',
 });
 
 PrefabManager.prefabLibrary.SevenSegment = {

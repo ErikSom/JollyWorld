@@ -1377,7 +1377,11 @@ const _B2dEditor = function () {
 						ui.editorGUI.editData[key] = prefabObjectSettings[key];
 
 						if(ui.editorGUI.editData[key] === undefined) ui.editorGUI.editData[key] = prefabClassSettings[key];
-						if (prefabClassOptions[key] == '$function') {
+						if (prefabClassOptions[key] == '$custom') {
+							// allow custom gui creation for some prefabs (like SevenSegment);
+							delete ui.editorGUI.editData[key];
+							prefabClassSettings[key](prefabObject, ui.editorGUI.editData, targetFolder);
+						}else if (prefabClassOptions[key] == '$function') {
 							// create a new function that passes the prefab object
 							ui.editorGUI.editData[key] = ()=>prefabClassSettings[key](prefabObject);
 							controller = targetFolder.add(ui.editorGUI.editData, key);
