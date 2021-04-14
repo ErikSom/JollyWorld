@@ -565,7 +565,6 @@ function UIManager() {
 
         const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, limit)];
         let [myPosition, leaderboardData] = await Promise.all(promises);
-        leaderboardData = leaderboardData.reverse();
 
         // const usernames = ["Goku", "Vegeta", "Krillin", "Gohan", "Freeza", "Cell", "Goten", "Gotenks", "Trunks"];
         // leaderboardData = [];
