@@ -241,14 +241,14 @@
 			display: flex;
 			font-size: 12px;
 			white-space: nowrap;
-			button{
+			a{
 				margin:0px 4px;
-				@extend .clean-text-button
+				@extend .clean-text-button;
 			}
 		}
 		.social-channels{
 			display: flex;
-			& > div{
+			& > a{
 				margin: 2px 2px;
 				border-radius: 4px;
 				@extend .simple-button;

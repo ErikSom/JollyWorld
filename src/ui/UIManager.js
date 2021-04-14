@@ -147,16 +147,16 @@ function UIManager() {
                 <div class="page-footer">
                     <div class="text">
                         <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
-                        <button class="privacy">Privacy Policy</button>
+                        <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
                         &
-                        <button class="terms">Terms of Service</button>
+                        <a href="https://jollyworld.app/terms/" class="terms">Terms of Service</a>
                         .
-                        <button class="contact">Contact</button>
+                        <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
                     </div>
                     <div class="social-channels">
-                        <div class="jolly-discord"></div>
-                        <div class="jolly-youtube"></div>
-                        <div class="jolly-facebook"></div>
+                        <a href="https://discord.gg/7ZWxBam9Hx" class="jolly-discord"></a>
+                        <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" class="jolly-youtube"></a>
+                        <a href="https://www.facebook.com/jolly.world.game/" class="jolly-facebook"></a>
                     </div>
                 </div>
             `
@@ -260,37 +260,6 @@ function UIManager() {
                 mobileBG.classList.remove('open');
                 headerButtons.classList.remove('open');
                 this.showSettingsMenu()
-            }
-
-            const footer = mainMenu.querySelector('.page-footer');
-            const privacyButton = footer.querySelector('.privacy');
-            privacyButton.onclick = ()=>{
-                window.location.href = 'https://jollyworld.app/privacy-policy/';
-            }
-
-            const termsButton = footer.querySelector('.terms');
-            termsButton.onclick = ()=>{
-                window.location.href = 'https://jollyworld.app/terms/';
-            }
-
-            const contactButton = footer.querySelector('.contact');
-            contactButton.onclick = ()=> {
-                window.location.href = "mailto:terminarchgames@gmail.com";
-            }
-
-            const jollyDiscordButton = footer.querySelector('.jolly-discord');
-            jollyDiscordButton.onclick = ()=> {
-                window.open("https://discord.gg/7ZWxBam9Hx", "_blank");
-            }
-
-            const jollyYouTubeButton = footer.querySelector('.jolly-youtube');
-            jollyYouTubeButton.onclick = ()=> {
-                window.open("https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw", "_blank");
-            }
-
-            const jollyFacebookButton = footer.querySelector('.jolly-facebook');
-            jollyFacebookButton.onclick = ()=> {
-                window.open("https://www.facebook.com/jolly.world.game/", "_blank");
             }
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
