@@ -322,6 +322,23 @@ export const openFullscreen = userTriggered => {
 		}
 	}
 }
+export const exitFullscreen = ()=> {
+	/* Close fullscreen */
+	if (document.exitFullscreen) {
+	  document.exitFullscreen();
+	} else if (document.webkitExitFullscreen) { /* Safari */
+	  document.webkitExitFullscreen();
+	} else if (document.msExitFullscreen) { /* IE11 */
+	  document.msExitFullscreen();
+	}
+}
+export const toggleFullscreen = userTriggered =>{
+	if(window.fullscreenElement){
+		exitFullscreen();
+	}else{
+		openFullscreen(userTriggered);
+	}
+}
 
 const showApplePWAInstall = () => {
 	const prompt = document.createElement('div');

@@ -10,7 +10,6 @@ import '../css/WinScreen.scss'
 import '../css/GameOver.scss'
 import '../css/Leaderboard.scss'
 import '../css/SettingsMenu.scss'
-import '../css/TextWall.scss'
 
 // https://github.com/catdad/canvas-confetti
 
@@ -66,7 +65,6 @@ let settingsMenu;
 let loginScreen;
 let leaderboard;
 let smallLogo;
-let textWall;
 
 let filter = {
     featured: '',
@@ -274,7 +272,12 @@ function UIManager() {
             const footer = mainMenu.querySelector('.page-footer');
             const privacyButton = footer.querySelector('.privacy');
             privacyButton.onclick = ()=>{
-                this.showTextWall("Privacy", "Long text")
+                window.location.href = 'https://jollyworld.app/privacy-policy/';
+            }
+
+            const termsButton = footer.querySelector('.terms');
+            termsButton.onclick = ()=>{
+                window.location.href = 'https://jollyworld.app/terms-and-conditions/';
             }
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
@@ -1091,7 +1094,7 @@ function UIManager() {
             }
             const fullscreenButton = buttons.querySelector('.fullscreen');
             fullscreenButton.onclick = ()=>{
-                MobileController.openFullscreen(true);
+                MobileController.toggleFullscreen(true);
             }
             customGUIContainer.appendChild(settingsMenu);
         }
