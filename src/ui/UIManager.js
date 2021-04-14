@@ -9,7 +9,8 @@ import '../css/PauseScreen.scss'
 import '../css/WinScreen.scss'
 import '../css/GameOver.scss'
 import '../css/Leaderboard.scss'
-
+import '../css/SettingsMenu.scss'
+import '../css/TextWall.scss'
 
 // https://github.com/catdad/canvas-confetti
 
@@ -65,6 +66,7 @@ let settingsMenu;
 let loginScreen;
 let leaderboard;
 let smallLogo;
+let textWall;
 
 let filter = {
     featured: '',
@@ -163,7 +165,16 @@ function UIManager() {
                     <div class="search-filter"></div>
                 </div>
                 <div class="game-scroll-block"></div>
-                <div class="footer"></div>
+                <div class="page-footer">
+                    <div class="text">
+                        <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
+                        <button class="privacy">Privacy Policy</button>
+                        &
+                        <button class="terms">Terms of Services</button>
+                        .
+                        <button class="contact">Contact</div>
+                    </div>
+                </div>
             `
 
             mainMenu = document.createElement('div');
@@ -233,6 +244,9 @@ function UIManager() {
                 }
             }
 
+            const settingsButton = header.querySelector('.settings');
+            settingsButton.onclick = ()=> this.showSettingsMenu()
+
             const loginButton = header.querySelector('.discord');
             loginButton.onclick = ()=>{
                 if(backendManager.isLoggedIn()){
@@ -255,6 +269,12 @@ function UIManager() {
             hamburger.onclick = ()=>{
                 mobileBG.classList.toggle('open');
                 headerButtons.classList.toggle('open');
+            }
+
+            const footer = mainMenu.querySelector('.page-footer');
+            const privacyButton = footer.querySelector('.privacy');
+            privacyButton.onclick = ()=>{
+                this.showTextWall("Privacy", "Long text")
             }
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
@@ -746,6 +766,30 @@ function UIManager() {
         mainMenu.classList.remove('inactive');
     }
 
+    this.showTextWall = (label, text) => {
+        const container = document.querySelector('#settings-ui');
+
+        if(!textWall){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">${label}</div>
+                <div class="text">${text}</div>
+                <div class="back">Back</div>
+            `;
+
+            textWall = document.createElement('div');
+            textWall.classList.add('textwall');
+            textWall.innerHTML = htmlStructure;
+
+            container.appendChild(textWall)
+        }
+
+        textWall.style.display = 'block';
+    }
+    this.hideTextWall = ()=>{
+        if(textWall) textWall.style.display = 'none';
+    }
+
     this.showLoginPrompt = ()=> {
         const container = document.querySelector('#settings-ui');
         if(!loginScreen){
@@ -798,7 +842,7 @@ function UIManager() {
         window.open(url, 'oAuthLogin', settings);
     }
 
-    // this.showSettingsButtons = function(){
+    // this.showSettingsMenuButtons = function(){
     //     const targetElement = document.querySelector('#settings-ui');
     //     const volumeButton = document.createElement('button');
     //     volumeButton.classList.add('audioButton');
@@ -1023,6 +1067,38 @@ function UIManager() {
             }
         },
         Settings.gameOverDelay);
+    }
+
+    this.showSettingsMenu = function (){
+        if(!settingsMenu){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">Settings</div>
+                <div class="buttons">
+                    <div class="fullscreen">Fullscreen</div>
+                    <div class="back">Back</div>
+                </div>
+            `;
+
+            settingsMenu = document.createElement('div');
+            settingsMenu.classList.add('settingsmenu');
+            settingsMenu.innerHTML = htmlStructure;
+
+            const buttons = settingsMenu.querySelector('.buttons');
+            const backButton = buttons.querySelector('.back');
+            backButton.onclick = ()=>{
+                this.hideSettingsMenu();
+            }
+            const fullscreenButton = buttons.querySelector('.fullscreen');
+            fullscreenButton.onclick = ()=>{
+                MobileController.openFullscreen(true);
+            }
+            customGUIContainer.appendChild(settingsMenu);
+        }
+        settingsMenu.style.display = 'block';
+    }
+    this.hideSettingsMenu = ()=> {
+        settingsMenu.style.display = 'none';
     }
 
     // this.showLevelBanner2 = function () {

@@ -305,8 +305,8 @@ export const fireKeyboardEvent = (down, key) => {
 }
 
 
-export const openFullscreen = () => {
-	if (isMobile() && window.location.hostname !== 'localhost') {
+export const openFullscreen = userTriggered => {
+	if ((isMobile() && window.location.hostname !== 'localhost') || userTriggered) {
 		const fullscreenElement = document.body;
 		if (fullscreenElement.requestFullscreen) {
 			fullscreenElement.requestFullscreen();

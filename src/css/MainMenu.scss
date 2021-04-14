@@ -229,6 +229,22 @@
 		}
 		@extend .base-button;
 	}
+	.page-footer{
+		position: absolute;
+		bottom: 0px;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		margin: 10px 0px;
+		.text{
+			display: flex;
+			font-size: 12px;
+			button{
+				margin:0px 4px;
+				@extend .clean-text-button
+			}
+		}
+	}
 }
 
 .game{
