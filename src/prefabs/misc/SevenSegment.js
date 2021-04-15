@@ -18,7 +18,7 @@ class SevenSegment extends PrefabManager.basePrefab {
 
         this.base = this.lookupObject.base;
         this.base.isSevenSegment = true;
-
+        this.isSevenSegment = true;
 
         this.updateNumber();
     }
@@ -36,6 +36,10 @@ class SevenSegment extends PrefabManager.basePrefab {
             this.rollover(false);
             this.number = 9;
         }
+    }
+
+    setNumber(num){
+
     }
 
     rollover(positive){
@@ -108,13 +112,14 @@ class SevenSegment extends PrefabManager.basePrefab {
         this.linkedSegment = target.mySprite;
     }
     linkTrigger(target){
-        
         if(this.linkedTriggers.includes(target.mySprite)){
             // resort
         }else{
             this.linkedTriggers.push(target.mySprite);
         }
 
+        // update conditions
+        this.serializeProps();
     }
     serializeProps(){
         if(this.linkedSegment && !this.linkedSegment.destroyed){
@@ -125,15 +130,24 @@ class SevenSegment extends PrefabManager.basePrefab {
         }
 
         if(this.linkedTriggers.length > 0){
-            this.prefabObject.settings.linkedTriggerIds = []
-            this.linkedTriggers.forEach(trigger => {
+            if(this.prefabObject.settings.linkedTriggerData === undefined) this.prefabObject.settings.linkedTriggerData = []
+            // [id, condition]
+            const rebuildTriggerIds = [];
+            this.linkedTriggers.forEach((trigger, index) => {
                 if(!trigger.destroyed){
                     game.editor.updateObject(trigger, trigger.data);
-                    this.prefabObject.settings.linkedTriggerIds.push(trigger.parent.getChildIndex(trigger));
+
+                    const oldData = this.prefabObject.settings.linkedTriggerData[index] || [0,0];
+                    rebuildTriggerIds.push([trigger.parent.getChildIndex(trigger), oldData[1]]);
                 }
             })
+            this.prefabObject.settings.linkedTriggerData = rebuildTriggerIds;
+
+            // sanitize for gui
+            this.linkedTriggers = this.linkedTriggers.filter(trigger => trigger && !trigger.destroyed);
+
         }else{
-            this.prefabObject.settings.linkedTriggerIds = [];
+            this.prefabObject.settings.linkedTriggerData = [];
         }
     }
     initializeProps(){
@@ -143,10 +157,11 @@ class SevenSegment extends PrefabManager.basePrefab {
                 this.linkedSegment = game.editor.textures.getChildAt(linkedSegmentId)
             }
         }
-        const triggerIds = this.prefabObject.settings.linkedTriggerIds;
+        const triggerIds = this.prefabObject.settings.linkedTriggerData;
         if(Array.isArray(triggerIds) && triggerIds.length > 0){
             this.linkedTriggers.length = 0;
-            triggerIds.forEach(id => {
+            triggerIds.forEach(data => {
+                const [id] = data;
                 if(id !== undefined && id < game.editor.textures.children.length){
                     this.linkedTriggers.push(game.editor.textures.getChildAt(id));
                 }
@@ -181,9 +196,9 @@ class SevenSegment extends PrefabManager.basePrefab {
         if(game.triggerDebugDraw.redrawTimer >= 0){
             game.triggerDebugDraw.redrawTimer --;
         }
-    
+
         if(game.triggerDebugDraw.redrawTimer !== 0) return;
-    
+
         const body = this.base;
 
         this.linkedTriggers.forEach((target, i) => {
@@ -277,6 +292,8 @@ const linkTrigger = prefab => {
 
     delete prefab.class.linkObjectTarget;
     stopCustomBehaviour();
+
+    game.editor.updateSelection();
 }
 
 const selectTriggerTarget = prefab=>{
@@ -290,7 +307,28 @@ const selectTriggerTarget = prefab=>{
 }
 
 const addCustomTriggerConditionGUI = (prefabObject, editData, targetFolder) => {
-    console.log("ADDING GUI FOR", prefabObject, editData, targetFolder)
+    const prefabClass = prefabObject.class;
+    prefabClass.serializeProps();
+    prefabClass.linkedTriggers.forEach((trigger, index)=>{
+        const triggerFolder = targetFolder.addFolder(`Trigger-${index+1}`)
+
+        const conditions = ["rollover", "change", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+        const conditionId = `__triggerCondition-${index}`;
+        editData[conditionId] = conditions[prefabObject.settings.linkedTriggerData[index][1]];
+
+        triggerFolder.add(editData, conditionId, conditions).name('trigger condition').onChange(function (value) {
+            prefabObject.settings.linkedTriggerData[index][1] = conditions.indexOf(value);
+        });
+
+        const removeFunction = ()=>{
+            console.log("Remove");
+        }
+
+        const triggerRemoveId = `__triggerRemove-${index}`;
+        editData[triggerRemoveId] = removeFunction;
+        triggerFolder.add(editData, triggerRemoveId).name('remove');
+    })
 }
 
 SevenSegment.settings = Object.assign({}, SevenSegment.settings, {

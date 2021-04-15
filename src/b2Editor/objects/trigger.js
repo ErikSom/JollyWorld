@@ -22,7 +22,7 @@ export const getActionsForObject = function (object) {
     var actions = [];
     actions.push("Empty");
     if (object.data.prefabInstanceName != undefined) {
-        actions.push("Impulse") //, "SetAwake");
+        if(!prefab.class.isSevenSegment) actions.push("Impulse");
         const prefab = B2dEditor.activePrefabs[object.data.prefabInstanceName];
         if(prefab.class.isExplosive){
             actions.push("SetActive");
@@ -40,6 +40,12 @@ export const getActionsForObject = function (object) {
         }
         if(prefab.class.isDrone){
             actions.push("SetWayPoint");
+        }
+        if(prefab.class.isSevenSegment){
+            actions.push("Increase");
+            actions.push("Decrease");
+            actions.push("SetNumber");
+            actions.push("SetRandom");
         }
     } else {
         switch (object.data.type) {
@@ -366,6 +372,18 @@ export const doAction = function (actionData, target) {
             break;
         case "PlayMidiInstrument":
             playTriggerInstrument(actionData);
+        break;
+        case "Increase":
+            prefab.class.increase();
+        break;
+        case "Decrease":
+            prefab.class.decrease();
+        break;
+        case "SetNumber":
+            prefab.class.setNumber(actionData.number);
+        break;
+        case "SetRandom":
+            prefab.class.setNumber(Math.floor(Math.random() * 10));
         break;
     }
 }
@@ -986,6 +1004,35 @@ export const actionDictionary = {
         },
     },
     /******************/
+
+    actionObject_Increase: {
+    type: 'Increase',
+    },
+    actionOptions_Increase: {},
+    /*******************/
+    actionObject_Decrease: {
+        type: 'Decrease',
+    },
+    actionOptions_Decrease: {},
+    /*******************/
+    actionObject_SetNumber: {
+        type: 'SetNumber',
+        number: 0,
+    },
+    actionOptions_SetNumber: {
+        number: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 9,
+            value: 0,
+            step: 1,
+        }
+    },
+    /*******************/
+    actionObject_SetRandom: {
+        type: 'SetRandom',
+    },
+    actionOptions_SetRandom: {},
 }
 const actionScrollWatch = [];
 const positionActionsGUI = ()=>{
