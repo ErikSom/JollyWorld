@@ -144,14 +144,16 @@ class SevenSegment extends PrefabManager.basePrefab {
         this.linkedSegment = target.mySprite;
     }
     linkTrigger(target){
-        if(this.linkedTriggers.includes(target.mySprite)){
-            // resort
-        }else{
-            this.linkedTriggers.push(target.mySprite);
-        }
+        if(target){
+            if(this.linkedTriggers.includes(target.mySprite)){
+                // resort
+            }else{
+                this.linkedTriggers.push(target.mySprite);
+            }
 
-        // update conditions
-        this.serializeProps();
+            // update conditions
+            this.serializeProps();
+        }
     }
     serializeProps(){
         if(this.linkedSegment && !this.linkedSegment.destroyed){
