@@ -17,6 +17,13 @@
 .simple-button-shadow:active{
 	filter:brightness(0.5) drop-shadow(2px 2px 2px black)
 }
+.clean-text-button{
+	color: black;
+	text-decoration: none;
+	&:hover{
+		text-decoration: underline;
+	}
+}
 
 .base-button{
 	@extend .simple-button;
