@@ -9,6 +9,12 @@ import {
 import { stopCustomBehaviour } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
 
+const TRIGGER_TYPE_ROLLOVER = 0;
+const TRIGGER_TYPE_CHANGE = 1;
+
+const conditions = ["rollover", "change", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+
 class SevenSegment extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
@@ -23,23 +29,49 @@ class SevenSegment extends PrefabManager.basePrefab {
         this.updateNumber();
     }
     increase(){
-        this.number++;
-        if(this.number === 10){
+        let newNumber = this.number + 1;
+        if(newNumber === 10){
             this.rollover(true);
-            this.number = 0;
+            newNumber = 0;
         }
-        this.updateNumber();
+        this.setNumber(newNumber);
     }
     decrease(){
-        this.number--;
-        if(this.number === -1){
+        let newNumber = this.number - 1;
+        if(newNumber === -1){
             this.rollover(false);
-            this.number = 9;
+            newNumber = 9;
         }
+        this.setNumber(newNumber);
+    }
+
+    trigger(type){
+        this.linkedTriggers.forEach((trigger, index) => {
+            if(trigger && !trigger.destroyed){
+                const data = this.prefabObject.settings.linkedTriggerData[index]
+                const collisionType = conditions[data[1]];
+
+                if(type === TRIGGER_TYPE_ROLLOVER){
+                    if(collisionType === 'rollover'){
+                        trigger.myBody.class.activateTrigger();
+                    }
+                }else {
+                    if(collisionType === 'change'){
+                        trigger.myBody.class.activateTrigger();
+                    }else if(parseInt(collisionType) === this.number){
+                        trigger.myBody.class.activateTrigger();
+                    }
+                }
+            }
+        })
     }
 
     setNumber(num){
-
+        if(this.number != num){
+            this.number = num;
+            this.updateNumber();
+            this.trigger(TRIGGER_TYPE_CHANGE);
+        }
     }
 
     rollover(positive){
@@ -53,7 +85,7 @@ class SevenSegment extends PrefabManager.basePrefab {
             }
 
         }
-
+        this.trigger(TRIGGER_TYPE_ROLLOVER);
     }
     updateNumber(){
 
@@ -311,8 +343,6 @@ const addCustomTriggerConditionGUI = (prefabObject, editData, targetFolder) => {
     prefabClass.serializeProps();
     prefabClass.linkedTriggers.forEach((trigger, index)=>{
         const triggerFolder = targetFolder.addFolder(`Trigger-${index+1}`)
-
-        const conditions = ["rollover", "change", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
         const conditionId = `__triggerCondition-${index}`;
         editData[conditionId] = conditions[prefabObject.settings.linkedTriggerData[index][1]];

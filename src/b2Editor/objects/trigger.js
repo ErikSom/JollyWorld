@@ -22,8 +22,8 @@ export const getActionsForObject = function (object) {
     var actions = [];
     actions.push("Empty");
     if (object.data.prefabInstanceName != undefined) {
-        if(!prefab.class.isSevenSegment) actions.push("Impulse");
         const prefab = B2dEditor.activePrefabs[object.data.prefabInstanceName];
+        if(!prefab.class.isSevenSegment) actions.push("Impulse");
         if(prefab.class.isExplosive){
             actions.push("SetActive");
             actions.push("Explode");
