@@ -10,6 +10,7 @@ import '../css/WinScreen.scss'
 import '../css/GameOver.scss'
 import '../css/Leaderboard.scss'
 import '../css/SettingsMenu.scss'
+import '../css/YoutubePlayer.scss'
 
 // https://github.com/catdad/canvas-confetti
 
@@ -463,6 +464,14 @@ function UIManager() {
                         </div>
                     </div>
                 </div>
+                <div class="jollyvideo">
+                    <div class="jollyvideo-logo"></div>
+                    <div class="videos">
+                        <div class="video video-template">
+                            <div class="play-button"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="nav-buttons">
                     <div class="back button">Back</div>
                     <div class="play button">
@@ -737,6 +746,41 @@ function UIManager() {
             publishedDateDiv.classList.remove('no-update');
             const updatedDate = publishedDateDiv.querySelector('.text-date-updated');
             updatedDate.innerText = format.formatDMY(levelData.updated_at);
+        }
+
+
+        // jolly video
+        const jollyVideoHolder = levelBanner.querySelector('.jollyvideo');
+
+
+
+        if(levelData.youtubelinks && levelData.youtubelinks.length > 0){
+            jollyVideoHolder.style.display = 'block';
+            const videosDiv = jollyVideoHolder.querySelector('.videos');
+
+            while(videosDiv.children.length>1){
+                videosDiv.removeChild(videosDiv.children[1]);
+            }
+
+            const videoTemplate = videosDiv.querySelector('.video-template')
+            videoTemplate.style.display = 'none';
+            levelData.youtubelinks.forEach(ytId => {
+                const video = videoTemplate.cloneNode(true)
+                video.style.display = 'block';
+                video.classList.remove('video-template')
+                video.style.backgroundImage = `url(https://i.ytimg.com/vi/${ytId}/mqdefault.jpg)`;
+
+                const playBut = video.querySelector('.play-button');
+                playBut.innerHTML = YouTubePlayer.playButtonHTML;
+
+                video.onclick = () => {
+                    this.showYouTubePlayer(ytId);
+                }
+
+                videosDiv.appendChild(video);
+            })
+        }else{
+            jollyVideoHolder.style.display = 'none';
         }
     }
     this.hideLevelBanner = ()=>{
@@ -1084,71 +1128,6 @@ function UIManager() {
         mainMenu.classList.remove('inactive');
         settingsMenu.style.display = 'none';
     }
-
-    // this.showLevelBanner2 = function () {
-    //     if (!levelBanner) {
-
-    //         game.editor.ui.registerDragWindow(levelBanner);
-
-    //         levelBannerYTFeed = document.createElement('div');
-    //         levelBannerYTFeed.classList.add('youtubeFeed');
-    //         for(let i = 0; i<3; i++){
-    //             const youtubeFrame = document.createElement('div');
-    //             youtubeFrame.classList.add('youtubeFrame');
-    //             levelBannerYTFeed.appendChild(youtubeFrame);
-
-    //             const playButtonIcon = document.createElement('button');
-    //             playButtonIcon.innerHTML = YouTubePlayer.playButtonHTML;
-    //             playButtonIcon.classList.add('youtubePlayButton');
-    //             youtubeFrame.appendChild(playButtonIcon);
-
-    //             youtubeFrame.onclick = () => {
-    //                 this.showYouTubePlayer(youtubeFrame.getAttribute('yt-video-id'));
-    //             }
-
-    //         }
-    //         customGUIContainer.appendChild(levelBannerYTFeed);
-
-
-    //     }
-    //     levelBanner.domElement.style.visibility = 'visible';
-    //     levelBannerYTFeed.style.visibility = 'visible';
-    //     // set values
-
-    //     let thumbNailImage = levelBanner.domElement.querySelector('#levelbanner_levelThumbnailImage');
-    //     thumbNailImage.src = `${Settings.STATIC}/${game.currentLevelData.thumb_big_md5}.png`;
-
-
-    //     let levelTitle = game.currentLevelData.published ? game.currentLevelData.title : game.currentLevelData.title+' (PREVIEW)';
-    //     levelBanner.domElement.querySelector('.levelbanner_title').innerText = levelTitle;
-    //     levelBanner.domElement.querySelector('.levelbanner_creatorSpan').innerText = game.currentLevelData.author.username;
-    //     levelBanner.domElement.querySelector('#levelbanner_description').innerText = game.currentLevelData.description;
-
-    //     levelBanner.domElement.style.left = '50%';
-    //     levelBanner.domElement.style.top = '50%';
-    //     levelBanner.domElement.style.transform = 'translate(-50%, -50%)';
-
-
-    //     const youtubeVideos = game.currentLevelData.youtubelinks || [];
-
-    //     if(youtubeVideos.length > 0) levelBannerYTFeed.classList.remove('hideLogo');
-    //     else  levelBannerYTFeed.classList.add('hideLogo');
-
-    //     const youtubeFrames = Array.from(levelBannerYTFeed.querySelectorAll('.youtubeFrame'));
-    //     youtubeFrames.forEach( (frame, i)=>{
-    //         frame.setAttribute('yt-video-id', youtubeVideos[i]);
-    //         if(youtubeVideos[i]){
-    //             frame.style.backgroundImage = `url(https://i.ytimg.com/vi/${youtubeVideos[i]}/mqdefault.jpg)`;
-    //             frame.style.opacity = 1.0;
-    //         }else{
-    //             frame.style.opacity = 0.0;
-    //         }
-
-    //     })
-    //     document.title = 'JollyWorld - '+levelTitle;
-    //     history.replaceState({}, document.title, `?lvl=${game.currentLevelData.id}`)
-
-    // }hi
 
     this.showCharacterSelect2 = function(){
         if(!characterSelect){
@@ -1636,6 +1615,64 @@ function UIManager() {
 
     this.showYouTubePlayer = function(id){
         if(!youtubePlayer){
+            const htmlStructure = /*html*/`
+                <div class="bar"><div class="close"></div></div>
+                <div id="YTPlayerHolder" class="yt-iframe"></div>
+                <div class="spinner">
+                    ${YouTubePlayer.spinnerHTML}
+                </div>
+                <div class="footer">
+                    <div class="text-author"></div>
+                    <div class="subscribe-button">
+                        ${YouTubePlayer.subscribeButtonHTML}
+                    </div>
+                </div>
+            `;
+
+
+            youtubePlayer = document.createElement('div');
+            youtubePlayer.classList.add('youtubeplayer');
+            youtubePlayer.innerHTML = htmlStructure;
+
+            const close = youtubePlayer.querySelector('.close');
+            close.onclick = ()=>{
+                levelBanner.style.visibility = 'visible';
+                this.hideYouTubePlayer();
+            }
+
+
+            customGUIContainer.appendChild(youtubePlayer);
+        }
+
+        levelBanner.style.visibility = 'hidden';
+
+        const footer = youtubePlayer.querySelector('.footer');
+        const author = footer.querySelector('.text-author');
+        const subscribe = footer.querySelector('.subscribe-button');
+        const spinner = youtubePlayer.querySelector('.spinner');
+
+        YouTubePlayer.loadVideo('YTPlayerHolder', id, author, subscribe,spinner);
+
+        const subscribeButton = footer.querySelector('.subscribe-button');
+        subscribeButton.onclick = ()=>{
+            const channelID = subscribeButton.getAttribute('yt-channel');
+            if(channelID){
+                window.open(`https://www.youtube.com/channel/${channelID}?view_as=subscriber&sub_confirmation=1`);
+            }
+        }
+
+        youtubePlayer.style.display = 'block';
+
+    }
+
+    this.hideYouTubePlayer = function(){
+        youtubePlayer.style.display = 'none';
+        YouTubePlayer.stopVideo();
+    }
+
+
+    this.showYouTubePlayer2 = function(id){
+        if(!youtubePlayer){
             const levelEditGUIWidth = 500;
             youtubePlayer = new dat.GUI({
                 autoPlace: false,
@@ -1677,13 +1714,6 @@ function UIManager() {
             subscribeHolder.appendChild(subscribeButton);
             subscribeButton.classList.add('youtubeSubscribe');
 
-            subscribeButton.onclick = ()=>{
-                const channelID = subscribeButton.getAttribute('yt-channel');
-                if(channelID){
-                    window.open(`https://www.youtube.com/channel/${channelID}?view_as=subscriber&sub_confirmation=1`);
-                }
-            }
-
             const ytSpinner = document.createElement('div');
             ytSpinner.classList.add('youtubeSpinner');
             ytSpinner.innerHTML = YouTubePlayer.spinnerHTML;
@@ -1706,11 +1736,6 @@ function UIManager() {
         youtubePlayer.domElement.style.left = '50%';
         youtubePlayer.domElement.style.top = '50%';
         youtubePlayer.domElement.style.transform = 'translate(-50%, -50%)';
-    }
-
-    this.hideYouTubePlayer = function(){
-        youtubePlayer.domElement.style.visibility = 'hidden';
-        YouTubePlayer.stopVideo();
     }
 
     this.FILTER_SORT_MOSTPLAYED = "mostplayed";

@@ -91,6 +91,49 @@
 	.leaderboard-bar{
 		@extend .leaderboard-entries
 	}
+	.jollyvideo{
+		padding: 0px 10px;
+		.jollyvideo-logo{
+			background-image: url(../../static/assets/images/gui/JollyTVLogo.png);
+			background-size: contain;
+			width: 84px;
+			height: 22px;
+			margin-bottom: 5px;
+		}
+		.videos{
+			display: flex;
+			gap: 20px;
+			
+			.video{
+				width: 112px;
+				height: 63px;
+				border: 2px solid black;
+				background-size: contain;
+				position: relative;
+				cursor: pointer;
+				.play-button{
+					position: absolute;
+					background-color: transparent;
+					width: 50%;
+					border: none;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					pointer-events: none;
+					opacity: 0.8;
+				}
+
+				&:hover{
+					.play-button{
+						path.play{
+							fill: red;
+						}
+						opacity: 1.0;
+					}
+				}
+			}
+		}
+	}
 	.nav-buttons{
 		display: flex;
 		padding: 5px;

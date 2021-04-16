@@ -9,10 +9,12 @@ import {
 import { stopCustomBehaviour } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
 
-const TRIGGER_TYPE_ROLLOVER = 0;
-const TRIGGER_TYPE_CHANGE = 1;
+const TRIGGER_TYPE_ROLLOVER_LEFT = 0;
+const TRIGGER_TYPE_ROLLOVER_RIGHT = 1;
+const TRIGGER_TYPE_ROLLOVER = 2;
+const TRIGGER_TYPE_CHANGE = 3;
 
-const conditions = ["rollover", "change", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const conditions = ["rollover left", "rollover right", "rollover", "change", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 
 class SevenSegment extends PrefabManager.basePrefab {
@@ -31,6 +33,7 @@ class SevenSegment extends PrefabManager.basePrefab {
     increase(){
         let newNumber = this.number + 1;
         if(newNumber === 10){
+            this.trigger(TRIGGER_TYPE_ROLLOVER_RIGHT);
             this.rollover(true);
             newNumber = 0;
         }
@@ -39,6 +42,7 @@ class SevenSegment extends PrefabManager.basePrefab {
     decrease(){
         let newNumber = this.number - 1;
         if(newNumber === -1){
+            this.trigger(TRIGGER_TYPE_ROLLOVER_LEFT);
             this.rollover(false);
             newNumber = 9;
         }
@@ -53,6 +57,14 @@ class SevenSegment extends PrefabManager.basePrefab {
 
                 if(type === TRIGGER_TYPE_ROLLOVER){
                     if(collisionType === 'rollover'){
+                        trigger.myBody.class.activateTrigger();
+                    }
+                }else if(type === TRIGGER_TYPE_ROLLOVER_LEFT){
+                    if(collisionType === 'rollover left'){
+                        trigger.myBody.class.activateTrigger();
+                    }
+                }else if(type === TRIGGER_TYPE_ROLLOVER_RIGHT){
+                    if(collisionType === 'rollover right'){
                         trigger.myBody.class.activateTrigger();
                     }
                 }else {
@@ -146,6 +158,7 @@ class SevenSegment extends PrefabManager.basePrefab {
         }else{
             this.linkedSegment = null;
         }
+        game.editor.updateSelection();
     }
     linkTrigger(target){
         if(target){
@@ -315,13 +328,20 @@ const linkSegment = prefab => {
 }
 
 const selectLinkTarget = prefab=>{
-    game.editor.customPrefabMouseDown = ()=>{
-        linkSegment(prefab);
+
+    if(!prefab.class.linkedSegment){
+
+        game.editor.customPrefabMouseDown = ()=>{
+            linkSegment(prefab);
+        }
+        game.editor.customDebugDraw = ()=>{
+            drawObjectAdding(prefab, 'isSevenSegment');
+        }
+        game.editor.customPrefabMouseMove = null;
+    } else{
+        prefab.class.linkedSegment = null;
+        game.editor.updateSelection();
     }
-    game.editor.customDebugDraw = ()=>{
-        drawObjectAdding(prefab, 'isSevenSegment');
-    }
-    game.editor.customPrefabMouseMove = null;
 }
 
 const linkTrigger = prefab => {
@@ -346,6 +366,14 @@ const selectTriggerTarget = prefab=>{
 
 const addCustomTriggerConditionGUI = (prefabObject, editData, targetFolder) => {
     const prefabClass = prefabObject.class;
+
+    if(prefabClass.linkedSegment){
+        Array.from(targetFolder.domElement.querySelectorAll('.function')).forEach( func => {
+            const prop = func.querySelector('.property-name')
+            if(prop.innerText === 'linkSevenSegment') prop.innerText = 'unlinkSevenSegment';
+        })
+    }
+
     prefabClass.serializeProps();
     prefabClass.linkedTriggers.forEach((trigger, index)=>{
         const triggerFolder = targetFolder.addFolder(`Trigger-${index+1}`)
@@ -358,7 +386,8 @@ const addCustomTriggerConditionGUI = (prefabObject, editData, targetFolder) => {
         });
 
         const removeFunction = ()=>{
-            console.log("Remove");
+            prefabClass.linkedTriggers.splice(index, 1);
+            game.editor.updateSelection();
         }
 
         const triggerRemoveId = `__triggerRemove-${index}`;
