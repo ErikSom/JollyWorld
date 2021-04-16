@@ -13,6 +13,21 @@
 		flex-direction: column;
 		align-items: center;
 		margin: 10px;
+		.music, .gore, .fullscreen{
+			width: auto;
+			padding: 0px 20px;
+			display: flex;
+			justify-content: center;
+			.choice{
+				&.on{
+					color: #00FF00
+				}
+				&.off{
+					color: #FF0000
+				}
+			}
+			@extend .back-button
+		}
 		.fullscreen{
 			@extend .back-button
 		}

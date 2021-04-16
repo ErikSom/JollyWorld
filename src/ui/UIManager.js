@@ -1114,7 +1114,9 @@ function UIManager() {
                 <div class="bar"></div>
                 <div class="header">Settings</div>
                 <div class="buttons">
-                    <div class="fullscreen">Fullscreen</div>
+                    <div class="music">Music:<div class="choice on">On</div></div>
+                    <div class="gore">Gore:<div class="choice on">On</div></div>
+                    <div class="fullscreen">Fullscreen:<div class="choice off">Off</div></div>
                     <div class="back">Back</div>
                 </div>
             `;
