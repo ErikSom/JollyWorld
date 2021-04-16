@@ -443,6 +443,10 @@ function UIManager() {
                         </div>
                     </div>
                 </div>
+                <div class="gameinfo-bar">
+                    <div class="gameplays">Gameplays:<div class="gameplays-text">100000</div></div>
+                    <div class="votes">Votes:<div class="votes-text">10 (85%)</div></div>
+                </div>
                 <div class="leaderboard-bar">
                     <div class="header-bar">
                         <div class="text-header">Leaderboard</div>
@@ -748,11 +752,20 @@ function UIManager() {
             updatedDate.innerText = format.formatDMY(levelData.updated_at);
         }
 
+        // game info
+
+        const gameInfoBar = levelBanner.querySelector('.gameinfo-bar');
+        const gameplays = gameInfoBar.querySelector('.gameplays-text');
+        gameplays.innerText = format.formatNumber(levelData.playcount);
+
+        const sumVotes = levelData.upvotes + levelData.downvotes;
+        const rating = levelData.upvotes / sumVotes;
+
+        const votes = gameInfoBar.querySelector('.votes-text');
+        votes.innerText = `${sumVotes} (${Math.round(rating * 100)}%)`;
 
         // jolly video
         const jollyVideoHolder = levelBanner.querySelector('.jollyvideo');
-
-
 
         if(levelData.youtubelinks && levelData.youtubelinks.length > 0){
             jollyVideoHolder.style.display = 'block';

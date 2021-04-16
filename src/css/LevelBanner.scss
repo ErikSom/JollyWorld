@@ -88,6 +88,22 @@
 			@extend .vote-buttons;
 		}
 	}
+	.gameinfo-bar{
+		display: flex;
+		justify-content: flex-end;
+		color: white;
+		font-size: 10px;
+		margin: 0px 10px;
+		gap: 10px;
+		font-weight: bold;
+		.gameplays, .votes{
+			display: flex;
+			gap: 2px;
+		}
+		.gameplays-text, .votes-text{
+			color: #00FF00
+		}
+	}
 	.leaderboard-bar{
 		@extend .leaderboard-entries
 	}
