@@ -1153,6 +1153,7 @@ function UIManager() {
             goreButton.onclick = ()=> {
                     const userData = SaveManager.getLocalUserdata();
                     userData.goreOn = !userData.goreOn;
+                    Settings.goreEnabled = userData.goreOn;
                     SaveManager.updateLocalUserData(userData);
                     this.showSettingsMenu();
             }

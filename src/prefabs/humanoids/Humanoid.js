@@ -215,6 +215,11 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
 
     processBloodSprays(){
+
+        if(!Settings.goreEnabled){
+            this.bloodSprays.length = 0;
+        }
+
         for(let i = 0; i<this.bloodSprays.length; i++){
             const spray = this.bloodSprays[i];
             if(spray.body && !spray.body.destroyed){
@@ -427,7 +432,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     if(characterBody == self.lookupObject["belly"]) forceDamage /= 3;
 
-                    if (forceDamage > Settings.bashForce / 2) {
+                    if (forceDamage > Settings.bashForce / 2 && Settings.goreEnabled) {
                         if (characterBody == self.lookupObject["head"]) {
                             if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
                                 type: Humanoid.GORE_SNAP,
@@ -687,6 +692,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     }
     generateGoreParticles(targetBodyPart){
+        if(!Settings.goreEnabled) return;
         let meatParticles = ["Gore_Meat", "Gore_Meat", "Gore_Meat"];
         let extraParticles = [];
         switch(targetBodyPart){

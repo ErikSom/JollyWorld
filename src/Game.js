@@ -137,6 +137,7 @@ function Game() {
             // else Settings.pixelRatio = 2;
         }
         Settings.sfxOn = userData.sfxOn;
+        Settings.goreEnabled = userData.goreOn;
 
         this.app = new PIXI.Application({
             view: this.canvas,
@@ -690,7 +691,8 @@ function Game() {
         GameTimer.show(true);
     }
     this.playLevelMidi = function (){
-        if(this.editor.editorSettingsObject.song && editor.editorSettingsObject.autoPlayMidi) MidiPlayer.play();
+        const userdata = SaveManager.getLocalUserdata();
+        if(this.editor.editorSettingsObject.song && editor.editorSettingsObject.autoPlayMidi && userdata.musicOn) MidiPlayer.play();
     }
     this.stopTestingWorld = function () {
         this.stopWorld();

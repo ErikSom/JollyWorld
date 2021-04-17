@@ -31,6 +31,7 @@ export var Settings = {
     prefabBounceLimiter:1.0,
     maxBullets:2,
     /*GORE*/
+    goreEnabled: true,
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
     bashForce:10000,
