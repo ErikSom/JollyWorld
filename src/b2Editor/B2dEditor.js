@@ -124,6 +124,7 @@ const _B2dEditor = function () {
 	this.groupEditingBlackOverlay;
 	this.deepClickDetection = null;
 	this.deepClickMinimumLayer = Number.POSITIVE_INFINITY;
+	this.verticeEditingCallback = null;
 
 	this.lookupGroups = {};
 
@@ -664,7 +665,13 @@ const _B2dEditor = function () {
 				this.verticeEditingSprite._cullingSizeDirty = true; // ADD THIS
 				delete this.verticeEditingSprite.selectedVertice;
 				delete this.verticeEditingSprite.oldIndex;
+
+				if(this.verticeEditingCallback) this.verticeEditingCallback(this.verticeEditingSprite);
+
 				delete this.verticeEditingSprite;
+
+
+
 			break;
 			case this.tool_CAMERA:
 				if(this.tracingTexture) this.tracingTexture.renderable = true;
