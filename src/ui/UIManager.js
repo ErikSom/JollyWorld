@@ -1107,7 +1107,21 @@ function UIManager() {
         },
         Settings.gameOverDelay);
     }
+    this.setSettingsMenuChoice = (element, choice) => {
 
+        const choiceElement = element.querySelector('.choice');
+
+        if(choice){
+            choiceElement.classList.add('on');
+            choiceElement.classList.remove('off');
+            choiceElement.innerText = 'On';
+        }else{
+            choiceElement.classList.add('off');
+            choiceElement.classList.remove('on');
+            choiceElement.innerText = 'Off';
+        }
+
+    }
     this.showSettingsMenu = function (){
         if(!settingsMenu){
             const htmlStructure = /*html*/`
@@ -1126,6 +1140,23 @@ function UIManager() {
             settingsMenu.innerHTML = htmlStructure;
 
             const buttons = settingsMenu.querySelector('.buttons');
+
+            const musicButton = buttons.querySelector('.music');
+            musicButton.onclick = ()=> {
+                    const userData = SaveManager.getLocalUserdata();
+                    userData.musicOn = !userData.musicOn;
+                    SaveManager.updateLocalUserData(userData);
+                    this.showSettingsMenu();
+            }
+
+            const goreButton = buttons.querySelector('.gore');
+            goreButton.onclick = ()=> {
+                    const userData = SaveManager.getLocalUserdata();
+                    userData.goreOn = !userData.goreOn;
+                    SaveManager.updateLocalUserData(userData);
+                    this.showSettingsMenu();
+            }
+
             const backButton = buttons.querySelector('.back');
             backButton.onclick = ()=>{
                 this.hideSettingsMenu();
@@ -1133,9 +1164,26 @@ function UIManager() {
             const fullscreenButton = buttons.querySelector('.fullscreen');
             fullscreenButton.onclick = ()=>{
                 MobileController.toggleFullscreen(true);
+                this.showSettingsMenu();
+
+                this.setSettingsMenuChoice(fullscreenButton, document.fullscreenElement === null);
             }
             customGUIContainer.appendChild(settingsMenu);
         }
+
+        const userData = SaveManager.getLocalUserdata();
+
+        const buttons = settingsMenu.querySelector('.buttons');
+
+        const musicButton = buttons.querySelector('.music');
+        this.setSettingsMenuChoice(musicButton, userData.musicOn);
+
+        const goreButton = buttons.querySelector('.gore');
+        this.setSettingsMenuChoice(goreButton, userData.goreOn);
+
+        const fullscreenButton = buttons.querySelector('.fullscreen');
+        this.setSettingsMenuChoice(fullscreenButton, document.fullscreenElement);
+
         mainMenu.classList.add('inactive');
         settingsMenu.style.display = 'block';
     }
