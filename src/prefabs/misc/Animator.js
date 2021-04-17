@@ -10,13 +10,17 @@ import { stopCustomBehaviour } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
 import { Settings } from "../../Settings";
 
-import { calculateBezierLength } from '../../b2Editor/utils/extramath'
+import { pointOnBezier, calculateBezierLength } from '../../b2Editor/utils/extramath'
 
 const DEFAULT_PATH = [{"x":95,"y":45.5,"point1":{"x":131.0757,"y":28.2216},"point2":{"x":131.0757,"y":-28.2216}},{"x":95,"y":-45.5,"point1":{"x":58.9243,"y":-62.7784},"point2":{"x":-58.9243,"y":-62.7784}},{"x":-95,"y":-45.5,"point1":{"x":-131.0757,"y":-28.2216},"point2":{"x":-131.0757,"y":27.2216}},{"x":-95,"y":44.5,"point1":{"x":-58.9243,"y":61.7784},"point2":{"x":58.9243,"y":62.7784}}];
 
 class Animator extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
+
+        this.totalLength = null;
+        this.cachedLengths = [];
+        this.cachedSumLengths = [];
 
         this.base = this.lookupObject.base;
         this.base.isAnimator = true;
@@ -30,12 +34,14 @@ class Animator extends PrefabManager.basePrefab {
     editPathCallback(newPathGraphic){
         game.editor.deleteObjects([newPathGraphic]);
         this.calculatePathLength();
+        console.log(this);
     }
 
     calculatePathLength(){
-        console.log(this.prefabObject.settings.path);
+        this.cachedLengths.length = 0;
+        this.cachedSumLengths.length = 0;
+        this.totalLength = 0;
 
-        let totalLength = 0;
         const verts = this.prefabObject.settings.path;
         const count = verts.length;
         let currentPoint;
@@ -50,7 +56,6 @@ class Animator extends PrefabManager.basePrefab {
 			}
 
             let length = 0;
-
             if(!currentPoint.point1 || !currentPoint.point2){
                 const dx = nextPoint.x - currentPoint.x;
                 const dy = nextPoint.y - currentPoint.y;
@@ -59,13 +64,51 @@ class Animator extends PrefabManager.basePrefab {
                 length = calculateBezierLength(currentPoint, currentPoint.point1, currentPoint.point2, nextPoint);
             }
 
-            totalLength += length;
+            this.cachedLengths[i-1] = length;
+            this.cachedSumLengths[i-1] = this.totalLength;
+            this.totalLength += length;
+        }
+    }
+    getPointAtProgress(progress){
 
-            console.log("Length for point:", i, 'is', length);
+        const progressLength = progress * this.totalLength;
+        const closestPointIndex = this.findPointAtLength(progressLength);
+
+        const verts = this.prefabObject.settings.path;
+
+        let currentPoint;
+		let nextPoint;
+
+        if(closestPointIndex !== verts.length-1){
+            currentPoint = verts[closestPointIndex];
+            nextPoint = verts[closestPointIndex+1];
+        }else{
+            currentPoint = verts[closestPointIndex];
+            nextPoint = verts[0];
         }
 
-        console.log("Total length:", totalLength);
+        const progressOnLine = progressLength-this.cachedSumLengths[closestPointIndex];
+        const t = progressOnLine / this.cachedLengths[closestPointIndex];
+        const x = pointOnBezier(t, currentPoint.x, currentPoint.point1.x, currentPoint.point2.x, nextPoint.x);
+        const y = pointOnBezier(t, currentPoint.y, currentPoint.point1.y, currentPoint.point2.y, nextPoint.y);
 
+        return {x, y};
+    }
+
+    findPointAtLength(length){
+        let left = 0;
+        let right = this.cachedSumLengths.length;
+        let steps = 0;
+        while (left+1<right) {
+            const mid = (left+right)>>1;
+            if (this.cachedSumLengths[mid] <= length) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+            steps++;
+        }
+        return left;
     }
 
     init() {

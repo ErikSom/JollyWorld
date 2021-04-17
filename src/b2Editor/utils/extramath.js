@@ -358,7 +358,7 @@ function quadraticBezierLength(p0, p1, p2) {
     return A_32 === 0 ? 0 : (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4 * C * A - B * B) * Y) / (4 * A_32);
 }
 
-const pointOnBezier = (t, start, control_1, control_2, end) => {
+export const pointOnBezier = (t, start, control_1, control_2, end) => {
     return start * (1.0 - t) * (1.0 - t) * (1.0 - t) +
         3.0 * control_1 * (1.0 - t) * (1.0 - t) * t +
         3.0 * control_2 * (1.0 - t) * t * t +
