@@ -14,7 +14,7 @@ export const rotateVector = function (vector, degrees) {
     return new b2Vec2(cos * tx - sin * ty, sin * tx + cos * ty);
 }
 
-export const rotateVectorAroundPoint = function(vector, point, degrees, log){
+export const rotateVectorAroundPoint = function (vector, point, degrees, log) {
     const vec = vector.Clone().SelfSub(point);
     // if(log) console.log(vec.x, vec.y, 'diff', vec.Length());
     const newvec = new b2Vec2(vec.Length(), 0);
@@ -69,21 +69,23 @@ export function linePointDistance(x, y, x1, y1, x2, y2) {
     let xx, yy;
 
     if (param < 0) {
-      xx = x1;
-      yy = y1;
-    }
-    else if (param > 1) {
-      xx = x2;
-      yy = y2;
-    }
-    else {
-      xx = x1 + param * C;
-      yy = y1 + param * D;
+        xx = x1;
+        yy = y1;
+    } else if (param > 1) {
+        xx = x2;
+        yy = y2;
+    } else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
     }
 
     let dx = x - xx;
     let dy = y - yy;
-    return {x:xx, y:yy, distance:Math.sqrt(dx * dx + dy * dy)};
+    return {
+        x: xx,
+        y: yy,
+        distance: Math.sqrt(dx * dx + dy * dy)
+    };
 }
 
 
@@ -95,11 +97,13 @@ export function linePointDistance(x, y, x1, y1, x2, y2) {
  * licensed under the MIT license.
  */
 
-if(typeof Math.sgn == "undefined") {
-    Math.sgn = function(x) { return x == 0 ? 0 : x > 0 ? 1 :-1; };
+if (typeof Math.sgn == "undefined") {
+    Math.sgn = function (x) {
+        return x == 0 ? 0 : x > 0 ? 1 : -1;
+    };
 }
 
-const pidouble = Math.PI*2;
+const pidouble = Math.PI * 2;
 export const normalizePI = angle => {
     while (angle <= -Math.PI) angle += pidouble;
     while (angle > Math.PI) angle -= pidouble;
@@ -108,28 +112,44 @@ export const normalizePI = angle => {
 
 export const clampAngleToRange = (angle, min, max) => Math.min(max, Math.max(min, normalizePI(angle)));
 
-export const angleDifference = ( angle1, angle2 ) =>
-{
-    const diff = ( angle2 - angle1 + Math.PI ) % pidouble - Math.PI;
+export const angleDifference = (angle1, angle2) => {
+    const diff = (angle2 - angle1 + Math.PI) % pidouble - Math.PI;
     return diff < -Math.PI ? diff + pidouble : diff;
 }
 
 
 let Vectors = {
-        subtract 	: 	function(v1, v2) { return {x:v1.x - v2.x, y:v1.y - v2.y }; },
-        dotProduct	: 	function(v1, v2) { return (v1.x * v2.x)  + (v1.y * v2.y); },
-        square		:	function(v) { return Math.sqrt((v.x * v.x) + (v.y * v.y)); },
-        scale		:	function(v, s) { return {x:v.x * s, y:v.y * s }; }
+        subtract: function (v1, v2) {
+            return {
+                x: v1.x - v2.x,
+                y: v1.y - v2.y
+            };
+        },
+        dotProduct: function (v1, v2) {
+            return (v1.x * v2.x) + (v1.y * v2.y);
+        },
+        square: function (v) {
+            return Math.sqrt((v.x * v.x) + (v.y * v.y));
+        },
+        scale: function (v, s) {
+            return {
+                x: v.x * s,
+                y: v.y * s
+            };
+        }
     },
     maxRecursion = 64,
-    flatnessTolerance = Math.pow(2.0,-maxRecursion-1);
+    flatnessTolerance = Math.pow(2.0, -maxRecursion - 1);
 
-export const distanceFromCurve = function(point, curve) {
+export const distanceFromCurve = function (point, curve) {
     let candidates = [],
         w = _convertToBezier(point, curve),
-        degree = curve.length - 1, higherDegree = (2 * degree) - 1,
+        degree = curve.length - 1,
+        higherDegree = (2 * degree) - 1,
         numSolutions = findRoots(w, higherDegree, candidates, 0),
-        v = Vectors.subtract(point, curve[0]), dist = Vectors.square(v), t = 0.0;
+        v = Vectors.subtract(point, curve[0]),
+        dist = Vectors.square(v),
+        t = 0.0;
 
     for (let i = 0; i < numSolutions; i++) {
         v = Vectors.subtract(point, bezier(curve, degree, candidates[i], null, null));
@@ -140,27 +160,41 @@ export const distanceFromCurve = function(point, curve) {
         }
     }
     v = Vectors.subtract(point, curve[degree]);
-    let  newDist = Vectors.square(v);
+    let newDist = Vectors.square(v);
     if (newDist < dist) {
         dist = newDist;
         t = 1.0;
     }
-    return {location:t, distance:dist};
+    return {
+        location: t,
+        distance: dist
+    };
 };
 
-export const nearestPointOnCurve = function(point, curve) {
+export const nearestPointOnCurve = function (point, curve) {
     let td = distanceFromCurve(point, curve);
-    return {point:bezier(curve, curve.length - 1, td.location, null, null), location:td.location};
+    return {
+        point: bezier(curve, curve.length - 1, td.location, null, null),
+        location: td.location
+    };
 };
 
-const _convertToBezier = function(point, curve) {
-    let degree = curve.length - 1, higherDegree = (2 * degree) - 1,
-        c = [], d = [], cdTable = [], w = [],
-        z = [ [1.0, 0.6, 0.3, 0.1], [0.4, 0.6, 0.6, 0.4], [0.1, 0.3, 0.6, 1.0] ];
+const _convertToBezier = function (point, curve) {
+    let degree = curve.length - 1,
+        higherDegree = (2 * degree) - 1,
+        c = [],
+        d = [],
+        cdTable = [],
+        w = [],
+        z = [
+            [1.0, 0.6, 0.3, 0.1],
+            [0.4, 0.6, 0.6, 0.4],
+            [0.1, 0.3, 0.6, 1.0]
+        ];
 
     for (let i = 0; i <= degree; i++) c[i] = Vectors.subtract(curve[i], point);
     for (let i = 0; i <= degree - 1; i++) {
-        d[i] = Vectors.subtract(curve[i+1], curve[i]);
+        d[i] = Vectors.subtract(curve[i + 1], curve[i]);
         d[i] = Vectors.scale(d[i], 3.0);
     }
     for (let row = 0; row <= degree - 1; row++) {
@@ -174,28 +208,31 @@ const _convertToBezier = function(point, curve) {
         w[i].y = 0.0;
         w[i].x = parseFloat(i) / higherDegree;
     }
-    let n = degree, m = degree-1;
+    let n = degree,
+        m = degree - 1;
     for (let k = 0; k <= n + m; k++) {
         let lb = Math.max(0, k - m),
             ub = Math.min(k, n);
         for (let i = lb; i <= ub; i++) {
             let j = k - i;
-            w[i+j].y += cdTable[j][i] * z[j][i];
+            w[i + j].y += cdTable[j][i] * z[j][i];
         }
     }
     return w;
 };
 
-const findRoots = function(w, degree, t, depth) {
-    let left = [], right = [],
+const findRoots = function (w, degree, t, depth) {
+    let left = [],
+        right = [],
         left_count, right_count,
-        left_t = [], right_t = [];
+        left_t = [],
+        right_t = [];
 
     switch (getCrossingCount(w, degree)) {
-        case 0 : {
+        case 0: {
             return 0;
         }
-        case 1 : {
+        case 1: {
             if (depth >= maxRecursion) {
                 t[0] = (w[0].x + w[degree].x) / 2.0;
                 return 1;
@@ -208,15 +245,16 @@ const findRoots = function(w, degree, t, depth) {
         }
     }
     bezier(w, degree, 0.5, left, right);
-    left_count  = findRoots(left,  degree, left_t, depth+1);
-    right_count = findRoots(right, degree, right_t, depth+1);
+    left_count = findRoots(left, degree, left_t, depth + 1);
+    right_count = findRoots(right, degree, right_t, depth + 1);
     for (let i = 0; i < left_count; i++) t[i] = left_t[i];
-    for (let i = 0; i < right_count; i++) t[i+left_count] = right_t[i];
-    return (left_count+right_count);
+    for (let i = 0; i < right_count; i++) t[i + left_count] = right_t[i];
+    return (left_count + right_count);
 };
 
-const getCrossingCount = function(curve, degree) {
-    let n_crossings = 0, sign, old_sign;
+const getCrossingCount = function (curve, degree) {
+    let n_crossings = 0,
+        sign, old_sign;
     sign = old_sign = Math.sgn(curve[0].y);
     for (let i = 1; i <= degree; i++) {
         sign = Math.sgn(curve[i].y);
@@ -226,8 +264,8 @@ const getCrossingCount = function(curve, degree) {
     return n_crossings;
 };
 
-const isFlatEnough = function(curve, degree) {
-    let  error,
+const isFlatEnough = function (curve, degree) {
+    let error,
         intercept_1, intercept_2, left_intercept, right_intercept,
         a, b, c, det, dInv, a1, b1, c1, a2, b2, c2;
     a = curve[0].y - curve[degree].y;
@@ -244,45 +282,109 @@ const isFlatEnough = function(curve, degree) {
         else if (value < max_distance_below)
             max_distance_below = value;
     }
-    a1 = 0.0; b1 = 1.0; c1 = 0.0; a2 = a; b2 = b;
+    a1 = 0.0;
+    b1 = 1.0;
+    c1 = 0.0;
+    a2 = a;
+    b2 = b;
     c2 = c - max_distance_above;
     det = a1 * b2 - a2 * b1;
-    dInv = 1.0/det;
+    dInv = 1.0 / det;
     intercept_1 = (b1 * c2 - b2 * c1) * dInv;
-    a2 = a; b2 = b; c2 = c - max_distance_below;
+    a2 = a;
+    b2 = b;
+    c2 = c - max_distance_below;
     det = a1 * b2 - a2 * b1;
-    dInv = 1.0/det;
+    dInv = 1.0 / det;
     intercept_2 = (b1 * c2 - b2 * c1) * dInv;
     left_intercept = Math.min(intercept_1, intercept_2);
     right_intercept = Math.max(intercept_1, intercept_2);
     error = right_intercept - left_intercept;
-    return (error < flatnessTolerance)? 1 : 0;
+    return (error < flatnessTolerance) ? 1 : 0;
 };
 
-const computeXIntercept = function(curve, degree) {
-    let XLK = 1.0, YLK = 0.0,
-        XNM = curve[degree].x - curve[0].x, YNM = curve[degree].y - curve[0].y,
-        XMK = curve[0].x - 0.0, YMK = curve[0].y - 0.0,
-        det = XNM*YLK - YNM*XLK, detInv = 1.0/det,
-        S = (XNM*YMK - YNM*XMK) * detInv;
+const computeXIntercept = function (curve, degree) {
+    let XLK = 1.0,
+        YLK = 0.0,
+        XNM = curve[degree].x - curve[0].x,
+        YNM = curve[degree].y - curve[0].y,
+        XMK = curve[0].x - 0.0,
+        YMK = curve[0].y - 0.0,
+        det = XNM * YLK - YNM * XLK,
+        detInv = 1.0 / det,
+        S = (XNM * YMK - YNM * XMK) * detInv;
     return 0.0 + XLK * S;
 };
 
-const bezier = function(curve, degree, t, left, right) {
-    let temp = [[]];
-    for (let j =0; j <= degree; j++) temp[0][j] = curve[j];
+const bezier = function (curve, degree, t, left, right) {
+    let temp = [
+        []
+    ];
+    for (let j = 0; j <= degree; j++) temp[0][j] = curve[j];
     for (let i = 1; i <= degree; i++) {
-        for (let j =0 ; j <= degree - i; j++) {
+        for (let j = 0; j <= degree - i; j++) {
             if (!temp[i]) temp[i] = [];
             if (!temp[i][j]) temp[i][j] = {};
-            temp[i][j].x = (1.0 - t) * temp[i-1][j].x + t * temp[i-1][j+1].x;
-            temp[i][j].y = (1.0 - t) * temp[i-1][j].y + t * temp[i-1][j+1].y;
+            temp[i][j].x = (1.0 - t) * temp[i - 1][j].x + t * temp[i - 1][j + 1].x;
+            temp[i][j].y = (1.0 - t) * temp[i - 1][j].y + t * temp[i - 1][j + 1].y;
         }
     }
     if (left != null)
-        for (let j = 0; j <= degree; j++) left[j]  = temp[j][0];
+        for (let j = 0; j <= degree; j++) left[j] = temp[j][0];
     if (right != null)
-        for (let j = 0; j <= degree; j++) right[j] = temp[degree-j][j];
+        for (let j = 0; j <= degree; j++) right[j] = temp[degree - j][j];
 
     return (temp[degree][0]);
 };
+
+
+function quadraticBezierLength(p0, p1, p2) {
+    const ax = p0.x - 2 * p1.x + p2.x;
+    const ay = p0.y - 2 * p1.y + p2.y;
+    const bx = 2 * p1.x - 2 * p0.x;
+    const by = 2 * p1.y - 2 * p0.y;
+    const A = 4 * (ax * ax + ay * ay);
+    const B = 4 * (ax * bx + ay * by);
+    const C = bx * bx + by * by;
+
+    const Sabc = 2 * Math.sqrt(A + B + C);
+    const A_2 = Math.sqrt(A);
+    const A_32 = 2 * A * A_2;
+    const C_2 = 2 * sqrt(C);
+    const BA = B / A_2;
+
+    const Y = (BA + C_2) > 0 ? Math.log((2 * A_2 + BA + Sabc) / (BA + C_2)) : 0;
+
+    return A_32 === 0 ? 0 : (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4 * C * A - B * B) * Y) / (4 * A_32);
+}
+
+const pointOnBezier = (t, start, control_1, control_2, end) => {
+    return start * (1.0 - t) * (1.0 - t) * (1.0 - t) +
+        3.0 * control_1 * (1.0 - t) * (1.0 - t) * t +
+        3.0 * control_2 * (1.0 - t) * t * t +
+        end * t * t * t;
+}
+
+export const calculateBezierLength = (start, p1, p2, end) => {
+    const steps = 10;
+
+    let t;
+    let previous_dot;
+    let length = 0.0;
+    for (let i = 0; i <= steps; i++) {
+        let dot = {
+            x: 0,
+            y: 0
+        };
+        t = i / steps;
+        dot.x = pointOnBezier(t, start.x, p1.x, p2.x, end.x);
+        dot.y = pointOnBezier(t, start.y, p1.y, p2.y, end.y);
+        if (i > 0) {
+            const x_diff = dot.x - previous_dot.x;
+            const y_diff = dot.y - previous_dot.y;
+            length += Math.sqrt(x_diff * x_diff + y_diff * y_diff);
+        }
+        previous_dot = dot;
+    }
+    return length;
+}

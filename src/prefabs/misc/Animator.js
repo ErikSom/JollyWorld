@@ -10,6 +10,8 @@ import { stopCustomBehaviour } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
 import { Settings } from "../../Settings";
 
+import { calculateBezierLength } from '../../b2Editor/utils/extramath'
+
 const DEFAULT_PATH = [{"x":95,"y":45.5,"point1":{"x":131.0757,"y":28.2216},"point2":{"x":131.0757,"y":-28.2216}},{"x":95,"y":-45.5,"point1":{"x":58.9243,"y":-62.7784},"point2":{"x":-58.9243,"y":-62.7784}},{"x":-95,"y":-45.5,"point1":{"x":-131.0757,"y":-28.2216},"point2":{"x":-131.0757,"y":27.2216}},{"x":-95,"y":44.5,"point1":{"x":-58.9243,"y":61.7784},"point2":{"x":58.9243,"y":62.7784}}];
 
 class Animator extends PrefabManager.basePrefab {
@@ -21,13 +23,49 @@ class Animator extends PrefabManager.basePrefab {
 	}
 
 	postConstructor(){
-		if(this.prefabObject.settings.path === undefined){
+		if(this.prefabObject.settings && this.prefabObject.settings.path === undefined){
 			this.prefabObject.settings.path = DEFAULT_PATH;
 		}
 	}
     editPathCallback(newPathGraphic){
-        console.log("Cleanup!!!");
         game.editor.deleteObjects([newPathGraphic]);
+        this.calculatePathLength();
+    }
+
+    calculatePathLength(){
+        console.log(this.prefabObject.settings.path);
+
+        let totalLength = 0;
+        const verts = this.prefabObject.settings.path;
+        const count = verts.length;
+        let currentPoint;
+		let nextPoint;
+        for(let i = 1; i<= count; i++){
+            if(i !== count){
+				currentPoint = verts[i - 1];
+				nextPoint = verts[i];
+			}else{
+				currentPoint = verts[i - 1];
+				nextPoint = verts[0];
+			}
+
+            let length = 0;
+
+            if(!currentPoint.point1 || !currentPoint.point2){
+                const dx = nextPoint.x - currentPoint.x;
+                const dy = nextPoint.y - currentPoint.y;
+                length = Math.sqrt(dx*dx + dy*dy);
+            }else{
+                length = calculateBezierLength(currentPoint, currentPoint.point1, currentPoint.point2, nextPoint);
+            }
+
+            totalLength += length;
+
+            console.log("Length for point:", i, 'is', length);
+        }
+
+        console.log("Total length:", totalLength);
+
     }
 
     init() {
@@ -48,7 +86,7 @@ const editPath = prefab => {
 
     game.editor.verticeEditingSprite = graphic;
     game.editor.selectTool(game.editor.tool_VERTICEEDITING);
-    game.editor.verticeEditingCallback = prefab.class.editPathCallback;
+    game.editor.verticeEditingCallback = prefab.class.editPathCallback.bind(prefab.class);
 }
 
 Animator.settings = Object.assign({}, Animator.settings, {

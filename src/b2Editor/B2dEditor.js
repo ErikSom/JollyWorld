@@ -666,7 +666,10 @@ const _B2dEditor = function () {
 				delete this.verticeEditingSprite.selectedVertice;
 				delete this.verticeEditingSprite.oldIndex;
 
-				if(this.verticeEditingCallback) this.verticeEditingCallback(this.verticeEditingSprite);
+				if(this.verticeEditingCallback){
+					this.verticeEditingCallback(this.verticeEditingSprite);
+					this.verticeEditingCallback = null;
+				}
 
 				delete this.verticeEditingSprite;
 
@@ -5959,6 +5962,7 @@ const _B2dEditor = function () {
 	this.verticesLineColor = 0x009DEC;
 	this.verticesFillColor = 0xFFFFFF;
 	this.verticesFirstFillColor = 0x004e64;
+	this.verticesFirstShowFillColor = 0x004e64;
 	this.verticesDoneFillColor = 0x7AE582;
 	this.verticesAddFillColor = 0x00FF00;
 	this.verticesBulletRadius = 3;
@@ -6241,6 +6245,10 @@ const _B2dEditor = function () {
 						}
 					}
 				}
+			}
+
+			if(index === 0 && this.verticeEditingCallback){
+				this.debugGraphics.beginFill(this.verticesFirstShowFillColor, 1.0);
 			}
 
 			this.debugGraphics.drawRect(verticeX, verticeY, Settings.verticeBoxSize, Settings.verticeBoxSize);
