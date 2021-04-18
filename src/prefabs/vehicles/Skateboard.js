@@ -113,6 +113,10 @@ class Skateboard extends BaseVehicle {
         AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'skateboard_idle_loop', idleVolume, Math.max(0.8, wheelRotationSpeed * 0.5), this.lookupObject.frame.GetPosition());
 
     }
+    destroy(){
+        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'skateboard_idle_loop');
+        super.destroy();
+    }
     initContactListener() {
         super.initContactListener();
         const self = this;
