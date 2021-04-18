@@ -76,10 +76,14 @@ class MidiPlayerClass {
 
 	play() {
 		if(this.ready){
-			this.stop();
-			this.playing = true;
-			this.shouldPlay = false;
-			this.tick();
+			if(this.elapsed){
+				this.resume();
+			}else{
+				this.stop();
+				this.playing = true;
+				this.shouldPlay = false;
+				this.tick();
+			}
 		}else{
 			this.shouldPlay = true;
 		}
@@ -90,10 +94,15 @@ class MidiPlayerClass {
 		this.playing = false;
 	}
 	resume(){
+		if(!this.playing) this.tick();
+
 		this.songStart = this.audioContext.currentTime-this.elapsed;
 		this.currentSongTime = this.elapsed;
 		this.nextStepTime = this.audioContext.currentTime;
 		this.playing = true;
+	}
+	reset(){
+		this.elapsed = 0;
 	}
 
 	stop(){

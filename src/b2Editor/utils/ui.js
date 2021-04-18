@@ -318,7 +318,7 @@ export const showHeaderBar = function () {
     headerBar.appendChild(button);
 
     button.addEventListener('click', () => {
-        game.testWorld();
+        game.testWorld(true);
     });
 
     let self = this;
