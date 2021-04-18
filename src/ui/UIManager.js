@@ -206,6 +206,14 @@ function UIManager() {
                 }
             })
 
+            if(backendManager.isLoggedIn()){
+                const bestFilter = filters.querySelector('.best-filter');
+                const mostFilter = filters.querySelector('.newest-filter');
+
+                bestFilter.classList.remove('checked');
+                mostFilter.classList.add('checked');
+            }
+
             const header = mainMenu.querySelector('.header');
 
             const hamburger = header.querySelector('.hamburger');
