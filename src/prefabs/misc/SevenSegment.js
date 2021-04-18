@@ -6,7 +6,7 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
-import { stopCustomBehaviour } from './CustomEditorBehavior';
+import { stopCustomBehaviour, drawObjectAdding } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
 
 const TRIGGER_TYPE_ROLLOVER_LEFT = 0;
@@ -152,20 +152,20 @@ class SevenSegment extends PrefabManager.basePrefab {
         }
 	}
 
-    linkSevenSegment(target){
-        if(target){
-            this.linkedSegment = target.mySprite;
+    linkSevenSegment(targetSprite){
+        if(targetSprite){
+            this.linkedSegment = targetSprite;
         }else{
             this.linkedSegment = null;
         }
         game.editor.updateSelection();
     }
-    linkTrigger(target){
-        if(target){
-            if(this.linkedTriggers.includes(target.mySprite)){
+    linkTrigger(targetSprite){
+        if(targetSprite){
+            if(this.linkedTriggers.includes(targetSprite)){
                 // resort
             }else{
-                this.linkedTriggers.push(target.mySprite);
+                this.linkedTriggers.push(targetSprite);
             }
 
             // update conditions
@@ -292,37 +292,8 @@ class SevenSegment extends PrefabManager.basePrefab {
     }
 }
 
-
-export const drawObjectAdding = (prefab, type) => {
-
-    const bodyObject = prefab.class.base;
-    const sprite = bodyObject.mySprite ? bodyObject.mySprite : bodyObject;
-
-    const editor = game.editor;
-
-    let tarSprite = editor.getPIXIPointFromWorldPoint(editor.mousePosWorld);
-    editor.debugGraphics.lineStyle(1, editor.jointLineColor, 1);
-
-    const worldQuery = editor.queryWorldForBodies(editor.mousePosWorld, editor.mousePosWorld);
-    prefab.class.linkObjectTarget = null;
-    worldQuery.forEach(body => {
-        if(body.mySprite && (body[type] || body.mySprite.data.type === type)){
-            tarSprite = body.mySprite;
-            prefab.class.linkObjectTarget = body;
-            editor.debugGraphics.lineStyle(1, "0xFFFF00", 1);
-        }
-    });
-
-    editor.debugGraphics.moveTo(sprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, sprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
-    editor.debugGraphics.lineTo(tarSprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, tarSprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
-
-}
 const linkSegment = prefab => {
-
-    // add prefab.class.linkObjectTarget
-
     prefab.class.linkSevenSegment(prefab.class.linkObjectTarget);
-
     delete prefab.class.linkObjectTarget;
     stopCustomBehaviour();
 }
@@ -335,7 +306,7 @@ const selectLinkTarget = prefab=>{
             linkSegment(prefab);
         }
         game.editor.customDebugDraw = ()=>{
-            drawObjectAdding(prefab, 'isSevenSegment');
+            drawObjectAdding(prefab, 'isSevenSegment', true);
         }
         game.editor.customPrefabMouseMove = null;
     } else{

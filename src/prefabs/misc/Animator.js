@@ -6,8 +6,11 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
-import { stopCustomBehaviour } from './CustomEditorBehavior';
+import { stopCustomBehaviour, drawObjectAdding } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
+
+
+
 import { Settings } from "../../Settings";
 
 import { pointOnBezier, calculateBezierLength } from '../../b2Editor/utils/extramath'
@@ -18,6 +21,7 @@ class Animator extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
 
+        this.linkedTarget = null;
         this.totalLength = null;
         this.cachedLengths = [];
         this.cachedSumLengths = [];
@@ -35,6 +39,14 @@ class Animator extends PrefabManager.basePrefab {
         game.editor.deleteObjects([newPathGraphic]);
         this.calculatePathLength();
         console.log(this);
+    }
+    linkTarget(targetSprite){
+        if(targetSprite){
+            this.linkedTarget = targetSprite;
+        }else{
+            this.linkedTarget = null;
+        }
+        game.editor.updateSelection();
     }
 
     calculatePathLength(){
@@ -119,6 +131,30 @@ class Animator extends PrefabManager.basePrefab {
     }
 }
 
+const linkTarget = prefab => {
+    prefab.class.linkTarget(prefab.class.linkObjectTarget);
+    delete prefab.class.linkObjectTarget;
+    stopCustomBehaviour();
+}
+
+
+const selectLinkTarget = prefab=>{
+
+    if(!prefab.class.linkedTarget){
+
+        game.editor.customPrefabMouseDown = ()=>{
+            linkTarget(prefab);
+        }
+        game.editor.customDebugDraw = ()=>{
+            drawObjectAdding(prefab, [game.editor.object_BODY, game.editor.object_TEXTURE, game.editor.object_GRAPHIC, game.editor.object_GRAPHICGROUP, game.editor.object_ANIMATIONGROUP]);
+        }
+        game.editor.customPrefabMouseMove = null;
+    } else{
+        prefab.class.linkedTarget = null;
+        game.editor.updateSelection();
+    }
+}
+
 const editPath = prefab => {
     const graphicObject = new game.editor.graphicObject;
     graphicObject.vertices = prefab.settings.path
@@ -133,9 +169,11 @@ const editPath = prefab => {
 }
 
 Animator.settings = Object.assign({}, Animator.settings, {
+    "selectTarget": prefab=>selectLinkTarget(prefab),
     "editPath": prefab=>editPath(prefab),
 });
 Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
+	"selectTarget": '$function',
 	"editPath": '$function',
 });
 
