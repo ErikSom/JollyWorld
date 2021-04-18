@@ -793,9 +793,7 @@ function Game() {
         ReplayManager.stopRecording();
     }
     this.openEditor = async function () {
-        console.log("GAMESTATE:", this.gameState)
         this.gameState = this.GAMESTATE_EDITOR;
-        console.log("GAMESTATE:", this.gameState)
 
         this.stopWorld();
 
@@ -978,7 +976,7 @@ function Game() {
 				method: 'GET',
 			}
 
-            // fetch(`${Settings.STATIC}/5fd64ae1b47b5ea1694047d26f979104.json`, body)
+            // fetch(`${Settings.STATIC}/6e785dcebe185763a81fdb29f677dd59.json`, body)
             fetch(`${Settings.STATIC}/${levelData.level_md5}.json`, body)
             .then(response => response.json())
             .then(data => {
@@ -988,6 +986,7 @@ function Game() {
                 SaveManager.saveTempEditorWorld(this.currentLevelData);
                 return resolve();
             }).catch((err)=>{
+                throw err;
                 return reject({
                     message: err
                 });
