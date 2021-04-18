@@ -9105,7 +9105,7 @@ const _B2dEditor = function () {
 		}else{
 			graphic.bezierCurveTo(nextPoint.point1.x, nextPoint.point1.y, nextPoint.point2.x, nextPoint.point2.y, startPoint.x, startPoint.y);
 		}
-
+		graphic.closePath();
 		graphic.endFill();
 
 		return graphic;

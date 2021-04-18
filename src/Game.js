@@ -625,7 +625,7 @@ function Game() {
         if(document.activeElement != document.body  && document.activeElement != this.canvas) return;
         this.editor.onKeyUp(e);
 
-        if (e.keyCode == 87 || e.keyCode == 83 && this.run) {
+        if ((e.keyCode == 87 || e.keyCode == 83) && this.run) {
             this.vehicle.stopAccelerate();
         }
         Key.onKeyUp(e);
@@ -783,7 +783,10 @@ function Game() {
         ReplayManager.stopRecording();
     }
     this.openEditor = async function () {
+        console.log("GAMESTATE:", this.gameState)
         this.gameState = this.GAMESTATE_EDITOR;
+        console.log("GAMESTATE:", this.gameState)
+
         this.stopWorld();
 
         let levelData;
@@ -807,6 +810,8 @@ function Game() {
         if(localStorage.getItem('needsToRegister')){
 			backendManager.dispatchEvent('username');
 		}
+        console.log("GAMESTATE:", this.gameState, this)
+
     }
     this.initLevel = function (data) {
         this.stopWorld();
