@@ -1338,9 +1338,15 @@ export const addTriggerGUI = function (dataJoint, _folder) {
     controller = worldSettingsFolder.add(ui.editorGUI.editData, 'addWorldAction').name(label);
 }
 
+const labels = {
+    impulseForce: 'linear',
+    rotationForce: 'angular',
+}
+
 const addActionGUIToFolder = (action, actionString, actionFolder, targetID, actionID) =>{
     let actionOptions = getActionOptions(action.type);
     let actionVarString;
+
 
     for (let key in action) {
         let actionController;
@@ -1348,6 +1354,14 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
             actionVarString = `${actionString}_${key}`;
             ui.editorGUI.editData[actionVarString] = action[key];
 
+            const label = labels[key];
+            if(label){
+                const labelString = `label_${key}`;
+                ui.editorGUI.editData[labelString] = label
+                const labelElement = actionFolder.add(ui.editorGUI.editData, labelString).name(label);
+                labelElement.domElement.style.display = 'none';
+                labelElement.domElement.parentNode.querySelector('.property-name').style.color = '#949494'
+            }
 
             switch (actionOptions[key].type) {
                 case guitype_MINMAX:
@@ -1450,6 +1464,10 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         default:
                             actionController.name(key);
                     }
+                    break;
+                case guitype_LABEL:
+                    actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
+                    console.log(actionController.domElement);
                     break;
             }
 

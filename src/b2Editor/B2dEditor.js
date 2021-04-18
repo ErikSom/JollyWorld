@@ -1475,10 +1475,11 @@ const _B2dEditor = function () {
 			const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
 			const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
 			const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
+			const hasJoints = this.selectedTextures.find(obj => obj.data.type === this.object_JOINT);
 
 			if (this.selectedPhysicsBodies.length + this.selectedTextures.length > 1) {
 				let canGroup = true;
-				if(hasTriggers) canGroup = false;
+				if(hasTriggers || hasJoints) canGroup = false;
 				if(hasAnimation && hasOthers) canGroup = false; // we cant group when we have mixed animations and other graphics
 				if(canGroup && hasAnimation && this.selectedTextures.length > 1) canGroup = false; // we cant group multiple animations
 
@@ -7722,8 +7723,9 @@ const _B2dEditor = function () {
 		const hasAnimation = this.selectedTextures.find(obj => obj.data.type === this.object_ANIMATIONGROUP);
 		const hasOthers = this.selectedTextures.find(obj => obj.data.type !== this.object_ANIMATIONGROUP);
 		const hasTriggers = this.selectedPhysicsBodies.find(obj => obj.mySprite.data.type === this.object_TRIGGER);
+		const hasJoints = this.selectedTextures.find(obj => obj.data.type === this.object_JOINT);
 
-		if(hasTriggers) return;
+		if(hasTriggers || hasJoints) return;
 		if(hasAnimation && hasOthers) return;
 
 		if (this.selectedPhysicsBodies.length > 0) {
