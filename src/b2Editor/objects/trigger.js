@@ -229,7 +229,6 @@ export const doAction = function (actionData, target) {
             if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
             else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorTorque() + actionData.force;
             targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
-            console.log(target);
             target.SetMaxMotorTorque(targetMotorForce);
             break;
         case "SetSpring":
@@ -1464,10 +1463,6 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         default:
                             actionController.name(key);
                     }
-                    break;
-                case guitype_LABEL:
-                    actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
-                    console.log(actionController.domElement);
                     break;
             }
 

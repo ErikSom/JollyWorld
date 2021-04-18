@@ -2041,7 +2041,6 @@ const _B2dEditor = function () {
 						if(newArr.length){
 							data.settings[property] = newArr;
 						}else{
-							console.log("DAFUQQQQQQ");
 							data.settings[property] = null;
 						}
 					}
@@ -3436,8 +3435,8 @@ const _B2dEditor = function () {
 
 			if(this.deepClickDetection !== null){
 
-				const distanceX = Math.abs(this.mousePosWorld.x - this.deepClickDetection.x);
-				const distanceY = Math.abs(this.mousePosWorld.y - this.deepClickDetection.y);
+				const distanceX = Math.abs(this.mousePosWorld.x - this.deepClickDetection.x) * this.cameraHolder.scale.x * Settings.PTM;
+				const distanceY = Math.abs(this.mousePosWorld.y - this.deepClickDetection.y) * this.cameraHolder.scale.x * Settings.PTM;
 
 				if(distanceX > Settings.deepClickDetectionMargin || distanceY > Settings.deepClickDetectionMargin){
 					this.deepClickDetection = null;
