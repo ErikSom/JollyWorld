@@ -21,6 +21,8 @@ export const getLocalUserdata = function(){
         helpClosed:[],
         editorGuiPos:{x:50, y:50},
         sfxOn:true,
+        musicOn:true,
+        goreOn:true,
         tutorials:[],
         selectedCharacter:0,
     }

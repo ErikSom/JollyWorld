@@ -333,7 +333,7 @@ export const exitFullscreen = ()=> {
 	}
 }
 export const toggleFullscreen = userTriggered =>{
-	if(window.fullscreenElement){
+	if(document.fullscreenElement){
 		exitFullscreen();
 	}else{
 		openFullscreen(userTriggered);

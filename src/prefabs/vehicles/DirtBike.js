@@ -68,6 +68,10 @@ class DirtBike extends BaseVehicle {
     stopAccelerate(){
         super.stopAccelerate();
     }
+    destroy(){
+        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'dirtbike_gas_loop');
+        super.destroy()
+    }
 }
 
 PrefabManager.prefabLibrary.DirtBike = {

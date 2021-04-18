@@ -137,6 +137,7 @@ function Game() {
             // else Settings.pixelRatio = 2;
         }
         Settings.sfxOn = userData.sfxOn;
+        Settings.goreEnabled = userData.goreOn;
 
         this.app = new PIXI.Application({
             view: this.canvas,
@@ -585,7 +586,7 @@ function Game() {
                     this.stopTestingWorld(e);
                     return;
                 } else if(e.keyCode !== 27){
-                    this.testWorld();
+                    this.testWorld(true);
                 }
             }
         }
@@ -624,7 +625,7 @@ function Game() {
         if(document.activeElement != document.body  && document.activeElement != this.canvas) return;
         this.editor.onKeyUp(e);
 
-        if (e.keyCode == 87 || e.keyCode == 83 && this.run) {
+        if ((e.keyCode == 87 || e.keyCode == 83) && this.run) {
             this.vehicle.stopAccelerate();
         }
         Key.onKeyUp(e);
@@ -668,6 +669,7 @@ function Game() {
         this.gameState = this.GAMESTATE_NORMALPLAY;
         if(firstEntry){
             this.levelStartTime = performance.now();
+            MidiPlayer.reset();
             window.SVGCache[1]();
         }
         MobileController.show();
@@ -676,7 +678,7 @@ function Game() {
         GameTimer.show(true);
     }
 
-    this.testWorld = function () {
+    this.testWorld = function (firstEntry) {
         this.movementBuffer = [];
         this.editor.testWorld();
         this.run = true;
@@ -685,12 +687,18 @@ function Game() {
         this.levelStartTime = performance.now();
         MobileController.show();
         TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
+        if(firstEntry){
+            MidiPlayer.reset();
+        }
         this.playLevelMidi();
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(true);
     }
     this.playLevelMidi = function (){
-        if(this.editor.editorSettingsObject.song && editor.editorSettingsObject.autoPlayMidi) MidiPlayer.play();
+        const userdata = SaveManager.getLocalUserdata();
+        if(this.editor.editorSettingsObject.song && editor.editorSettingsObject.autoPlayMidi && userdata.musicOn){
+            MidiPlayer.play();
+        }
     }
     this.stopTestingWorld = function () {
         this.stopWorld();
@@ -705,6 +713,13 @@ function Game() {
         setTimeout(()=>{
             const checkPointData = this.checkPointData;
             this.resetGame();
+
+            if(doCheckpoint && this.editor.editorSettingsObject.song && !this.editor.editorSettingsObject.resetMidiOnRetry){
+                MidiPlayer.pause();
+            }else{
+                MidiPlayer.stop();
+            }
+
             if (this.gameState == this.GAMESTATE_EDITOR) {
                 this.stopTestingWorld();
                 this.testWorld();
@@ -757,9 +772,6 @@ function Game() {
                     this.levelStartTime = performance.now();
                 }
 
-                console.log("**** Time reset:", this.levelStartTime-performance.now())
-
-
                 window.SVGCache[1](doCheckpoint);
 
             }, Settings.levelBuildDelayTime);
@@ -781,7 +793,10 @@ function Game() {
         ReplayManager.stopRecording();
     }
     this.openEditor = async function () {
+        console.log("GAMESTATE:", this.gameState)
         this.gameState = this.GAMESTATE_EDITOR;
+        console.log("GAMESTATE:", this.gameState)
+
         this.stopWorld();
 
         let levelData;

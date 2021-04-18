@@ -53,6 +53,7 @@ export const init = function () {
     }
 }
 export const playOnceEmitter = function (type, body, point, angle, randomColors) {
+    if(['blood', 'gorecloud'].includes(type) && !Settings.goreEnabled) return;
     if (!angle) angle = 0;
     if (!body) body = globalBody;
 

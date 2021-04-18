@@ -51,6 +51,11 @@ class Bike extends BaseVehicle {
             AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
         }
     }
+    destroy(){
+        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
+        AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
+        super.destroy();
+    }
 }
 
 PrefabManager.prefabLibrary.Bike = {
