@@ -8,7 +8,7 @@ export const stopCustomBehaviour = () => {
     game.editor.customDebugDraw = null;
 }
 
-export const drawObjectAdding = (prefab, types, allowPrefabs = false) => {
+export const drawObjectAdding = (prefab, types, allowPrefabs = false, lockMouseCenter = true) => {
 
     if(!Array.isArray(types)) types = [types];
 
@@ -37,8 +37,8 @@ export const drawObjectAdding = (prefab, types, allowPrefabs = false) => {
         if(!allowPrefabs && objectData.prefabInstanceName) shouldAdd = false;
 
         if(shouldAdd){
-            tarSprite = highestObject;
-            prefab.class.linkObjectTarget = tarSprite;
+            if(lockMouseCenter) tarSprite = highestObject;
+            prefab.class.linkObjectTarget = highestObject;
             editor.debugGraphics.lineStyle(1, "0xFFFF00", 1);
         }
     }
