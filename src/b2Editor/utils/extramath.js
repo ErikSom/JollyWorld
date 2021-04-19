@@ -337,27 +337,6 @@ const bezier = function (curve, degree, t, left, right) {
     return (temp[degree][0]);
 };
 
-
-function quadraticBezierLength(p0, p1, p2) {
-    const ax = p0.x - 2 * p1.x + p2.x;
-    const ay = p0.y - 2 * p1.y + p2.y;
-    const bx = 2 * p1.x - 2 * p0.x;
-    const by = 2 * p1.y - 2 * p0.y;
-    const A = 4 * (ax * ax + ay * ay);
-    const B = 4 * (ax * bx + ay * by);
-    const C = bx * bx + by * by;
-
-    const Sabc = 2 * Math.sqrt(A + B + C);
-    const A_2 = Math.sqrt(A);
-    const A_32 = 2 * A * A_2;
-    const C_2 = 2 * sqrt(C);
-    const BA = B / A_2;
-
-    const Y = (BA + C_2) > 0 ? Math.log((2 * A_2 + BA + Sabc) / (BA + C_2)) : 0;
-
-    return A_32 === 0 ? 0 : (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4 * C * A - B * B) * Y) / (4 * A_32);
-}
-
 export const pointOnBezier = (t, start, control_1, control_2, end) => {
     return start * (1.0 - t) * (1.0 - t) * (1.0 - t) +
         3.0 * control_1 * (1.0 - t) * (1.0 - t) * t +
