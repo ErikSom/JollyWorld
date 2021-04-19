@@ -1311,7 +1311,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         let actionVarString = `${actionString}_targetActionDropDown`;
 
         ui.editorGUI.editData[actionVarString] = action.type;
-        controller;
+
         controller = actionFolder.add(ui.editorGUI.editData, actionVarString, getWorldActions()).onChange(function (value) {
             this.humanUpdate = true;
             this.targetValue = value;
@@ -1610,7 +1610,6 @@ export class triggerCore {
             this.followRotationOffset = targetRotation-da;
 
         }
-
 
         this.initContactListener();
     }

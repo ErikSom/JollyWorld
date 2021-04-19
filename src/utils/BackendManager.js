@@ -379,6 +379,8 @@ function BackendManager() {
 	}
 
 	this.submitTime = async levelid => {
+		if(!this.isLoggedIn()) return;
+
         const data = await window.SVGCache[2]();
 
 		// POST /leaderboard/:id/entry (encrypted body)
@@ -403,7 +405,10 @@ function BackendManager() {
 			}
 		});
 	}
+
 	this.getLeaderboardPosition = async levelid => {
+		if(!this.isLoggedIn()) return null;
+
 		// GET /leaderboard/:id/my
 		const body = {
 			method: 'GET',
@@ -419,8 +424,6 @@ function BackendManager() {
 		if(result.status === 404) return null;
 
 		const json = await result.json();
-
-		
 
 		const {error} = json;
 		if(error){
