@@ -24,6 +24,7 @@ class Animator extends PrefabManager.basePrefab {
 
         this.linkedTarget = null;
         this.linkedReference = null;
+        this.referenceStartAngle = 0;
         this.bodyAnimator = null;
 
         this.totalLength = null;
@@ -51,7 +52,7 @@ class Animator extends PrefabManager.basePrefab {
     updatePathGraphics(){
         const colorFill = "#0096ff";
 		const colorLine = "#00518a";
-        game.editor.updatePolyGraphic(this.pathGraphic, this.prefabObject.settings.path, colorFill, colorLine, 1, 0.4);
+        game.editor.updatePolyGraphic(this.pathGraphic, this.prefabObject.settings.path, colorFill, colorLine, 1, 0.2);
     }
 
     editPathCallback(newPathGraphic){
@@ -133,6 +134,22 @@ class Animator extends PrefabManager.basePrefab {
             currentPoint = verts[closestPointIndex];
             nextPoint = verts[0];
         }
+
+        // rotate current & next point
+        currentPoint = JSON.parse(JSON.stringify(currentPoint));
+        nextPoint = JSON.parse(JSON.stringify(nextPoint));
+
+        [currentPoint, nextPoint, currentPoint.point1, currentPoint.point2].forEach(point => {
+            if(point){
+                const l = Math.sqrt(point.x * point.x + point.y * point.y);
+                const a = Math.atan2(point.y, point.x);
+
+                const newRotation = this.base.GetAngle() + a;
+
+                point.x = l * Math.cos(newRotation);
+                point.y = l * Math.sin(newRotation);
+            }
+        });
 
         const progressOnLine = progressLength-this.cachedSumLengths[closestPointIndex];
         const t = progressOnLine / this.cachedLengths[closestPointIndex];
@@ -262,16 +279,26 @@ class Animator extends PrefabManager.basePrefab {
         this.animationDuration = this.prefabObject.settings.duration * 1000;
         this.animationClockwise = this.prefabObject.settings.clockwise;
 
+        if(this.linkedReference){
+            const dx = this.linkedReference.x - this.linkedTarget.x;
+            const dy = this.linkedReference.y - this.linkedTarget.y;
+            const a = Math.atan2(dy, dx);
+
+            this.referenceLength = Math.sqrt(dx*dx + dy*dy);
+            this.referenceAngle = a - this.linkedReference.myBody.GetAngle();
+        }
+
         if(this.linkedTarget && this.linkedTarget.data.type === game.editor.object_BODY){
             this.buildBodyAnimator();
-            console.log(this.bodyAnimator);
         }
+
+        this.base.myTexture.visible = false;
 
         super.init();
     }
     update() {
 
-        if(this.animating && this.linkedTarget && !this.linkedTarget.destroyed){
+        if(this.animating && this.linkedTarget && !this.linkedTarget.destroyed && (this.prefabObject.settings.global || (this.linkedReference && !this.linkedReference.destroyed))){
             this.animationTime += game.editor.deltaTime;
 
             while(this.animationTime > this.animationDuration){
@@ -286,6 +313,16 @@ class Animator extends PrefabManager.basePrefab {
             if(this.prefabObject.settings.global){
                 x += this.base.GetPosition().x * Settings.PTM;
                 y += this.base.GetPosition().y * Settings.PTM;
+            }else{
+                const l = Math.sqrt(x*x + y*y);
+                const a = Math.atan2(y, x);
+
+                x = this.linkedReference.myBody.GetPosition().x * Settings.PTM;
+                y = this.linkedReference.myBody.GetPosition().y * Settings.PTM;
+
+                x += l * Math.cos(a + this.linkedReference.myBody.GetAngle());
+                y += l * Math.sin(a + this.linkedReference.myBody.GetAngle());
+
             }
 
             if(this.linkedTarget.myBody){
