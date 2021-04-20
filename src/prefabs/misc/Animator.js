@@ -15,6 +15,7 @@ import {
 import { Settings } from "../../Settings";
 
 import { pointOnBezier, calculateBezierLength } from '../../b2Editor/utils/extramath'
+import easing from '../../b2Editor/utils/easing';
 
 const DEFAULT_PATH = [{"x":95,"y":45.5,"point1":{"x":131.0757,"y":28.2216},"point2":{"x":131.0757,"y":-28.2216}},{"x":95,"y":-45.5,"point1":{"x":58.9243,"y":-62.7784},"point2":{"x":-58.9243,"y":-62.7784}},{"x":-95,"y":-45.5,"point1":{"x":-131.0757,"y":-28.2216},"point2":{"x":-131.0757,"y":27.2216}},{"x":-95,"y":44.5,"point1":{"x":-58.9243,"y":61.7784},"point2":{"x":58.9243,"y":62.7784}}];
 
@@ -37,6 +38,7 @@ class Animator extends PrefabManager.basePrefab {
         this.pathGraphic = new PIXI.Graphics();
         this.base.myTexture.addChildAt(this.pathGraphic, 0);
 
+        this.easeFunction = easing.linear;
         this.animating = true;
         this.animationClockwise = true;
         this.animationDuration = 1000;
@@ -47,7 +49,7 @@ class Animator extends PrefabManager.basePrefab {
 		if(this.prefabObject.settings && this.prefabObject.settings.path === undefined){
 			this.prefabObject.settings.path = DEFAULT_PATH;
 		}
-        this.updatePathGraphics();
+        if(this.prefabObject.settings) this.updatePathGraphics();
 	}
     updatePathGraphics(){
         const colorFill = "#0096ff";
@@ -234,7 +236,7 @@ class Animator extends PrefabManager.basePrefab {
             editor.debugGraphics.lineTo(targetX * editor.cameraHolder.scale.x + editor.cameraHolder.x, targetY * editor.cameraHolder.scale.y + editor.cameraHolder.y);
 
             if(this.linkedReference && !this.linkedReference.destroyed){
-                editor.debugGraphics.lineStyle(1, "0xFFFFFF", 1);
+                editor.debugGraphics.lineStyle(1, "0xFF0000", 1);
                 editor.debugGraphics.moveTo(sprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, sprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
                 editor.debugGraphics.lineTo(this.linkedReference.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, this.linkedReference.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
             }
@@ -294,6 +296,8 @@ class Animator extends PrefabManager.basePrefab {
 
         this.base.myTexture.visible = false;
 
+        this.easeFunction = easing[this.prefabObject.settings.easing];
+
         super.init();
     }
     update() {
@@ -307,6 +311,7 @@ class Animator extends PrefabManager.basePrefab {
 
             let animationProgress = this.animationTime / this.animationDuration;
             if(this.animationClockwise) animationProgress = 1 - animationProgress;
+            animationProgress = this.easeFunction(animationProgress);
 
             let {x, y} = this.getPointAtProgress(animationProgress);
 
@@ -459,6 +464,7 @@ const addCustomBodyGUI = (prefabObject, editData, targetFolder) => {
 
 Animator.settings = Object.assign({}, Animator.settings, {
     "duration": 1.0,
+    "easing": "linear",
     "clockwise": true,
     "selectTarget": prefab=>selectLinkTarget(prefab),
     "global": true,
@@ -471,6 +477,7 @@ Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
 		max:120.0,
 		step:0.1
 	},
+    "easing": Object.keys(easing),
     "clockwise": true,
 	"selectTarget": '$function',
     "global":true,
@@ -479,7 +486,7 @@ Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
 });
 
 PrefabManager.prefabLibrary.Animator = {
-    json: '{"objects":[[0,0.0114,0.0124,0,"animator","base",0,["#999999"],["#000"],[0],true,true,[[{"x":-2.3022,"y":1.0019},{"x":-2.3022,"y":-1.0019},{"x":2.3022,"y":-1.0019},{"x":2.3022,"y":1.0019}]],[1],[2],[0],"",[0],true,false,false,[0.5],[0.2],false,true],[7,-0.3433,-0.3725,0,"","",1,[[6,-40,-0.092,0,"","",71,"#10c5ff","#000",1,30,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true],[6,-20,-0.092,0,"","",72,"#0894f9","#000",1,30,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true],[6,0,-0.092,0,"","",73,"#0065ff","#000",1,30,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true],[6,20,0.368,0,"","",74,"#034ee2","#000",1,30,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true],[6,40,-0.092,0,"","",75,"#003fa0","#000",1,30,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true]],0,1.0131,2.3154,0,1,0,0,0,true,false,[]]]}',
+    json: '{"objects":[[0,0.0109,0.0493,0,"","base",0,["#999999"],["#000"],[0],true,true,[[{"x":0.7976,"y":-0.7824},{"x":0.7976,"y":0.7824},{"x":-0.7976,"y":0.7824},{"x":-0.7976,"y":-0.7824}]],[1],[2],[0],"",[0],true,false,false,[0.5],[0.2],false,true],[7,-0.3259,-1.4783,0,"","",1,[[6,3.6726,13.5219,0,"","",73,"#565656","#656565",1,null,[{"x":20.9882,"y":12.8053},{"x":20.9882,"y":-12.8053},{"x":-20.9882,"y":-12.8053},{"x":-20.9882,"y":12.8053}],null,null,null,null,"",0,0,0,0,"",true],[6,1.8117,-9.3132,0,"","",74,"#565656","#656565",1,null,[{"x":-21.5279,"y":0.9465},{"x":17.81,"y":-11.0793},{"x":21.4079,"y":-0.6124},{"x":-17.69,"y":10.7453}],null,null,null,null,"",0,0,0,0,"",true],[6,3.3384,5.9852,0,"","",75,"#ffffff","#656565",1,null,[{"x":18.3522,"y":2.3065},{"x":18.3522,"y":-2.3065},{"x":-18.3522,"y":-2.3065},{"x":-18.3522,"y":2.3065}],null,null,null,null,"",0,0,0,0,"",true],[6,2.1456,-9.4312,-0.3075,"","",76,"#ffffff","#656565",1,null,[{"x":18.3522,"y":2.3065},{"x":18.3522,"y":-2.3065},{"x":-18.3522,"y":-2.3065},{"x":-18.3522,"y":2.3065}],null,null,null,null,"",0,0,0,0,"",true],[6,-18.6541,2.4961,0,"","",77,"#565656","#656565",1,5.6458,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true],[6,-6.8562,-5.8989,0,"","",79,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true],[6,8.7544,-10.4567,0,"","",80,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true],[6,-5.9108,6.7258,0.0698,"","",81,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true],[6,11.6985,6.3709,0.0698,"","",82,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true]],0,3.0277,1.7878,0,1,0,0,0,true,false,[]]]}',
     class: Animator,
     library: PrefabManager.LIBRARY_MISC
 }

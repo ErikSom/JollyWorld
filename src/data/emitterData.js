@@ -1,3 +1,5 @@
+import easing from "../b2Editor/utils/easing";
+
 export const blood = {
 	"alpha": {
 		"start": 0.73,
@@ -448,22 +450,6 @@ export const sparksMetal = {
 	"emit":false
 }
 
-const EasingFunctions = {
-	// linear: t => t,
-	// easeInQuad: t => t*t,
-	// easeOutQuad: t => t*(2-t),
-	easeInOutQuad: t => t<.5 ? 2*t*t : -1+(4-2*t)*t
-	// easeInCubic: t => t*t*t,
-	// easeOutCubic: t => (--t)*t*t+1,
-	// easeInOutCubic: t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1,
-	// easeInQuart: t => t*t*t*t,
-	// easeOutQuart: t => 1-(--t)*t*t*t,
-	// easeInOutQuart: t => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t,
-	// easeInQuint: t => t*t*t*t*t,
-	// easeOutQuint: t => 1+(--t)*t*t*t*t,
-	// easeInOutQuint: t => t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t
-}
-
 export const confettiFrames = [
 	{
 		framerate: 20,
@@ -552,6 +538,6 @@ export const confetti = {
 		"y": 0,
 		"r": 100
 	},
-	"ease":EasingFunctions.easeInOutQuad,
+	"ease":easing.easeInOutQuad,
 	"emit":false
 }
