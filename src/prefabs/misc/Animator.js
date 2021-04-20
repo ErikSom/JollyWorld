@@ -64,7 +64,8 @@ class Animator extends PrefabManager.basePrefab {
     }
     linkTarget(targetSprite){
         if(targetSprite){
-            this.linkedTarget = targetSprite;
+            // if texture then pick the body
+            this.linkedTarget = targetSprite.myBody.mySprite;
 
             const dx = game.editor.mousePosWorld.x*Settings.PTM - this.linkedTarget.x;
             const dy = game.editor.mousePosWorld.y*Settings.PTM - this.linkedTarget.y;
@@ -80,7 +81,8 @@ class Animator extends PrefabManager.basePrefab {
 
     linkReference(targetSprite){
         if(targetSprite){
-            this.linkedReference = targetSprite;
+            // if texture then pick the body
+            this.linkedReference = targetSprite.myBody.mySprite;
         }else{
             this.linkedReference = null;
         }
@@ -426,12 +428,26 @@ const addCustomBodyGUI = (prefabObject, editData, targetFolder) => {
             if(prop.innerText === 'selectTarget') prop.innerText = 'unselectTarget';
         })
 
+        if(prefabObject.settings.global === undefined) prefabObject.settings.global = true;
+
+        editData.global = prefabObject.settings.global;
+        targetFolder.add(editData, 'global').onChange(function (value) {
+            prefabObject.settings.global = value;
+            game.editor.updateSelection();
+        });
+
         if(!prefabObject.settings.global){
-            if(!prefabClass.linkedReference){
-                const addReferenceId = 'selectReferenceBody';
-                editData[addReferenceId] = () => selectLinkReference(prefabObject);
-                targetFolder.add(editData, addReferenceId);
+            const addReferenceId = 'selectReferenceBody';
+            editData[addReferenceId] = () => selectLinkReference(prefabObject);
+            targetFolder.add(editData, addReferenceId);
+
+            if(prefabClass.linkedReference){
+                Array.from(targetFolder.domElement.querySelectorAll('.function')).forEach( func => {
+                    const prop = func.querySelector('.property-name')
+                    if(prop.innerText === 'selectReferenceBody') prop.innerText = 'unselectReferenceBody';
+                })
             }
+
         }
 
         if(prefabClass.linkedTarget.data.type === game.editor.object_BODY){
@@ -467,7 +483,6 @@ Animator.settings = Object.assign({}, Animator.settings, {
     "easing": "linear",
     "clockwise": true,
     "selectTarget": prefab=>selectLinkTarget(prefab),
-    "global": true,
     "bodyValues": addCustomBodyGUI,
     "editPath": prefab=>editPath(prefab),
 });
@@ -480,7 +495,6 @@ Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
     "easing": Object.keys(easing),
     "clockwise": true,
 	"selectTarget": '$function',
-    "global":true,
     "bodyValues": '$custom',
 	"editPath": '$function',
 });

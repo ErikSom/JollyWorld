@@ -29,7 +29,7 @@ export const drawObjectAdding = (prefab, types, allowPrefabs = false, lockMouseC
         let shouldAdd = false;
 
         types.forEach(type => {
-            if(objectData.type === type || (typeof type === 'string' && highestObject.myBody && highestObject.myBody[type])){
+            if(objectData.type === type || (typeof type === 'string' && highestObject.myBody && highestObject.myBody[type]) || (type === game.editor.object_BODY && highestObject.myBody && !highestObject.data.prefabInstanceName)){
                 shouldAdd = true;
             }
         })
