@@ -2051,7 +2051,6 @@ const _B2dEditor = function () {
 						if(newArr.length){
 							data.settings[property] = newArr;
 						}else{
-							console.log("DAFUQQQQQQ");
 							data.settings[property] = null;
 						}
 					}
@@ -3456,8 +3455,8 @@ const _B2dEditor = function () {
 
 			if(this.deepClickDetection !== null){
 
-				const distanceX = Math.abs(this.mousePosWorld.x - this.deepClickDetection.x);
-				const distanceY = Math.abs(this.mousePosWorld.y - this.deepClickDetection.y);
+				const distanceX = Math.abs(this.mousePosWorld.x - this.deepClickDetection.x) * this.cameraHolder.scale.x * Settings.PTM;
+				const distanceY = Math.abs(this.mousePosWorld.y - this.deepClickDetection.y) * this.cameraHolder.scale.x * Settings.PTM;
 
 				if(distanceX > Settings.deepClickDetectionMargin || distanceY > Settings.deepClickDetectionMargin){
 					this.deepClickDetection = null;
@@ -9561,12 +9560,23 @@ const _B2dEditor = function () {
 			data.y = sprite.myBody.GetPosition().y;
 			data.rotation = sprite.myBody.GetAngle();
 
+			if(data.triggerObjects.length > 0 && (!sprite.targets || sprite.targets.length === 0)){
+				alert("Please DM Smerik with what your last action was right before you received this message. This could be crucial in fixing a very important bug");
+			}
+
 			// potential trigger issue here
 			data.triggerObjects = [];
 			for (var i = 0; i < sprite.targets.length; i++) {
 				if (sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);
 				else data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
 			}
+
+			data.triggerObjects.forEach(target => {
+				if(target === undefined || target === null){
+					alert("Please DM Smerik with what your last action was right before you received this message. This could be crucial in fixing a very important bug");
+				}
+			})
+
 		}
 
 		if (!sprite && data.type == this.object_PREFAB) {

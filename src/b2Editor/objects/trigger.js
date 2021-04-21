@@ -229,7 +229,6 @@ export const doAction = function (actionData, target) {
             if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
             else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorTorque() + actionData.force;
             targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
-            console.log(target);
             target.SetMaxMotorTorque(targetMotorForce);
             break;
         case "SetSpring":
@@ -1312,7 +1311,7 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         let actionVarString = `${actionString}_targetActionDropDown`;
 
         ui.editorGUI.editData[actionVarString] = action.type;
-        controller;
+
         controller = actionFolder.add(ui.editorGUI.editData, actionVarString, getWorldActions()).onChange(function (value) {
             this.humanUpdate = true;
             this.targetValue = value;
@@ -1465,10 +1464,6 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                             actionController.name(key);
                     }
                     break;
-                case guitype_LABEL:
-                    actionController = actionFolder.add(ui.editorGUI.editData, actionVarString)
-                    console.log(actionController.domElement);
-                    break;
             }
 
         }
@@ -1615,7 +1610,6 @@ export class triggerCore {
             this.followRotationOffset = targetRotation-da;
 
         }
-
 
         this.initContactListener();
     }
