@@ -9788,7 +9788,7 @@ const _B2dEditor = function () {
 		}
 
 		//Fix trigger object targets & fix prefab object targets
-		if(!prefabInstanceName){
+		if(!prefabInstanceName && this.editing){
 			for (var i = 0; i < this.triggerObjects.length; i++) {
 				var _trigger = this.triggerObjects[i];
 				if (_trigger.mySprite.triggerInitialized) continue;
