@@ -6,12 +6,6 @@ import {
 import { stopCustomBehaviour, drawObjectAdding } from './CustomEditorBehavior';
 import * as PIXI from 'pixi.js';
 
-import {
-    Key
-} from "../../../libs/Key"
-
-
-
 import { Settings } from "../../Settings";
 
 import { pointOnBezier, calculateBezierLength } from '../../b2Editor/utils/extramath'
@@ -23,6 +17,8 @@ class Animator extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
 
+        this.isAnimator = true;
+
         this.linkedTarget = null;
         this.linkedReference = null;
         this.referenceStartAngle = 0;
@@ -33,7 +29,6 @@ class Animator extends PrefabManager.basePrefab {
         this.cachedSumLengths = [];
 
         this.base = this.lookupObject.base;
-        this.base.isAnimator = true;
 
         this.pathGraphicContainer = new PIXI.Container();
         this.pathGraphicContainer.alpha = 0.4;
@@ -347,38 +342,47 @@ class Animator extends PrefabManager.basePrefab {
     }
 
     init() {
-        this.calculatePathLength();
-        this.animationDuration = this.prefabObject.settings.duration * 1000;
-        this.animationClockwise = this.prefabObject.settings.clockwise;
+        if(this.linkedTarget && !this.linkedTarget.destroyed){
+            this.calculatePathLength();
+            this.animationDuration = this.prefabObject.settings.duration * 1000;
+            this.animationClockwise = this.prefabObject.settings.clockwise;
 
-        if(this.linkedReference){
-            const dx = this.linkedReference.x - this.linkedTarget.x;
-            const dy = this.linkedReference.y - this.linkedTarget.y;
-            const a = Math.atan2(dy, dx);
+            if(this.linkedReference){
+                const dx = this.linkedReference.x - this.linkedTarget.x;
+                const dy = this.linkedReference.y - this.linkedTarget.y;
+                const a = Math.atan2(dy, dx);
 
-            this.referenceLength = Math.sqrt(dx*dx + dy*dy);
-            this.referenceAngle = a - this.linkedReference.myBody.GetAngle();
+                this.referenceLength = Math.sqrt(dx*dx + dy*dy);
+                this.referenceAngle = a - this.linkedReference.myBody.GetAngle();
+            }
+
+            if(this.linkedTarget && this.linkedTarget.data.type === game.editor.object_BODY){
+                this.buildBodyAnimator();
+            }
+
+            this.easeFunction = easing[this.prefabObject.settings.easing];
+
+            if(!game.editor.editorSettingsObject.physicsDebug){
+                this.base.myTexture.visible = false;
+            }
+
+            this.animating = this.prefabObject.settings.animating;
+            this.animationTime = this.prefabObject.settings.startProgress * this.animationDuration;
         }
-
-        if(this.linkedTarget && this.linkedTarget.data.type === game.editor.object_BODY){
-            this.buildBodyAnimator();
-        }
-
-        this.easeFunction = easing[this.prefabObject.settings.easing];
-
-        if(!game.editor.editorSettingsObject.physicsDebug){
-            this.base.myTexture.visible = false;
-        }
-
-        this.animationTime = this.prefabObject.settings.startProgress * this.animationDuration;
 
         super.init();
     }
 
+    setProgress(progress){
+        this.animationTime = progress * this.animationDuration;
+    }
+
     update() {
 
-        if(this.animating && this.linkedTarget && !this.linkedTarget.destroyed && (this.prefabObject.settings.global || (this.linkedReference && !this.linkedReference.destroyed))){
-            this.animationTime += game.editor.deltaTime;
+        if(this.linkedTarget && !this.linkedTarget.destroyed && (this.prefabObject.settings.global || (this.linkedReference && !this.linkedReference.destroyed))){
+            if(this.animating){
+                this.animationTime += game.editor.deltaTime;
+            }
 
             while(this.animationTime > this.animationDuration){
                 this.animationTime -= this.animationDuration;
@@ -513,6 +517,7 @@ const addCustomBodyGUI = (prefabObject, editData, targetFolder) => {
         editData.global = prefabObject.settings.global;
         targetFolder.add(editData, 'global').onChange(function (value) {
             prefabObject.settings.global = value;
+            prefabClass.linkedReference = null;
             game.editor.updateSelection();
         });
 
@@ -532,7 +537,7 @@ const addCustomBodyGUI = (prefabObject, editData, targetFolder) => {
 
         if(prefabClass.linkedTarget.data.type === game.editor.object_BODY){
             const maxForceId = `maxForce`;
-            if(prefabObject.settings.maxForce === undefined) prefabObject.settings.maxForce = 100;
+            if(prefabObject.settings.maxForce === undefined) prefabObject.settings.maxForce = 5000;
             editData[maxForceId] = prefabObject.settings.maxForce;
 
             targetFolder.add(editData, maxForceId, 0, 50000).step(1).onChange(function (value) {
@@ -566,6 +571,7 @@ Animator.settings = Object.assign({}, Animator.settings, {
     "selectTarget": prefab=>selectLinkTarget(prefab),
     "bodyValues": addCustomBodyGUI,
     "editPath": prefab=>editPath(prefab),
+    "animating": true,
 });
 Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
    "duration":{
@@ -583,6 +589,7 @@ Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
 	"selectTarget": '$function',
     "bodyValues": '$custom',
 	"editPath": '$function',
+    "animating": true,
 });
 
 PrefabManager.prefabLibrary.Animator = {

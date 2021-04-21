@@ -23,7 +23,7 @@ export const getActionsForObject = function (object) {
     actions.push("Empty");
     if (object.data.prefabInstanceName != undefined) {
         const prefab = B2dEditor.activePrefabs[object.data.prefabInstanceName];
-        if(!prefab.class.isSevenSegment) actions.push("Impulse");
+        if(!prefab.class.isSevenSegment && !prefab.class.isAnimator) actions.push("Impulse");
         if(prefab.class.isExplosive){
             actions.push("SetActive");
             actions.push("Explode");
@@ -46,6 +46,16 @@ export const getActionsForObject = function (object) {
             actions.push("Decrease");
             actions.push("SetNumber");
             actions.push("SetRandom");
+        }
+        if(prefab.class.isExplosive){
+            actions.push("SetActive");
+            actions.push("Explode");
+        }
+        if(prefab.class.isAnimator){
+            actions.push("SetProgress");
+            actions.push("SetClockwise");
+            actions.push("SetAnimating");
+            actions.push("SetDuration");
         }
     } else {
         switch (object.data.type) {
@@ -383,6 +393,20 @@ export const doAction = function (actionData, target) {
         break;
         case "SetRandom":
             prefab.class.setNumber(Math.floor(Math.random() * 10));
+        break;
+        case "SetProgress":
+            prefab.class.setProgress(actionData.progress);
+        break;
+        case "SetClockwise":
+            prefab.class.animationClockwise = actionData.setClockwise;
+            if(actionData.toggle) actionData.setClockwise = !actionData.setClockwise;
+        break
+        case "SetAnimating":
+            prefab.class.animating = actionData.setAnimating;
+            if(actionData.toggle) actionData.setAnimating = !actionData.setAnimating;
+        break
+        case "SetDuration":
+            prefab.class.animationDuration = actionData.duration * 1000;
         break;
     }
 }
@@ -1032,6 +1056,63 @@ export const actionDictionary = {
         type: 'SetRandom',
     },
     actionOptions_SetRandom: {},
+    /*******************/
+    actionObject_SetProgress: {
+        type: 'SetProgress',
+        progress: 0,
+    },
+    actionOptions_SetProgress: {
+        progress: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 1,
+            value: 0,
+            step: 0.1,
+        }
+    },
+    /*******************/
+    actionObject_SetClockwise: {
+        type: 'SetClockwise',
+        toggle: false,
+        setClockwise: true,
+    },
+    actionOptions_SetClockwise: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setClockwise: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
+    actionObject_SetAnimating: {
+        type: 'SetAnimating',
+        toggle: false,
+        setAnimating: true,
+    },
+    actionOptions_SetAnimating: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        setAnimating: {
+            type: guitype_BOOL,
+        },
+    },
+    /*******************/
+    actionObject_SetDuration: {
+        type: 'SetDuration',
+        duration: 1.0,
+    },
+    actionOptions_SetDuration: {
+        duration: {
+            type: guitype_MINMAX,
+            min: 0.1,
+            max: 120,
+            value: 1.0,
+            step: 0.1,
+        }
+    },
+    /*******************/
 }
 const actionScrollWatch = [];
 const positionActionsGUI = ()=>{
