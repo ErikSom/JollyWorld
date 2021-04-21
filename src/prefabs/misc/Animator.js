@@ -377,6 +377,17 @@ class Animator extends PrefabManager.basePrefab {
         this.animationTime = progress * this.animationDuration;
     }
 
+    setDuration(duration){
+        const currentProgress = this.animationTime / this.animationDuration;
+        this.animationDuration = duration;
+        this.animationTime = duration * currentProgress;
+    }
+    setClockwise(clockwise){
+        const currentProgress = this.animationTime / this.animationDuration;
+        this.animationClockwise = clockwise;
+        this.animationTime = this.animationDuration * (1 - currentProgress);
+    }
+
     update() {
 
         if(this.linkedTarget && !this.linkedTarget.destroyed && (this.prefabObject.settings.global || (this.linkedReference && !this.linkedReference.destroyed))){

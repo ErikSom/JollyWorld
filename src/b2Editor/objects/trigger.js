@@ -398,7 +398,7 @@ export const doAction = function (actionData, target) {
             prefab.class.setProgress(actionData.progress);
         break;
         case "SetClockwise":
-            prefab.class.animationClockwise = actionData.setClockwise;
+            prefab.class.setClockwise(actionData.setClockwise);
             if(actionData.toggle) actionData.setClockwise = !actionData.setClockwise;
         break
         case "SetAnimating":
@@ -406,7 +406,7 @@ export const doAction = function (actionData, target) {
             if(actionData.toggle) actionData.setAnimating = !actionData.setAnimating;
         break
         case "SetDuration":
-            prefab.class.animationDuration = actionData.duration * 1000;
+            prefab.class.setDuration(actionData.duration * 1000);
         break;
     }
 }
