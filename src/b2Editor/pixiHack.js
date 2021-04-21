@@ -100,5 +100,6 @@ export function attachGraphicsAPIMixin() {
            this.lineTo(x2, y2);
        }
        this.lineTo(x1, y1);
+       this.closePath();
     }
 }

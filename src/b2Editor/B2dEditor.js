@@ -9079,7 +9079,9 @@ const _B2dEditor = function () {
 
 	}
 
-	this.updatePolyGraphic = function (graphic, verts, colorFill, colorLine, lineWidth, transparancy, dontClear) {
+	this.updatePolyGraphic = function (graphic, verts, colorFill, colorLine, lineWidth, transparancy, dontClear, fillTransparancy) {
+		if(!fillTransparancy === undefined) fillTransparancy = transparancy;
+
 		let color;
 		color = colorLine.slice(1);
 		let colorLineHex = parseInt(color, 16);
@@ -9093,7 +9095,7 @@ const _B2dEditor = function () {
 		if(colorFill !== 'transparent'){
 			color = colorFill.slice(1);
 			let colorFillHex = parseInt(color, 16);
-			graphic.beginFill(colorFillHex, transparancy);
+			graphic.beginFill(colorFillHex, fillTransparancy);
 		}
 
 		const count = verts.length;

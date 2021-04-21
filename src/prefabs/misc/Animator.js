@@ -35,8 +35,12 @@ class Animator extends PrefabManager.basePrefab {
         this.base = this.lookupObject.base;
         this.base.isAnimator = true;
 
+        this.pathGraphicContainer = new PIXI.Container();
+        this.pathGraphicContainer.alpha = 0.4;
         this.pathGraphic = new PIXI.Graphics();
-        this.base.myTexture.addChildAt(this.pathGraphic, 0);
+        this.pathGraphic.cacheAsBitmap = true;
+        this.pathGraphicContainer.addChild(this.pathGraphic);
+        this.base.myTexture.addChildAt(this.pathGraphicContainer, 0);
 
         this.easeFunction = easing.linear;
         this.animating = true;
@@ -49,17 +53,55 @@ class Animator extends PrefabManager.basePrefab {
 		if(this.prefabObject.settings && this.prefabObject.settings.path === undefined){
 			this.prefabObject.settings.path = DEFAULT_PATH;
 		}
-        if(this.prefabObject.settings) this.updatePathGraphics();
+        if(this.prefabObject.settings){
+            this.calculatePathLength();
+            this.updatePathGraphics();
+        }
 	}
     updatePathGraphics(){
-        const colorFill = "#0096ff";
+
+        this.pathGraphic.cacheAsBitmap = false;
+        const colorFill = "0x000000";
 		const colorLine = "#00518a";
-        game.editor.updatePolyGraphic(this.pathGraphic, this.prefabObject.settings.path, colorFill, colorLine, 1, 0.2);
+        const opacity = 1.0;
+        game.editor.updatePolyGraphic(this.pathGraphic, this.prefabObject.settings.path, colorFill, colorLine, 10, opacity, false, 0.01);
+
+        const arrowEveryPX = 100;
+
+        const arrows = Math.floor(this.totalLength / arrowEveryPX);
+        const progresSteps = 1.0 / arrows;
+
+        this.pathGraphic.beginFill(0x00518a, opacity);
+        this.pathGraphic.lineStyle(0, 0x0, 0);
+        for(let i = 0; i<arrows; i++){
+            this.drawArrowAtProgress(progresSteps * i);
+        }
+        this.pathGraphic.beginFill(0x0f9002, opacity);
+
+        if(this.prefabObject.settings.clockwise){
+            this.drawArrowAtProgress(1-this.prefabObject.settings.startProgress);
+        }else{
+            this.drawArrowAtProgress(this.prefabObject.settings.startProgress);
+        }
+
+        this.pathGraphic.cacheAsBitmap = true;
+    }
+
+    drawArrowAtProgress(progress){
+        const point = this.getPointAtProgress(progress);
+        const nextPoint = this.getPointAtProgress(progress+0.01);
+
+        const dx = nextPoint.x - point.x;
+        const dy = nextPoint.y - point.y;
+        const a = Math.atan2(dy, dx) + (this.prefabObject.settings.clockwise ? Math.PI : 0)
+
+        this.pathGraphic.drawRegularPoly(point.x, point.y, 20, 3, a);
     }
 
     editPathCallback(newPathGraphic){
         // the vertices is a shared array between the newPathGraphic and this object, so updating those vertices updates them here.
         game.editor.deleteObjects([newPathGraphic]);
+        this.calculatePathLength();
         this.updatePathGraphics();
     }
     linkTarget(targetSprite){
@@ -72,7 +114,7 @@ class Animator extends PrefabManager.basePrefab {
             const a = Math.atan2(dy, dx);
 
             this.prefabObject.settings.targetAnchorLength = Math.sqrt(dx*dx + dy*dy);
-            this.prefabObject.settings.targetAnchorAngle = a-targetSprite.rotation;
+            this.prefabObject.settings.targetAnchorAngle = a-this.linkedTarget.rotation;
         }else{
             this.linkedTarget = null;
         }
@@ -278,6 +320,16 @@ class Animator extends PrefabManager.basePrefab {
 
     }
 
+    set(property, value){
+        super.set(property, value);
+        switch (property) {
+            case 'startProgress':
+            case 'clockwise':
+                this.updatePathGraphics();
+                break;
+        }
+    }
+
     init() {
         this.calculatePathLength();
         this.animationDuration = this.prefabObject.settings.duration * 1000;
@@ -296,12 +348,17 @@ class Animator extends PrefabManager.basePrefab {
             this.buildBodyAnimator();
         }
 
-        this.base.myTexture.visible = false;
-
         this.easeFunction = easing[this.prefabObject.settings.easing];
+
+        if(!game.editor.editorSettingsObject.physicsDebug){
+            this.base.myTexture.visible = false;
+        }
+
+        this.animationTime = this.prefabObject.settings.startProgress * this.animationDuration;
 
         super.init();
     }
+
     update() {
 
         if(this.animating && this.linkedTarget && !this.linkedTarget.destroyed && (this.prefabObject.settings.global || (this.linkedReference && !this.linkedReference.destroyed))){
@@ -327,8 +384,11 @@ class Animator extends PrefabManager.basePrefab {
                 x = this.linkedReference.myBody.GetPosition().x * Settings.PTM;
                 y = this.linkedReference.myBody.GetPosition().y * Settings.PTM;
 
-                x += l * Math.cos(a + this.linkedReference.myBody.GetAngle());
-                y += l * Math.sin(a + this.linkedReference.myBody.GetAngle());
+
+                const targetAngle = a;
+
+                x += l * Math.cos(targetAngle);
+                y += l * Math.sin(targetAngle);
 
             }
 
@@ -351,9 +411,12 @@ class Animator extends PrefabManager.basePrefab {
                 this.linkedTarget.x = x - offsetX;
                 this.linkedTarget.y = y - offsetY;
             }
-
         }
 
+        if(game.editor.editorSettingsObject.physicsDebug && (this.linkedReference && !this.linkedReference.destroyed)){
+            this.base.SetPosition(this.linkedReference.myBody.GetPosition());
+            this.base.SetAngle(this.linkedReference.myBody.GetAngle());
+        }
 
         super.update();
     }
@@ -481,6 +544,7 @@ const addCustomBodyGUI = (prefabObject, editData, targetFolder) => {
 Animator.settings = Object.assign({}, Animator.settings, {
     "duration": 1.0,
     "easing": "linear",
+    "startProgress":0,
     "clockwise": true,
     "selectTarget": prefab=>selectLinkTarget(prefab),
     "bodyValues": addCustomBodyGUI,
@@ -493,6 +557,11 @@ Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
 		step:0.1
 	},
     "easing": Object.keys(easing),
+    "startProgress":{
+		min:0.0,
+		max:1.0,
+		step:0.01
+	},
     "clockwise": true,
 	"selectTarget": '$function',
     "bodyValues": '$custom',
