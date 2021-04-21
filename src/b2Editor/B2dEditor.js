@@ -2915,6 +2915,16 @@ const _B2dEditor = function () {
 								}
 							}
 							this.doubleClickTime = 0;
+						}else{
+							const prefabKeys = Object.keys(this.selectedPrefabs);
+							if(prefabKeys.length === 1){
+								const prefabObject = this.activePrefabs[prefabKeys[0]];
+
+								if(prefabObject.class.doubleClickCallback){
+									prefabObject.class.doubleClickCallback();
+								}
+							}
+							this.doubleClickTime = 0;
 						}
 					}else if(this.deepClickDetection !== null && (prefabKeys.length + this.selectedTextures.length + this.selectedPhysicsBodies.length === 1)){
 						if(prefabKeys.length){

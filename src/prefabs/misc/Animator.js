@@ -74,20 +74,20 @@ class Animator extends PrefabManager.basePrefab {
         this.pathGraphic.beginFill(0x00518a, opacity);
         this.pathGraphic.lineStyle(0, 0x0, 0);
         for(let i = 0; i<arrows; i++){
-            this.drawArrowAtProgress(progresSteps * i);
+            this.drawArrowAtProgress(progresSteps * i, 20);
         }
-        this.pathGraphic.beginFill(0x0f9002, opacity);
+        this.pathGraphic.beginFill(0xffffff, opacity);
 
         if(this.prefabObject.settings.clockwise){
-            this.drawArrowAtProgress(1-this.prefabObject.settings.startProgress);
+            this.drawArrowAtProgress(1-this.prefabObject.settings.startProgress, 10);
         }else{
-            this.drawArrowAtProgress(this.prefabObject.settings.startProgress);
+            this.drawArrowAtProgress(this.prefabObject.settings.startProgress, 10);
         }
 
         this.pathGraphic.cacheAsBitmap = true;
     }
 
-    drawArrowAtProgress(progress){
+    drawArrowAtProgress(progress, size){
         const point = this.getPointAtProgress(progress);
         const nextPoint = this.getPointAtProgress(progress+0.01);
 
@@ -95,7 +95,15 @@ class Animator extends PrefabManager.basePrefab {
         const dy = nextPoint.y - point.y;
         const a = Math.atan2(dy, dx) + (this.prefabObject.settings.clockwise ? Math.PI : 0)
 
-        this.pathGraphic.drawRegularPoly(point.x, point.y, 20, 3, a);
+
+        const l = Math.sqrt(point.x*point.x + point.y*point.y);
+        const a2 = Math.atan2(point.y, point.x);
+
+        const x = l * Math.cos(a2 - this.base.GetAngle());
+        const y = l * Math.sin(a2 - this.base.GetAngle());
+
+
+        this.pathGraphic.drawRegularPoly(x, y, size, 3, a + this.base.GetAngle());
     }
 
     editPathCallback(newPathGraphic){
@@ -106,8 +114,13 @@ class Animator extends PrefabManager.basePrefab {
     }
     linkTarget(targetSprite){
         if(targetSprite){
-            // if texture then pick the body
-            this.linkedTarget = targetSprite.myBody.mySprite;
+
+            if(targetSprite.myBody) {
+                // if texture then pick the body
+                this.linkedTarget = targetSprite.myBody.mySprite;
+            }else{
+                this.linkedTarget = targetSprite;
+            }
 
             const dx = game.editor.mousePosWorld.x*Settings.PTM - this.linkedTarget.x;
             const dy = game.editor.mousePosWorld.y*Settings.PTM - this.linkedTarget.y;
@@ -216,6 +229,9 @@ class Animator extends PrefabManager.basePrefab {
         }
 
         return {x, y};
+    }
+    doubleClickCallback(){
+        editPath(this.prefabObject);
     }
 
     findPointAtLength(length){
@@ -476,6 +492,7 @@ const editPath = prefab => {
     graphicObject.y = prefab.class.base.GetPosition().y * Settings.PTM;
 
     const graphic = game.editor.buildGraphicFromObj(graphicObject);
+    graphic.rotation = prefab.class.base.GetAngle();
 
     game.editor.verticeEditingSprite = graphic;
     game.editor.selectTool(game.editor.tool_VERTICEEDITING);
