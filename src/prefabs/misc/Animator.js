@@ -543,7 +543,7 @@ const addCustomBodyGUI = (prefabObject, editData, targetFolder) => {
             if(prefabObject.settings.frequencyHZ === undefined) prefabObject.settings.frequencyHZ = 5;
             editData[frequenzeHZId] = prefabObject.settings.frequencyHZ;
 
-            targetFolder.add(editData, frequenzeHZId, 0, 20).step(1).onChange(function (value) {
+            targetFolder.add(editData, frequenzeHZId, 0, 20).step(0.1).onChange(function (value) {
                 prefabObject.settings.frequencyHZ = value;
             });
 
