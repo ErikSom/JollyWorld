@@ -939,12 +939,18 @@ function Game() {
             window.SVGCache[3]();
         }
     }
-    this.gameWin = function () {
+    this.gameWin = async function () {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
-            backendManager.submitTime(game.currentLevelData.id);
+            await backendManager.submitTime(game.currentLevelData.id);
 
-            const d = dateDiff(window.wqhjfu, 0);
+            let d;
+            if(window.wqhjfu){
+               d = dateDiff(window.wqhjfu, 0);
+            }else{
+               d = dateDiff(performance.now(), this.levelStartTime);
+            }
+
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             if(this.gameState == this.GAMESTATE_EDITOR){
                 ui.show();
