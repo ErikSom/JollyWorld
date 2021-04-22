@@ -4505,6 +4505,19 @@ const _B2dEditor = function () {
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
+		}else if(e.keyCode == 65 && this.ctrlDown && this.altDown){
+			console.log("YES 1");
+			if(this.selectedTextures.length > 0 && Object.keys(this.selectedPrefabs).length + this.selectedPhysicsBodies.length + this.selectedTextures.length === 1){
+			console.log("YES 2");
+
+				const graphic = this.selectedTextures[0];
+				if(graphic.data.type === this.object_GRAPHIC){
+			console.log("YES 3");
+
+					const animatorPrefab = `{"objects":[[4,${graphic.x},${graphic.y},${graphic.rotation},{"duration":1,"easing":"linear","startProgress":0,"clockwise":true,"animating":true,"path":${JSON.stringify(graphic.data.vertices)},"linkedTargetId":null,"linkedReferenceId":null},"Animator"]]}`;
+					const animatorBodies = game.editor.buildJSON(JSON.parse(animatorPrefab));
+				}
+			}
 		}else if ((e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
 
 

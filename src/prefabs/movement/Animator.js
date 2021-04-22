@@ -3,7 +3,7 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
-import { stopCustomBehaviour, drawObjectAdding } from './CustomEditorBehavior';
+import { stopCustomBehaviour, drawObjectAdding } from '../misc/CustomEditorBehavior';
 import * as PIXI from 'pixi.js';
 
 import { Settings } from "../../Settings";
@@ -46,7 +46,7 @@ class Animator extends PrefabManager.basePrefab {
 
 	postConstructor(){
 		if(this.prefabObject.settings && this.prefabObject.settings.path === undefined){
-			this.prefabObject.settings.path = DEFAULT_PATH;
+			this.prefabObject.settings.path = JSON.parse(JSON.stringify(DEFAULT_PATH));
 		}
         if(this.prefabObject.settings){
             this.calculatePathLength();
@@ -360,7 +360,7 @@ class Animator extends PrefabManager.basePrefab {
                 this.buildBodyAnimator();
             }
 
-            this.easeFunction = easing[this.prefabObject.settings.easing];
+            this.easeFunction = this.prefabObject.settings.easing === 'linear' ? easing[this.prefabObject.settings.easing] : easing[this.prefabObject.settings.easing+'Cubic'];
 
             if(!game.editor.editorSettingsObject.physicsDebug){
                 this.base.myTexture.visible = false;
@@ -590,7 +590,7 @@ Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
 		max:120.0,
 		step:0.1
 	},
-    "easing": Object.keys(easing),
+    "easing": ['linear', 'easeIn', 'easeOut', 'easeInOut'],
     "startProgress":{
 		min:0.0,
 		max:1.0,
@@ -606,6 +606,6 @@ Animator.settingsOptions = Object.assign({}, Animator.settingsOptions, {
 PrefabManager.prefabLibrary.Animator = {
     json: '{"objects":[[0,0.0051,0.0406,0,"","base",0,["#999999"],["#000"],[0],true,true,[[{"x":0.7976,"y":-0.7824},{"x":0.7976,"y":0.7824},{"x":-0.7976,"y":0.7824},{"x":-0.7976,"y":-0.7824}]],[1],[2],[0],"",[0],true,false,false,[0.5],[0.2],false,true],[7,-0.1516,-1.2184,0,"","",1,[[6,3.1381,4.6794,0,"","",0,"#00b2ff","#000",0.4,33.0257,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true],[6,3.3239,13.002,0,"","",73,"#565656","#656565",1,null,[{"x":20.9882,"y":12.8053},{"x":20.9882,"y":-12.8053},{"x":-20.9882,"y":-12.8053},{"x":-20.9882,"y":12.8053}],null,null,null,null,"",0,0,0,0,"",true],[6,1.463,-9.8331,0,"","",74,"#565656","#656565",1,null,[{"x":-21.5279,"y":0.9465},{"x":17.81,"y":-11.0793},{"x":21.4079,"y":-0.6124},{"x":-17.69,"y":10.7453}],null,null,null,null,"",0,0,0,0,"",true],[6,2.9897,5.4653,0,"","",75,"#ffffff","#656565",1,null,[{"x":18.3522,"y":2.3065},{"x":18.3522,"y":-2.3065},{"x":-18.3522,"y":-2.3065},{"x":-18.3522,"y":2.3065}],null,null,null,null,"",0,0,0,0,"",true],[6,1.7969,-9.9511,-0.3075,"","",76,"#ffffff","#656565",1,null,[{"x":18.3522,"y":2.3065},{"x":18.3522,"y":-2.3065},{"x":-18.3522,"y":-2.3065},{"x":-18.3522,"y":2.3065}],null,null,null,null,"",0,0,0,0,"",true],[6,-19.0028,1.9762,0,"","",77,"#565656","#656565",1,5.6458,[{"x":0,"y":0},{"x":0,"y":0}],null,null,null,null,"",0,0,0,0,"",true],[6,-7.2049,-6.4188,0,"","",78,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true],[6,8.4057,-10.9766,0,"","",79,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true],[6,-6.2595,6.2059,0.0698,"","",80,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true],[6,11.3498,5.851,0.0698,"","",81,"#565656","#656565",1,null,[{"x":-4.6234,"y":5.0592},{"x":-1.9815,"y":-3.3508},{"x":5.0009,"y":-5.3658},{"x":1.6041,"y":3.6574}],null,null,null,null,"",0,0,0,0,"",true]],0,2.4556,1.6946,0,1,0,0,0,true,false,[]]]}',
     class: Animator,
-    library: PrefabManager.LIBRARY_MISC
+    library: PrefabManager.LIBRARY_MOVEMENT
 }
 
