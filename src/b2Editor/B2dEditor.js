@@ -4540,20 +4540,18 @@ const _B2dEditor = function () {
 				yInc *= 10;
 			}
 
-			for(let p = 0; p<Settings.scalePrecision; p++){
-				const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
-				const currentSize = {
-					width: aabb.GetExtents().x * 2 * this.PTM,
-					height: aabb.GetExtents().y * 2 * this.PTM
-				}
-				let targetWidth = Math.max(1, currentSize.width+xInc);
-				let targetHeight = Math.max(1, currentSize.height+yInc);
-
-				const scaleX = targetWidth / currentSize.width;
-				const scaleY = targetHeight / currentSize.height;
-
-				this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
+			const aabb = this.computeObjectsAABB(this.selectedPhysicsBodies, this.selectedTextures, true);
+			const currentSize = {
+				width: aabb.GetExtents().x * 2 * this.PTM,
+				height: aabb.GetExtents().y * 2 * this.PTM
 			}
+			let targetWidth = Math.max(1, Math.round(currentSize.width)+xInc);
+			let targetHeight = Math.max(1, Math.round(currentSize.height)+yInc);
+
+			const scaleX = targetWidth / currentSize.width;
+			const scaleY = targetHeight / currentSize.height;
+
+			this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
 
 			this.updateSelection()
 

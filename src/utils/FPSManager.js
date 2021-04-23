@@ -17,7 +17,6 @@ export const update = deltaTime =>{
 			let averageFPS = measuredFPS.reduce((a, b) => a + b, 0);
 			averageFPS /= measuredFPS.length;
 			if(1000/averageFPS < Settings.FPSLimitTarget){
-				console.log("DROPPING THE FPS!!!!");
 				Settings.FPSLimiter = true;
 			}
 		}

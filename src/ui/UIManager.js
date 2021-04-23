@@ -640,7 +640,7 @@ function UIManager() {
                     entry.classList.add('me');
                 }
 
-                const d = format.dateDiff(entryData.time, 0);
+                const d = format.timeFormat(entryData.time);
                 const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
 
                 const timeText = entry.querySelector('.text-time');

@@ -10,14 +10,14 @@ timer.append(timerMilliseconds);
 
 timer.classList.add('game-timer');
 
-import { dateDiff } from "../b2Editor/utils/formatString";
+import { timeFormat } from "../b2Editor/utils/formatString";
 import {
     game
 } from "../Game";
 
 export const update = ()=>{
     if(game.levelWon || game.gameOver) return;
-    const d = dateDiff(performance.now(), game.levelStartTime);
+    const d = timeFormat(game.gameFrame * (1/60) * 1000);
     const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
     timerSeconds.innerText = s;
     timerMilliseconds.innerText = d.ms;

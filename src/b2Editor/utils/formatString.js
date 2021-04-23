@@ -10,8 +10,8 @@ export const formatDMY = timestamp => {
 
     return `${day} ${month} ${year}`;
 }
-export const dateDiff = (d1, d2, padded=true) => {
-    let delta = Math.abs(d2 - d1) / 1000;
+export const timeFormat = (delta, padded=true) => {
+    delta = delta / 1000;
     let dd = Math.floor(delta / 86400);
     delta -= dd * 86400;
     let hh = Math.floor(delta / 3600) % 24;

@@ -27,7 +27,7 @@ import {
 } from "./data/levelsData";
 import {MidiPlayer} from './utils/MidiPlayer'
 
-import { dateDiff, JSONStringify } from "./b2Editor/utils/formatString";
+import { timeFormat, JSONStringify } from "./b2Editor/utils/formatString";
 
 import * as emitterManager from './utils/EmitterManager';
 import * as PhysicsParticleEmitter from './utils/PhysicsParticleEmitter';
@@ -101,6 +101,7 @@ function Game() {
     this.currentLevelData;
 
     this.levelStartTime = 0;
+    this.gameFrame = 0;
     this.levelWon = false;
     this.gameOver = false;
     this.checkPointData = null;
@@ -669,6 +670,7 @@ function Game() {
         this.gameState = this.GAMESTATE_NORMALPLAY;
         if(firstEntry){
             this.levelStartTime = performance.now();
+            this.gameFrame = 0;
             MidiPlayer.reset();
             window.SVGCache[1]();
         }
@@ -685,6 +687,7 @@ function Game() {
         this.findPlayableCharacter();
         this.stopAutoSave();
         this.levelStartTime = performance.now();
+        this.gameFrame = 0;
         MobileController.show();
         TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
         if(firstEntry){
@@ -768,8 +771,10 @@ function Game() {
 
                 if(doCheckpoint && checkPointData){
                     this.levelStartTime = performance.now() - checkPointData.time;
+                    this.gameFrame = checkPointData.frame;
                 }else{
                     this.levelStartTime = performance.now();
+                    this.gameFrame = 0;
                 }
 
                 window.SVGCache[1](doCheckpoint);
@@ -932,9 +937,10 @@ function Game() {
                 object,
                 flipped:this.character.flipped,
                 time: performance.now() - this.levelStartTime,
+                frame: this.gameFrame,
                 // save checkpoint time
             }
-            console.log("**** Time checkpoint:", this.checkPointData.time)
+            console.log("**** Time checkpoint:", this.checkPointData.time, this.checkPointData.frame)
 
             window.SVGCache[3]();
         }
@@ -946,9 +952,11 @@ function Game() {
 
             let d;
             if(window.wqhjfu){
-               d = dateDiff(window.wqhjfu, 0);
+               d = timeFormat(window.wqhjfu);
+               console.log("REAL TIME");
             }else{
-               d = dateDiff(performance.now(), this.levelStartTime);
+               d = timeFormat(this.gameFrame * (1/60) * 1000);
+               console.log("FAKE TIME");
             }
 
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
@@ -966,7 +974,7 @@ function Game() {
     }
     this.gameLose = function () {
         if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
-            const d = dateDiff(performance.now(), this.levelStartTime);
+            const d = timeFormat(this.gameFrame * (1/60) * 1000);
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             ui.show();
             ui.showGameOver(s, d.ms);
@@ -1107,6 +1115,8 @@ function Game() {
 
         camera.x += movX;
         camera.y += movY;
+
+        window.SVGCache[4]();
 
         this.myEffectsContainer.scale.x = camera.scale.x;
         this.myEffectsContainer.scale.y = camera.scale.y;
@@ -1325,6 +1335,7 @@ function Game() {
 
             this.inputUpdate();
             this.world.Step(Settings.physicsTimeStep * game.editor.editorSettingsObject.gameSpeed, 4, 3);
+            this.gameFrame++;
             this.world.ClearForces();
             this.gameCamera();
             PhysicsParticleEmitter.update();
