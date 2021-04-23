@@ -1103,6 +1103,10 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
+				advancedFolder.add(ui.editorGUI.editData, "bulletCollision").name("continuous collision detection").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				});
 
 				let bodyIsGroup = false;
 				for (let i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -2484,6 +2488,7 @@ const _B2dEditor = function () {
 		this.friction = Settings.defaultFriction;
 		this.fixedRotation = false;
 		this.optimizePhysics = true;
+		this.bulletCollision = false;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -5723,6 +5728,13 @@ const _B2dEditor = function () {
 								delete body.ignorePhysicsCuller;
 							}
 						}
+					}else if(controller.property == "bulletCollision"){
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.bulletCollision = controller.targetValue;
+							body.SetBullet(controller.targetValue);
+						}
 					}else if (controller.property == "tileTexture") {
 						//do tileTexture
 					} else if (controller.property == "lockselection") {
@@ -7233,6 +7245,7 @@ const _B2dEditor = function () {
 		body.SetFixedRotation(obj.fixedRotation);
 
 		if(!obj.optimizePhysics) body.ignorePhysicsCuller = true;
+		if(obj.bulletCollision) body.SetBullet(obj.bulletCollision);
 
 		var graphic = new PIXI.Graphics();
 		body.originalGraphic = graphic;
@@ -9243,6 +9256,7 @@ const _B2dEditor = function () {
 			arr[22] = obj.restitution;
 			arr[23] = obj.fixedRotation;
 			arr[24] = obj.optimizePhysics;
+			arr[25] = obj.bulletCollision;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -9396,6 +9410,7 @@ const _B2dEditor = function () {
 			obj.restitution = arr[22] !== undefined  ? arr[22] : Settings.defaultRestitution;
 			obj.fixedRotation = arr[23] !== undefined  ? arr[23] : false;
 			obj.optimizePhysics = arr[24] !== undefined  ? arr[24] : true;
+			obj.bulletCollision = arr[25] !== undefined  ? arr[25] : false;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
