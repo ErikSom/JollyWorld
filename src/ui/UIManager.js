@@ -1863,6 +1863,8 @@ const shouldShowVoteButton = (up, down, levelData) => {
 }
 
 const shouldShowHeartButton = (heart, levelData) => {
+    heart.classList.remove('faved');
+
     const fave = BackendCache.favoriteDataCache[levelData.id];
     if (fave) {
         heart.classList.remove('disabled');
