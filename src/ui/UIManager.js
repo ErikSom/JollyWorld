@@ -1157,11 +1157,11 @@ function UIManager() {
         if(choice){
             choiceElement.classList.add('on');
             choiceElement.classList.remove('off');
-            choiceElement.innerText = localize('mainmenu_on');
+            choiceElement.innerText = localize('settings_on');
         }else{
             choiceElement.classList.add('off');
             choiceElement.classList.remove('on');
-            choiceElement.innerText = localize('mainmenu_off');
+            choiceElement.innerText = localize('settings_off');
         }
 
     }
@@ -1174,7 +1174,7 @@ function UIManager() {
                     <div class="music"><div class="fit h2">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="gore"><div class="fit h2">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="fullscreen"><div class="fit h2">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
-                    <div class="back"><span class="fit h2">${localize('settings_back')}</span></div>
+                    <div class="back"><span class="fit h2">${localize('levelbanner_back')}</span></div>
                 </div>
             `;
 
@@ -1249,7 +1249,7 @@ function UIManager() {
                 <div class="header"><span class="fit h1">${localize('characterselect_select_character')}</span></div>
                 <div class="characters">
                 </div>
-                <div class="back button"><span class="fit h2">${localize('mainmenu_back')}</span></div>
+                <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
             `;
 
             characterSelect = document.createElement('div');
