@@ -37,6 +37,9 @@ import { YouTubePlayer } from '../utils/YouTubePlayer';
 import * as AudioManager from "../utils/AudioManager"
 import * as TutorialManager from "../utils/TutorialManager"
 import SimpleBar from 'simplebar'
+import {localize} from '../utils/Localization'
+
+import textFit from '../../libs/textFit';
 
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -91,11 +94,11 @@ function UIManager() {
                     <div class="mobile-bg"></div>
                     <div class="hamburger"><span></span><span></span><span></span></div>
                     <div class="buttons">
-                        <div class="discord">Login</div>
+                        <div class="discord"><span class="fit">${localize('mainmenu_login')}</span></div>
                         <div class="character-select">
-                            <div class="text-change">Change</div>
+                            <div class="text-change"><span class="fit">${localize('mainmenu_change')}</span></div>
                         </div>
-                        <div class="editor">Editor</div>
+                        <div class="editor"><span class="fit">${localize('mainmenu_editor')}</span></div>
                         <div class="volume"></div>
                         <div class="settings"></div>
                     </div>
@@ -109,7 +112,7 @@ function UIManager() {
                                 <div class="text-holder">
                                     <div class="text-level-name">Level Name Goes Here</div>
                                     <div class="level-author">
-                                        <div class="text-level-by">By:</div>
+                                        <div class="text-level-by">${localize('mainmenu_by')}:</div>
                                         <div class="text-author">Author Name</div>
                                     </div>
                                     <div class="tags">
@@ -126,21 +129,21 @@ function UIManager() {
                 <div class="filters">
                     <div class="date-filter button checked">#</div>
                     <div class ='date-filters'>
-                        <div class="today-filter button">Today</div>
-                        <div class="week-filter button">This Week</div>
-                        <div class="month-filter button">This Month</div>
-                        <div class="anytime-filter button checked">Anytime</div>
+                        <div class="today-filter button"><span class="fit">${localize('mainmenu_today')}</span></div>
+                        <div class="week-filter button"><span class="fit">${localize('mainmenu_thisweek')}</span></div>
+                        <div class="month-filter button"><span class="fit">${localize('mainmenu_thismonth')}</span></div>
+                        <div class="anytime-filter button checked"><span class="fit">${localize('mainmenu_anytime')}</span></div>
                     </div>
                     <div class="featured-filter button checked">
                     <svg class="check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58.7 50.4"><path d="M5.2 16.5c-2.8 0-4.2 1.4-4.2 4.2v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2z" fill="#333"/><path d="M1 20.7v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2c-2.8 0-4.2 1.4-4.2 4.2z" fill="none" stroke="#66cd32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g><path d="M58.1 1.6c-.2-.1-.5-.1-.7-.1C41.7 6.9 29 16.2 19.5 29.4l-4.6-6.8-.3-.3c-.2-.1-.3-.1-.5-.1H2.2c-.2 0-.5.1-.7.2-.2.2-.3.4-.3.6s0 .4.2.6l15 22.5c.1.2.3.3.5.4.2.1.4.1.6 0s.4-.2.5-.4C29 29.3 42.5 15 58.2 3.2c.2-.1.3-.3.4-.5 0-.3 0-.5-.1-.7 0-.2-.2-.3-.4-.4z"/><path d="M18.2 29.6l-5.4-8H1l15 22.5C27.1 27.2 40.6 12.8 56.5 1c-16 5.5-28.7 15-38.3 28.6z" fill="red"/><path d="M18.2 29.6C27.8 16 40.5 6.5 56.5 1 40.6 12.8 27.1 27.2 16 44.1L1 21.6h11.9l5.3 8z" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
-                    Featured
+                    <div><span class="fit">${localize('mainmenu_featured')}</span></div>
                     </div>
-                    <div class="more button checked">More</div>
+                    <div class="more button checked"><span class="fit">${localize('mainmenu_more')}</span></div>
                     <div class="other-filters">
-                        <div class="best-filter button checked">Best Rated</div>
-                        <div class="mostplayed-filter button">Most Played</div>
-                        <div class="newest-filter button">Newest</div>
-                        <div class="oldest-filter button">Oldest</div>
+                        <div class="best-filter button checked"><span class="fit">${localize('mainmenu_best_rated')}</span></div>
+                        <div class="mostplayed-filter button"><span class="fit">${localize('mainmenu_best_rated')}</span></div>
+                        <div class="newest-filter button"><span class="fit">${localize('mainmenu_newest')}</span></div>
+                        <div class="oldest-filter button"><span class="fit">${localize('mainmenu_oldest')}</span></div>
                     </div>
                     <div class="search-filter"></div>
                 </div>
@@ -228,7 +231,7 @@ function UIManager() {
             characterSelect.onclick = ()=> {
                 mobileBG.classList.remove('open');
                 headerButtons.classList.remove('open');
-                this.showCharacterSelect2();
+                this.showCharacterSelect();
             }
 
             const editorButton = header.querySelector('.editor');
@@ -275,6 +278,11 @@ function UIManager() {
             this.mainMenuResize();
 
             customGUIContainer.appendChild(mainMenu);
+
+            // fit texts
+            Array.from(mainMenu.querySelectorAll('.fit')).forEach( el => {
+                    textFit(el)
+            });
         }
 
         this.setMainMenuCharacterImage();
@@ -505,6 +513,11 @@ function UIManager() {
                 this.hideLevelBanner();
             }
             customGUIContainer.appendChild(levelBanner);
+
+            // fit texts
+            Array.from(levelBanner.querySelectorAll('.fit')).forEach( el => {
+                    textFit(el)
+            });
         }
 
         levelBanner.style.display = 'block';
@@ -1144,11 +1157,11 @@ function UIManager() {
         if(choice){
             choiceElement.classList.add('on');
             choiceElement.classList.remove('off');
-            choiceElement.innerText = 'On';
+            choiceElement.innerText = localize('mainmenu_on');
         }else{
             choiceElement.classList.add('off');
             choiceElement.classList.remove('on');
-            choiceElement.innerText = 'Off';
+            choiceElement.innerText = localize('mainmenu_off');
         }
 
     }
@@ -1156,12 +1169,12 @@ function UIManager() {
         if(!settingsMenu){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header">Settings</div>
+                <div class="header"><span class="fit h1">${localize('settings_settings')}</span></div>
                 <div class="buttons">
-                    <div class="music">Music:<div class="choice on">On</div></div>
-                    <div class="gore">Gore:<div class="choice on">On</div></div>
-                    <div class="fullscreen">Fullscreen:<div class="choice off">Off</div></div>
-                    <div class="back">Back</div>
+                    <div class="music"><div class="fit h2">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div></div>
+                    <div class="gore"><div class="fit h2">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
+                    <div class="fullscreen"><div class="fit h2">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
+                    <div class="back"><span class="fit h2">${localize('settings_back')}</span></div>
                 </div>
             `;
 
@@ -1199,7 +1212,13 @@ function UIManager() {
 
                 this.setSettingsMenuChoice(fullscreenButton, document.fullscreenElement === null);
             }
+
             customGUIContainer.appendChild(settingsMenu);
+
+            // fit texts
+            Array.from(settingsMenu.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
         }
 
         const userData = SaveManager.getLocalUserdata();
@@ -1223,14 +1242,14 @@ function UIManager() {
         settingsMenu.style.display = 'none';
     }
 
-    this.showCharacterSelect2 = function(){
+    this.showCharacterSelect = function(){
         if(!characterSelect){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header">Select a character</div>
+                <div class="header"><span class="fit h1">${localize('characterselect_select_character')}</span></div>
                 <div class="characters">
                 </div>
-                <div class="back button">Back</div>
+                <div class="back button"><span class="fit h2">${localize('mainmenu_back')}</span></div>
             `;
 
             characterSelect = document.createElement('div');
@@ -1269,6 +1288,10 @@ function UIManager() {
                 }
             }
             customGUIContainer.appendChild(characterSelect);
+            // fit texts
+            Array.from(characterSelect.querySelectorAll('.fit')).forEach( el => {
+                    textFit(el)
+            });
         }
 
         characterSelect.style.display = 'block';

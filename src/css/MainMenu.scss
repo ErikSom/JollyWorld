@@ -90,8 +90,9 @@
 				position:relative;
 				@extend .base-button;
 				.text-change{
+					width: 80px;
 					top: 30px;
-					left: -7px;
+					left: -18px;
 					font-size: 17px;
 					position: absolute;
 				}

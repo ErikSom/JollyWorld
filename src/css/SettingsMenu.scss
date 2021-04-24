@@ -27,6 +27,10 @@
 					color: #FF0000
 				}
 			}
+			div.fit{
+				display: flex;
+
+			}
 			@extend .back-button
 		}
 		.fullscreen{
