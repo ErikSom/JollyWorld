@@ -259,6 +259,49 @@ function BackendManager() {
 		});
 	}
 
+	this.favoriteLevel = function (levelid) {
+		// (POST) level/favorite/:id
+		const body = {
+			method: 'POST',
+			withCredentials: true,
+			headers: {
+			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			},
+		}
+
+		fetch(`${Settings.API}/level/favorite/${levelid}`, body)
+		.then(result => result.json())
+		.then(async data => {
+			const {error} = data;
+			if(error) return;
+
+			// update local cache
+			BackendCache.favoriteDataCache[levelid] = true;
+			BackendCache.save();
+		});
+	}
+	this.unfavoriteLevel = function(levelid){
+		// (POST) level/unfavorite/:id
+		const body = {
+			method: 'POST',
+			withCredentials: true,
+			headers: {
+			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			},
+		}
+
+		fetch(`${Settings.API}/level/unfavorite/${levelid}`, body)
+		.then(result => result.json())
+		.then(async data => {
+			const {error} = data;
+			if(error) return;
+
+			// update local cache
+			delete BackendCache.favoriteDataCache[levelid];
+			BackendCache.save();
+		});
+	}
+
     this.increasePlayCountPublishedLevel = function (details) {
 		// (POST) level/play/id
 		const body = {

@@ -10,6 +10,7 @@ const saveKeyPrefix = 'JollyWorld';
 export const SAVEKEYS = {
     tempEditorWorld:"tempEditorWorld",
     levelsVoted:"levelsVoted",
+    levelsFavorites:"levelsFavorites",
     userData:'userData',
 }
 

@@ -561,6 +561,10 @@ function UIManager() {
 
         shouldShowVoteButton(voteUpButton, voteDownButton, levelData);
 
+
+        const heartButton = socialBar.querySelector('.save');
+        this.enableHeartButton(heartButton, levelData);
+
         const leaderboardBar = levelBanner.querySelector('.leaderboard-bar');
 
         const showAllButton = leaderboardBar.querySelector('.viewall')
@@ -728,6 +732,24 @@ function UIManager() {
 
             }
         })
+    }
+
+    this.enableHeartButton = (heart, levelData) => {
+
+        heart.onclick = ()=>{
+            if(heart.classList.contains('disabled')){
+                heart.classList.remove('faved')
+                void heart.offsetWidth;
+                heart.classList.add('faved')
+                backendManager.favoriteLevel(levelData.id);
+                heart.classList.remove('disabled');
+            }else{
+                backendManager.unfavoriteLevel(levelData.id);
+                heart.classList.add('disabled');
+            }
+        }
+
+        shouldShowHeartButton(heart, levelData);
     }
 
     this.setLevelBannerData = levelData => {
@@ -1404,8 +1426,11 @@ function UIManager() {
         const voteUpButton = voteButtons.querySelector('.vote-up');
         const voteDownButton = voteButtons.querySelector('.vote-down');
 
-        const shareButton = pauseScreen.querySelector('.share')
+        const shareButton = pauseScreen.querySelector('.share');
         shareButton.onclick = () => this.showSocialShare(game.currentLevelData);
+
+        const heartButton = pauseScreen.querySelector('.save');
+        this.enableHeartButton(heartButton, game.currentLevelData);
 
         shouldShowVoteButton(voteUpButton, voteDownButton, game.currentLevelData);
 
@@ -1834,5 +1859,14 @@ const shouldShowVoteButton = (up, down, levelData) => {
         } else {
             up.classList.add('disabled');
         }
+    }
+}
+
+const shouldShowHeartButton = (heart, levelData) => {
+    const fave = BackendCache.favoriteDataCache[levelData.id];
+    if (fave) {
+        heart.classList.remove('disabled');
+    }else{
+        heart.classList.add('disabled');
     }
 }
