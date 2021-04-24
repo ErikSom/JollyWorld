@@ -98,7 +98,7 @@ function UIManager() {
                         <div class="character-select">
                             <div class="text-change"><span class="fit">${localize('mainmenu_change')}</span></div>
                         </div>
-                        <div class="editor"><span class="fit">${localize('mainmenu_editor')}</span></div>
+                        <div class="editor"><span class="fit h2">${localize('mainmenu_editor')}</span></div>
                         <div class="volume"></div>
                         <div class="settings"></div>
                     </div>
@@ -421,7 +421,7 @@ function UIManager() {
                     <div class="text-holder">
                         <div class="text-level-name">Level Name Goes Here</div>
                         <div class="level-author">
-                            <div class="text-level-by">By:</div>
+                            <div class="text-level-by">${localize('mainmenu_by')}:</div>
                             <div class="text-author">Author Name</div>
                         </div>
                         <div class="tags">
@@ -444,11 +444,11 @@ function UIManager() {
                 <div class="social-bar">
                     <div class="share">
                         <div class="share-icon"></div>
-                        Share
+                        ${localize('levelbanner_share')}
                     </div>
                     <div class="save">
                         <div class="heart-icon"></div>
-                        Save
+                        ${localize('levelbanner_save')}
                     </div>
                     <div class="voting">
                         <div class="vote-down button">
@@ -460,16 +460,16 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="gameinfo-bar">
-                    <div class="gameplays">Gameplays:<div class="gameplays-text">100000</div></div>
-                    <div class="votes">Votes:<div class="votes-text">10 (85%)</div></div>
+                    <div class="gameplays">${localize('levelbanner_gameplays')}:<div class="gameplays-text">100000</div></div>
+                    <div class="votes">${localize('levelbanner_votes')}:<div class="votes-text">10 (85%)</div></div>
                 </div>
                 <div class="leaderboard-bar">
                     <div class="header-bar">
-                        <div class="text-header">Leaderboard</div>
-                        <div class="viewall">View All</div>
+                        <div class="text-header"><span class="fit">${localize('levelbanner_leaderboard')}</span></div>
+                        <div class="viewall"><span class="fit">${localize('levelbanner_viewall')}</span></div>
                     </div>
                     <div class="entries offcharts">
-                        <div class="entry-info">Loading...</div>
+                        <div class="entry-info">${localize('levelbanner_loading')}</div>
                         <div class="entry entry-template">
                             <div class="position">
                                 <div class="profile"></div>
@@ -477,7 +477,7 @@ function UIManager() {
                             </div>
                             <div class="text-player-name">Smerik</div>
                             <div class="time">
-                                <div class="text-time-label">Time:</div>
+                                <div class="text-time-label">${localize('levelbanner_time')}:</div>
                                 <div class="text-time">01:38</div>
                                 <div class="text-time-mili">456</div>
                             </div>
@@ -493,9 +493,9 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="nav-buttons">
-                    <div class="back button">Back</div>
+                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
                     <div class="play button">
-                        <div class="text-play">Play</div>
+                        <div class="text-play"><span class="fit h2">${localize('levelbanner_play')}</span></div>
                         <div class="progress"></div>
                     </div>
                 </div>
@@ -632,7 +632,7 @@ function UIManager() {
         }
 
         if(!leaderboardData || leaderboardData.length == 0){
-            info.innerText = 'No entries';
+            info.innerText = localize('levelbanner_noentries');
         }else{
             info.style.display = 'none';
 
@@ -1380,7 +1380,7 @@ function UIManager() {
                 <div class="header">Pause</div>
                 <div class="text-level-name">Level Name Goes Here</div>
                 <div class="level-author">
-                    <div class="text-level-by">By:</div>
+                    <div class="text-level-by">${localize('mainmenu_by')}</div>
                     <div class="text-author">Author Name</div>
                 </div>
                 <div class="share">
