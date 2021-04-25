@@ -142,7 +142,7 @@ function UIManager() {
                     <div class="more button checked"><span class="fit">${localize('mainmenu_more')}</span></div>
                     <div class="other-filters">
                         <div class="best-filter button checked"><span class="fit">${localize('mainmenu_best_rated')}</span></div>
-                        <div class="mostplayed-filter button"><span class="fit">${localize('mainmenu_best_rated')}</span></div>
+                        <div class="mostplayed-filter button"><span class="fit">${localize('mainmenu_most_played')}</span></div>
                         <div class="newest-filter button"><span class="fit">${localize('mainmenu_newest')}</span></div>
                         <div class="oldest-filter button"><span class="fit">${localize('mainmenu_oldest')}</span></div>
                     </div>
@@ -1108,7 +1108,7 @@ function UIManager() {
                     <div class="gore"><div class="fit h2">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="fullscreen"><div class="fit h2">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
                     <div class="back"><span class="fit h2">${localize('levelbanner_back')}</span></div>
-                    <div class="country"><div class="selectflag flag">🇺🇸</div><div class="flags"></div></div>
+                    <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
             `;
 
