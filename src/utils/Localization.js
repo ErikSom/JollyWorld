@@ -1,5 +1,6 @@
+import { Settings } from "../Settings";
+
 const languageDataBase = {};
-const currentLanguage = 'nl';
 
 const init = ()=>{
 	parseLocalization();
@@ -20,7 +21,7 @@ const parseLocalization = ()=>{
 export const localize = id =>{
 	let text = '?';
 	if(languageDataBase[id]){
-		text = languageDataBase[id][currentLanguage];
+		text = languageDataBase[id][Settings.currentLanguage];
 		if(!text) text = languageDataBase[id]['us']
 	}
 	return text;

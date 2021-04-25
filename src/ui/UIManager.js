@@ -300,18 +300,22 @@ function UIManager() {
     this.makeCountrySelect = country => {
         const flags = country.querySelector('.flags');
         const selectFlag = country.querySelector('.selectflag');
-        countries.forEach(country=> {
-            const flag = document.createElement('div');
-            flag.classList.add('flag');
-            flag.innerText = countryToFlag(country);
-            flag.onclick = ()=>{
-                flags.classList.remove('open');
-                selectFlag.innerText = flag.innerText;
-            };
-            flags.appendChild(flag);
 
-        })
-        selectFlag.onclick = ()=>{flags.classList.add('open')}
+        if(!flags.classList.contains('init')){
+            countries.forEach(country=> {
+                const flag = document.createElement('div');
+                flag.classList.add('flag');
+                flag.innerText = countryToFlag(country);
+                flag.onclick = ()=>{
+                    flags.classList.remove('open');
+                    selectFlag.innerText = flag.innerText;
+                };
+                flags.appendChild(flag);
+            })
+            flags.classList.add('init');
+            selectFlag.onclick = ()=>{flags.classList.add('open')}
+        }
+        selectFlag.innerText = countryToFlag(Settings.currentLanguage);
     }
 
     this.mainMenuResize = ()=> {
