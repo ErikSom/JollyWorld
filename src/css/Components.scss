@@ -279,6 +279,43 @@
 	}
 }
 
+.country-select{
+	position: absolute;
+	bottom: 0px;
+	right:0px;
+	margin:5px 10px;
+
+	.selectflag{
+		font-size: 22px;
+	}
+
+	.flag{
+		text-shadow: 2px 2px black;
+		@extend .simple-button;
+	}
+
+	.flags{
+		display: none;
+		width: 160px;
+		flex-wrap: wrap;
+		gap: 0px 5px;
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		z-index: 999;
+		background: #333333;
+		border: 2px solid black;
+		padding: 10px;
+		.flag{
+			font-size: 30px
+		}
+		&.open{
+			display: flex;
+		}
+	}
+}
+
+
 @keyframes vote-up-anim{
 	0%, 100%{
 		transform: unset;

@@ -41,5 +41,11 @@
 		.back{
 			@extend .back-button
 		}
+		.country{
+			.selectflag{
+				font-size: 30px;
+			}
+			@extend .country-select;
+		}
 	}
 }

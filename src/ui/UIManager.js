@@ -1107,6 +1107,7 @@ function UIManager() {
                     <div class="gore"><div class="fit h2">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="fullscreen"><div class="fit h2">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
                     <div class="back"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                    <div class="country"><div class="selectflag flag">🇺🇸</div><div class="flags"></div></div>
                 </div>
             `;
 
@@ -1144,6 +1145,9 @@ function UIManager() {
 
                 this.setSettingsMenuChoice(fullscreenButton, document.fullscreenElement === null);
             }
+
+            const country = buttons.querySelector('.country');
+            this.makeCountrySelect(country);
 
             customGUIContainer.appendChild(settingsMenu);
 
