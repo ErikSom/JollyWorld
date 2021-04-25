@@ -37,7 +37,7 @@ import { YouTubePlayer } from '../utils/YouTubePlayer';
 import * as AudioManager from "../utils/AudioManager"
 import * as TutorialManager from "../utils/TutorialManager"
 import SimpleBar from 'simplebar'
-import {localize} from '../utils/Localization'
+import {countries, countryToFlag, localize} from '../utils/Localization'
 
 import textFit from '../../libs/textFit';
 
@@ -162,6 +162,7 @@ function UIManager() {
                         <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" class="jolly-youtube"></a>
                         <a href="https://www.facebook.com/jolly.world.game/" class="jolly-facebook"></a>
                     </div>
+                    <div class="country"><div class="selectflag flag">🇺🇸</div><div class="flags"></div></div>
                 </div>
             `
 
@@ -263,6 +264,7 @@ function UIManager() {
             backendManager.registerListener('login', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
+
             if(!MobileController.isMobile()){
                 new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
             }
@@ -273,6 +275,9 @@ function UIManager() {
                 headerButtons.classList.remove('open');
                 this.showSettingsMenu()
             }
+
+            const country = mainMenu.querySelector('.country');
+            this.makeCountrySelect(country);
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
             this.mainMenuResize();
@@ -290,6 +295,23 @@ function UIManager() {
         mainMenu.style.display = 'block';
 
         this.reloadMainMenuGames();
+    }
+
+    this.makeCountrySelect = country => {
+        const flags = country.querySelector('.flags');
+        const selectFlag = country.querySelector('.selectflag');
+        countries.forEach(country=> {
+            const flag = document.createElement('div');
+            flag.classList.add('flag');
+            flag.innerText = countryToFlag(country);
+            flag.onclick = ()=>{
+                flags.classList.remove('open');
+                selectFlag.innerText = flag.innerText;
+            };
+            flags.appendChild(flag);
+
+        })
+        selectFlag.onclick = ()=>{flags.classList.add('open')}
     }
 
     this.mainMenuResize = ()=> {
@@ -679,10 +701,10 @@ function UIManager() {
         if(!leaderboard){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header">Leaderboard</div>
+                <div class="header"><span class="fit h1">${localize('levelbanner_leaderboard')}</span></div>
                 <div class="leaderboard-bar">
                     <div class="entries offcharts">
-                        <div class="entry-info">Loading...</div>
+                        <div class="entry-info">${localize('levelbanner_loading')}</div>
                         <div class="entry entry-template">
                             <div class="position">
                                 <div class="profile"></div>
@@ -690,7 +712,7 @@ function UIManager() {
                             </div>
                             <div class="text-player-name">Smerik</div>
                             <div class="time">
-                                <div class="text-time-label">Time:</div>
+                                <div class="text-time-label">${localize('levelbanner_time')}:</div>
                                 <div class="text-time">01:38</div>
                                 <div class="text-time-mili">456</div>
                             </div>
@@ -698,7 +720,7 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="nav-buttons">
-                    <div class="back button">Back</div>
+                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
                 </div>
             `;
 
@@ -712,14 +734,17 @@ function UIManager() {
                 this.hideLeaderboard();
             }
             customGUIContainer.appendChild(leaderboard);
+
+            // fit texts
+            Array.from(leaderboard.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
         }
 
         leaderboard.style.display = 'block';
 
         const leaderboardBar = leaderboard.querySelector('.leaderboard-bar');
         this.fillLeaderboard(leaderboardBar, levelData.id, 100);
-
-        console.log("SHOW LEADERBOARD!!");
     }
 
     this.hideLeaderboard = ()=>{
@@ -848,30 +873,6 @@ function UIManager() {
         mainMenu.classList.remove('inactive');
     }
 
-    this.showTextWall = (label, text) => {
-        const container = document.querySelector('#settings-ui');
-
-        if(!textWall){
-            const htmlStructure = /*html*/`
-                <div class="bar"></div>
-                <div class="header">${label}</div>
-                <div class="text">${text}</div>
-                <div class="back">Back</div>
-            `;
-
-            textWall = document.createElement('div');
-            textWall.classList.add('textwall');
-            textWall.innerHTML = htmlStructure;
-
-            container.appendChild(textWall)
-        }
-
-        textWall.style.display = 'block';
-    }
-    this.hideTextWall = ()=>{
-        if(textWall) textWall.style.display = 'none';
-    }
-
     this.showLoginPrompt = ()=> {
         const container = document.querySelector('#settings-ui');
         if(!loginScreen){
@@ -967,17 +968,17 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
                 <div class="sun"></div>
-                <div class="header"></div>
+                <div class="header"><span class="fit h0">${localize('levelgui_youlose')}</span></div>
                 <div class="time">
-                    <div class="text-label">Time:</div>
+                    <div class="text-label">${localize('levelbanner_time')}:</div>
                     <div class="text-time">00:00</div>
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit">Exit to Menu</div>
-                    <div class="test">Exit Test</div>
-                    <div class="reset">Reset</div>
-                    <div class="retry">Retry</div>
+                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
+                    <div class="test"><span class="fit h2">${localize('levelgui_exittest')}</span></div>
+                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
+                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
                 </div>
                 <div class="voting">
                     <div class="vote-down button">
@@ -1021,6 +1022,11 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(gameOver);
+
+            // fit texts
+            Array.from(gameOver.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
         }
 
 
@@ -1063,93 +1069,6 @@ function UIManager() {
         }
     }
 
-    this.showGameOver2 = function () {
-        if (!gameOver) {
-            gameOver = document.createElement('div');
-            gameOver.setAttribute('id', 'gameOverScreen');
-            customGUIContainer.appendChild(gameOver);
-
-            let textGroup = document.createElement('div');
-            textGroup.setAttribute('class', 'textGroup');
-            gameOver.appendChild(textGroup);
-
-            let text = document.createElement('div');
-            text.setAttribute('class', 'gameOverText');
-            text.innerHTML = 'You are dead';
-            textGroup.appendChild(text);
-
-            text = document.createElement('div');
-            text.setAttribute('class', 'spaceRestartText');
-            text.innerHTML = 'Press space to retry';
-            textGroup.appendChild(text);
-
-            let buttonGroup = document.createElement('div');
-            buttonGroup.setAttribute('class', 'buttonGroup');
-            gameOver.appendChild(buttonGroup);
-
-            let button = document.createElement('div');
-            button.setAttribute('class', 'headerButton checkpoint buttonOverlay dark');
-            button.innerHTML = "RETRY";
-            buttonGroup.appendChild(button);
-
-            button.addEventListener('click', () => {
-                game.resetWorld(true);
-            });
-
-            button = document.createElement('div');
-            button.setAttribute('class', 'headerButton restart buttonOverlay dark');
-            button.innerHTML = "RESET";
-            buttonGroup.appendChild(button);
-
-            button.addEventListener('click', () => {
-                this.hideGameOverMenu();
-                game.openMainMenu(game.currentLevelData);
-            });
-
-            button = document.createElement('div');
-            button.setAttribute('class', 'headerButton exit buttonOverlay dark');
-            button.innerHTML = "EXIT";
-            buttonGroup.appendChild(button);
-
-            button.addEventListener('click', () => {
-                if(game.gameState === game.GAMESTATE_EDITOR){
-                    game.stopTestingWorld();
-                }else{
-                    game.openMainMenu();
-                }
-            });
-
-            const votingButs = this.buildVoteGUI();
-            votingButs.classList.add('ratingHolder')
-            votingButs.style.position = 'absolute';
-            votingButs.style.top = '110%';
-            votingButs.style.background = '#4040407a';
-            votingButs.style.borderRadius = '16px';
-            votingButs.style.padding = '5px';
-
-            gameOver.appendChild(votingButs);
-
-        }
-
-        const votingHolder = gameOver.querySelector('.ratingHolder');
-        this.updateVoteGUI(votingHolder);
-
-        if(game.gameState === game.GAMESTATE_NORMALPLAY){
-            votingHolder.style.display = 'flex';
-        }else{
-            votingHolder.style.display = 'none';
-        }
-
-
-        if(gameOver && game.run) gameOver.style.display = 'flex';
-        setTimeout(()=>{
-            if(gameOver && game.run){
-                gameOver.style.opacity = 1;
-                AudioManager.playSFX('lose', 0.3, 1.0);
-            }
-        },
-        Settings.gameOverDelay);
-    }
     this.setSettingsMenuChoice = (element, choice) => {
 
         const choiceElement = element.querySelector('.choice');
@@ -1165,6 +1084,7 @@ function UIManager() {
         }
 
     }
+
     this.showSettingsMenu = function (){
         if(!settingsMenu){
             const htmlStructure = /*html*/`
@@ -1327,10 +1247,10 @@ function UIManager() {
         if(!vehicleSelect){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header">Select a vehicle</div>
+                <div class="header"><span class="fit h1">${localize('vehicleselect_select_vehicle')}</span></div>
                 <div class="vehicles">
                 </div>
-                <div class="back button">Back</div>
+                <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
             `;
 
             vehicleSelect = document.createElement('div');
@@ -1377,7 +1297,7 @@ function UIManager() {
         if(!pauseScreen){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header">Pause</div>
+                <div class="header"><span class="fit h1">${localize('levelgui_pause')}</span></div>
                 <div class="text-level-name">Level Name Goes Here</div>
                 <div class="level-author">
                     <div class="text-level-by">${localize('mainmenu_by')}</div>
@@ -1385,11 +1305,11 @@ function UIManager() {
                 </div>
                 <div class="share">
                     <div class="share-icon"></div>
-                    Share
+                    ${localize('levelbanner_share')}
                 </div>
                 <div class="save">
                     <div class="heart-icon"></div>
-                    Save
+                    ${localize('levelbanner_save')}
                 </div>
                 <div class="vote-bar">
                     <div class ="voting">
@@ -1402,13 +1322,10 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="buttons">
-                    <div class="reset">Reset</div>
-                    <div class="retry">Retry</div>
-                    <div class="exit">Exit to Menu</div>
-                    <div class="resume">Resume</div>
-                </div>
-                <div class ="footer">
-                    <div class="rights"></div>
+                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
+                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
+                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
+                    <div class="resume"><span class="fit h2">${localize('levelgui_resume')}</span></div>
                 </div>
             `;
 
@@ -1438,6 +1355,11 @@ function UIManager() {
             };
 
             customGUIContainer.appendChild(pauseScreen);
+
+            // fit texts
+            Array.from(pauseScreen.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
         }
 
         const title = pauseScreen.querySelector('.text-level-name');
@@ -1546,17 +1468,17 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
                 <div class="sun"></div>
-                <div class="header"></div>
+                <div class="header"><span class="fit h0">${localize('levelgui_youwin')}</span></div>
                 <div class="time">
-                    <div class="text-label">Time:</div>
+                    <div class="text-label">${localize('levelbanner_time')}:</div>
                     <div class="text-time">00:00</div>
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit">Exit to Menu</div>
-                    <div class="test">Exit Test</div>
-                    <div class="reset">Reset</div>
-                    <div class="retry">Retry</div>
+                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
+                    <div class="test"><span class="fit h2">${localize('levelgui_exittest')}</span></div>
+                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
+                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
                 </div>
                 <div class="voting">
                     <div class="vote-down button">
@@ -1596,6 +1518,11 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(winScreen);
+
+            // fit texts
+            Array.from(winScreen.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
         }
 
 
@@ -1634,14 +1561,14 @@ function UIManager() {
     this.buildSocialShare = ()=> {
         const htmlStructure = /*html*/`
             <div class="bar"><div class="close"></div></div>
-            <div class="header">Jolly Sharing</div>
+            <div class="header"><span class="fit h1">${localize('share_sharing')}</span></div>
             <div class="padding">
-                <div class="text-level-link">Level link</div>
+                <div class="text-level-link"><span class="fit">${localize('share_levellink')}</span></div>
                 <div class="copy-url">
                     <input class="text-url" readonly>
                     <div class="copy-button"></div>
                 </div>
-                <div class="share-by">Or share by</div>
+                <div class="share-by"><span class="fit">${localize('share_shareby')}</span></div>
                 <div class="social-share-holder"></div>
             </div>
         `;
@@ -1724,6 +1651,11 @@ function UIManager() {
         if(!socialShareScreen){
             socialShareScreen = this.buildSocialShare();
             customGUIContainer.appendChild(socialShareScreen);
+
+            // fit texts
+            Array.from(socialShareScreen.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
         }
         this.updateSocialShareLinks(socialShareScreen, level);
         socialShareScreen.style.display = 'block';

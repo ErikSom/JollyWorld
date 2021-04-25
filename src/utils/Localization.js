@@ -26,6 +26,33 @@ export const localize = id =>{
 	return text;
 }
 
+export const countries = ['de','nl','uk','us','br','pt','fr','au','es','it','ca','ie','be'];
+
+
+export const countryToFlag = country => {
+    switch(country){
+        case 'de': return '🇩🇪'
+        case 'nl': return '🇳🇱'
+        case 'uk': return '🇩🇬'
+        case 'us': return '🇺🇸'
+        case 'br': return '🇧🇷'
+        case 'pt': return '🇵🇹'
+        case 'fr': return '🇫🇷'
+        case 'au': return '🇦🇺'
+        case 'es': return '🇪🇸'
+        case 'it': return '🇮🇹'
+        case 'ca': return '🇨🇦'
+        case 'ie': return '🇮🇪'
+        case 'be': return '🇧🇪'
+    }
+}
+export const countryToLanguage = country => {
+    let language = country
+    if(['uk', 'ca', 'us', 'ie'].includes(country)) language = 'en';
+    if(['br'].includes(country)) language = 'pt';
+    if(['be'].includes(country)) language = 'nl';
+}
+
 const LOCALIZATION_DATA = [
     {
         "textId": "mainmenu_featured",
@@ -106,9 +133,9 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "mainmenu_by",
-        "us": "by",
-        "nl": "door",
-        "de": "von",
+        "us": "By",
+        "nl": "Door",
+        "de": "Von",
         "es": "De",
         "pt": "De",
         "cz": "Od",
@@ -187,7 +214,7 @@ const LOCALIZATION_DATA = [
         "nl": "Beschikbaar op PC",
         "de": "Auf PC Verfügbar",
         "es": "Disponible en PC",
-        "pt": "Disponível PC",
+        "pt": "Disponível no PC",
         "cz": "K dispozici na PC",
         "fr": "Disponible sur PC",
         "it": "Disponibile su PC"
@@ -274,6 +301,7 @@ const LOCALIZATION_DATA = [
         "us": "Select a vehicle",
         "nl": "Kies een voertuig",
         "de": "Wähle ein Fahrzeug",
+        "pt": "Selecione o veículo",
         "cz": "Vybrat vozidlo"
     },
     {
@@ -293,7 +321,7 @@ const LOCALIZATION_DATA = [
         "nl": "Opslaan",
         "de": "Speichern",
         "es": "Salvar",
-        "pt": "Salve",
+        "pt": "Salvar",
         "cz": "Uložit",
         "fr": "Sauvegarder",
         "it": "Salva"
@@ -304,7 +332,7 @@ const LOCALIZATION_DATA = [
         "nl": "Gespeeld",
         "de": "Gespielt",
         "es": "Jugadas",
-        "pt": "Tocam",
+        "pt": "Jogadas",
         "cz": "Hry",
         "fr": "Pièces",
         "it": "Gioca"
@@ -348,7 +376,7 @@ const LOCALIZATION_DATA = [
         "nl": "Terug",
         "de": "Zurück",
         "es": "Regresar",
-        "pt": "Retornar",
+        "pt": "Voltar",
         "cz": "Zpět",
         "fr": "Rendre",
         "it": "Ritornare"
@@ -367,7 +395,9 @@ const LOCALIZATION_DATA = [
     {
         "textId": "levelbanner_loading",
         "us": "Loading...",
-        "nl": "Laden.."
+        "nl": "Laden..",
+        "pt": "Carregar",
+        "cz": "Načítání"
     },
     {
         "textId": "levelbanner_time",
@@ -407,6 +437,7 @@ const LOCALIZATION_DATA = [
         "us": "No entries",
         "nl": "Geen scores",
         "de": "Keine Einträge",
+        "pt": "Vazio",
         "cz": "Žádné záznamy"
     },
     {
@@ -447,6 +478,7 @@ const LOCALIZATION_DATA = [
         "us": "Pause",
         "nl": "Pauze",
         "de": "Pause",
+        "pt": "Pausar",
         "cz": "Pauza"
     },
     {
@@ -454,6 +486,7 @@ const LOCALIZATION_DATA = [
         "us": "Exit to Menu",
         "nl": "Naar hoofdmenu",
         "de": "Zum Menü",
+        "pt": "Sair para o menu",
         "cz": "Zpět do menu"
     },
     {
@@ -461,13 +494,30 @@ const LOCALIZATION_DATA = [
         "us": "Resume",
         "nl": "Hervat",
         "de": "Zurück",
+        "pt": "Continuar",
         "cz": "Pokračovat"
+    },
+    {
+        "textId": "levelgui_reset",
+        "us": "Reset",
+        "nl": "Reset"
+    },
+    {
+        "textId": "levelgui_retry",
+        "us": "Retry",
+        "nl": "Opnieuw"
+    },
+    {
+        "textId": "levelgui_exittest",
+        "us": "Exit Test",
+        "nl": "Sluit Test"
     },
     {
         "textId": "levelgui_youlose",
         "us": "You lose!",
         "nl": "Verliezer!",
         "de": "Du hast verloren!",
+        "pt": "Você perdeu!",
         "cz": "Prohrál jsi"
     },
     {
@@ -475,203 +525,260 @@ const LOCALIZATION_DATA = [
         "us": "You win!",
         "nl": "Winnaar!",
         "de": "Du hast gewonnen!",
+        "pt": "Você ganhou!",
         "cz": "Vyhrál jsi"
     },
     {
         "textId": "editortoolgui_select",
         "us": "select",
         "de": "auswählen",
+        "pt": "selecionar",
         "cz": "Vybrat"
     },
     {
         "textId": "editortoolgui_geometry",
         "us": "geometry",
         "de": "formen",
+        "pt": "Geometria",
         "cz": "Tvary"
     },
     {
         "textId": "editortoolgui_polydrawing",
         "us": "polydrawing",
         "de": "polygon",
+        "pt": "Desenho poligonal",
         "cz": "Polygon"
     },
     {
         "textId": "editortoolgui_pen",
         "us": "pen",
         "de": "stift",
+        "pt": "Caneta",
         "cz": "Pero"
     },
     {
         "textId": "editortoolgui_joints",
         "us": "joints",
         "de": "bindungen",
+        "pt": "Juntas",
         "cz": "Spojení"
     },
     {
         "textId": "editortoolgui_prefabs",
         "us": "prefabs",
-        "de": "fertigbauten"
+        "de": "fertigbauten",
+        "pt": "Objetos prontos",
+        "cz": "Předvytvořené"
     },
     {
         "textId": "editortoolgui_text",
         "us": "text",
         "de": "text",
+        "pt": "Texto",
         "cz": "Text"
     },
     {
         "textId": "editortoolgui_art",
         "us": "art",
         "de": "grafiken",
+        "pt": "Arte",
         "cz": "Malování"
     },
     {
         "textId": "editortoolgui_trigger",
         "us": "trigger",
         "de": "auslöser",
+        "pt": "Acionador",
         "cz": "Spouštěč"
     },
     {
         "textId": "editorheader_test",
         "us": "test",
         "de": "test",
+        "pt": "Teste",
         "cz": "Test"
     },
     {
         "textId": "editorheader_profilescreen",
         "us": "Profile Screen",
         "de": "Profil Fenster",
+        "pt": "Foto de Perfil",
         "cz": "Obrazovka profilu"
     },
     {
         "textId": "editorheader_logout",
         "us": "LOGOUT",
         "de": "AUSLOGGEN",
+        "pt": "Deslogar",
         "cz": "Odhlásit se"
     },
     {
         "textId": "editorheader_new",
         "us": "NEW",
         "de": "NEU",
+        "pt": "Novo",
         "cz": "Nový"
     },
     {
         "textId": "editorheader_load",
         "us": "LOAD",
         "de": "LADEN",
+        "pt": "Carregar",
         "cz": "Načíst"
     },
     {
         "textId": "editorheader_exit",
         "us": "EXIT",
         "de": "VERLASSEN",
+        "pt": "Sair",
         "cz": "Odejít"
     },
     {
         "textId": "editorlevelbanner_publishsettings",
         "us": "Publish Settings",
         "de": "Veröffentlichungseinstellungen",
+        "pt": "Publicar informações",
         "cz": "Zveřejnit nastavení"
     },
     {
         "textId": "editorlevelbanner_thumbnail",
         "us": "Thumbnail",
         "de": "Schaubild",
+        "pt": "Miniatura",
         "cz": "Miniatura"
     },
     {
         "textId": "editorlevelbanner_clicktoadd",
         "us": "click to add",
-        "de": "bild einfügen"
+        "de": "bild einfügen",
+        "pt": "Click para adicionar",
+        "cz": "Klikněte pro vložení"
     },
     {
         "textId": "editorlevelbanner_title",
         "us": "Title",
-        "de": "Titel"
+        "de": "Titel",
+        "pt": "Título",
+        "cz": "Název"
     },
     {
         "textId": "editorlevelbanner_charactersleft",
         "us": "Characters left",
-        "de": "Buchstaben übrig"
+        "de": "Buchstaben übrig",
+        "pt": "Personagens restantes",
+        "cz": "Zbývá znaků"
     },
     {
         "textId": "editorlevelbanner_description",
         "us": "Description",
-        "de": "Beschreibung"
+        "de": "Beschreibung",
+        "pt": "Descrição",
+        "cz": "Popis"
     },
     {
         "textId": "editorlevelbanner_linkyoutubevideos",
         "us": "Link YouTube videos",
-        "de": "YouTube videos verknüpfen"
+        "de": "YouTube videos verknüpfen",
+        "pt": "Videos do Youtube",
+        "cz": "Připojit YouTube videa"
     },
     {
         "textId": "editorlevelbanner_saveas",
         "us": "SAVE AS",
-        "de": "SPEICHERN ALS"
+        "de": "SPEICHERN ALS",
+        "pt": "Salvar como",
+        "cz": "Uložit jako"
     },
     {
         "textId": "editorlevelbanner_delete",
         "us": "DELETE",
-        "de": "LÖSCHEN"
+        "de": "LÖSCHEN",
+        "pt": "Deletar",
+        "cz": "Smazat"
     },
     {
         "textId": "editorlevelbanner_preview",
         "us": "PREVIEW",
-        "de": "VORSCHAU"
+        "de": "VORSCHAU",
+        "pt": "Pré-visualizar",
+        "cz": "Náhled"
     },
     {
         "textId": "editorlevelbanner_publish",
         "us": "PUBLISH",
-        "de": "VERÖFFENTLICHEN"
+        "de": "VERÖFFENTLICHEN",
+        "pt": "Publicar",
+        "cz": "Zveřejnit"
     },
     {
         "textId": "editorlevelbanner_notice",
         "us": "Notice",
-        "de": "Achtung"
+        "de": "Achtung",
+        "pt": "Aviso",
+        "cz": "Upozornění"
     },
     {
         "textId": "editorlevelbanner_prompt",
         "us": "Prompt",
-        "de": "Aufforderung"
-    },
-    {
-        "textId": "editorlevelbanner_mintitlelength",
-        "us": "Title must be at least 3 characters long",
-        "de": "Der Titel muss mindenstens 3 Buchstaben lang sein"
+        "de": "Aufforderung",
+        "pt": "Console",
+        "cz": "Výzva"
     },
     {
         "textId": "editorlevelbanner_ok",
         "us": "OK",
-        "de": "OK"
+        "de": "OK",
+        "pt": "OK!",
+        "cz": "OK"
     },
     {
         "textId": "editorlevelbanner_yes",
         "us": "Yes!",
-        "de": "Ja!"
+        "de": "Ja!",
+        "pt": "SIM!",
+        "cz": "Ano!"
     },
     {
         "textId": "editorlevelbanner_nope",
         "us": "NOPE!",
-        "de": "DOCH NICHT!"
+        "de": "DOCH NICHT!",
+        "pt": "NOPE!",
+        "cz": "Ne!"
+    },
+    {
+        "textId": "editorlevelbanner_mintitlelength",
+        "us": "Title must be at least 3 characters long",
+        "de": "Der Titel muss mindenstens 3 Buchstaben lang sein",
+        "pt": "O Titulo precisa ter pelo menos 3 caracteres",
+        "cz": "Název musí obsahovat nejméně 3 znaky"
     },
     {
         "textId": "editorlevelbanner_savefirst",
         "us": "You first need to save the level before you can publish / preview it.",
-        "de": "Du musst dein Level speichern, bevor du es veröffentlichen / anschauen kannst."
+        "de": "Du musst dein Level speichern, bevor du es veröffentlichen / anschauen kannst.",
+        "pt": "Você precisa salvar o mapa primeiro antes de publicar",
+        "cz": "Nejdříve musíte level uložit než jej zveřejníte / zobrazíte náhled"
     },
     {
         "textId": "editorlevelbanner_nothumbnail",
         "us": "Your level needs a thumbnail before you can publish / preview it.",
-        "de": "Dein Level braucht ein Schaubild, bevor du es veröffentlichen / anschauen kannst."
+        "de": "Dein Level braucht ein Schaubild, bevor du es veröffentlichen / anschauen kannst.",
+        "pt": "Seu mapa precisa de uma thumbnail antes de ser publicado",
+        "cz": "Váš level potřebuje miniaturu než jej zveřejníte / zobrazíte náhled"
     },
     {
         "textId": "editorlevelbanner_unsavedchanges",
         "us": "You have unsaved changes to your level, are you sure you wish to proceed?",
-        "de": "Dein Level hat ungespeicherte Änderungen, möchtest du trotzdem fortfahren?"
+        "de": "Dein Level hat ungespeicherte Änderungen, möchtest du trotzdem fortfahren?",
+        "pt": "Você não salvou as modificações do seu mapa, tem certeza que quer prosseguir?",
+        "cz": "Máte neuložené změny ve vašem levelu, jste si jisti, že chcete pokračovat?"
     },
     {
         "textId": "editorlevelbanner_deleteconfirm",
         "us": "Are you sure you want to delete this level?",
-        "de": "Bist du sicher, dass du dieses Level löschen willst?"
+        "de": "Bist du sicher, dass du dieses Level löschen willst?",
+        "pt": "Você tem certeza que quer deletar o mapa?",
+        "cz": "Jste si jisti, že chcete smazat tento level?"
     }
 ]
 init();

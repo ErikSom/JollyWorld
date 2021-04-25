@@ -16,15 +16,19 @@
 	}
 
 	.header{
-		background-image: url(../../static/assets/images/gui/YouWin.png);
-		background-size: contain;
-		background-repeat: no-repeat;
-		width: 368px;
+		color: #51a327;
+		font-family: "Lily Script One", cursive;
+		font-size: 90px;
+		width: 100vw;
 		height: 112px;
-		max-width: 90vw;
 		position: absolute;
+		font-weight: 100;
+		text-shadow: 2px 2px black, 2px -2px black, -2px -2px black, -2px 2px black, 2px 0px black, 0px 2px black, -2px 0px black, 0px -2px black, 3px 3px white, 3px -3px white, -3px -3px white, -3px 3px white, 3px 0px white, 0px 3px white, -3px 0px white, 0px -3px white;
+		filter: drop-shadow(2px 4px 2px black);
 		top: -16px;
 		left: 206px;
+		margin: -6px 6px;
+		white-space: nowrap;
 		filter: drop-shadow(2px 2px 2px black);
 	}
 

@@ -1,5 +1,6 @@
 export default function textFit(textSpan) {
 	let maxSize = 24;
+	if(textSpan.classList.contains('h0')) maxSize = 90;
 	if(textSpan.classList.contains('h1')) maxSize = 40;
 	if(textSpan.classList.contains('h2')) maxSize = 32;
 
