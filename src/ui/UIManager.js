@@ -11,6 +11,7 @@ import '../css/GameOver.scss'
 import '../css/Leaderboard.scss'
 import '../css/SettingsMenu.scss'
 import '../css/YoutubePlayer.scss'
+import '../css/flags.css'
 
 // https://github.com/catdad/canvas-confetti
 
@@ -162,7 +163,7 @@ function UIManager() {
                         <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" class="jolly-youtube"></a>
                         <a href="https://www.facebook.com/jolly.world.game/" class="jolly-facebook"></a>
                     </div>
-                    <div class="country"><div class="selectflag flag">🇺🇸</div><div class="flags"></div></div>
+                    <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
             `
 
@@ -304,11 +305,11 @@ function UIManager() {
         if(!flags.classList.contains('init')){
             countries.forEach(country=> {
                 const flag = document.createElement('div');
-                flag.classList.add('flag');
-                flag.innerText = countryToFlag(country);
+                flag.className = `flag fflag fflag-${country.toUpperCase()} ff-lg ff-app`;
                 flag.onclick = ()=>{
                     flags.classList.remove('open');
-                    selectFlag.innerText = flag.innerText;
+
+                    selectFlag.className = `flag fflag fflag-${country.toUpperCase()} ff-lg ff-app`;
 
                     if(Settings.currentCountry !== country){
                         const userData = SaveManager.getLocalUserdata();
@@ -323,7 +324,7 @@ function UIManager() {
             flags.classList.add('init');
             selectFlag.onclick = ()=>{flags.classList.add('open')}
         }
-        selectFlag.innerText = countryToFlag(Settings.currentCountry);
+        selectFlag.className = `flag fflag fflag-${Settings.currentCountry.toUpperCase()} ff-lg ff-app`;
     }
 
     this.mainMenuResize = ()=> {

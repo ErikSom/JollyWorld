@@ -1,0 +1,231 @@
+/*!*****************************************************
+
+Freak Flags, Copyright ©2021 Michael P. Cohen. Freak flags is licenced under the MIT licence.  
+
+For complete information visit: www.freakflagsprite.com 
+
+******************************************************/
+
+.fflag {
+    background-image:url(../../static//assets/images/gui/flags.png);
+    background-repeat:no-repeat;
+    background-size: 100% 49494%;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    vertical-align: middle;
+    box-sizing: content-box;
+}
+.fflag-CH,
+.fflag-NP {box-shadow: none!important}
+.fflag-AI {background-position:center 0.2287%}
+.fflag-AG {background-position:center 0.4524%}
+.fflag-AR {background-position:center 0.6721%}
+.fflag-AW {background-position:left 0.8958%}
+.fflag-BS {background-position:left 1.1162%}
+.fflag-BB {background-position:center 1.3379%}
+.fflag-BQ {background-position:center 1.5589%}
+.fflag-BZ {background-position:center 1.7836%}
+.fflag-BM {background-position:center 2.0047%}
+.fflag-BO {background-position:center 2.2247%}
+.fflag-VG {background-position:center 2.4467%}
+.fflag-BR {background-position:center 2.6674%}
+.fflag-CA {background-position:center 2.8931%}
+.fflag-KY {background-position:center 3.1125%}
+.fflag-CL {background-position:left 3.3325%}
+.fflag-CO {background-position:left 3.5542%}
+.fflag-KM {background-position:center 3.7759%}
+.fflag-CR {background-position:center 4.0015%}
+.fflag-CU {background-position:left 4.2229%}
+.fflag-CW {background-position:center 4.441%}
+.fflag-DM {background-position:center 4.66663%}
+.fflag-DO {background-position:center 4.8844%}
+.fflag-EC {background-position:center 5.1061%}
+.fflag-SV {background-position:center 5.3278%}
+.fflag-FK {background-position:center 5.5495%}
+.fflag-GF {background-position:center 5.7712%}
+.fflag-GL {background-position:left 5.994%}
+.fflag-GD {background-position:center 6.2156%}
+.fflag-GP {background-position:center 6.4363%}
+.fflag-GT {background-position:center 6.658%}
+.fflag-GY {background-position:center 6.8805%}
+.fflag-HT {background-position:center 7.1038%}
+.fflag-HN {background-position:center 7.3231%}
+.fflag-JM {background-position:center 7.5448%}
+.fflag-MQ {background-position:center 7.7661%}
+.fflag-MX {background-position:center 7.98937%}
+.fflag-MS {background-position:center 8.2099%}
+.fflag-NI {background-position:center 8.4316%}
+.fflag-PA {background-position:center 8.6533%}
+.fflag-PY {background-position:center 8.875%}
+.fflag-PE {background-position:center 9.0967%}
+.fflag-PR {background-position:left 9.32237%}
+.fflag-BL {background-position:center 9.5426%}
+.fflag-KN {background-position:center 9.7628%}
+.fflag-LC {background-position:center 9.9845%}
+.fflag-PM {background-position:center 10.2052%}
+.fflag-VC {background-position:center 10.4269%}
+.fflag-SX {background-position:left 10.6486%}
+.fflag-TT {background-position:center 10.8703%}
+.fflag-TC {background-position:center 11.0945%}
+.fflag-US {background-position:center 11.3135%}
+.fflag-VI {background-position:center 11.5354%}
+.fflag-UY {background-position:left 11.7593%}
+.fflag-VE {background-position:center 11.9799%}
+.fflag-AF {background-position:center 12.2005%}
+.fflag-AZ {background-position:center 12.4222%}
+.fflag-BD {background-position:center 12.644%}
+.fflag-BT {background-position:center 12.8664%}
+.fflag-BN {background-position:center 13.0873%}
+.fflag-KH {background-position:center 13.309%}
+.fflag-CN {background-position:left 13.5307%}
+.fflag-GE {background-position:center 13.7524%}
+.fflag-HK {background-position:center 13.9741%}
+.fflag-IN {background-position:center 14.1958%}
+.fflag-ID {background-position:center 14.4175%}
+.fflag-JP {background-position:center 14.6415%}
+.fflag-KZ {background-position:center 14.8609%}
+.fflag-LA {background-position:center 15.0826%}
+.fflag-MO {background-position:center 15.306%}
+.fflag-MY {background-position:center 15.528%}
+.fflag-MV {background-position:center 15.7496%}
+.fflag-MN {background-position:left 15.9694%}
+.fflag-MM {background-position:center 16.1911%}
+.fflag-NP {background-position:left 16.4128%}
+.fflag-KP {background-position:left 16.6345%}
+.fflag-MP {background-position:center 16.8562%}
+.fflag-PW {background-position:center 17.0779%}
+.fflag-PG {background-position:center 17.2996%}
+.fflag-PH {background-position:left 17.5213%}
+.fflag-SG {background-position:left 17.743%}
+.fflag-KR {background-position:center 17.968%}
+.fflag-LK {background-position:right 18.1864%}
+.fflag-TW {background-position:left 18.4081%}
+.fflag-TJ {background-position:center 18.6298%}
+.fflag-TH {background-position:center 18.8515%}
+.fflag-TL {background-position:left 19.0732%}
+.fflag-TM {background-position:center 19.2987%}
+.fflag-VN {background-position:center 19.518%}
+.fflag-AL {background-position:center 19.7383%}
+.fflag-AD {background-position:center 19.96%}
+.fflag-AM {background-position:center 20.1817%}
+.fflag-AT {background-position:center 20.4034%}
+.fflag-BY {background-position:left 20.6241%}
+.fflag-BE {background-position:center 20.8468%}
+.fflag-BA {background-position:center 21.0685%}
+.fflag-BG {background-position:center 21.2902%}
+.fflag-HR {background-position:center 21.5119%}
+.fflag-CY {background-position:center 21.7336%}
+.fflag-CZ {background-position:left 21.9553%}
+.fflag-DK {background-position:center 22.177%}
+.fflag-EE {background-position:center 22.4002%}
+.fflag-FO {background-position:center 22.6204%}
+.fflag-FI {background-position:center 22.8421%}
+.fflag-FR {background-position:center 23.0638%}
+.fflag-DE {background-position:center 23.2855%}
+.fflag-GI {background-position:center 23.5072%}
+.fflag-GR {background-position:left 23.732%}
+.fflag-HU {background-position:center 23.9506%}
+.fflag-IS {background-position:center 24.1723%}
+.fflag-IE {background-position:center 24.394%}
+.fflag-IM {background-position:center 24.6157%}
+.fflag-IT {background-position:center 24.8374%}
+.fflag-JE {background-position:center 25.0591%}
+.fflag-XK {background-position:center 25.2808%}
+.fflag-LV {background-position:center 25.5025%}
+.fflag-LI {background-position:left 25.7242%}
+.fflag-LT {background-position:center 25.9459%}
+.fflag-LU {background-position:center 26.1676%}
+.fflag-MT {background-position:left 26.3885%}
+.fflag-MD {background-position:center 26.611%}
+.fflag-MC {background-position:center 26.8327%}
+.fflag-ME {background-position:center 27.0544%}
+.fflag-NL {background-position:center 27.2761%}
+.fflag-MK {background-position:center 27.4978%}
+.fflag-NO {background-position:center 27.7195%}
+.fflag-PL {background-position:center 27.9412%}
+.fflag-PT {background-position:center 28.1615%}
+.fflag-RO {background-position:center 28.3846%}
+.fflag-RU {background-position:center 28.6063%}
+.fflag-SM {background-position:center 28.829%}
+.fflag-RS {background-position:center 29.0497%}
+.fflag-SK {background-position:center 29.2714%}
+.fflag-SI {background-position:center 29.4931%}
+.fflag-ES {background-position:left 29.7148%}
+.fflag-SE {background-position:center 29.9365%}
+.fflag-CH {background-position:center 30.1582%}
+.fflag-TR {background-position:center 30.3799%}
+.fflag-UA {background-position:center 30.6016%}
+.fflag-GB {background-position:center 30.8233%}
+.fflag-VA {background-position:right 31.045%}
+.fflag-BH {background-position:center 31.2667%}
+.fflag-IR {background-position:center 31.4884%}
+.fflag-IQ {background-position:center 31.7101%}
+.fflag-IL {background-position:center 31.9318%}
+.fflag-KW {background-position:left 32.1535%}
+.fflag-JO {background-position:left 32.3752%}
+.fflag-KG {background-position:center 32.5969%}
+.fflag-LB {background-position:center 32.8186%}
+.fflag-OM {background-position:left 33.0403%}
+.fflag-PK {background-position:center 33.258%}
+.fflag-PS {background-position:center 33.4837%}
+.fflag-QA {background-position:center 33.7054%}
+.fflag-SA {background-position:center 33.9271%}
+.fflag-SY {background-position:center 34.1488%}
+.fflag-AE {background-position:center 34.3705%}
+.fflag-UZ {background-position:left 34.5922%}
+.fflag-AS {background-position:right 34.8139%}
+.fflag-AU {background-position:center 35.0356%}
+.fflag-CX {background-position:center 35.2555%}
+.fflag-CC {background-position:center 35.479%}
+.fflag-CK {background-position:center 35.7007%}
+.fflag-FJ {background-position:center 35.9224%}
+.fflag-PF {background-position:center 36.1441%}
+.fflag-GU {background-position:center 36.3658%}
+.fflag-KI {background-position:center 36.5875%}
+.fflag-MH {background-position:left 36.8092%}
+.fflag-FM {background-position:center 37.0309%}
+.fflag-NC {background-position:center 37.2526%}
+.fflag-NZ {background-position:center 37.4743%}
+.fflag-NR {background-position:left 37.696%}
+.fflag-NU {background-position:center 37.9177%}
+.fflag-NF {background-position:center 38.1394%}
+.fflag-WS {background-position:left 38.3611%}
+.fflag-SB {background-position:left 38.5828%}
+.fflag-TK {background-position:center 38.8045%}
+.fflag-TO {background-position:left 39.0262%}
+.fflag-TV {background-position:center 39.2479%}
+.fflag-VU {background-position:left 39.4696%}
+.fflag-WF {background-position:center 39.6913%}
+.fflag-JR {background-position:center 39.913%}
+.fflag-BE.ff-app,
+.fflag-FR.ff-app,
+.fflag-IE.ff-app,
+.fflag-IT.ff-app,
+.fflag-RO.ff-app {background-size:100%  50000%}
+
+.fflag.ff-sm {width: 18px;height: 11px}
+.fflag.ff-md {width: 27px;height: 17px}
+.fflag.ff-lg {width: 42px;height: 27px}
+.fflag.ff-xl {width: 60px;height: 37px}
+
+/* ff-app = app icon look */
+.ff-app {
+	background-size: 155%;
+	background-clip: content-box;
+	border-radius: 21%;
+}
+.ff-app:before {
+	content: '';
+	display: inline-block;
+	width: inherit;
+	height: inherit;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: radial-gradient(circle at center -166%, rgba(255,255,255,.0) 0%, rgba(255,255,255,.0) 66%, rgba(255,255,255,.5) 80%, rgba(255,255,255,0) 80.5%, rgba(0,0,0,.02) 81%, rgba(0,0,0,.2) 100%);
+}
+.ff-app.ff-sm:before, .ff-app.ff-sm {width: 12px; height: 12px}
+.ff-app.ff-md:before, .ff-app.ff-md {width: 18px; height: 18px}
+.ff-app.ff-lg:before, .ff-app.ff-lg {width: 24px; height: 24px}
+.ff-app.ff-xl:before, .ff-app.ff-xl {width: 32px; height: 32px}

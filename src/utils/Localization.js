@@ -27,7 +27,7 @@ export const localize = id =>{
 	return text;
 }
 
-export const countries = ['de','nl','uk','us','br','pt','fr','au','es','it','ca','ie','be'];
+export const countries = ['de','nl','gb','us','br','pt','fr','au','es','it','ca','ie','be'];
 
 
 export const countryToFlag = country => {
