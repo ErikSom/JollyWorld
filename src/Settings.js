@@ -2,7 +2,7 @@ const targetFPS = 60;
 export var Settings = {
     /*APP*/
     languages:['us', 'nl'],
-    currentLanguage:'nl',
+    currentCountry:'us',
     targetResolution:{x:1920, y:1080},
     minimumAspect:1.20,
     maximumAspect:2.60,

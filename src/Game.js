@@ -47,6 +47,7 @@ import { YouTubePlayer } from "./utils/YouTubePlayer";
 const nanoid = require('nanoid');
 
 import GameStats from 'gamestats.js'; //TO DO PUBLISH NPM
+import { countries } from "./utils/Localization";
 
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
@@ -131,6 +132,27 @@ function Game() {
         this.canvas = document.getElementById("canvas");
 
         const userData = SaveManager.getLocalUserdata();
+
+
+        if(userData.country === '?'){
+            let country = 'us';
+            let userLang = navigator.language || navigator.userLanguage;
+            if(userLang){
+                const userCountry = userLang.split('-')[1];
+                if(userCountry){
+                    countries.forEach(c => {
+                        if(c === userCountry.toLowerCase()){
+                            country = c;
+                        }
+                    })
+                }
+            }
+
+            userData.country = country;
+            SaveManager.updateLocalUserData(userData);
+        }
+        Settings.currentCountry = userData.country;
+
 
         if(Settings.HDR && window.devicePixelRatio >= 2){
             // max 2K

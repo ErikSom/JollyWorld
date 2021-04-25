@@ -21,7 +21,7 @@ const parseLocalization = ()=>{
 export const localize = id =>{
 	let text = '?';
 	if(languageDataBase[id]){
-		text = languageDataBase[id][Settings.currentLanguage];
+		text = languageDataBase[id][Settings.currentCountry];
 		if(!text) text = languageDataBase[id]['us']
 	}
 	return text;

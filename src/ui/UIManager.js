@@ -309,13 +309,21 @@ function UIManager() {
                 flag.onclick = ()=>{
                     flags.classList.remove('open');
                     selectFlag.innerText = flag.innerText;
+
+                    if(Settings.currentCountry !== country){
+                        const userData = SaveManager.getLocalUserdata();
+                        userData.country = country;
+                        SaveManager.updateLocalUserData(userData);
+                        window.location.reload();
+                    }
+
                 };
                 flags.appendChild(flag);
             })
             flags.classList.add('init');
             selectFlag.onclick = ()=>{flags.classList.add('open')}
         }
-        selectFlag.innerText = countryToFlag(Settings.currentLanguage);
+        selectFlag.innerText = countryToFlag(Settings.currentCountry);
     }
 
     this.mainMenuResize = ()=> {

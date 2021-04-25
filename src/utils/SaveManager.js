@@ -26,6 +26,7 @@ export const getLocalUserdata = function(){
         goreOn:true,
         tutorials:[],
         selectedCharacter:0,
+        country:'?'
     }
 
     if(userData){
