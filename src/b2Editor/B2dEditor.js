@@ -9110,7 +9110,7 @@ const _B2dEditor = function () {
 	}
 
 	this.updatePolyGraphic = function (graphic, verts, colorFill, colorLine, lineWidth, transparancy, dontClear, fillTransparancy) {
-		if(!fillTransparancy === undefined) fillTransparancy = transparancy;
+		if(fillTransparancy === undefined) fillTransparancy = transparancy;
 
 		let color;
 		color = colorLine.slice(1);
