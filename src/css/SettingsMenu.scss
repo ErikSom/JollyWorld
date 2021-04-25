@@ -18,6 +18,8 @@
 			padding: 0px 20px;
 			display: flex;
 			justify-content: center;
+			white-space: nowrap;
+			max-width: 90%;
 			.choice{
 				margin-left: 4px;
 				&.on{
