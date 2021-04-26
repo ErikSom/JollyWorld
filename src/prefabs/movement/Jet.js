@@ -3,6 +3,7 @@ import * as PrefabManager from '../PrefabManager';
 import { game } from '../../Game';
 import { Settings } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 
 class Jet extends PrefabManager.basePrefab {
@@ -54,7 +55,7 @@ class Jet extends PrefabManager.basePrefab {
         super.destroy();
     }
     positionJetEmitter(){
-        const pos = this.base.GetPosition().Clone();
+        const pos = b2CloneVec2(this.base.GetPosition());
         const lengthOffset = 1.0;
         const angleOffset = Math.PI;
         const angle = this.base.GetAngle()+angleOffset;

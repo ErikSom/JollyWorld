@@ -39,7 +39,7 @@ export const drawLine = function(sp, ep, _lineOptions){
     //     v.SelfNormalize();
     //     const tl = l*lineOptions.labelPosition;
     //     v.SelfMul(tl);
-    //     const tp = sp.Clone().SelfAdd(v);
+    //     const tp = b2CloneVec2(sp).SelfAdd(v);
     //     drawCircle(tp, 10, lineOptions, {color:lineOptions.labelColor});
     //     tp.SelfMul(B2dEditor.container.scale.x);
     //     tp.SelfAdd(B2dEditor.container.position);

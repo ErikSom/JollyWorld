@@ -7,6 +7,7 @@ import {
 } from "../../Game";
 import { stopCustomBehaviour, drawObjectAdding } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
+import { b2CloneVec2 } from "../../../libs/debugdraw";
 
 const TRIGGER_TYPE_ROLLOVER_LEFT = 0;
 const TRIGGER_TYPE_ROLLOVER_RIGHT = 1;
@@ -257,12 +258,12 @@ class SevenSegment extends PrefabManager.basePrefab {
 
             let tarPos;
 
-            tarPos = target.myBody.GetPosition().Clone();
+            tarPos = b2CloneVec2(target.myBody.GetPosition());
             tarPos.x *= game.editor.PTM;
             tarPos.y *= game.editor.PTM;
 
             const lineOffsetSize = -20 * game.levelCamera.scale.x;
-            const linePos = myPos.Clone().SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
+            const linePos = b2CloneVec2(myPos).SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
 
             game.triggerDebugDraw.lineStyle(1.0 / game.editor.cameraHolder.scale.x, "0x000", 1.0);
             game.triggerDebugDraw.moveTo(linePos.x, linePos.y);
@@ -273,7 +274,7 @@ class SevenSegment extends PrefabManager.basePrefab {
             v.SelfNormalize();
             const tl = l*0.5;
             v.SelfMul(tl);
-            const tp = linePos.Clone().SelfAdd(v);
+            const tp = b2CloneVec2(linePos).SelfAdd(v);
 
             game.triggerDebugDraw.beginFill("0x999", 1.0);
             game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);

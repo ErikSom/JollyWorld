@@ -2,6 +2,8 @@ import {
     game
 } from "../../Game";
 
+import {b2CloneVec2} from "../../../libs/debugdraw"
+
 const {b2Vec2} = Box2D
 
 export const rotateVector = function (vector, degrees) {
@@ -14,7 +16,7 @@ export const rotateVector = function (vector, degrees) {
 }
 
 export const rotateVectorAroundPoint = function (vector, point, degrees, log) {
-    const vec = vector.Clone().SelfSub(point);
+    const vec = b2CloneVec2(b2CloneVevector).SelfSub(point);
     // if(log) console.log(vec.x, vec.y, 'diff', vec.Length());
     const newvec = new b2Vec2(vec.Length(), 0);
     const rotatedVector = rotateVector(newvec, degrees);

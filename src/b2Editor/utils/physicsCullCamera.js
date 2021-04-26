@@ -1,3 +1,4 @@
+import { b2CloneVec2 } from "../../../libs/debugdraw";
 import {
     game
 } from "../../Game";
@@ -41,8 +42,8 @@ export const update = ()=>{
 	}
 
 	if(game.cameraFocusObject){
-		const linearVelocity = game.cameraFocusObject.GetLinearVelocity().Clone().SelfMul(0);
-		const targetPosition = game.cameraFocusObject.GetPosition().Clone().SelfAdd(linearVelocity);
+		const linearVelocity = b2CloneVec2(game.cameraFocusObject.GetLinearVelocity()).SelfMul(0);
+		const targetPosition = b2CloneVec2(game.cameraFocusObject.GetPosition()).SelfAdd(linearVelocity);
 		game.editor.physicsCamera.SetPosition(targetPosition);
 	}
 }

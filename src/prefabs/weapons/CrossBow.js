@@ -8,6 +8,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class CrossBow extends PrefabManager.basePrefab {
     constructor(target) {
@@ -74,7 +75,7 @@ class CrossBow extends PrefabManager.basePrefab {
 	}
 	shoot() {
 
-		const pos = this.crossbowBody.GetPosition().Clone();
+		const pos = b2CloneVec2(this.crossbowBody.GetPosition());
 		const angle = this.crossbowBody.GetAngle()+(this.flipped ? Math.PI : 0);
 		const offsetLength = 0.6;
 		const angleOffset = game.editor.PI2 +(this.flipped ? Math.PI : 0);

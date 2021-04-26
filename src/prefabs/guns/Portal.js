@@ -6,6 +6,7 @@ import {
     Settings
 } from '../../Settings';
 import anime from 'animejs'
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class Portal extends PrefabManager.basePrefab {
     constructor(target) {
@@ -46,7 +47,7 @@ class Portal extends PrefabManager.basePrefab {
 
                 if (target.ignoreCollisionsTime && currentTime < target.ignoreCollisionsTime) return;
 
-                let offsetPosition = target.GetPosition().Clone();
+                let offsetPosition = b2CloneVec2(target.GetPosition());
                 offsetPosition.SelfSub(self.lookupObject['portal'].GetPosition());
                 let offsetPositionLength = offsetPosition.Length();
                 let offsetPositionAngle = Math.atan2(offsetPosition.y, offsetPosition.x) - self.lookupObject['portal'].GetAngle();
@@ -108,7 +109,7 @@ class Portal extends PrefabManager.basePrefab {
                     // teleportData.target.mySprite.color.invalidate();
                 },
                 complete: function () {
-                    const newPosition = self.lookupObject['portal'].GetPosition().Clone();
+                    const newPosition = b2CloneVec2(self.lookupObject['portal'].GetPosition());
                     const angle = self.lookupObject['portal'].GetAngle() + teleportData.offsetPositionAngle;
                     const offsetPosition = new Box2D.b2Vec2(teleportData.offsetPositionLength * Math.cos(angle), teleportData.offsetPositionLength * Math.sin(angle));
                     newPosition.SelfAdd(offsetPosition);
@@ -175,7 +176,7 @@ class Portal extends PrefabManager.basePrefab {
         this.rayCastCallback.prototype.ReportFixture = function (fixture, point, normal, fraction) {
             if(fixture.GetBody() !== self.lookupObject['portal']) return -1;
             this.m_hit = true;
-            this.m_point = point.Clone();
+            this.m_point = b2CloneVec2(point);
             this.m_normal = normal;
             this.m_fixture = fixture;
             return fraction;
@@ -183,7 +184,7 @@ class Portal extends PrefabManager.basePrefab {
 
         targets.map((target)=>{
             const rayStart = target.GetPosition();
-            let rayEnd = target.GetPosition().Clone();
+            let rayEnd = b2CloneVec2(target.GetPosition());
             rayEnd.SelfSub(rayEndOffset);
             let callback = new this.rayCastCallback();
             target.GetWorld().RayCast(callback, rayStart, rayEnd);

@@ -7,6 +7,7 @@ import {
 import { Settings } from '../../Settings';
 import * as MobileController from '../../utils/MobileController'
 import { stopCustomBehaviour } from '../misc/CustomEditorBehavior';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 
 export class NoVehicle extends BaseVehicle {
@@ -60,9 +61,9 @@ export class NoVehicle extends BaseVehicle {
     patchJoints(){
         const calculateJointDistance = (joint1, joint2, joint3) =>{
             let length = 0;
-            length += joint1.Clone().SelfSub(joint2).Length();
+            length += b2CloneVec2(joint1).SelfSub(joint2).Length();
             if(joint3){
-                length += joint3.Clone().SelfSub(joint2).Length();
+                length += b2CloneVec2(joint3).SelfSub(joint2).Length();
             }
             return length;
         }

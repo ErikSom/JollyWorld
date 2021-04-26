@@ -11,6 +11,7 @@ import {
 } from "../../Game";
 import { PropertyAnimator } from "../../b2Editor/utils/propertyAnimator";
 import { drawCircle } from "../../b2Editor/utils/drawing";
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class Skateboard extends BaseVehicle {
     constructor(target) {
@@ -95,7 +96,7 @@ class Skateboard extends BaseVehicle {
 
 
             }else{
-                globalFrame = this.lookupObject.frame.GetPosition().Clone();
+                globalFrame = b2CloneVec2(this.lookupObject.frame.GetPosition());
                 const offset = 1.0;
                 const offsetAngle = -0.1;
                 const angle = this.lookupObject.frame.GetAngle()+offsetAngle;

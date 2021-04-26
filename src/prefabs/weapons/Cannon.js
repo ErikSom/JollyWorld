@@ -10,6 +10,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class Cannon extends PrefabManager.basePrefab {
     constructor(target) {
@@ -84,7 +85,7 @@ class Cannon extends PrefabManager.basePrefab {
 	}
 
 	getShootingPosition(){
-		const pos = this.cannonBody.GetPosition().Clone();
+		const pos = b2CloneVec2(this.cannonBody.GetPosition());
 		const angle = this.cannonBody.GetAngle() + (this.flipped ? Math.PI : 0);
 		const offsetLength = 5.0;
 		const angleOffset = Math.PI;

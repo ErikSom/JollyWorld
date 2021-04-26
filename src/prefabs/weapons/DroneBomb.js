@@ -9,6 +9,7 @@ import * as AudioManager from '../../utils/AudioManager';
 import {
     game
 } from "../../Game";
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 const SIDE_RIGHT = 0;
 const SIDE_LEFT = 1;
@@ -70,7 +71,7 @@ class DroneBomb extends Explosive {
 		this.chaseScoutDelay = 100;
 		this.lookRange = this.prefabObject.settings.lookRange;
 		this.lookRangeVec = new Box2D.b2Vec2(this.lookRange, this.lookRange)
-		this.startPosition = this.body.GetPosition().Clone();
+		this.startPosition = b2CloneVec2(this.body.GetPosition());
 		this.wayPoint = null;
 	}
 
@@ -95,10 +96,10 @@ class DroneBomb extends Explosive {
 		const forceMultiplier = 100 / this.prefabObject.settings.flySpeed;
 		const maxForce = 100 / forceMultiplier;
 
-		const gravityNormal = game.world.GetGravity().Clone().SelfNormalize();
+		const gravityNormal = b2CloneVec2(game.world.GetGravity()).SelfNormalize();
 
-		const targetPosition = this.chaseTarget ? this.chaseTarget.GetPosition().Clone() : (this.wayPoint ? this.wayPoint.Clone() : this.startPosition.Clone());
-		targetPosition.SelfAdd(gravityNormal.Clone().SelfMul(-8.0 * forceMultiplier));
+		const targetPosition = this.chaseTarget ? b2CloneVec2(this.chaseTarget.GetPosition()) : (this.wayPoint ? b2CloneVec2(this.wayPoint) : b2CloneVec2(this.startPosition));
+		targetPosition.SelfAdd(b2CloneVec2(gravityNormal).SelfMul(-8.0 * forceMultiplier));
 
 		const targetDistance = targetPosition.SelfSub(this.body.GetPosition()).SelfSub(this.body.GetLinearVelocity());
 
@@ -154,8 +155,8 @@ class DroneBomb extends Explosive {
 
 		if (PrefabManager.timerReady(this.chaseScoutTimer, this.chaseScoutDelay, true)) {
 
-			const lowerBound = this.body.GetPosition().Clone().SelfSub(this.lookRangeVec);
-			const upperBound = this.body.GetPosition().Clone().SelfAdd(this.lookRangeVec);
+			const lowerBound = b2CloneVec2(this.body.GetPosition()).SelfSub(this.lookRangeVec);
+			const upperBound = b2CloneVec2(this.body.GetPosition()).SelfAdd(this.lookRangeVec);
 	
 			const bodies = game.editor.queryWorldForBodies(lowerBound, upperBound);
 
@@ -196,7 +197,7 @@ class DroneBomb extends Explosive {
 			}
 			if(!found && this.chaseTarget){
 				this.chaseTarget = null;
-				this.startPosition = this.body.GetPosition().Clone();
+				this.startPosition = b2CloneVec2(this.body.GetPosition());
 			}
 
 			this.chaseScoutTimer = 0;
@@ -208,13 +209,13 @@ class DroneBomb extends Explosive {
 	}
 
 	positionEmitters(){
-		const correctedPos = this.body.GetPosition().Clone();
+		const correctedPos = b2CloneVec2(this.body.GetPosition());
 		const correctLengthOffset = 0.5;
 		const correctionAngle = this.body.GetAngle()-Settings.pihalve;
 		correctedPos.x += correctLengthOffset * Math.cos(correctionAngle);
 		correctedPos.y += correctLengthOffset * Math.sin(correctionAngle);
 
-		let pos = correctedPos.Clone();
+		let pos = b2CloneVec2(correctedPos);
         const lengthOffset = 2.1;
         let angle = this.body.GetAngle()+Math.PI;
         pos.x += lengthOffset * Math.cos(angle);
@@ -269,8 +270,8 @@ class DroneBomb extends Explosive {
 						game.editor.addDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
 					}else self.emitterRight.playOnce();
 
-					self.body.ApplyForce(angleVector.Clone().SelfMul(-pushForce/4), pos, true);
-					self.body.ApplyForce(angleVector.Clone().SelfMul(-pushForce), self.body.GetPosition(), true);
+					self.body.ApplyForce(b2CloneVec2(angleVector).SelfMul(-pushForce/4), pos, true);
+					self.body.ApplyForce(b2CloneVec2(angleVector).SelfMul(-pushForce), self.body.GetPosition(), true);
 
 					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
 
@@ -281,8 +282,8 @@ class DroneBomb extends Explosive {
 						game.editor.addDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
 					}else self.emitterLeft.playOnce();
 
-					self.body.ApplyForce(angleVector.Clone().SelfMul(pushForce/4), pos, true);
-					self.body.ApplyForce(angleVector.Clone().SelfMul(pushForce), self.body.GetPosition(), true);
+					self.body.ApplyForce(b2CloneVec2(angleVector).SelfMul(pushForce/4), pos, true);
+					self.body.ApplyForce(b2CloneVec2(angleVector).SelfMul(pushForce), self.body.GetPosition(), true);
 
 					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
 				}

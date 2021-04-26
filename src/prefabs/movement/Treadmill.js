@@ -3,6 +3,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 const PIXI = require('pixi.js');
 
 const TOP_RIGHT = 0;
@@ -287,7 +288,7 @@ class Treadmill extends PrefabManager.basePrefab {
 						const force = targetVelocity.SelfMul(velocityToImpulseTranslation);
 						force.SelfMul(self.base.GetMass());
 						force.SelfMul(-1); // invert speed when applied to treadmill
-						self.impulseQueue.push([self.base, force.Clone(), worldCollisionPoint]);
+						self.impulseQueue.push([self.base, b2CloneVec2(force), worldCollisionPoint]);
 
 						self.edgeCollisionTicks[direction] = self.edgeCollisionTick;
 					}
@@ -303,7 +304,7 @@ class Treadmill extends PrefabManager.basePrefab {
 					if(applyForce){
 						const force = targetVelocity.SelfMul(velocityToImpulseTranslation);
 						force.SelfMul(otherBody.GetMass());
-						self.impulseQueue.push([otherBody, force.Clone(), worldCollisionPoint]);
+						self.impulseQueue.push([otherBody, b2CloneVec2(force), worldCollisionPoint]);
 					}
 				}
 			});

@@ -9,6 +9,7 @@ import * as emitterManager from '../../utils/EmitterManager';
 import * as AudioManager from '../../utils/AudioManager';
 import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
 import { editorSettings } from '../../b2Editor/utils/editorSettings';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 
 const vec1 = new Box2D.b2Vec2();
@@ -354,9 +355,9 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.contactListener.PreSolve = function (contact, impulse) {
             const bodyA = contact.GetFixtureA().GetBody();
             const bodyB = contact.GetFixtureB().GetBody();
-            bodyA.preSolveVelicity = bodyA.GetLinearVelocity().Clone();
+            bodyA.preSolveVelicity = b2CloneVec2(bodyA.GetLinearVelocity());
             bodyA.preSolveVelicityCounter = bodyA.preSolveVelicityCounter !== undefined ? bodyA.preSolveVelicityCounter + 1 : 1;
-            bodyB.preSolveVelicity = bodyB.GetLinearVelocity().Clone();
+            bodyB.preSolveVelicity = b2CloneVec2(bodyB.GetLinearVelocity());
             bodyB.preSolveVelicityCounter = bodyB.preSolveVelicityCounter !== undefined ? bodyB.preSolveVelicityCounter + 1 : 1;
 
         }
@@ -416,10 +417,10 @@ export class Humanoid extends PrefabManager.basePrefab {
                 let forceDamage = 0;
 
                 if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
-                    const charOtherBodyDiff = characterBody.GetPosition().Clone().SelfSub(otherBody.GetPosition());
+                    const charOtherBodyDiff = b2CloneVec2(characterBody.GetPosition()).SelfSub(otherBody.GetPosition());
                     const dotProductChar = characterBody.preSolveVelicity.Dot(charOtherBodyDiff)*-1;
 
-                    const otherBodyCharDiff = otherBody.GetPosition().Clone().SelfSub(characterBody.GetPosition());
+                    const otherBodyCharDiff = b2CloneVec2(otherBody.GetPosition()).SelfSub(characterBody.GetPosition());
                     const dotProductOther = otherBody.preSolveVelicity.Dot(otherBodyCharDiff)*-1;
 
                     if(dotProductChar>0){
@@ -1196,7 +1197,7 @@ export class Humanoid extends PrefabManager.basePrefab {
        const angle = Math.atan2(dy, dx);
 
         if(!lowerJoint){
-            const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
+            const anchorDistanceUpper = b2CloneVec2(baseJointPos).SelfSub(upperPart.GetPosition()).Length();
 
             const eyeObjects = ['eye_left', 'eye_left_joint', 'eye_right', 'eye_right_joint'];
 
@@ -1242,8 +1243,8 @@ export class Humanoid extends PrefabManager.basePrefab {
             const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
             const endJointPos = new Box2D.b2Vec2(endJoint.position.x/Settings.PTM, endJoint.position.y/Settings.PTM);
 
-            const upperLength = lowerJointPos.Clone().SelfSub(baseJointPos).Length();
-            const lowerLength = endJointPos.Clone().SelfSub(lowerJointPos).Length();
+            const upperLength = b2CloneVec2(lowerJointPos).SelfSub(baseJointPos).Length();
+            const lowerLength = b2CloneVec2(endJointPos).SelfSub(lowerJointPos).Length();
             const totalLength = upperLength+lowerLength;
             const upperLengthShare = upperLength/totalLength;
             const lowerLengthShare = lowerLength/totalLength;
@@ -1254,11 +1255,11 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             let upperAngle = invertAngle ? angle-upperAngleChange  : angle+upperAngleChange;
 
-            const anchorDistanceUpper = baseJointPos.Clone().SelfSub(upperPart.GetPosition()).Length();
+            const anchorDistanceUpper = b2CloneVec2(baseJointPos).SelfSub(upperPart.GetPosition()).Length();
             upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle)));
             upperPart.SetAngle(upperAngle-Settings.pihalve);
 
-            const anchorDistanceLower = lowerJointPos.Clone().SelfSub(lowerPart.GetPosition()).Length();
+            const anchorDistanceLower = b2CloneVec2(lowerJointPos).SelfSub(lowerPart.GetPosition()).Length();
 
             const lowerJointPosRotated = rotateVectorAroundPoint(lowerJointPos, baseJointPos, upperAngle*game.editor.RAD2DEG);
             lowerJointPos.x = lowerJointPosRotated.x;
@@ -1298,7 +1299,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             const joint = this.lookupObject[part+"_joint"];
             const jointWorldPos = new Box2D.b2Vec2(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
             const bodyPart = this.lookupObject[part];
-            const jointOffset = bodyPart.GetPosition().Clone().SelfSub(jointWorldPos);
+            const jointOffset = b2CloneVec2(bodyPart.GetPosition()).SelfSub(jointWorldPos);
             bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x) - this.lookupObject.body.GetAngle();
             bodyPart.jointOffsetLength = jointOffset.Length();
         });

@@ -8,6 +8,7 @@ import {
 import {
     Settings
 } from "../../Settings";
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 export class Explosive extends PrefabManager.basePrefab {
     constructor(target) {
@@ -53,7 +54,7 @@ export class Explosive extends PrefabManager.basePrefab {
 				rayCallback.target = body;
 				this.explodeTarget.GetWorld().RayCast(rayCallback, rayStartPosition, body.GetPosition());
 
-				const diff = rayStartPosition.Clone().SelfSub(body.GetPosition());
+				const diff = b2CloneVec2(rayStartPosition).SelfSub(body.GetPosition());
 				diff.SelfNormalize();
 
 				const power = (1-rayCallback.m_fraction)*this.explosivePower*5;

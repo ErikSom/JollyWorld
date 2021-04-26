@@ -16,6 +16,7 @@ import * as drawing from '../utils/drawing'
 import * as AudioManager from '../../utils/AudioManager'
 import { applyColorMatrix } from "../utils/colorMatrixParser";
 import { MidiPlayer } from '../../utils/MidiPlayer';
+import { b2CloneVec2 } from "../../../libs/debugdraw";
 
 export const getActionsForObject = function (object) {
     var actions = [];
@@ -2012,7 +2013,7 @@ export const drawEditorTriggerTargets = targets=>{
                     tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
                     tarPos = new PIXI.Point(tarPrefab.x, tarPrefab.y);
                 } else if ([game.editor.object_BODY, game.editor.object_TRIGGER].includes(target.data.type)) {
-                    tarPos = target.myBody.GetPosition().Clone();
+                    tarPos = b2CloneVec2(target.myBody.GetPosition());
                     tarPos.x *= game.editor.PTM;
                     tarPos.y *= game.editor.PTM;
                 } else{
@@ -2020,7 +2021,7 @@ export const drawEditorTriggerTargets = targets=>{
                 }
 
                 const lineOffsetSize = -20 * game.levelCamera.scale.x;
-                const linePos = myPos.Clone().SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
+                const linePos = b2CloneVec2(myPos).SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
 
                 game.triggerDebugDraw.lineStyle(1.0 / game.editor.cameraHolder.scale.x, "0x000", 1.0);
                 game.triggerDebugDraw.moveTo(linePos.x, linePos.y);
@@ -2031,7 +2032,7 @@ export const drawEditorTriggerTargets = targets=>{
                 v.SelfNormalize();
                 const tl = l*0.5;
                 v.SelfMul(tl);
-                const tp = linePos.Clone().SelfAdd(v);
+                const tp = b2CloneVec2(linePos).SelfAdd(v);
 
                 game.triggerDebugDraw.beginFill("0x999", 1.0);
                 game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
@@ -2042,7 +2043,7 @@ export const drawEditorTriggerTargets = targets=>{
 
             if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
                 const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
-                drawing.addText(keyName, game.triggerDebugDraw, myPos.Clone().SelfAdd({x:1, y:1}), {fill:0x000, fontSize: 14 / game.editor.cameraHolder.scale.x});
+                drawing.addText(keyName, game.triggerDebugDraw, b2CloneVec2(myPos).SelfAdd({x:1, y:1}), {fill:0x000, fontSize: 14 / game.editor.cameraHolder.scale.x});
                 drawing.addText(keyName, game.triggerDebugDraw, myPos, {fontSize: 14 / game.editor.cameraHolder.scale.x});
             }
         }

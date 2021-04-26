@@ -26,7 +26,7 @@ class PhysicsParticle extends PrefabManager.basePrefab {
         fixDef.density = oldFixture.m_density;
         fixDef.friction = oldFixture.m_friction;
         fixDef.restitution = oldFixture.m_restitution;
-        fixDef.filter = oldFixture.m_filter.Clone();
+        fixDef.filter = oldFixture.m_filter.Clone(); // FIXME
 
         fixDef.shape = new Box2D.b2CircleShape;
         fixDef.shape.SetRadius(this.particleSize / Settings.PTM);

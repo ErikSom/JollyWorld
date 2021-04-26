@@ -47,7 +47,7 @@ import { findObjectWithCopyHash } from "./utils/finder";
 import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
-import { generateVertices } from "./utils/box2dHelpers";
+import { b2CloneVec2, b2MulVec2 } from "../../libs/debugdraw";
 
 const { getPointer, NULL, pointsToVec2Array } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -2840,7 +2840,7 @@ const _B2dEditor = function () {
 					this.selectedPhysicsBodies = [];
 					this.selectedTextures = [];
 
-					this.deepClickDetection = this.mousePosWorld.Clone();
+					this.deepClickDetection = b2CloneVec2(this.mousePosWorld);
 
 					let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
 					if (highestObject) {
@@ -4999,7 +4999,7 @@ const _B2dEditor = function () {
 			const data = selectedPhysicsBody.mySprite.data;
 			if(data.type === this.object_TRIGGER) continue;
 
-			const pos = selectedPhysicsBody.GetPosition().Clone().SelfMul(Settings.PTM);
+			const pos = b2CloneVec2(selectedPhysicsBody.GetPosition()).SelfMul(Settings.PTM);
 
 			for (let j = 0; j < data.vertices.length; j++) {
 				if (data.radius[j]) {
@@ -6436,7 +6436,7 @@ const _B2dEditor = function () {
 				const tarPrefab = this.activePrefabs[highestObject.data.prefabInstanceName];
 				tarPos = new b2Vec2(tarPrefab.x, tarPrefab.y);
 			} else if ([this.object_BODY, this.object_TRIGGER].includes(highestObject.data.type)) {
-				tarPos = highestObject.myBody.GetPosition().Clone();
+				tarPos = b2CloneVec2(highestObject.myBody.GetPosition());
 				tarPos.x *= this.PTM;
 				tarPos.y *= this.PTM;
 			} else {
@@ -7229,10 +7229,10 @@ const _B2dEditor = function () {
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
-		if(obj.trigger) bd.type = Box2D.b2_kinematicBody;
-		else if (obj.fixed) bd.type = Box2D.b2_staticBody;
-		else bd.type = Box2D.b2_dynamicBody;
-		bd.angularDamping = 0.9;
+		if(obj.trigger) bd.set_type(Box2D.b2_kinematicBody);
+		else if (obj.fixed) bd.set_type(Box2D.b2_staticBody);
+		else bd.set_type(Box2D.b2_dynamicBody);
+		bd.set_angularDamping(0.9);
 
 		var body = this.world.CreateBody(bd);
 		body.SetAwake(false);
@@ -7277,7 +7277,7 @@ const _B2dEditor = function () {
 		body.mySprite.visible = obj.visible;
 
 		this.updateBodyFixtures(body);
-		// this.updateBodyShapes(body);
+		this.updateBodyShapes(body);
 
 		body.mySprite.x = body.GetPosition().x * this.PTM;
 		body.mySprite.y = body.GetPosition().y * this.PTM;
@@ -8801,9 +8801,9 @@ const _B2dEditor = function () {
 
 			for (let j = 0; j < innerVertices.length; j++) {
 				fixDef = new b2FixtureDef;
-				fixDef.density = data.density[i];
-				fixDef.friction = data.friction[i];
-				fixDef.restitution = data.restitution[i];
+				fixDef.set_density(data.density[i]);
+				fixDef.set_friction(data.friction[i]);
+				fixDef.set_restitution(data.restitution[i]);
 				const radius = data.radius[i];
 				if (!radius) {
 					let vert;
@@ -8811,7 +8811,6 @@ const _B2dEditor = function () {
 					let vertices = innerVertices[j];
 					for (var k = 0; k < vertices.length; k++) {
 						vert = vertices[k];
-						console.log(vert);
 						b2Vec2Arr.push({x: vert.x, y: vert.y});
 					}
 

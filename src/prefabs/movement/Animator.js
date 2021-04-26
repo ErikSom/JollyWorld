@@ -9,6 +9,7 @@ import { Settings } from "../../Settings";
 
 import { pointOnBezier, calculateBezierLength } from '../../b2Editor/utils/extramath'
 import easing from '../../b2Editor/utils/easing';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 const DEFAULT_PATH = [{"x":95,"y":45.5,"point1":{"x":131.0757,"y":28.2216},"point2":{"x":131.0757,"y":-28.2216}},{"x":95,"y":-45.5,"point1":{"x":58.9243,"y":-62.7784},"point2":{"x":-58.9243,"y":-62.7784}},{"x":-95,"y":-45.5,"point1":{"x":-131.0757,"y":-28.2216},"point2":{"x":-131.0757,"y":27.2216}},{"x":-95,"y":44.5,"point1":{"x":-58.9243,"y":61.7784},"point2":{"x":58.9243,"y":62.7784}}];
 
@@ -314,7 +315,7 @@ class Animator extends PrefabManager.basePrefab {
         const l = this.prefabObject.settings.targetAnchorLength / Settings.PTM;
         const a = this.prefabObject.settings.targetAnchorAngle;
 
-        const targetPosition = this.linkedTarget.myBody.GetPosition().Clone();
+        const targetPosition = b2CloneVec2(this.linkedTarget.myBody.GetPosition());
 
         const offsetX = l * Math.cos(this.linkedTarget.rotation+a);
         const offsetY = l * Math.sin(this.linkedTarget.rotation+a);
@@ -424,7 +425,7 @@ class Animator extends PrefabManager.basePrefab {
 
             if(this.linkedTarget.myBody){
 
-                const targetPosition = this.base.GetPosition().Clone();
+                const targetPosition = b2CloneVec2(this.base.GetPosition());
                 targetPosition.x = x / Settings.PTM;
                 targetPosition.y = y / Settings.PTM;
 

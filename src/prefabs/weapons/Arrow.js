@@ -3,6 +3,7 @@ import * as PrefabManager from '../PrefabManager'
 import {
     game
 } from "../../Game";
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class Arrow extends PrefabManager.basePrefab {
     constructor(target) {
@@ -43,7 +44,7 @@ class Arrow extends PrefabManager.basePrefab {
 		if(!this.sticking && this.arrowBody.IsAwake()){
 			this.arrowBody.GetWorldVector(this.pointingVec, this.vec);
 			const pointingDirection = this.vec;
-			const flightDirection = this.arrowBody.GetLinearVelocity().Clone();
+			const flightDirection = b2CloneVec2(this.arrowBody.GetLinearVelocity());
 			const flightSpeed = flightDirection.Normalize();
 
 

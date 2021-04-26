@@ -5,6 +5,7 @@ import {
 } from "../../Game";
 import { Settings } from '../../Settings';
 import { applyColorMatrixMultiple } from '../../b2Editor/utils/colorMatrixParser';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 
 export class BaseVehicle extends PrefabManager.basePrefab {
@@ -58,7 +59,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             if(fixture.GetBody().mainCharacter) return -1;
             if (fixture.IsSensor()) return -1;
             this.m_hit = true;
-            this.m_point = point.Clone();
+            this.m_point = b2CloneVec2(point);
             this.m_normal = normal;
             this.m_fixture = fixture;
             return fraction;
@@ -171,7 +172,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             let checkSlize = (360 / 20) * game.editor.DEG2RAD;
             let totalCircleRad = 360 * game.editor.DEG2RAD;
             for (j = 0; j < totalCircleRad; j += checkSlize) {
-                rayEnd = rayStart.Clone();
+                rayEnd = b2CloneVec2(rayStart);
                 rayEnd.SelfAdd(new Box2D.b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
                 let callback = new this.RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
@@ -190,7 +191,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     applyImpulse(force, angle) {
         let i;
         let body;
-        let dirFore = angle.Clone();
+        let dirFore = b2CloneVec2(angle);
         dirFore.SelfMul(force * 0.01)
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             body = this.lookupObject._bodies[i];

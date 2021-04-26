@@ -5,6 +5,7 @@ import {
     game
 } from "../../Game";
 import { drawLine } from '../../b2Editor/utils/drawing';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 export class SharpObject extends PrefabManager.basePrefab {
     constructor(target) {
@@ -35,7 +36,7 @@ export class SharpObject extends PrefabManager.basePrefab {
 		fixDef.restitution = fixture.GetRestitution();
 
 		const shape = fixture.GetShape();
-		fixDef.shape = shape.Clone();
+		fixDef.shape = shape.Clone(); // FIXME
 
 		const newFixture = this.sharpBody.CreateFixture(fixDef);
 
@@ -56,7 +57,7 @@ export class SharpObject extends PrefabManager.basePrefab {
             if (!fixture.GetBody().isFlesh) return -1;
             if (fixture.IsSensor()) return -1;
             this.m_hit = true;
-            this.m_point = point.Clone();
+            this.m_point = b2CloneVec2(point);
             this.m_normal = normal;
             this.m_fixture = fixture;
             return fraction;
@@ -186,7 +187,7 @@ export class SharpObject extends PrefabManager.basePrefab {
         const startPosition = new Box2D.b2Vec2(basePosition.x+this.offsetWidth*Math.cos(startAngle), basePosition.y+this.offsetWidth*Math.sin(startAngle));
         const bladePosition = new Box2D.b2Vec2(startPosition.x + this.width*Math.cos(sharpBodyAngle), startPosition.y + this.width*Math.sin(sharpBodyAngle));
 
-        const diff = bladePosition.Clone().SelfSub(contactPoint);
+        const diff = b2CloneVec2(bladePosition).SelfSub(contactPoint);
         const angle = Math.atan2(diff.y, diff.x) - game.editor.PI2;
 
         const angleDif = sharpBodyAngle - angle;

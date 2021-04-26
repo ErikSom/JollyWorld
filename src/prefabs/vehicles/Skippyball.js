@@ -2,6 +2,7 @@ import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
 import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class Skippyball extends BaseVehicle {
     constructor(target) {
@@ -109,11 +110,11 @@ class Skippyball extends BaseVehicle {
 				contactDecrease = 0.5;
 			} else if(contactBody.GetType() === Box2D.b2_dynamicBody){
 				contactDecrease = 0.5;
-				const baseForce = direction.Clone().SelfMul(impulse * -50 * forceSpread * contactDecrease) ;
+				const baseForce = b2CloneVec2(direction).SelfMul(impulse * -50 * forceSpread * contactDecrease) ;
 				contactBody.ApplyForce(baseForce, this.pullBodies[index-1].GetPosition(), true);
 			}
 
-			const baseForce = direction.Clone().SelfMul(impulse * forceSpread * contactDecrease) ;
+			const baseForce = b2CloneVec2(direction).SelfMul(impulse * forceSpread * contactDecrease) ;
 
 			this.lookupObject._bodies.forEach(body=>{
 				body.ApplyForceToCenter(baseForce);
@@ -159,7 +160,7 @@ class Skippyball extends BaseVehicle {
 			})
 
 			this.pullBodies.forEach(body => {
-				const direction = body.GetPosition().Clone().SelfSub(this.base.GetPosition()).SelfNormalize();
+				const direction = b2CloneVec2(body.GetPosition()).SelfSub(this.base.GetPosition()).SelfNormalize();
 				body.ApplyForceToCenter(direction.SelfMul(-30 * this.forceBuildup));
 			})
 
@@ -181,8 +182,8 @@ class Skippyball extends BaseVehicle {
 		this.handleFront.position.x = -20;
 		this.handleBack.position.x = -6.5;
 		this.baseYOffset = 34;
-		this.handleFront.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
-		this.handleBack.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
+		this.handleFront.position.y = -b2CloneVec2(this.handlePoint.GetPosition()).SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
+		this.handleBack.position.y = -b2CloneVec2(this.handlePoint.GetPosition()).SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
 
 	}
 
@@ -193,7 +194,7 @@ class Skippyball extends BaseVehicle {
 			const targetBodyIndex = (i + 3) % this.steps + 1;
 			const p = this.lookupObject[`b${targetBodyIndex}`];
 			p.mySprite.visible = false;
-			radiusAr.push(this.base.GetPosition().Clone().SelfSub(p.GetPosition()).Length()*Settings.PTM);
+			radiusAr.push(b2CloneVec2(this.base.GetPosition()).SelfSub(p.GetPosition()).Length()*Settings.PTM);
 		}
 
 		const rInc = 16;

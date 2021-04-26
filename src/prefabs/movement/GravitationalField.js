@@ -5,6 +5,7 @@ import {
     game
 } from "../../Game";
 import { CircleMaterial } from './CircleShaders';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 let circularTextureMaterial;
 
@@ -185,7 +186,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 			body.SetLinearDamping(this.damping);
 			body.SetAngularDamping(this.damping);
 
-			const diff = body.GetPosition().Clone().SelfSub(this.forceField.GetPosition());
+			const diff = b2CloneVec2(body.GetPosition()).SelfSub(this.forceField.GetPosition());
 			const rad = Math.max(1.0, diff.LengthSquared()*2);
 
 			const forceScalar = this.force;

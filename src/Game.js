@@ -45,6 +45,9 @@ const nanoid = require('nanoid');
 import GameStats from 'gamestats.js'; //TO DO PUBLISH NPM
 import { countries } from "./utils/Localization";
 
+
+import {b2CloneVec2, b2MulVec2} from '../libs/debugdraw'
+
 var b2Vec2 = Box2D.b2Vec2,
     b2AABB = Box2D.b2AABB,
     b2Body = Box2D.b2Body,
@@ -940,7 +943,7 @@ function Game() {
     }
     this.gameCheckpoint = function (object) {
         if(!this.checkPointData || ( Math.abs(this.checkPointData.x - object.GetPosition().x) > 1 || Math.abs(this.checkPointData.y - object.GetPosition().y) > 1)){
-            const confettiPosition = object.GetPosition().Clone();
+            const confettiPosition = b2CloneVec2(object.GetPosition());
             const confettiOffset = 3.0;
             const offsetAngle = object.GetAngle() - Settings.pihalve;
 
@@ -1113,7 +1116,7 @@ function Game() {
 
         let offsetX = 0;
         let offsetY = 0;
-        this.movementBuffer.push(this.cameraFocusObject.GetLinearVelocity().Clone());
+        this.movementBuffer.push(b2CloneVec2(this.cameraFocusObject.GetLinearVelocity()));
         if(this.movementBuffer.length > this.movementBufferSize) this.movementBuffer.shift();
 
         if(this.movementBuffer.length){
@@ -1187,7 +1190,7 @@ function Game() {
     //         body = bodies[i];
     //         otherBody = i == 0 ? bodies[1] : bodies[0];
     //         if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
-    //             body.oldBounceManifest = body.GetLinearVelocity().Clone();
+    //             body.oldBounceManifest = b2CloneVec2(body.GetLinearVelocity());
     //         }
     //     }
     // }

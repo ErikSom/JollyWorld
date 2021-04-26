@@ -6,6 +6,7 @@ import * as PIXI from 'pixi.js';
 import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';
 import * as TutorialManager from '../../utils/TutorialManager';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 const ANIMATION_TRAVEL_SPEED = 4000 / Settings.PTM;
 
@@ -25,7 +26,7 @@ export class RopeHat extends Hat {
 
 
 			this.m_hit = true;
-			this.m_point = point.Clone();
+			this.m_point = b2CloneVec2(point);
 			this.m_normal = normal;
 			this.m_fixture = fixture;
 			return fraction;
@@ -64,7 +65,7 @@ export class RopeHat extends Hat {
 			this.ropeFired = true;
 			const rayStart = this.head.GetPosition();
 			const angle = this.head.GetAngle() - Math.PI / 2;
-			const rayEnd = rayStart.Clone();
+			const rayEnd = b2CloneVec2(rayStart);
 			const length = 100;
 			rayEnd.x += length * Math.cos(angle);
 			rayEnd.y += length * Math.sin(angle);
@@ -124,7 +125,7 @@ export class RopeHat extends Hat {
 		const farthestPoint = precise ? point : this.findFarthestPointFromBody(0.3, point, body);
 		if (farthestPoint === null) return;
 
-		const diff = this.head.GetPosition().Clone().SelfSub(farthestPoint);
+		const diff = b2CloneVec2(this.head.GetPosition()).SelfSub(farthestPoint);
 		const angle = Math.atan2(diff.y, diff.x) - 90 * game.editor.DEG2RAD;
 
 		bd.position = farthestPoint;
@@ -224,7 +225,7 @@ export class RopeHat extends Hat {
 		}
 	}
 	bendRope(point, body) {
-		const diff = this.head.GetPosition().Clone().SelfSub(point);
+		const diff = b2CloneVec2(this.head.GetPosition()).SelfSub(point);
 		let angle = Math.atan2(diff.y, diff.x);
 		if(this.bendSpeed > 0){
 			angle -=  45 * game.editor.DEG2RAD;
@@ -235,16 +236,16 @@ export class RopeHat extends Hat {
 		body.ignorePhysicsCuller = true;
 		this.touchedBodies.push(body);
 
-		const offsetPoint = point.Clone();
+		const offsetPoint = b2CloneVec2(point);
 		const offsetLength = 0.5;
 		const offset = new Box2D.b2Vec2(offsetLength*Math.cos(angle), offsetLength*Math.sin(angle));
 		offsetPoint.SelfAdd(offset);
 
-		const bendLength = this.ropeEnd.GetPosition().Clone().SelfSub(offsetPoint).Length();
+		const bendLength = b2CloneVec2(this.ropeEnd.GetPosition()).SelfSub(offsetPoint).Length();
 		this.bendRopeLength += bendLength;
 
 		this.ropePoints.push({
-			point: this.ropeEnd.GetPosition().Clone(),
+			point: b2CloneVec2(this.ropeEnd.GetPosition()),
 			body: this.revoluteJoint.GetBodyA(),
 			speed: this.revoluteJoint.GetJointSpeed(),
 			bendLength
@@ -272,7 +273,7 @@ export class RopeHat extends Hat {
 		rayCB.prototype.ReportFixture = function (fixture, point, normal, fraction) {
 			if (fixture.GetBody() !== body) return -1;
 			this.m_hit = true;
-			this.m_point = point.Clone();
+			this.m_point = b2CloneVec2(point);
 			this.m_normal = normal;
 			this.m_fixture = fixture;
 			this.m_fraction = fraction;
@@ -283,7 +284,7 @@ export class RopeHat extends Hat {
 		let maxLength = 0;
 		let farthestPoint = null;
 
-		const dir = this.head.GetPosition().Clone().SelfSub(point).SelfNormalize();
+		const dir = b2CloneVec2(this.head.GetPosition()).SelfSub(point).SelfNormalize();
 
 		for (let i = 0; i < steps; i++) {
 			const rot = rotChunk * i;
@@ -309,7 +310,7 @@ export class RopeHat extends Hat {
 	}
 
 	getGunStartPosition(){
-		const gunStartPosition = this.head.GetPosition().Clone();
+		const gunStartPosition = b2CloneVec2(this.head.GetPosition());
 		const gunAngle = this.hatBody.GetAngle()+90*game.editor.DEG2RAD;
 		const gunlength = 3.5;
 		gunStartPosition.x -= gunlength * Math.cos(gunAngle);
@@ -331,7 +332,7 @@ export class RopeHat extends Hat {
 		for(let i = 1; i<tilingPoints.length; i++){
 			const point = tilingPoints[i];
 			const previousPoint = tilingPoints[i-1];
-			const diff = point.Clone().SelfSub(previousPoint);
+			const diff = b2CloneVec2(point).SelfSub(previousPoint);
 
 			const tilingSprite = new PIXI.TilingSprite(
 				PIXI.Texture.from("rope.png"),
@@ -363,7 +364,7 @@ export class RopeHat extends Hat {
 			fixture = this.ropeEnd.GetFixtureList();
 		}
 
-		const ropeLength = this.head.GetPosition().Clone().SelfSub(this.ropeEnd.GetPosition()).Length();
+		const ropeLength = b2CloneVec2(this.head.GetPosition()).SelfSub(this.ropeEnd.GetPosition()).Length();
 
 		// rope collider
 		let fixDef = new Box2D.b2FixtureDef;
@@ -403,8 +404,8 @@ export class RopeHat extends Hat {
 
 		const point = this.currentAnimationPoint;
 		const previousPoint = this.ropeGoingOut ? this.targetAnimationPoint : this.getGunStartPosition();
-		const diff = point.Clone().SelfSub(previousPoint);
-		const dir = diff.Clone().SelfNormalize();
+		const diff = b2CloneVec2(point).SelfSub(previousPoint);
+		const dir = b2CloneVec2(diff).SelfNormalize();
 		const angle = Math.atan2(diff.y, diff.x);
 
 
@@ -417,7 +418,7 @@ export class RopeHat extends Hat {
 			this.anchorTexture.rotation = angle;
 		}
 
-		const ropeDiff = this.currentAnimationPoint.Clone().SelfSub(this.getGunStartPosition())
+		const ropeDiff = b2CloneVec2(this.currentAnimationPoint).SelfSub(this.getGunStartPosition())
 		const ropeAngle = Math.atan2(ropeDiff.y, ropeDiff.x);
 
 		const tilingSprite = new PIXI.TilingSprite(
@@ -434,7 +435,7 @@ export class RopeHat extends Hat {
 		this.tilingSprites.push(tilingSprite);
 
 
-		const endDiff = point.Clone().SelfSub(previousPoint);
+		const endDiff = b2CloneVec2(point).SelfSub(previousPoint);
 		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5){
 			if(this.ropeGoingOut && !this.ropeAttached){
 				// ?
@@ -471,7 +472,7 @@ export class RopeHat extends Hat {
 	accelerate(dir) {
 		if (!this.pulleyJoint) return;
 
-		const ropeLength = this.ropeEnd.GetPosition().Clone().SelfSub(this.hatBody.GetPosition()).Length();
+		const ropeLength = b2CloneVec2(this.ropeEnd.GetPosition()).SelfSub(this.hatBody.GetPosition()).Length();
 		// stop pulling when we are below min length
 		if(dir<0 && ropeLength<this.minRopeLength){
 			dir = 0;

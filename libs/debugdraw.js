@@ -1,3 +1,20 @@
+ /**
+ * to replace original C++ operator =
+ * @param {Box2D.b2Vec2} vec
+ * @returns {Box2D.b2Vec2}
+ */
+export const b2CloneVec2 = vec =>
+  new Box2D.b2Vec2(vec.get_x(), vec.get_y());
+
+/**
+ * to replace original C++ operator *= (float) 
+ * @param {Box2D.b2Vec2} vec
+ * @param {number} scale
+ * @returns {Box2D.b2Vec2}
+ */
+export const b2MulVec2 = (vec, scale) =>
+  new Box2D.b2Vec2(scale * vec.get_x(), scale * vec.get_y());
+
 /**
  * Forked from Box2D.js
  * @see https://github.com/kripken/box2d.js/blob/f75077b/helpers/embox2d-helpers.js
@@ -12,7 +29,7 @@
  * @param {number} pixelsPerMeter
  * @param {import('box2d-wasm').Box2DEmscriptenModule} box2D
  */
- export const makeDebugDraw = (ctx, pixelsPerMeter, {
+export const makeDebugDraw = (ctx, pixelsPerMeter, {
     b2Color,
     b2Draw: { e_shapeBit },
     b2Transform,
@@ -21,23 +38,6 @@
     wrapPointer
   }) => {
 
-  /**
-   * to replace original C++ operator =
-   * @param {Box2D.b2Vec2} vec
-   * @returns {Box2D.b2Vec2}
-   */
-  const copyVec2 = vec =>
-    new b2Vec2(vec.get_x(), vec.get_y());
-
-  /**
-   * to replace original C++ operator *= (float) 
-   * @param {Box2D.b2Vec2} vec
-   * @param {number} scale
-   * @returns {Box2D.b2Vec2}
-   */
-  const scaledVec2 = (vec, scale) =>
-    new b2Vec2(scale * vec.get_x(), scale * vec.get_y());
-    
   /**
    * @param {Box2D.b2Color} color
    * @returns {string}
@@ -98,8 +98,8 @@
     
     if (fill) {
       //render axis marker
-      const vertex = copyVec2(center);
-      vertex.op_add(scaledVec2(axis, radius));
+      const vertex = b2CloneVec2(center);
+      vertex.op_add(b2MulVec2(axis, radius));
       ctx.beginPath();
       ctx.moveTo(center.get_x(), center.get_y());
       ctx.lineTo(vertex.get_x(), vertex.get_y());

@@ -6,6 +6,7 @@ import {
     Settings
 } from '../../Settings';
 import * as PIXI from 'pixi.js';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 
 class YogaBall extends PrefabManager.basePrefab {
@@ -53,8 +54,8 @@ class YogaBall extends PrefabManager.basePrefab {
 		this.handleFront.position.x = -20;
 		this.handleBack.position.x = -6.5;
 		this.baseYOffset = 34;
-		this.handleFront.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
-		this.handleBack.position.y = -this.handlePoint.GetPosition().Clone().SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
+		this.handleFront.position.y = -b2CloneVec2(this.handlePoint.GetPosition()).SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
+		this.handleBack.position.y = -b2CloneVec2(this.handlePoint.GetPosition()).SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
 	}
 
 	getMeshData(){
@@ -64,7 +65,7 @@ class YogaBall extends PrefabManager.basePrefab {
 			const targetBodyIndex = (i + 3) % this.steps + 1;
 			const p = this.lookupObject[`b${targetBodyIndex}`];
 			p.mySprite.visible = false;
-			radiusAr.push(this.base.GetPosition().Clone().SelfSub(p.GetPosition()).Length()*Settings.PTM);
+			radiusAr.push(b2CloneVec2(this.base.GetPosition()).SelfSub(p.GetPosition()).Length()*Settings.PTM);
 		}
 
 		const rInc = 16;

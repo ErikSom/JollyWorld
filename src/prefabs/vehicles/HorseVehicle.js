@@ -3,6 +3,7 @@ import { BaseVehicle } from './BaseVehicle';
 import {
     game
 } from "../../Game";
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class HorseVehicle extends BaseVehicle {
     constructor(target) {
@@ -24,7 +25,7 @@ class HorseVehicle extends BaseVehicle {
 
         const frontLegDelay = 20;
         const tarAngleOffsets = [180, 0 - frontLegDelay, 180 - frontLegDelay];
-        let vehicleSpeed = this.lookupObject["frame"].GetLinearVelocity().Clone().SelfNormalize();
+        let vehicleSpeed = b2CloneVec2(this.lookupObject["frame"].GetLinearVelocity()).SelfNormalize();
         let vehicleDirection = this.lookupObject["frame"].GetTransform().GetRotation().GetXAxis(new Box2D.b2Vec2());
         let moveForward = (vehicleSpeed.Dot(vehicleDirection) > 0);
         const motionToRotationSmoothing = 0.4;
@@ -43,7 +44,7 @@ class HorseVehicle extends BaseVehicle {
             const checkSlize = (360 / 20) * game.editor.DEG2RAD;
             const totalCircleRad = 360 * game.editor.DEG2RAD;
             for (var j = 0; j < totalCircleRad; j += checkSlize) {
-                rayEnd = rayStart.Clone();
+                rayEnd = b2CloneVec2(rayStart);
                 rayEnd.SelfAdd(new Box2D.b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
                 let callback = new this.RaycastCallbackWheel();
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
