@@ -50,6 +50,8 @@ import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 
+const { getPointer, NULL } = Box2D;
+
 const PIXIHeaven = self.PIXI.heaven;
 
 const _B2dEditor = function () {
@@ -2373,17 +2375,13 @@ const _B2dEditor = function () {
 			}
 		}
 
-		var body = this.world.GetBodyList();
-		var i = 0
-		while (body) {
+		for (let body = this.world.GetBodyList(); getPointer(body) !== getPointer(NULL); body = body.GetNext()) {
 			if(body.lockPositionForOneFrame){
 				// fixes PostSolve displacements (e.g. Arrow)
 				body.SetPosition(body.lockPositionForOneFrame);
-				body.lockPositionForOneFrame = undefined;
+				delete body.lockPositionForOneFrame;
 			}
 			this.updateBodyPosition(body);
-			i++;
-			body = body.GetNext();
 		}
 
 		//update objects
@@ -2395,7 +2393,7 @@ const _B2dEditor = function () {
 					this.activePrefabs[key].class.update();
 				}
 			}
-			for (i = 0; i < this.triggerObjects.length; i++) {
+			for (let i = 0; i < this.triggerObjects.length; i++) {
 				this.triggerObjects[i].class.update();
 			}
 			this.handleParallax();
@@ -5626,7 +5624,7 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.fixed = controller.targetValue;
 							if (body.mySprite.data.fixed) body.SetType(Box2D.b2BodyType.b2_staticBody);
-							else body.SetType(Box2D.b2BodyType.b2_dynamicBody);
+							else body.SetType(Box2D.b2_dynamicBody);
 
 							var oldPosition = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
 							body.SetPosition(new b2Vec2(1000, 1000));
@@ -5636,7 +5634,7 @@ const _B2dEditor = function () {
 							this.setBodyCollision(body, body.mySprite.data.collision);
 
 							//awake fix
-							if (body.GetType() == Box2D.b2BodyType.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
+							if (body.GetType() == Box2D.b2_dynamicBody) body.SetAwake(body.mySprite.data.awake);
 						}
 
 					} else if (controller.property == "awake") {
@@ -7233,7 +7231,7 @@ const _B2dEditor = function () {
 		var bd = new b2BodyDef();
 		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
 		else if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
-		else bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		else bd.type = Box2D.b2_dynamicBody;
 		bd.angularDamping = 0.9;
 
 		var body = this.world.CreateBody(bd);
@@ -9917,15 +9915,12 @@ const _B2dEditor = function () {
 		delete this.editorSettingsObject.song;
 
 		//Destroy all bodies
-		var body = this.world.GetBodyList();
-		var i = 0
-		while (body) {
-			var b = body;
-			this.world.DestroyBody(b);
-			body = body.GetNext();
+		for (let body = this.world.GetBodyList(); getPointer(body) !== getPointer(NULL); body = body.GetNext()) {
+			this.world.DestroyBody(body);
 		}
 
 		//Destroy all graphics
+		var i = 0
 		for (i = 0; i < this.textures.children.length; i++) {
 			var sprite = this.textures.getChildAt(i);
 			sprite.parent.removeChild(sprite);
@@ -9957,61 +9952,61 @@ const _B2dEditor = function () {
         if(this.tracingTexture) this.tracingTexture.renderable = true;
 	}
 
-	this.B2dEditorContactListener = new Box2D.b2ContactListener();
-	this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
-		if (self.contactCallBackListener) {
-			if (secondParam) self.contactCallBackListener[name](contact, secondParam);
-			else self.contactCallBackListener[name](contact);
-		}
-		var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-		var body;
-		var selectedPrefab = null;
-		var selectedSubPrefab = null
-		for (var i = 0; i < bodies.length; i++) {
-			body = bodies[i];
-			if (body.mySprite && body.mySprite.data.prefabInstanceName) {
-				var tarPrefab = self.activePrefabs[body.mySprite.data.prefabInstanceName].class;
-				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
-					selectedPrefab = tarPrefab;
-					if (secondParam) selectedPrefab.contactListener[name](contact, secondParam);
-					else selectedPrefab.contactListener[name](contact);
-				}
-			}
-			if (body.mySprite && body.mySprite.data.subPrefabInstanceName) {
-				var tarPrefab = self.activePrefabs[body.mySprite.data.subPrefabInstanceName].class;
-				if (tarPrefab && tarPrefab != selectedSubPrefab && tarPrefab.contactListener) {
-					selectedSubPrefab = tarPrefab;
-					if (secondParam) selectedSubPrefab.contactListener[name](contact, secondParam);
-					else selectedSubPrefab.contactListener[name](contact);
-				}
-			}
-			if (body.mySprite && body.mySprite.data.type == self.object_TRIGGER) {
-				if (secondParam) body.class.contactListener[name](contact, secondParam);
-				else body.class.contactListener[name](contact);
-			}
+	// this.B2dEditorContactListener = new Box2D.b2ContactListener();
+	// this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
+	// 	if (self.contactCallBackListener) {
+	// 		if (secondParam) self.contactCallBackListener[name](contact, secondParam);
+	// 		else self.contactCallBackListener[name](contact);
+	// 	}
+	// 	var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+	// 	var body;
+	// 	var selectedPrefab = null;
+	// 	var selectedSubPrefab = null
+	// 	for (var i = 0; i < bodies.length; i++) {
+	// 		body = bodies[i];
+	// 		if (body.mySprite && body.mySprite.data.prefabInstanceName) {
+	// 			var tarPrefab = self.activePrefabs[body.mySprite.data.prefabInstanceName].class;
+	// 			if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
+	// 				selectedPrefab = tarPrefab;
+	// 				if (secondParam) selectedPrefab.contactListener[name](contact, secondParam);
+	// 				else selectedPrefab.contactListener[name](contact);
+	// 			}
+	// 		}
+	// 		if (body.mySprite && body.mySprite.data.subPrefabInstanceName) {
+	// 			var tarPrefab = self.activePrefabs[body.mySprite.data.subPrefabInstanceName].class;
+	// 			if (tarPrefab && tarPrefab != selectedSubPrefab && tarPrefab.contactListener) {
+	// 				selectedSubPrefab = tarPrefab;
+	// 				if (secondParam) selectedSubPrefab.contactListener[name](contact, secondParam);
+	// 				else selectedSubPrefab.contactListener[name](contact);
+	// 			}
+	// 		}
+	// 		if (body.mySprite && body.mySprite.data.type == self.object_TRIGGER) {
+	// 			if (secondParam) body.class.contactListener[name](contact, secondParam);
+	// 			else body.class.contactListener[name](contact);
+	// 		}
 
-			if(body.contactListener){
-				if (secondParam) body.contactListener[name](contact, secondParam);
-				else body.contactListener[name](contact);
-			}
-		}
-	}
-	this.B2dEditorContactListener.BeginContact = function (contact) {
-		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
-			physicsCullCamera.beginContact(contact);
-		}else this.BubbleEvent("BeginContact", contact);
-	}
-	this.B2dEditorContactListener.EndContact = function (contact) {
-		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
-			physicsCullCamera.endContact(contact);
-		}else this.BubbleEvent("EndContact", contact);
-	}
-	this.B2dEditorContactListener.PreSolve = function (contact, oldManifold) {
-		this.BubbleEvent("PreSolve", contact, oldManifold);
-	}
-	this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
-		this.BubbleEvent("PostSolve", contact, impulse);
-	}
+	// 		if(body.contactListener){
+	// 			if (secondParam) body.contactListener[name](contact, secondParam);
+	// 			else body.contactListener[name](contact);
+	// 		}
+	// 	}
+	// }
+	// this.B2dEditorContactListener.BeginContact = function (contact) {
+	// 	if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+	// 		physicsCullCamera.beginContact(contact);
+	// 	}else this.BubbleEvent("BeginContact", contact);
+	// }
+	// this.B2dEditorContactListener.EndContact = function (contact) {
+	// 	if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+	// 		physicsCullCamera.endContact(contact);
+	// 	}else this.BubbleEvent("EndContact", contact);
+	// }
+	// this.B2dEditorContactListener.PreSolve = function (contact, oldManifold) {
+	// 	this.BubbleEvent("PreSolve", contact, oldManifold);
+	// }
+	// this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
+	// 	this.BubbleEvent("PostSolve", contact, impulse);
+	// }
 	this.testWorld = function () {
 		this.selectTool(this.tool_SELECT);
 

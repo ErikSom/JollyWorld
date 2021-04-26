@@ -145,7 +145,7 @@ class ForceField extends PrefabManager.basePrefab {
 			const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
 			const otherBody = (bodies[0] == self.forceField) ? bodies[1] : bodies[0];
 
-			if(otherBody.GetType() !== Box2D.b2BodyType.b2_dynamicBody) return;
+			if(otherBody.GetType() !== Box2D.b2_dynamicBody) return;
 			if(!otherBody.IsAwake()) return;
 
 			if(!otherBody.isAffectedByForcefield){

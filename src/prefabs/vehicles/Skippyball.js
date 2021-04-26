@@ -107,7 +107,7 @@ class Skippyball extends BaseVehicle {
 			let contactDecrease = 1.0;
 			if(!contactBody){
 				contactDecrease = 0.5;
-			} else if(contactBody.GetType() === Box2D.b2BodyType.b2_dynamicBody){
+			} else if(contactBody.GetType() === Box2D.b2_dynamicBody){
 				contactDecrease = 0.5;
 				const baseForce = direction.Clone().SelfMul(impulse * -50 * forceSpread * contactDecrease) ;
 				contactBody.ApplyForce(baseForce, this.pullBodies[index-1].GetPosition(), true);

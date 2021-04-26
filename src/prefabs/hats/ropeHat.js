@@ -117,7 +117,7 @@ export class RopeHat extends Hat {
 		this.blockControls = true;
 
 		const bd = new Box2D.b2BodyDef();
-		bd.type = Box2D.b2BodyType.b2_dynamicBody;
+		bd.type = Box2D.b2_dynamicBody;
 		bd.angularDamping = 0.85;
 		bd.linearDamping = 0.85;
 

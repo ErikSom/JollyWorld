@@ -36,7 +36,7 @@ class Cannon extends PrefabManager.basePrefab {
 		if(this.prefabObject.settings.isFixed){
             this.cannonBody.SetType(Box2D.b2BodyType.b2_staticBody);
         }else{
-            this.cannonBody.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.cannonBody.SetType(Box2D.b2_dynamicBody);
 		}
 		this.lastCannonBalls = [];
 

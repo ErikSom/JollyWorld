@@ -176,7 +176,7 @@ class Treadmill extends PrefabManager.basePrefab {
         if(this.prefabObject.settings.isFixed){
             this.base.SetType(Box2D.b2BodyType.b2_staticBody);
         }else{
-            this.base.SetType(Box2D.b2BodyType.b2_dynamicBody);
+            this.base.SetType(Box2D.b2_dynamicBody);
 		}
 		this.targetSpeedPTM = this.prefabObject.settings.wheelSpeed / Settings.PTM;
 	}

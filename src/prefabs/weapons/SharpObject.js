@@ -219,7 +219,7 @@ export class SharpObject extends PrefabManager.basePrefab {
 
             let otherBody = (bodies[0] == sharpBody) ? bodies[1] : bodies[0];
 
-            if(!otherBody.mySprite || otherBody.connectedSpike || otherBody.mySprite.data.collision == 2 || otherBody.GetType() != Box2D.b2BodyType.b2_dynamicBody) return;
+            if(!otherBody.mySprite || otherBody.connectedSpike || otherBody.mySprite.data.collision == 2 || otherBody.GetType() != Box2D.b2_dynamicBody) return;
             const allowedBodyParts = ['head', 'body'];
             if(otherBody.isFlesh && !allowedBodyParts.includes(otherBody.mySprite.data.refName)) return;
 

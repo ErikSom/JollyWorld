@@ -1,4 +1,4 @@
-import * as Box2D  from "./Box2D";
+import * as Box2D  from "./LEGACY_Box2D";
 
 class DebugDraw extends Box2D.b2Draw {
   
