@@ -35,6 +35,7 @@ import * as TutorialManager from './utils/TutorialManager';
 import * as SlowmoUI from './ui/Slomo';
 import * as GameTimer from './utils/GameTimer'
 import * as ReplayManager from './utils/ReplayManager';
+import * as b2DebugDrawManager from './utils/b2DebugDrawManager'
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -225,6 +226,8 @@ function Game() {
 
     this.gameSetup = function () {
 
+        b2DebugDrawManager.init();
+
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
         );
@@ -266,11 +269,7 @@ function Game() {
         }
         this.stage.addChild(this.triggerDebugDraw);
 
-        //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
-        // this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
-        // this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
-        // this.world.SetDebugDraw(this.myDebugDraw);
 
         this.gameRender();
 
@@ -499,6 +498,8 @@ function Game() {
 
         this.oldInnerWidth = window.innerWidth;
         this.oldInnerHeight = window.innerHeight;
+
+        b2DebugDrawManager.resize();
     }
 
     this.getBodyAtMouse = function () {
