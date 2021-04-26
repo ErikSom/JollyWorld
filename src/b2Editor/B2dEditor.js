@@ -1,5 +1,3 @@
-const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
-
 import * as PrefabManager from "../prefabs/PrefabManager";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";
@@ -50,7 +48,8 @@ import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 
-const { getPointer, NULL } = Box2D;
+const { getPointer, NULL } = Box2D; // emscriptem specific
+const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
 
 const PIXIHeaven = self.PIXI.heaven;
 

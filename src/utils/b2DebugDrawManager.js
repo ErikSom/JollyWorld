@@ -11,6 +11,7 @@ export const init = () => {
 		position:absolute;
 		top:0;
 		left:0;
+		pointer-events: none;
 	`;
 	const debugDraw = makeDebugDraw(ctx, Settings.PTM, Box2D);
 	game.world.SetDebugDraw(debugDraw);
