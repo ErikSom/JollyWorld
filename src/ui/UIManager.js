@@ -1042,11 +1042,18 @@ function UIManager() {
             });
         }
 
+        const buttons = gameOver.querySelector('.buttons');
+        const exitButton = buttons.querySelector('.exit');
+        const testButton = buttons.querySelector('.test');
+
+
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             gameOver.classList.add('editor');
+            textFit(testButton.querySelector('.fit'));
         }else{
             gameOver.classList.remove('editor');
+            textFit(exitButton.querySelector('.fit'));
         }
 
 
