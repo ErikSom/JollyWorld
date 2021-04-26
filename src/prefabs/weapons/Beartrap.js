@@ -1,5 +1,4 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
 import * as AudioManager from '../../utils/AudioManager';
 import {
     game

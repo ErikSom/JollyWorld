@@ -1,9 +1,8 @@
 import {
-    b2Vec2
-} from "../../../libs/Box2D";
-import {
     game
 } from "../../Game";
+
+const {b2Vec2} = Box2D
 
 export const rotateVector = function (vector, degrees) {
     const radians = degrees * game.editor.DEG2RAD;

@@ -1,6 +1,5 @@
 import * as PrefabManager from '../PrefabManager'
 import * as PrefabBuilder from '../../utils/PrefabBuilder'
-import * as Box2D from '../../../libs/Box2D';
 
 import { drawCircle } from '../../b2Editor/utils/drawing';
 

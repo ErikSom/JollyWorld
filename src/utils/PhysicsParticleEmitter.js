@@ -1,5 +1,4 @@
 import * as PrefabBuilder from './PrefabBuilder';
-import * as Box2D from '../../libs/Box2D';
 import {
 	game
 } from "../Game";

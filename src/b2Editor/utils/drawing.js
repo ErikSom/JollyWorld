@@ -1,5 +1,4 @@
 import { B2dEditor } from "../B2dEditor";
-import * as Box2D from "../../../libs/Box2D";
 import * as dat from "../../../libs/dat.gui";
 import { Settings } from "../../Settings";
 

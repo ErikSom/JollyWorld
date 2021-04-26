@@ -70,6 +70,9 @@ module.exports = {
 			'node_modules',
 		],
 	},
+	node: {
+		fs: "empty"
+		},
 	plugins: [
 		new CopyPlugin({
 			patterns: [

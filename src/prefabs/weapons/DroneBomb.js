@@ -1,5 +1,4 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
 import {PIDController} from '../misc/PIDController'
 import { Settings } from '../../Settings';
 import { normalizePI } from '../../b2Editor/utils/extramath';

@@ -4,7 +4,6 @@ import {
 import {
     Settings
 } from '../../Settings';
-import * as Box2D from '../../../libs/Box2D'
 
 export const init = ()=>{
 	const bd = new Box2D.b2BodyDef();

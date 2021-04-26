@@ -2,7 +2,6 @@ import Hat from './hat'
 import {
 	game
 } from "../../Game";
-import * as Box2D from '../../../libs/Box2D'
 import * as PIXI from 'pixi.js';
 import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';

@@ -1,8 +1,5 @@
-import {
-	b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape
-} from "../../libs/Box2D";
+const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
 
-import * as Box2D from "../../libs/Box2D";
 import * as PrefabManager from "../prefabs/PrefabManager";
 import * as drawing from "./utils/drawing";
 import * as scrollBars from "./utils/scrollBars";

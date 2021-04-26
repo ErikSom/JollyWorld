@@ -2,7 +2,6 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
-import * as Box2D from "../../../libs/Box2D";
 import {
     Settings
 } from '../../Settings';

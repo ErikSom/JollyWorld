@@ -2,7 +2,6 @@ import {
     B2dEditor
 } from "../B2dEditor";
 import * as ui from "../utils/ui";
-import * as Box2D from "../../../libs/Box2D";
 import {
     Settings
 } from "../../Settings";

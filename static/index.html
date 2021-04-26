@@ -192,13 +192,15 @@
 
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>
 
-    <script>
+    <script type="module">
         var __assetHashNames = '{{{ASSET_HASH_NAMES}}}';
         var preloaderFill = document.getElementsByClassName('preloaderFill')[0];
         var setLoaderProgress = function(percent){
                 var sp = 7;
                 preloaderFill.style.width = (sp+percent*(100-sp)).toFixed(2)+'%';
             }
+
+        var gameScript = false;
         function loadJS(url, onError) {
             setLoaderProgress(0);
             if (!onError) onError = function () {};
@@ -209,8 +211,13 @@
                         try {
                             setLoaderProgress(1);
                             setTimeout(function(){
-                                eval(xhr.responseText);
-                            }, 100);
+                                if(window.Box2D){
+                                    gameScript = xhr.responseText;
+                                    eval(xhr.responseText);
+                                } else {
+                                    gameScript = xhr.responseText;
+                                }
+                            }, 1);
                         } catch (e) {
                             onError(e);
                             return;
@@ -237,7 +244,18 @@
                 setLoaderProgress(Math.min(1.0, percentComplete));
             }
         }
+
+        import Box2DFactory from './Box2D.js';
+        Box2DFactory().then(Box2D => {
+            window.Box2D = Box2D;
+            if(gameScript){
+                eval(gameScript);
+                gameScript = undefined;
+            }
+        });
+
         loadJS('./assets/awesome-game.js');
+
     </script>
 
 </body>

@@ -1,7 +1,6 @@
 import {
     B2dEditor
 } from "../../b2Editor/B2dEditor"
-import * as Box2D from '../../../libs/Box2D'
 import * as PrefabManager from '../PrefabManager';
 import {
     game

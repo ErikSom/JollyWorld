@@ -1,6 +1,5 @@
 import * as PrefabManager from '../PrefabManager'
 import { SharpObject } from './SharpObject';
-import * as Box2D from '../../../libs/Box2D';
 
 import {
     game

@@ -1,5 +1,4 @@
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
 
 class Trampoline extends PrefabManager.basePrefab {
     constructor(target) {

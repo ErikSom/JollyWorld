@@ -3,7 +3,6 @@ import { Explosive } from './Explosive';
 import * as emitterManager from '../../utils/EmitterManager';
 import * as PhysicsParticleEmitter from '../../utils/PhysicsParticleEmitter';
 import * as PrefabBuilder from '../../utils/PrefabBuilder';
-import * as Box2D from '../../../libs/Box2D';
 import * as AudioManager from '../../utils/AudioManager';
 
 

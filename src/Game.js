@@ -1,14 +1,9 @@
-
-import * as Box2D from "../libs/Box2D";
 import {
     Key
 } from "../libs/Key";
 import {
     B2dEditor
 } from "./b2Editor/B2dEditor";
-import {
-    getPIXIDebugDraw
-} from "../libs/debugdraw";
 import * as PIXI from 'pixi.js'
 import {
     ui
@@ -273,9 +268,9 @@ function Game() {
 
         //Debug Draw
         this.newDebugGraphics = new PIXI.Graphics();
-        this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
-        this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
-        this.world.SetDebugDraw(this.myDebugDraw);
+        // this.myDebugDraw = getPIXIDebugDraw(this.newDebugGraphics, Settings.PTM);
+        // this.myDebugDraw.SetFlags(Box2D.b2DrawFlags.e_shapeBit | Box2D.b2DrawFlags.e_jointBit);
+        // this.world.SetDebugDraw(this.myDebugDraw);
 
         this.gameRender();
 

@@ -1,7 +1,6 @@
 import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
 import { Settings } from '../../Settings';
-import * as Box2D from '../../../libs/Box2D'
 import * as AudioManager from '../../utils/AudioManager';
 
 class Skippyball extends BaseVehicle {

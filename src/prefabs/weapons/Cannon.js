@@ -1,6 +1,5 @@
 import * as PrefabManager from '../PrefabManager'
 import * as PrefabBuilder from '../../utils/PrefabBuilder'
-import * as Box2D from '../../../libs/Box2D';
 import * as EffectsComposer from '../../utils/EffectsComposer';
 import * as emitterManager from '../../utils/EmitterManager';
 import * as AudioManager from '../../utils/AudioManager';

@@ -1,6 +1,5 @@
 
 import * as PrefabManager from '../PrefabManager';
-import * as Box2D from '../../../libs/Box2D';
 import { removeGraphicFromCells } from '../../utils/PIXICuller';
 import {
     game
