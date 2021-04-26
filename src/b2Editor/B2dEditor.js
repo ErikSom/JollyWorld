@@ -2321,17 +2321,17 @@ const _B2dEditor = function () {
 			}
 
 			const angle = body.GetAngle() - textureOffsetAngle;
-			body.myTexture.x = body.GetPosition().x * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
-			body.myTexture.y = body.GetPosition().y * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
-			// body.mySprite.x = body.GetPosition().x * this.PTM;
-			// body.mySprite.y = body.GetPosition().y * this.PTM;
+			body.myTexture.x = body.GetPosition().get_x() * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
+			body.myTexture.y = body.GetPosition().get_y() * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
+			// body.mySprite.x = body.GetPosition().get_x() * this.PTM;
+			// body.mySprite.y = body.GetPosition().get_y() * this.PTM;
 			//if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
 			body.myTexture.rotation = body.GetAngle() - body.myTexture.data.textureAngleOffset;
 
 		}
 		if (body.mySprite && body.mySprite.visible) {
-			body.mySprite.x = body.GetPosition().x * this.PTM;
-			body.mySprite.y = body.GetPosition().y * this.PTM;
+			body.mySprite.x = body.GetPosition().get_x() * this.PTM;
+			body.mySprite.y = body.GetPosition().get_y() * this.PTM;
 			//if(body.mySprite.rotation != body.GetAngle()) // pixi updatetransform fix
 			body.mySprite.rotation = body.GetAngle();
 
@@ -2366,8 +2366,8 @@ const _B2dEditor = function () {
 					const frame = [];
 					const lookup = game.character.lookupObject
 					const color = '0x'+Math.floor(Math.random()*16777215).toString(16);
-					if(lookup.body) frame[0] = [color, lookup.body.GetPosition().x, lookup.body.GetPosition().y, lookup.body.GetAngle()];
-					if(lookup.head) frame[1] = [color, lookup.head.GetPosition().x, lookup.head.GetPosition().y];
+					if(lookup.body) frame[0] = [color, lookup.body.GetPosition().get_x(), lookup.body.GetPosition().get_y(), lookup.body.GetAngle()];
+					if(lookup.head) frame[1] = [color, lookup.head.GetPosition().get_x(), lookup.head.GetPosition().y];
 					this.playerHistory.push(frame);
 					if(this.playerHistory.length>maxRecordTime*recordPerSecond) this.playerHistory.shift();
 					this.recordPlayerHistoryTime = 1000/recordPerSecond;
@@ -2792,8 +2792,8 @@ const _B2dEditor = function () {
 
 					const targetBody = this.activePrefabs[key].class.lookupObject['body'];
 
-					let cameraTargetX = targetBody.GetPosition().x*this.PTM;
-					let cameraTargetY = targetBody.GetPosition().y*this.PTM;
+					let cameraTargetX = targetBody.GetPosition().get_x()*this.PTM;
+					let cameraTargetY = targetBody.GetPosition().get_y()*this.PTM;
 
 					return {x:cameraTargetX, y: cameraTargetY}
                 }
@@ -3684,8 +3684,8 @@ const _B2dEditor = function () {
 							centerPoints[group].x += prefab.x;
 							centerPoints[group].y += prefab.y;
 						}else if (body || (!this.editing && data.type == this.jointObject)) {
-							centerPoints[group].x += body.GetPosition().x * this.PTM;
-							centerPoints[group].y += body.GetPosition().y * this.PTM;
+							centerPoints[group].x += body.GetPosition().get_x() * this.PTM;
+							centerPoints[group].y += body.GetPosition().get_y() * this.PTM;
 						} else {
 							centerPoints[group].x += sprite.x;
 							centerPoints[group].y += sprite.y;
@@ -3730,8 +3730,8 @@ const _B2dEditor = function () {
 						body.SetAngle(newAngle);
 
 						if (group) {
-							const difX = (body.GetPosition().x * this.PTM) - centerPoints[group].x;
-							const difY = (body.GetPosition().y * this.PTM) - centerPoints[group].y;
+							const difX = (body.GetPosition().get_x() * this.PTM) - centerPoints[group].x;
+							const difY = (body.GetPosition().get_y() * this.PTM) - centerPoints[group].y;
 							const distanceToCenter = Math.sqrt(difX * difX + difY * difY);
 							const angleToCenter = Math.atan2(difY, difX);
 							const newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter + rAngle);
@@ -3876,8 +3876,8 @@ const _B2dEditor = function () {
 			for (i = 0; i < objects.length; i++) {
 				if(objects[i].mySprite != undefined){
 					let body = objects[i];
-					centerPoint.x += body.GetPosition().x * this.PTM;
-					centerPoint.y += body.GetPosition().y * this.PTM;
+					centerPoint.x += body.GetPosition().get_x() * this.PTM;
+					centerPoint.y += body.GetPosition().get_y() * this.PTM;
 				}else{
 					let sprite = objects[i];
 					centerPoint.x += sprite.x;
@@ -3893,8 +3893,8 @@ const _B2dEditor = function () {
 				if(objects[i].mySprite != undefined){
 					let body = objects[i];
 
-					var xDif = body.GetPosition().x * this.PTM - centerPoint.x;
-					var yDif = body.GetPosition().y * this.PTM - centerPoint.y;
+					var xDif = body.GetPosition().get_x() * this.PTM - centerPoint.x;
+					var yDif = body.GetPosition().get_y() * this.PTM - centerPoint.y;
 
 					this.setScale(body, scaleX, scaleY);
 
@@ -5629,9 +5629,9 @@ const _B2dEditor = function () {
 							if (body.mySprite.data.fixed) body.SetType(Box2D.b2_staticBody);
 							else body.SetType(Box2D.b2_dynamicBody);
 
-							var oldPosition = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
-							body.SetPosition(new b2Vec2(1000, 1000));
-							body.SetPosition(oldPosition);
+							var oldPosition = new b2Vec2(body.GetPosition().get_x(), body.GetPosition().get_y());
+							body.SetTransform(new b2Vec2(1000, 1000), body.GetAngle());
+							body.SetTransform(oldPosition, body.GetAngle());
 
 							//update collision data
 							this.setBodyCollision(body, body.mySprite.data.collision);
@@ -7282,15 +7282,15 @@ const _B2dEditor = function () {
 		this.updateBodyFixtures(body);
 		this.updateBodyShapes(body);
 
-		body.mySprite.x = body.GetPosition().x * this.PTM;
-		body.mySprite.y = body.GetPosition().y * this.PTM;
+		body.mySprite.x = body.GetPosition().get_x() * this.PTM;
+		body.mySprite.y = body.GetPosition().get_y() * this.PTM;
 		body.mySprite.rotation = body.GetAngle();
 
 		if(!obj.fixed) disableCulling(body.mySprite);
 
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
-		//this.setBodyCollision(body, obj.collision);
+		this.setBodyCollision(body, obj.collision);
 
 		this.addObjectToLookupGroups(body, body.mySprite.data);
 
@@ -7644,7 +7644,7 @@ const _B2dEditor = function () {
 					const reflectedAngle = centerObject.GetAngle()+objectAngleDiff
 					object.SetAngle(reflectedAngle);
 
-					const cdx = object.GetPosition().x-centerObject.GetPosition().x;
+					const cdx = object.GetPosition().get_x()-centerObject.GetPosition().get_x();
 					const cdy = object.GetPosition().y-centerObject.GetPosition().y;
 					const cda = Math.atan2(cdy, cdx);
 					const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
@@ -7658,10 +7658,10 @@ const _B2dEditor = function () {
 
 					reflectAngle = na+centerObject.GetAngle();
 
-					nx = centerObject.GetPosition().x + ndl * Math.cos(reflectAngle);
+					nx = centerObject.GetPosition().get_x() + ndl * Math.cos(reflectAngle);
 					ny = centerObject.GetPosition().y + ndl * Math.sin(reflectAngle);
 
-					// const nx = centerObject.GetPosition().x+cdl*Math.cos(reflectedcda)
+					// const nx = centerObject.GetPosition().get_x()+cdl*Math.cos(reflectedcda)
 					// const ny = centerObject.GetPosition().y+cdl*Math.sin(reflectedcda);
 
 					const position = object.GetPosition();
@@ -7733,7 +7733,7 @@ const _B2dEditor = function () {
 				const reflectedAngle = centerObject.GetAngle()+objectAngleDiff
 				object.rotation = reflectedAngle;
 
-				const cdx = object.x-centerObject.GetPosition().x*Settings.PTM;
+				const cdx = object.x-centerObject.GetPosition().get_x()*Settings.PTM;
 				const cdy = object.y-centerObject.GetPosition().y*Settings.PTM;
 				const cda = Math.atan2(cdy, cdx);
 				const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
@@ -7747,7 +7747,7 @@ const _B2dEditor = function () {
 
 				reflectAngle = na+centerObject.GetAngle();
 
-				nx = centerObject.GetPosition().x * Settings.PTM + ndl * Math.cos(reflectAngle);
+				nx = centerObject.GetPosition().get_x() * Settings.PTM + ndl * Math.cos(reflectAngle);
 				ny = centerObject.GetPosition().y * Settings.PTM + ndl * Math.sin(reflectAngle);
 
 				object.x = nx;
@@ -7810,7 +7810,7 @@ const _B2dEditor = function () {
 
 		if (combinedGraphics && combinedBodies) {
 			//merge these two together yo
-			var dif = new b2Vec2(combinedGraphics.x - combinedBodies.GetPosition().x * this.PTM, combinedGraphics.y - combinedBodies.GetPosition().y * this.PTM);
+			var dif = new b2Vec2(combinedGraphics.x - combinedBodies.GetPosition().get_x() * this.PTM, combinedGraphics.y - combinedBodies.GetPosition().y * this.PTM);
 			var angleOffset = combinedBodies.GetAngle() - Math.atan2(dif.y, dif.x);
 			var angle = combinedBodies.GetAngle() - combinedGraphics.rotation;
 			if (combinedBodies.mySprite.parent.getChildIndex(combinedBodies.mySprite) > combinedGraphics.parent.getChildIndex(combinedGraphics)) {
@@ -7882,12 +7882,12 @@ const _B2dEditor = function () {
 		};
 		bodyObjects.forEach((body) => {
 			this.updateObject(body.mySprite, body.mySprite.data);
-			centerPoint.x += body.GetPosition().x;
-			centerPoint.y += body.GetPosition().y;
-			// if(body.GetPosition().x < bounds.l) bounds.l = body.GetPosition().x;
-			// if(body.GetPosition().y < bounds.d) bounds.d = body.GetPosition().y;
-			// if(body.GetPosition().x > bounds.r) bounds.r = body.GetPosition().x;
-			// if(body.GetPosition().y > bounds.u) bounds.u = body.GetPosition().y;
+			centerPoint.x += body.GetPosition().get_x();
+			centerPoint.y += body.GetPosition().get_y();
+			// if(body.GetPosition().get_x() < bounds.l) bounds.l = body.GetPosition().get_x();
+			// if(body.GetPosition().get_y() < bounds.d) bounds.d = body.GetPosition().get_y();
+			// if(body.GetPosition().get_x() > bounds.r) bounds.r = body.GetPosition().get_x();
+			// if(body.GetPosition().get_y() > bounds.u) bounds.u = body.GetPosition().get_y();
 
 		});
 		centerPoint.x /= bodyObjects.length;
@@ -7917,7 +7917,7 @@ const _B2dEditor = function () {
 					for (var l = 0; l < innerVerts[k].length; l++) {
 
 						const offsetCenterPoint = {
-							x: bodyObjects[i].GetPosition().x - centerPoint.x,
+							x: bodyObjects[i].GetPosition().get_x() - centerPoint.x,
 							y: bodyObjects[i].GetPosition().y - centerPoint.y
 						}
 
@@ -8023,7 +8023,7 @@ const _B2dEditor = function () {
 			centerPoint.x = sqrtO * Math.cos(a + atanO);
 			centerPoint.y = sqrtO * Math.sin(a + atanO);
 
-			bodyObject.x += bodyGroup.GetPosition().x + centerPoint.x;
+			bodyObject.x += bodyGroup.GetPosition().get_x() + centerPoint.x;
 			bodyObject.y += bodyGroup.GetPosition().y + centerPoint.y;
 			bodyObject.rotation = bodyGroup.GetAngle();
 			bodyObject.vertices = innerVerts;
@@ -8243,10 +8243,10 @@ const _B2dEditor = function () {
 
 		//TODO Bug when selection collision 4 and reset - body falls through fixtures
 
-		let fixture = body.GetFixtureList();
 		let index = collisions.length-1;
 
-		while (fixture) {
+		for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+
 			const collision = collisions[index];
 			//TODO: Set collision for all fixtures
 			const filterData = new Box2D.b2Filter();
@@ -8254,41 +8254,41 @@ const _B2dEditor = function () {
 			// 0) collides with everything
 			// - nothing*/
 
-			if (body.GetType() == Box2D.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
-			else filterData.categoryBits = this.MASKBIT_NORMAL;
-			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_ONLY_US;
+			if (body.GetType() == Box2D.b2_staticBody) filterData.set_categoryBits(this.MASKBIT_FIXED);
+			else filterData.set_categoryBits(this.MASKBIT_NORMAL);
+			filterData.set_maskBits(this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL); //this.MASKBIT_ONLY_US;
 			fixture.SetSensor(false);
 
 			if (collision == 1) {
 				// 1) collides with mostly everything but characters
 				// - mask bit set to CHARACTER_MASKBIT
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
+				filterData.set_maskBits(this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL); // this.MASKBIT_CHARACTER | this.MASKBIT_ONLY_US;
 			} else if (collision == 2) {
 				// 2) collides with nothing
 				// - setAsTrigger
-				filterData.categoryBits = this.MASKBIT_NOTHING;
-				filterData.maskBits = this.MASKBIT_PHYSICS_CULL;
+				filterData.set_categoryBits(this.MASKBIT_NOTHING);
+				filterData.set_maskBits(this.MASKBIT_PHYSICS_CULL);
 			} else if (collision == 3) {
 				// 3) collides with everything except other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
 
-				if (body.GetType() == Box2D.b2_staticBody) filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_FIXED;
-				else filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
+				if (body.GetType() == Box2D.b2_staticBody) filterData.set_categoryBits(this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_FIXED);
+				else filterData.set_categoryBits(this.MASKBIT_EVERYTHING_BUT_US);
 
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				filterData.set_maskBits(this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL); //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 4) {
 				// 4) collides only with other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
-				filterData.categoryBits = this.MASKBIT_ONLY_US;
-				filterData.maskBits = this.MASKBIT_ONLY_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
+				filterData.set_categoryBits(this.MASKBIT_ONLY_US);
+				filterData.set_maskBits(this.MASKBIT_ONLY_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL); //this.MASKBIT_NORMAL | this.MASKBIT_FIXED  | this.MASKBIT_CHARACTER; this.MASKBIT_EVERYTHING_BUT_US;
 			} else if (collision == 5) {
 				// 5) collides only with fixed shapes
 		 		// - set mask to CHARACTER_MASKBIT, CUSTOM_MASKBIT, NORMAL_MASKBIT;
-				filterData.maskBits = this.MASKBIT_FIXED | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				filterData.set_maskBits(this.MASKBIT_FIXED | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL); //this.MASKBIT_NORMAL | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 6) {
 				// 6) collides only with characters
 				// - set mask to CUSTOM_MASKBIT, FIXED_MASKBIT, NORMAL_MASKBIT
-				filterData.maskBits = this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
+				filterData.set_maskBits(this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL); // this.MASKBIT_NORMAL| this.MASKBIT_FIXED | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
 			} else if (collision == 7) {
 				// 7) sets objects to be an character
 				// -
@@ -8302,24 +8302,22 @@ const _B2dEditor = function () {
 						this.uniqueCollisionPrefabs[body.mySprite.data.prefabInstanceName] = targetGroup;
 					}
 				}
-				filterData.categoryBits = this.MASKBIT_CHARACTER;
-				filterData.groupIndex = targetGroup;
+				filterData.set_categoryBits(this.MASKBIT_CHARACTER);
+				filterData.set_groupIndex(targetGroup);
 			}else if(collision == 8){
 				// 8) only triggers
-				filterData.categoryBits = this.MASKBIT_NOTHING;
-				filterData.maskBits = this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL;
+				filterData.set_categoryBits(this.MASKBIT_NOTHING);
+				filterData.set_maskBits(this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL);
 			}else if(collision == 9){
 				// 9) Trigger collisions
-				filterData.categoryBits = this.MASKBIT_TRIGGER;
-				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_NOTHING
+				filterData.set_categoryBits(this.MASKBIT_TRIGGER);
+				filterData.set_maskBits(this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_ONLY_US | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_NOTHING);
 				fixture.SetSensor(true);
 			}else if(collision == 10){
 			// EVERYTHING
 			}
 
 			fixture.SetFilterData(filterData);
-
-			fixture = fixture.GetNext();
 
 			if(index>0) index--;
 			//
@@ -8442,7 +8440,7 @@ const _B2dEditor = function () {
 				addJointToCharacter = this.retrieveSubClassFromBody(bodyA);
 
 				if(jointPlaceHolder.jointType != this.jointObject_TYPE_DISTANCE){
-					jointPlaceHolder.x = bodyA.GetPosition().x*Settings.PTM;
+					jointPlaceHolder.x = bodyA.GetPosition().get_x()*Settings.PTM;
 					jointPlaceHolder.y = bodyA.GetPosition().y*Settings.PTM;
 				}
 			}
@@ -8515,7 +8513,7 @@ const _B2dEditor = function () {
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
 			let ropeJointDef = new Box2D.b2RopeJointDef;
 			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
-			const xd = bodyA.GetPosition().x - bodyB.GetPosition().x;
+			const xd = bodyA.GetPosition().get_x() - bodyB.GetPosition().get_x();
 			const yd = bodyA.GetPosition().y - bodyB.GetPosition().y;
 			ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
 
@@ -9559,8 +9557,8 @@ const _B2dEditor = function () {
 
 	this.updateObject = function (sprite, data) {
 		if (data.type == this.object_BODY) {
-			data.x = sprite.myBody.GetPosition().x;
-			data.y = sprite.myBody.GetPosition().y;
+			data.x = sprite.myBody.GetPosition().get_x();
+			data.y = sprite.myBody.GetPosition().get_y();
 			data.rotation = sprite.myBody.GetAngle();
 		} else if (data.type == this.object_TEXTURE || data.type == this.object_GRAPHIC || data.type == this.object_GRAPHICGROUP || data.type == this.object_TEXT || data.type == this.object_ANIMATIONGROUP) {
 			data.x = sprite.x;
@@ -9574,8 +9572,8 @@ const _B2dEditor = function () {
 			data.y = sprite.y;
 			data.rotation = sprite.rotation
 		} else if (data.type == this.object_TRIGGER) {
-			data.x = sprite.myBody.GetPosition().x;
-			data.y = sprite.myBody.GetPosition().y;
+			data.x = sprite.myBody.GetPosition().get_x();
+			data.y = sprite.myBody.GetPosition().get_y();
 			data.rotation = sprite.myBody.GetAngle();
 
 			if(data.triggerObjects.length > 0 && (!sprite.targets || sprite.targets.length === 0)){
