@@ -226,11 +226,13 @@ function Game() {
 
     this.gameSetup = function () {
 
-        b2DebugDrawManager.init();
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
         );
+
+        b2DebugDrawManager.init();
+
         const bodyDef = new Box2D.b2BodyDef();
         this.m_groundBody = this.world.CreateBody(bodyDef);
 
@@ -828,7 +830,7 @@ function Game() {
             levelData = null;
         }
         if(!levelData){
-            levelData = JSON.parse(JSON.stringify(levelsData.editorLevel));
+            levelData = JSON.parse(JSON.stringify(levelsData.mainMenuLevel)); // TODO CHANGE THIS BACK TO EDITOR LEVEL
             levelData.id = nanoid();
             levelData.creationDate = Date.now();
         }
@@ -1369,7 +1371,7 @@ function Game() {
 
         this.newDebugGraphics.clear();
         if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
-            this.world.DrawDebugData();
+            b2DebugDrawManager.update(this.editor.cameraHolder.x / Settings.PTM, this.editor.cameraHolder.y / Settings.PTM);
         }
 
         // move our trigger debug draw

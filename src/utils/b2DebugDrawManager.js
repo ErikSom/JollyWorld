@@ -23,13 +23,13 @@ export const resize = () => {
 	canvas.height = window.innerHeight;
 }
 
-export const drawCanvas = cameraPosition => {
+export const update = (cameraX, cameraY) => {
 	ctx.fillStyle = 'rgba(0,0,0,0)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
   
 	ctx.save();
 	ctx.scale(Settings.PTM, Settings.PTM);
-	ctx.translate(cameraPosition.x, cameraPosition.y);
+	ctx.translate(cameraX, cameraY);
 	ctx.lineWidth /= Settings.PTM;
 
 	ctx.fillStyle = 'rgb(255,255,0)';
