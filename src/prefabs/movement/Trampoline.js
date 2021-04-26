@@ -12,7 +12,7 @@ class Trampoline extends PrefabManager.basePrefab {
         this.bounce.noImpactDamage = true;
 
         if(this.prefabObject.settings.isFixed){
-            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.base.SetType(Box2D.b2_staticBody);
         }else{
             this.base.SetType(Box2D.b2_dynamicBody);
         }

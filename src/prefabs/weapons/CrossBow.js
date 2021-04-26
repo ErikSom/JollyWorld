@@ -29,7 +29,7 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.shouldShoot = false;
 
 		if(this.prefabObject.settings.isFixed){
-            this.crossbowBody.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.crossbowBody.SetType(Box2D.b2_staticBody);
         }else{
             this.crossbowBody.SetType(Box2D.b2_dynamicBody);
 		}

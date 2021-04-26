@@ -7,7 +7,7 @@ import {
 
 export const init = ()=>{
 	const bd = new Box2D.b2BodyDef();
-	bd.type = Box2D.b2BodyType.b2_kinematicBody;
+	bd.type = Box2D.b2_kinematicBody;
 	game.editor.physicsCamera = game.world.CreateBody(bd);
 	game.editor.physicsCamera.SetSleepingAllowed(false);
 }
@@ -74,7 +74,7 @@ export const endContact = contact => {
 	const otherBody = otherFixture.GetBody();
 
 	if(otherBody.mySprite && game.editor.physicsCamera && !game.editor.physicsCamera.reFixture){
-		if(otherBody.mySprite.data.awake && otherBody.IsAwake() && otherBody.GetType() !== Box2D.b2BodyType.b2_staticBody && !otherBody.ignorePhysicsCuller){
+		if(otherBody.mySprite.data.awake && otherBody.IsAwake() && otherBody.GetType() !== Box2D.b2_staticBody && !otherBody.ignorePhysicsCuller){
 			otherBody.SetAwake(false);
 			delete otherBody.InCameraView;
 

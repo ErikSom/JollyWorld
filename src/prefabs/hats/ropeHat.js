@@ -148,7 +148,7 @@ export class RopeHat extends Hat {
 			const bodyB = contact.GetFixtureB().GetBody();
 			const targetBody = bodyA === this.ropeEnd ? bodyB : bodyA;
 			const targetFixture = bodyA === this.ropeEnd ? contact.GetFixtureB() : contact.GetFixtureA();
-			if (targetBody.GetType() !== Box2D.b2BodyType.b2_staticBody) return;
+			if (targetBody.GetType() !== Box2D.b2_staticBody) return;
 			if (!(targetFixture.GetFilterData().maskBits & game.editor.MASKBIT_CHARACTER)) return;
 			const worldManifold = new Box2D.b2WorldManifold();
 			contact.GetWorldManifold(worldManifold);

@@ -28,7 +28,7 @@ class Beartrap extends PrefabManager.basePrefab {
 		this.setLights(0x00ff00, false);
 
         if(this.prefabObject.settings.isFixed){
-            this.base.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.base.SetType(Box2D.b2_staticBody);
         }else{
             this.base.SetType(Box2D.b2_dynamicBody);
         }

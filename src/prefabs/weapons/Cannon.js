@@ -34,7 +34,7 @@ class Cannon extends PrefabManager.basePrefab {
 		this.positionCannonEmitter();
 
 		if(this.prefabObject.settings.isFixed){
-            this.cannonBody.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.cannonBody.SetType(Box2D.b2_staticBody);
         }else{
             this.cannonBody.SetType(Box2D.b2_dynamicBody);
 		}

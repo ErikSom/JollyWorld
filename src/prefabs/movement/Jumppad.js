@@ -21,7 +21,7 @@ class Jumppad extends PrefabManager.basePrefab {
 
 
         if(this.prefabObject.settings.isFixed){
-            this.lookupObject.platform.SetType(Box2D.b2BodyType.b2_staticBody);
+            this.lookupObject.platform.SetType(Box2D.b2_staticBody);
         }else{
             this.lookupObject.platform.SetType(Box2D.b2_dynamicBody);
         }

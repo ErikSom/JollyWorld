@@ -5622,7 +5622,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.fixed = controller.targetValue;
-							if (body.mySprite.data.fixed) body.SetType(Box2D.b2BodyType.b2_staticBody);
+							if (body.mySprite.data.fixed) body.SetType(Box2D.b2_staticBody);
 							else body.SetType(Box2D.b2_dynamicBody);
 
 							var oldPosition = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
@@ -7228,8 +7228,8 @@ const _B2dEditor = function () {
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
-		if(obj.trigger) bd.type = Box2D.b2BodyType.b2_kinematicBody;
-		else if (obj.fixed) bd.type = Box2D.b2BodyType.b2_staticBody;
+		if(obj.trigger) bd.type = Box2D.b2_kinematicBody;
+		else if (obj.fixed) bd.type = Box2D.b2_staticBody;
 		else bd.type = Box2D.b2_dynamicBody;
 		bd.angularDamping = 0.9;
 
@@ -7687,9 +7687,9 @@ const _B2dEditor = function () {
 					if(prefabClass.isCharacter || prefabClass.isVehicle){
 						shouldDestroy = false;
 						if(joint.GetBodyA().mainCharacter){
-							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVain && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+							if((!joint.GetBodyB().mainCharacter && !joint.GetBodyB().isVain && !joint.GetBodyB().isVehiclePart && !joint.GetBodyB().isHat) || joint.GetBodyB().GetType() == Box2D.b2_staticBody) shouldDestroy = true;
 						}else{
-							if((!joint.GetBodyA().mainCharacter && !joint.GetBodyB().isVain && !joint.GetBodyA().isVehiclePart && !joint.GetBodyA().isHat) || joint.GetBodyA().GetType() == Box2D.b2BodyType.b2_staticBody) shouldDestroy = true;
+							if((!joint.GetBodyA().mainCharacter && !joint.GetBodyB().isVain && !joint.GetBodyA().isVehiclePart && !joint.GetBodyA().isHat) || joint.GetBodyA().GetType() == Box2D.b2_staticBody) shouldDestroy = true;
 						}
 					}
 
@@ -8251,7 +8251,7 @@ const _B2dEditor = function () {
 			// 0) collides with everything
 			// - nothing*/
 
-			if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
+			if (body.GetType() == Box2D.b2_staticBody) filterData.categoryBits = this.MASKBIT_FIXED;
 			else filterData.categoryBits = this.MASKBIT_NORMAL;
 			filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_ONLY_US;
 			fixture.SetSensor(false);
@@ -8269,7 +8269,7 @@ const _B2dEditor = function () {
 				// 3) collides with everything except other shapes with collision set to this value.
 				// - catagory CUSTOM_MASKBIT, mask CUSTOM_MASKBIT
 
-				if (body.GetType() == Box2D.b2BodyType.b2_staticBody) filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_FIXED;
+				if (body.GetType() == Box2D.b2_staticBody) filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_FIXED;
 				else filterData.categoryBits = this.MASKBIT_EVERYTHING_BUT_US;
 
 				filterData.maskBits = this.MASKBIT_NORMAL | this.MASKBIT_FIXED | this.MASKBIT_CHARACTER | this.MASKBIT_TRIGGER | this.MASKBIT_PHYSICS_CULL; //this.MASKBIT_EVERYTHING_BUT_US | this.MASKBIT_ONLY_US;
@@ -8453,7 +8453,7 @@ const _B2dEditor = function () {
 			fixDef.restitution = Settings.defaultRestitution;
 
 			let bd = new b2BodyDef();
-			bd.type = Box2D.b2BodyType.b2_staticBody;
+			bd.type = Box2D.b2_staticBody;
 			bodyB = this.world.CreateBody(bd);
 			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 

@@ -353,7 +353,7 @@ export const doAction = function (actionData, target) {
         break;
         case "SetStatic":
             if(target.myBody){
-                const type = actionData.setStatic ? Box2D.b2BodyType.b2_staticBody : Box2D.b2_dynamicBody;
+                const type = actionData.setStatic ? Box2D.b2_staticBody : Box2D.b2_dynamicBody;
                 target.myBody.SetType(type);
                 if(actionData.toggle) actionData.setStatic = !actionData.setStatic;
             }
@@ -1854,7 +1854,7 @@ export class triggerCore {
         this.triggeredThisTick = true;
     }
     setEnabled(enable) {
-        const type = enable ? Box2D.b2BodyType.b2_kinematicBody : Box2D.b2BodyType.b2_staticBody
+        const type = enable ? Box2D.b2_kinematicBody : Box2D.b2_staticBody
         this.trigger.SetType(type);
     }
 }

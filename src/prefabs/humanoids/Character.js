@@ -93,7 +93,7 @@ export class Character extends Humanoid {
     addJoint(joint, bodyB){
         if(bodyB.isVehiclePart){
             this.vehicleJoints.push(joint);
-            if(!bodyB.mySprite.data.prefabInstanceName && bodyB.GetType() != Box2D.b2BodyType.b2_staticBody){
+            if(!bodyB.mySprite.data.prefabInstanceName && bodyB.GetType() != Box2D.b2_staticBody){
                 // find all vehicle parts
                 joint.jointCrawled = true;
                 bodyB.jointCrawled = true;
