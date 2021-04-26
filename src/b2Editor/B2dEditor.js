@@ -2323,6 +2323,7 @@ const _B2dEditor = function () {
 			const angle = body.GetAngle() - textureOffsetAngle;
 			body.myTexture.x = body.GetPosition().get_x() * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.cos(angle);
 			body.myTexture.y = body.GetPosition().get_y() * this.PTM + body.myTexture.data.texturePositionOffsetLength * Math.sin(angle);
+
 			// body.mySprite.x = body.GetPosition().get_x() * this.PTM;
 			// body.mySprite.y = body.GetPosition().get_y() * this.PTM;
 			//if(body.myTexture.rotation !=  body.GetAngle() - body.myTexture.data.textureAngleOffset) // pixi updatetransform fix
@@ -5002,8 +5003,6 @@ const _B2dEditor = function () {
 
 			const pos = b2MulVec2(b2CloneVec2(selectedPhysicsBody.GetPosition()), Settings.PTM);
 
-			console.log(pos.get_x(), pos.get_y());
-
 			for (let j = 0; j < data.vertices.length; j++) {
 				if (data.radius[j]) {
 
@@ -7238,7 +7237,9 @@ const _B2dEditor = function () {
 		bd.set_angularDamping(0.9);
 
 		var body = this.world.CreateBody(bd);
-		body.SetAwake(false);
+		body.SetAwake(true); // FIX ME
+
+		game.cameraFocusObject = body; // FIX ME
 
 		body.SetFixedRotation(obj.fixedRotation);
 
@@ -10060,7 +10061,7 @@ const _B2dEditor = function () {
 				joint.spriteData = sprite.data;
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
-				sprite.myBody.SetAwake(false);
+				sprite.myBody.SetAwake(true); // FIX ME
 				if(sprite.myBody.ignorePhysicsCuller && sprite.data.awake) sprite.myBody.SetAwake(true);
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);

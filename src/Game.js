@@ -531,7 +531,7 @@ function Game() {
     };
 
     this.inputUpdate = function () {
-        if (this.gameState != this.GAMESTATE_MENU && this.character.alive && !this.pause && !this.levelWon) {
+        if (this.gameState != this.GAMESTATE_MENU && (this.character && this.character.alive) && !this.pause && !this.levelWon) {
             if (this.vehicle && !this.vehicle.destroyed && this.character.attachedToVehicle) {
 
                 if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
@@ -1121,8 +1121,8 @@ function Game() {
 
         if(this.movementBuffer.length){
             for(let i = 0; i<this.movementBuffer.length; i++){
-                offsetX += this.movementBuffer[i].x;
-                offsetY += this.movementBuffer[i].y;
+                offsetX += this.movementBuffer[i].get_x();
+                offsetY += this.movementBuffer[i].get_y();
             }
             offsetX /= this.movementBufferSize;
             offsetY /= this.movementBufferSize;

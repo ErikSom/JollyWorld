@@ -4,11 +4,11 @@
  * @returns {Box2D.b2Vec2}
  */
 export const b2CloneVec2 = vec =>
-  new Box2D.b2Vec2(vec.get_x()*scale, vec.get_y()*scale);
+  new Box2D.b2Vec2(vec.get_x(), vec.get_y());
 
 
 const b2CloneMulVec2 = (vec, scale) => {
-  new Box2D.b2Vec2(scale * vec.get_x()*scale, scale * vec.get_y()*scale);
+  new Box2D.b2Vec2(vec.get_x()*scale, vec.get_y()*scale);
 }
 
 /**
@@ -20,6 +20,11 @@ const b2CloneMulVec2 = (vec, scale) => {
 export const b2MulVec2 = (vec, scale) => {
   vec.set_x(vec.get_x()*scale);
   vec.set_y(vec.get_y()*scale);
+  return vec;
+}
+export const b2AddVec2 = (vec, vec2) => {
+  vec.set_x(vec.get_x() + vec2.get_x());
+  vec.set_y(vec.get_y() + vec2.get_y());
   return vec;
 }
 
@@ -66,6 +71,8 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
    * @returns {void}
    */
   const setCtxColor = (rgbStr) => {
+    console.log(rgbStr);
+
     ctx.fillStyle = `rgba(${rgbStr},0.5)`;
     ctx.strokeStyle = `rgb(${rgbStr})`;
   };
@@ -204,6 +211,8 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
       const color = wrapPointer(color_p, b2Color);
       setCtxColor(getRgbStr(color));
       const vertices = reifyArray(vertices_p, vertexCount, sizeOfB2Vec, b2Vec2);
+
+
       drawPolygon(vertices, vertexCount, false);
     },
     /**

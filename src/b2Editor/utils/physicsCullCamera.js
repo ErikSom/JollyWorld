@@ -1,10 +1,12 @@
-import { b2CloneVec2 } from "../../../libs/debugdraw";
+import { b2AddVec2, b2CloneVec2, b2MulVec2 } from "../../../libs/debugdraw";
 import {
     game
 } from "../../Game";
 import {
     Settings
 } from '../../Settings';
+
+const { getPointer, NULL } = Box2D;
 
 export const init = ()=>{
 	const bd = new Box2D.b2BodyDef();
@@ -19,22 +21,32 @@ export const update = ()=>{
 	if(game.editor.physicsCamera.cameraZoom != game.editor.editorSettingsObject.cameraZoom){
 		game.editor.physicsCamera.reFixture = true;
 
-		let fixture = game.editor.physicsCamera.GetFixtureList();
-		if(fixture) game.editor.physicsCamera.DestroyFixture(fixture);
+		const body = game.editor.physicsCamera;
+
+		let fixture;
+		for (fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+			body.DestroyFixture(fixture);
+		}
+
 
 		const fixDef = new Box2D.b2FixtureDef;
-		fixDef.shape = new Box2D.b2CircleShape;
-		fixDef.isSensor = true;
 
+		const shape = new Box2D.b2CircleShape();
 		const targetRadius = (Settings.targetResolution.x / 2) / Settings.PTM * game.editor.editorSettingsObject.physicsCameraSize;
-		fixDef.shape.SetRadius(targetRadius / game.editor.editorSettingsObject.cameraZoom);
+		shape.set_m_radius(targetRadius / game.editor.editorSettingsObject.cameraZoom);
+
+		fixDef.set_shape(shape);
+		Box2D.destroy(shape);
+
+		fixDef.set_isSensor(true);
+
 		fixture = game.editor.physicsCamera.CreateFixture(fixDef);
 		fixture.isPhysicsCamera = true;
 
 		// also collide with only similar objects
 		const filterData = fixture.GetFilterData();
-		filterData.categoryBits = game.editor.MASKBIT_PHYSICS_CULL;
-		filterData.maskBits = game.editor.MASKBIT_NORMAL | game.editor.MASKBIT_FIXED | game.editor.MASKBIT_CHARACTER | game.editor.MASKBIT_EVERYTHING_BUT_US | game.editor.MASKBIT_ONLY_US | game.editor.MASKBIT_NOTHING | game.editor.MASKBIT_NPC;
+		filterData.set_categoryBits(game.editor.MASKBIT_PHYSICS_CULL);
+		filterData.set_maskBits(game.editor.MASKBIT_NORMAL | game.editor.MASKBIT_FIXED | game.editor.MASKBIT_CHARACTER | game.editor.MASKBIT_EVERYTHING_BUT_US | game.editor.MASKBIT_ONLY_US | game.editor.MASKBIT_NOTHING | game.editor.MASKBIT_NPC);
 		fixture.SetFilterData(filterData);
 
 		game.editor.physicsCamera.cameraZoom = game.editor.editorSettingsObject.cameraZoom;
@@ -42,9 +54,9 @@ export const update = ()=>{
 	}
 
 	if(game.cameraFocusObject){
-		const linearVelocity = b2CloneVec2(game.cameraFocusObject.GetLinearVelocity()).SelfMul(0);
-		const targetPosition = b2CloneVec2(game.cameraFocusObject.GetPosition()).SelfAdd(linearVelocity);
-		game.editor.physicsCamera.SetPosition(targetPosition);
+		const linearVelocity = b2MulVec2(b2CloneVec2(game.cameraFocusObject.GetLinearVelocity()), 0);
+		const targetPosition = b2AddVec2(b2CloneVec2(game.cameraFocusObject.GetPosition()), linearVelocity);
+		game.editor.physicsCamera.SetTransform(targetPosition, 0);
 	}
 }
 
