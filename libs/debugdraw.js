@@ -4,16 +4,28 @@
  * @returns {Box2D.b2Vec2}
  */
 export const b2CloneVec2 = vec =>
-  new Box2D.b2Vec2(vec.get_x(), vec.get_y());
+  new Box2D.b2Vec2(vec.get_x()*scale, vec.get_y()*scale);
+
+
+const b2CloneMulVec2 = (vec, scale) => {
+  new Box2D.b2Vec2(scale * vec.get_x()*scale, scale * vec.get_y()*scale);
+}
 
 /**
- * to replace original C++ operator *= (float) 
+ * to replace original C++ operator *= (float)
  * @param {Box2D.b2Vec2} vec
  * @param {number} scale
  * @returns {Box2D.b2Vec2}
  */
-export const b2MulVec2 = (vec, scale) =>
-  new Box2D.b2Vec2(scale * vec.get_x(), scale * vec.get_y());
+export const b2MulVec2 = (vec, scale) => {
+  vec.set_x(vec.get_x()*scale);
+  vec.set_y(vec.get_y()*scale);
+  return vec;
+}
+
+let scale = 1.0;
+
+export const setDebugDrawZoom = s => {scale = s;};
 
 /**
  * Forked from Box2D.js
@@ -68,10 +80,10 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
     let first = true;
     for (const vertex of vertices) {
       if (first) {
-        ctx.moveTo(vertex.get_x(), vertex.get_y());
+        ctx.moveTo(vertex.get_x()*scale, vertex.get_y()*scale);
         first = false;
       } else {
-        ctx.lineTo(vertex.get_x(), vertex.get_y());
+        ctx.lineTo(vertex.get_x()*scale, vertex.get_y()*scale);
       }
     }
     ctx.closePath();
@@ -90,7 +102,7 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
    */
   const drawCircle = (center, radius, axis, fill) => {
     ctx.beginPath();
-    ctx.arc(center.get_x(), center.get_y(), radius, 0, 2 * Math.PI, false);
+    ctx.arc(center.get_x()*scale, center.get_y()*scale, radius, 0, 2 * Math.PI, false);
     if (fill) {
       ctx.fill();
     }
@@ -99,10 +111,10 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
     if (fill) {
       //render axis marker
       const vertex = b2CloneVec2(center);
-      vertex.op_add(b2MulVec2(axis, radius));
+      vertex.op_add(b2CloneMulVec2(axis, radius));
       ctx.beginPath();
-      ctx.moveTo(center.get_x(), center.get_y());
-      ctx.lineTo(vertex.get_x(), vertex.get_y());
+      ctx.moveTo(center.get_x()*scale, center.get_y()*scale);
+      ctx.lineTo(vertex.get_x()*scale, vertex.get_y()*scale);
       ctx.stroke();
     }
   };
@@ -114,8 +126,8 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
    */
   const drawSegment = (vert1, vert2) => {
     ctx.beginPath();
-    ctx.moveTo(vert1.get_x(), vert1.get_y());
-    ctx.lineTo(vert2.get_x(), vert2.get_y());
+    ctx.moveTo(vert1.get_x()*scale, vert1.get_y()*scale);
+    ctx.lineTo(vert2.get_x()*scale, vert2.get_y()*scale);
     ctx.stroke();
   };
 
@@ -127,8 +139,8 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
   const drawPoint = (vertex, sizeMetres) => {
     const sizePixels = sizeMetres/pixelsPerMeter;
     ctx.fillRect(
-      vertex.get_x()-sizePixels/2,
-      vertex.get_y()-sizePixels/2,
+      vertex.get_x()*scale-sizePixels/2,
+      vertex.get_y()*scale-sizePixels/2,
       sizePixels,
       sizePixels
       );
@@ -144,7 +156,7 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
     const rot = transform.get_q();
     
     ctx.save();
-    ctx.translate(pos.get_x(), pos.get_y());
+    ctx.translate(pos.get_x()*scale, pos.get_y()*scale);
     ctx.scale(0.5, 0.5);
     ctx.rotate(rot.GetAngle());
     ctx.lineWidth *= 2;

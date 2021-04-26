@@ -49,7 +49,7 @@ import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2MulVec2 } from "../../libs/debugdraw";
 
-const { getPointer, NULL, pointsToVec2Array } = Box2D; // emscriptem specific
+const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
 
 const PIXIHeaven = self.PIXI.heaven;
@@ -2082,7 +2082,7 @@ const _B2dEditor = function () {
 		copyCenterPoint.x = copyCenterPoint.x / copyArray.length;
 		copyCenterPoint.y = copyCenterPoint.y / copyArray.length;
 
-		this.copiedCenterPosition.Copy(copyCenterPoint).SelfMul(1/Settings.PTM);
+		b2MulVec2(this.copiedCenterPosition.Copy(copyCenterPoint), 1/Settings.PTM);
 
 		//adjust center and build string
 		for (i = 0; i < copyArray.length; i++) {
@@ -2808,21 +2808,23 @@ const _B2dEditor = function () {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
 			} else if (this.selectingTriggerTarget) {
-				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.get_x(), this.mousePosWorld.get_y());
 			} else if(this.customPrefabMouseDown){
 				this.customPrefabMouseDown();
 			} else if (this.selectedTool == this.tool_SELECT) {
-				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.get_x(), this.mousePosWorld.get_y());
 
 				// detect click on transformGUI
 				if(this.transformGUI && this.transformGUI.visible && this.clickOnTransformGUI()) return;
 
-				var aabb = new b2AABB;
-				aabb.lowerBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
-				aabb.upperBound.Set(this.mousePosWorld.x, this.mousePosWorld.y);
+				var aabb = new b2AABB();
+				aabb.get_lowerBound().Set(this.mousePosWorld.get_x(), this.mousePosWorld.get_y());
+				aabb.get_upperBound().Set(this.mousePosWorld.get_x(), this.mousePosWorld.get_y());
 				if(!this.selectedBoundingBox) return;
 
 				const clickInsideSelection = this.selectedBoundingBox.Contains(aabb);
+
+				destroy(aabb);
 
 				if (!clickInsideSelection || this.shiftDown || this.ctrlDown) {
 					//reset selectionie
@@ -3025,19 +3027,19 @@ const _B2dEditor = function () {
 					this.activeVertices = [];
 				}
 			} else if (this.selectedTool == this.tool_GEOMETRY || this.selectedTool == this.tool_TRIGGER) {
-				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.get_x(), this.mousePosWorld.get_y());
 			} else if (this.selectedTool == this.tool_CAMERA) {
 				this.takeCameraShot();
 			} else if (this.selectedTool == this.tool_ART) {
 				this.activeVertices.push({
-					x: this.mousePosWorld.x,
-					y: this.mousePosWorld.y
+					x: this.mousePosWorld.get_x(),
+					y: this.mousePosWorld.get_y()
 				});
 			} else if (this.selectedTool == this.tool_JOINTS) {
 				const joint = this.attachJointPlaceHolder();
 				if(joint) jointTriggerLayer.add(joint);
 			} else if (this.selectedTool == this.tool_TEXT) {
-				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.get_x(), this.mousePosWorld.get_y());
 
 				var textObject = new this.textObject;
 				textObject.x = this.startSelectionPoint.x * this.PTM;
@@ -3055,7 +3057,7 @@ const _B2dEditor = function () {
 				this.openTextEditor();
 
 			} else if(this.selectedTool === this.tool_VERTICEEDITING){
-				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.x, this.mousePosWorld.y);
+				this.startSelectionPoint = new b2Vec2(this.mousePosWorld.get_x(), this.mousePosWorld.get_y());
 
 				delete this.verticeEditingSprite.selectedVerticePoint;
 				const mousePixiPos = this.getPIXIPointFromWorldPoint(this.mousePosWorld);
@@ -3202,7 +3204,7 @@ const _B2dEditor = function () {
 			if(this.customPrefabMouseMove){
 				this.customPrefabMouseMove();
 			}else if (this.mouseDown) {
-				var move = new b2Vec2(this.mousePosWorld.x - this.oldMousePosWorld.x, this.mousePosWorld.y - this.oldMousePosWorld.y);
+				var move = new b2Vec2(this.mousePosWorld.get_x() - this.oldMousePosWorld.x, this.mousePosWorld.get_y() - this.oldMousePosWorld.y);
 
 				if(this.shiftDown){
 					move.x = Math.round((move.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
@@ -3216,7 +3218,7 @@ const _B2dEditor = function () {
 				}
 
 				if (this.spaceCameraDrag || evt.which === 2) {
-					move.SelfMul(this.cameraHolder.scale.x);
+					b2MulVec2(move, this.cameraHolder.scale.x);
 					camera.pan(move);
 					scrollBars.update();
 				} else if (this.selectedTool == this.tool_SELECT && !this.selectingTriggerTarget) {
@@ -3273,8 +3275,8 @@ const _B2dEditor = function () {
 					const previousVertice = this.activeVertices[this.activeVertices.length-1];
 
 					if(previousVertice){
-						const dx = this.mousePosWorld.x-previousVertice.x;
-						const dy = this.mousePosWorld.y-previousVertice.y;
+						const dx = this.mousePosWorld.get_x()-previousVertice.x;
+						const dy = this.mousePosWorld.get_y()-previousVertice.y;
 						const dl = Math.sqrt(dx*dx + dy*dy);
 						if(dl < Settings.minimumArtToolMovement/camera.scale.x){
 							canPlace = false;
@@ -3283,16 +3285,16 @@ const _B2dEditor = function () {
 
 					if(canPlace){
 						this.activeVertices.push({
-							x: this.mousePosWorld.x,
-							y: this.mousePosWorld.y
+							x: this.mousePosWorld.get_x(),
+							y: this.mousePosWorld.get_y()
 						});
 					}
 					this.preOptimizeArtVertices();
 
 				}else if(this.selectedTool === this.tool_VERTICEEDITING){
 					if(this.verticeEditingSprite.selectedVertice){
-						const difX = (this.mousePosWorld.x-this.oldMousePosWorld.x)*this.PTM;
-						const difY = (this.mousePosWorld.y-this.oldMousePosWorld.y)*this.PTM;
+						const difX = (this.mousePosWorld.get_x()-this.oldMousePosWorld.x)*this.PTM;
+						const difY = (this.mousePosWorld.get_y()-this.oldMousePosWorld.y)*this.PTM;
 						const dA = Math.atan2(difY, difX)-this.verticeEditingSprite.rotation;
 						const dL = Math.sqrt(difX*difX+difY*difY);
 						const movX = dL*Math.cos(dA);
@@ -3455,8 +3457,8 @@ const _B2dEditor = function () {
 
 			if(this.deepClickDetection !== null){
 
-				const distanceX = Math.abs(this.mousePosWorld.x - this.deepClickDetection.x) * this.cameraHolder.scale.x * Settings.PTM;
-				const distanceY = Math.abs(this.mousePosWorld.y - this.deepClickDetection.y) * this.cameraHolder.scale.x * Settings.PTM;
+				const distanceX = Math.abs(this.mousePosWorld.get_x() - this.deepClickDetection.x) * this.cameraHolder.scale.x * Settings.PTM;
+				const distanceY = Math.abs(this.mousePosWorld.get_y() - this.deepClickDetection.y) * this.cameraHolder.scale.x * Settings.PTM;
 
 				if(distanceX > Settings.deepClickDetectionMargin || distanceY > Settings.deepClickDetectionMargin){
 					this.deepClickDetection = null;
@@ -4097,7 +4099,7 @@ const _B2dEditor = function () {
 			} else if(this.selectingTriggerTarget){
 				if(this.startSelectionPoint){
 					const minSelectPixi = 3/Settings.PTM;
-					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
+					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.get_x()) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.get_y())<= minSelectPixi){
 						const highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 						if (highestObject) {
 							for (var i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -4139,7 +4141,7 @@ const _B2dEditor = function () {
 				if (this.selectedPhysicsBodies.length == 0 && this.selectedTextures.length == 0 && Object.keys(this.selectedPrefabs).length == 0 && this.startSelectionPoint) {
 
 					const minSelectPixi = 3/Settings.PTM;
-					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.x) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.y)<= minSelectPixi){
+					if(Math.abs(this.startSelectionPoint.x-this.mousePosWorld.get_x()) <= minSelectPixi && Math.abs(this.startSelectionPoint.y-this.mousePosWorld.get_y())<= minSelectPixi){
 						let highestObject = this.retrieveHighestSelectedObject(this.mousePosWorld, this.mousePosWorld);
 
 						if (highestObject) {
@@ -4176,7 +4178,7 @@ const _B2dEditor = function () {
 				if(ui.editorGUI.editData.isBody){
 					let bodyObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
-						let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+						let radius = new b2Vec2(this.mousePosWorld.get_x() - this.startSelectionPoint.x, this.mousePosWorld.get_y() - this.startSelectionPoint.y).Length() * this.PTM;
 						if(this.shiftDown){
 							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 						}
@@ -4207,7 +4209,7 @@ const _B2dEditor = function () {
 				}else{
 					let graphicObject;
 					if (ui.editorGUI.editData.shape == "Circle") {
-						let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+						let radius = new b2Vec2(this.mousePosWorld.get_x() - this.startSelectionPoint.x, this.mousePosWorld.get_y() - this.startSelectionPoint.y).Length() * this.PTM;
 						if(this.shiftDown){
 							radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 						}
@@ -4242,7 +4244,7 @@ const _B2dEditor = function () {
 				triggerObject.x = this.startSelectionPoint.x;
 				triggerObject.y = this.startSelectionPoint.y;
 				if (ui.editorGUI.editData.shape == "Circle"){
-					let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+					let radius = new b2Vec2(this.mousePosWorld.get_x() - this.startSelectionPoint.x, this.mousePosWorld.get_y() - this.startSelectionPoint.y).Length() * this.PTM;
 					if(this.shiftDown){
 						radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 					}
@@ -4265,8 +4267,8 @@ const _B2dEditor = function () {
 				if(!this.mouseDown) return;
 
 				this.activeVertices.push({
-					x: this.mousePosWorld.x,
-					y: this.mousePosWorld.y
+					x: this.mousePosWorld.get_x(),
+					y: this.mousePosWorld.get_y()
 				});
 
 				this.activeVertices = verticeOptimize.simplifyPath(this.activeVertices, ui.editorGUI.editData.smoothen, this.cameraHolder.scale.x);
@@ -4434,8 +4436,8 @@ const _B2dEditor = function () {
 		if(this.editing && !uiScroll){
 			const zoom = e.deltaY>0;
 			camera.zoom({
-				x: this.mousePosWorld.x * this.PTM,
-				y: this.mousePosWorld.y * this.PTM
+				x: this.mousePosWorld.get_x() * this.PTM,
+				y: this.mousePosWorld.get_y() * this.PTM
 			}, zoom);
 			game.triggerDebugDraw.debounceRedraw();
 		}
@@ -4606,15 +4608,15 @@ const _B2dEditor = function () {
 		} else if (e.keyCode == 187 || e.keyCode == 61 || e.keyCode == 107 || e.keyCode == 171) { // +
 			//zoomin
 			camera.zoom({
-				x: this.mousePosWorld.x * this.PTM,
-				y: this.mousePosWorld.y * this.PTM
+				x: this.mousePosWorld.get_x() * this.PTM,
+				y: this.mousePosWorld.get_y() * this.PTM
 			}, true);
 			game.triggerDebugDraw.debounceRedraw();
 		} else if (e.keyCode == 189 || e.keyCode == 109 || e.keyCode == 173) { // -
 			//zoomout
 			camera.zoom({
-				x: this.mousePosWorld.x * this.PTM,
-				y: this.mousePosWorld.y * this.PTM
+				x: this.mousePosWorld.get_x() * this.PTM,
+				y: this.mousePosWorld.get_y() * this.PTM
 			}, false);
 			game.triggerDebugDraw.debounceRedraw();
 		} else if (e.keyCode == 112) { // F1
@@ -4717,10 +4719,11 @@ const _B2dEditor = function () {
 
 	this.queryPhysicsBodies = [];
 	this.queryWorldForBodies = function (lowerBound, upperBound) {
+
 		this.queryPhysicsAABB = new b2AABB();
 
-		this.queryPhysicsAABB.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
-		this.queryPhysicsAABB.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
+		this.queryPhysicsAABB.get_lowerBound().Set((lowerBound.get_x() < upperBound.get_x() ? lowerBound.get_x() : upperBound.get_x()), (lowerBound.get_y() < upperBound.get_y() ? lowerBound.get_y() : upperBound.get_y()));
+		this.queryPhysicsAABB.get_upperBound().Set((lowerBound.get_x() > upperBound.get_x() ? lowerBound.get_x() : upperBound.get_x()), (lowerBound.get_y() > upperBound.get_y() ? lowerBound.get_y() : upperBound.get_y()));
 
 		this.queryPhysicsBodies = [];
 		this.world.QueryAABB(this.getBodyCB, this.queryPhysicsAABB);
@@ -4752,8 +4755,8 @@ const _B2dEditor = function () {
 
 	this.queryWorldForGraphics = function (lowerBound, upperBound) {
 		const aabb = new b2AABB();
-		aabb.lowerBound.Set((lowerBound.x < upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y < upperBound.y ? lowerBound.y : upperBound.y));
-		aabb.upperBound.Set((lowerBound.x > upperBound.x ? lowerBound.x : upperBound.x), (lowerBound.y > upperBound.y ? lowerBound.y : upperBound.y));
+		aabb.lowerBound.Set((lowerBound.get_x() < upperBound.get_x() ? lowerBound.get_x() : upperBound.get_x()), (lowerBound.get_y() < upperBound.get_y() ? lowerBound.get_y() : upperBound.get_y()));
+		aabb.upperBound.Set((lowerBound.get_x() > upperBound.get_x() ? lowerBound.get_x() : upperBound.get_x()), (lowerBound.get_y() > upperBound.get_y() ? lowerBound.get_y() : upperBound.get_y()));
 		const lowerBoundPixi = this.getPIXIPointFromWorldPoint(aabb.lowerBound);
 		const upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.upperBound);
 		//QueryTextures
@@ -4881,26 +4884,24 @@ const _B2dEditor = function () {
 	}
 
 
-	this.getBodyCB = new function () {
-		this.ReportFixture = function (fixture) {
-			let isIncluded = false;
-			for (let i = 0; i < self.queryPhysicsBodies.length; i++) {
-				if (self.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
-			}
-			if (!isIncluded){
-
-
-				const maxClickDistance = 0.1;
-				const isClick = Math.abs(self.queryPhysicsAABB.lowerBound.x-self.queryPhysicsAABB.upperBound.x)<maxClickDistance || Math.abs(self.queryPhysicsAABB.lowerBound.y-self.queryPhysicsAABB.upperBound.y)<maxClickDistance
-
-				if (!isClick || fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.queryPhysicsAABB.lowerBound)) {
-					self.queryPhysicsBodies.push(fixture.GetBody());
-                }
-			}
-			return true;
+	this.getBodyCB = new JSQueryCallback();
+	this.getBodyCB.ReportFixture = function (fixturePtr) {
+		const fixture = Box2D.wrapPointer( fixturePtr, Box2D.b2Fixture );
+		let isIncluded = false;
+		for (let i = 0; i < self.queryPhysicsBodies.length; i++) {
+			if (self.queryPhysicsBodies[i] == fixture.GetBody()) isIncluded = true;
 		}
-	};
+		if (!isIncluded){
 
+			const maxClickDistance = 0.1;
+			const isClick = Math.abs(self.queryPhysicsAABB.get_lowerBound().get_x()-self.queryPhysicsAABB.get_upperBound().get_x())<maxClickDistance || Math.abs(self.queryPhysicsAABB.get_lowerBound().get_y()-self.queryPhysicsAABB.get_upperBound().get_y())<maxClickDistance
+
+			if (!isClick || fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.queryPhysicsAABB.get_lowerBound())) {
+				self.queryPhysicsBodies.push(fixture.GetBody());
+			}
+		}
+		return true;
+	}
 
 	this.computeSelectionAABB = function () {
 
@@ -4919,9 +4920,9 @@ const _B2dEditor = function () {
 		return this.computeObjectsAABB(computeBodies, computeTextures);
 	}
 	this.computeObjectsAABB = function (computeBodies, computeTextures, origin = false) {
-		const aabb = new b2AABB;
-		aabb.lowerBound = new b2Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
-		aabb.upperBound = new b2Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
+		const aabb = new b2AABB();
+		aabb.set_lowerBound(new b2Vec2(Number.MAX_VALUE, Number.MAX_VALUE));
+		aabb.set_upperBound(new b2Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE));
 		let oldRot;
 
 		const allElements = [...computeBodies, ...computeTextures];
@@ -4939,15 +4940,15 @@ const _B2dEditor = function () {
 
 			if(body){
 				oldRot = body.GetAngle();
-				if (origin) body.SetAngle(0);
-				let fixture = body.GetFixtureList();
-				while (fixture != null) {
-					const bAABB = new b2AABB;
+				if (origin) body.SetTransform(body.GetPosition(), 0);
+
+				for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+					const bAABB = new b2AABB();
 					fixture.GetShape().ComputeAABB(bAABB, body.GetTransform());
-					aabb.Combine1(bAABB);
-					fixture = fixture.GetNext();
+					aabb.Combine(bAABB);
 				}
-				if (origin) body.SetAngle(oldRot);
+
+				if (origin) body.SetTransform(body.GetPosition(), oldRot);
 			}
 			if(sprite){
 				const camera = B2dEditor.container.camera || B2dEditor.container;
@@ -4959,9 +4960,9 @@ const _B2dEditor = function () {
 
 				const pos = new PIXI.Point(bounds.x, bounds.y);
 
-				spriteAABB.lowerBound = new b2Vec2(pos.x / this.PTM, pos.y / this.PTM);
-				spriteAABB.upperBound = new b2Vec2((pos.x + bounds.width) / this.PTM, (pos.y + bounds.height) / this.PTM);
-				aabb.Combine1(spriteAABB);
+				spriteAABB.set_lowerBound(new b2Vec2(pos.x / this.PTM, pos.y / this.PTM));
+				spriteAABB.set_upperBound(new b2Vec2((pos.x + bounds.width) / this.PTM, (pos.y + bounds.height) / this.PTM));
+				aabb.Combine(spriteAABB);
 				if (origin) sprite.rotation = oldRot;
 			}
 		})
@@ -4977,8 +4978,8 @@ const _B2dEditor = function () {
 
 			aabb = this.computeSelectionAABB();
 
-			var lowerBoundPixi = this.getPIXIPointFromWorldPoint(aabb.lowerBound);
-			var upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.upperBound);
+			var lowerBoundPixi = this.getPIXIPointFromWorldPoint(aabb.get_lowerBound());
+			var upperBoundPixi = this.getPIXIPointFromWorldPoint(aabb.get_upperBound());
 
 			//Showing selection
 			this.drawBox(this.debugGraphics, this.cameraHolder.x + lowerBoundPixi.x * this.cameraHolder.scale.x, this.cameraHolder.y + lowerBoundPixi.y * this.cameraHolder.scale.y, (upperBoundPixi.x - lowerBoundPixi.x) * this.cameraHolder.scale.y, (upperBoundPixi.y - lowerBoundPixi.y) * this.cameraHolder.scale.x, this.selectionBoxColor);
@@ -4986,7 +4987,7 @@ const _B2dEditor = function () {
 			aabb = new b2AABB;
 
 			//Making selection
-			if (this.mouseDown && !this.spaceCameraDrag && this.startSelectionPoint) this.drawBox(this.debugGraphics, this.cameraHolder.x + this.startSelectionPoint.x * this.PTM * this.cameraHolder.scale.x, this.cameraHolder.y + this.startSelectionPoint.y * this.PTM * this.cameraHolder.scale.y, (this.mousePosWorld.x * this.PTM - this.startSelectionPoint.x * this.PTM) * this.cameraHolder.scale.x, (this.mousePosWorld.y * this.PTM - this.startSelectionPoint.y * this.PTM) * this.cameraHolder.scale.y, "#000000");
+			if (this.mouseDown && !this.spaceCameraDrag && this.startSelectionPoint) this.drawBox(this.debugGraphics, this.cameraHolder.x + this.startSelectionPoint.x * this.PTM * this.cameraHolder.scale.x, this.cameraHolder.y + this.startSelectionPoint.y * this.PTM * this.cameraHolder.scale.y, (this.mousePosWorld.get_x() * this.PTM - this.startSelectionPoint.x * this.PTM) * this.cameraHolder.scale.x, (this.mousePosWorld.get_y() * this.PTM - this.startSelectionPoint.y * this.PTM) * this.cameraHolder.scale.y, "#000000");
 		}
 		this.selectedBoundingBox = aabb;
 
@@ -4999,7 +5000,9 @@ const _B2dEditor = function () {
 			const data = selectedPhysicsBody.mySprite.data;
 			if(data.type === this.object_TRIGGER) continue;
 
-			const pos = b2CloneVec2(selectedPhysicsBody.GetPosition()).SelfMul(Settings.PTM);
+			const pos = b2MulVec2(b2CloneVec2(selectedPhysicsBody.GetPosition()), Settings.PTM);
+
+			console.log(pos.get_x(), pos.get_y());
 
 			for (let j = 0; j < data.vertices.length; j++) {
 				if (data.radius[j]) {
@@ -5031,7 +5034,7 @@ const _B2dEditor = function () {
 
 
 					}
-					this.debugGraphics.drawDashedPolygon(polygons, pos.x * this.cameraHolder.scale.x + this.cameraHolder.x, pos.y * this.cameraHolder.scale.y + this.cameraHolder.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
+					this.debugGraphics.drawDashedPolygon(polygons, pos.get_x() * this.cameraHolder.scale.x + this.cameraHolder.x, pos.get_y() * this.cameraHolder.scale.y + this.cameraHolder.y, this.selectedPhysicsBodies[i].mySprite.rotation, 20, 10, offset);
 				}
 			}
 		}
@@ -6156,8 +6159,8 @@ const _B2dEditor = function () {
 	}
 	this.getCurrentMouseVertice = function(){
 		const newVertice = {
-			x: this.mousePosWorld.x,
-			y: this.mousePosWorld.y
+			x: this.mousePosWorld.get_x(),
+			y: this.mousePosWorld.get_y()
 		}
 
 		if(this.activeVertices.length>0 && this.shiftDown){
@@ -6334,7 +6337,7 @@ const _B2dEditor = function () {
 			this.debugGraphics.beginFill(this.verticesFillColor, 0.5);
 
 			if (ui.editorGUI.editData.shape == "Circle") {
-				let radius = new b2Vec2(this.mousePosWorld.x - this.startSelectionPoint.x, this.mousePosWorld.y - this.startSelectionPoint.y).Length() * this.PTM;
+				let radius = new b2Vec2(this.mousePosWorld.get_x() - this.startSelectionPoint.x, this.mousePosWorld.get_y() - this.startSelectionPoint.y).Length() * this.PTM;
 				if(this.shiftDown){
 					radius = Math.floor(radius / Settings.geometrySnapScale) * Settings.geometrySnapScale;
 				}
@@ -6345,8 +6348,8 @@ const _B2dEditor = function () {
 				this.debugGraphics.arc(this.getPIXIPointFromWorldPoint(this.startSelectionPoint).x * camera.scale.x + camera.x , this.getPIXIPointFromWorldPoint(this.startSelectionPoint).y * camera.scale.y + camera.y, radius, 0, 2 * Math.PI, false);
 			} else if (ui.editorGUI.editData.shape == "Box") {
 
-				let difX = this.mousePosWorld.x - this.startSelectionPoint.x;
-				let difY = this.mousePosWorld.y - this.startSelectionPoint.y;
+				let difX = this.mousePosWorld.get_x() - this.startSelectionPoint.x;
+				let difY = this.mousePosWorld.get_y() - this.startSelectionPoint.y;
 
 				if(this.shiftDown){
 					difX *= Settings.PTM;
@@ -6376,7 +6379,7 @@ const _B2dEditor = function () {
 					y: this.startSelectionPoint.y+difY
 				});
 
-				if (this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
+				if (this.mousePosWorld.get_x() < this.startSelectionPoint.x) this.activeVertices.reverse();
 
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
@@ -6386,8 +6389,8 @@ const _B2dEditor = function () {
 			} else if (ui.editorGUI.editData.shape == "Triangle") {
 				this.activeVertices = [];
 	
-				let difX = this.mousePosWorld.x - this.startSelectionPoint.x;
-				let difY = this.mousePosWorld.y - this.startSelectionPoint.y;
+				let difX = this.mousePosWorld.get_x() - this.startSelectionPoint.x;
+				let difY = this.mousePosWorld.get_y() - this.startSelectionPoint.y;
 
 				if(this.shiftDown){
 					difX *= Settings.PTM;
@@ -6412,7 +6415,7 @@ const _B2dEditor = function () {
 					y: this.startSelectionPoint.y
 				});
 
-				if (this.mousePosWorld.x < this.startSelectionPoint.x) this.activeVertices.reverse();
+				if (this.mousePosWorld.get_x() < this.startSelectionPoint.x) this.activeVertices.reverse();
 
 				this.debugGraphics.moveTo(this.getPIXIPointFromWorldPoint(this.activeVertices[0]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[0]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
 				this.debugGraphics.lineTo(this.getPIXIPointFromWorldPoint(this.activeVertices[1]).x * this.cameraHolder.scale.x + this.cameraHolder.x, this.getPIXIPointFromWorldPoint(this.activeVertices[1]).y * this.cameraHolder.scale.y + this.cameraHolder.y);
@@ -6531,15 +6534,15 @@ const _B2dEditor = function () {
 			var pointInsideBody = false;
 			for (i = 0; i < selectedPhysicsBodies.length; i++) {
 				body = selectedPhysicsBodies[i];
-				fixture = body.GetFixtureList();
 
-				while (fixture != null) {
+
+				for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 					if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), lowerBound)) {
 						pointInsideBody = true;
 					}
-
-					fixture = fixture.GetNext();
 				}
+
+
 				if (!pointInsideBody) {
 					selectedPhysicsBodies.splice(i, 1);
 					i--;
@@ -8375,8 +8378,8 @@ const _B2dEditor = function () {
 				tarObj.bodyB_ID = bodies[1].mySprite.parent.getChildIndex(bodies[1].mySprite);
 			}
 
-			tarObj.x = this.mousePosWorld.x * this.PTM;
-			tarObj.y = this.mousePosWorld.y * this.PTM;
+			tarObj.x = this.mousePosWorld.get_x() * this.PTM;
+			tarObj.y = this.mousePosWorld.get_y() * this.PTM;
 		}
 
 		var jointGraphics;
@@ -10120,7 +10123,8 @@ const _B2dEditor = function () {
 		return new b2Vec2(((pixelPoint.x - this.cameraHolder.x) / this.cameraHolder.scale.x) / this.PTM, ((pixelPoint.y - this.cameraHolder.y) / this.cameraHolder.scale.y) / this.PTM);
 	}
 	this.getPIXIPointFromWorldPoint = function (worldPoint) {
-		return new b2Vec2(worldPoint.x * this.PTM, worldPoint.y * this.PTM);
+		if(worldPoint.get_x !== undefined) return {x: worldPoint.get_x() * this.PTM, y: worldPoint.get_y() * this.PTM};
+		else return {x: worldPoint.x * this.PTM, y: worldPoint.y * this.PTM};
 	}
 	this.getScreenPointFromWorldPoint = function(worldPoint){
 		const point = this.getPIXIPointFromWorldPoint(worldPoint);
