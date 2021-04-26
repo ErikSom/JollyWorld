@@ -47,8 +47,9 @@ import { findObjectWithCopyHash } from "./utils/finder";
 import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
+import { generateVertices } from "./utils/box2dHelpers";
 
-const { getPointer, NULL } = Box2D; // emscriptem specific
+const { getPointer, NULL, pointsToVec2Array } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
 
 const PIXIHeaven = self.PIXI.heaven;
@@ -7261,9 +7262,8 @@ const _B2dEditor = function () {
 		obj.friction = [].concat(obj.friction);
 		obj.collision = [].concat(obj.collision);
 
-		body.SetPositionAndAngle(new b2Vec2(obj.x, obj.y), 0);
-		body.SetAngle(obj.rotation);
 
+		body.SetTransform(new b2Vec2(obj.x, obj.y), obj.rotation);
 
 		body.mySprite = new PIXI.Sprite();
 		this.textures.addChild(body.mySprite);
@@ -7277,7 +7277,7 @@ const _B2dEditor = function () {
 		body.mySprite.visible = obj.visible;
 
 		this.updateBodyFixtures(body);
-		this.updateBodyShapes(body);
+		// this.updateBodyShapes(body);
 
 		body.mySprite.x = body.GetPosition().x * this.PTM;
 		body.mySprite.y = body.GetPosition().y * this.PTM;
@@ -7287,7 +7287,7 @@ const _B2dEditor = function () {
 
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
-		this.setBodyCollision(body, obj.collision);
+		//this.setBodyCollision(body, obj.collision);
 
 		this.addObjectToLookupGroups(body, body.mySprite.data);
 
@@ -8761,14 +8761,11 @@ const _B2dEditor = function () {
 		//build fixtures
 
 		let fixDef = undefined;
-		let fixture = body.GetFixtureList();
+		let fixture;
 
-		const fixtures = [];
-		while (fixture != null) {
-			fixtures.push(fixture);
-			fixture = fixture.GetNext();
+		for (fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+			body.DestroyFixture(fixture)
 		}
-		fixtures.forEach(fixture=>body.DestroyFixture(fixture));
 
 		const data = body.mySprite.data;
 		const vertices = data.vertices;
@@ -8814,13 +8811,15 @@ const _B2dEditor = function () {
 					let vertices = innerVertices[j];
 					for (var k = 0; k < vertices.length; k++) {
 						vert = vertices[k];
-						b2Vec2Arr.push(new b2Vec2(vert.x, vert.y));
+						console.log(vert);
+						b2Vec2Arr.push({x: vert.x, y: vert.y});
 					}
 
-					fixDef.shape = new b2PolygonShape;
-					fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
+					const shape = new b2PolygonShape();
+					shape.Set(pointsToVec2Array(b2Vec2Arr)[0], b2Vec2Arr.length);
+					fixDef.set_shape(shape);
 				} else {
-					fixDef.shape = new b2CircleShape;
+					fixDef.shape = new b2CircleShape();
 					fixDef.shape.SetLocalPosition(new b2Vec2(innerVertices[j][0].x, innerVertices[j][0].y));
 					fixDef.shape.SetRadius(radius / this.PTM);
 				}
