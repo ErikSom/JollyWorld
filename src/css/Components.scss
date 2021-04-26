@@ -41,6 +41,7 @@
 	font-size: 23px;
 	text-rendering: geometricPrecision;
 	cursor: pointer;
+	white-space: nowrap;
 }
 
 .back-button{
@@ -160,7 +161,7 @@
 	.heart-icon{
 		width: 38px;
 		height: 36px;
-		margin-bottom: 9px;
+		margin: 0 auto 9px auto;
 		background-image: url(../../static/assets/images/gui/Heart_Icon.png);
 	}
 	&.disabled{
