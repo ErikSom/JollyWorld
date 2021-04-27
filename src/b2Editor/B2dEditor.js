@@ -1812,12 +1812,9 @@ const _B2dEditor = function () {
 						if (!alreadySelected) arr.push(myJoint);
 					}
 				} else {
-					var jointEdge = b.GetJointList();
-					while (jointEdge) {
+					for (let jointEdge = b.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.GetNext()) {
 						if (jointEdge.joint.spriteData) arr.push(jointEdge.joint);
-						jointEdge = jointEdge.next;
 					}
-
 				}
 				if (b.myTexture) {
 					var sprite = b.myTexture;
@@ -2372,7 +2369,7 @@ const _B2dEditor = function () {
 					const lookup = game.character.lookupObject
 					const color = '0x'+Math.floor(Math.random()*16777215).toString(16);
 					if(lookup.body) frame[0] = [color, lookup.body.GetPosition().get_x(), lookup.body.GetPosition().get_y(), lookup.body.GetAngle()];
-					if(lookup.head) frame[1] = [color, lookup.head.GetPosition().get_x(), lookup.head.GetPosition().y];
+					if(lookup.head) frame[1] = [color, lookup.head.GetPosition().get_x(), lookup.head.GetPosition().get_y()];
 					this.playerHistory.push(frame);
 					if(this.playerHistory.length>maxRecordTime*recordPerSecond) this.playerHistory.shift();
 					this.recordPlayerHistoryTime = 1000/recordPerSecond;
@@ -7654,7 +7651,7 @@ const _B2dEditor = function () {
 					object.SetAngle(reflectedAngle);
 
 					const cdx = object.GetPosition().get_x()-centerObject.GetPosition().get_x();
-					const cdy = object.GetPosition().y-centerObject.GetPosition().y;
+					const cdy = object.GetPosition().get_y()-centerObject.GetPosition().get_y();
 					const cda = Math.atan2(cdy, cdx);
 					const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
 
@@ -7668,10 +7665,10 @@ const _B2dEditor = function () {
 					reflectAngle = na+centerObject.GetAngle();
 
 					nx = centerObject.GetPosition().get_x() + ndl * Math.cos(reflectAngle);
-					ny = centerObject.GetPosition().y + ndl * Math.sin(reflectAngle);
+					ny = centerObject.GetPosition().get_y() + ndl * Math.sin(reflectAngle);
 
 					// const nx = centerObject.GetPosition().get_x()+cdl*Math.cos(reflectedcda)
-					// const ny = centerObject.GetPosition().y+cdl*Math.sin(reflectedcda);
+					// const ny = centerObject.GetPosition().get_y()+cdl*Math.sin(reflectedcda);
 
 					const position = object.GetPosition();
 					position.x = nx;
@@ -7743,7 +7740,7 @@ const _B2dEditor = function () {
 				object.rotation = reflectedAngle;
 
 				const cdx = object.x-centerObject.GetPosition().get_x()*Settings.PTM;
-				const cdy = object.y-centerObject.GetPosition().y*Settings.PTM;
+				const cdy = object.y-centerObject.GetPosition().get_y()*Settings.PTM;
 				const cda = Math.atan2(cdy, cdx);
 				const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
 
@@ -7757,7 +7754,7 @@ const _B2dEditor = function () {
 				reflectAngle = na+centerObject.GetAngle();
 
 				nx = centerObject.GetPosition().get_x() * Settings.PTM + ndl * Math.cos(reflectAngle);
-				ny = centerObject.GetPosition().y * Settings.PTM + ndl * Math.sin(reflectAngle);
+				ny = centerObject.GetPosition().get_y() * Settings.PTM + ndl * Math.sin(reflectAngle);
 
 				object.x = nx;
 				object.y = ny;
@@ -7819,7 +7816,7 @@ const _B2dEditor = function () {
 
 		if (combinedGraphics && combinedBodies) {
 			//merge these two together yo
-			var dif = new b2Vec2(combinedGraphics.x - combinedBodies.GetPosition().get_x() * this.PTM, combinedGraphics.y - combinedBodies.GetPosition().y * this.PTM);
+			var dif = new b2Vec2(combinedGraphics.x - combinedBodies.GetPosition().get_x() * this.PTM, combinedGraphics.y - combinedBodies.GetPosition().get_y() * this.PTM);
 			var angleOffset = combinedBodies.GetAngle() - Math.atan2(dif.y, dif.x);
 			var angle = combinedBodies.GetAngle() - combinedGraphics.rotation;
 			if (combinedBodies.mySprite.parent.getChildIndex(combinedBodies.mySprite) > combinedGraphics.parent.getChildIndex(combinedGraphics)) {
@@ -7927,7 +7924,7 @@ const _B2dEditor = function () {
 
 						const offsetCenterPoint = {
 							x: bodyObjects[i].GetPosition().get_x() - centerPoint.x,
-							y: bodyObjects[i].GetPosition().y - centerPoint.y
+							y: bodyObjects[i].GetPosition().get_y() - centerPoint.y
 						}
 
 						var p = {
@@ -8033,7 +8030,7 @@ const _B2dEditor = function () {
 			centerPoint.y = sqrtO * Math.sin(a + atanO);
 
 			bodyObject.x += bodyGroup.GetPosition().get_x() + centerPoint.x;
-			bodyObject.y += bodyGroup.GetPosition().y + centerPoint.y;
+			bodyObject.y += bodyGroup.GetPosition().get_y() + centerPoint.y;
 			bodyObject.rotation = bodyGroup.GetAngle();
 			bodyObject.vertices = innerVerts;
 			bodyObject.colorFill = colorFill[i];
@@ -8450,14 +8447,14 @@ const _B2dEditor = function () {
 
 				if(jointPlaceHolder.jointType != this.jointObject_TYPE_DISTANCE){
 					jointPlaceHolder.x = bodyA.GetPosition().get_x()*Settings.PTM;
-					jointPlaceHolder.y = bodyA.GetPosition().y*Settings.PTM;
+					jointPlaceHolder.y = bodyA.GetPosition().get_y()*Settings.PTM;
 				}
 			}
 
 		} else {
 			//pin to background
 
-			let fixDef = new b2FixtureDef;
+			let fixDef = new b2FixtureDef();
 			fixDef.density = 1.0;
 			fixDef.friction = Settings.defaultFriction;
 			fixDef.restitution = Settings.defaultRestitution;
@@ -8468,10 +8465,13 @@ const _B2dEditor = function () {
 			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
 
-			fixDef.shape = new b2PolygonShape;
-			fixDef.shape.SetAsBox(1, 1);
+			const shape = new b2PolygonShape();
+			shape.SetAsBox(1, 1);
 
-			let fixture = bodyB.CreateFixture(fixDef);
+			fixDef.set_shape(shape);
+			bodyB.CreateFixture(fixDef);
+
+			destroy(shape);
 
 			this.setBodyCollision(bodyB, [2]);
 
@@ -8479,18 +8479,18 @@ const _B2dEditor = function () {
 		let joint;
 
 		if (jointPlaceHolder.jointType == this.jointObject_TYPE_PIN) {
-			const revoluteJointDef = new Box2D.b2RevoluteJointDef;
+			const revoluteJointDef = new Box2D.b2RevoluteJointDef();
 
 			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
-			revoluteJointDef.collideConnected = jointPlaceHolder.collideConnected;
-			revoluteJointDef.referenceAngle = jointPlaceHolder.autoReferenceAngle ? bodyB.GetAngle()-bodyA.GetAngle() : 0;
-			revoluteJointDef.lowerAngle = jointPlaceHolder.lowerAngle * this.DEG2RAD;
-			revoluteJointDef.upperAngle = jointPlaceHolder.upperAngle * this.DEG2RAD;
-			revoluteJointDef.maxMotorTorque = jointPlaceHolder.maxMotorTorque;
-			revoluteJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
-			revoluteJointDef.enableLimit = jointPlaceHolder.enableLimit;
-			revoluteJointDef.enableMotor = jointPlaceHolder.enableMotor;
+			revoluteJointDef.set_collideConnected(jointPlaceHolder.collideConnected);
+			revoluteJointDef.set_referenceAngle(jointPlaceHolder.autoReferenceAngle ? bodyB.GetAngle()-bodyA.GetAngle() : 0);
+			revoluteJointDef.set_lowerAngle(jointPlaceHolder.lowerAngle * this.DEG2RAD);
+			revoluteJointDef.set_upperAngle(jointPlaceHolder.upperAngle * this.DEG2RAD);
+			revoluteJointDef.set_maxMotorTorque(jointPlaceHolder.maxMotorTorque);
+			revoluteJointDef.set_motorSpeed(jointPlaceHolder.motorSpeed);
+			revoluteJointDef.set_enableLimit(jointPlaceHolder.enableLimit);
+			revoluteJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
 			joint = this.world.CreateJoint(revoluteJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE) {
@@ -8498,45 +8498,45 @@ const _B2dEditor = function () {
 			const rotation = jointPlaceHolder.rotation + 90.0 * this.DEG2RAD;
 			const axis = new b2Vec2(Math.cos(rotation), Math.sin(rotation));
 
-			let prismaticJointDef = new Box2D.b2PrismaticJointDef;
+			let prismaticJointDef = new Box2D.b2PrismaticJointDef();
 
 			prismaticJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
-			prismaticJointDef.collideConnected = jointPlaceHolder.collideConnected;
-			prismaticJointDef.referenceAngle = bodyB.GetAngle()-bodyA.GetAngle();
-			prismaticJointDef.lowerTranslation = jointPlaceHolder.lowerLimit / this.PTM;
-			prismaticJointDef.upperTranslation = jointPlaceHolder.upperLimit / this.PTM;
-			prismaticJointDef.maxMotorForce = jointPlaceHolder.maxMotorTorque;
-			prismaticJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
-			prismaticJointDef.enableLimit = jointPlaceHolder.enableLimit;
-			prismaticJointDef.enableMotor = jointPlaceHolder.enableMotor;
+			prismaticJointDef.set_collideConnected(jointPlaceHolder.collideConnected);
+			prismaticJointDef.set_referenceAngle(bodyB.GetAngle()-bodyA.GetAngle());
+			prismaticJointDef.set_lowerTranslation(jointPlaceHolder.lowerLimit / this.PTM);
+			prismaticJointDef.set_upperTranslation(jointPlaceHolder.upperLimit / this.PTM);
+			prismaticJointDef.set_maxMotorForce(jointPlaceHolder.maxMotorTorque);
+			prismaticJointDef.set_motorSpeed(jointPlaceHolder.motorSpeed);
+			prismaticJointDef.set_enableLimit(jointPlaceHolder.enableLimit);
+			prismaticJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
 			joint = this.world.CreateJoint(prismaticJointDef);
 
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
-			let distanceJointDef = new Box2D.b2DistanceJointDef;
+			let distanceJointDef = new Box2D.b2DistanceJointDef();
 			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
-			distanceJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
-			distanceJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
+			distanceJointDef.set_stiffness(jointPlaceHolder.frequencyHz);
+			distanceJointDef.set_damping(jointPlaceHolder.dampingRatio);
 
 			joint = this.world.CreateJoint(distanceJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
-			let ropeJointDef = new Box2D.b2RopeJointDef;
+			let ropeJointDef = new Box2D.b2RopeJointDef();
 			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
 			const xd = bodyA.GetPosition().get_x() - bodyB.GetPosition().get_x();
-			const yd = bodyA.GetPosition().y - bodyB.GetPosition().y;
-			ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
+			const yd = bodyA.GetPosition().get_y() - bodyB.GetPosition().get_y();
+			ropeJointDef.set_maxLength(Math.sqrt(xd * xd + yd * yd));
 
 			joint = this.world.CreateJoint(ropeJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_WHEEL) {
 			const axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation + 90 * this.DEG2RAD), Math.sin(jointPlaceHolder.rotation + 90 * this.DEG2RAD));
 
-			let wheelJointDef = new Box2D.b2WheelJointDef;
+			let wheelJointDef = new Box2D.b2WheelJointDef();
 			wheelJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
-			wheelJointDef.frequencyHz = jointPlaceHolder.frequencyHz;
-			wheelJointDef.dampingRatio = jointPlaceHolder.dampingRatio;
-			wheelJointDef.maxMotorForce = jointPlaceHolder.maxMotorTorque;
-			wheelJointDef.motorSpeed = jointPlaceHolder.motorSpeed;
-			wheelJointDef.enableMotor = jointPlaceHolder.enableMotor;
+			wheelJointDef.set_stiffness(jointPlaceHolder.frequencyHz);
+			wheelJointDef.set_damping(jointPlaceHolder.dampingRatio);
+			wheelJointDef.set_maxMotorForce(jointPlaceHolder.maxMotorTorque);
+			wheelJointDef.set_motorSpeed(jointPlaceHolder.motorSpeed);
+			wheelJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
 			joint = this.world.CreateJoint(wheelJointDef);
 		}
