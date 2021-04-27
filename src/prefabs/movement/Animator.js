@@ -117,8 +117,8 @@ class Animator extends PrefabManager.basePrefab {
                 this.linkedTarget = targetSprite;
             }
 
-            const dx = game.editor.mousePosWorld.x*Settings.PTM - this.linkedTarget.x;
-            const dy = game.editor.mousePosWorld.y*Settings.PTM - this.linkedTarget.y;
+            const dx = game.editor.mousePosWorld.get_x()*Settings.PTM - this.linkedTarget.x;
+            const dy = game.editor.mousePosWorld.get_y()*Settings.PTM - this.linkedTarget.y;
             const a = Math.atan2(dy, dx);
 
             this.prefabObject.settings.targetAnchorLength = Math.sqrt(dx*dx + dy*dy);

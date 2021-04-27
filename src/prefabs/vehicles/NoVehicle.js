@@ -200,8 +200,8 @@ PrefabManager.prefabLibrary.NoVehicle = {
 }
 
 export const setPositionLimb = (prefab, limb) => {
-    let x = game.editor.mousePosWorld.x - prefab.x / game.editor.PTM;
-    let y = game.editor.mousePosWorld.y - prefab.y / game.editor.PTM;
+    let x = game.editor.mousePosWorld.get_x() - prefab.x / game.editor.PTM;
+    let y = game.editor.mousePosWorld.get_y() - prefab.y / game.editor.PTM;
     const l = Math.sqrt(x*x+y*y);
     const a = Math.atan2(y,x);
 

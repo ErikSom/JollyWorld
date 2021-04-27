@@ -48,12 +48,9 @@ import { countries } from "./utils/Localization";
 
 import {b2CloneVec2, b2MulVec2} from '../libs/debugdraw'
 
-var b2Vec2 = Box2D.b2Vec2,
-    b2AABB = Box2D.b2AABB,
-    b2Body = Box2D.b2Body,
-    b2World = Box2D.b2World,
-    b2MouseJointDef = Box2D.b2MouseJointDef;
+const {JSQueryCallback} = Box2D;
 
+const {b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef} = Box2D;
 
 // chech WebGL support
 (function () {
@@ -428,12 +425,14 @@ function Game() {
             var body = this.getBodyAtMouse();
             if (body) {
                 var md = new b2MouseJointDef();
-                md.bodyA = this.m_groundBody;
-                md.bodyB = body;
-                md.target = new Box2D.b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y);
-                md.collideConnected = true;
-                md.maxForce = 300.0 * body.GetMass();
-                this.mouseJoint = this.world.CreateJoint(md);
+                md.set_bodyA(this.m_groundBody);
+                md.set_bodyB(body);
+                md.set_target(new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y()));
+                md.set_collideConnected(true);
+                md.set_maxForce(300.0 * body.GetMass());
+                md.set_stiffness(10);
+                md.set_damping(1);
+                this.mouseJoint = Box2D.castObject(this.world.CreateJoint(md), Box2D.b2MouseJoint);
                 body.SetAwake(true);
             }
         }
@@ -509,8 +508,8 @@ function Game() {
 
     this.getBodyAtMouse = function () {
         var aabb = new b2AABB();
-        aabb.lowerBound.Set(this.editor.mousePosWorld.x - 0.001, this.editor.mousePosWorld.y - 0.001);
-        aabb.upperBound.Set(this.editor.mousePosWorld.x + 0.001, this.editor.mousePosWorld.y + 0.001);
+        aabb.get_lowerBound().Set(this.editor.mousePosWorld.get_x() - 0.001, this.editor.mousePosWorld.get_y() - 0.001);
+        aabb.get_upperBound().Set(this.editor.mousePosWorld.get_x() + 0.001, this.editor.mousePosWorld.get_y() + 0.001);
         // Query the world for overlapping shapes.
 
         this.selectedBody = null;
@@ -518,17 +517,18 @@ function Game() {
         return this.selectedBody;
     };
 
-    this.getBodyCB = new function () {
-        this.ReportFixture = function (fixture) {
-            if (fixture.GetBody().GetType() != b2Body.b2_staticBody && !fixture.isPhysicsCamera) {
-                if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
-                    self.selectedBody = fixture.GetBody();
-                    return false;
-                }
+    this.getBodyCB = new JSQueryCallback();
+	this.getBodyCB.ReportFixture = function (fixturePtr) {
+        const fixture = Box2D.wrapPointer( fixturePtr, Box2D.b2Fixture );
+        if (fixture.GetBody().GetType() != b2Body.b2_staticBody && !fixture.isPhysicsCamera) {
+            if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
+                self.selectedBody = fixture.GetBody();
+                return false;
             }
-            return true;
         }
-    };
+        return true;
+    }
+
 
     this.inputUpdate = function () {
         if (this.gameState != this.GAMESTATE_MENU && (this.character && this.character.alive) && !this.pause && !this.levelWon) {
@@ -1344,7 +1344,8 @@ function Game() {
 
         if (Settings.allowMouseMovement && this.mouseJoint) {
             if (Key.isDown(Key.MOUSE)) {
-                this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.x, this.editor.mousePosWorld.y));
+                console.log(this.mouseJoint);
+                this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y()));
             } else {
                 this.world.DestroyJoint(this.mouseJoint);
                 this.mouseJoint = null;

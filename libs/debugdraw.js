@@ -48,7 +48,7 @@ export const setDebugDrawZoom = s => {scale = s;};
  */
 export const makeDebugDraw = (ctx, pixelsPerMeter, {
     b2Color,
-    b2Draw: { e_shapeBit },
+    b2Draw: { e_shapeBit, e_jointBit },
     b2Transform,
     b2Vec2,
     JSDraw,
@@ -71,8 +71,6 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
    * @returns {void}
    */
   const setCtxColor = (rgbStr) => {
-    console.log(rgbStr);
-
     ctx.fillStyle = `rgba(${rgbStr},0.5)`;
     ctx.strokeStyle = `rgb(${rgbStr})`;
   };
@@ -275,6 +273,6 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
       drawPoint(vertex, sizeMetres);
     }
   });
-  debugDraw.SetFlags(e_shapeBit);
+  debugDraw.SetFlags(e_shapeBit | e_jointBit);
   return debugDraw;
 };
