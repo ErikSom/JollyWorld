@@ -7242,6 +7242,8 @@ const _B2dEditor = function () {
 		var body = this.world.CreateBody(bd);
 		body.SetAwake(false);
 
+		game.cameraFocusObject = body;
+
 		body.SetFixedRotation(obj.fixedRotation);
 
 		if(!obj.optimizePhysics) body.ignorePhysicsCuller = true;

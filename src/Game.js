@@ -530,7 +530,7 @@ function Game() {
     };
 
     this.inputUpdate = function () {
-        if (this.gameState != this.GAMESTATE_MENU && this.character.alive && !this.pause && !this.levelWon) {
+        if (this.gameState != this.GAMESTATE_MENU && (this.character && this.character.alive) && !this.pause && !this.levelWon) {
             if (this.vehicle && !this.vehicle.destroyed && this.character.attachedToVehicle) {
 
                 if (Key.isDown(Key.W) || Key.isDown(Key.UP)) {
