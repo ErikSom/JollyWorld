@@ -1373,6 +1373,7 @@ function Game() {
         AudioManager.update();
 
         this.newDebugGraphics.clear();
+        b2DebugDrawManager.clear();
         if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
             b2DebugDrawManager.update(this.editor.cameraHolder.x / Settings.PTM, this.editor.cameraHolder.y / Settings.PTM);
         }

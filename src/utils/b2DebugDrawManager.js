@@ -1,9 +1,18 @@
-import { makeDebugDraw, setDebugDrawZoom } from '../../libs/debugdraw';
-import { game } from '../Game';
-import { Settings } from '../Settings';
+import {
+	makeDebugDraw,
+	setDebugDrawZoom
+} from '../../libs/debugdraw';
+import {
+	game
+} from '../Game';
+import {
+	Settings
+} from '../Settings';
 
 let canvas = document.createElement('canvas');
-let ctx = canvas.getContext('2d', {alpha:true});
+let ctx = canvas.getContext('2d', {
+	alpha: true
+});
 
 export const init = () => {
 	document.body.appendChild(canvas);
@@ -25,10 +34,7 @@ export const resize = () => {
 }
 
 export const update = (cameraX, cameraY) => {
-
 	setDebugDrawZoom(game.editor.cameraHolder.scale.x);
-
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	ctx.save();
 	ctx.scale(Settings.PTM, Settings.PTM);
@@ -39,4 +45,8 @@ export const update = (cameraX, cameraY) => {
 	game.world.DebugDraw();
 
 	ctx.restore();
-  };
+};
+
+export const clear = () => {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}

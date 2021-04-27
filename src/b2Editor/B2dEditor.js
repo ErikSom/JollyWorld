@@ -1858,6 +1858,7 @@ const _B2dEditor = function () {
 
 	this.markedForUnidentifiedPasting = [];
 	this.copySelection = function () {
+		debugger;
 		let i;
 		let body;
 		const copyArray = [];
@@ -2082,7 +2083,11 @@ const _B2dEditor = function () {
 		copyCenterPoint.x = copyCenterPoint.x / copyArray.length;
 		copyCenterPoint.y = copyCenterPoint.y / copyArray.length;
 
-		b2MulVec2(this.copiedCenterPosition.Copy(copyCenterPoint), 1/Settings.PTM);
+
+		this.copiedCenterPosition.set_x(copyCenterPoint.x);
+		this.copiedCenterPosition.set_y(copyCenterPoint.y);
+
+		b2MulVec2(this.copiedCenterPosition, 1/Settings.PTM);
 
 		//adjust center and build string
 		for (i = 0; i < copyArray.length; i++) {
@@ -2151,16 +2156,15 @@ const _B2dEditor = function () {
 
 			var i;
 			var sprite;
-			var movX = - targetPosition.x * this.PTM;
-			var movY = - targetPosition.y * this.PTM;
+			var movX = - targetPosition.get_x() * this.PTM;
+			var movY = - targetPosition.get_y() * this.PTM;
 
 			for (i = startChildIndex; i < this.textures.children.length; i++) {
 				sprite = this.textures.getChildAt(i);
 				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP && sprite.data.type != this.object_TEXT && sprite.data.type != this.object_ANIMATIONGROUP) {
 					var pos = sprite.myBody.GetPosition();
-					pos.x -= movX / this.PTM;
-					pos.y -= movY / this.PTM;
-					sprite.myBody.SetPosition(pos);
+					pos.set_x(pos.get_x() - movX / this.PTM);
+					pos.set_y(pos.get_y() - movY / this.PTM);
 
 					if (sprite.data.prefabInstanceName) this.selectedPrefabs[sprite.data.prefabInstanceName] = true;
 					else this.selectedPhysicsBodies.push(sprite.myBody);
@@ -3713,13 +3717,15 @@ const _B2dEditor = function () {
 						const oldPosition = body.GetPosition();
 
 						if(this.shiftDown){
-							oldPosition.x = Math.round((oldPosition.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
-							oldPosition.y = Math.round((oldPosition.y * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize;
-							oldPosition.x /= Settings.PTM;
-							oldPosition.y /= Settings.PTM;
+							oldPosition.set_x(Math.round((oldPosition.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize);
+							oldPosition.set_y(Math.round((oldPosition.y * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize);
+							oldPosition.set_x(oldPosition.get_x() / Settings.PTM);
+							oldPosition.set_y(oldPosition.get_y() / Settings.PTM);
 						}
 
-						body.SetPosition(new b2Vec2(oldPosition.x + obj.x / this.PTM, oldPosition.y + obj.y / this.PTM));
+						oldPosition.set_x(oldPosition.get_x() + obj.x / this.PTM);
+						oldPosition.set_y(oldPosition.get_y() + obj.y / this.PTM);
+
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						//split between per object / group rotation
 
@@ -3728,7 +3734,8 @@ const _B2dEditor = function () {
 						const oldAngle = body.GetAngle();
 
 						let newAngle = oldAngle + rAngle;
-						body.SetAngle(newAngle);
+
+						body.SetTransform(body.GetPosition(), newAngle);
 
 						if (group) {
 							const difX = (body.GetPosition().get_x() * this.PTM) - centerPoints[group].x;
@@ -3737,7 +3744,9 @@ const _B2dEditor = function () {
 							const angleToCenter = Math.atan2(difY, difX);
 							const newX = centerPoints[group].x + distanceToCenter * Math.cos(angleToCenter + rAngle);
 							const newY = centerPoints[group].y + distanceToCenter * Math.sin(angleToCenter + rAngle);
-							body.SetPosition(new b2Vec2(newX / this.PTM, newY / this.PTM));
+
+							body.GetPosition().set_x(newX / this.PTM);
+							body.GetPosition().set_y(newY / this.PTM);
 						}
 					}
 					this.updateBodyPosition(body);
@@ -7629,9 +7638,8 @@ const _B2dEditor = function () {
 						vertices.reverse();
 						shape.Set(vertices);
 					}else{
-						const position = shape.GetLocalPosition();
-						position.x *= -1;
-						shape.SetLocalPosition(position);
+						const position = shape.get_m_p();
+						position.set_x(position.get_x() * -1);
 					}
 
 					fixture = fixture.GetNext();
@@ -8807,6 +8815,7 @@ const _B2dEditor = function () {
 				fixDef.set_friction(data.friction[i]);
 				fixDef.set_restitution(data.restitution[i]);
 				const radius = data.radius[i];
+				let shape;
 				if (!radius) {
 					let vert;
 					let b2Vec2Arr = [];
@@ -8816,15 +8825,19 @@ const _B2dEditor = function () {
 						b2Vec2Arr.push({x: vert.x, y: vert.y});
 					}
 
-					const shape = new b2PolygonShape();
+					shape = new b2PolygonShape();
 					shape.Set(pointsToVec2Array(b2Vec2Arr)[0], b2Vec2Arr.length);
 					fixDef.set_shape(shape);
 				} else {
-					fixDef.shape = new b2CircleShape();
-					fixDef.shape.SetLocalPosition(new b2Vec2(innerVertices[j][0].x, innerVertices[j][0].y));
-					fixDef.shape.SetRadius(radius / this.PTM);
+					shape = new b2CircleShape();
+					shape.set_m_radius(radius / this.PTM);
+					const pos = shape.get_m_p();
+					pos.set_x(innerVertices[j][0].x);
+					pos.set_y(innerVertices[j][0].y);
+					fixDef.set_shape(shape)
 				}
 				fixture = body.CreateFixture(fixDef);
+				destroy(shape);
 			}
 		}
 	}
