@@ -8545,7 +8545,7 @@ const _B2dEditor = function () {
 			wheelJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
 			wheelJointDef.set_stiffness(jointPlaceHolder.frequencyHz);
 			wheelJointDef.set_damping(jointPlaceHolder.dampingRatio);
-			wheelJointDef.set_maxMotorForce(jointPlaceHolder.maxMotorTorque);
+			wheelJointDef.set_maxMotorTorque(jointPlaceHolder.maxMotorTorque);
 			wheelJointDef.set_motorSpeed(jointPlaceHolder.motorSpeed);
 			wheelJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
