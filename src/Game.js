@@ -429,9 +429,9 @@ function Game() {
                 md.set_bodyB(body);
                 md.set_target(new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y()));
                 md.set_collideConnected(true);
-                md.set_maxForce(300.0 * body.GetMass());
-                md.set_stiffness(10);
-                md.set_damping(1);
+                md.set_maxForce(1000.0 * body.GetMass());
+                md.set_stiffness(100);
+                md.set_damping(0.5);
                 this.mouseJoint = Box2D.castObject(this.world.CreateJoint(md), Box2D.b2MouseJoint);
                 body.SetAwake(true);
             }
@@ -1344,7 +1344,6 @@ function Game() {
 
         if (Settings.allowMouseMovement && this.mouseJoint) {
             if (Key.isDown(Key.MOUSE)) {
-                console.log(this.mouseJoint);
                 this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y()));
             } else {
                 this.world.DestroyJoint(this.mouseJoint);

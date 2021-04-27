@@ -1833,10 +1833,19 @@ const _B2dEditor = function () {
 					b.connectedSpike.connectedBodies.splice(tarIndex);
 					b.connectedSpike.connectedJoints.splice(tarIndex);
 				}
-				this.world.DestroyBody(b);
+				this.DestroyBody(b);
 			}
 			obj.destroyed = true;
 		}
+	}
+	this.DestroyBody = function(body){
+		this.world.DestroyBody(body);
+		// clean up all properties for Emscripten object recycle
+		delete body.myTexture;
+		delete body.mySprite;
+		delete body.myJoints;
+		delete body.myTriggers;
+		delete body.destroyed;
 	}
 	this.deleteSelection = function (force) {
 
@@ -1855,7 +1864,6 @@ const _B2dEditor = function () {
 
 	this.markedForUnidentifiedPasting = [];
 	this.copySelection = function () {
-		debugger;
 		let i;
 		let body;
 		const copyArray = [];
@@ -9928,7 +9936,7 @@ const _B2dEditor = function () {
 
 		//Destroy all bodies
 		for (let body = this.world.GetBodyList(); getPointer(body) !== getPointer(NULL); body = body.GetNext()) {
-			this.world.DestroyBody(body);
+			this.DestroyBody(body);
 		}
 
 		//Destroy all graphics
