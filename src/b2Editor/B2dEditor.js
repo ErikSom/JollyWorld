@@ -1843,8 +1843,8 @@ const _B2dEditor = function () {
 		// clean up all properties for Emscripten object recycle
 		delete body.myTexture;
 		delete body.mySprite;
-		delete body.myJoints;
-		delete body.myTriggers;
+		if(body.myJoints) body.myJoints.length = 0;
+		if(body.myTriggers) body.myTriggers.length = 0;
 		delete body.destroyed;
 	}
 	this.deleteSelection = function (force) {
@@ -2167,9 +2167,11 @@ const _B2dEditor = function () {
 			for (i = startChildIndex; i < this.textures.children.length; i++) {
 				sprite = this.textures.getChildAt(i);
 				if (sprite.myBody != undefined && sprite.data.type != this.object_TEXTURE && sprite.data.type != this.object_GRAPHIC && sprite.data.type != this.object_GRAPHICGROUP && sprite.data.type != this.object_TEXT && sprite.data.type != this.object_ANIMATIONGROUP) {
-					var pos = sprite.myBody.GetPosition();
+					const pos = b2CloneVec2(sprite.myBody.GetPosition());
 					pos.set_x(pos.get_x() - movX / this.PTM);
 					pos.set_y(pos.get_y() - movY / this.PTM);
+
+					sprite.myBody.SetTransform(pos, sprite.myBody.GetAngle())
 
 					if (sprite.data.prefabInstanceName) this.selectedPrefabs[sprite.data.prefabInstanceName] = true;
 					else this.selectedPhysicsBodies.push(sprite.myBody);
@@ -3719,17 +3721,18 @@ const _B2dEditor = function () {
 
 					body = objects[i];
 					if (transformType == this.TRANSFORM_MOVE) {
-						const oldPosition = body.GetPosition();
+						const pos = b2CloneVec2(body.GetPosition());
 
 						if(this.shiftDown){
-							oldPosition.set_x(Math.round((oldPosition.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize);
-							oldPosition.set_y(Math.round((oldPosition.y * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize);
-							oldPosition.set_x(oldPosition.get_x() / Settings.PTM);
-							oldPosition.set_y(oldPosition.get_y() / Settings.PTM);
+							pos.set_x(Math.round((pos.x * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize);
+							pos.set_y(Math.round((pos.y * Settings.PTM) / Settings.positionGridSize) * Settings.positionGridSize);
+							pos.set_x(pos.get_x() / Settings.PTM);
+							pos.set_y(pos.get_y() / Settings.PTM);
 						}
 
-						oldPosition.set_x(oldPosition.get_x() + obj.x / this.PTM);
-						oldPosition.set_y(oldPosition.get_y() + obj.y / this.PTM);
+						pos.set_x(pos.get_x() + obj.x / this.PTM);
+						pos.set_y(pos.get_y() + obj.y / this.PTM);
+						body.SetTransform(pos, body.GetAngle());
 
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						//split between per object / group rotation
