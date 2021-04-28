@@ -11,7 +11,7 @@ const { getPointer, NULL } = Box2D;
 export const init = ()=>{
 	const bd = new Box2D.b2BodyDef();
 	bd.type = Box2D.b2_kinematicBody;
-	game.editor.physicsCamera = game.world.CreateBody(bd);
+	game.editor.physicsCamera = game.editor.CreateBody(bd);
 	game.editor.physicsCamera.SetSleepingAllowed(false);
 }
 

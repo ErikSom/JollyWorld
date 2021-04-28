@@ -154,6 +154,10 @@ const _B2dEditor = function () {
 	this.cameraHolder;
 	this.physicsCamera;
 
+
+	//emscripten specific
+	this.bodiesDestroyedThisFrame = [];
+
 	Object.defineProperty(this, 'cameraHolder', {
 		get: () => {
 			 if (this.container.camera) {
@@ -1839,21 +1843,35 @@ const _B2dEditor = function () {
 		}
 	}
 	this.DestroyBody = function(body){
+		// mark this body as pooled
+		body.__emscripten_pool = true;
 		this.world.DestroyBody(body);
+	}
+	this.CleanBody = function(body){
 		// clean up all properties for Emscripten object recycle
-		delete body.myTexture;
-		delete body.mySprite;
-		if(body.myJoints) body.myJoints.length = 0;
-		if(body.myTriggers) body.myTriggers.length = 0;
-		if(body.recentlyImpactedBodies) body.recentlyImpactedBodies.length = 0;
-		delete body.destroyed;
-		delete body.ignoreCollisionsTime;
-		delete body.isFlesh;
-		delete body.snapped;
-		delete body.instaKill;
-		delete body.isVehiclePart;
-		delete body.noImpactDamage;
-		delete body.noDamage;
+		if(body.__emscripten_pool){
+			delete body.myTexture;
+			delete body.mySprite;
+			delete body.myJoints;
+			delete body.myTriggers;
+			delete body.recentlyImpactedBodies;
+			delete body.destroyed;
+			delete body.ignoreCollisionsTime;
+			delete body.isFlesh;
+			delete body.snapped;
+			delete body.instaKill;
+			delete body.isVehiclePart;
+			delete body.noImpactDamage;
+			delete body.noDamage;
+			delete body.__emscripten_pool;
+		}
+	}
+
+	this.CreateBody = function(bodyDef){
+		// make sure we are not pooling an object
+		const body = this.world.CreateBody(bodyDef);
+		this.CleanBody(body);
+		return body;
 	}
 	this.deleteSelection = function (force) {
 
@@ -2374,6 +2392,12 @@ const _B2dEditor = function () {
 		this.deltaTimeSeconds = this.deltaTime / 1000;
 
 		FPSManager.update(deltaTime);
+
+		// clean emscripten bodies
+		if(this.bodiesDestroyedThisFrame.length){
+			this.bodiesDestroyedThisFrame.forEach( body => this.CleanBody(body));
+			this.bodiesDestroyedThisFrame.length = 0;
+		}
 
 		if (game.gameState == game.GAMESTATE_EDITOR) {
 			if(this.editing){
@@ -7261,7 +7285,7 @@ const _B2dEditor = function () {
 		else bd.set_type(Box2D.b2_dynamicBody);
 		bd.set_angularDamping(0.9);
 
-		var body = this.world.CreateBody(bd);
+		var body = this.CreateBody(bd);
 		body.SetAwake(true); // FIX ME
 
 		game.cameraFocusObject = body; // FIX ME
@@ -8480,7 +8504,7 @@ const _B2dEditor = function () {
 
 			let bd = new b2BodyDef();
 			bd.type = Box2D.b2_staticBody;
-			bodyB = this.world.CreateBody(bd);
+			bodyB = this.CreateBody(bd);
 			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
 
 

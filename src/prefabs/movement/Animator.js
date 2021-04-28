@@ -302,7 +302,7 @@ class Animator extends PrefabManager.basePrefab {
     buildBodyAnimator(){
 
         const bodyDef = new Box2D.b2BodyDef();
-        this.m_groundBody = game.world.CreateBody(bodyDef);
+        this.m_groundBody = game.editor.CreateBody(bodyDef);
 
         const md = new Box2D.b2MouseJointDef();
         md.bodyA = this.m_groundBody;

@@ -131,7 +131,7 @@ export class RopeHat extends Hat {
 		bd.position = farthestPoint;
 		bd.angle =angle;
 
-		this.ropeEnd = this.head.GetWorld().CreateBody(bd);
+		this.ropeEnd = game.editor.CreateBody(bd);
 		this.ropeEnd.ignorePhysicsCuller = true;
 
 		body.ignorePhysicsCuller = true;

@@ -40,7 +40,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 
 		let sprite, body;
 		if(spritePool.length>0){
-			body = game.editor.world.CreateBody(bodyDef);
+			body = game.editor.CreateBody(bodyDef);
 			fixDef.shape.SetRadius(size);
 			body.CreateFixture(fixDef);
 

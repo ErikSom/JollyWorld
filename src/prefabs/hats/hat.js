@@ -21,7 +21,7 @@ export default class Hat {
 		bd.linearDamping = 0.85;
 		bd.position = this.head.GetPosition();
 		bd.angle = this.head.GetAngle();
-		this.hatBody = this.head.GetWorld().CreateBody(bd);
+		this.hatBody = game.editor.CreateBody(bd);
 		this.hatBody.isHat = true;
 		this.hatBody.key = this.head.mySprite.data.prefabInstanceName
 
