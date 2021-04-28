@@ -28,6 +28,12 @@ export const b2AddVec2 = (vec, vec2) => {
   return vec;
 }
 
+export const b2SubVec2 = (vec, vec2) => {
+  vec.set_x(vec.get_x() - vec2.get_x());
+  vec.set_y(vec.get_y() - vec2.get_y());
+  return vec;
+}
+
 
 export function b2LinearStiffness(def, frequencyHertz, dampingRatio, bodyA, bodyB) {
   const massA = bodyA.GetMass();
