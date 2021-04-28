@@ -46,7 +46,7 @@ import GameStats from 'gamestats.js'; //TO DO PUBLISH NPM
 import { countries } from "./utils/Localization";
 
 
-import {b2CloneVec2, b2MulVec2} from '../libs/debugdraw'
+import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 
 const {JSQueryCallback} = Box2D;
 
@@ -429,9 +429,10 @@ function Game() {
                 md.set_bodyB(body);
                 md.set_target(new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y()));
                 md.set_collideConnected(true);
-                md.set_maxForce(1000.0 * body.GetMass());
-                md.set_stiffness(100);
-                md.set_damping(0.5);
+                md.set_maxForce(300.0 * body.GetMass());
+
+                b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, body);
+
                 this.mouseJoint = Box2D.castObject(this.world.CreateJoint(md), Box2D.b2MouseJoint);
                 body.SetAwake(true);
             }

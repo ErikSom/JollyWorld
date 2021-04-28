@@ -8539,8 +8539,8 @@ const _B2dEditor = function () {
 			const length = distanceJointDef.get_length();
 
 			distanceJointDef.set_length(length);
-			distanceJointDef.set_minLength(length);
-			distanceJointDef.set_maxLength(length);
+			distanceJointDef.set_minLength(0);
+			distanceJointDef.set_maxLength(100);
 
 			b2LinearStiffness(distanceJointDef, jointPlaceHolder.frequencyHz, jointPlaceHolder.dampingRatio, bodyA, bodyB);
 
