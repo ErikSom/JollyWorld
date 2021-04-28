@@ -1214,7 +1214,7 @@ function Game() {
                     const velocityBoostY = (body.GetLinearVelocity().get_y() - body.oldBounceManifest.y);
 
                     if(Math.sqrt(velocityBoostX*velocityBoostX + velocityBoostY * velocityBoostY) > 5){
-                        for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.GetNext()) {
+                        for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
                             const joint = jointEdge.joint;
                             const connectedBody = joint.GetBodyA() === body ? joint.GetBodyB() : joint.GetBodyA();
                             const velocity = connectedBody.GetLinearVelocity();

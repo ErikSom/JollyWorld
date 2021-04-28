@@ -1812,7 +1812,7 @@ const _B2dEditor = function () {
 						if (!alreadySelected) arr.push(myJoint);
 					}
 				} else {
-					for (let jointEdge = b.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.GetNext()) {
+					for (let jointEdge = b.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
 						if (jointEdge.joint.spriteData) arr.push(jointEdge.joint);
 					}
 				}
