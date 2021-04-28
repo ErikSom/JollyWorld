@@ -47,7 +47,7 @@ import { findObjectWithCopyHash } from "./utils/finder";
 import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
-import { b2CloneVec2, b2MulVec2 } from "../../libs/debugdraw";
+import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -8525,16 +8525,33 @@ const _B2dEditor = function () {
 
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
 			let distanceJointDef = new Box2D.b2DistanceJointDef();
-			distanceJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
-			distanceJointDef.set_stiffness(jointPlaceHolder.frequencyHz);
-			distanceJointDef.set_damping(jointPlaceHolder.dampingRatio);
+
+			const anchor = new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM);
+
+			distanceJointDef.Initialize(bodyA, bodyB, anchor, anchor);
+
+			distanceJointDef.set_collideConnected(jointPlaceHolder.collideConnected);
+
+
+			const xd = bodyA.GetPosition().get_x() - bodyB.GetPosition().get_x();
+			const yd = bodyA.GetPosition().get_y() - bodyB.GetPosition().get_y();
+
+			const length = distanceJointDef.get_length();
+
+			distanceJointDef.set_length(length);
+			distanceJointDef.set_minLength(length);
+			distanceJointDef.set_maxLength(length);
+
+			b2LinearStiffness(distanceJointDef, jointPlaceHolder.frequencyHz, jointPlaceHolder.dampingRatio, bodyA, bodyB);
 
 			joint = this.world.CreateJoint(distanceJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
-			let ropeJointDef = new Box2D.b2RopeJointDef();
+			let ropeJointDef = new Box2D.b2DistanceJointDef();
 			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
 			const xd = bodyA.GetPosition().get_x() - bodyB.GetPosition().get_x();
 			const yd = bodyA.GetPosition().get_y() - bodyB.GetPosition().get_y();
+			distanceJointDef.set_stiffness(0);
+			distanceJointDef.set_damping(0);
 			ropeJointDef.set_maxLength(Math.sqrt(xd * xd + yd * yd));
 
 			joint = this.world.CreateJoint(ropeJointDef);
@@ -8543,8 +8560,7 @@ const _B2dEditor = function () {
 
 			let wheelJointDef = new Box2D.b2WheelJointDef();
 			wheelJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
-			wheelJointDef.set_stiffness(jointPlaceHolder.frequencyHz);
-			wheelJointDef.set_damping(jointPlaceHolder.dampingRatio);
+			b2LinearStiffness(wheelJointDef, jointPlaceHolder.frequencyHz, jointPlaceHolder.dampingRatio, bodyA, bodyB);
 			wheelJointDef.set_maxMotorTorque(jointPlaceHolder.maxMotorTorque);
 			wheelJointDef.set_motorSpeed(jointPlaceHolder.motorSpeed);
 			wheelJointDef.set_enableMotor(jointPlaceHolder.enableMotor);

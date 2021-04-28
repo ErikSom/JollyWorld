@@ -28,6 +28,26 @@ export const b2AddVec2 = (vec, vec2) => {
   return vec;
 }
 
+
+export function b2LinearStiffness(def, frequencyHertz, dampingRatio, bodyA, bodyB) {
+  const massA = bodyA.GetMass();
+  const massB = bodyB.GetMass();
+  let mass;
+  if (massA > 0.0 && massB > 0.0) {
+      mass = massA * massB / (massA + massB);
+  }
+  else if (massA > 0.0) {
+      mass = massA;
+  }
+  else {
+      mass = massB;
+  }
+  const omega = 2.0 * Math.PI * frequencyHertz;
+  def.set_stiffness(mass * omega * omega);
+  def.set_damping(2.0 * mass * dampingRatio * omega);
+}
+
+
 let scale = 1.0;
 
 export const setDebugDrawZoom = s => {scale = s;};
