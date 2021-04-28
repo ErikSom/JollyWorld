@@ -8482,7 +8482,10 @@ const _B2dEditor = function () {
 			fixDef.set_shape(shape);
 			bodyB.CreateFixture(fixDef);
 
+			destroy(fixDef);
+			destroy(bd);
 			destroy(shape);
+
 
 			this.setBodyCollision(bodyB, [2]);
 
@@ -8492,7 +8495,9 @@ const _B2dEditor = function () {
 		if (jointPlaceHolder.jointType == this.jointObject_TYPE_PIN) {
 			const revoluteJointDef = new Box2D.b2RevoluteJointDef();
 
-			revoluteJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
+			const anchor = new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM)
+
+			revoluteJointDef.Initialize(bodyA, bodyB, anchor);
 
 			revoluteJointDef.set_collideConnected(jointPlaceHolder.collideConnected);
 			revoluteJointDef.set_referenceAngle(jointPlaceHolder.autoReferenceAngle ? bodyB.GetAngle()-bodyA.GetAngle() : 0);
@@ -8503,7 +8508,9 @@ const _B2dEditor = function () {
 			revoluteJointDef.set_enableLimit(jointPlaceHolder.enableLimit);
 			revoluteJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
-			joint = this.world.CreateJoint(revoluteJointDef);
+			joint = Box2D.castObject(this.world.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+			destroy(revoluteJointDef);
+			destroy(anchor);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE) {
 
 			const rotation = jointPlaceHolder.rotation + 90.0 * this.DEG2RAD;
@@ -8511,7 +8518,9 @@ const _B2dEditor = function () {
 
 			let prismaticJointDef = new Box2D.b2PrismaticJointDef();
 
-			prismaticJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
+			const anchor = new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM);
+
+			prismaticJointDef.Initialize(bodyA, bodyB, anchor, axis);
 			prismaticJointDef.set_collideConnected(jointPlaceHolder.collideConnected);
 			prismaticJointDef.set_referenceAngle(bodyB.GetAngle()-bodyA.GetAngle());
 			prismaticJointDef.set_lowerTranslation(jointPlaceHolder.lowerLimit / this.PTM);
@@ -8521,8 +8530,10 @@ const _B2dEditor = function () {
 			prismaticJointDef.set_enableLimit(jointPlaceHolder.enableLimit);
 			prismaticJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
-			joint = this.world.CreateJoint(prismaticJointDef);
-
+			joint = Box2D.castObject(this.world.CreateJoint(prismaticJointDef), b2PrismaticJoint);
+			destroy(prismaticJointDef);
+			destroy(anchor);
+			destroy(axis);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_DISTANCE) {
 			let distanceJointDef = new Box2D.b2DistanceJointDef();
 
@@ -8532,40 +8543,49 @@ const _B2dEditor = function () {
 
 			distanceJointDef.set_collideConnected(jointPlaceHolder.collideConnected);
 
-
-			const xd = bodyA.GetPosition().get_x() - bodyB.GetPosition().get_x();
-			const yd = bodyA.GetPosition().get_y() - bodyB.GetPosition().get_y();
-
 			const length = distanceJointDef.get_length();
 
 			distanceJointDef.set_length(length);
 			distanceJointDef.set_minLength(0);
-			distanceJointDef.set_maxLength(100);
+			distanceJointDef.set_maxLength(100); // arbitrary large number
 
 			b2LinearStiffness(distanceJointDef, jointPlaceHolder.frequencyHz, jointPlaceHolder.dampingRatio, bodyA, bodyB);
 
-			joint = this.world.CreateJoint(distanceJointDef);
+			joint = Box2D.castObject(this.world.CreateJoint(distanceJointDef), Box2D.b2DistanceJoint);
+			destroy(anchor);
+			destroy(distanceJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
 			let ropeJointDef = new Box2D.b2DistanceJointDef();
 			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
-			const xd = bodyA.GetPosition().get_x() - bodyB.GetPosition().get_x();
-			const yd = bodyA.GetPosition().get_y() - bodyB.GetPosition().get_y();
-			distanceJointDef.set_stiffness(0);
-			distanceJointDef.set_damping(0);
-			ropeJointDef.set_maxLength(Math.sqrt(xd * xd + yd * yd));
 
-			joint = this.world.CreateJoint(ropeJointDef);
+			const length = ropeJointDef.get_length();
+			ropeJointDef.set_minLength(length);
+			ropeJointDef.set_maxLength(length);
+
+			ropeJointDef.set_stiffness(0);
+			ropeJointDef.set_damping(0);
+
+			joint = Box2D.castObject(this.world.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+
+			destroy(ropeJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_WHEEL) {
 			const axis = new b2Vec2(Math.cos(jointPlaceHolder.rotation + 90 * this.DEG2RAD), Math.sin(jointPlaceHolder.rotation + 90 * this.DEG2RAD));
 
 			let wheelJointDef = new Box2D.b2WheelJointDef();
-			wheelJointDef.Initialize(bodyA, bodyB, new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM), axis);
+
+			const anchor = new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM);
+
+			wheelJointDef.Initialize(bodyA, bodyB, anchor, axis);
 			b2LinearStiffness(wheelJointDef, jointPlaceHolder.frequencyHz, jointPlaceHolder.dampingRatio, bodyA, bodyB);
 			wheelJointDef.set_maxMotorTorque(jointPlaceHolder.maxMotorTorque);
 			wheelJointDef.set_motorSpeed(jointPlaceHolder.motorSpeed);
 			wheelJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
-			joint = this.world.CreateJoint(wheelJointDef);
+			joint = Box2D.castObject(this.world.CreateJoint(wheelJointDef), Box2D.b2WheelJoint);
+
+			destroy(axis);
+			destroy(anchor);
+			destroy(wheelJointDef);
 		}
 		joint.data = jointPlaceHolder.data;
 		bodyA.myJoints = undefined;
