@@ -396,7 +396,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 const bodyB = contact.GetFixtureB().GetBody();
                 const velocityA = bodyA.GetLinearVelocity().Length();
                 const velocityB = bodyB.GetLinearVelocity().Length();
-                let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().y, bodyA.GetLinearVelocity().x) : Math.atan2(bodyB.GetLinearVelocity().y, bodyB.GetLinearVelocity().x);
+                let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().get_y(), bodyA.GetLinearVelocity().get_x()) : Math.atan2(bodyB.GetLinearVelocity().get_y(), bodyB.GetLinearVelocity().get_x());
                 impactAngle *= game.editor.RAD2DEG + 180;
                 const velocitySum = velocityA + velocityB;
 

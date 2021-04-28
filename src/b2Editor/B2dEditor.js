@@ -1845,7 +1845,15 @@ const _B2dEditor = function () {
 		delete body.mySprite;
 		if(body.myJoints) body.myJoints.length = 0;
 		if(body.myTriggers) body.myTriggers.length = 0;
+		if(body.recentlyImpactedBodies) body.recentlyImpactedBodies.length = 0;
 		delete body.destroyed;
+		delete body.ignoreCollisionsTime;
+		delete body.isFlesh;
+		delete body.snapped;
+		delete body.instaKill;
+		delete body.isVehiclePart;
+		delete body.noImpactDamage;
+		delete body.noDamage;
 	}
 	this.deleteSelection = function (force) {
 

@@ -48,7 +48,7 @@ import { countries } from "./utils/Localization";
 
 import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 
-const {JSQueryCallback} = Box2D;
+const {JSQueryCallback, JSContactListener} = Box2D;
 
 const {b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef} = Box2D;
 
@@ -1154,179 +1154,181 @@ function Game() {
     }
 
     var self = this;
-    // this.gameContactListener = new Box2D.b2ContactListener();
-    // this.gameContactListener.BeginContact = function (contact) {
+    this.gameContactListener = new JSContactListener();
+    this.gameContactListener.BeginContact = function (contactPtr) {
+        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
 
-    //     const currentTime = Date.now();
-    //     let target = contact.GetFixtureA().GetBody();
-    //     if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
-    //     else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
+        const currentTime = Date.now();
+        let target = contact.GetFixtureA().GetBody();
+        if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
+        else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
 
-    //     target = contact.GetFixtureB().GetBody();
-    //     if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
-    //     else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
-    // }
-    // this.gameContactListener.EndContact = function (contact) {
-    //     const bodyA = contact.GetFixtureA().GetBody();
-    //     const bodyB = contact.GetFixtureB().GetBody();
+        target = contact.GetFixtureB().GetBody();
+        if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
+        else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
+    }
+    this.gameContactListener.EndContact = function (contactPtr) {
+        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
 
-    //     if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)){
-    //         if(bodyA.recentlyImpactedBodies.length === 1) delete bodyA.recentlyImpactedBodies;
-    //         else bodyA.recentlyImpactedBodies = bodyA.recentlyImpactedBodies.filter(body=>body != bodyB);
-    //     }
-    //     if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)){
-    //         if(bodyB.recentlyImpactedBodies.length === 1) delete bodyB.recentlyImpactedBodies;
-    //         else bodyB.recentlyImpactedBodies = bodyB.recentlyImpactedBodies.filter(body=>body != bodyA);
-    //     }
-    // }
+        const bodyA = contact.GetFixtureA().GetBody();
+        const bodyB = contact.GetFixtureB().GetBody();
 
-    // this.gameContactListener.PreSolve = function (contact, oldManifold) {
-    //     const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-    //     let body;
-    //     let otherBody;
+        if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)){
+            if(bodyA.recentlyImpactedBodies.length === 1) delete bodyA.recentlyImpactedBodies;
+            else bodyA.recentlyImpactedBodies = bodyA.recentlyImpactedBodies.filter(body=>body != bodyB);
+        }
+        if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)){
+            if(bodyB.recentlyImpactedBodies.length === 1) delete bodyB.recentlyImpactedBodies;
+            else bodyB.recentlyImpactedBodies = bodyB.recentlyImpactedBodies.filter(body=>body != bodyA);
+        }
+    }
 
-    //     if(!bodies[0].mySprite || !bodies[1].mySprite) return;
+    this.gameContactListener.PreSolve = function (contactPtr) {
+        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
 
-    //     for (let i = 0; i < bodies.length; i++) {
-    //         body = bodies[i];
-    //         otherBody = i == 0 ? bodies[1] : bodies[0];
-    //         if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
-    //             body.oldBounceManifest = b2CloneVec2(body.GetLinearVelocity());
-    //         }
-    //     }
-    // }
-    // this.gameContactListener.PostSolve = function (contact, impulse) {
+        const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+        let body;
+        let otherBody;
 
-    //     const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-    //     let body;
-    //     let otherBody;
+        if(!bodies[0].mySprite || !bodies[1].mySprite) return;
 
-    //     if(!bodies[0].mySprite || !bodies[1].mySprite) return;
+        for (let i = 0; i < bodies.length; i++) {
+            body = bodies[i];
+            otherBody = i == 0 ? bodies[1] : bodies[0];
+            if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
+                body.oldBounceManifest = b2CloneVec2(body.GetLinearVelocity());
+            }
+        }
+    }
+    this.gameContactListener.PostSolve = function (contactPtr, impulse) {
+        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
 
+        const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+        let body;
+        let otherBody;
 
-    //     for (let i = 0; i < bodies.length; i++) {
-    //         body = bodies[i];
-    //         otherBody = i == 0 ? bodies[1] : bodies[0];
-    //         const otherFixture = i == 0 ? contact.GetFixtureB() : contact.GetFixtureA();
-
-    //         if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
-    //             if(body.oldBounceManifest && otherFixture.GetRestitution()>=0.5){
-
-    //                 const velocityBoostX = (body.GetLinearVelocity().x - body.oldBounceManifest.x);
-    //                 const velocityBoostY = (body.GetLinearVelocity().y - body.oldBounceManifest.y);
-
-    //                 if(Math.sqrt(velocityBoostX*velocityBoostX + velocityBoostY * velocityBoostY) > 5){
-    //                     let jointEdge = body.GetJointList();
-    //                     while (jointEdge) {
-    //                         const joint = jointEdge.joint;
-    //                         const connectedBody = joint.GetBodyA() === body ? joint.GetBodyB() : joint.GetBodyA();
-    //                         const velocity = connectedBody.GetLinearVelocity();
-    //                         if(Math.abs(velocity.x-body.GetLinearVelocity().x) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX*Settings.prefabBounceLimiter;
-    //                         if(Math.abs(velocity.y-body.GetLinearVelocity().y) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY*Settings.prefabBounceLimiter;
-
-    //                         let innerJointEdge = connectedBody.GetJointList();
-
-    //                         while(innerJointEdge){
-    //                             const innerConnectedBody = innerJointEdge.joint.GetBodyA() === connectedBody ? innerJointEdge.joint.GetBodyB() : innerJointEdge.joint.GetBodyA();
-    //                             if(innerConnectedBody != body){
-    //                                 const innerVelocity = innerConnectedBody.GetLinearVelocity();
-    //                                 if(Math.abs(innerVelocity.x-body.GetLinearVelocity().x) > Math.abs(velocityBoostX)/2) innerVelocity.x += velocityBoostX*Settings.prefabBounceLimiter;
-    //                                 if(Math.abs(innerVelocity.y-body.GetLinearVelocity().y) > Math.abs(velocityBoostY)/2) innerVelocity.y += velocityBoostY*Settings.prefabBounceLimiter;
-    //                             }
-    //                             innerJointEdge = innerJointEdge.next;
-    //                         }
-
-    //                         jointEdge = jointEdge.next;
-
-    //                     }
-    //                 }
-    //                 delete body.oldBounceManifest;
-    //             }
-    //         }
+        if(!bodies[0].mySprite || !bodies[1].mySprite) return;
 
 
-    //         if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
-    //             if(otherBody.instaKill){
-    //                 const bodyClass = self.editor.retrieveSubClassFromBody(body);
-    //                 if(bodyClass && bodyClass.dealDamage){
-    //                     bodyClass.dealDamage(10000);
-    //                 }
-    //             }else if(!otherBody.isVehiclePart && !otherBody.noImpactDamage) {
-    //                 let force = 0;
-    //                 for (let j = 0; j < impulse.normalImpulses.length; j++)
-    //                     if (impulse.normalImpulses[j] > force) force = impulse.normalImpulses[j];
+        for (let i = 0; i < bodies.length; i++) {
+            body = bodies[i];
+            otherBody = i == 0 ? bodies[1] : bodies[0];
+            const otherFixture = i == 0 ? contact.GetFixtureB() : contact.GetFixtureA();
 
-    //                 const bodyA = contact.GetFixtureA().GetBody();
-    //                 const bodyB = contact.GetFixtureB().GetBody();
+            if(body.mySprite.data.prefabInstanceName && body.mySprite.data.prefabInstanceName != otherBody.mySprite.data.prefabInstanceName){
+                if(body.oldBounceManifest && otherFixture.GetRestitution()>=0.5){
 
-    //                 const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
-    //                 const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
-    //                 let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().y, contact.GetFixtureA().GetBody().GetLinearVelocity().x) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().y, contact.GetFixtureB().GetBody().GetLinearVelocity().x);
-    //                 impactAngle *= game.editor.RAD2DEG + 180;
-    //                 const velocitySum = velocityA + velocityB;
+                    const velocityBoostX = (body.GetLinearVelocity().get_x() - body.oldBounceManifest.x);
+                    const velocityBoostY = (body.GetLinearVelocity().get_y() - body.oldBounceManifest.y);
 
-    //                 let allowSound = true;
-    //                 if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
-    //                 if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+                    if(Math.sqrt(velocityBoostX*velocityBoostX + velocityBoostY * velocityBoostY) > 5){
+                        for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.GetNext()) {
+                            const joint = jointEdge.joint;
+                            const connectedBody = joint.GetBodyA() === body ? joint.GetBodyB() : joint.GetBodyA();
+                            const velocity = connectedBody.GetLinearVelocity();
+                            if(Math.abs(velocity.x-body.GetLinearVelocity().get_x()) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX*Settings.prefabBounceLimiter;
+                            if(Math.abs(velocity.y-body.GetLinearVelocity().get_y()) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY*Settings.prefabBounceLimiter;
 
-    //                 const skipBecauseToLight = contact.GetFixtureA().GetDensity() === 0.001 || contact.GetFixtureB().GetDensity() === 0.001;
+                            for (let innerJointEdge = connectedBody.GetJointList(); getPointer(innerJointEdge) !== getPointer(NULL); innerJointEdge = innerJointEdge.GetNext()) {
+                                const innerConnectedBody = innerJointEdge.joint.GetBodyA() === connectedBody ? innerJointEdge.joint.GetBodyB() : innerJointEdge.joint.GetBodyA();
+                                if(innerConnectedBody != body){
+                                    const innerVelocity = innerConnectedBody.GetLinearVelocity();
+                                    if(Math.abs(innerVelocity.x-body.GetLinearVelocity().get_x()) > Math.abs(velocityBoostX)/2) innerVelocity.x += velocityBoostX*Settings.prefabBounceLimiter;
+                                    if(Math.abs(innerVelocity.y-body.GetLinearVelocity().get_y()) > Math.abs(velocityBoostY)/2) innerVelocity.y += velocityBoostY*Settings.prefabBounceLimiter;
+                                }
+                            }
+                        }
 
-    //                 if (velocitySum > 10.0 && !skipBecauseToLight) {
-    //                     const worldManifold = new Box2D.b2WorldManifold();
-    //                     contact.GetWorldManifold(worldManifold);
-    //                     const worldCollisionPoint = worldManifold.points[0];
+                    }
+                    destroy(body.oldBounceManifest);
+                    delete body.oldBounceManifest;
+                }
+            }
 
-    //                     const slidingDecalSlider = 50;
-    //                     const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
-    //                     self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
 
-    //                     emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+            if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
+                if(otherBody.instaKill){
+                    const bodyClass = self.editor.retrieveSubClassFromBody(body);
+                    if(bodyClass && bodyClass.dealDamage){
+                        bodyClass.dealDamage(10000);
+                    }
+                }else if(!otherBody.isVehiclePart && !otherBody.noImpactDamage) {
+                    let force = 0;
+                    for (let j = 0; j < impulse.normalImpulses.length; j++)
+                        if (impulse.normalImpulses[j] > force) force = impulse.normalImpulses[j];
 
-    //                     if(allowSound) AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.1, 1.4 + 0.4 * Math.random()-0.2, body.GetPosition());
+                    const bodyA = contact.GetFixtureA().GetBody();
+                    const bodyB = contact.GetFixtureB().GetBody();
 
-    //                     if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
-    //                     bodyA.recentlyImpactedBodies.push(bodyB);
+                    const velocityA = contact.GetFixtureA().GetBody().GetLinearVelocity().Length();
+                    const velocityB = contact.GetFixtureB().GetBody().GetLinearVelocity().Length();
+                    let impactAngle = (velocityA > velocityB) ? Math.atan2(contact.GetFixtureA().GetBody().GetLinearVelocity().get_y(), contact.GetFixtureA().GetBody().GetLinearVelocity().get_x()) : Math.atan2(contact.GetFixtureB().GetBody().GetLinearVelocity().get_y(), contact.GetFixtureB().GetBody().GetLinearVelocity().get_x());
+                    impactAngle *= game.editor.RAD2DEG + 180;
+                    const velocitySum = velocityA + velocityB;
 
-    //                     const bodyClass = self.editor.retrieveSubClassFromBody(body);
-    //                     if(bodyClass && bodyClass.dealDamage && !body.noDamage){
-    //                         const slidingDamageScalar = 50;
-    //                         bodyClass.dealDamage(velocitySum/slidingDamageScalar);
-    //                     }
-    //                 }
-    //             }
-    //         }else{
-    //             let force = 0;
-    //             for (let j = 0; j < impulse.normalImpulses.length; j++)
-    //                 if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
-    //             const bodyA = contact.GetFixtureA().GetBody();
-    //             const bodyB = contact.GetFixtureB().GetBody();
+                    let allowSound = true;
+                    if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                    if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
 
-    //             const velocityA = bodyA.GetLinearVelocity().Length();
-    //             const velocityB = bodyB.GetLinearVelocity().Length();
-    //             let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().y, bodyA.GetLinearVelocity().x) : Math.atan2(bodyB.GetLinearVelocity().y, bodyB.GetLinearVelocity().x);
-    //             impactAngle *= game.editor.RAD2DEG + 180;
+                    const skipBecauseToLight = contact.GetFixtureA().GetDensity() === 0.001 || contact.GetFixtureB().GetDensity() === 0.001;
 
-    //             const fastestBody = velocityA > velocityB ? bodyA : bodyB;
+                    if (velocitySum > 10.0 && !skipBecauseToLight) {
+                        const worldManifold = new Box2D.b2WorldManifold();
+                        contact.GetWorldManifold(worldManifold);
+                        const worldCollisionPoint = worldManifold.points[0];
 
-    //             const velocitySum = velocityA + velocityB;
+                        const slidingDecalSlider = 50;
+                        const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
+                        self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
 
-    //             let allowSound = true;
-    //             if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
-    //             if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+                        emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 
-    //             if (velocitySum > 10.0 && force > 10 * fastestBody.GetMass() && allowSound) {
-    //                 let targetSounds = ['impact-small1', 'impact-small2'];
+                        if(allowSound) AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.1, 1.4 + 0.4 * Math.random()-0.2, body.GetPosition());
 
-    //                 if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
-    //                 bodyA.recentlyImpactedBodies.push(bodyB);
+                        if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                        bodyA.recentlyImpactedBodies.push(bodyB);
 
-    //                 if(fastestBody.GetMass() > 1000) targetSounds = ['impact-heavy1', 'impact-heavy2'];
-    //                 if(fastestBody.GetMass() > 100) targetSounds = ['impact-medium1', 'impact-medium2'];
-    //                 AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, fastestBody.GetPosition());
-    //             }
-    //         }
-    //     }
-    // }
+                        const bodyClass = self.editor.retrieveSubClassFromBody(body);
+                        if(bodyClass && bodyClass.dealDamage && !body.noDamage){
+                            const slidingDamageScalar = 50;
+                            bodyClass.dealDamage(velocitySum/slidingDamageScalar);
+                        }
+                    }
+                }
+            }else{
+                let force = 0;
+                for (let j = 0; j < impulse.normalImpulses.length; j++)
+                    if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+                const bodyA = contact.GetFixtureA().GetBody();
+                const bodyB = contact.GetFixtureB().GetBody();
+
+                const velocityA = bodyA.GetLinearVelocity().Length();
+                const velocityB = bodyB.GetLinearVelocity().Length();
+                // let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().get_y(), bodyA.GetLinearVelocity().get_x()) : Math.atan2(bodyB.GetLinearVelocity().get_y(), bodyB.GetLinearVelocity().get_x());
+                // impactAngle *= game.editor.RAD2DEG + 180;
+
+                const fastestBody = velocityA > velocityB ? bodyA : bodyB;
+
+                const velocitySum = velocityA + velocityB;
+
+                let allowSound = true;
+                if(bodyA.recentlyImpactedBodies && bodyA.recentlyImpactedBodies.includes(bodyB)) allowSound = false;
+                if(bodyB.recentlyImpactedBodies && bodyB.recentlyImpactedBodies.includes(bodyA)) allowSound = false;
+
+                if (velocitySum > 10.0 && force > 10 * fastestBody.GetMass() && allowSound) {
+                    let targetSounds = ['impact-small1', 'impact-small2'];
+
+                    if(!bodyA.recentlyImpactedBodies) bodyA.recentlyImpactedBodies = [];
+                    bodyA.recentlyImpactedBodies.push(bodyB);
+
+                    if(fastestBody.GetMass() > 1000) targetSounds = ['impact-heavy1', 'impact-heavy2'];
+                    if(fastestBody.GetMass() > 100) targetSounds = ['impact-medium1', 'impact-medium2'];
+                    AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, fastestBody.GetPosition());
+                }
+            }
+        }
+    }
+
     let then, now;
     this.gameRender = (newtime) => {
         if (!then) then = window.performance.now();

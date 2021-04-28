@@ -54,7 +54,7 @@ class Portal extends PrefabManager.basePrefab {
                 const offsetAngle = target.GetAngle() - self.lookupObject['portal'].GetAngle();
                 target.ignoreCollisionsTime = currentTime + Settings.timeBetweenTeleports;
 
-                const linearVelocityAngle = Math.atan2(target.GetLinearVelocity().y, target.GetLinearVelocity().x) - self.lookupObject['portal'].GetAngle();
+                const linearVelocityAngle = Math.atan2(target.GetLinearVelocity().get_y(), target.GetLinearVelocity().get_x()) - self.lookupObject['portal'].GetAngle();
                 const linearVelocityLength = target.GetLinearVelocity().Length();
 
                 var teleportData = {

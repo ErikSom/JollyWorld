@@ -36,11 +36,11 @@ export const update = ()=>{
 		shape.set_m_radius(targetRadius / game.editor.editorSettingsObject.cameraZoom);
 
 		fixDef.set_shape(shape);
-		Box2D.destroy(shape);
-
 		fixDef.set_isSensor(true);
 
 		fixture = game.editor.physicsCamera.CreateFixture(fixDef);
+		Box2D.destroy(shape);
+
 		fixture.isPhysicsCamera = true;
 
 		// also collide with only similar objects
