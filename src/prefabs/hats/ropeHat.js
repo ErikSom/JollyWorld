@@ -141,7 +141,7 @@ export class RopeHat extends Hat {
 		this.ropeEnd.key = this.head.mySprite.data.prefabInstanceName
 		this.ropeEnd.SetBullet(true);
 
-		this.ropeEnd.contactListener = new Box2D.b2ContactListener();
+		this.ropeEnd.contactListener = new Box2D.JSContactListener();
 		this.ropeEnd.contactListener.PreSolve = contact => {
 			contact.SetEnabled(false);
 			if (this.bendBody || !this.revoluteJoint || Math.abs(this.revoluteJoint.GetJointSpeed())<0.01) return;

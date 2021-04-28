@@ -1155,9 +1155,7 @@ function Game() {
 
     var self = this;
     this.gameContactListener = new JSContactListener();
-    this.gameContactListener.BeginContact = function (contactPtr) {
-        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
-
+    this.gameContactListener.BeginContact = function (contact) {
         const currentTime = Date.now();
         let target = contact.GetFixtureA().GetBody();
         if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
@@ -1167,9 +1165,7 @@ function Game() {
         if(target.ignoreCollisionsTime && target.ignoreCollisionsTime>currentTime) contact.SetEnabled(false);
         else if(target.ignoreCollisionsTime && target.ignoreCollisionsTime<currentTime) target.ignoreCollisionsTime = undefined;
     }
-    this.gameContactListener.EndContact = function (contactPtr) {
-        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
-
+    this.gameContactListener.EndContact = function (contact) {
         const bodyA = contact.GetFixtureA().GetBody();
         const bodyB = contact.GetFixtureB().GetBody();
 
@@ -1183,9 +1179,7 @@ function Game() {
         }
     }
 
-    this.gameContactListener.PreSolve = function (contactPtr) {
-        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
-
+    this.gameContactListener.PreSolve = function (contact) {
         const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         let body;
         let otherBody;
@@ -1200,9 +1194,7 @@ function Game() {
             }
         }
     }
-    this.gameContactListener.PostSolve = function (contactPtr, impulse) {
-        const contact = Box2D.wrapPointer( contactPtr, b2Contact );
-
+    this.gameContactListener.PostSolve = function (contact, impulse) {
         const bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
         let body;
         let otherBody;
@@ -1254,8 +1246,11 @@ function Game() {
                     }
                 }else if(!otherBody.isVehiclePart && !otherBody.noImpactDamage) {
                     let force = 0;
-                    for (let j = 0; j < impulse.normalImpulses.length; j++)
-                        if (impulse.normalImpulses[j] > force) force = impulse.normalImpulses[j];
+                    for (let j = 0; j < impulse.get_count(); j++){
+                        if (impulse.get_normalImpulses(j) > force){
+                            force = impulse.get_normalImpulses(j);
+                        }
+                    }
 
                     const bodyA = contact.GetFixtureA().GetBody();
                     const bodyB = contact.GetFixtureB().GetBody();
@@ -1297,8 +1292,11 @@ function Game() {
                 }
             }else{
                 let force = 0;
-                for (let j = 0; j < impulse.normalImpulses.length; j++)
-                    if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+                for (let j = 0; j < impulse.get_count(); j++){
+                    if (impulse.get_normalImpulses(j) > force){
+                        force = impulse.get_normalImpulses(j);
+                    }
+                }
                 const bodyA = contact.GetFixtureA().GetBody();
                 const bodyB = contact.GetFixtureB().GetBody();
 

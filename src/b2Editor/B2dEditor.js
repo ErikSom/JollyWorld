@@ -10019,61 +10019,68 @@ const _B2dEditor = function () {
         if(this.tracingTexture) this.tracingTexture.renderable = true;
 	}
 
-	// this.B2dEditorContactListener = new Box2D.b2ContactListener();
-	// this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
-	// 	if (self.contactCallBackListener) {
-	// 		if (secondParam) self.contactCallBackListener[name](contact, secondParam);
-	// 		else self.contactCallBackListener[name](contact);
-	// 	}
-	// 	var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
-	// 	var body;
-	// 	var selectedPrefab = null;
-	// 	var selectedSubPrefab = null
-	// 	for (var i = 0; i < bodies.length; i++) {
-	// 		body = bodies[i];
-	// 		if (body.mySprite && body.mySprite.data.prefabInstanceName) {
-	// 			var tarPrefab = self.activePrefabs[body.mySprite.data.prefabInstanceName].class;
-	// 			if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
-	// 				selectedPrefab = tarPrefab;
-	// 				if (secondParam) selectedPrefab.contactListener[name](contact, secondParam);
-	// 				else selectedPrefab.contactListener[name](contact);
-	// 			}
-	// 		}
-	// 		if (body.mySprite && body.mySprite.data.subPrefabInstanceName) {
-	// 			var tarPrefab = self.activePrefabs[body.mySprite.data.subPrefabInstanceName].class;
-	// 			if (tarPrefab && tarPrefab != selectedSubPrefab && tarPrefab.contactListener) {
-	// 				selectedSubPrefab = tarPrefab;
-	// 				if (secondParam) selectedSubPrefab.contactListener[name](contact, secondParam);
-	// 				else selectedSubPrefab.contactListener[name](contact);
-	// 			}
-	// 		}
-	// 		if (body.mySprite && body.mySprite.data.type == self.object_TRIGGER) {
-	// 			if (secondParam) body.class.contactListener[name](contact, secondParam);
-	// 			else body.class.contactListener[name](contact);
-	// 		}
+	this.B2dEditorContactListener = new Box2D.JSContactListener();
+	this.B2dEditorContactListener.BubbleEvent = function (name, contact, secondParam) {
+		if (self.contactCallBackListener) {
+			if (secondParam) self.contactCallBackListener[name](contact, secondParam);
+			else self.contactCallBackListener[name](contact);
+		}
+		var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
+		var body;
+		var selectedPrefab = null;
+		var selectedSubPrefab = null
+		for (var i = 0; i < bodies.length; i++) {
+			body = bodies[i];
+			if (body.mySprite && body.mySprite.data.prefabInstanceName) {
+				var tarPrefab = self.activePrefabs[body.mySprite.data.prefabInstanceName].class;
+				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
+					selectedPrefab = tarPrefab;
+					if (secondParam) selectedPrefab.contactListener[name](contact, secondParam);
+					else selectedPrefab.contactListener[name](contact);
+				}
+			}
+			if (body.mySprite && body.mySprite.data.subPrefabInstanceName) {
+				var tarPrefab = self.activePrefabs[body.mySprite.data.subPrefabInstanceName].class;
+				if (tarPrefab && tarPrefab != selectedSubPrefab && tarPrefab.contactListener) {
+					selectedSubPrefab = tarPrefab;
+					if (secondParam) selectedSubPrefab.contactListener[name](contact, secondParam);
+					else selectedSubPrefab.contactListener[name](contact);
+				}
+			}
+			if (body.mySprite && body.mySprite.data.type == self.object_TRIGGER) {
+				if (secondParam) body.class.contactListener[name](contact, secondParam);
+				else body.class.contactListener[name](contact);
+			}
 
-	// 		if(body.contactListener){
-	// 			if (secondParam) body.contactListener[name](contact, secondParam);
-	// 			else body.contactListener[name](contact);
-	// 		}
-	// 	}
-	// }
-	// this.B2dEditorContactListener.BeginContact = function (contact) {
-	// 	if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
-	// 		physicsCullCamera.beginContact(contact);
-	// 	}else this.BubbleEvent("BeginContact", contact);
-	// }
-	// this.B2dEditorContactListener.EndContact = function (contact) {
-	// 	if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
-	// 		physicsCullCamera.endContact(contact);
-	// 	}else this.BubbleEvent("EndContact", contact);
-	// }
-	// this.B2dEditorContactListener.PreSolve = function (contact, oldManifold) {
-	// 	this.BubbleEvent("PreSolve", contact, oldManifold);
-	// }
-	// this.B2dEditorContactListener.PostSolve = function (contact, impulse) {
-	// 	this.BubbleEvent("PostSolve", contact, impulse);
-	// }
+			if(body.contactListener){
+				if (secondParam) body.contactListener[name](contact, secondParam);
+				else body.contactListener[name](contact);
+			}
+		}
+	}
+	this.B2dEditorContactListener.BeginContact = function (contactPtr) {
+        const contact = Box2D.wrapPointer( contactPtr, Box2D.b2Contact );
+		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+			physicsCullCamera.beginContact(contact);
+		}else this.BubbleEvent("BeginContact", contact);
+	}
+	this.B2dEditorContactListener.EndContact = function (contactPtr) {
+        const contact = Box2D.wrapPointer( contactPtr, Box2D.b2Contact );
+		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+			physicsCullCamera.endContact(contact);
+		}else this.BubbleEvent("EndContact", contact);
+	}
+	this.B2dEditorContactListener.PreSolve = function (contactPtr, oldManifoldPtr) {
+		const contact = Box2D.wrapPointer( contactPtr, Box2D.b2Contact );
+		const oldManifold = Box2D.wrapPointer( oldManifoldPtr, Box2D.b2Manifold );
+
+		this.BubbleEvent("PreSolve", contact, oldManifold);
+	}
+	this.B2dEditorContactListener.PostSolve = function (contactPtr, impulsePtr) {
+		const contact = Box2D.wrapPointer( contactPtr, Box2D.b2Contact );
+		const impulse = Box2D.wrapPointer(  impulsePtr, Box2D.b2ContactImpulse );
+		this.BubbleEvent("PostSolve", contact, impulse);
+	}
 	this.testWorld = function () {
 		this.selectTool(this.tool_SELECT);
 

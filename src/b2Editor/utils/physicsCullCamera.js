@@ -96,8 +96,7 @@ export const endContact = contact => {
 			const crawledJoints = [];
 
 			const crawlJoints = body => {
-				let jointEdge = body.GetJointList();
-				while (jointEdge) {
+				for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.GetNext()) {
 					const joint = jointEdge.joint;
 					if(!joint.jointCrawled){
 						joint.jointCrawled = true;
@@ -117,7 +116,6 @@ export const endContact = contact => {
 							crawlJoints(bodyB);
 						}
 					}
-					jointEdge = jointEdge.next;
 				}
 			}
 

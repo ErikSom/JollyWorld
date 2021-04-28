@@ -1774,7 +1774,7 @@ export class triggerCore {
     }
     initContactListener() {
         var self = this;
-        this.contactListener = new Box2D.b2ContactListener();
+        this.contactListener = new Box2D.JSContactListener();
         this.contactListener.BeginContact = function (contact, target) {
             if (self.data.targetType>=triggerButtonIndex || !self.data.enabled) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
