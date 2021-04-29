@@ -13,9 +13,11 @@ export const init = ()=>{
 	bd.type = Box2D.b2_kinematicBody;
 	game.editor.physicsCamera = game.editor.CreateBody(bd);
 	game.editor.physicsCamera.SetSleepingAllowed(false);
+	Box2D.destroy(bd);
 }
 
 export const update = ()=>{
+	console.log("Updating",game.cameraFocusObject);
 	if(!game.editor.physicsCamera) return;
 
 	if(game.editor.physicsCamera.cameraZoom != game.editor.editorSettingsObject.cameraZoom){
@@ -29,7 +31,7 @@ export const update = ()=>{
 		}
 
 
-		const fixDef = new Box2D.b2FixtureDef;
+		const fixDef = new Box2D.b2FixtureDef();
 
 		const shape = new Box2D.b2CircleShape();
 		const targetRadius = (Settings.targetResolution.x / 2) / Settings.PTM * game.editor.editorSettingsObject.physicsCameraSize;
@@ -40,8 +42,9 @@ export const update = ()=>{
 
 		fixture = game.editor.physicsCamera.CreateFixture(fixDef);
 		Box2D.destroy(shape);
+		Box2D.destroy(fixDef);
 
-		fixture.isPhysicsCamera = true;
+		fixture.isPhysicsCamera = true; // FIX ME - fixtures moeten ook goed resetten
 
 		// also collide with only similar objects
 		const filterData = fixture.GetFilterData();
@@ -54,9 +57,9 @@ export const update = ()=>{
 	}
 
 	if(game.cameraFocusObject){
-		const linearVelocity = b2MulVec2(b2CloneVec2(game.cameraFocusObject.GetLinearVelocity()), 0);
-		const targetPosition = b2AddVec2(b2CloneVec2(game.cameraFocusObject.GetPosition()), linearVelocity);
+		const targetPosition = b2CloneVec2(game.cameraFocusObject.GetPosition());
 		game.editor.physicsCamera.SetTransform(targetPosition, 0);
+		Box2D.destroy(targetPosition);
 	}
 }
 

@@ -1864,6 +1864,8 @@ const _B2dEditor = function () {
 			delete body.noImpactDamage;
 			delete body.noDamage;
 			delete body.__emscripten_pool;
+			delete body.reFixture;
+			delete body.cameraZoom;
 		}
 	}
 

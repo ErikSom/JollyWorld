@@ -137,7 +137,7 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
    */
   const drawCircle = (center, radius, axis, fill) => {
     ctx.beginPath();
-    ctx.arc(center.get_x()*scale, center.get_y()*scale, radius, 0, 2 * Math.PI, false);
+    ctx.arc(center.get_x()*scale, center.get_y()*scale, radius*scale, 0, 2 * Math.PI, false);
     if (fill) {
       ctx.fill();
     }
@@ -146,7 +146,7 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
     if (fill) {
       //render axis marker
       const vertex = b2CloneVec2(center);
-      vertex.op_add(b2CloneMulVec2(axis, radius));
+      vertex.op_add(b2CloneMulVec2(axis, radius*scale));
       ctx.beginPath();
       ctx.moveTo(center.get_x()*scale, center.get_y()*scale);
       ctx.lineTo(vertex.get_x()*scale, vertex.get_y()*scale);
