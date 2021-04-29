@@ -7,7 +7,7 @@ import {
 } from "../../Game";
 import { stopCustomBehaviour, drawObjectAdding } from './CustomEditorBehavior';
 import * as drawing from '../../b2Editor/utils/drawing';
-import { b2CloneVec2 } from "../../../libs/debugdraw";
+import { b2AddVec2, b2CloneVec2, b2MulVec2, b2SubVec2 } from "../../../libs/debugdraw";
 
 const TRIGGER_TYPE_ROLLOVER_LEFT = 0;
 const TRIGGER_TYPE_ROLLOVER_RIGHT = 1;
@@ -263,23 +263,34 @@ class SevenSegment extends PrefabManager.basePrefab {
             tarPos.y *= game.editor.PTM;
 
             const lineOffsetSize = -20 * game.levelCamera.scale.x;
-            const linePos = b2CloneVec2(myPos).SelfSub(tarPos).SelfNormalize().SelfMul(lineOffsetSize).SelfAdd(myPos);
+            const linePos = b2CloneVec2(myPos);
+            b2SubVec2(linePos, tarPos);
+            linePos.Normalize();
+            b2MulVec2(linePos, lineOffsetSize)
+            b2AddVec2(linePos, myPos);
 
             game.triggerDebugDraw.lineStyle(1.0 / game.editor.cameraHolder.scale.x, "0x000", 1.0);
             game.triggerDebugDraw.moveTo(linePos.x, linePos.y);
             game.triggerDebugDraw.lineTo(tarPos.x, tarPos.y);
 
             const v = new Box2D.b2Vec2(tarPos.x-linePos.x, tarPos.y-linePos.y);
-            const l = v.Length();
-            v.SelfNormalize();
+            const l = v.Normalize();
             const tl = l*0.5;
-            v.SelfMul(tl);
-            const tp = b2CloneVec2(linePos).SelfAdd(v);
+
+            b2MulVec2(v, tl);
+
+            const tp = b2CloneVec2(linePos)
+            b2AddVec2(tp, v);
 
             game.triggerDebugDraw.beginFill("0x999", 1.0);
             game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
             game.triggerDebugDraw.endFill();
             drawing.addText(i+1, game.triggerDebugDraw, tp, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+
+            Box2D.destroy(tarPos)
+            Box2D.destroy(linePos);
+            Box2D.destroy(v);
+            Box2D.destroy(tp);
         });
         game.triggerDebugDraw.dirtyTargets = false;
     }
