@@ -10,7 +10,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2MulVec2 } from '../../../libs/debugdraw';
 
 class Cannon extends PrefabManager.basePrefab {
     constructor(target) {
@@ -96,14 +96,15 @@ class Cannon extends PrefabManager.basePrefab {
 	positionCannonEmitter(){
         const pos = this.getShootingPosition();
         this.emitter.spawnPos.set(pos.x * Settings.PTM, pos.y * Settings.PTM);
+		Box2D.destroy(pos);
     }
 
 
 	shoot() {
 
-		const pos = this.getShootingPosition();
+		const worldPos = this.getShootingPosition();
 
-		const pixiPoint = game.editor.getPIXIPointFromWorldPoint(pos);
+		const pixiPoint = game.editor.getPIXIPointFromWorldPoint(worldPos);
 		// game.levelCamera.matrix.apply(pixiPoint,pixiPoint);
 		// drawCircle(pixiPoint, 10);
 
@@ -111,7 +112,7 @@ class Cannon extends PrefabManager.basePrefab {
         EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.shootForce/600, point:pixiPoint});
 
 		const angle = this.cannonBody.GetAngle() + (this.flipped ? Math.PI : 0);
-		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'CannonBall', true);
+		const prefabData = PrefabBuilder.generatePrefab(worldPos, angle*game.editor.RAD2DEG, 'CannonBall', true);
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
@@ -119,7 +120,8 @@ class Cannon extends PrefabManager.basePrefab {
 		AudioManager.playSFX('cannon', 0.2, 1.0 + 0.4 * Math.random()-0.2, body.GetPosition());
 
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
-		body.ApplyForce(impulse, body.GetPosition());
+		body.ApplyForce(impulse, body.GetPosition(), true);
+		Box2D.destroy(impulse);
 
 
 		this.lastCannonBalls.push(prefabData.prefabClass);
@@ -129,8 +131,10 @@ class Cannon extends PrefabManager.basePrefab {
 
         this.emitter.playOnce();
 
-		this.cannonBody.ApplyForce(impulse.SelfMul(-0.1), pos, true);
 
+		b2MulVec2(impulse, -0.1);
+		this.cannonBody.ApplyForce(impulse, worldPos, true);
+		Box2D.destroy(worldPos);
 
 		this.reloadTimer = 0;
 		this.loaded = false;

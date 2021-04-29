@@ -7286,7 +7286,7 @@ const _B2dEditor = function () {
 		bd.set_angularDamping(0.9);
 
 		var body = this.CreateBody(bd);
-		body.SetAwake(true); // FIX ME
+		body.SetAwake(false);
 
 		game.cameraFocusObject = body; // FIX ME
 
@@ -10160,7 +10160,7 @@ const _B2dEditor = function () {
 				joint.spriteData = sprite.data;
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
-				sprite.myBody.SetAwake(true); // FIX ME
+				sprite.myBody.SetAwake(false);
 				if(sprite.myBody.ignorePhysicsCuller && sprite.data.awake) sprite.myBody.SetAwake(true);
 			} else if (sprite.data.type == this.object_TEXTURE) {
 				this.addObjectToLookupGroups(sprite, sprite.data);
