@@ -31,7 +31,8 @@ export var Settings = {
     defaultRestitution:0.2,
     defaultFriction:0.5,
     prefabBounceLimiter:1.0,
-    maxBullets:2,
+    maxBulletsPrefab:2,
+    maxTotalBullets:6,
     /*GORE*/
     goreEnabled: true,
     emittersPerBody:3,

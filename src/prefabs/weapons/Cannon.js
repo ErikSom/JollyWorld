@@ -125,7 +125,7 @@ class Cannon extends PrefabManager.basePrefab {
 
 
 		this.lastCannonBalls.push(prefabData.prefabClass);
-		if(this.lastCannonBalls.length>Settings.maxBullets){
+		if(this.lastCannonBalls.length>Settings.maxBulletsPrefab){
 			this.lastCannonBalls.shift().destroy();
 		}
 

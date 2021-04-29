@@ -34,6 +34,8 @@ export const b2SubVec2 = (vec, vec2) => {
   return vec;
 }
 
+export const b2Clamp = (a, lo, hi) => (a < lo) ? (lo) : ((a > hi) ? (hi) : (a));
+
 export const b2DotVV = (a, b) => {
   return a.get_x() * b.get_x() + a.get_y() * b.get_y();
 }

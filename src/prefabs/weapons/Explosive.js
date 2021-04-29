@@ -8,7 +8,7 @@ import {
 import {
     Settings
 } from "../../Settings";
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2SubVec2 } from '../../../libs/debugdraw';
 
 export class Explosive extends PrefabManager.basePrefab {
     constructor(target) {
@@ -38,8 +38,8 @@ export class Explosive extends PrefabManager.basePrefab {
 		const aabb = new Box2D.b2AABB();
 		const rayStartPosition = this.explodeTarget.GetPosition();
 		const radius = this.explosiveRadius/Settings.PTM;
-		aabb.lowerBound.Set(rayStartPosition.x-radius, rayStartPosition.y-radius);
-		aabb.upperBound.Set(rayStartPosition.x+radius, rayStartPosition.y+radius);
+		aabb.get_lowerBound().Set(rayStartPosition.x-radius, rayStartPosition.y-radius);
+		aabb.get_upperBound().Set(rayStartPosition.x+radius, rayStartPosition.y+radius);
 
 		getBodies.clean();
 		this.explodeTarget.GetWorld().QueryAABB(getBodies, aabb);
@@ -54,15 +54,16 @@ export class Explosive extends PrefabManager.basePrefab {
 				rayCallback.target = body;
 				this.explodeTarget.GetWorld().RayCast(rayCallback, rayStartPosition, body.GetPosition());
 
-				const diff = b2CloneVec2(rayStartPosition).SelfSub(body.GetPosition());
-				diff.SelfNormalize();
+				const diff = b2CloneVec2(rayStartPosition);
+				b2SubVec2(diff, body.GetPosition());
+				diff.Normalize();
 
 				const power = (1-rayCallback.m_fraction)*this.explosivePower*5;
 				const force = new Box2D.b2Vec2(power*-diff.x, power*-diff.y);
 
 				if(rayCallback.m_point){
 
-					body.ApplyForce(force, rayCallback.m_point);
+					body.ApplyForce(force, rayCallback.m_point, true);
 					const powerRate = power/this.explosivePower;
 
 					if(body.isFlesh){
@@ -131,9 +132,9 @@ export class Explosive extends PrefabManager.basePrefab {
 				for (var i = 0; i < bodies.length; i++) {
 					body = bodies[i];
 					if(self.activateOn == Explosive.activateOnTypes.impact){
-						const count = contact.GetManifold().pointCount;
+						const count = contact.GetManifold().get_pointCount();
 						let force = 0;
-						for (var j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+						for (var j = 0; j < count; j++) force = Math.max(force, impulse.get_normalImpulses(j));
 						force *= Math.min(body.GetMass(), 50);
 
 						if(force > self.impactForExplosion){
@@ -185,29 +186,10 @@ Explosive.settingsOptions = Object.assign({}, Explosive.settingsOptions, {
 	"activateOn":Object.values(Explosive.activateOnTypes),
 });
 
-Explosive.RaycastCallbackExplosive = function () {
-	this.target = null;
-	this.m_fraction = 0;
-	this.m_point = null;
-	this.m_hit = false;
-}
-Explosive.RaycastCallbackExplosive.prototype.ReportFixture = function (fixture,	point, normal, fraction) {
-	const body = fixture.GetBody();
-	if(!this.target){
-		if(body.GetType() !== Box2D.b2_staticBody) return -1;
-		if (fixture.IsSensor()) return -1;
-	}else{
-		if(body !== this.target) return -1;
-		this.target = null;
-	}
-	this.m_hit = true;
-	this.m_point = point;
-	this.m_fraction = fraction;
-};
-
-const getBodies = new function () {
-	this.bodies = [];
-	this.ReportFixture = function(fixture){
+const getBodies = Object.assign(new Box2D.JSQueryCallback(), {
+	bodies: [],
+	ReportFixture: function(fixturePtr){
+		const fixture = Box2D.wrapPointer( fixturePtr, Box2D.b2Fixture );
 		const body = fixture.GetBody();
 		const bodyClass = game.editor.retrieveClassFromBody(body);
 		let ignore = false;
@@ -217,9 +199,33 @@ const getBodies = new function () {
 		}
 		if(!ignore) this.bodies.push(body);
 		return true;
-	};
-	this.clean = function(){
+	},
+	clean: function(){
 		this.bodies.length = 0;
 	}
-};
-const rayCallback = new Explosive.RaycastCallbackExplosive();
+});
+
+const rayCallback = Object.assign(new Box2D.JSRayCastCallback(), {
+	target: null,
+	m_fraction: 0,
+	m_point: null,
+	m_hit: false,
+	ReportFixture: function (fixture_p,	point_p, normal, fraction) {
+
+		const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
+		const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
+		// const normal = Box2D.wrapPointer(normal_p, Box2D.b2Vec2);
+
+		const body = fixture.GetBody();
+		if(!this.target){
+			if(body.GetType() !== Box2D.b2_staticBody) return -1;
+			if (fixture.IsSensor()) return -1;
+		}else{
+			if(body !== this.target) return -1;
+			this.target = null;
+		}
+		this.m_hit = true;
+		this.m_point = point;
+		this.m_fraction = fraction;
+	}
+});

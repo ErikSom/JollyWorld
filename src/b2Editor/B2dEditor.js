@@ -153,7 +153,7 @@ const _B2dEditor = function () {
 
 	this.cameraHolder;
 	this.physicsCamera;
-
+	this.bulletBodyCount = 0;
 
 	//emscripten specific
 	this.bodiesDestroyedThisFrame = [];
@@ -10009,6 +10009,7 @@ const _B2dEditor = function () {
 		this.uniqueCollisionPrefabs = {};
 
 		this.physicsCamera = null;
+		this.bulletBodyCount = 0;
 		window.__guiusercolors = [];
 		delete this.editorSettingsObject.song;
 

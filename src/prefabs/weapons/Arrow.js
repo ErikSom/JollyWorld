@@ -4,17 +4,26 @@ import {
     game
 } from "../../Game";
 import { b2CloneVec2, b2DotVV, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
+import { Settings } from '../../Settings';
 
 class Arrow extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
 		this.dragConstant = 0.2;
-		this.lifeTime = 8000;
+		this.lifeTime = 6000;
         this.lifeTimer = 0;
+		this.isBullet = false;
     }
     init() {
 		this.arrowBody = this.lookupObject['arrowBody'];
-		this.arrowBody.SetBullet(true);
+
+		if(game.editor.bulletBodyCount < Settings.maxTotalBullets){
+			this.arrowBody.SetBullet(true);
+			game.editor.bulletBodyCount++;
+			this.isBullet = true;
+		}
+
+
 		this.arrowBody.isArrow = true;
 
 		super.init();
@@ -93,9 +102,15 @@ class Arrow extends PrefabManager.basePrefab {
         this.lifeTimer += game.editor.deltaTime;
 	}
 	destroy(){
-		if(this.worldCollisionPoint) Box2D.destroy(this.worldCollisionPoint);
-		Box2D.destroy(this.pointingVec);
-		Box2D.destroy(this.tailVec);
+		if(!this.destroyed){
+			if(this.worldCollisionPoint) Box2D.destroy(this.worldCollisionPoint);
+			Box2D.destroy(this.pointingVec);
+			Box2D.destroy(this.tailVec);
+
+			if(this.isBullet){
+				game.editor.bulletBodyCount--;
+			}
+		}
 
 		super.destroy();
 	}

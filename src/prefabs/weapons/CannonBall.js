@@ -2,15 +2,33 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
+import { Settings } from '../../Settings';
 
 class CannonBall extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
-		this.lifeTime = 8000;
+		this.lifeTime = 6000;
         this.lifeTimer = 0;
         this.body = this.lookupObject.body;
-		this.body.SetBullet(true);
+
+        if(game.editor.bulletBodyCount < Settings.maxTotalBullets){
+            this.body.SetBullet(true);
+			game.editor.bulletBodyCount++;
+			this.isBullet = true;
+		}
+
 	}
+
+    destroy(){
+        if(!this.destroyed){
+			if(this.isBullet){
+				game.editor.bulletBodyCount--;
+			}
+		}
+
+        super.destroy();
+    }
+
 	update(){
 		if (PrefabManager.timerReady(this.lifeTimer, this.lifeTime, true)) {
             this.destroy();

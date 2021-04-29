@@ -93,7 +93,7 @@ class CrossBow extends PrefabManager.basePrefab {
 		Box2D.destroy(impulse);
 
 		this.lastArrows.push(prefabData.prefabClass);
-		if(this.lastArrows.length>Settings.maxBullets){
+		if(this.lastArrows.length>Settings.maxBulletsPrefab){
 			const lastArrow = this.lastArrows.shift();
 			if(!lastArrow.sticking)	lastArrow.destroy();
 		}
