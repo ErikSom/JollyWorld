@@ -13,6 +13,7 @@ export const init = ()=>{
 	bd.type = Box2D.b2_kinematicBody;
 	game.editor.physicsCamera = game.editor.CreateBody(bd);
 	game.editor.physicsCamera.SetSleepingAllowed(false);
+	game.editor.physicsCamera.isPhysicsCamera = true;
 	Box2D.destroy(bd);
 }
 
@@ -44,8 +45,6 @@ export const update = ()=>{
 		Box2D.destroy(shape);
 		Box2D.destroy(fixDef);
 
-		fixture.isPhysicsCamera = true; // FIX ME - fixtures moeten ook goed resetten
-
 		// also collide with only similar objects
 		const filterData = fixture.GetFilterData();
 		filterData.set_categoryBits(game.editor.MASKBIT_PHYSICS_CULL);
@@ -64,7 +63,7 @@ export const update = ()=>{
 }
 
 export const beginContact = contact => {
-	const otherFixture = contact.GetFixtureA().isPhysicsCamera ? contact.GetFixtureB() : contact.GetFixtureA();
+	const otherFixture = contact.GetFixtureA().GetBody().isPhysicsCamera ? contact.GetFixtureB() : contact.GetFixtureA();
 	const otherBody = otherFixture.GetBody();
 
 	if(otherBody.mySprite){
@@ -86,7 +85,7 @@ export const beginContact = contact => {
 }
 
 export const endContact = contact => {
-	const otherFixture = contact.GetFixtureA().isPhysicsCamera ? contact.GetFixtureB() : contact.GetFixtureA();
+	const otherFixture = contact.GetFixtureA().GetBody().isPhysicsCamera ? contact.GetFixtureB() : contact.GetFixtureA();
 	const otherBody = otherFixture.GetBody();
 
 	if(otherBody.mySprite && game.editor.physicsCamera && !game.editor.physicsCamera.reFixture){

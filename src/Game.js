@@ -521,7 +521,7 @@ function Game() {
     this.getBodyCB = new JSQueryCallback();
 	this.getBodyCB.ReportFixture = function (fixturePtr) {
         const fixture = Box2D.wrapPointer( fixturePtr, Box2D.b2Fixture );
-        if (fixture.GetBody().GetType() != b2Body.b2_staticBody && !fixture.isPhysicsCamera) {
+        if (fixture.GetBody().GetType() != b2Body.b2_staticBody && !fixture.GetBody().isPhysicsCamera) {
             if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
                 self.selectedBody = fixture.GetBody();
                 return false;

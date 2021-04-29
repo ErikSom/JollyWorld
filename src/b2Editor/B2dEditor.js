@@ -1866,6 +1866,7 @@ const _B2dEditor = function () {
 			delete body.__emscripten_pool;
 			delete body.reFixture;
 			delete body.cameraZoom;
+			delete body.isPhysicsCamera;
 		}
 	}
 
@@ -10086,13 +10087,13 @@ const _B2dEditor = function () {
 	}
 	this.B2dEditorContactListener.BeginContact = function (contactPtr) {
         const contact = Box2D.wrapPointer( contactPtr, Box2D.b2Contact );
-		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+		if(contact.GetFixtureA().GetBody().isPhysicsCamera || contact.GetFixtureB().GetBody().isPhysicsCamera){
 			physicsCullCamera.beginContact(contact);
 		}else this.BubbleEvent("BeginContact", contact);
 	}
 	this.B2dEditorContactListener.EndContact = function (contactPtr) {
         const contact = Box2D.wrapPointer( contactPtr, Box2D.b2Contact );
-		if(contact.GetFixtureA().isPhysicsCamera || contact.GetFixtureB().isPhysicsCamera){
+		if(contact.GetFixtureA().GetBody().isPhysicsCamera || contact.GetFixtureB().GetBody().isPhysicsCamera){
 			physicsCullCamera.endContact(contact);
 		}else this.BubbleEvent("EndContact", contact);
 	}
