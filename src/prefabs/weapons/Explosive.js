@@ -44,6 +44,8 @@ export class Explosive extends PrefabManager.basePrefab {
 		getBodies.clean();
 		this.explodeTarget.GetWorld().QueryAABB(getBodies, aabb);
 
+		Box2D.destroy(aabb);
+
 		[...getBodies.bodies].forEach(body=>{
 
 			rayCallback.m_hit = false;
@@ -60,6 +62,7 @@ export class Explosive extends PrefabManager.basePrefab {
 
 				const power = (1-rayCallback.m_fraction)*this.explosivePower*5;
 				const force = new Box2D.b2Vec2(power*-diff.x, power*-diff.y);
+
 
 				if(rayCallback.m_point){
 
@@ -88,6 +91,8 @@ export class Explosive extends PrefabManager.basePrefab {
 					}
 				}
 
+				Box2D.destroy(diff);
+				Box2D.destroy(force);
 			}
 
 		})

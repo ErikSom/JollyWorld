@@ -109,11 +109,9 @@ class DroneBomb extends Explosive {
 
 		const targetPosition = this.chaseTarget ? b2CloneVec2(this.chaseTarget.GetPosition()) : (this.wayPoint ? b2CloneVec2(this.wayPoint) : b2CloneVec2(this.startPosition));
 
-
 		const gravityNormalIncrease = b2MulVec2(b2CloneVec2(gravityNormal), -8.0 * forceMultiplier);
 
 		b2AddVec2(targetPosition, gravityNormalIncrease);
-
 		b2SubVec2(targetPosition, this.body.GetPosition());
 		b2SubVec2(targetPosition, this.body.GetLinearVelocity());
 
@@ -148,12 +146,21 @@ class DroneBomb extends Explosive {
 		horizontalForce.y = targetHorizontalForce * Math.sin(this.body.GetAngle());
 
 		this.body.ApplyForce(horizontalForce, this.body.GetPosition(), true);
-
 		this.body.ApplyForce(force, this.body.GetPosition(), true);
 
 		this.positionEmitters();
 		this.emitterLeft.update(game.editor.deltaTime * 0.001);
 		this.emitterRight.update(game.editor.deltaTime * 0.001);
+
+
+		Box2D.destroy(targetPosition);
+		Box2D.destroy(gravityNormal);
+		Box2D.destroy(gravityNormalIncrease);
+		Box2D.destroy(forceNormal);
+		Box2D.destroy(force);
+		Box2D.destroy(quadNormal);
+		Box2D.destroy(horizontalForce);
+
 
 		if(this.active){
 			if (PrefabManager.timerReady(this.blinkTimer, this.blinkDelay, true)) {
@@ -178,6 +185,9 @@ class DroneBomb extends Explosive {
 			b2AddVec2(upperBound, this.lookRangeVec)
 
 			const bodies = game.editor.queryWorldForBodies(lowerBound, upperBound);
+
+			Box2D.destroy(lowerBound);
+			Box2D.destroy(upperBound);
 
 			let found = false;
 			this.lightTexture.tint = 0xFFFFFF;
@@ -256,6 +266,9 @@ class DroneBomb extends Explosive {
         this.emitterRight.minStartRotation = - emitterAngleOffset;
         this.emitterRight.maxStartRotation = + emitterAngleOffset;
         this.emitterRight.rotation = angle * game.editor.RAD2DEG;
+
+		Box2D.destroy(correctedPos);
+		Box2D.destroy(pos);
 	}
 	destroy(){
 		emitterManager.destroyEmitter(this.emitterLeft);
@@ -303,6 +316,10 @@ class DroneBomb extends Explosive {
 					self.body.ApplyForce(force1, pos, true);
 					self.body.ApplyForce(force2, self.body.GetPosition(), true);
 
+					Box2D.destroy(pos);
+					Box2D.destroy(force1);
+					Box2D.destroy(force2);
+
 					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
 
 				} else if(sideFixture === self.sides[SIDE_LEFT]){
@@ -323,6 +340,10 @@ class DroneBomb extends Explosive {
 					self.body.ApplyForce(force1, pos, true);
 					self.body.ApplyForce(force2, self.body.GetPosition(), true);
 
+					Box2D.destroy(pos);
+					Box2D.destroy(force1);
+					Box2D.destroy(force2);
+
 					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
 				}
 
@@ -335,6 +356,7 @@ class DroneBomb extends Explosive {
 						self.set('active', true);
 					}
 				}
+				Box2D.destroy(angleVector);
 			}
         }
         this.contactListener.EndContact = function (contact) {
