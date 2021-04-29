@@ -7669,35 +7669,39 @@ const _B2dEditor = function () {
 		objects.forEach(object =>{
 			if (object.mySprite){
 				// body
-				let fixture = object.GetFixtureList();
-				while(fixture){
-					const shape = fixture.GetShape();
-					if(shape instanceof Box2D.b2PolygonShape){
-						let vertices = shape.GetVertices();
-						for (let i = 0; i < vertices.length; i++) {
-							vertices[i].x *= -1;
+				const body = object;
+				for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+					const shapeBase = fixture.GetShape();
+					if(shapeBase.GetType() ===  Box2D.b2Shape.e_polygon){
+						let shape = Box2D.castObject(shapeBase, b2PolygonShape);
 
+						const vertices = [];
+						for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
+							const vertex = shape.get_m_vertices(vertexIx);
+							vertices.push({x:vertex.get_x()*-1, y:vertex.get_y()});
 						}
+
 						vertices.reverse();
-						shape.Set(vertices);
+						shape.Set(pointsToVec2Array(vertices)[0], vertices.length);
+
+
 					}else{
+						let shape = Box2D.castObject(shapeBase, b2CircleShape);
 						const position = shape.get_m_p();
 						position.set_x(position.get_x() * -1);
 					}
-
-					fixture = fixture.GetNext();
 				}
-				object.ResetMassData();
-				object.mySprite.scale.x *= -1;
 
-				if(object != centerObject){
+				body.ResetMassData();
+				body.mySprite.scale.x *= -1;
 
-					const objectAngleDiff = centerObject.GetAngle()-object.GetAngle();
+				if(body != centerObject){
+
+					const objectAngleDiff = centerObject.GetAngle()-body.GetAngle();
 					const reflectedAngle = centerObject.GetAngle()+objectAngleDiff
-					object.SetAngle(reflectedAngle);
 
-					const cdx = object.GetPosition().get_x()-centerObject.GetPosition().get_x();
-					const cdy = object.GetPosition().get_y()-centerObject.GetPosition().get_y();
+					const cdx = body.GetPosition().get_x()-centerObject.GetPosition().get_x();
+					const cdy = body.GetPosition().get_y()-centerObject.GetPosition().get_y();
 					const cda = Math.atan2(cdy, cdx);
 					const cdl = Math.sqrt(cdx*cdx + cdy*cdy);
 
@@ -7716,26 +7720,24 @@ const _B2dEditor = function () {
 					// const nx = centerObject.GetPosition().get_x()+cdl*Math.cos(reflectedcda)
 					// const ny = centerObject.GetPosition().get_y()+cdl*Math.sin(reflectedcda);
 
-					const position = object.GetPosition();
-					position.x = nx;
-					position.y = ny;
+					const position = b2CloneVec2(body.GetPosition());
+					position.set_x(nx);
+					position.set_y(ny);
 
-					object.SetPosition(position);
+					body.SetTransform(position, reflectedAngle);
+					Box2D.destroy(position);
 				}
 
-				if(object.myTexture){
-					object.myTexture.scale.x *= -1;
-					object.myTexture.data.texturePositionOffsetAngle = -(object.myTexture.data.texturePositionOffsetAngle+Math.PI/2) - Math.PI/2;
+				if(body.myTexture){
+					body.myTexture.scale.x *= -1;
+					body.myTexture.data.texturePositionOffsetAngle = -(body.myTexture.data.texturePositionOffsetAngle+Math.PI/2) - Math.PI/2;
 				}
 
-				let jointEdge = object.GetJointList();
 				const destroyJoints = [];
-				while (jointEdge) {
+				for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
 					const joint = jointEdge.joint;
-
 					let keyA = joint.GetBodyA().mySprite ? joint.GetBodyA().mySprite.data.prefabInstanceName : joint.GetBodyA().key;
 					let keyB = joint.GetBodyB().mySprite ? joint.GetBodyB().mySprite.data.prefabInstanceName : joint.GetBodyB().key;
-
 
 					let shouldDestroy = keyA !== keyB;
 
@@ -7752,21 +7754,22 @@ const _B2dEditor = function () {
 						destroyJoints.push(joint);
 					}else if(!flippedJoints.includes(joint)){
 
-						if(joint.m_localAnchorA !== undefined) joint.m_localAnchorA.x *= -1;
-						if(joint.m_localAnchorB !== undefined) joint.m_localAnchorB.x *= -1;
-						if(joint.m_localCenterA !== undefined) joint.m_localCenterA.x *= -1;
-						if(joint.m_localCenterB !== undefined) joint.m_localCenterB.x *= -1;
+						if(joint.get_m_localAnchorA !== undefined) joint.get_m_localAnchorA().set_x(joint.get_m_localAnchorA().get_x() * -1);
+						if(joint.get_m_localAnchorB !== undefined) joint.get_m_localAnchorB().set_x(joint.get_m_localAnchorB().get_x() * -1);
+						if(joint.get_m_localCenterA !== undefined) joint.get_m_localCenterA().set_x(joint.get_m_localCenterA().get_x() * -1);
+						if(joint.get_m_localCenterB !== undefined) joint.get_m_localCenterB().set_x(joint.get_m_localCenterB().get_x() * -1);
 
-						if(joint.m_lowerAngle !== undefined && joint.m_upperAngle !== undefined) {
-							const oldLower = joint.m_lowerAngle;
-							joint.m_lowerAngle = -joint.m_upperAngle;
-							joint.m_upperAngle = -oldLower;
+						if(joint.get_m_lowerAngle !== undefined && joint.get_m_upperAngle !== undefined) {
+							const oldLower = joint.get_m_lowerAngle();
+							joint.set_m_lowerAngle(-joint.get_m_upperAngle());
+							joint.set_m_upperAngle(-oldLower);
 						}
 
 						flippedJoints.push(joint);
 					}
-					jointEdge = jointEdge.next;
 				}
+
+
 				destroyJoints.forEach(joint => game.world.DestroyJoint(joint));
 
 			}else{

@@ -18,7 +18,6 @@ export const init = ()=>{
 }
 
 export const update = ()=>{
-	console.log("Updating",game.cameraFocusObject);
 	if(!game.editor.physicsCamera) return;
 
 	if(game.editor.physicsCamera.cameraZoom != game.editor.editorSettingsObject.cameraZoom){
