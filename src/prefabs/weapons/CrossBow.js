@@ -79,15 +79,18 @@ class CrossBow extends PrefabManager.basePrefab {
 		const angle = this.crossbowBody.GetAngle()+(this.flipped ? Math.PI : 0);
 		const offsetLength = 0.6;
 		const angleOffset = game.editor.PI2 +(this.flipped ? Math.PI : 0);
-		pos.x -= offsetLength*Math.cos(angle+angleOffset);
-		pos.y -= offsetLength*Math.sin(angle+angleOffset);
+		pos.set_x(pos.get_x() - offsetLength*Math.cos(angle+angleOffset));
+		pos.set_y(pos.get_y() - offsetLength*Math.sin(angle+angleOffset));
 
 		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'Arrow', true);
+		Box2D.destroy(pos);
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
-		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x, body.GetPosition().y));
+
+		body.ApplyForce(impulse, body.GetPosition(), true);
+		Box2D.destroy(impulse);
 
 		this.lastArrows.push(prefabData.prefabClass);
 		if(this.lastArrows.length>Settings.maxBullets){
@@ -100,6 +103,9 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.reloadTimer = 0;
 		this.loaded = false;
 		this.shouldShoot = false;
+
+
+		// FIX ME : MAX OF 10 BULLETS types on the screen
 	}
 	reload() {
 		this.arrowSprite.alpha = 1.0;

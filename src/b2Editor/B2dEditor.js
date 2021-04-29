@@ -3952,7 +3952,9 @@ const _B2dEditor = function () {
 					this.setScale(body, scaleX, scaleY);
 
 					if(this.altDown){
-						body.SetPosition(new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM))
+						const scalePos = new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM);
+						body.SetTransform(scalePos, body.GetAngle());
+						Box2D.destroy(scalePos);
 					}
 				}else{
 					let sprite = objects[i];
@@ -7496,10 +7498,10 @@ const _B2dEditor = function () {
 
 			let oldFixtures = []
 			const body = obj;
-			let fixture = body.GetFixtureList();
-			while (fixture != null) {
+			
+			for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 				oldFixtures.push(fixture);
-				if (fixture.GetShape() instanceof b2CircleShape) {
+				if (fixture.GetShape().GetType() === Box2D.b2Shape.e_circle) {
 					//oh shit we have a circle, must scale with aspect ratio
 					if (Math.round(scaleX * 100) / 100 != 1) {
 						scaleY = scaleX;
@@ -7507,33 +7509,32 @@ const _B2dEditor = function () {
 						scaleX = scaleY;
 					}
 				}
-				fixture = fixture.GetNext();
 			}
 
 			oldFixtures.reverse();
 
 			for (let i = 0; i < oldFixtures.length; i++) {
 				let fixture = oldFixtures[i];
-				var shape = fixture.GetShape();
-				if (shape instanceof Box2D.b2PolygonShape) {
-					let oldVertices = shape.GetVertices();
-
-					for (let j = 0; j < oldVertices.length; j++) {
-						oldVertices[j].x = oldVertices[j].x * scaleX;
-						oldVertices[j].y = oldVertices[j].y * scaleY;
+				const shapeBase = fixture.GetShape();
+				if (shapeBase.GetType() === Box2D.b2Shape.e_polygon) {
+					const shape = Box2D.castObject(shapeBase, b2PolygonShape);
+					const vertices = [];
+					for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
+						const vertex = shape.get_m_vertices(vertexIx);
+						vertices.push({x:vertex.get_x()*scaleX, y:vertex.get_y()*scaleY});
 					}
-					shape.Set(oldVertices);
+
+					shape.Set(pointsToVec2Array(vertices)[0], vertices.length);
 
 					if(data.type === this.object_TRIGGER){
 						obj.mySprite.data.vertices = oldVertices.map(vertice =>({x:vertice.x, y:vertice.y}));
 					}
-				} else if (shape instanceof Box2D.b2CircleShape) {
-					shape.SetRadius(shape.GetRadius() * scaleX);
+				} else if (shapeBase.GetType() ===  Box2D.b2Shape.e_circle) {
+					const shape = Box2D.castObject(shapeBase, b2CircleShape);
+					shape.set_m_radius(shape.get_m_radius() * scaleX);
 					if(Array.isArray(body.mySprite.data.radius)) body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
 					else body.mySprite.data.radius = body.mySprite.data.radius* scaleX;
 				}
-				fixture.DestroyProxies();
-				fixture.CreateProxies(body.m_xf);
 
 			};
 
