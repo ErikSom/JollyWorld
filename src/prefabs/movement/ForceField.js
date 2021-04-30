@@ -4,6 +4,9 @@ import {
     game
 } from "../../Game";
 
+const { getPointer, NULL, pointsToVec2Array } = Box2D; // emscriptem specific
+
+
 class ForceField extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
@@ -41,18 +44,18 @@ class ForceField extends PrefabManager.basePrefab {
 
 		const body = this.forceField;
 
-		const aabb = new Box2D.b2AABB;
-		aabb.lowerBound = new Box2D.b2Vec2(Number.MAX_VALUE, Number.MAX_VALUE);
-		aabb.upperBound = new Box2D.b2Vec2(-Number.MAX_VALUE, -Number.MAX_VALUE);
+		const aabb = new Box2D.b2AABB();
+		aabb.get_lowerBound().Set(Number.MAX_VALUE, Number.MAX_VALUE);
+		aabb.get_upperBound().Set(-Number.MAX_VALUE, -Number.MAX_VALUE);
 
 		const oldRot = body.GetAngle();
-		body.SetAngle(0);
-		let fixture = body.GetFixtureList();
-		while (fixture != null) {
-			aabb.Combine1(fixture.GetAABB(0));
-			fixture = fixture.GetNext();
+		body.SetTransform(body.GetPosition(), 0);
+
+		for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+			aabb.Combine(fixture.GetAABB(0));
 		}
-		body.SetAngle(oldRot);
+
+		body.SetTransform(body.GetPosition(), oldRot);
 
 		this.width = width;
 		this.height = height;
@@ -66,8 +69,8 @@ class ForceField extends PrefabManager.basePrefab {
 		let scaleY = height / currentSize.height;
 
 		let oldFixtures = []
-		fixture = body.GetFixtureList();
-		while (fixture != null) {
+
+		for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 			fixture.SetSensor(true);
 			oldFixtures.push(fixture);
 			if (fixture.GetShape() instanceof Box2D.b2CircleShape) {
@@ -78,37 +81,37 @@ class ForceField extends PrefabManager.basePrefab {
 					scaleX = scaleY;
 				}
 			}
-			fixture = fixture.GetNext();
 		}
+
 
 		oldFixtures.reverse();
 
 		for (let i = 0; i < oldFixtures.length; i++) {
 			let fixture = oldFixtures[i];
-			var shape = fixture.GetShape();
-			if (shape instanceof Box2D.b2PolygonShape) {
-				let oldVertices = shape.GetVertices();
+			const baseShape = fixture.GetShape();
+			if (baseShape.GetType() === Box2D.b2Shape.e_polygon) {
+				const shape = Box2D.castObject(baseShape, Box2D.b2PolygonShape);
+
+				const vertices = [];
+				for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
+					const vertex = shape.get_m_vertices(vertexIx);
+					vertices.push({x:vertex.get_x()*scaleX, y:vertex.get_y()*scaleY});
+				}
+
+				vertices.reverse();
+				shape.Set(pointsToVec2Array(vertices)[0], vertices.length);
+
+				let oldVertices = body.mySprite.data.vertices[i];
 
 				for (let j = 0; j < oldVertices.length; j++) {
 					oldVertices[j].x = oldVertices[j].x * scaleX;
 					oldVertices[j].y = oldVertices[j].y * scaleY;
 				}
-				shape.Set(oldVertices);
 
-				oldVertices = body.mySprite.data.vertices[i];
-
-				for (let j = 0; j < oldVertices.length; j++) {
-					oldVertices[j].x = oldVertices[j].x * scaleX;
-					oldVertices[j].y = oldVertices[j].y * scaleY;
-				}
-
-			} else if (shape instanceof Box2D.b2CircleShape) {
-				shape.SetRadius(shape.GetRadius() * scaleX);
+			} else if (baseShape.GetType() === Box2D.b2Shape.e_circle) {
+				shape.set_m_radius(shape.get_m_radius() * scaleX);
 				body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
 			}
-			fixture.DestroyProxies();
-			fixture.CreateProxies(body.m_xf);
-
 		};
 
 		game.editor.updateBodyShapes(body);
@@ -182,6 +185,8 @@ class ForceField extends PrefabManager.basePrefab {
 
 			body.ApplyForceToCenter(force, true);
 		})
+
+		Box2D.destroy(force);
 	}
 }
 
