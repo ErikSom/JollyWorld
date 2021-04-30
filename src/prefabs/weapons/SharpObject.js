@@ -59,6 +59,7 @@ export class SharpObject extends PrefabManager.basePrefab {
             Box2D.destroy(newShape);
         } // also e_circle?
 
+        // FIX ME, need to look at why its not always attaching
 
 		const filterData = fixture.GetFilterData();
 		filterData.set_maskBits(game.editor.MASKBIT_FIXED);

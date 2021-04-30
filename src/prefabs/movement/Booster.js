@@ -46,6 +46,8 @@ class Booster extends PrefabManager.basePrefab {
                 }
             })
 
+            Box2D.destroy(velocityInc);
+
         }
     }
 }

@@ -422,12 +422,15 @@ function Game() {
         this.fixTouchEvent(e);
 
         if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug &&  !this.mouseJoint && this.run) {
-            var body = this.getBodyAtMouse();
+            const body = this.getBodyAtMouse();
             if (body) {
-                var md = new b2MouseJointDef();
+                const md = new b2MouseJointDef();
                 md.set_bodyA(this.m_groundBody);
                 md.set_bodyB(body);
-                md.set_target(new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y()));
+                
+                const targetPosition = new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y());
+
+                md.set_target(targetPosition);
                 md.set_collideConnected(true);
                 md.set_maxForce(300.0 * body.GetMass());
 
@@ -435,6 +438,11 @@ function Game() {
 
                 this.mouseJoint = Box2D.castObject(this.world.CreateJoint(md), Box2D.b2MouseJoint);
                 body.SetAwake(true);
+
+                Box2D.destroy(targetPosition);
+                Box2D.destroy(md);
+
+
             }
         }
         Key.onMouseDown();

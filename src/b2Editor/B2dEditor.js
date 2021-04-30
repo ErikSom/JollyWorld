@@ -1862,6 +1862,7 @@ const _B2dEditor = function () {
 			delete body.instaKill;
 			delete body.isVehiclePart;
 			delete body.noImpactDamage;
+			delete body.myTileSprite;
 			delete body.noDamage;
 			delete body.__emscripten_pool;
 			delete body.reFixture;

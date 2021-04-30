@@ -11,6 +11,9 @@ const BOTTOM_RIGHT = 1;
 const BOTTOM_LEFT = 2;
 const TOP_LEFT = 3;
 
+const { getPointer, NULL } = Box2D; // emscriptem specific
+
+
 class Treadmill extends PrefabManager.basePrefab {
 
     constructor(target) {
@@ -24,10 +27,9 @@ class Treadmill extends PrefabManager.basePrefab {
 		this.edgeTop = null;
 		this.edgeCenter = null;
 
-
-		let fixture = this.base.GetFixtureList();
 		let count = 0;
-		while(fixture){
+
+		for (let fixture = this.base.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 			if(count === 0) this.edgeLeft = fixture;
 			if(count === 1) this.edgeRight = fixture;
 			if(count === 2) this.edgeBottom = fixture;
@@ -37,25 +39,23 @@ class Treadmill extends PrefabManager.basePrefab {
 			if(count<=3){
 				fixture.SetSensor(true);
 			}
-
-			fixture = fixture.GetNext();
 			count++;
 		}
 
-		this.edgeCenterP1X = this.edgeCenter.GetShape().GetVertices()[TOP_RIGHT].x;
-		this.edgeCenterP2X = this.edgeCenter.GetShape().GetVertices()[BOTTOM_RIGHT].x;
+		this.edgeCenterP1X = Box2D.castObject(this.edgeCenter.GetShape(), Box2D.b2PolygonShape).get_m_vertices(TOP_RIGHT).get_x();
+		this.edgeCenterP2X = Box2D.castObject(this.edgeCenter.GetShape(), Box2D.b2PolygonShape).get_m_vertices(BOTTOM_RIGHT).get_x();
 
-		this.edgeTopP1X = this.edgeTop.GetShape().GetVertices()[TOP_RIGHT].x;
-		this.edgeTopP2X = this.edgeTop.GetShape().GetVertices()[BOTTOM_RIGHT].x;
+		this.edgeTopP1X = Box2D.castObject(this.edgeTop.GetShape(), Box2D.b2PolygonShape).get_m_vertices(TOP_RIGHT).get_x();
+		this.edgeTopP2X = Box2D.castObject(this.edgeTop.GetShape(), Box2D.b2PolygonShape).get_m_vertices(BOTTOM_RIGHT).get_x();
 
-		this.edgeBottomP1X = this.edgeBottom.GetShape().GetVertices()[TOP_RIGHT].x;
-		this.edgeBottomP2X = this.edgeBottom.GetShape().GetVertices()[BOTTOM_RIGHT].x;
+		this.edgeBottomP1X = Box2D.castObject(this.edgeBottom.GetShape(), Box2D.b2PolygonShape).get_m_vertices(TOP_RIGHT).get_x();
+		this.edgeBottomP2X = Box2D.castObject(this.edgeBottom.GetShape(), Box2D.b2PolygonShape).get_m_vertices(BOTTOM_RIGHT).get_x();
 
 
-		this.edgeRightP1X = this.edgeRight.GetShape().GetVertices()[TOP_RIGHT].x;
-		this.edgeRightP2X = this.edgeRight.GetShape().GetVertices()[BOTTOM_RIGHT].x;
-		this.edgeRightP3X = this.edgeRight.GetShape().GetVertices()[BOTTOM_LEFT].x;
-		this.edgeRightP4X = this.edgeRight.GetShape().GetVertices()[TOP_LEFT].x;
+		this.edgeRightP1X = Box2D.castObject(this.edgeRight.GetShape(), Box2D.b2PolygonShape).get_m_vertices(TOP_RIGHT).get_x();
+		this.edgeRightP2X = Box2D.castObject(this.edgeRight.GetShape(), Box2D.b2PolygonShape).get_m_vertices(BOTTOM_RIGHT).get_x();
+		this.edgeRightP3X = Box2D.castObject(this.edgeRight.GetShape(), Box2D.b2PolygonShape).get_m_vertices(BOTTOM_LEFT).get_x();
+		this.edgeRightP4X = Box2D.castObject(this.edgeRight.GetShape(), Box2D.b2PolygonShape).get_m_vertices(TOP_LEFT).get_x();
 
 		// 0 top right
 		// 1 bottom right
@@ -102,30 +102,43 @@ class Treadmill extends PrefabManager.basePrefab {
 		const targetWheelSizePTM = targetWheelSize / Settings.PTM;
 		const fixtures = [this.edgeLeft, this.edgeRight, this.edgeBottom, this.edgeTop, this.edgeCenter];
 
-		this.edgeCenter.GetShape().GetVertices()[TOP_RIGHT].x = this.edgeCenterP1X + targetWheelSizePTM;
-		this.edgeCenter.GetShape().GetVertices()[BOTTOM_RIGHT].x = this.edgeCenterP2X + targetWheelSizePTM;
+		let shape = Box2D.castObject(this.edgeCenter.GetShape(), Box2D.b2PolygonShape);
+		shape.get_m_vertices(TOP_RIGHT).set_x(this.edgeCenterP1X + targetWheelSizePTM);
+		shape.get_m_vertices(BOTTOM_RIGHT).set_x(this.edgeCenterP2X + targetWheelSizePTM);
 
-		this.edgeTop.GetShape().GetVertices()[TOP_RIGHT].x = this.edgeTopP1X + targetWheelSizePTM;
-		this.edgeTop.GetShape().GetVertices()[BOTTOM_RIGHT].x = this.edgeTopP2X + targetWheelSizePTM;
+		shape = Box2D.castObject(this.edgeTop.GetShape(), Box2D.b2PolygonShape);
+		shape.get_m_vertices(TOP_RIGHT).set_x(this.edgeTopP1X + targetWheelSizePTM);
+		shape.get_m_vertices(BOTTOM_RIGHT).set_x(this.edgeTopP2X + targetWheelSizePTM);
 
-		this.edgeBottom.GetShape().GetVertices()[TOP_RIGHT].x = this.edgeBottomP1X + targetWheelSizePTM;
-		this.edgeBottom.GetShape().GetVertices()[BOTTOM_RIGHT].x = this.edgeBottomP2X + targetWheelSizePTM;
+		shape = Box2D.castObject(this.edgeBottom.GetShape(), Box2D.b2PolygonShape);
+		shape.get_m_vertices(TOP_RIGHT).set_x(this.edgeBottomP1X + targetWheelSizePTM);
+		shape.get_m_vertices(BOTTOM_RIGHT).set_x(this.edgeBottomP2X + targetWheelSizePTM);
 
-		this.edgeRight.GetShape().GetVertices()[TOP_RIGHT].x = this.edgeRightP1X + targetWheelSizePTM;
-		this.edgeRight.GetShape().GetVertices()[BOTTOM_RIGHT].x = this.edgeRightP2X + targetWheelSizePTM;
-		this.edgeRight.GetShape().GetVertices()[BOTTOM_LEFT].x = this.edgeRightP3X + targetWheelSizePTM;
-		this.edgeRight.GetShape().GetVertices()[TOP_LEFT].x = this.edgeRightP4X + targetWheelSizePTM;
+		shape = Box2D.castObject(this.edgeBottom.GetShape(), Box2D.b2PolygonShape);
+		shape.get_m_vertices(TOP_RIGHT).set_x(this.edgeRightP1X + targetWheelSizePTM);
+		shape.get_m_vertices(BOTTOM_RIGHT).set_x(this.edgeRightP2X + targetWheelSizePTM);
+		shape.get_m_vertices(BOTTOM_LEFT).set_x(this.edgeRightP3X + targetWheelSizePTM);
+		shape.get_m_vertices(TOP_LEFT).set_x(this.edgeRightP4X + targetWheelSizePTM);
 
 		fixtures.forEach(fixture=>{
-			const vertices = fixture.GetShape().GetVertices();
+			const shape = Box2D.castObject(fixture.GetShape(), Box2D.b2PolygonShape);
 
-			const fixDef = new Box2D.b2FixtureDef;
-			fixDef.density = fixture.GetDensity();
-			fixDef.friction = fixture.GetFriction();
-			fixDef.restitution = fixture.GetRestitution();
-			fixDef.isSensor = fixture.IsSensor();
-			fixDef.shape = new Box2D.b2PolygonShape;
-			fixDef.shape.SetAsArray(vertices, vertices.length);
+			const b2Vec2Arr = [];
+            for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
+                const vertex = shape.get_m_vertices(vertexIx);
+                b2Vec2Arr.push({x: vertex.get_x()+1, y: vertex.get_y()});
+            }
+
+			const fixDef = new Box2D.b2FixtureDef();
+			fixDef.set_density(fixture.GetDensity());
+			fixDef.set_friction(fixture.GetFriction());
+			fixDef.set_restitution(fixture.GetRestitution());
+			fixDef.set_isSensor(fixture.IsSensor());
+
+			const newShape = new Box2D.b2PolygonShape();
+            newShape.Set(Box2D.pointsToVec2Array(b2Vec2Arr)[0], b2Vec2Arr.length);
+
+			fixDef.set_shape(newShape);
 
 			const newFixture = this.base.CreateFixture(fixDef);
 

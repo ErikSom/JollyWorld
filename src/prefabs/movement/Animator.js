@@ -9,7 +9,7 @@ import { Settings } from "../../Settings";
 
 import { pointOnBezier, calculateBezierLength } from '../../b2Editor/utils/extramath'
 import easing from '../../b2Editor/utils/easing';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2LinearStiffness } from '../../../libs/debugdraw';
 
 const DEFAULT_PATH = [{"x":95,"y":45.5,"point1":{"x":131.0757,"y":28.2216},"point2":{"x":131.0757,"y":-28.2216}},{"x":95,"y":-45.5,"point1":{"x":58.9243,"y":-62.7784},"point2":{"x":-58.9243,"y":-62.7784}},{"x":-95,"y":-45.5,"point1":{"x":-131.0757,"y":-28.2216},"point2":{"x":-131.0757,"y":27.2216}},{"x":-95,"y":44.5,"point1":{"x":-58.9243,"y":61.7784},"point2":{"x":58.9243,"y":62.7784}}];
 
@@ -305,12 +305,12 @@ class Animator extends PrefabManager.basePrefab {
         this.m_groundBody = game.editor.CreateBody(bodyDef);
 
         const md = new Box2D.b2MouseJointDef();
-        md.bodyA = this.m_groundBody;
-        md.bodyB = this.linkedTarget.myBody;
+        md.set_bodyA(this.m_groundBody);
+        md.set_bodyB(this.linkedTarget.myBody);
+        md.set_collideConnected(false);
+        md.set_maxForce(this.prefabObject.settings.maxForce);
 
-        md.maxForce = this.prefabObject.settings.maxForce;
-        md.frequencyHz = this.prefabObject.settings.frequencyHZ;
-        md.dampingRatio = this.prefabObject.settings.damping;
+        b2LinearStiffness(md, this.prefabObject.settings.frequencyHZ, this.prefabObject.settings.damping, this.m_groundBody, this.linkedTarget.myBody);
 
         const l = this.prefabObject.settings.targetAnchorLength / Settings.PTM;
         const a = this.prefabObject.settings.targetAnchorAngle;
@@ -320,15 +320,16 @@ class Animator extends PrefabManager.basePrefab {
         const offsetX = l * Math.cos(this.linkedTarget.rotation+a);
         const offsetY = l * Math.sin(this.linkedTarget.rotation+a);
 
-        targetPosition.x += offsetX;
-        targetPosition.y += offsetY;
+        targetPosition.set_x(targetPosition.get_x() + offsetX);
+        targetPosition.set_y(targetPosition.get_y() + offsetY);
 
-        md.target = targetPosition;
+        md.set_target(targetPosition);
 
-        md.collideConnected = false;
+        this.bodyAnimator = Box2D.castObject(game.world.CreateJoint(md), Box2D.b2MouseJoint);
 
-        this.bodyAnimator = game.world.CreateJoint(md);
-
+        Box2D.destroy(md);
+        Box2D.destroy(bodyDef);
+        Box2D.destroy(targetPosition);
     }
 
     set(property, value){
@@ -426,10 +427,12 @@ class Animator extends PrefabManager.basePrefab {
             if(this.linkedTarget.myBody){
 
                 const targetPosition = b2CloneVec2(this.base.GetPosition());
-                targetPosition.x = x / Settings.PTM;
-                targetPosition.y = y / Settings.PTM;
+                targetPosition.set_x(x / Settings.PTM);
+                targetPosition.set_y(y / Settings.PTM);
 
                 this.bodyAnimator.SetTarget(targetPosition);
+
+                Box2D.destroy(targetPosition);
 
             }else{
 
@@ -445,8 +448,7 @@ class Animator extends PrefabManager.basePrefab {
         }
 
         if(game.editor.editorSettingsObject.physicsDebug && (this.linkedReference && !this.linkedReference.destroyed)){
-            this.base.SetPosition(this.linkedReference.myBody.GetPosition());
-            this.base.SetAngle(this.linkedReference.myBody.GetAngle());
+            this.base.SetTransform(this.linkedReference.myBody.GetPosition(), this.linkedReference.myBody.GetAngle())
         }
 
         super.update();
