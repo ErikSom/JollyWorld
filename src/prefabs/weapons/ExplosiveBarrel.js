@@ -31,18 +31,24 @@ class ExplosiveBarrel extends Explosive {
 
 		emitterManager.playOnceEmitter("explosion2_layer1", this.explodeTarget, pos, 0);
 		emitterManager.playOnceEmitter("explosion2_layer2", this.explodeTarget, pos, 0);
-		
+
 		const prefabData = PrefabBuilder.generatePrefab(pos, 0, 'ExplosiveBarrelBottom', true);
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
 		const force = 1500;
 		const offset = 0.5;
 		const impulse = new Box2D.b2Vec2((Math.random()*(force*2)-force), (Math.random()*(force*2)-force));
-		body.ApplyForce(impulse, new Box2D.b2Vec2(body.GetPosition().x+(Math.random()*(offset*2)-offset), body.GetPosition().y+(Math.random()*(offset*2)-offset)));
+		const point = new Box2D.b2Vec2(body.GetPosition().get_x()+(Math.random()*(offset*2)-offset), body.GetPosition().get_y()+(Math.random()*(offset*2)-offset));
+		body.ApplyForce(impulse, point, true);
+
+
+		Box2D.destroy(impulse);
+		Box2D.destroy(point);
 
 		PhysicsParticleEmitter.emit(['Cardboard_1', 'Cardboard_2', 'Cardboard_3'], pos, 20, 5, 20, false, [0x752E00, 0x98440D]);
 
 		AudioManager.playSFX('barrel-explosion', 0.3, 1.0 + 0.4 * Math.random()-0.2, body.GetPosition());
+
 
 		this.destroy();
 	}

@@ -22,16 +22,21 @@ class PhysicsParticle extends PrefabManager.basePrefab {
         // resize particle
         const oldFixture = body.GetFixtureList();
 
-        const fixDef = new Box2D.b2FixtureDef;
-        fixDef.density = oldFixture.m_density;
-        fixDef.friction = oldFixture.m_friction;
-        fixDef.restitution = oldFixture.m_restitution;
-        fixDef.filter = oldFixture.m_filter.Clone(); // FIXME
+        const fixDef = new Box2D.b2FixtureDef();
+        fixDef.set_density(oldFixture.get_density());
+        fixDef.set_friction(oldFixture.get_friction());
+        fixDef.set_restitution(oldFixture.get_restitution());
+        fixDef.set_filter(oldFixture.get_filter().Clone());
 
-        fixDef.shape = new Box2D.b2CircleShape;
-        fixDef.shape.SetRadius(this.particleSize / Settings.PTM);
+        const shape = new Box2D.b2CircleShape();
+        shape.set_m_radius(this.particleSize / Settings.PTM);
+        fixDef.set_shape(shape);
+
         body.CreateFixture(fixDef);
         body.DestroyFixture(oldFixture);
+
+        Box2D.destroy(fixDef);
+        Box2D.destroy(shape);
 
         // set correct texture
         body.myTexture.children[0].texture = PIXI.Texture.from(`${this.texture}0000`);
