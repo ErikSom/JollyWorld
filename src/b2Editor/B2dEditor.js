@@ -1866,6 +1866,8 @@ const _B2dEditor = function () {
 			delete body.__emscripten_pool;
 			delete body.reFixture;
 			delete body.cameraZoom;
+			delete body.FakeSensor;
+			delete body.connectedSpike;
 			delete body.isPhysicsCamera;
 		}
 	}

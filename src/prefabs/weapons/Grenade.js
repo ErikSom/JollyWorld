@@ -25,6 +25,7 @@ class Grenade extends Explosive {
 		const pos = this.explodeTarget.GetPosition();
 		emitterManager.playOnceEmitter("explosion_layer1", this.explodeTarget, pos, 0);
 		emitterManager.playOnceEmitter("explosion_layer2", this.explodeTarget, pos, 0);
+		// FIX ME - there is a big leak with emitters
 		AudioManager.playSFX('grenade-explosion', 0.3, 1.0 + 0.4 * Math.random()-0.2, pos);
 
 		this.destroy();
