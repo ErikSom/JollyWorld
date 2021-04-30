@@ -1870,6 +1870,7 @@ const _B2dEditor = function () {
 			delete body.FakeSensor;
 			delete body.connectedSpike;
 			delete body.isPhysicsCamera;
+			delete body.isAffectedByForcefield;
 		}
 	}
 
@@ -8572,7 +8573,7 @@ const _B2dEditor = function () {
 			prismaticJointDef.set_enableLimit(jointPlaceHolder.enableLimit);
 			prismaticJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
-			joint = Box2D.castObject(this.world.CreateJoint(prismaticJointDef), b2PrismaticJoint);
+			joint = Box2D.castObject(this.world.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
 			destroy(prismaticJointDef);
 			destroy(anchor);
 			destroy(axis);

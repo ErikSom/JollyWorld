@@ -3,6 +3,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import { b2CloneVec2 } from '../../../libs/debugdraw';
 
 class Slower extends PrefabManager.basePrefab {
 
@@ -38,10 +39,12 @@ class Slower extends PrefabManager.basePrefab {
 
             bodies.forEach(body=> {
                 if(body.GetType() !== Box2D.b2_staticBody){
-                    const velocity = body.GetLinearVelocity();
-                    velocity.x += velocityInc.x;
-                    velocity.y += velocityInc.y;
+                    const velocity = b2CloneVec2(body.GetLinearVelocity());
+                    velocity.set_x(velocity.get_x() + velocityInc.x);
+                    velocity.set_y(velocity.get_y() + velocityInc.y);
                     body.SetLinearVelocity(velocity);
+
+                    Box2D.destroy(velocity);
                 }
             })
 

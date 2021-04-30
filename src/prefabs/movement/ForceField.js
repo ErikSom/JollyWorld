@@ -65,6 +65,8 @@ class ForceField extends PrefabManager.basePrefab {
 			height: aabb.GetExtents().y * 2 * game.editor.PTM
 		}
 
+		Box2D.destroy(aabb);
+
 		let scaleX = width / currentSize.width;
 		let scaleY = height / currentSize.height;
 
@@ -82,7 +84,6 @@ class ForceField extends PrefabManager.basePrefab {
 				}
 			}
 		}
-
 
 		oldFixtures.reverse();
 
@@ -109,6 +110,8 @@ class ForceField extends PrefabManager.basePrefab {
 				}
 
 			} else if (baseShape.GetType() === Box2D.b2Shape.e_circle) {
+				const shape = Box2D.castObject(baseShape, Box2D.b2CircleShape);
+
 				shape.set_m_radius(shape.get_m_radius() * scaleX);
 				body.mySprite.data.radius = body.mySprite.data.radius.map(r => r* scaleX);
 			}

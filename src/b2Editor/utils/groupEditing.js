@@ -1,3 +1,4 @@
+import { b2CloneVec2 } from "../../../libs/debugdraw";
 import {
     game
 } from "../../Game"
@@ -172,10 +173,11 @@ export const stopEditingGroup = () => {
 				editor.setBodyCollision(editor.groupEditingObject.myBody, editor.groupEditingObject.data.collision);
 				editor.groupEditingObject.myBody.ResetMassData();
 
-				const position = editor.groupEditingObject.myBody.GetPosition();
-				position.x -= xDif;
-				position.y -= yDif;
-				editor.groupEditingObject.myBody.SetPosition(position);
+				const position = b2CloneVec2(editor.groupEditingObject.myBody.GetPosition());
+				position.set_x(position.get_x() - xDif);
+				position.set_y(position.get_y() - yDif);
+				editor.groupEditingObject.myBody.SetTransform(position, editor.groupEditingObject.myBody.GetAngle());
+				Box2D.destroy(position);
 				const originalTexture = editor.groupEditingObject.myBody.myTexture;
 				const clonedTexture = clonedSprite.myBody.myTexture;
 				if(clonedTexture){

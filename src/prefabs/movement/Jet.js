@@ -43,6 +43,8 @@ class Jet extends PrefabManager.basePrefab {
             const position = this.base.GetPosition();
             this.base.ApplyForce(force, position, true);
             if(this.connectedBody) this.connectedBody.ApplyForce(force, position, true);
+
+            Box2D.destroy(force);
         }
 
         this.positionJetEmitter();
@@ -59,14 +61,16 @@ class Jet extends PrefabManager.basePrefab {
         const lengthOffset = 1.0;
         const angleOffset = Math.PI;
         const angle = this.base.GetAngle()+angleOffset;
-        pos.x += lengthOffset * Math.cos(angle);
-        pos.y += lengthOffset * Math.sin(angle);
+        pos.set_x(pos.get_x() + lengthOffset * Math.cos(angle));
+        pos.set_y(pos.get_y() + lengthOffset * Math.sin(angle));
         this.emitter.spawnPos.set(pos.x * Settings.PTM, pos.y * Settings.PTM);
 
         const emitterAngleOffset = (this.emitter.maxStartRotation - this.emitter.minStartRotation) / 2;
         this.emitter.minStartRotation = angle - emitterAngleOffset;
         this.emitter.maxStartRotation = angle + emitterAngleOffset;
         this.emitter.rotation = angle * game.editor.RAD2DEG;
+
+        Box2D.destroy(pos);
     }
 }
 
