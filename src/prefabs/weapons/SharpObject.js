@@ -46,7 +46,7 @@ export class SharpObject extends PrefabManager.basePrefab {
             const b2Vec2Arr = [];
             for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
                 const vertex = shape.get_m_vertices(vertexIx);
-                b2Vec2Arr.push({x: vertex.get_x()+1, y: vertex.get_y()});
+                b2Vec2Arr.push({x: vertex.get_x(), y: vertex.get_y()});
             }
 
             newShape.Set(Box2D.pointsToVec2Array(b2Vec2Arr)[0], b2Vec2Arr.length);

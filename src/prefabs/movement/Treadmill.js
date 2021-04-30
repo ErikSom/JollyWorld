@@ -3,7 +3,8 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2MulVec2 } from '../../../libs/debugdraw';
+
 const PIXI = require('pixi.js');
 
 const TOP_RIGHT = 0;
@@ -114,7 +115,7 @@ class Treadmill extends PrefabManager.basePrefab {
 		shape.get_m_vertices(TOP_RIGHT).set_x(this.edgeBottomP1X + targetWheelSizePTM);
 		shape.get_m_vertices(BOTTOM_RIGHT).set_x(this.edgeBottomP2X + targetWheelSizePTM);
 
-		shape = Box2D.castObject(this.edgeBottom.GetShape(), Box2D.b2PolygonShape);
+		shape = Box2D.castObject(this.edgeRight.GetShape(), Box2D.b2PolygonShape);
 		shape.get_m_vertices(TOP_RIGHT).set_x(this.edgeRightP1X + targetWheelSizePTM);
 		shape.get_m_vertices(BOTTOM_RIGHT).set_x(this.edgeRightP2X + targetWheelSizePTM);
 		shape.get_m_vertices(BOTTOM_LEFT).set_x(this.edgeRightP3X + targetWheelSizePTM);
@@ -126,7 +127,7 @@ class Treadmill extends PrefabManager.basePrefab {
 			const b2Vec2Arr = [];
             for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
                 const vertex = shape.get_m_vertices(vertexIx);
-                b2Vec2Arr.push({x: vertex.get_x()+1, y: vertex.get_y()});
+                b2Vec2Arr.push({x: vertex.get_x(), y: vertex.get_y()});
             }
 
 			const fixDef = new Box2D.b2FixtureDef();
@@ -208,6 +209,7 @@ class Treadmill extends PrefabManager.basePrefab {
 		this.impulseQueue.forEach(impulseData => {
 			const [body, force , point] = impulseData;
 			body.ApplyForce(force, point, true);
+			Box2D.destroy(force);
 		});
 		this.impulseQueue.length = 0;
 
@@ -215,13 +217,6 @@ class Treadmill extends PrefabManager.basePrefab {
 		this.wheelTextures.forEach(wheel=>{
 			wheel.rotation += rotationSpeed * game.editor.deltaTime * game.editor.RAD2DEG;
 		})
-	}
-
-	matchVelocity(current, target){
-		if(target.x < 0 && current.x > target.x) current.x = target.x;
-		if(target.x > 0 && current.x < target.x) current.x = target.x;
-		if(target.y < 0 && current.y > target.y) current.y = target.y;
-		if(target.y > 0 && current.y < target.y) current.y = target.y;
 	}
 
     initContactListener() {
@@ -261,33 +256,38 @@ class Treadmill extends PrefabManager.basePrefab {
 
 			const worldManifold = new Box2D.b2WorldManifold();
 			contact.GetWorldManifold(worldManifold);
-			const worldCollisionPoint = worldManifold.points[0];
-
+			const worldCollisionPoint = worldManifold.get_points(0);
 
 			const rotationToVelocityTranslation = 30;
 			const velocityToImpulseTranslation = 8;
-
 
 			const targetVelocities = [];
 			const targetDirections = [];
 			if(otherBody.edgeTop){
 				let angle = self.base.GetAngle();
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+
+				const velocity = new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation);
+				targetVelocities.push(velocity);
 				targetDirections.push(0);
 			}
 			if(otherBody.edgeRight){
 				let angle = self.base.GetAngle()+Settings.pihalve;
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+
+				const velocity = new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation);
+				targetVelocities.push(velocity);
 				targetDirections.push(1);
+
 			}
 			if(otherBody.edgeBottom){
 				let angle = self.base.GetAngle()+Math.PI;
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+				const velocity = new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation);
+				targetVelocities.push(velocity);
 				targetDirections.push(2);
 			}
 			if(otherBody.edgeLeft){
 				let angle = self.base.GetAngle()-Settings.pihalve;
-				targetVelocities.push(new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation));
+				const velocity = new Box2D.b2Vec2(self.targetSpeedPTM * Math.cos(angle) * rotationToVelocityTranslation, self.targetSpeedPTM * Math.sin(angle) * rotationToVelocityTranslation);
+				targetVelocities.push(velocity);
 				targetDirections.push(3);
 			}
 
@@ -298,9 +298,11 @@ class Treadmill extends PrefabManager.basePrefab {
 
 					const direction = targetDirections[index];
 					if(self.edgeCollisionTicks[direction] != self.edgeCollisionTick){
-						const force = targetVelocity.SelfMul(velocityToImpulseTranslation);
-						force.SelfMul(self.base.GetMass());
-						force.SelfMul(-1); // invert speed when applied to treadmill
+						const force = targetVelocity;
+						b2MulVec2(force, velocityToImpulseTranslation);
+						b2MulVec2(force, self.base.GetMass());
+						b2MulVec2(force, -1); // invert speed when applied to treadmill
+
 						self.impulseQueue.push([self.base, b2CloneVec2(force), worldCollisionPoint]);
 
 						self.edgeCollisionTicks[direction] = self.edgeCollisionTick;
@@ -309,21 +311,21 @@ class Treadmill extends PrefabManager.basePrefab {
 					const current = otherBody.GetLinearVelocity();
 					let applyForce = false;
 
-					if(targetVelocity.x < 0 && current.x > targetVelocity.x) applyForce = true;
-					if(targetVelocity.x > 0 && current.x < targetVelocity.x) applyForce = true;
-					if(targetVelocity.y < 0 && current.y > targetVelocity.y) applyForce = true;
-					if(targetVelocity.y > 0 && current.y < targetVelocity.y) applyForce = true;
+					if(targetVelocity.get_x() < 0 && current.get_x() > targetVelocity.get_x()) applyForce = true;
+					if(targetVelocity.get_x() > 0 && current.get_x() < targetVelocity.get_x()) applyForce = true;
+					if(targetVelocity.get_y() < 0 && current.get_y() > targetVelocity.get_y()) applyForce = true;
+					if(targetVelocity.get_y() > 0 && current.get_y() < targetVelocity.get_y()) applyForce = true;
 
 					if(applyForce){
-						const force = targetVelocity.SelfMul(velocityToImpulseTranslation);
-						force.SelfMul(otherBody.GetMass());
+						const force = targetVelocity;
+						b2MulVec2(force, velocityToImpulseTranslation);
+						b2MulVec2(force, otherBody.GetMass());
 						self.impulseQueue.push([otherBody, b2CloneVec2(force), worldCollisionPoint]);
 					}
 				}
+
+				Box2D.destroy(targetVelocity);
 			});
-
-
-
 
 		}
     }
