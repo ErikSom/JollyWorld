@@ -1112,6 +1112,7 @@ function UIManager() {
                 <div class="header"><span class="fit h1">${localize('settings_settings')}</span></div>
                 <div class="buttons">
                     <div class="music"><div class="fit h2">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div></div>
+                    <div class="blood"><div class="fit h2">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="gore"><div class="fit h2">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="fullscreen"><div class="fit h2">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
                     <div class="back"><span class="fit h2">${localize('levelbanner_back')}</span></div>
@@ -1129,6 +1130,15 @@ function UIManager() {
             musicButton.onclick = ()=> {
                     const userData = SaveManager.getLocalUserdata();
                     userData.musicOn = !userData.musicOn;
+                    SaveManager.updateLocalUserData(userData);
+                    this.showSettingsMenu();
+            }
+
+            const bloodButton = buttons.querySelector('.blood');
+            bloodButton.onclick = ()=> {
+                    const userData = SaveManager.getLocalUserdata();
+                    userData.bloodOn = !userData.bloodOn;
+                    Settings.bloodEnabled = userData.bloodOn;
                     SaveManager.updateLocalUserData(userData);
                     this.showSettingsMenu();
             }
@@ -1171,6 +1181,9 @@ function UIManager() {
 
         const musicButton = buttons.querySelector('.music');
         this.setSettingsMenuChoice(musicButton, userData.musicOn);
+
+        const bloodButton = buttons.querySelector('.blood');
+        this.setSettingsMenuChoice(bloodButton, userData.bloodOn);
 
         const goreButton = buttons.querySelector('.gore');
         this.setSettingsMenuChoice(goreButton, userData.goreOn);

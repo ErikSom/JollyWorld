@@ -160,6 +160,7 @@ function Game() {
             // else Settings.pixelRatio = 2;
         }
         Settings.sfxOn = userData.sfxOn;
+        Settings.bloodEnabled = userData.bloodOn;
         Settings.goreEnabled = userData.goreOn;
 
         this.app = new PIXI.Application({

@@ -284,8 +284,8 @@ const LOCALIZATION_DATA = [
         "jr": "Shanties"
     },
     {
-        "textId": "settings_gore",
-        "us": "Gore",
+        "textId": "settings_blood",
+        "us": "Blood",
         "nl": "Bloed",
         "de": "Blut",
         "es": "Sangre",
@@ -293,7 +293,19 @@ const LOCALIZATION_DATA = [
         "cz": "Krev",
         "fr": "Sang",
         "it": "Sangue",
-        "jr": "Ye own meat juice"
+        "jr": "Juice"
+    },
+    {
+        "textId": "settings_gore",
+        "us": "Gore",
+        "nl": "Wonden",
+        "de": "Zwickel",
+        "es": "Cornear",
+        "pt": "Escornar",
+        "cz": "Klín",
+        "fr": "Encorner",
+        "it": "Incornare",
+        "jr": "Meat"
     },
     {
         "textId": "settings_fullscreen",
