@@ -9,6 +9,8 @@ import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
 import {Humanoid} from './Humanoid'
 import * as MobileController from '../../utils/MobileController'
 
+const { getPointer, NULL } = Box2D;
+
 export class Character extends Humanoid {
     constructor(target) {
         super(target);

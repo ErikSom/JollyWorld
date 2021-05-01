@@ -9,12 +9,12 @@ import * as emitterManager from '../../utils/EmitterManager';
 import * as AudioManager from '../../utils/AudioManager';
 import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
 import { editorSettings } from '../../b2Editor/utils/editorSettings';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2DotVV, b2SubVec2 } from '../../../libs/debugdraw';
 
+const { getPointer, NULL } = Box2D;
 
 const vec1 = new Box2D.b2Vec2();
 const vec2 = new Box2D.b2Vec2();
-
 
 export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -223,8 +223,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         for(let i = 0; i<this.bloodSprays.length; i++){
             const spray = this.bloodSprays[i];
             if(spray.body && !spray.body.destroyed){
-                const spawnPos = new Box2D.b2Vec2();
-                spray.body.GetWorldPoint(spray.anchor, spawnPos);
+                const spawnPos = spray.body.GetWorldPoint(spray.anchor);
 
                  if(!spray.initialized){
                      spray.emitter = emitterManager.playOnceEmitter("bloodSpray", spray.body, spawnPos, spray.body.GetAngle()+spray.angle);
@@ -262,12 +261,11 @@ export class Humanoid extends PrefabManager.basePrefab {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
             if (!targetJoint) continue;
 
-            const pos1 = vec1;
-            targetJoint.GetAnchorA(pos1);
-            const pos2 = vec2;
-            targetJoint.GetAnchorB(pos2);
+            const pos1 = b2CloneVec2(targetJoint.GetAnchorA());
+            const pos2 = b2CloneVec2(targetJoint.GetAnchorB());
 
-            const distance = pos1.SelfSub(pos2);
+            const distance = pos1;
+            b2SubVec2(distance, pos2);
 
             if(distance.Length() > snapSeperation){
                 if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
@@ -281,32 +279,30 @@ export class Humanoid extends PrefabManager.basePrefab {
                     });
 
                     targetJoint.snapTick = 0;
-
-
                 }
             }else{
                 targetJoint.snapTick = 0;
             }
+
+            Box2D.destroy(pos1);
+            Box2D.destroy(pos2);
         }
 
 
         for(i = 0; i<this.vains.length; i++){
             const vain = this.vains[i];
 
-            let jointEdge = vain.GetJointList();
-
-            while(jointEdge){
+            for (let jointEdge = vain.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
 
                 let targetJoint = jointEdge.joint;
 
-                if(targetJoint.GetType() !== Box2D.b2JointType.e_ropeJoint){
+                if(targetJoint.GetType() !== Box2D.e_ropeJoint){
 
-                    const pos1 = vec1;
-                    targetJoint.GetAnchorA(pos1);
-                    const pos2 = vec2;
-                    targetJoint.GetAnchorB(pos2);
+                    const pos1 = b2CloneVec2(targetJoint.GetAnchorA());
+                    const pos2 = b2CloneVec2(targetJoint.GetAnchorB(pos2));
 
-                    const distance = pos1.SelfSub(pos2);
+                    const distance = pos1;
+                    b2SubVec2(distance, pos2);
 
                     if(distance.Length() > snapSeperation){
                         if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
@@ -322,12 +318,11 @@ export class Humanoid extends PrefabManager.basePrefab {
                         targetJoint.snapTick = 0;
                     }
 
+                    Box2D.destroy(pos1);
+                    Box2D.destroy(pos2);
+
                 }
-
-
-                jointEdge = jointEdge.next;
             }
-
         }
     }
 
@@ -384,10 +379,10 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             if ((otherBody.mySprite.data.prefabID != characterBody.mySprite.data.prefabID || otherBody.mySprite.data.prefabID == undefined)) {
 
-                const count = contact.GetManifold().pointCount;
+                const count = contact.GetManifold().get_pointCount();
 
                 let force = 0;
-                for (let j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+                for (let j = 0; j < count; j++) force = Math.max(force, impulse.gete_normalImpulses(j));
 
                 const minForceForDamage = 10.0;
                 const forceToDamageDivider = 50.0;
@@ -418,10 +413,13 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
                     const charOtherBodyDiff = b2CloneVec2(characterBody.GetPosition()).SelfSub(otherBody.GetPosition());
-                    const dotProductChar = characterBody.preSolveVelicity.Dot(charOtherBodyDiff)*-1;
+                    const dotProductChar = b2DotVV(characterBody.preSolveVelicity, charOtherBodyDiff) *-1;
 
                     const otherBodyCharDiff = b2CloneVec2(otherBody.GetPosition()).SelfSub(characterBody.GetPosition());
-                    const dotProductOther = otherBody.preSolveVelicity.Dot(otherBodyCharDiff)*-1;
+                    const dotProductOther = b2CloneVec2(otherBody.preSolveVelicity, otherBodyCharDiff) *-1;
+
+                    Box2D.destroy(charOtherBodyDiff);
+                    Box2D.destroy(otherBodyCharDiff);
 
                     if(dotProductChar>0){
                         forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
@@ -455,11 +453,13 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
             characterBody.preSolveVelicityCounter--;
             if(characterBody.preSolveVelicityCounter <= 0){
+                Box2D.destroy(characterBody.preSolveVelicity);
                 delete characterBody.preSolveVelicity;
                 delete characterBody.preSolveVelicityCounter;
             }
             otherBody.preSolveVelicityCounter--;
             if(otherBody.preSolveVelicityCounter <= 0){
+                Box2D.destroy(otherBody.preSolveVelicity);
                 delete otherBody.preSolveVelicity;
                 delete otherBody.preSolveVelicityCounter;
             }
@@ -510,8 +510,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
 
         }else{
-            let jointEdge = baseBody.GetJointList();
-            while(jointEdge){
+            for (let jointEdge = baseBody.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
                 const joint = jointEdge.joint;
                 const body = joint.GetBodyA() === baseBody ? joint.GetBodyB() : joint.GetBodyA();
 
@@ -524,10 +523,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     const anchor = joint.GetBodyA() === baseBody ? joint.GetLocalAnchorB() : joint.GetLocalAnchorA();
                     this.bloodSprays.push({body, anchor, angle, time:bloodTime});
                 }
-
-                jointEdge = jointEdge.next;
             }
-
         }
 
 
@@ -553,12 +549,10 @@ export class Humanoid extends PrefabManager.basePrefab {
                     emitterManager.playOnceEmitter("gorecloud", targetBody, targetBody.GetPosition());
                     AudioManager.playSFX(['bash1', 'bash2', 'bash3', 'bash4'], 0.3, 1.0+Math.random()*.2-.1, targetBody.GetPosition());
 
-                    let connectedJointEdge = targetBody.GetJointList();
-                    while(connectedJointEdge){
+                    for (let connectedJointEdge = targetBody.GetJointList(); getPointer(connectedJointEdge) !== getPointer(NULL); connectedJointEdge = connectedJointEdge.get_next()) {
                         const joint = connectedJointEdge.joint;
-                        if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.addDecalToBody(joint.GetBodyA(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                        if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.addDecalToBody(joint.GetBodyB(), joint.GetAnchorA(new Box2D.b2Vec2()), "Decal.png", true);
-                        connectedJointEdge = connectedJointEdge.next;
+                        if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.addDecalToBody(joint.GetBodyA(), joint.GetAnchorA(), "Decal.png", true);
+                        if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.addDecalToBody(joint.GetBodyB(), joint.GetAnchorA(), "Decal.png", true);
                     }
 
                     // Fix bash damaage & also set snapped for objects that got detached from the player
@@ -610,8 +604,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
 
 
-                    const anchorAPos = targetJoint.GetAnchorA(vec1);
-                    const anchorBPos = targetJoint.GetAnchorB(vec2);
+                    const anchorAPos = targetJoint.GetAnchorA();
+                    const anchorBPos = targetJoint.GetAnchorB();
 
                     let revoluteJointDef, joint;
 
@@ -622,31 +616,40 @@ export class Humanoid extends PrefabManager.basePrefab {
                     let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
 
 
-                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
+                    revoluteJointDef = new Box2D.b2RevoluteJointDef();
 
-                    vainBodies._bodies[0].SetPosition(anchorAPos);
+                    vainBodies._bodies[0].SetTransform(anchorAPos, vainBodies._bodies[0].GetAngle());
 
                     revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], anchorAPos);
 
-                    revoluteJointDef.collideConnected = false;
-                    joint = game.world.CreateJoint(revoluteJointDef);
+                    revoluteJointDef.set_collideConnected(false);
+                    joint = Box2D.castObject(game.world.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+                    Box2D.destroy(revoluteJointDef);
 
-                    revoluteJointDef = new Box2D.b2RevoluteJointDef;
-                    vainBodies._bodies[3].SetPosition(anchorBPos);
+                    revoluteJointDef = new Box2D.b2RevoluteJointDef();
+                    vainBodies._bodies[3].SetTransform(anchorBPos, vainBodies._bodies[3].GetAngle());
                     revoluteJointDef.Initialize(targetJoint.GetBodyB(), vainBodies._bodies[3], anchorBPos);
 
 
-                    revoluteJointDef.collideConnected = false;
-                    joint = game.world.CreateJoint(revoluteJointDef);
+                    revoluteJointDef.set_collideConnected(false);
+                    joint = Box2D.castObject(game.world.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+                    Box2D.destroy(revoluteJointDef);
+
 
                     let ropeJointDef;
 
-
-                    ropeJointDef = new Box2D.b2RopeJointDef;
+                    ropeJointDef = new Box2D.b2DistanceJointDef();
                     ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), anchorAPos, anchorAPos);
-                    ropeJointDef.maxLength = vainSize;
 
-                    joint = game.world.CreateJoint(ropeJointDef);
+                    const length = ropeJointDef.get_length();
+                    ropeJointDef.set_minLength(length);
+                    ropeJointDef.set_maxLength(length);
+                    ropeJointDef.set_stiffness(0);
+                    ropeJointDef.set_damping(0);
+
+                    joint = Box2D.castObject(game.world.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+
+                    Box2D.destroy(ropeJointDef);
 
                     [targetJoint.GetBodyA(), targetJoint.GetBodyB()].forEach(body => {
                         if(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT] === body){
@@ -732,6 +735,8 @@ export class Humanoid extends PrefabManager.basePrefab {
             goreLookupObject._bodies.forEach((body)=>{
                 body.ApplyForce(impulse, targetBody.GetPosition());
             });
+
+            Box2D.destroy(impulse);
 
             if(particle == 'Gore_Meat'){
                 const ranId = Math.floor(Math.random()*4)+1;
@@ -1059,7 +1064,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         const clampedAngle = clampAngleToRange(jointAngle,joint.GetLowerLimit(), joint.GetUpperLimit());
         const angleCorrection = clampedAngle-jointAngle;
-        const rotationPoint = joint.GetAnchorA(new Box2D.b2Vec2());
+        const rotationPoint = joint.GetAnchorA();
 
         refNames.forEach(linkedBodyRef=> {
             const linkedBody =  this.lookupObject[linkedBodyRef];
@@ -1071,9 +1076,13 @@ export class Humanoid extends PrefabManager.basePrefab {
             const newX = rotationPoint.x + dl * Math.cos(newRot);
             const newY = rotationPoint.y + dl * Math.sin(newRot);
 
-            linkedBody.GetPosition().x = newX;
-            linkedBody.GetPosition().y = newY;
-            linkedBody.SetAngle(linkedBody.GetAngle()-angleCorrection);
+            const newPos = b2CloneVec2(linkedBody.GetPosition());
+            newPos.set_x(newX);
+            newPos.set_y(newY);
+
+            linkedBody.SetTransform(newPos, linkedBody.GetAngle()-angleCorrection);
+
+            Box2D.destroy(newPos);
         });
     };
 
@@ -1103,21 +1112,35 @@ export class Humanoid extends PrefabManager.basePrefab {
             anchor = refJoint.GetAnchorB(new Box2D.b2Vec2());
         }
 
-        const ropeJointDef = new Box2D.b2RopeJointDef();
+        const ropeJointDef = new Box2D.b2DistanceJointDef();
 
         const targetAnchor = this.lookupObject[`${target}_joint`].GetAnchorA(new Box2D.b2Vec2());
 
         ropeJointDef.Initialize(targetBody, base, targetAnchor, anchor);
-        const newJoint = game.world.CreateJoint(ropeJointDef);
+
+        const length = ropeJointDef.get_length();
+        ropeJointDef.set_minLength(length);
+        ropeJointDef.set_maxLength(length);
+
+        ropeJointDef.set_stiffness(0);
+        ropeJointDef.set_damping(0);
+
+        const newJoint = Box2D.castObject(game.world.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+        Box2D.destroy(ropeJointDef);
 
         let maxLength = 0;
         linkedBodies.forEach((linkedBody, index)=>{
 
             let nextLinkedBody = index+1 === linkedBodies.length ? baseRefJoint : linkedBodies[index+1];
-            const j1 = this.lookupObject[linkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
-            const j2 = this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA(new Box2D.b2Vec2());
+            const j1 = this.lookupObject[linkedBody+'_joint'].GetAnchorA();
+            const j2 = this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA();
 
-            maxLength += j1.SelfSub(j2).Length();
+            const inc = b2CloneVec2(j1);
+            b2SubVec2(inc, j2);
+
+            maxLength += inc.Length();
+
+            Box2D.destroy(inc);
 
         });
         newJoint.SetMaxLength(maxLength);
@@ -1197,7 +1220,10 @@ export class Humanoid extends PrefabManager.basePrefab {
        const angle = Math.atan2(dy, dx);
 
         if(!lowerJoint){
-            const anchorDistanceUpper = b2CloneVec2(baseJointPos).SelfSub(upperPart.GetPosition()).Length();
+            const distanceClone = b2CloneVec2(baseJointPos);
+            let anchorDistanceUpper = b2SubVec2(distanceClone,upperPart.GetPosition()).Length();
+
+            Box2D.destroy(distanceClone);
 
             const eyeObjects = ['eye_left', 'eye_left_joint', 'eye_right', 'eye_right_joint'];
 
@@ -1205,32 +1231,30 @@ export class Humanoid extends PrefabManager.basePrefab {
                 eyeObjects.forEach(key => {
                     const eyeObject = this.lookupObject[key];
 
-                    eyeObject.localVec = new Box2D.b2Vec2();
-
                     if(eyeObject.GetPosition){
-                        upperPart.GetLocalPoint(eyeObject.GetPosition(), eyeObject.localVec);
+                        eyeObject.localVec = upperPart.GetLocalPoint(eyeObject.GetPosition());
                     }else{
                         const eyePos = new Box2D.b2Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM);
-                        upperPart.GetLocalPoint(eyePos, eyeObject.localVec);
+                        eyeObject.localVec = upperPart.GetLocalPoint(eyePos);
+                        Box2D.destroy(eyePos);
                     }
                 });
             }
 
-            upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle)));
-            upperPart.SetAngle(angle+Settings.pihalve);
+            const newPos = new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle));
+            upperPart.SetTransform(newPos, angle+Settings.pihalve);
+            Box2D.destroy(newPos);
 
             if(upperPart === this.lookupObject[Humanoid.BODY_PARTS.HEAD]){
                 eyeObjects.forEach(key => {
                     const eyeObject = this.lookupObject[key];
 
-                    const globalPos = new Box2D.b2Vec2();
-                    upperPart.GetWorldPoint(eyeObject.localVec, globalPos);
+                    const globalPos = upperPart.GetWorldPoint(eyeObject.localVec);
 
                     delete eyeObject.localVec;
 
                     if(eyeObject.SetPosition){
-                        eyeObject.SetPosition(globalPos);
-                        eyeObject.SetAngle(angle+Settings.pihalve);
+                        eyeObject.SetTransform(globalPos, angle+Settings.pihalve);
                     } else{
                         eyeObject.position.x = globalPos.x * Settings.PTM;
                         eyeObject.position.y = globalPos.y * Settings.PTM;
@@ -1243,8 +1267,12 @@ export class Humanoid extends PrefabManager.basePrefab {
             const lowerJointPos = new Box2D.b2Vec2(lowerJoint.position.x/Settings.PTM, lowerJoint.position.y/Settings.PTM);
             const endJointPos = new Box2D.b2Vec2(endJoint.position.x/Settings.PTM, endJoint.position.y/Settings.PTM);
 
-            const upperLength = b2CloneVec2(lowerJointPos).SelfSub(baseJointPos).Length();
-            const lowerLength = b2CloneVec2(endJointPos).SelfSub(lowerJointPos).Length();
+            let posClone = b2CloneVec2(lowerJointPos);
+            const upperLength = b2SubVec2(posClone, baseJointPos).Length();
+
+            posClone.Set(endJointPos.x, endJointPos.y);
+            const lowerLength = b2SubVec2(posClone, lowerJointPos).Length();
+
             const totalLength = upperLength+lowerLength;
             const upperLengthShare = upperLength/totalLength;
             const lowerLengthShare = lowerLength/totalLength;
@@ -1255,42 +1283,44 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             let upperAngle = invertAngle ? angle-upperAngleChange  : angle+upperAngleChange;
 
-            const anchorDistanceUpper = b2CloneVec2(baseJointPos).SelfSub(upperPart.GetPosition()).Length();
-            upperPart.SetPosition(new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle)));
-            upperPart.SetAngle(upperAngle-Settings.pihalve);
+            posClone.Set(baseJointPos.x, baseJointPos.y);
+            const anchorDistanceUpper = b2SubVec2(posClone, upperPart.GetPosition()).Length();
 
-            const anchorDistanceLower = b2CloneVec2(lowerJointPos).SelfSub(lowerPart.GetPosition()).Length();
+            posClone.Set(baseJointPos.x+anchorDistanceUpper*Math.cos(upperAngle), baseJointPos.y+anchorDistanceUpper*Math.sin(upperAngle));
+            upperPart.SetTransform(posClone, upperAngle-Settings.pihalve);
+
+            posClone.Set(lowerJointPos.x, lowerJointPos.y);
+            const anchorDistanceLower = b2SubVec2(posClone, lowerPart.GetPosition()).Length();
 
             const lowerJointPosRotated = rotateVectorAroundPoint(lowerJointPos, baseJointPos, upperAngle*game.editor.RAD2DEG);
             lowerJointPos.x = lowerJointPosRotated.x;
             lowerJointPos.y = lowerJointPosRotated.y;
             lowerJoint.position.x = lowerJointPos.x*Settings.PTM;
             lowerJoint.position.y = lowerJointPos.y*Settings.PTM;
+            Box2D.destroy(lowerJointPosRotated);
+
 
             const lowerAngleChange = Math.acos(Math.max(-1.0, Math.min(1.0, (baseDiff * lowerLengthShare) / lowerLength)));
             const lowerAngle = invertAngle ? angle+lowerAngleChange : angle-lowerAngleChange;
 
-            lowerPart.SetPosition(new Box2D.b2Vec2(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle)));
-            lowerPart.SetAngle(lowerAngle-Settings.pihalve);
+            posClone.Set(lowerJointPos.x+anchorDistanceLower*Math.cos(lowerAngle), lowerJointPos.y+anchorDistanceLower*Math.sin(lowerAngle))
+            lowerPart.SetTransform(posClone, lowerAngle-Settings.pihalve);
 
             const endJointPosRotated = rotateVectorAroundPoint(new Box2D.b2Vec2(lowerJointPos.x-lowerLength, lowerJointPos.y), lowerJointPos, lowerAngle*game.editor.RAD2DEG);
             endJointPos.x = endJointPosRotated.x;
             endJointPos.y = endJointPosRotated.y;
             endJoint.position.x = endJointPos.x*Settings.PTM;
             endJoint.position.y = endJointPos.y*Settings.PTM;
+            Box2D.destroy(endJointPosRotated);
 
             const endPos = new Box2D.b2Vec2(endJointPos.x, endJointPos.y);
-
-
             // const offsetAngle = this.flipped ? Math.PI-endPart.jointOffsetAngle+this.lookupObject.body.GetAngle() : Math.PI-endPart.jointOffsetAngle-this.lookupObject.body.GetAngle();
 
-            endPart.SetAngle(lowerAngle-Settings.pihalve);
-
             let targetOffsetAngle = this.flipped ? lowerAngle - endPart.jointOffsetAngle+Settings.pihalve : lowerAngle + endPart.jointOffsetAngle-Settings.pihalve;
-            endPos.x += endPart.jointOffsetLength * Math.cos(targetOffsetAngle);
-            endPos.y += endPart.jointOffsetLength * Math.sin(targetOffsetAngle);
+            endPos.set_x(endPos.get_x() + endPart.jointOffsetLength * Math.cos(targetOffsetAngle));
+            endPos.set_y(endPos.get_y() + endPart.jointOffsetLength * Math.sin(targetOffsetAngle));
 
-            endPart.SetPosition(endPos);
+            endPart.SetTransform(endPos, lowerAngle-Settings.pihalve);
         }
     }
 
@@ -1299,9 +1329,13 @@ export class Humanoid extends PrefabManager.basePrefab {
             const joint = this.lookupObject[part+"_joint"];
             const jointWorldPos = new Box2D.b2Vec2(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
             const bodyPart = this.lookupObject[part];
-            const jointOffset = b2CloneVec2(bodyPart.GetPosition()).SelfSub(jointWorldPos);
+            const jointOffset = b2CloneVec2(bodyPart.GetPosition());
+            b2SubVec2(jointOffset, jointWorldPos);
             bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x) - this.lookupObject.body.GetAngle();
             bodyPart.jointOffsetLength = jointOffset.Length();
+
+            Box2D.destroy(jointWorldPos);
+            Box2D.destroy(jointOffset);
         });
     }
 }

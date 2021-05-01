@@ -2,7 +2,7 @@ import {
     game
 } from "../../Game";
 
-import {b2CloneVec2} from "../../../libs/debugdraw"
+import {b2AddVec2, b2CloneVec2, b2SubVec2} from "../../../libs/debugdraw"
 
 const {b2Vec2} = Box2D
 
@@ -16,11 +16,17 @@ export const rotateVector = function (vector, degrees) {
 }
 
 export const rotateVectorAroundPoint = function (vector, point, degrees, log) {
-    const vec = b2CloneVec2(b2CloneVevector).SelfSub(point);
+    const vec = b2CloneVec2(vector);
+    b2SubVec2(vec, point);
     // if(log) console.log(vec.x, vec.y, 'diff', vec.Length());
-    const newvec = new b2Vec2(vec.Length(), 0);
-    const rotatedVector = rotateVector(newvec, degrees);
-    return rotatedVector.SelfAdd(point);
+    const length = vec.Length();
+    vec.Set(length, 0);
+    const rotatedVector = rotateVector(vec, degrees);
+    b2AddVec2(rotateVector, point);
+
+    Box2D.destroy(vec);
+
+    return rotatedVector;
 }
 
 export const lineIntersect = function (A, B, C, D) {

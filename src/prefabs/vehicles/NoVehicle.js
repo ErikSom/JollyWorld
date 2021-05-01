@@ -9,6 +9,7 @@ import * as MobileController from '../../utils/MobileController'
 import { stopCustomBehaviour } from '../misc/CustomEditorBehavior';
 import { b2CloneVec2 } from '../../../libs/debugdraw';
 
+const { getPointer, NULL } = Box2D;
 
 export class NoVehicle extends BaseVehicle {
     constructor(target) {
@@ -70,8 +71,7 @@ export class NoVehicle extends BaseVehicle {
 
         [...Object.values(Humanoid.BODY_PARTS)].forEach(bodyPart => {
             const bodyObject = this.lookupObject[bodyPart];
-            let jointEdge = bodyObject.GetJointList();
-            while (jointEdge) {
+            for (let jointEdge = bodyObject.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
                 const joint = jointEdge.joint;
 
                 const bodyA = joint.GetBodyA();

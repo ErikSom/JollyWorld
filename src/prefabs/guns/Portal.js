@@ -143,8 +143,7 @@ class Portal extends PrefabManager.basePrefab {
         const self = this;
 
         const crawlJoints = function (_target) {
-            var jointEdge = _target.GetJointList();
-            while (jointEdge) {
+            for (let jointEdge = _target.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
                 let targetBody = (jointEdge.joint.GetBodyA() == _target) ? jointEdge.joint.GetBodyB() : jointEdge.joint.GetBodyA();
                 if (targetBody.GetType() == Box2D.b2_staticBody) {
                     targetBody = undefined;

@@ -1870,7 +1870,10 @@ const _B2dEditor = function () {
 			delete body.FakeSensor;
 			delete body.connectedSpike;
 			delete body.isPhysicsCamera;
+			delete body.isisHumanoid;
 			delete body.isAffectedByForcefield;
+			delete body.mainHumanoid;
+			delete body.grabJoints;
 		}
 	}
 

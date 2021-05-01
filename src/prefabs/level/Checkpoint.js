@@ -10,16 +10,23 @@ class Checkpoint extends PrefabManager.basePrefab {
         super(target);
         this.base = this.lookupObject['base'];
 
-        const fixDef = new Box2D.b2FixtureDef;
+        const fixDef = new Box2D.b2FixtureDef();
 		fixDef.density = 0.001;
 
-        const shape = new Box2D.b2PolygonShape;
+        const shape = new Box2D.b2PolygonShape();
         const plateauSize = 5.3;
-        shape.SetAsBox(plateauSize, plateauSize, new Box2D.b2Vec2(0, -plateauSize));
-        fixDef.shape = shape;
-        fixDef.isSensor = true;
+
+        const offset = new Box2D.b2Vec2(0, -plateauSize)
+        shape.SetAsBox(plateauSize, plateauSize, offset);
+        fixDef.set_shape(shape);
+        fixDef.set_isSensor(true);
 
 		this.hitCheck = this.base.CreateFixture(fixDef);
+
+        Box2D.destroy(shape);
+        Box2D.destroy(fixDef);
+        Box2D.destroy(offset);
+
     }
     init() {
         super.init();

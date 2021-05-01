@@ -6,6 +6,7 @@ import {
 
 import {Humanoid} from '../humanoids/Humanoid'
  
+const { getPointer, NULL } = Box2D;
 
 export class SliceObject extends PrefabManager.basePrefab {
     constructor(target) {
@@ -22,13 +23,10 @@ export class SliceObject extends PrefabManager.basePrefab {
         super.update();
         if(this.objectsToSlice){
             this.objectsToSlice.forEach(body => {
-            let jointEdge = body.GetJointList();
-                while (jointEdge) {
-                    const next = jointEdge.next;
+            for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
                     if(Math.random()<this.sliceChance){
                         game.editor.deleteObjects([jointEdge.joint]);
                     }
-                    jointEdge = next;
                 }
             });
         }

@@ -82,8 +82,8 @@ export class NPC extends PrefabManager.basePrefab {
 
 			// rotate around body
 			const body = this.prefabObject.class.lookupObject['body'];
-			const dx = x-body.GetPosition().x;
-			const dy = y-body.GetPosition().y;
+			const dx = x-body.GetPosition().get_x();
+			const dy = y-body.GetPosition().get_y();
 			const dl = Math.sqrt(dx*dx + dy*dy);
 			let da = Math.atan2(dy, dx);
 
@@ -93,8 +93,8 @@ export class NPC extends PrefabManager.basePrefab {
 
 			da = Math.atan2(y, x);
 
-			x = body.GetPosition().x + dl * Math.cos(da+body.GetAngle());
-			y = body.GetPosition().y + dl * Math.sin(da+body.GetAngle());
+			x = body.GetPosition().get_x() + dl * Math.cos(da+body.GetAngle());
+			y = body.GetPosition().get_y() + dl * Math.sin(da+body.GetAngle());
 
 			x -= this.prefabObject.x / game.editor.PTM;
 			y -= this.prefabObject.y / game.editor.PTM;

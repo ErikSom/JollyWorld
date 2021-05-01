@@ -4,21 +4,29 @@ import {
 } from "../../Game";
 import { Humanoid } from '../humanoids/Humanoid';
 
+const { getPointer, NULL } = Box2D;
+
 class Finish extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
         this.base = this.lookupObject['base'];
 
-        const fixDef = new Box2D.b2FixtureDef;
+        const fixDef = new Box2D.b2FixtureDef();
 		fixDef.density = 0.001;
 
-        const shape = new Box2D.b2PolygonShape;
+        const shape = new Box2D.b2PolygonShape();
         const plateauSize = 5.3;
-        shape.SetAsBox(plateauSize, plateauSize, new Box2D.b2Vec2(0, -plateauSize));
-        fixDef.shape = shape;
-        fixDef.isSensor = true;
+
+        const offset = new Box2D.b2Vec2(0, -plateauSize)
+        shape.SetAsBox(plateauSize, plateauSize, offset);
+        fixDef.set_shape(shape);
+        fixDef.set_isSensor(true);
 
 		this.hitCheck = this.base.CreateFixture(fixDef);
+
+        Box2D.destroy(shape);
+        Box2D.destroy(fixDef);
+        Box2D.destroy(offset);
     }
     init() {
         super.init();
@@ -77,8 +85,7 @@ export const crawlJointsUtility = (crawlBody, condition) => {
     crawlBody.jointCrawled = true;
     const crawledJoints = [];
     const crawlJoints = body => {
-        let jointEdge = body.GetJointList();
-        while (jointEdge) {
+        for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
             const joint = jointEdge.joint;
             if(!joint.jointCrawled){
                 joint.jointCrawled = true;
@@ -98,7 +105,6 @@ export const crawlJointsUtility = (crawlBody, condition) => {
                     crawlJoints(bodyB);
                 }
             }
-            jointEdge = jointEdge.next;
         }
     }
     crawlJoints(crawlBody);
