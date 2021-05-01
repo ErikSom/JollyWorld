@@ -423,7 +423,7 @@ class Animator extends PrefabManager.basePrefab {
 
             }
 
-            if(this.linkedTarget.myBody){
+            if(this.linkedTarget.myBody && this.bodyAnimator){
 
                 const targetPosition = this.base.GetPosition().Clone();
                 targetPosition.x = x / Settings.PTM;
@@ -431,7 +431,7 @@ class Animator extends PrefabManager.basePrefab {
 
                 this.bodyAnimator.SetTarget(targetPosition);
 
-            }else{
+            }else if(this.linkedTarget.parent){
 
                 const l = this.prefabObject.settings.targetAnchorLength;
                 const a = this.prefabObject.settings.targetAnchorAngle;
