@@ -53,7 +53,6 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.stabalizeJoints();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
-        console.log(this.collisionUpdates);
 
         this.bloodSprays = [];
 
@@ -99,7 +98,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                 texture.addChildAt(sprite, 0);
             }
         }
-		console.log("Headjoint:", this.lookupObject['head_joint']);
     }
 
     setExpression(expression){
@@ -444,8 +442,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                     }
 
                     if(characterBody == self.lookupObject["belly"]) forceDamage /= 3;
-
-                    if(forceDamage>100) console.log(forceDamage);
 
                     if (forceDamage > Settings.bashForce / 2 && Settings.goreEnabled) {
                         if (characterBody == self.lookupObject["head"]) {

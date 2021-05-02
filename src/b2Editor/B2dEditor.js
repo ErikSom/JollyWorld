@@ -1840,14 +1840,15 @@ const _B2dEditor = function () {
 
 
 				for (let jointEdge = b.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
+
 					let joint = jointEdge.joint;
 					if(joint.GetType() === Box2D.e_revoluteJoint){
 						joint = Box2D.castObject(joint, Box2D.b2RevoluteJoint);
-						joint.destroyed = true;
 					}else if(joint.GetType() === Box2D.e_distanceJoint){
 						joint = Box2D.castObject(joint, Box2D.b2DistanceJoint);
-						joint.destroyed = true;
 					}
+
+					this.preDestroyJoint(joint);
 				}
 
 				this.DestroyBody(b);
@@ -1900,16 +1901,55 @@ const _B2dEditor = function () {
 		return body;
 	}
 
+	this.CastJoint = function(joint){
+		if(joint.GetType() === Box2D.e_revoluteJoint){
+			return Box2D.castObject(joint, Box2D.b2RevoluteJoint);
+		}else if(joint.GetType() === Box2D.e_distanceJoint){
+			return Box2D.castObject(joint, Box2D.b2DistanceJoint);
+		}else if(joint.GetType() === Box2D.e_prismaticJoint){
+			return Box2D.castObject(joint, Box2D.b2PrismaticJoint);
+		}else if(joint.GetType() === Box2D.e_wheelJoint){
+			return Box2D.castObject(joint, Box2D.b2WheelJoint);
+		}
+		return joint;
+	}
+
+	this.preDestroyJoint = function(joint){
+		joint.destroyed = true;
+		joint.__emscripten_pool = true;
+
+		if(joint.linkedJoints){
+			joint.linkedJoints.forEach(joint => {
+				joint.innerLoopDestroyed = true;
+				this.DestroyJoint(joint);
+			});
+			delete joint.linkedJoints;
+		}
+		if(joint.connectedJoints){
+			joint.connectedJoints.forEach(joint => {
+				if(joint.linkedJoints){
+					joint.linkedJoints = joint.linkedJoints.filter(_j=>_j != joint);
+					if(joint.linkedJoints.length === 0) delete joint.linkedJoints
+				}
+			});
+		}
+
+	}
+
 	this.DestroyJoint = function(joint){
 		if(joint.destroyed) return;
-		joint.__emscripten_pool = true;
-		joint.destroyed = true;
+		this.preDestroyJoint(joint);
+		if(joint.innerLoopDestroyed) return;
 		this.world.DestroyJoint(joint);
 	}
 	this.CleanJoint = function(joint){
 		// clean up all properties for Emscripten object recycle
 		if(joint.__emscripten_pool){
 			delete joint.__emscripten_pool;
+			delete joint.linkedJoints;
+			delete joint.connectedJoints;
+			delete joint.destroyed;
+			delete joint.innerLoopDestroyed;
 		}
 	}
 
@@ -1917,9 +1957,9 @@ const _B2dEditor = function () {
 		// make sure we are not pooling an object
 		const joint = this.world.CreateJoint(jointDef);
 		this.CleanJoint(joint);
+
 		return joint;
 	}
-
 
 	this.deleteSelection = function (force) {
 

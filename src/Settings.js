@@ -37,7 +37,7 @@ export var Settings = {
     goreEnabled: true,
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
-    bashForce:100,
+    bashForce:10000,
     physicsParticleLifeTime:2000,
     physicsParticleLifeTimeRandomOffset:1000,
     /*CHARACTER*/
