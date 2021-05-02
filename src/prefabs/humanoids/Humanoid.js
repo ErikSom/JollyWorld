@@ -53,6 +53,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.stabalizeJoints();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
+        console.log(this.collisionUpdates);
 
         this.bloodSprays = [];
 
@@ -98,6 +99,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 texture.addChildAt(sprite, 0);
             }
         }
+		console.log("Headjoint:", this.lookupObject['head_joint']);
     }
 
     setExpression(expression){
@@ -198,7 +200,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         const jointsToAnalyse = ['leg_left_joint', 'leg_right_joint','arm_left_joint', 'arm_right_joint'/*,'head_joint', 'belly_joint'*/ ];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
-            if (!targetJoint) continue;
+            if (!targetJoint || targetJoint.destroyed) continue;
 
             let reactionForce = vec1;
             targetJoint.GetReactionForce(1 / Settings.physicsTimeStep, reactionForce);
@@ -227,6 +229,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                  if(!spray.initialized){
                      spray.emitter = emitterManager.playOnceEmitter("bloodSpray", spray.body, spawnPos, spray.body.GetAngle()+spray.angle);
+                     if(!spray.emitter) spray.time = 0; // if we receive no particle emitter destroy me right away
                      spray.initialized = true;
                  } else if(spray.emitter){
                     spray.emitter.spawnPos.set(spawnPos.x * Settings.PTM, spawnPos.y * Settings.PTM);
@@ -259,7 +262,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         
         for (i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]];
-            if (!targetJoint) continue;
+            if (!targetJoint || targetJoint.destroyed) continue;
 
             const pos1 = b2CloneVec2(targetJoint.GetAnchorA());
             const pos2 = b2CloneVec2(targetJoint.GetAnchorB());
@@ -295,11 +298,21 @@ export class Humanoid extends PrefabManager.basePrefab {
             for (let jointEdge = vain.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
 
                 let targetJoint = jointEdge.joint;
+                if (!targetJoint) continue;
 
-                if(targetJoint.GetType() !== Box2D.e_ropeJoint){
+                let skip = false;
+
+                if(targetJoint.GetType === Box2D.e_distanceJoint){
+                    targetJoint = Box2D.castObject(targetJoint, Box2D.b2DistanceJoint);
+                    if(targetJoint.get_minLength() === targetJoint.get_maxLength()){
+                        skip = true;
+                    }
+                }
+
+                if(!skip){
 
                     const pos1 = b2CloneVec2(targetJoint.GetAnchorA());
-                    const pos2 = b2CloneVec2(targetJoint.GetAnchorB(pos2));
+                    const pos2 = b2CloneVec2(targetJoint.GetAnchorB());
 
                     const distance = pos1;
                     b2SubVec2(distance, pos2);
@@ -382,7 +395,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 const count = contact.GetManifold().get_pointCount();
 
                 let force = 0;
-                for (let j = 0; j < count; j++) force = Math.max(force, impulse.gete_normalImpulses(j));
+                for (let j = 0; j < count; j++) force = Math.max(force, impulse.get_normalImpulses(j));
 
                 const minForceForDamage = 10.0;
                 const forceToDamageDivider = 50.0;
@@ -412,10 +425,12 @@ export class Humanoid extends PrefabManager.basePrefab {
                 let forceDamage = 0;
 
                 if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
-                    const charOtherBodyDiff = b2CloneVec2(characterBody.GetPosition()).SelfSub(otherBody.GetPosition());
+                    const charOtherBodyDiff = b2CloneVec2(characterBody.GetPosition());
+                    b2SubVec2(charOtherBodyDiff, otherBody.GetPosition());
                     const dotProductChar = b2DotVV(characterBody.preSolveVelicity, charOtherBodyDiff) *-1;
 
-                    const otherBodyCharDiff = b2CloneVec2(otherBody.GetPosition()).SelfSub(characterBody.GetPosition());
+                    const otherBodyCharDiff = b2CloneVec2(otherBody.GetPosition());
+                    b2SubVec2(otherBodyCharDiff, characterBody.GetPosition());
                     const dotProductOther = b2CloneVec2(otherBody.preSolveVelicity, otherBodyCharDiff) *-1;
 
                     Box2D.destroy(charOtherBodyDiff);
@@ -429,6 +444,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                     }
 
                     if(characterBody == self.lookupObject["belly"]) forceDamage /= 3;
+
+                    if(forceDamage>100) console.log(forceDamage);
 
                     if (forceDamage > Settings.bashForce / 2 && Settings.goreEnabled) {
                         if (characterBody == self.lookupObject["head"]) {
@@ -511,10 +528,11 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         }else{
             for (let jointEdge = baseBody.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
-                const joint = jointEdge.joint;
+                let joint = jointEdge.joint;
                 const body = joint.GetBodyA() === baseBody ? joint.GetBodyB() : joint.GetBodyA();
 
-                if(body.isFlesh && joint.GetType() === Box2D.b2JointType.e_revoluteJoint && !['eye_left', 'eye_right'].includes(body.mySprite.data.refName)){
+                if(body.isFlesh && joint.GetType() === Box2D.e_revoluteJoint && !['eye_left', 'eye_right'].includes(body.mySprite.data.refName)){
+                    joint = Box2D.castObject(joint, Box2D.b2RevoluteJoint);
                     let angle = Settings.pihalve;
                     if(joint === this.lookupObject[body.mySprite.data.refName+'_joint']){
                         angle = -Settings.pihalve;
@@ -586,11 +604,10 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     if(targetBody.grabJoints){
                         targetBody.grabJoints.forEach(grabJoint=>{
-                            game.world.DestroyJoint(grabJoint);
+                            game.editor.DestroyJoint(grabJoint);
                             delete targetBody.grabJoints;
                         })
                     }
-
                     game.editor.deleteObjects([targetBody]);
 
                 }
@@ -598,7 +615,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 break;
             case Humanoid.GORE_SNAP:
                 const targetJoint = this.lookupObject[update.target + "_joint"];
-                if (targetJoint) {
+                if (targetJoint && !targetJoint.destroyed) {
                     this.addBloodEmitters(update.target, update.type);
 
                     if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
@@ -623,7 +640,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], anchorAPos);
 
                     revoluteJointDef.set_collideConnected(false);
-                    joint = Box2D.castObject(game.world.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+                    joint = Box2D.castObject(game.editor.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
                     Box2D.destroy(revoluteJointDef);
 
                     revoluteJointDef = new Box2D.b2RevoluteJointDef();
@@ -632,7 +649,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
 
                     revoluteJointDef.set_collideConnected(false);
-                    joint = Box2D.castObject(game.world.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+                    joint = Box2D.castObject(game.editor.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
                     Box2D.destroy(revoluteJointDef);
 
 
@@ -647,7 +664,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     ropeJointDef.set_stiffness(0);
                     ropeJointDef.set_damping(0);
 
-                    joint = Box2D.castObject(game.world.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                    joint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
 
                     Box2D.destroy(ropeJointDef);
 
@@ -671,7 +688,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
                     if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
 
-                    game.world.DestroyJoint(targetJoint);
+                    game.editor.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];
 
                     AudioManager.playSFX(['snap1', 'snap2', 'snap3', 'snap4'], 0.3, 1.0+Math.random()*.2-.1, targetJoint.GetBodyA().GetPosition());
@@ -1107,14 +1124,14 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         let anchor = null;
         if(refJoint.GetBodyA() === base){
-            anchor = refJoint.GetAnchorA(new Box2D.b2Vec2());
+            anchor = refJoint.GetAnchorA();
         }else{
-            anchor = refJoint.GetAnchorB(new Box2D.b2Vec2());
+            anchor = refJoint.GetAnchorB();
         }
 
         const ropeJointDef = new Box2D.b2DistanceJointDef();
 
-        const targetAnchor = this.lookupObject[`${target}_joint`].GetAnchorA(new Box2D.b2Vec2());
+        const targetAnchor = this.lookupObject[`${target}_joint`].GetAnchorA();
 
         ropeJointDef.Initialize(targetBody, base, targetAnchor, anchor);
 
@@ -1125,7 +1142,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         ropeJointDef.set_stiffness(0);
         ropeJointDef.set_damping(0);
 
-        const newJoint = Box2D.castObject(game.world.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+        const newJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
         Box2D.destroy(ropeJointDef);
 
         let maxLength = 0;

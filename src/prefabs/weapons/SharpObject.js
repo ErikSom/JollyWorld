@@ -186,7 +186,7 @@ export class SharpObject extends PrefabManager.basePrefab {
 
                 Box2D.destroy(startPosition);
 
-                let joint = Box2D.castObject(game.world.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
+                let joint = Box2D.castObject(game.editor.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
                 this.connectedBodies.push(this.bodiesToStick[i].body);
                 this.connectedJoints.push(joint);
             }
@@ -203,7 +203,7 @@ export class SharpObject extends PrefabManager.basePrefab {
                 const tarIndex = this.connectedBodies.indexOf(this.bodiesToSeperate[i].body);
                 var joint = this.connectedJoints[tarIndex];
                 if(!joint) continue;
-                game.world.DestroyJoint(joint);
+                game.editor.DestroyJoint(joint);
 
                 this.bodiesToSeperate[i].body.connectedSpike = undefined;
                 this.connectedBodies.splice(tarIndex, 1);
@@ -275,7 +275,7 @@ export class SharpObject extends PrefabManager.basePrefab {
                     bodyClass.dealDamage(damage);
                 }
 
-                self.bodiesToStick.push({body:otherBody, pos:worldManifold.points[0]});
+                self.bodiesToStick.push({body:otherBody, pos:worldManifold.get_points(0)});
             }
         }
         this.contactListener.EndContact = function (contact) {

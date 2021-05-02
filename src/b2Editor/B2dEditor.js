@@ -1689,7 +1689,7 @@ const _B2dEditor = function () {
 					}
 				}
 				this.removeObjectFromLookupGroups(joint, joint.spriteData);
-				this.world.DestroyJoint(joint);
+				this.DestroyJoint(joint);
 
 				//TODO: remove joints from lookup object???
 
@@ -1837,6 +1837,19 @@ const _B2dEditor = function () {
 					b.connectedSpike.connectedBodies.splice(tarIndex);
 					b.connectedSpike.connectedJoints.splice(tarIndex);
 				}
+
+
+				for (let jointEdge = b.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
+					let joint = jointEdge.joint;
+					if(joint.GetType() === Box2D.e_revoluteJoint){
+						joint = Box2D.castObject(joint, Box2D.b2RevoluteJoint);
+						joint.destroyed = true;
+					}else if(joint.GetType() === Box2D.e_distanceJoint){
+						joint = Box2D.castObject(joint, Box2D.b2DistanceJoint);
+						joint.destroyed = true;
+					}
+				}
+
 				this.DestroyBody(b);
 			}
 			obj.destroyed = true;
@@ -1874,6 +1887,9 @@ const _B2dEditor = function () {
 			delete body.isAffectedByForcefield;
 			delete body.mainHumanoid;
 			delete body.grabJoints;
+			delete body.myRTCache;
+			delete body.myDecalEntry;
+			delete body.myDecalRT;
 		}
 	}
 
@@ -1883,6 +1899,28 @@ const _B2dEditor = function () {
 		this.CleanBody(body);
 		return body;
 	}
+
+	this.DestroyJoint = function(joint){
+		if(joint.destroyed) return;
+		joint.__emscripten_pool = true;
+		joint.destroyed = true;
+		this.world.DestroyJoint(joint);
+	}
+	this.CleanJoint = function(joint){
+		// clean up all properties for Emscripten object recycle
+		if(joint.__emscripten_pool){
+			delete joint.__emscripten_pool;
+		}
+	}
+
+	this.CreateJoint = function(jointDef){
+		// make sure we are not pooling an object
+		const joint = this.world.CreateJoint(jointDef);
+		this.CleanJoint(joint);
+		return joint;
+	}
+
+
 	this.deleteSelection = function (force) {
 
 		const toBeDeletedPrefabs = []
@@ -7778,7 +7816,7 @@ const _B2dEditor = function () {
 				}
 
 
-				destroyJoints.forEach(joint => game.world.DestroyJoint(joint));
+				destroyJoints.forEach(joint => this.DestroyJoint(joint));
 
 			}else{
 				// sprite or joint
@@ -8554,7 +8592,7 @@ const _B2dEditor = function () {
 			revoluteJointDef.set_enableLimit(jointPlaceHolder.enableLimit);
 			revoluteJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
-			joint = Box2D.castObject(this.world.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+			joint = Box2D.castObject(this.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
 			destroy(revoluteJointDef);
 			destroy(anchor);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_SLIDE) {
@@ -8576,7 +8614,7 @@ const _B2dEditor = function () {
 			prismaticJointDef.set_enableLimit(jointPlaceHolder.enableLimit);
 			prismaticJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
-			joint = Box2D.castObject(this.world.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
+			joint = Box2D.castObject(this.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
 			destroy(prismaticJointDef);
 			destroy(anchor);
 			destroy(axis);
@@ -8597,7 +8635,7 @@ const _B2dEditor = function () {
 
 			b2LinearStiffness(distanceJointDef, jointPlaceHolder.frequencyHz, jointPlaceHolder.dampingRatio, bodyA, bodyB);
 
-			joint = Box2D.castObject(this.world.CreateJoint(distanceJointDef), Box2D.b2DistanceJoint);
+			joint = Box2D.castObject(this.CreateJoint(distanceJointDef), Box2D.b2DistanceJoint);
 			destroy(anchor);
 			destroy(distanceJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_ROPE) {
@@ -8611,7 +8649,7 @@ const _B2dEditor = function () {
 			ropeJointDef.set_stiffness(0);
 			ropeJointDef.set_damping(0);
 
-			joint = Box2D.castObject(this.world.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+			joint = Box2D.castObject(this.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
 
 			destroy(ropeJointDef);
 		} else if (jointPlaceHolder.jointType == this.jointObject_TYPE_WHEEL) {
@@ -8627,7 +8665,7 @@ const _B2dEditor = function () {
 			wheelJointDef.set_motorSpeed(jointPlaceHolder.motorSpeed);
 			wheelJointDef.set_enableMotor(jointPlaceHolder.enableMotor);
 
-			joint = Box2D.castObject(this.world.CreateJoint(wheelJointDef), Box2D.b2WheelJoint);
+			joint = Box2D.castObject(this.CreateJoint(wheelJointDef), Box2D.b2WheelJoint);
 
 			destroy(axis);
 			destroy(anchor);

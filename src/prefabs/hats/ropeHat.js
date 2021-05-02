@@ -166,7 +166,7 @@ export class RopeHat extends Hat {
 		revoluteJointDef.Initialize(body, this.ropeEnd, farthestPoint);
 		revoluteJointDef.collideConnected = true;
 
-		this.revoluteJoint = this.head.GetWorld().CreateJoint(revoluteJointDef);
+		this.revoluteJoint = game.editor.CreateJoint(revoluteJointDef);
 
 		this.setDistanceJointEnabled(true);
 
@@ -175,7 +175,7 @@ export class RopeHat extends Hat {
 		prismaticJointDef.Initialize(this.head, this.ropeEnd, farthestPoint, axis);
 		prismaticJointDef.maxMotorForce = 20000;
 		prismaticJointDef.enableMotor = false;
-		this.pulleyJoint = this.head.GetWorld().CreateJoint(prismaticJointDef);
+		this.pulleyJoint = game.editor.CreateJoint(prismaticJointDef);
 
 		if(this.character.attachedToVehicle){
 			const frame = this.character.mainPrefabClass.lookupObject['frame'];
@@ -184,17 +184,17 @@ export class RopeHat extends Hat {
 				prismaticJointDef.Initialize(frame, this.ropeEnd, farthestPoint, axis);
 				prismaticJointDef.maxMotorForce = 20000;
 				prismaticJointDef.enableMotor = false;
-				this.pulleyFrameJoint = frame.GetWorld().CreateJoint(prismaticJointDef);
+				this.pulleyFrameJoint = game.editor.CreateJoint(prismaticJointDef);
 			}
 		}
 	}
 
 	setDistanceJointEnabled(enabled){
 		if(this.ropeHeadJoint){
-			this.head.GetWorld().DestroyJoint(this.ropeHeadJoint);
+			game.editor.DestroyJoint(this.ropeHeadJoint);
 		}
 		if(this.frameJoint){
-			this.head.GetWorld().DestroyJoint(this.frameJoint);
+			game.editor.DestroyJoint(this.frameJoint);
 		}
 		if(enabled){
 			if(this.character.attachedToVehicle){
@@ -202,23 +202,23 @@ export class RopeHat extends Hat {
 				if(frame){
 					let ropeJointDef = new Box2D.b2RopeJointDef();
 					ropeJointDef.Initialize(frame, this.ropeEnd, frame.GetPosition(), this.ropeEnd.GetPosition());
-					this.frameJoint = frame.GetWorld().CreateJoint(ropeJointDef);
+					this.frameJoint = game.editor.CreateJoint(ropeJointDef);
 				}
 			}else{
 				let distanceJointDef = new Box2D.b2DistanceJointDef();
 				distanceJointDef.Initialize(this.head, this.ropeEnd, this.head.GetPosition(), this.ropeEnd.GetPosition());
 				distanceJointDef.frequencyHz = 60;
 				distanceJointDef.dampingRatio = 1.0;
-				 this.ropeHeadJoint = this.head.GetWorld().CreateJoint(distanceJointDef);
+				 this.ropeHeadJoint = game.editor.CreateJoint(distanceJointDef);
 			}
 		}
 	}
 
 	releaseRope() {
 		if (this.ropeEnd) {
-			this.head.GetWorld().DestroyBody(this.ropeEnd);
-			if(this.pulleyJoint) this.head.GetWorld().DestroyJoint(this.pulleyJoint);
-			if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
+			game.editor.DestroyBody(this.ropeEnd);
+			if(this.pulleyJoint) game.editor.DestroyJoint(this.pulleyJoint);
+			if(this.pulleyFrameJoint) game.editor.DestroyJoint(this.pulleyFrameJoint);
 			this.revoluteJoint = this.pulleyJoint = this.pulleyFrameJoint = null;
 			this.ropeActive = false
 			this.bendBody = this.bendPoint = null;
@@ -509,8 +509,8 @@ export class RopeHat extends Hat {
 	}
 
 	detachFromVehicle(){
-		if(this.frameJoint)	this.head.GetWorld().DestroyJoint(this.frameJoint);
-		if(this.pulleyFrameJoint) this.head.GetWorld().DestroyJoint(this.pulleyFrameJoint);
+		if(this.frameJoint)	game.editor.DestroyJoint(this.frameJoint);
+		if(this.pulleyFrameJoint) game.editor.DestroyJoint(this.pulleyFrameJoint);
 		this.frameJoint = this.pulleyFrameJoint = null;
 		if(this.ropeFired) this.setDistanceJointEnabled(true);
 	}

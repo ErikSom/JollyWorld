@@ -436,7 +436,7 @@ function Game() {
 
                 b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, body);
 
-                this.mouseJoint = Box2D.castObject(this.world.CreateJoint(md), Box2D.b2MouseJoint);
+                this.mouseJoint = Box2D.castObject(this.editor.CreateJoint(md), Box2D.b2MouseJoint);
                 body.SetAwake(true);
 
                 Box2D.destroy(targetPosition);
@@ -1278,7 +1278,7 @@ function Game() {
                     if (velocitySum > 10.0 && !skipBecauseToLight) {
                         const worldManifold = new Box2D.b2WorldManifold();
                         contact.GetWorldManifold(worldManifold);
-                        const worldCollisionPoint = worldManifold.points[0];
+                        const worldCollisionPoint = worldManifold.get_points(0);
 
                         const slidingDecalSlider = 50;
                         const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
@@ -1355,7 +1355,7 @@ function Game() {
             if (Key.isDown(Key.MOUSE)) {
                 this.mouseJoint.SetTarget(new b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y()));
             } else {
-                this.world.DestroyJoint(this.mouseJoint);
+                this.editor.DestroyJoint(this.mouseJoint);
                 this.mouseJoint = null;
             }
         }

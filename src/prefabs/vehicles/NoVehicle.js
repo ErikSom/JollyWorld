@@ -166,7 +166,7 @@ export class NoVehicle extends BaseVehicle {
                             if(bodyToPatch == this.lookupObject['body']){
                                 ropeJointDef.maxLength = maxLength ? maxLength : ropeJointDef.maxLength;
                             }
-                            const newJoint = game.editor.world.CreateJoint(ropeJointDef);
+                            const newJoint = game.editor.CreateJoint(ropeJointDef);
                             newJoint.connectedJoints = [];
 
                             linkedBodies.forEach(linkedBodyKey => {

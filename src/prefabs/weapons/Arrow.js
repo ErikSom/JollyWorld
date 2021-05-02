@@ -84,7 +84,7 @@ class Arrow extends PrefabManager.basePrefab {
 				Box2D.destroy(worldCoordsAnchorPoint);
 				weldJointDef.collideConnected = false;
 				weldJointDef.referenceAngle = weldJointDef.bodyB.GetAngle()-weldJointDef.bodyA.GetAngle();
-				game.world.CreateJoint(weldJointDef);
+				game.editor.CreateJoint(weldJointDef);
 
 				Box2D.destroy(weldJointDef);
 

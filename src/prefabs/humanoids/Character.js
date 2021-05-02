@@ -143,13 +143,13 @@ export class Character extends Humanoid {
         this.mainPrefabClass.destroyConnectedJoints[update.target].forEach((targetJointName) => {
             if (targetJointName instanceof String || typeof(targetJointName) === 'string') {
                 if (this.lookupObject[targetJointName]) {
-                    game.world.DestroyJoint(this.lookupObject[targetJointName]);
+                    game.editor.DestroyJoint(this.lookupObject[targetJointName]);
                     delete this.lookupObject[targetJointName];
                 }
             } else if (!this.lookupObject[targetJointName.ifno]) {
                 targetJointName.destroy.forEach((connectedJointName) => {
                     if (this.lookupObject[connectedJointName]) {
-                        game.world.DestroyJoint(this.lookupObject[connectedJointName]);
+                        game.editor.DestroyJoint(this.lookupObject[connectedJointName]);
                         delete this.lookupObject[connectedJointName];
                     }
                 });
@@ -201,7 +201,7 @@ export class Character extends Humanoid {
         if(vehicleJoints){
             vehicleJoints.forEach((jointName) => {
                 if (this.lookupObject[jointName]) {
-                    game.world.DestroyJoint(this.lookupObject[jointName]);
+                    game.editor.DestroyJoint(this.lookupObject[jointName]);
                     delete this.lookupObject[jointName];
                 }
             });
@@ -209,7 +209,7 @@ export class Character extends Humanoid {
 
         if(this.vehicleJoints){
             this.vehicleJoints.forEach(joint =>{
-                game.world.DestroyJoint(joint);
+                game.editor.DestroyJoint(joint);
                 this.vehicleJoints = [];
             })
         }
@@ -223,13 +223,13 @@ export class Character extends Humanoid {
             //     var nextJoint = jointEdge.next;
             //     var joint = jointEdge.joint;
             //     if (joint.GetType() != 1) {
-            //         game.world.DestroyJoint(joint);
+            //         game.editor.DestroyJoint(joint);
             //     } else {
             //         var bodies = [joint.GetBodyA(), joint.GetBodyB()];
             //         for (var j = 0; j < bodies.length; j++) {
             //             if (!bodies[j]) continue;
             //             if (bodies[j].mySprite.data.subPrefabInstanceName != compareClass) {
-            //                 game.world.DestroyJoint(joint);
+            //                 game.editor.DestroyJoint(joint);
             //                 break;
             //             }
             //         }

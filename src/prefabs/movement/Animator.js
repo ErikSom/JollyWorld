@@ -325,7 +325,7 @@ class Animator extends PrefabManager.basePrefab {
 
         md.set_target(targetPosition);
 
-        this.bodyAnimator = Box2D.castObject(game.world.CreateJoint(md), Box2D.b2MouseJoint);
+        this.bodyAnimator = Box2D.castObject(game.editor.CreateJoint(md), Box2D.b2MouseJoint);
 
         Box2D.destroy(md);
         Box2D.destroy(bodyDef);

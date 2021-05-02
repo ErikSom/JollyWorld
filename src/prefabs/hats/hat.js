@@ -39,7 +39,7 @@ export default class Hat {
 		hatWeldJointDef.dampingRatio = 1.0;
 		hatWeldJointDef.collideConnected = false;
 
-		this.hatWeldJoint = this.head.GetWorld().CreateJoint(hatWeldJointDef);
+		this.hatWeldJoint = game.editor.CreateJoint(hatWeldJointDef);
 
 		const textureObject = new game.editor.textureObject();
 		textureObject.x = this.hatBody.GetPosition().x*game.editor.PTM;
@@ -61,7 +61,7 @@ export default class Hat {
 		this.hatBody.myTexture = texture;
 	}
 	detach(){
-		this.hatBody.GetWorld().DestroyJoint(this.hatWeldJoint);
+		game.editor.DestroyJoint(this.hatWeldJoint);
 		this.hatBody.GetFixtureList().SetSensor(false);
 		this.hatWeldJoint = null;
 	}

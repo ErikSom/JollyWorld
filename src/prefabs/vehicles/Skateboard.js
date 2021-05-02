@@ -61,7 +61,7 @@ class Skateboard extends BaseVehicle {
 
         md.collideConnected = true;
         md.maxForce = 1000.0 * footRight.GetMass();
-        this.legAnimator = game.world.CreateJoint(md);
+        this.legAnimator = game.editor.CreateJoint(md);
         footRight.SetAwake(true);
 
         this.character.setHat(SkateHelmet);
@@ -106,7 +106,7 @@ class Skateboard extends BaseVehicle {
 
             this.legAnimator.SetTarget(globalFrame);
         }else if(this.legAnimator){
-            game.world.DestroyJoint(this.legAnimator);
+            game.editor.DestroyJoint(this.legAnimator);
             this.legAnimator = null;
         }
 

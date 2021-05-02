@@ -221,7 +221,7 @@ class Portal extends PrefabManager.basePrefab {
         }
         if (this.jointsToDestroy.length > 0) {
             this.jointsToDestroy.map((joint) => {
-                game.world.DestroyJoint(joint);
+                game.editor.DestroyJoint(joint);
             });
             this.jointsToDestroy = [];
         }

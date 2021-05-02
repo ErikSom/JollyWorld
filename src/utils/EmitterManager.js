@@ -18,35 +18,34 @@ let globalBody = {
 export const init = function () {
     const emitterPoolData = [{
         type: 'blood',
-        poolSize: 30
+        poolSize: 12
     },
     {
         type: 'bloodSpray',
-        poolSize: 10
+        poolSize: 6
     },
-    
     {
         type: 'gorecloud',
-        poolSize: 15
+        poolSize: 8
     }, {
         type: 'explosion_layer1',
-        poolSize: 10
+        poolSize: 8
     }, {
         type: 'explosion_layer2',
-        poolSize: 10
+        poolSize: 8
     },{
         type: 'explosion2_layer1',
-        poolSize: 10
+        poolSize: 8
     }, {
         type: 'explosion2_layer2',
-        poolSize: 10
+        poolSize: 8
     },
     {
         type: 'screenConfetti',
         poolSize: 3
     }];
     emitterPoolData.forEach((data) => {
-        for (let i = 0; i < data.poolSize; i++) getEmitter(data.type);
+        for (let i = 0; i < data.poolSize; i++) getEmitter(data.type, true, true);
     })
     for (let i = 0; i < emitters.length; i++) {
         emittersPool[emitters[i].type].push(emitters[i]);
@@ -61,6 +60,7 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
     if (body && body.emitterCount && body.emitterCount >= maxEmitters) return;
 
     let emitter = getEmitter(type);
+    if(!emitter) return;
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
 
 
@@ -106,6 +106,7 @@ export const getLoopingEmitter = function(type,body,point,angle){
     if (!angle) angle = 0;
 
     let emitter = getEmitter(type, false);
+    if(!emitter) return;
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
 
     attachEmitter(body, emitter);
@@ -149,10 +150,18 @@ export const destroyEmitter = emitter =>{
     emitter.destroy();
 }
 
-export const getEmitter = function (type, pool = true) {
+const ingorePool = {
+    "jetfire": true,
+    "cannonShoot": true,
+    "sparksMetal": true
+}
+
+export const getEmitter = function (type, pool = true, init = false) {
     if(pool){
         if (!emittersPool[type]) emittersPool[type] = [];
         if (emittersPool[type].length > 0) return emittersPool[type].shift();
+        // some particles ignore the pool
+        if(!init && !ingorePool[type]) return;
     }
 
     let emitter;
@@ -252,21 +261,25 @@ export const getEmitter = function (type, pool = true) {
     return emitter;
 }
 export const update = function () {
+
     for (var i = 0; i < emitters.length; i++) {
         var emitter = emitters[i];
-        if (!emitter.body && emittersPool[emitter.type] > Settings.emitterPool) {
-            if (Date.now() - emitter.lastUsed > Settings.emitterMaxPoolTime) {
-                for (var j = 0; j < emittersPool[emitter.type].length; j++)
-                    if (emittersPool[emitter.type][j] == emitter) emittersPool[emitter.type].splice(j, 1);
-                emitter.destroy();
-                emitters.splice(i, 1);
-                i--;
-            }
+        if (!emitter.body && emittersPool[emitter.type]) {
+            // if (Date.now() - emitter.lastUsed > Settings.emitterMaxPoolTime) {
+            //     for (var j = 0; j < emittersPool[emitter.type].length; j++){
+            //         if (emittersPool[emitter.type][j] == emitter){
+            //             emittersPool[emitter.type].splice(j, 1);
+            //         }
+            //     }
+            //     emitter.destroy();
+            //     emitters.splice(i, 1);
+            //     i--;
+            // }
         } else emitter.update(game.editor.deltaTime * 0.001);
     }
 }
 export const reset = function () {
-    emittersPool = {};
+    emittersPool = {}
     for (let i = 0; i < emitters.length; i++) {
         let emitter = emitters[i];
         emitter.body = undefined;
