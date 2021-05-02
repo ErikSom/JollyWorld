@@ -5,8 +5,9 @@ import {
 } from "../../Game";
 import { Settings } from '../../Settings';
 import { applyColorMatrixMultiple } from '../../b2Editor/utils/colorMatrixParser';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2MulVec2 } from '../../../libs/debugdraw';
 
+const { getPointer, NULL } = Box2D;
 
 export class BaseVehicle extends PrefabManager.basePrefab {
     static forceUnique = true;
@@ -52,31 +53,17 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.desiredVehicleTorques = [];
         this.desiredVehicleSpeeds = [];
 
-        this.RaycastCallbackWheel = function () {
-            this.m_hit = false;
-        }
-        this.RaycastCallbackWheel.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-            if(fixture.GetBody().mainCharacter) return -1;
-            if (fixture.IsSensor()) return -1;
-            this.m_hit = true;
-            this.m_point = b2CloneVec2(point);
-            this.m_normal = normal;
-            this.m_fixture = fixture;
-            return fraction;
-        };
-
         let maxEngines = 4;
         for (i = 1; i <= maxEngines; i++) {
             let engine = this.lookupObject["engine" + i.toString()];
             if (engine != null) {
                 this.engines.push(engine);
                 let tarBody = engine.GetBodyA();
-                let fixture = tarBody.GetFixtureList();
-                while (fixture != null) {
-                    if (fixture.GetShape() instanceof Box2D.b2CircleShape) {
+
+                for (let fixture = tarBody.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+                    if (fixture.GetType() === Box2D.b2Shape.e_circle) {
                         this.wheels.push(fixture)
                     }
-                    fixture = fixture.GetNext();
                 }
             }
         }
@@ -167,15 +154,35 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             let rayStart = wheel.GetBody().GetPosition();
             let rayEnd;
             // add 360 scope
-            let wheelRadius = wheel.GetShape().GetRadius();
+            let wheelRadius = wheel.GetShape().get_m_radius();
             let rayLength = wheelRadius + offset;
             let checkSlize = (360 / 20) * game.editor.DEG2RAD;
             let totalCircleRad = 360 * game.editor.DEG2RAD;
             for (j = 0; j < totalCircleRad; j += checkSlize) {
                 rayEnd = b2CloneVec2(rayStart);
-                rayEnd.SelfAdd(new Box2D.b2Vec2(Math.cos(j) * rayLength, Math.sin(j) * rayLength));
-                let callback = new this.RaycastCallbackWheel();
+                rayEnd.set_x(rayEnd.get_x() + Math.cos(j) * rayLength );
+                rayEnd.set_y(rayEnd.get_y() + Math.sin(j) * rayLength );
+
+                let callback = Object.assign(new Box2D.JSRayCastCallback(), {
+                    ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
+        
+                        const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
+                        const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
+                        const normal = Box2D.wrapPointer(normal_p, Box2D.b2Vec2);
+        
+                        if(fixture.GetBody().mainCharacter) return -1;
+                        if (fixture.IsSensor()) return -1;
+                        this.m_hit = true;
+                        this.m_point = point;
+                        this.m_normal = normal;
+                        this.m_fixture = fixture;
+                        return fraction;
+                    },
+                    m_hit: false
+                });
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
+                Box2D.destroy(rayEnd);
+
                 if (callback.m_hit) {
                     let forceDir = extramath.rotateVector(callback.m_normal, 90);
 
@@ -192,14 +199,15 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         let i;
         let body;
         let dirFore = b2CloneVec2(angle);
-        dirFore.SelfMul(force * 0.01)
+        b2MulVec2(dirFore, force * 0.01)
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             body = this.lookupObject._bodies[i];
             let oldVelocity = body.GetLinearVelocity();
             let newVelocity = new Box2D.b2Vec2(oldVelocity.x + dirFore.x, oldVelocity.y + dirFore.y);
             body.SetLinearVelocity(newVelocity);
+            Box2D.destroy(newVelocity);
         }
-
+        Box2D.destroy(dirFore);
     }
     accelerateWheels(dir) {
         let i;

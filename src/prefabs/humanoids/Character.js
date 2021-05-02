@@ -8,6 +8,7 @@ import {
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
 import {Humanoid} from './Humanoid'
 import * as MobileController from '../../utils/MobileController'
+import { b2MulVec2 } from '../../../libs/debugdraw';
 
 const { getPointer, NULL } = Box2D;
 
@@ -102,8 +103,7 @@ export class Character extends Humanoid {
                 this.vehicleParts.push(bodyB);
 
                 const crawlJoints = body => {
-                    let jointEdge = body.GetJointList();
-                    while (jointEdge) {
+                    for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
                         const joint = jointEdge.joint;
                         if(!joint.jointCrawled){
                             joint.jointCrawled = true;
@@ -123,7 +123,6 @@ export class Character extends Humanoid {
                                 crawlJoints(bodyB);
                             }
                         }
-                        jointEdge = jointEdge.next;
                     }
                 }
 
@@ -214,35 +213,16 @@ export class Character extends Humanoid {
             })
         }
 
-        //var compareClass = this.lookupObject._bodies[0].mySprite.data.subPrefabInstanceName;
-        for (var i = 0; i < this.lookupObject._bodies.length; i++) {
-            var body = this.lookupObject._bodies[i];
-            // var jointEdge = body.GetJointList();
-
-            // while (jointEdge) {
-            //     var nextJoint = jointEdge.next;
-            //     var joint = jointEdge.joint;
-            //     if (joint.GetType() != 1) {
-            //         game.editor.DestroyJoint(joint);
-            //     } else {
-            //         var bodies = [joint.GetBodyA(), joint.GetBodyB()];
-            //         for (var j = 0; j < bodies.length; j++) {
-            //             if (!bodies[j]) continue;
-            //             if (bodies[j].mySprite.data.subPrefabInstanceName != compareClass) {
-            //                 game.editor.DestroyJoint(joint);
-            //                 break;
-            //             }
-            //         }
-            //     }
-            //     jointEdge = nextJoint;
-            // }
-
-            var body = this.lookupObject["body"];
+        for (let i = 0; i < this.lookupObject._bodies.length; i++) {
+            const body = this.lookupObject["body"];
             if(body){
-                var bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
-                var dirFore = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
-                dirFore.SelfMul(force);
-                body.ApplyForce(dirFore, body.GetPosition());
+                const bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
+                const dirForce = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+                b2MulVec2(dirForce, force)
+                body.ApplyForce(dirForce, body.GetPosition(), true);
+
+                Box2D.destroy(bodyAngleVector);
+                Box2D.destroy(dirForce);
             }
         }
 
@@ -254,7 +234,6 @@ export class Character extends Humanoid {
     destroy(){
         this.destroyed = true;
         if(this.hat){
-            console.log("DESTROY HAT!!");
             this.hat.destroy();
         }
         super.destroy();
