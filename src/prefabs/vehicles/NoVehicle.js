@@ -95,7 +95,7 @@ export class NoVehicle extends BaseVehicle {
                     otherBody = bodyB;
                 }
 
-                if(patchJoint && bodyPart !== 'body' && joint.GetType() !== Box2D.b2JointType.e_distanceJoint){
+                if(patchJoint && bodyPart !== 'body' && joint.GetType() !== Box2D.e_distanceJoint){
                     let refJoint;
                     let maxLength = 0;
                     const bodyToPatch = this.lookupObject['body'];

@@ -39,6 +39,7 @@ class Skippyball extends BaseVehicle {
 		this.accelerating = false;
 
 		this.baseHZ = 5.2;
+		this.baseDampingratio = 0.1;
 		this.forceBuildup = 0;
 		this.forceIncrease = 0.02;
 		this.stretchSoundId = null;
@@ -85,7 +86,7 @@ class Skippyball extends BaseVehicle {
 
 			this.forceBuildup = 0;
 			this.pullJoints.forEach(joint => {
-				b2LinearStiffness(joint, this.baseHZ, joint.GetDamping(), joint.GetBodyA(), joint.GetBodyB(), true);
+				b2LinearStiffness(joint, this.baseHZ, this.baseDampingratio, joint.GetBodyA(), joint.GetBodyB(), true);
 			})
 			this.yogaColorFilter.alpha = 0.0;
 
@@ -161,8 +162,7 @@ class Skippyball extends BaseVehicle {
 
 			const HZReducer = 2.2;
 			this.pullJoints.forEach(joint => {
-				b2LinearStiffness(joint, this.baseHZ - HZReducer * this.forceBuildup, joint.GetDamping(), joint.GetBodyA(), joint.GetBodyB(), true);
-
+				b2LinearStiffness(joint, this.baseHZ - HZReducer * this.forceBuildup, this.baseDampingratio, joint.GetBodyA(), joint.GetBodyB(), true);
 			})
 
 			this.pullBodies.forEach(body => {

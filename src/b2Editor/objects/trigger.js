@@ -18,6 +18,8 @@ import { applyColorMatrix } from "../utils/colorMatrixParser";
 import { MidiPlayer } from '../../utils/MidiPlayer';
 import { b2AddVec2, b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from "../../../libs/debugdraw";
 
+const { getPointer, NULL } = Box2D;
+
 export const getActionsForObject = function (object) {
     var actions = [];
     actions.push("Empty");
@@ -1705,7 +1707,7 @@ export class triggerCore {
     update() {
         if(this.data.enabled){
             if (this.data.targetType == triggerTargetType.click) {
-                for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+                for (let fixture = this.trigger.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
                     if (fixture.TestPoint(B2dEditor.mousePosWorld)) {
                         if(Key.isPressed(Key.MOUSE)){
                             if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;

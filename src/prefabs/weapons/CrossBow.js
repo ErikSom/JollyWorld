@@ -98,14 +98,10 @@ class CrossBow extends PrefabManager.basePrefab {
 			if(!lastArrow.sticking)	lastArrow.destroy();
 		}
 
-
 		this.arrowSprite.alpha = 0;
 		this.reloadTimer = 0;
 		this.loaded = false;
 		this.shouldShoot = false;
-
-
-		// FIX ME : MAX OF 10 BULLETS types on the screen
 	}
 	reload() {
 		this.arrowSprite.alpha = 1.0;
