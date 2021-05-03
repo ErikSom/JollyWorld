@@ -48,7 +48,7 @@ import { countries } from "./utils/Localization";
 
 import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 
-const {JSQueryCallback, JSContactListener} = Box2D;
+const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
 const {b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef} = Box2D;
 
@@ -1231,7 +1231,7 @@ function Game() {
                             if(Math.abs(velocity.x-body.GetLinearVelocity().get_x()) > Math.abs(velocityBoostX)/2) velocity.x += velocityBoostX*Settings.prefabBounceLimiter;
                             if(Math.abs(velocity.y-body.GetLinearVelocity().get_y()) > Math.abs(velocityBoostY)/2) velocity.y += velocityBoostY*Settings.prefabBounceLimiter;
 
-                            for (let innerJointEdge = connectedBody.GetJointList(); getPointer(innerJointEdge) !== getPointer(NULL); innerJointEdge = innerJointEdge.GetNext()) {
+                            for (let innerJointEdge = connectedBody.GetJointList(); getPointer(innerJointEdge) !== getPointer(NULL); innerJointEdge = innerJointEdge.get_next()) {
                                 const innerConnectedBody = innerJointEdge.joint.GetBodyA() === connectedBody ? innerJointEdge.joint.GetBodyB() : innerJointEdge.joint.GetBodyA();
                                 if(innerConnectedBody != body){
                                     const innerVelocity = innerConnectedBody.GetLinearVelocity();
@@ -1242,7 +1242,7 @@ function Game() {
                         }
 
                     }
-                    destroy(body.oldBounceManifest);
+                    Box2D.destroy(body.oldBounceManifest);
                     delete body.oldBounceManifest;
                 }
             }
