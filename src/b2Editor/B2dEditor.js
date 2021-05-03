@@ -1924,17 +1924,18 @@ const _B2dEditor = function () {
 		joint.__emscripten_pool = true;
 
 		if(joint.linkedJoints){
-			joint.linkedJoints.forEach(joint => {
-				joint.innerLoopDestroyed = true;
-				this.DestroyJoint(joint);
+			joint.linkedJoints.forEach(_joint => {
+				_joint.innerLoopDestroyed = true;
+				this.preDestroyJoint(_joint);
+				this.world.DestroyJoint(_joint);
 			});
 			delete joint.linkedJoints;
 		}
 		if(joint.connectedJoints){
-			joint.connectedJoints.forEach(joint => {
-				if(joint.linkedJoints){
-					joint.linkedJoints = joint.linkedJoints.filter(_j=>_j != joint);
-					if(joint.linkedJoints.length === 0) delete joint.linkedJoints
+			joint.connectedJoints.forEach(_joint => {
+				if(_joint.linkedJoints){
+					_joint.linkedJoints = _joint.linkedJoints.filter(_j=>_j != _joint);
+					if(_joint.linkedJoints.length === 0) delete _joint.linkedJoints
 				}
 			});
 		}
@@ -1942,6 +1943,7 @@ const _B2dEditor = function () {
 	}
 
 	this.DestroyJoint = function(joint){
+		debugger;
 		if(joint.destroyed) return;
 		this.preDestroyJoint(joint);
 		if(joint.innerLoopDestroyed) return;
@@ -1961,7 +1963,7 @@ const _B2dEditor = function () {
 	this.CreateJoint = function(jointDef){
 		// make sure we are not pooling an object
 		const joint = this.world.CreateJoint(jointDef);
-		this.CleanJoint(joint);
+		this.CleanJoint(this.CastJoint(joint));
 
 		return joint;
 	}
@@ -8989,9 +8991,19 @@ const _B2dEditor = function () {
 
 			for (let j = 0; j < innerVertices.length; j++) {
 				fixDef = new b2FixtureDef;
-				fixDef.set_density(data.density[i]);
-				fixDef.set_friction(data.friction[i]);
-				fixDef.set_restitution(data.restitution[i]);
+
+				let density = data.density[i];
+				if(!density && density !== 0) density = 1.0;
+				fixDef.set_density(density);
+
+				let friction = data.friction[i];
+				if(!friction && friction !== 0) friction = Settings.defaultFriction;
+				fixDef.set_friction(friction);
+
+				let restitution = data.restitution[i];
+				if(!restitution && restitution !== 0) restitution = Settings.defaultRestitution;
+				fixDef.set_restitution(restitution);
+
 				const radius = data.radius[i];
 				let shape;
 				if (!radius) {

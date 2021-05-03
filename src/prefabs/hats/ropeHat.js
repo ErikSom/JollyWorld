@@ -78,7 +78,6 @@ export class RopeHat extends Hat {
 			});
 			this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
 
-			Box2D.destroy(rayEnd);
 
 			this.anchorTexture = new self.PIXI.heaven.Sprite(PIXI.Texture.from("RopePartAndHook0000"));
 			this.anchorTexture.pivot.set(this.anchorTexture.width/2, this.anchorTexture.height / 2);
@@ -93,12 +92,14 @@ export class RopeHat extends Hat {
 				this.ropeAttached = true;
 			} else {
 				this.ropeFired = false;
-				this.targetAnimationPoint = rayEnd;
+				this.targetAnimationPoint = b2CloneVec2(rayEnd);
 				this.ropeAttached = false;
 			}
 			this.currentAnimationPoint = this.getGunStartPosition();
 			this.showAnimation = true;
 			AudioManager.playSFX('rope-out', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
+
+			Box2D.destroy(rayEnd);
 		}
 	}
 	detachRope() {
@@ -208,7 +209,10 @@ export class RopeHat extends Hat {
 		if(this.ropeHeadJoint){
 			game.editor.DestroyJoint(this.ropeHeadJoint);
 		}
+		console.log("SET ENABLED:", enabled);
 		if(this.frameJoint){
+			console.trace();
+			console.log("DESTROYING FRAME JOINT", this.frameJoint);
 			game.editor.DestroyJoint(this.frameJoint);
 		}
 		if(enabled){
@@ -227,6 +231,9 @@ export class RopeHat extends Hat {
 
 					this.frameJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
 					Box2D.destroy(ropeJointDef);
+
+					console.trace();
+					console.log("BUILD FRAME JOINT", this.frameJoint, game.editor, game.world);
 
 				}
 			}else{
@@ -338,7 +345,7 @@ export class RopeHat extends Hat {
 			this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
 			if (callback.m_fraction > maxLength) {
 				maxLength = callback.m_fraction;
-				farthestPoint = rayStart;
+				farthestPoint = b2CloneVec2(rayStart);
 			}
 			Box2D.destroy(rayStart);
 			Box2D.destroy(rayEnd);
@@ -357,8 +364,8 @@ export class RopeHat extends Hat {
 		const gunStartPosition = b2CloneVec2(this.head.GetPosition());
 		const gunAngle = this.hatBody.GetAngle()+90*game.editor.DEG2RAD;
 		const gunlength = 3.5;
-		gunStartPosition.x -= gunlength * Math.cos(gunAngle);
-		gunStartPosition.y -= gunlength * Math.sin(gunAngle);
+		gunStartPosition.set_x(gunStartPosition.get_x() - gunlength * Math.cos(gunAngle));
+		gunStartPosition.set_y(gunStartPosition.get_y() - gunlength * Math.sin(gunAngle));
 		return gunStartPosition;
 	}
 
@@ -496,6 +503,8 @@ export class RopeHat extends Hat {
 
 		const endDiff = b2CloneVec2(point);
 		b2SubVec2(endDiff, previousPoint);
+
+		console.log(endDiff.Length(), ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5);
 
 		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5){
 			if(this.ropeGoingOut && !this.ropeAttached){

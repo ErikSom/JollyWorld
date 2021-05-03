@@ -11,7 +11,7 @@ import {
 } from "../../Game";
 import { PropertyAnimator } from "../../b2Editor/utils/propertyAnimator";
 import { drawCircle } from "../../b2Editor/utils/drawing";
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2LinearStiffness } from '../../../libs/debugdraw';
 
 class Skateboard extends BaseVehicle {
     constructor(target) {
@@ -53,7 +53,7 @@ class Skateboard extends BaseVehicle {
 
         const footRight = this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT];
 
-        const md = new b2MouseJointDef();
+        const md = new Box2D.b2MouseJointDef();
         md.set_bodyA(this.m_groundBody);
         md.set_bodyB(footRight);
 
@@ -61,9 +61,9 @@ class Skateboard extends BaseVehicle {
         md.set_collideConnected(true);
         md.set_maxForce(1000.0 * footRight.GetMass());
 
-        b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, body);
+        b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, footRight);
 
-        this.legAnimator = Box2D.castObject(this.editor.CreateJoint(md), Box2D.b2MouseJoint);
+        this.legAnimator = Box2D.castObject(game.editor.CreateJoint(md), Box2D.b2MouseJoint);
 
         footRight.SetAwake(true);
 
