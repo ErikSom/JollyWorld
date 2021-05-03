@@ -250,6 +250,7 @@ export class RopeHat extends Hat {
 	releaseRope() {
 		if (this.ropeEnd) {
 			game.editor.DestroyBody(this.ropeEnd);
+
 			if(this.pulleyJoint) game.editor.DestroyJoint(this.pulleyJoint);
 			if(this.pulleyFrameJoint) game.editor.DestroyJoint(this.pulleyFrameJoint);
 			this.revoluteJoint = this.pulleyJoint = this.pulleyFrameJoint = null;

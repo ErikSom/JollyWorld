@@ -1837,20 +1837,6 @@ const _B2dEditor = function () {
 					b.connectedSpike.connectedBodies.splice(tarIndex);
 					b.connectedSpike.connectedJoints.splice(tarIndex);
 				}
-
-
-				for (let jointEdge = b.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
-
-					let joint = jointEdge.joint;
-					if(joint.GetType() === Box2D.e_revoluteJoint){
-						joint = Box2D.castObject(joint, Box2D.b2RevoluteJoint);
-					}else if(joint.GetType() === Box2D.e_distanceJoint){
-						joint = Box2D.castObject(joint, Box2D.b2DistanceJoint);
-					}
-
-					this.preDestroyJoint(joint);
-				}
-
 				this.DestroyBody(b);
 			}
 			obj.destroyed = true;
@@ -1859,6 +1845,12 @@ const _B2dEditor = function () {
 	this.DestroyBody = function(body){
 		// mark this body as pooled
 		body.__emscripten_pool = true;
+
+		for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
+			let joint = this.CastJoint(jointEdge.joint);
+			this.preDestroyJoint(joint);
+		}
+
 		this.world.DestroyBody(body);
 	}
 	this.CleanBody = function(body){
@@ -1925,9 +1917,11 @@ const _B2dEditor = function () {
 
 		if(joint.linkedJoints){
 			joint.linkedJoints.forEach(_joint => {
-				_joint.innerLoopDestroyed = true;
-				this.preDestroyJoint(_joint);
-				this.world.DestroyJoint(_joint);
+				if(!_joint.destroyed){
+					_joint.innerLoopDestroyed = true;
+					this.preDestroyJoint(_joint);
+					this.world.DestroyJoint(_joint);
+				}
 			});
 			delete joint.linkedJoints;
 		}
