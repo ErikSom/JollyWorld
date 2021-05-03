@@ -1266,7 +1266,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     delete eyeObject.localVec;
 
-                    if(eyeObject.SetPosition){
+                    if(eyeObject.SetTransform){
                         eyeObject.SetTransform(globalPos, angle+Settings.pihalve);
                     } else{
                         eyeObject.position.x = globalPos.x * Settings.PTM;

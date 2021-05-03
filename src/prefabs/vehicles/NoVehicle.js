@@ -7,7 +7,7 @@ import {
 import { Settings } from '../../Settings';
 import * as MobileController from '../../utils/MobileController'
 import { stopCustomBehaviour } from '../misc/CustomEditorBehavior';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2SubVec2 } from '../../../libs/debugdraw';
 
 const { getPointer, NULL } = Box2D;
 
@@ -62,9 +62,17 @@ export class NoVehicle extends BaseVehicle {
     patchJoints(){
         const calculateJointDistance = (joint1, joint2, joint3) =>{
             let length = 0;
-            length += b2CloneVec2(joint1).SelfSub(joint2).Length();
+
+            const diss = b2CloneVec2(joint1);
+            b2SubVec2(diss, joint2);
+            length += diss.Length();
+            Box2D.destroy(diss);
+
             if(joint3){
-                length += b2CloneVec2(joint3).SelfSub(joint2).Length();
+                const diss2 = b2CloneVec2(joint3);
+                b2SubVec2(diss2, joint2);
+                length += diss2.Length();
+                Box2D.destroy(diss2);
             }
             return length;
         }
@@ -152,22 +160,28 @@ export class NoVehicle extends BaseVehicle {
                         }
 
                         if(anchorOnBody){
-                            const ropeJointDef = new Box2D.b2RopeJointDef;
-
                             let jointAnchor = bodyToPatch.GetPosition();
 
-                            if(bodyToPatch == this.lookupObject['body']) jointAnchor = anchorOnBody;
-
+                            const ropeJointDef = new Box2D.b2DistanceJointDef();
                             ropeJointDef.Initialize(bodyToPatch, otherBody, refJointAnchor, jointAnchor);
+
                             const xd = refJointAnchor.x - jointAnchor.x;
                             const yd = refJointAnchor.y - jointAnchor.y;
 
-                            ropeJointDef.maxLength = Math.sqrt(xd * xd + yd * yd);
-                            if(bodyToPatch == this.lookupObject['body']){
-                                ropeJointDef.maxLength = maxLength ? maxLength : ropeJointDef.maxLength;
+                            const length = Math.sqrt(xd * xd + yd * yd);
+                            ropeJointDef.set_length(length);
+                            if(bodyToPatch == this.lookupObject['body'] && maxLength){
+                                ropeJointDef.set_length(maxLength);
                             }
-                            const newJoint = game.editor.CreateJoint(ropeJointDef);
+
+                            ropeJointDef.set_minLength(length);
+                            ropeJointDef.set_maxLength(length);
+                            ropeJointDef.set_stiffness(0);
+                            ropeJointDef.set_damping(0);
+
+                            const newJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
                             newJoint.connectedJoints = [];
+
 
                             linkedBodies.forEach(linkedBodyKey => {
                                 const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]

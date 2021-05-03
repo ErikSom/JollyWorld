@@ -141,12 +141,12 @@ class Arrow extends PrefabManager.basePrefab {
 				for (let i = 0; i < bodies.length; i++) {
 					body = bodies[i];
 					if(body == self.arrowBody || !body.isFlesh) continue;
-					if(impulse.normalImpulses[0] > self.stickImpulse && !self.bodyToStick){
+					if(impulse.get_normalImpulses(0) > self.stickImpulse && !self.bodyToStick){
 						const worldManifold = new Box2D.b2WorldManifold();
 						contact.GetWorldManifold(worldManifold);
-						self.collisionImpulse = impulse.normalImpulses(0);
+						self.collisionImpulse = impulse.get_normalImpulses(0);
 						self.bodyToStick = body;
-						const offsetLength = self.impactOffsetLength - Math.min(impulse.normalImpulses[0] / 10, self.maxImpactToCollisionOffset);
+						const offsetLength = self.impactOffsetLength - Math.min(impulse.get_normalImpulses(0) / 10, self.maxImpactToCollisionOffset);
 
 						const offset = self.vec;
 						offset.x = offsetLength*Math.cos(self.impactAngle);

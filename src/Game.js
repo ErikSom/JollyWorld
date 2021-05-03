@@ -776,10 +776,12 @@ function Game() {
 
                 if(this.playerPrefabObject.class.character.hat){
                     const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
-                    const position = hatBody.GetPosition();
-                    position.x += positionDiff.x / Settings.PTM;
-                    position.y += positionDiff.y / Settings.PTM;
-                    hatBody.SetPosition(position);
+                    const position = b2CloneVec2(hatBody.GetPosition());
+                    position.set_x(position.get_x() + positionDiff.x / Settings.PTM);
+                    position.set_y(position.get_y() + positionDiff.y / Settings.PTM);
+
+                    hatBody.SetTransform(position, hatBody.GetAngle());
+                    Box2D.destroy(position);
                 }
 
                 this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);

@@ -17,7 +17,7 @@ class Checkpoint extends PrefabManager.basePrefab {
         const plateauSize = 5.3;
 
         const offset = new Box2D.b2Vec2(0, -plateauSize)
-        shape.SetAsBox(plateauSize, plateauSize, offset);
+        shape.SetAsBox(plateauSize, plateauSize, offset, 0);
         fixDef.set_shape(shape);
         fixDef.set_isSensor(true);
 

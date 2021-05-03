@@ -280,6 +280,8 @@ class DroneBomb extends Explosive {
 		Box2D.destroy(this.lookRangeVec);
 		Box2D.destroy(this.startPosition);
 
+		if(this.wayPoint) Box2D.destroy(this.wayPoint);
+
         super.destroy();
 	}
 

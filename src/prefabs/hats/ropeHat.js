@@ -6,7 +6,9 @@ import * as PIXI from 'pixi.js';
 import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';
 import * as TutorialManager from '../../utils/TutorialManager';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2AddVec2, b2CloneVec2, b2LinearStiffness, b2SubVec2 } from '../../../libs/debugdraw';
+
+const { getPointer, NULL } = Box2D;
 
 const ANIMATION_TRAVEL_SPEED = 4000 / Settings.PTM;
 
@@ -17,20 +19,7 @@ export class RopeHat extends Hat {
 		this.hatOffsetLength = 45;
 		this.hatOffsetAngle = Math.PI/2;
 		this.minRopeLength = 7;
-		this.rayCastCallback = function () {
-			this.m_hit = false;
-		};
-		this.rayCastCallback.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-			if(fixture.IsSensor()) return -1;
-			if(fixture.GetBody().mainCharacter) return -1;
 
-
-			this.m_hit = true;
-			this.m_point = b2CloneVec2(point);
-			this.m_normal = normal;
-			this.m_fixture = fixture;
-			return fraction;
-		}
 		this.ropeFired = false;
 		this.showAnimation = false;
 		this.ropeAttached = false;
@@ -67,10 +56,29 @@ export class RopeHat extends Hat {
 			const angle = this.head.GetAngle() - Math.PI / 2;
 			const rayEnd = b2CloneVec2(rayStart);
 			const length = 100;
-			rayEnd.x += length * Math.cos(angle);
-			rayEnd.y += length * Math.sin(angle);
-			let callback = new this.rayCastCallback();
+			rayEnd.set_x(rayEnd.get_x() + length * Math.cos(angle));
+			rayEnd.set_y(rayEnd.get_y() + length * Math.sin(angle));
+			let callback = Object.assign(new Box2D.JSRayCastCallback(), {
+				ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
+
+					const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
+					const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
+					const normal = Box2D.wrapPointer(normal_p, Box2D.b2Vec2);
+
+					if(fixture.IsSensor()) return -1;
+					if(fixture.GetBody().mainCharacter) return -1;
+
+					this.m_hit = true;
+					this.m_point = point;
+					this.m_normal = normal;
+					this.m_fixture = fixture;
+					return fraction;
+				},
+				m_hit: false
+			});
 			this.head.GetWorld().RayCast(callback, rayStart, rayEnd);
+
+			Box2D.destroy(rayEnd);
 
 			this.anchorTexture = new self.PIXI.heaven.Sprite(PIXI.Texture.from("RopePartAndHook0000"));
 			this.anchorTexture.pivot.set(this.anchorTexture.width/2, this.anchorTexture.height / 2);
@@ -118,20 +126,23 @@ export class RopeHat extends Hat {
 		this.blockControls = true;
 
 		const bd = new Box2D.b2BodyDef();
-		bd.type = Box2D.b2_dynamicBody;
-		bd.angularDamping = 0.85;
-		bd.linearDamping = 0.85;
+		bd.set_type(Box2D.b2_dynamicBody);
+		bd.set_angularDamping(0.85);
+		bd.set_linearDamping(0.85);
 
 		const farthestPoint = precise ? point : this.findFarthestPointFromBody(0.3, point, body);
 		if (farthestPoint === null) return;
 
-		const diff = b2CloneVec2(this.head.GetPosition()).SelfSub(farthestPoint);
+		const diff = b2CloneVec2(this.head.GetPosition());
+		b2SubVec2(diff, farthestPoint);
 		const angle = Math.atan2(diff.y, diff.x) - 90 * game.editor.DEG2RAD;
 
-		bd.position = farthestPoint;
-		bd.angle =angle;
+		bd.get_position().Set(farthestPoint.x, farthestPoint.y);
+		bd.set_angle(angle);
 
 		this.ropeEnd = game.editor.CreateBody(bd);
+		Box2D.destroy(bd);
+
 		this.ropeEnd.ignorePhysicsCuller = true;
 
 		body.ignorePhysicsCuller = true;
@@ -142,6 +153,8 @@ export class RopeHat extends Hat {
 		this.ropeEnd.SetBullet(true);
 
 		this.ropeEnd.contactListener = new Box2D.JSContactListener();
+		this.ropeEnd.contactListener.BeginContact = ()=>{};
+		this.ropeEnd.contactListener.EndContact = ()=>{};
 		this.ropeEnd.contactListener.PreSolve = contact => {
 			contact.SetEnabled(false);
 			if (this.bendBody || !this.revoluteJoint || Math.abs(this.revoluteJoint.GetJointSpeed())<0.01) return;
@@ -150,10 +163,10 @@ export class RopeHat extends Hat {
 			const targetBody = bodyA === this.ropeEnd ? bodyB : bodyA;
 			const targetFixture = bodyA === this.ropeEnd ? contact.GetFixtureB() : contact.GetFixtureA();
 			if (targetBody.GetType() !== Box2D.b2_staticBody) return;
-			if (!(targetFixture.GetFilterData().maskBits & game.editor.MASKBIT_CHARACTER)) return;
+			if (!(targetFixture.GetFilterData().get_maskBits() & game.editor.MASKBIT_CHARACTER)) return;
 			const worldManifold = new Box2D.b2WorldManifold();
 			contact.GetWorldManifold(worldManifold);
-			const worldCollisionPoint = worldManifold.points[0];
+			const worldCollisionPoint = worldManifold.get_points(0);
 			this.bendPoint = worldCollisionPoint;
 			this.bendBody = targetBody;
 			this.bendSpeed = this.revoluteJoint.GetJointSpeed();
@@ -162,29 +175,31 @@ export class RopeHat extends Hat {
 		//build fixtures
 		this.updateRopeFixture();
 
-		const revoluteJointDef = new Box2D.b2RevoluteJointDef;
+		const revoluteJointDef = new Box2D.b2RevoluteJointDef();
 		revoluteJointDef.Initialize(body, this.ropeEnd, farthestPoint);
-		revoluteJointDef.collideConnected = true;
+		revoluteJointDef.set_collideConnected(true);
 
-		this.revoluteJoint = game.editor.CreateJoint(revoluteJointDef);
+		this.revoluteJoint = Box2D.castObject(game.editor.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+		Box2D.destroy(revoluteJointDef);
 
 		this.setDistanceJointEnabled(true);
 
 		let prismaticJointDef = new Box2D.b2PrismaticJointDef();
 		const axis = new Box2D.b2Vec2(Math.cos(this.head.GetAngle() + 90 * game.editor.DEG2RAD), Math.sin(this.head.GetAngle() + 90 * game.editor.DEG2RAD));
 		prismaticJointDef.Initialize(this.head, this.ropeEnd, farthestPoint, axis);
-		prismaticJointDef.maxMotorForce = 20000;
-		prismaticJointDef.enableMotor = false;
-		this.pulleyJoint = game.editor.CreateJoint(prismaticJointDef);
+		prismaticJointDef.set_maxMotorForce(20000);
+		prismaticJointDef.set_enableMotor(false);
+		this.pulleyJoint = Box2D.castObject(game.editor.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
+		Box2D.destroy(prismaticJointDef);
 
 		if(this.character.attachedToVehicle){
 			const frame = this.character.mainPrefabClass.lookupObject['frame'];
 			if(frame){
 				prismaticJointDef = new Box2D.b2PrismaticJointDef();
 				prismaticJointDef.Initialize(frame, this.ropeEnd, farthestPoint, axis);
-				prismaticJointDef.maxMotorForce = 20000;
-				prismaticJointDef.enableMotor = false;
-				this.pulleyFrameJoint = game.editor.CreateJoint(prismaticJointDef);
+				prismaticJointDef.set_maxMotorForce(20000);
+				prismaticJointDef.set_enableMotor(false);
+				this.pulleyFrameJoint = Box2D.castObject(game.editor.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
 			}
 		}
 	}
@@ -200,16 +215,27 @@ export class RopeHat extends Hat {
 			if(this.character.attachedToVehicle){
 				const frame = this.character.mainPrefabClass.lookupObject['frame'];
 				if(frame){
-					let ropeJointDef = new Box2D.b2RopeJointDef();
+					let ropeJointDef = new Box2D.b2DistanceJointDef();
 					ropeJointDef.Initialize(frame, this.ropeEnd, frame.GetPosition(), this.ropeEnd.GetPosition());
-					this.frameJoint = game.editor.CreateJoint(ropeJointDef);
+
+					const length = ropeJointDef.get_length();
+					ropeJointDef.set_minLength(length);
+					ropeJointDef.set_maxLength(length);
+
+					ropeJointDef.set_stiffness(0);
+					ropeJointDef.set_damping(0);
+
+					this.frameJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+					Box2D.destroy(ropeJointDef);
+
 				}
 			}else{
 				let distanceJointDef = new Box2D.b2DistanceJointDef();
 				distanceJointDef.Initialize(this.head, this.ropeEnd, this.head.GetPosition(), this.ropeEnd.GetPosition());
-				distanceJointDef.frequencyHz = 60;
-				distanceJointDef.dampingRatio = 1.0;
-				 this.ropeHeadJoint = game.editor.CreateJoint(distanceJointDef);
+				b2LinearStiffness(distanceJointDef, 60, 10, this.head, this.ropeEnd);
+
+				this.ropeHeadJoint = Box2D.castObject(game.editor.CreateJoint(distanceJointDef), Box2D.b2DistanceJoint);
+				Box2D.destroy(distanceJointDef);
 			}
 		}
 	}
@@ -225,8 +251,11 @@ export class RopeHat extends Hat {
 		}
 	}
 	bendRope(point, body) {
-		const diff = b2CloneVec2(this.head.GetPosition()).SelfSub(point);
+		const diff = b2CloneVec2(this.head.GetPosition());
+		b2SubVec2(diff, point);
+
 		let angle = Math.atan2(diff.y, diff.x);
+		Box2D.destroy(diff);
 		if(this.bendSpeed > 0){
 			angle -=  45 * game.editor.DEG2RAD;
 		}else{
@@ -239,9 +268,13 @@ export class RopeHat extends Hat {
 		const offsetPoint = b2CloneVec2(point);
 		const offsetLength = 0.5;
 		const offset = new Box2D.b2Vec2(offsetLength*Math.cos(angle), offsetLength*Math.sin(angle));
-		offsetPoint.SelfAdd(offset);
+		b2AddVec2(offsetPoint, offset);
 
-		const bendLength = b2CloneVec2(this.ropeEnd.GetPosition()).SelfSub(offsetPoint).Length();
+		const bendPos = b2CloneVec2(this.ropeEnd.GetPosition());
+		b2SubVec2(bendPos, offsetPoint).Length();
+		const bendLength = bendPos.Length();
+		Box2D.destroy(bendPos);
+
 		this.bendRopeLength += bendLength;
 
 		this.ropePoints.push({
@@ -255,6 +288,9 @@ export class RopeHat extends Hat {
 
 		this.attachRope(offsetPoint, body, true);
 
+		Box2D.destroy(offsetPoint);
+		Box2D.destroy(offset);
+
 	}
 	unBendRope() {
 		const bendData = this.ropePoints.pop();
@@ -267,24 +303,29 @@ export class RopeHat extends Hat {
 		const steps = 16;
 		const rotChunk = (Math.PI * 2) / steps;
 
-		const rayCB = function () {
-			this.m_hit = false;
-		};
-		rayCB.prototype.ReportFixture = function (fixture, point, normal, fraction) {
-			if (fixture.GetBody() !== body) return -1;
-			this.m_hit = true;
-			this.m_point = b2CloneVec2(point);
-			this.m_normal = normal;
-			this.m_fixture = fixture;
-			this.m_fraction = fraction;
-			return fraction;
-		}
+		const callback = Object.assign(new Box2D.JSRayCastCallback(), {
+			ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
 
-		const callback = new rayCB();
+				const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
+				const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
+				const normal = Box2D.wrapPointer(normal_p, Box2D.b2Vec2);
+
+				if (fixture.GetBody() !== body) return -1;
+				this.m_hit = true;
+				this.m_point = point;
+				this.m_normal = normal;
+				this.m_fixture = fixture;
+				this.m_fraction = fraction;
+			},
+			m_hit: false
+		});
+
 		let maxLength = 0;
 		let farthestPoint = null;
 
-		const dir = b2CloneVec2(this.head.GetPosition()).SelfSub(point).SelfNormalize();
+		const dir = b2CloneVec2(this.head.GetPosition());
+		b2SubVec2(dir, point);
+		dir.Normalize();
 
 		for (let i = 0; i < steps; i++) {
 			const rot = rotChunk * i;
@@ -299,7 +340,10 @@ export class RopeHat extends Hat {
 				maxLength = callback.m_fraction;
 				farthestPoint = rayStart;
 			}
+			Box2D.destroy(rayStart);
+			Box2D.destroy(rayEnd);
 		}
+		Box2D.destroy(dir);
 		return farthestPoint;
 	}
 	clearTilingRope(){
@@ -325,14 +369,15 @@ export class RopeHat extends Hat {
 
 		const tilingPoints = [];
 		this.ropePoints.forEach(rope=>tilingPoints.push(rope.point));
-		tilingPoints.push(this.ropeEnd.GetPosition());
+		tilingPoints.push(b2CloneVec2(this.ropeEnd.GetPosition()));
 
 		tilingPoints.push(this.getGunStartPosition());
 
 		for(let i = 1; i<tilingPoints.length; i++){
 			const point = tilingPoints[i];
 			const previousPoint = tilingPoints[i-1];
-			const diff = b2CloneVec2(point).SelfSub(previousPoint);
+			const diff = b2CloneVec2(point);
+			b2SubVec2(diff, previousPoint);
 
 			const tilingSprite = new PIXI.TilingSprite(
 				PIXI.Texture.from("rope.png"),
@@ -344,7 +389,7 @@ export class RopeHat extends Hat {
 
 			const angle = Math.atan2(diff.y, diff.x);
 			tilingSprite.rotation = angle + 90 * game.editor.DEG2RAD;
-
+			Box2D.destroy(diff);
 
 			if(i === 1){
 				this.anchorTexture.x = previousPoint.x*game.editor.PTM;
@@ -357,37 +402,45 @@ export class RopeHat extends Hat {
 
 		}
 
-
-		let fixture = this.ropeEnd.GetFixtureList();
-		while (fixture) {
+		for (let fixture = this.ropeEnd.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 			this.ropeEnd.DestroyFixture(fixture);
-			fixture = this.ropeEnd.GetFixtureList();
 		}
 
-		const ropeLength = b2CloneVec2(this.head.GetPosition()).SelfSub(this.ropeEnd.GetPosition()).Length();
+		const ropeDiss = b2CloneVec2(this.head.GetPosition());
+		b2SubVec2(ropeDiss, this.ropeEnd.GetPosition());
+		const ropeLength = ropeDiss.Length();
+		Box2D.destroy(ropeDiss);
 
 		// rope collider
-		let fixDef = new Box2D.b2FixtureDef;
-		fixDef.density = 100;
-		fixDef.shape = new Box2D.b2CircleShape;
-		fixDef.shape.SetRadius(0.1);
-		fixDef.isSensor = true;
-		this.ropeEnd.CreateFixture(fixDef);
+		let fixDef = new Box2D.b2FixtureDef();
+		fixDef.set_density(100);
+		let shape = new Box2D.b2CircleShape();
+		shape.set_m_radius(0.1);
 
-		fixDef = new Box2D.b2FixtureDef;
-		fixDef.density = 0.1;
+		fixDef.set_shape(shape);
+
+		fixDef.set_isSensor(true);
+		this.ropeEnd.CreateFixture(fixDef);
+		Box2D.destroy(shape);
+		Box2D.destroy(fixDef);
+
+		fixDef = new Box2D.b2FixtureDef();
+		fixDef.set_density(0.1);
 
 		const thickness = 0.05;
 
 		const b2Vec2Arr = [];
-		b2Vec2Arr.push(new Box2D.b2Vec2(-thickness, 0));
-		b2Vec2Arr.push(new Box2D.b2Vec2(thickness, 0));
-		b2Vec2Arr.push(new Box2D.b2Vec2(0, ropeLength));
+		b2Vec2Arr.push({x:-thickness, y:0});
+		b2Vec2Arr.push({x:thickness, y:0});
+		b2Vec2Arr.push({x:0, y:ropeLength});
 
-		fixDef.shape = new Box2D.b2PolygonShape;
-		fixDef.shape.SetAsArray(b2Vec2Arr, b2Vec2Arr.length);
-
+		shape = new Box2D.b2PolygonShape();
+		shape.Set(Box2D.pointsToVec2Array(b2Vec2Arr)[0], b2Vec2Arr.length);
+		fixDef.set_shape(shape);
 		this.ropeEnd.CreateFixture(fixDef);
+
+		Box2D.destroy(shape);
+		Box2D.destroy(fixDef);
 	}
 
 	clearRope(){
@@ -404,13 +457,14 @@ export class RopeHat extends Hat {
 
 		const point = this.currentAnimationPoint;
 		const previousPoint = this.ropeGoingOut ? this.targetAnimationPoint : this.getGunStartPosition();
-		const diff = b2CloneVec2(point).SelfSub(previousPoint);
-		const dir = b2CloneVec2(diff).SelfNormalize();
+		const diff = b2CloneVec2(point);
+		b2SubVec2(diff, previousPoint);
+		const dir = b2CloneVec2(diff);
+		dir.Normalize();
 		const angle = Math.atan2(diff.y, diff.x);
 
-
-		this.currentAnimationPoint.x -= dir.x * ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds;
-		this.currentAnimationPoint.y -= dir.y * ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds;
+		this.currentAnimationPoint.set_x(this.currentAnimationPoint.get_x() - dir.x * ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds);
+		this.currentAnimationPoint.set_y(this.currentAnimationPoint.get_y() - dir.y * ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds);
 
 		this.anchorTexture.x = point.x*game.editor.PTM;
 		this.anchorTexture.y = point.y*game.editor.PTM;
@@ -418,7 +472,9 @@ export class RopeHat extends Hat {
 			this.anchorTexture.rotation = angle;
 		}
 
-		const ropeDiff = b2CloneVec2(this.currentAnimationPoint).SelfSub(this.getGunStartPosition())
+		const ropeDiff = b2CloneVec2(this.currentAnimationPoint);
+		b2SubVec2(ropeDiff, this.getGunStartPosition())
+
 		const ropeAngle = Math.atan2(ropeDiff.y, ropeDiff.x);
 
 		const tilingSprite = new PIXI.TilingSprite(
@@ -426,6 +482,9 @@ export class RopeHat extends Hat {
 			4,
 			ropeDiff.Length()*game.editor.PTM,
 		);
+
+		Box2D.destroy(ropeDiff);
+
 		tilingSprite.x = point.x*game.editor.PTM;
 		tilingSprite.y = point.y*game.editor.PTM;
 
@@ -435,7 +494,9 @@ export class RopeHat extends Hat {
 		this.tilingSprites.push(tilingSprite);
 
 
-		const endDiff = b2CloneVec2(point).SelfSub(previousPoint);
+		const endDiff = b2CloneVec2(point);
+		b2SubVec2(endDiff, previousPoint);
+
 		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5){
 			if(this.ropeGoingOut && !this.ropeAttached){
 				// ?
@@ -454,6 +515,10 @@ export class RopeHat extends Hat {
 			}
 			this.ropeGoingOut = false;
 		}
+
+		Box2D.destroy(diff);
+		Box2D.destroy(dir);
+		Box2D.destroy(endDiff);
 	}
 
 	lean(dir) {
@@ -467,12 +532,18 @@ export class RopeHat extends Hat {
 		const xForce = force * Math.cos(angle);
 		const yForce = force * Math.sin(angle);
 
-		this.body.ApplyForce(new Box2D.b2Vec2(xForce, yForce), this.body.GetPosition(), true);
+		const forceVec = new Box2D.b2Vec2(xForce, yForce);
+
+		this.body.ApplyForce(forceVec, this.body.GetPosition(), true);
+		Box2D.destroy(forceVec);
 	}
 	accelerate(dir) {
 		if (!this.pulleyJoint) return;
 
-		const ropeLength = b2CloneVec2(this.ropeEnd.GetPosition()).SelfSub(this.hatBody.GetPosition()).Length();
+		const ropeDiss = b2CloneVec2(this.ropeEnd.GetPosition());
+		b2SubVec2(ropeDiss, this.hatBody.GetPosition());
+		const ropeLength = ropeDiss.Length();
+		Box2D.destroy(ropeDiss);
 		// stop pulling when we are below min length
 		if(dir<0 && ropeLength<this.minRopeLength){
 			dir = 0;

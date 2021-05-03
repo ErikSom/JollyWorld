@@ -1,3 +1,4 @@
+import { b2LinearStiffness } from "../../../libs/debugdraw";
 import {
 	game
 } from "../../Game";
@@ -16,30 +17,39 @@ export default class Hat {
 	}
 	attach(){
 		const bd = new Box2D.b2BodyDef();
-		bd.type = Box2D.b2_dynamicBody;
-		bd.angularDamping = 0.85;
-		bd.linearDamping = 0.85;
-		bd.position = this.head.GetPosition();
-		bd.angle = this.head.GetAngle();
+		bd.set_type(Box2D.b2_dynamicBody);
+		bd.set_angularDamping(0.85);
+		bd.set_linearDamping(0.85);
+		bd.get_position().Set(this.head.GetPosition().x, this.head.GetPosition().y);
+		bd.set_angle(this.head.GetAngle());
 		this.hatBody = game.editor.CreateBody(bd);
+		Box2D.destroy(bd);
+	
 		this.hatBody.isHat = true;
 		this.hatBody.key = this.head.mySprite.data.prefabInstanceName
 
-		const fixDef = new Box2D.b2FixtureDef;
+		const fixDef = new Box2D.b2FixtureDef();
 		fixDef.density = 0.01;
-		fixDef.shape = new Box2D.b2CircleShape;
-		fixDef.shape.SetRadius(1.2);
+
+		const shape = new Box2D.b2CircleShape();
+		shape.set_m_radius(1.2);
+		fixDef.set_shape(shape);
 		this.hatBody.CreateFixture(fixDef);
+		Box2D.destroy(shape);
+		Box2D.destroy(fixDef);
+
 		game.editor.setBodyCollision(this.hatBody, 7);
 		this.hatBody.GetFixtureList().SetSensor(true);
 
 		const hatWeldJointDef = new Box2D.b2WeldJointDef();
 		hatWeldJointDef.Initialize(this.hatBody, this.head, this.hatBody.GetPosition());
-		hatWeldJointDef.frequencyHz = 60;
-		hatWeldJointDef.dampingRatio = 1.0;
-		hatWeldJointDef.collideConnected = false;
 
-		this.hatWeldJoint = game.editor.CreateJoint(hatWeldJointDef);
+		b2LinearStiffness(hatWeldJointDef, 60, 1.0, this.hatBody, this.head);
+
+
+		hatWeldJointDef.set_collideConnected(false);
+
+		this.hatWeldJoint = Box2D.castObject(game.editor.CreateJoint(hatWeldJointDef), Box2D.b2WeldJoint);
 
 		const textureObject = new game.editor.textureObject();
 		textureObject.x = this.hatBody.GetPosition().x*game.editor.PTM;

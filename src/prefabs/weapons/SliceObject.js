@@ -42,9 +42,9 @@ export class SliceObject extends PrefabManager.basePrefab {
 
             if(sliceBody != self.sliceBody || !otherBody.isFlesh) return;
 
-            const count = contact.GetManifold().pointCount;
+            const count = contact.GetManifold().get_pointCount();
             let force = 0;
-            for (let j = 0; j < count; j++) force = Math.max(force, impulse.normalImpulses[j]);
+            for (let j = 0; j < count; j++) force = Math.max(force, impulse.get_normalImpulses(j));
             if(force > self.sliceForce){
                 if(!self.objectsToSlice.includes(otherBody)){
                     self.objectsToSlice.push(otherBody);

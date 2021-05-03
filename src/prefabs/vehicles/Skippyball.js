@@ -2,7 +2,7 @@ import * as PrefabManager from '../PrefabManager';
 import { BaseVehicle } from './BaseVehicle';
 import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';
-import { b2CloneVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
 
 class Skippyball extends BaseVehicle {
     constructor(target) {
@@ -85,8 +85,7 @@ class Skippyball extends BaseVehicle {
 
 			this.forceBuildup = 0;
 			this.pullJoints.forEach(joint => {
-				joint.SetFrequency(this.baseHZ);
-				joint.SetFrequency(this.baseHZ);
+				b2LinearStiffness(joint, this.baseHZ, joint.GetDamping(), joint.GetBodyA(), joint.GetBodyB(), true);
 			})
 			this.yogaColorFilter.alpha = 0.0;
 
@@ -110,19 +109,26 @@ class Skippyball extends BaseVehicle {
 				contactDecrease = 0.5;
 			} else if(contactBody.GetType() === Box2D.b2_dynamicBody){
 				contactDecrease = 0.5;
-				const baseForce = b2CloneVec2(direction).SelfMul(impulse * -50 * forceSpread * contactDecrease) ;
+				const baseForce = b2CloneVec2(direction);
+				b2MulVec2(baseForce, (impulse * -50 * forceSpread * contactDecrease));
 				contactBody.ApplyForce(baseForce, this.pullBodies[index-1].GetPosition(), true);
+				Box2D.destroy(baseForce);
 			}
 
-			const baseForce = b2CloneVec2(direction).SelfMul(impulse * forceSpread * contactDecrease) ;
+			const baseForce = b2CloneVec2(direction);
+			b2MulVec2(baseForce, (impulse * forceSpread * contactDecrease)) ;
 
 			this.lookupObject._bodies.forEach(body=>{
-				body.ApplyForceToCenter(baseForce);
+				body.ApplyForceToCenter(baseForce, true);
 			})
+
+			Box2D.destroy(baseForce);
 
 		});
 		const pitchOffset = 0.2;
 		AudioManager.playSFX ('bouncejump', 0.3 * this.forceBuildup, 1.0 + (Math.random()*pitchOffset - pitchOffset/2), this.base.GetPosition());
+
+		Box2D.destroy(direction);
 	}
 
 	buildMesh(){
@@ -155,13 +161,17 @@ class Skippyball extends BaseVehicle {
 
 			const HZReducer = 2.2;
 			this.pullJoints.forEach(joint => {
-				joint.SetFrequency(this.baseHZ - HZReducer * this.forceBuildup);
-				joint.SetFrequency(this.baseHZ - HZReducer * this.forceBuildup);
+				b2LinearStiffness(joint, this.baseHZ - HZReducer * this.forceBuildup, joint.GetDamping(), joint.GetBodyA(), joint.GetBodyB(), true);
+
 			})
 
 			this.pullBodies.forEach(body => {
-				const direction = b2CloneVec2(body.GetPosition()).SelfSub(this.base.GetPosition()).SelfNormalize();
-				body.ApplyForceToCenter(direction.SelfMul(-30 * this.forceBuildup));
+				const direction = b2CloneVec2(body.GetPosition());
+				b2SubVec2(direction, this.base.GetPosition());
+				direction.Normalize();
+				b2MulVec2(direction, -30 * this.forceBuildup);
+				body.ApplyForceToCenter(direction, true);
+				Box2D.destroy(direction);
 			})
 
 			this.yogaColorFilter.alpha = 0.4 * this.forceBuildup;
@@ -182,9 +192,14 @@ class Skippyball extends BaseVehicle {
 		this.handleFront.position.x = -20;
 		this.handleBack.position.x = -6.5;
 		this.baseYOffset = 34;
-		this.handleFront.position.y = -b2CloneVec2(this.handlePoint.GetPosition()).SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
-		this.handleBack.position.y = -b2CloneVec2(this.handlePoint.GetPosition()).SelfSub(this.base.GetPosition()).Length() * Settings.PTM - this.baseYOffset;
 
+		const pos = b2CloneVec2(this.handlePoint.GetPosition());
+		b2SubVec2(pos, this.base.GetPosition());
+		const y = -pos.Length() * Settings.PTM - this.baseYOffset;
+
+		this.handleFront.position.y = y;
+		this.handleBack.position.y = y;
+		Box2D.destroy(pos);
 	}
 
 	getMeshData(){
@@ -194,7 +209,12 @@ class Skippyball extends BaseVehicle {
 			const targetBodyIndex = (i + 3) % this.steps + 1;
 			const p = this.lookupObject[`b${targetBodyIndex}`];
 			p.mySprite.visible = false;
-			radiusAr.push(b2CloneVec2(this.base.GetPosition()).SelfSub(p.GetPosition()).Length()*Settings.PTM);
+
+			const pos = b2CloneVec2(this.base.GetPosition());
+			b2SubVec2(pos, p.GetPosition());
+
+			radiusAr.push(pos.Length()*Settings.PTM);
+			Box2D.destroy(pos);
 		}
 
 		const rInc = 16;
@@ -264,8 +284,8 @@ class Skippyball extends BaseVehicle {
 			if(!bodyA.skipPush && !bodyB.skipPush) return;
 
 			let force = 0;
-			for (let i = 0; i < impulse.normalImpulses.length; i++)
-			if (impulse.normalImpulses[i] > force) force = impulse.normalImpulses[i];
+			for (let i = 0; i < impulse.get_count(); i++)
+			if (impulse.get_normalImpulses(i) > force) force = impulse.get_normalImpulses(i);
 
 			if(force>=8 && performance.now() - self.bounceSoundTime > 100){
 				const pitchOffset = 0.2;

@@ -34,14 +34,14 @@ export const b2SubVec2 = (vec, vec2) => {
   return vec;
 }
 
-export const b2Clamp = (a, lo, hi) => (a < lo) ? (lo) : ((a > hi) ? (hi) : (a));
+export const b2Clamp =(a, lo, hi) => (a < lo) ? (lo) : ((a > hi) ? (hi) : (a));
 
 export const b2DotVV = (a, b) => {
   return a.get_x() * b.get_x() + a.get_y() * b.get_y();
 }
 
 
-export function b2LinearStiffness(def, frequencyHertz, dampingRatio, bodyA, bodyB) {
+export function b2LinearStiffness(def, frequencyHertz, dampingRatio, bodyA, bodyB, isJoint=false) {
   const massA = bodyA.GetMass();
   const massB = bodyB.GetMass();
   let mass;
@@ -55,8 +55,14 @@ export function b2LinearStiffness(def, frequencyHertz, dampingRatio, bodyA, body
       mass = massB;
   }
   const omega = 2.0 * Math.PI * frequencyHertz;
-  def.set_stiffness(mass * omega * omega);
-  def.set_damping(2.0 * mass * dampingRatio * omega);
+
+  if(isJoint){
+    def.SetStiffness(mass * omega * omega);
+    def.SetDamping(2.0 * mass * dampingRatio * omega);
+  }else{
+    def.set_stiffness(mass * omega * omega);
+    def.set_damping(2.0 * mass * dampingRatio * omega);
+  }
 }
 
 

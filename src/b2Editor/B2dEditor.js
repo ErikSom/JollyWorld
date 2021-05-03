@@ -1891,6 +1891,11 @@ const _B2dEditor = function () {
 			delete body.myRTCache;
 			delete body.myDecalEntry;
 			delete body.myDecalRT;
+			delete body.isHat;
+			delete body.key;
+			delete body.bounceIndex;
+			delete body.yogaBody;
+			delete body.skipPush;
 		}
 	}
 
@@ -2510,7 +2515,7 @@ const _B2dEditor = function () {
 		for (let body = this.world.GetBodyList(); getPointer(body) !== getPointer(NULL); body = body.GetNext()) {
 			if(body.lockPositionForOneFrame){
 				// fixes PostSolve displacements (e.g. Arrow)
-				body.SetPosition(body.lockPositionForOneFrame);
+				body.SetTransform(body.lockPositionForOneFrame, body.GetAngle());
 				delete body.lockPositionForOneFrame;
 			}
 			this.updateBodyPosition(body);
@@ -6997,8 +7002,9 @@ const _B2dEditor = function () {
 				var xOffset = (left - right) / this.PTM;
 				var yOffset = (down - up) / this.PTM;
 
-				body.SetPosition(new b2Vec2(graphicContainer.x / this.PTM + xOffset, graphicContainer.y / this.PTM + yOffset));
-				body.SetAngle(graphicContainer.rotation);
+				const pos = new b2Vec2(graphicContainer.x / this.PTM + xOffset, graphicContainer.y / this.PTM + yOffset);
+				body.SetTransform(pos, graphicContainer.rotation)
+				Box2D.destroy(pos);
 
 			}
 		}
@@ -8597,8 +8603,9 @@ const _B2dEditor = function () {
 			let bd = new b2BodyDef();
 			bd.type = Box2D.b2_staticBody;
 			bodyB = this.CreateBody(bd);
-			bodyB.SetPosition(new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM));
-
+			const pos = new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM);
+			bodyB.SetTransform(pos, bodyB.GetAngle());
+			Box2D.destroy(pos);
 
 			const shape = new b2PolygonShape();
 			shape.SetAsBox(1, 1);

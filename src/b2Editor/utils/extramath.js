@@ -22,7 +22,7 @@ export const rotateVectorAroundPoint = function (vector, point, degrees, log) {
     const length = vec.Length();
     vec.Set(length, 0);
     const rotatedVector = rotateVector(vec, degrees);
-    b2AddVec2(rotateVector, point);
+    b2AddVec2(rotatedVector, point);
 
     Box2D.destroy(vec);
 

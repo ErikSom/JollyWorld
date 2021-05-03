@@ -48,20 +48,23 @@ class Skateboard extends BaseVehicle {
         this.desiredVehicleSpeeds = [20, 20];
         const bodyDef = new Box2D.b2BodyDef();
         this.m_groundBody = game.editor.CreateBody(bodyDef);
+        Box2D.destroy(bodyDef);
         this.m_groundBody.mySprite = {data:{prefabInstanceName:this.lookupObject.body.mySprite.data.prefabInstanceName}} // hack to not get deleted on mirroring
 
-        const md = new Box2D.b2MouseJointDef();
-        md.bodyA = this.m_groundBody;
-
-
         const footRight = this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT];
-        md.bodyB = footRight;
 
-        md.target = footRight.GetPosition();
+        const md = new b2MouseJointDef();
+        md.set_bodyA(this.m_groundBody);
+        md.set_bodyB(footRight);
 
-        md.collideConnected = true;
-        md.maxForce = 1000.0 * footRight.GetMass();
-        this.legAnimator = game.editor.CreateJoint(md);
+        md.set_target(footRight.GetPosition());
+        md.set_collideConnected(true);
+        md.set_maxForce(1000.0 * footRight.GetMass());
+
+        b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, body);
+
+        this.legAnimator = Box2D.castObject(this.editor.CreateJoint(md), Box2D.b2MouseJoint);
+
         footRight.SetAwake(true);
 
         this.character.setHat(SkateHelmet);
@@ -80,7 +83,7 @@ class Skateboard extends BaseVehicle {
                 this.legAnimation.update(game.editor.deltaTime*this.accel);
                 const frame = this.legAnimation.getFrame();
 
-                globalFrame = this.lookupObject.body.GetWorldPoint(frame, new Box2D.b2Vec2())
+                globalFrame = b2CloneVec2(this.lookupObject.body.GetWorldPoint(frame));
                 // DEBUG DRAW EXAMPLE
                 // game.editor.debugGraphics.clear();
                 // const pixiPoint = game.editor.getPIXIPointFromWorldPoint(globalFrame);
@@ -100,11 +103,12 @@ class Skateboard extends BaseVehicle {
                 const offset = 1.0;
                 const offsetAngle = -0.1;
                 const angle = this.lookupObject.frame.GetAngle()+offsetAngle;
-                globalFrame.x += offset*Math.cos(angle);
-                globalFrame.y += offset*Math.sin(angle);
+                globalFrame.set_x(globalFrame.get_x() + offset*Math.cos(angle));
+                globalFrame.set_y(globalFrame.get_y() + offset*Math.sin(angle));
             }
 
             this.legAnimator.SetTarget(globalFrame);
+            Box2D.destroy(globalFrame);
         }else if(this.legAnimator){
             game.editor.DestroyJoint(this.legAnimator);
             this.legAnimator = null;
