@@ -209,10 +209,7 @@ export class RopeHat extends Hat {
 		if(this.ropeHeadJoint){
 			game.editor.DestroyJoint(this.ropeHeadJoint);
 		}
-		console.log("SET ENABLED:", enabled);
 		if(this.frameJoint){
-			console.trace();
-			console.log("DESTROYING FRAME JOINT", this.frameJoint);
 			game.editor.DestroyJoint(this.frameJoint);
 		}
 		if(enabled){
@@ -231,9 +228,6 @@ export class RopeHat extends Hat {
 
 					this.frameJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
 					Box2D.destroy(ropeJointDef);
-
-					console.trace();
-					console.log("BUILD FRAME JOINT", this.frameJoint, game.editor, game.world);
 
 				}
 			}else{

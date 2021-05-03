@@ -1937,7 +1937,6 @@ const _B2dEditor = function () {
 	}
 
 	this.DestroyJoint = function(joint){
-		debugger;
 		if(joint.destroyed) return;
 		this.preDestroyJoint(joint);
 		if(joint.innerLoopDestroyed) return;
@@ -7823,7 +7822,7 @@ const _B2dEditor = function () {
 
 				const destroyJoints = [];
 				for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
-					const joint = jointEdge.joint;
+					const joint = this.CastJoint(jointEdge.joint);
 					let keyA = joint.GetBodyA().mySprite ? joint.GetBodyA().mySprite.data.prefabInstanceName : joint.GetBodyA().key;
 					let keyB = joint.GetBodyB().mySprite ? joint.GetBodyB().mySprite.data.prefabInstanceName : joint.GetBodyB().key;
 
@@ -7842,15 +7841,13 @@ const _B2dEditor = function () {
 						destroyJoints.push(joint);
 					}else if(!flippedJoints.includes(joint)){
 
-						if(joint.get_m_localAnchorA !== undefined) joint.get_m_localAnchorA().set_x(joint.get_m_localAnchorA().get_x() * -1);
-						if(joint.get_m_localAnchorB !== undefined) joint.get_m_localAnchorB().set_x(joint.get_m_localAnchorB().get_x() * -1);
-						if(joint.get_m_localCenterA !== undefined) joint.get_m_localCenterA().set_x(joint.get_m_localCenterA().get_x() * -1);
-						if(joint.get_m_localCenterB !== undefined) joint.get_m_localCenterB().set_x(joint.get_m_localCenterB().get_x() * -1);
+						if(joint.GetLocalAnchorA !== undefined) joint.GetLocalAnchorA().Set(joint.GetLocalAnchorA().x * -1, joint.GetLocalAnchorA().y);
+						if(joint.GetLocalAnchorB !== undefined) joint.GetLocalAnchorB().Set(joint.GetLocalAnchorB().x * -1, joint.GetLocalAnchorB().y);
 
-						if(joint.get_m_lowerAngle !== undefined && joint.get_m_upperAngle !== undefined) {
-							const oldLower = joint.get_m_lowerAngle();
-							joint.set_m_lowerAngle(-joint.get_m_upperAngle());
-							joint.set_m_upperAngle(-oldLower);
+						if(joint.GetLowerLimit !== undefined && joint.GetUpperLimit !== undefined) {
+							const oldLower = joint.GetLowerLimit();
+							const oldUpper = joint.GetUpperLimit();
+							joint.SetLimits(-oldUpper, -oldLower);
 						}
 
 						flippedJoints.push(joint);
