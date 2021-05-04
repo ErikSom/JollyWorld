@@ -7307,6 +7307,7 @@ const _B2dEditor = function () {
 		this.setBodyCollision(body, [9]);
 
 		body.SetSleepingAllowed(false);
+		body.SetGravityScale(0);
 		body.SetAwake(true);
 
 		this.removeObjectFromLookupGroups(body, body.mySprite.data);
@@ -7373,7 +7374,7 @@ const _B2dEditor = function () {
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
-		if(obj.trigger) bd.set_type(Box2D.b2_dynamicBody);
+		if(obj.trigger) bd.set_type(Box2D.b2_staticBody);
 		else if (obj.fixed) bd.set_type(Box2D.b2_staticBody);
 		else bd.set_type(Box2D.b2_dynamicBody);
 		bd.set_angularDamping(0.9);
@@ -7381,9 +7382,6 @@ const _B2dEditor = function () {
 
 		var body = this.CreateBody(bd);
 		body.SetAwake(false);
-
-		
-		game.cameraFocusObject = body; // FIX ME
 
 		body.SetFixedRotation(obj.fixedRotation);
 
