@@ -166,7 +166,6 @@ const initGraphicForCulling = function (graphic) {
     graphic.updateTransform = function() {
         if (this._cullingTransformID != this.transform._currentLocalID && !this.ignoreCulling) {
             this._cullingTransformID = this.transform._currentLocalID;
-            if(window.tracingblabla) console.trace();
             placeGraphicInCells(graphic);
         }
         _pixiContainerUpdateSuper.apply(this);
