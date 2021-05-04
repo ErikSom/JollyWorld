@@ -1118,7 +1118,13 @@ function Game() {
 
         const currentZoom = camera.scale.x;
         const targetZoom = Settings.aspectZoom * this.editor.editorSettingsObject.cameraZoom;
-        const cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
+
+        let cameraTargetPosition;
+        if(this.cameraFocusObject && !this.cameraFocusObject.destroyed){
+            cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
+        }else{
+            return;
+        }
 
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
 

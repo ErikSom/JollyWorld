@@ -1889,6 +1889,12 @@ const _B2dEditor = function () {
 			delete body.yogaBody;
 			delete body.skipPush;
 			delete body.mainCharacter;
+			delete body.InCameraView;
+			delete body.destroyed;
+			delete body.instaKill;
+			delete body.originalGraphic;
+			delete body.preSolveVelicity;
+			delete body.preSolveVelicityCounter;
 		}
 	}
 
