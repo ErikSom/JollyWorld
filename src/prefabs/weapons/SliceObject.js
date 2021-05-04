@@ -24,8 +24,9 @@ export class SliceObject extends PrefabManager.basePrefab {
         if(this.objectsToSlice){
             this.objectsToSlice.forEach(body => {
             for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
+                    const joint = game.editor.CastJoint(jointEdge.joint);
                     if(Math.random()<this.sliceChance){
-                        game.editor.deleteObjects([jointEdge.joint]);
+                        game.editor.deleteObjects([joint]);
                     }
                 }
             });
