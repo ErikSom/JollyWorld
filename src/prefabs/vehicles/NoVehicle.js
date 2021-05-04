@@ -103,10 +103,10 @@ export class NoVehicle extends BaseVehicle {
                     if([Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.ARM_LEFT, Humanoid.BODY_PARTS.SHOULDER_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT+'_joint'];
                         if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.HAND_LEFT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.HAND_LEFT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.SHOULDER_LEFT, Humanoid.BODY_PARTS.ARM_LEFT, Humanoid.BODY_PARTS.HAND_LEFT];
                         }else if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.ARM_LEFT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_LEFT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.ARM_LEFT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.SHOULDER_LEFT, Humanoid.BODY_PARTS.ARM_LEFT];
                         }else{
                             linkedBodies = [Humanoid.BODY_PARTS.SHOULDER_LEFT];
@@ -114,19 +114,19 @@ export class NoVehicle extends BaseVehicle {
                     } else if([Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT, Humanoid.BODY_PARTS.SHOULDER_RIGHT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT+'_joint'];
                         if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.HAND_RIGHT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.HAND_RIGHT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.SHOULDER_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT, Humanoid.BODY_PARTS.HAND_RIGHT];
                         } else if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.ARM_RIGHT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.SHOULDER_RIGHT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.ARM_RIGHT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.SHOULDER_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT];
                         }
                     } else if([Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_LEFT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT+'_joint'];
                         if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.FEET_LEFT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.THIGH_LEFT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.FEET_LEFT];
                         }else if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.LEG_LEFT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.THIGH_LEFT, Humanoid.BODY_PARTS.LEG_LEFT];
                         }else{
                             linkedBodies = [Humanoid.BODY_PARTS.THIGH_LEFT];
@@ -134,10 +134,10 @@ export class NoVehicle extends BaseVehicle {
                     } else if([Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.THIGH_RIGHT].includes(patchJoint.mySprite.data.refName)){
                         refJoint = this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT+'_joint'];
                         if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.FEET_RIGHT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.THIGH_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.FEET_RIGHT];
                         }else if(patchJoint.mySprite.data.refName === Humanoid.BODY_PARTS.LEG_RIGHT){
-                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT+'_joint'].GetAnchorA(new Box2D.b2Vec2), this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].GetPosition());
+                            maxLength = calculateJointDistance(this.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT+'_joint'].GetAnchorA(), this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].GetPosition());
                             linkedBodies = [Humanoid.BODY_PARTS.THIGH_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT];
                         }else{
                             linkedBodies = [Humanoid.BODY_PARTS.THIGH_RIGHT];
@@ -150,13 +150,13 @@ export class NoVehicle extends BaseVehicle {
 
                     if(refJoint){
 
-                        const refJointAnchor = refJoint.GetAnchorA(new Box2D.b2Vec2);
+                        const refJointAnchor = refJoint.GetAnchorA();
 
                         let anchorOnBody = null;
                         if(patchJoint === bodyA && joint.GetAnchorA){
-                            anchorOnBody = joint.GetAnchorA(new Box2D.b2Vec2);
+                            anchorOnBody = joint.GetAnchorA();
                         }else if(joint.GetAnchorB){
-                            anchorOnBody = joint.GetAnchorB(new Box2D.b2Vec2);
+                            anchorOnBody = joint.GetAnchorB();
                         }
 
                         if(anchorOnBody){

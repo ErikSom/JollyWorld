@@ -1236,8 +1236,6 @@ export class Humanoid extends PrefabManager.basePrefab {
             const distanceClone = b2CloneVec2(baseJointPos);
             let anchorDistanceUpper = b2SubVec2(distanceClone,upperPart.GetPosition()).Length();
 
-            Box2D.destroy(distanceClone);
-
             const eyeObjects = ['eye_left', 'eye_left_joint', 'eye_right', 'eye_right_joint'];
 
             if(upperPart === this.lookupObject[Humanoid.BODY_PARTS.HEAD]){
@@ -1245,10 +1243,10 @@ export class Humanoid extends PrefabManager.basePrefab {
                     const eyeObject = this.lookupObject[key];
 
                     if(eyeObject.GetPosition){
-                        eyeObject.localVec = upperPart.GetLocalPoint(eyeObject.GetPosition());
+                        eyeObject.localVec = b2CloneVec2(upperPart.GetLocalPoint(eyeObject.GetPosition()));
                     }else{
                         const eyePos = new Box2D.b2Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM);
-                        eyeObject.localVec = upperPart.GetLocalPoint(eyePos);
+                        eyeObject.localVec = b2CloneVec2(upperPart.GetLocalPoint(eyePos));
                         Box2D.destroy(eyePos);
                     }
                 });
@@ -1261,9 +1259,9 @@ export class Humanoid extends PrefabManager.basePrefab {
             if(upperPart === this.lookupObject[Humanoid.BODY_PARTS.HEAD]){
                 eyeObjects.forEach(key => {
                     const eyeObject = this.lookupObject[key];
-
                     const globalPos = upperPart.GetWorldPoint(eyeObject.localVec);
 
+                    Box2D.destroy(eyeObject.localVec);
                     delete eyeObject.localVec;
 
                     if(eyeObject.SetTransform){

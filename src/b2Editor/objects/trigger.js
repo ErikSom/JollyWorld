@@ -1786,6 +1786,7 @@ export class triggerCore {
         var self = this;
         this.contactListener = new Box2D.JSContactListener();
         this.contactListener.BeginContact = function (contact, target) {
+            console.log("BEGIN CONTACT!!")
             if (self.data.targetType>=triggerButtonIndex || !self.data.enabled) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {
@@ -1865,7 +1866,7 @@ export class triggerCore {
         this.triggeredThisTick = true;
     }
     setEnabled(enable) {
-        const type = enable ? Box2D.b2_kinematicBody : Box2D.b2_staticBody
+        const type = enable ? Box2D.b2_dynamicBody : Box2D.b2_staticBody
         this.trigger.SetType(type);
     }
 }

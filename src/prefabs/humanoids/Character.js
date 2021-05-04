@@ -137,7 +137,7 @@ export class Character extends Humanoid {
     }
     doCollisionUpdate(update) {
         super.doCollisionUpdate(update);
-        //Destroy connected joints
+        // Destroy connected joints
         if(!this.mainPrefabClass.destroyConnectedJoints[update.target]) return;
         this.mainPrefabClass.destroyConnectedJoints[update.target].forEach((targetJointName) => {
             if (targetJointName instanceof String || typeof(targetJointName) === 'string') {

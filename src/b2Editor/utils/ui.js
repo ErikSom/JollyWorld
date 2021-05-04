@@ -1179,15 +1179,12 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
     }
 
 
-    if(!Settings.userAdmin || window.location.search.indexOf('levelAdmin=true')<0){
+    if(!Settings.userAdmin || !Settings.levelAdmin){
         backendManager.getUserLevels().then((levels) => {
             buildLevelList(levels);
         })
     }else{
-        backendManager.getPublishedLevels({
-            by: 'Newest',
-            range: 'Anytime'
-        }).then((levels) => {
+        backendManager.getPublishedLevels(game.ui.determineMainMenuFilter()).then((levels) => {
             buildLevelList(levels);
         })
     }

@@ -125,6 +125,8 @@ function Game() {
         const showStats = (window.location.search.indexOf('stats=true')>=0)
         this.stats.show(showStats);
 
+        Settings.levelAdmin = window.location.search.indexOf('levelAdmin=true')>=0;
+
         this.canvas = document.getElementById("canvas");
 
         const userData = SaveManager.getLocalUserdata();
@@ -369,7 +371,6 @@ function Game() {
                         s = s.trim();
                         if(s && s.startsWith(Settings.jollyDataPrefix) && s.endsWith('>')){
                             const copyData = s.substr(Settings.jollyDataPrefix.length, s.length-Settings.jollyDataPrefix.length-1);
-                            console.log("PASTE!!!!")
                             this.editor.pasteData(copyData);
                         }
                     });

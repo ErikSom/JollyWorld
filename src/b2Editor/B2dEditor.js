@@ -1937,6 +1937,7 @@ const _B2dEditor = function () {
 	}
 
 	this.DestroyJoint = function(joint){
+		console.trace();
 		if(joint.destroyed) return;
 		this.preDestroyJoint(joint);
 		if(joint.innerLoopDestroyed) return;
@@ -1950,6 +1951,7 @@ const _B2dEditor = function () {
 			delete joint.connectedJoints;
 			delete joint.destroyed;
 			delete joint.innerLoopDestroyed;
+			delete joint.snapTick;
 		}
 	}
 
@@ -7371,13 +7373,17 @@ const _B2dEditor = function () {
 	this.buildBodyFromObj = function (obj) {
 
 		var bd = new b2BodyDef();
-		if(obj.trigger) bd.set_type(Box2D.b2_kinematicBody);
+		if(obj.trigger) bd.set_type(Box2D.b2_dynamicBody);
 		else if (obj.fixed) bd.set_type(Box2D.b2_staticBody);
 		else bd.set_type(Box2D.b2_dynamicBody);
 		bd.set_angularDamping(0.9);
 
+
 		var body = this.CreateBody(bd);
 		body.SetAwake(false);
+
+		
+		game.cameraFocusObject = body; // FIX ME
 
 		body.SetFixedRotation(obj.fixedRotation);
 

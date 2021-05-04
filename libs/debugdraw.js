@@ -4,11 +4,11 @@
  * @returns {Box2D.b2Vec2}
  */
 export const b2CloneVec2 = vec =>
-  new Box2D.b2Vec2(vec.get_x(), vec.get_y());
+  new Box2D.b2Vec2(vec.x, vec.y);
 
 
 const b2CloneMulVec2 = (vec, scale) => {
-  new Box2D.b2Vec2(vec.get_x()*scale, vec.get_y()*scale);
+  new Box2D.b2Vec2(vec.x*scale, vec.y*scale);
 }
 
 /**
@@ -18,19 +18,19 @@ const b2CloneMulVec2 = (vec, scale) => {
  * @returns {Box2D.b2Vec2}
  */
 export const b2MulVec2 = (vec, scale) => {
-  vec.set_x(vec.get_x()*scale);
-  vec.set_y(vec.get_y()*scale);
+  vec.set_x(vec.x*scale);
+  vec.set_y(vec.y*scale);
   return vec;
 }
 export const b2AddVec2 = (vec, vec2) => {
-  vec.set_x(vec.get_x() + vec2.get_x());
-  vec.set_y(vec.get_y() + vec2.get_y());
+  vec.set_x(vec.x + vec2.x);
+  vec.set_y(vec.y + vec2.y);
   return vec;
 }
 
 export const b2SubVec2 = (vec, vec2) => {
-  vec.set_x(vec.get_x() - vec2.get_x());
-  vec.set_y(vec.get_y() - vec2.get_y());
+  vec.set_x(vec.x - vec2.x);
+  vec.set_y(vec.y - vec2.y);
   return vec;
 }
 
