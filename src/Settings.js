@@ -36,6 +36,7 @@ export var Settings = {
     maxTotalBullets:6,
     /*GORE*/
     goreEnabled: true,
+    bloodEnabled: true,
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
     bashForce:10000,

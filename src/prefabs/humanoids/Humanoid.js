@@ -216,7 +216,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     processBloodSprays(){
 
-        if(!Settings.goreEnabled){
+        if(!Settings.goreEnabled || !Settings.bloodEnabled){
             this.bloodSprays.length = 0;
         }
 

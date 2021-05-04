@@ -23,6 +23,7 @@ export const getLocalUserdata = function(){
         editorGuiPos:{x:50, y:50},
         sfxOn:true,
         musicOn:true,
+        bloodOn:true,
         goreOn:true,
         tutorials:[],
         selectedCharacter:0,

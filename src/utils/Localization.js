@@ -27,7 +27,7 @@ export const localize = id =>{
 	return text;
 }
 
-export const countries = ['de','nl','gb','us','br','pt','fr','au','es','it','ca','ie','be'];
+export const countries = ['de','nl','gb','us','br','pt','fr','au','es','it','ca','ie','be', 'cz','jr'];
 
 
 export const countryToFlag = country => {
@@ -64,7 +64,8 @@ const LOCALIZATION_DATA = [
         "pt": "Recomendado",
         "cz": "Doporučené",
         "fr": "En vedette",
-        "it": "Raccomandato"
+        "it": "Raccomandato",
+        "jr": "Scurvy Approved"
     },
     {
         "textId": "mainmenu_best_rated",
@@ -75,7 +76,8 @@ const LOCALIZATION_DATA = [
         "pt": "Melhor avaliado",
         "cz": "Nejlépe hodnocené",
         "fr": "Mieux noté",
-        "it": "I più votati"
+        "it": "I più votati",
+        "jr": "Most Bootyful"
     },
     {
         "textId": "mainmenu_most_played",
@@ -86,7 +88,8 @@ const LOCALIZATION_DATA = [
         "pt": "Mais Jogadas",
         "cz": "Nejhranější ",
         "fr": "Le plus joué",
-        "it": "Più giocato"
+        "it": "Più giocato",
+        "jr": "Most Plundered"
     },
     {
         "textId": "mainmenu_newest",
@@ -97,7 +100,8 @@ const LOCALIZATION_DATA = [
         "pt": "Mais novo",
         "cz": "Nejnovější",
         "fr": "Plus nouveau",
-        "it": "Più nuovo"
+        "it": "Più nuovo",
+        "jr": "Newly Discovered"
     },
     {
         "textId": "mainmenu_oldest",
@@ -108,7 +112,8 @@ const LOCALIZATION_DATA = [
         "pt": "Mais velho",
         "cz": "Nejstarší",
         "fr": "Plus vieux",
-        "it": "Più vecchio"
+        "it": "Più vecchio",
+        "jr": "Ol' sea legends"
     },
     {
         "textId": "mainmenu_editor",
@@ -119,7 +124,8 @@ const LOCALIZATION_DATA = [
         "pt": "Editor",
         "cz": "Editor",
         "fr": "Éditeur",
-        "it": "Editor"
+        "it": "Editor",
+        "jr": "Sea Buildin'"
     },
     {
         "textId": "mainmenu_change",
@@ -130,7 +136,8 @@ const LOCALIZATION_DATA = [
         "pt": "Mudar",
         "cz": "Změnit",
         "fr": "Changer",
-        "it": "Modificare"
+        "it": "Modificare",
+        "jr": "Pick a new captain"
     },
     {
         "textId": "mainmenu_by",
@@ -141,7 +148,8 @@ const LOCALIZATION_DATA = [
         "pt": "De",
         "cz": "Od",
         "fr": "De",
-        "it": "Da"
+        "it": "Da",
+        "jr": "Aye"
     },
     {
         "textId": "mainmenu_login",
@@ -152,7 +160,8 @@ const LOCALIZATION_DATA = [
         "pt": "Entrar",
         "cz": "Přihlásit se",
         "fr": "Entrer",
-        "it": "Entra"
+        "it": "Entra",
+        "jr": "Set Sail"
     },
     {
         "textId": "mainmenu_today",
@@ -163,7 +172,8 @@ const LOCALIZATION_DATA = [
         "pt": "Hoje",
         "cz": "Dnes",
         "fr": "Aujourd'hui",
-        "it": "Oggi"
+        "it": "Oggi",
+        "jr": "Since this day"
     },
     {
         "textId": "mainmenu_thisweek",
@@ -174,7 +184,8 @@ const LOCALIZATION_DATA = [
         "pt": "Esta semana",
         "cz": "Tento týden",
         "fr": "Cette semaine",
-        "it": "Questa settimana"
+        "it": "Questa settimana",
+        "jr": "Since 7 nights ago"
     },
     {
         "textId": "mainmenu_thismonth",
@@ -185,7 +196,8 @@ const LOCALIZATION_DATA = [
         "pt": "Este mês",
         "cz": "Tento měsíc",
         "fr": "Ce mois",
-        "it": "Questo mese"
+        "it": "Questo mese",
+        "jr": "Since 1 moon ago"
     },
     {
         "textId": "mainmenu_anytime",
@@ -196,7 +208,8 @@ const LOCALIZATION_DATA = [
         "pt": "Sempre",
         "cz": "Kdykoli",
         "fr": "Toujours",
-        "it": "Per sempre"
+        "it": "Per sempre",
+        "jr": "Since forever!"
     },
     {
         "textId": "mainmenu_more",
@@ -207,7 +220,8 @@ const LOCALIZATION_DATA = [
         "pt": "Mais",
         "cz": "Více",
         "fr": "Suite",
-        "it": "Di più"
+        "it": "Di più",
+        "jr": "Moarrgh"
     },
     {
         "textId": "mainmenu_availablepc",
@@ -218,7 +232,8 @@ const LOCALIZATION_DATA = [
         "pt": "Disponível no PC",
         "cz": "K dispozici na PC",
         "fr": "Disponible sur PC",
-        "it": "Disponibile su PC"
+        "it": "Disponibile su PC",
+        "jr": "Available on Pirate Crew"
     },
     {
         "textId": "settings_settings",
@@ -229,7 +244,8 @@ const LOCALIZATION_DATA = [
         "pt": "Definições",
         "cz": "Nastavení",
         "fr": "Paramètres",
-        "it": "Impostazioni"
+        "it": "Impostazioni",
+        "jr": "Mess with yer boat"
     },
     {
         "textId": "settings_on",
@@ -240,7 +256,8 @@ const LOCALIZATION_DATA = [
         "pt": "Ligado",
         "cz": "Zapnout",
         "fr": "Allumé",
-        "it": "Attivato"
+        "it": "Attivato",
+        "jr": "Aye"
     },
     {
         "textId": "settings_off",
@@ -251,7 +268,8 @@ const LOCALIZATION_DATA = [
         "pt": "Desligado",
         "cz": "Vypnout",
         "fr": "éteint",
-        "it": "Spento"
+        "it": "Spento",
+        "jr": "Nay"
     },
     {
         "textId": "settings_music",
@@ -262,18 +280,32 @@ const LOCALIZATION_DATA = [
         "pt": "Música",
         "cz": "Hudba",
         "fr": "Musique",
-        "it": "Musica"
+        "it": "Musica",
+        "jr": "Shanties"
     },
     {
-        "textId": "settings_gore",
-        "us": "Gore",
+        "textId": "settings_blood",
+        "us": "Blood",
         "nl": "Bloed",
         "de": "Blut",
         "es": "Sangre",
         "pt": "Sangue",
         "cz": "Krev",
         "fr": "Sang",
-        "it": "Sangue"
+        "it": "Sangue",
+        "jr": "Juice"
+    },
+    {
+        "textId": "settings_gore",
+        "us": "Gore",
+        "nl": "Wonden",
+        "de": "Zwickel",
+        "es": "Cornear",
+        "pt": "Escornar",
+        "cz": "Klín",
+        "fr": "Encorner",
+        "it": "Incornare",
+        "jr": "Meat"
     },
     {
         "textId": "settings_fullscreen",
@@ -284,7 +316,8 @@ const LOCALIZATION_DATA = [
         "pt": "Tela completa",
         "cz": "Celá obrazovka",
         "fr": "Plein écran",
-        "it": "Schermo intero"
+        "it": "Schermo intero",
+        "jr": "Take of yer eyepatch"
     },
     {
         "textId": "characterselect_select_character",
@@ -295,15 +328,18 @@ const LOCALIZATION_DATA = [
         "pt": "Selecione o personagem",
         "cz": "Vybrat postavu",
         "fr": "Sélectionnez un personnage",
-        "it": "Seleziona personaggio"
+        "it": "Seleziona personaggio",
+        "jr": "Pick yer captain"
     },
     {
         "textId": "vehicleselect_select_vehicle",
         "us": "Select a vehicle",
         "nl": "Kies een voertuig",
         "de": "Wähle ein Fahrzeug",
+        "es": "Elige un vehículo",
         "pt": "Selecione o veículo",
-        "cz": "Vybrat vozidlo"
+        "cz": "Vybrat vozidlo",
+        "jr": "Pick yer boat"
     },
     {
         "textId": "levelbanner_share",
@@ -314,7 +350,8 @@ const LOCALIZATION_DATA = [
         "pt": "Compartilhar",
         "cz": "Sdílet",
         "fr": "Partager",
-        "it": "Condividere"
+        "it": "Condividere",
+        "jr": "Share with yer maties"
     },
     {
         "textId": "levelbanner_save",
@@ -325,7 +362,8 @@ const LOCALIZATION_DATA = [
         "pt": "Salvar",
         "cz": "Uložit",
         "fr": "Sauvegarder",
-        "it": "Salva"
+        "it": "Salva",
+        "jr": "Put on ye personal map"
     },
     {
         "textId": "levelbanner_gameplays",
@@ -336,7 +374,8 @@ const LOCALIZATION_DATA = [
         "pt": "Jogadas",
         "cz": "Hry",
         "fr": "Pièces",
-        "it": "Gioca"
+        "it": "Gioca",
+        "jr": "Voyages"
     },
     {
         "textId": "levelbanner_votes",
@@ -347,7 +386,8 @@ const LOCALIZATION_DATA = [
         "pt": "Votos",
         "cz": "Hlasování",
         "fr": "Votes",
-        "it": "Voti"
+        "it": "Voti",
+        "jr": "Ayes"
     },
     {
         "textId": "levelbanner_viewall",
@@ -358,7 +398,8 @@ const LOCALIZATION_DATA = [
         "pt": "Ver todos",
         "cz": "Zobrazit vše",
         "fr": "Voir tous",
-        "it": "Vedi tutto"
+        "it": "Vedi tutto",
+        "jr": "All landlubbers"
     },
     {
         "textId": "levelbanner_play",
@@ -369,7 +410,8 @@ const LOCALIZATION_DATA = [
         "pt": "Jogar",
         "cz": "Hrát",
         "fr": "Jouer",
-        "it": "Giocare"
+        "it": "Giocare",
+        "jr": "Start the raid!"
     },
     {
         "textId": "levelbanner_back",
@@ -380,7 +422,8 @@ const LOCALIZATION_DATA = [
         "pt": "Voltar",
         "cz": "Zpět",
         "fr": "Rendre",
-        "it": "Ritornare"
+        "it": "Ritornare",
+        "jr": "Avast!"
     },
     {
         "textId": "levelbanner_leaderboard",
@@ -391,14 +434,17 @@ const LOCALIZATION_DATA = [
         "pt": "Posições",
         "cz": "Žebříček",
         "fr": "Positions",
-        "it": "Posizioni"
+        "it": "Posizioni",
+        "jr": "Most Wanted Pirates"
     },
     {
         "textId": "levelbanner_loading",
         "us": "Loading...",
-        "nl": "Laden..",
+        "nl": "Laden...",
+        "de": "Laden...",
         "pt": "Carregar",
-        "cz": "Načítání"
+        "cz": "Načítání",
+        "jr": "Sailin' to the destination"
     },
     {
         "textId": "levelbanner_time",
@@ -409,7 +455,8 @@ const LOCALIZATION_DATA = [
         "pt": "Tempo",
         "cz": "Čas",
         "fr": "Temps",
-        "it": "Tempo"
+        "it": "Tempo",
+        "jr": "Knots"
     },
     {
         "textId": "levelbanner_published",
@@ -420,7 +467,8 @@ const LOCALIZATION_DATA = [
         "pt": "Publicados",
         "cz": "Zveřejněno",
         "fr": "Publié",
-        "it": "Pubblicato"
+        "it": "Pubblicato",
+        "jr": "Discovered"
     },
     {
         "textId": "levelbanner_updated",
@@ -431,7 +479,8 @@ const LOCALIZATION_DATA = [
         "pt": "Atualizada",
         "cz": "Aktualizováno",
         "fr": "Mise à jour",
-        "it": "Aggiornato"
+        "it": "Aggiornato",
+        "jr": "Revisited"
     },
     {
         "textId": "levelbanner_noentries",
@@ -439,7 +488,8 @@ const LOCALIZATION_DATA = [
         "nl": "Geen scores",
         "de": "Keine Einträge",
         "pt": "Vazio",
-        "cz": "Žádné záznamy"
+        "cz": "Žádné záznamy",
+        "jr": "Treasure unclaimed"
     },
     {
         "textId": "share_sharing",
@@ -450,7 +500,8 @@ const LOCALIZATION_DATA = [
         "pt": "Compartilhar",
         "cz": "Sdílení",
         "fr": "Partager",
-        "it": "Condividere"
+        "it": "Condividere",
+        "jr": "Share with yer mates."
     },
     {
         "textId": "share_levellink",
@@ -461,7 +512,8 @@ const LOCALIZATION_DATA = [
         "pt": "Link",
         "cz": "Odkaz",
         "fr": "Relier",
-        "it": "Link"
+        "it": "Link",
+        "jr": "Island coordinates"
     },
     {
         "textId": "share_shareby",
@@ -472,7 +524,8 @@ const LOCALIZATION_DATA = [
         "pt": "Compartilhado por",
         "cz": "Nebo sdílet s",
         "fr": "Partagé par",
-        "it": "Condiviso da"
+        "it": "Condiviso da",
+        "jr": "Alternate routes"
     },
     {
         "textId": "levelgui_pause",
@@ -480,7 +533,8 @@ const LOCALIZATION_DATA = [
         "nl": "Pauze",
         "de": "Pause",
         "pt": "Pausar",
-        "cz": "Pauza"
+        "cz": "Pauza",
+        "jr": "Stop the ship"
     },
     {
         "textId": "levelgui_exittomenu",
@@ -488,7 +542,8 @@ const LOCALIZATION_DATA = [
         "nl": "Naar hoofdmenu",
         "de": "Zum Menü",
         "pt": "Sair para o menu",
-        "cz": "Zpět do menu"
+        "cz": "Zpět do menu",
+        "jr": "Walk the plank"
     },
     {
         "textId": "levelgui_resume",
@@ -496,22 +551,35 @@ const LOCALIZATION_DATA = [
         "nl": "Hervat",
         "de": "Zurück",
         "pt": "Continuar",
-        "cz": "Pokračovat"
+        "cz": "Pokračovat",
+        "jr": "Continue fightin'"
     },
     {
         "textId": "levelgui_reset",
         "us": "Reset",
-        "nl": "Reset"
+        "nl": "Reset",
+        "de": "Zurücksetzen",
+        "pt": "Resetar",
+        "cz": "Restartovat",
+        "jr": "Start the raid all over"
     },
     {
         "textId": "levelgui_retry",
         "us": "Retry",
-        "nl": "Opnieuw"
+        "nl": "Opnieuw",
+        "de": "Neustart",
+        "pt": "Tentar novamente",
+        "cz": "Opakovat",
+        "jr": "Pick up where ye last left off"
     },
     {
         "textId": "levelgui_exittest",
         "us": "Exit Test",
-        "nl": "Sluit Test"
+        "nl": "Sluit Test",
+        "de": "Test Verlassen",
+        "pt": "Sar do teste",
+        "cz": "Opustit test",
+        "jr": "Swim back to shore"
     },
     {
         "textId": "levelgui_youlose",
@@ -519,7 +587,8 @@ const LOCALIZATION_DATA = [
         "nl": "Verliezer!",
         "de": "Du hast verloren!",
         "pt": "Você perdeu!",
-        "cz": "Prohrál jsi"
+        "cz": "Prohrál jsi",
+        "jr": "Yer with Davy Jones!"
     },
     {
         "textId": "levelgui_youwin",
@@ -527,259 +596,297 @@ const LOCALIZATION_DATA = [
         "nl": "Winnaar!",
         "de": "Du hast gewonnen!",
         "pt": "Você ganhou!",
-        "cz": "Vyhrál jsi"
+        "cz": "Vyhrál jsi",
+        "jr": "Ye found the treasure!"
     },
     {
         "textId": "editortoolgui_select",
         "us": "select",
         "de": "auswählen",
         "pt": "selecionar",
-        "cz": "Vybrat"
+        "cz": "Vybrat",
+        "jr": "Move yer rocks"
     },
     {
         "textId": "editortoolgui_geometry",
         "us": "geometry",
         "de": "formen",
         "pt": "Geometria",
-        "cz": "Tvary"
+        "cz": "Tvary",
+        "jr": "Basic Land"
     },
     {
         "textId": "editortoolgui_polydrawing",
         "us": "polydrawing",
         "de": "polygon",
         "pt": "Desenho poligonal",
-        "cz": "Polygon"
+        "cz": "Polygon",
+        "jr": "Janky Quill"
     },
     {
         "textId": "editortoolgui_pen",
         "us": "pen",
         "de": "stift",
         "pt": "Caneta",
-        "cz": "Pero"
+        "cz": "Pero",
+        "jr": "Smoothin' Quill"
     },
     {
         "textId": "editortoolgui_joints",
         "us": "joints",
         "de": "bindungen",
         "pt": "Juntas",
-        "cz": "Spojení"
+        "cz": "Spojení",
+        "jr": "Carpentry"
     },
     {
         "textId": "editortoolgui_prefabs",
         "us": "prefabs",
         "de": "fertigbauten",
         "pt": "Objetos prontos",
-        "cz": "Předvytvořené"
+        "cz": "Předvytvořené",
+        "jr": "Treasures"
     },
     {
         "textId": "editortoolgui_text",
         "us": "text",
         "de": "text",
         "pt": "Texto",
-        "cz": "Text"
+        "cz": "Text",
+        "jr": "Parchment"
     },
     {
         "textId": "editortoolgui_art",
         "us": "art",
         "de": "grafiken",
         "pt": "Arte",
-        "cz": "Malování"
+        "cz": "Malování",
+        "jr": "ARRRRT"
     },
     {
         "textId": "editortoolgui_trigger",
         "us": "trigger",
         "de": "auslöser",
         "pt": "Acionador",
-        "cz": "Spouštěč"
+        "cz": "Spouštěč",
+        "jr": "Booby Traps"
     },
     {
         "textId": "editorheader_test",
         "us": "test",
         "de": "test",
         "pt": "Teste",
-        "cz": "Test"
+        "cz": "Test",
+        "jr": "Set Foot"
     },
     {
         "textId": "editorheader_profilescreen",
         "us": "Profile Screen",
         "de": "Profil Fenster",
         "pt": "Foto de Perfil",
-        "cz": "Obrazovka profilu"
+        "cz": "Obrazovka profilu",
+        "jr": "Captain's Quarters"
     },
     {
         "textId": "editorheader_logout",
         "us": "LOGOUT",
         "de": "AUSLOGGEN",
         "pt": "Deslogar",
-        "cz": "Odhlásit se"
+        "cz": "Odhlásit se",
+        "jr": "DROP ANCHOR"
     },
     {
         "textId": "editorheader_new",
         "us": "NEW",
         "de": "NEU",
         "pt": "Novo",
-        "cz": "Nový"
+        "cz": "Nový",
+        "jr": "NEW MAP"
     },
     {
         "textId": "editorheader_load",
         "us": "LOAD",
         "de": "LADEN",
         "pt": "Carregar",
-        "cz": "Načíst"
+        "cz": "Načíst",
+        "jr": "FIND MAP"
     },
     {
         "textId": "editorheader_exit",
         "us": "EXIT",
         "de": "VERLASSEN",
         "pt": "Sair",
-        "cz": "Odejít"
+        "cz": "Odejít",
+        "jr": "ABANDON SHIP"
     },
     {
         "textId": "editorlevelbanner_publishsettings",
         "us": "Publish Settings",
         "de": "Veröffentlichungseinstellungen",
         "pt": "Publicar informações",
-        "cz": "Zveřejnit nastavení"
+        "cz": "Zveřejnit nastavení",
+        "jr": "Island Settings"
     },
     {
         "textId": "editorlevelbanner_thumbnail",
         "us": "Thumbnail",
         "de": "Schaubild",
         "pt": "Miniatura",
-        "cz": "Miniatura"
+        "cz": "Miniatura",
+        "jr": "Flag"
     },
     {
         "textId": "editorlevelbanner_clicktoadd",
         "us": "click to add",
         "de": "bild einfügen",
         "pt": "Click para adicionar",
-        "cz": "Klikněte pro vložení"
+        "cz": "Klikněte pro vložení",
+        "jr": "Click to raise flag"
     },
     {
         "textId": "editorlevelbanner_title",
         "us": "Title",
         "de": "Titel",
         "pt": "Título",
-        "cz": "Název"
+        "cz": "Název",
+        "jr": "Island Name"
     },
     {
         "textId": "editorlevelbanner_charactersleft",
         "us": "Characters left",
         "de": "Buchstaben übrig",
         "pt": "Personagens restantes",
-        "cz": "Zbývá znaků"
+        "cz": "Zbývá znaků",
+        "jr": "Blots of ink left"
     },
     {
         "textId": "editorlevelbanner_description",
         "us": "Description",
         "de": "Beschreibung",
         "pt": "Descrição",
-        "cz": "Popis"
+        "cz": "Popis",
+        "jr": "Captain's Log"
     },
     {
         "textId": "editorlevelbanner_linkyoutubevideos",
         "us": "Link YouTube videos",
         "de": "YouTube videos verknüpfen",
-        "pt": "Videos do Youtube",
-        "cz": "Připojit YouTube videa"
+        "es": "Vincular videos de YouTube",
+        "pt": "Colocar video do Youtube",
+        "cz": "Připojit YouTube videa",
+        "jr": "Log videos o' YouTube"
     },
     {
         "textId": "editorlevelbanner_saveas",
         "us": "SAVE AS",
         "de": "SPEICHERN ALS",
         "pt": "Salvar como",
-        "cz": "Uložit jako"
+        "cz": "Uložit jako",
+        "jr": "CHART NEW LAND"
     },
     {
         "textId": "editorlevelbanner_delete",
         "us": "DELETE",
         "de": "LÖSCHEN",
         "pt": "Deletar",
-        "cz": "Smazat"
+        "cz": "Smazat",
+        "jr": "DESTROY"
     },
     {
         "textId": "editorlevelbanner_preview",
         "us": "PREVIEW",
         "de": "VORSCHAU",
         "pt": "Pré-visualizar",
-        "cz": "Náhled"
+        "cz": "Náhled",
+        "jr": "UNMARKED VISIT"
     },
     {
         "textId": "editorlevelbanner_publish",
         "us": "PUBLISH",
         "de": "VERÖFFENTLICHEN",
         "pt": "Publicar",
-        "cz": "Zveřejnit"
+        "cz": "Zveřejnit",
+        "jr": "MARK THE SPOT"
     },
     {
         "textId": "editorlevelbanner_notice",
         "us": "Notice",
         "de": "Achtung",
         "pt": "Aviso",
-        "cz": "Upozornění"
+        "cz": "Upozornění",
+        "jr": "Ahoy there!"
     },
     {
         "textId": "editorlevelbanner_prompt",
         "us": "Prompt",
         "de": "Aufforderung",
         "pt": "Console",
-        "cz": "Výzva"
+        "cz": "Výzva",
+        "jr": "There be danger lying thee!"
     },
     {
         "textId": "editorlevelbanner_ok",
         "us": "OK",
         "de": "OK",
         "pt": "OK!",
-        "cz": "OK"
+        "cz": "OK",
+        "jr": "Aye!"
     },
     {
         "textId": "editorlevelbanner_yes",
         "us": "Yes!",
         "de": "Ja!",
         "pt": "SIM!",
-        "cz": "Ano!"
+        "cz": "Ano!",
+        "jr": "Aye aye!"
     },
     {
         "textId": "editorlevelbanner_nope",
         "us": "NOPE!",
         "de": "DOCH NICHT!",
         "pt": "NOPE!",
-        "cz": "Ne!"
+        "cz": "Ne!",
+        "jr": "AVAST!"
     },
     {
         "textId": "editorlevelbanner_mintitlelength",
         "us": "Title must be at least 3 characters long",
         "de": "Der Titel muss mindenstens 3 Buchstaben lang sein",
         "pt": "O Titulo precisa ter pelo menos 3 caracteres",
-        "cz": "Název musí obsahovat nejméně 3 znaky"
+        "cz": "Název musí obsahovat nejméně 3 znaky",
+        "jr": "Ye must call yer island with at least 3 letters"
     },
     {
         "textId": "editorlevelbanner_savefirst",
         "us": "You first need to save the level before you can publish / preview it.",
         "de": "Du musst dein Level speichern, bevor du es veröffentlichen / anschauen kannst.",
         "pt": "Você precisa salvar o mapa primeiro antes de publicar",
-        "cz": "Nejdříve musíte level uložit než jej zveřejníte / zobrazíte náhled"
+        "cz": "Nejdříve musíte level uložit než jej zveřejníte / zobrazíte náhled",
+        "jr": "Ye need to mark the spot before ye put this island on the map."
     },
     {
         "textId": "editorlevelbanner_nothumbnail",
         "us": "Your level needs a thumbnail before you can publish / preview it.",
         "de": "Dein Level braucht ein Schaubild, bevor du es veröffentlichen / anschauen kannst.",
         "pt": "Seu mapa precisa de uma thumbnail antes de ser publicado",
-        "cz": "Váš level potřebuje miniaturu než jej zveřejníte / zobrazíte náhled"
+        "cz": "Váš level potřebuje miniaturu než jej zveřejníte / zobrazíte náhled",
+        "jr": "There be no flag on yer land. How your mates gonna know what to expect?"
     },
     {
         "textId": "editorlevelbanner_unsavedchanges",
         "us": "You have unsaved changes to your level, are you sure you wish to proceed?",
         "de": "Dein Level hat ungespeicherte Änderungen, möchtest du trotzdem fortfahren?",
         "pt": "Você não salvou as modificações do seu mapa, tem certeza que quer prosseguir?",
-        "cz": "Máte neuložené změny ve vašem levelu, jste si jisti, že chcete pokračovat?"
+        "cz": "Máte neuložené změny ve vašem levelu, jste si jisti, že chcete pokračovat?",
+        "jr": "Ye didn't chart your location. Do ye still want to set sail?"
     },
     {
         "textId": "editorlevelbanner_deleteconfirm",
         "us": "Are you sure you want to delete this level?",
         "de": "Bist du sicher, dass du dieses Level löschen willst?",
         "pt": "Você tem certeza que quer deletar o mapa?",
-        "cz": "Jste si jisti, že chcete smazat tento level?"
+        "cz": "Jste si jisti, že chcete smazat tento level?",
+        "jr": "Do ye want to send this level to Davy Jones's locker?"
     }
 ]
 init();
