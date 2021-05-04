@@ -87,8 +87,8 @@ export class RopeHat extends Hat {
 			this.ropeGoingOut = true;
 
 			if (callback.m_hit) {
+				this.targetAnimationPoint = b2CloneVec2(callback.m_point);
 				this.attachRope(callback.m_point, callback.m_fixture.GetBody());
-				this.targetAnimationPoint = callback.m_point;
 				this.ropeAttached = true;
 			} else {
 				this.ropeFired = false;
@@ -498,8 +498,6 @@ export class RopeHat extends Hat {
 
 		const endDiff = b2CloneVec2(point);
 		b2SubVec2(endDiff, previousPoint);
-
-		console.log(endDiff.Length(), ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5);
 
 		if(endDiff.Length()<= ANIMATION_TRAVEL_SPEED * game.editor.deltaTimeSeconds * 1.5){
 			if(this.ropeGoingOut && !this.ropeAttached){

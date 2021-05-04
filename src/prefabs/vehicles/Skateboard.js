@@ -83,7 +83,11 @@ class Skateboard extends BaseVehicle {
                 this.legAnimation.update(game.editor.deltaTime*this.accel);
                 const frame = this.legAnimation.getFrame();
 
-                globalFrame = b2CloneVec2(this.lookupObject.body.GetWorldPoint(frame));
+                const posVec = new Box2D.b2Vec2(frame.x, frame.y);
+
+                globalFrame = b2CloneVec2(this.lookupObject.body.GetWorldPoint(posVec));
+
+                Box2D.destroy(posVec);
                 // DEBUG DRAW EXAMPLE
                 // game.editor.debugGraphics.clear();
                 // const pixiPoint = game.editor.getPIXIPointFromWorldPoint(globalFrame);

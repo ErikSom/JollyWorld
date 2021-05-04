@@ -1876,7 +1876,7 @@ const _B2dEditor = function () {
 			delete body.FakeSensor;
 			delete body.connectedSpike;
 			delete body.isPhysicsCamera;
-			delete body.isisHumanoid;
+			delete body.isHumanoid;
 			delete body.isAffectedByForcefield;
 			delete body.mainHumanoid;
 			delete body.grabJoints;
@@ -1888,6 +1888,7 @@ const _B2dEditor = function () {
 			delete body.bounceIndex;
 			delete body.yogaBody;
 			delete body.skipPush;
+			delete body.mainCharacter;
 		}
 	}
 
@@ -1907,6 +1908,8 @@ const _B2dEditor = function () {
 			return Box2D.castObject(joint, Box2D.b2PrismaticJoint);
 		}else if(joint.GetType() === Box2D.e_wheelJoint){
 			return Box2D.castObject(joint, Box2D.b2WheelJoint);
+		}else if(joint.GetType() === Box2D.e_weldJoint){
+			return Box2D.castObject(joint, Box2D.b2WeldJoint);
 		}
 		return joint;
 	}
@@ -1937,7 +1940,7 @@ const _B2dEditor = function () {
 	}
 
 	this.DestroyJoint = function(joint){
-		if(joint.destroyed) return;
+		if(!joint || joint.destroyed) return;
 		this.preDestroyJoint(joint);
 		if(joint.innerLoopDestroyed) return;
 		this.world.DestroyJoint(joint);
