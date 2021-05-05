@@ -10,9 +10,10 @@ const { getPointer, NULL } = Box2D;
 
 export const init = ()=>{
 	const bd = new Box2D.b2BodyDef();
-	bd.type = Box2D.b2_kinematicBody;
+	bd.type = Box2D.b2_dynamicBody;
 	game.editor.physicsCamera = game.editor.CreateBody(bd);
 	game.editor.physicsCamera.SetSleepingAllowed(false);
+	game.editor.physicsCamera.SetGravityScale(0);
 	game.editor.physicsCamera.isPhysicsCamera = true;
 	Box2D.destroy(bd);
 }
@@ -54,10 +55,15 @@ export const update = ()=>{
 		delete game.editor.physicsCamera.reFixture;
 	}
 
-	if(game.cameraFocusObject){
+	if(game.cameraFocusObject && !game.cameraFocusObject.destroyed){
 		const targetPosition = b2CloneVec2(game.cameraFocusObject.GetPosition());
 		game.editor.physicsCamera.SetTransform(targetPosition, 0);
 		Box2D.destroy(targetPosition);
+	}else{
+		let cameraX = -(game.editor.cameraHolder.x / game.editor.cameraHolder.scale.x - (window.innerWidth / 2 / game.editor.cameraHolder.scale.x)) / Settings.PTM;
+		let cameraY = -(game.editor.cameraHolder.y / game.editor.cameraHolder.scale.y - (window.innerHeight / 2 / game.editor.cameraHolder.scale.y)) / Settings.PTM;
+		const targetPosition = new Box2D.b2Vec2(cameraX, cameraY);
+		game.editor.physicsCamera.SetTransform(targetPosition, 0);
 	}
 }
 
