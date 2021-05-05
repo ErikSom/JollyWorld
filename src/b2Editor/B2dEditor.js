@@ -1862,6 +1862,7 @@ const _B2dEditor = function () {
 			delete body.myTriggers;
 			delete body.recentlyImpactedBodies;
 			delete body.destroyed;
+			delete body.ignorePhysicsCuller
 			delete body.ignoreCollisionsTime;
 			delete body.isFlesh;
 			delete body.snapped;

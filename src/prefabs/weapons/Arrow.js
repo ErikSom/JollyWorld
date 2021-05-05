@@ -6,6 +6,8 @@ import {
 import { b2CloneVec2, b2DotVV, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
 import { Settings } from '../../Settings';
 
+const { getPointer, NULL } = Box2D;
+
 class Arrow extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
@@ -88,7 +90,7 @@ class Arrow extends PrefabManager.basePrefab {
 
 				Box2D.destroy(weldJointDef);
 
-				for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+				for (let fixture = this.arrowBody.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 					fixture.SetSensor(true);
 				}
 
@@ -148,11 +150,11 @@ class Arrow extends PrefabManager.basePrefab {
 						self.bodyToStick = body;
 						const offsetLength = self.impactOffsetLength - Math.min(impulse.get_normalImpulses(0) / 10, self.maxImpactToCollisionOffset);
 
-						const offset = self.vec;
+						const offset = self.arrowBody.GetWorldVector(self.pointingVec);
 						offset.x = offsetLength*Math.cos(self.impactAngle);
 						offset.y = offsetLength*Math.sin(self.impactAngle);
 
-						self.worldCollisionPoint = worldManifold.points[0];
+						self.worldCollisionPoint = worldManifold.get_points(0);
 						b2SubVec2(self.worldCollisionPoint, offset);
 
 						self.arrowBody.lockPositionForOneFrame = self.worldCollisionPoint;
