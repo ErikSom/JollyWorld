@@ -79,13 +79,21 @@ class Arrow extends PrefabManager.basePrefab {
 
 				this.arrowBody.SetTransform(this.worldCollisionPoint, this.impactAngle);
 
-				weldJointDef.bodyA = this.bodyToStick;
-				weldJointDef.bodyB = this.arrowBody;
-				weldJointDef.bodyA.GetLocalPoint( worldCoordsAnchorPoint, weldJointDef.localAnchorA);
-				weldJointDef.bodyB.GetLocalPoint( worldCoordsAnchorPoint, weldJointDef.localAnchorB);
+				weldJointDef.set_bodyA(this.bodyToStick);
+				weldJointDef.set_bodyB(this.arrowBody);
+
+
+				const localAnchorA = weldJointDef.bodyA.GetLocalPoint( worldCoordsAnchorPoint);
+				weldJointDef.localAnchorA.Set(localAnchorA.x, localAnchorA.y);
+
+				const localAnchorB = weldJointDef.bodyB.GetLocalPoint( worldCoordsAnchorPoint);
+				weldJointDef.localAnchorB.Set(localAnchorB.x, localAnchorB.y);
+
+
+
 				Box2D.destroy(worldCoordsAnchorPoint);
-				weldJointDef.collideConnected = false;
-				weldJointDef.referenceAngle = weldJointDef.bodyB.GetAngle()-weldJointDef.bodyA.GetAngle();
+				weldJointDef.set_collideConnected(false);
+				weldJointDef.set_referenceAngle(weldJointDef.bodyB.GetAngle()-weldJointDef.bodyA.GetAngle());
 				game.editor.CreateJoint(weldJointDef);
 
 				Box2D.destroy(weldJointDef);
@@ -150,12 +158,10 @@ class Arrow extends PrefabManager.basePrefab {
 						self.bodyToStick = body;
 						const offsetLength = self.impactOffsetLength - Math.min(impulse.get_normalImpulses(0) / 10, self.maxImpactToCollisionOffset);
 
-						const offset = self.arrowBody.GetWorldVector(self.pointingVec);
-						offset.x = offsetLength*Math.cos(self.impactAngle);
-						offset.y = offsetLength*Math.sin(self.impactAngle);
-
+						const offset = new Box2D.b2Vec2(offsetLength*Math.cos(self.impactAngle), offsetLength*Math.sin(self.impactAngle));
 						self.worldCollisionPoint = worldManifold.get_points(0);
 						b2SubVec2(self.worldCollisionPoint, offset);
+						Box2D.destroy(offset);
 
 						self.arrowBody.lockPositionForOneFrame = self.worldCollisionPoint;
 
