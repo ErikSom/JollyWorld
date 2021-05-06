@@ -5817,10 +5817,9 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.friction[0] = controller.targetValue;
-							var fixture = body.GetFixtureList();
-							while(fixture){
+
+							for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 								fixture.SetFriction(controller.targetValue);
-								fixture = fixture.GetNext();
 							}
 						}
 					} else if (controller.property == "restitution") {
@@ -5828,10 +5827,9 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.restitution[0] = controller.targetValue;
-							var fixture = body.GetFixtureList();
-							while(fixture){
+
+							for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 								fixture.SetRestitution(controller.targetValue);
-								fixture = fixture.GetNext();
 							}
 						}
 					}else if (controller.property == "collisionTypes") {
