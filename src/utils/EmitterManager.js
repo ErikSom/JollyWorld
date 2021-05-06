@@ -43,6 +43,10 @@ export const init = function () {
     {
         type: 'screenConfetti',
         poolSize: 3
+    },
+    {
+        type: 'confetti',
+        poolSize: 3
     }];
     emitterPoolData.forEach((data) => {
         for (let i = 0; i < data.poolSize; i++) getEmitter(data.type, true, true);

@@ -960,8 +960,8 @@ function Game() {
             const confettiOffset = 3.0;
             const offsetAngle = object.GetAngle() - Settings.pihalve;
 
-            confettiPosition.x += confettiOffset * Math.cos(offsetAngle);
-            confettiPosition.y += confettiOffset * Math.sin(offsetAngle);
+            confettiPosition.set_x(confettiPosition.get_x() + confettiOffset * Math.cos(offsetAngle));
+            confettiPosition.set_y(confettiPosition.get_y() + confettiOffset * Math.sin(offsetAngle));
 
             emitterManager.playOnceEmitter("confetti", object, confettiPosition, 0, ['#27cdcb', '#333333']);
 		    AudioManager.playSFX('checkpoint', 0.2, 1.0 + 0.4 * Math.random()-0.2, object.GetPosition());
@@ -976,7 +976,8 @@ function Game() {
                 frame: this.gameFrame,
                 // save checkpoint time
             }
-            console.log("**** Time checkpoint:", this.checkPointData.time, this.checkPointData.frame)
+
+            Box2D.destroy(confettiPosition);
 
             window.SVGCache[3]();
         }

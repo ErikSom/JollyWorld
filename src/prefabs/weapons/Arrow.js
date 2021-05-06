@@ -114,6 +114,7 @@ class Arrow extends PrefabManager.basePrefab {
 	destroy(){
 		if(!this.destroyed){
 			if(this.worldCollisionPoint) Box2D.destroy(this.worldCollisionPoint);
+			this.worldCollisionPoint = null;
 			Box2D.destroy(this.pointingVec);
 			Box2D.destroy(this.tailVec);
 
@@ -159,7 +160,7 @@ class Arrow extends PrefabManager.basePrefab {
 						const offsetLength = self.impactOffsetLength - Math.min(impulse.get_normalImpulses(0) / 10, self.maxImpactToCollisionOffset);
 
 						const offset = new Box2D.b2Vec2(offsetLength*Math.cos(self.impactAngle), offsetLength*Math.sin(self.impactAngle));
-						self.worldCollisionPoint = worldManifold.get_points(0);
+						self.worldCollisionPoint = b2CloneVec2(worldManifold.get_points(0));
 						b2SubVec2(self.worldCollisionPoint, offset);
 						Box2D.destroy(offset);
 

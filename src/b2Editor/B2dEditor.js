@@ -1896,6 +1896,7 @@ const _B2dEditor = function () {
 			delete body.originalGraphic;
 			delete body.preSolveVelicity;
 			delete body.preSolveVelicityCounter;
+			delete body.emitterCount;
 		}
 	}
 
