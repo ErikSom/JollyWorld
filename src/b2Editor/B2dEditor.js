@@ -9741,8 +9741,12 @@ const _B2dEditor = function () {
 					propertiesToFix.forEach(property => {
 						const targetObject = obj.settings[property];
 						if(Array.isArray(targetObject)){
-							targetObject.forEach( (id, index) => {
-								targetObject[index] = vehicleCorrectLayer(id + startChildIndex);
+							targetObject.forEach( (obj, index) => {
+								if(typeof obj === 'number'){
+									targetObject[index] = vehicleCorrectLayer(obj + startChildIndex);
+								}else {
+									targetObject[index][0] = vehicleCorrectLayer(targetObject[index][0] + startChildIndex);
+								}
 							})
 						}
 					})
