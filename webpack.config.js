@@ -14,6 +14,7 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, 'build/assets/'),
 		filename: 'awesome-game.js',
+		publicPath: 'assets/',
 	},
 	module: {
 		rules: [

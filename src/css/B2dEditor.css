@@ -58,7 +58,7 @@ body>.grid {
     margin-top: 10px !important;
 }
 
-canvas {
+body > canvas {
     position: absolute;
     top: 0;
     left: 0;

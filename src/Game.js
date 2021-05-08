@@ -175,6 +175,7 @@ function Game() {
             window.location.reload();
         });
 
+        this.stats.enableExtension('pixi', [PIXI, this.app]);
 
         window.__pixiScreenshot = ()=>{
             this.needScreenshot = true;

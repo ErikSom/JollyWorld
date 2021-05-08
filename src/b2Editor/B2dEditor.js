@@ -9929,6 +9929,7 @@ const _B2dEditor = function () {
 		}
 
 		//Destroy all graphics
+		console.log(game.app.renderer);
 		for (i = 0; i < this.textures.children.length; i++) {
 			var sprite = this.textures.getChildAt(i);
 			sprite.parent.removeChild(sprite);
