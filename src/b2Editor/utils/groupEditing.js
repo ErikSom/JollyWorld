@@ -10,6 +10,9 @@ export const startEditingGroup = () => {
 
 	if(editor.groupEditing) return;
 
+
+	editor.lockSaving = true;
+
 	editor.groupMinChildIndex = editor.textures.children.length-1;
 
 	editor.groupEditingObject = null;
@@ -262,6 +265,8 @@ export const stopEditingGroup = () => {
 	editor.groupMinChildIndex = -1;
 	editor.selectedTool = -1;
 	editor.selectTool(editor.tool_SELECT)
+
+	editor.lockSaving = false;
 
 	// store the new edited group
 	editor.storeUndoMovementDebounced();

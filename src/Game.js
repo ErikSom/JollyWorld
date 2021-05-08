@@ -885,7 +885,7 @@ function Game() {
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(() => {
-            if(!self.editor.groupEditing && !self.IS_ERROR){
+            if(!self.editor.lockSaving && !self.IS_ERROR){
                 self.currentLevelData.json = game.editor.worldJSON;
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
             }

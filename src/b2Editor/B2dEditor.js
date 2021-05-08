@@ -67,6 +67,7 @@ const _B2dEditor = function () {
 	this.deltaTime;
 	this.contactCallBackListener;
 
+
 	this.activePrefabs = {};
 	this.parallaxObject = [];
 	this.animationGroups = [];
@@ -103,6 +104,7 @@ const _B2dEditor = function () {
 
 	this.worldJSON;
 	this.lastValidWorldJSON;
+	this.lockSaving = false;
 
 	this.copiedJSON = '';
 	this.copiedCenterPosition = new Box2D.b2Vec2();
@@ -436,6 +438,7 @@ const _B2dEditor = function () {
 				// this.verticeEditingSprite.parent.addChild(this.verticeEditingBlackOverlay);
 				this.verticeEditingSprite.oldIndex = this.verticeEditingSprite.parent.getChildIndex(this.verticeEditingSprite);
 				this.verticeEditingSprite.parent.addChild(this.verticeEditingSprite);
+				this.lockSaving = true;
 				break
 			case this.tool_GEOMETRY:
 				ui.editorGUI.editData = this.editorGeometryObject;
@@ -673,6 +676,7 @@ const _B2dEditor = function () {
 
 				delete this.verticeEditingSprite;
 
+				this.lockSaving = false;
 
 
 			break;
@@ -4034,8 +4038,8 @@ const _B2dEditor = function () {
 
 	this.storeUndoMovement = function () {
 		if(!this.editing) return;
-		if(this.groupEditing) return;
-
+		if(this.lockSaving) return;
+ 
 		jointTriggerLayer.bringToFront();
 
 		this.stringifyWorldJSON();
@@ -9186,6 +9190,8 @@ const _B2dEditor = function () {
 	}
 
 	this.stringifyWorldJSON = function () {
+		if(this.groupEditing) stopEditingGroup();
+		if(this.selectedTool === this.tool_VERTICEEDITING) this.selectTool(this.tool_SELECT);
 
 		this.worldJSON = '{"objects":[';
 		var sprite;
