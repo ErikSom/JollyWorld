@@ -99,7 +99,7 @@ function UIManager() {
                         <div class="character-select">
                             <div class="text-change"><span class="fit">${localize('mainmenu_change')}</span></div>
                         </div>
-                        <div class="editor"><span class="fit h2">${localize('mainmenu_editor')}</span></div>
+                        <div class="editor"><span class="fit h2">${localize('mainmenu_editor')}</span><span class="availablepc">${localize('mainmenu_availablepc')}</span></div>
                         <div class="volume"></div>
                         <div class="settings"></div>
                     </div>
@@ -229,9 +229,14 @@ function UIManager() {
             }
 
             const editorButton = header.querySelector('.editor');
-            editorButton.onclick = ()=> {
-                this.hideMainMenu();
-                game.openEditor();
+
+            if(MobileController.isMobile()){
+                editorButton.classList.add('mobile');
+            }else{
+                editorButton.onclick = ()=> {
+                    this.hideMainMenu();
+                    game.openEditor();
+                }
             }
 
             const hamburger = header.querySelector('.hamburger');
