@@ -59,7 +59,7 @@ export const zoom = function (pos, isZoomIn) {
 export const setZoom = function (pos, scale) {
     const camera = B2dEditor.container.camera || B2dEditor.container;
 
-    scale = Math.min(10, Math.max(0.1, scale));
+    scale = Math.min(10, Math.max(0.01, scale));
     var worldPos = {
         x: (pos.x),
         y: (pos.y)
@@ -85,11 +85,12 @@ export const setZoom = function (pos, scale) {
         B2dEditor.editorIcons[i].scale.y = 1.0 / newScale.y;
     }
     if(scrollBars.screenWidth/scale> editorSettings.worldSize.width){
-        scale = scrollBars.screenWidth/editorSettings.worldSize.width;
+        // small epsilon to prevent infinite loop zoom
+        scale = scrollBars.screenWidth/editorSettings.worldSize.width+0.00001;
         setZoom(pos, scale)
         return;
     }else if(scrollBars.screenHeight/scale> editorSettings.worldSize.height){
-        scale = scrollBars.screenHeight/editorSettings.worldSize.height;
+        scale = scrollBars.screenHeight/editorSettings.worldSize.height+0.00001;
         setZoom(pos, scale)
         return;
     }
