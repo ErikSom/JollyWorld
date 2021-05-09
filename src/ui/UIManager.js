@@ -1046,7 +1046,7 @@ function UIManager() {
         const exitButton = buttons.querySelector('.exit');
         const testButton = buttons.querySelector('.test');
 
-
+        if(gameOver && game.run) gameOver.style.display = 'block';
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             gameOver.classList.add('editor');
@@ -1055,7 +1055,6 @@ function UIManager() {
             gameOver.classList.remove('editor');
             textFit(exitButton.querySelector('.fit'));
         }
-
 
         const timeText = gameOver.querySelector('.text-time');
         timeText.innerText = time;
@@ -1071,7 +1070,6 @@ function UIManager() {
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
 
 
-        if(gameOver && game.run) gameOver.style.display = 'block';
         setTimeout(()=>{
             if(gameOver && game.run){
                 gameOver.style.opacity = 1;
