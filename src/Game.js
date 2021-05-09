@@ -264,9 +264,8 @@ function Game() {
         this.triggerDebugDraw = new PIXI.Graphics();
         this.triggerDebugDraw.debounceRedraw = ()=>{
             while(game.triggerDebugDraw.children.length > 0){
-                var child = game.triggerDebugDraw.getChildAt(0);
-                game.triggerDebugDraw.removeChild(child);
-                child.destroy();
+                const child = game.triggerDebugDraw.getChildAt(0);
+                child.destroy(true);
             }
             game.triggerDebugDraw.clear();
             this.triggerDebugDraw.redrawTimer = 6;

@@ -2038,13 +2038,13 @@ export const drawEditorTriggerTargets = targets=>{
                 game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
                 game.triggerDebugDraw.endFill();
 
-                drawing.addText(j+1, game.triggerDebugDraw, tp, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+                drawing.addText(j+1, game.triggerDebugDraw, tp, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
             };
 
             if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
                 const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
-                drawing.addText(keyName, game.triggerDebugDraw, myPos.Clone().SelfAdd({x:1, y:1}), {fill:0x000, fontSize: 14 / game.editor.cameraHolder.scale.x});
-                drawing.addText(keyName, game.triggerDebugDraw, myPos, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+                drawing.addText(keyName, game.triggerDebugDraw, myPos.Clone().SelfAdd({x:1, y:1}), {fill:0x000, fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
+                drawing.addText(keyName, game.triggerDebugDraw, myPos, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
             }
         }
     });

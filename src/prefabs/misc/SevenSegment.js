@@ -279,7 +279,7 @@ class SevenSegment extends PrefabManager.basePrefab {
             game.triggerDebugDraw.beginFill("0x999", 1.0);
             game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
             game.triggerDebugDraw.endFill();
-            drawing.addText(i+1, game.triggerDebugDraw, tp, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+            drawing.addText(i+1, game.triggerDebugDraw, tp, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
         });
         game.triggerDebugDraw.dirtyTargets = false;
     }
