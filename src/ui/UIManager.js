@@ -221,14 +221,6 @@ function UIManager() {
 
             const header = mainMenu.querySelector('.header');
 
-            const hamburger = header.querySelector('.hamburger');
-            const mobileBG = header.querySelector('.mobile-bg');
-            const headerButtons = header.querySelector('.buttons');
-            hamburger.onclick = ()=>{
-                mobileBG.classList.toggle('open');
-                headerButtons.classList.toggle('open');
-            }
-
             const characterSelect = header.querySelector('.character-select');
             characterSelect.onclick = ()=> {
                 mobileBG.classList.remove('open');
@@ -240,6 +232,17 @@ function UIManager() {
             editorButton.onclick = ()=> {
                 this.hideMainMenu();
                 game.openEditor();
+            }
+
+            const hamburger = header.querySelector('.hamburger');
+            const mobileBG = header.querySelector('.mobile-bg');
+            const headerButtons = header.querySelector('.buttons');
+            hamburger.onclick = ()=>{
+                mobileBG.classList.toggle('open');
+                headerButtons.classList.toggle('open');
+
+                textFit(characterSelect.querySelector('.fit'));
+                textFit(editorButton.querySelector('.fit'));
             }
 
             const volumeButton = header.querySelector('.volume');
@@ -1560,13 +1563,19 @@ function UIManager() {
             });
         }
 
+        const buttons = winScreen.querySelector('.buttons');
+        const exitButton = buttons.querySelector('.exit');
+        const testButton = buttons.querySelector('.test');
+
+        winScreen.style.display = 'block';
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             winScreen.classList.add('editor');
+            textFit(testButton.querySelector('.fit'));
         }else{
             winScreen.classList.remove('editor');
+            textFit(exitButton.querySelector('.fit'));
         }
-
 
         const timeText = winScreen.querySelector('.text-time');
         timeText.innerText = time;
@@ -1581,7 +1590,6 @@ function UIManager() {
 
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
 
-        winScreen.style.display = 'block';
 
         AudioManager.playSFX('win', 0.5, 1.0);
 
