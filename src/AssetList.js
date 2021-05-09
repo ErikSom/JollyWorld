@@ -26,7 +26,6 @@ export const LoadCoreAssets = function (loader){
         /*PARTICLE DATA*/
         .add(`assets/images/particles/${hashName('particles.json')}`)
         /*MISC*/
-        .add("Logo", `assets/images/gui/${hashName('Logo.svg')}`)
         .add(`assets/images/gui/${hashName('iconSet.json')}`);
 }
 
