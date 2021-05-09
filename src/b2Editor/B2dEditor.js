@@ -2969,6 +2969,8 @@ const _B2dEditor = function () {
 									this.selectedTextures = [highestObject];
 								}
 							}
+
+							this.updateSelection();
 						}
 					}else{
 						let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
