@@ -1145,15 +1145,16 @@ export class Humanoid extends PrefabManager.basePrefab {
         linkedBodies.forEach((linkedBody, index)=>{
 
             let nextLinkedBody = index+1 === linkedBodies.length ? baseRefJoint : linkedBodies[index+1];
-            const j1 = this.lookupObject[linkedBody+'_joint'].GetAnchorA();
-            const j2 = this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA();
+            const j1 = b2CloneVec2(this.lookupObject[linkedBody+'_joint'].GetAnchorA());
+            const j2 = b2CloneVec2(this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA());
 
-            const inc = b2CloneVec2(j1);
+            const inc = j1;
             b2SubVec2(inc, j2);
 
             maxLength += inc.Length();
 
-            Box2D.destroy(inc);
+            Box2D.destroy(j1);
+            Box2D.destroy(j2);
 
         });
         newJoint.SetMaxLength(maxLength);

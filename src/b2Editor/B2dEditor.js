@@ -9018,7 +9018,7 @@ const _B2dEditor = function () {
 
 				let density = data.density[i];
 				if(!density && density !== 0) density = 1.0;
-				fixDef.set_density(density);
+				fixDef.set_density(Math.max(density, 0.001));
 
 				let friction = data.friction[i];
 				if(!friction && friction !== 0) friction = Settings.defaultFriction;
