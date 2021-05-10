@@ -1158,6 +1158,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         });
         newJoint.SetMaxLength(maxLength);
+        newJoint.SetMinLength(0);
 
         [...linkedBodies, baseRefJoint].forEach(linkedBodyKey => {
             const linkedJoint = this.lookupObject[`${linkedBodyKey}_joint`]

@@ -8716,7 +8716,7 @@ const _B2dEditor = function () {
 			ropeJointDef.Initialize(bodyA, bodyB, bodyA.GetPosition(), bodyB.GetPosition());
 
 			const length = ropeJointDef.get_length();
-			ropeJointDef.set_minLength(length);
+			ropeJointDef.set_minLength(0);
 			ropeJointDef.set_maxLength(length);
 
 			ropeJointDef.set_stiffness(0);
