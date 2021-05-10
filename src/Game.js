@@ -1286,14 +1286,15 @@ function Game() {
 
                     const skipBecauseToLight = contact.GetFixtureA().GetDensity() === 0.001 || contact.GetFixtureB().GetDensity() === 0.001;
 
-                    if (velocitySum > 10.0 && !skipBecauseToLight) {
+                    if (velocitySum > 10.0 && !skipBecauseToLight && (!body.decalTimeout || performance.now() > body.decalTimeout)) {
+                        body.decalTimeout = performance.now() + Settings.decalTimeout
                         const worldManifold = new Box2D.b2WorldManifold();
                         contact.GetWorldManifold(worldManifold);
                         const worldCollisionPoint = worldManifold.get_points(0);
 
                         const slidingDecalSlider = 50;
                         const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
-                        self.editor.addDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
+                        self.editor.queueDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
 
                         emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 

@@ -72,6 +72,7 @@ const _B2dEditor = function () {
 	this.activePrefabs = {};
 	this.parallaxObject = [];
 	this.animationGroups = [];
+	this.decalQueue = [];
 	this.prefabCounter = 0; //to ensure uniquenesss
 
 	this.uniqueCollisions = -3;
@@ -1903,6 +1904,7 @@ const _B2dEditor = function () {
 			delete body.preSolveVelicity;
 			delete body.preSolveVelicityCounter;
 			delete body.emitterCount;
+			delete body.decalTimeout;
 		}
 	}
 
@@ -2552,6 +2554,7 @@ const _B2dEditor = function () {
 				if(animationGroup.playing) animationGroup.updateAnimation(this.deltaTime);
 			})
 			physicsCullCamera.update();
+			this.processQueueDecalToBody();
 		}
 	}
 
@@ -8901,6 +8904,20 @@ const _B2dEditor = function () {
 		body.myTexture.originalSprite.texture = decal.decalRT;
 	
 	}
+	this.processQueueDecalToBody = function(){
+		if(!this.decalQueue.length) return;
+
+		for(let i = 0; i<Settings.decalProcessesPerFrame; i++){
+			const decalProcess = this.decalQueue.shift();
+			this.addDecalToBody(...decalProcess)
+			if(this.decalQueue.length === 0) break;
+		}
+
+	}
+
+	this.queueDecalToBody = function(body, worldPosition, textureName, carving, size, rotation, optional) {
+		this.decalQueue.push([body, worldPosition, textureName, carving, size, rotation, optional]);
+	}
 
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size, rotation, optional) {
 		if (body.destroyed || !Settings.goreEnabled)
@@ -10175,6 +10192,7 @@ const _B2dEditor = function () {
 		this.lookupGroups = {};
 		this.parallaxObject = [];
 		this.animationGroups = [];
+		this.decalQueue = [];
 
 		this.clearDebugGraphics();
 		this.clearLevelGradients();

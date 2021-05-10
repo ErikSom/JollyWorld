@@ -70,7 +70,7 @@ export class Explosive extends PrefabManager.basePrefab {
 					const powerRate = power/this.explosivePower;
 
 					if(body.isFlesh){
-						self.editor.addDecalToBody(body, rayCallback.m_point, "skorch.png", true, powerRate*5, Math.atan2(diff.y, diff.x), {burn:powerRate*.6});
+						self.editor.queueDecalToBody(body, rayCallback.m_point, "skorch.png", true, powerRate*5, Math.atan2(diff.y, diff.x), {burn:powerRate*.6});
 					}
 
 					if (powerRate > .2 && body.mySprite && body.mySprite.data.prefabInstanceName) {

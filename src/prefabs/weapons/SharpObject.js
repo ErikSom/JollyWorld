@@ -174,8 +174,8 @@ export class SharpObject extends PrefabManager.basePrefab {
                         this.sharpBody.GetWorld().RayCast(callback, bladePosition, bladeEndPosition);
                         if (callback.m_hit) {
                             const body = callback.m_fixture.GetBody();
-                            game.editor.addDecalToBody(body, callback.m_point, "Decal.png", true, 0.5);
-                            game.editor.addDecalToBody(sharpBody, callback.m_point, "Decal.png", false, 1.3);
+                            game.editor.queueDecalToBody(body, callback.m_point, "Decal.png", true, 0.5);
+                            game.editor.queueDecalToBody(sharpBody, callback.m_point, "Decal.png", false, 1.3);
 
                             emitterManager.playOnceEmitter("blood", body, callback.m_point, extentAngle);
                         }

@@ -306,7 +306,7 @@ class DroneBomb extends Explosive {
 					b2MulVec2(pos, 1/game.editor.PTM);
 					if(isFlesh){
 						emitterManager.playOnceEmitter("blood", self.body, pos, self.emitterRight.rotation);
-						game.editor.addDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
+						game.editor.queueDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
 					}else self.emitterRight.playOnce();
 
 					let force1 = b2CloneVec2(angleVector);
@@ -330,7 +330,7 @@ class DroneBomb extends Explosive {
 
 					if(isFlesh){
 						emitterManager.playOnceEmitter("blood", self.body, pos, self.emitterLeft.rotation);
-						game.editor.addDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
+						game.editor.queueDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
 					}else self.emitterLeft.playOnce();
 
 					let force1 = b2CloneVec2(angleVector);

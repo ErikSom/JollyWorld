@@ -565,8 +565,8 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     for (let connectedJointEdge = targetBody.GetJointList(); getPointer(connectedJointEdge) !== getPointer(NULL); connectedJointEdge = connectedJointEdge.get_next()) {
                         const joint = connectedJointEdge.joint;
-                        if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.addDecalToBody(joint.GetBodyA(), joint.GetAnchorA(), "Decal.png", true);
-                        if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.addDecalToBody(joint.GetBodyB(), joint.GetAnchorA(), "Decal.png", true);
+                        if(joint.GetBodyA() != targetBody && joint.GetBodyA().isFlesh) game.editor.queueDecalToBody(joint.GetBodyA(), joint.GetAnchorA(), "Decal.png", true);
+                        if(joint.GetBodyB() != targetBody && joint.GetBodyB().isFlesh) game.editor.queueDecalToBody(joint.GetBodyB(), joint.GetAnchorA(), "Decal.png", true);
                     }
 
                     // Fix bash damaage & also set snapped for objects that got detached from the player
@@ -681,8 +681,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                     })
                     //carve bodies
 
-                    if (targetJoint.GetBodyA().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
-                    if (targetJoint.GetBodyB().isFlesh) game.editor.addDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
+                    if (targetJoint.GetBodyA().isFlesh) game.editor.queueDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
+                    if (targetJoint.GetBodyB().isFlesh) game.editor.queueDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
 
                     game.editor.DestroyJoint(targetJoint);
                     delete this.lookupObject[update.target + "_joint"];

@@ -42,6 +42,8 @@ export var Settings = {
     bashForce:10000,
     physicsParticleLifeTime:2000,
     physicsParticleLifeTimeRandomOffset:1000,
+    decalTimeout:50,
+    decalProcessesPerFrame:6,
     /*CHARACTER*/
     detachForce:300,
     characterLeanSpeed:2,
