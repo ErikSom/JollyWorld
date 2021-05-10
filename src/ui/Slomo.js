@@ -58,6 +58,7 @@ export const hide = ()=> {
 		ui.alpha = 0;
 		alertTime = 0;
 		colorToggle = false;
+		gameSpeed = 1.0;
 	}
 }
 export const update = () => {
