@@ -2053,7 +2053,7 @@ export const drawEditorTriggerTargets = targets=>{
                 game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
                 game.triggerDebugDraw.endFill();
 
-                drawing.addText(j+1, game.triggerDebugDraw, tp, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+                drawing.addText(j+1, game.triggerDebugDraw, tp, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
 
                 Box2D.destroy(tarPos);
                 Box2D.destroy(linePos);
@@ -2064,8 +2064,8 @@ export const drawEditorTriggerTargets = targets=>{
             if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
                 const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
                 const tarPos = new Box2D.b2Vec2(myPos.x + 1, myPos.y + 1);
-                drawing.addText(keyName, game.triggerDebugDraw, tarPos, {fill:0x000, fontSize: 14 / game.editor.cameraHolder.scale.x});
-                drawing.addText(keyName, game.triggerDebugDraw, myPos, {fontSize: 14 / game.editor.cameraHolder.scale.x});
+                drawing.addText(keyName, game.triggerDebugDraw, tarPos, {fill:0x000, fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
+                drawing.addText(keyName, game.triggerDebugDraw, myPos, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
 
                 Box2D.destroy(tarPos);
             }

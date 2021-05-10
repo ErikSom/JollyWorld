@@ -61,12 +61,13 @@ export const drawPolygon = function(polygons, point, _lineOptions, _fillOptions)
     B2dEditor.debugGraphics.endFill();
 }
 
-export const addText = function(string, target, position, _textOptions){
+export const addText = function(string, target, position, _textOptions, scale=1){
     const textOptions = Object.assign({}, textOptionsBase, _textOptions);
     let text = new PIXI.Text(string, textOptions);
     if(textOptions.align == "center") text.pivot.set(text.width/2, text.height/2);
     text.x = position.x;
     text.y = position.y;
+    text.scale.x = text.scale.y = scale;
     target.addChild(text);
 }
 

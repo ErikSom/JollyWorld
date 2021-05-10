@@ -173,6 +173,7 @@ function Game() {
             window.location.reload();
         });
 
+        this.stats.enableExtension('pixi', [PIXI, this.app]);
 
         window.__pixiScreenshot = ()=>{
             this.needScreenshot = true;
@@ -265,9 +266,8 @@ function Game() {
         this.triggerDebugDraw = new PIXI.Graphics();
         this.triggerDebugDraw.debounceRedraw = ()=>{
             while(game.triggerDebugDraw.children.length > 0){
-                var child = game.triggerDebugDraw.getChildAt(0);
-                game.triggerDebugDraw.removeChild(child);
-                child.destroy();
+                const child = game.triggerDebugDraw.getChildAt(0);
+                child.destroy(true);
             }
             game.triggerDebugDraw.clear();
             this.triggerDebugDraw.redrawTimer = 6;
@@ -897,7 +897,7 @@ function Game() {
         let self = this;
         this.stopAutoSave();
         this.autoSaveTimeOutID = setTimeout(() => {
-            if(!self.editor.groupEditing && !self.IS_ERROR){
+            if(!self.editor.lockSaving && !self.IS_ERROR){
                 self.currentLevelData.json = game.editor.worldJSON;
                 SaveManager.saveTempEditorWorld(self.currentLevelData);
             }

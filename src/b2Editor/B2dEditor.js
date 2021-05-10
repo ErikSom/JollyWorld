@@ -13,6 +13,8 @@ import * as DS from './utils/DecalSystem';
 import * as camera from './utils/camera';
 import * as PIXI from 'pixi.js';
 
+import easing from './utils/easing';
+
 import {
 	lineIntersect,
 	flatten,
@@ -66,6 +68,7 @@ const _B2dEditor = function () {
 	this.deltaTime;
 	this.contactCallBackListener;
 
+
 	this.activePrefabs = {};
 	this.parallaxObject = [];
 	this.animationGroups = [];
@@ -102,6 +105,7 @@ const _B2dEditor = function () {
 
 	this.worldJSON;
 	this.lastValidWorldJSON;
+	this.lockSaving = false;
 
 	this.copiedJSON = '';
 	this.copiedCenterPosition = new Box2D.b2Vec2();
@@ -439,6 +443,7 @@ const _B2dEditor = function () {
 				// this.verticeEditingSprite.parent.addChild(this.verticeEditingBlackOverlay);
 				this.verticeEditingSprite.oldIndex = this.verticeEditingSprite.parent.getChildIndex(this.verticeEditingSprite);
 				this.verticeEditingSprite.parent.addChild(this.verticeEditingSprite);
+				this.lockSaving = true;
 				break
 			case this.tool_GEOMETRY:
 				ui.editorGUI.editData = this.editorGeometryObject;
@@ -676,6 +681,7 @@ const _B2dEditor = function () {
 
 				delete this.verticeEditingSprite;
 
+				this.lockSaving = false;
 
 
 			break;
@@ -3106,6 +3112,8 @@ const _B2dEditor = function () {
 									this.selectedTextures = [highestObject];
 								}
 							}
+
+							this.updateSelection();
 						}
 					}else{
 						let highestObject = this.retrieveHighestSelectedObject(this.startSelectionPoint, this.startSelectionPoint);
@@ -4183,8 +4191,8 @@ const _B2dEditor = function () {
 
 	this.storeUndoMovement = function () {
 		if(!this.editing) return;
-		if(this.groupEditing) return;
-
+		if(this.lockSaving) return;
+ 
 		jointTriggerLayer.bringToFront();
 
 		this.stringifyWorldJSON();
@@ -4598,6 +4606,8 @@ const _B2dEditor = function () {
 
     }
 	this.onKeyDown = function (e) {
+		const gameContainer = B2dEditor.container.camera || B2dEditor.container;
+
 		if (e.keyCode == 86) { //v
 			if((e.ctrlKey || e.metaKey) && e.shiftKey){
 				this.pasteSelection();
@@ -4670,20 +4680,26 @@ const _B2dEditor = function () {
 				}
 			}
 		}else if ((e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
+			const minScale = 0.01;
+			const maxScale = 0.5;
+			const scaleMinMaxDiff = maxScale-minScale;
 
+			// 1 is fully zoomed out, 0 = zoomed in;
+			const scaleProgress = easing.easeInQuint( 1 - (Math.min(maxScale, gameContainer.scale.x) - minScale) / scaleMinMaxDiff );
+			const maxPixScale = Math.max(1, Math.round(20 * scaleProgress));
 
 			let xInc = 0;
 			let yInc = 0;
 			if(e.keyCode === 65){
-				xInc = -1;
+				xInc = -maxPixScale;
 			}else if(e.keyCode === 68){
-				xInc = 1;
+				xInc = maxPixScale;
 			}
 
 			if(e.keyCode === 87){
-				yInc = 1;
+				yInc = maxPixScale;
 			}else if(e.keyCode === 83){
-				yInc = -1;
+				yInc = -maxPixScale;
 			}
 
 			if(this.shiftDown){
@@ -4704,8 +4720,16 @@ const _B2dEditor = function () {
 
 			this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
 
-			this.updateSelection()
-
+			// hack to improve speed of dat gui
+			if(ui?.editorGUI?.__folders?.body?.__controllers){
+				ui.editorGUI.__folders.body.__controllers.forEach(controller => {
+					if(controller.property === 'width'){
+						controller.object.width = targetWidth;
+					}else if(controller.property === 'height'){
+						controller.object.height = targetHeight;
+					}
+				});
+			}
 		}else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
 			if(e.keyCode == 8 && (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN)){
 				this.activeVertices.pop();
@@ -9383,6 +9407,8 @@ const _B2dEditor = function () {
 	}
 
 	this.stringifyWorldJSON = function () {
+		if(this.groupEditing) stopEditingGroup();
+		if(this.selectedTool === this.tool_VERTICEEDITING) this.selectTool(this.tool_SELECT);
 
 		this.worldJSON = '{"objects":[';
 		var sprite;
@@ -9932,8 +9958,12 @@ const _B2dEditor = function () {
 					propertiesToFix.forEach(property => {
 						const targetObject = obj.settings[property];
 						if(Array.isArray(targetObject)){
-							targetObject.forEach( (id, index) => {
-								targetObject[index] = vehicleCorrectLayer(id + startChildIndex);
+							targetObject.forEach( (obj, index) => {
+								if(typeof obj === 'number'){
+									targetObject[index] = vehicleCorrectLayer(obj + startChildIndex);
+								}else {
+									targetObject[index][0] = vehicleCorrectLayer(targetObject[index][0] + startChildIndex);
+								}
 							})
 						}
 					})

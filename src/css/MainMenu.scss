@@ -102,6 +102,27 @@
 				height: 54px;
 				font-size: 36px;
 				line-height: 54px;
+				.availablepc {
+					display:none;
+				}
+				&.mobile{
+					line-height: 34px !important;
+					filter: grayscale(1);
+
+					.availablepc{
+						display: block;
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+						font-size: 12px;
+						margin-top: 14px;
+					}
+
+					.h2{
+						line-height: inherit !important;
+					}
+				}
 				@extend .base-button;
 			}
 			.volume{
