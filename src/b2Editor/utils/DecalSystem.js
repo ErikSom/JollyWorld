@@ -43,7 +43,7 @@ export class DecalSystem {
         this.next = null;
 
         if(owner) {
-            this.next = owner;
+            owner.next = this;
         }
 
         //update decals every 2 frame
@@ -101,14 +101,14 @@ export class DecalSystem {
         g.scale.set(1);
 
         g.color.setLight(1, 1, 1);
-		g.color.setDark(0, 0, 0);		
+		g.color.setDark(0, 0, 0);
 
         // render decal base texture
         this.app.renderer.render(g, this.resultRT, true);
 
         // render white mask
 		g.color.setLight(1, 1, 1);
-		g.color.setDark(1, 1, 1);		
+		g.color.setDark(1, 1, 1);
 
         this.app.renderer.render(g, this.maskRT, false);
     }
@@ -218,10 +218,11 @@ export class DecalSystem {
 
         this.next = null;
         this.decals.forEach((e) => e.destroy());
-        this.maskRT.destroy();
-        this.decalRT.destroy();
-        this.resultRT.destroy();
-        
+
+        this.maskRT.destroy(true);
+        this.decalRT.destroy(true);
+        this.resultRT.destroy(true);
+
         this.decals = [];
         this.maskRT = null;
         this.decalRT = null;
