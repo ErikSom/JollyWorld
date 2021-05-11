@@ -10170,14 +10170,29 @@ const _B2dEditor = function () {
 		}
 
 		//Destroy all graphics
+
+		debugger;
 		var i = 0
 		for (i = 0; i < this.textures.children.length; i++) {
-			var sprite = this.textures.getChildAt(i);
-			sprite.parent.removeChild(sprite);
+			const sprite = this.textures.getChildAt(i);
+
+			if(sprite.myTileSprite){
+				sprite.myTileSprite.parent.removeChild(sprite.myTileSprite);
+			}
+
+			if(sprite.myBody){
+				if(sprite.myBody.myTileSprite){
+					sprite.myBody.myTileSprite.parent.removeChild(sprite.myBody.myTileSprite);
+				}
+			}
+
+			let destroyAll = false;
+			if(sprite.data && [this.object_TEXT, this.object_GRAPHIC, this.object_BODY, this.object_TRIGGER].includes(sprite.data.type)) destroyAll = true;
+
 			sprite.destroy({
 				children: true,
-				texture: false,
-				baseTexture: false
+				texture: destroyAll,
+				baseTexture: destroyAll
 			});
 			i--;
 		}
