@@ -120,6 +120,8 @@ class GravitationalField extends PrefabManager.basePrefab {
 
 		};
 
+		body.SetTransform(body.GetPosition(), body.GetAngle());
+
 		game.editor.updateBodyShapes(body);
 		game.editor.updateTileSprite(body, true);
 

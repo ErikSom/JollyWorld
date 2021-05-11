@@ -99,7 +99,6 @@ class ForceField extends PrefabManager.basePrefab {
 					vertices.push({x:vertex.get_x()*scaleX, y:vertex.get_y()*scaleY});
 				}
 
-				vertices.reverse();
 				shape.Set(pointsToVec2Array(vertices)[0], vertices.length);
 
 				let oldVertices = body.mySprite.data.vertices[i];
@@ -117,8 +116,11 @@ class ForceField extends PrefabManager.basePrefab {
 			}
 		};
 
+		body.SetTransform(body.GetPosition(), body.GetAngle());
+
 		game.editor.updateBodyShapes(body);
 		game.editor.updateTileSprite(body, true);
+
 		this.setDirection(this.prefabObject.settings.direction);
 		this.setDisableGravity(this.prefabObject.settings.disableGravity);
 

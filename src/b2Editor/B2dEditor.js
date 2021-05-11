@@ -10170,8 +10170,6 @@ const _B2dEditor = function () {
 		}
 
 		//Destroy all graphics
-
-		debugger;
 		var i = 0
 		for (i = 0; i < this.textures.children.length; i++) {
 			const sprite = this.textures.getChildAt(i);
