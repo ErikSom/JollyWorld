@@ -1970,6 +1970,7 @@ const _B2dEditor = function () {
 			delete joint.destroyed;
 			delete joint.innerLoopDestroyed;
 			delete joint.snapTick;
+			delete joint.myTriggers;
 		}
 	}
 
@@ -10185,8 +10186,23 @@ const _B2dEditor = function () {
 				}
 			}
 
+			if(sprite.data && sprite.data.type === this.object_GRAPHICGROUP){
+				debugger;
+				sprite.children.forEach(s => {
+					if(s.isSprite){
+						s.destroy({
+							children: true,
+							texture: false,
+							baseTexture: false
+						});
+					}
+				})
+			}
+
 			let destroyAll = false;
-			if(sprite.data && [this.object_TEXT, this.object_GRAPHIC, this.object_BODY, this.object_TRIGGER].includes(sprite.data.type)) destroyAll = true;
+			if(sprite.data &&
+				[this.object_TEXT, this.object_GRAPHIC, this.object_BODY, this.object_TRIGGER, this.object_GRAPHICGROUP].includes(sprite.data.type)
+				&& !sprite.isMesh) destroyAll = true;
 
 			sprite.destroy({
 				children: true,
