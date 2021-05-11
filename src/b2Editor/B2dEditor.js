@@ -10181,6 +10181,7 @@ const _B2dEditor = function () {
 			if(sprite.myBody){
 				if(sprite.myBody.myTileSprite){
 					sprite.myBody.myTileSprite.parent.removeChild(sprite.myBody.myTileSprite);
+					delete sprite.myBody.myTileSprite;
 				}
 			}
 
