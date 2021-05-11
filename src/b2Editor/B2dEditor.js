@@ -10186,23 +10186,34 @@ const _B2dEditor = function () {
 				}
 			}
 
-			if(sprite.data && sprite.data.type === this.object_GRAPHICGROUP){
-				debugger;
-				sprite.children.forEach(s => {
-					if(s.isSprite){
+			let destroyAll = false;
+
+			if(sprite.data){
+				// make sure to first remove textures from graphic groups
+				if(sprite.data.type === this.object_GRAPHICGROUP){
+					const toDestroy = [];
+					sprite.children.forEach(s => {
+						if(s.isSprite && !s._text){
+							toDestroy.push(s);
+						}
+					})
+					toDestroy.forEach(s => {
 						s.destroy({
 							children: true,
 							texture: false,
 							baseTexture: false
-						});
-					}
-				})
+						})
+					});
+				}
+
+				if(sprite.data.type === this.object_ANIMATIONGROUP){
+					debugger;
+				}
+
+				if([this.object_TEXT, this.object_GRAPHIC, this.object_BODY, this.object_TRIGGER, this.object_GRAPHICGROUP].includes(sprite.data.type)
+				&& !sprite.isMesh) destroyAll = true;
 			}
 
-			let destroyAll = false;
-			if(sprite.data &&
-				[this.object_TEXT, this.object_GRAPHIC, this.object_BODY, this.object_TRIGGER, this.object_GRAPHICGROUP].includes(sprite.data.type)
-				&& !sprite.isMesh) destroyAll = true;
 
 			sprite.destroy({
 				children: true,
