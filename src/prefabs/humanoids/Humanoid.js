@@ -195,10 +195,10 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.alive = false;
     }
     processJointDamage() {
-        const jointsToAnalyse = ['leg_left_joint', 'leg_right_joint','arm_left_joint', 'arm_right_joint'/*,'head_joint', 'belly_joint'*/ ];
+        const jointsToAnalyse = ['leg_left', 'leg_right','arm_left', 'arm_right'/*,'head_joint', 'belly_joint'*/ ];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
-            let targetJoint = this.lookupObject[jointsToAnalyse[i]];
-            if (!targetJoint || targetJoint.destroyed) continue;
+            let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
+            if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
 
             let reactionForce = vec1;
             targetJoint.GetReactionForce(1 / Settings.physicsTimeStep, reactionForce);
@@ -254,13 +254,13 @@ export class Humanoid extends PrefabManager.basePrefab {
         const snapSeperation = 0.2;
         const maxSnapTicks = 30;
         let i;
-        const jointsToAnalyse = ['leg_left_joint', 'leg_right_joint', 'head_joint', 'belly_joint', 'feet_left_joint', 'feet_right_joint', 'hand_left_joint', 'hand_right_joint', 'thigh_left_joint', 'thigh_right_joint', 'shoulder_left_joint', 'shoulder_right_joint'];
+        const jointsToAnalyse = ['leg_left', 'leg_right', 'head', 'belly', 'feet_left', 'feet_right', 'hand_left', 'hand_right', 'thigh_left', 'thigh_right', 'shoulder_left', 'shoulder_right'];
 
         // check num frames
         
         for (i = 0; i < jointsToAnalyse.length; i++) {
-            let targetJoint = this.lookupObject[jointsToAnalyse[i]];
-            if (!targetJoint || targetJoint.destroyed) continue;
+            let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
+            if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
 
             const pos1 = b2CloneVec2(targetJoint.GetAnchorA());
             const pos2 = b2CloneVec2(targetJoint.GetAnchorB());
@@ -611,7 +611,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 break;
             case Humanoid.GORE_SNAP:
                 const targetJoint = this.lookupObject[update.target + "_joint"];
-                if (targetJoint && !targetJoint.destroyed) {
+                if (targetJoint && !targetJoint.destroyed && this.lookupObject[update.target]) {
                     this.addBloodEmitters(update.target, update.type);
 
                     if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
