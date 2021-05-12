@@ -868,7 +868,7 @@ function Game() {
         this.editor.buildJSON(data.json);
         if(this.editor.editorSettingsObject.song) MidiPlayer.startLoad(this.editor.editorSettingsObject.song);
 
-        if(backendManager.isLoggedIn() && data.id){
+        if(backendManager.isLoggedIn() && backendManager.userData && data.id){
             window.SVGCache[0](backendManager.userData.id, data.id, game.selectedCharacter)
         }
     }

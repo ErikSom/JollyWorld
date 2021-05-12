@@ -346,8 +346,11 @@ function UIManager() {
         }
     }
 
-    this.handleLoginChange = ()=> {
+    this.handleLoginChange = async ()=> {
         const header = mainMenu.querySelector('.header');
+
+        // if we can't retrieve userdata quick enough
+        if(!backendManager.userData) setTimeout(handleLoginChange, 100);
 
         const discordButton = header.querySelector('.discord');
         if(backendManager.isLoggedIn()){
@@ -662,6 +665,11 @@ function UIManager() {
         //         }
         //     )
         // }
+
+        if(backendManager.isLoggedIn() && !backendManager.userData){
+            // if we have not yet retreived the userdata fetch it
+            await backendManager.getBackendUserData();
+        }
 
         const inRankings = backendManager.isLoggedIn() && leaderboardData.find(entry => entry.username === backendManager.userData.username);
 
