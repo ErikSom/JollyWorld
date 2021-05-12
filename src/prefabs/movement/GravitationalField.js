@@ -160,6 +160,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 			const otherBody = (bodies[0] == self.forceField) ? bodies[1] : bodies[0];
 
 			if(otherBody.GetType() !== Box2D.b2_dynamicBody) return;
+			if(otherBody.mySprite && otherBody.mySprite.data.type === game.editor.object_TRIGGER) return;
 			if(!otherBody.IsAwake()) return;
 
 			if(!otherBody.isAffectedByForcefield){
