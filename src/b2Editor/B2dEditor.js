@@ -9824,23 +9824,11 @@ const _B2dEditor = function () {
 			data.y = sprite.myBody.GetPosition().get_y();
 			data.rotation = sprite.myBody.GetAngle();
 
-			if(data.triggerObjects.length > 0 && (!sprite.targets || sprite.targets.length === 0)){
-				alert("Please DM Smerik with what your last action was right before you received this message. This could be crucial in fixing a very important bug");
-			}
-
-			// potential trigger issue here
 			data.triggerObjects = [];
 			for (var i = 0; i < sprite.targets.length; i++) {
 				if (sprite.targets[i] instanceof this.prefabObject) data.triggerObjects.push(sprite.targets[i].key);
 				else data.triggerObjects.push(sprite.targets[i].parent.getChildIndex(sprite.targets[i]));
 			}
-
-			data.triggerObjects.forEach(target => {
-				if(target === undefined || target === null){
-					alert("Please DM Smerik with what your last action was right before you received this message. This could be crucial in fixing a very important bug");
-				}
-			})
-
 		}
 
 		if (!sprite && data.type == this.object_PREFAB) {
