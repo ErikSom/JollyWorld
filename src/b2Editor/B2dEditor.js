@@ -10189,13 +10189,21 @@ const _B2dEditor = function () {
 			let destroyAll = false;
 
 			if(sprite.data){
-				// make sure to first remove textures from graphic groups
-				if(sprite.data.type === this.object_GRAPHICGROUP){
+				// make sure to first remove textures from graphic groups and animations
+				if(sprite.data.type === this.object_GRAPHICGROUP || sprite.data.type === this.object_ANIMATIONGROUP){
 					const toDestroy = [];
 					sprite.children.forEach(s => {
 						if(s.isSprite && !s._text){
 							toDestroy.push(s);
+						}else if(s.children.length > 0){
+							// check if its a graphics group
+							s.children.forEach(_s => {
+								if(_s.isSprite && !_s._text){
+									toDestroy.push(_s);
+								}
+							})
 						}
+
 					})
 					toDestroy.forEach(s => {
 						s.destroy({
@@ -10206,11 +10214,7 @@ const _B2dEditor = function () {
 					});
 				}
 
-				if(sprite.data.type === this.object_ANIMATIONGROUP){
-					debugger;
-				}
-
-				if([this.object_TEXT, this.object_GRAPHIC, this.object_BODY, this.object_TRIGGER, this.object_GRAPHICGROUP].includes(sprite.data.type)
+				if([this.object_TEXT, this.object_GRAPHIC, this.object_BODY, this.object_TRIGGER, this.object_GRAPHICGROUP, this.object_ANIMATIONGROUP].includes(sprite.data.type)
 				&& !sprite.isMesh) destroyAll = true;
 			}
 
