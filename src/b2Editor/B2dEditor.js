@@ -4725,14 +4725,17 @@ const _B2dEditor = function () {
 			this.applyToSelectedObjects(this.TRANSFORM_SCALE, {scaleX, scaleY});
 
 			// hack to improve speed of dat gui
-			if(ui?.editorGUI?.__folders?.body?.__controllers){
-				ui.editorGUI.__folders.body.__controllers.forEach(controller => {
-					if(controller.property === 'width'){
-						controller.object.width = targetWidth;
-					}else if(controller.property === 'height'){
-						controller.object.height = targetHeight;
-					}
-				});
+			if(ui?.editorGUI?.__folders){
+				const key = Object.keys(ui?.editorGUI?.__folders)[0];
+				if(ui?.editorGUI?.__folders[key].__controllers){
+					ui?.editorGUI?.__folders[key].__controllers.forEach(controller => {
+						if(controller.property === 'width'){
+							controller.object.width = targetWidth;
+						}else if(controller.property === 'height'){
+							controller.object.height = targetHeight;
+						}
+					});
+				}
 			}
 		}else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
 			if(e.keyCode == 8 && (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN)){
