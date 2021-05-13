@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Jolly Admin</title>
+
+	<style>
+		body{
+			background: #E7B98A;
+		}
+		.thumb{
+			width: 200px;
+			height: 150px;
+			background: black;
+		}
+	</style>
+</head>
+<body>
+	<script>
+	const API = 'https://api.jollyworld.app';
+    const STATIC = 'https://static.jollyworld.app';
+
+	window.levelData = null;
+
+	const getBackendUserData = () => {
+		return new Promise((resolve, reject) => {
+			const body = {
+				method: 'GET',
+				withCredentials: true,
+				headers: {
+				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				},
+			}
+			fetch(`${API}/me`, body)
+			.then(result => result.json())
+			.then(data => {
+				const { error } = data;
+				if(error){
+					this.backendSignout();
+					return reject();
+				}
+				this.userData = data;
+				resolve(data);
+			});
+		})
+    }
+	const getPublishedLevelInfo = id =>{
+		return new Promise((resolve, reject) => {
+			const body = {
+				method: 'GET',
+			}
+			fetch(`${API}/level/${id}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+				if(error) return reject(error);
+
+				resolve(data);
+			});
+		})
+	}
+
+	const doFeatureLevelData = function (details) {
+		//DELETE /level/:id
+		const method = details.featured ? 'unfeature' : 'feature';
+		return new Promise((resolve, reject) => {
+			const body = {
+				method: 'POST',
+				withCredentials: true,
+				headers: {
+				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Content-Type': 'application/json'
+				},
+			}
+			console.log(details.featured);
+			fetch(`${API}/level/${method}/${details.id}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+
+				if(error) return reject(error)
+
+				resolve();
+
+			});
+		})
+    }
+
+	const deleteUserLevelData = function (details) {
+		//DELETE /level/:id
+		return new Promise((resolve, reject) => {
+			const body = {
+				method: 'DELETE',
+				withCredentials: true,
+				headers: {
+				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Content-Type': 'application/json'
+				},
+			}
+			fetch(`${API}/level/${details.id}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+
+				if(error) return reject(error)
+
+				resolve();
+
+			});
+		})
+    }
+
+	const init = async ()=>{
+		const userData = await getBackendUserData();
+		if(!userData){
+			alert("Login to jollyworld first @ https://jollyworld.app");
+		}
+		if(!userData.is_admin){
+			alert("You don't have permission to be here, contact @Smerik in the Jolly Discord if you think otherwise");
+			window.open("https://www.jollyworld.app","_self")
+		}
+
+		initButtons();
+	}
+
+	const setLevelData = async id => {
+		try{
+			const levelInfo = await getPublishedLevelInfo(id);
+			window.levelData = levelInfo;
+		}catch(err){
+			console.log("Incorrect id");
+			return;
+		}
+
+		const thumb = document.querySelector('.thumb');
+		const title = document.querySelector('.title');
+		const featured = document.querySelector('.featured');
+		const mobile = document.querySelector('.mobile');
+		const kidssafe = document.querySelector('.kidssafe');
+		const flags = document.querySelector('.flags');
+
+		const thumbSrc = `${STATIC}/${levelData.thumb_big_md5}.png`;
+        thumb.style.backgroundImage = `url(${thumbSrc})`;
+
+		const setOption = (target, option) => {
+			const optionDiv = target.querySelector('.option');
+			if(optionDiv) optionDiv.textContent = option;
+		}
+
+		title.textContent = levelData.title;
+		setOption(featured, levelData.featured.toString());
+		// setOption(mobile, levelData.mobile.toString());
+		// setOption(kidssafe, levelData.kid_safe.toString());
+	}
+
+
+	const initButtons = ()=>{
+		const levelInput = document.querySelector('.levelid');
+		const loadButton = document.querySelector('.loadButton');
+		const featureButton = document.querySelector('.featureButton');
+		const mobileButton = document.querySelector('.mobileButton');
+		const deleteButton = document.querySelector('.deleteButton');
+
+		loadButton.onclick = async ()=>{
+			if(levelInput.value !== '') setLevelData(levelInput.value);
+		}
+
+		featureButton.onclick = async ()=>{
+			if(!levelData) {
+				alert('load level first');
+				return;
+			}
+			await doFeatureLevelData(levelData);
+			await setLevelData(levelData.id);
+			alert("Featured status changed");
+		}
+
+		deleteButton.onclick = ()=>{
+			if(!levelData) {
+				alert('load level first');
+				return;
+			}			if (confirm(`Are you sure you want to delete level ${window.levelData.title}`)) {
+				deleteUserLevelData(levelData);
+				alert("Level deleted!");
+			} else {
+				// nothing
+			}
+		}
+	}
+	</script>
+
+	<div class="levelloader">
+		<label>
+			LevelID:
+			<input class="levelid" type="text" name="LevelID" />
+		</label>
+		<button class="loadButton">Load</button>
+	</div>
+
+	<div class="leveldiv">
+		<div class="thumb"></div>
+		<div class="title">Load a level first</div>
+		<div class="featured">Featured:<span class="option">?</span></div>
+		<!-- <div class="mobile">Available Mobile:<span class="option">?</span></div>
+		<div class="kidssafe">Kids Safe:<span class="option">?</span></div>
+		<div class="flags">Flags:<span class="option">?</span></div> -->
+	</div>
+
+	<div class="buttons">
+		<button class="featureButton">Toggle Featured</button>
+		<!-- <button class="mobileButton">Mobile</button>
+		<button class="kidssafeButton">Kids Safe</button> -->
+		<button class="deleteButton">Delete</button>
+	</div>
+
+	<script>
+		init();
+	</script>
+</body>
+</html>

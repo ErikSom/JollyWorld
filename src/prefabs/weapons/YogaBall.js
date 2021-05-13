@@ -32,7 +32,7 @@ class YogaBall extends PrefabManager.basePrefab {
 		const t = PIXI.Texture.from('YogaBall0000')
 		this.mesh = new PIXI.SimpleMesh(t, ...this.getMeshData());
 		this.base.mySprite.addChild(this.mesh);
-
+		this.base.mySprite.isMesh = true;
 
 		this.handleFront = new PIXI.Sprite(PIXI.Texture.from('YogaBall_Handle_Front0000'));
 		this.handleBack = new PIXI.Sprite(PIXI.Texture.from('YogaBallHandle_Back0000'));
