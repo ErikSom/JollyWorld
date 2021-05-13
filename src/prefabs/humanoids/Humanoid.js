@@ -384,8 +384,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 otherBody = contact.GetFixtureA().GetBody();
                 otherFixture = contact.GetFixtureA();
             }
-
-            if(otherFixture.GetDensity() <= 0.001) return;
+            if(otherFixture.GetDensity() <= 0.0011) return;
             if(otherBody.GetMass()===0 || (otherBody.isVehiclePart && characterBody.mainHumanoid) || otherBody.noImpactDamage) return;
 
             if ((otherBody.mySprite.data.prefabID != characterBody.mySprite.data.prefabID || otherBody.mySprite.data.prefabID == undefined)) {
