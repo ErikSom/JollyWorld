@@ -7650,7 +7650,7 @@ const _B2dEditor = function () {
 					shape.Set(pointsToVec2Array(vertices)[0], vertices.length);
 
 					if(data.type === this.object_TRIGGER){
-						obj.mySprite.data.vertices = oldVertices.map(vertice =>({x:vertice.x, y:vertice.y}));
+						obj.mySprite.data.vertices = vertices.map(vertice =>({x:vertice.x, y:vertice.y}));
 					}
 				} else if (shapeBase.GetType() ===  Box2D.b2Shape.e_circle) {
 					const shape = Box2D.castObject(shapeBase, b2CircleShape);

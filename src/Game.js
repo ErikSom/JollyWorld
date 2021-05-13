@@ -385,7 +385,8 @@ function Game() {
                             game.editor.tracingTexture.destroy({texture:true, baseTexture:true});
                         }
 
-                        game.editor.tracingTexture = new PIXI.Sprite(PIXI.Texture.from(src));
+                        const texture = PIXI.Texture.from(src, {scaleMode:PIXI.SCALE_MODES.NEAREST});
+                        game.editor.tracingTexture = new PIXI.Sprite(texture);
                         game.editor.tracingTexture.pivot.set(game.editor.tracingTexture.width/2, game.editor.tracingTexture.height/2);
                         game.editor.container.addChildAt(game.editor.tracingTexture, 0);
                         if(game.editor.selectedTool === game.editor.tool_SETTINGS){
