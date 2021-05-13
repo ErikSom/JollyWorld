@@ -29,6 +29,14 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.autoShoot = this.prefabObject.settings.autoShoot;
 		this.shouldShoot = false;
 
+		this.arrowSpawnPoint = new Box2D.b2Vec2( 1.4, -0.66 );
+
+		if(this.flipped){
+			this.arrowSpawnPoint.set_x(-Math.abs(this.arrowSpawnPoint.x));
+		}else{
+			this.arrowSpawnPoint.set_x(Math.abs(this.arrowSpawnPoint.x));
+		}
+
 		if(this.prefabObject.settings.isFixed){
             this.crossbowBody.SetType(Box2D.b2_staticBody);
         }else{
@@ -74,22 +82,20 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.shouldShoot = true;
 	}
 	shoot() {
+		const pos = b2CloneVec2(this.crossbowBody.GetWorldPoint(this.arrowSpawnPoint));
 
-		const pos = b2CloneVec2(this.crossbowBody.GetPosition());
 		const angle = this.crossbowBody.GetAngle()+(this.flipped ? Math.PI : 0);
-		const offsetLength = 0.6;
-		const angleOffset = game.editor.PI2 +(this.flipped ? Math.PI : 0);
-		pos.set_x(pos.get_x() - offsetLength*Math.cos(angle+angleOffset));
-		pos.set_y(pos.get_y() - offsetLength*Math.sin(angle+angleOffset));
 
 		const prefabData = PrefabBuilder.generatePrefab(pos, angle*game.editor.RAD2DEG, 'Arrow', true);
-		Box2D.destroy(pos);
 
 		const { lookupObject } = prefabData;
 		const body = lookupObject._bodies[0];
+		body.SetTransform(pos, angle);
+		game.editor.updateBodyPosition(body);
+		Box2D.destroy(pos);
 		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 
-		body.ApplyForce(impulse, body.GetPosition(), true);
+		body.ApplyForceToCenter(impulse, true);
 		Box2D.destroy(impulse);
 
 		this.lastArrows.push(prefabData.prefabClass);

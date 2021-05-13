@@ -52,7 +52,7 @@ class Arrow extends PrefabManager.basePrefab {
     }
 	update(){
 		if(!this.sticking && this.arrowBody.IsAwake()){
-			const pointingDirection = this.arrowBody.GetWorldVector(this.pointingVec);
+			const pointingDirection = b2CloneVec2(this.arrowBody.GetWorldVector(this.pointingVec));
 			let flightDirection = b2CloneVec2(this.arrowBody.GetLinearVelocity());
 			const flightSpeed = flightDirection.Normalize();
 
@@ -61,12 +61,13 @@ class Arrow extends PrefabManager.basePrefab {
 
 			const dragForceMagnitude = (1 - Math.abs(dot)) * flightSpeed * flightSpeed * this.dragConstant * this.arrowBody.GetMass();
 
-			const arrowTailPosition = this.arrowBody.GetWorldPoint( this.tailVec );
+			const arrowTailPosition = b2CloneVec2(this.arrowBody.GetWorldPoint( this.tailVec ));
 
 			b2MulVec2(flightDirection, -dragForceMagnitude);
 
 			this.arrowBody.ApplyForce(flightDirection , arrowTailPosition );
 			Box2D.destroy(flightDirection);
+			Box2D.destroy(arrowTailPosition);
 
 			if(this.bodyToStick){
 				this.arrowBody.SetBullet(false);
