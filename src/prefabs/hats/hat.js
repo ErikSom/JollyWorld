@@ -86,7 +86,7 @@ export default class Hat {
 		this.detach();
 		if(this.hatBody){
 			this.hatBody.myTexture.parent.removeChild(this.hatBody.myTexture);
-			game.world.DestroyBody(this.hatBody);
+			game.editor.DestroyBody(this.hatBody);
 			this.hatBody = null;
 		}
 	}

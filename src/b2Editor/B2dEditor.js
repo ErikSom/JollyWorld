@@ -1934,6 +1934,8 @@ const _B2dEditor = function () {
 		joint.destroyed = true;
 		joint.__emscripten_pool = true;
 
+		this.removeObjectFromLookupGroups(joint, joint.spriteData);
+
 		if(joint.linkedJoints){
 			joint.linkedJoints.forEach(_joint => {
 				if(!_joint.destroyed){

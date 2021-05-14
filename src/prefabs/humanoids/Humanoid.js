@@ -35,7 +35,6 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.flipped = false;
         this.mouthTextureName = 'Mouth';
         this.mouthPos = {x:41, y:59};
-
     }
 
     postConstructor(){
@@ -257,7 +256,6 @@ export class Humanoid extends PrefabManager.basePrefab {
         const jointsToAnalyse = ['leg_left', 'leg_right', 'head', 'belly', 'feet_left', 'feet_right', 'hand_left', 'hand_right', 'thigh_left', 'thigh_right', 'shoulder_left', 'shoulder_right'];
 
         // check num frames
-        
         for (i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
             if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
@@ -549,7 +547,6 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 var targetBody = this.lookupObject[update.target];
                 if (targetBody) {
-
                     this.addBloodEmitters(update.target, update.type);
                     for (var i = 1; i < this.collisionUpdates.length; i++) {
                         if (this.collisionUpdates[i].target === update.target) {
@@ -611,6 +608,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             case Humanoid.GORE_SNAP:
                 const targetJoint = this.lookupObject[update.target + "_joint"];
                 if (targetJoint && !targetJoint.destroyed && this.lookupObject[update.target]) {
+
                     this.addBloodEmitters(update.target, update.type);
 
                     if (targetJoint.GetBodyA().connectedSpike || targetJoint.GetBodyB().connectedSpike) break;
@@ -626,7 +624,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                     let vainBodies = game.editor.buildJSON(JSON.parse(vainPrefab));
 
                     let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
-
 
                     revoluteJointDef = new Box2D.b2RevoluteJointDef();
 
