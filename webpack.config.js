@@ -63,6 +63,14 @@ module.exports = {
 	optimization: {
 		minimize: true,
 		minimizer: [new TerserPlugin()],
+		namedModules: true,
+		namedChunks: true,
+		removeAvailableModules: true,
+		flagIncludedChunks: true,
+		occurrenceOrder: false,
+		usedExports: true,
+		concatenateModules: true,
+		sideEffects: false,
 	},
 
 	resolve: {
