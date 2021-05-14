@@ -38,7 +38,6 @@
 			.then(data => {
 				const { error } = data;
 				if(error){
-					this.backendSignout();
 					return reject();
 				}
 				this.userData = data;
@@ -113,10 +112,13 @@
     }
 
 	const init = async ()=>{
-		const userData = await getBackendUserData();
-		if(!userData){
+		try{
+			const userData = await getBackendUserData();
+		}catch(err){
 			alert("Login to jollyworld first @ https://jollyworld.app");
+			window.open("https://www.jollyworld.app","_self")
 		}
+
 		if(!userData.is_admin){
 			alert("You don't have permission to be here, contact @Smerik in the Jolly Discord if you think otherwise");
 			window.open("https://www.jollyworld.app","_self")
