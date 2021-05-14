@@ -651,8 +651,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                     ropeJointDef.Initialize(targetJoint.GetBodyA(), targetJoint.GetBodyB(), anchorAPos, anchorAPos);
 
                     const length = ropeJointDef.get_length();
-                    ropeJointDef.set_minLength(length);
-                    ropeJointDef.set_maxLength(length);
+                    ropeJointDef.set_minLength(0);
+                    ropeJointDef.set_maxLength(1.0);
                     ropeJointDef.set_stiffness(0);
                     ropeJointDef.set_damping(0);
 
