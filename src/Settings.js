@@ -39,7 +39,7 @@ export var Settings = {
     bloodEnabled: true,
     emittersPerBody:3,
     emitterMaxPoolTime:5000,
-    bashForce:10000,
+    bashForce:20000,
     physicsParticleLifeTime:2000,
     physicsParticleLifeTimeRandomOffset:1000,
     decalTimeout:50,

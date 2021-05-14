@@ -383,7 +383,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 otherFixture = contact.GetFixtureA();
             }
             if(otherFixture.GetDensity() <= 0.0011) return;
-            if(otherBody.GetMass()===0 || (otherBody.isVehiclePart && characterBody.mainHumanoid) || otherBody.noImpactDamage) return;
+            if((otherBody.isVehiclePart && characterBody.mainHumanoid) || otherBody.noImpactDamage) return;
 
             if ((otherBody.mySprite.data.prefabID != characterBody.mySprite.data.prefabID || otherBody.mySprite.data.prefabID == undefined)) {
 
@@ -419,6 +419,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                 let forceDamage = 0;
 
+
                 if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
                     const charOtherBodyDiff = b2CloneVec2(characterBody.GetPosition());
                     b2SubVec2(charOtherBodyDiff, otherBody.GetPosition());
@@ -440,7 +441,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     if(characterBody == self.lookupObject["belly"]) forceDamage /= 3;
 
-                    if (forceDamage > Settings.bashForce / 2 && Settings.goreEnabled) {
+                    if (forceDamage > Settings.bashForce / 4 && Settings.goreEnabled) {
                         if (characterBody == self.lookupObject["head"]) {
                             if (PrefabManager.chancePercent(30)) self.collisionUpdates.push({
                                 type: Humanoid.GORE_SNAP,
