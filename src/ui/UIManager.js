@@ -350,7 +350,7 @@ function UIManager() {
         const header = mainMenu.querySelector('.header');
 
         // if we can't retrieve userdata quick enough
-        if(!backendManager.userData) setTimeout(handleLoginChange, 100);
+        if(backendManager.isLoggedIn() && !backendManager.userData) setTimeout(this.handleLoginChange, 100);
 
         const discordButton = header.querySelector('.discord');
         if(backendManager.isLoggedIn()){
