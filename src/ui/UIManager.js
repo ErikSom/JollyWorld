@@ -11,6 +11,7 @@ import '../css/GameOver.scss'
 import '../css/Leaderboard.scss'
 import '../css/SettingsMenu.scss'
 import '../css/YoutubePlayer.scss'
+import '../css/UserPage.scss'
 import '../css/flags.css'
 
 // https://github.com/catdad/canvas-confetti
@@ -69,6 +70,7 @@ let socialShareScreen;
 let settingsMenu;
 let loginScreen;
 let leaderboard;
+let userPage;
 let smallLogo;
 
 let filter = {
@@ -551,6 +553,10 @@ function UIManager() {
             levelBanner.classList.add('levelbanner');
             levelBanner.innerHTML = htmlStructure;
 
+            const authorButton = levelBanner.querySelector('.text-author');
+            authorButton.onclick = ()=>{
+                this.showUserPage(authorButton.innerText);
+            }
 
             const navButtons = levelBanner.querySelector('.nav-buttons');
             const backButton = navButtons.querySelector('.back');
@@ -634,6 +640,58 @@ function UIManager() {
         this.enableVoteButtons(voteUpButton, voteDownButton, levelData);
 
         this.setLevelBannerData(levelData);
+    }
+
+    this.showUserPage = username => {
+        if(!userPage){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">
+                    <div class="userinfo">
+                        <div class="username">Smerik</div>
+                        <div class="membersince"><span>${localize('userpage_membersince')}:</span><span class="value">?</span></div>
+                    </div>
+                    <div class="flair">
+                        <div class="gamespublished"><span>${localize('userpage_gamespublished')}:</span><span class="value">?</span></div>
+                        <div class="gamespublished"><span>${localize('userpage_averagerating')}:</span><span class="value">?</span></div>
+                        <div class="gamespublished"><span>${localize('userpage_gamesfeatured')}:</span><span class="value">?</span></div>
+                        <div class="gamespublished"><span>${localize('userpage_totalgameplays')}:</span><span class="value">?</span></div>
+                    </div>
+                </div>
+                <div class="titlebar">
+                    <div class="toggletitle"><span>${localize('userpage_games')}</span></div>
+                    <div class="togglebuttons">
+                        <div class="games"><span class="fit">${localize('userpage_games')}</span></div>
+                        <div class="favorites"><span class="fit">${localize('userpage_favorites')}</span></div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                </div>
+            `;
+
+            userPage = document.createElement('div');
+            userPage.classList.add('userPage');
+            userPage.innerHTML = htmlStructure;
+
+            const navButtons = userPage.querySelector('.nav-buttons');
+            const backButton = navButtons.querySelector('.back');
+            backButton.onclick = ()=>{
+                this.hideUserPage();
+            }
+            customGUIContainer.appendChild(userPage);
+
+            // fit texts
+            Array.from(userPage.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
+        }
+
+        userPage.style.display = 'block';
+    }
+
+    this.hideUserPage = ()=>{
+        userPage.style.display = 'none';
     }
 
     this.fillLeaderboard = async (element, levelid, limit) => {

@@ -1,0 +1,62 @@
+@use 'Components';
+
+.userPage{
+	@extend .main-window;
+	width: 80%;
+	color: white;
+	.value{
+		font-size: 12px;
+		color: #00FF00;
+		margin: 0 5px 0 2px;
+	}
+
+	.header{
+		padding: 10px;
+		display: flex;
+		.userinfo{
+			.username{
+				color: #00FF00;
+				font-size: 36px;
+			}
+			.membersince{
+				font-size: 12px;
+			}
+
+		}
+		.flair{
+			margin-left: auto;
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			grid-template-rows: 20px;
+			font-size: 12px;
+		}
+	}
+
+	.titlebar{
+		padding: 10px;
+		display: flex;
+		.toggletitle{
+			@extend .jollyfont;
+			font-size: 24px;
+		}
+		.togglebuttons{
+			display: flex;
+			margin-left: auto;
+		}
+		.games, .favorites{
+			@extend .base-button;
+			width: 75px;
+			height: 24px;
+			font-size: 14px;
+			line-height: 24px;
+		}
+	}
+
+	.nav-buttons{
+		display: flex;
+		padding: 5px;
+		.back{
+			@extend .back-button;
+		}
+	}
+}

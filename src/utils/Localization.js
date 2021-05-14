@@ -87,7 +87,7 @@ const LOCALIZATION_DATA = [
         "es": "Mas Jugado",
         "pt": "Mais Jogadas",
         "cz": "Nejhranější ",
-        "fr": "Le plus joué",
+        "fr": "Les plus joués",
         "it": "Più giocato",
         "jr": "Most Plundered"
     },
@@ -99,7 +99,7 @@ const LOCALIZATION_DATA = [
         "es": "Mas Nuevo",
         "pt": "Mais novo",
         "cz": "Nejnovější",
-        "fr": "Plus nouveau",
+        "fr": "Plus récents",
         "it": "Più nuovo",
         "jr": "Newly Discovered"
     },
@@ -111,7 +111,7 @@ const LOCALIZATION_DATA = [
         "es": "Mas Viejo",
         "pt": "Mais velho",
         "cz": "Nejstarší",
-        "fr": "Plus vieux",
+        "fr": "Plus anciens",
         "it": "Più vecchio",
         "jr": "Ol' sea legends"
     },
@@ -147,7 +147,7 @@ const LOCALIZATION_DATA = [
         "es": "De",
         "pt": "De",
         "cz": "Od",
-        "fr": "De",
+        "fr": "Paramètres",
         "it": "Da",
         "jr": "Aye"
     },
@@ -159,7 +159,7 @@ const LOCALIZATION_DATA = [
         "es": "Entrar",
         "pt": "Entrar",
         "cz": "Přihlásit se",
-        "fr": "Entrer",
+        "fr": "Se connecter",
         "it": "Entra",
         "jr": "Set Sail"
     },
@@ -207,7 +207,7 @@ const LOCALIZATION_DATA = [
         "es": "Siempre",
         "pt": "Sempre",
         "cz": "Kdykoli",
-        "fr": "Toujours",
+        "fr": "N'importe quand",
         "it": "Per sempre",
         "jr": "Since forever!"
     },
@@ -219,7 +219,7 @@ const LOCALIZATION_DATA = [
         "es": "Mas",
         "pt": "Mais",
         "cz": "Více",
-        "fr": "Suite",
+        "fr": "Plus",
         "it": "Di più",
         "jr": "Moarrgh"
     },
@@ -255,7 +255,7 @@ const LOCALIZATION_DATA = [
         "es": "Encendido ",
         "pt": "Ligado",
         "cz": "Zapnout",
-        "fr": "Allumé",
+        "fr": "Activé",
         "it": "Attivato",
         "jr": "Aye"
     },
@@ -267,7 +267,7 @@ const LOCALIZATION_DATA = [
         "es": "Apagado",
         "pt": "Desligado",
         "cz": "Vypnout",
-        "fr": "éteint",
+        "fr": "Désactivé",
         "it": "Spento",
         "jr": "Nay"
     },
@@ -303,7 +303,7 @@ const LOCALIZATION_DATA = [
         "es": "Cornear",
         "pt": "Escornar",
         "cz": "Klín",
-        "fr": "Encorner",
+        "fr": "Gore",
         "it": "Incornare",
         "jr": "Meat"
     },
@@ -339,6 +339,7 @@ const LOCALIZATION_DATA = [
         "es": "Elige un vehículo",
         "pt": "Selecione o veículo",
         "cz": "Vybrat vozidlo",
+        "fr": "Sélectionner un véhicule",
         "jr": "Pick yer boat"
     },
     {
@@ -373,7 +374,7 @@ const LOCALIZATION_DATA = [
         "es": "Jugadas",
         "pt": "Jogadas",
         "cz": "Hry",
-        "fr": "Pièces",
+        "fr": "Joué",
         "it": "Gioca",
         "jr": "Voyages"
     },
@@ -421,7 +422,7 @@ const LOCALIZATION_DATA = [
         "es": "Regresar",
         "pt": "Voltar",
         "cz": "Zpět",
-        "fr": "Rendre",
+        "fr": "Fermer",
         "it": "Ritornare",
         "jr": "Avast!"
     },
@@ -433,7 +434,7 @@ const LOCALIZATION_DATA = [
         "es": "Posiciones",
         "pt": "Posições",
         "cz": "Žebříček",
-        "fr": "Positions",
+        "fr": "Meilleurs scores",
         "it": "Posizioni",
         "jr": "Most Wanted Pirates"
     },
@@ -444,6 +445,7 @@ const LOCALIZATION_DATA = [
         "de": "Laden...",
         "pt": "Carregar",
         "cz": "Načítání",
+        "fr": "Chargement",
         "jr": "Sailin' to the destination"
     },
     {
@@ -461,7 +463,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "levelbanner_published",
         "us": "Published",
-        "nl": "Gepubliseerd",
+        "nl": "Gepubliceerd",
         "de": "Veröffentlicht",
         "es": "Publicado",
         "pt": "Publicados",
@@ -489,7 +491,43 @@ const LOCALIZATION_DATA = [
         "de": "Keine Einträge",
         "pt": "Vazio",
         "cz": "Žádné záznamy",
+        "fr": "Aucun score",
         "jr": "Treasure unclaimed"
+    },
+    {
+        "textId": "userpage_gamespublished",
+        "us": "Games Published",
+        "nl": "Games gepubliceerd"
+    },
+    {
+        "textId": "userpage_averagerating",
+        "us": "Average Rating",
+        "nl": "Gemiddelde beoordeling"
+    },
+    {
+        "textId": "userpage_gamesfeatured",
+        "us": "Games Featured",
+        "nl": "Spellen Aanbevolen"
+    },
+    {
+        "textId": "userpage_totalgameplays",
+        "us": "Total Gameplays",
+        "nl": "Totaal gespeeld"
+    },
+    {
+        "textId": "userpage_games",
+        "us": "Games",
+        "nl": "Spellen"
+    },
+    {
+        "textId": "userpage_favorites",
+        "us": "Favorites",
+        "nl": "Favorieten"
+    },
+    {
+        "textId": "userpage_membersince",
+        "us": "Member since",
+        "nl": "Lid sinds"
     },
     {
         "textId": "share_sharing",
@@ -534,6 +572,7 @@ const LOCALIZATION_DATA = [
         "de": "Pause",
         "pt": "Pausar",
         "cz": "Pauza",
+        "fr": "Pause",
         "jr": "Stop the ship"
     },
     {
@@ -543,6 +582,7 @@ const LOCALIZATION_DATA = [
         "de": "Zum Menü",
         "pt": "Sair para o menu",
         "cz": "Zpět do menu",
+        "fr": "Quitter vers le menu",
         "jr": "Walk the plank"
     },
     {
@@ -552,6 +592,7 @@ const LOCALIZATION_DATA = [
         "de": "Zurück",
         "pt": "Continuar",
         "cz": "Pokračovat",
+        "fr": "Continuer",
         "jr": "Continue fightin'"
     },
     {
@@ -561,6 +602,7 @@ const LOCALIZATION_DATA = [
         "de": "Zurücksetzen",
         "pt": "Resetar",
         "cz": "Restartovat",
+        "fr": "Reset",
         "jr": "Start the raid all over"
     },
     {
@@ -570,6 +612,7 @@ const LOCALIZATION_DATA = [
         "de": "Neustart",
         "pt": "Tentar novamente",
         "cz": "Opakovat",
+        "fr": "Recommencer",
         "jr": "Pick up where ye last left off"
     },
     {
@@ -579,6 +622,7 @@ const LOCALIZATION_DATA = [
         "de": "Test Verlassen",
         "pt": "Sar do teste",
         "cz": "Opustit test",
+        "fr": "Quitter le test",
         "jr": "Swim back to shore"
     },
     {
@@ -588,6 +632,7 @@ const LOCALIZATION_DATA = [
         "de": "Du hast verloren!",
         "pt": "Você perdeu!",
         "cz": "Prohrál jsi",
+        "fr": "Tu as perdu !",
         "jr": "Yer with Davy Jones!"
     },
     {
@@ -597,6 +642,7 @@ const LOCALIZATION_DATA = [
         "de": "Du hast gewonnen!",
         "pt": "Você ganhou!",
         "cz": "Vyhrál jsi",
+        "fr": "Tu as gagné !",
         "jr": "Ye found the treasure!"
     },
     {
@@ -605,6 +651,7 @@ const LOCALIZATION_DATA = [
         "de": "auswählen",
         "pt": "selecionar",
         "cz": "Vybrat",
+        "fr": "Sélectionner",
         "jr": "Move yer rocks"
     },
     {
@@ -613,6 +660,7 @@ const LOCALIZATION_DATA = [
         "de": "formen",
         "pt": "Geometria",
         "cz": "Tvary",
+        "fr": "Géometrie",
         "jr": "Basic Land"
     },
     {
@@ -621,6 +669,7 @@ const LOCALIZATION_DATA = [
         "de": "polygon",
         "pt": "Desenho poligonal",
         "cz": "Polygon",
+        "fr": "Dessin polygonal",
         "jr": "Janky Quill"
     },
     {
@@ -629,6 +678,7 @@ const LOCALIZATION_DATA = [
         "de": "stift",
         "pt": "Caneta",
         "cz": "Pero",
+        "fr": "Stylo",
         "jr": "Smoothin' Quill"
     },
     {
@@ -637,6 +687,7 @@ const LOCALIZATION_DATA = [
         "de": "bindungen",
         "pt": "Juntas",
         "cz": "Spojení",
+        "fr": "Joints",
         "jr": "Carpentry"
     },
     {
@@ -645,6 +696,7 @@ const LOCALIZATION_DATA = [
         "de": "fertigbauten",
         "pt": "Objetos prontos",
         "cz": "Předvytvořené",
+        "fr": "Préfabs",
         "jr": "Treasures"
     },
     {
@@ -653,6 +705,7 @@ const LOCALIZATION_DATA = [
         "de": "text",
         "pt": "Texto",
         "cz": "Text",
+        "fr": "Texte",
         "jr": "Parchment"
     },
     {
@@ -661,6 +714,7 @@ const LOCALIZATION_DATA = [
         "de": "grafiken",
         "pt": "Arte",
         "cz": "Malování",
+        "fr": "Dessin",
         "jr": "ARRRRT"
     },
     {
@@ -669,6 +723,7 @@ const LOCALIZATION_DATA = [
         "de": "auslöser",
         "pt": "Acionador",
         "cz": "Spouštěč",
+        "fr": "Déclencheur",
         "jr": "Booby Traps"
     },
     {
@@ -677,6 +732,7 @@ const LOCALIZATION_DATA = [
         "de": "test",
         "pt": "Teste",
         "cz": "Test",
+        "fr": "Tester",
         "jr": "Set Foot"
     },
     {
@@ -685,6 +741,7 @@ const LOCALIZATION_DATA = [
         "de": "Profil Fenster",
         "pt": "Foto de Perfil",
         "cz": "Obrazovka profilu",
+        "fr": "Profile",
         "jr": "Captain's Quarters"
     },
     {
@@ -693,6 +750,7 @@ const LOCALIZATION_DATA = [
         "de": "AUSLOGGEN",
         "pt": "Deslogar",
         "cz": "Odhlásit se",
+        "fr": "Se déconnecter",
         "jr": "DROP ANCHOR"
     },
     {
@@ -701,6 +759,7 @@ const LOCALIZATION_DATA = [
         "de": "NEU",
         "pt": "Novo",
         "cz": "Nový",
+        "fr": "Nouveau",
         "jr": "NEW MAP"
     },
     {
@@ -709,6 +768,7 @@ const LOCALIZATION_DATA = [
         "de": "LADEN",
         "pt": "Carregar",
         "cz": "Načíst",
+        "fr": "Charger",
         "jr": "FIND MAP"
     },
     {
@@ -717,6 +777,7 @@ const LOCALIZATION_DATA = [
         "de": "VERLASSEN",
         "pt": "Sair",
         "cz": "Odejít",
+        "fr": "Quitter",
         "jr": "ABANDON SHIP"
     },
     {
@@ -725,6 +786,7 @@ const LOCALIZATION_DATA = [
         "de": "Veröffentlichungseinstellungen",
         "pt": "Publicar informações",
         "cz": "Zveřejnit nastavení",
+        "fr": "Paramètres de publication",
         "jr": "Island Settings"
     },
     {
@@ -733,6 +795,7 @@ const LOCALIZATION_DATA = [
         "de": "Schaubild",
         "pt": "Miniatura",
         "cz": "Miniatura",
+        "fr": "Miniature",
         "jr": "Flag"
     },
     {
@@ -741,6 +804,7 @@ const LOCALIZATION_DATA = [
         "de": "bild einfügen",
         "pt": "Click para adicionar",
         "cz": "Klikněte pro vložení",
+        "fr": "Cliquer pour ajouter",
         "jr": "Click to raise flag"
     },
     {
@@ -749,6 +813,7 @@ const LOCALIZATION_DATA = [
         "de": "Titel",
         "pt": "Título",
         "cz": "Název",
+        "fr": "Titre",
         "jr": "Island Name"
     },
     {
@@ -757,6 +822,7 @@ const LOCALIZATION_DATA = [
         "de": "Buchstaben übrig",
         "pt": "Personagens restantes",
         "cz": "Zbývá znaků",
+        "fr": "Personnages restants",
         "jr": "Blots of ink left"
     },
     {
@@ -765,6 +831,7 @@ const LOCALIZATION_DATA = [
         "de": "Beschreibung",
         "pt": "Descrição",
         "cz": "Popis",
+        "fr": "Description",
         "jr": "Captain's Log"
     },
     {
@@ -774,6 +841,7 @@ const LOCALIZATION_DATA = [
         "es": "Vincular videos de YouTube",
         "pt": "Colocar video do Youtube",
         "cz": "Připojit YouTube videa",
+        "fr": "Lien vers les vidéos YouTube",
         "jr": "Log videos o' YouTube"
     },
     {
@@ -782,6 +850,7 @@ const LOCALIZATION_DATA = [
         "de": "SPEICHERN ALS",
         "pt": "Salvar como",
         "cz": "Uložit jako",
+        "fr": "Sauvegarder en tant que",
         "jr": "CHART NEW LAND"
     },
     {
@@ -790,6 +859,7 @@ const LOCALIZATION_DATA = [
         "de": "LÖSCHEN",
         "pt": "Deletar",
         "cz": "Smazat",
+        "fr": "Supprimer",
         "jr": "DESTROY"
     },
     {
@@ -798,6 +868,7 @@ const LOCALIZATION_DATA = [
         "de": "VORSCHAU",
         "pt": "Pré-visualizar",
         "cz": "Náhled",
+        "fr": "Prévisualiser",
         "jr": "UNMARKED VISIT"
     },
     {
@@ -806,6 +877,7 @@ const LOCALIZATION_DATA = [
         "de": "VERÖFFENTLICHEN",
         "pt": "Publicar",
         "cz": "Zveřejnit",
+        "fr": "Publier",
         "jr": "MARK THE SPOT"
     },
     {
@@ -830,6 +902,7 @@ const LOCALIZATION_DATA = [
         "de": "OK",
         "pt": "OK!",
         "cz": "OK",
+        "fr": "Ok",
         "jr": "Aye!"
     },
     {
@@ -838,6 +911,7 @@ const LOCALIZATION_DATA = [
         "de": "Ja!",
         "pt": "SIM!",
         "cz": "Ano!",
+        "fr": "Oui !",
         "jr": "Aye aye!"
     },
     {
@@ -846,6 +920,7 @@ const LOCALIZATION_DATA = [
         "de": "DOCH NICHT!",
         "pt": "NOPE!",
         "cz": "Ne!",
+        "fr": "Nan !",
         "jr": "AVAST!"
     },
     {
@@ -854,6 +929,7 @@ const LOCALIZATION_DATA = [
         "de": "Der Titel muss mindenstens 3 Buchstaben lang sein",
         "pt": "O Titulo precisa ter pelo menos 3 caracteres",
         "cz": "Název musí obsahovat nejméně 3 znaky",
+        "fr": "Le titre doit faire au moins 3 caractères",
         "jr": "Ye must call yer island with at least 3 letters"
     },
     {
@@ -862,6 +938,7 @@ const LOCALIZATION_DATA = [
         "de": "Du musst dein Level speichern, bevor du es veröffentlichen / anschauen kannst.",
         "pt": "Você precisa salvar o mapa primeiro antes de publicar",
         "cz": "Nejdříve musíte level uložit než jej zveřejníte / zobrazíte náhled",
+        "fr": "Tu dois sauvegarder le niveau avant de le publier / prévisualiser.",
         "jr": "Ye need to mark the spot before ye put this island on the map."
     },
     {
@@ -870,6 +947,7 @@ const LOCALIZATION_DATA = [
         "de": "Dein Level braucht ein Schaubild, bevor du es veröffentlichen / anschauen kannst.",
         "pt": "Seu mapa precisa de uma thumbnail antes de ser publicado",
         "cz": "Váš level potřebuje miniaturu než jej zveřejníte / zobrazíte náhled",
+        "fr": "Ton niveau a besoin d'une miniature avant d'être publié / prévisualisé.",
         "jr": "There be no flag on yer land. How your mates gonna know what to expect?"
     },
     {
@@ -878,6 +956,7 @@ const LOCALIZATION_DATA = [
         "de": "Dein Level hat ungespeicherte Änderungen, möchtest du trotzdem fortfahren?",
         "pt": "Você não salvou as modificações do seu mapa, tem certeza que quer prosseguir?",
         "cz": "Máte neuložené změny ve vašem levelu, jste si jisti, že chcete pokračovat?",
+        "fr": "Ton niveau a des changements non sauvegardés, es-tu sûr de vouloir continuer ?",
         "jr": "Ye didn't chart your location. Do ye still want to set sail?"
     },
     {
@@ -886,6 +965,7 @@ const LOCALIZATION_DATA = [
         "de": "Bist du sicher, dass du dieses Level löschen willst?",
         "pt": "Você tem certeza que quer deletar o mapa?",
         "cz": "Jste si jisti, že chcete smazat tento level?",
+        "fr": "Es-tu sûr de vouloir supprimer ce niveau ?",
         "jr": "Do ye want to send this level to Davy Jones's locker?"
     }
 ]
