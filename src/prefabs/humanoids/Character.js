@@ -104,7 +104,7 @@ export class Character extends Humanoid {
 
                 const crawlJoints = body => {
                     for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
-                        const joint = jointEdge.joint;
+                        const joint = game.editor.CastJoint(jointEdge.joint);
                         if(!joint.jointCrawled){
                             joint.jointCrawled = true;
                             this.vehicleJoints.push(joint);
