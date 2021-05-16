@@ -340,6 +340,7 @@ const LOCALIZATION_DATA = [
         "pt": "Selecione o veículo",
         "cz": "Vybrat vozidlo",
         "fr": "Sélectionner un véhicule",
+        "it": "Scegli un veicolo",
         "jr": "Pick yer boat"
     },
     {
@@ -355,16 +356,9 @@ const LOCALIZATION_DATA = [
         "jr": "Share with yer maties"
     },
     {
-        "textId": "levelbanner_save",
-        "us": "Save",
-        "nl": "Opslaan",
-        "de": "Speichern",
-        "es": "Salvar",
-        "pt": "Salvar",
-        "cz": "Uložit",
-        "fr": "Sauvegarder",
-        "it": "Salva",
-        "jr": "Put on ye personal map"
+        "textId": "levelbanner_favorite",
+        "us": "Favorite",
+        "nl": "Favoriet"
     },
     {
         "textId": "levelbanner_gameplays",
@@ -443,9 +437,11 @@ const LOCALIZATION_DATA = [
         "us": "Loading...",
         "nl": "Laden...",
         "de": "Laden...",
+        "es": "Cargando",
         "pt": "Carregar",
         "cz": "Načítání",
         "fr": "Chargement",
+        "it": "Ricarica",
         "jr": "Sailin' to the destination"
     },
     {
@@ -489,45 +485,63 @@ const LOCALIZATION_DATA = [
         "us": "No entries",
         "nl": "Geen scores",
         "de": "Keine Einträge",
+        "es": "No Hay Entradas",
         "pt": "Vazio",
         "cz": "Žádné záznamy",
         "fr": "Aucun score",
+        "it": "Non c'è nulla",
         "jr": "Treasure unclaimed"
     },
     {
-        "textId": "userpage_gamespublished",
-        "us": "Games Published",
-        "nl": "Games gepubliceerd"
+        "textId": "userpage_levelspublished",
+        "us": "Levels Published",
+        "nl": "Levels Gepubliceerd"
     },
     {
         "textId": "userpage_averagerating",
         "us": "Average Rating",
-        "nl": "Gemiddelde beoordeling"
+        "nl": "Gemiddelde beoordeling",
+        "es": "Puntuacion Average",
+        "pt": "Pontuação média",
+        "fr": "Score moyen",
+        "it": "Punteggio medio"
     },
     {
-        "textId": "userpage_gamesfeatured",
-        "us": "Games Featured",
-        "nl": "Spellen Aanbevolen"
+        "textId": "userpage_levelsfeatured",
+        "us": "levels Featured",
+        "nl": "Levels Aanbevolen"
     },
     {
         "textId": "userpage_totalgameplays",
         "us": "Total Gameplays",
-        "nl": "Totaal gespeeld"
+        "nl": "Totaal gespeeld",
+        "es": "Total de jugadas",
+        "pt": "Total De Jogadas",
+        "fr": "Total des jeux",
+        "it": "Riproduzioni totali"
     },
     {
-        "textId": "userpage_games",
-        "us": "Games",
-        "nl": "Spellen"
+        "textId": "userpage_levels",
+        "us": "Levels",
+        "nl": "Levels"
     },
     {
         "textId": "userpage_favorites",
         "us": "Favorites",
-        "nl": "Favorieten"
+        "nl": "Favorieten",
+        "es": "Favoritos",
+        "pt": "Favoritos",
+        "fr": "Favoris",
+        "it": "Preferiti"
     },
     {
         "textId": "userpage_membersince",
         "us": "Member since",
-        "nl": "Lid sinds"
+        "nl": "Lid sinds",
+        "es": "Miembro desde",
+        "pt": "Membro desde",
+        "fr": "Membre depuis",
+        "it": "Membro da"
     },
     {
         "textId": "share_sharing",
@@ -570,9 +584,11 @@ const LOCALIZATION_DATA = [
         "us": "Pause",
         "nl": "Pauze",
         "de": "Pause",
+        "es": "Pausar",
         "pt": "Pausar",
         "cz": "Pauza",
         "fr": "Pause",
+        "it": "Pausa",
         "jr": "Stop the ship"
     },
     {
@@ -580,9 +596,11 @@ const LOCALIZATION_DATA = [
         "us": "Exit to Menu",
         "nl": "Naar hoofdmenu",
         "de": "Zum Menü",
+        "es": "Salir Al Menu",
         "pt": "Sair para o menu",
         "cz": "Zpět do menu",
         "fr": "Quitter vers le menu",
+        "it": "Esci dal menu",
         "jr": "Walk the plank"
     },
     {
@@ -590,9 +608,11 @@ const LOCALIZATION_DATA = [
         "us": "Resume",
         "nl": "Hervat",
         "de": "Zurück",
+        "es": "Resumir",
         "pt": "Continuar",
         "cz": "Pokračovat",
         "fr": "Continuer",
+        "it": "Ricapitolare",
         "jr": "Continue fightin'"
     },
     {
@@ -600,9 +620,11 @@ const LOCALIZATION_DATA = [
         "us": "Reset",
         "nl": "Reset",
         "de": "Zurücksetzen",
+        "es": "Resetear",
         "pt": "Resetar",
         "cz": "Restartovat",
         "fr": "Reset",
+        "it": "Resettare",
         "jr": "Start the raid all over"
     },
     {
@@ -610,9 +632,11 @@ const LOCALIZATION_DATA = [
         "us": "Retry",
         "nl": "Opnieuw",
         "de": "Neustart",
+        "es": "Intentar De Nuevo",
         "pt": "Tentar novamente",
         "cz": "Opakovat",
         "fr": "Recommencer",
+        "it": "Riprova",
         "jr": "Pick up where ye last left off"
     },
     {
@@ -620,9 +644,11 @@ const LOCALIZATION_DATA = [
         "us": "Exit Test",
         "nl": "Sluit Test",
         "de": "Test Verlassen",
+        "es": "Salir Del Test",
         "pt": "Sar do teste",
         "cz": "Opustit test",
         "fr": "Quitter le test",
+        "it": "Esci dal test",
         "jr": "Swim back to shore"
     },
     {
@@ -630,9 +656,11 @@ const LOCALIZATION_DATA = [
         "us": "You lose!",
         "nl": "Verliezer!",
         "de": "Du hast verloren!",
+        "es": "Perdiste",
         "pt": "Você perdeu!",
         "cz": "Prohrál jsi",
         "fr": "Tu as perdu !",
+        "it": "Hai perso",
         "jr": "Yer with Davy Jones!"
     },
     {
@@ -640,198 +668,242 @@ const LOCALIZATION_DATA = [
         "us": "You win!",
         "nl": "Winnaar!",
         "de": "Du hast gewonnen!",
+        "es": "Ganaste",
         "pt": "Você ganhou!",
         "cz": "Vyhrál jsi",
         "fr": "Tu as gagné !",
+        "it": "Ha vinto",
         "jr": "Ye found the treasure!"
     },
     {
         "textId": "editortoolgui_select",
         "us": "select",
         "de": "auswählen",
+        "es": "Seleccionar",
         "pt": "selecionar",
         "cz": "Vybrat",
         "fr": "Sélectionner",
+        "it": "Selezionare",
         "jr": "Move yer rocks"
     },
     {
         "textId": "editortoolgui_geometry",
         "us": "geometry",
         "de": "formen",
+        "es": "Geometria",
         "pt": "Geometria",
         "cz": "Tvary",
         "fr": "Géometrie",
+        "it": "Geometria",
         "jr": "Basic Land"
     },
     {
         "textId": "editortoolgui_polydrawing",
         "us": "polydrawing",
         "de": "polygon",
+        "es": "Dibujar Poly",
         "pt": "Desenho poligonal",
         "cz": "Polygon",
         "fr": "Dessin polygonal",
+        "it": "Disegna Poly",
         "jr": "Janky Quill"
     },
     {
         "textId": "editortoolgui_pen",
         "us": "pen",
         "de": "stift",
+        "es": "Lapiz",
         "pt": "Caneta",
         "cz": "Pero",
         "fr": "Stylo",
+        "it": "Matita",
         "jr": "Smoothin' Quill"
     },
     {
         "textId": "editortoolgui_joints",
         "us": "joints",
         "de": "bindungen",
+        "es": "Articulacion",
         "pt": "Juntas",
         "cz": "Spojení",
         "fr": "Joints",
+        "it": "Comune",
         "jr": "Carpentry"
     },
     {
         "textId": "editortoolgui_prefabs",
         "us": "prefabs",
         "de": "fertigbauten",
+        "es": "Prefabricados",
         "pt": "Objetos prontos",
         "cz": "Předvytvořené",
         "fr": "Préfabs",
+        "it": "Prefabbricato",
         "jr": "Treasures"
     },
     {
         "textId": "editortoolgui_text",
         "us": "text",
         "de": "text",
+        "es": "Texto",
         "pt": "Texto",
         "cz": "Text",
         "fr": "Texte",
+        "it": "Testo",
         "jr": "Parchment"
     },
     {
         "textId": "editortoolgui_art",
         "us": "art",
         "de": "grafiken",
+        "es": "Arte",
         "pt": "Arte",
         "cz": "Malování",
         "fr": "Dessin",
+        "it": "Arte",
         "jr": "ARRRRT"
     },
     {
         "textId": "editortoolgui_trigger",
         "us": "trigger",
         "de": "auslöser",
+        "es": "Gatillo",
         "pt": "Acionador",
         "cz": "Spouštěč",
         "fr": "Déclencheur",
+        "it": "Trigger",
         "jr": "Booby Traps"
     },
     {
         "textId": "editorheader_test",
         "us": "test",
         "de": "test",
+        "es": "Probar",
         "pt": "Teste",
         "cz": "Test",
         "fr": "Tester",
+        "it": "Provare",
         "jr": "Set Foot"
     },
     {
         "textId": "editorheader_profilescreen",
         "us": "Profile Screen",
         "de": "Profil Fenster",
+        "es": "Menu de Perfil",
         "pt": "Foto de Perfil",
         "cz": "Obrazovka profilu",
         "fr": "Profile",
+        "it": "Menu profilo",
         "jr": "Captain's Quarters"
     },
     {
         "textId": "editorheader_logout",
         "us": "LOGOUT",
         "de": "AUSLOGGEN",
+        "es": "Salir",
         "pt": "Deslogar",
         "cz": "Odhlásit se",
         "fr": "Se déconnecter",
+        "it": "Partire",
         "jr": "DROP ANCHOR"
     },
     {
         "textId": "editorheader_new",
         "us": "NEW",
         "de": "NEU",
+        "es": "Nuevo",
         "pt": "Novo",
         "cz": "Nový",
         "fr": "Nouveau",
+        "it": "Nuovo",
         "jr": "NEW MAP"
     },
     {
         "textId": "editorheader_load",
         "us": "LOAD",
         "de": "LADEN",
+        "es": "Cargar",
         "pt": "Carregar",
         "cz": "Načíst",
         "fr": "Charger",
+        "it": "Caricare",
         "jr": "FIND MAP"
     },
     {
         "textId": "editorheader_exit",
         "us": "EXIT",
         "de": "VERLASSEN",
+        "es": "Salir",
         "pt": "Sair",
         "cz": "Odejít",
         "fr": "Quitter",
+        "it": "Partire",
         "jr": "ABANDON SHIP"
     },
     {
         "textId": "editorlevelbanner_publishsettings",
         "us": "Publish Settings",
         "de": "Veröffentlichungseinstellungen",
+        "es": "Ajustes de publicacion",
         "pt": "Publicar informações",
         "cz": "Zveřejnit nastavení",
         "fr": "Paramètres de publication",
+        "it": "Impostazioni post",
         "jr": "Island Settings"
     },
     {
         "textId": "editorlevelbanner_thumbnail",
         "us": "Thumbnail",
         "de": "Schaubild",
+        "es": "Imagen",
         "pt": "Miniatura",
         "cz": "Miniatura",
         "fr": "Miniature",
+        "it": "Immagine",
         "jr": "Flag"
     },
     {
         "textId": "editorlevelbanner_clicktoadd",
         "us": "click to add",
         "de": "bild einfügen",
+        "es": "Click para agregar",
         "pt": "Click para adicionar",
         "cz": "Klikněte pro vložení",
         "fr": "Cliquer pour ajouter",
+        "it": "Fare clic per aggiungere",
         "jr": "Click to raise flag"
     },
     {
         "textId": "editorlevelbanner_title",
         "us": "Title",
         "de": "Titel",
+        "es": "Titulo",
         "pt": "Título",
         "cz": "Název",
         "fr": "Titre",
+        "it": "Titolo",
         "jr": "Island Name"
     },
     {
         "textId": "editorlevelbanner_charactersleft",
         "us": "Characters left",
         "de": "Buchstaben übrig",
+        "es": "Caracteres restantes",
         "pt": "Personagens restantes",
         "cz": "Zbývá znaků",
         "fr": "Personnages restants",
+        "it": "Caratteri rimanenti",
         "jr": "Blots of ink left"
     },
     {
         "textId": "editorlevelbanner_description",
         "us": "Description",
         "de": "Beschreibung",
+        "es": "Descripcion",
         "pt": "Descrição",
         "cz": "Popis",
         "fr": "Description",
+        "it": "Descrizione",
         "jr": "Captain's Log"
     },
     {
@@ -842,130 +914,161 @@ const LOCALIZATION_DATA = [
         "pt": "Colocar video do Youtube",
         "cz": "Připojit YouTube videa",
         "fr": "Lien vers les vidéos YouTube",
+        "it": "Video di YouTube link",
         "jr": "Log videos o' YouTube"
     },
     {
         "textId": "editorlevelbanner_saveas",
         "us": "SAVE AS",
         "de": "SPEICHERN ALS",
+        "es": "Salvar como",
         "pt": "Salvar como",
         "cz": "Uložit jako",
         "fr": "Sauvegarder en tant que",
+        "it": "Salva come",
         "jr": "CHART NEW LAND"
     },
     {
         "textId": "editorlevelbanner_delete",
         "us": "DELETE",
         "de": "LÖSCHEN",
+        "es": "Borrar",
         "pt": "Deletar",
         "cz": "Smazat",
         "fr": "Supprimer",
+        "it": "Cancellare",
         "jr": "DESTROY"
     },
     {
         "textId": "editorlevelbanner_preview",
         "us": "PREVIEW",
         "de": "VORSCHAU",
+        "es": "Anticipar",
         "pt": "Pré-visualizar",
         "cz": "Náhled",
         "fr": "Prévisualiser",
+        "it": "Anticipare",
         "jr": "UNMARKED VISIT"
     },
     {
         "textId": "editorlevelbanner_publish",
         "us": "PUBLISH",
         "de": "VERÖFFENTLICHEN",
+        "es": "Publicar",
         "pt": "Publicar",
         "cz": "Zveřejnit",
         "fr": "Publier",
+        "it": "Per pubblicare",
         "jr": "MARK THE SPOT"
     },
     {
         "textId": "editorlevelbanner_notice",
         "us": "Notice",
         "de": "Achtung",
+        "es": "Aviso",
         "pt": "Aviso",
         "cz": "Upozornění",
+        "fr": "Remarquer",
+        "it": "Avviso",
         "jr": "Ahoy there!"
     },
     {
         "textId": "editorlevelbanner_prompt",
         "us": "Prompt",
         "de": "Aufforderung",
+        "es": "Puntual",
         "pt": "Console",
         "cz": "Výzva",
+        "fr": "Alerte",
+        "it": "Puntuale",
         "jr": "There be danger lying thee!"
     },
     {
         "textId": "editorlevelbanner_ok",
         "us": "OK",
         "de": "OK",
+        "es": "OK",
         "pt": "OK!",
         "cz": "OK",
         "fr": "Ok",
+        "it": "OK",
         "jr": "Aye!"
     },
     {
         "textId": "editorlevelbanner_yes",
         "us": "Yes!",
         "de": "Ja!",
+        "es": "Si",
         "pt": "SIM!",
         "cz": "Ano!",
         "fr": "Oui !",
+        "it": "Sì",
         "jr": "Aye aye!"
     },
     {
         "textId": "editorlevelbanner_nope",
         "us": "NOPE!",
         "de": "DOCH NICHT!",
+        "es": "Nop",
         "pt": "NOPE!",
         "cz": "Ne!",
         "fr": "Nan !",
+        "it": "Nop",
         "jr": "AVAST!"
     },
     {
         "textId": "editorlevelbanner_mintitlelength",
         "us": "Title must be at least 3 characters long",
         "de": "Der Titel muss mindenstens 3 Buchstaben lang sein",
+        "es": "El titulo debe ser al menos 3 caracteres",
         "pt": "O Titulo precisa ter pelo menos 3 caracteres",
         "cz": "Název musí obsahovat nejméně 3 znaky",
         "fr": "Le titre doit faire au moins 3 caractères",
+        "it": "Il titolo deve contenere almeno 3 caratteri",
         "jr": "Ye must call yer island with at least 3 letters"
     },
     {
         "textId": "editorlevelbanner_savefirst",
         "us": "You first need to save the level before you can publish / preview it.",
         "de": "Du musst dein Level speichern, bevor du es veröffentlichen / anschauen kannst.",
+        "es": "Primero debes salvar tu nivel antes de publicarlo o hacer preview",
         "pt": "Você precisa salvar o mapa primeiro antes de publicar",
         "cz": "Nejdříve musíte level uložit než jej zveřejníte / zobrazíte náhled",
         "fr": "Tu dois sauvegarder le niveau avant de le publier / prévisualiser.",
+        "it": "Devi prima salvare il tuo livello prima di pubblicarlo o visualizzarlo in anteprima.",
         "jr": "Ye need to mark the spot before ye put this island on the map."
     },
     {
         "textId": "editorlevelbanner_nothumbnail",
         "us": "Your level needs a thumbnail before you can publish / preview it.",
         "de": "Dein Level braucht ein Schaubild, bevor du es veröffentlichen / anschauen kannst.",
+        "es": "Tu nivel necesita una imagen antes de publicarlo o hacer preview",
         "pt": "Seu mapa precisa de uma thumbnail antes de ser publicado",
         "cz": "Váš level potřebuje miniaturu než jej zveřejníte / zobrazíte náhled",
         "fr": "Ton niveau a besoin d'une miniature avant d'être publié / prévisualisé.",
+        "it": "Il tuo livello necessita di un'immagine prima di pubblicarla o visualizzarla in anteprima",
         "jr": "There be no flag on yer land. How your mates gonna know what to expect?"
     },
     {
         "textId": "editorlevelbanner_unsavedchanges",
         "us": "You have unsaved changes to your level, are you sure you wish to proceed?",
         "de": "Dein Level hat ungespeicherte Änderungen, möchtest du trotzdem fortfahren?",
+        "es": "Tienes cambios sin salvar en tu nivel, estas seguro que quieres continuar?",
         "pt": "Você não salvou as modificações do seu mapa, tem certeza que quer prosseguir?",
         "cz": "Máte neuložené změny ve vašem levelu, jste si jisti, že chcete pokračovat?",
         "fr": "Ton niveau a des changements non sauvegardés, es-tu sûr de vouloir continuer ?",
+        "it": "Hai modifiche non salvate nel tuo livello, sei sicuro di voler continuare?",
         "jr": "Ye didn't chart your location. Do ye still want to set sail?"
     },
     {
         "textId": "editorlevelbanner_deleteconfirm",
         "us": "Are you sure you want to delete this level?",
         "de": "Bist du sicher, dass du dieses Level löschen willst?",
+        "es": "Estas seguro que quieres borrar este nivel?",
         "pt": "Você tem certeza que quer deletar o mapa?",
         "cz": "Jste si jisti, že chcete smazat tento level?",
         "fr": "Es-tu sûr de vouloir supprimer ce niveau ?",
+        "it": "Sei sicuro di voler eliminare questo livello?",
         "jr": "Do ye want to send this level to Davy Jones's locker?"
     }
 ]

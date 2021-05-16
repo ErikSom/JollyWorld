@@ -73,12 +73,6 @@ let leaderboard;
 let userPage;
 let smallLogo;
 
-let filter = {
-    featured: '',
-    sort: '',
-    range: ''
-};
-
 function UIManager() {
 
     var self = this;
@@ -496,7 +490,7 @@ function UIManager() {
                     </div>
                     <div class="save">
                         <div class="heart-icon"></div>
-                        ${localize('levelbanner_save')}
+                        ${localize('levelbanner_favorite')}
                     </div>
                     <div class="voting">
                         <div class="vote-down button">
@@ -652,21 +646,24 @@ function UIManager() {
                         <div class="membersince"><span>${localize('userpage_membersince')}:</span><span class="value">?</span></div>
                     </div>
                     <div class="flair">
-                        <div class="gamespublished"><span>${localize('userpage_gamespublished')}:</span><span class="value">?</span></div>
-                        <div class="gamespublished"><span>${localize('userpage_averagerating')}:</span><span class="value">?</span></div>
-                        <div class="gamespublished"><span>${localize('userpage_gamesfeatured')}:</span><span class="value">?</span></div>
-                        <div class="gamespublished"><span>${localize('userpage_totalgameplays')}:</span><span class="value">?</span></div>
+                        <div class="gamespublished"><span>${localize('userpage_levelspublished')}:</span><span class="value">?</span></div>
+                        <div class="gamesaveragerating"><span>${localize('userpage_averagerating')}:</span><span class="value">?</span></div>
+                        <div class="gamesfeatured"><span>${localize('userpage_levelsfeatured')}:</span><span class="value">?</span></div>
+                        <div class="gamestotalgameplays"><span>${localize('userpage_totalgameplays')}:</span><span class="value">?</span></div>
+                    </div>
+                    <div class="nav-buttons">
+                        <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
                     </div>
                 </div>
                 <div class="titlebar">
-                    <div class="toggletitle"><span>${localize('userpage_games')}</span></div>
+                    <div class="toggletitle"><span>${localize('userpage_levels')}</span></div>
                     <div class="togglebuttons">
-                        <div class="games"><span class="fit">${localize('userpage_games')}</span></div>
+                        <div class="games checked"><span class="fit">${localize('userpage_levels')}</span></div>
                         <div class="favorites"><span class="fit">${localize('userpage_favorites')}</span></div>
                     </div>
                 </div>
-                <div class="nav-buttons">
-                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                <div class = "games-scroll">
+                    <div class="gamesholder"></div>
                 </div>
             `;
 
@@ -687,7 +684,108 @@ function UIManager() {
             });
         }
 
+
+        const toggleTitle = userPage.querySelector('.toggletitle');
+        const toggleButtons = userPage.querySelector('.togglebuttons');
+        const games = toggleButtons.querySelector('.games');
+        const favorites = toggleButtons.querySelector('.favorites');
+
+        games.onclick = ()=>{
+            if(!games.classList.contains('.checked')){
+                games.classList.add('checked');
+                favorites.classList.remove('checked');
+                toggleTitle.innerText = localize('userpage_levels')
+                this.showUserPage(username);
+            }
+        }
+
+        favorites.onclick = ()=>{
+            if(!favorites.classList.contains('.checked')){
+                favorites.classList.add('checked');
+                games.classList.remove('checked');
+                toggleTitle.innerText = localize('userpage_favorites')
+                this.showUserPage(username);
+            }
+        }
+
+        this.setUserPageInfo(username);
+
         userPage.style.display = 'block';
+    }
+
+    this.setUserPageInfo = async username => {
+
+        const header = userPage.querySelector('.header');
+        const username_text = header.querySelector('.username');
+        const membersince_text = header.querySelector('.membersince  > .value');
+
+        const flair = userPage.querySelector('.flair');
+        const gamespublished = flair.querySelector('.gamespublished > .value');
+        const gamesaveragerating = flair.querySelector('.gamesaveragerating > .value');
+        const gamesfeatured = flair.querySelector('.gamesfeatured > .value');
+        const gamestotalgameplays = flair.querySelector('.gamestotalgameplays > .value');
+
+        username_text.innerText = "";
+        membersince_text.innerText = "?";
+        gamespublished.innerText = "?";
+        gamesaveragerating.innerText = "?";
+        gamesfeatured.innerText = "?";
+        gamestotalgameplays.innerText = "?";
+
+        new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false });
+
+        const gamesHolder = userPage.querySelector('.gamesholder');
+
+        while(gamesHolder.children.length>0){
+            gamesHolder.removeChild(gamesHolder.children[0]);
+        }
+
+        const userData  = await backendManager.getUserProfile(username);
+
+
+        if(userData){
+            username_text.innerText = username;
+            membersince_text.innerText = format.formatDMY(userData.created_at);
+            gamespublished.innerText = userData.published_levels.length;
+
+            if(userData.published_levels.length > 0){
+                const votedLevels = userData.published_levels.filter(level => level.upvotes + level.downvotes > 0);
+                const averageRating = votedLevels.reduce((a, b) => a + b.upvotes/(b.upvotes+b.downvotes), 0) / votedLevels.length;
+                gamesaveragerating.innerText = `${Math.round(averageRating * 100)}%`;
+                gamesfeatured.innerText = userData.published_levels.filter(level => level.featured).length;
+                gamestotalgameplays.innerText = userData.published_levels.reduce((a, b) => a + b.playcount, 0);
+            }else{
+                gamesaveragerating.innerText = "-";
+                gamesfeatured.innerText = "-";
+                gamestotalgameplays.innerText = "-";
+            }
+
+            const toggleButtons = userPage.querySelector('.togglebuttons');
+            const gamesChecked = toggleButtons.querySelector('.games');
+
+            const gameTemplate = mainMenu.querySelector('.game-template');
+            const targetGames = gamesChecked.classList.contains('checked') ? userData.published_levels : userData.favorite_levels;
+
+            targetGames.forEach( level => {
+                const game = gameTemplate.cloneNode(true)
+                game.style.display = 'block';
+                game.classList.remove('game-template')
+                this.setLevelDataOnGameTile(game, level);
+                gamesHolder.appendChild(game);
+                game.onclick = ()=> {
+                    this.hideUserPage();
+                    this.showLevelBanner(level);
+                }
+                imageObserver.observe(game);
+            });
+
+            while(gamesHolder.children.length<12){
+                gamesHolder.appendChild(document.createElement('div'))
+            }
+
+        }else{
+            username_text.innerText = 'unknown user';
+        }
     }
 
     this.hideUserPage = ()=>{
@@ -917,7 +1015,12 @@ function UIManager() {
         const rating = levelData.upvotes / sumVotes;
 
         const votes = gameInfoBar.querySelector('.votes-text');
-        votes.innerText = `${sumVotes} (${Math.round(rating * 100)}%)`;
+
+        if(levelData.upvotes + levelData.downvotes > 0){
+            votes.innerText = `${sumVotes} (${Math.round(rating * 100)}%)`;
+        } else{
+            votes.innerText = `${sumVotes}`;
+        }
 
         // jolly video
         const jollyVideoHolder = levelBanner.querySelector('.jollyvideo');
@@ -1418,7 +1521,7 @@ function UIManager() {
                 </div>
                 <div class="save">
                     <div class="heart-icon"></div>
-                    ${localize('levelbanner_save')}
+                    ${localize('levelbanner_favorite')}
                 </div>
                 <div class="vote-bar">
                     <div class ="voting">

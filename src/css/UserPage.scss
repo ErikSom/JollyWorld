@@ -3,6 +3,8 @@
 .userPage{
 	@extend .main-window;
 	width: 80%;
+	max-height: 90%;
+	overflow: hidden;
 	color: white;
 	.value{
 		font-size: 12px;
@@ -13,10 +15,14 @@
 	.header{
 		padding: 10px;
 		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: space-between;
 		.userinfo{
 			.username{
 				color: #00FF00;
 				font-size: 36px;
+				margin-right: 80px;
 			}
 			.membersince{
 				font-size: 12px;
@@ -24,16 +30,14 @@
 
 		}
 		.flair{
-			margin-left: auto;
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
-			grid-template-rows: 20px;
 			font-size: 12px;
 		}
 	}
 
 	.titlebar{
-		padding: 10px;
+		padding: 0px 10px;
 		display: flex;
 		.toggletitle{
 			@extend .jollyfont;
@@ -41,6 +45,7 @@
 		}
 		.togglebuttons{
 			display: flex;
+			gap: 10px;
 			margin-left: auto;
 		}
 		.games, .favorites{
@@ -49,13 +54,35 @@
 			height: 24px;
 			font-size: 14px;
 			line-height: 24px;
+
+			&:not(.checked){
+				filter: brightness(0.5);
+			}
 		}
+
+	}
+
+
+	.games-scroll{
+		height: 50vh;
+		overflow-x: hidden;
+		overflow-y: auto;
+		margin-top: 14px;
+		margin-right: 24px
+	}
+
+	.gamesholder{
+		display: grid;
+		grid-template-columns: repeat( auto-fit, minmax(210px, 1fr) );
+		grid-gap: 10px;
+		padding: 0px 44px 0px 14px;
+    	width: 100%;
+		margin: 10px 0 100px 0;
 	}
 
 	.nav-buttons{
-		display: flex;
-		padding: 5px;
 		.back{
+			margin: 0px;
 			@extend .back-button;
 		}
 	}
