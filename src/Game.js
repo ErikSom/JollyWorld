@@ -314,6 +314,11 @@ function Game() {
             }).catch(_err =>{
                 history.replaceState({}, document.title, '')
             });
+        }else{
+            const username = urlParams.get('user');
+            if(username){
+                ui.showUserPage(username);
+            }
         }
 
         document.body.addEventListener("keydown", this.onKeyDown.bind(this), {passive:false});

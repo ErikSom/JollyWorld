@@ -495,6 +495,26 @@ function BackendManager() {
 		}
 
 	}
+
+	this.getUserProfile = async username => {
+		// GET /leaderboard/:id/get ?limit=10
+		const body = {
+			method: 'GET',
+		}
+
+		const result = await fetch(`${Settings.API}/profile/${username}`, body);
+		if(result.status === 404) return null;
+
+		const json = await result.json();
+
+		const {error} = json;
+		if(error){
+			return null
+		}else{
+			return json
+		}
+
+	}
 }
 
 export const backendManager = new BackendManager();

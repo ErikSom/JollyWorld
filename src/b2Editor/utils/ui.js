@@ -270,7 +270,7 @@ const doPublishLevelData = function (publishButton, preview) {
         if (!game.currentLevelData.description) return showNotice(Settings.DEFAULT_TEXTS.publish_noDescription);
 
         if(preview){
-            window.open(`https://jollyworld.app/#${game.currentLevelData.id}`, "_blank");
+            window.open(`https://jollyworld.app/?lvl=${game.currentLevelData.id}`, "_blank");
         }else{
             showPrompt(`Are you sure you wish to publish the level data for  ${game.currentLevelData.title} live?`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
                 publishButton.style.backgroundColor = 'grey';
