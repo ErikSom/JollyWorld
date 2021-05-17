@@ -852,7 +852,7 @@ function Game() {
             levelData = null;
         }
         if(!levelData){
-            levelData = JSON.parse(JSON.stringify(levelsData.mainMenuLevel)); // TODO CHANGE THIS BACK TO EDITOR LEVEL
+            levelData = levelsData.editorLevel();
             levelData.id = nanoid();
             levelData.creationDate = Date.now();
         }
