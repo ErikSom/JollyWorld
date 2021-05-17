@@ -992,15 +992,15 @@ function Game() {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             // GAME STATE NORMAL
-            await backendManager.submitTime(game.currentLevelData.id);
+            if(this.gameState == this.GAMESTATE_NORMALPLAY){
+                await backendManager.submitTime(game.currentLevelData.id);
+            }
 
             let d;
             if(window.wqhjfu){
                d = timeFormat(window.wqhjfu);
-               console.log("REAL TIME");
             }else{
                d = timeFormat(this.gameFrame * (1/60) * 1000);
-               console.log("FAKE TIME");
             }
 
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
