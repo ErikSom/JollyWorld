@@ -767,8 +767,16 @@ function UIManager() {
             gamespublished.innerText = userData.published_levels.length;
 
             if(userData.published_levels.length > 0){
-                const votedLevels = userData.published_levels.filter(level => level.upvotes + level.downvotes > 0);
-                const averageRating = votedLevels.reduce((a, b) => a + b.upvotes/(b.upvotes+b.downvotes), 0) / votedLevels.length;
+
+                let upvotes = 0;
+                let downvotes = 0;
+
+                userData.published_levels.forEach( level => {
+                    upvotes += level.upvotes;
+                    downvotes += level.downvotes;
+                })
+
+                const averageRating = upvotes/ (upvotes+downvotes);
                 gamesaveragerating.innerText = `${Math.round(averageRating * 100)}%`;
                 gamesfeatured.innerText = userData.published_levels.filter(level => level.featured).length;
                 gamestotalgameplays.innerText = userData.published_levels.reduce((a, b) => a + b.playcount, 0);

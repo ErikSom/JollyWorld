@@ -1891,6 +1891,8 @@ const _B2dEditor = function () {
 			delete body.myRTCache;
 			delete body.myDecalEntry;
 			delete body.myDecalRT;
+			delete body.myMaskRT;
+			delete body.myMask;
 			delete body.isHat;
 			delete body.key;
 			delete body.bounceIndex;
@@ -1905,6 +1907,27 @@ const _B2dEditor = function () {
 			delete body.preSolveVelicityCounter;
 			delete body.emitterCount;
 			delete body.decalTimeout;
+			delete body.isVain;
+			delete body.vainRopeJoint;
+			delete body.jointCrawled;
+			delete body.isArrow;
+			delete body.isCrossBow;
+			delete body.oldBounceManifest;
+			delete body.copyHash;
+			delete body.lockPositionForOneFrame;
+			delete body.myFlesh;
+			delete body.class;
+			delete body.contactListener;
+			delete body.edgeLeft;
+			delete body.edgeRight;
+			delete body.edgeBottom;
+			delete body.edgeTop;
+			delete body.isVehicle;
+			delete body.yogaBody;
+			delete body.bounceIndex;
+			delete body.isCannon;
+			delete body.emitterCount;
+			delete body.isCharacter;
 		}
 	}
 
@@ -1973,14 +1996,16 @@ const _B2dEditor = function () {
 			delete joint.innerLoopDestroyed;
 			delete joint.snapTick;
 			delete joint.myTriggers;
+			delete joint.spriteData;
+			delete joint.data;
 		}
 	}
 
 	this.CreateJoint = function(jointDef){
 		// make sure we are not pooling an object
-		const joint = this.world.CreateJoint(jointDef);
-		this.CleanJoint(this.CastJoint(joint));
-
+		let joint = this.world.CreateJoint(jointDef);
+		joint =  this.CastJoint(joint);
+		this.CleanJoint(joint);
 		return joint;
 	}
 

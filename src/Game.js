@@ -991,6 +991,7 @@ function Game() {
     this.gameWin = async function () {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
+            // GAME STATE NORMAL
             await backendManager.submitTime(game.currentLevelData.id);
 
             let d;
