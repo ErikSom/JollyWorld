@@ -43,7 +43,6 @@ import {countries, countryToFlag, localize} from '../utils/Localization'
 
 import textFit from '../../libs/textFit';
 
-
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -261,6 +260,9 @@ function UIManager() {
             loginButton.onclick = ()=>{
                 if(backendManager.isLoggedIn()){
                     // show profile page
+                    if(backendManager.userData && backendManager.userData.username){
+                        this.showUserPage(backendManager.userData.username, 'favorite');
+                    }
                 }else{
                     this.openDiscordOauth();
                 }
@@ -271,7 +273,7 @@ function UIManager() {
 
 
             if(!MobileController.isMobile()){
-                new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
+                new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
             }
 
             const settingsButton = header.querySelector('.settings');
@@ -549,7 +551,7 @@ function UIManager() {
 
             const authorButton = levelBanner.querySelector('.text-author');
             authorButton.onclick = ()=>{
-                this.showUserPage(authorButton.innerText);
+                this.showUserPage(authorButton.innerText, 'games');
             }
 
             const navButtons = levelBanner.querySelector('.nav-buttons');
@@ -636,7 +638,7 @@ function UIManager() {
         this.setLevelBannerData(levelData);
     }
 
-    this.showUserPage = username => {
+    this.showUserPage = (username, defaultChecked) => {
         if(!userPage){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
@@ -663,7 +665,8 @@ function UIManager() {
                     </div>
                 </div>
                 <div class = "games-scroll">
-                    <div class="gamesholder"></div>
+                    <div class="gamesholder">
+                    </div>
                 </div>
             `;
 
@@ -671,9 +674,13 @@ function UIManager() {
             userPage.classList.add('userPage');
             userPage.innerHTML = htmlStructure;
 
+            // const simpleBar = new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false });
+            // console.log(simpleBar);
+
             const navButtons = userPage.querySelector('.nav-buttons');
             const backButton = navButtons.querySelector('.back');
             backButton.onclick = ()=>{
+                history.replaceState({}, 'JollyWorld', '/');
                 this.hideUserPage();
             }
             customGUIContainer.appendChild(userPage);
@@ -708,7 +715,19 @@ function UIManager() {
             }
         }
 
+        if(defaultChecked === 'games'){
+            favorites.classList.remove('checked');
+            games.classList.add('checked');
+        } else if(defaultChecked === 'favorite'){
+            favorites.classList.add('checked');
+            games.classList.remove('checked');
+        }
+
         this.setUserPageInfo(username);
+
+        history.replaceState({}, document.title, `?user=${username}`);
+
+        userPage.parentNode.appendChild(userPage);
 
         userPage.style.display = 'block';
     }
@@ -725,15 +744,14 @@ function UIManager() {
         const gamesfeatured = flair.querySelector('.gamesfeatured > .value');
         const gamestotalgameplays = flair.querySelector('.gamestotalgameplays > .value');
 
-        username_text.innerText = "";
-        membersince_text.innerText = "?";
-        gamespublished.innerText = "?";
-        gamesaveragerating.innerText = "?";
-        gamesfeatured.innerText = "?";
-        gamestotalgameplays.innerText = "?";
-
-        new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false });
-
+        if(userPage.style.display === 'none'){
+            username_text.innerText = "";
+            membersince_text.innerText = "?";
+            gamespublished.innerText = "?";
+            gamesaveragerating.innerText = "?";
+            gamesfeatured.innerText = "?";
+            gamestotalgameplays.innerText = "?";
+        }
         const gamesHolder = userPage.querySelector('.gamesholder');
 
         while(gamesHolder.children.length>0){
@@ -786,6 +804,8 @@ function UIManager() {
         }else{
             username_text.innerText = 'unknown user';
         }
+
+        new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
     }
 
     this.hideUserPage = ()=>{
@@ -859,6 +879,10 @@ function UIManager() {
 
                 const username = entry.querySelector('.text-player-name')
                 username.innerText = entryData.username;
+
+                username.onclick = ()=>{
+                    this.showUserPage(username.innerText, 'games');
+                }
 
                 if(backendManager.isLoggedIn() && entryData.username === backendManager.userData.username){
                     entry.classList.add('me');

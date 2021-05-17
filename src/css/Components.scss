@@ -245,6 +245,7 @@
 			.text-player-name{
 				color: #00FF00;
 				width: 112px;
+				@extend .clean-text-button;
 			}
 
 			.time{

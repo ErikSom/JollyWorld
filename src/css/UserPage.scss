@@ -3,8 +3,6 @@
 .userPage{
 	@extend .main-window;
 	width: 80%;
-	max-height: 90%;
-	overflow: hidden;
 	color: white;
 	.value{
 		font-size: 12px;
@@ -16,8 +14,8 @@
 		padding: 10px;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 10px;
 		justify-content: space-between;
+		gap: 10px;
 		.userinfo{
 			.username{
 				color: #00FF00;
@@ -61,7 +59,6 @@
 		}
 
 	}
-
 
 	.games-scroll{
 		height: 50vh;
