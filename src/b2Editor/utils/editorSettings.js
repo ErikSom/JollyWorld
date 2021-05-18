@@ -4,7 +4,6 @@ export const editorSettings = {
     pathSmoothTolerance:2.5,
     pathSimplificationMaxVertices:100,
     maxVertices:5000,
-    physicsDebug:true,
     gravityX:0,
     gravityY:10,
 }

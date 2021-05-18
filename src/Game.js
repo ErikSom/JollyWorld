@@ -429,7 +429,7 @@ function Game() {
 
         this.fixTouchEvent(e);
 
-        if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug &&  !this.mouseJoint && this.run) {
+        if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettingsObject.physicsDebug &&  !this.mouseJoint && this.run) {
             const body = this.getBodyAtMouse();
             if (body) {
                 const md = new b2MouseJointDef();
@@ -1402,7 +1402,7 @@ function Game() {
 
         this.newDebugGraphics.clear();
         b2DebugDrawManager.clear();
-        if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
+        if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettingsObject.physicsDebug) {
             b2DebugDrawManager.update(this.editor.cameraHolder.x / Settings.PTM, this.editor.cameraHolder.y / Settings.PTM);
         }
 

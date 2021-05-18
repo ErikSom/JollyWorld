@@ -1786,7 +1786,6 @@ export class triggerCore {
         var self = this;
         this.contactListener = new Box2D.JSContactListener();
         this.contactListener.BeginContact = function (contact, target) {
-            console.log("BEGIN CONTACT!!")
             if (self.data.targetType>=triggerButtonIndex || !self.data.enabled) return;
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             for (var i = 0; i < bodies.length; i++) {

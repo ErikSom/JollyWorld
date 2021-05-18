@@ -621,7 +621,7 @@ const _B2dEditor = function () {
 				const utilityFolder = ui.editorGUI.addFolder('utilities');
 				utilityFolder.open();
 
-				utilityFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
+				utilityFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>this.editorSettingsObject.physicsDebug=val);
 				utilityFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
 					editorSettings.stats=val;
 					game.stats.show(val);
