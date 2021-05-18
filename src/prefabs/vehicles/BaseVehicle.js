@@ -202,6 +202,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         b2MulVec2(dirFore, force * 0.01)
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             body = this.lookupObject._bodies[i];
+            if(body.snapped) continue;
             let oldVelocity = body.GetLinearVelocity();
             let newVelocity = new Box2D.b2Vec2(oldVelocity.x + dirFore.x, oldVelocity.y + dirFore.y);
             body.SetLinearVelocity(newVelocity);

@@ -435,7 +435,6 @@ function Game() {
                 const md = new b2MouseJointDef();
                 md.set_bodyA(this.m_groundBody);
                 md.set_bodyB(body);
-                
                 const targetPosition = new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y());
 
                 md.set_target(targetPosition);
@@ -444,13 +443,12 @@ function Game() {
 
                 b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, body);
 
-                this.mouseJoint = Box2D.castObject(this.editor.CreateJoint(md), Box2D.b2MouseJoint);
+                this.mouseJoint = this.editor.CreateJoint(md);
+
                 body.SetAwake(true);
 
                 Box2D.destroy(targetPosition);
                 Box2D.destroy(md);
-
-
             }
         }
         Key.onMouseDown();

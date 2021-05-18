@@ -120,7 +120,9 @@ class Skippyball extends BaseVehicle {
 			b2MulVec2(baseForce, (impulse * forceSpread * contactDecrease)) ;
 
 			this.lookupObject._bodies.forEach(body=>{
-				body.ApplyForceToCenter(baseForce, true);
+				if(!body.snapped){
+					body.ApplyForceToCenter(baseForce, true);
+				}
 			})
 
 			Box2D.destroy(baseForce);

@@ -1954,6 +1954,8 @@ const _B2dEditor = function () {
 			return Box2D.castObject(joint, Box2D.b2WheelJoint);
 		}else if(joint.GetType() === Box2D.e_weldJoint){
 			return Box2D.castObject(joint, Box2D.b2WeldJoint);
+		}else if(joint.GetType() === Box2D.e_mouseJoint){
+			return Box2D.castObject(joint, Box2D.b2MouseJoint);
 		}
 		return joint;
 	}
@@ -2321,8 +2323,6 @@ const _B2dEditor = function () {
 			this.selectedPhysicsBodies = [];
 			this.selectedTextures = [];
 			this.selectedPrefabs = {};
-
-
 
 			const targetPosition = (oldPosition || this.shiftDown) ? this.copiedCenterPosition : this.mousePosWorld;
 
@@ -7821,6 +7821,10 @@ const _B2dEditor = function () {
 
 		if(prefabClass.isCharacter){
 			objects = objects.concat(prefabClass.vehicleParts);
+		}
+
+		if(prefabClass.isVehicle){
+			objects = objects.filter(body => !body.snapped);
 		}
 
 		const centerObject = prefabClass.lookupObject[centerObjectName];

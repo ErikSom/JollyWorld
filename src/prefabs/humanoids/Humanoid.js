@@ -142,12 +142,12 @@ export class Humanoid extends PrefabManager.basePrefab {
         super.update();
 
         if (PrefabManager.timerReady(this.eyesTimer, Humanoid.TIME_EYES_CLOSE, true) || !this.alive) {
-            if (this.lookupObject.eye_left){
+            if (this.lookupObject.eye_left && !this.lookupObject.eye_left.snapped){
                 const textureIndex = this.lookupObject.eye_left.myTexture.data.textureName.substr(this.lookupObject.eye_left.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_left.myTexture.data.textureName.split(textureIndex)[0];
                 this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
             }
-            if (this.lookupObject.eye_right){
+            if (this.lookupObject.eye_right && !this.lookupObject.eye_right.snapped){
                 const textureIndex = this.lookupObject.eye_right.myTexture.data.textureName.substr(this.lookupObject.eye_right.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_right.myTexture.data.textureName.split(textureIndex)[0];
                 this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
@@ -586,6 +586,9 @@ export class Humanoid extends PrefabManager.basePrefab {
                         if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
                     } else if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT] === targetBody){
                         if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.HEAD] === targetBody){
+                        if(this.lookupObject['eye_left']) this.lookupObject['eye_left'].snapped = true;
+                        if(this.lookupObject['eye_right']) this.lookupObject['eye_right'].snapped = true;
                     }
 
                     this.dealDamage(30);
@@ -673,11 +676,17 @@ export class Humanoid extends PrefabManager.basePrefab {
                             if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].snapped = true;
                             if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
                         }
-                    })
+                    });
                     //carve bodies
 
-                    if (targetJoint.GetBodyA().isFlesh) game.editor.queueDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
-                    if (targetJoint.GetBodyB().isFlesh) game.editor.queueDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
+                    this.lookupObject[update.target].snapped = true;
+
+                    if (targetJoint.GetBodyA().isFlesh){
+                        game.editor.queueDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
+                    }
+                    if (targetJoint.GetBodyB().isFlesh){
+                        game.editor.queueDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
+                    }
 
                     game.editor.deleteObjects([targetJoint]);
 
