@@ -1853,6 +1853,10 @@ const _B2dEditor = function () {
 		// mark this body as pooled
 		body.__emscripten_pool = true;
 
+		if(body.queuedForDecals){
+			this.decalQueue = this.decalQueue.filter(data => data[0] !== body);
+		}
+
 		for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
 			let joint = this.CastJoint(jointEdge.joint);
 			this.preDestroyJoint(joint);
@@ -1928,6 +1932,7 @@ const _B2dEditor = function () {
 			delete body.isCannon;
 			delete body.emitterCount;
 			delete body.isCharacter;
+			delete body.queuedForDecals
 		}
 	}
 
@@ -8947,6 +8952,7 @@ const _B2dEditor = function () {
 	}
 
 	this.queueDecalToBody = function(body, worldPosition, textureName, carving, size, rotation, optional) {
+		body.queuedForDecals = true;
 		this.decalQueue.push([body, worldPosition, textureName, carving, size, rotation, optional]);
 	}
 
@@ -8955,6 +8961,7 @@ const _B2dEditor = function () {
 			return;
 
 //		return;
+		delete body.queuedForDecals;
 
 		size = size || 1;
 		rotation = rotation || 0;
@@ -8963,7 +8970,7 @@ const _B2dEditor = function () {
 		if (!body.myDecalRT) {
 			this.prepareBodyForDecals(body);
 		}
-		
+
 		/**
 		 * @type {DS.DecalSystem}
 		 */
