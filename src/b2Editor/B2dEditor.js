@@ -1932,7 +1932,8 @@ const _B2dEditor = function () {
 			delete body.isCannon;
 			delete body.emitterCount;
 			delete body.isCharacter;
-			delete body.queuedForDecals
+			delete body.queuedForDecals;
+			delete body.isBeartrapSpike;
 		}
 	}
 

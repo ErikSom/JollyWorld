@@ -434,9 +434,12 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if(dotProductChar>0){
                         forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
                     }
+
                     if(dotProductOther>0){
                         forceDamage += otherBody.preSolveVelicity.LengthSquared() * otherBody.GetMass();
                     }
+
+                    if(otherBody.isBeartrapSpike) forceDamage *= 20;
 
                     if(characterBody == self.lookupObject["belly"]) forceDamage /= 3;
 
