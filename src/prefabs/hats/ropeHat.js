@@ -250,6 +250,7 @@ export class RopeHat extends Hat {
 			this.revoluteJoint = this.pulleyJoint = this.pulleyFrameJoint = null;
 			this.ropeActive = false
 			this.bendBody = this.bendPoint = null;
+			this.ropeEnd = null;
 		}
 	}
 	bendRope(point, body) {
@@ -365,7 +366,7 @@ export class RopeHat extends Hat {
 	}
 
 	updateRopeFixture() {
-		if(!this.ropeEnd) return;
+		if(!this.ropeEnd || this.ropeEnd.destroyed) return;
 
 		this.clearTilingRope();
 

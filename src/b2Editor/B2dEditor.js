@@ -1851,6 +1851,7 @@ const _B2dEditor = function () {
 	}
 	this.DestroyBody = function(body){
 		// mark this body as pooled
+		body.destroyed = true;
 		body.__emscripten_pool = true;
 
 		if(body.queuedForDecals){
