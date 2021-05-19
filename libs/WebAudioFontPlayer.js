@@ -1876,6 +1876,7 @@ MIDIFile.Track = MIDIFileTrack;
 			}
 		}
 		this.queueWaveTable = function (audioContext, target, preset, when, pitch, duration, volume, slides) {
+			if(!preset) return;
 			this.resumeContext(audioContext);
 			volume = this.limitVolume(volume);
 			var zone = this.findZone(audioContext, preset, pitch);
