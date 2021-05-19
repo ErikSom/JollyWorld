@@ -243,10 +243,17 @@ export const doAction = function (actionData, target) {
             break;
         case "SetMaxMotorTorque":
             let targetMotorForce;
-            if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
-            else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorTorque() + actionData.force;
-            targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
-            target.SetMaxMotorTorque(targetMotorForce);
+            if(target.SetMaxMotorTorque){
+                if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
+                else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorTorque() + actionData.force;
+                targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
+                target.SetMaxMotorTorque(targetMotorForce);
+            }else if(target.SetMaxMotorForce){
+                if (actionData.setAdd == "fixed") targetMotorForce = actionData.force;
+                else if (actionData.setAdd == "add") targetMotorForce = target.GetMaxMotorForce() + actionData.force;
+                targetMotorForce = Math.min(Settings.motorForceLimit, Math.max(0, targetMotorForce));
+                target.SetMaxMotorForce(targetMotorForce);
+            }
             break;
         case "SetSpring":
             b2LinearStiffness(target, actionData.frequencyHz, actionData.dampingRatio, target.GetBodyA(), target.GetBodyB(), true);
