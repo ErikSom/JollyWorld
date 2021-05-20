@@ -38,6 +38,7 @@ export class RopeHat extends Hat {
 		this.tilingSprites = [];
 		this.isRopeHat = true;
 		this.touchedBodies = [];
+		this.endRope = null;
 		this.attach();
 	}
 	attach(){
@@ -69,7 +70,7 @@ export class RopeHat extends Hat {
 					if(fixture.GetBody().mainCharacter) return -1;
 
 					this.m_hit = true;
-					this.m_point = point;
+					this.m_point = b2CloneVec2(point);
 					this.m_normal = normal;
 					this.m_fixture = fixture;
 					return fraction;
@@ -90,6 +91,7 @@ export class RopeHat extends Hat {
 				this.targetAnimationPoint = b2CloneVec2(callback.m_point);
 				this.attachRope(callback.m_point, callback.m_fixture.GetBody());
 				this.ropeAttached = true;
+
 			} else {
 				this.ropeFired = false;
 				this.targetAnimationPoint = b2CloneVec2(rayEnd);
@@ -123,6 +125,7 @@ export class RopeHat extends Hat {
 	}
 
 	attachRope(point, body, precise) {
+
 		this.ropeActive = true;
 		this.blockControls = true;
 
@@ -132,6 +135,8 @@ export class RopeHat extends Hat {
 		bd.set_linearDamping(0.85);
 
 		const farthestPoint = precise ? point : this.findFarthestPointFromBody(0.3, point, body);
+
+
 		if (farthestPoint === null) return;
 
 		const diff = b2CloneVec2(this.head.GetPosition());
@@ -312,7 +317,6 @@ export class RopeHat extends Hat {
 				const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
 				const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
 				const normal = Box2D.wrapPointer(normal_p, Box2D.b2Vec2);
-
 				if (fixture.GetBody() !== body) return -1;
 				this.m_hit = true;
 				this.m_point = point;
@@ -590,14 +594,11 @@ export class RopeHat extends Hat {
 	}
 
 	update() {
-
 		if(this.showAnimation){
 			this.showRopeAnimation();
 		}
 
-
 		if (this.ropeActive) {
-			
 			if(!this.showAnimation){
 				this.updateRopeFixture();
 			}

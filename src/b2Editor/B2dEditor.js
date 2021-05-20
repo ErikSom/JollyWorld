@@ -8667,9 +8667,10 @@ const _B2dEditor = function () {
 			//pin to background
 
 			let fixDef = new b2FixtureDef();
-			fixDef.density = 1.0;
-			fixDef.friction = Settings.defaultFriction;
-			fixDef.restitution = Settings.defaultRestitution;
+			fixDef.set_density(1.0);
+			fixDef.set_friction(Settings.defaultFriction);
+			fixDef.set_restitution(Settings.defaultRestitution);
+			fixDef.set_isSensor(true);
 
 			let bd = new b2BodyDef();
 			bd.type = Box2D.b2_staticBody;
@@ -8690,6 +8691,11 @@ const _B2dEditor = function () {
 
 
 			this.setBodyCollision(bodyB, [2]);
+
+			for (let fixture = bodyB.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+				// force sensor on joint placeholder bodies
+				fixture.SetSensor(true);
+			}
 
 		}
 		let joint;
