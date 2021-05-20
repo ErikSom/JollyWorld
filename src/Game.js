@@ -314,6 +314,11 @@ function Game() {
             }).catch(_err =>{
                 history.replaceState({}, document.title, '')
             });
+        }else{
+            const username = urlParams.get('user');
+            if(username){
+                ui.showUserPage(username);
+            }
         }
 
         document.body.addEventListener("keydown", this.onKeyDown.bind(this), {passive:false});
@@ -424,13 +429,12 @@ function Game() {
 
         this.fixTouchEvent(e);
 
-        if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettings.physicsDebug &&  !this.mouseJoint && this.run) {
+        if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettingsObject.physicsDebug &&  !this.mouseJoint && this.run) {
             const body = this.getBodyAtMouse();
             if (body) {
                 const md = new b2MouseJointDef();
                 md.set_bodyA(this.m_groundBody);
                 md.set_bodyB(body);
-                
                 const targetPosition = new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y());
 
                 md.set_target(targetPosition);
@@ -439,13 +443,12 @@ function Game() {
 
                 b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, body);
 
-                this.mouseJoint = Box2D.castObject(this.editor.CreateJoint(md), Box2D.b2MouseJoint);
+                this.mouseJoint = this.editor.CreateJoint(md);
+
                 body.SetAwake(true);
 
                 Box2D.destroy(targetPosition);
                 Box2D.destroy(md);
-
-
             }
         }
         Key.onMouseDown();
@@ -847,7 +850,7 @@ function Game() {
             levelData = null;
         }
         if(!levelData){
-            levelData = JSON.parse(JSON.stringify(levelsData.mainMenuLevel)); // TODO CHANGE THIS BACK TO EDITOR LEVEL
+            levelData = levelsData.editorLevel();
             levelData.id = nanoid();
             levelData.creationDate = Date.now();
         }
@@ -986,15 +989,16 @@ function Game() {
     this.gameWin = async function () {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
-            await backendManager.submitTime(game.currentLevelData.id);
+            // GAME STATE NORMAL
+            if(this.gameState == this.GAMESTATE_NORMALPLAY){
+                await backendManager.submitTime(game.currentLevelData.id);
+            }
 
             let d;
             if(window.wqhjfu){
                d = timeFormat(window.wqhjfu);
-               console.log("REAL TIME");
             }else{
                d = timeFormat(this.gameFrame * (1/60) * 1000);
-               console.log("FAKE TIME");
             }
 
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
@@ -1396,7 +1400,7 @@ function Game() {
 
         this.newDebugGraphics.clear();
         b2DebugDrawManager.clear();
-        if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettings.physicsDebug) {
+        if ((this.gameState == this.GAMESTATE_EDITOR || Settings.admin) && this.editor.editorSettingsObject.physicsDebug) {
             b2DebugDrawManager.update(this.editor.cameraHolder.x / Settings.PTM, this.editor.cameraHolder.y / Settings.PTM);
         }
 

@@ -1876,6 +1876,7 @@ MIDIFile.Track = MIDIFileTrack;
 			}
 		}
 		this.queueWaveTable = function (audioContext, target, preset, when, pitch, duration, volume, slides) {
+			if(!preset) return;
 			this.resumeContext(audioContext);
 			volume = this.limitVolume(volume);
 			var zone = this.findZone(audioContext, preset, pitch);
@@ -1905,7 +1906,7 @@ MIDIFile.Track = MIDIFileTrack;
 			envelope.audioBufferSourceNode = audioContext.createBufferSource();
 			envelope.audioBufferSourceNode.playbackRate.setValueAtTime(playbackRate, 0);
 			if (slides) {
-				if (slides.length > 0) {
+				if (slides.length > 0 && when > 0) {
 					envelope.audioBufferSourceNode.playbackRate.setValueAtTime(playbackRate, when);
 					for (var i = 0; i < slides.length; i++) {
 						var newPlaybackRate = 1.0 * Math.pow(2, (100.0 * slides[i].pitch - baseDetune) / 1200.0);

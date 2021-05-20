@@ -19,6 +19,7 @@
 }
 .clean-text-button{
 	color: black;
+	cursor: pointer;
 	text-decoration: none;
 	&:hover{
 		text-decoration: underline;
@@ -245,6 +246,7 @@
 			.text-player-name{
 				color: #00FF00;
 				width: 112px;
+				@extend .clean-text-button;
 			}
 
 			.time{

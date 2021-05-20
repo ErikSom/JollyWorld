@@ -1,6 +1,6 @@
 {
   "name": "jollywheels",
-  "version": "0.9.56",
+  "version": "0.9.57",
   "description": "This game is not for kids, its physics / gore and fun!",
   "main": "./build/index.html",
   "repository": "https://smerik@bitbucket.org/smerik/jollywheels.git",
@@ -68,7 +68,7 @@
     "sass": "^1.32.8",
     "sass-loader": "10.1.1",
     "self": "^1.0.0",
-    "simplebar": "^5.3.0",
+    "simplebar": "^5.3.3",
     "simplify-js": "^1.2.3",
     "style-loader": "^1.2.1",
     "terser-webpack-plugin": "^3.0.6",

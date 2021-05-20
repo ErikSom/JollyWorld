@@ -13,8 +13,7 @@ import { b2CloneVec2, b2DotVV, b2SubVec2 } from '../../../libs/debugdraw';
 
 const { getPointer, NULL } = Box2D;
 
-const vec1 = new Box2D.b2Vec2();
-const vec2 = new Box2D.b2Vec2();
+const vec1 = new Box2D.b2Vec2(0,0);
 
 export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -143,12 +142,12 @@ export class Humanoid extends PrefabManager.basePrefab {
         super.update();
 
         if (PrefabManager.timerReady(this.eyesTimer, Humanoid.TIME_EYES_CLOSE, true) || !this.alive) {
-            if (this.lookupObject.eye_left){
+            if (this.lookupObject.eye_left && !this.lookupObject.eye_left.snapped){
                 const textureIndex = this.lookupObject.eye_left.myTexture.data.textureName.substr(this.lookupObject.eye_left.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_left.myTexture.data.textureName.split(textureIndex)[0];
                 this.lookupObject.eye_left.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
             }
-            if (this.lookupObject.eye_right){
+            if (this.lookupObject.eye_right && !this.lookupObject.eye_right.snapped){
                 const textureIndex = this.lookupObject.eye_right.myTexture.data.textureName.substr(this.lookupObject.eye_right.myTexture.data.textureName.length-4);
                 const baseTextureName = this.lookupObject.eye_right.myTexture.data.textureName.split(textureIndex)[0];
                 this.lookupObject.eye_right.myTexture.originalSprite.texture = PIXI.Texture.from(`${baseTextureName}_Closed${textureIndex}`);
@@ -435,9 +434,12 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if(dotProductChar>0){
                         forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
                     }
+
                     if(dotProductOther>0){
                         forceDamage += otherBody.preSolveVelicity.LengthSquared() * otherBody.GetMass();
                     }
+
+                    if(otherBody.isBeartrapSpike) forceDamage *= 20;
 
                     if(characterBody == self.lookupObject["belly"]) forceDamage /= 3;
 
@@ -587,6 +589,9 @@ export class Humanoid extends PrefabManager.basePrefab {
                         if(this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT].snapped = true;
                     } else if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT] === targetBody){
                         if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT]) this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
+                    } else if(this.lookupObject[Humanoid.BODY_PARTS.HEAD] === targetBody){
+                        if(this.lookupObject['eye_left']) this.lookupObject['eye_left'].snapped = true;
+                        if(this.lookupObject['eye_right']) this.lookupObject['eye_right'].snapped = true;
                     }
 
                     this.dealDamage(30);
@@ -618,7 +623,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                     const anchorAPos = targetJoint.GetAnchorA();
                     const anchorBPos = targetJoint.GetAnchorB();
 
-                    let revoluteJointDef, joint;
 
                     let vainPrefab = '{"objects":[[4,' + anchorAPos.x * Settings.PTM + ',' + anchorAPos.y * Settings.PTM + ',0,{},"Vain"]]}'
 
@@ -626,14 +630,15 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     let vainSize = (vainBodies._bodies[0].originalGraphic.height * vainBodies._bodies.length) / Settings.PTM;
 
-                    revoluteJointDef = new Box2D.b2RevoluteJointDef();
-
                     vainBodies._bodies[0].SetTransform(anchorAPos, vainBodies._bodies[0].GetAngle());
 
+                    let revoluteJointDef = new Box2D.b2RevoluteJointDef();
                     revoluteJointDef.Initialize(targetJoint.GetBodyA(), vainBodies._bodies[0], anchorAPos);
 
                     revoluteJointDef.set_collideConnected(false);
-                    joint = Box2D.castObject(game.editor.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+
+
+                    let joint = game.editor.CreateJoint(revoluteJointDef);
                     Box2D.destroy(revoluteJointDef);
 
                     revoluteJointDef = new Box2D.b2RevoluteJointDef();
@@ -642,9 +647,8 @@ export class Humanoid extends PrefabManager.basePrefab {
 
 
                     revoluteJointDef.set_collideConnected(false);
-                    joint = Box2D.castObject(game.editor.CreateJoint(revoluteJointDef), Box2D.b2RevoluteJoint);
+                    joint = game.editor.CreateJoint(revoluteJointDef);
                     Box2D.destroy(revoluteJointDef);
-
 
                     let ropeJointDef;
 
@@ -657,7 +661,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                     ropeJointDef.set_stiffness(0);
                     ropeJointDef.set_damping(0);
 
-                    joint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                    joint = game.editor.CreateJoint(ropeJointDef);
 
                     Box2D.destroy(ropeJointDef);
 
@@ -675,14 +679,19 @@ export class Humanoid extends PrefabManager.basePrefab {
                             if(this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT].snapped = true;
                             if(this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT])this.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT].snapped = true;
                         }
-                    })
+                    });
                     //carve bodies
 
-                    if (targetJoint.GetBodyA().isFlesh) game.editor.queueDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
-                    if (targetJoint.GetBodyB().isFlesh) game.editor.queueDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
+                    this.lookupObject[update.target].snapped = true;
 
-                    game.editor.DestroyJoint(targetJoint);
-                    delete this.lookupObject[update.target + "_joint"];
+                    if (targetJoint.GetBodyA().isFlesh){
+                        game.editor.queueDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);
+                    }
+                    if (targetJoint.GetBodyB().isFlesh){
+                        game.editor.queueDecalToBody(targetJoint.GetBodyB(), anchorBPos, "Decal.png", true);
+                    }
+
+                    game.editor.deleteObjects([targetJoint]);
 
                     AudioManager.playSFX(['snap1', 'snap2', 'snap3', 'snap4'], 0.3, 1.0+Math.random()*.2-.1, targetJoint.GetBodyA().GetPosition());
 

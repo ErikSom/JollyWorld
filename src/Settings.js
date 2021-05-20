@@ -89,7 +89,7 @@ export var Settings = {
     REDIRECT:'https://jollyworld.app/login.html',
     GAMEURI: 'https://jollyworld.app',
     YTAPIKEY:'AIzaSyDjy-Fw9ocqXRL2Axjj5zvBhgIXTJLcLY0',
-    levelsPerRequest:100,
+    levelsPerRequest:250,
 
     /*TEXT*/
     DEFAULT_TEXTS:{

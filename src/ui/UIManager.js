@@ -11,6 +11,7 @@ import '../css/GameOver.scss'
 import '../css/Leaderboard.scss'
 import '../css/SettingsMenu.scss'
 import '../css/YoutubePlayer.scss'
+import '../css/UserPage.scss'
 import '../css/flags.css'
 
 // https://github.com/catdad/canvas-confetti
@@ -42,7 +43,6 @@ import {countries, countryToFlag, localize} from '../utils/Localization'
 
 import textFit from '../../libs/textFit';
 
-
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -69,13 +69,8 @@ let socialShareScreen;
 let settingsMenu;
 let loginScreen;
 let leaderboard;
+let userPage;
 let smallLogo;
-
-let filter = {
-    featured: '',
-    sort: '',
-    range: ''
-};
 
 function UIManager() {
 
@@ -265,6 +260,9 @@ function UIManager() {
             loginButton.onclick = ()=>{
                 if(backendManager.isLoggedIn()){
                     // show profile page
+                    if(backendManager.userData && backendManager.userData.username){
+                        this.showUserPage(backendManager.userData.username, 'favorite');
+                    }
                 }else{
                     this.openDiscordOauth();
                 }
@@ -275,7 +273,7 @@ function UIManager() {
 
 
             if(!MobileController.isMobile()){
-                new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false });
+                new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
             }
 
             const settingsButton = header.querySelector('.settings');
@@ -350,7 +348,10 @@ function UIManager() {
         const header = mainMenu.querySelector('.header');
 
         // if we can't retrieve userdata quick enough
-        if(backendManager.isLoggedIn() && !backendManager.userData) setTimeout(this.handleLoginChange, 100);
+        if(backendManager.isLoggedIn() && !backendManager.userData){
+            setTimeout(this.handleLoginChange, 100);
+            return;
+        }
 
         const discordButton = header.querySelector('.discord');
         if(backendManager.isLoggedIn()){
@@ -494,7 +495,7 @@ function UIManager() {
                     </div>
                     <div class="save">
                         <div class="heart-icon"></div>
-                        ${localize('levelbanner_save')}
+                        ${localize('levelbanner_favorite')}
                     </div>
                     <div class="voting">
                         <div class="vote-down button">
@@ -551,6 +552,10 @@ function UIManager() {
             levelBanner.classList.add('levelbanner');
             levelBanner.innerHTML = htmlStructure;
 
+            const authorButton = levelBanner.querySelector('.text-author');
+            authorButton.onclick = ()=>{
+                this.showUserPage(authorButton.innerText, 'games');
+            }
 
             const navButtons = levelBanner.querySelector('.nav-buttons');
             const backButton = navButtons.querySelector('.back');
@@ -636,6 +641,188 @@ function UIManager() {
         this.setLevelBannerData(levelData);
     }
 
+    this.showUserPage = (username, defaultChecked) => {
+        if(!userPage){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header">
+                    <div class="userinfo">
+                        <div class="username">Smerik</div>
+                        <div class="membersince"><span>${localize('userpage_membersince')}:</span><span class="value">?</span></div>
+                    </div>
+                    <div class="flair">
+                        <div class="gamespublished"><span>${localize('userpage_levelspublished')}:</span><span class="value">?</span></div>
+                        <div class="gamesaveragerating"><span>${localize('userpage_averagerating')}:</span><span class="value">?</span></div>
+                        <div class="gamesfeatured"><span>${localize('userpage_levelsfeatured')}:</span><span class="value">?</span></div>
+                        <div class="gamestotalgameplays"><span>${localize('userpage_totalgameplays')}:</span><span class="value">?</span></div>
+                    </div>
+                    <div class="nav-buttons">
+                        <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                    </div>
+                </div>
+                <div class="titlebar">
+                    <div class="toggletitle"><span>${localize('userpage_levels')}</span></div>
+                    <div class="togglebuttons">
+                        <div class="games checked"><span class="fit">${localize('userpage_levels')}</span></div>
+                        <div class="favorites"><span class="fit">${localize('userpage_favorites')}</span></div>
+                    </div>
+                </div>
+                <div class = "games-scroll">
+                    <div class="gamesholder">
+                    </div>
+                </div>
+            `;
+
+            userPage = document.createElement('div');
+            userPage.classList.add('userPage');
+            userPage.innerHTML = htmlStructure;
+
+            // const simpleBar = new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false });
+            // console.log(simpleBar);
+
+            const navButtons = userPage.querySelector('.nav-buttons');
+            const backButton = navButtons.querySelector('.back');
+            backButton.onclick = ()=>{
+                history.replaceState({}, 'JollyWorld', '/');
+                this.hideUserPage();
+            }
+            customGUIContainer.appendChild(userPage);
+
+            // fit texts
+            Array.from(userPage.querySelectorAll('.fit')).forEach( el => {
+                textFit(el)
+            });
+        }
+
+
+        const toggleTitle = userPage.querySelector('.toggletitle');
+        const toggleButtons = userPage.querySelector('.togglebuttons');
+        const games = toggleButtons.querySelector('.games');
+        const favorites = toggleButtons.querySelector('.favorites');
+
+        games.onclick = ()=>{
+            if(!games.classList.contains('.checked')){
+                games.classList.add('checked');
+                favorites.classList.remove('checked');
+                toggleTitle.innerText = localize('userpage_levels')
+                this.showUserPage(username);
+            }
+        }
+
+        favorites.onclick = ()=>{
+            if(!favorites.classList.contains('.checked')){
+                favorites.classList.add('checked');
+                games.classList.remove('checked');
+                toggleTitle.innerText = localize('userpage_favorites')
+                this.showUserPage(username);
+            }
+        }
+
+        if(defaultChecked === 'games'){
+            favorites.classList.remove('checked');
+            games.classList.add('checked');
+        } else if(defaultChecked === 'favorite'){
+            favorites.classList.add('checked');
+            games.classList.remove('checked');
+        }
+
+        this.setUserPageInfo(username);
+
+        history.replaceState({}, document.title, `?user=${username}`);
+
+        userPage.parentNode.appendChild(userPage);
+
+        userPage.style.display = 'block';
+    }
+
+    this.setUserPageInfo = async username => {
+
+        const header = userPage.querySelector('.header');
+        const username_text = header.querySelector('.username');
+        const membersince_text = header.querySelector('.membersince  > .value');
+
+        const flair = userPage.querySelector('.flair');
+        const gamespublished = flair.querySelector('.gamespublished > .value');
+        const gamesaveragerating = flair.querySelector('.gamesaveragerating > .value');
+        const gamesfeatured = flair.querySelector('.gamesfeatured > .value');
+        const gamestotalgameplays = flair.querySelector('.gamestotalgameplays > .value');
+
+        if(userPage.style.display === 'none'){
+            username_text.innerText = "";
+            membersince_text.innerText = "?";
+            gamespublished.innerText = "?";
+            gamesaveragerating.innerText = "?";
+            gamesfeatured.innerText = "?";
+            gamestotalgameplays.innerText = "?";
+        }
+        const gamesHolder = userPage.querySelector('.gamesholder');
+
+        while(gamesHolder.children.length>0){
+            gamesHolder.removeChild(gamesHolder.children[0]);
+        }
+
+        const userData  = await backendManager.getUserProfile(username);
+
+
+        if(userData){
+            username_text.innerText = username;
+            membersince_text.innerText = format.formatDMY(userData.created_at);
+            gamespublished.innerText = userData.published_levels.length;
+
+            if(userData.published_levels.length > 0){
+
+                let upvotes = 0;
+                let downvotes = 0;
+
+                userData.published_levels.forEach( level => {
+                    upvotes += level.upvotes;
+                    downvotes += level.downvotes;
+                })
+
+                const averageRating = upvotes/ (upvotes+downvotes);
+                gamesaveragerating.innerText = `${Math.round(averageRating * 100)}%`;
+                gamesfeatured.innerText = userData.published_levels.filter(level => level.featured).length;
+                gamestotalgameplays.innerText = userData.published_levels.reduce((a, b) => a + b.playcount, 0);
+            }else{
+                gamesaveragerating.innerText = "-";
+                gamesfeatured.innerText = "-";
+                gamestotalgameplays.innerText = "-";
+            }
+
+            const toggleButtons = userPage.querySelector('.togglebuttons');
+            const gamesChecked = toggleButtons.querySelector('.games');
+
+            const gameTemplate = mainMenu.querySelector('.game-template');
+            const targetGames = gamesChecked.classList.contains('checked') ? userData.published_levels : userData.favorite_levels;
+
+            targetGames.forEach( level => {
+                const game = gameTemplate.cloneNode(true)
+                game.style.display = 'block';
+                game.classList.remove('game-template')
+                this.setLevelDataOnGameTile(game, level);
+                gamesHolder.appendChild(game);
+                game.onclick = ()=> {
+                    this.hideUserPage();
+                    this.showLevelBanner(level);
+                }
+                imageObserver.observe(game);
+            });
+
+            while(gamesHolder.children.length<12){
+                gamesHolder.appendChild(document.createElement('div'))
+            }
+
+        }else{
+            username_text.innerText = 'unknown user';
+        }
+
+        new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
+    }
+
+    this.hideUserPage = ()=>{
+        userPage.style.display = 'none';
+    }
+
     this.fillLeaderboard = async (element, levelid, limit) => {
 
         const entries = element.querySelector('.entries');
@@ -703,6 +890,10 @@ function UIManager() {
 
                 const username = entry.querySelector('.text-player-name')
                 username.innerText = entryData.username;
+
+                username.onclick = ()=>{
+                    this.showUserPage(username.innerText, 'games');
+                }
 
                 if(backendManager.isLoggedIn() && entryData.username === backendManager.userData.username){
                     entry.classList.add('me');
@@ -859,7 +1050,12 @@ function UIManager() {
         const rating = levelData.upvotes / sumVotes;
 
         const votes = gameInfoBar.querySelector('.votes-text');
-        votes.innerText = `${sumVotes} (${Math.round(rating * 100)}%)`;
+
+        if(levelData.upvotes + levelData.downvotes > 0){
+            votes.innerText = `${sumVotes} (${Math.round(rating * 100)}%)`;
+        } else{
+            votes.innerText = `${sumVotes}`;
+        }
 
         // jolly video
         const jollyVideoHolder = levelBanner.querySelector('.jollyvideo');
@@ -1360,7 +1556,7 @@ function UIManager() {
                 </div>
                 <div class="save">
                     <div class="heart-icon"></div>
-                    ${localize('levelbanner_save')}
+                    ${localize('levelbanner_favorite')}
                 </div>
                 <div class="vote-bar">
                     <div class ="voting">

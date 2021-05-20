@@ -57,7 +57,7 @@ export const getTempEditorWorld = async function(){
     try{
         tempWorld = await idb.get(SAVEKEYS.tempEditorWorld);
     } catch(err){
-        tempWorld = JSON.parse(JSON.stringify(levelsData.editorLevel));
+        tempWorld = JSON.parse(JSON.stringify(levelsData.editorLevel()));
         tempWorld.id = nanoid();
         tempWorld.creationDate = Date.now();
         saveTempEditorWorld(tempWorld);
@@ -67,7 +67,7 @@ export const getTempEditorWorld = async function(){
     if(window.location.search.indexOf('localstorage=true')>=0){
         tempWorld = loadData(SAVEKEYS.tempEditorWorld);
         if(!tempWorld){
-            tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.editorLevel);
+            tempWorld = saveData(SAVEKEYS.tempEditorWorld, levelsData.editorLevel());
             tempWorld.id = nanoid();
             tempWorld.creationDate = Date.now();
         }

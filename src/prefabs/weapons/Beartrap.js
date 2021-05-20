@@ -19,6 +19,11 @@ class Beartrap extends PrefabManager.basePrefab {
 		this.base = this.lookupObject['base'];
 		this.lever = this.lookupObject['lever'];
 
+
+		this.lookupObject['spikeLeft'].isBeartrapSpike = true;
+		this.lookupObject['spikeRight'].isBeartrapSpike = true;
+
+
 		this.ready = true;
 		this.beartrapTimer = Number.POSITIVE_INFINITY;
         this.beartrapDelay = this.prefabObject.settings.delay * 1000.0;

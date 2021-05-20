@@ -621,7 +621,7 @@ const _B2dEditor = function () {
 				const utilityFolder = ui.editorGUI.addFolder('utilities');
 				utilityFolder.open();
 
-				utilityFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>editorSettings.physicsDebug=val);
+				utilityFolder.add(ui.editorGUI.editData, 'physicsDebug').onChange(val=>this.editorSettingsObject.physicsDebug=val);
 				utilityFolder.add(ui.editorGUI.editData, 'stats').onChange(val=> {
 					editorSettings.stats=val;
 					game.stats.show(val);
@@ -1851,7 +1851,12 @@ const _B2dEditor = function () {
 	}
 	this.DestroyBody = function(body){
 		// mark this body as pooled
+		body.destroyed = true;
 		body.__emscripten_pool = true;
+
+		if(body.queuedForDecals){
+			this.decalQueue = this.decalQueue.filter(data => data[0] !== body);
+		}
 
 		for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
 			let joint = this.CastJoint(jointEdge.joint);
@@ -1891,6 +1896,8 @@ const _B2dEditor = function () {
 			delete body.myRTCache;
 			delete body.myDecalEntry;
 			delete body.myDecalRT;
+			delete body.myMaskRT;
+			delete body.myMask;
 			delete body.isHat;
 			delete body.key;
 			delete body.bounceIndex;
@@ -1905,6 +1912,29 @@ const _B2dEditor = function () {
 			delete body.preSolveVelicityCounter;
 			delete body.emitterCount;
 			delete body.decalTimeout;
+			delete body.isVain;
+			delete body.vainRopeJoint;
+			delete body.jointCrawled;
+			delete body.isArrow;
+			delete body.isCrossBow;
+			delete body.oldBounceManifest;
+			delete body.copyHash;
+			delete body.lockPositionForOneFrame;
+			delete body.myFlesh;
+			delete body.class;
+			delete body.contactListener;
+			delete body.edgeLeft;
+			delete body.edgeRight;
+			delete body.edgeBottom;
+			delete body.edgeTop;
+			delete body.isVehicle;
+			delete body.yogaBody;
+			delete body.bounceIndex;
+			delete body.isCannon;
+			delete body.emitterCount;
+			delete body.isCharacter;
+			delete body.queuedForDecals;
+			delete body.isBeartrapSpike;
 		}
 	}
 
@@ -1926,6 +1956,8 @@ const _B2dEditor = function () {
 			return Box2D.castObject(joint, Box2D.b2WheelJoint);
 		}else if(joint.GetType() === Box2D.e_weldJoint){
 			return Box2D.castObject(joint, Box2D.b2WeldJoint);
+		}else if(joint.GetType() === Box2D.e_mouseJoint){
+			return Box2D.castObject(joint, Box2D.b2MouseJoint);
 		}
 		return joint;
 	}
@@ -1973,14 +2005,16 @@ const _B2dEditor = function () {
 			delete joint.innerLoopDestroyed;
 			delete joint.snapTick;
 			delete joint.myTriggers;
+			delete joint.spriteData;
+			delete joint.data;
 		}
 	}
 
 	this.CreateJoint = function(jointDef){
 		// make sure we are not pooling an object
-		const joint = this.world.CreateJoint(jointDef);
-		this.CleanJoint(this.CastJoint(joint));
-
+		let joint = this.world.CreateJoint(jointDef);
+		joint =  this.CastJoint(joint);
+		this.CleanJoint(joint);
 		return joint;
 	}
 
@@ -2291,8 +2325,6 @@ const _B2dEditor = function () {
 			this.selectedPhysicsBodies = [];
 			this.selectedTextures = [];
 			this.selectedPrefabs = {};
-
-
 
 			const targetPosition = (oldPosition || this.shiftDown) ? this.copiedCenterPosition : this.mousePosWorld;
 
@@ -7793,6 +7825,10 @@ const _B2dEditor = function () {
 			objects = objects.concat(prefabClass.vehicleParts);
 		}
 
+		if(prefabClass.isVehicle){
+			objects = objects.filter(body => !body.snapped);
+		}
+
 		const centerObject = prefabClass.lookupObject[centerObjectName];
 		const flippedJoints = [];
 		objects.forEach(object =>{
@@ -8616,6 +8652,7 @@ const _B2dEditor = function () {
 
 			bodyB = this.textures.getChildAt(jointPlaceHolder.bodyB_ID).myBody;
 
+			if(bodyA === bodyB) return;
 
 			if(bodyA.mySprite && bodyA.mySprite.data.prefabInstanceName && bodyB.mySprite && !bodyB.mySprite.data.prefabInstanceName){
 				// this is an ancnhor created on a NoVehicle object that we want to force on the position of the actual body
@@ -8631,9 +8668,10 @@ const _B2dEditor = function () {
 			//pin to background
 
 			let fixDef = new b2FixtureDef();
-			fixDef.density = 1.0;
-			fixDef.friction = Settings.defaultFriction;
-			fixDef.restitution = Settings.defaultRestitution;
+			fixDef.set_density(1.0);
+			fixDef.set_friction(Settings.defaultFriction);
+			fixDef.set_restitution(Settings.defaultRestitution);
+			fixDef.set_isSensor(true);
 
 			let bd = new b2BodyDef();
 			bd.type = Box2D.b2_staticBody;
@@ -8654,6 +8692,11 @@ const _B2dEditor = function () {
 
 
 			this.setBodyCollision(bodyB, [2]);
+
+			for (let fixture = bodyB.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+				// force sensor on joint placeholder bodies
+				fixture.SetSensor(true);
+			}
 
 		}
 		let joint;
@@ -8922,6 +8965,7 @@ const _B2dEditor = function () {
 	}
 
 	this.queueDecalToBody = function(body, worldPosition, textureName, carving, size, rotation, optional) {
+		body.queuedForDecals = true;
 		this.decalQueue.push([body, worldPosition, textureName, carving, size, rotation, optional]);
 	}
 
@@ -8930,6 +8974,7 @@ const _B2dEditor = function () {
 			return;
 
 //		return;
+		delete body.queuedForDecals;
 
 		size = size || 1;
 		rotation = rotation || 0;
@@ -8938,7 +8983,7 @@ const _B2dEditor = function () {
 		if (!body.myDecalRT) {
 			this.prepareBodyForDecals(body);
 		}
-		
+
 		/**
 		 * @type {DS.DecalSystem}
 		 */
@@ -10345,17 +10390,19 @@ const _B2dEditor = function () {
 				if (sprite.bodies.length > 1) sprite.data.bodyB_ID = sprite.bodies[1].mySprite.parent.getChildIndex(sprite.bodies[1].mySprite);
 				this.updateObject(sprite, sprite.data);
 
-				var joint = this.attachJoint(sprite.data);
-
-				if (sprite.myTriggers != undefined) {
-					for (var j = 0; j < sprite.myTriggers.length; j++) {
-						trigger.replaceTargetOnTrigger(sprite.myTriggers[j], sprite, joint);
-					}
-				}
+				const joint = this.attachJoint(sprite.data);
 
 				spritesToDestroy.push(sprite);
-				this.addObjectToLookupGroups(joint, sprite.data);
-				joint.spriteData = sprite.data;
+
+				if(joint){
+					if (sprite.myTriggers != undefined) {
+						for (var j = 0; j < sprite.myTriggers.length; j++) {
+							trigger.replaceTargetOnTrigger(sprite.myTriggers[j], sprite, joint);
+						}
+					}
+					this.addObjectToLookupGroups(joint, sprite.data);
+					joint.spriteData = sprite.data;
+				}
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
 				sprite.myBody.SetAwake(false);
