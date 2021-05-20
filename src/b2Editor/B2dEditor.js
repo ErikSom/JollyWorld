@@ -8652,6 +8652,7 @@ const _B2dEditor = function () {
 
 			bodyB = this.textures.getChildAt(jointPlaceHolder.bodyB_ID).myBody;
 
+			if(bodyA === bodyB) return;
 
 			if(bodyA.mySprite && bodyA.mySprite.data.prefabInstanceName && bodyB.mySprite && !bodyB.mySprite.data.prefabInstanceName){
 				// this is an ancnhor created on a NoVehicle object that we want to force on the position of the actual body
@@ -10389,17 +10390,19 @@ const _B2dEditor = function () {
 				if (sprite.bodies.length > 1) sprite.data.bodyB_ID = sprite.bodies[1].mySprite.parent.getChildIndex(sprite.bodies[1].mySprite);
 				this.updateObject(sprite, sprite.data);
 
-				var joint = this.attachJoint(sprite.data);
-
-				if (sprite.myTriggers != undefined) {
-					for (var j = 0; j < sprite.myTriggers.length; j++) {
-						trigger.replaceTargetOnTrigger(sprite.myTriggers[j], sprite, joint);
-					}
-				}
+				const joint = this.attachJoint(sprite.data);
 
 				spritesToDestroy.push(sprite);
-				this.addObjectToLookupGroups(joint, sprite.data);
-				joint.spriteData = sprite.data;
+
+				if(joint){
+					if (sprite.myTriggers != undefined) {
+						for (var j = 0; j < sprite.myTriggers.length; j++) {
+							trigger.replaceTargetOnTrigger(sprite.myTriggers[j], sprite, joint);
+						}
+					}
+					this.addObjectToLookupGroups(joint, sprite.data);
+					joint.spriteData = sprite.data;
+				}
 			} else if (sprite.data.type == this.object_BODY) {
 				this.addObjectToLookupGroups(sprite.myBody, sprite.data);
 				sprite.myBody.SetAwake(false);
