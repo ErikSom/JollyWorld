@@ -7791,10 +7791,14 @@ const _B2dEditor = function () {
 							} else {
 								scaleX = scaleY;
 							}
+							gObj.radius *= scaleX;
 						}
 					}
 					centerPoint.x += gObj.x;
 					centerPoint.y += gObj.y;
+
+					sprite.data.graphicObjects[j] = this.serializeObject(gObj);
+
 				}
 
 				centerPoint.x /= sprite.data.graphicObjects.length;

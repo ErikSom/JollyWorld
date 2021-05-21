@@ -37,6 +37,7 @@ export class Character extends Humanoid {
     }
 
     setHat(hatClass){
+        if(!this.alive) return;
         if(this.hat) this.hat.detach();
         this.hat = new hatClass(this, this.lookupObject.head, this.lookupObject.body);
         if(this.flipped) this.hat.flip();
