@@ -2298,7 +2298,7 @@ const _B2dEditor = function () {
 	}
 
 	this.cutSelection = function () {
-		this.copySelection();
+		this.copiedJSON = this.copySelection();
 		if (this.copiedJSON != null) this.deleteSelection();
 	}
 	this.pasteData = function(compressedString){
@@ -2348,7 +2348,7 @@ const _B2dEditor = function () {
 					sprite.x -= movX;
 					sprite.y -= movY;
 
-					if (!sprite.originalGraphic && sprite.myBody == null) {
+					if (sprite.myBody == null) {
 						if (sprite.data.prefabInstanceName) this.selectedPrefabs[sprite.data.prefabInstanceName] = true;
 						else this.selectedTextures.push(sprite);
 					}
