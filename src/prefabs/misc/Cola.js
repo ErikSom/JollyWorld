@@ -8,6 +8,7 @@ class Cola extends SoftBreakable {
         this.partsType = ["Plastic", 4];
         this.partsColors = [0x4f2700, 0x4f2700, 0x4f2700, 0x4f2700, 0xff0001];
         this.breakingForce = 15;
+        this.partsOffset = [0, 2];
         super.init();
     }
 }

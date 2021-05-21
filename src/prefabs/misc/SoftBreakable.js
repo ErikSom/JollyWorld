@@ -16,9 +16,11 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 		this.emitterType = 'splash';
 		this.partsColors = [0xFFFFFF];
 		this.partsType = ['Pumpkin2', 3];
+		this.partsOffset = [0,0];
 		this.partsQuantity = 6;
 		this.partsSize = 5;
 		this.partsForce = 10;
+		this.sound = '';
 		this.doBreak = false;
 
 	}
@@ -26,6 +28,11 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 	init(){
 		super.init();
         this.base = this.lookupObject['base'];
+
+		if(!this.prefabObject.settings.isAwake){
+            this.base.SetAwake(false);
+			this.base.mySprite.data.awake = false;
+        }
 	}
 
 	break(){
@@ -36,7 +43,7 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 			parts.push(`${this.partsType[0]}_${i+1}`);
 		}
 
-		PhysicsParticleEmitter.emit(parts, this.base.GetPosition(), this.partsQuantity, this.partsSize, this.partsForce, false, this.partsColors);
+		PhysicsParticleEmitter.emit(parts, this.base.GetPosition(), this.partsQuantity, this.partsSize, this.partsForce, false, this.partsColors, this.base.GetAngle(), this.partsOffset);
 		this.destroy();
 	}
 
@@ -64,3 +71,11 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 		}
     }
 }
+
+SoftBreakable.settings = Object.assign({}, SoftBreakable.settings, {
+    "isAwake": true
+});
+
+SoftBreakable.settingsOptions = Object.assign({}, SoftBreakable.settingsOptions, {
+    "isAwake": true
+});

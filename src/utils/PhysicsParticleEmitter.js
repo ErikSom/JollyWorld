@@ -4,6 +4,7 @@ import {
 } from "../Game";
 import { Settings } from '../Settings';
 import { disableCulling } from '../utils/PIXICuller';
+import { b2CloneVec2 } from '../../libs/debugdraw';
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
 
 
@@ -21,7 +22,7 @@ export const init = ()=> {
 	}
 }
 
-export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[]) => {
+export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[], rotation=0, offset=[0,0]) => {
 
 	let force2 = force*2;
 	size = size / Settings.PTM;
@@ -81,10 +82,37 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		sprite.pivot.x = sprite.width/2;
 		sprite.pivot.y = sprite.height/2;
 
-		body.SetTransform(worldPosition, body.GetAngle())
+		const targetPosition = b2CloneVec2(worldPosition);
 
-		sprite.x = worldPosition.get_x()*Settings.PTM;
-		sprite.y = worldPosition.get_y()*Settings.PTM;
+		if(offset !== [0,0]){
+			if(offset[0] !== 0){
+
+				const offsetLength = (offset[0] * 2) * Math.random() - offset[0];
+				const offsetX = offsetLength * Math.cos(rotation);
+				const offsetY = offsetLength * Math.sin(rotation);
+
+				targetPosition.set_x(targetPosition.get_x() + offsetX);
+				targetPosition.set_y(targetPosition.get_y() + offsetY);
+
+			}
+
+			if(offset[1] !== 0){
+
+				const offsetLength = (offset[1] * 2) * Math.random() - offset[1];
+				const offsetX = offsetLength * Math.cos(rotation+Settings.pihalve);
+				const offsetY = offsetLength * Math.sin(rotation+Settings.pihalve);
+
+				targetPosition.set_x(targetPosition.get_x() + offsetX);
+				targetPosition.set_y(targetPosition.get_y() + offsetY);
+
+			}
+		}
+
+
+		body.SetTransform(targetPosition, body.GetAngle())
+
+		sprite.x = targetPosition.get_x()*Settings.PTM;
+		sprite.y = targetPosition.get_y()*Settings.PTM;
 
 		impulse.Set(Math.random()*force2-force, Math.random()*force2-force)
 		body.SetLinearVelocity(impulse)
@@ -94,6 +122,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		}
 
 		Box2D.destroy(impulse);
+		Box2D.destroy(targetPosition);
 
 	}
 }
