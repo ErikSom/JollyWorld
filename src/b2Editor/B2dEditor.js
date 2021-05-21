@@ -793,7 +793,7 @@ const _B2dEditor = function () {
 				currentCase = case_JUST_JOINTS;
 			}
 
-			if((_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0) + (_selectedAnimationGroups.length > 0 ? 1 : 0)){
+			if((_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0)){
 				hideMirrorTransformGui = true;
 			}
 
@@ -4132,7 +4132,7 @@ const _B2dEditor = function () {
 						else y *= -1;
 						object.myTexture.data.texturePositionOffsetAngle = Math.atan2(y, x);
 
-						if([this.object_GRAPHICGROUP, this.object_GRAPHIC].includes(object.myTexture.data.type)) objects.push(object.myTexture);
+						if([this.object_GRAPHICGROUP, this.object_ANIMATIONGROUP, this.object_GRAPHIC].includes(object.myTexture.data.type)) objects.push(object.myTexture);
 					}
 				} else {
 					data = object.data;
@@ -4164,28 +4164,73 @@ const _B2dEditor = function () {
 					}
 				}
 
-				if([this.object_GRAPHICGROUP].includes(data.type)){
+				if ([this.object_GRAPHICGROUP, this.object_ANIMATIONGROUP].includes(data.type)) {
 					data.graphicObjects.forEach(graphicObject => {
-						const vertices = graphicObject[11];
-						vertices.forEach(vertice=>{
-							if(obj) vertice.x *= -1;
-							else vertice.y *= -1;
 
-							if(vertice.point1){
-								if(obj) vertice.point1.x *= -1;
-								else vertice.point1.y *= -1;
-							}
-							if(vertice.point2){
-								if(obj) vertice.point2.x *= -1;
-								else vertice.point2.y *= -1;
-							}
-						})
-						if(obj) graphicObject[1] *= -1;
-						else graphicObject[2] *= -1;
-						graphicObject.rotation = -graphicObject.rotation;
+						switch (graphicObject[0]) {
+							case this.object_GRAPHIC:
+								const vertices = graphicObject[11];
+								vertices.forEach(vertice => {
+									if (obj) vertice.x *= -1;
+									else vertice.y *= -1;
+
+									if (vertice.point1) {
+										if (obj) vertice.point1.x *= -1;
+										else vertice.point1.y *= -1;
+									}
+									if (vertice.point2) {
+										if (obj) vertice.point2.x *= -1;
+										else vertice.point2.y *= -1;
+									}
+								})
+								if (obj) graphicObject[1] *= -1;
+								else graphicObject[2] *= -1;
+								graphicObject.rotation = -graphicObject.rotation;
+								break
+							case this.object_TEXT:
+							case this.object_TEXTURE:
+								if (obj) graphicObject[1] *= -1;
+								else graphicObject[2] *= -1;
+								graphicObject.rotation = -graphicObject.rotation;
+								break
+							case this.object_GRAPHICGROUP:
+								if (obj) graphicObject[1] *= -1;
+								else graphicObject[2] *= -1;
+								const innerGraphicObjects = graphicObject[7];
+								innerGraphicObjects.forEach(graphicObject => {
+									switch (graphicObject[0]) {
+										case this.object_GRAPHIC:
+											const vertices = graphicObject[11];
+											vertices.forEach(vertice => {
+												if (obj) vertice.x *= -1;
+												else vertice.y *= -1;
+
+												if (vertice.point1) {
+													if (obj) vertice.point1.x *= -1;
+													else vertice.point1.y *= -1;
+												}
+												if (vertice.point2) {
+													if (obj) vertice.point2.x *= -1;
+													else vertice.point2.y *= -1;
+												}
+											})
+											if (obj) graphicObject[1] *= -1;
+											else graphicObject[2] *= -1;
+											graphicObject.rotation = -graphicObject.rotation;
+											break
+										case this.object_TEXT:
+										case this.object_TEXTURE:
+											if (obj) graphicObject[1] *= -1;
+											else graphicObject[2] *= -1;
+											graphicObject.rotation = -graphicObject.rotation;
+											break
+									}
+								})
+								break
+						}
+
+						this.updateGraphicGroupShapes(object);
 					})
-
-					this.updateGraphicGroupShapes(object);
 				}
 
 			}
