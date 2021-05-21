@@ -198,6 +198,7 @@ const getBodies = Object.assign(new Box2D.JSQueryCallback(), {
 		const body = fixture.GetBody();
 		const bodyClass = game.editor.retrieveClassFromBody(body);
 		let ignore = false;
+		if(body.mySprite && body.mySprite.data.type === game.editor.object_TRIGGER) ignore = true;
 		if(bodyClass){
 			if(bodyClass.isExplosive && bodyClass.exploded) ignore = true;
 			if(bodyClass.isParticle) ignore = true;
