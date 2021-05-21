@@ -793,7 +793,7 @@ const _B2dEditor = function () {
 				currentCase = case_JUST_JOINTS;
 			}
 
-			if((_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0) + (_selectedAnimationGroups.length > 0 ? 1 : 0) + (_selectedGraphicGroups.length > 0 ? 1 : 0)){
+			if((_selectedPinJoints.length > 0 ? 1 : 0) + (_selectedSlideJoints.length > 0 ? 1 : 0) + (_selectedDistanceJoints.length > 0 ? 1 : 0) + (_selectedRopeJoints.length > 0 ? 1 : 0) + (_selectedWheelJoints.length > 0 ? 1 : 0) + (_selectedTexts.length > 0 ? 1 : 0) + (_selectedAnimationGroups.length > 0 ? 1 : 0)){
 				hideMirrorTransformGui = true;
 			}
 
@@ -4166,7 +4166,8 @@ const _B2dEditor = function () {
 
 				if([this.object_GRAPHICGROUP].includes(data.type)){
 					data.graphicObjects.forEach(graphicObject => {
-						graphicObject.vertices.forEach(vertice=>{
+						const vertices = graphicObject[11];
+						vertices.forEach(vertice=>{
 							if(obj) vertice.x *= -1;
 							else vertice.y *= -1;
 
@@ -4179,10 +4180,11 @@ const _B2dEditor = function () {
 								else vertice.point2.y *= -1;
 							}
 						})
-						if(obj) graphicObject.x *= -1;
-						else graphicObject.y *= -1;
+						if(obj) graphicObject[1] *= -1;
+						else graphicObject[2] *= -1;
 						graphicObject.rotation = -graphicObject.rotation;
 					})
+
 					this.updateGraphicGroupShapes(object);
 				}
 
