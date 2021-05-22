@@ -69,11 +69,11 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 			body = sprite.myBody;
 			body.GetFixtureList().GetShape().set_m_radius(size);
 		}
-
 		if(!randomTexture){
 			sprite.texture = PIXI.Texture.from(textures[i%textures.length]+'0000');
 		}else{
-			sprite.texture = PIXI.Texture.from(textures[Math.round(Math.random()*textures.length)]+'0000');
+			const randomTexture = textures[Math.floor(Math.random()*textures.length)];
+			sprite.texture = PIXI.Texture.from(randomTexture+'0000');
 		}
 
 		sprite.lifeTime = Settings.physicsParticleLifeTime + Math.round(Settings.physicsParticleLifeTimeRandomOffset*Math.random());
@@ -119,6 +119,8 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 
 		if(tints.length>0){
 			sprite.tint = tints[Math.round(Math.random()*tints.length)];
+		}else{
+			sprite.tint = 0xFFFFFF;
 		}
 
 		Box2D.destroy(impulse);

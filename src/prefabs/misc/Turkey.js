@@ -8,9 +8,10 @@ class Turkey extends SoftBreakable {
         this.partsRandom = false;
         this.partsQuantity = 3;
         this.partsColors = [];
-        this.breakingForce = 15;
+        this.breakingForce = 33;
         this.partsOffset = [2, 2];
         this.sound = 'chicken-explode';
+        this.name = "Turkey";
         super.init();
     }
 }

@@ -6,9 +6,10 @@ class Cola extends SoftBreakable {
         this.splashColors = ['#181211', '#4a110a', '#181211', '#4a110a', '#deaf67'];
         this.partsType = ["Plastic", 4];
         this.partsColors = [0x4f2700, 0x4f2700, 0x4f2700, 0x4f2700, 0xff0001];
-        this.breakingForce = 15;
+        this.breakingForce = 19.6;
         this.partsOffset = [0, 2];
         this.sound = 'coke-explode';
+        this.name = "Cola";
         super.init();
     }
 }

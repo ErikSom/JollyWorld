@@ -71,7 +71,6 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 					force = impulse.get_normalImpulses(j);
 				}
 			}
-
 			const skipBecauseToLight = contact.GetFixtureA().GetDensity() === 0.001 || contact.GetFixtureB().GetDensity() === 0.001;
 			if (force > self.breakingForce && !skipBecauseToLight) {
 				self.doBreak = true;
