@@ -47,6 +47,10 @@ export const init = function () {
     {
         type: 'confetti',
         poolSize: 3
+    },
+    {
+        type: 'splash',
+        poolSize: 6
     }];
     emitterPoolData.forEach((data) => {
         for (let i = 0; i < data.poolSize; i++) getEmitter(data.type, true, true);
@@ -256,6 +260,12 @@ export const getEmitter = function (type, pool = true, init = false) {
                 emitterData['confetti']
             );
             emitter.particleConstructor = AnimatedParticle;
+            break;
+        case "splash":
+            emitter = new Emitter(
+                game.editor.textures, [PIXI.Texture.from('Splash')],
+                emitterData[type]
+            );
             break;
     }
     if(pool){

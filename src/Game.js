@@ -289,6 +289,7 @@ function Game() {
         assets.weapons = Object.keys(res["Weapons.json"].textures);
         assets.level = Object.keys(res["Level.json"].textures);
         assets.gore = Object.keys(res["Characters_Gore.json"].textures);
+        assets.misc = Object.keys(res["Misc.json"].textures);
 
         this.editor.tileLists = Settings.textureNames;
         this.editor.init(this.stage, this.myContainer, this.world, Settings.PTM);

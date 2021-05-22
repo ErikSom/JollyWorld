@@ -19,6 +19,7 @@ export const LoadCoreAssets = function (loader){
         .add("Construction.json", `assets/images/prefabs/${hashName('Construction.json')}`)
         .add("Nature.json", `assets/images/prefabs/${hashName('Nature.json')}`)
         .add("Weapons.json", `assets/images/prefabs/${hashName('Weapons.json')}`)
+        .add("Misc.json", `assets/images/prefabs/${hashName('Misc.json')}`)
         .add("Level.json", `assets/images/prefabs/${hashName('Level.json')}`)
         .add("textures.json", `assets/images/textures/${hashName('textures.json')}`)
         /*TILE DATA*/
