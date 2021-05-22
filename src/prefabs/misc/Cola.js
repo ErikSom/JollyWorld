@@ -1,4 +1,3 @@
-import { SuperEmitter } from '../../utils/SuperEmitter';
 import * as PrefabManager from '../PrefabManager';
 import {SoftBreakable} from './SoftBreakable'
 
@@ -9,6 +8,7 @@ class Cola extends SoftBreakable {
         this.partsColors = [0x4f2700, 0x4f2700, 0x4f2700, 0x4f2700, 0xff0001];
         this.breakingForce = 15;
         this.partsOffset = [0, 2];
+        this.sound = 'coke-explode';
         super.init();
     }
 }

@@ -6,6 +6,7 @@ import {
 
 import * as emitterManager from '../../utils/EmitterManager'
 import * as PhysicsParticleEmitter from '../../utils/PhysicsParticleEmitter';
+import * as AudioManager from '../../utils/AudioManager';
 
 export class SoftBreakable extends PrefabManager.basePrefab {
     constructor(target) {
@@ -16,11 +17,12 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 		this.emitterType = 'splash';
 		this.partsColors = [0xFFFFFF];
 		this.partsType = ['Pumpkin2', 3];
+		this.partsRandom = true;
 		this.partsOffset = [0,0];
 		this.partsQuantity = 6;
 		this.partsSize = 5;
 		this.partsForce = 10;
-		this.sound = '';
+		this.sound = 'fruit-explode';
 		this.doBreak = false;
 
 	}
@@ -38,12 +40,18 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 	break(){
 		emitterManager.playOnceEmitter(this.emitterType, null, this.base.GetPosition(), 0, this.splashColors);
 
-		const parts = [];
-		for(let i = 0; i <this.partsType[1]; i++){
-			parts.push(`${this.partsType[0]}_${i+1}`);
+		let parts = [];
+		if(this.partsRandom){
+			for(let i = 0; i <this.partsType[1]; i++){
+				parts.push(`${this.partsType[0]}_${i+1}`);
+			}
+		}else{
+			parts = this.partsType;
 		}
 
-		PhysicsParticleEmitter.emit(parts, this.base.GetPosition(), this.partsQuantity, this.partsSize, this.partsForce, false, this.partsColors, this.base.GetAngle(), this.partsOffset);
+		AudioManager.playSFX(this.sound, 0.2, 1.0 + 0.4 * Math.random()-0.2, this.base.GetPosition());
+
+		PhysicsParticleEmitter.emit(parts, this.base.GetPosition(), this.partsQuantity, this.partsSize, this.partsForce, this.partsRandom, this.partsColors, this.base.GetAngle(), this.partsOffset);
 		this.destroy();
 	}
 
