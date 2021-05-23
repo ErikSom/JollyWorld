@@ -9094,11 +9094,12 @@ const _B2dEditor = function () {
 		//build fixtures
 
 		let fixDef = undefined;
-		let fixture;
 
-		for (fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
-			body.DestroyFixture(fixture)
+		const fixturesToDestroy = [];
+		for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
+			fixturesToDestroy.push(fixture);
 		}
+		fixturesToDestroy.forEach(fixture => body.DestroyFixture(fixture));
 
 		const data = body.mySprite.data;
 		const vertices = data.vertices;
@@ -9169,7 +9170,7 @@ const _B2dEditor = function () {
 					pos.set_y(innerVertices[j][0].y);
 					fixDef.set_shape(shape)
 				}
-				fixture = body.CreateFixture(fixDef);
+				const fixture = body.CreateFixture(fixDef);
 				destroy(shape);
 			}
 		}

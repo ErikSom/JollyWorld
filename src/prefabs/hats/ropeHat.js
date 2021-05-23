@@ -409,9 +409,11 @@ export class RopeHat extends Hat {
 
 		}
 
+		const fixturesToDestroy = [];
 		for (let fixture = this.ropeEnd.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
-			this.ropeEnd.DestroyFixture(fixture);
+			fixturesToDestroy.push(fixture);
 		}
+		fixturesToDestroy.forEach(fixture => this.ropeEnd.DestroyFixture(fixture));
 
 		const ropeDiss = b2CloneVec2(this.head.GetPosition());
 		b2SubVec2(ropeDiss, this.ropeEnd.GetPosition());

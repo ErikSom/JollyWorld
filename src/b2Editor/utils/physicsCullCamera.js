@@ -27,9 +27,12 @@ export const update = ()=>{
 		const body = game.editor.physicsCamera;
 
 		let fixture;
+
+		const fixturesToDestroy = [];
 		for (fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
-			body.DestroyFixture(fixture);
+			fixturesToDestroy.push(fixture);
 		}
+		fixturesToDestroy.forEach(fixture => body.DestroyFixture(fixture));
 
 
 		const fixDef = new Box2D.b2FixtureDef();
