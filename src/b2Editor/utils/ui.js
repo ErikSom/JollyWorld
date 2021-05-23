@@ -229,10 +229,15 @@ const doSaveLevelData = async function (saveButton) {
 
     //try to save online
     game.saveLevelData().then(() => {
-        saveButton.style.backgroundColor = '';
-        saveButton.innerText = 'SAVE';
+        saveButton.innerText = 'SUCCESS';
+        setTimeout(()=>{
+            if(saveButton && saveButton.parentNode){
+                saveButton.innerText = 'SAVE';
+                saveButton.style.backgroundColor = '';
+            }
+        }, 2000);
     }).catch((error) => {
-        console.log(error);
+        alert("There was an error saving your level, please look in the console");
         saveButton.style.backgroundColor = '';
         saveButton.innerText = 'SAVE';
     });
