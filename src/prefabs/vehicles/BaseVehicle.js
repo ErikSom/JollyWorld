@@ -19,6 +19,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         this.flipped = false;
         this.isVehicle = true;
         this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
+
         this.vehicleName = '';
         this.accel = 0;
         this.limbsObserver = [];

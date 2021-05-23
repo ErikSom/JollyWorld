@@ -34,6 +34,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.flipped = false;
         this.mouthTextureName = 'Mouth';
         this.mouthPos = {x:41, y:59};
+        this.skin = 0;
     }
 
     postConstructor(){
@@ -122,6 +123,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
 
     setSkin(skin){
+        this.skin = skin;
         const targetFrame = String(skin).padStart(4, '0');
         for (let i = 0; i < this.lookupObject._bodies.length; i++) {
             const body = this.lookupObject._bodies[i];
@@ -719,20 +721,25 @@ export class Humanoid extends PrefabManager.basePrefab {
         let extraParticles = [];
         switch(targetBodyPart){
             case 'head':
-                extraParticles.push('Gore_Brain');
+                extraParticles.push('Gore_Brain', 'Normal_Head_Gore1', 'Normal_Head_Gore2');
                 meatParticles.push("Gore_Meat", "Gore_Meat");
             break
             case 'body':
-                extraParticles.push('Gore_LungRight', 'Gore_LungLeft', 'Gore_Stomach','Gore_Liver');
+                extraParticles.push('Gore_LungRight', 'Gore_LungLeft', 'Gore_Stomach','Gore_Liver', 'Normal_Core_Gore2', 'Normal_Core_Gore1');
                 meatParticles.push("Gore_Meat", "Gore_Meat","Gore_Meat", "Gore_Meat");
             break;
             case 'belly':
                 extraParticles.push('Gore_Intestine');
+                extraParticles.push('Normal_Belly_Gore1');
             break;
             case 'thigh_left':
             case 'thigh_right':
+                extraParticles.push('Normal_Thigh_Gore1');
+                meatParticles.push("Gore_Meat");
+            break;
             case 'leg_left':
             case 'leg_right':
+                extraParticles.push('Normal_Leg_Gore1');
                 meatParticles.push("Gore_Meat");
             break;
             case 'hand_left':
@@ -742,6 +749,14 @@ export class Humanoid extends PrefabManager.basePrefab {
             case 'feet_left':
             case 'feet_right':
                 meatParticles = ['Gore_Meat', 'Gore_Meat'];
+            break;
+            case 'shoulder_left':
+            case 'shoulder_right':
+                extraParticles.push('Normal_Shoulder_Gore1');
+            break;
+            case 'arm_left':
+            case 'arm_right':
+                extraParticles.push('Normal_Arm_Gore1');
             break;
         }
         const goreParticleMaxSpeed = 50;
@@ -758,8 +773,11 @@ export class Humanoid extends PrefabManager.basePrefab {
             Box2D.destroy(impulse);
 
             if(particle == 'Gore_Meat'){
-                const ranId = Math.floor(Math.random()*4)+1;
+                const ranId = Math.floor(Math.random()*6)+1;
                 goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+ranId+'0000');
+            }else if(particle.indexOf('Normal_') === 0){
+                const targetFrame = String(this.skin).padStart(4, '0');
+                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+targetFrame);
             }
         });
     }

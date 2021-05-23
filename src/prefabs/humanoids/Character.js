@@ -23,6 +23,11 @@ export class Character extends Humanoid {
 
     }
 
+    postConstructor(){
+        super.postConstructor();
+        this.setSkin(game.selectedCharacter);
+    }
+
     init() {
         super.init();
     }

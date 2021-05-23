@@ -34,3 +34,49 @@ PrefabManager.prefabLibrary.Gore_Meat = {
     json: '{"objects":[[0,0,0,0,".gore","meat",0,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],5,[5.189757000693358],"",[1]],[1,0,0,0,"","",1,"Gore_Meat10000",0,0,0,0,false,"#FFFFFF"]]}',
     class: Gore,
 }
+
+PrefabManager.prefabLibrary.Normal_Thigh_Gore1 = {
+    json: '{"objects":[[0,-0.0669,0.0873,0,".gore","thighgore",0,["#999999"],["#000"],[0],false,true,[[[{"x":-0.3797,"y":0.1373},{"x":-0.0759,"y":-0.739},{"x":0.4615,"y":0.0905},{"x":-0.0058,"y":0.5111}]]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,2.006,-2.6185,0,"","",1,"Normal_Belly_Gore10000",0,6.5971,0.9171,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Shoulder_Gore1 = {
+    json: '{"objects":[[0,-0.025,-0.0167,0,".gore","shouldergore",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.2804,"y":0.3096},{"x":-0.2804,"y":-0.3096},{"x":0.2804,"y":-0.3096},{"x":0.2804,"y":0.3096}]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,0.75,0.5,0,"","",1,"Normal_Shoulder_Gore10000",0,1.8028,-0.588,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Leg_Gore1 = {
+    json: '{"objects":[[0,-0.025,0,0,".gore","leggore",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.1519,"y":0.4206},{"x":-0.1519,"y":-0.4206},{"x":0.1519,"y":-0.4206},{"x":0.1519,"y":0.4206}]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,0.75,0,0,"","",1,"Normal_Leg_Gore10000",0,1.5,0,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Head_Gore2 = {
+    json: '{"objects":[[0,0,-0.0167,0,".gore","headgore2",0,["#999999"],["#000"],[0],false,true,[[[{"x":-0.4615,"y":0.035},{"x":0.1227,"y":-0.5257},{"x":0.4264,"y":-0.1285},{"x":-0.0876,"y":0.6192}]]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,0,0.5,0,"","",1,"Normal_Head_Gore20000",0,1,-1.5708,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Head_Gore1 = {
+    json: '{"objects":[[0,-0.0083,-0.0167,0,".gore","headgore1",0,["#999999"],["#000"],[0],false,true,[[[{"x":-0.6338,"y":0.1811},{"x":0.184,"y":-0.6484},{"x":0.6747,"y":-0.2746},{"x":-0.2249,"y":0.7419}]]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,0.25,0.5,0,"","",1,"Normal_Head_Gore10000",0,1.118,-1.1071,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Core_Gore2 = {
+    json: '{"objects":[[0,-0.0167,0.0333,0,".gore","coregore2",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.2979,"y":0.5666},{"x":-0.2979,"y":-0.5666},{"x":0.2979,"y":-0.5666},{"x":0.2979,"y":0.5666}]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,0.5,-1,0,"","",1,"Normal_Core_Gore20000",0,2.2361,1.1071,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Core_Gore1 = {
+    json: '{"objects":[[0,0.0384,-0.0331,0,".gore","coregore1",0,["#999999"],["#000"],[0],false,true,[[[{"x":-0.2629,"y":0.9405},{"x":0.5549,"y":-0.0993},{"x":0.1227,"y":-0.7886},{"x":-0.4148,"y":-0.0526}]]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,-1.152,0.9925,0,"","",1,"Normal_Core_Gore10000",0,3.0412,-2.4304,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Belly_Gore1 = {
+    json: '{"objects":[[0,-0.0669,0.0873,0,".gore","bellygore",0,["#999999"],["#000"],[0],false,true,[[[{"x":-0.3797,"y":0.1373},{"x":-0.0759,"y":-0.739},{"x":0.4615,"y":0.0905},{"x":-0.0058,"y":0.5111}]]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,2.006,-2.6185,0,"","",1,"Normal_Belly_Gore10000",0,6.5971,0.9171,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
+PrefabManager.prefabLibrary.Normal_Arm_Gore1 = {
+    json: '{"objects":[[0,-0.0333,0.05,0,".gore","armgore",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.1811,"y":0.3797},{"x":-0.1811,"y":-0.3797},{"x":0.1811,"y":-0.3797},{"x":0.1811,"y":0.3797}]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false],[1,1,-1.5,0,"","",1,"Normal_Arm_Gore10000",0,3.6055,0.9828,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    class: Gore,
+}
+
