@@ -118,7 +118,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		body.SetLinearVelocity(impulse)
 
 		if(tints.length>0){
-			sprite.tint = tints[Math.round(Math.random()*tints.length)];
+			sprite.tint = tints[Math.floor(Math.random()*tints.length)];
 		}else{
 			sprite.tint = 0xFFFFFF;
 		}
