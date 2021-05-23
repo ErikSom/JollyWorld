@@ -763,7 +763,22 @@ export class Humanoid extends PrefabManager.basePrefab {
         const particlesToGenerate = meatParticles.concat(extraParticles);
         const targetBody = this.lookupObject[targetBodyPart];
         particlesToGenerate.forEach((particle)=>{
-            const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM},${targetBody.GetPosition().y * Settings.PTM},0,{},"${particle}"]]}`;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            if(['Normal_Head_Gore1', 'Normal_Head_Gore2', 'Normal_Core_Gore1', 'Normal_Core_Gore2'].includes(particle)){
+                let bodyAngle = targetBody.GetAngle() + Settings.pihalve/2;
+
+                if(particle.charAt(particle.length -1) === '1'){
+                    bodyAngle += Math.PI;
+                }
+
+                const offsetLength = 14;
+                offsetX = offsetLength * Math.cos(bodyAngle);
+                offsetY = offsetLength * Math.sin(bodyAngle);
+            }
+
+            const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM + offsetX},${targetBody.GetPosition().y * Settings.PTM + offsetY},0,{},"${particle}"]]}`;
             const goreLookupObject = game.editor.buildJSON(JSON.parse(gorePrefab));
             const impulse = new Box2D.b2Vec2((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
             goreLookupObject._bodies.forEach((body)=>{
