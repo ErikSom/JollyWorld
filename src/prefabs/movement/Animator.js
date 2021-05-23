@@ -244,14 +244,16 @@ class Animator extends PrefabManager.basePrefab {
     }
 
     serializeProps(){
-        if(this.linkedTarget && !this.linkedTarget.destroyed){
+        this.checkPropsDestroyed();
+
+        if(this.linkedTarget && !this.linkedTarget._destroyed){
             game.editor.updateObject(this.linkedTarget, this.linkedTarget.data);
             this.prefabObject.settings.linkedTargetId = [this.linkedTarget.parent.getChildIndex(this.linkedTarget)];
         } else {
             this.prefabObject.settings.linkedTargetId = null;
         }
 
-        if(this.linkedReference && !this.linkedReference.destroyed){
+        if(this.linkedReference && !this.linkedReference._destroyed){
             game.editor.updateObject(this.linkedReference, this.linkedReference.data);
             this.prefabObject.settings.linkedReferenceId = [this.linkedReference.parent.getChildIndex(this.linkedReference)];
         } else {
@@ -275,11 +277,16 @@ class Animator extends PrefabManager.basePrefab {
         }
     }
 
+    checkPropsDestroyed(){
+        if(this.linkedTarget && this.linkedTarget._destroyed) this.linkedTarget = null;
+        if(this.linkedReference && this.linkedReference._destroyed) this.linkedReference = null;
+    }
+
     drawDebugEditor(){
         const bodyObject = this.base;
         const sprite = bodyObject.mySprite;
 
-        if(this.linkedTarget && !this.linkedTarget.destroyed){
+        if(this.linkedTarget && !this.linkedTarget._destroyed){
             const l = this.prefabObject.settings.targetAnchorLength;
             const a = this.prefabObject.settings.targetAnchorAngle;
 
@@ -290,7 +297,7 @@ class Animator extends PrefabManager.basePrefab {
             editor.debugGraphics.moveTo(sprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, sprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
             editor.debugGraphics.lineTo(targetX * editor.cameraHolder.scale.x + editor.cameraHolder.x, targetY * editor.cameraHolder.scale.y + editor.cameraHolder.y);
 
-            if(this.linkedReference && !this.linkedReference.destroyed){
+            if(this.linkedReference && !this.linkedReference._destroyed){
                 editor.debugGraphics.lineStyle(1, "0xFF0000", 1);
                 editor.debugGraphics.moveTo(sprite.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, sprite.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
                 editor.debugGraphics.lineTo(this.linkedReference.x * editor.cameraHolder.scale.x + editor.cameraHolder.x, this.linkedReference.y * editor.cameraHolder.scale.y + editor.cameraHolder.y);
@@ -343,7 +350,7 @@ class Animator extends PrefabManager.basePrefab {
     }
 
     init() {
-        if(this.linkedTarget && !this.linkedTarget.destroyed){
+        if(this.linkedTarget && !this.linkedTarget._destroyed){
             this.calculatePathLength();
             this.animationDuration = this.prefabObject.settings.duration * 1000;
             this.animationClockwise = this.prefabObject.settings.clockwise;
@@ -391,7 +398,7 @@ class Animator extends PrefabManager.basePrefab {
 
     update() {
 
-        if(this.linkedTarget && !this.linkedTarget.destroyed && (this.prefabObject.settings.global || (this.linkedReference && !this.linkedReference.destroyed))){
+        if(this.linkedTarget && !this.linkedTarget._destroyed && (this.prefabObject.settings.global || (this.linkedReference && !this.linkedReference._destroyed))){
             if(this.animating){
                 this.animationTime += game.editor.deltaTime;
             }
@@ -447,7 +454,7 @@ class Animator extends PrefabManager.basePrefab {
             }
         }
 
-        if(game.editor.editorSettingsObject.physicsDebug && (this.linkedReference && !this.linkedReference.destroyed)){
+        if(game.editor.editorSettingsObject.physicsDebug && (this.linkedReference && !this.linkedReference._destroyed)){
             this.base.SetTransform(this.linkedReference.myBody.GetPosition(), this.linkedReference.myBody.GetAngle())
         }
 
@@ -518,6 +525,8 @@ const editPath = prefab => {
 
 const addCustomBodyGUI = (prefabObject, editData, targetFolder) => {
     const prefabClass = prefabObject.class;
+
+    prefabClass.checkPropsDestroyed();
 
     if(prefabClass.linkedTarget){
         Array.from(targetFolder.domElement.querySelectorAll('.function')).forEach( func => {
