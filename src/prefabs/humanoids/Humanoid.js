@@ -782,6 +782,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             const goreLookupObject = game.editor.buildJSON(JSON.parse(gorePrefab));
             const impulse = new Box2D.b2Vec2((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
             goreLookupObject._bodies.forEach((body)=>{
+                body.SetLinearVelocity(targetBody.GetLinearVelocity());
                 body.ApplyForce(impulse, targetBody.GetPosition());
             });
 
