@@ -51,12 +51,15 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 
 		AudioManager.playSFX(this.sound, 0.2, 1.0 + 0.4 * Math.random()-0.2, this.base.GetPosition());
 
-		PhysicsParticleEmitter.emit(parts, this.base.GetPosition(), this.partsQuantity, this.partsSize, this.partsForce, this.partsRandom, this.partsColors, this.base.GetAngle(), this.partsOffset);
+		if(this.prefabObject.settings.hasDebris){
+			PhysicsParticleEmitter.emit(parts, this.base.GetPosition(), this.partsQuantity, this.partsSize, this.partsForce, this.partsRandom, this.partsColors, this.base.GetAngle(), this.partsOffset);
+		}
+
 		this.destroy();
 	}
 
 	update(){
-		if(this.doBreak){
+		if(this.doBreak && this.prefabObject.settings.isDestructible){
 			this.break();
 		}
 	}
@@ -80,9 +83,13 @@ export class SoftBreakable extends PrefabManager.basePrefab {
 }
 
 SoftBreakable.settings = Object.assign({}, SoftBreakable.settings, {
-    "isAwake": true
+    "isAwake": true,
+    "isDestructible": true,
+    "hasDebris": true,
 });
 
 SoftBreakable.settingsOptions = Object.assign({}, SoftBreakable.settingsOptions, {
-    "isAwake": true
+    "isAwake": true,
+	"isDestructible": true,
+    "hasDebris": true,
 });
