@@ -15,6 +15,7 @@ class GravitationalField extends PrefabManager.basePrefab {
 
 		this.forceField = this.lookupObject['forcefield_body'];
 		this.forceField.myTileSprite.fixTextureRotation = true;
+		this.forceField.ignoreTriggers = true;
 
 		//this.forceField.myTileSprite.pluginName = 'meshCircleTexture';
 		const t = this.forceField.myTileSprite.material.texture;

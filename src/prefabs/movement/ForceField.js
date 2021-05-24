@@ -11,7 +11,7 @@ class ForceField extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
 		this.forceField = this.lookupObject['forcefield_body'];
-		
+		this.forceField.ignoreTriggers = true;
 		//this.forceField.myTileSprite = new TiledMesh();
 		this.forceField.myTileSprite.fixTextureRotation = true;
 

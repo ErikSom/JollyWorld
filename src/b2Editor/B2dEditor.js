@@ -1936,6 +1936,7 @@ const _B2dEditor = function () {
 			delete body.isCharacter;
 			delete body.queuedForDecals;
 			delete body.isBeartrapSpike;
+			delete body.ignoreTriggers;
 		}
 	}
 
@@ -5984,7 +5985,9 @@ const _B2dEditor = function () {
 							body.mySprite.data.optimizePhysics = controller.targetValue;
 							if(!body.mySprite.data.optimizePhysics){
 								body.ignorePhysicsCuller = true;
+								body.SetSleepingAllowed(false);
 							}else{
+								body.SetSleepingAllowed(true);
 								delete body.ignorePhysicsCuller;
 							}
 						}
@@ -7506,7 +7509,10 @@ const _B2dEditor = function () {
 
 		body.SetFixedRotation(obj.fixedRotation);
 
-		if(!obj.optimizePhysics) body.ignorePhysicsCuller = true;
+		if(!obj.optimizePhysics){
+			body.ignorePhysicsCuller = true;
+			body.SetSleepingAllowed(false);
+		}
 		if(obj.bulletCollision) body.SetBullet(obj.bulletCollision);
 
 		var graphic = new PIXI.Graphics();

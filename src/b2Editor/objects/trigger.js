@@ -1657,6 +1657,7 @@ export const triggerButtonRepeatType = {
 }
 
 export const containsTargetType = function (targetTrigger, body) {
+    if(body.ignoreTriggers) return false;
     switch (targetTrigger.data.targetType) {
         case triggerTargetType.mainCharacter:
             return body.mainCharacter;
@@ -1723,6 +1724,17 @@ export class triggerCore {
         this.initContactListener();
     }
     update() {
+
+        if(this.data.targetType == triggerTargetType.keydown){
+            if(Key.isReleased(this.data.triggerKey)){
+                this.touchingTarget = false;
+            }
+        } else if(this.data.targetType == triggerTargetType.keyup){
+            if(Key.isPressed(this.data.triggerKey)){
+                this.touchingTarget = false;
+            }
+        }
+
         if(this.data.enabled){
             if (this.data.targetType == triggerTargetType.click) {
                 for (let fixture = this.trigger.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
@@ -1743,15 +1755,11 @@ export class triggerCore {
                 if(Key.isPressed(this.data.triggerKey)){
                     if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;
                     else this.touchingTarget = true;
-                }else if(Key.isReleased(this.data.triggerKey)){
-                    this.touchingTarget = false;
                 }
             } else if(this.data.targetType == triggerTargetType.keyup){
                 if(Key.isReleased(this.data.triggerKey)){
                     if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;
                     else this.touchingTarget = true;
-                }else if(Key.isPressed(this.data.triggerKey)){
-                    this.touchingTarget = false;
                 }
             }
             if(this.data.followPlayer){
