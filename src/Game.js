@@ -1119,8 +1119,8 @@ function Game() {
     this.movementBufferSize = 60;
     this.movementBuffer = [];
     this.gameCamera = function (instant) {
-        const panEase = !instant ? 0.1 : 1.0;
-        const zoomEase = !instant ? 0.1 : 1.0;
+        const panEase = !instant ? this.editor.editorSettingsObject.cameraEase : 1.0;
+        const zoomEase = !instant ? this.editor.editorSettingsObject.cameraEase : 1.0;
         const camera = this.editor.cameraHolder;
 
         const currentZoom = camera.scale.x;
@@ -1154,7 +1154,9 @@ function Game() {
             offsetY /= this.movementBufferSize;
         }
         if(!window.cameraSpeedBuffer) window.cameraSpeedBuffer = 20;
-        const movementBufferScale = window.cameraSpeedBuffer * camera.scale.x;
+        
+        const speedBuffer = 20 * (1 - this.editor.editorSettingsObject.cameraEase - 0.1 / 0.9);
+        const movementBufferScale = speedBuffer / camera.scale.x;
 
         cameraTargetPosition.x += offsetX * movementBufferScale;
         cameraTargetPosition.y += offsetY * movementBufferScale;

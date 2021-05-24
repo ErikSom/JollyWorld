@@ -18,6 +18,7 @@ export var Settings = {
     timeStep:1000 / targetFPS,
     allowMouseMovement:true,
     defaultCameraZoom:1.0,
+    defaultCameraEase:0.1,
     defaultPhysicsCameraSize:1.5,
     lineWidthCorrection:1.0,
     gameOverDelay:1000,

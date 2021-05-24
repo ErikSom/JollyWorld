@@ -574,6 +574,7 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, 'gravityX', -20, 20).step(0.1).onChange(onChange('gravityX'));
 				targetFolder.add(ui.editorGUI.editData, 'gravityY', -20, 20).step(0.1).onChange(onChange('gravityY'));
 				targetFolder.add(ui.editorGUI.editData, 'cameraZoom', 0.1, 2.0).step(0.1).onChange(onChange('cameraZoom'));
+				targetFolder.add(ui.editorGUI.editData, 'cameraEase', 0.1, 1.0).step(0.1).onChange(onChange('cameraEase'));
 				targetFolder.add(ui.editorGUI.editData, 'gameSpeed', 0.1, 2.0).step(0.1).onChange(onChange('gameSpeed'));
 
 
@@ -2886,6 +2887,7 @@ const _B2dEditor = function () {
 		this.showCameraLines = true;
 		this.backgroundColor = 0xD4D4D4;
 		this.cameraZoom = Settings.defaultCameraZoom;
+		this.cameraEase = Settings.defaultCameraEase;
 		this.gameSpeed = 1.0;
 		this.physicsCameraSize = Settings.defaultPhysicsCameraSize;
 		this.colorMatrix = [];
@@ -9711,6 +9713,7 @@ const _B2dEditor = function () {
 			arr[6] = obj.colorMatrix;
 			arr[7] = obj.autoPlayMidi;
 			arr[8] = obj.resetMidiOnRetry;
+			arr[9] = obj.cameraEase;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -9870,6 +9873,7 @@ const _B2dEditor = function () {
 			obj.colorMatrix = Array.isArray(arr[6]) ? arr[6] : [];
 			obj.autoPlayMidi = arr[7] !== undefined ? arr[7] : true;
 			obj.resetMidiOnRetry = arr[8] !== undefined ? arr[8] : true;
+			obj.cameraEase = arr[9] !== undefined ? arr[9] : Settings.defaultCameraEase;
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();
