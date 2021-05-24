@@ -216,6 +216,7 @@ export const doAction = function (actionData, target) {
                     target.myBody.myTexture.forceRenderable = actionData.setVisible;
                 }
                 target.visible = actionData.setVisible;
+                game.editor.updateBodyPosition(target.myBody);
             }else{
                 target.renderable = actionData.setVisible;
                 target.forceRenderable = actionData.setVisible;
