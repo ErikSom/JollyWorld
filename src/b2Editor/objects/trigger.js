@@ -1665,7 +1665,10 @@ export const containsTargetType = function (targetTrigger, body) {
         case triggerTargetType.anyButMainCharacter:
             return !body.mainCharacter && body.isHumanoid;
         case triggerTargetType.allObjects:
-            return true;
+            let allowed = true;
+            const firstTarget = targetTrigger.targets[0];
+            if(targetTrigger.data.followFirstTarget && firstTarget && firstTarget.myBody && body === firstTarget.myBody) allowed = false;
+            return allowed;
         case triggerTargetType.attachedTargetsOnly:
             for (let i = 0; i < targetTrigger.targets.length; i++) {
                 let target = targetTrigger.targets[i];
