@@ -1155,7 +1155,7 @@ function Game() {
         }
 
         const speedBuffer = 20 * (1 - this.editor.editorSettingsObject.cameraEase - 0.1 / 0.9);
-        const movementBufferScale = speedBuffer / camera.scale.x;
+        const movementBufferScale = speedBuffer * camera.scale.x;
 
         cameraTargetPosition.x += offsetX * movementBufferScale;
         cameraTargetPosition.y += offsetY * movementBufferScale;
