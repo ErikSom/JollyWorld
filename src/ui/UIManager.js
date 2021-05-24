@@ -995,6 +995,12 @@ function UIManager() {
     this.enableHeartButton = (heart, levelData) => {
 
         heart.onclick = ()=>{
+
+            if(!backendManager.isLoggedIn()){
+                game.ui.showLoginPrompt();
+                return;
+            }
+
             if(heart.classList.contains('disabled')){
                 heart.classList.remove('faved')
                 void heart.offsetWidth;
@@ -1632,82 +1638,6 @@ function UIManager() {
     }
     this.hidePauseMenu = function () {
         pauseScreen.style.display = 'none';
-    }
-
-    this.buildVoteGUI = ()=>{
-        const ratingHolder = document.createElement('div');
-        ratingHolder.setAttribute('class', 'ratingHolder');
-        ratingHolder.classList.add('pauseMenu_ratingHolder');
-
-        let upvoteButton = document.createElement('div');
-        upvoteButton.setAttribute('class', 'startButton menuButton upvote')
-        ratingHolder.appendChild(upvoteButton);
-
-        let thumbIcon = document.createElement('div');
-        thumbIcon.setAttribute('class', 'thumbsUpIcon');
-        upvoteButton.appendChild(thumbIcon);
-
-        let ratingText = document.createElement('div');
-        ratingText.setAttribute('class', 'ratingText')
-        ratingHolder.appendChild(ratingText);
-
-        let span = document.createElement('span');
-        span.classList.add('rating_span');
-        span.classList.add('greenSpan');
-        ratingText.appendChild(span);
-
-        span = document.createElement('span');
-        span.innerText = 'Likes';
-        ratingText.appendChild(span);
-
-        span = document.createElement('span');
-        span.classList.add('sumvotes_span')
-        span.classList.add('greenSpan');
-        ratingText.appendChild(span);
-
-        span = document.createElement('span');
-        span.innerText = 'Voters';
-        ratingText.appendChild(span);
-
-        let downvoteButton = document.createElement('div');
-        downvoteButton.setAttribute('class', 'startButton menuButton downvote')
-        ratingHolder.appendChild(downvoteButton);
-
-        thumbIcon = document.createElement('div');
-        thumbIcon.setAttribute('class', 'thumbsUpIcon');
-        downvoteButton.appendChild(thumbIcon);
-
-        upvoteButton.addEventListener('click', () => {
-            backendManager.voteLevel(game.currentLevelData.id, 1).then(() => {
-                shouldShowVoteButton(upvoteButton, downvoteButton, game.currentLevelData)
-            });
-        });
-        downvoteButton.addEventListener('click', () => {
-            backendManager.voteLevel(game.currentLevelData.id, -1).then(() => {
-                shouldShowVoteButton(upvoteButton, downvoteButton, game.currentLevelData)
-            });
-        });
-
-        this.updateVoteGUI(ratingHolder);
-
-        return ratingHolder
-    }
-    this.updateVoteGUI = element =>{
-
-        const upvoteButton = element.querySelector('.upvote');
-        const downvoteButton = element.querySelector('.downvote');
-
-        shouldShowVoteButton(upvoteButton, downvoteButton, game.currentLevelData);
-
-        const sumVotes = game.currentLevelData.upvotes + game.currentLevelData.downvotes;
-        const rating = game.currentLevelData.upvotes / sumVotes;
-
-        const ratingSpan = element.querySelector('.rating_span');
-        ratingSpan.innerText = (!sumVotes || sumVotes < 10) ? '??' : Math.round(rating * 100) + '%';
-
-        const sumVotesSpan = element.querySelector('.sumvotes_span');
-        sumVotesSpan.innerText = format.formatNumber(sumVotes);
-
     }
 
     this.showWinScreen = function(time, mili){

@@ -659,7 +659,7 @@ function Game() {
 
         Key.onKeydown(e);
         if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
-        e.preventDefault();
+        if(!this.gameState === this.GAMESTATE_MENU) e.preventDefault();
     }
     this.onKeyUp = function (e) {
         if(document.activeElement != document.body  && document.activeElement != this.canvas) return;
