@@ -154,7 +154,10 @@ export const doAction = function (actionData, target) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
                 } else bodies = [target.myBody];
                 bodies.forEach(body => {
-                    const a = actionData.direction * B2dEditor.DEG2RAD;
+                    let a = actionData.direction * B2dEditor.DEG2RAD;
+                    if(actionData.relative){
+                        a += body.GetAngle();
+                    }
                     const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
                     body.ApplyTorque(actionData.rotationForce, true)
@@ -441,6 +444,7 @@ export const actionDictionary = {
     actionObject_Impulse: {
         type: "Impulse",
         impulseForce: 0,
+        relative: false,
         direction: 270,
         rotationForce: 0,
     },
@@ -451,6 +455,9 @@ export const actionDictionary = {
             max: 100000,
             value: 0,
             step: 1,
+        },
+        relative: {
+            type: guitype_BOOL,
         },
         direction: {
             type: guitype_ROTATION,
