@@ -1724,17 +1724,6 @@ export class triggerCore {
         this.initContactListener();
     }
     update() {
-
-        if(this.data.targetType == triggerTargetType.keydown){
-            if(Key.isReleased(this.data.triggerKey)){
-                this.touchingTarget = false;
-            }
-        } else if(this.data.targetType == triggerTargetType.keyup){
-            if(Key.isPressed(this.data.triggerKey)){
-                this.touchingTarget = false;
-            }
-        }
-
         if(this.data.enabled){
             if (this.data.targetType == triggerTargetType.click) {
                 for (let fixture = this.trigger.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
@@ -1755,11 +1744,15 @@ export class triggerCore {
                 if(Key.isPressed(this.data.triggerKey)){
                     if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;
                     else this.touchingTarget = true;
+                } else if(Key.isReleased(this.data.triggerKey)){
+                    this.touchingTarget = false;
                 }
             } else if(this.data.targetType == triggerTargetType.keyup){
                 if(Key.isReleased(this.data.triggerKey)){
                     if(this.data.repeatType != triggerButtonRepeatType.continuously) this.runTriggerOnce = true;
                     else this.touchingTarget = true;
+                } else if(Key.isPressed(this.data.triggerKey)){
+                    this.touchingTarget = false;
                 }
             }
             if(this.data.followPlayer){
@@ -1891,6 +1884,11 @@ export class triggerCore {
         this.triggeredThisTick = true;
     }
     setEnabled(enable) {
+
+        if(!enable && (this.data.targetType == triggerTargetType.keydown || this.data.targetType == triggerTargetType.keyup)){
+            this.touchingTarget = false;
+        }
+
         const type = enable ? Box2D.b2_dynamicBody : Box2D.b2_staticBody
         this.trigger.SetType(type);
     }

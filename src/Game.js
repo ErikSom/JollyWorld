@@ -1153,8 +1153,7 @@ function Game() {
             offsetX /= this.movementBufferSize;
             offsetY /= this.movementBufferSize;
         }
-        if(!window.cameraSpeedBuffer) window.cameraSpeedBuffer = 20;
-        
+
         const speedBuffer = 20 * (1 - this.editor.editorSettingsObject.cameraEase - 0.1 / 0.9);
         const movementBufferScale = speedBuffer / camera.scale.x;
 
