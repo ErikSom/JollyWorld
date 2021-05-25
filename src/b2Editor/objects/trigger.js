@@ -178,6 +178,7 @@ export const doAction = function (actionData, target) {
                 } else if (target.myBody) {
                     objects = [target.myBody];
                     targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x * Settings.PTM, target.myBody.GetPosition().y * Settings.PTM);
+                    target.myBody.SetAwake(true);
                 } else {
                     objects = [target];
                     targetPos = new Box2D.b2Vec2(target.x, target.y);
