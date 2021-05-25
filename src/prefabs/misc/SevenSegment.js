@@ -182,7 +182,7 @@ class SevenSegment extends PrefabManager.basePrefab {
         }
 
         if(this.linkedTriggers.length > 0){
-            if(this.prefabObject.settings.linkedTriggerData === undefined) this.prefabObject.settings.linkedTriggerData = []
+            if(!this.prefabObject.settings.linkedTriggerData) this.prefabObject.settings.linkedTriggerData = []
             // [id, condition]
             const rebuildTriggerIds = [];
             this.linkedTriggers.forEach((trigger, index) => {
