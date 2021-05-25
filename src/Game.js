@@ -91,6 +91,7 @@ function Game() {
     this.desiredVehicleTorque = 0;
 
     this.cameraFocusObject;
+    this.lastKnownCameraPoint;
     this.cameraFocusCharacterObject;
 
     this.stats;
@@ -1129,8 +1130,9 @@ function Game() {
         let cameraTargetPosition;
         if(this.cameraFocusObject && !this.cameraFocusObject.destroyed){
             cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
-        }else{
-            return;
+            this.lastKnownCameraPoint = cameraTargetPosition;
+        }else if(this.lastKnownCameraPoint){
+            cameraTargetPosition = this.lastKnownCameraPoint;
         }
 
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
@@ -1142,8 +1144,14 @@ function Game() {
 
         let offsetX = 0;
         let offsetY = 0;
-        this.movementBuffer.push(b2CloneVec2(this.cameraFocusObject.GetLinearVelocity()));
-        if(this.movementBuffer.length > this.movementBufferSize) this.movementBuffer.shift();
+        if(this.cameraFocusObject){
+            this.movementBuffer.push(b2CloneVec2(this.cameraFocusObject.GetLinearVelocity()));
+        }else{
+            this.movementBuffer.push(new Box2D.b2Vec2(0,0));
+        }
+        if(this.movementBuffer.length > this.movementBufferSize){
+             Box2D.destroy(this.movementBuffer.shift());
+        }
 
         if(this.movementBuffer.length){
             for(let i = 0; i<this.movementBuffer.length; i++){
