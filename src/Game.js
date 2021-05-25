@@ -1130,9 +1130,9 @@ function Game() {
         let cameraTargetPosition;
         if(this.cameraFocusObject && !this.cameraFocusObject.destroyed){
             cameraTargetPosition = this.editor.getPIXIPointFromWorldPoint(this.cameraFocusObject.GetPosition());
-            this.lastKnownCameraPoint = cameraTargetPosition;
+            this.lastKnownCameraPoint = {x:cameraTargetPosition.x, y:cameraTargetPosition.y};
         }else if(this.lastKnownCameraPoint){
-            cameraTargetPosition = this.lastKnownCameraPoint;
+            cameraTargetPosition = {x:this.lastKnownCameraPoint.x, y:this.lastKnownCameraPoint.y};
         }
 
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);

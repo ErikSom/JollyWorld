@@ -1864,6 +1864,8 @@ const _B2dEditor = function () {
 			this.preDestroyJoint(joint);
 		}
 
+		if(game.cameraFocusObject === body) game.cameraFocusObject = null;
+
 		this.world.DestroyBody(body);
 	}
 	this.CleanBody = function(body){
