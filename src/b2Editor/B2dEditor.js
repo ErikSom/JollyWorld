@@ -7614,14 +7614,14 @@ const _B2dEditor = function () {
 		this.updateGraphicGroupShapes(graphic);
 		this.textures.addChild(graphic);
 
+		graphic.alpha = obj.transparancy;
+		graphic.renderable = obj.visible;
+		graphic.forceRenderable = obj.visible;
+
 		if (graphic.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
 			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
 		}
-
-		graphic.alpha = obj.transparancy;
-		graphic.renderable = obj.visible;
-		graphic.forceRenderable = obj.visible;
 
 		applyColorMatrix(graphic, obj.colorMatrix);
 
@@ -7642,15 +7642,15 @@ const _B2dEditor = function () {
 		this.updateGraphicGroupShapes(graphic);
 		this.textures.addChild(graphic);
 
-		if (graphic.data.bodyID != undefined) {
-			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
-			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
-		}
-
 		graphic.alpha = obj.transparancy;
 		graphic.renderable = obj.visible;
 		graphic.forceRenderable = obj.visible;
 		graphic.scale.x = obj.mirrored ? -1 : 1;
+
+		if (graphic.data.bodyID != undefined) {
+			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
+			this.setTextureToBody(body, graphic, obj.texturePositionOffsetLength, obj.texturePositionOffsetAngle, obj.textureAngleOffset);
+		}
 
 		this.initAnimation(graphic);
 
@@ -8925,6 +8925,8 @@ const _B2dEditor = function () {
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
 		//body.mySprite.renderable = false;
+		body.myTexture.renderable = body.mySprite.data.visible;
+		body.myTexture.forceRenderable  = body.mySprite.data.visible;
 		texture.myBody = body;
 	}
 
