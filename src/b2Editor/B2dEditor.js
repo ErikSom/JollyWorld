@@ -6571,7 +6571,7 @@ const _B2dEditor = function () {
 			let nextVertice = index === vertices.length-1 ? vertices[0] : vertices[index+1];
 			if(vertice.point1){
 				// point on curve
-				const curve = [vertice, vertice.point1, vertice.point2, nextVertice];
+				const curve = [vertice, vertice.point1 || {x:vertice.x, y:vertice.y}, vertice.point2  || {x:vertice.x, y:vertice.y}, nextVertice];
 				const distance = distanceFromCurve(point, curve).distance;
 				if(distance<closestDistance){
 					closestDistance = distance;

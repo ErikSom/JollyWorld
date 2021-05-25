@@ -39,7 +39,7 @@ export const ExtractTextureAssets = async (loader) => {
     const textureSize = 128;
     tempCanvas.width = tempCanvas.height = textureSize;
     const keys = Object.keys(textureSheet.textures);
-    
+
     for(let i = 0; i< keys.length; i++){
         const key = keys[i];
         const texture = textureSheet.textures[key];
