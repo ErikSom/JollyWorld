@@ -1298,6 +1298,7 @@ export const destroyEditorGUI = function () {
         customGUIContainer.removeChild(editorGUI.domElement);
         editorGUI = undefined;
     }
+    removeGradientEditor();
     removeColorMatrixEditor();
 }
 
