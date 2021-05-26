@@ -1,3 +1,4 @@
+import { b2CloneVec2, b2SubVec2 } from "../../../libs/debugdraw";
 import {
 	game
 } from "../../Game";
@@ -66,6 +67,92 @@ const breakBody = body => {
 		newBodies.push(newBody);
 	})
 
+
+	// reattach joints
+	for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
+		const joint = game.editor.CastJoint(jointEdge.joint);
+
+		const otherBody = joint.GetBodyA() === body ? joint.GetBodyB() : joint.GetBodyA();
+
+		if(joint.GetType() == Box2D.e_revoluteJoint){
+			const revoluteJointDef = new Box2D.b2RevoluteJointDef();
+
+			const anchor = joint.GetAnchorA();
+
+			const targetBody = findBestJointFixture(newBodies, anchor);
+
+			revoluteJointDef.Initialize(targetBody, otherBody, anchor);
+
+			revoluteJointDef.set_collideConnected(joint.GetCollideConnected());
+			revoluteJointDef.set_referenceAngle(joint.GetReferenceAngle());
+			revoluteJointDef.set_lowerAngle(joint.GetUpperLimit());
+			revoluteJointDef.set_upperAngle(joint.GetLowerLimit());
+			revoluteJointDef.set_maxMotorTorque(joint.GetMaxMotorTorque());
+			revoluteJointDef.set_motorSpeed(joint.GetMotorSpeed());
+			revoluteJointDef.set_enableLimit(joint.IsLimitEnabled());
+			revoluteJointDef.set_enableMotor(joint.IsMotorEnabled());
+
+			game.editor.CreateJoint(revoluteJointDef);
+			destroy(revoluteJointDef);
+		} else if(joint.GetType() == Box2D.e_prismaticJoint){
+
+			let prismaticJointDef = new Box2D.b2PrismaticJointDef();
+
+			const axis = joint.GetLocalAxisA();
+			const anchor = new joint.GetAnchorA();
+
+			const targetBody = findBestJointFixture(newBodies, anchor);
+
+			prismaticJointDef.Initialize(targetBody, otherBody, anchor, axis);
+			prismaticJointDef.set_collideConnected(joint.GetCollideConnected());
+			prismaticJointDef.set_referenceAngle(joint.GetReferenceAngle());
+			prismaticJointDef.set_lowerTranslation(joint.GetLowerLimit());
+			prismaticJointDef.set_upperTranslation(joint.GetUpperLimit());
+			prismaticJointDef.set_maxMotorForce(joint.GetMaxMotorForce());
+			prismaticJointDef.set_motorSpeed(joint.GetMotorSpeed());
+			prismaticJointDef.set_enableLimit(joint.IsLimitEnabled());
+			prismaticJointDef.set_enableMotor(joint.IsMotorEnabled());
+
+			game.editor.CreateJoint(prismaticJointDef);
+			destroy(prismaticJointDef);
+		}else if(joint.GetType() == Box2D.e_distanceJoint){
+			let distanceJointDef = new Box2D.b2DistanceJointDef();
+
+			const anchor = joint.GetAnchorA();
+			const targetBody = findBestJointFixture(newBodies, anchor);
+
+			distanceJointDef.Initialize(targetBody, otherBody, anchor, anchor);
+
+			distanceJointDef.set_collideConnected(joint.GetCollideConnected());
+
+			distanceJointDef.set_length(joint.GetLength());
+			distanceJointDef.set_minLength(joint.GetMinLength());
+			distanceJointDef.set_maxLength(joint.GetMaxLength());
+
+			distanceJointDef.set_stiffness(joint.GetStiffness());
+			distanceJointDef.set_damping(joint.GetDamping());
+
+			game.editor.CreateJoint(distanceJointDef);
+		}else if(joint.GetType() == Box2D.e_wheelJoint){
+
+			let wheelJointDef = new Box2D.b2WheelJointDef();
+			const axis = joint.GetLocalAxisA();
+			const anchor = joint.GetAnchorA();
+			const targetBody = findBestJointFixture(newBodies, anchor);
+
+			wheelJointDef.Initialize(targetBody, otherBody, anchor, axis);
+			wheelJointDef.set_stiffness(joint.GetStiffness());
+			wheelJointDef.set_damping(joint.GetDamping());
+			wheelJointDef.set_maxMotorTorque(joint.GetMaxMotorTorque());
+			wheelJointDef.set_motorSpeed(joint.GetMotorSpeed());
+			wheelJointDef.set_enableMotor(joint.IsMotorEnabled());
+
+			game.editor.CreateJoint(wheelJointDef);
+
+			destroy(wheelJointDef);
+		}
+	}
+
 	// final step
 	newBodies.reverse();
 	newBodies.forEach(newBody => {
@@ -75,6 +162,31 @@ const breakBody = body => {
 
 	game.editor.deleteObjects([body]);
 
+}
+
+const findBestJointFixture = (newBodies, anchor) => {
+	let minDistance = Number.POSITIVE_INFINITY;
+	let targetBody = null;
+
+	for(let i = 0; i<newBodies.length; i++){
+		const newBody = newBodies[i];
+		const fixture = newBody.GetFixtureList();
+
+		if(fixture.TestPoint(anchor)){
+			return newBody;
+		}
+
+		const dis = b2CloneVec2(newBody.GetPosition());
+		b2SubVec2(dis, anchor);
+
+		const disLength = dis.Length();
+		if(disLength < minDistance){
+			minDistance = disLength;
+			targetBody = newBody;
+		}
+	};
+
+	return targetBody;
 }
 
 export const update = ()=>{
