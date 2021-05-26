@@ -36,6 +36,7 @@ import * as SlowmoUI from './ui/Slomo';
 import * as GameTimer from './utils/GameTimer'
 import * as ReplayManager from './utils/ReplayManager';
 import * as b2DebugDrawManager from './utils/b2DebugDrawManager'
+import * as BodyBreaker from './b2Editor/utils/bodyBreaker'
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -1271,6 +1272,15 @@ function Game() {
                 }
             }
 
+            let force = 0;
+            for (let j = 0; j < impulse.get_count(); j++){
+                if (impulse.get_normalImpulses(j) > force){
+                    force = impulse.get_normalImpulses(j);
+                }
+            }
+
+            BodyBreaker.checkBodyBreak(body, force);
+            BodyBreaker.checkBodyBreak(otherBody, force);
 
             if ((body.isFlesh && !body.snapped) && (bodies[0].mySprite.data.prefabID != bodies[1].mySprite.data.prefabID || bodies[0].mySprite.data.prefabID == undefined)) {
                 if(otherBody.instaKill){
@@ -1279,12 +1289,7 @@ function Game() {
                         bodyClass.dealDamage(10000);
                     }
                 }else if(!otherBody.isVehiclePart && !otherBody.noImpactDamage) {
-                    let force = 0;
-                    for (let j = 0; j < impulse.get_count(); j++){
-                        if (impulse.get_normalImpulses(j) > force){
-                            force = impulse.get_normalImpulses(j);
-                        }
-                    }
+ 
 
                     const bodyA = contact.GetFixtureA().GetBody();
                     const bodyB = contact.GetFixtureB().GetBody();
@@ -1326,12 +1331,6 @@ function Game() {
                     }
                 }
             }else{
-                let force = 0;
-                for (let j = 0; j < impulse.get_count(); j++){
-                    if (impulse.get_normalImpulses(j) > force){
-                        force = impulse.get_normalImpulses(j);
-                    }
-                }
                 const bodyA = contact.GetFixtureA().GetBody();
                 const bodyB = contact.GetFixtureB().GetBody();
 

@@ -50,6 +50,7 @@ import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
+import * as BodyBreakable from './utils/bodyBreaker';
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -1118,6 +1119,10 @@ const _B2dEditor = function () {
 					this.humanUpdate = true;
 					this.targetValue = value;
 				});
+				advancedFolder.add(ui.editorGUI.editData, "breakable").onChange(function (value) {
+					this.humanUpdate = true;
+					this.targetValue = value;
+				});
 
 				let bodyIsGroup = false;
 				for (let i = 0; i < this.selectedPhysicsBodies.length; i++) {
@@ -1939,6 +1944,7 @@ const _B2dEditor = function () {
 			delete body.queuedForDecals;
 			delete body.isBeartrapSpike;
 			delete body.ignoreTriggers;
+			delete body.goingToBreak;
 		}
 	}
 
@@ -2594,6 +2600,7 @@ const _B2dEditor = function () {
 			})
 			physicsCullCamera.update();
 			this.processQueueDecalToBody();
+			BodyBreakable.update();
 		}
 	}
 
@@ -2676,6 +2683,7 @@ const _B2dEditor = function () {
 		this.fixedRotation = false;
 		this.optimizePhysics = true;
 		this.bulletCollision = false;
+		this.breakable = false;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -5999,6 +6007,12 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.bulletCollision = controller.targetValue;
 							body.SetBullet(controller.targetValue);
+						}
+					}else if(controller.property == "breakable"){
+						//body
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.breakable = controller.targetValue;
 						}
 					}else if (controller.property == "tileTexture") {
 						//do tileTexture
@@ -9612,6 +9626,7 @@ const _B2dEditor = function () {
 			arr[23] = obj.fixedRotation;
 			arr[24] = obj.optimizePhysics;
 			arr[25] = obj.bulletCollision;
+			arr[26] = obj.breakable;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -9767,6 +9782,7 @@ const _B2dEditor = function () {
 			obj.fixedRotation = arr[23] !== undefined  ? arr[23] : false;
 			obj.optimizePhysics = arr[24] !== undefined  ? arr[24] : true;
 			obj.bulletCollision = arr[25] !== undefined  ? arr[25] : false;
+			obj.breakable = arr[26] !== undefined  ? arr[26] : false;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
@@ -10343,6 +10359,7 @@ const _B2dEditor = function () {
 		this.animationGroups = [];
 		this.decalQueue = [];
 
+		BodyBreakable.reset();
 		this.clearDebugGraphics();
 		this.clearLevelGradients();
 		//reset gui
