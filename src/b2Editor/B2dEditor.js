@@ -9197,6 +9197,8 @@ const _B2dEditor = function () {
 					fixDef.set_shape(shape)
 				}
 				const fixture = body.CreateFixture(fixDef);
+				delete fixture.verticeRef;
+				if(data.breakable) fixture.verticeRef = i;
 				destroy(shape);
 			}
 		}

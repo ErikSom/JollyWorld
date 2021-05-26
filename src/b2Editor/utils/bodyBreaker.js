@@ -21,6 +21,8 @@ const breakBody = body => {
 		fixturesToSplit.push(fixture);
 	}
 
+	const newBodies = [];
+
 	fixturesToSplit.forEach((oldFixture, index) => {
 		const bodyObject = new game.editor.bodyObject;
 		Object.assign(bodyObject, body.mySprite.data);
@@ -47,10 +49,12 @@ const breakBody = body => {
 		bodyObject.y = body.GetPosition().y;
 		bodyObject.rotation = body.GetAngle();
 
-		bodyObject.radius = [body.mySprite.data.radius[0]];
-		bodyObject.colorFill = [body.mySprite.data.colorFill[0]];
-		bodyObject.colorLine = [body.mySprite.data.colorLine[0]];
-		bodyObject.lineWidth = [body.mySprite.data.lineWidth[0]];
+		// we need this verticeRef because a single vertice array can generate multiple fixtures
+		const targetIndex = oldFixture.verticeRef;
+		bodyObject.radius = [body.mySprite.data.radius[targetIndex]];
+		bodyObject.colorFill = [body.mySprite.data.colorFill[targetIndex]];
+		bodyObject.colorLine = [body.mySprite.data.colorLine[targetIndex]];
+		bodyObject.lineWidth = [body.mySprite.data.lineWidth[targetIndex]];
 		bodyObject.breakable = false;
 
 		bodyObject.vertices.push(fixtureVertices);
@@ -59,14 +63,18 @@ const breakBody = body => {
 		newBody.SetLinearVelocity(body.GetLinearVelocity());
 		newBody.SetAngularVelocity(body.GetAngularVelocity());
 
+		newBodies.push(newBody);
+	})
+
+	// final step
+	newBodies.reverse();
+	newBodies.forEach(newBody => {
+		// place in correct spot
+		newBody.mySprite.parent.addChildAt(newBody.mySprite, body.mySprite.parent.getChildIndex(body.mySprite));
 	})
 
 	game.editor.deleteObjects([body]);
 
-}
-
-const findIndex = (vertices, index)=> {
-	// crawl vertice arrays to match index
 }
 
 export const update = ()=>{
