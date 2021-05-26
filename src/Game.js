@@ -1136,6 +1136,8 @@ function Game() {
             cameraTargetPosition = {x:this.lastKnownCameraPoint.x, y:this.lastKnownCameraPoint.y};
         }
 
+        if(!cameraTargetPosition) return;
+
         this.editor.camera.setZoom(cameraTargetPosition, currentZoom + (targetZoom - currentZoom) * zoomEase);
 
         cameraTargetPosition.x -= window.innerWidth / 2.0 / camera.scale.x;
