@@ -10,7 +10,11 @@ const bodiesToBreak = [];
 export const checkBodyBreak = (body, impulse) => {
 	if(!body.mySprite || !body.mySprite.data.breakable || body.goingToBreak) return;
 
-	if(impulse > 0){
+	const targetDensity = Array.isArray(body.mySprite.data.density) ? body.mySprite.data.density[0] : body.mySprite.data.density;
+
+	const densityBreakMultiplier = 500;
+
+	if(impulse > targetDensity * densityBreakMultiplier){
 		body.goingToBreak = true;
 		bodiesToBreak.push(body);
 	}
@@ -27,6 +31,8 @@ const breakBody = body => {
 	fixturesToSplit.forEach((oldFixture, index) => {
 		const bodyObject = new game.editor.bodyObject;
 		Object.assign(bodyObject, body.mySprite.data);
+
+		bodyObject.fixed = false;
 
 		bodyObject.vertices = [];
 
@@ -57,6 +63,7 @@ const breakBody = body => {
 		bodyObject.colorLine = [body.mySprite.data.colorLine[targetIndex]];
 		bodyObject.lineWidth = [body.mySprite.data.lineWidth[targetIndex]];
 		bodyObject.breakable = false;
+		if(bodyObject.colorFill[0] === undefined) debugger;
 
 		bodyObject.vertices.push(fixtureVertices);
 
