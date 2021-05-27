@@ -26,7 +26,8 @@ export const getLocalUserdata = function(){
         bloodOn:true,
         goreOn:true,
         tutorials:[],
-        selectedCharacter:0,
+        selectedCharacter: 0,
+        tutorialFinished: false,
         country:'?'
     }
 

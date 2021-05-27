@@ -195,21 +195,22 @@
     <script type="module">
         window.__assetHashNames = '{{{ASSET_HASH_NAMES}}}';
         var preloaderFill = document.getElementsByClassName('preloaderFill')[0];
-        var setLoaderProgress = function(percent){
+        window.setLoaderProgress = function(percent){
                 var sp = 7;
                 preloaderFill.style.width = (sp+percent*(100-sp)).toFixed(2)+'%';
             }
 
         var gameScript = false;
         function loadJS(url, onError) {
-            setLoaderProgress(0);
+            window.setLoaderProgress(0);
             if (!onError) onError = function () {};
             var xhr = new XMLHttpRequest();
+            var maxProgress = .8;
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200 || xhr.status == 0) {
                         try {
-                            setLoaderProgress(1);
+                            window.setLoaderProgress(maxProgress);
                             setTimeout(function(){
                                 if(window.Box2D){
                                     gameScript = xhr.responseText;
@@ -238,10 +239,10 @@
                 if (event.lengthComputable) {
                     percentComplete = event.loaded / event.total;
                 } else {
-                    var total = 550000*4;
+                    var total = 660000*4;
                     percentComplete = event.loaded / total;
                 }
-                setLoaderProgress(Math.min(1.0, percentComplete));
+                window.setLoaderProgress(Math.min(maxProgress, percentComplete * maxProgress));
             }
         }
 

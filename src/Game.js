@@ -202,11 +202,18 @@ function Game() {
 
         LoadCoreAssets(this.app.loader);
 
+        this.app.loader.onProgress.add(()=>{
+            const startProgress = 0.8;
+            const leftProgress = 1.0-startProgress;
+            window.setLoaderProgress(0.8 + leftProgress * (this.app.loader.progress / 100));
+        })
+
         this.editor = B2dEditor;
 
         this.app.loader.load(
             async ()=> {
                 await ExtractTextureAssets(this.app.loader);
+                window.setLoaderProgress(1.0);
                 this.gameSetup();
             }
         );
@@ -419,11 +426,26 @@ function Game() {
 
         PIXICuller.init(this.editor.textures, this.levelCamera);
 
-        this.preloader.classList.add('hide');
 
         SlowmoUI.init();
         this.handleResize();
         //this.myContainer.updateTransform = function() {};
+
+        if(!userData.tutorialFinished && !backendManager.isLoggedIn()){
+            this.showInitialTutorial();
+        }else{
+            this.preloader.classList.add('hide');
+        }
+    }
+
+    this.showInitialTutorial = ()=>{
+        console.log("SHOW INITIAL TUTORIAL")
+        const tutorialLevel = {...levelsData.tutorialLevel}
+        game.loadPublishedLevelData(tutorialLevel, ()=>{}).then(() => {
+            console.log("LEVEL LOADED!!!");
+        }).catch(error => {
+            // skip tutorial
+        });
     }
 
 

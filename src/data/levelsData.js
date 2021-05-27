@@ -3732,7 +3732,7 @@ export const levelsData = {
                     "y": 110
                 }], null, null, null, null, "", 0, 0, 0, 0, "", true],
                 [9, 11941.5745, -541.3666, 0, "", "Tip_Title_2", 176, "!-Prefabs Settings", "#000", 1, 20, "Lily Script One", "left", null, null, null, null, 0, 0, 0, true],
-                [9, 12044.3442, -444.5068, 0, "", "Tip_Body_2", 177, "Some elements, including prefabs have\ndifferent settings that you can modify\njust right click on them to open the\nsettings box.\nIf you want a prefab to not move from\nwhere you placed it, then tick the\nIs Fixed Box and it will stay in place.", "#000", 1, 20, "Karla", "left", null, null, null, null, 0, 0, 0, true],
+                [9, 12044.3442, -444.5068, 0, "", "Tip_Body_2", 177, "Some elements, including prefabs have\ndifferent settings that you can modify\njust left click on them to open the\nsettings box.\nIf you want a prefab to not move from\nwhere you placed it, then tick the\nIs Fixed Box and it will stay in place.", "#000", 1, 20, "Karla", "left", null, null, null, null, 0, 0, 0, true],
                 [9, 11786.095, -555.4953, 0, "", "", 178, "Tip!", "#000", 1, 50, "Lily Script One", "left", null, null, null, null, 0, 0, 0, true],
                 [6, 12625.2622, -433.5998, 0, "", "", 179, "#6b6a6a", "#000000", 1, 0, [{
                     "x": -240.8255,
@@ -9865,7 +9865,7 @@ export const levelsData = {
                 ], null, null, null, null, 1, 0, 0, 0, true, false, []],
                 [9, 1075.7019, -111.8177, 0, "", "Tutorial_Text_4", 230, "Press on your Keyboard", "#000000", 1, 35, "Lily Script One", "left", null, null, null, null, 0, 0, 0, true],
                 [9, 1499.4322, -111.5231, 0, "", "Tutorial_Text_6", 231, "Mouse Wheel", "#000000", 1, 35, "Lily Script One", "left", null, null, null, null, 0, 0, 0, true],
-                [9, 207.1451, -108.9853, 0, "", "Tutorial_Text_3", 232, "Press Space on your Keyboard and Hold Right click", "#000000", 1, 30, "Lily Script One", "left", null, null, null, null, 0, 0, 0, true],
+                [9, 207.1451, -108.9853, 0, "", "Tutorial_Text_3", 232, "Press Space on your Keyboard and Hold Left click", "#000000", 1, 30, "Lily Script One", "left", null, null, null, null, 0, 0, 0, true],
                 [9, 1334.6089, -113.3056, 0, "", "Tutorial_Text_5", 233, "or", "#706868", 1, 42, "Lily Script One", "left", null, null, null, null, 0, 0, 0, true],
                 [6, 12669.51, -361.719, 0, "", "", 234, "#ffffff", "#000000", 1, 0, [{
                     "x": -15.891,
@@ -12194,4 +12194,10 @@ export const levelsData = {
         description: '',
         crossPromo: [],
     }),
+
+    tutorialLevel:{
+        id: 'BNNWOqMaR2KLOS2ndlMOk',
+        level_md5: 'cdb7adcf193a783d6366d92675c7d58c',
+        forced_vehicle: 1,
+    }
 };
