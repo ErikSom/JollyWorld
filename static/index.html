@@ -91,13 +91,11 @@
             transform: translate(-50%, -50%);
             border: 2px solid white;
             margin-top: 2px;
-        }
-        .preloaderBar{
             background:#545454;
             position: absolute;
             border-radius: 10px;
         }
-        .preloaderBar div{
+        .preloaderFill,  .innerBorder{
             width:100%;
             height:100%;
             border-radius: 10px;
@@ -107,7 +105,6 @@
             background-image: -moz-linear-gradient( -45deg, rgba(0, 0, 0, .2) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .2) 75%, transparent 75%, transparent );
             animation: move 2s linear infinite;
             -webkit-animation: move 2s linear infinite;
-			-moz-animation: move 2s linear infinite;
             position:absolute;
             background-size: 50px 50px;
             background-color: #d70201;
@@ -116,6 +113,27 @@
         .preloaderBar .innerBorder{
             position: absolute;
             border: 2px solid black;
+        }
+        .cycling{
+            position:absolute;
+            z-index: 1;
+            transform-origin: bottom;
+            transform: scale(0.6);
+            left: 0;
+            top: -84px;
+            margin-left: -20px;
+        }
+        .cycling.fall{
+            animation: fall linear 1s forwards;
+            -webkit-animation: fall linear 1s forwards;
+            will-change: left, top, transform;
+        }
+        .cycling-anim{
+            width: 82px;
+            height: 82px;
+            background: url(./assets/images/misc/cycling.png) 0 0 no-repeat;
+            animation: step-frame steps(7) 600ms infinite both;
+            -webkit-animation: step-frame steps(7) 600ms infinite both;
         }
         @keyframes move{
             0% {
@@ -133,15 +151,56 @@
 		       background-position: 50px 50px;
 		    }
 		}
-
-		@-moz-keyframes move {
-		    0% {
-		       background-position: 0 0;
-		    }
-		    100% {
-		       background-position: 50px 50px;
-		    }
-		}
+        @keyframes step-frame {
+            0% {
+                background-position: 0%;
+            }
+            100% {
+                background-position: 100%;
+            }
+        }
+        @-webkit-keyframes step-frame {
+            0% {
+                background-position: 0%;
+            }
+            100% {
+                background-position: 100%;
+            }
+        }
+        @keyframes fall {
+            0% {
+                left: 160px;
+                top: -84px;
+                transform: scale(0.6) rotate(0deg);
+            }
+            20% {
+                left: 184px;
+                top: -60px;
+                transform: scale(0.6) rotate(64deg);
+            }
+            100%{
+                left: 190px;
+                top: 1000px;
+                transform: scale(0.6) rotate(66deg);
+            }
+        }
+        @-webkit-keyframes fall {
+            0% {
+                left: 160px;
+                top: -84px;
+                transform: scale(0.6) rotate(0deg);
+            }
+            20% {
+                left: 184px;
+                top: -60px;
+                transform: scale(0.6) rotate(64deg);
+            }
+            100%{
+                left: 190px;
+                top: 1000px;
+                transform: scale(0.6) rotate(66deg);
+            }
+        }
 
 
     </style>
@@ -186,6 +245,9 @@
             <div class="preloaderBar">
                 <div class="preloaderFill"></div>
                 <div class="innerBorder"></div>
+                <div class="cycling">
+                    <div class="cycling-anim"></div>
+                </div>
             </div>
         </div>
     </div>

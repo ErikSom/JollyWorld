@@ -431,6 +431,8 @@ function Game() {
         this.handleResize();
         //this.myContainer.updateTransform = function() {};
 
+        this.preloader.querySelector('.cycling').classList.add('fall');
+
         if(!userData.tutorialFinished && !backendManager.isLoggedIn()){
             this.showInitialTutorial();
         }else{
