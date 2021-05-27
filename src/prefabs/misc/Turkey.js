@@ -17,7 +17,7 @@ class Turkey extends SoftBreakable {
 }
 
 PrefabManager.prefabLibrary.Turkey = {
-    json: '{"objects":[[0,-0.0455,-0.0337,0,"turkey","base",0,["#999999","#999999"],["#000","#000"],[1,1,1],false,true,[[{"x":-0.3966,"y":-0.0159},{"x":-0.3966,"y":-0.0159}],[{"x":0.3966,"y":0.0159},{"x":0.3966,"y":0.0159}]],[1,1],[0,0],[18.8298,19.6251],"",[0,0],false,false,false,[0.5,0.5],[0.2,0.2],false,true,false],[1,1.3647,1.0115,0,"turkey","texture",1,"Turkey instance 10000",0,3.3974,-0.6378,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    json: '{"objects":[[0,-0.0455,-0.0337,0,"turkey","base",0,["#999999","#999999"],["#000","#000"],[0,1,1],false,true,[[{"x":-0.3966,"y":-0.0159},{"x":-0.3966,"y":-0.0159}],[{"x":0.3966,"y":0.0159},{"x":0.3966,"y":0.0159}]],[1,1],[0,0],[18.8298,19.6251],"",[0,0],true,false,false,[0.5,0.5],[0.2,0.2],false,true,false,false],[1,1.3647,1.0115,0,"turkey","texture",1,"Turkey instance 10000",0,3.3974,-0.6378,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
     class: Turkey,
     library: PrefabManager.LIBRARY_MISC
 }
