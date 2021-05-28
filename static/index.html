@@ -89,7 +89,7 @@
             top: 100%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border: 2px solid white;
+            border: 1.6px solid white;
             margin-top: 2px;
             background:#545454;
             position: absolute;
@@ -134,6 +134,21 @@
             background: url(./assets/images/misc/cycling.png) 0 0 no-repeat;
             animation: step-frame steps(7) 600ms infinite both;
             -webkit-animation: step-frame steps(7) 600ms infinite both;
+        }
+        .logo{
+            width: 200px;
+			height: 68px;
+			background-repeat: no-repeat;
+			position: absolute;
+			z-index: 1;
+			filter: drop-shadow(2px 2px 2px black);
+			background-image: url(./assets/images/gui/Logo.svg);
+        }
+        .centered{
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: -82px 0 0 0;
         }
         @keyframes move{
             0% {
@@ -242,6 +257,7 @@
     <div id="preloader">
         <div class="preloaderDoor"></div>
         <div class="preloaderDoor upper">
+            <div class="logo centered"></div>
             <div class="preloaderBar">
                 <div class="preloaderFill"></div>
                 <div class="innerBorder"></div>
@@ -257,9 +273,11 @@
     <script type="module">
         window.__assetHashNames = '{{{ASSET_HASH_NAMES}}}';
         var preloaderFill = document.getElementsByClassName('preloaderFill')[0];
+        var cyclist = document.querySelector('.cycling')
         window.setLoaderProgress = function(percent){
                 var sp = 7;
                 preloaderFill.style.width = (sp+percent*(100-sp)).toFixed(2)+'%';
+                cyclist.style.left = (percent*160).toFixed(2)+'px';
             }
 
         var gameScript = false;
