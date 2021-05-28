@@ -15,7 +15,7 @@ class Cola extends SoftBreakable {
 }
 
 PrefabManager.prefabLibrary.Cola = {
-    json: '{"objects":[[0,0.0024,-0.0092,0,"cola","base",0,["#999999"],["#000"],[1],false,true,[[{"x":0.3228,"y":-1.19},{"x":0.3228,"y":1.19},{"x":-0.3228,"y":1.19},{"x":-0.3228,"y":-1.19}]],[1],[0],[0],"",[0],false,false,false,[0.5],[0.2],false,true,false],[1,-0.072,0.2759,0,"cola","texture",1,"Cola instance 10000",0,0.5703,-1.826,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
+    json: '{"objects":[[0,0.0024,-0.0092,0,"cola","base",0,["#999999"],["#000"],[0],false,true,[[{"x":0.3228,"y":-1.19},{"x":0.3228,"y":1.19},{"x":-0.3228,"y":1.19},{"x":-0.3228,"y":-1.19}]],[1],[0],[0],"",[0],true,false,false,[0.5],[0.2],false,true,false,false],[1,-0.072,0.2759,0,"cola","texture",1,"Cola instance 10000",0,0.5703,-1.826,0,false,"#FFFFFF",1,1,1,0,0,0,true]]}',
     class: Cola,
     library: PrefabManager.LIBRARY_MISC
 }
