@@ -358,7 +358,8 @@ const LOCALIZATION_DATA = [
     {
         "textId": "levelbanner_favorite",
         "us": "Favorite",
-        "nl": "Favoriet"
+        "nl": "Favoriet",
+        "jr": "Treasure"
     },
     {
         "textId": "levelbanner_gameplays",
@@ -495,7 +496,8 @@ const LOCALIZATION_DATA = [
     {
         "textId": "userpage_levelspublished",
         "us": "Levels Published",
-        "nl": "Levels Gepubliceerd"
+        "nl": "Levels Gepubliceerd",
+        "jr": "Islands Mapped"
     },
     {
         "textId": "userpage_averagerating",
@@ -508,8 +510,9 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "userpage_levelsfeatured",
-        "us": "levels Featured",
-        "nl": "Levels Aanbevolen"
+        "us": "Levels Featured",
+        "nl": "Levels Aanbevolen",
+        "jr": "Scurvy Approved Islands"
     },
     {
         "textId": "userpage_totalgameplays",
@@ -518,12 +521,14 @@ const LOCALIZATION_DATA = [
         "es": "Total de jugadas",
         "pt": "Total De Jogadas",
         "fr": "Total des jeux",
-        "it": "Riproduzioni totali"
+        "it": "Riproduzioni totali",
+        "jr": "Total Voyages"
     },
     {
         "textId": "userpage_levels",
         "us": "Levels",
-        "nl": "Levels"
+        "nl": "Levels",
+        "jr": "Islands"
     },
     {
         "textId": "userpage_favorites",
@@ -532,7 +537,8 @@ const LOCALIZATION_DATA = [
         "es": "Favoritos",
         "pt": "Favoritos",
         "fr": "Favoris",
-        "it": "Preferiti"
+        "it": "Preferiti",
+        "jr": "Treasured"
     },
     {
         "textId": "userpage_membersince",
@@ -541,7 +547,8 @@ const LOCALIZATION_DATA = [
         "es": "Miembro desde",
         "pt": "Membro desde",
         "fr": "Membre depuis",
-        "it": "Membro da"
+        "it": "Membro da",
+        "jr": "Set sea on"
     },
     {
         "textId": "share_sharing",
@@ -676,8 +683,150 @@ const LOCALIZATION_DATA = [
         "jr": "Ye found the treasure!"
     },
     {
+        "textId": "tutorial_skip_button",
+        "us": "Skip",
+        "nl": "Overslaan"
+    },
+    {
+        "textId": "editor_tutorial_text_1",
+        "us": "Welcome to the tutorial level!",
+        "nl": "Welkom bij het tutorial level!",
+        "jr": "Welcome to Tutorial land, where ye get shot in ye 'ead"
+    },
+    {
+        "textId": "editor_tutorial_tip_title_1",
+        "us": "Create a floor base",
+        "nl": "Maak eerst een vloer",
+        "jr": "Lay down a deck"
+    },
+    {
+        "textId": "editor_tutorial_tip_body_1",
+        "us": "To create a floor base \\nplatform for the character\\nto ride on, select the \\nGeometry tool and draw \\na rectangle under the \\ncharacter.",
+        "nl": "Om een vloer te maken\\n voor ons karakter om op te rijden \\n selecteer je de Geometry tool en\\nteken je een vierkant onder het \\nkarakter.",
+        "jr": "To lay down a deck, \\nfor yer maties \\nto walk on, grab some \\nbasic land and chart out \\na rectangle under their \\nfeet."
+    },
+    {
+        "textId": "editor_tutorial_title_1",
+        "us": "Drag",
+        "nl": "Sleep"
+    },
+    {
+        "textId": "editor_tutorial_title_2",
+        "us": "Zoom In & Zoom Out",
+        "nl": "Zoem in & Zoem uit",
+        "jr": "Adjust ye periscope"
+    },
+    {
+        "textId": "editor_tutorial_title_3",
+        "us": "Move the triangle",
+        "nl": "Verplaats de triangel"
+    },
+    {
+        "textId": "editor_tutorial_title_4",
+        "us": "Draw a square",
+        "nl": "Teken een vierkant",
+        "jr": "Chart out a square"
+    },
+    {
+        "textId": "editor_tutorial_title_5",
+        "us": "Modify this square",
+        "nl": "Pas dit vierkant aan",
+        "jr": "Tinker with the square"
+    },
+    {
+        "textId": "editor_tutorial_title_6",
+        "us": "Add Obstacles!",
+        "nl": "Plaats obstakels!",
+        "jr": "Set some booby traps"
+    },
+    {
+        "textId": "editor_tutorial_title_7",
+        "us": "Add Checkpoint",
+        "nl": "Plaats een checkpoint",
+        "jr": "Build a lighthouse"
+    },
+    {
+        "textId": "editor_tutorial_tip_title_2",
+        "us": "Prefabs Settings",
+        "nl": "Prefabs instellingen"
+    },
+    {
+        "textId": "editor_tutorial_tip_body_2",
+        "us": "Some elements, including prefabs have\\ndifferent settings that you can modify\\njust left click on them to open the\\nsettings box.\\nIf you want a prefab to not move from\\nwhere you placed it, then tick the\\nIs Fixed Box and it will stay in place.",
+        "nl": "Sommige elementen, waaronder prefabs hebben\\n verschillende instellingen die je aan kan passen.\\n Klik met linker muis knop om de instellingen te zien.\\n Als je wilt dat een Prefab niet beweegt\\n dan kan je isFixed aanklikken,\\n dit zorgt er voor dat hij niet verplaatst.",
+        "jr": "Some parts, includin' booby traps, have different things to tinker 'round with."
+    },
+    {
+        "textId": "editor_tutorial_title_8",
+        "us": "Non-Static Objects",
+        "nl": "Niet-Static objecten",
+        "jr": "Ships that move."
+    },
+    {
+        "textId": "editor_tutorial_title_9",
+        "us": "Add The Finish Line",
+        "nl": "Plaats de Finish",
+        "jr": "Raise the Jolly Roger"
+    },
+    {
+        "textId": "editor_tutorial_title_10",
+        "us": "Test & Publish!",
+        "nl": "Test & Publiceer"
+    },
+    {
+        "textId": "editor_tutorial_text_2",
+        "us": "Learn how to build a level in 10 easy steps!",
+        "nl": "Leer om een level te bouwen in 10 simpele stappen!"
+    },
+    {
+        "textId": "editor_tutorial_text_4",
+        "us": "Press on your Keyboard",
+        "nl": "Druk op je Toetsenbord"
+    },
+    {
+        "textId": "editor_tutorial_text_6",
+        "us": "Mouse Wheel",
+        "nl": "Muis Wiel",
+        "jr": "Steerin' Wheel"
+    },
+    {
+        "textId": "editor_tutorial_text_3",
+        "us": "Press Space on your Keyboard and Hold Right click",
+        "nl": "Druk Spatie op je Toetsenbord en houd rechter muis ingedrukt"
+    },
+    {
+        "textId": "editor_tutorial_text_5",
+        "us": "or",
+        "nl": "of",
+        "jr": "orr"
+    },
+    {
+        "textId": "editor_tutorial_text_7",
+        "us": "Is a good practice to add checkpoints \\nafter difficult obstacles",
+        "nl": "Het is aanbevolen om checkpoints\\n toe te voegen naar moeilijke stukken",
+        "jr": "Tis polite to build lighthouses after laying down some traps. Or not, Arrrgh!"
+    },
+    {
+        "textId": "editor_tutorial_text_8",
+        "us": "Press T on your Keyboard\\nto test the level",
+        "nl": "Druk T op je toetsenbord om je level te testen",
+        "jr": "Press T on ye keyboard\\nto set foot on yer land."
+    },
+    {
+        "textId": "editor_tutorial_text_9",
+        "us": "Press this button \\nat the top right",
+        "nl": "Druk deze knop\\n die staat boven rechts"
+    },
+    {
+        "textId": "editor_tutorial_text_10",
+        "us": "Fill up all the info, then Save or hit publish!\\nPS: Don't publish this tutorial please ;P",
+        "nl": "Vul alle informatie in, klik dan Save of Publish!\\n P.S. please publiceer dit tutorial level niet ;P",
+        "jr": "Read up on everything ye can, then put it on the map.\\nDon't claim this land as yer own!"
+    },
+    {
         "textId": "editortoolgui_select",
         "us": "select",
+        "nl": "selecteer",
         "de": "auswählen",
         "es": "Seleccionar",
         "pt": "selecionar",
@@ -689,6 +838,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_geometry",
         "us": "geometry",
+        "nl": "vormen",
         "de": "formen",
         "es": "Geometria",
         "pt": "Geometria",
@@ -700,6 +850,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_polydrawing",
         "us": "polydrawing",
+        "nl": "polygon",
         "de": "polygon",
         "es": "Dibujar Poly",
         "pt": "Desenho poligonal",
@@ -711,6 +862,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_pen",
         "us": "pen",
+        "nl": "pen",
         "de": "stift",
         "es": "Lapiz",
         "pt": "Caneta",
@@ -722,6 +874,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_joints",
         "us": "joints",
+        "nl": "verbindingen",
         "de": "bindungen",
         "es": "Articulacion",
         "pt": "Juntas",
@@ -733,6 +886,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_prefabs",
         "us": "prefabs",
+        "nl": "fabrikaten",
         "de": "fertigbauten",
         "es": "Prefabricados",
         "pt": "Objetos prontos",
@@ -744,6 +898,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_text",
         "us": "text",
+        "nl": "text",
         "de": "text",
         "es": "Texto",
         "pt": "Texto",
@@ -755,6 +910,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_art",
         "us": "art",
+        "nl": "kunst",
         "de": "grafiken",
         "es": "Arte",
         "pt": "Arte",
@@ -766,6 +922,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editortoolgui_trigger",
         "us": "trigger",
+        "nl": "trigger",
         "de": "auslöser",
         "es": "Gatillo",
         "pt": "Acionador",
@@ -777,6 +934,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorheader_test",
         "us": "test",
+        "nl": "test",
         "de": "test",
         "es": "Probar",
         "pt": "Teste",
@@ -788,6 +946,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorheader_profilescreen",
         "us": "Profile Screen",
+        "nl": "Profiel scherm",
         "de": "Profil Fenster",
         "es": "Menu de Perfil",
         "pt": "Foto de Perfil",
@@ -799,6 +958,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorheader_logout",
         "us": "LOGOUT",
+        "nl": "UITLOGGEN",
         "de": "AUSLOGGEN",
         "es": "Salir",
         "pt": "Deslogar",
@@ -810,6 +970,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorheader_new",
         "us": "NEW",
+        "nl": "NIEUW",
         "de": "NEU",
         "es": "Nuevo",
         "pt": "Novo",
@@ -821,6 +982,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorheader_load",
         "us": "LOAD",
+        "nl": "LAAD",
         "de": "LADEN",
         "es": "Cargar",
         "pt": "Carregar",
@@ -832,6 +994,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorheader_exit",
         "us": "EXIT",
+        "nl": "VERLAAT",
         "de": "VERLASSEN",
         "es": "Salir",
         "pt": "Sair",
@@ -843,6 +1006,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_publishsettings",
         "us": "Publish Settings",
+        "nl": "Publiceer Instellingen",
         "de": "Veröffentlichungseinstellungen",
         "es": "Ajustes de publicacion",
         "pt": "Publicar informações",
@@ -854,6 +1018,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_thumbnail",
         "us": "Thumbnail",
+        "nl": "Afbeelding",
         "de": "Schaubild",
         "es": "Imagen",
         "pt": "Miniatura",
@@ -865,6 +1030,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_clicktoadd",
         "us": "click to add",
+        "nl": "click om t",
         "de": "bild einfügen",
         "es": "Click para agregar",
         "pt": "Click para adicionar",
@@ -876,6 +1042,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_title",
         "us": "Title",
+        "nl": "Titel",
         "de": "Titel",
         "es": "Titulo",
         "pt": "Título",
@@ -887,6 +1054,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_charactersleft",
         "us": "Characters left",
+        "nl": "Letters over",
         "de": "Buchstaben übrig",
         "es": "Caracteres restantes",
         "pt": "Personagens restantes",
@@ -898,6 +1066,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_description",
         "us": "Description",
+        "nl": "Beschrijving",
         "de": "Beschreibung",
         "es": "Descripcion",
         "pt": "Descrição",
@@ -909,6 +1078,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_linkyoutubevideos",
         "us": "Link YouTube videos",
+        "nl": "Voeg YouTube videos toe",
         "de": "YouTube videos verknüpfen",
         "es": "Vincular videos de YouTube",
         "pt": "Colocar video do Youtube",
@@ -918,8 +1088,14 @@ const LOCALIZATION_DATA = [
         "jr": "Log videos o' YouTube"
     },
     {
+        "textId": "editorlevelbanner_save",
+        "us": "SAVE",
+        "nl": "OPSLAAN"
+    },
+    {
         "textId": "editorlevelbanner_saveas",
         "us": "SAVE AS",
+        "nl": "OPSLAAN ALS",
         "de": "SPEICHERN ALS",
         "es": "Salvar como",
         "pt": "Salvar como",
@@ -931,6 +1107,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_delete",
         "us": "DELETE",
+        "nl": "VERWIJDER",
         "de": "LÖSCHEN",
         "es": "Borrar",
         "pt": "Deletar",
@@ -942,6 +1119,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_preview",
         "us": "PREVIEW",
+        "nl": "VOORBEELD",
         "de": "VORSCHAU",
         "es": "Anticipar",
         "pt": "Pré-visualizar",
@@ -953,6 +1131,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_publish",
         "us": "PUBLISH",
+        "nl": "PUBLICEER",
         "de": "VERÖFFENTLICHEN",
         "es": "Publicar",
         "pt": "Publicar",
@@ -964,6 +1143,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_notice",
         "us": "Notice",
+        "nl": "Melding",
         "de": "Achtung",
         "es": "Aviso",
         "pt": "Aviso",
@@ -975,6 +1155,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_prompt",
         "us": "Prompt",
+        "nl": "Keuze",
         "de": "Aufforderung",
         "es": "Puntual",
         "pt": "Console",
@@ -986,6 +1167,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_ok",
         "us": "OK",
+        "nl": "OK",
         "de": "OK",
         "es": "OK",
         "pt": "OK!",
@@ -997,6 +1179,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_yes",
         "us": "Yes!",
+        "nl": "Ja!",
         "de": "Ja!",
         "es": "Si",
         "pt": "SIM!",
@@ -1008,6 +1191,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_nope",
         "us": "NOPE!",
+        "nl": "NEE!",
         "de": "DOCH NICHT!",
         "es": "Nop",
         "pt": "NOPE!",

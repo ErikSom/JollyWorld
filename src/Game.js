@@ -113,6 +113,7 @@ function Game() {
     this.ui = ui;
 
     this.preloader = document.getElementById('preloader');
+    this.tutorialMode = false;
 
     // path pixi for camera support
     // PathRenderTarget();
@@ -431,22 +432,24 @@ function Game() {
         this.handleResize();
         //this.myContainer.updateTransform = function() {};
 
-        this.preloader.querySelector('.cycling').classList.add('fall');
-
-        if(!userData.tutorialFinished && !backendManager.isLoggedIn()){
+        if((!userData.tutorialFinished && !backendManager.isLoggedIn()) || window.location.search.indexOf('forceTutorial=true')>=0){
             this.showInitialTutorial();
         }else{
             this.preloader.classList.add('hide');
+            this.preloader.querySelector('.cycling').classList.add('fall');
         }
     }
 
     this.showInitialTutorial = ()=>{
-        console.log("SHOW INITIAL TUTORIAL")
         const tutorialLevel = {...levelsData.tutorialLevel}
         game.loadPublishedLevelData(tutorialLevel, ()=>{}).then(() => {
-            console.log("LEVEL LOADED!!!");
+            this.tutorialMode = true;
+            ui.showSkipTutorialButton();
+            ui.playLevelFromMainMenu();
+            this.preloader.querySelector('.cycling').classList.add('fall');
         }).catch(error => {
             // skip tutorial
+            this.preloader.classList.add('hide');
         });
     }
 
@@ -904,7 +907,7 @@ function Game() {
         }
     }
     this.pauseGame = function(){
-        if(this.gameOver || this.levelWon) return;
+        if(this.gameOver || this.levelWon || this.tutorialMode) return;
         this.pause = true;
         this.run = false;
         ui.showPauseMenu();

@@ -71,6 +71,7 @@ let loginScreen;
 let leaderboard;
 let userPage;
 let smallLogo;
+let skipTutorial;
 
 function UIManager() {
 
@@ -1184,6 +1185,33 @@ function UIManager() {
         if(smallLogo) smallLogo.style.display = 'none';
     }
 
+    this.showSkipTutorialButton = function(){
+        if(!skipTutorial){
+            skipTutorial = document.createElement('div');
+            skipTutorial.classList.add('back-button');
+            skipTutorial.style.position = 'absolute';
+            skipTutorial.style.top = '0px';
+            skipTutorial.style.right = '0px';
+            skipTutorial.style.margin = '10px';
+            customGUIContainer.appendChild(skipTutorial);
+            skipTutorial.innerHTML = `<span class="fit h2">${localize('tutorial_skip_button')}</span>`;
+            textFit(skipTutorial.querySelector('.fit'));
+            skipTutorial.onclick = ()=> {
+                game.openMainMenu();
+                this.hideSkipTutorialButton();
+            }
+        }
+    }
+    this.hideSkipTutorialButton = function(){
+        if(skipTutorial){
+            skipTutorial.parentNode.removeChild(skipTutorial);
+            const userData = SaveManager.getLocalUserdata();
+            userData.tutorialFinished = true;
+            SaveManager.updateLocalUserData(userData);
+        }
+        skipTutorial = null;
+    }
+
     this.hide = function () {
         customGUIContainer.style.display = 'none';
     }
@@ -1482,7 +1510,7 @@ function UIManager() {
         characterSelect.style.display = 'none';
     }
 
-    this.playLevelFromMainMenu = function(){
+    this.playLevelFromMainMenu = function(delay){
         mainMenu.classList.remove('inactive');
         game.preloader.classList.remove('hide');
         setTimeout(()=>{
@@ -1705,9 +1733,19 @@ function UIManager() {
 
         const buttons = winScreen.querySelector('.buttons');
         const exitButton = buttons.querySelector('.exit');
+        const retryButton = buttons.querySelector('.retry');
+        const resetButton = buttons.querySelector('.reset');
         const testButton = buttons.querySelector('.test');
 
         winScreen.style.display = 'block';
+
+        if(game.tutorialMode){
+            retryButton.classList.add('hidden');
+            resetButton.classList.add('hidden');
+        }else{
+            retryButton.classList.remove('hidden');
+            resetButton.classList.remove('hidden');
+        }
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             winScreen.classList.add('editor');
@@ -1730,9 +1768,15 @@ function UIManager() {
 
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
 
+        if(game.tutorialMode){
+            voteButtons.classList.add('hidden');
+        }else{
+            voteButtons.classList.remove('hidden');
+        }
+
+        this.hideSkipTutorialButton();
 
         AudioManager.playSFX('win', 0.5, 1.0);
-
     }
 
     this.hideWinScreen = function () {
