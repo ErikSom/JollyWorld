@@ -310,6 +310,7 @@ function Game() {
 
 
         const urlParams = new URLSearchParams(window.location.search);
+        const forceTutorial = urlParams.get('forceTutorial');
         let uidHash = urlParams.get('lvl');
 
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
@@ -430,9 +431,8 @@ function Game() {
 
         SlowmoUI.init();
         this.handleResize();
-        //this.myContainer.updateTransform = function() {};
 
-        if((!userData.tutorialFinished && !backendManager.isLoggedIn()) || window.location.search.indexOf('forceTutorial=true')>=0){
+        if((!userData.tutorialFinished && !backendManager.isLoggedIn()) || forceTutorial){
             this.showInitialTutorial();
         }else{
             this.preloader.classList.add('hide');
