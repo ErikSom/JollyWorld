@@ -85,6 +85,7 @@ function UIManager() {
                     <div class="clouds"></div>
                     <div class="clouds-alpha"></div>
                     <div class="grass1"></div>
+                    <div class="cycling-anim"></div>
                     <div class="grass2"></div>
                     <div class=bg-hider></div>
                     <div class="mobile-bg"></div>
