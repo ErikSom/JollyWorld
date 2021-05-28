@@ -39,7 +39,7 @@ linkJSONwithPNG();
 serviceWorkerFiles = files.filter(file => file.indexOf('.ttf') >= 0);
 
 // remove all linked pngs
-files = files.filter(file => !pngsToDelete.includes(file) && file.indexOf('.DS_Store') < 0 && file.indexOf('/instruments/') < 0 && file.indexOf('/terms/') < 0 && file.indexOf('awesome-game.js') < 0 && file.indexOf('Logo.svg') < 0 && file.indexOf('.ttf') < 0 && path.basename(file).length<30);
+files = files.filter(file => !pngsToDelete.includes(file) && file.indexOf('.DS_Store') < 0 && file.indexOf('/instruments/') < 0 && file.indexOf('/terms/') < 0 && file.indexOf('awesome-game.js') < 0 && file.indexOf('cycling.png') < 0 && file.indexOf('Logo.svg') < 0 && file.indexOf('.ttf') < 0 && path.basename(file).length<30);
 
 const renamedFiles = {};
 
