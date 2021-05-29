@@ -432,7 +432,7 @@ function Game() {
         SlowmoUI.init();
         this.handleResize();
 
-        if((!userData.tutorialFinished && !backendManager.isLoggedIn()) || forceTutorial){
+        if((!userData.tutorialFinished && !backendManager.isLoggedIn() && !MobileController.isMobile()) || forceTutorial){
             this.showInitialTutorial();
         }else{
             this.preloader.classList.add('hide');
