@@ -168,9 +168,11 @@ export class Humanoid extends PrefabManager.basePrefab {
             this.setExpression(Humanoid.EXPRESSION_SPECIAL);
         }
 
-        this.processJointDamage();
-        this.processBodySeparation();
-        this.processBloodSprays();
+        if(!game.tutorialMode){
+            this.processJointDamage();
+            this.processBodySeparation();
+            this.processBloodSprays();
+        }
 
         if (this.collisionUpdates.length > 0) {
             this.doCollisionUpdate(this.collisionUpdates[0]);
@@ -340,6 +342,8 @@ export class Humanoid extends PrefabManager.basePrefab {
     static GORE_SNAP = 1;
 
     dealDamage(damage){
+        if(game.tutorialMode) return;
+
         this.life -= damage;
 
         this.setExpression(Humanoid.EXPRESSION_PAIN);
@@ -546,6 +550,7 @@ export class Humanoid extends PrefabManager.basePrefab {
 
     }
     doCollisionUpdate(update) {
+        if(game.tutorialMode) return;
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
         switch (update.type) {
             case Humanoid.GORE_BASH:

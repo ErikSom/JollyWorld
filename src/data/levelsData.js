@@ -12197,7 +12197,7 @@ export const levelsData = {
 
     tutorialLevel:{
         id: 'BNNWOqMaR2KLOS2ndlMOk',
-        level_md5: 'cdb7adcf193a783d6366d92675c7d58c',
+        level_md5: '5f93b5a4159ec079a9598642daa91861',
         forced_vehicle: 1,
     }
 };

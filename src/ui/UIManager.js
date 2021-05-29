@@ -1207,6 +1207,7 @@ function UIManager() {
             skipTutorial.parentNode.removeChild(skipTutorial);
             const userData = SaveManager.getLocalUserdata();
             userData.tutorialFinished = true;
+            game.tutorialMode = false;
             SaveManager.updateLocalUserData(userData);
         }
         skipTutorial = null;
