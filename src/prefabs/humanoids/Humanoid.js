@@ -53,6 +53,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
 
+        console.log(this.collisionUpdates);
+
         this.bloodSprays = [];
 
         this.alive = true;
@@ -1152,11 +1154,11 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.stabalizeJoint(Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]); // add stabalize joints to bodies delete on snap 
         this.stabalizeJoint(Humanoid.BODY_PARTS.ARM_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.SHOULDER_RIGHT, [Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.ARM_RIGHT]);
 
-        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT]);
-        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.LEG_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.BELLY, Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_LEFT, [Humanoid.BODY_PARTS.BELLY, Humanoid.BODY_PARTS.LEG_LEFT]);
 
-        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT,[Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT]);
-        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT, [Humanoid.BODY_PARTS.LEG_RIGHT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT,[Humanoid.BODY_PARTS.BELLY, Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT]);
+        this.stabalizeJoint(Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.BODY, Humanoid.BODY_PARTS.THIGH_RIGHT, [Humanoid.BODY_PARTS.BELLY, Humanoid.BODY_PARTS.LEG_RIGHT]);
     }
     stabalizeJoint(target, base, baseRefJoint, linkedBodies){
         const targetBody = this.lookupObject[target];
