@@ -10383,7 +10383,7 @@ const _B2dEditor = function () {
 		var selectedSubPrefab = null
 		for (var i = 0; i < bodies.length; i++) {
 			body = bodies[i];
-			if (body.mySprite && body.mySprite.data.prefabInstanceName) {
+			if (body.mySprite && body.mySprite.data.prefabInstanceName && self.activePrefabs[body.mySprite.data.prefabInstanceName]) {
 				var tarPrefab = self.activePrefabs[body.mySprite.data.prefabInstanceName].class;
 				if (tarPrefab && tarPrefab != selectedPrefab && tarPrefab.contactListener) {
 					selectedPrefab = tarPrefab;
