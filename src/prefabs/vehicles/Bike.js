@@ -35,6 +35,7 @@ class Bike extends BaseVehicle {
         super.init();
         this.desiredVehicleTorques = [100, 100];
         this.desiredVehicleSpeeds = [20, 20];
+        this.destroyTires = [];
     }
     update() {
         super.update();
@@ -50,16 +51,64 @@ class Bike extends BaseVehicle {
             AudioManager.playPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop', 0.3, Math.max(0.8, pedalSpeed), this.lookupObject.frame.GetPosition());
             AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
         }
+
+        if(this.destroyTires.length > 0){
+            this.destroyTires.forEach(tire => this.destroyTire(tire));
+            this.destroyTires.length = 0;
+        }
+
     }
     destroy(){
         AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_pedal_loop');
         AudioManager.stopPrefabUniqueLoopSFX(this.prefabObject.key, 'bike_idle_loop');
         super.destroy();
     }
+    destroyTire(tire){
+        if(tire.broken) return;
+
+        tire.broken = true;
+        const textureName = tire.myTexture.data.textureName.split('0000')[0];
+        tire.myTexture.originalSprite.texture = PIXI.Texture.from(`${textureName}_Bended0000`);
+        tire.myTexture.originalSprite.x = -2;
+        tire.myTexture.originalSprite.y = 20;
+
+        let oldFixture = tire.GetFixtureList();
+
+        const fixDef = new Box2D.b2FixtureDef();
+
+        fixDef.set_density(oldFixture.GetDensity());
+        fixDef.set_friction(oldFixture.GetFriction());
+        fixDef.set_restitution(oldFixture.GetRestitution());
+
+        const shape = new Box2D.b2PolygonShape();
+        shape.SetAsBox(1.6, 0.8);
+
+        fixDef.set_shape(shape);
+
+        const filterData = new Box2D.b2Filter();
+        filterData.set_categoryBits(oldFixture.GetFilterData().get_categoryBits());
+		filterData.set_maskBits(oldFixture.GetFilterData().get_maskBits());
+
+        fixDef.set_filter(filterData);
+
+        const fixture = tire.CreateFixture(fixDef);
+
+        this.wheels = this.wheels.filter(fixture => fixture != oldFixture);
+        this.wheels.push(fixture);
+
+
+        tire.DestroyFixture(oldFixture);
+
+        const targetIndex = tire === this.lookupObject.wheel_front ? 1 : 0;
+        this.desiredVehicleTorques[targetIndex] = 400;
+
+        Box2D.destroy(shape);
+        Box2D.destroy(fixDef);
+    }
     initContactListener() {
         super.initContactListener();
         const self = this;
-        this.contactListener.PreSolve = function (contact, impulse) {
+        this.contactListener.PreSolve = function (contact) {
 
             let frame = null;
             let otherBody = null;
@@ -70,13 +119,38 @@ class Bike extends BaseVehicle {
                 frame = contact.GetFixtureB().GetBody();
                 otherBody = contact.GetFixtureA().GetBody();
             }
-            if(!frame || !otherBody.mainCharacter) return;
 
+            if(!frame || !otherBody.mainCharacter) return;
 
             if([self.lookupObject[Humanoid.BODY_PARTS.LEG_LEFT], self.lookupObject[Humanoid.BODY_PARTS.LEG_RIGHT], self.lookupObject[Humanoid.BODY_PARTS.FEET_LEFT], self.lookupObject[Humanoid.BODY_PARTS.FEET_RIGHT], self.lookupObject[Humanoid.BODY_PARTS.THIGH_LEFT], self.lookupObject[Humanoid.BODY_PARTS.THIGH_RIGHT],self.lookupObject[Humanoid.BODY_PARTS.BELLY]].includes(otherBody)){
                 contact.SetEnabled(false);
             }
 		}
+        this.contactListener.PostSolve = function (contact, impulse) {
+            let wheel = null;
+            let otherBody = null;
+
+            if(contact.GetFixtureA().GetBody() === self.lookupObject.wheel_front || contact.GetFixtureA().GetBody() === self.lookupObject.wheel_back){
+                wheel = contact.GetFixtureA().GetBody();
+                otherBody = contact.GetFixtureB().GetBody();
+            }else if(contact.GetFixtureB().GetBody() === self.lookupObject.wheel_front || contact.GetFixtureB().GetBody() === self.lookupObject.wheel_back){
+                wheel = contact.GetFixtureB().GetBody();
+                otherBody = contact.GetFixtureA().GetBody();
+            }
+
+            if(!wheel || wheel.broken) return
+
+            let force = 0;
+            for (let j = 0; j < impulse.get_count(); j++){
+                if (impulse.get_normalImpulses(j) > force){
+                    force = impulse.get_normalImpulses(j);
+                }
+            }
+
+            if(force>100){
+                self.destroyTires.push(wheel);
+            }
+        }
     }
 }
 

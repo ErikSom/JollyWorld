@@ -1945,6 +1945,7 @@ const _B2dEditor = function () {
 			delete body.isBeartrapSpike;
 			delete body.ignoreTriggers;
 			delete body.goingToBreak;
+			delete body.broken;
 		}
 	}
 

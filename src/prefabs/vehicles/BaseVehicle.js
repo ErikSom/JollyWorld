@@ -155,7 +155,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             let rayStart = wheel.GetBody().GetPosition();
             let rayEnd;
             // add 360 scope
-            let wheelRadius = wheel.GetShape().get_m_radius();
+            let wheelRadius = wheel.GetShape().get_m_radius() || wheel.GetBody().myTexture.width / Settings.PTM;
             let rayLength = wheelRadius + offset;
             let checkSlize = (360 / 20) * game.editor.DEG2RAD;
             let totalCircleRad = 360 * game.editor.DEG2RAD;
