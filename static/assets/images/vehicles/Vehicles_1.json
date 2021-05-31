@@ -2,7 +2,7 @@
 
 "Bicycle_Body0000":
 {
-	"frame": {"x":2,"y":359,"w":185,"h":149},
+	"frame": {"x":2,"y":2,"w":185,"h":149},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":149},
@@ -10,7 +10,7 @@
 },
 "Bicycle_Pedals0000":
 {
-	"frame": {"x":473,"y":2,"w":35,"h":35},
+	"frame": {"x":189,"y":2,"w":35,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":35,"h":35},
@@ -18,23 +18,39 @@
 },
 "Bicycle_WheelBack0000":
 {
-	"frame": {"x":220,"y":292,"w":113,"h":113},
+	"frame": {"x":226,"y":2,"w":113,"h":113},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":113,"h":113},
 	"sourceSize": {"w":113,"h":113}
+},
+"Bicycle_WheelBack_Bended0000":
+{
+	"frame": {"x":341,"y":2,"w":116,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":80},
+	"sourceSize": {"w":116,"h":80}
 },
 "Bicycle_WheelFront0000":
 {
-	"frame": {"x":335,"y":292,"w":113,"h":113},
+	"frame": {"x":459,"y":2,"w":113,"h":113},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":113,"h":113},
 	"sourceSize": {"w":113,"h":113}
 },
+"Bicycle_WheelFront_Bended0000":
+{
+	"frame": {"x":574,"y":2,"w":116,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":80},
+	"sourceSize": {"w":116,"h":80}
+},
 "DirtBike_Axis0000":
 {
-	"frame": {"x":450,"y":288,"w":40,"h":73},
+	"frame": {"x":692,"y":2,"w":40,"h":73},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":73},
@@ -42,7 +58,7 @@
 },
 "DirtBike_Body0000":
 {
-	"frame": {"x":2,"y":2,"w":312,"h":159},
+	"frame": {"x":2,"y":153,"w":312,"h":159},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":312,"h":159},
@@ -50,23 +66,39 @@
 },
 "DirtBike_WheelBack0000":
 {
-	"frame": {"x":220,"y":163,"w":126,"h":127},
+	"frame": {"x":316,"y":153,"w":126,"h":127},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":126,"h":127},
 	"sourceSize": {"w":126,"h":127}
+},
+"DirtBike_WheelBack_Bended0000":
+{
+	"frame": {"x":444,"y":153,"w":127,"h":97},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":127,"h":97},
+	"sourceSize": {"w":127,"h":97}
 },
 "DirtBike_WheelFront0000":
 {
-	"frame": {"x":348,"y":159,"w":126,"h":127},
+	"frame": {"x":573,"y":153,"w":126,"h":127},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":126,"h":127},
 	"sourceSize": {"w":126,"h":127}
 },
+"DirtBike_WheelFront_Bended0000":
+{
+	"frame": {"x":701,"y":153,"w":120,"h":86},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":86},
+	"sourceSize": {"w":120,"h":86}
+},
 "DirtBike_WheelSupport0000":
 {
-	"frame": {"x":189,"y":407,"w":136,"h":49},
+	"frame": {"x":823,"y":153,"w":136,"h":49},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":49},
@@ -74,7 +106,7 @@
 },
 "SkateBoard_Board0000":
 {
-	"frame": {"x":189,"y":458,"w":140,"h":32},
+	"frame": {"x":2,"y":314,"w":140,"h":32},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":140,"h":32},
@@ -82,39 +114,15 @@
 },
 "Skateboard_Wheel0000":
 {
-	"frame": {"x":327,"y":434,"w":21,"h":21},
+	"frame": {"x":144,"y":314,"w":21,"h":21},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":21},
 	"sourceSize": {"w":21,"h":21}
 },
-"SuperMarketCart_Body0000":
-{
-	"frame": {"x":2,"y":163,"w":216,"h":194},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":216,"h":194},
-	"sourceSize": {"w":216,"h":194}
-},
-"SuperMarketCart_Engine0000":
-{
-	"frame": {"x":327,"y":407,"w":25,"h":25},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":25},
-	"sourceSize": {"w":25,"h":25}
-},
-"SuperMarketCart_Wheel0000":
-{
-	"frame": {"x":189,"y":359,"w":27,"h":27},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":27},
-	"sourceSize": {"w":27,"h":27}
-},
 "YogaBall0000":
 {
-	"frame": {"x":316,"y":2,"w":155,"h":155},
+	"frame": {"x":167,"y":314,"w":155,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":155,"h":155},
@@ -122,7 +130,7 @@
 },
 "YogaBallHandle_Back0000":
 {
-	"frame": {"x":473,"y":39,"w":15,"h":35},
+	"frame": {"x":324,"y":314,"w":15,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":35},
@@ -130,7 +138,7 @@
 },
 "YogaBall_Handle_Front0000":
 {
-	"frame": {"x":450,"y":363,"w":17,"h":35},
+	"frame": {"x":341,"y":314,"w":17,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":17,"h":35},
@@ -141,7 +149,7 @@
 	"version": "20.0.3.25487",
 	"image": "Vehicles_1.png",
 	"format": "RGBA8888",
-	"size": {"w":512,"h":512},
+	"size": {"w":1024,"h":512},
 	"scale": "1"
 }
 }
