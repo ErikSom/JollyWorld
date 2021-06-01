@@ -185,14 +185,11 @@ class Bike extends BaseVehicle {
 		}
         this.contactListener.PostSolve = function (contact, impulse) {
             let wheel = null;
-            let otherBody = null;
 
             if(contact.GetFixtureA().GetBody() === self.lookupObject.wheel_front || contact.GetFixtureA().GetBody() === self.lookupObject.wheel_back){
                 wheel = contact.GetFixtureA().GetBody();
-                otherBody = contact.GetFixtureB().GetBody();
             }else if(contact.GetFixtureB().GetBody() === self.lookupObject.wheel_front || contact.GetFixtureB().GetBody() === self.lookupObject.wheel_back){
                 wheel = contact.GetFixtureB().GetBody();
-                otherBody = contact.GetFixtureA().GetBody();
             }
 
             if(!wheel || wheel.broken) return
