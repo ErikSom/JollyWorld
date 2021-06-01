@@ -152,6 +152,8 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         for (i = 0; i < this.wheels.length; i++) {
             wheel = this.wheels[i];
 
+            if(wheel.snapped) continue;
+
             let rayStart = wheel.GetBody().GetPosition();
             let rayEnd;
             // add 360 scope

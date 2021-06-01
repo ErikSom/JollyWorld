@@ -3,6 +3,12 @@ import * as AudioManager from '../../utils/AudioManager';
 import {Humanoid} from '../humanoids/Humanoid';
 
 import { BaseVehicle } from './BaseVehicle';
+import { game } from '../../Game';
+import { b2SubVec2 } from '../../../libs/debugdraw';
+
+
+const vec1 = new Box2D.b2Vec2(0, 0);
+const vec2 = new Box2D.b2Vec2(0, 0);
 
 class Bike extends BaseVehicle {
     constructor(target) {
@@ -36,6 +42,7 @@ class Bike extends BaseVehicle {
         this.desiredVehicleTorques = [100, 100];
         this.desiredVehicleSpeeds = [20, 20];
         this.destroyTires = [];
+        this.snapJoints = [];
     }
     update() {
         super.update();
@@ -55,6 +62,13 @@ class Bike extends BaseVehicle {
         if(this.destroyTires.length > 0){
             this.destroyTires.forEach(tire => this.destroyTire(tire));
             this.destroyTires.length = 0;
+        }
+
+        this.processWheelSeparation();
+
+        if(this.snapJoints.length > 0){
+            this.snapJoints.forEach(joint => this.snapWheelJoint(joint));
+            this.snapJoints.length = 0;
         }
 
     }
@@ -105,6 +119,49 @@ class Bike extends BaseVehicle {
         Box2D.destroy(shape);
         Box2D.destroy(fixDef);
     }
+
+    snapWheelJoint(joint){
+        this.engines = this.engines.filter(j => j != joint);
+
+        if(joint.GetBodyA() === this.lookupObject.wheel_front || joint.GetBodyB() === this.lookupObject.wheel_front) this.lookupObject.wheel_front.snapped = true;
+        if(joint.GetBodyA() === this.lookupObject.wheel_back || joint.GetBodyB() === this.lookupObject.wheel_back) this.lookupObject.wheel_back.snapped = true;
+
+        if(joint.destroyed) return;
+        game.editor.deleteObjects([joint]);
+    }
+
+    processWheelSeparation(){
+        const snapSeperation = 0.4;
+        const maxSnapTicks = 30;
+        let i;
+        const jointsToAnalyse = ['engine1', 'engine2'];
+
+        // check num frames
+        for (i = 0; i < jointsToAnalyse.length; i++) {
+            let targetJoint = this.lookupObject[jointsToAnalyse[i]];
+            if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
+
+            vec1.Set(targetJoint.GetAnchorA().x, targetJoint.GetAnchorA().y);
+            vec2.Set(targetJoint.GetAnchorB().x, targetJoint.GetAnchorB().y);
+
+            const distance = vec1;
+            b2SubVec2(distance, vec2);
+
+            if(distance.Length() > snapSeperation){
+                if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
+                targetJoint.snapTick++;
+
+                if(targetJoint.snapTick>= maxSnapTicks){
+
+                    this.snapJoints.push(targetJoint);
+
+                    targetJoint.snapTick = 0;
+                }
+            }else{
+                targetJoint.snapTick = 0;
+            }
+        }
+    }
     initContactListener() {
         super.initContactListener();
         const self = this;
@@ -147,7 +204,9 @@ class Bike extends BaseVehicle {
                 }
             }
 
-            if(force>100){
+            const destructionForce = 600;
+
+            if(force>destructionForce){
                 self.destroyTires.push(wheel);
             }
         }
