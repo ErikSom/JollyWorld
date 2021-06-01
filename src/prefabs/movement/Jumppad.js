@@ -2,6 +2,8 @@ import * as PrefabManager from '../PrefabManager';
 import {
     game
 } from "../../Game";
+import { b2MulVec2 } from '../../../libs/debugdraw';
+import { crawlJointsUtility } from '../level/Finish';
 
 class Jumppad extends PrefabManager.basePrefab {
     static JUMPPAD_RELEASE = 50;
@@ -18,6 +20,7 @@ class Jumppad extends PrefabManager.basePrefab {
         this.pad = this.lookupObject.pad;
         this.padEngine = this.lookupObject["pad_engine"];
         this.padEngine.EnableMotor(false);
+        this.contactBodies = [];
 
 
         if(this.prefabObject.settings.isFixed){
@@ -32,6 +35,31 @@ class Jumppad extends PrefabManager.basePrefab {
             this.padEngine.EnableMotor(true);
             this.padEngine.SetMaxMotorForce(this.prefabObject.settings.force * 10.0);
             this.padEngine.SetMotorSpeed(50.0);
+
+            this.contactBodies = this.contactBodies.filter(body => !body.destroyed);
+
+            debugger;
+
+            this.contactBodies.forEach( body => {
+                const bodyAngleVector = new Box2D.b2Vec2(Math.cos(this.pad.GetAngle()), Math.sin(this.pad.GetAngle()));
+                const dirForce = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+                b2MulVec2(dirForce,  this.prefabObject.settings.force)
+
+                // add sensor, only push a body once
+
+                const bodyDirForce = new Box2D.b2Vec2(0, 0);
+                bodyDirForce.Set(dirForce.x, dirForce.y);
+                b2MulVec2(bodyDirForce,  body.GetMass());
+                const bodies = crawlJointsUtility(body, ()=>true);
+                body.ApplyForceToCenter(bodyDirForce, body.GetPosition(), true);
+		        bodies.forEach(b => {
+                    bodyDirForce.Set(dirForce.x, dirForce.y);
+                    b2MulVec2(bodyDirForce,  b.GetMass());
+                    b.ApplyForceToCenter(bodyDirForce, b.GetPosition(), true);
+                })
+            })
+
+
         } else if (PrefabManager.timerReady(this.jumppadTimer, this.jumppadDelay + Jumppad.JUMPPAD_RELEASE, true)) {
             this.padEngine.EnableMotor(false);
         } else if (PrefabManager.timerReady(this.jumppadTimer, this.jumppadDelay + Jumppad.JUMPPAD_RELEASED, false)) {
@@ -49,6 +77,19 @@ class Jumppad extends PrefabManager.basePrefab {
     initContactListener() {
         super.initContactListener();
         var self = this;
+        this.contactListener.BeginContact = function (contact) {
+			const otherBody = (contact.GetFixtureA().GetBody() == self.pad) ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
+
+			if(otherBody.GetType() !== Box2D.b2_dynamicBody) return;
+			if(otherBody.mySprite && otherBody.mySprite.data.type === game.editor.object_TRIGGER) return;
+
+			self.contactBodies.push(otherBody);
+        }
+        this.contactListener.EndContact = function (contact) {
+			const otherBody = (contact.GetFixtureA().GetBody() == self.pad) ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
+            if(!contact.GetFixtureA().GetBody() === self.pad && !contact.GetFixtureB().GetBody() === self.pad) return;
+			self.contactBodies = self.contactBodies.filter(body => body !== otherBody);
+		}
         this.contactListener.PostSolve = function (contact, impulse) {
             var bodies = [contact.GetFixtureA().GetBody(), contact.GetFixtureB().GetBody()];
             var body;
