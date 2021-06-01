@@ -11,9 +11,11 @@ import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils
 import { editorSettings } from '../../b2Editor/utils/editorSettings';
 import { b2CloneVec2, b2DotVV, b2SubVec2 } from '../../../libs/debugdraw';
 
-const { getPointer, NULL } = Box2D;
 
-const vec1 = new Box2D.b2Vec2(0,0);
+const vec1 = new Box2D.b2Vec2(0, 0);
+const vec2 = new Box2D.b2Vec2(0, 0);
+
+const { getPointer, NULL } = Box2D;
 
 export class Humanoid extends PrefabManager.basePrefab {
     static TIME_EYES_CLOSE = 3000;
@@ -52,8 +54,6 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.stabalizeJoints();
         this.eyesTimer = 0.0;
         this.collisionUpdates = [];
-
-        console.log(this.collisionUpdates);
 
         this.bloodSprays = [];
 
@@ -204,8 +204,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
             if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
 
-            let reactionForce = vec1;
-            targetJoint.GetReactionForce(1 / Settings.physicsTimeStep, reactionForce);
+            let reactionForce =  targetJoint.GetReactionForce(1 / Settings.physicsTimeStep);;
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
@@ -265,11 +264,11 @@ export class Humanoid extends PrefabManager.basePrefab {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
             if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
 
-            const pos1 = b2CloneVec2(targetJoint.GetAnchorA());
-            const pos2 = b2CloneVec2(targetJoint.GetAnchorB());
+            vec1.Set(targetJoint.GetAnchorA().x, targetJoint.GetAnchorA().y);
+            vec2.Set(targetJoint.GetAnchorB().x, targetJoint.GetAnchorB().y);
 
-            const distance = pos1;
-            b2SubVec2(distance, pos2);
+            const distance = vec1;
+            b2SubVec2(distance, vec2);
 
             if(distance.Length() > snapSeperation){
                 if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
@@ -287,9 +286,6 @@ export class Humanoid extends PrefabManager.basePrefab {
             }else{
                 targetJoint.snapTick = 0;
             }
-
-            Box2D.destroy(pos1);
-            Box2D.destroy(pos2);
         }
 
 
@@ -311,12 +307,11 @@ export class Humanoid extends PrefabManager.basePrefab {
                 }
 
                 if(!skip){
+                    vec1.Set(targetJoint.GetAnchorA().x, targetJoint.GetAnchorA().y);
+                    vec2.Set(targetJoint.GetAnchorB().x, targetJoint.GetAnchorB().y);
 
-                    const pos1 = b2CloneVec2(targetJoint.GetAnchorA());
-                    const pos2 = b2CloneVec2(targetJoint.GetAnchorB());
-
-                    const distance = pos1;
-                    b2SubVec2(distance, pos2);
+                    const distance = vec1;
+                    b2SubVec2(distance, vec2);
 
                     if(distance.Length() > snapSeperation){
                         if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
@@ -331,10 +326,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                     }else{
                         targetJoint.snapTick = 0;
                     }
-
-                    Box2D.destroy(pos1);
-                    Box2D.destroy(pos2);
-
                 }
             }
         }
@@ -366,9 +357,12 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.contactListener.PreSolve = function (contact, impulse) {
             const bodyA = contact.GetFixtureA().GetBody();
             const bodyB = contact.GetFixtureB().GetBody();
-            bodyA.preSolveVelicity = b2CloneVec2(bodyA.GetLinearVelocity());
+            if(!bodyA.preSolveVelicity) bodyA.preSolveVelicity = b2CloneVec2(bodyA.GetLinearVelocity());
+            else bodyA.preSolveVelicity.Set(bodyA.GetLinearVelocity().x, bodyA.GetLinearVelocity().y)
             bodyA.preSolveVelicityCounter = bodyA.preSolveVelicityCounter !== undefined ? bodyA.preSolveVelicityCounter + 1 : 1;
-            bodyB.preSolveVelicity = b2CloneVec2(bodyB.GetLinearVelocity());
+
+            if(!bodyB.preSolveVelicity) bodyB.preSolveVelicity = b2CloneVec2(bodyB.GetLinearVelocity());
+            else bodyB.preSolveVelicity.Set(bodyB.GetLinearVelocity().x, bodyB.GetLinearVelocity().y)
             bodyB.preSolveVelicityCounter = bodyB.preSolveVelicityCounter !== undefined ? bodyB.preSolveVelicityCounter + 1 : 1;
 
         }
@@ -428,16 +422,15 @@ export class Humanoid extends PrefabManager.basePrefab {
 
 
                 if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
-                    const charOtherBodyDiff = b2CloneVec2(characterBody.GetPosition());
+                    const charOtherBodyDiff = vec1;
+                    charOtherBodyDiff.Set(characterBody.GetPosition().x, characterBody.GetPosition().y);
                     b2SubVec2(charOtherBodyDiff, otherBody.GetPosition());
                     const dotProductChar = b2DotVV(characterBody.preSolveVelicity, charOtherBodyDiff) *-1;
 
-                    const otherBodyCharDiff = b2CloneVec2(otherBody.GetPosition());
+                    const otherBodyCharDiff = vec2;
+                    vec2.Set(otherBody.GetPosition().x, otherBody.GetPosition().y);
                     b2SubVec2(otherBodyCharDiff, characterBody.GetPosition());
-                    const dotProductOther = b2CloneVec2(otherBody.preSolveVelicity, otherBodyCharDiff) *-1;
-
-                    Box2D.destroy(charOtherBodyDiff);
-                    Box2D.destroy(otherBodyCharDiff);
+                    const dotProductOther = b2DotVV(otherBody.preSolveVelicity, otherBodyCharDiff) *-1;
 
                     if(dotProductChar>0){
                         forceDamage += characterBody.preSolveVelicity.LengthSquared() * characterBody.GetMass();
@@ -474,14 +467,10 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
             characterBody.preSolveVelicityCounter--;
             if(characterBody.preSolveVelicityCounter <= 0){
-                Box2D.destroy(characterBody.preSolveVelicity);
-                delete characterBody.preSolveVelicity;
                 delete characterBody.preSolveVelicityCounter;
             }
             otherBody.preSolveVelicityCounter--;
             if(otherBody.preSolveVelicityCounter <= 0){
-                Box2D.destroy(otherBody.preSolveVelicity);
-                delete otherBody.preSolveVelicity;
                 delete otherBody.preSolveVelicityCounter;
             }
         }
@@ -1136,13 +1125,11 @@ export class Humanoid extends PrefabManager.basePrefab {
             const newX = rotationPoint.x + dl * Math.cos(newRot);
             const newY = rotationPoint.y + dl * Math.sin(newRot);
 
-            const newPos = b2CloneVec2(linkedBody.GetPosition());
+            const newPos = vec1;
             newPos.set_x(newX);
             newPos.set_y(newY);
 
             linkedBody.SetTransform(newPos, linkedBody.GetAngle()-angleCorrection);
-
-            Box2D.destroy(newPos);
         });
     };
 
@@ -1192,17 +1179,15 @@ export class Humanoid extends PrefabManager.basePrefab {
         linkedBodies.forEach((linkedBody, index)=>{
 
             let nextLinkedBody = index+1 === linkedBodies.length ? baseRefJoint : linkedBodies[index+1];
-            const j1 = b2CloneVec2(this.lookupObject[linkedBody+'_joint'].GetAnchorA());
-            const j2 = b2CloneVec2(this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA());
+            const j1 = vec1;
+            j1.Set(this.lookupObject[linkedBody+'_joint'].GetAnchorA().x, this.lookupObject[linkedBody+'_joint'].GetAnchorA().y);
+            const j2 = vec2;
+            j2.Set(this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA().x, this.lookupObject[nextLinkedBody+'_joint'].GetAnchorA().y);
 
             const inc = j1;
             b2SubVec2(inc, j2);
 
             maxLength += inc.Length();
-
-            Box2D.destroy(j1);
-            Box2D.destroy(j2);
-
         });
         newJoint.SetMaxLength(maxLength);
         newJoint.SetMinLength(0);
