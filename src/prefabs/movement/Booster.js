@@ -3,6 +3,7 @@ import {
     game
 } from "../../Game";
 import { Settings } from '../../Settings';
+import { crawlJointsUtility } from '../level/Finish';
 
 class Booster extends PrefabManager.basePrefab {
 
@@ -27,12 +28,9 @@ class Booster extends PrefabManager.basePrefab {
         this.contactListener.PostSolve = function(contact) {
             const otherBody = contact.GetFixtureA().GetBody() === self.base ? contact.GetFixtureB().GetBody() : contact.GetFixtureA().GetBody();
 
-            let bodies = [otherBody];
+            let bodies =  crawlJointsUtility(otherBody, ()=>true);
+            bodies.push(otherBody);
 
-            if(otherBody.mySprite && otherBody.mySprite.data.prefabInstanceName){
-                const prefabKey = otherBody.mySprite.data.prefabInstanceName;
-                bodies = game.editor.activePrefabs[prefabKey].class.lookupObject._bodies;
-            }
             const direction = self.base.GetAngle();
             const deltaVelocityInc = self.velocityBoost*game.editor.deltaTime;
             const velocityInc = new Box2D.b2Vec2(deltaVelocityInc*Math.cos(direction), deltaVelocityInc*Math.sin(direction));

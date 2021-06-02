@@ -4323,6 +4323,8 @@ const _B2dEditor = function () {
 			return;
 		}
 
+		const oldSelectedTool = this.selectedTool;
+
 		if(!undo && this.undoIndex === 0) return;
 		if(!undo && this.undoIndex<0) this.undoIndex++;
 
@@ -4336,6 +4338,10 @@ const _B2dEditor = function () {
 
 		this.resetEditor();
 		this.buildJSON(json);
+
+		if(oldSelectedTool !== this.tool_VERTICEEDITING){
+			this.selectTool(oldSelectedTool);
+		}
 
 	}
 
