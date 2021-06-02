@@ -4,6 +4,7 @@ import {
 } from "../../Game";
 import { b2MulVec2 } from '../../../libs/debugdraw';
 import { crawlJointsUtility } from '../level/Finish';
+import { Settings } from '../../Settings';
 
 class Jumppad extends PrefabManager.basePrefab {
     static JUMPPAD_RELEASE = 50;
@@ -22,6 +23,29 @@ class Jumppad extends PrefabManager.basePrefab {
         this.padEngine.EnableMotor(false);
         this.contactBodies = [];
 
+        const fixDef = new Box2D.b2FixtureDef();
+        fixDef.set_density(0.001);
+        fixDef.set_friction(Settings.defaultFriction);
+        fixDef.set_restitution(Settings.defaultRestitution);
+        fixDef.set_isSensor(true);
+
+        const shape = new Box2D.b2PolygonShape();
+        shape.SetAsBox(5.2, 0.6);
+
+        const vertices = [];
+        for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
+            const vertex = shape.get_m_vertices(vertexIx);
+            vertices.push({x:vertex.get_x(), y:vertex.get_y()-0.2});
+        }
+
+        shape.Set(Box2D.pointsToVec2Array(vertices)[0], vertices.length);
+
+        fixDef.set_shape(shape);
+        this.pad.CreateFixture(fixDef);
+
+
+        Box2D.destroy(fixDef);
+        Box2D.destroy(shape);
 
         if(this.prefabObject.settings.isFixed){
             this.lookupObject.platform.SetType(Box2D.b2_staticBody);
@@ -36,16 +60,15 @@ class Jumppad extends PrefabManager.basePrefab {
             this.padEngine.SetMaxMotorForce(this.prefabObject.settings.force * 10.0);
             this.padEngine.SetMotorSpeed(50.0);
 
-            this.contactBodies = this.contactBodies.filter(body => !body.destroyed);
-
-            debugger;
+            // deduplicate array
+            this.contactBodies = this.contactBodies.filter((body, i, a) => i === (a.indexOf(body) && !body.destroyed));
 
             this.contactBodies.forEach( body => {
                 const bodyAngleVector = new Box2D.b2Vec2(Math.cos(this.pad.GetAngle()), Math.sin(this.pad.GetAngle()));
                 const dirForce = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
                 b2MulVec2(dirForce,  this.prefabObject.settings.force)
 
-                // add sensor, only push a body once
+                // add sensor
 
                 const bodyDirForce = new Box2D.b2Vec2(0, 0);
                 bodyDirForce.Set(dirForce.x, dirForce.y);
@@ -118,7 +141,7 @@ Jumppad.settingsOptions = Object.assign({}, Jumppad.settingsOptions, {
     },
     "force": {
         min: 100,
-        max: 100000,
+        max: 10000,
         step: 1
     },
     "isFixed": false
