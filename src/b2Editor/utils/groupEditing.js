@@ -10,6 +10,17 @@ export const isBodyGroup = body => {
 	return (body.mySprite.data.vertices.length > 1 || body.myTexture);
 }
 
+export const setBodyGroupOpacity = (body, opacity) => {
+	body.mySprite.alpha = opacity;
+	if(body.myTexture){
+		if([game.editor.object_ANIMATIONGROUP, game.editor.object_GRAPHICGROUP].includes(body.myTexture.type)){
+			body.myTexture.alpha = opacity * body.myTexture.data.transparancy;
+		}else{
+			body.myTexture.alpha = opacity;
+		}
+	}
+}
+
 export const startEditingGroup = () => {
 	const editor = game.editor;
 

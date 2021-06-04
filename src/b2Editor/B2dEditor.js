@@ -46,7 +46,7 @@ import { TiledMesh } from './classes/TiledMesh';
 import  * as physicsCullCamera from './utils/physicsCullCamera';
 import nanoid from "nanoid";
 import { findObjectWithCopyHash } from "./utils/finder";
-import { isBodyGroup, startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
+import { isBodyGroup, setBodyGroupOpacity, startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
@@ -695,6 +695,7 @@ const _B2dEditor = function () {
 	}
 
 	this.updateSelection = function () {
+		debugger;
 		//Joints
 		var i;
 
@@ -1026,7 +1027,7 @@ const _B2dEditor = function () {
 
 				if (multiBodyColor) {
 					ui.editorGUI.editData.transparancy = ui.editorGUI.editData.transparancy[0];
-					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
+					controller = visualsFolder.add(ui.editorGUI.editData, "groupOpacity", 0, 1).name("opacity");
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
 						this.targetValue = value;
@@ -1063,11 +1064,21 @@ const _B2dEditor = function () {
 						this.humanUpdate = true;
 						this.targetValue = value;
 					}.bind(controller));
-					controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
-					controller.onChange(function (value) {
-						this.humanUpdate = true;
-						this.targetValue = value;
-					}.bind(controller));
+
+					if(isBodyGroup(this.selectedPhysicsBodies[0])){
+						controller = visualsFolder.add(ui.editorGUI.editData, "groupOpacity", 0, 1).name("opacity");
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						}.bind(controller));
+					}else{
+						controller = visualsFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
+						controller.onChange(function (value) {
+							this.humanUpdate = true;
+							this.targetValue = value;
+						}.bind(controller));
+					}
+
 					controller = visualsFolder.add(ui.editorGUI.editData, "visible", 0, 1);
 					controller.onChange(function (value) {
 						this.humanUpdate = true;
@@ -5883,8 +5894,14 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
-							body.mySprite.data.transparancy[0] = controller.targetValue;
-							body.mySprite.alpha = body.mySprite.data.transparancy[0];
+
+							if(isBodyGroup(body)){
+								body.mySprite.data.groupOpacity = controller.targetValue;
+								setBodyGroupOpacity(body, body.mySprite.data.groupOpacity);
+							}else{
+								body.mySprite.data.transparancy[0] = controller.targetValue;
+								body.mySprite.alpha = body.mySprite.data.transparancy[0];
+							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
@@ -5894,6 +5911,14 @@ const _B2dEditor = function () {
 							} else {
 								this.updateGraphicShapes(sprite);
 								this.updateTileSprite(sprite);
+							}
+						}
+					} else if(controller.property == "groupOpacity"){
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							if(isBodyGroup(body)){
+								body.mySprite.data.groupOpacity = controller.targetValue;
+								setBodyGroupOpacity(body, body.mySprite.data.groupOpacity);
 							}
 						}
 					} else if (controller.property == "visible") {
@@ -7604,7 +7629,7 @@ const _B2dEditor = function () {
 		body.isVehiclePart = obj.isVehiclePart;
 
 		if(isBodyGroup(body)){
-			body.mySprite.alpha = obj.groupOpacity;
+			setBodyGroupOpacity(body, obj.groupOpacity);
 		}else{
 			body.mySprite.alpha = obj.transparancy[0];
 		}
@@ -9812,7 +9837,7 @@ const _B2dEditor = function () {
 			obj.optimizePhysics = arr[24] !== undefined  ? arr[24] : true;
 			obj.bulletCollision = arr[25] !== undefined  ? arr[25] : false;
 			obj.breakable = arr[26] !== undefined  ? arr[26] : false;
-			obj.groupOpacity = arr[27] !== undefined  ? arr[27] : 1.0;
+			obj.groupOpacity = arr[27] !== undefined  ? arr[27] : (Array.isArray(obj.transparancy) ? obj.transparancy[0] : obj.transparancy);
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
