@@ -6,6 +6,10 @@ import {
 	editorSettings
 } from './editorSettings';
 
+export const isBodyGroup = body => {
+	return (body.mySprite.data.vertices.length > 1 || body.myTexture);
+}
+
 export const startEditingGroup = () => {
 	const editor = game.editor;
 

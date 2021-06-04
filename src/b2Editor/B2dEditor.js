@@ -46,7 +46,7 @@ import { TiledMesh } from './classes/TiledMesh';
 import  * as physicsCullCamera from './utils/physicsCullCamera';
 import nanoid from "nanoid";
 import { findObjectWithCopyHash } from "./utils/finder";
-import { startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
+import { isBodyGroup, startEditingGroup, stopEditingGroup } from "./utils/groupEditing";
 import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
@@ -825,7 +825,18 @@ const _B2dEditor = function () {
 				ui.editorGUI.editData = new this.bodyObject;
 				dataJoint = this.selectedPhysicsBodies[0].mySprite.data;
 				if (this.selectedPhysicsBodies.length > 1) targetFolder = ui.editorGUI.addFolder('multiple bodies');
-				else targetFolder = ui.editorGUI.addFolder('body');
+				else{
+					const body = this.selectedPhysicsBodies[0];
+					if(isBodyGroup(body)){
+						if(body.myTexture){
+							targetFolder = ui.editorGUI.addFolder('mixed group');
+						}else{
+							targetFolder = ui.editorGUI.addFolder('body group');
+						}
+					} else {
+						targetFolder = ui.editorGUI.addFolder('body');
+					}
+				}
 				break;
 			case case_JUST_TEXTURES:
 				dataJoint = _selectedTextures[0].data;
@@ -1126,11 +1137,13 @@ const _B2dEditor = function () {
 
 				let bodyIsGroup = false;
 				for (let i = 0; i < this.selectedPhysicsBodies.length; i++) {
-					if (this.selectedPhysicsBodies[i].mySprite.data.vertices.length > 1 || this.selectedPhysicsBodies[i].myTexture) {
+					const body = this.selectedPhysicsBodies[i];
+					if (body && isBodyGroup(body)) {
 						bodyIsGroup = true;
 						break;
 					}
 				}
+
 				if (!bodyIsGroup) {
 					ui.editorGUI.editData.convertToGraphic = function () {};
 					var label = this.selectedPhysicsBodies.length == 1 ? "convert to graphic" : "convert to graphics";
@@ -2292,10 +2305,10 @@ const _B2dEditor = function () {
 		}
 
 		copyJSON += ']}';
-		if(Settings.admin){
-			console.log("*******************COPY JSON*********************");
-			console.log(copyJSON);
-			console.log("*************************************************");
+		if(Settings.admin || true){
+			console.info("*******************COPY JSON*********************");
+			console.info(copyJSON);
+			console.info("*************************************************");
 		}
 
 		if (copyArray.length !== 0){
@@ -2685,6 +2698,7 @@ const _B2dEditor = function () {
 		this.optimizePhysics = true;
 		this.bulletCollision = false;
 		this.breakable = false;
+		this.groupOpacity = 1.0;
 	}
 	this.textureObject = function () {
 		this.type = self.object_TEXTURE;
@@ -7569,7 +7583,6 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
-		body.mySprite.alpha = obj.transparancy[0];
 		body.mySprite.visible = obj.visible;
 
 		this.updateBodyFixtures(body);
@@ -7589,6 +7602,12 @@ const _B2dEditor = function () {
 
 		body.instaKill = obj.instaKill;
 		body.isVehiclePart = obj.isVehiclePart;
+
+		if(isBodyGroup(body)){
+			body.mySprite.alpha = obj.groupOpacity;
+		}else{
+			body.mySprite.alpha = obj.transparancy[0];
+		}
 
 		return body;
 
@@ -8168,7 +8187,7 @@ const _B2dEditor = function () {
 		groupedBodyObject.colorFill = [];
 		groupedBodyObject.colorLine = [];
 		groupedBodyObject.lineWidth = [];
-		groupedBodyObject.transparancy = [1];
+		groupedBodyObject.transparancy = [];
 		groupedBodyObject.radius = [];
 		groupedBodyObject.density = [];
 		groupedBodyObject.friction = [];
@@ -9220,7 +9239,7 @@ const _B2dEditor = function () {
 			let colorFill = body.mySprite.data.colorFill[i];
 			let colorLine = body.mySprite.data.colorLine[i];
 			let lineWidth = body.mySprite.data.lineWidth[i];
-			let transparancy = 1.0;
+			let transparancy = body.mySprite.data.transparancy[i];
 
 			if (body.mySprite.data.type == this.object_TRIGGER) {
 				//color trigger
@@ -9636,6 +9655,7 @@ const _B2dEditor = function () {
 			arr[24] = obj.optimizePhysics;
 			arr[25] = obj.bulletCollision;
 			arr[26] = obj.breakable;
+			arr[27] = obj.groupOpacity;
 		} else if (obj.type == this.object_TEXTURE) {
 			arr[6] = obj.ID;
 			arr[7] = obj.textureName;
@@ -9792,6 +9812,7 @@ const _B2dEditor = function () {
 			obj.optimizePhysics = arr[24] !== undefined  ? arr[24] : true;
 			obj.bulletCollision = arr[25] !== undefined  ? arr[25] : false;
 			obj.breakable = arr[26] !== undefined  ? arr[26] : false;
+			obj.groupOpacity = arr[27] !== undefined  ? arr[27] : 1.0;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
