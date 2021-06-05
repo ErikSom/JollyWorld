@@ -20,6 +20,18 @@ export const checkBodyBreak = (body, impulse) => {
 	}
 }
 
+export const calculateBodyArea = vertices => {
+	let area = 0
+	for (let i = 0; i < vertices.length; i++) {
+		const addX = vertices[i].x;
+		const addY = vertices[i === vertices.length - 1 ? 0 : i + 1].y;
+		const subX = vertices[i === vertices.length - 1 ? 0 : i + 1].x;
+		const subY = vertices[i].y;
+		area += (addX * addY * 0.5) - (subX * subY * 0.5);
+	}
+	return area;
+}
+
 const breakBody = body => {
 	const fixturesToSplit = [];
 	for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
@@ -29,12 +41,7 @@ const breakBody = body => {
 	const newBodies = [];
 
 	fixturesToSplit.forEach((oldFixture, index) => {
-		const bodyObject = new game.editor.bodyObject;
-		Object.assign(bodyObject, body.mySprite.data);
 
-		bodyObject.fixed = false;
-
-		bodyObject.vertices = [];
 
 		const fixtureVertices = [];
 
@@ -52,26 +59,50 @@ const breakBody = body => {
 				fixtureVertices.push({x:vertex.x, y:vertex.y});
 			}
 		}
-		bodyObject.x = body.GetPosition().x;
-		bodyObject.y = body.GetPosition().y;
-		bodyObject.rotation = body.GetAngle();
 
-		// we need this verticeRef because a single vertice array can generate multiple fixtures
-		const targetIndex = oldFixture.verticeRef;
-		bodyObject.radius = [body.mySprite.data.radius[targetIndex]];
-		bodyObject.colorFill = [body.mySprite.data.colorFill[targetIndex]];
-		bodyObject.colorLine = [body.mySprite.data.colorLine[targetIndex]];
-		bodyObject.lineWidth = [body.mySprite.data.lineWidth[targetIndex]];
-		bodyObject.breakable = false;
-		if(bodyObject.colorFill[0] === undefined) debugger;
+		const minimumBodyBreakSize = 1.0;
+		let fixturesToAdd = [];
+		console.log('BODY AREA!!', calculateBodyArea(fixtureVertices));
 
-		bodyObject.vertices.push(fixtureVertices);
+		// if length not 3, turn circle into fixtures and other shapes as well :)
 
-		const newBody = game.editor.buildBodyFromObj(bodyObject);
-		newBody.SetLinearVelocity(body.GetLinearVelocity());
-		newBody.SetAngularVelocity(body.GetAngularVelocity());
+		if(fixtureVertices.length === 3){
+			if(Math.abs(calculateBodyArea(fixtureVertices)) > minimumBodyBreakSize){
+				fixturesToAdd = subDivideTriangle(fixtureVertices);
+			}
+			// else we ditch this fixture
+		}else{
+			fixturesToAdd.push(fixtureVertices);
+		}
 
-		newBodies.push(newBody);
+		if(fixturesToAdd.length>0){
+			const bodyObject = new game.editor.bodyObject;
+			Object.assign(bodyObject, body.mySprite.data);
+
+			bodyObject.fixed = false;
+			bodyObject.breakable = true;
+
+			bodyObject.vertices = [];
+
+			bodyObject.x = body.GetPosition().x;
+			bodyObject.y = body.GetPosition().y;
+			bodyObject.rotation = body.GetAngle();
+
+			// we need this verticeRef because a single vertice array can generate multiple fixtures
+			const targetIndex = oldFixture.verticeRef;
+			bodyObject.radius = [body.mySprite.data.radius[targetIndex]];
+			bodyObject.colorFill = [body.mySprite.data.colorFill[targetIndex]];
+			bodyObject.colorLine = [body.mySprite.data.colorLine[targetIndex]];
+			bodyObject.lineWidth = [body.mySprite.data.lineWidth[targetIndex]];
+
+			bodyObject.vertices.push(fixturesToAdd);
+
+			const newBody = game.editor.buildBodyFromObj(bodyObject);
+			newBody.SetLinearVelocity(body.GetLinearVelocity());
+			newBody.SetAngularVelocity(body.GetAngularVelocity());
+
+			newBodies.push(newBody);
+		}
 	})
 
 
@@ -194,6 +225,51 @@ const findBestJointFixture = (newBodies, anchor) => {
 	};
 
 	return targetBody;
+}
+
+const vectorDistance = (a, b) => {
+	const xd = a.x-b.x;
+	const yd = a.y-b.y;
+	return Math.sqrt(xd*xd + yd*yd);
+}
+
+const centerVec = (a, b) => {
+	const x = a.x + (b.x-a.x) * 0.5;
+	const y = a.y + (b.y-a.y) * 0.5;
+	return {x, y};
+}
+
+const sortByLargest = vertices => {
+	const l1 = vectorDistance(vertices[0], vertices[1]);
+	const l2 = vectorDistance(vertices[1], vertices[2]);
+	const l3 = vectorDistance(vertices[2], vertices[0]);
+
+	if(l1 > l2 && l1 > l3){
+		return vertices;
+	}else if(l2 > l3){
+		return [vertices[1], vertices[2], vertices[0]];
+	}
+	return [vertices[2], vertices[0], vertices[1]];
+}
+
+const subDivideTriangle = vertices => {
+	const ran = Math.floor(Math.random() * 3);
+
+	switch(ran){
+		case 0:
+		case 1:
+		case 2:
+			vertices = sortByLargest(vertices);
+			const cv = centerVec(vertices[0], vertices[1]);
+
+			const arr = [vertices[0], cv, vertices[1], vertices[2]];
+
+			// if(calculateBodyArea(arr) > 0) arr.reverse();
+
+			return [arr];
+	}
+
+
 }
 
 export const update = ()=>{

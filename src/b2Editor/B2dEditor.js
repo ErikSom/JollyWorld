@@ -695,7 +695,6 @@ const _B2dEditor = function () {
 	}
 
 	this.updateSelection = function () {
-		debugger;
 		//Joints
 		var i;
 
@@ -6958,15 +6957,7 @@ const _B2dEditor = function () {
 		bodyObject.y = centerPoint.y;
 
 		//check winding order
-
-		var area = 0
-		for (var i = 0; i < verts.length; i++) {
-			const addX = verts[i].x;
-			const addY = verts[i === verts.length - 1 ? 0 : i + 1].y;
-			const subX = verts[i === verts.length - 1 ? 0 : i + 1].x;
-			const subY = verts[i].y;
-			area += (addX * addY * 0.5) - (subX * subY * 0.5);
-		}
+		const area = BodyBreakable.calculateBodyArea(verts);
 		if (Math.abs(area) < this.minimumBodySurfaceArea) return false;
 
 		bodyObject.vertices = area < 0 ? verts.reverse() : verts;
