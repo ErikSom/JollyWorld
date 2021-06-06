@@ -1,20 +1,27 @@
-import { b2CloneVec2, b2SubVec2 } from "../../../libs/debugdraw";
+import {
+	b2CloneVec2,
+	b2SubVec2
+} from "../../../libs/debugdraw";
 import {
 	game
 } from "../../Game";
 
-const { getPointer, NULL, destroy} = Box2D; // emscriptem specific
+const {
+	getPointer,
+	NULL,
+	destroy
+} = Box2D; // emscriptem specific
 
 const bodiesToBreak = [];
 
 export const checkBodyBreak = (body, impulse) => {
-	if(!body.mySprite || !body.mySprite.data.breakable || body.goingToBreak) return;
+	if (!body.mySprite || !body.mySprite.data.breakable || body.goingToBreak) return;
 
 	const targetDensity = Array.isArray(body.mySprite.data.density) ? body.mySprite.data.density[0] : body.mySprite.data.density;
 
 	const densityBreakMultiplier = 500;
 
-	if(impulse > targetDensity * densityBreakMultiplier){
+	if (impulse > targetDensity * densityBreakMultiplier) {
 		body.goingToBreak = true;
 		bodiesToBreak.push(body);
 	}
@@ -46,36 +53,58 @@ const breakBody = body => {
 		const fixtureVertices = [];
 
 		const baseShape = oldFixture.GetShape();
-		if(baseShape.GetType() === Box2D.b2Shape.e_circle){
+		if (baseShape.GetType() === Box2D.b2Shape.e_circle) {
 			const shape = Box2D.castObject(baseShape, Box2D.b2CircleShape);
 			const pos = shape.get_m_p();
-			fixtureVertices.push({x:pos.x, y:pos.y});
-			fixtureVertices.push({x:pos.x, y:pos.y});
+			fixtureVertices.push({
+				x: pos.x,
+				y: pos.y
+			});
+			fixtureVertices.push({
+				x: pos.x,
+				y: pos.y
+			});
 
-		}else {
+		} else {
 			const shape = Box2D.castObject(baseShape, Box2D.b2PolygonShape);
 			for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
 				const vertex = shape.get_m_vertices(vertexIx);
-				fixtureVertices.push({x:vertex.x, y:vertex.y});
+				fixtureVertices.push({
+					x: vertex.x,
+					y: vertex.y
+				});
 			}
 		}
 
-		const minimumBodyBreakSize = 1.0;
-		let fixturesToAdd = [];
-		console.log('BODY AREA!!', calculateBodyArea(fixtureVertices));
+		let bodiesToCreate = [fixtureVertices];
 
-		// if length not 3, turn circle into fixtures and other shapes as well :)
+		if (fixturesToSplit.length === 1) {
+			if(fixtureVertices.length > 3){
+				let pointsArr = [];
+				for (let j = 0; j < fixtureVertices.length; j++) {
+					pointsArr.push(fixtureVertices[j].x);
+					pointsArr.push(fixtureVertices[j].y);
+				}
 
-		if(fixtureVertices.length === 3){
-			if(Math.abs(calculateBodyArea(fixtureVertices)) > minimumBodyBreakSize){
-				fixturesToAdd = subDivideTriangle(fixtureVertices);
+				const earcutIndexes = PIXI.utils.earcut(pointsArr, [], 2);
+
+				const earcutPoints = [];
+				for (let j = 0; j < earcutIndexes.length; j++) {
+					earcutPoints.push(fixtureVertices[earcutIndexes[j]]);
+				}
+
+				let earcutTriangles = [];
+				while (earcutPoints.length) {
+					earcutTriangles.push(earcutPoints.splice(0, 3));
+				}
+
+				bodiesToCreate = earcutTriangles;
+			}else if (fixtureVertices.length === 3) {
+				bodiesToCreate = subDivideTriangle(fixtureVertices);
 			}
-			// else we ditch this fixture
-		}else{
-			fixturesToAdd.push(fixtureVertices);
 		}
 
-		if(fixturesToAdd.length>0){
+		bodiesToCreate.forEach(newBodyVertices => {
 			const bodyObject = new game.editor.bodyObject;
 			Object.assign(bodyObject, body.mySprite.data);
 
@@ -95,14 +124,14 @@ const breakBody = body => {
 			bodyObject.colorLine = [body.mySprite.data.colorLine[targetIndex]];
 			bodyObject.lineWidth = [body.mySprite.data.lineWidth[targetIndex]];
 
-			bodyObject.vertices.push(fixturesToAdd);
+			bodyObject.vertices.push(newBodyVertices);
 
 			const newBody = game.editor.buildBodyFromObj(bodyObject);
 			newBody.SetLinearVelocity(body.GetLinearVelocity());
 			newBody.SetAngularVelocity(body.GetAngularVelocity());
 
 			newBodies.push(newBody);
-		}
+		});
 	})
 
 
@@ -112,7 +141,7 @@ const breakBody = body => {
 
 		const otherBody = joint.GetBodyA() === body ? joint.GetBodyB() : joint.GetBodyA();
 
-		if(joint.GetType() == Box2D.e_revoluteJoint){
+		if (joint.GetType() == Box2D.e_revoluteJoint) {
 			const revoluteJointDef = new Box2D.b2RevoluteJointDef();
 
 			const anchor = joint.GetAnchorA();
@@ -132,7 +161,7 @@ const breakBody = body => {
 
 			game.editor.CreateJoint(revoluteJointDef);
 			destroy(revoluteJointDef);
-		} else if(joint.GetType() == Box2D.e_prismaticJoint){
+		} else if (joint.GetType() == Box2D.e_prismaticJoint) {
 
 			let prismaticJointDef = new Box2D.b2PrismaticJointDef();
 
@@ -153,7 +182,7 @@ const breakBody = body => {
 
 			game.editor.CreateJoint(prismaticJointDef);
 			destroy(prismaticJointDef);
-		}else if(joint.GetType() == Box2D.e_distanceJoint){
+		} else if (joint.GetType() == Box2D.e_distanceJoint) {
 			let distanceJointDef = new Box2D.b2DistanceJointDef();
 
 			const anchor = joint.GetAnchorA();
@@ -171,7 +200,7 @@ const breakBody = body => {
 			distanceJointDef.set_damping(joint.GetDamping());
 
 			game.editor.CreateJoint(distanceJointDef);
-		}else if(joint.GetType() == Box2D.e_wheelJoint){
+		} else if (joint.GetType() == Box2D.e_wheelJoint) {
 
 			let wheelJointDef = new Box2D.b2WheelJointDef();
 			const axis = joint.GetLocalAxisA();
@@ -206,11 +235,11 @@ const findBestJointFixture = (newBodies, anchor) => {
 	let minDistance = Number.POSITIVE_INFINITY;
 	let targetBody = null;
 
-	for(let i = 0; i<newBodies.length; i++){
+	for (let i = 0; i < newBodies.length; i++) {
 		const newBody = newBodies[i];
 		const fixture = newBody.GetFixtureList();
 
-		if(fixture.TestPoint(anchor)){
+		if (fixture.TestPoint(anchor)) {
 			return newBody;
 		}
 
@@ -218,7 +247,7 @@ const findBestJointFixture = (newBodies, anchor) => {
 		b2SubVec2(dis, anchor);
 
 		const disLength = dis.Length();
-		if(disLength < minDistance){
+		if (disLength < minDistance) {
 			minDistance = disLength;
 			targetBody = newBody;
 		}
@@ -228,15 +257,19 @@ const findBestJointFixture = (newBodies, anchor) => {
 }
 
 const vectorDistance = (a, b) => {
-	const xd = a.x-b.x;
-	const yd = a.y-b.y;
-	return Math.sqrt(xd*xd + yd*yd);
+	const xd = a.x - b.x;
+	const yd = a.y - b.y;
+	return Math.sqrt(xd * xd + yd * yd);
 }
 
 const centerVec = (a, b) => {
-	const x = a.x + (b.x-a.x) * 0.5;
-	const y = a.y + (b.y-a.y) * 0.5;
-	return {x, y};
+	const ranCenter = Math.random() * 0.5 + 0.25;
+	const x = a.x + (b.x - a.x) * ranCenter;
+	const y = a.y + (b.y - a.y) * ranCenter;
+	return {
+		x,
+		y
+	};
 }
 
 const sortByLargest = vertices => {
@@ -244,9 +277,9 @@ const sortByLargest = vertices => {
 	const l2 = vectorDistance(vertices[1], vertices[2]);
 	const l3 = vectorDistance(vertices[2], vertices[0]);
 
-	if(l1 > l2 && l1 > l3){
+	if (l1 > l2 && l1 > l3) {
 		return vertices;
-	}else if(l2 > l3){
+	} else if (l2 > l3) {
 		return [vertices[1], vertices[2], vertices[0]];
 	}
 	return [vertices[2], vertices[0], vertices[1]];
@@ -255,25 +288,22 @@ const sortByLargest = vertices => {
 const subDivideTriangle = vertices => {
 	const ran = Math.floor(Math.random() * 3);
 
-	switch(ran){
+	switch (ran) {
 		case 0:
 		case 1:
 		case 2:
 			vertices = sortByLargest(vertices);
 			const cv = centerVec(vertices[0], vertices[1]);
 
-			const arr = [vertices[0], cv, vertices[1], vertices[2]];
+			const triangle1 = [vertices[0], cv, vertices[2]];
+			const triangle2 = [vertices[1], cv, vertices[2]];
 
-			// if(calculateBodyArea(arr) > 0) arr.reverse();
-
-			return [arr];
+			return [triangle1, triangle2];
 	}
-
-
 }
 
-export const update = ()=>{
-	bodiesToBreak.forEach( body => breakBody(body));
+export const update = () => {
+	bodiesToBreak.forEach(body => breakBody(body));
 	bodiesToBreak.length = [];
 }
 
