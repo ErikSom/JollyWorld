@@ -5,6 +5,7 @@ import {
 import {
 	game
 } from "../../Game";
+import { Settings } from "../../Settings";
 
 const {
 	getPointer,
@@ -53,8 +54,9 @@ const breakBody = body => {
 		const fixtureVertices = [];
 
 		const baseShape = oldFixture.GetShape();
+		let shape;
 		if (baseShape.GetType() === Box2D.b2Shape.e_circle) {
-			const shape = Box2D.castObject(baseShape, Box2D.b2CircleShape);
+			shape = Box2D.castObject(baseShape, Box2D.b2CircleShape);
 			const pos = shape.get_m_p();
 			fixtureVertices.push({
 				x: pos.x,
@@ -66,7 +68,7 @@ const breakBody = body => {
 			});
 
 		} else {
-			const shape = Box2D.castObject(baseShape, Box2D.b2PolygonShape);
+			shape = Box2D.castObject(baseShape, Box2D.b2PolygonShape);
 			for (let vertexIx = 0; vertexIx < shape.get_m_count(); vertexIx++) {
 				const vertex = shape.get_m_vertices(vertexIx);
 				fixtureVertices.push({
@@ -77,6 +79,8 @@ const breakBody = body => {
 		}
 
 		let bodiesToCreate = [fixtureVertices];
+
+		let destroyCircle = false;
 
 		if (fixturesToSplit.length === 1) {
 			if(fixtureVertices.length > 3){
@@ -101,36 +105,102 @@ const breakBody = body => {
 				bodiesToCreate = earcutTriangles;
 			}else if (fixtureVertices.length === 3) {
 				bodiesToCreate = subDivideTriangle(fixtureVertices);
+			}else if (baseShape.GetType() === Box2D.b2Shape.e_circle) {
+				destroyCircle = true;
+				// we are dealing with a mofo circle
+				bodiesToCreate = [];
+
+				const pixelsBetweenVertices = 10 / Settings.PTM;
+				const circumference = shape.get_m_radius() * 2 * Math.PI;
+				const verticesToPlace = Math.min(12, Math.max(4, circumference / pixelsBetweenVertices));
+
+				const startPos = shape.get_m_p();
+				const circleVertices = [];
+				const angleSlice = Settings.pidouble / verticesToPlace;
+				for(let i = 0; i<verticesToPlace; i++){
+					const a = i * angleSlice;
+					const x = startPos.x + shape.get_m_radius() * Math.cos(a);
+					const y = startPos.y + shape.get_m_radius() * Math.sin(a);
+					circleVertices.push({x, y})
+				}
+				const qR = shape.get_m_radius()/4;
+				const hR = shape.get_m_radius()/2;
+				const centerPoint = {x:startPos.x + Math.random()*hR - qR, y:startPos.y + Math.random()*hR - qR};
+				let count = 0;
+				let lastVertice = null;
+				while(count < circleVertices.length){
+
+					const itemsLeft = circleVertices.length-count;
+
+					let ran = Math.max(2, Math.floor(Math.random()*(itemsLeft / 2)));
+					if(itemsLeft<=3) ran = Math.min(3, itemsLeft);
+
+					const arr = [];
+
+					if(lastVertice){
+						arr.push({x:lastVertice.x, y:lastVertice.y});
+					}
+
+					for(let i = 0; i<ran; i++){
+						arr.push({x:circleVertices[count+i].x, y:circleVertices[count+i].y})
+						lastVertice = circleVertices[count+i];
+					}
+
+					if(count + ran === circleVertices.length){
+						arr.push({x:circleVertices[0].x, y:circleVertices[0].y})
+					}
+
+					arr.push({x:centerPoint.x, y:centerPoint.y});
+					bodiesToCreate.push([arr]);
+
+					count += ran;
+				}
+				bodiesToCreate = bodiesToCreate;
 			}
 		}
 
 		bodiesToCreate.forEach(newBodyVertices => {
-			const bodyObject = new game.editor.bodyObject;
-			Object.assign(bodyObject, body.mySprite.data);
+			let area = 0;
 
-			bodyObject.fixed = false;
-			bodyObject.breakable = true;
+			if(Array.isArray(newBodyVertices[0])){
+				area = calculateBodyArea(newBodyVertices[0]);
+			}else{
+				area = calculateBodyArea(newBodyVertices);
+			}
 
-			bodyObject.vertices = [];
+			if(Math.abs(area) >  1){
+				const bodyObject = new game.editor.bodyObject;
+				Object.assign(bodyObject, body.mySprite.data);
 
-			bodyObject.x = body.GetPosition().x;
-			bodyObject.y = body.GetPosition().y;
-			bodyObject.rotation = body.GetAngle();
+				bodyObject.fixed = false;
+				bodyObject.breakable = true;
 
-			// we need this verticeRef because a single vertice array can generate multiple fixtures
-			const targetIndex = oldFixture.verticeRef;
-			bodyObject.radius = [body.mySprite.data.radius[targetIndex]];
-			bodyObject.colorFill = [body.mySprite.data.colorFill[targetIndex]];
-			bodyObject.colorLine = [body.mySprite.data.colorLine[targetIndex]];
-			bodyObject.lineWidth = [body.mySprite.data.lineWidth[targetIndex]];
+				bodyObject.vertices = [];
 
-			bodyObject.vertices.push(newBodyVertices);
+				bodyObject.x = body.GetPosition().x;
+				bodyObject.y = body.GetPosition().y;
+				bodyObject.rotation = body.GetAngle();
 
-			const newBody = game.editor.buildBodyFromObj(bodyObject);
-			newBody.SetLinearVelocity(body.GetLinearVelocity());
-			newBody.SetAngularVelocity(body.GetAngularVelocity());
+				// we need this verticeRef because a single vertice array can generate multiple fixtures
+				const targetIndex = oldFixture.verticeRef;
 
-			newBodies.push(newBody);
+				if(!destroyCircle){
+					bodyObject.radius = [body.mySprite.data.radius[targetIndex]];
+				}else{
+					bodyObject.radius = [0];
+				}
+				bodyObject.colorFill = [body.mySprite.data.colorFill[targetIndex]];
+				bodyObject.colorLine = [body.mySprite.data.colorLine[targetIndex]];
+				bodyObject.lineWidth = [body.mySprite.data.lineWidth[targetIndex]];
+
+				bodyObject.vertices.push(newBodyVertices);
+
+				const newBody = game.editor.buildBodyFromObj(bodyObject);
+				newBody.SetLinearVelocity(body.GetLinearVelocity());
+				newBody.SetAngularVelocity(body.GetAngularVelocity());
+
+				newBodies.push(newBody);
+			}
 		});
 	})
 
