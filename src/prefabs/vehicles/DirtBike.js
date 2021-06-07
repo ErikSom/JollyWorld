@@ -230,7 +230,7 @@ class DirtBike extends BaseVehicle {
             }
 
 
-            const destructionForce = 1000;
+            const destructionForce = 1300;
 
             if(force>destructionForce){
                 self.destroyTires.push(wheel);

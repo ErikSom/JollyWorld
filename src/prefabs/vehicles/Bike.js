@@ -201,7 +201,7 @@ class Bike extends BaseVehicle {
                 }
             }
 
-            const destructionForce = 600;
+            const destructionForce = 900;
 
             if(force>destructionForce){
                 self.destroyTires.push(wheel);
