@@ -1098,12 +1098,13 @@ function UIManager() {
         }
     }
     this.hideLevelBanner = ()=>{
+        if(levelBanner){
+            const thumb = levelBanner.querySelector('.thumb');
+            thumb.style.backgroundImage = 'none';
 
-        const thumb = levelBanner.querySelector('.thumb');
-        thumb.style.backgroundImage = 'none';
-
-        levelBanner.style.display = 'none';
-        mainMenu.classList.remove('inactive');
+            levelBanner.style.display = 'none';
+            mainMenu.classList.remove('inactive');
+        }
     }
 
     this.showLoginPrompt = ()=> {
@@ -1208,6 +1209,10 @@ function UIManager() {
             const userData = SaveManager.getLocalUserdata();
             userData.tutorialFinished = true;
             game.tutorialMode = false;
+            if(game.showLevelAfterTutorial){
+                this.showLevelBanner(game.showLevelAfterTutorial);
+                delete game.showLevelAfterTutorial;
+            }
             SaveManager.updateLocalUserData(userData);
         }
         skipTutorial = null;
@@ -1521,7 +1526,6 @@ function UIManager() {
             backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
             setTimeout(()=>{
                 game.preloader.classList.add('hide');
-                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
             }, Settings.levelBuildDelayTime);
         }, Settings.levelBuildDelayTime);
     }

@@ -2,19 +2,6 @@ import * as SaveManager from "./SaveManager";
 import { isMobile } from "./MobileController";
 
 export const TUTORIALS = {
-	WELCOME:{
-		type: 0,
-		text: 'Hi, welcome to JollyWorld! Press <b>ARROW</b> keys to drive me around.',
-		mobileText: 'Hi, welcome to JollyWorld! Touch the Arrows to drive me around.',
-		closeTime: 5000,
-		extraTutorials:['DIRECTION'],
-	},
-	DIRECTION:{
-		type: 1,
-		text: 'Press <b>SPACE</b> to change my direction',
-		mobileText: 'Touch the rotating arrow to change my direction',
-		closeTime: 4000,
-	},
 	ROPEHELMET:{
 		type: 2,
 		text: 'You found a rope helmet, press <b>E</b> to shoot the rope, swing and move up and down using the <b>ARROW</b> keys',

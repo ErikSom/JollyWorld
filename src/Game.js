@@ -114,6 +114,7 @@ function Game() {
 
     this.preloader = document.getElementById('preloader');
     this.tutorialMode = false;
+    this.showLevelAfterTutorial = null;
 
     // path pixi for camera support
     // PathRenderTarget();
@@ -323,6 +324,7 @@ function Game() {
         if(uidHash && uidHash.length===21){
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
                 ui.showLevelBanner(levelData);
+                this.showLevelAfterTutorial = levelData;
             }).catch(_err =>{
                 history.replaceState({}, document.title, '')
             });
@@ -437,6 +439,7 @@ function Game() {
         }else{
             this.preloader.classList.add('hide');
             this.preloader.querySelector('.cycling').classList.add('fall');
+            delete this.showLevelAfterTutorial;
         }
     }
 
@@ -447,6 +450,7 @@ function Game() {
             ui.showSkipTutorialButton();
             ui.playLevelFromMainMenu();
             this.preloader.querySelector('.cycling').classList.add('fall');
+            ui.hideLevelBanner();
         }).catch(error => {
             // skip tutorial
             this.preloader.classList.add('hide');
@@ -757,7 +761,6 @@ function Game() {
         this.levelStartTime = performance.now();
         this.gameFrame = 0;
         MobileController.show();
-        TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
         if(firstEntry){
             MidiPlayer.reset();
         }
@@ -837,7 +840,6 @@ function Game() {
                 ui.hideGameOverMenu();
 
                 game.preloader.classList.add('hide');
-                TutorialManager.showTutorial(TutorialManager.TUTORIALS.WELCOME);
 
                 if(doCheckpoint && checkPointData){
                     this.levelStartTime = performance.now() - checkPointData.time;
