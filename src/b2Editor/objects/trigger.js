@@ -162,7 +162,7 @@ export const doAction = function (actionData, target) {
                     //actionData.impulseForce these are legacy properties, still some levels have them.
                     //actionData.rotationForce
 
-                    const impulseReducer = 10;
+                    const impulseReducer = 20;
 
                     if(actionData.linearForce === undefined){ // legacy fix
                         actionData.linearForce = actionData.impulseForce / (body.GetMass() * impulseReducer);
@@ -173,10 +173,10 @@ export const doAction = function (actionData, target) {
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
 
                     if(actionData.rotationalForce === undefined){  // legacy fix
-                        actionData.rotationalForce = actionData.rotationForce / body.GetMass();
+                        actionData.rotationalForce = actionData.rotationForce / body.GetMass() / impulseReducer;
                     }
 
-                    const rotationForce = actionData.rotationalForce * body.GetMass();
+                    const rotationForce = actionData.rotationalForce * body.GetMass() * impulseReducer;
                     body.ApplyTorque(rotationForce, true)
                     Box2D.destroy(impulse);
                 });
@@ -461,10 +461,10 @@ export const actionDictionary = {
     //*** IMPULSE ***/
     actionObject_Impulse: {
         type: "Impulse",
-        impulse: 0,
+        linearForce: 0,
         relative: false,
         direction: 270,
-        rotation: 0,
+        rotationalForce: 0,
     },
     actionOptions_Impulse: {
         linearForce: {
