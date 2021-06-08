@@ -164,19 +164,19 @@ export const doAction = function (actionData, target) {
 
                     const impulseReducer = 10;
 
-                    if(actionData.impulse === undefined){ // legacy fix
-                        actionData.impulse = actionData.impulseForce / (body.GetMass() * impulseReducer);
+                    if(actionData.linearForce === undefined){ // legacy fix
+                        actionData.linearForce = actionData.impulseForce / (body.GetMass() * impulseReducer);
                     }
 
-                    const force = actionData.impulse * body.GetMass() / impulseReducer;
+                    const force = actionData.linearForce * body.GetMass() / impulseReducer;
                     const impulse = new Box2D.b2Vec2(force * Math.cos(a), force * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
 
-                    if(actionData.rotation === undefined){  // legacy fix
-                        actionData.rotation = actionData.rotationForce / body.GetMass();
+                    if(actionData.rotationalForce === undefined){  // legacy fix
+                        actionData.rotationalForce = actionData.rotationForce / body.GetMass();
                     }
 
-                    const rotationForce = actionData.rotation * body.GetMass();
+                    const rotationForce = actionData.rotationalForce * body.GetMass();
                     body.ApplyTorque(rotationForce, true)
                     Box2D.destroy(impulse);
                 });
@@ -467,7 +467,7 @@ export const actionDictionary = {
         rotation: 0,
     },
     actionOptions_Impulse: {
-        impulse: {
+        linearForce: {
             type: guitype_MINMAX,
             min: 0,
             max: 1000,
@@ -484,7 +484,7 @@ export const actionDictionary = {
             value: 270,
             step: 0.1,
         },
-        rotation: {
+        rotationalForce: {
             type: guitype_MINMAX,
             min: -1000,
             max: 1000,
@@ -1478,8 +1478,8 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 }
 
 const labels = {
-    impulse: 'linear',
-    rotation: 'angular',
+    linearForce: 'linear',
+    rotationalForce: 'angular',
 }
 
 const addActionGUIToFolder = (action, actionString, actionFolder, targetID, actionID) =>{
