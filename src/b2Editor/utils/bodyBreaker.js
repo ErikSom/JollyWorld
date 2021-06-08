@@ -22,6 +22,20 @@ export const checkBodyBreak = (body, impulse) => {
 
 	const densityBreakMultiplier = 500;
 
+	if(body.breakPenalty) impulse *= body.breakPenalty;
+	if(body.mySprite.width * body.mySprite.height < 10000){
+		impulse *= 1.5;
+	}
+	if(body.mySprite.width * body.mySprite.height < 6000){
+		impulse *= 1.5;
+	}
+	if(body.mySprite.width * body.mySprite.height < 3000){
+		impulse *= 1.5;
+	}
+	if(body.mySprite.width * body.mySprite.height < 1000){
+		impulse *= 1.5;
+	}
+
 	if (impulse > targetDensity * densityBreakMultiplier) {
 		body.goingToBreak = true;
 		bodiesToBreak.push(body);
@@ -198,6 +212,12 @@ const breakBody = body => {
 				const newBody = game.editor.buildBodyFromObj(bodyObject);
 				newBody.SetLinearVelocity(body.GetLinearVelocity());
 				newBody.SetAngularVelocity(body.GetAngularVelocity());
+
+				if(body.breakPenalty === undefined){
+					newBody.breakPenalty = 2;
+				}else{
+					newBody.breakPenalty = body.breakPenalty + 1;
+				}
 
 				newBodies.push(newBody);
 			}
