@@ -158,9 +158,26 @@ export const doAction = function (actionData, target) {
                     if(actionData.relative){
                         a += body.GetAngle();
                     }
-                    const impulse = new Box2D.b2Vec2(actionData.impulseForce * Math.cos(a), actionData.impulseForce * Math.sin(a))
+
+                    //actionData.impulseForce these are legacy properties, still some levels have them.
+                    //actionData.rotationForce
+
+                    const impulseReducer = 10;
+
+                    if(actionData.impulse === undefined){ // legacy fix
+                        actionData.impulse = actionData.impulseForce / (body.GetMass() * impulseReducer);
+                    }
+
+                    const force = actionData.impulse * body.GetMass() / impulseReducer;
+                    const impulse = new Box2D.b2Vec2(force * Math.cos(a), force * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
-                    body.ApplyTorque(actionData.rotationForce, true)
+
+                    if(actionData.rotation === undefined){  // legacy fix
+                        actionData.rotation = actionData.rotationForce / body.GetMass();
+                    }
+
+                    const rotationForce = actionData.rotation * body.GetMass();
+                    body.ApplyTorque(rotationForce, true)
                     Box2D.destroy(impulse);
                 });
             break;
@@ -444,16 +461,16 @@ export const actionDictionary = {
     //*** IMPULSE ***/
     actionObject_Impulse: {
         type: "Impulse",
-        impulseForce: 0,
+        impulse: 0,
         relative: false,
         direction: 270,
-        rotationForce: 0,
+        rotation: 0,
     },
     actionOptions_Impulse: {
-        impulseForce: {
+        impulse: {
             type: guitype_MINMAX,
             min: 0,
-            max: 100000,
+            max: 1000,
             value: 0,
             step: 1,
         },
@@ -467,6 +484,22 @@ export const actionDictionary = {
             value: 270,
             step: 0.1,
         },
+        rotation: {
+            type: guitype_MINMAX,
+            min: -1000,
+            max: 1000,
+            value: 0,
+            step: 1
+        },
+
+        impulseForce: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 100000,
+            value: 0,
+            step: 1,
+        },
+
         rotationForce: {
             type: guitype_MINMAX,
             min: -10000,
@@ -1445,8 +1478,8 @@ export const addTriggerGUI = function (dataJoint, _folder) {
 }
 
 const labels = {
-    impulseForce: 'linear',
-    rotationForce: 'angular',
+    impulse: 'linear',
+    rotation: 'angular',
 }
 
 const addActionGUIToFolder = (action, actionString, actionFolder, targetID, actionID) =>{
