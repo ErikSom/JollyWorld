@@ -6094,6 +6094,7 @@ const _B2dEditor = function () {
 									else sprite.alpha = sprite.data.transparancy || 1;
 
 									if (sprite.myBody && sprite.myBody.myTexture) {
+										sprite.myBody.myTexture.data.lockselection = controller.targetValue;
 										if (sprite.data.lockselection) sprite.myBody.myTexture.alpha /= 2;
 										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.transparancy || 1;
 									}
@@ -6850,6 +6851,7 @@ const _B2dEditor = function () {
 		this.selectingTriggerTarget = false;
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound, skipLayer=Number.POSITIVE_INFINITY) {
+		debugger;
 		let i;
 		let body;
 		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
