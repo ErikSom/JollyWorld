@@ -2316,7 +2316,7 @@ const _B2dEditor = function () {
 		}
 
 		copyJSON += ']}';
-		if(Settings.admin || true){
+		if(Settings.admin){
 			console.info("*******************COPY JSON*********************");
 			console.info(copyJSON);
 			console.info("*************************************************");

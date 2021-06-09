@@ -15,8 +15,10 @@ import { editorSettings } from "../utils/editorSettings";
 import * as drawing from '../utils/drawing'
 import * as AudioManager from '../../utils/AudioManager'
 import { applyColorMatrix } from "../utils/colorMatrixParser";
+import * as EffectsComposer from '../../utils/EffectsComposer';
 import { MidiPlayer } from '../../utils/MidiPlayer';
 import { b2AddVec2, b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from "../../../libs/debugdraw";
+import { isBodyGroup, setBodyGroupOpacity } from "../utils/groupEditing";
 
 const { getPointer, NULL } = Box2D;
 
@@ -127,12 +129,12 @@ export const getActionsForObject = function (object) {
         }
     }
     if (object.data.type != B2dEditor.object_JOINT) {
-        actions.push("SetPosition", "SetRotation", "SetVisibility")
+        actions.push("SetPosition", "SetRotation", "SetVisibility", "SetOpacity")
     }
     actions.push("Destroy");
     return actions;
 }
-const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", ACTION_GAME_WIN, ACTION_GAME_LOSE, "SetGameSpeed", "SetCameraColorMatrix", "PlaySFX", "MidiControls", "PlayMidiInstrument"];
+const getWorldActions = ()=> ["SetGravity", "SetCameraZoom", "ResetCameraTarget", ACTION_GAME_WIN, ACTION_GAME_LOSE, "SetGameSpeed", "SetCameraColorMatrix", "PlaySFX", "MidiControls", "PlayMidiInstrument", "SetScreenShake"];
 
 export const getAction = function (action) {
     return JSON.parse(JSON.stringify(actionDictionary[`actionObject_${action}`]));
@@ -446,6 +448,47 @@ export const doAction = function (actionData, target) {
         break
         case "SetDuration":
             prefab.class.setDuration(actionData.duration * 1000);
+        break;
+        case "SetScreenShake":
+            if(game.cameraFocusObject){
+                const pixiPoint = game.editor.getPIXIPointFromWorldPoint(game.cameraFocusObject);
+                EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:actionData.amplitude, point:pixiPoint});
+            }
+        break;
+        case "SetOpacity":
+            let targetOpacity;
+
+            if (actionData.setAdd == "fixed") targetOpacity = actionData.opacity;
+            else{
+                if (target.myBody) {
+                    if(isBodyGroup(target.myBody)){
+                        targetOpacity = target.data.groupOpacity;
+                    }else{
+                        targetOpacity = target.alpha
+                    }
+                } else {
+                    targetOpacity = target.alpha
+                }
+
+                if(actionData.setAdd === "add"){
+                    targetOpacity += actionData.opacity;
+                }else{
+                    targetOpacity -= actionData.opacity;
+                }
+            }
+
+            targetOpacity = Math.max(0, Math.min(1.0, targetOpacity));
+
+            if (target.myBody) {
+                if(isBodyGroup(target.myBody)){
+                    target.data.groupOpacity = targetOpacity;
+                    setBodyGroupOpacity(target.myBody, target.data.groupOpacity);
+                }else{
+                    target.alpha = targetOpacity
+                }
+            } else {
+                target.alpha = targetOpacity;
+            }
         break;
     }
 }
@@ -1170,6 +1213,38 @@ export const actionDictionary = {
             value: 1.0,
             step: 0.1,
         }
+    },
+    /*******************/
+    actionObject_SetScreenShake: {
+        type: 'SetScreenShake',
+        amplitude: 10,
+    },
+    actionOptions_SetScreenShake: {
+        amplitude: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 100,
+            value: 10,
+            step: 1,
+        }
+    },
+    /*******************/
+    actionObject_SetOpacity: {
+        type: 'SetOpacity',
+        setAdd: 'fixed',
+        opacity: 0,
+    },
+    actionOptions_SetOpacity: {
+        setAdd: {
+            type: guitype_LIST,
+            items: ['fixed', 'add', 'subtract'],
+        },
+        opacity: {
+            type: guitype_MINMAX,
+            min: 0,
+            max: 1,
+            step: 0.01,
+        },
     },
     /*******************/
 }
