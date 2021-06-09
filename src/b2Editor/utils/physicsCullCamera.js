@@ -98,7 +98,6 @@ export const endContact = contact => {
 
 	if(otherBody.mySprite && game.editor.physicsCamera && !game.editor.physicsCamera.reFixture){
 		if(otherBody.mySprite.data.awake && otherBody.IsAwake() && otherBody.GetType() !== Box2D.b2_staticBody && !otherBody.ignorePhysicsCuller){
-			otherBody.SetAwake(false);
 			delete otherBody.InCameraView;
 
 			const connectedBodies = [otherBody];
@@ -131,8 +130,18 @@ export const endContact = contact => {
 
 			crawlJoints(otherBody);
 
+			let canFreeze = true;
+
 			connectedBodies.forEach(body => {
-				if(!body.ignorePhysicsCuller) body.SetAwake(false);
+				if(body.InCameraView) canFreeze = false;
+			});
+
+			if(canFreeze){
+				otherBody.SetAwake(false);
+			}
+
+			connectedBodies.forEach(body => {
+				if(!body.ignorePhysicsCuller && canFreeze) body.SetAwake(false);
 				delete body.jointCrawled;
 			});
 			crawledJoints.forEach(joint => {
