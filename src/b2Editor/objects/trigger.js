@@ -19,6 +19,7 @@ import * as EffectsComposer from '../../utils/EffectsComposer';
 import { MidiPlayer } from '../../utils/MidiPlayer';
 import { b2AddVec2, b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from "../../../libs/debugdraw";
 import { isBodyGroup, setBodyGroupOpacity } from "../utils/groupEditing";
+import { disableCulling } from "../../utils/PIXICuller";
 
 const { getPointer, NULL } = Box2D;
 
@@ -235,12 +236,24 @@ export const doAction = function (actionData, target) {
         case "SetVisibility":
             if (target.myBody) {
                 if(target.myBody.myTexture){
+
+                    if(!actionData.setVisible){
+                        disableCulling(target.myBody.myTexture);
+                    }
+
                     target.myBody.myTexture.renderable = actionData.setVisible;
                     target.myBody.myTexture.forceRenderable = actionData.setVisible;
                 }
-                target.visible = actionData.setVisible;
+                if(!actionData.setVisible){
+                    disableCulling(target);
+                }
+                target.renderable = actionData.setVisible;
                 game.editor.updateBodyPosition(target.myBody);
             }else{
+                if(!actionData.setVisible){
+                    disableCulling(target);
+                }
+
                 target.renderable = actionData.setVisible;
                 target.forceRenderable = actionData.setVisible;
             }

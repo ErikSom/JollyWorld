@@ -5927,7 +5927,7 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.visible = controller.targetValue;
 							body.mySprite.renderable = controller.targetValue;
-							if(body.myTexture) body.myTexture.visible = controller.targetValue;
+							if(body.myTexture) body.myTexture.renderable = controller.targetValue;
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
