@@ -5925,13 +5925,24 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
+							if(!controller.targetValue){
+								disableCulling(body.mySprite);
+							}
 							body.mySprite.data.visible = controller.targetValue;
 							body.mySprite.renderable = controller.targetValue;
-							if(body.myTexture) body.myTexture.renderable = controller.targetValue;
+							if(body.myTexture){
+								if(!controller.targetValue){
+									disableCulling(body.myTexture);
+								}
+								body.myTexture.renderable = controller.targetValue;
+							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.visible = controller.targetValue;
+							if(!controller.targetValue){
+								disableCulling(sprite);
+							}
 							sprite.renderable = controller.targetValue;
 							sprite.forceRenderable = controller.targetValue;
 						}
@@ -7623,7 +7634,6 @@ const _B2dEditor = function () {
 		body.mySprite.renderable = obj.visible;
 
 
-
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
 		this.setBodyCollision(body, obj.collision);
@@ -9011,6 +9021,9 @@ const _B2dEditor = function () {
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
 		//body.mySprite.renderable = false;
+		if(!body.mySprite.data.visible){
+			disableCulling(body.myTexture);
+		}
 		body.myTexture.renderable = body.mySprite.data.visible;
 		body.myTexture.forceRenderable  = body.mySprite.data.visible;
 		texture.myBody = body;
