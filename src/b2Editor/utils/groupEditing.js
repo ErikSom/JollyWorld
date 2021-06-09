@@ -111,7 +111,7 @@ export const stopEditingGroup = () => {
 			editor.selectedPhysicsBodies.push(sprite.myBody)
 		}else{
 			// dont push textures that are grouped inside a group -_-
-			if(!sprite.myBody) editor.selectedTextures.push(sprite);
+			if(!sprite.myBody && sprite.data.type !== editor.object_ANIMATIONGROUP) editor.selectedTextures.push(sprite);
 		}
 	}
 

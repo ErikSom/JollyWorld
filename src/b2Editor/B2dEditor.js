@@ -5926,7 +5926,7 @@ const _B2dEditor = function () {
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.visible = controller.targetValue;
-							body.mySprite.visible = controller.targetValue;
+							body.mySprite.renderable = controller.targetValue;
 							if(body.myTexture) body.myTexture.visible = controller.targetValue;
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
@@ -6851,7 +6851,6 @@ const _B2dEditor = function () {
 		this.selectingTriggerTarget = false;
 	}
 	this.retrieveHighestSelectedObject = function (lowerBound, upperBound, skipLayer=Number.POSITIVE_INFINITY) {
-		debugger;
 		let i;
 		let body;
 		const selectedPhysicsBodies = this.queryWorldForBodies(lowerBound, upperBound);
@@ -7527,8 +7526,13 @@ const _B2dEditor = function () {
 		container.data = obj;
 
 		container.alpha = obj.transparancy;
-		container.renderable = obj.visible;
 		container.forceRenderable = obj.visible;
+
+		if(!obj.visible){
+			disableCulling(container);
+		}
+		container.renderable = obj.visible;
+
 
 		if (container.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
@@ -7602,7 +7606,6 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
-		body.mySprite.visible = obj.visible;
 
 		this.updateBodyFixtures(body);
 		this.updateBodyShapes(body);
@@ -7612,6 +7615,14 @@ const _B2dEditor = function () {
 		body.mySprite.rotation = body.GetAngle();
 
 		if(!obj.fixed) disableCulling(body.mySprite);
+
+		if(!obj.visible){
+			disableCulling(body.mySprite);
+		}
+
+		body.mySprite.renderable = obj.visible;
+
+
 
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
@@ -7637,8 +7648,12 @@ const _B2dEditor = function () {
 		container.x = obj.x;
 		container.y = obj.y;
 		container.rotation = obj.rotation;
+
+		if(!obj.visible){
+			disableCulling(container);
+		}
+
 		container.renderable = obj.visible;
-		container.forceRenderable = obj.visible;
 
 		var originalGraphic = new PIXI.Graphics();
 		container.addChild(originalGraphic);
@@ -7676,8 +7691,13 @@ const _B2dEditor = function () {
 		this.textures.addChild(graphic);
 
 		graphic.alpha = obj.transparancy;
-		graphic.renderable = obj.visible;
 		graphic.forceRenderable = obj.visible;
+
+		if(!obj.visible){
+			disableCulling(graphic);
+		}
+
+		graphic.renderable = obj.visible;
 
 		if (graphic.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
@@ -7704,9 +7724,14 @@ const _B2dEditor = function () {
 		this.textures.addChild(graphic);
 
 		graphic.alpha = obj.transparancy;
-		graphic.renderable = obj.visible;
 		graphic.forceRenderable = obj.visible;
 		graphic.scale.x = obj.mirrored ? -1 : 1;
+
+		if(!obj.visible){
+			disableCulling(graphic);
+		}
+
+		graphic.renderable = obj.visible;
 
 		if (graphic.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
