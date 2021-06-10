@@ -5925,13 +5925,24 @@ const _B2dEditor = function () {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
+							if(!controller.targetValue){
+								disableCulling(body.mySprite);
+							}
 							body.mySprite.data.visible = controller.targetValue;
-							body.mySprite.visible = controller.targetValue;
-							if(body.myTexture) body.myTexture.visible = controller.targetValue;
+							body.mySprite.renderable = controller.targetValue;
+							if(body.myTexture){
+								if(!controller.targetValue){
+									disableCulling(body.myTexture);
+								}
+								body.myTexture.renderable = controller.targetValue;
+							}
 						}
 						for (j = 0; j < this.selectedTextures.length; j++) {
 							sprite = this.selectedTextures[j];
 							sprite.data.visible = controller.targetValue;
+							if(!controller.targetValue){
+								disableCulling(sprite);
+							}
 							sprite.renderable = controller.targetValue;
 							sprite.forceRenderable = controller.targetValue;
 						}
@@ -6094,6 +6105,7 @@ const _B2dEditor = function () {
 									else sprite.alpha = sprite.data.transparancy || 1;
 
 									if (sprite.myBody && sprite.myBody.myTexture) {
+										sprite.myBody.myTexture.data.lockselection = controller.targetValue;
 										if (sprite.data.lockselection) sprite.myBody.myTexture.alpha /= 2;
 										else sprite.myBody.myTexture.alpha = sprite.myBody.myTexture.data.transparancy || 1;
 									}
@@ -7525,8 +7537,13 @@ const _B2dEditor = function () {
 		container.data = obj;
 
 		container.alpha = obj.transparancy;
-		container.renderable = obj.visible;
 		container.forceRenderable = obj.visible;
+
+		if(!obj.visible){
+			disableCulling(container);
+		}
+		container.renderable = obj.visible;
+
 
 		if (container.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(container.data.bodyID).myBody;
@@ -7600,7 +7617,6 @@ const _B2dEditor = function () {
 		body.mySprite.myBody = body;
 		body.mySprite.data = obj;
 
-		body.mySprite.visible = obj.visible;
 
 		this.updateBodyFixtures(body);
 		this.updateBodyShapes(body);
@@ -7610,6 +7626,12 @@ const _B2dEditor = function () {
 		body.mySprite.rotation = body.GetAngle();
 
 		if(!obj.fixed) disableCulling(body.mySprite);
+
+		if(!obj.visible && obj.visible !== undefined){
+			disableCulling(body.mySprite);
+		}
+
+		body.mySprite.renderable = obj.visible !== undefined ? obj.visible : true;
 
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
@@ -7635,8 +7657,12 @@ const _B2dEditor = function () {
 		container.x = obj.x;
 		container.y = obj.y;
 		container.rotation = obj.rotation;
+
+		if(!obj.visible){
+			disableCulling(container);
+		}
+
 		container.renderable = obj.visible;
-		container.forceRenderable = obj.visible;
 
 		var originalGraphic = new PIXI.Graphics();
 		container.addChild(originalGraphic);
@@ -7674,8 +7700,13 @@ const _B2dEditor = function () {
 		this.textures.addChild(graphic);
 
 		graphic.alpha = obj.transparancy;
-		graphic.renderable = obj.visible;
 		graphic.forceRenderable = obj.visible;
+
+		if(!obj.visible){
+			disableCulling(graphic);
+		}
+
+		graphic.renderable = obj.visible;
 
 		if (graphic.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
@@ -7702,9 +7733,14 @@ const _B2dEditor = function () {
 		this.textures.addChild(graphic);
 
 		graphic.alpha = obj.transparancy;
-		graphic.renderable = obj.visible;
 		graphic.forceRenderable = obj.visible;
 		graphic.scale.x = obj.mirrored ? -1 : 1;
+
+		if(!obj.visible){
+			disableCulling(graphic);
+		}
+
+		graphic.renderable = obj.visible;
 
 		if (graphic.data.bodyID != undefined) {
 			var body = this.textures.getChildAt(graphic.data.bodyID).myBody;
@@ -8984,6 +9020,9 @@ const _B2dEditor = function () {
 		texture.data.texturePositionOffsetAngle = positionOffsetAngle;
 		texture.data.textureAngleOffset = offsetRotation;
 		//body.mySprite.renderable = false;
+		if(!body.mySprite.data.visible){
+			disableCulling(body.myTexture);
+		}
 		body.myTexture.renderable = body.mySprite.data.visible;
 		body.myTexture.forceRenderable  = body.mySprite.data.visible;
 		texture.myBody = body;
