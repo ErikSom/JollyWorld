@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Jolly World - Modder</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+	<style>
+		html, body{
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: #e7b98a;
+			overflow: hidden;
+		}
+		#dropzone{
+			background: rgb(211 161 109);
+			border: 7px dotted #e7b98a;
+			position: relative;
+			width: 400px;
+			height: 200px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: auto;
+		}
+		#label{
+			color: #fff;
+			font-family: "Lily Script One",cursive;
+			text-shadow: 2.2px 2px #000;
+			text-align: center;
+			line-height: 38px;
+			font-size: 41px;
+			text-rendering: geometricPrecision;
+		}
+		#files{
+			opacity: 0;
+			width:100%;
+			height:100%;
+			position: absolute;
+		}
+		h1, h2{
+			color: #fff;
+			font-family: "Lily Script One",cursive;
+			text-shadow: 2.2px 2px #000;
+			text-align: center;
+			text-rendering: geometricPrecision;
+		}
+		h1{
+			font-size: 56px;
+		}
+		h2{
+			font-size: 36px;
+		}
+		@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
+	</style>
+</head>
+<body>
+	<h1>Jolly Modder</h1>
+	<div id="dropzone">
+		<input type="file" id="files" name="drop"/>
+		<h2 id="label">Drop mod here</h2>
+	</div>
+	<script>
+		function handleFileSelect(evt) {
+			evt.stopPropagation();
+		    evt.preventDefault();
+
+			var files = evt.dataTransfer ? evt.dataTransfer.files : evt.target.files; 
+
+			var output = [];
+			for (var i = 0, f; f = files[i]; i++) {
+				console.log('FILE:', f)
+			}
+		}
+		var dropZone = document.getElementById('files');
+		dropZone.addEventListener('change', handleFileSelect, false);
+
+		function handleDragOver(evt) {
+			evt.stopPropagation();
+			evt.preventDefault();
+			evt.dataTransfer.dropEffect = 'copy';
+		}
+
+		dropZone.addEventListener('dragover', handleDragOver, false);
+		dropZone.addEventListener('drop', handleFileSelect, false);
+	</script>
+</body>
+</html>
