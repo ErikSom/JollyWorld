@@ -7627,12 +7627,11 @@ const _B2dEditor = function () {
 
 		if(!obj.fixed) disableCulling(body.mySprite);
 
-		if(!obj.visible){
+		if(!obj.visible && obj.visible !== undefined){
 			disableCulling(body.mySprite);
 		}
 
-		body.mySprite.renderable = obj.visible;
-
+		body.mySprite.renderable = obj.visible !== undefined ? obj.visible : true;
 
 		if (obj.tileTexture != "") this.updateTileSprite(body);
 
