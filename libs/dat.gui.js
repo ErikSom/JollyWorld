@@ -210,14 +210,6 @@ window.__guiusercolors = [];
         SIX_CHAR_HEX: {
           read: function read(original) {
             var test = original.match(/^#([A-F0-9]{6})$/i);
-
-            if(original === 'empty'){
-              return {
-                space: 'HEX',
-                hex: parseInt('0xFFFFFFFF', 0)
-              };
-            }
-
             if (test === null) {
               return false;
             }
@@ -1353,14 +1345,6 @@ window.__guiusercolors = [];
       _this2.__hue_knob.className = 'hue-knob';
       _this2.__hue_field = document.createElement('div');
       _this2.__hue_field.className = 'hue-field';
-      _this2.__red_line = document.createElement('div');
-      _this2.__red_line.style = `
-      width: 130px;
-      height: 5px;
-      border-bottom: 2px solid red;
-      -webkit-transform: translateY(10px) translateX(-1px) rotate(-8deg);
-      position: absolute;
-      `
       _this2.__input = document.createElement('input');
       _this2.__input.type = 'text';
       _this2.__input_textShadow = '0 1px 1px ';
@@ -1415,27 +1399,47 @@ window.__guiusercolors = [];
       font-size: 16px;
       cursor:pointer;
     `;
-      _this2.__nocolor = document.createElement('div');
-      const redline = document.createElement('div');
-      redline.style = `
-      width: 25px;
-      height: 5px;
-      border-bottom: 2px solid red;
-      transform: translateY(4px) translateX(-7px) rotate(-43deg);
+    _this2.__alphaslider = document.createElement('div');
+    _this2.__alphaslider.style = `
       position: absolute;
-      `
-      _this2.__nocolor.appendChild(redline);
-      _this2.__nocolor.style = `
-      background-color: white;
-      padding: 2px;
-      border: 1px solid gray;
-      grid-column-end: span 2;
-      grid-row-end: span 2;
-      line-height: 12px;
-      text-align: center;
-      font-size: 16px;
-      cursor:pointer;
+      width: 102px;
+      height: 22px;
+      background-color: rgb(34, 34, 34);
+      padding: 3px;
+      bottom: -22px;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 10px;
+      color: black;
+      cursor: ew-resize;
     `;
+      var checkerBG = document.createElement('div');
+      _this2.__alphaslider.appendChild(checkerBG);
+      checkerBG.style = `
+      background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),linear-gradient(-45deg, #ccc 25%, transparent 25%),linear-gradient(45deg, transparent 75%, #ccc 75%),linear-gradient(-45deg, transparent 75%, #ccc 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+      width:96px;
+      height:16px;
+      `
+      var fillColor = document.createElement('div');
+      fillColor.style = `
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+      `
+      checkerBG.appendChild(fillColor);
+      _this2.__alpha_knob = document.createElement('div');
+      _this2.__alpha_knob.style = `
+      position: absolute;
+      width: 2px;
+      height: 17px;
+      border-bottom: 4px solid #e91e63;
+      z-index: 1;
+      `
+      fillColor.appendChild(_this2.__alpha_knob);
+
 
       dom.bind(_this2.__input, 'keydown', function (e) {
         if (e.keyCode === 13) {
@@ -1517,6 +1521,8 @@ window.__guiusercolors = [];
       dom.bind(_this2.__field_knob, 'touchstart', fieldDown);
       dom.bind(_this2.__hue_field, 'mousedown', fieldDownH);
       dom.bind(_this2.__hue_field, 'touchstart', fieldDownH);
+      dom.bind(_this2.__alphaslider, 'mousedown', fieldDownA);
+      dom.bind(_this2.__alphaslider, 'touchstart', fieldDownA);
 
       function fieldDown(e) {
         setSV(e);
@@ -1534,6 +1540,15 @@ window.__guiusercolors = [];
         dom.bind(window, 'touchend', fieldUpH);
       }
 
+
+      function fieldDownA(e) {
+        setA(e);
+        dom.bind(window, 'mousemove', setA);
+        dom.bind(window, 'touchmove', setA);
+        dom.bind(window, 'mouseup', fieldUpA);
+        dom.bind(window, 'touchend', fieldUpA);
+      }
+
       function fieldUpSV() {
         dom.unbind(window, 'mousemove', setSV);
         dom.unbind(window, 'touchmove', setSV);
@@ -1547,6 +1562,14 @@ window.__guiusercolors = [];
         dom.unbind(window, 'touchmove', setH);
         dom.unbind(window, 'mouseup', fieldUpH);
         dom.unbind(window, 'touchend', fieldUpH);
+        onFinish();
+      }
+
+      function fieldUpA() {
+        dom.unbind(window, 'mousemove', setA);
+        dom.unbind(window, 'touchmove', setA);
+        dom.unbind(window, 'mouseup', fieldUpA);
+        dom.unbind(window, 'touchend', fieldUpA);
         onFinish();
       }
 
@@ -1570,15 +1593,15 @@ window.__guiusercolors = [];
       _this2.__selector.appendChild(_this2.__saturation_field);
       _this2.__selector.appendChild(_this2.__hue_field);
       _this2.__selector.appendChild(_this2.__recentcolors);
+      _this2.__selector.appendChild(_this2.__alphaslider);
       _this2.__recentcolors.appendChild(_this2.__colorplus);
       _this2.__recentcolors.appendChild(_this2.__colorpicker);
       _this2.__recentcolors.appendChild(_this2.__colorminus);
-      _this2.__recentcolors.appendChild(_this2.__nocolor);
 
       const updateColors = () => {
         const oldElements = [..._this2.__recentcolors.children];
-        if (oldElements.length > 4) {
-          for (let i = 4; i < oldElements.length; i++) {
+        if (oldElements.length > 3) {
+          for (let i = 3; i < oldElements.length; i++) {
             _this2.__recentcolors.removeChild(oldElements[i]);
           }
         }
@@ -1651,12 +1674,7 @@ window.__guiusercolors = [];
         document.body.appendChild(blockerElement);
       }
 
-      _this2.__nocolor.onmousedown = () => {
-        _this2.setValue('empty');
-      }
-
       _this2.__hue_field.appendChild(_this2.__hue_knob);
-      _this2.domElement.appendChild(_this2.__red_line);
       _this2.domElement.appendChild(_this2.__input);
       _this2.domElement.appendChild(_this2.__selector);
       _this2.updateDisplay();
@@ -1704,16 +1722,28 @@ window.__guiusercolors = [];
         _this.setValue(_this.__color.toOriginal());
         return false;
       }
+      function setA(e) {
+        if (e.type.indexOf('touch') === -1) {
+          e.preventDefault();
+        }
+        var fieldRect = _this.__alphaslider.getBoundingClientRect();
+        var _ref2 = e.touches && e.touches[0] || e,
+          clientX = _ref2.clientX;
+        var w = 1 - (clientX - fieldRect.left) / (fieldRect.right - fieldRect.left);
+        if (w > 1) {
+          w = 1;
+        } else if (w < 0) {
+          w = 0;
+        }
+        _this.__color.a = w;
+        _this.setValue(_this.__color.toOriginal());
+        return false;
+      }
       return _this2;
     }
     createClass(ColorController, [{
       key: 'updateDisplay',
       value: function updateDisplay() {
-        if(this.getValue() === 'empty'){
-          this.__red_line.style.display = 'block';
-        }else{
-          this.__red_line.style.display = 'none';
-        }
         var i = interpret(this.getValue());
         if (i !== false) {
           var mismatch = false;
@@ -1738,6 +1768,7 @@ window.__guiusercolors = [];
           border: this.__field_knob_border + 'rgb(' + flip + ',' + flip + ',' + flip + ')'
         });
         this.__hue_knob.style.marginTop = (1 - this.__color.h / 360) * 100 + 'px';
+        this.__alpha_knob.style.marginLeft = (1 - this.__color.a) * 96 + 'px';
         this.__temp.s = 1;
         this.__temp.v = 1;
         linearGradient(this.__saturation_field, 'left', '#fff', this.__temp.toHexString());
