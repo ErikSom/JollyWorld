@@ -38,6 +38,7 @@ window.__guiusercolors = [];
   }
 
   function colorToString(color, forceCSSHex) {
+    debugger;
     var colorFormat = color.__state.conversionName.toString();
     var r = Math.round(color.r);
     var g = Math.round(color.g);
@@ -51,6 +52,7 @@ window.__guiusercolors = [];
       while (str.length < 6) {
         str = '0' + str;
       }
+      str += 'ff';
       return '#' + str;
     } else if (colorFormat === 'CSS_RGB') {
       return 'rgb(' + r + ',' + g + ',' + b + ')';
@@ -209,13 +211,23 @@ window.__guiusercolors = [];
         },
         SIX_CHAR_HEX: {
           read: function read(original) {
-            var test = original.match(/^#([A-F0-9]{6})$/i);
+
+            var test_six = original.match(/^#([A-F0-9]{6})$/i);
+            if(test_six){
+              original += 'FF';
+            }
+
+            var test = original.match(/^#([A-F0-9]{8})$/i);
             if (test === null) {
               return false;
             }
+
+
+            const sixString = test[1].substr(0, 6);
+
             return {
               space: 'HEX',
-              hex: parseInt('0x' + test[1].toString(), 0)
+              hex: parseInt('0x' + sixString, 0)
             };
           },
           write: colorToString
