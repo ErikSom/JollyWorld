@@ -52,7 +52,7 @@ window.__guiusercolors = [];
       while (str.length < 6) {
         str = '0' + str;
       }
-      str += 'ff';
+      str += Math.round(a * 255).toString(16).padStart(2, '0');
       return '#' + str;
     } else if (colorFormat === 'CSS_RGB') {
       return 'rgb(' + r + ',' + g + ',' + b + ')';
@@ -222,12 +222,13 @@ window.__guiusercolors = [];
               return false;
             }
 
-
             const sixString = test[1].substr(0, 6);
+            const aString = test[1].substr(6);
 
             return {
               space: 'HEX',
-              hex: parseInt('0x' + sixString, 0)
+              hex: parseInt('0x' + sixString, 0),
+              a: parseInt('0x' + aString, 0) / 255
             };
           },
           write: colorToString
@@ -1439,7 +1440,7 @@ window.__guiusercolors = [];
       fillColor.style = `
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+      background: linear-gradient(90deg, rgba(255,255,255,1) 16%, rgba(255,255,255,0) 100%);
       `
       checkerBG.appendChild(fillColor);
       _this2.__alpha_knob = document.createElement('div');
@@ -1780,6 +1781,7 @@ window.__guiusercolors = [];
           border: this.__field_knob_border + 'rgb(' + flip + ',' + flip + ',' + flip + ')'
         });
         this.__hue_knob.style.marginTop = (1 - this.__color.h / 360) * 100 + 'px';
+        
         this.__alpha_knob.style.marginLeft = (1 - this.__color.a) * 96 + 'px';
         this.__temp.s = 1;
         this.__temp.v = 1;
