@@ -38,7 +38,6 @@ window.__guiusercolors = [];
   }
 
   function colorToString(color, forceCSSHex) {
-    debugger;
     var colorFormat = color.__state.conversionName.toString();
     var r = Math.round(color.r);
     var g = Math.round(color.g);
