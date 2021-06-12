@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+	<title>Jolly World - SVG Import</title>
+	<style>
+		html, body{
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background: #e7b98a;
+			overflow: hidden;
+		}
+		#dropzone{
+			background: rgb(211 161 109);
+			border: 7px dotted #e7b98a;
+			position: relative;
+			width: 400px;
+			height: 200px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: auto;
+		}
+		#label{
+			color: #fff;
+			font-family: "Lily Script One",cursive;
+			text-shadow: 2.2px 2px #000;
+			text-align: center;
+			line-height: 38px;
+			font-size: 41px;
+			text-rendering: geometricPrecision;
+		}
+		#files{
+			opacity: 0;
+			width:100%;
+			height:100%;
+			position: absolute;
+		}
+		h1, h2{
+			color: #fff;
+			font-family: "Lily Script One",cursive;
+			text-shadow: 2.2px 2px #000;
+			text-align: center;
+			text-rendering: geometricPrecision;
+		}
+		h1{
+			font-size: 56px;
+		}
+		h2{
+			font-size: 36px;
+		}
+		@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
+	</style>
+</head>
+<body>
+	<h1>Jolly Modder</h1>
+	<div id="dropzone">
+		<input type="file" id="files" name="drop"/>
+		<h2 id="label">Drop mod here</h2>
+	</div>
+	<script>
+		paper.setup();
+
+		var paths = [];
+
+		function importSVG(url){
+			paper.project.importSVG(url, {
+				expandShapes:false,
+				onLoad: function(item) {
+					console.log(item);
+					findPaths(item.children[1]);
+					const objects = convertPathsToJollyObjects(paths);
+					serializeGraphics(objects);
+				}
+			})
+		}
+
+		function findPaths(item){
+			if(item.segments != undefined){
+				paths.push(item);
+			}
+			if(item.children){
+
+				// var keys = Object.keys(item.children);
+
+				// for(var i = 0; i<keys.length; i++){
+				// 	var key = keys[i];
+				// 	var child = item.children[key];
+				// 	item.refName = key;
+
+				// 	findPaths(child);
+				// }
+
+				for(var i = 0; i<item.children.length; i++){
+					findPaths(item.children[i]);
+				}
+
+
+			}
+		}
+
+		var templateGraphic = function () {
+			this.type = 6;
+			this.x = null;
+			this.y = null;
+			this.rotation = 0;
+			this.groups = "";
+			this.refName = "";
+			this.ID = 0;
+			this.colorFill = "#999999";
+			this.colorLine = "#000";
+			this.transparancy = 1.0;
+			this.radius;
+			this.vertices = [{
+				x: 0,
+				y: 0
+			}, {
+				x: 0,
+				y: 0
+			}];
+			this.bodyID = null;
+			this.texturePositionOffsetLength = null;
+			this.texturePositionOffsetAngle = null;
+			this.textureAngleOffset = null;
+			this.tileTexture = "";
+			this.lockselection = false;
+			this.lineWidth = 1.0;
+			this.parallax = 0.0;
+			this.repeatTeleportX = 0;
+			this.repeatTeleportY = 0;
+			this.gradient = '';
+			this.visible = true;
+		}
+
+
+		function convertPathsToJollyObjects(paths){
+			const objects = [];
+			for(var i = 0; i<paths.length; i++){
+				path = paths[i];
+
+				var object = new templateGraphic();
+
+
+
+
+
+
+				if(path.fillColor){
+					object.colorFill = path.fillColor.toCSS(true);
+
+					if(path.fillColor.red === 0 && path.fillColor.green === 0 && path.fillColor.blue === 0){
+						debugger;
+						if(path.parent.fillColor && (path.parent.fillColor.red !== 0 && path.parent.fillColor.green !== 0 && path.parent.fillColor.blue !== 0)){
+							object.colorFill = path.parent.fillColor.toCSS(true);
+						}
+					}
+
+				}
+				if(path.lineColor){
+					object.colorLine = path.lineColor.toCSS(true);
+
+					if(path.lineColor.red === 0 && path.lineColor.green === 0 && path.lineColor.blue === 0){
+						if(path.parent.lineColor && (path.parent.lineColor.red !== 0 && path.parent.lineColor.green !== 0 && path.parent.lineColor.blue !== 0)){
+							object.colorLine = path.parent.lineColor.toCSS(true);
+						}
+					}
+
+					object.lineWidth = Math.ceil(path.strokeWidth);
+				}else{
+					object.lineWidth = 0;
+				}
+
+				object.rotation = path.rotation;
+				object.x = 0;
+				object.y = 0;
+
+				// object.refName = path.refName;
+
+				object.transparancy = path.opacity;
+
+				var vertices = object.vertices = [];
+
+				for(var j = 0; j<path.segments.length; j++){
+					var p = path.segments[j];
+
+					vertices.push({
+						x: p.point.x,
+						y: p.point.y,
+						point1: {
+							x: p.curve.points[1].x,
+							y: p.curve.points[1].y
+						},
+						point2: {
+							x: p.curve.points[2].x,
+							y: p.curve.points[2].y
+						}
+                	})
+
+				}
+				objects.push(object);
+			}
+			console.log('objects:', objects)
+			return objects;
+		}
+
+		function serializeGraphics(objects){
+			var serialized = {objects:[]};
+			for(var i = 0; i<objects.length; i++){
+				var obj = objects[i];
+
+				const arr = [];
+				arr[0] = obj.type;
+				arr[1] = obj.x;
+				arr[2] = obj.y;
+				arr[3] = obj.rotation;
+				arr[4] = obj.groups;
+				arr[5] = obj.refName;
+				arr[6] = i;
+				arr[7] = obj.colorFill;
+				arr[8] = obj.colorLine;
+				arr[9] = obj.transparancy;
+				arr[10] = obj.radius;
+				arr[11] = obj.vertices;
+				arr[12] = obj.bodyID;
+				arr[13] = obj.texturePositionOffsetLength;
+				arr[14] = obj.texturePositionOffsetAngle;
+				arr[15] = obj.textureAngleOffset;
+				arr[16] = obj.tileTexture;
+				arr[17] = obj.lineWidth;
+				arr[18] = obj.parallax;
+				arr[19] = obj.repeatTeleportX;
+				arr[20] = obj.repeatTeleportY;
+				arr[21] = '';
+				arr[22] = obj.visible;
+
+				serialized.objects.push(arr);
+			}
+
+			var copyJSON = stringifyJSON(serialized);
+
+			var jollyData = window.atob('PGpvbGx5RGF0YS0=')+LZString.compressToEncodedURIComponent(copyJSON)+'>';
+
+			console.log("******************** COPY DATA ********************");
+			console.log(jollyData);
+			console.log("***************************************************");
+
+			copyStringToClipboard(jollyData);
+
+		}
+
+		function stringifyJSON(json){
+			return JSON.stringify(json, function(key, val) {
+				return (val && val.toFixed) ? Number(val.toFixed(4)) : val;
+			})
+		}
+
+		function copyStringToClipboard(str) {
+			var el = document.createElement('textarea');
+			el.value = str;
+			el.setAttribute('readonly', '');
+			el.style = {position: 'absolute', left: '-9999px'};
+			document.body.appendChild(el);
+			el.select();
+			document.execCommand('copy');
+			document.body.removeChild(el);
+		}
+
+		function handleFileSelect(evt) {
+			evt.stopPropagation();
+		    evt.preventDefault();
+
+			var files = evt.dataTransfer ? evt.dataTransfer.files : evt.target.files; 
+
+			var output = [];
+			for (var i = 0, f; f = files[i]; i++) {
+				var reader = new FileReader();
+				reader.onloadend = () => {
+					importSVG(reader.result);
+				};
+				reader.readAsDataURL(f);
+			}
+		}
+		var dropZone = document.getElementById('files');
+		dropZone.addEventListener('change', handleFileSelect, false);
+
+		function handleDragOver(evt) {
+			evt.stopPropagation();
+			evt.preventDefault();
+			evt.dataTransfer.dropEffect = 'copy';
+		}
+
+		dropZone.addEventListener('dragover', handleDragOver, false);
+		dropZone.addEventListener('drop', handleFileSelect, false);
+
+	</script>
+</body>
+</html>

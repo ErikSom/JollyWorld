@@ -10200,6 +10200,9 @@ const _B2dEditor = function () {
 						prefabOffset = this.textures.children.length - prefabOffset;
 					}
 				} else if (obj.type == this.object_GRAPHIC) {
+
+					if(obj.vertices.length === 1) continue;
+
 					if (obj.bodyID != undefined) {
 						obj.bodyID += startChildIndex - vehicleOffset;
 					}
