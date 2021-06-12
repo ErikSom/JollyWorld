@@ -210,6 +210,14 @@ window.__guiusercolors = [];
         SIX_CHAR_HEX: {
           read: function read(original) {
             var test = original.match(/^#([A-F0-9]{6})$/i);
+
+            if(original === 'empty'){
+              return {
+                space: 'HEX',
+                hex: parseInt('0xFFFFFFFF', 0)
+              };
+            }
+
             if (test === null) {
               return false;
             }
@@ -1345,6 +1353,14 @@ window.__guiusercolors = [];
       _this2.__hue_knob.className = 'hue-knob';
       _this2.__hue_field = document.createElement('div');
       _this2.__hue_field.className = 'hue-field';
+      _this2.__red_line = document.createElement('div');
+      _this2.__red_line.style = `
+      width: 130px;
+      height: 5px;
+      border-bottom: 2px solid red;
+      -webkit-transform: translateY(10px) translateX(-1px) rotate(-8deg);
+      position: absolute;
+      `
       _this2.__input = document.createElement('input');
       _this2.__input.type = 'text';
       _this2.__input_textShadow = '0 1px 1px ';
@@ -1399,6 +1415,28 @@ window.__guiusercolors = [];
       font-size: 16px;
       cursor:pointer;
     `;
+      _this2.__nocolor = document.createElement('div');
+      const redline = document.createElement('div');
+      redline.style = `
+      width: 25px;
+      height: 5px;
+      border-bottom: 2px solid red;
+      transform: translateY(4px) translateX(-7px) rotate(-43deg);
+      position: absolute;
+      `
+      _this2.__nocolor.appendChild(redline);
+      _this2.__nocolor.style = `
+      background-color: white;
+      padding: 2px;
+      border: 1px solid gray;
+      grid-column-end: span 2;
+      grid-row-end: span 2;
+      line-height: 12px;
+      text-align: center;
+      font-size: 16px;
+      cursor:pointer;
+    `;
+
       dom.bind(_this2.__input, 'keydown', function (e) {
         if (e.keyCode === 13) {
           onBlur.call(this);
@@ -1535,11 +1573,12 @@ window.__guiusercolors = [];
       _this2.__recentcolors.appendChild(_this2.__colorplus);
       _this2.__recentcolors.appendChild(_this2.__colorpicker);
       _this2.__recentcolors.appendChild(_this2.__colorminus);
+      _this2.__recentcolors.appendChild(_this2.__nocolor);
 
       const updateColors = () => {
         const oldElements = [..._this2.__recentcolors.children];
-        if (oldElements.length > 3) {
-          for (let i = 3; i < oldElements.length; i++) {
+        if (oldElements.length > 4) {
+          for (let i = 4; i < oldElements.length; i++) {
             _this2.__recentcolors.removeChild(oldElements[i]);
           }
         }
@@ -1612,7 +1651,12 @@ window.__guiusercolors = [];
         document.body.appendChild(blockerElement);
       }
 
+      _this2.__nocolor.onmousedown = () => {
+        _this2.setValue('empty');
+      }
+
       _this2.__hue_field.appendChild(_this2.__hue_knob);
+      _this2.domElement.appendChild(_this2.__red_line);
       _this2.domElement.appendChild(_this2.__input);
       _this2.domElement.appendChild(_this2.__selector);
       _this2.updateDisplay();
@@ -1665,6 +1709,11 @@ window.__guiusercolors = [];
     createClass(ColorController, [{
       key: 'updateDisplay',
       value: function updateDisplay() {
+        if(this.getValue() === 'empty'){
+          this.__red_line.style.display = 'block';
+        }else{
+          this.__red_line.style.display = 'none';
+        }
         var i = interpret(this.getValue());
         if (i !== false) {
           var mismatch = false;
