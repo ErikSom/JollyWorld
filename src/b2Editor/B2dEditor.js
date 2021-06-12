@@ -9564,6 +9564,14 @@ const _B2dEditor = function () {
 		if(fillTransparancy === undefined) fillTransparancy = transparancy;
 
 		let color;
+		
+		let lineTransparancy = transparancy;
+
+		if(colorLine.length > 7){
+			lineTransparancy = Math.max(parseInt('0x'+colorLine.substr(7), 0) / 255, 1/255) * transparancy;
+			colorLine = colorLine.substr(0, 7);
+		}
+
 		color = colorLine.slice(1);
 		let colorLineHex = parseInt(color, 16);
 
@@ -9571,9 +9579,14 @@ const _B2dEditor = function () {
 		graphic.boundsPadding = 0;
 
 		if(lineWidth) lineWidth += Settings.lineWidthCorrection;
-		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
+		graphic.lineStyle(lineWidth, colorLineHex, lineTransparancy);
 
 		if(colorFill !== 'transparent'){
+			if(colorFill.length > 7){
+				fillTransparancy = Math.max(parseInt('0x'+colorFill.substr(7), 0) / 255, 1/255) * transparancy;
+				colorFill = colorFill.substr(0, 7);
+			}
+
 			color = colorFill.slice(1);
 			let colorFillHex = parseInt(color, 16);
 			graphic.beginFill(colorFillHex, fillTransparancy);
@@ -9612,6 +9625,14 @@ const _B2dEditor = function () {
 	}
 	this.updateCircleGraphic = function (graphic, radius, pos, colorFill, colorLine, lineWidth, transparancy, dontClear) {
 		let color;
+
+		let lineTransparancy = transparancy;
+
+		if(colorLine.length > 7){
+			lineTransparancy = Math.max(parseInt('0x'+colorLine.substr(7), 0) / 255, 1/255) * transparancy;
+			colorLine = colorLine.substr(0, 7);
+		}
+
 		color = colorLine.slice(1);
 		const colorLineHex = parseInt(color, 16);
 
@@ -9620,12 +9641,18 @@ const _B2dEditor = function () {
 
 		if(lineWidth) lineWidth += Settings.lineWidthCorrection;
 
-		graphic.lineStyle(lineWidth, colorLineHex, transparancy);
+		graphic.lineStyle(lineWidth, colorLineHex, lineTransparancy);
+
+		let fillTransparancy = transparancy;
 
 		if(colorFill !== 'transparent'){
+			if(colorFill.length > 7){
+				fillTransparancy = Math.max(parseInt('0x'+colorFill.substr(7), 0) / 255, 1/255) * transparancy;
+				colorFill = colorFill.substr(0, 7);
+			}
 			color = colorFill.slice(1);
 			const colorFillHex = parseInt(color, 16);
-			graphic.beginFill(colorFillHex, transparancy);
+			graphic.beginFill(colorFillHex, fillTransparancy);
 		}
 
 		let x = this.getPIXIPointFromWorldPoint(pos).x;

@@ -31,6 +31,7 @@ export const timeFormat = (delta, padded=true) => {
     return {dd, hh, mm, ss, ms};
 }
 export const hexToNumberHex = hex => {
+    if(hex.length>7) hex = hex.substr(0, 7);
     if(typeof hex === 'string') hex = hex.replace('#', '0x');
     return parseInt(Number(hex), 10)
 }
