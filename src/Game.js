@@ -37,6 +37,7 @@ import * as GameTimer from './utils/GameTimer'
 import * as ReplayManager from './utils/ReplayManager';
 import * as b2DebugDrawManager from './utils/b2DebugDrawManager'
 import * as BodyBreaker from './b2Editor/utils/bodyBreaker'
+import * as ModManager from './utils/ModManager'
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -240,7 +241,8 @@ function Game() {
     };
 
     this.gameSetup = function () {
-
+        // first thing we do is mod the textures
+        ModManager.init();
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity

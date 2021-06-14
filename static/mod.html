@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Jolly World - Modder</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index-min.js"></script>
 	<style>
-		html, body{
+		html,
+		body {
 			width: 100%;
 			height: 100%;
 			margin: 0;
@@ -15,7 +18,8 @@
 			background: #e7b98a;
 			overflow: hidden;
 		}
-		#dropzone{
+
+		#dropzone {
 			background: rgb(211 161 109);
 			border: 7px dotted #e7b98a;
 			position: relative;
@@ -26,57 +30,118 @@
 			align-items: center;
 			margin: auto;
 		}
-		#label{
+
+		#label {
 			color: #fff;
-			font-family: "Lily Script One",cursive;
+			font-family: "Lily Script One", cursive;
 			text-shadow: 2.2px 2px #000;
 			text-align: center;
 			line-height: 38px;
 			font-size: 41px;
 			text-rendering: geometricPrecision;
 		}
-		#files{
+
+		#files {
 			opacity: 0;
-			width:100%;
-			height:100%;
+			width: 100%;
+			height: 100%;
 			position: absolute;
 		}
-		h1, h2{
+
+		h1,
+		h2 {
 			color: #fff;
-			font-family: "Lily Script One",cursive;
+			font-family: "Lily Script One", cursive;
 			text-shadow: 2.2px 2px #000;
 			text-align: center;
 			text-rendering: geometricPrecision;
 		}
-		h1{
+
+		h1 {
 			font-size: 56px;
 		}
-		h2{
+
+		h2 {
 			font-size: 36px;
 		}
+		.button{
+			cursor:pointer;
+			background-color: red;
+			width: 200px;
+			height: 38px;
+			border-radius: 8px;
+			border: 2px solid black;
+			box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+			color: white;
+			font-family: "Lily Script One", cursive;
+			text-shadow: 1.2px 2px black;
+			text-align: center;
+			line-height: 38px;
+			font-size: 23px;
+			text-rendering: geometricPrecision;
+			cursor: pointer;
+			white-space: nowrap;
+			margin: auto;
+		}
+
 		@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
 	</style>
 </head>
+
 <body>
 	<h1>Jolly Modder</h1>
 	<div id="dropzone">
-		<input type="file" id="files" name="drop"/>
+		<input type="file" id="files" name="drop" />
 		<h2 id="label">Drop mod here</h2>
 	</div>
+	<h2 id="installed">
+		Installed Mod:
+		<span>none</span>
+	</h2>
+	<div id="remove" class="button">
+		Remove Mod
+	</div>
 	<script>
+
+		const folderName = 'jollymod';
+		const modNameKey = 'jollyModName';
+		let filesToStore = 0;
+		let filesStored = 0;
+
+		const {get, set, keys, del} = window.idbKeyval;
+
+		function updateModName(){
+			const modName = localStorage.getItem(modNameKey);
+			if(modName){
+				document.querySelector('#remove').style.display = 'block';
+			}else{
+				document.querySelector('#remove').style.display = 'none';
+			}
+			document.querySelector('#installed > span').innerText = modName || 'none';
+		}
+		updateModName();
+
 		function handleFileSelect(evt) {
 			evt.stopPropagation();
-		    evt.preventDefault();
+			evt.preventDefault();
 
-			var files = evt.dataTransfer ? evt.dataTransfer.files : evt.target.files; 
+			const files = evt.dataTransfer ? evt.dataTransfer.files : evt.target.files;
 
-			var output = [];
-			for (var i = 0, f; f = files[i]; i++) {
-				console.log('FILE:', f)
+			for (let i = 0, f; f = files[i]; i++) {
+				const zip = new JSZip();
+				zip.loadAsync(f).then(function (zip) {
+					processFiles(zip.files);
+					localStorage.setItem(modNameKey, f.name);
+				}, function () {
+					alert("Not a valid zip file")
+				});
+
 			}
 		}
-		var dropZone = document.getElementById('files');
+		const dropZone = document.getElementById('files');
 		dropZone.addEventListener('change', handleFileSelect, false);
+
+		const label = document.getElementById('label');
 
 		function handleDragOver(evt) {
 			evt.stopPropagation();
@@ -86,6 +151,91 @@
 
 		dropZone.addEventListener('dragover', handleDragOver, false);
 		dropZone.addEventListener('drop', handleFileSelect, false);
+
+		function processFiles(files){
+			clearOldMods().then(()=>{
+				label.innerText = 'Installing Mod...';
+
+				const keys = Object.keys(files);
+
+				for(var i = 0; i<keys.length; i++){
+					var key = keys[i];
+					var file = files[key];
+
+					var path = key.split('/');
+					path.shift();
+
+					switch(path[0]){
+						case 'characters':
+							processCharacterMod(path, file);
+						break;
+						case 'vehicles':
+							processBasicMod(path, file);
+						break;
+					}
+				}
+			});
+		}
+		function finishMod(){
+			filesToStore = 0;
+			filesStored = 0;
+			label.innerText = 'Mod installed';
+			updateModName();
+		}
+
+		function storeImage(file, target){
+			file.async("blob").then(function (blob) {
+				set(target, blob).then(()=>{
+					filesStored++;
+					label.innerText = `Installing Mod... ${filesStored}/${filesToStore}`;
+					if(filesStored === filesToStore){
+						finishMod();
+					}
+				})
+			})
+		}
+
+		function processCharacterMod(path, file){
+			const charNameArray = ['billyjoel', 'jeroen', 'marique', 'damien', 'thezuck', 'bobzombie', 'xenot', 'ronda', 'jacklee', 'coljackson', 'hank', 'mrskat', 'seanbro', 'crashy', 'brittany', 'machote']
+			let characterIndex = charNameArray.indexOf(path[1]);
+			if(characterIndex !== -1 && path[2] !== ""){
+				filesToStore++;
+				storeImage(file, `${folderName}/characters/${characterIndex}/${path[2]}`);
+			}
+		}
+
+		function processBasicMod(path, file){
+			if(path[path.length-1] !== ""){
+				filesToStore++;
+				storeImage(file, `${folderName}/${path[0]}/${path[path.length-1]}`);
+				console.log("Processing basic mod:", path[path.length-1]);
+			}
+		}
+
+		function clearOldMods(){
+			label.innerText = 'Removing old Mod...';
+			localStorage.removeItem(modNameKey);
+			updateModName();
+
+			return new Promise((resolve, reject) => {
+				keys().then(keys => {
+					keys.forEach(key => {
+						if(key.indexOf(folderName) === 0){
+							del(key);
+						}
+					})
+					resolve();
+				});
+			})
+		}
+
+		document.querySelector('#remove').onclick = ()=> {
+			clearOldMods().then(()=>{
+				label.innerText = 'Drop mod here';
+				updateModName();
+			});
+		}
 	</script>
 </body>
+
 </html>
