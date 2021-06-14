@@ -160,6 +160,8 @@
 
 				for(var i = 0; i<keys.length; i++){
 					var key = keys[i];
+					if(!key.endsWith('.png')) continue;
+
 					var file = files[key];
 
 					var path = key.split('/');
@@ -169,6 +171,13 @@
 						case 'characters':
 							processCharacterMod(path, file);
 						break;
+						case 'kids':
+							processKidMod(path, file);
+						break;
+						case 'babies':
+							processBabyMod(path, file);
+						break;
+						case 'textures':
 						case 'vehicles':
 							processBasicMod(path, file);
 						break;
@@ -201,6 +210,24 @@
 			if(characterIndex !== -1 && path[2] !== ""){
 				filesToStore++;
 				storeImage(file, `${folderName}/characters/${characterIndex}/${path[2]}`);
+			}
+		}
+
+		function processKidMod(path, file){
+			const charNameArray = ['kid1', 'kid2', 'kid3']
+			let characterIndex = charNameArray.indexOf(path[1]);
+			if(characterIndex !== -1 && path[2] !== ""){
+				filesToStore++;
+				storeImage(file, `${folderName}/kids/${characterIndex}/${path[2]}`);
+			}
+		}
+
+		function processBabyMod(path, file){
+			const charNameArray = ['baby1', 'baby2', 'baby3']
+			let characterIndex = charNameArray.indexOf(path[1]);
+			if(characterIndex !== -1 && path[2] !== ""){
+				filesToStore++;
+				storeImage(file, `${folderName}/babies/${characterIndex}/${path[2]}`);
 			}
 		}
 

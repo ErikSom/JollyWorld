@@ -4,7 +4,7 @@ import {
 
 import * as idb from 'idb-keyval';
 
-const folderName = 'mod';
+const folderName = 'jollymod';
 
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d', {alpha:true});
@@ -14,23 +14,28 @@ export const init = ()=>{
 		console.log("KEYS:", keys)
 
 		const characterMods = [];
+		const vehicleMods = [];
 
 		if(keys.find( key => key.startsWith(folderName))){
 
-
 			keys.forEach(key => {
-				console.log(key)
-				if(key.indexOf(`${folderName}/characters`) === 0){
+				if(key.indexOf(`${folderName}/characters`) === 0 || key.indexOf(`${folderName}/kids`) === 0 || key.indexOf(`${folderName}/babies`) === 0){
 					characterMods.push(key);
 				}
+				if(key.indexOf(`${folderName}/vehicles`) === 0){
+					vehicleMods.push(key);
+				}
 			})
-
 
 			if(characterMods.length > 0){
 				modCharacters(characterMods);
 			}
 
-			console.log(game.app, characterMods.length);
+			if(vehicleMods.length > 0){
+				modVehicles(vehicleMods);
+			}
+
+			console.log(game.app, characterMods.length, vehicleMods.length);
 			console.log("Mod found, enable mod!!");
 
 
@@ -43,9 +48,17 @@ export const init = ()=>{
 }
 
 const modCharacters = characterMods => {
-	// firsts lets grab our Characters base texture;
+	modAtlas('Characters_1.json_image', 'Characters_1.json', characterMods);
+}
 
-	const targetBaseTextureCache = PIXI.utils.BaseTextureCache['Characters_1.json_image'];
+const modVehicles = vehicleMods => {
+	modAtlas('Vehicles_1.json_image', 'Vehicles_1.json', vehicleMods);
+}
+
+const modAtlas = (textureName, jsonName, textures) => {
+	// firsts lets grab our atlas base texture;
+
+	const targetBaseTextureCache = PIXI.utils.BaseTextureCache[textureName];
 	const resource = targetBaseTextureCache.resource;
 
 	canvas.width = resource.width;
@@ -53,12 +66,12 @@ const modCharacters = characterMods => {
 
 	ctx.drawImage(resource.source, 0, 0);
 
-	const atlas = game.app.loader.resources['Characters_1.json'].data.frames;
+	const atlas = game.app.loader.resources[jsonName].data.frames;
 
-	const expectedMods = characterMods.length;
+	const expectedMods = textures.length;
 	let finishedMods = 0;
 
-	characterMods.forEach(mod => {
+	textures.forEach(mod => {
 
 		const path = mod.split('/');
 		const textureName = path[path.length-1].split('.')[0];
@@ -71,6 +84,7 @@ const modCharacters = characterMods => {
 			document.body.appendChild(image);
 			image.src = url;
 			image.onload = () => {
+				ctx.clearRect(x, y, w, h);
 				ctx.drawImage(image, x, y, w, h);
 				finishedMods++;
 				if(finishedMods === expectedMods){
@@ -85,6 +99,4 @@ const modCharacters = characterMods => {
 			// error
 		});
 	})
-
-
 }

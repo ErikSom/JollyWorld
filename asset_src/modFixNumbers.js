@@ -10,10 +10,11 @@ function ThroughDirectory(Directory) {
     });
 }
 
-ThroughDirectory('./mod');
+ThroughDirectory('./');
 
 for(let i = 0; i<Files.length; i++){
 	file = Files[i];
+	if(!file.endsWith('.png')) continue
 	var fileNameStart = file.substr(0, file.length-8);
 	var fileNumber = file.substr(fileNameStart.length, 4);
 	var newNumber = parseInt(fileNumber, 10);
