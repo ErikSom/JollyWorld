@@ -177,6 +177,9 @@
 						case 'babies':
 							processBabyMod(path, file);
 						break;
+						case 'gore':
+							processGoreMod(path, file);
+						break;
 						case 'textures':
 						case 'vehicles':
 							processBasicMod(path, file);
@@ -228,6 +231,25 @@
 			if(characterIndex !== -1 && path[2] !== ""){
 				filesToStore++;
 				storeImage(file, `${folderName}/babies/${characterIndex}/${path[2]}`);
+			}
+		}
+
+		function processGoreMod(path, file){
+			const subFolder = path[1];
+			const lastPath = path[path.length-1];
+
+			if(lastPath === "") return;
+
+			switch(subFolder){
+				case 'chunks':
+				case 'organs':
+					filesToStore++;
+					storeImage(file, `${folderName}/gore/${lastPath}`);
+				break;
+				case 'skin':
+					filesToStore++;
+					storeImage(file, `${folderName}/characters/0/${lastPath}`);
+				break;
 			}
 		}
 
