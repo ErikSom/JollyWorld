@@ -152,7 +152,7 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         for (i = 0; i < this.wheels.length; i++) {
             wheel = this.wheels[i];
 
-            if(wheel.snapped) continue;
+            if(wheel.GetBody().snapped) continue;
 
             let rayStart = wheel.GetBody().GetPosition();
             let rayEnd;
@@ -168,11 +168,11 @@ export class BaseVehicle extends PrefabManager.basePrefab {
 
                 let callback = Object.assign(new Box2D.JSRayCastCallback(), {
                     ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
-        
+
                         const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
                         const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
                         const normal = Box2D.wrapPointer(normal_p, Box2D.b2Vec2);
-        
+
                         if(fixture.GetBody().mainCharacter) return -1;
                         if (fixture.IsSensor()) return -1;
                         this.m_hit = true;

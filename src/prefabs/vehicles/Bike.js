@@ -81,6 +81,7 @@ class Bike extends BaseVehicle {
         if(tire.broken) return;
 
         tire.broken = true;
+
         const textureName = tire.myTexture.data.textureName.split('0000')[0];
         tire.myTexture.originalSprite.texture = PIXI.Texture.from(`${textureName}_Bended0000`);
         tire.myTexture.originalSprite.x = -2;
