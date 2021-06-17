@@ -89,8 +89,8 @@ const determineVolumeAndPan = pos => {
 	let maxDistance = window.innerWidth > window.innerHeight ? window.innerWidth/2 : window.innerHeight/2;
 	maxDistance += effectMargin;
 
-	const vl = Math.max(0, 1-(distance / maxDistance))
-	const pan = -dx / maxDistance;
+	const vl = Math.max(0, 1-(distance / maxDistance)) || 0
+	const pan = (-dx / maxDistance) || 0;
 
 	return {vl, pan}
 }
