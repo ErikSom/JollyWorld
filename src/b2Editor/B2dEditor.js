@@ -8712,6 +8712,8 @@ const _B2dEditor = function () {
 				bodies.push(this.textures.getChildAt(tarObj.bodyB_ID).myBody);
 			}
 
+			if(!bodies[0]) return;
+
 		} else {
 			tarObj = new this.jointObject;
 

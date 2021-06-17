@@ -21,7 +21,7 @@ export const bringToFront = ()=>{
 
 		const el = elements[i];
 
-		if(el.destroyed){
+		if(!el || el.destroyed){
 			elements.splice(i, 1);
 			i--;
 		}else{
