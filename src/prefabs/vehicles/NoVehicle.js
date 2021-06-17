@@ -23,6 +23,7 @@ export class NoVehicle extends BaseVehicle {
                 this.positionLimb(key);
             }
         }
+        game.editor.applyToObjects("move", {x:0, y:0}, this.lookupObject._bodies);
     }
     positionLimb(limb){
         let x = this.prefabObject.settings.limbs[limb][0];

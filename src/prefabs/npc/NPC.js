@@ -20,6 +20,7 @@ export class NPC extends PrefabManager.basePrefab {
 				}
 			}
 		}
+        game.editor.applyToObjects("move", {x:0, y:0}, this.lookupObject._bodies);
 		this.initialized = true;
         if(this.prefabObject.settings) this.applyColorMatrix(this.prefabObject.settings.colorMatrix);
 	}

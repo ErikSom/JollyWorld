@@ -30,8 +30,6 @@ export class Character extends Humanoid {
 
     init() {
         super.init();
-
-        console.log(this.collisionUpdates);
     }
 
     flip(noVehicleOverride){
