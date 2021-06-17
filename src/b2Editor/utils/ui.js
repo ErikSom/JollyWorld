@@ -2203,8 +2203,11 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
             // else we close the dropdown before we select an item
             setTimeout(() => {
                 imageDropDown.classList.remove('open');
-                const elementIndex = Array.from(imageDropDown.children).find(element => element.checked).value;
-                clickCallback(elementIndex);
+                const element = Array.from(imageDropDown.children).find(element => element.checked);
+                if(element){
+                    const elementIndex = element.value;
+                    clickCallback(elementIndex);
+                }
             }, 0);
         } else {
             imageDropDown.classList.add('open');

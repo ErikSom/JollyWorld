@@ -256,7 +256,7 @@ const breakBody = body => {
 			let prismaticJointDef = new Box2D.b2PrismaticJointDef();
 
 			const axis = joint.GetLocalAxisA();
-			const anchor = new joint.GetAnchorA();
+			const anchor = joint.GetAnchorA();
 
 			const targetBody = findBestJointFixture(newBodies, anchor);
 
