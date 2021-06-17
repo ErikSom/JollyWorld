@@ -9027,6 +9027,9 @@ const _B2dEditor = function () {
 		}
 		body.myTexture.renderable = body.mySprite.data.visible;
 		body.myTexture.forceRenderable  = body.mySprite.data.visible;
+
+		setBodyGroupOpacity(body, body.mySprite.data.groupOpacity);
+
 		texture.myBody = body;
 	}
 
@@ -9897,7 +9900,7 @@ const _B2dEditor = function () {
 			obj.optimizePhysics = arr[24] !== undefined  ? arr[24] : true;
 			obj.bulletCollision = arr[25] !== undefined  ? arr[25] : false;
 			obj.breakable = arr[26] !== undefined  ? arr[26] : false;
-			obj.groupOpacity = arr[27] !== undefined  ? arr[27] : (Array.isArray(obj.transparancy) ? obj.transparancy[0] : obj.transparancy);
+			obj.groupOpacity = arr[27] !== undefined  ? arr[27] : 1;
 		} else if (arr[0] == this.object_TEXTURE) {
 			obj = new this.textureObject();
 			obj.ID = arr[6];
