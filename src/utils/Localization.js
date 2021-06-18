@@ -587,6 +587,16 @@ const LOCALIZATION_DATA = [
         "jr": "Alternate routes"
     },
     {
+        "textId": "discord_getinvolved",
+        "us": "Get Involved!",
+        "nl": "Doe Mee!"
+    },
+    {
+        "textId": "discord_content",
+        "us": "Meet level creators, chat with fellow Jolly players, drop suggestions for the game, report bugs, share your creations or learn new tips on how to beat certain levels. This is also the place where new big updates will be announced first!",
+        "nl": "Ontmoet level ontwikkelaars, praat met andere Jolly spelers, drop suggesties for het spel, rapporteer bugs, deel jou creaties of leer nieuwe trucs om levels makkelijker te verslaan. Dit is ook de plek waar nieuwe grote updates als eerst worden aangekondigd!"
+    },
+    {
         "textId": "levelgui_pause",
         "us": "Pause",
         "nl": "Pauze",

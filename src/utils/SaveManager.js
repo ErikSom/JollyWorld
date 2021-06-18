@@ -28,6 +28,9 @@ export const getLocalUserdata = function(){
         tutorials:[],
         selectedCharacter: 0,
         tutorialFinished: false,
+        discordShown: false,
+        levelsPlayed: 0,
+        levelsPublished: false,
         country:'?'
     }
 

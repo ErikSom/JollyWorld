@@ -1,0 +1,38 @@
+@use 'Components';
+
+.discordJoin{
+	@extend .main-window;
+
+	.header{
+		@extend .jollyfont;
+		font-size: 40px;
+		text-align: center;
+	}
+
+	.billyDiscord{
+		width: 334px;
+		height: 235px;
+		margin: auto;
+	}
+
+	.content{
+		text-align: center;
+		color: #fff;
+		margin: 20px 0px;
+		padding: 20px;
+	}
+
+	.discordButton{
+		@extend .simple-button;
+		width: 355px;
+		height: 126px;
+		margin: auto;
+		display: block;
+	}
+
+	.back{
+		width: 180px;
+		margin: 20px auto;
+		@extend .back-button;
+	}
+}

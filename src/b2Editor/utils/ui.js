@@ -284,6 +284,10 @@ const doPublishLevelData = function (publishButton, preview) {
                     publishButton.style.backgroundColor = '';
                     publishButton.innerText = 'PUBLISH';
 
+                    const userData = SaveManager.getLocalUserdata();
+                    userData.levelsPublished = true;
+                    SaveManager.updateLocalUserData(userData);
+
                     showConfetti();
 
                     showPublishSocialShareScreen(game.currentLevelData, publishedId);

@@ -723,6 +723,14 @@ function Game() {
             ui.showLevelBanner(levelData);
         }
 
+        const userdata = SaveManager.getLocalUserdata();
+
+        if(!userdata.discordShown){
+            if(userdata.levelsPlayed >=3 || userdata.levelsPublished){
+                ui.showDiscordJoin();
+            }
+        }
+
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(false);
 
@@ -747,6 +755,11 @@ function Game() {
             this.gameFrame = 0;
             MidiPlayer.reset();
             window.SVGCache[1]();
+
+            const userData = SaveManager.getLocalUserdata();
+            userData.levelsPlayed++;
+            SaveManager.updateLocalUserData(userData);
+
         }
         MobileController.show();
         ui.showSmallLogo();

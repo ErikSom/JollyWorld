@@ -12,6 +12,7 @@ import '../css/Leaderboard.scss'
 import '../css/SettingsMenu.scss'
 import '../css/YoutubePlayer.scss'
 import '../css/UserPage.scss'
+import '../css/DiscordJoin.scss'
 import '../css/flags.css'
 
 // https://github.com/catdad/canvas-confetti
@@ -72,6 +73,7 @@ let leaderboard;
 let userPage;
 let smallLogo;
 let skipTutorial;
+let discordJoin;
 
 function UIManager() {
 
@@ -149,16 +151,16 @@ function UIManager() {
                 <div class="page-footer">
                     <div class="text">
                         <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
-                        <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
+                        <a href="https://jollyworld.app/privacy-policy/" target="_blank" rel="noopener noreferrer" class="privacy">Privacy Policy</a>
                         &
-                        <a href="https://jollyworld.app/terms/" class="terms">Terms of Service</a>
+                        <a href="https://jollyworld.app/terms/" target="_blank" rel="noopener noreferrer" class="terms">Terms of Service</a>
                         .
                         <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
                     </div>
                     <div class="social-channels">
-                        <a href="https://discord.gg/7ZWxBam9Hx" class="jolly-discord"></a>
-                        <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" class="jolly-youtube"></a>
-                        <a href="https://www.facebook.com/jolly.world.game/" class="jolly-facebook"></a>
+                        <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
+                        <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>
+                        <a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>
                     </div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
@@ -2020,6 +2022,56 @@ function UIManager() {
         youtubePlayer.domElement.style.left = '50%';
         youtubePlayer.domElement.style.top = '50%';
         youtubePlayer.domElement.style.transform = 'translate(-50%, -50%)';
+    }
+
+    this.showDiscordJoin = function(){
+        if(!discordJoin){
+            const htmlStructure = /*html*/`
+                <div class="bar"></div>
+                <div class="header"><span class="fit h1">${localize('discord_getinvolved')}</span></div>
+                <div class="billyDiscord"></div>
+                <div class="content">${localize('discord_content')}</div>
+                <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="discordButton"></a>
+                <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+            `;
+
+            discordJoin = document.createElement('div');
+            discordJoin.classList.add('discordJoin');
+            discordJoin.innerHTML = htmlStructure;
+
+
+            const billyDiscord = discordJoin.querySelector('.billyDiscord');
+            billyDiscord.style.backgroundImage = `url(./assets/images/misc/${hashName('jollyDiscord.png')})`
+
+            const discordButton = discordJoin.querySelector('.discordButton');
+            discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discordJoin.png')})`
+
+            const back = discordJoin.querySelector('.back');
+            back.onclick = ()=>{
+                this.hideDiscordJoin();
+            }
+
+            customGUIContainer.appendChild(discordJoin);
+            // fit texts
+            Array.from(discordJoin.querySelectorAll('.fit')).forEach( el => {
+                    textFit(el)
+            });
+        }
+        this.hideDiscordJoin = function(){
+            if(discordJoin){
+                discordJoin.style.display = 'none';
+                mainMenu.classList.remove('inactive');
+
+                // we have shown the discord invite, don't bother again
+                const userData = SaveManager.getLocalUserdata();
+                userData.discordShown = true;
+                SaveManager.updateLocalUserData(userData);
+            }
+        }
+
+        mainMenu.classList.add('inactive');
+
+        discordJoin.style.display = 'block';
     }
 
     this.FILTER_SORT_MOSTPLAYED = "mostplayed";
