@@ -9134,7 +9134,7 @@ const _B2dEditor = function () {
 	}
 
 	this.addDecalToBody = function (body, worldPosition, textureName, carving, size, rotation, optional) {
-		if (body.destroyed || !Settings.goreEnabled)
+		if (body.destroyed || !body.myTexture || !Settings.goreEnabled)
 			return;
 
 //		return;
