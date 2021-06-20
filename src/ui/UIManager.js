@@ -1370,6 +1370,8 @@ function UIManager() {
                     <div class="fullscreen"><div class="fit h3">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
                     <a class="credits" href="https://jollyworld.app/credits/" target="_blank" rel="noopener noreferrer" ><span class="fit h3">${localize('settings_credits')}</span></a>
                     <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
+                    <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></span></div>
+                    <div class="install"><span class="fit h3">${localize('settings_installmod')}</span></div>
                     <div class="back"><span class="fit h3">${localize('levelbanner_back')}</span></div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>

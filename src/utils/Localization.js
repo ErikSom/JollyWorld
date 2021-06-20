@@ -330,6 +330,16 @@ const LOCALIZATION_DATA = [
         "nl": "Credits"
     },
     {
+        "textId": "settings_installedmod",
+        "us": "Mod installed",
+        "nl": "Mod geinstalleerd"
+    },
+    {
+        "textId": "settings_installmod",
+        "us": "Modify",
+        "us": "Modificeer",
+    },
+    {
         "textId": "characterselect_select_character",
         "us": "Select a character",
         "nl": "Kies een character",

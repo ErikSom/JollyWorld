@@ -38,11 +38,33 @@
 			}
 			@extend .back-button
 		}
-		.back, .consent, .credits{
+		.back, .consent, .credits, .install{
 			@extend .back-button;
 			width: unset;
 			min-width: 100px;
 			height: 36px;
+		}
+		.mod{
+			width: 60%;
+			justify-content: center;
+			display: flex;
+			background: #484848;
+			font-family: "Lily Script One", cursive;
+			text-shadow: 1.2px 2px black;
+			color: white;
+			border: 7px dotted #666666;
+			white-space: nowrap;
+			div{
+				overflow: hidden;
+    			text-overflow: ellipsis;
+			}
+		}
+		.install{
+			max-width: 136px;
+			background: #51A328;
+		}
+		.back{
+			margin: 0 40%;
 		}
 		.country{
 			@extend .country-select;
