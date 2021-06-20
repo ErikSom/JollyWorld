@@ -1368,6 +1368,7 @@ function UIManager() {
                     <div class="blood"><div class="fit h2">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="gore"><div class="fit h2">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="fullscreen"><div class="fit h2">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
+                    <div class="consent"><span class="fit h2">${localize('settings_consent')}</span></div>
                     <div class="back"><span class="fit h2">${localize('levelbanner_back')}</span></div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
@@ -1403,6 +1404,11 @@ function UIManager() {
                     Settings.goreEnabled = userData.goreOn;
                     SaveManager.updateLocalUserData(userData);
                     this.showSettingsMenu();
+            }
+
+            const consentButton = buttons.querySelector('.consent');
+            consentButton.onclick = ()=>{
+                window.__tcfapi('displayConsentUi', 2, () => {});
             }
 
             const backButton = buttons.querySelector('.back');
@@ -1650,6 +1656,7 @@ function UIManager() {
             const resumeButton = buttons.querySelector('.resume');
             resumeButton.onclick = () => {
                 game.unpauseGame();
+                PokiSDK.gameplayStart();
             };
 
             customGUIContainer.appendChild(pauseScreen);

@@ -320,6 +320,11 @@ const LOCALIZATION_DATA = [
         "jr": "Take of yer eyepatch"
     },
     {
+        "textId": "settings_consent",
+        "us": "Cookies",
+        "nl": "Cookies"
+    },
+    {
         "textId": "characterselect_select_character",
         "us": "Select a character",
         "nl": "Kies een character",

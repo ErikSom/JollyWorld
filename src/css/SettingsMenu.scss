@@ -41,6 +41,9 @@
 		.back{
 			@extend .back-button
 		}
+		.consent{
+			@extend .back-button
+		}
 		.country{
 			@extend .country-select;
 		}

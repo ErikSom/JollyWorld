@@ -683,6 +683,7 @@ function Game() {
                      this.pauseGame();
                 } else{
                     this.unpauseGame();
+                    PokiSDK.gameplayStart();
                     if(e.keyCode == Key.R){
                         // retry
                         game.resetWorld(true);
@@ -942,7 +943,6 @@ function Game() {
         this.run = true;
         ui.hidePauseMenu();
         MobileController.show();
-        PokiSDK.gameplayStart();
     }
     this.resetGame = function(){
         this.levelWon = false;
