@@ -331,13 +331,18 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "settings_installedmod",
-        "us": "Mod installed",
-        "nl": "Mod geinstalleerd"
+        "us": "Mod active",
+        "nl": "Mod actief"
     },
     {
         "textId": "settings_installmod",
         "us": "Modify",
-        "us": "Modificeer",
+        "nl": "Modificeer"
+    },
+    {
+        "textId": "settings_none",
+        "us": "None",
+        "nl": "Geen"
     },
     {
         "textId": "characterselect_select_character",

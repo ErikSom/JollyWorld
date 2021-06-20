@@ -57,11 +57,15 @@
 			div{
 				overflow: hidden;
     			text-overflow: ellipsis;
+				margin-left: 4px;
 			}
 		}
 		.install{
 			max-width: 136px;
 			background: #51A328;
+		}
+		.credits, .install{
+			text-decoration: none;
 		}
 		.back{
 			margin: 0 40%;

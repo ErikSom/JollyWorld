@@ -1371,7 +1371,7 @@ function UIManager() {
                     <a class="credits" href="https://jollyworld.app/credits/" target="_blank" rel="noopener noreferrer" ><span class="fit h3">${localize('settings_credits')}</span></a>
                     <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
                     <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></span></div>
-                    <div class="install"><span class="fit h3">${localize('settings_installmod')}</span></div>
+                    <a class="install" href="https://jollyworld.app/mod/"><span class="fit h3">${localize('settings_installmod')}</span></a>
                     <div class="back"><span class="fit h3">${localize('levelbanner_back')}</span></div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
@@ -1452,6 +1452,10 @@ function UIManager() {
 
         const fullscreenButton = buttons.querySelector('.fullscreen');
         this.setSettingsMenuChoice(fullscreenButton, document.fullscreenElement);
+
+        const modKey = localStorage.getItem('jollyModName');
+        const modName = buttons.querySelector('.mod > div');
+        modName.innerText = modKey || localize('settings_none');
 
         mainMenu.classList.add('inactive');
         settingsMenu.style.display = 'block';
