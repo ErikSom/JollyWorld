@@ -168,7 +168,8 @@ export const doAction = function (actionData, target) {
                     const impulseReducer = 20;
 
                     if(actionData.linearForce === undefined){ // legacy fix
-                        actionData.linearForce = actionData.impulseForce / (body.GetMass() * impulseReducer);
+                        debugger;
+                        actionData.linearForce = (actionData.impulseForce * impulseReducer) / body.GetMass();
                     }
 
                     const force = actionData.linearForce * body.GetMass() / impulseReducer;
