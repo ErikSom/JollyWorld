@@ -3,6 +3,7 @@ export default function textFit(textSpan) {
 	if(textSpan.classList.contains('h0')) maxSize = 90;
 	if(textSpan.classList.contains('h1')) maxSize = 40;
 	if(textSpan.classList.contains('h2')) maxSize = 32;
+	if(textSpan.classList.contains('h3')) maxSize = 24;
 
 	const minSize = 8;
 	const defaultMargin = 10;
@@ -11,7 +12,7 @@ export default function textFit(textSpan) {
 
 	textSpan.style.fontSize = maxSize+'px';
 	textSpan.style.lineHeight = textDiv.offsetHeight+'px';
-	textDiv.style.lineHeight = 'normal';
+	textDiv.style.lineHeight = '0';
 
 	while((textSpan.offsetWidth > (textDiv.offsetWidth-defaultMargin) || textSpan.offsetHeight > textDiv.offsetHeight) && iterations< maxSize-minSize )
 	{

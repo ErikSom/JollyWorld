@@ -1364,12 +1364,13 @@ function UIManager() {
                 <div class="bar"></div>
                 <div class="header"><span class="fit h1">${localize('settings_settings')}</span></div>
                 <div class="buttons">
-                    <div class="music"><div class="fit h2">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="blood"><div class="fit h2">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="gore"><div class="fit h2">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="fullscreen"><div class="fit h2">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
-                    <div class="consent"><span class="fit h2">${localize('settings_consent')}</span></div>
-                    <div class="back"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                    <div class="music"><div class="fit h3">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div></div>
+                    <div class="blood"><div class="fit h3">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div></div>
+                    <div class="gore"><div class="fit h3">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
+                    <div class="fullscreen"><div class="fit h3">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
+                    <a class="credits" href="https://jollyworld.app/credits/" target="_blank" rel="noopener noreferrer" ><span class="fit h3">${localize('settings_credits')}</span></a>
+                    <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
+                    <div class="back"><span class="fit h3">${localize('levelbanner_back')}</span></div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
             `;

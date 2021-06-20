@@ -325,6 +325,11 @@ const LOCALIZATION_DATA = [
         "nl": "Cookies"
     },
     {
+        "textId": "settings_credits",
+        "us": "Credits",
+        "nl": "Credits"
+    },
+    {
         "textId": "characterselect_select_character",
         "us": "Select a character",
         "nl": "Kies een character",

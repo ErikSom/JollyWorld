@@ -10,10 +10,13 @@
 
 	.buttons{
 		display: flex;
-		flex-direction: column;
+		flex-wrap: wrap;
 		align-items: center;
+		justify-content: center;
 		margin: 10px;
+
 		.music, .blood, .gore, .fullscreen{
+			height: 36px;
 			width: auto;
 			padding: 0px 20px;
 			display: flex;
@@ -35,14 +38,11 @@
 			}
 			@extend .back-button
 		}
-		.fullscreen{
-			@extend .back-button
-		}
-		.back{
-			@extend .back-button
-		}
-		.consent{
-			@extend .back-button
+		.back, .consent, .credits{
+			@extend .back-button;
+			width: unset;
+			min-width: 100px;
+			height: 36px;
 		}
 		.country{
 			@extend .country-select;
