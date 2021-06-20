@@ -24,6 +24,7 @@ export var Settings = {
     gameOverDelay:1000,
     minlevelVotes:10,
     levelAdmin:false,
+    disableAds:false,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,

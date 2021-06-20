@@ -29,6 +29,8 @@
     <meta name="description" content="Create the most decapitating levels with treacherous terrain and blood-spilling obstacles for you and your friends to ride and play through." />
     <meta property="og:description" content="Create the most decapitating levels with treacherous terrain and blood-spilling obstacles for you and your friends to ride and play through.">
 
+    <script src="//game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
+
     <style>
         html,
         body,
@@ -282,6 +284,7 @@
 
         var gameScript = false;
         function loadJS(url, onError) {
+            PokiSDK.gameLoadingStart();
             window.setLoaderProgress(0);
             if (!onError) onError = function () {};
             var xhr = new XMLHttpRequest();
@@ -335,7 +338,18 @@
             }
         });
 
-        loadJS('./assets/awesome-game.js');
+        PokiSDK.init().then(
+            () => {
+                loadJS('./assets/awesome-game.js');
+            }
+        ).catch(
+            () => {
+                window.dafadfgjiwrgj = true;
+                loadJS('./assets/awesome-game.js');
+            }
+        );
+        PokiSDK.setDebug(true);
+
 
     </script>
 

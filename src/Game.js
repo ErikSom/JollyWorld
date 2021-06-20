@@ -217,6 +217,7 @@ function Game() {
             async ()=> {
                 await ExtractTextureAssets(this.app.loader);
                 window.setLoaderProgress(1.0);
+                PokiSDK.gameLoadingFinished();
                 this.gameSetup();
             }
         );
@@ -336,6 +337,8 @@ function Game() {
                 ui.showUserPage(username);
             }
         }
+
+        if(window.dafadfgjiwrgj || urlParams.get('disableAds')) Settings.disableAds = true;
 
         document.body.addEventListener("keydown", this.onKeyDown.bind(this), {passive:false});
         document.body.addEventListener("keyup", this.onKeyUp.bind(this), {passive:false});
@@ -761,6 +764,7 @@ function Game() {
             SaveManager.updateLocalUserData(userData);
 
         }
+        PokiSDK.gameplayStart();
         MobileController.show();
         ui.showSmallLogo();
         this.playLevelMidi();
@@ -883,6 +887,7 @@ function Game() {
         ui.hideSmallLogo();
         MidiPlayer.stop();
         ReplayManager.stopRecording();
+        PokiSDK.gameplayStop();
     }
     this.openEditor = async function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -930,12 +935,14 @@ function Game() {
         ui.showPauseMenu();
         AudioManager.stopAllSounds();
         MobileController.hide();
+        PokiSDK.gameplayStop();
     }
     this.unpauseGame = function(){
         this.pause = false;
         this.run = true;
         ui.hidePauseMenu();
         MobileController.show();
+        PokiSDK.gameplayStart();
     }
     this.resetGame = function(){
         this.levelWon = false;

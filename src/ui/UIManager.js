@@ -1519,17 +1519,26 @@ function UIManager() {
     }
 
     this.playLevelFromMainMenu = function(delay){
-        mainMenu.classList.remove('inactive');
-        game.preloader.classList.remove('hide');
-        setTimeout(()=>{
-            this.hideMainMenu();
-            game.initLevel(game.currentLevelData);
-            game.playWorld(true);
-            backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+
+        const continueToGame = ()=>{
+            mainMenu.classList.remove('inactive');
+            game.preloader.classList.remove('hide');
             setTimeout(()=>{
-                game.preloader.classList.add('hide');
+                this.hideMainMenu();
+                game.initLevel(game.currentLevelData);
+                game.playWorld(true);
+                backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+                setTimeout(()=>{
+                    game.preloader.classList.add('hide');
+                }, Settings.levelBuildDelayTime);
             }, Settings.levelBuildDelayTime);
-        }, Settings.levelBuildDelayTime);
+        }
+
+        PokiSDK.commercialBreak().then(
+            () => {
+                continueToGame();
+            }
+        );
     }
 
     this.showVehicleSelect = function(){
