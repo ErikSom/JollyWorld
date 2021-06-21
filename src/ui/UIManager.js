@@ -13,6 +13,7 @@ import '../css/SettingsMenu.scss'
 import '../css/YoutubePlayer.scss'
 import '../css/UserPage.scss'
 import '../css/DiscordJoin.scss'
+import '../css/Shared.scss'
 import '../css/flags.css'
 
 // https://github.com/catdad/canvas-confetti
