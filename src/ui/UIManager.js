@@ -151,9 +151,9 @@ function UIManager() {
                 <div class="page-footer">
                     <div class="text">
                         <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
-                        <a href="https://jollyworld.app/privacy-policy/" target="_blank" rel="noopener noreferrer" class="privacy">Privacy Policy</a>
+                        <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
                         &
-                        <a href="https://jollyworld.app/terms/" target="_blank" rel="noopener noreferrer" class="terms">Terms of Service</a>
+                        <a href="https://jollyworld.app/terms/" class="terms">Terms of Service</a>
                         .
                         <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
                     </div>
@@ -1379,7 +1379,7 @@ function UIManager() {
                     <div class="blood"><div class="fit h3">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="gore"><div class="fit h3">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
                     <div class="fullscreen"><div class="fit h3">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
-                    <a class="credits" href="https://jollyworld.app/credits/" target="_blank" rel="noopener noreferrer" ><span class="fit h3">${localize('settings_credits')}</span></a>
+                    <a class="credits" href="https://jollyworld.app/credits/"><span class="fit h3">${localize('settings_credits')}</span></a>
                     <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
                     <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></span></div>
                     <a class="install" href="https://jollyworld.app/mod/"><span class="fit h3">${localize('settings_installmod')}</span></a>
