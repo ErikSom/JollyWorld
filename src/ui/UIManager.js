@@ -370,11 +370,13 @@ function UIManager() {
         }
 
         const discordButton = header.querySelector('.discord');
+        const span = discordButton.querySelector('.fit');
+
         if(backendManager.isLoggedIn()){
-            discordButton.innerText = backendManager.userData.username;
+            span.innerText = backendManager.userData.username;
             discordButton.style.fontSize = '26px';
         }else{
-            discordButton.innerText = 'Login';
+            span.innerText = 'Login';
             discordButton.style.fontSize = '36px';
         }
     }
