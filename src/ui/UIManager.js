@@ -1664,6 +1664,7 @@ function UIManager() {
             resumeButton.onclick = () => {
                 game.unpauseGame();
                 PokiSDK.gameplayStart();
+                window.pokiGPStart = true;
             };
 
             customGUIContainer.appendChild(pauseScreen);

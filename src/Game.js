@@ -684,6 +684,7 @@ function Game() {
                 } else{
                     this.unpauseGame();
                     PokiSDK.gameplayStart();
+                    window.pokiGPStart = true;
                     if(e.keyCode == Key.R){
                         // retry
                         game.resetWorld(true);
@@ -766,6 +767,7 @@ function Game() {
 
         }
         PokiSDK.gameplayStart();
+        window.pokiGPStart = true;
         MobileController.show();
         ui.showSmallLogo();
         this.playLevelMidi();
@@ -888,7 +890,12 @@ function Game() {
         ui.hideSmallLogo();
         MidiPlayer.stop();
         ReplayManager.stopRecording();
-        PokiSDK.gameplayStop();
+
+        if(window.pokiGPStart){
+            PokiSDK.gameplayStop();
+            window.pokiGPStart = false;
+        }
+
     }
     this.openEditor = async function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -936,7 +943,11 @@ function Game() {
         ui.showPauseMenu();
         AudioManager.stopAllSounds();
         MobileController.hide();
-        PokiSDK.gameplayStop();
+
+        if(window.pokiGPStart){
+            PokiSDK.gameplayStop();
+            window.pokiGPStart = false;
+        }
     }
     this.unpauseGame = function(){
         this.pause = false;
