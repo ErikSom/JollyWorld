@@ -290,6 +290,17 @@ function UIManager() {
             const country = mainMenu.querySelector('.country');
             this.makeCountrySelect(country);
 
+
+            const socialChannels = mainMenu.querySelector('.social-channels');
+            const youtubeLogo = socialChannels.querySelector('.jolly-youtube');
+            const facebookLogo = socialChannels.querySelector('.jolly-facebook');
+
+            if(Settings.onPoki){
+                youtubeLogo.style.display = 'none';
+                facebookLogo.style.display = 'none';
+            }
+
+
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
             this.mainMenuResize();
 
@@ -1943,6 +1954,12 @@ function UIManager() {
             youtubePlayer = document.createElement('div');
             youtubePlayer.classList.add('youtubeplayer');
             youtubePlayer.innerHTML = htmlStructure;
+
+
+            if(Settings.onPoki){
+                const subscribeButton = youtubePlayer.querySelector('.subscribe-button');
+                subscribeButton.style.display = 'none';
+            }
 
             const close = youtubePlayer.querySelector('.close');
             close.onclick = ()=>{

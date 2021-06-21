@@ -322,6 +322,8 @@ function Game() {
         const userData = SaveManager.getLocalUserdata();
         game.selectedCharacter = userData.selectedCharacter;
 
+        if(urlParams.get('site_id') || urlParams.get('pokiDebug')) Settings.onPoki = true;
+
         this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
@@ -339,6 +341,7 @@ function Game() {
         }
 
         if(window.dafadfgjiwrgj || urlParams.get('disableAds')) Settings.disableAds = true;
+
 
         document.body.addEventListener("keydown", this.onKeyDown.bind(this), {passive:false});
         document.body.addEventListener("keyup", this.onKeyUp.bind(this), {passive:false});
