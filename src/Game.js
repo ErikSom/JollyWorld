@@ -633,6 +633,13 @@ function Game() {
                 if(Key.isPressed(Key.SPACE)){
                     this.character.flip();
                 }
+
+                if(Key.isPressed(Settings.keys.grab)){
+                    this.character.grab();
+                }
+                if(Key.isReleased(Settings.keys.grab)){
+                    this.character.release();
+                }
             }
 
             if(this.character.hat){

@@ -1,3 +1,5 @@
+import { Key } from "../libs/Key";
+
 const targetFPS = 60;
 export var Settings = {
     /*APP*/
@@ -93,6 +95,11 @@ export var Settings = {
     YTAPIKEY:'AIzaSyDjy-Fw9ocqXRL2Axjj5zvBhgIXTJLcLY0',
     levelsPerRequest:250,
 
+    /*KEYS*/
+    keys:{
+        grab: Key.F
+    },
+
     /*TEXT*/
     DEFAULT_TEXTS:{
         levelEditScreen_DefaultTitleText: 'Fill in Title',
@@ -119,9 +126,6 @@ export var Settings = {
 
     pidouble: Math.PI*2,
     pihalve: Math.PI/2,
-
-
-
 
 
 }

@@ -20,6 +20,8 @@ export class Character extends Humanoid {
         this.vehicleJoints = [];
         this.vehicleParts = [];
         this.isCharacter = true;
+        this.grabJointLeft = null;
+        this.grabJointRight = null;
 
     }
 
@@ -55,6 +57,42 @@ export class Character extends Humanoid {
 
         this.setExpression(Humanoid.EXPRESSION_SPECIAL);
     }
+
+    grab(){
+        [this.lookupObject.hand_left, this.lookupObject.hand_right].forEach(hand => {
+            if(hand && !hand.snapped){
+
+                const radius = 0.5;
+                const aabb = new Box2D.b2AABB();
+
+                aabb.get_lowerBound().Set(hand.GetPosition().x-radius, hand.GetPosition().y-radius);
+                aabb.get_upperBound().Set(hand.GetPosition().x+radius, hand.GetPosition().y+radius);
+                const bodiesFound = [];
+                const getBodyCB = new Box2D.JSQueryCallback();
+                getBodyCB.ReportFixture = function (fixturePtr) {
+                    const fixture = Box2D.wrapPointer( fixturePtr, Box2D.b2Fixture );
+                    const body = fixture.GetBody();
+                    if(!body.isPhysicsCamera && !fixture.IsSensor() && (!body.mainCharacter || body.snapped)){
+                        bodiesFound.push(body);
+                    }
+                    return true;
+                }
+                game.world.QueryAABB(getBodyCB, aabb);
+
+                console.log("BODIES FOUND:", bodiesFound.length, bodiesFound);
+            }
+        })
+    }
+
+    release(){
+        [this.grabJointLeft, this.grabJointRight].forEach(joint => {
+            if(joint){
+                
+            }
+        })
+
+    }
+
     update() {
         super.update();
         if(this.hat) this.hat.update();
