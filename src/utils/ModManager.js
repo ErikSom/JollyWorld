@@ -8,57 +8,58 @@ import { Settings } from "../Settings";
 const folderName = 'jollymod';
 
 export const init = ()=>{
-	idb.keys().then(keys => {
-		console.log("KEYS:", keys)
+	try{
+		idb.keys().then(keys => {
 
-		const characterMods = [];
-		const vehicleMods = [];
-		const goreMods = [];
-		const textureMods = [];
+			const characterMods = [];
+			const vehicleMods = [];
+			const goreMods = [];
+			const textureMods = [];
 
-		if(keys.find( key => key.startsWith(folderName))){
+			if(keys.find( key => key.startsWith(folderName))){
 
-			keys.forEach(key => {
-				if(key.indexOf(`${folderName}/characters`) === 0 || key.indexOf(`${folderName}/kids`) === 0 || key.indexOf(`${folderName}/babies`) === 0){
-					characterMods.push(key);
+				keys.forEach(key => {
+					if(key.indexOf(`${folderName}/characters`) === 0 || key.indexOf(`${folderName}/kids`) === 0 || key.indexOf(`${folderName}/babies`) === 0){
+						characterMods.push(key);
+					}
+					if(key.indexOf(`${folderName}/vehicles`) === 0){
+						vehicleMods.push(key);
+					}
+					if(key.indexOf(`${folderName}/gore`) === 0){
+						goreMods.push(key);
+					}
+					if(key.indexOf(`${folderName}/textures`) === 0){
+						textureMods.push(key);
+					}
+				})
+
+				if(characterMods.length > 0){
+					modCharacters(characterMods);
 				}
-				if(key.indexOf(`${folderName}/vehicles`) === 0){
-					vehicleMods.push(key);
+
+				if(vehicleMods.length > 0){
+					modVehicles(vehicleMods);
 				}
-				if(key.indexOf(`${folderName}/gore`) === 0){
-					goreMods.push(key);
+
+				if(goreMods.length > 0){
+					modGore(goreMods);
 				}
-				if(key.indexOf(`${folderName}/textures`) === 0){
-					textureMods.push(key);
+
+				if(textureMods.length > 0){
+					modTexture(textureMods);
 				}
-			})
 
-			if(characterMods.length > 0){
-				modCharacters(characterMods);
+				// var url = URL.createObjectURL(blob);
+				// var image = new Image();
+				// document.body.appendChild(image);
+				// image.src = url;
 			}
-
-			if(vehicleMods.length > 0){
-				modVehicles(vehicleMods);
-			}
-
-			if(goreMods.length > 0){
-				modGore(goreMods);
-			}
-
-			if(textureMods.length > 0){
-				modTexture(textureMods);
-			}
-
-			console.log(game.app, characterMods.length, vehicleMods.length);
-			console.log("Mod found, enable mod!!");
-
-
-			// var url = URL.createObjectURL(blob);
-			// var image = new Image();
-			// document.body.appendChild(image);
-			// image.src = url;
-		}
-	})
+		}).catch(e => {
+			// err
+		})
+	}catch(e){
+		//
+	}
 }
 
 const modCharacters = characterMods => {
@@ -75,7 +76,6 @@ const modGore = goreMods => {
 
 const modTexture = textureMods => {
 	textureMods.forEach(key => {
-		console.log(key);
 		const baseName = key.split('.')[0];
 		const number = parseInt(baseName.substr(baseName.length-4, 4), 10);
 		const realTextureName = Settings.textureNames[number];
