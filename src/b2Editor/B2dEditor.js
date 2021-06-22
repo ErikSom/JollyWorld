@@ -51,6 +51,7 @@ import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
 import * as BodyBreakable from './utils/bodyBreaker';
+import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -2054,6 +2055,8 @@ const _B2dEditor = function () {
 	}
 
 	this.deleteSelection = function (force) {
+
+		stopCustomBehaviour();
 
 		const toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
