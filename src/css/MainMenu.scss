@@ -584,8 +584,10 @@
 }
 
 @media screen and (max-height:480px){
-	.game-scroll-block{
-		bottom: 106px;
+	.mainmenu{
+		.game-scroll-block{
+			bottom: 106px;
+		}
 	}
 }
 
