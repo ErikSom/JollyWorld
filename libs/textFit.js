@@ -14,7 +14,7 @@ export default function textFit(textSpan) {
 	textSpan.style.lineHeight = textDiv.offsetHeight+'px';
 	
 	if(textSpan.offsetHeight !== 0){
-		textDiv.style.lineHeight = '0';
+		// textDiv.style.lineHeight = '0';
 	}
 
 	while((textSpan.offsetWidth > (textDiv.offsetWidth-defaultMargin) || textSpan.offsetHeight > textDiv.offsetHeight) && iterations< maxSize-minSize )

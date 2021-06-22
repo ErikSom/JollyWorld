@@ -242,10 +242,12 @@ function UIManager() {
             const hamburger = header.querySelector('.hamburger');
             const mobileBG = header.querySelector('.mobile-bg');
             const headerButtons = header.querySelector('.buttons');
+            const discordButton = header.querySelector('.discord');
             hamburger.onclick = ()=>{
                 mobileBG.classList.toggle('open');
                 headerButtons.classList.toggle('open');
 
+                textFit(discordButton.querySelector('.fit'));
                 textFit(characterSelect.querySelector('.fit'));
                 textFit(editorButton.querySelector('.fit'));
             }

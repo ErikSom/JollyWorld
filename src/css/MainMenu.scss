@@ -583,6 +583,12 @@
 	}
 }
 
+@media screen and (max-height:480px){
+	.game-scroll-block{
+		bottom: 106px;
+	}
+}
+
 @keyframes cloud-anim {
 	0% {
 		background-position: -120px;
