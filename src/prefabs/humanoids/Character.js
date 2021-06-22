@@ -59,6 +59,9 @@ export class Character extends Humanoid {
     }
 
     grab(){
+        console.log("GRAB", this.grabJointLeft, this.grabJointRight)
+        if(this.grabJointLeft || this.grabJointRight) return;
+
         [this.lookupObject.hand_left, this.lookupObject.hand_right].forEach(hand => {
             if(hand && !hand.snapped){
 
@@ -77,9 +80,34 @@ export class Character extends Humanoid {
                     }
                     return true;
                 }
-                game.world.QueryAABB(getBodyCB, aabb);
 
-                console.log("BODIES FOUND:", bodiesFound.length, bodiesFound);
+                game.world.QueryAABB(getBodyCB, aabb);
+                console.log("DAFUQQQQ!!", bodiesFound);
+
+                if(bodiesFound.length > 0){
+                    const targetBody = bodiesFound.shift();
+
+                    let ropeJointDef = new Box2D.b2DistanceJointDef();
+
+
+                    ropeJointDef.Initialize(hand, targetBody, hand.GetPosition(), hand.GetPosition());
+
+                    const length = ropeJointDef.get_length();
+                    ropeJointDef.set_minLength(0);
+                    ropeJointDef.set_maxLength(length);
+
+                    ropeJointDef.set_stiffness(0);
+                    ropeJointDef.set_damping(0);
+
+                    const joint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                    Box2D.destroy(ropeJointDef);
+
+                    if(hand === this.lookupObject.hand_left){
+                        this.grabJointLeft = joint;
+                    }else{
+                        this.grabJointRight = joint;
+                    }
+                }
             }
         })
     }
@@ -87,10 +115,11 @@ export class Character extends Humanoid {
     release(){
         [this.grabJointLeft, this.grabJointRight].forEach(joint => {
             if(joint){
-                
+                game.editor.DestroyJoint(joint);
             }
         })
-
+        this.grabJointLeft = null;
+        this.grabJointRight = null;
     }
 
     update() {
