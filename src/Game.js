@@ -322,6 +322,8 @@ function Game() {
         const userData = SaveManager.getLocalUserdata();
         game.selectedCharacter = userData.selectedCharacter;
 
+        if(urlParams.get('site_id') || urlParams.get('pokiDebug')) Settings.onPoki = true;
+
         this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
@@ -339,6 +341,7 @@ function Game() {
         }
 
         if(window.dafadfgjiwrgj || urlParams.get('disableAds')) Settings.disableAds = true;
+
 
         document.body.addEventListener("keydown", this.onKeyDown.bind(this), {passive:false});
         document.body.addEventListener("keyup", this.onKeyUp.bind(this), {passive:false});
@@ -691,6 +694,7 @@ function Game() {
                 } else{
                     this.unpauseGame();
                     PokiSDK.gameplayStart();
+                    window.pokiGPStart = true;
                     if(e.keyCode == Key.R){
                         // retry
                         game.resetWorld(true);
@@ -706,6 +710,10 @@ function Game() {
         Key.onKeydown(e);
         if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
         if(!this.gameState === this.GAMESTATE_MENU) e.preventDefault();
+
+        if (['ArrowDown', 'ArrowUp', ' '].includes(e.key)) {
+            e.preventDefault();
+        }
     }
     this.onKeyUp = function (e) {
         if(document.activeElement != document.body  && document.activeElement != this.canvas) return;
@@ -773,6 +781,7 @@ function Game() {
 
         }
         PokiSDK.gameplayStart();
+        window.pokiGPStart = true;
         MobileController.show();
         ui.showSmallLogo();
         this.playLevelMidi();
@@ -895,7 +904,12 @@ function Game() {
         ui.hideSmallLogo();
         MidiPlayer.stop();
         ReplayManager.stopRecording();
-        PokiSDK.gameplayStop();
+
+        if(window.pokiGPStart){
+            PokiSDK.gameplayStop();
+            window.pokiGPStart = false;
+        }
+
     }
     this.openEditor = async function () {
         this.gameState = this.GAMESTATE_EDITOR;
@@ -943,7 +957,11 @@ function Game() {
         ui.showPauseMenu();
         AudioManager.stopAllSounds();
         MobileController.hide();
-        PokiSDK.gameplayStop();
+
+        if(window.pokiGPStart){
+            PokiSDK.gameplayStop();
+            window.pokiGPStart = false;
+        }
     }
     this.unpauseGame = function(){
         this.pause = false;

@@ -27,6 +27,7 @@ export var Settings = {
     minlevelVotes:10,
     levelAdmin:false,
     disableAds:false,
+    onPoki:false,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,

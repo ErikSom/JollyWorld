@@ -27,32 +27,26 @@ export const localize = id =>{
 	return text;
 }
 
-export const countries = ['de','nl','gb','us','br','pt','fr','au','es','it','ca','ie','be', 'cz','jr'];
+export const countries = ['de','nl','us','pt','fr','es','it','cz','jr'];
 
 
-export const countryToFlag = country => {
-    switch(country){
-        case 'de': return '🇩🇪'
-        case 'nl': return '🇳🇱'
-        case 'uk': return '🇩🇬'
-        case 'us': return '🇺🇸'
-        case 'br': return '🇧🇷'
-        case 'pt': return '🇵🇹'
-        case 'fr': return '🇫🇷'
-        case 'au': return '🇦🇺'
-        case 'es': return '🇪🇸'
-        case 'it': return '🇮🇹'
-        case 'ca': return '🇨🇦'
-        case 'ie': return '🇮🇪'
-        case 'be': return '🇧🇪'
-    }
-}
-export const countryToLanguage = country => {
-    let language = country
-    if(['uk', 'ca', 'us', 'ie'].includes(country)) language = 'en';
-    if(['br'].includes(country)) language = 'pt';
-    if(['be'].includes(country)) language = 'nl';
-}
+// export const countryToFlag = country => {
+//     switch(country){
+//         case 'de': return '🇩🇪'
+//         case 'nl': return '🇳🇱'
+//         case 'us': return '🇺🇸'
+//         case 'pt': return '🇵🇹'
+//         case 'fr': return '🇫🇷'
+//         case 'es': return '🇪🇸'
+//         case 'it': return '🇮🇹'
+//     }
+// }
+// export const countryToLanguage = country => {
+//     let language = country
+//     if(['uk', 'ca', 'us', 'ie'].includes(country)) language = 'en';
+//     if(['br'].includes(country)) language = 'pt';
+//     if(['be'].includes(country)) language = 'nl';
+// }
 
 const LOCALIZATION_DATA = [
     {
