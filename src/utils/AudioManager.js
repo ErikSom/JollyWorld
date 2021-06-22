@@ -54,7 +54,13 @@ export const loadAudio = (name, json) => {
 			autoplay:false,
 		});
 
-		howl.once('unlock', ()=>{howl.stop();})
+		howl.once('unlock', ()=>{
+			try{
+				howl.stop();
+			}catch(e){
+				//
+			}
+		})
 
 		howl.once('load', function () {
 			Object.keys(json.sprite).forEach(key=>{
@@ -178,7 +184,11 @@ export const stopAllSounds = ()=>{
 		}
 	});
 
-	howls.forEach(howl=> howl.stop());
+	try{
+		howls.forEach(howl=> howl.stop());
+	}catch(e){
+		//
+	}
 	activeSounds = {}
 }
 export const update = ()=> {
