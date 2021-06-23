@@ -11,6 +11,8 @@ import {
 } from '../Settings';
 import nanoid from 'nanoid';
 
+import * as betterLocalStorage from '../utils/LocalStorageWrapper'
+
 
 // static assets van een level:
 // https://static.jollyworld.app/6d3c174811e2246ab9cb15eb76fda6f6.png
@@ -61,7 +63,7 @@ function BackendManager() {
 				method: 'POST',
 				withCredentials: true,
 				headers: {
-				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 				'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({username})
@@ -74,8 +76,8 @@ function BackendManager() {
 				// show error code
 				if(error) return reject(error);
 
-				localStorage.setItem('oauth-token', token);
-				localStorage.removeItem('needsToRegister');
+				betterLocalStorage.setItem('oauth-token', token);
+				betterLocalStorage.removeItem('needsToRegister');
 
 				this.dispatchEvent('login');
 
@@ -90,7 +92,7 @@ function BackendManager() {
 				method: 'GET',
 				withCredentials: true,
 				headers: {
-				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 				},
 			}
 			fetch(`${Settings.API}/me`, body)
@@ -112,23 +114,23 @@ function BackendManager() {
 		})
     }
 
-    this.isLoggedIn =  () => !!localStorage.getItem('oauth-token') && !localStorage.getItem('needsToRegister');
+    this.isLoggedIn =  () => !!betterLocalStorage.getItem('oauth-token') && !betterLocalStorage.getItem('needsToRegister');
 
     this.backendLogin = function () {
 		if(this.isLoggedIn()) return;
 
-		const oauthhandshake = localStorage.getItem('oauth-handshake');
+		const oauthhandshake = betterLocalStorage.getItem('oauth-handshake');
 		if(!oauthhandshake) return;
 
 		fetch(`${Settings.API}/login?code=${encodeURIComponent(oauthhandshake)}&redirect=${encodeURIComponent(Settings.REDIRECT)}`)
 		.then(result => result.json())
 		.then(data=> {
-			localStorage.removeItem('oauth-handshake');
+			betterLocalStorage.removeItem('oauth-handshake');
 
 			const {token, needs_to_register} = data;
-			localStorage.setItem('oauth-token', token);
+			betterLocalStorage.setItem('oauth-token', token);
 			if(needs_to_register){
-				localStorage.setItem('needsToRegister', needs_to_register);
+				betterLocalStorage.setItem('needsToRegister', needs_to_register);
 			}
 
 			if(needs_to_register){
@@ -141,9 +143,9 @@ function BackendManager() {
 	}
 
     this.backendSignout = function () {
-		localStorage.removeItem('oauth-handshake');
-		localStorage.removeItem('oauth-token');
-		localStorage.removeItem('needsToRegister');
+		betterLocalStorage.removeItem('oauth-handshake');
+		betterLocalStorage.removeItem('oauth-token');
+		betterLocalStorage.removeItem('needsToRegister');
 		this.dispatchEvent('logout');
     }
 
@@ -173,7 +175,7 @@ function BackendManager() {
 				method: 'POST',
 				withCredentials: true,
 				headers: {
-				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 				'Content-Type': 'application/json'
 				},
 				body: JSON.stringify(bodyLevelData)
@@ -204,7 +206,7 @@ function BackendManager() {
 				method: 'POST',
 				withCredentials: true,
 				headers: {
-				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 				'Content-Type': 'application/json'
 				},
 			}
@@ -238,7 +240,7 @@ function BackendManager() {
 				method: 'POST',
 				withCredentials: true,
 				headers: {
-				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 				},
 			}
 
@@ -265,7 +267,7 @@ function BackendManager() {
 			method: 'POST',
 			withCredentials: true,
 			headers: {
-			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 			},
 		}
 
@@ -286,7 +288,7 @@ function BackendManager() {
 			method: 'POST',
 			withCredentials: true,
 			headers: {
-			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 			},
 		}
 
@@ -326,7 +328,7 @@ function BackendManager() {
 				method: 'DELETE',
 				withCredentials: true,
 				headers: {
-				'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+				'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 				'Content-Type': 'application/json'
 				},
 			}
@@ -431,7 +433,7 @@ function BackendManager() {
 			method: 'POST',
 			withCredentials: true,
 			headers: {
-			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 			'Content-Type': 'application/json'
 			},
 			body: data
@@ -457,7 +459,7 @@ function BackendManager() {
 			method: 'GET',
 			withCredentials: true,
 			headers: {
-			'Authorization': `Bearer ${localStorage.getItem('oauth-token')}`,
+			'Authorization': `Bearer ${betterLocalStorage.getItem('oauth-token')}`,
 			'Content-Type': 'application/json'
 			},
 		}

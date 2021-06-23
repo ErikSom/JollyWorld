@@ -49,6 +49,7 @@ import { countries } from "./utils/Localization";
 
 
 import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
+import * as betterLocalStorage from './utils/LocalStorageWrapper'
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -927,7 +928,7 @@ function Game() {
         this.editor.editing = true;
         ui.hide();
 
-        if(localStorage.getItem('needsToRegister')){
+        if(betterLocalStorage.getItem('needsToRegister')){
 			backendManager.dispatchEvent('username');
 		}
     }
