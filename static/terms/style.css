@@ -8,9 +8,20 @@ h3{
 }
 html{
 	background-color: #e7b98a;
-	padding: 20px;
+}
+html, body{
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+.scroll{
+	width: 100%;
+	height: 100%;
+	overflow-y: scroll;
 }
 .logo{
+	margin: 32px auto;
 	width: 260px;
 	height: 68px;
 	background-repeat: no-repeat;
@@ -34,7 +45,7 @@ a{
 	line-height: 48px;
 	font-size: 36px;
 	cursor: pointer;
-	margin: 32px 0 0 0;
+	margin: 32px auto;
 	background-color: #7B7B7B;
 }
 .back-button:hover{

@@ -4,6 +4,8 @@ import {
 } from "../data/levelsData";
 import * as idb from 'idb-keyval';
 
+import * as betterLocalStorage from './LocalStorageWrapper'
+
 const nanoid = require('nanoid');
 const saveKeyPrefix = 'JollyWorld';
 
@@ -82,22 +84,14 @@ export const getTempEditorWorld = async function(){
 
 export const saveData = function(key, value){
     key = saveKeyPrefix+'_'+key;
-    try{
-        window.localStorage.setItem(key, JSONStringify(value));
-        return value;
-    }catch(err){
-        console.warn("Saving not working", err);
-    }
+    betterLocalStorage.setItem(key, JSONStringify(value));
+    return value;
 }
 
 export const loadData = function(key){
     key = saveKeyPrefix+'_'+key;
-    try{
-        const data = window.localStorage.getItem(key);
-        return data ? JSON.parse(data) : undefined;
-    }catch(err){
-        console.warn("Saving not working", err);
-    }
+    const data = betterLocalStorage.getItem(key);
+    return data ? JSON.parse(data) : undefined;
 }
 
 

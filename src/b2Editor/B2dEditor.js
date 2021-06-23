@@ -51,6 +51,7 @@ import { applyColorMatrix } from "./utils/colorMatrixParser";
 import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
 import * as BodyBreakable from './utils/bodyBreaker';
+import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -2055,6 +2056,8 @@ const _B2dEditor = function () {
 	}
 
 	this.deleteSelection = function (force) {
+
+		stopCustomBehaviour();
 
 		const toBeDeletedPrefabs = []
 		for (var key in this.selectedPrefabs) {
@@ -7857,6 +7860,8 @@ const _B2dEditor = function () {
 				if(dataVertices[i].point1){
 					dataVertices[i].point1.x = dataVertices[i].point1.x * scaleX;
 					dataVertices[i].point1.y = dataVertices[i].point1.y * scaleY;
+				}
+				if(dataVertices[i].point2){
 					dataVertices[i].point2.x = dataVertices[i].point2.x * scaleX;
 					dataVertices[i].point2.y = dataVertices[i].point2.y * scaleY;
 				}
@@ -7919,6 +7924,8 @@ const _B2dEditor = function () {
 							if(gObj.vertices[k].point1){
 								gObj.vertices[k].point1.x *= scaleX;
 								gObj.vertices[k].point1.y *= scaleY;
+							}
+							if(gObj.vertices[k].point2){
 								gObj.vertices[k].point2.x *= scaleX;
 								gObj.vertices[k].point2.y *= scaleY;
 							}
@@ -7941,6 +7948,8 @@ const _B2dEditor = function () {
 					if(sprite.data.vertices[j].point1){
 						sprite.data.vertices[j].point1.x *= scaleX;
 						sprite.data.vertices[j].point1.y *= scaleY;
+					}
+					if(sprite.data.vertices[j].point2){
 						sprite.data.vertices[j].point2.x *= scaleX;
 						sprite.data.vertices[j].point2.y *= scaleY;
 					}
