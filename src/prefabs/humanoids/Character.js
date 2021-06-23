@@ -21,7 +21,9 @@ export class Character extends Humanoid {
         this.vehicleParts = [];
         this.isCharacter = true;
         this.grabJointLeft = null;
+        this.grabBodyLeft = null;
         this.grabJointRight = null;
+        this.grabBodyRight = null;
 
     }
 
@@ -32,6 +34,13 @@ export class Character extends Humanoid {
 
     init() {
         super.init();
+
+        [this.lookupObject.body, this.lookupObject.head].forEach(body => {
+            for (let fixture = body.GetFixtureList(); Box2D.getPointer(fixture) !== Box2D.getPointer(Box2D.NULL); fixture = fixture.GetNext()) {
+                fixture.SetDensity(fixture.GetDensity()*0.5);
+            }
+        })
+        // make eyes not interactable
     }
 
     flip(noVehicleOverride){
@@ -82,13 +91,11 @@ export class Character extends Humanoid {
                 }
 
                 game.world.QueryAABB(getBodyCB, aabb);
-                console.log("DAFUQQQQ!!", bodiesFound);
 
                 if(bodiesFound.length > 0){
                     const targetBody = bodiesFound.shift();
 
                     let ropeJointDef = new Box2D.b2DistanceJointDef();
-
 
                     ropeJointDef.Initialize(hand, targetBody, hand.GetPosition(), hand.GetPosition());
 
@@ -102,10 +109,22 @@ export class Character extends Humanoid {
                     const joint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
                     Box2D.destroy(ropeJointDef);
 
+                    if(targetBody.oldDensities === undefined){
+                        targetBody.oldDensities = [];
+                        for (let fixture = targetBody.GetFixtureList(); Box2D.getPointer(fixture) !== Box2D.getPointer(Box2D.NULL); fixture = fixture.GetNext()) {
+                            const oldDensity = fixture.GetDensity();
+                            targetBody.oldDensities.push(oldDensity);
+                            fixture.SetDensity(oldDensity*0.05);
+                        }
+                        targetBody.ResetMassData();
+                    }
+
                     if(hand === this.lookupObject.hand_left){
                         this.grabJointLeft = joint;
+                        this.grabBodyLeft = targetBody;
                     }else{
                         this.grabJointRight = joint;
+                        this.grabBodyRight = targetBody;
                     }
                 }
             }
@@ -120,6 +139,24 @@ export class Character extends Humanoid {
         })
         this.grabJointLeft = null;
         this.grabJointRight = null;
+
+        [this.grabBodyLeft, this.grabBodyRight].forEach(targetBody => {
+            if(targetBody && targetBody.oldDensities !== undefined){
+
+                let count = 0;
+                for (let fixture = targetBody.GetFixtureList(); Box2D.getPointer(fixture) !== Box2D.getPointer(Box2D.NULL); fixture = fixture.GetNext()) {
+                    const oldDensity = targetBody.oldDensities[count];
+                    fixture.SetDensity(oldDensity);
+                    count++;
+                }
+                targetBody.ResetMassData();
+
+                delete targetBody.oldDensities;
+            }
+        })
+
+        this.grabBodyLeft = null;
+        this.grabBodyRight = null;
     }
 
     update() {

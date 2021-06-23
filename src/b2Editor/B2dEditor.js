@@ -1970,6 +1970,7 @@ const _B2dEditor = function () {
 			delete body.goingToBreak;
 			delete body.broken;
 			delete body.breakPenalty;
+			delete body.oldDensities;
 		}
 	}
 

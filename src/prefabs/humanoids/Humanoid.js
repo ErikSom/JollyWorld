@@ -1008,11 +1008,29 @@ export class Humanoid extends PrefabManager.basePrefab {
                 }
             },
         }
-        // if (direction == 'set-random') {
-        //     const randomPoses = ['up', 'down', 'right'];
-        //     this.randomPose = randomPoses[Math.floor(Math.random() * randomPoses.length)];
-        //     return;
-        // }
+
+        const bodyGroupMap = {
+            [Humanoid.BODY_PARTS.FEET_LEFT]:'leftLeg',
+            [Humanoid.BODY_PARTS.LEG_LEFT]:'leftLeg',
+            [Humanoid.BODY_PARTS.THIGH_LEFT]:'leftLeg',
+            [Humanoid.BODY_PARTS.FEET_RIGHT]:'rightLeg',
+            [Humanoid.BODY_PARTS.LEG_RIGHT]:'rightLeg',
+            [Humanoid.BODY_PARTS.THIGH_RIGHT]:'rightLeg',
+            [Humanoid.BODY_PARTS.BELLY]:'leftLeg',
+            [Humanoid.BODY_PARTS.BELLY]:'rightLeg',
+        }
+
+        const ignoreBodyGroup = {};
+        Object.keys(bodyGroupMap).forEach(key => {
+            const refJoint = this.lookupObject[key + '_joint'];
+            if(refJoint && refJoint.snapTick && refJoint.snapTick>12){
+                const groupKey = bodyGroupMap[key];
+
+                ignoreBodyGroup[groupKey] = true;
+            }
+        })
+
+
 
         let targetPosition = positions[direction];
         // if (direction == 'random') targetPosition = positions[this.randomPose];
@@ -1026,6 +1044,28 @@ export class Humanoid extends PrefabManager.basePrefab {
                 if (!refBody) continue;
                 let refJoint = this.lookupObject[body_part + '_joint'];
                 if (!refJoint) continue;
+
+                const groupKey = bodyGroupMap[body_part];
+                if(ignoreBodyGroup[groupKey]) continue;
+
+                if(refJoint.snapTick && refJoint.snapTick > 10){
+                    // make sure the character does not break his own body
+                    const leftLeg = [Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_LEFT];
+                    const rightLeg = [Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.THIGH_RIGHT];
+
+
+                    [leftLeg, rightLeg].forEach(groupedBodies => {
+                        if(groupedBodies.includes(body_part)){
+                            groupedBodies.forEach(body_part => {
+                                let otherRefJoint = this.lookupObject[body_part + '_joint'];
+                                if(otherRefJoint){
+                                    otherRefJoint.snapTick = refJoint.snapTick;
+                                }
+                            })
+                        }
+                    })
+                    continue;
+                }
 
                 if (targetPosition[body_part].reference != 'body' && !this.lookupObject[targetPosition[body_part].reference + '_joint']) continue;
 
