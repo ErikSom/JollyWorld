@@ -305,6 +305,8 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if(targetJoint.get_minLength() === targetJoint.get_maxLength()){
                         skip = true;
                     }
+                }else{
+                    targetJoint = game.editor.CastJoint(targetJoint);
                 }
 
                 if(!skip){

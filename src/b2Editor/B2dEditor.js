@@ -53,7 +53,7 @@ import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw"
 import * as BodyBreakable from './utils/bodyBreaker';
 import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
 
-const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback } = Box2D; // emscriptem specific
+const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
 
 const PIXIHeaven = self.PIXI.heaven;
@@ -2023,14 +2023,18 @@ const _B2dEditor = function () {
 				}
 			});
 		}
-
 	}
+
+	this.existsInEmscriptenCache = obj => getPointer(obj) in getCache(getClass(obj));
 
 	this.DestroyJoint = function(joint){
 		if(!joint || joint.destroyed) return;
 		this.preDestroyJoint(joint);
 		if(joint.innerLoopDestroyed) return;
-		this.world.DestroyJoint(joint);
+
+		if(this.existsInEmscriptenCache(joint)){
+			this.world.DestroyJoint(joint);
+		}
 	}
 	this.CleanJoint = function(joint){
 		// clean up all properties for Emscripten object recycle
