@@ -75,8 +75,9 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.vainJoints = [];
         this.jointMaxForces = [1000000, 1000000, 800000, 800000];
 
-        // game.editor.setBodyCollision(this.lookupObject.eye_left, [5]);
-        // game.editor.setBodyCollision(this.lookupObject.eye_right, [5]);
+        game.editor.setBodyCollision(this.lookupObject.eye_left, [2]);
+        game.editor.setBodyCollision(this.lookupObject.eye_right, [2]);
+
         var i;
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             var body = this.lookupObject._bodies[i];
@@ -635,7 +636,6 @@ export class Humanoid extends PrefabManager.basePrefab {
 
                     revoluteJointDef.set_collideConnected(false);
 
-
                     let joint = game.editor.CreateJoint(revoluteJointDef);
                     Box2D.destroy(revoluteJointDef);
 
@@ -680,7 +680,12 @@ export class Humanoid extends PrefabManager.basePrefab {
                     });
                     //carve bodies
 
-                    this.lookupObject[update.target].snapped = true;
+                    const targetBody = this.lookupObject[update.target];
+                    targetBody.snapped = true;
+
+                    if(["eye_left", "eye_right"].includes(update.target)){
+                        game.editor.setBodyCollision(targetBody, [1]);
+                    }
 
                     if (targetJoint.GetBodyA().isFlesh){
                         game.editor.queueDecalToBody(targetJoint.GetBodyA(), anchorAPos, "Decal.png", true);

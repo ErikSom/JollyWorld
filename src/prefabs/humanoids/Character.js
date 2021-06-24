@@ -133,8 +133,8 @@ export class Character extends Humanoid {
 
     release(){
         [this.grabJointLeft, this.grabJointRight].forEach(joint => {
-            if(joint){
-                game.editor.DestroyJoint(joint);
+            if(joint && !joint.destroyed){
+                game.editor.deleteObjects([joint]);
             }
         })
         this.grabJointLeft = null;
