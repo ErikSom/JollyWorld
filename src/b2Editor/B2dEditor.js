@@ -4449,19 +4449,7 @@ const _B2dEditor = function () {
 							stopEditingGroup();
 						}
 					}else{
-						this.selectedPhysicsBodies = this.queryWorldForBodies(this.startSelectionPoint, this.mousePosWorld);
-						this.selectedTextures = this.queryWorldForGraphics(this.startSelectionPoint, this.mousePosWorld);
-
-						for(let i = 0; i<this.selectedTextures.length; i++){
-							const texture = this.selectedTextures[i];
-							if(texture.myBody){
-								if(!this.selectedPhysicsBodies.includes(texture.myBody)){
-									this.selectedPhysicsBodies.push(texture.myBody);
-								}
-								this.selectedTextures.splice(i, 1);
-								i--;
-							}
-						}
+						this.makeSelection(this.startSelectionPoint, this.mousePosWorld);
 					}
 
 					this.applyToSelectedObjects(this.TRANSFORM_UPDATE);
@@ -4740,6 +4728,24 @@ const _B2dEditor = function () {
         e.preventDefault();
 
     }
+
+	this.makeSelection = (startPos, endPos) => {
+		this.selectedPhysicsBodies = this.queryWorldForBodies(startPos, endPos);
+		this.selectedTextures = this.queryWorldForGraphics(startPos, endPos);
+
+		for(let i = 0; i<this.selectedTextures.length; i++){
+			const texture = this.selectedTextures[i];
+			if(texture.myBody){
+				if(!this.selectedPhysicsBodies.includes(texture.myBody)){
+					this.selectedPhysicsBodies.push(texture.myBody);
+				}
+				this.selectedTextures.splice(i, 1);
+				i--;
+			}
+		}
+	}
+
+
 	this.onKeyDown = function (e) {
 		const gameContainer = B2dEditor.container.camera || B2dEditor.container;
 
@@ -4804,15 +4810,28 @@ const _B2dEditor = function () {
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
-		}else if(e.keyCode == 65 && this.ctrlDown && this.altDown){
-			if(this.selectedTextures.length > 0 && Object.keys(this.selectedPrefabs).length + this.selectedPhysicsBodies.length + this.selectedTextures.length === 1){
+		}else if(e.keyCode == 65){
+			if(this.ctrlDown && this.altDown){
+				if(this.selectedTextures.length > 0 && Object.keys(this.selectedPrefabs).length + this.selectedPhysicsBodies.length + this.selectedTextures.length === 1){
 
-				const graphic = this.selectedTextures[0];
-				if(graphic.data.type === this.object_GRAPHIC){
+					const graphic = this.selectedTextures[0];
+					if(graphic.data.type === this.object_GRAPHIC){
 
-					const animatorPrefab = `{"objects":[[4,${graphic.x},${graphic.y},${graphic.rotation},{"duration":1,"easing":"linear","startProgress":0,"clockwise":true,"animating":true,"path":${JSON.stringify(graphic.data.vertices)},"linkedTargetId":null,"linkedReferenceId":null},"Animator"]]}`;
-					const animatorBodies = game.editor.buildJSON(JSON.parse(animatorPrefab));
+						const animatorPrefab = `{"objects":[[4,${graphic.x},${graphic.y},${graphic.rotation},{"duration":1,"easing":"linear","startProgress":0,"clockwise":true,"animating":true,"path":${JSON.stringify(graphic.data.vertices)},"linkedTargetId":null,"linkedReferenceId":null},"Animator"]]}`;
+						const animatorBodies = game.editor.buildJSON(JSON.parse(animatorPrefab));
+					}
 				}
+			}else if(this.ctrlDown){
+				const lower = new Box2D.b2Vec2(-50000, -50000);
+				const upper = new Box2D.b2Vec2(50000, 50000);
+
+				this.makeSelection(lower, upper);
+				this.applyToSelectedObjects(this.TRANSFORM_UPDATE);
+				this.filterSelectionForPrefabs();
+				this.updateSelection();
+
+				destroy(lower);
+				destroy(upper);
 			}
 		}else if ((e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
 			const minScale = 0.01;
