@@ -1051,7 +1051,7 @@ export const showSaveScreen = function () {
         saveScreen.domElement.style.left = loadScreen.domElement.style.left;
     }
 }
-export const generateLevelList = function (divWrapper, buttonName, buttonFunction) {
+export const generateLevelList = function (divWrapper, buttonName, buttonFunction, appendDiv) {
 
     //fill here
     var filterBar = document.createElement('div');
@@ -1247,16 +1247,17 @@ export const showLoadScreen = function () {
     const buttonFunction = (button, level) => {
         const doLevelLoad = () => {
             button.style.backgroundColor = 'grey';
+            const oldText = button.innerText;
             button.innerText = 'LOADING..';
             game.loadUserLevelData(level).then(() => {
                 button.style.backgroundColor = '';
-                button.innerText = 'LOAD';
+                button.innerText = oldText;
                 hideEditorPanels();
                 setLevelSpecifics();
             }).catch((error) => {
                 console.log(error);
                 button.style.backgroundColor = '';
-                button.innerText = 'LOAD';
+                button.innerText = oldText;
             });
         }
         if (hasUnsavedChanges()) {
@@ -1272,6 +1273,55 @@ export const showLoadScreen = function () {
     while (levelListDiv.firstChild) levelListDiv.removeChild(levelListDiv.firstChild)
 
     generateLevelList(levelListDiv, 'Load', buttonFunction);
+
+    const innerLevelListElement = levelListDiv.querySelector('.itemList');
+
+    const importDiv = document.createElement('div');
+    importDiv.classList.add('listItem');
+    importDiv.style = `
+        height: 40px;
+        align-items: center;
+    `
+
+    const input = document.createElement('input');
+    input.setAttribute('placeholder', 'Paste preview levelId')
+    importDiv.appendChild(input);
+    input.style = `
+        margin: 5px;
+        width: 78%;
+        font-size: 18px;
+        height: 30px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        background-color: rgb(68, 68, 68);
+        padding: 0px 5px;
+        border: none;
+        color: rgb(0, 255, 0);
+    `
+
+    const importButton = document.createElement('div');
+    importButton.innerText = 'IMPORT';
+    importButton.classList.add('headerButton', 'save', 'buttonOverlay', 'dark')
+    importDiv.appendChild(importButton);
+
+    importButton.onclick = ()=>{
+        if(input.value.length !== 21){
+            alert('Invalid preview id');
+        }else{
+            backendManager.getPublishedLevelInfo(input.value).then(data => {
+                if(data.published){
+                    alert("Can't import published levels");
+                }else{
+                    buttonFunction(importButton, data);
+                }
+            }).catch(err => {
+                alert('Something went wrong with importing');
+            })
+        }
+    }
+
+    innerLevelListElement.appendChild(importDiv);
+
 
     loadScreen.domElement.style.top = '10px';
     loadScreen.domElement.style.left = `${window.innerWidth-400-20}px`
