@@ -3170,6 +3170,8 @@ const _B2dEditor = function () {
 						}else if(this.selectedPhysicsBodies.length > 0){
 							const targetSprite = this.selectedPhysicsBodies[0].mySprite;
 							this.deepClickMinimumLayer = targetSprite.parent.getChildIndex(targetSprite);
+
+							const myTexture = targetSprite.myBody.myTexture;
 						}else{
 							const targetSprite = this.selectedTextures[0];
 							this.deepClickMinimumLayer = targetSprite.parent.getChildIndex(targetSprite);
@@ -6895,7 +6897,7 @@ const _B2dEditor = function () {
 		for(let i = 0; i<selectedTextures.length; i++){
 			const texture = selectedTextures[i];
 			if(texture.myBody){
-				if(!selectedPhysicsBodies.includes(texture.myBody)){
+				if(!selectedPhysicsBodies.includes(texture.myBody) && texture.data.type !== this.object_BODY){
 					selectedPhysicsBodies.push(texture.myBody);
 				}
 				selectedTextures.splice(i, 1);
