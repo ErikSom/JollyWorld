@@ -638,7 +638,7 @@ function Game() {
                     this.character.flip();
                 }
 
-                if(Key.isPressed(Settings.keys.grab)){
+                if(Key.isDown(Settings.keys.grab)){
                     this.character.grab();
                 }
                 if(Key.isReleased(Settings.keys.grab)){

@@ -68,13 +68,13 @@ export class Character extends Humanoid {
     }
 
     grab(){
-        console.log("GRAB", this.grabJointLeft, this.grabJointRight)
+        const armLength = 3.43;
         if(this.grabJointLeft || this.grabJointRight) return;
 
         [this.lookupObject.hand_left, this.lookupObject.hand_right].forEach(hand => {
             if(hand && !hand.snapped){
 
-                const radius = 0.5;
+                const radius = 0.4;
                 const aabb = new Box2D.b2AABB();
 
                 aabb.get_lowerBound().Set(hand.GetPosition().x-radius, hand.GetPosition().y-radius);
@@ -99,14 +99,14 @@ export class Character extends Humanoid {
 
                     ropeJointDef.Initialize(hand, targetBody, hand.GetPosition(), hand.GetPosition());
 
-                    const length = ropeJointDef.get_length();
+                    let length = ropeJointDef.get_length();
                     ropeJointDef.set_minLength(0);
                     ropeJointDef.set_maxLength(length);
 
                     ropeJointDef.set_stiffness(0);
                     ropeJointDef.set_damping(0);
 
-                    const joint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                    const handJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
                     Box2D.destroy(ropeJointDef);
 
                     if(targetBody.oldDensities === undefined){
@@ -119,13 +119,52 @@ export class Character extends Humanoid {
                         targetBody.ResetMassData();
                     }
 
+                    // body joint 
+                    ropeJointDef = new Box2D.b2DistanceJointDef();
+
+                    ropeJointDef.Initialize(this.lookupObject.body, targetBody, this.lookupObject.body.GetPosition(), hand.GetPosition());
+
+                    length = ropeJointDef.get_length();
+                    ropeJointDef.set_minLength(0);
+                    ropeJointDef.set_maxLength(armLength);
+
+                    ropeJointDef.set_stiffness(0);
+                    ropeJointDef.set_damping(0);
+                    ropeJointDef.set_collideConnected(true);
+
+                    const bodyJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                    handJoint.linkedJoints = [bodyJoint];
+                    Box2D.destroy(ropeJointDef);
+
+                    let connectedArmParts = null;
+
                     if(hand === this.lookupObject.hand_left){
-                        this.grabJointLeft = joint;
+                        connectedArmParts = [this.lookupObject.arm_left, this.lookupObject.shoulder_left];
+                        this.grabJointLeft = handJoint;
                         this.grabBodyLeft = targetBody;
                     }else{
-                        this.grabJointRight = joint;
+                        connectedArmParts = [this.lookupObject.arm_right, this.lookupObject.shoulder_right];
+                        this.grabJointRight = handJoint;
                         this.grabBodyRight = targetBody;
                     }
+
+                    connectedArmParts.forEach(part => {
+                        if(part && !part.destroyed){
+                            ropeJointDef = new Box2D.b2DistanceJointDef();
+                            ropeJointDef.Initialize(part, targetBody, part.GetPosition(), hand.GetPosition());
+
+                            length = ropeJointDef.get_length();
+                            ropeJointDef.set_minLength(0);
+                            ropeJointDef.set_maxLength(armLength);
+
+                            ropeJointDef.set_stiffness(0);
+                            ropeJointDef.set_damping(0);
+
+                            const newJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                            handJoint.linkedJoints.push(newJoint);
+                            Box2D.destroy(ropeJointDef);
+                        }
+                    })
                 }
             }
         })
