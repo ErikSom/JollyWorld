@@ -4815,8 +4815,8 @@ const _B2dEditor = function () {
 			} else {
 				this.applyToSelectedObjects(this.TRANSFORM_ROTATE, this.shiftDown ? -10 : -1);
 			}
-		}else if(e.keyCode == 65){
-			if(this.ctrlDown && this.altDown){
+		}else if(e.keyCode == 65 && this.ctrlDown){
+			if(this.altDown){
 				if(this.selectedTextures.length > 0 && Object.keys(this.selectedPrefabs).length + this.selectedPhysicsBodies.length + this.selectedTextures.length === 1){
 
 					const graphic = this.selectedTextures[0];
@@ -4826,7 +4826,7 @@ const _B2dEditor = function () {
 						const animatorBodies = game.editor.buildJSON(JSON.parse(animatorPrefab));
 					}
 				}
-			}else if(this.ctrlDown){
+			}else {
 				const lower = new Box2D.b2Vec2(-50000, -50000);
 				const upper = new Box2D.b2Vec2(50000, 50000);
 
