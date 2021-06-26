@@ -8,7 +8,8 @@ import {
 import {globalEvents, GLOBAL_EVENTS} from '../../utils/EventDispatcher'
 import {Humanoid} from './Humanoid'
 import * as MobileController from '../../utils/MobileController'
-import { b2MulVec2 } from '../../../libs/debugdraw';
+import { b2CloneVec2, b2MulVec2 } from '../../../libs/debugdraw';
+import { crawlJointsUtility } from '../level/Finish';
 
 const { getPointer, NULL } = Box2D;
 
@@ -69,7 +70,22 @@ export class Character extends Humanoid {
 
     grab(){
         const armLength = 3.43;
-        if(this.grabJointLeft || this.grabJointRight) return;
+        if(this.grabJointLeft || this.grabJointRight || !this.alive){
+
+            if(this.grabJointLeft){
+                [this.lookupObject.arm_left, this.lookupObject.hand_left, this.lookupObject.shoulder_left].forEach(obj => {
+                    if(obj && obj.snapped) this.release(true, false);
+                })
+            }
+
+            if(this.grabJointRight){
+                [this.lookupObject.arm_right, this.lookupObject.hand_right, this.lookupObject.shoulder_right].forEach(obj => {
+                    if(obj && obj.snapped) this.release(false, true);
+                })
+            }
+
+            return;
+        }
 
         [this.lookupObject.hand_left, this.lookupObject.hand_right].forEach(hand => {
             if(hand && !hand.snapped){
@@ -92,39 +108,83 @@ export class Character extends Humanoid {
 
                 game.world.QueryAABB(getBodyCB, aabb);
 
-                if(bodiesFound.length > 0){
-                    const targetBody = bodiesFound.shift();
+                const directions = 8;
 
-                    let ropeJointDef = new Box2D.b2DistanceJointDef();
+                const checkSlize = (360 / directions) * game.editor.DEG2RAD;
+                const totalCircleRad = 360 * game.editor.DEG2RAD;
+                const rayStart = hand.GetPosition();
 
-                    ropeJointDef.Initialize(hand, targetBody, hand.GetPosition(), hand.GetPosition());
+                let targetBody = null;
 
-                    let length = ropeJointDef.get_length();
-                    ropeJointDef.set_minLength(0);
-                    ropeJointDef.set_maxLength(length);
+                for (let i = 0; i < totalCircleRad; i += checkSlize) {
+                    const rayEnd = b2CloneVec2(rayStart);
+                    rayEnd.set_x(rayEnd.get_x() + Math.cos(i) * radius );
+                    rayEnd.set_y(rayEnd.get_y() + Math.sin(i) * radius );
 
-                    ropeJointDef.set_stiffness(0);
-                    ropeJointDef.set_damping(0);
+                    let callback = Object.assign(new Box2D.JSRayCastCallback(), {
+                        ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
 
-                    const handJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                            const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
+                            const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
+                            const normal = Box2D.wrapPointer(normal_p, Box2D.b2Vec2);
+
+                            if(!bodiesFound.includes(fixture.GetBody())){
+                                return -1;
+                            }
+                            if (fixture.IsSensor()) return -1;
+                            this.m_hit = true;
+                            this.m_point = point;
+                            this.m_normal = normal;
+                            this.m_fixture = fixture;
+                            return fraction;
+                        },
+                        m_hit: false
+                    });
+                    game.world.RayCast(callback, rayStart, rayEnd);
+                    if(callback.m_hit){
+                        targetBody = callback.m_fixture.GetBody();
+                        break;
+                    }
+                    Box2D.destroy(rayEnd);
+                }
+
+                if(targetBody){
+
+                    let ropeJointDef = new Box2D.b2RevoluteJointDef();
+
+                    ropeJointDef.Initialize(hand, targetBody, hand.GetPosition());
+
+                    ropeJointDef.set_lowerAngle(0);
+                    ropeJointDef.set_upperAngle(0);
+                    ropeJointDef.set_enableLimit(true);
+
+                    const handJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2RevoluteJoint);
                     Box2D.destroy(ropeJointDef);
 
                     if(targetBody.oldDensities === undefined){
-                        targetBody.oldDensities = [];
-                        for (let fixture = targetBody.GetFixtureList(); Box2D.getPointer(fixture) !== Box2D.getPointer(Box2D.NULL); fixture = fixture.GetNext()) {
-                            const oldDensity = fixture.GetDensity();
-                            targetBody.oldDensities.push(oldDensity);
-                            fixture.SetDensity(oldDensity*0.05);
-                        }
-                        targetBody.ResetMassData();
+
+                        const targetBodies = [targetBody, ...crawlJointsUtility(targetBody, body => !body.mainCharacter)];
+
+                        targetBodies.forEach(body=>{
+                            const densityReducer = 0.05;
+                            if(body.oldDensities === undefined){
+                                body.oldDensities = [];
+                                for (let fixture = body.GetFixtureList(); Box2D.getPointer(fixture) !== Box2D.getPointer(Box2D.NULL); fixture = fixture.GetNext()) {
+                                    const oldDensity = fixture.GetDensity();
+                                    body.oldDensities.push(oldDensity);
+                                    fixture.SetDensity(oldDensity*densityReducer);
+                                }
+                                body.ResetMassData();
+                            }
+                        });
                     }
 
-                    // body joint 
+                    // body joint
                     ropeJointDef = new Box2D.b2DistanceJointDef();
 
                     ropeJointDef.Initialize(this.lookupObject.body, targetBody, this.lookupObject.body.GetPosition(), hand.GetPosition());
 
-                    length = ropeJointDef.get_length();
+                    let length = ropeJointDef.get_length();
                     ropeJointDef.set_minLength(0);
                     ropeJointDef.set_maxLength(armLength);
 
@@ -134,6 +194,23 @@ export class Character extends Humanoid {
 
                     const bodyJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
                     handJoint.linkedJoints = [bodyJoint];
+                    Box2D.destroy(ropeJointDef);
+
+                    // head joint
+                    ropeJointDef = new Box2D.b2DistanceJointDef();
+
+                    ropeJointDef.Initialize(this.lookupObject.head, targetBody, this.lookupObject.head.GetPosition(), hand.GetPosition());
+
+                    length = ropeJointDef.get_length();
+                    ropeJointDef.set_minLength(0);
+                    ropeJointDef.set_maxLength(armLength*2);
+
+                    ropeJointDef.set_stiffness(0);
+                    ropeJointDef.set_damping(0);
+                    ropeJointDef.set_collideConnected(false);
+
+                    const headJoint = Box2D.castObject(game.editor.CreateJoint(ropeJointDef), Box2D.b2DistanceJoint);
+                    handJoint.linkedJoints.push(headJoint);
                     Box2D.destroy(ropeJointDef);
 
                     let connectedArmParts = null;
@@ -170,27 +247,43 @@ export class Character extends Humanoid {
         })
     }
 
-    release(){
-        [this.grabJointLeft, this.grabJointRight].forEach(joint => {
+    release(left=true, right=true){
+
+        const jointArr = [];
+        if(left) jointArr.push(this.grabJointLeft);
+        if(right) jointArr.push(this.grabJointRight);
+
+        jointArr.forEach(joint => {
             if(joint && !joint.destroyed){
                 game.editor.deleteObjects([joint]);
             }
         })
+
         this.grabJointLeft = null;
         this.grabJointRight = null;
 
-        [this.grabBodyLeft, this.grabBodyRight].forEach(targetBody => {
+        const bodyArr = [];
+        if(left) bodyArr.push(this.grabBodyLeft);
+        if(right) bodyArr.push(this.grabBodyRight);
+
+        bodyArr.forEach(targetBody => {
             if(targetBody && targetBody.oldDensities !== undefined){
 
-                let count = 0;
-                for (let fixture = targetBody.GetFixtureList(); Box2D.getPointer(fixture) !== Box2D.getPointer(Box2D.NULL); fixture = fixture.GetNext()) {
-                    const oldDensity = targetBody.oldDensities[count];
-                    fixture.SetDensity(oldDensity);
-                    count++;
-                }
-                targetBody.ResetMassData();
+                const targetBodies = [targetBody, ...crawlJointsUtility(targetBody, body => !body.mainCharacter)];
 
-                delete targetBody.oldDensities;
+                targetBodies.forEach(body=>{
+                    if(body.oldDensities !== undefined){
+                        let count = 0;
+                        for (let fixture = body.GetFixtureList(); Box2D.getPointer(fixture) !== Box2D.getPointer(Box2D.NULL); fixture = fixture.GetNext()) {
+                            const oldDensity = body.oldDensities[count];
+                            fixture.SetDensity(oldDensity);
+                            count++;
+                        }
+                        body.ResetMassData();
+                        delete body.oldDensities;
+                    }
+                });
+
             }
         })
 
@@ -217,6 +310,7 @@ export class Character extends Humanoid {
     die(){
         if(this.alive){
             this.detachFromVehicle();
+            this.release();
             game.gameLose();
         }
         super.die();

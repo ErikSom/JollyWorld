@@ -153,7 +153,6 @@ export const doAction = function (actionData, target) {
 
     switch (actionData.type) {
         case "Impulse":
-            debugger;
                 if (target.data.prefabInstanceName) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
                 } else bodies = [target.myBody];
@@ -170,7 +169,6 @@ export const doAction = function (actionData, target) {
                     const mass = body.GetMass() || 1;
 
                     if(actionData.linearForce === undefined){ // legacy fix
-                        debugger;
                         actionData.linearForce = (actionData.impulseForce * impulseReducer) / mass;
                     }
 
