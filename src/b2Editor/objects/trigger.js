@@ -153,6 +153,7 @@ export const doAction = function (actionData, target) {
 
     switch (actionData.type) {
         case "Impulse":
+            debugger;
                 if (target.data.prefabInstanceName) {
                     bodies = B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies;
                 } else bodies = [target.myBody];
@@ -166,21 +167,22 @@ export const doAction = function (actionData, target) {
                     //actionData.rotationForce
 
                     const impulseReducer = 20;
+                    const mass = body.GetMass() || 1;
 
                     if(actionData.linearForce === undefined){ // legacy fix
                         debugger;
-                        actionData.linearForce = (actionData.impulseForce * impulseReducer) / body.GetMass();
+                        actionData.linearForce = (actionData.impulseForce * impulseReducer) / mass;
                     }
 
-                    const force = actionData.linearForce * body.GetMass() / impulseReducer;
+                    const force = actionData.linearForce * mass / impulseReducer;
                     const impulse = new Box2D.b2Vec2(force * Math.cos(a), force * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
 
                     if(actionData.rotationalForce === undefined){  // legacy fix
-                        actionData.rotationalForce = actionData.rotationForce / body.GetMass() / impulseReducer;
+                        actionData.rotationalForce = actionData.rotationForce / mass / impulseReducer;
                     }
 
-                    const rotationForce = actionData.rotationalForce * body.GetMass() * impulseReducer;
+                    const rotationForce = actionData.rotationalForce * mass * impulseReducer;
                     body.ApplyTorque(rotationForce, true)
                     Box2D.destroy(impulse);
                 });
