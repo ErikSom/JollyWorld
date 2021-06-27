@@ -108,7 +108,7 @@ export class Character extends Humanoid {
 
                 game.world.QueryAABB(getBodyCB, aabb);
 
-                const directions = 8;
+                const directions = 12;
 
                 const checkSlize = (360 / directions) * game.editor.DEG2RAD;
                 const totalCircleRad = 360 * game.editor.DEG2RAD;
@@ -118,8 +118,8 @@ export class Character extends Humanoid {
 
                 for (let i = 0; i < totalCircleRad; i += checkSlize) {
                     const rayEnd = b2CloneVec2(rayStart);
-                    rayEnd.set_x(rayEnd.get_x() + Math.cos(i) * radius );
-                    rayEnd.set_y(rayEnd.get_y() + Math.sin(i) * radius );
+                    rayEnd.set_x(rayEnd.get_x() + Math.cos(i) * 0.6 );
+                    rayEnd.set_y(rayEnd.get_y() + Math.sin(i) * 0.6 );
 
                     let callback = Object.assign(new Box2D.JSRayCastCallback(), {
                         ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
@@ -248,7 +248,7 @@ export class Character extends Humanoid {
     }
 
     release(left=true, right=true){
-
+        
         const jointArr = [];
         if(left) jointArr.push(this.grabJointLeft);
         if(right) jointArr.push(this.grabJointRight);
@@ -259,8 +259,8 @@ export class Character extends Humanoid {
             }
         })
 
-        this.grabJointLeft = null;
-        this.grabJointRight = null;
+        if(left) this.grabJointLeft = null;
+        if(right) this.grabJointRight = null;
 
         const bodyArr = [];
         if(left) bodyArr.push(this.grabBodyLeft);
@@ -287,8 +287,8 @@ export class Character extends Humanoid {
             }
         })
 
-        this.grabBodyLeft = null;
-        this.grabBodyRight = null;
+        if(left) this.grabBodyLeft = null;
+        if(right) this.grabBodyRight = null;
     }
 
     update() {

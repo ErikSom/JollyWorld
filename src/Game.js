@@ -1471,7 +1471,7 @@ function Game() {
             ReplayManager.update();
 
             this.inputUpdate();
-            this.world.Step(Settings.physicsTimeStep * game.editor.editorSettingsObject.gameSpeed, 4, 3);
+            this.world.Step(Settings.physicsTimeStep * game.editor.editorSettingsObject.gameSpeed, 8, 6);
             this.gameFrame++;
             this.world.ClearForces();
             this.gameCamera();

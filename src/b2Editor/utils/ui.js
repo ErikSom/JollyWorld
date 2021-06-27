@@ -1312,6 +1312,8 @@ export const showLoadScreen = function () {
                 if(data.published){
                     alert("Can't import published levels");
                 }else{
+                    // lets change the level id so we can right away save it
+                    data.id = nanoid();
                     buttonFunction(importButton, data);
                 }
             }).catch(err => {
