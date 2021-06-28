@@ -474,7 +474,7 @@ function Game() {
 
         if (Settings.allowMouseMovement && this.gameState == this.GAMESTATE_EDITOR && this.editor.editorSettingsObject.physicsDebug &&  !this.mouseJoint && this.run) {
             const body = this.getBodyAtMouse();
-            if (body) {
+            if (body && body.mySprite && body.mySprite.data.type != this.editor.object_TRIGGER) {
                 const md = new b2MouseJointDef();
                 md.set_bodyA(this.m_groundBody);
                 md.set_bodyB(body);
@@ -487,6 +487,8 @@ function Game() {
                 b2LinearStiffness(md, 5.0, 0.7, this.m_groundBody, body);
 
                 this.mouseJoint = this.editor.CreateJoint(md);
+
+                console.log(this.mouseJoint);
 
                 body.SetAwake(true);
 
@@ -578,7 +580,7 @@ function Game() {
     this.getBodyCB = new JSQueryCallback();
 	this.getBodyCB.ReportFixture = function (fixturePtr) {
         const fixture = Box2D.wrapPointer( fixturePtr, Box2D.b2Fixture );
-        if (fixture.GetBody().GetType() != b2Body.b2_staticBody && !fixture.GetBody().isPhysicsCamera) {
+        if (fixture.GetBody().GetType() != Box2D.b2_staticBody && !fixture.GetBody().isPhysicsCamera) {
             if (fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), self.editor.mousePosWorld)) {
                 self.selectedBody = fixture.GetBody();
                 return false;
