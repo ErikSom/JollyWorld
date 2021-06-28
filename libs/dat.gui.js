@@ -1630,7 +1630,8 @@ window.__guiusercolors = [];
 
           color.onmousedown = () => {
               // select color
-              _this2.__color.hex = c.replace('#', '0x');
+              _this2.__color.hex = c.replace('#', '0x').substr(0, 8);
+              _this2.__color.a = 1.0;
               _this2.setValue(_this2.__color.toOriginal());
           }
         });
@@ -1677,6 +1678,7 @@ window.__guiusercolors = [];
             _this2.__color.r = p[0];
             _this2.__color.g = p[1];
             _this2.__color.b = p[2];
+            _this2.__color.a = 1.0;
             _this2.setValue(_this2.__color.toOriginal());
           });
           //
