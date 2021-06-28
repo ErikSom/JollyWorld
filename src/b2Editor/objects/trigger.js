@@ -39,6 +39,8 @@ export const getActionsForObject = function (object) {
         if(prefab.class.isVehicle){
             actions.push("DealDamage");
             actions.push("SetColorMatrix");
+            actions.push("SetFlipped");
+
         }
         if(prefab.class.isJet){
             actions.push("EngineOn");
@@ -503,6 +505,12 @@ export const doAction = function (actionData, target) {
             } else {
                 target.alpha = targetOpacity;
             }
+        break;
+        case "SetFlipped":
+            if(prefab.class.flipped !== actionData.flipped){
+                prefab.class.flip();
+            }
+            if(actionData.toggle) actionData.flipped = !actionData.flipped;
         break;
     }
 }
@@ -1258,6 +1266,20 @@ export const actionDictionary = {
             min: 0,
             max: 1,
             step: 0.01,
+        },
+    },
+    /*******************/
+    actionObject_SetFlipped: {
+        type: 'SetFlipped',
+        toggle: false,
+        flipped: true,
+    },
+    actionOptions_SetFlipped: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        flipped: {
+            type: guitype_BOOL,
         },
     },
     /*******************/
