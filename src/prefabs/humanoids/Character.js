@@ -248,7 +248,9 @@ export class Character extends Humanoid {
     }
 
     release(left=true, right=true){
-        
+
+        this.releaseImmune = Date.now() + 200;
+
         const jointArr = [];
         if(left) jointArr.push(this.grabJointLeft);
         if(right) jointArr.push(this.grabJointRight);

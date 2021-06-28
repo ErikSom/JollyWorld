@@ -36,6 +36,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.flipped = false;
         this.mouthTextureName = 'Mouth';
         this.mouthPos = {x:41, y:59};
+        this.releaseImmune = 0;
         this.skin = 0;
     }
 
@@ -203,7 +204,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         const jointsToAnalyse = ['leg_left', 'leg_right','arm_left', 'arm_right'/*,'head_joint', 'belly_joint'*/ ];
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
-            if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
+            if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]] || Date.now() < self.releaseImmune) continue;
 
             let reactionForce =  targetJoint.GetReactionForce(1 / Settings.physicsTimeStep);;
             reactionForce = reactionForce.LengthSquared();
@@ -263,7 +264,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         // check num frames
         for (i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
-            if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]]) continue;
+            if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]] || Date.now() < self.releaseImmune) continue;
 
             vec1.Set(targetJoint.GetAnchorA().x, targetJoint.GetAnchorA().y);
             vec2.Set(targetJoint.GetAnchorB().x, targetJoint.GetAnchorB().y);
@@ -424,7 +425,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 let forceDamage = 0;
 
 
-                if(characterBody.preSolveVelicity && otherBody.preSolveVelicity){
+                if(characterBody.preSolveVelicity && otherBody.preSolveVelicity && Date.now() > self.releaseImmune ){
                     const charOtherBodyDiff = vec1;
                     charOtherBodyDiff.Set(characterBody.GetPosition().x, characterBody.GetPosition().y);
                     b2SubVec2(charOtherBodyDiff, otherBody.GetPosition());
