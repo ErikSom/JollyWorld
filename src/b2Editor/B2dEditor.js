@@ -82,7 +82,7 @@ const _B2dEditor = function () {
 
 	this.container = null;
 	this.selectedTool = -1;
-	this.breakPrefabs = true;
+	this.breakPrefabs = false;
 
 	this.selectedPhysicsBodies = [];
 	this.selectedTextures = [];
