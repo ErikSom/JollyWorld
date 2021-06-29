@@ -55,6 +55,7 @@ export const calculateBodyArea = vertices => {
 }
 
 const breakBody = body => {
+	debugger;
 	const fixturesToSplit = [];
 	for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 		fixturesToSplit.push(fixture);
@@ -177,9 +178,19 @@ const breakBody = body => {
 			let area = 0;
 
 			if(Array.isArray(newBodyVertices[0])){
-				area = calculateBodyArea(newBodyVertices[0]);
+				if(newBodyVertices[0].length <3){
+					// circle
+					area = 2;
+				}else{
+					area = calculateBodyArea(newBodyVertices[0]);
+				}
 			}else{
-				area = calculateBodyArea(newBodyVertices);
+				if(newBodyVertices.length <3){
+					// circle
+					area = 2;
+				}else{
+					area = calculateBodyArea(newBodyVertices);
+				}
 			}
 
 			if(Math.abs(area) >  1){
