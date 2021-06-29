@@ -1302,6 +1302,13 @@ function Game() {
 
         if(!bodies[0].mySprite || !bodies[1].mySprite) return;
 
+        if(contact.GetFixtureA().GetBody().mainCharacter || contact.GetFixtureB().GetBody().mainCharacter){
+            if([].concat(contact.GetFixtureA().GetBody().mySprite.data.collision).includes(1) || [].concat(contact.GetFixtureB().GetBody().mySprite.data.collision).includes(1)){
+                contact.SetEnabled(false);
+                return;
+            }
+        }
+
         for (let i = 0; i < bodies.length; i++) {
             body = bodies[i];
             otherBody = i == 0 ? bodies[1] : bodies[0];
