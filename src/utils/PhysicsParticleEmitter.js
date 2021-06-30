@@ -27,7 +27,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 	let force2 = force*2;
 	size = size / Settings.PTM;
 	for(let i = 0; i<amount; i++){
-		const impulse = new Box2D.b2Vec2();
+		const impulse = new Box2D.b2Vec2(0, 0);
 
 		let sprite, body;
 		if(spritePool.length>0){

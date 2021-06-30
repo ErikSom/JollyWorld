@@ -131,7 +131,7 @@ class DroneBomb extends Explosive {
 			targetThrottle *= -1;
 		}
 
-		const force = new Box2D.b2Vec2();
+		const force = new Box2D.b2Vec2(0, 0);
 		force.x = targetThrottle * Math.cos(forceDirection);
 		force.y = targetThrottle * Math.sin(forceDirection);
 
@@ -141,7 +141,7 @@ class DroneBomb extends Explosive {
 		this.horizontalThrottle.step( 1 / Settings.physicsTimeStep );
 		let targetHorizontalForce = b2Clamp(this.horizontalThrottle.getOutput() / forceMultiplier, -maxForce, maxForce);
 
-		const horizontalForce = new Box2D.b2Vec2();
+		const horizontalForce = new Box2D.b2Vec2(0, 0);
 		horizontalForce.x = targetHorizontalForce * Math.cos(this.body.GetAngle());
 		horizontalForce.y = targetHorizontalForce * Math.sin(this.body.GetAngle());
 

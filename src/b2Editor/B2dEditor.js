@@ -111,7 +111,7 @@ const _B2dEditor = function () {
 	this.lockSaving = false;
 
 	this.copiedJSON = '';
-	this.copiedCenterPosition = new Box2D.b2Vec2();
+	this.copiedCenterPosition = new Box2D.b2Vec2(0, 0);
 	this.ui = ui;
 
 	this.mouseDown = false;
