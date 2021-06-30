@@ -437,6 +437,7 @@ export class Character extends Humanoid {
     detachFromVehicle(force) {
         if (!force) force = 0;
         if (!this.attachedToVehicle) return;
+        this.ignoreJointDamage = true;
 
         const vehicleJoints = this.mainPrefabClass.destroyConnectedJoints['head'];
 
