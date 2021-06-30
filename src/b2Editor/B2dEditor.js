@@ -8117,6 +8117,10 @@ const _B2dEditor = function () {
 							joint.SetLimits(-oldUpper, -oldLower);
 						}
 
+						if(joint.GetType() === Box2D.e_prismaticJoint){
+							debugger;
+						}
+
 						flippedJoints.push(joint);
 					}
 				}
