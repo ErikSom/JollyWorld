@@ -5,6 +5,10 @@ import * as AudioManager from '../../utils/AudioManager';
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
 import easing from '../../b2Editor/utils/easing';
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+const vec3 = new Box2D.b2Vec2();
+
 class Skippyball extends BaseVehicle {
     constructor(target) {
         super(target);
@@ -83,9 +87,11 @@ class Skippyball extends BaseVehicle {
 	fixBalls(){
 
 		const bouncyBall = this.lookupObject['b'+this.ballFixerIndex];
-		const rayStart = b2CloneVec2(bouncyBall.GetPosition());
+		const rayStart = vec1;
+		rayStart.Set(bouncyBall.GetPosition().x, bouncyBall.GetPosition().y);
 		const rayEnd = this.base.GetPosition();
-		const distance = b2CloneVec2(rayStart);
+		const distance = vec2;
+		distance.Set(rayStart.x, rayStart.y);
 		b2SubVec2(distance,rayEnd)
 		distance.Normalize();
 
@@ -116,10 +122,6 @@ class Skippyball extends BaseVehicle {
 		if (callback.m_hit) {
 			bouncyBall.SetTransform(rayEnd, bouncyBall.GetAngle());
 		}
-
-		Box2D.destroy(rayStart);
-		Box2D.destroy(distance);
-
 		this.ballFixerIndex++;
 		if(this.ballFixerIndex>this.steps) this.ballFixerIndex = 1;
 	}
@@ -150,7 +152,8 @@ class Skippyball extends BaseVehicle {
 
 	push(){
 		const angle = this.base.GetAngle() - Settings.pihalve;
-		const direction = new Box2D.b2Vec2(Math.cos(angle), Math.sin(angle));
+		const direction = vec1;
+		direction.Set(Math.cos(angle), Math.sin(angle));
 		const impulse = 1000 * easing.easeInQuad(this.forceBuildup);
 
 		const forceSpread = 1.0;
@@ -171,7 +174,8 @@ class Skippyball extends BaseVehicle {
 					contactDecrease = 0.6;
 				}
 
-				const baseForce = b2CloneVec2(direction);
+				const baseForce = vec2;
+				baseForce.Set(direction.x, direction.y);
 				b2MulVec2(baseForce, (impulse * forceSpread * contactDecrease)) ;
 
 				this.lookupObject._bodies.forEach(body=>{
@@ -179,8 +183,6 @@ class Skippyball extends BaseVehicle {
 						body.ApplyForceToCenter(baseForce, true);
 					}
 				})
-
-				Box2D.destroy(baseForce);
 
 				break;
 			}
@@ -190,17 +192,16 @@ class Skippyball extends BaseVehicle {
 		this.pointContacts.forEach( (contactBody, index)  => {
 			if(contactBody && contactBody.GetType() === Box2D.b2_dynamicBody){
 				const contactDecrease = 0.5;
-				const baseForce = b2CloneVec2(direction);
+				const baseForce = vec2;
+				baseForce.Set(direction.x, direction.y);
 				b2MulVec2(baseForce, (impulse * -50 * forceSpread * contactDecrease));
 				contactBody.ApplyForce(baseForce, this.pullBodies[index-1].GetPosition(), true);
-				Box2D.destroy(baseForce);
 			}
 		});
 
 		const pitchOffset = 0.2;
 		AudioManager.playSFX ('bouncejump', 0.3 * this.forceBuildup, 1.0 + (Math.random()*pitchOffset - pitchOffset/2), this.base.GetPosition());
 
-		Box2D.destroy(direction);
 	}
 
 	buildMesh(){
@@ -237,12 +238,12 @@ class Skippyball extends BaseVehicle {
 			})
 
 			this.pullBodies.forEach(body => {
-				const direction = b2CloneVec2(body.GetPosition());
+				const direction = vec1;
+				direction.Set(body.GetPosition().x, body.GetPosition().y);
 				b2SubVec2(direction, this.base.GetPosition());
 				direction.Normalize();
 				b2MulVec2(direction, -30 * this.forceBuildup);
 				body.ApplyForceToCenter(direction, true);
-				Box2D.destroy(direction);
 			})
 
 			this.yogaColorFilter.alpha = 0.4 * this.forceBuildup;
@@ -264,13 +265,13 @@ class Skippyball extends BaseVehicle {
 		this.handleBack.position.x = -6.5;
 		this.baseYOffset = 34;
 
-		const pos = b2CloneVec2(this.handlePoint.GetPosition());
+		const pos = vec1;
+		pos.Set(this.handlePoint.GetPosition().x, this.handlePoint.GetPosition().y);
 		b2SubVec2(pos, this.base.GetPosition());
 		const y = -pos.Length() * Settings.PTM - this.baseYOffset;
 
 		this.handleFront.position.y = y;
 		this.handleBack.position.y = y;
-		Box2D.destroy(pos);
 	}
 
 	getMeshData(){
@@ -281,11 +282,11 @@ class Skippyball extends BaseVehicle {
 			const p = this.lookupObject[`b${targetBodyIndex}`];
 			p.mySprite.visible = false;
 
-			const pos = b2CloneVec2(this.base.GetPosition());
+			const pos = vec1;
+			pos.Set(this.base.GetPosition().x, this.base.GetPosition().y);
 			b2SubVec2(pos, p.GetPosition());
 
 			radiusAr.push(pos.Length()*Settings.PTM);
-			Box2D.destroy(pos);
 		}
 
 		const rInc = 16;
