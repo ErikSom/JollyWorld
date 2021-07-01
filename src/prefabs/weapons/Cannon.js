@@ -12,6 +12,9 @@ import {
 import { Settings } from '../../Settings';
 import { b2CloneVec2, b2MulVec2 } from '../../../libs/debugdraw';
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
 class Cannon extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
@@ -85,7 +88,8 @@ class Cannon extends PrefabManager.basePrefab {
 	}
 
 	getShootingPosition(){
-		const pos = b2CloneVec2(this.cannonBody.GetPosition());
+		const pos = vec1;
+		pos.Set(this.cannonBody.GetPosition().x, this.cannonBody.GetPosition().y);
 		const angle = this.cannonBody.GetAngle() + (this.flipped ? Math.PI : 0);
 		const offsetLength = 5.0;
 		const angleOffset = Math.PI;
@@ -96,7 +100,6 @@ class Cannon extends PrefabManager.basePrefab {
 	positionCannonEmitter(){
         const pos = this.getShootingPosition();
         this.emitter.spawnPos.set(pos.x * Settings.PTM, pos.y * Settings.PTM);
-		Box2D.destroy(pos);
     }
 
 
@@ -119,9 +122,9 @@ class Cannon extends PrefabManager.basePrefab {
 
 		AudioManager.playSFX('cannon', 0.2, 1.0 + 0.4 * Math.random()-0.2, body.GetPosition());
 
-		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
+		const impulse = vec2;
+		impulse.Set(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 		body.ApplyForce(impulse, body.GetPosition(), true);
-		Box2D.destroy(impulse);
 
 
 		this.lastCannonBalls.push(prefabData.prefabClass);
@@ -131,10 +134,8 @@ class Cannon extends PrefabManager.basePrefab {
 
         this.emitter.playOnce();
 
-
 		b2MulVec2(impulse, -0.1);
 		this.cannonBody.ApplyForce(impulse, worldPos, true);
-		Box2D.destroy(worldPos);
 
 		this.reloadTimer = 0;
 		this.loaded = false;
