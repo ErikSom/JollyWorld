@@ -63,6 +63,7 @@ const {b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef} = Box2D;
     }
 })();
 
+const vec1 = new b2Vec2();
 
 function Game() {
 
@@ -478,7 +479,9 @@ function Game() {
                 const md = new b2MouseJointDef();
                 md.set_bodyA(this.m_groundBody);
                 md.set_bodyB(body);
-                const targetPosition = new Box2D.b2Vec2(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y());
+                const targetPosition = vec1;
+                vec1.Set(this.editor.mousePosWorld.get_x(), this.editor.mousePosWorld.get_y());
+
 
                 md.set_target(targetPosition);
                 md.set_collideConnected(true);
@@ -492,7 +495,6 @@ function Game() {
 
                 body.SetAwake(true);
 
-                Box2D.destroy(targetPosition);
                 Box2D.destroy(md);
             }
         }
@@ -854,12 +856,11 @@ function Game() {
 
                 if(this.playerPrefabObject.class.character.hat){
                     const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
-                    const position = b2CloneVec2(hatBody.GetPosition());
-                    position.set_x(position.get_x() + positionDiff.x / Settings.PTM);
-                    position.set_y(position.get_y() + positionDiff.y / Settings.PTM);
+                    const position = vec1;
+                    position.set_x(hatBody.get_x() + positionDiff.x / Settings.PTM);
+                    position.set_y(hatBody.get_y() + positionDiff.y / Settings.PTM);
 
                     hatBody.SetTransform(position, hatBody.GetAngle());
-                    Box2D.destroy(position);
                 }
 
                 this.editor.applyToObjects(this.editor.TRANSFORM_MOVE, positionDiff, allObjects);
@@ -1042,7 +1043,8 @@ function Game() {
     }
     this.gameCheckpoint = function (object) {
         if(!this.checkPointData || ( Math.abs(this.checkPointData.x - object.GetPosition().x) > 1 || Math.abs(this.checkPointData.y - object.GetPosition().y) > 1)){
-            const confettiPosition = b2CloneVec2(object.GetPosition());
+            const confettiPosition = vec1;
+            confettiPosition.Set(object.GetPosition().x, object.GetPosition().y);
             const confettiOffset = 3.0;
             const offsetAngle = object.GetAngle() - Settings.pihalve;
 
@@ -1062,8 +1064,6 @@ function Game() {
                 frame: this.gameFrame,
                 // save checkpoint time
             }
-
-            Box2D.destroy(confettiPosition);
 
             window.SVGCache[3]();
         }
@@ -1226,14 +1226,19 @@ function Game() {
 
         let offsetX = 0;
         let offsetY = 0;
-        if(this.cameraFocusObject){
-            this.movementBuffer.push(b2CloneVec2(this.cameraFocusObject.GetLinearVelocity()));
-        }else{
-            this.movementBuffer.push(new Box2D.b2Vec2(0,0));
-        }
+
+        let newVec;
         if(this.movementBuffer.length > this.movementBufferSize){
-             Box2D.destroy(this.movementBuffer.shift());
+            newVec = this.movementBuffer.shift();
+        }else{
+            newVec = new Box2D.b2Vec2(0,0);
         }
+
+        if(this.cameraFocusObject){
+            newVec.Set(this.cameraFocusObject.GetLinearVelocity().x, this.cameraFocusObject.GetLinearVelocity().y)
+        }
+        this.movementBuffer.push(newVec);
+ 
 
         if(this.movementBuffer.length){
             for(let i = 0; i<this.movementBuffer.length; i++){
