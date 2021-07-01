@@ -10,6 +10,9 @@ import {
 } from "../../Settings";
 import { b2CloneVec2, b2SubVec2 } from '../../../libs/debugdraw';
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
 export class Explosive extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
@@ -56,12 +59,14 @@ export class Explosive extends PrefabManager.basePrefab {
 				rayCallback.target = body;
 				this.explodeTarget.GetWorld().RayCast(rayCallback, rayStartPosition, body.GetPosition());
 
-				const diff = b2CloneVec2(rayStartPosition);
+				const diff = vec1;
+				diff.Set(rayStartPosition.x, rayStartPosition.y);
 				b2SubVec2(diff, body.GetPosition());
 				diff.Normalize();
 
 				const power = (1-rayCallback.m_fraction)*this.explosivePower*5;
-				const force = new Box2D.b2Vec2(power*-diff.x, power*-diff.y);
+				const force = vec2;
+				force.Set(power*-diff.x, power*-diff.y);
 
 
 				if(rayCallback.m_point){
@@ -90,11 +95,7 @@ export class Explosive extends PrefabManager.basePrefab {
 
 					}
 				}
-
-				Box2D.destroy(diff);
-				Box2D.destroy(force);
 			}
-
 		})
 
         const pixiPoint = game.editor.getPIXIPointFromWorldPoint(rayStartPosition);
