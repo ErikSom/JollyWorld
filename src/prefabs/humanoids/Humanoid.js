@@ -784,13 +784,12 @@ export class Humanoid extends PrefabManager.basePrefab {
 
             const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM + offsetX},${targetBody.GetPosition().y * Settings.PTM + offsetY},0,{},"${particle}"]]}`;
             const goreLookupObject = game.editor.buildJSON(JSON.parse(gorePrefab));
-            const impulse = new Box2D.b2Vec2((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
+            const impulse = vec1;
+            impulse.Set((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
             goreLookupObject._bodies.forEach((body)=>{
                 body.SetLinearVelocity(targetBody.GetLinearVelocity());
                 body.ApplyForce(impulse, targetBody.GetPosition());
             });
-
-            Box2D.destroy(impulse);
 
             if(particle == 'Gore_Meat'){
                 const ranId = Math.floor(Math.random()*6)+1;
@@ -1327,16 +1326,16 @@ export class Humanoid extends PrefabManager.basePrefab {
                     if(eyeObject.GetPosition){
                         eyeObject.localVec = b2CloneVec2(upperPart.GetLocalPoint(eyeObject.GetPosition()));
                     }else{
-                        const eyePos = new Box2D.b2Vec2(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM);
+                        const eyePos = vec1;
+                        eyePos.Set(eyeObject.position.x/Settings.PTM, eyeObject.position.y/Settings.PTM);
                         eyeObject.localVec = b2CloneVec2(upperPart.GetLocalPoint(eyePos));
-                        Box2D.destroy(eyePos);
                     }
                 });
             }
 
-            const newPos = new Box2D.b2Vec2(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle));
+            const newPos = vec1;
+            newPost.Set(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle));
             upperPart.SetTransform(newPos, angle+Settings.pihalve);
-            Box2D.destroy(newPos);
 
             if(upperPart === this.lookupObject[Humanoid.BODY_PARTS.HEAD]){
                 eyeObjects.forEach(key => {
@@ -1420,15 +1419,14 @@ export class Humanoid extends PrefabManager.basePrefab {
     calculateJointOffsets(){
         [Humanoid.BODY_PARTS.HAND_LEFT, Humanoid.BODY_PARTS.HAND_RIGHT, Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.FEET_RIGHT].forEach(part => {
             const joint = this.lookupObject[part+"_joint"];
-            const jointWorldPos = new Box2D.b2Vec2(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
+            const jointWorldPos = vec1;
+            jointWorldPos.Set(joint.position.x / Settings.PTM, joint.position.y / Settings.PTM);
             const bodyPart = this.lookupObject[part];
-            const jointOffset = b2CloneVec2(bodyPart.GetPosition());
+            const jointOffset = vec2;
+            jointOffset.Set(bodyPart.GetPosition().x, bodyPart.GetPosition().y);
             b2SubVec2(jointOffset, jointWorldPos);
             bodyPart.jointOffsetAngle = Math.atan2(jointOffset.y, jointOffset.x) - this.lookupObject.body.GetAngle();
             bodyPart.jointOffsetLength = jointOffset.Length();
-
-            Box2D.destroy(jointWorldPos);
-            Box2D.destroy(jointOffset);
         });
     }
 }

@@ -6,6 +6,8 @@ import { Humanoid } from '../humanoids/Humanoid';
 
 const { getPointer, NULL } = Box2D;
 
+const vec1 = new Box2D.b2Vec2();
+
 class Finish extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
@@ -17,7 +19,8 @@ class Finish extends PrefabManager.basePrefab {
         const shape = new Box2D.b2PolygonShape();
         const plateauSize = 5.3;
 
-        const offset = new Box2D.b2Vec2(0, -plateauSize)
+        const offset = vec1;
+        offset.Set(0, -plateauSize)
         shape.SetAsBox(plateauSize, plateauSize, offset, 0);
         fixDef.set_shape(shape);
         fixDef.set_isSensor(true);
@@ -26,7 +29,6 @@ class Finish extends PrefabManager.basePrefab {
 
         Box2D.destroy(shape);
         Box2D.destroy(fixDef);
-        Box2D.destroy(offset);
     }
     init() {
         super.init();

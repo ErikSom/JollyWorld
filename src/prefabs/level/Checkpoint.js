@@ -5,6 +5,8 @@ import {
 import { Humanoid } from '../humanoids/Humanoid';
 import * as AudioManager from '../../utils/AudioManager';
 
+const vec1 = new Box2D.b2Vec2();
+
 class Checkpoint extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
@@ -16,7 +18,8 @@ class Checkpoint extends PrefabManager.basePrefab {
         const shape = new Box2D.b2PolygonShape();
         const plateauSize = 5.3;
 
-        const offset = new Box2D.b2Vec2(0, -plateauSize)
+        const offset = vec1;
+        offset.Set(0, -plateauSize)
         shape.SetAsBox(plateauSize, plateauSize, offset, 0);
         fixDef.set_shape(shape);
         fixDef.set_isSensor(true);
@@ -25,7 +28,6 @@ class Checkpoint extends PrefabManager.basePrefab {
 
         Box2D.destroy(shape);
         Box2D.destroy(fixDef);
-        Box2D.destroy(offset);
 
     }
     init() {
