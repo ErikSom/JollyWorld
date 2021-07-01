@@ -9,6 +9,9 @@ import { b2CloneVec2, b2SubVec2 } from '../../../libs/debugdraw';
 
 const { getPointer, NULL, pointsToVec2Array } = Box2D; // emscriptem specific
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
 class GravitationalField extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
@@ -193,19 +196,18 @@ class GravitationalField extends PrefabManager.basePrefab {
 			body.SetLinearDamping(this.damping);
 			body.SetAngularDamping(this.damping);
 
-			const diff = b2CloneVec2(body.GetPosition())
+			const diff = vec1;
+			diff.Set(body.GetPosition().x, body.GetPosition().y)
 			b2SubVec2(diff, this.forceField.GetPosition());
 
 			const rad = Math.max(1.0, diff.LengthSquared()*2);
 
 			const forceScalar = this.force;
 			const forceValue = this.push ? forceScalar : -forceScalar;
-			const force = new Box2D.b2Vec2((forceValue*diff.x)/rad, (forceValue*diff.y)/rad);
+			const force = vec2;
+			force.Set((forceValue*diff.x)/rad, (forceValue*diff.y)/rad);
 
 			body.ApplyLinearImpulse(force, body.GetPosition(), true);
-
-			Box2D.destroy(diff);
-			Box2D.destroy(force);
 		})
 
 		const rotationSpeed = 2.0;

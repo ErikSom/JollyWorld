@@ -5,6 +5,7 @@ import { Settings } from '../../Settings';
 import * as emitterManager from '../../utils/EmitterManager';
 import { b2CloneVec2 } from '../../../libs/debugdraw';
 
+const vec1 = new Box2D.b2Vec2();
 
 class Jet extends PrefabManager.basePrefab {
 
@@ -39,12 +40,11 @@ class Jet extends PrefabManager.basePrefab {
         if(this.engineOn){
             const direction = this.base.GetAngle();
             const deltaForce = (this.force / Settings.targetFPS) * game.editor.deltaTime;
-            const force = new Box2D.b2Vec2(deltaForce*Math.cos(direction), deltaForce*Math.sin(direction));
+            const force = vec1;
+            force.Set(deltaForce*Math.cos(direction), deltaForce*Math.sin(direction));
             const position = this.base.GetPosition();
             this.base.ApplyForce(force, position, true);
             if(this.connectedBody) this.connectedBody.ApplyForce(force, position, true);
-
-            Box2D.destroy(force);
         }
 
         this.positionJetEmitter();

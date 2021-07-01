@@ -13,6 +13,8 @@ import { b2CloneVec2, b2LinearStiffness } from '../../../libs/debugdraw';
 
 const DEFAULT_PATH = [{"x":95,"y":45.5,"point1":{"x":131.0757,"y":28.2216},"point2":{"x":131.0757,"y":-28.2216}},{"x":95,"y":-45.5,"point1":{"x":58.9243,"y":-62.7784},"point2":{"x":-58.9243,"y":-62.7784}},{"x":-95,"y":-45.5,"point1":{"x":-131.0757,"y":-28.2216},"point2":{"x":-131.0757,"y":27.2216}},{"x":-95,"y":44.5,"point1":{"x":-58.9243,"y":61.7784},"point2":{"x":58.9243,"y":62.7784}}];
 
+const vec1 = new Box2D.b2Vec2();
+
 class Animator extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
@@ -322,7 +324,8 @@ class Animator extends PrefabManager.basePrefab {
         const l = this.prefabObject.settings.targetAnchorLength / Settings.PTM;
         const a = this.prefabObject.settings.targetAnchorAngle;
 
-        const targetPosition = b2CloneVec2(this.linkedTarget.myBody.GetPosition());
+        const targetPosition = vec1;
+        targetPosition.Set(this.linkedTarget.myBody.GetPosition().x, this.linkedTarget.myBody.GetPosition().y);
 
         const offsetX = l * Math.cos(this.linkedTarget.rotation+a);
         const offsetY = l * Math.sin(this.linkedTarget.rotation+a);
@@ -336,7 +339,6 @@ class Animator extends PrefabManager.basePrefab {
 
         Box2D.destroy(md);
         Box2D.destroy(bodyDef);
-        Box2D.destroy(targetPosition);
     }
 
     set(property, value){
@@ -433,13 +435,12 @@ class Animator extends PrefabManager.basePrefab {
 
             if(this.linkedTarget.myBody && this.bodyAnimator){
 
-                const targetPosition = b2CloneVec2(this.base.GetPosition());
+                const targetPosition = vec1;
+                targetPosition.Set(this.base.GetPosition().x, this.base.GetPosition().y);
                 targetPosition.set_x(x / Settings.PTM);
                 targetPosition.set_y(y / Settings.PTM);
 
                 this.bodyAnimator.SetTarget(targetPosition);
-
-                Box2D.destroy(targetPosition);
 
             }else if(this.linkedTarget.parent){
 

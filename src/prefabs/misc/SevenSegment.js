@@ -16,6 +16,8 @@ const TRIGGER_TYPE_CHANGE = 3;
 
 const conditions = ["rollover left", "rollover right", "rollover", "change", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
 
 class SevenSegment extends PrefabManager.basePrefab {
     constructor(target) {
@@ -263,14 +265,15 @@ class SevenSegment extends PrefabManager.basePrefab {
             let myPos = body.GetPosition();
             myPos = B2dEditor.getPIXIPointFromWorldPoint(myPos);
 
-            let tarPos;
+            let tarPos = vec1;
 
-            tarPos = b2CloneVec2(target.myBody.GetPosition());
+            tarPos.Set(target.myBody.GetPosition().x, target.myBody.GetPosition().y);
             tarPos.x *= game.editor.PTM;
             tarPos.y *= game.editor.PTM;
 
             const lineOffsetSize = -20 * game.levelCamera.scale.x;
-            const linePos = b2CloneVec2(myPos);
+            const linePos = vec2;
+            linePos.Set(myPos.x, myPos.y);
             b2SubVec2(linePos, tarPos);
             linePos.Normalize();
             b2MulVec2(linePos, lineOffsetSize)
@@ -280,24 +283,21 @@ class SevenSegment extends PrefabManager.basePrefab {
             game.triggerDebugDraw.moveTo(linePos.x, linePos.y);
             game.triggerDebugDraw.lineTo(tarPos.x, tarPos.y);
 
-            const v = new Box2D.b2Vec2(tarPos.x-linePos.x, tarPos.y-linePos.y);
+            const v = vec3;
+            v.Set(tarPos.x-linePos.x, tarPos.y-linePos.y);
             const l = v.Normalize();
             const tl = l*0.5;
 
             b2MulVec2(v, tl);
 
-            const tp = b2CloneVec2(linePos)
+            const tp = vec1;
+            tp.Set(linePos.x, linePos.y);
             b2AddVec2(tp, v);
 
             game.triggerDebugDraw.beginFill("0x999", 1.0);
             game.triggerDebugDraw.drawCircle(tp.x, tp.y, 10 / game.editor.cameraHolder.scale.x);
             game.triggerDebugDraw.endFill();
             drawing.addText(i+1, game.triggerDebugDraw, tp, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
-
-            Box2D.destroy(tarPos)
-            Box2D.destroy(linePos);
-            Box2D.destroy(v);
-            Box2D.destroy(tp);
         });
         game.triggerDebugDraw.dirtyTargets = false;
     }
