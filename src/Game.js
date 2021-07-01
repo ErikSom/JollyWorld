@@ -857,8 +857,8 @@ function Game() {
                 if(this.playerPrefabObject.class.character.hat){
                     const hatBody = this.playerPrefabObject.class.character.hat.hatBody;
                     const position = vec1;
-                    position.set_x(hatBody.get_x() + positionDiff.x / Settings.PTM);
-                    position.set_y(hatBody.get_y() + positionDiff.y / Settings.PTM);
+                    position.set_x(hatBody.GetPosition().get_x() + positionDiff.x / Settings.PTM);
+                    position.set_y(hatBody.GetPosition().get_y() + positionDiff.y / Settings.PTM);
 
                     hatBody.SetTransform(position, hatBody.GetAngle());
                 }
