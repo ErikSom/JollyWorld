@@ -15,6 +15,7 @@ const ANIMATION_TRAVEL_SPEED = 4000 / Settings.PTM;
 const vec1 = new Box2D.b2Vec2();
 const vec2 = new Box2D.b2Vec2();
 const vec3 = new Box2D.b2Vec2();
+const copyVec1 = new Box2D.b2Vec2();
 
 export class RopeHat extends Hat {
 	constructor(character, head, body) {
@@ -276,7 +277,7 @@ export class RopeHat extends Hat {
 		body.ignorePhysicsCuller = true;
 		this.touchedBodies.push(body);
 
-		const offsetPoint = vec1;
+		const offsetPoint = copyVec1;
 		offsetPoint.Set(point.x, point.y);
 		const offsetLength = 0.5;
 		const offset = vec2;
