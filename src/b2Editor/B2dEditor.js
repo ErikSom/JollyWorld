@@ -58,6 +58,8 @@ const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} =
 
 const PIXIHeaven = self.PIXI.heaven;
 
+const vec1 = new b2Vec2();
+
 const _B2dEditor = function () {
 
 	this.initialPTM;
@@ -4144,9 +4146,9 @@ const _B2dEditor = function () {
 					this.setScale(body, scaleX, scaleY);
 
 					if(this.altDown){
-						const scalePos = new b2Vec2((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM);
+						const scalePos = vec1;
+						scalePos.Set((centerPoint.x + xDif * scaleX) / this.PTM, (centerPoint.y + yDif * scaleY) / this.PTM);
 						body.SetTransform(scalePos, body.GetAngle());
-						Box2D.destroy(scalePos);
 					}
 				}else{
 					let sprite = objects[i];
@@ -7219,9 +7221,9 @@ const _B2dEditor = function () {
 				var xOffset = (left - right) / this.PTM;
 				var yOffset = (down - up) / this.PTM;
 
-				const pos = new b2Vec2(graphicContainer.x / this.PTM + xOffset, graphicContainer.y / this.PTM + yOffset);
-				body.SetTransform(pos, graphicContainer.rotation)
-				Box2D.destroy(pos);
+				const pos = vec1;
+				pos.Set(graphicContainer.x / this.PTM + xOffset, graphicContainer.y / this.PTM + yOffset);
+				body.SetTransform(pos, graphicContainer.rotation);
 
 			}
 		}
@@ -8074,12 +8076,11 @@ const _B2dEditor = function () {
 					// const nx = centerObject.GetPosition().get_x()+cdl*Math.cos(reflectedcda)
 					// const ny = centerObject.GetPosition().get_y()+cdl*Math.sin(reflectedcda);
 
-					const position = b2CloneVec2(body.GetPosition());
+					const position = vec1;
 					position.set_x(nx);
 					position.set_y(ny);
 
 					body.SetTransform(position, reflectedAngle);
-					Box2D.destroy(position);
 				}
 
 				if(body.myTexture){
@@ -8867,9 +8868,9 @@ const _B2dEditor = function () {
 			let bd = new b2BodyDef();
 			bd.type = Box2D.b2_staticBody;
 			bodyB = this.CreateBody(bd);
-			const pos = new b2Vec2(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM);
+			const pos = vec1;
+			pos.Set(jointPlaceHolder.x / this.PTM, jointPlaceHolder.y / this.PTM);
 			bodyB.SetTransform(pos, bodyB.GetAngle());
-			Box2D.destroy(pos);
 
 			const shape = new b2PolygonShape();
 			shape.SetAsBox(1, 1);
