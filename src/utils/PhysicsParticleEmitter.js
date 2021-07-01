@@ -7,7 +7,8 @@ import { disableCulling } from '../utils/PIXICuller';
 import { b2CloneVec2 } from '../../libs/debugdraw';
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
 
-
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
 
 const poolSize = 200;
 const spritePool = [];
@@ -27,7 +28,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 	let force2 = force*2;
 	size = size / Settings.PTM;
 	for(let i = 0; i<amount; i++){
-		const impulse = new Box2D.b2Vec2(0, 0);
+		const impulse = vec1;
 
 		let sprite, body;
 		if(spritePool.length>0){
@@ -82,7 +83,8 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		sprite.pivot.x = sprite.width/2;
 		sprite.pivot.y = sprite.height/2;
 
-		const targetPosition = b2CloneVec2(worldPosition);
+		const targetPosition = vec2;
+		targetPosition.Set(worldPosition.x, worldPosition.y);
 
 		if(offset !== [0,0]){
 			if(offset[0] !== 0){
@@ -122,10 +124,6 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		}else{
 			sprite.tint = 0xFFFFFF;
 		}
-
-		Box2D.destroy(impulse);
-		Box2D.destroy(targetPosition);
-
 	}
 }
 
