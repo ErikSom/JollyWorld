@@ -27,6 +27,7 @@ import * as AudioManager from "../../utils/AudioManager"
 import { applyColorMatrix, applyColorMatrixMultiple, colorMatrixEffects, guiToEffectProps, setEffectProperties } from "./colorMatrixParser";
 import { KeyboardEventKeys } from "../../../libs/Key";
 
+const nanoid = require('nanoid');
 
 let toolGUI;
 export let assetGUI;
