@@ -120,9 +120,9 @@ class DroneBomb extends Explosive {
 		if(this.chaseTarget){
 			targetPosition.Set(this.chaseTarget.GetPosition().x, this.chaseTarget.GetPosition().y);
 		}else if(this.wayPoint){
-			targetPosition.Set(this.wayPoint.GetPosition().x, this.wayPoint.GetPosition().y);
+			targetPosition.Set(this.wayPoint.x, this.wayPoint.y);
 		}else{
-			targetPosition.Set(this.startPosition.GetPosition().x, this.startPosition.GetPosition().y);
+			targetPosition.Set(this.startPosition.x, this.startPosition.y);
 		}
 
 		const gravityNormalIncrease = vec3;
