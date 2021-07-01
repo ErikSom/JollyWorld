@@ -9,6 +9,9 @@ import { b2CloneVec2, b2MulVec2 } from '../../../libs/debugdraw';
 
 const { getPointer, NULL } = Box2D;
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
 export class BaseVehicle extends PrefabManager.basePrefab {
     static forceUnique = true;
     static playableCharacter = true;
@@ -162,9 +165,9 @@ export class BaseVehicle extends PrefabManager.basePrefab {
             let checkSlize = (360 / 20) * game.editor.DEG2RAD;
             let totalCircleRad = 360 * game.editor.DEG2RAD;
             for (j = 0; j < totalCircleRad; j += checkSlize) {
-                rayEnd = b2CloneVec2(rayStart);
-                rayEnd.set_x(rayEnd.get_x() + Math.cos(j) * rayLength );
-                rayEnd.set_y(rayEnd.get_y() + Math.sin(j) * rayLength );
+                rayEnd = vec1;
+                rayEnd.set_x(rayStart.get_x() + Math.cos(j) * rayLength );
+                rayEnd.set_y(rayStart.get_y() + Math.sin(j) * rayLength );
 
                 let callback = Object.assign(new Box2D.JSRayCastCallback(), {
                     ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
@@ -184,7 +187,6 @@ export class BaseVehicle extends PrefabManager.basePrefab {
                     m_hit: false
                 });
                 wheel.GetBody().GetWorld().RayCast(callback, rayStart, rayEnd);
-                Box2D.destroy(rayEnd);
 
                 if (callback.m_hit) {
                     let forceDir = extramath.rotateVector(callback.m_normal, 90);
@@ -201,17 +203,17 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     applyImpulse(force, angle) {
         let i;
         let body;
-        let dirFore = b2CloneVec2(angle);
-        b2MulVec2(dirFore, force * 0.01)
+        let dirForce = vec1;
+        dirForce.Set(angle.x, angle.y);
+        b2MulVec2(dirForce, force * 0.01)
         for (i = 0; i < this.lookupObject._bodies.length; i++) {
             body = this.lookupObject._bodies[i];
             if(body.snapped) continue;
             let oldVelocity = body.GetLinearVelocity();
-            let newVelocity = new Box2D.b2Vec2(oldVelocity.x + dirFore.x, oldVelocity.y + dirFore.y);
+            let newVelocity = vec2;
+            newVelocity.Set(oldVelocity.x + dirForce.x, oldVelocity.y + dirForce.y);
             body.SetLinearVelocity(newVelocity);
-            Box2D.destroy(newVelocity);
         }
-        Box2D.destroy(dirFore);
     }
     accelerateWheels(dir) {
         let i;

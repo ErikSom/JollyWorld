@@ -6,6 +6,8 @@ import { Settings } from '../../Settings';
 import { b2CloneVec2 } from '../../../libs/debugdraw';
 import { crawlJointsUtility } from '../level/Finish';
 
+const vec1 = new Box2D.b2Vec2();
+
 class Slower extends PrefabManager.basePrefab {
 
     constructor(target) {
@@ -37,12 +39,11 @@ class Slower extends PrefabManager.basePrefab {
 
             bodies.forEach(body=> {
                 if(body.GetType() !== Box2D.b2_staticBody){
-                    const velocity = b2CloneVec2(body.GetLinearVelocity());
+                    const velocity = vec1;
+                    velocity.Set(body.GetLinearVelocity().x, body.GetLinearVelocity().y);
                     velocity.set_x(velocity.get_x() + velocityInc.x);
                     velocity.set_y(velocity.get_y() + velocityInc.y);
                     body.SetLinearVelocity(velocity);
-
-                    Box2D.destroy(velocity);
                 }
             })
 

@@ -14,7 +14,6 @@ const TOP_LEFT = 3;
 
 const { getPointer, NULL } = Box2D; // emscriptem specific
 
-
 class Treadmill extends PrefabManager.basePrefab {
 
     constructor(target) {

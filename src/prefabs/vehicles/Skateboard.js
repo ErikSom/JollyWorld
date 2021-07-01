@@ -13,6 +13,9 @@ import { PropertyAnimator } from "../../b2Editor/utils/propertyAnimator";
 import { drawCircle } from "../../b2Editor/utils/drawing";
 import { b2CloneVec2, b2LinearStiffness } from '../../../libs/debugdraw';
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
 class Skateboard extends BaseVehicle {
     constructor(target) {
         super(target);
@@ -73,7 +76,7 @@ class Skateboard extends BaseVehicle {
     update() {
         super.update();
 
-        let globalFrame;
+        let globalFrame = vec2;
         const wheelRotationSpeed = (Math.abs(this.lookupObject.wheel_back.GetAngularVelocity())/20 + Math.abs(this.lookupObject.wheel_front.GetAngularVelocity())/20)/2;
         let idleVolume = Math.min(wheelRotationSpeed/15, 0.1);
         if(idleVolume< 0.002) idleVolume = 0;
@@ -83,11 +86,12 @@ class Skateboard extends BaseVehicle {
                 this.legAnimation.update(game.editor.deltaTime*this.accel);
                 const frame = this.legAnimation.getFrame();
 
-                const posVec = new Box2D.b2Vec2(frame.x, frame.y);
+                const posVec = vec1;
+                posVec.Set(frame.x, frame.y);
 
-                globalFrame = b2CloneVec2(this.lookupObject.body.GetWorldPoint(posVec));
+                const wp = this.lookupObject.body.GetWorldPoint(posVec);
+                globalFrame.Set(wp.x, wp.y);
 
-                Box2D.destroy(posVec);
                 // DEBUG DRAW EXAMPLE
                 // game.editor.debugGraphics.clear();
                 // const pixiPoint = game.editor.getPIXIPointFromWorldPoint(globalFrame);
@@ -103,7 +107,7 @@ class Skateboard extends BaseVehicle {
 
 
             }else{
-                globalFrame = b2CloneVec2(this.lookupObject.frame.GetPosition());
+                globalFrame.Set(this.lookupObject.frame.GetPosition().x, this.lookupObject.frame.GetPosition().y);
                 const offset = 1.0;
                 const offsetAngle = -0.1;
                 const angle = this.lookupObject.frame.GetAngle()+offsetAngle;
@@ -112,7 +116,6 @@ class Skateboard extends BaseVehicle {
             }
 
             this.legAnimator.SetTarget(globalFrame);
-            Box2D.destroy(globalFrame);
         }else if(this.legAnimator){
             game.editor.DestroyJoint(this.legAnimator);
             this.legAnimator = null;

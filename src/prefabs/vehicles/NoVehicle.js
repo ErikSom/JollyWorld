@@ -11,6 +11,8 @@ import { b2CloneVec2, b2SubVec2 } from '../../../libs/debugdraw';
 
 const { getPointer, NULL } = Box2D;
 
+const vec1 = new Box2D.b2Vec2();
+
 export class NoVehicle extends BaseVehicle {
     constructor(target) {
         super(target);
@@ -64,16 +66,16 @@ export class NoVehicle extends BaseVehicle {
         const calculateJointDistance = (joint1, joint2, joint3) =>{
             let length = 0;
 
-            const diss = b2CloneVec2(joint1);
+            const diss = vec1;
+            diss.Set(joint1.x, joint1.y);
             b2SubVec2(diss, joint2);
             length += diss.Length();
-            Box2D.destroy(diss);
 
             if(joint3){
-                const diss2 = b2CloneVec2(joint3);
+                const diss2 = vec1;
+                diss2.Set(joint3.x, joint3.y);
                 b2SubVec2(diss2, joint2);
                 length += diss2.Length();
-                Box2D.destroy(diss2);
             }
             return length;
         }
