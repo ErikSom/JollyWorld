@@ -1334,7 +1334,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             }
 
             const newPos = vec1;
-            newPost.Set(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle));
+            newPos.Set(baseJointPos.x+anchorDistanceUpper*Math.cos(angle), baseJointPos.y+anchorDistanceUpper*Math.sin(angle));
             upperPart.SetTransform(newPos, angle+Settings.pihalve);
 
             if(upperPart === this.lookupObject[Humanoid.BODY_PARTS.HEAD]){
