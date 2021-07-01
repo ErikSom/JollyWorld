@@ -16,6 +16,14 @@ const { getPointer, NULL } = Box2D; // emscriptem specific
 const SIDE_RIGHT = 0;
 const SIDE_LEFT = 1;
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+const vec3 = new Box2D.b2Vec2();
+const vec4 = new Box2D.b2Vec2();
+const vec5 = new Box2D.b2Vec2();
+const vec6 = new Box2D.b2Vec2();
+const vec7 = new Box2D.b2Vec2();
+
 class DroneBomb extends Explosive {
     constructor(target) {
 		super(target);
@@ -104,12 +112,22 @@ class DroneBomb extends Explosive {
 		const forceMultiplier = 100 / this.prefabObject.settings.flySpeed;
 		const maxForce = 100 / forceMultiplier;
 
-		const gravityNormal = b2CloneVec2(game.world.GetGravity());
+		const gravityNormal = vec2;
+		gravityNormal.Set(game.world.GetGravity().x, game.world.GetGravity().y);
 		gravityNormal.Normalize();
 
-		const targetPosition = this.chaseTarget ? b2CloneVec2(this.chaseTarget.GetPosition()) : (this.wayPoint ? b2CloneVec2(this.wayPoint) : b2CloneVec2(this.startPosition));
+		const targetPosition = vec1;
+		if(this.chaseTarget){
+			targetPosition.Set(this.chaseTarget.GetPosition().x, this.chaseTarget.GetPosition().y);
+		}else if(this.wayPoint){
+			targetPosition.Set(this.wayPoint.GetPosition().x, this.wayPoint.GetPosition().y);
+		}else{
+			targetPosition.Set(this.startPosition.GetPosition().x, this.startPosition.GetPosition().y);
+		}
 
-		const gravityNormalIncrease = b2MulVec2(b2CloneVec2(gravityNormal), -8.0 * forceMultiplier);
+		const gravityNormalIncrease = vec3;
+		gravityNormalIncrease.Set(gravityNormal.x, gravityNormal.y);
+		b2MulVec2(gravityNormalIncrease, -8.0 * forceMultiplier);
 
 		b2AddVec2(targetPosition, gravityNormalIncrease);
 		b2SubVec2(targetPosition, this.body.GetPosition());
@@ -123,7 +141,8 @@ class DroneBomb extends Explosive {
 
 		const gravityAngle = Math.atan2(game.world.GetGravity().get_y(), game.world.GetGravity().get_x());
 		const forceDirection = normalizePI(gravityAngle -Math.PI);
-		const forceNormal = new Box2D.b2Vec2(Math.cos(forceDirection), Math.sin(forceDirection));
+		const forceNormal = vec4;
+		forceNormal.Set(Math.cos(forceDirection), Math.sin(forceDirection));
 		const facingGravity = b2DotVV(gravityNormal,forceNormal);
 		const almostFlipped = 0;
 
@@ -131,17 +150,20 @@ class DroneBomb extends Explosive {
 			targetThrottle *= -1;
 		}
 
-		const force = new Box2D.b2Vec2(0, 0);
+		const force = vec5;
+		force.Set(0, 0);
 		force.x = targetThrottle * Math.cos(forceDirection);
 		force.y = targetThrottle * Math.sin(forceDirection);
 
-		const quadNormal = new Box2D.b2Vec2(Math.cos(this.body.GetAngle()), Math.sin(this.body.GetAngle()));
+		const quadNormal = vec6;
+		quadNormal.Set(Math.cos(this.body.GetAngle()), Math.sin(this.body.GetAngle()));
 
 		this.horizontalThrottle.setError(b2DotVV(targetDistance,quadNormal));
 		this.horizontalThrottle.step( 1 / Settings.physicsTimeStep );
 		let targetHorizontalForce = b2Clamp(this.horizontalThrottle.getOutput() / forceMultiplier, -maxForce, maxForce);
 
-		const horizontalForce = new Box2D.b2Vec2(0, 0);
+		const horizontalForce = vec7;
+		horizontalForce.Set(0, 0);
 		horizontalForce.x = targetHorizontalForce * Math.cos(this.body.GetAngle());
 		horizontalForce.y = targetHorizontalForce * Math.sin(this.body.GetAngle());
 
@@ -151,15 +173,6 @@ class DroneBomb extends Explosive {
 		this.positionEmitters();
 		this.emitterLeft.update(game.editor.deltaTime * 0.001);
 		this.emitterRight.update(game.editor.deltaTime * 0.001);
-
-
-		Box2D.destroy(targetPosition);
-		Box2D.destroy(gravityNormal);
-		Box2D.destroy(gravityNormalIncrease);
-		Box2D.destroy(forceNormal);
-		Box2D.destroy(force);
-		Box2D.destroy(quadNormal);
-		Box2D.destroy(horizontalForce);
 
 
 		if(this.active){
@@ -178,16 +191,15 @@ class DroneBomb extends Explosive {
 
 		if (PrefabManager.timerReady(this.chaseScoutTimer, this.chaseScoutDelay, true)) {
 
-			const lowerBound = b2CloneVec2(this.body.GetPosition());
+			const lowerBound = vec1;
+			lowerBound.Set(this.body.GetPosition().x, this.body.GetPosition().y);
 			b2SubVec2(lowerBound, this.lookRangeVec);
 
-			const upperBound = b2CloneVec2(this.body.GetPosition());
+			const upperBound = vec2;
+			upperBound.Set(this.body.GetPosition().x, this.body.GetPosition().y);
 			b2AddVec2(upperBound, this.lookRangeVec)
 
 			const bodies = game.editor.queryWorldForBodies(lowerBound, upperBound);
-
-			Box2D.destroy(lowerBound);
-			Box2D.destroy(upperBound);
 
 			let found = false;
 			this.lightTexture.tint = 0xFFFFFF;
@@ -237,13 +249,15 @@ class DroneBomb extends Explosive {
 	}
 
 	positionEmitters(){
-		const correctedPos = b2CloneVec2(this.body.GetPosition());
+		const correctedPos = vec1;
+		correctedPos.Set(this.body.GetPosition().x, this.body.GetPosition().y);
 		const correctLengthOffset = 0.5;
 		const correctionAngle = this.body.GetAngle()-Settings.pihalve;
 		correctedPos.set_x(correctedPos.get_x() + correctLengthOffset * Math.cos(correctionAngle));
 		correctedPos.set_y(correctedPos.get_y() + correctLengthOffset * Math.sin(correctionAngle));
 
-		let pos = b2CloneVec2(correctedPos);
+		let pos = vec2;
+		pos.Set(correctedPos.x, correctedPos.y);
         const lengthOffset = 2.1;
         let angle = this.body.GetAngle()+Math.PI;
         pos.set_x(pos.get_x() + lengthOffset * Math.cos(angle));
@@ -267,8 +281,6 @@ class DroneBomb extends Explosive {
         this.emitterRight.maxStartRotation = + emitterAngleOffset;
         this.emitterRight.rotation = angle * game.editor.RAD2DEG;
 
-		Box2D.destroy(correctedPos);
-		Box2D.destroy(pos);
 	}
 	destroy(){
 		emitterManager.destroyEmitter(this.emitterLeft);
@@ -299,33 +311,34 @@ class DroneBomb extends Explosive {
 
 				const isFlesh = otherFixture.GetBody().isFlesh;
 				const pushForce = 300;
-				const angleVector = new Box2D.b2Vec2(Math.cos(self.body.GetAngle()), Math.sin(self.body.GetAngle()));
+				const angleVector = vec4;
+				angleVector.Set(Math.cos(self.body.GetAngle()), Math.sin(self.body.GetAngle()));
 
 				if(sideFixture === self.sides[SIDE_RIGHT]){
-					const pos = new Box2D.b2Vec2(self.emitterRight.spawnPos.x, self.emitterRight.spawnPos.y);
+					const pos = vec1;
+					pos.Set(self.emitterRight.spawnPos.x, self.emitterRight.spawnPos.y);
 					b2MulVec2(pos, 1/game.editor.PTM);
 					if(isFlesh){
 						emitterManager.playOnceEmitter("blood", self.body, pos, self.emitterRight.rotation);
 						game.editor.queueDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
 					}else self.emitterRight.playOnce();
 
-					let force1 = b2CloneVec2(angleVector);
+					let force1 = vec2;
+					force1.Set(angleVector.x, angleVector.y);
 					b2MulVec2(force1, -pushForce/4);
 
-					let force2 = b2CloneVec2(angleVector);
+					let force2 = vec3;
+					force2.Set(angleVector.x, angleVector.y);
 					b2MulVec2(force2, -pushForce);
 
 					self.body.ApplyForce(force1, pos, true);
 					self.body.ApplyForce(force2, self.body.GetPosition(), true);
 
-					Box2D.destroy(pos);
-					Box2D.destroy(force1);
-					Box2D.destroy(force2);
-
 					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
 
 				} else if(sideFixture === self.sides[SIDE_LEFT]){
-					const pos = new Box2D.b2Vec2(self.emitterLeft.spawnPos.x, self.emitterLeft.spawnPos.y)
+					const pos = vec1;
+					pos.Set(self.emitterLeft.spawnPos.x, self.emitterLeft.spawnPos.y)
 					b2MulVec2(pos, 1/Settings.PTM);
 
 					if(isFlesh){
@@ -333,18 +346,16 @@ class DroneBomb extends Explosive {
 						game.editor.queueDecalToBody(otherFixture.GetBody(), pos, "Decal.png", true, 1.0);
 					}else self.emitterLeft.playOnce();
 
-					let force1 = b2CloneVec2(angleVector);
+					let force1 = vec2;
+					force1.Set(angleVector.x, angleVector.y);
 					b2MulVec2(force1, pushForce/4);
 
-					let force2 = b2CloneVec2(angleVector);
+					let force2 = vec3;
+					force2.Set(angleVector.x, angleVector.y);
 					b2MulVec2(force2, pushForce);
 
 					self.body.ApplyForce(force1, pos, true);
 					self.body.ApplyForce(force2, self.body.GetPosition(), true);
-
-					Box2D.destroy(pos);
-					Box2D.destroy(force1);
-					Box2D.destroy(force2);
 
 					AudioManager.playSFX('drone-wall', 0.3, 1.0 + 0.4 * Math.random()-0.2, self.body.GetPosition());
 				}
@@ -358,7 +369,6 @@ class DroneBomb extends Explosive {
 						self.set('active', true);
 					}
 				}
-				Box2D.destroy(angleVector);
 			}
         }
         this.contactListener.EndContact = function (contact) {
