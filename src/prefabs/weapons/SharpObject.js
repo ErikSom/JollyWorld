@@ -7,6 +7,11 @@ import {
 import { drawLine } from '../../b2Editor/utils/drawing';
 import { b2CloneVec2, b2SubVec2 } from '../../../libs/debugdraw';
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+const vec3 = new Box2D.b2Vec2();
+const vec4 = new Box2D.b2Vec2();
+
 export class SharpObject extends PrefabManager.basePrefab {
     constructor(target) {
         super(target);
@@ -78,7 +83,8 @@ export class SharpObject extends PrefabManager.basePrefab {
         const basePosition = this.sharpBody.GetPosition();
 
         const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
-        const startPosition = new Box2D.b2Vec2(basePosition.get_x()+this.offsetWidth*Math.cos(startAngle), basePosition.get_y()+this.offsetWidth*Math.sin(startAngle));
+        const startPosition = vec1;
+        startPosition.Set(basePosition.get_x()+this.offsetWidth*Math.cos(startAngle), basePosition.get_y()+this.offsetWidth*Math.sin(startAngle));
 
         const numSpreadParts = Math.floor((this.width*2)/this.spread)+1;
 
@@ -90,18 +96,14 @@ export class SharpObject extends PrefabManager.basePrefab {
             const sideBladeAngle = bladeAngle+side*game.editor.DEG2RAD;
             for(let j = 0; j<numSpreadParts; j++){
                 const totalSpread = this.spread*j;
-                let bladePosition = new Box2D.b2Vec2(startPosition.get_x() + totalSpread*Math.cos(spreadAngle), startPosition.get_y() + totalSpread*Math.sin(spreadAngle));
-                let bladeEndPosition = new Box2D.b2Vec2(bladePosition.get_x() + this.extent * Math.cos(sideBladeAngle),bladePosition.get_y() + this.extent * Math.sin(sideBladeAngle));
+                let bladePosition = vec2;
+                bladePosition.Set(startPosition.get_x() + totalSpread*Math.cos(spreadAngle), startPosition.get_y() + totalSpread*Math.sin(spreadAngle));
+                let bladeEndPosition = vec3;
+                bladeEndPosition.Set(bladePosition.get_x() + this.extent * Math.cos(sideBladeAngle),bladePosition.get_y() + this.extent * Math.sin(sideBladeAngle));
                 drawLine(game.editor.getPIXIPointFromWorldPoint(bladePosition), game.editor.getPIXIPointFromWorldPoint(bladeEndPosition));
-
-                Box2D.destroy(bladePosition);
-                Box2D.destroy(bladeEndPosition);
 
             }
         })
-
-        Box2D.destroy(startPosition);
-
     }
 
 
@@ -138,7 +140,8 @@ export class SharpObject extends PrefabManager.basePrefab {
                 const basePosition = this.sharpBody.GetPosition();
                 const extentAngle = sharpBodyAngle-90*game.editor.DEG2RAD;
                 const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
-                const startPosition = new Box2D.b2Vec2(basePosition.get_x()+this.offsetWidth*Math.cos(startAngle), basePosition.get_y()+this.offsetWidth*Math.sin(startAngle));
+                const startPosition = vec1;
+                startPosition.Set(basePosition.get_x()+this.offsetWidth*Math.cos(startAngle), basePosition.get_y()+this.offsetWidth*Math.sin(startAngle));
 
                 const numSpreadParts = Math.floor((this.width*2)/this.spread)+1;
 
@@ -150,8 +153,10 @@ export class SharpObject extends PrefabManager.basePrefab {
                     const sideBladeAngle = bladeAngle+side*game.editor.DEG2RAD;
                     for(let j = 0; j<numSpreadParts; j++){
                         const totalSpread = this.spread*j;
-                        let bladePosition = new Box2D.b2Vec2(startPosition.get_x() + totalSpread*Math.cos(spreadAngle), startPosition.get_y() + totalSpread*Math.sin(spreadAngle));
-                        let bladeEndPosition = new Box2D.b2Vec2(bladePosition.get_x() + this.extent * Math.cos(sideBladeAngle),bladePosition.get_y() + this.extent * Math.sin(sideBladeAngle));
+                        let bladePosition = vec2;
+                        bladePosition.Set(startPosition.get_x() + totalSpread*Math.cos(spreadAngle), startPosition.get_y() + totalSpread*Math.sin(spreadAngle));
+                        let bladeEndPosition = vec3;
+                        bladeEndPosition.Set(bladePosition.get_x() + this.extent * Math.cos(sideBladeAngle),bladePosition.get_y() + this.extent * Math.sin(sideBladeAngle));
 
                         const callback =  Object.assign(new Box2D.JSRayCastCallback(), {
                             ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
@@ -179,12 +184,8 @@ export class SharpObject extends PrefabManager.basePrefab {
 
                             emitterManager.playOnceEmitter("blood", body, callback.m_point, extentAngle);
                         }
-                        Box2D.destroy(bladePosition);
-                        Box2D.destroy(bladeEndPosition);
                     }
                 });
-
-                Box2D.destroy(startPosition);
 
                 let joint = Box2D.castObject(game.editor.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
                 this.connectedBodies.push(this.bodiesToStick[i].body);
@@ -217,10 +218,13 @@ export class SharpObject extends PrefabManager.basePrefab {
         const basePosition = this.sharpBody.GetPosition();
         const sharpBodyAngle = this.sharpBody.GetAngle()+this.angleCorrection*game.editor.DEG2RAD;
         const startAngle = sharpBodyAngle+180*game.editor.DEG2RAD;
-        const startPosition = new Box2D.b2Vec2(basePosition.get_x()+this.offsetWidth*Math.cos(startAngle), basePosition.get_y()+this.offsetWidth*Math.sin(startAngle));
-        const bladePosition = new Box2D.b2Vec2(startPosition.get_x() + this.width*Math.cos(sharpBodyAngle), startPosition.get_y() + this.width*Math.sin(sharpBodyAngle));
+        const startPosition = vec1;
+        startPosition.Set(basePosition.get_x()+this.offsetWidth*Math.cos(startAngle), basePosition.get_y()+this.offsetWidth*Math.sin(startAngle));
+        const bladePosition = vec2;
+        bladePosition.Set(startPosition.get_x() + this.width*Math.cos(sharpBodyAngle), startPosition.get_y() + this.width*Math.sin(sharpBodyAngle));
 
-        const diff = b2CloneVec2(bladePosition)
+        const diff = vec3;
+        diff.Set(bladePosition.x, bladePosition.y)
         b2SubVec2(diff, contactPoint);
 
         const angle = Math.atan2(diff.y, diff.x) - game.editor.PI2;
@@ -229,11 +233,6 @@ export class SharpObject extends PrefabManager.basePrefab {
         const shortestDif = Math.atan2(Math.sin(angleDif), Math.cos(angleDif)) * game.editor.RAD2DEG;
         const otherSideAngleDif = (sharpBodyAngle+Math.PI) - angle;
         const otherShortestDif = Math.atan2(Math.sin(otherSideAngleDif), Math.cos(otherSideAngleDif)) * game.editor.RAD2DEG;
-
-
-        Box2D.destroy(startPosition);
-        Box2D.destroy(bladePosition);
-        Box2D.destroy(diff);
 
         if((Math.abs(shortestDif) < this.maxEntryAngle) || (this.twoSided && Math.abs(otherShortestDif) < this.maxEntryAngle)){
             return true;

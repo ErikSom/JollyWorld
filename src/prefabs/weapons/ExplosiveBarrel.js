@@ -10,6 +10,9 @@ import {
     game
 } from "../../Game";
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
 class ExplosiveBarrel extends Explosive {
     constructor(target) {
         super(target);
@@ -37,13 +40,11 @@ class ExplosiveBarrel extends Explosive {
 		const body = lookupObject._bodies[0];
 		const force = 1500;
 		const offset = 0.5;
-		const impulse = new Box2D.b2Vec2((Math.random()*(force*2)-force), (Math.random()*(force*2)-force));
-		const point = new Box2D.b2Vec2(body.GetPosition().get_x()+(Math.random()*(offset*2)-offset), body.GetPosition().get_y()+(Math.random()*(offset*2)-offset));
+		const impulse = vec1;
+		impulse.Set((Math.random()*(force*2)-force), (Math.random()*(force*2)-force));
+		const point = vec2;
+		point.Set(body.GetPosition().get_x()+(Math.random()*(offset*2)-offset), body.GetPosition().get_y()+(Math.random()*(offset*2)-offset));
 		body.ApplyForce(impulse, point, true);
-
-
-		Box2D.destroy(impulse);
-		Box2D.destroy(point);
 
 		PhysicsParticleEmitter.emit(['Cardboard_1', 'Cardboard_2', 'Cardboard_3'], pos, 20, 5, 20, false, [0x752E00, 0x98440D]);
 

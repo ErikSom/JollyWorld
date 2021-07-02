@@ -8,6 +8,8 @@ import {
 
 const { getPointer, NULL } = Box2D;
 
+const vec1 = new Box2D.b2Vec2();
+
 export const init = ()=>{
 	const bd = new Box2D.b2BodyDef();
 	bd.type = Box2D.b2_dynamicBody;
@@ -59,9 +61,9 @@ export const update = ()=>{
 	}
 
 	if(game.cameraFocusObject && !game.cameraFocusObject.destroyed){
-		const targetPosition = b2CloneVec2(game.cameraFocusObject.GetPosition());
+		const targetPosition = vec1;
+		targetPosition.Set(game.cameraFocusObject.GetPosition().x, game.cameraFocusObject.GetPosition().y);
 		game.editor.physicsCamera.SetTransform(targetPosition, 0);
-		Box2D.destroy(targetPosition);
 	}else{
 		let cameraX = -(game.editor.cameraHolder.x / game.editor.cameraHolder.scale.x - (window.innerWidth / 2 / game.editor.cameraHolder.scale.x)) / Settings.PTM;
 		let cameraY = -(game.editor.cameraHolder.y / game.editor.cameraHolder.scale.y - (window.innerHeight / 2 / game.editor.cameraHolder.scale.y)) / Settings.PTM;

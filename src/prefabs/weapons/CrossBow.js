@@ -10,6 +10,8 @@ import {
 import { Settings } from '../../Settings';
 import { b2CloneVec2 } from '../../../libs/debugdraw';
 
+const vec1 = new Box2D.b2Vec2();
+
 class CrossBow extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
@@ -82,7 +84,9 @@ class CrossBow extends PrefabManager.basePrefab {
 		this.shouldShoot = true;
 	}
 	shoot() {
-		const pos = b2CloneVec2(this.crossbowBody.GetWorldPoint(this.arrowSpawnPoint));
+		let wp = this.crossbowBody.GetWorldPoint(this.arrowSpawnPoint);
+		const pos = vec1;
+		pos.Set(wp.x, wp.y);
 
 		const angle = this.crossbowBody.GetAngle()+(this.flipped ? Math.PI : 0);
 
@@ -92,11 +96,11 @@ class CrossBow extends PrefabManager.basePrefab {
 		const body = lookupObject._bodies[0];
 		body.SetTransform(pos, angle);
 		game.editor.updateBodyPosition(body);
-		Box2D.destroy(pos);
-		const impulse = new Box2D.b2Vec2(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
+
+		const impulse = vec1;
+		impulse.Set(this.shootForce*Math.cos(angle), this.shootForce*Math.sin(angle));
 
 		body.ApplyForceToCenter(impulse, true);
-		Box2D.destroy(impulse);
 
 		this.lastArrows.push(prefabData.prefabClass);
 		if(this.lastArrows.length>Settings.maxBulletsPrefab){

@@ -4,7 +4,9 @@ import {
 
 import {b2AddVec2, b2CloneVec2, b2SubVec2} from "../../../libs/debugdraw"
 
-const {b2Vec2} = Box2D
+const {b2Vec2} = Box2D;
+
+const vec1 = new b2Vec2();
 
 export const rotateVector = function (vector, degrees) {
     const radians = degrees * game.editor.DEG2RAD;
@@ -16,15 +18,14 @@ export const rotateVector = function (vector, degrees) {
 }
 
 export const rotateVectorAroundPoint = function (vector, point, degrees, log) {
-    const vec = b2CloneVec2(vector);
+    const vec = vec1;
+    vec.Set(vector.x, vector.y);
     b2SubVec2(vec, point);
     // if(log) console.log(vec.x, vec.y, 'diff', vec.Length());
     const length = vec.Length();
     vec.Set(length, 0);
     const rotatedVector = rotateVector(vec, degrees);
     b2AddVec2(rotatedVector, point);
-
-    Box2D.destroy(vec);
 
     return rotatedVector;
 }

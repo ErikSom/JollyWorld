@@ -8,6 +8,14 @@ import { Settings } from '../../Settings';
 
 const { getPointer, NULL } = Box2D;
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+const vec3 = new Box2D.b2Vec2();
+const vec4 = new Box2D.b2Vec2();
+
+const pointingVec = new Box2D.b2Vec2( 1, 0 );
+const tailVec = new Box2D.b2Vec2( -1.4, 0 );
+
 class Arrow extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
@@ -29,8 +37,6 @@ class Arrow extends PrefabManager.basePrefab {
 		this.arrowBody.isArrow = true;
 
 		super.init();
-		this.pointingVec = new Box2D.b2Vec2( 1, 0 );
-		this.tailVec = new Box2D.b2Vec2( -1.4, 0 );
 		this.sticking = false;
 		this.bodyToStick = null;
 		this.stickImpulse = 8.0;
@@ -52,29 +58,36 @@ class Arrow extends PrefabManager.basePrefab {
     }
 	update(){
 		if(!this.sticking && this.arrowBody.IsAwake()){
-			const pointingDirection = b2CloneVec2(this.arrowBody.GetWorldVector(this.pointingVec));
-			let flightDirection = b2CloneVec2(this.arrowBody.GetLinearVelocity());
+			let wp = this.arrowBody.GetWorldVector(pointingVec);
+			const pointingDirection = vec1;
+			pointingDirection.Set(wp.x, wp.y);
+
+			let flightDirection = vec2;
+			flightDirection.Set(this.arrowBody.GetLinearVelocity().x, this.arrowBody.GetLinearVelocity().y);
 			const flightSpeed = flightDirection.Normalize();
 
 			const dot = b2DotVV( flightDirection, pointingDirection );
-			Box2D.destroy(pointingDirection);
 
 			const dragForceMagnitude = (1 - Math.abs(dot)) * flightSpeed * flightSpeed * this.dragConstant * this.arrowBody.GetMass();
 
-			const arrowTailPosition = b2CloneVec2(this.arrowBody.GetWorldPoint( this.tailVec ));
+			const arrowTailPosition = vec1;
+			wp = this.arrowBody.GetWorldPoint( tailVec );
+
+			arrowTailPosition.Set(wp.x, wp.y);
+
 
 			b2MulVec2(flightDirection, -dragForceMagnitude);
 
 			this.arrowBody.ApplyForce(flightDirection , arrowTailPosition );
-			Box2D.destroy(flightDirection);
-			Box2D.destroy(arrowTailPosition);
 
 			if(this.bodyToStick){
 				this.arrowBody.SetBullet(false);
 
-				let offsetPos = new Box2D.b2Vec2(0.6, 0);
-				const worldCoordsAnchorPoint = this.arrowBody.GetWorldPoint( offsetPos );
-				Box2D.destroy(offsetPos);
+				let offsetPos = vec3;
+				offsetPos.Set(0.6, 0);
+				const worldCoordsAnchorPoint = vec4;
+				wp = this.arrowBody.GetWorldPoint( offsetPos );
+				worldCoordsAnchorPoint.Set(wp.x, wp.y);
 
 				const weldJointDef = new Box2D.b2WeldJointDef();
 
@@ -90,9 +103,6 @@ class Arrow extends PrefabManager.basePrefab {
 				const localAnchorB = weldJointDef.bodyB.GetLocalPoint( worldCoordsAnchorPoint);
 				weldJointDef.localAnchorB.Set(localAnchorB.x, localAnchorB.y);
 
-
-
-				Box2D.destroy(worldCoordsAnchorPoint);
 				weldJointDef.set_collideConnected(false);
 				weldJointDef.set_referenceAngle(weldJointDef.bodyB.GetAngle()-weldJointDef.bodyA.GetAngle());
 				game.editor.CreateJoint(weldJointDef);
@@ -116,8 +126,6 @@ class Arrow extends PrefabManager.basePrefab {
 		if(!this.destroyed){
 			if(this.worldCollisionPoint) Box2D.destroy(this.worldCollisionPoint);
 			this.worldCollisionPoint = null;
-			Box2D.destroy(this.pointingVec);
-			Box2D.destroy(this.tailVec);
 
 			if(this.isBullet){
 				game.editor.bulletBodyCount--;
@@ -160,10 +168,10 @@ class Arrow extends PrefabManager.basePrefab {
 						self.bodyToStick = body;
 						const offsetLength = self.impactOffsetLength - Math.min(impulse.get_normalImpulses(0) / 10, self.maxImpactToCollisionOffset);
 
-						const offset = new Box2D.b2Vec2(offsetLength*Math.cos(self.impactAngle), offsetLength*Math.sin(self.impactAngle));
+						const offset = vec1;
+						offset.Set(offsetLength*Math.cos(self.impactAngle), offsetLength*Math.sin(self.impactAngle));
 						self.worldCollisionPoint = b2CloneVec2(worldManifold.get_points(0));
 						b2SubVec2(self.worldCollisionPoint, offset);
-						Box2D.destroy(offset);
 
 						self.arrowBody.lockPositionForOneFrame = self.worldCollisionPoint;
 

@@ -13,6 +13,9 @@ import { crawlJointsUtility } from '../level/Finish';
 
 const { getPointer, NULL } = Box2D;
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+
 export class Character extends Humanoid {
     constructor(target) {
         super(target);
@@ -117,9 +120,9 @@ export class Character extends Humanoid {
                 let targetBody = null;
 
                 for (let i = 0; i < totalCircleRad; i += checkSlize) {
-                    const rayEnd = b2CloneVec2(rayStart);
-                    rayEnd.set_x(rayEnd.get_x() + Math.cos(i) * 0.6 );
-                    rayEnd.set_y(rayEnd.get_y() + Math.sin(i) * 0.6 );
+                    const rayEnd = vec1;
+                    rayEnd.set_x(rayStart.get_x() + Math.cos(i) * 0.6 );
+                    rayEnd.set_y(rayStart.get_y() + Math.sin(i) * 0.6 );
 
                     let callback = Object.assign(new Box2D.JSRayCastCallback(), {
                         ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
@@ -145,7 +148,6 @@ export class Character extends Humanoid {
                         targetBody = callback.m_fixture.GetBody();
                         break;
                     }
-                    Box2D.destroy(rayEnd);
                 }
 
                 if(targetBody){
@@ -462,13 +464,12 @@ export class Character extends Humanoid {
         for (let i = 0; i < this.lookupObject._bodies.length; i++) {
             const body = this.lookupObject["body"];
             if(body){
-                const bodyAngleVector = new Box2D.b2Vec2(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
-                const dirForce = new Box2D.b2Vec2(bodyAngleVector.y, -bodyAngleVector.x);
+                const bodyAngleVector = vec1;
+                bodyAngleVector.Set(Math.cos(body.GetAngle()), Math.sin(body.GetAngle()));
+                const dirForce = vec2;
+                dirForce.Set(bodyAngleVector.y, -bodyAngleVector.x);
                 b2MulVec2(dirForce, force)
                 body.ApplyForce(dirForce, body.GetPosition(), true);
-
-                Box2D.destroy(bodyAngleVector);
-                Box2D.destroy(dirForce);
             }
         }
 

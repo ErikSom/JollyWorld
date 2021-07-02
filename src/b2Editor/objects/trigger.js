@@ -23,6 +23,11 @@ import { disableCulling } from "../../utils/PIXICuller";
 
 const { getPointer, NULL } = Box2D;
 
+const vec1 = new Box2D.b2Vec2();
+const vec2 = new Box2D.b2Vec2();
+const vec3 = new Box2D.b2Vec2();
+const vec4 = new Box2D.b2Vec2();
+
 export const getActionsForObject = function (object) {
     var actions = [];
     actions.push("Empty");
@@ -175,7 +180,8 @@ export const doAction = function (actionData, target) {
                     }
 
                     const force = actionData.linearForce * mass / impulseReducer;
-                    const impulse = new Box2D.b2Vec2(force * Math.cos(a), force * Math.sin(a))
+                    const impulse = vec1;
+                    impulse.Set(force * Math.cos(a), force * Math.sin(a))
                     body.ApplyLinearImpulse(impulse, body.GetPosition(), true)
 
                     if(actionData.rotationalForce === undefined){  // legacy fix
@@ -184,11 +190,10 @@ export const doAction = function (actionData, target) {
 
                     const rotationForce = actionData.rotationalForce * mass * impulseReducer;
                     body.ApplyTorque(rotationForce, true)
-                    Box2D.destroy(impulse);
                 });
             break;
         case "SetPosition":
-                let targetPos;
+                let targetPos = vec1;
                 if (target.data.prefabInstanceName) {
 
                     if(prefab.class.isVehicle){
@@ -197,14 +202,14 @@ export const doAction = function (actionData, target) {
                     }else{
                         objects = [].concat(prefab.class.lookupObject._bodies, prefab.class.lookupObject._textures);
                     }
-                    targetPos = new Box2D.b2Vec2(target.x, target.y);
+                    targetPos.Set(target.x, target.y);
                 } else if (target.myBody) {
                     objects = [target.myBody];
-                    targetPos = new Box2D.b2Vec2(target.myBody.GetPosition().x * Settings.PTM, target.myBody.GetPosition().y * Settings.PTM);
+                    targetPos.Set(target.myBody.GetPosition().x * Settings.PTM, target.myBody.GetPosition().y * Settings.PTM);
                     target.myBody.SetAwake(true);
                 } else {
                     objects = [target];
-                    targetPos = new Box2D.b2Vec2(target.x, target.y);
+                    targetPos.Set(target.x, target.y);
                 }
 
                 if (actionData.setAdd == "fixed"){
@@ -214,7 +219,6 @@ export const doAction = function (actionData, target) {
                 }
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
-                Box2D.destroy(targetPos);
             break;
         case "SetRotation":
                 let targetRotation;
@@ -324,9 +328,9 @@ export const doAction = function (actionData, target) {
             if(actionData.toggle) actionData.setFollowPlayer = !actionData.setFollowPlayer;
             break;
         case "SetGravity":
-            const gravity = new Box2D.b2Vec2(actionData.gravityX, actionData.gravityY);
+            const gravity = vec1;
+            gravity.Set(actionData.gravityX, actionData.gravityY);
             game.world.SetGravity(gravity);
-            Box2D.destroy(gravity);
             break;
         case "SetCameraZoom":
             game.editor.editorSettingsObject.cameraZoom = actionData.zoom;
@@ -388,8 +392,12 @@ export const doAction = function (actionData, target) {
             animation.frameTime = 1000 / actionData.fps;
         break
         case "SetWayPoint":
-            if(prefab.class.wayPoint) Box2D.destroy(prefab.class.wayPoint);
-            prefab.class.wayPoint = new Box2D.b2Vec2(actionData.x, actionData.y);
+            if(!prefab.class.wayPoint){
+                prefab.class.wayPoint = new Box2D.b2Vec2(actionData.x, actionData.y);
+            } else {
+                prefab.class.wayPoint.Set(actionData.x, actionData.y);
+            }
+
             b2MulVec2(prefab.class.wayPoint, 1/game.editor.PTM);
         break;
         case "SetMirrored":
@@ -1912,9 +1920,9 @@ export class triggerCore {
                 targetX += this.followLengthOffset * Math.cos(targetRot);
                 targetY += this.followLengthOffset * Math.sin(targetRot);
 
-                const tarPos = new Box2D.b2Vec2(targetX, targetY)
+                const tarPos = vec1;
+                tarPos.Set(targetX, targetY)
                 this.trigger.SetTransform(tarPos, this.trigger.GetAngle());
-                Box2D.destroy(tarPos);
             }
             if (this.runTriggerOnce && !this.destroy) {
                 this.activateTrigger();
@@ -2185,21 +2193,22 @@ export const drawEditorTriggerTargets = targets=>{
 
             for(let j = 0; j<body.mySprite.targets.length; j++){
                 let target = body.mySprite.targets[j];
-                let tarPos;
+                let tarPos = vec1;
                 let tarPrefab;
 
                 if(target.data.prefabInstanceName){
                     tarPrefab = B2dEditor.activePrefabs[target.data.prefabInstanceName];
-                    tarPos = new Box2D.b2Vec2(tarPrefab.x, tarPrefab.y);
+                    tarPos.Set(tarPrefab.x, tarPrefab.y);
                 } else if ([game.editor.object_BODY, game.editor.object_TRIGGER].includes(target.data.type)) {
-                    tarPos = b2CloneVec2(target.myBody.GetPosition());
+                    tarPos.Set(target.myBody.GetPosition().x, target.myBody.GetPosition().y);
                     b2MulVec2(tarPos, game.editor.PTM);
                 } else{
-                    tarPos = new Box2D.b2Vec2(target.x, target.y);
+                    tarPos.Set(target.x, target.y);
                 }
 
                 const lineOffsetSize = -20 * game.levelCamera.scale.x;
-                const linePos = b2CloneVec2(myPos);
+                const linePos = vec2;
+                linePos.Set(myPos.x, myPos.y);
                 b2SubVec2(linePos, tarPos);
                 linePos.Normalize();
                 b2MulVec2(linePos, lineOffsetSize);
@@ -2209,12 +2218,14 @@ export const drawEditorTriggerTargets = targets=>{
                 game.triggerDebugDraw.moveTo(linePos.x, linePos.y);
                 game.triggerDebugDraw.lineTo(tarPos.x, tarPos.y);
 
-                const v = new Box2D.b2Vec2(tarPos.x-linePos.x, tarPos.y-linePos.y);
+                const v = vec3;
+                v.Set(tarPos.x-linePos.x, tarPos.y-linePos.y);
                 const l = v.Length();
                 v.Normalize();
                 const tl = l*0.5;
                 b2MulVec2(v, tl);
-                const tp = b2CloneVec2(linePos);
+                const tp = vec2;
+                tp.Set(linePos.x, linePos.y);
                 b2AddVec2(tp, v);
 
                 game.triggerDebugDraw.beginFill("0x999", 1.0);
@@ -2223,19 +2234,14 @@ export const drawEditorTriggerTargets = targets=>{
 
                 drawing.addText(j+1, game.triggerDebugDraw, tp, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
 
-                Box2D.destroy(tarPos);
-                Box2D.destroy(linePos);
-                Box2D.destroy(v);
-                Box2D.destroy(tp);
             };
 
             if([triggerTargetType.keydown, triggerTargetType.keyup].includes(body.mySprite.data.targetType)){
                 const keyName = `${KeyValLookup[body.mySprite.data.triggerKey]} ${(body.mySprite.data.targetType === triggerTargetType.keydown ? '(d)':'(u)')}`;
-                const tarPos = new Box2D.b2Vec2(myPos.x + 1, myPos.y + 1);
+                const tarPos = vec1;
+                tarPos.Set(myPos.x + 1, myPos.y + 1);
                 drawing.addText(keyName, game.triggerDebugDraw, tarPos, {fill:0x000, fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
                 drawing.addText(keyName, game.triggerDebugDraw, myPos, {fontSize: 14}, 1/game.editor.cameraHolder.scale.x);
-
-                Box2D.destroy(tarPos);
             }
         }
     });

@@ -5,6 +5,8 @@ import {
 import { Settings } from '../../Settings';
 import { crawlJointsUtility } from '../level/Finish';
 
+const vec1 = new Box2D.b2Vec2();
+
 class Booster extends PrefabManager.basePrefab {
 
     constructor(target) {
@@ -33,7 +35,8 @@ class Booster extends PrefabManager.basePrefab {
 
             const direction = self.base.GetAngle();
             const deltaVelocityInc = self.velocityBoost*game.editor.deltaTime;
-            const velocityInc = new Box2D.b2Vec2(deltaVelocityInc*Math.cos(direction), deltaVelocityInc*Math.sin(direction));
+            const velocityInc = vec1;
+            velocityInc.Set(deltaVelocityInc*Math.cos(direction), deltaVelocityInc*Math.sin(direction));
 
             bodies.forEach(body=> {
                 if(body.GetType() !== Box2D.b2_staticBody){
@@ -43,9 +46,6 @@ class Booster extends PrefabManager.basePrefab {
                     body.SetLinearVelocity(velocity);
                 }
             })
-
-            Box2D.destroy(velocityInc);
-
         }
     }
 }

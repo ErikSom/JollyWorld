@@ -6,6 +6,7 @@ import {
 
 const { getPointer, NULL, pointsToVec2Array } = Box2D; // emscriptem specific
 
+const vec1 = new Box2D.b2Vec2();
 
 class ForceField extends PrefabManager.basePrefab {
     constructor(target) {
@@ -181,7 +182,8 @@ class ForceField extends PrefabManager.basePrefab {
 
     update() {
 		const direction = this.direction*game.editor.DEG2RAD;
-		const force = new Box2D.b2Vec2(this.force*Math.cos(direction), this.force*Math.sin(direction));
+		const force = vec1;
+		force.Set(this.force*Math.cos(direction), this.force*Math.sin(direction));
 
 		this.fieldBodies.forEach(body=>{
 
@@ -191,8 +193,6 @@ class ForceField extends PrefabManager.basePrefab {
 
 			body.ApplyForceToCenter(force, true);
 		})
-
-		Box2D.destroy(force);
 	}
 }
 
