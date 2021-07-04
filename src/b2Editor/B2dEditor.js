@@ -2050,6 +2050,7 @@ const _B2dEditor = function () {
 			delete joint.myTriggers;
 			delete joint.spriteData;
 			delete joint.data;
+			delete joint.isFlipped;
 		}
 	}
 
@@ -8020,8 +8021,12 @@ const _B2dEditor = function () {
 			objects = objects.filter(body => !body.snapped);
 		}
 
+		console.log(objects);
+
 		const centerObject = prefabClass.lookupObject[centerObjectName];
 		const flippedJoints = [];
+
+		debugger;
 		objects.forEach(object =>{
 			if (object.mySprite){
 				// body
@@ -8052,6 +8057,8 @@ const _B2dEditor = function () {
 				body.mySprite.scale.x *= -1;
 
 				if(body != centerObject){
+
+					// make sure the initial object is not mirrored (object a)
 
 					const objectAngleDiff = centerObject.GetAngle()-body.GetAngle();
 					const reflectedAngle = centerObject.GetAngle()+objectAngleDiff
@@ -8091,6 +8098,7 @@ const _B2dEditor = function () {
 				const destroyJoints = [];
 				for (let jointEdge = body.GetJointList(); getPointer(jointEdge) !== getPointer(NULL); jointEdge = jointEdge.get_next()) {
 					const joint = this.CastJoint(jointEdge.joint);
+
 					let keyA = joint.GetBodyA().mySprite ? joint.GetBodyA().mySprite.data.prefabInstanceName : joint.GetBodyA().key;
 					let keyB = joint.GetBodyB().mySprite ? joint.GetBodyB().mySprite.data.prefabInstanceName : joint.GetBodyB().key;
 
@@ -8109,23 +8117,87 @@ const _B2dEditor = function () {
 						destroyJoints.push(joint);
 					}else if(!flippedJoints.includes(joint)){
 
-						if(joint.GetLocalAnchorA !== undefined) joint.GetLocalAnchorA().Set(joint.GetLocalAnchorA().x * -1, joint.GetLocalAnchorA().y);
-						if(joint.GetLocalAnchorB !== undefined) joint.GetLocalAnchorB().Set(joint.GetLocalAnchorB().x * -1, joint.GetLocalAnchorB().y);
+						if(joint.GetType() !== Box2D.e_prismaticJoint){
 
-						if(joint.GetLowerLimit !== undefined && joint.GetUpperLimit !== undefined) {
-							const oldLower = joint.GetLowerLimit();
-							const oldUpper = joint.GetUpperLimit();
-							joint.SetLimits(-oldUpper, -oldLower);
+							if(joint.GetLocalAnchorA !== undefined) joint.GetLocalAnchorA().Set(joint.GetLocalAnchorA().x * -1, joint.GetLocalAnchorA().y);
+							if(joint.GetLocalAnchorB !== undefined) joint.GetLocalAnchorB().Set(joint.GetLocalAnchorB().x * -1, joint.GetLocalAnchorB().y);
+
+
+							if(joint.GetLowerLimit !== undefined && joint.GetUpperLimit !== undefined) {
+								const oldLower = joint.GetLowerLimit();
+								const oldUpper = joint.GetUpperLimit();
+								joint.SetLimits(-oldUpper, -oldLower);
+							}
+
+							// if(joint.GetType() === Box2D.e_prismaticJoint){
+
+							// 	const globalVec = joint.GetBodyA().GetWorldVector(joint.GetLocalAxisA())
+							// 	globalVec.x *= -1;
+
+							// 	const localVec = joint.GetBodyA().GetLocalVector(globalVec);
+
+							// 	joint.GetLocalAxisA().Set(localVec.x, localVec.y);
+
+
+							// 	const pointerX = (Box2D.getPointer(joint.GetLocalAxisA()) + 8) >> 2;
+							// 	const pointerY = (Box2D.getPointer(joint.GetLocalAxisA()) + 12) >> 2;
+
+							// 	const otherAxisX = Box2D.HEAPF32[pointerX] * -1;
+							// 	const otherAxisY = Box2D.HEAPF32[pointerY] * -1;
+
+							// 	Box2D.HEAPF32.set([otherAxisX, otherAxisY], pointerX);
+							// }
+
+							flippedJoints.push(joint);
+						}else{
+
+
+							const prismaticJointDef = new Box2D.b2PrismaticJointDef();
+
+							const localAnchorA = joint.GetLocalAnchorA();
+							localAnchorA.Set(joint.GetLocalAnchorA().x * -1, joint.GetLocalAnchorA().y);
+
+							const localAnchorB = joint.GetLocalAnchorB();
+							localAnchorB.Set(joint.GetLocalAnchorB().x * -1, joint.GetLocalAnchorB().y);
+
+							prismaticJointDef.set_bodyA(joint.GetBodyA());
+							prismaticJointDef.set_bodyB(joint.GetBodyB());
+							prismaticJointDef.set_localAnchorA(localAnchorA);
+							prismaticJointDef.set_localAnchorB(localAnchorB);
+
+
+							// mirror the axis
+
+							const localVec = joint.GetLocalAxisA();
+							joint.GetLocalAxisA().Set(localVec.x * -1, localVec.y);
+
+
+							prismaticJointDef.set_localAxisA(joint.GetLocalAxisA());
+							prismaticJointDef.set_collideConnected(joint.GetCollideConnected());
+							const angleInc = joint.isFlipped ? Math.PI : -Math.PI;
+							prismaticJointDef.set_referenceAngle(joint.GetReferenceAngle() + angleInc);
+							prismaticJointDef.set_lowerTranslation(joint.GetLowerLimit());
+							prismaticJointDef.set_upperTranslation(joint.GetUpperLimit());
+							prismaticJointDef.set_maxMotorForce(joint.GetMaxMotorForce());
+							prismaticJointDef.set_motorSpeed(joint.GetMotorSpeed());
+							prismaticJointDef.set_enableLimit(joint.IsLimitEnabled());
+							prismaticJointDef.set_enableMotor(joint.IsMotorEnabled());
+
+							const newJoint = Box2D.castObject(this.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
+
+							newJoint.isFlipped = !joint.isFlipped;
+
+							destroy(prismaticJointDef);
+
+							flippedJoints.push(newJoint);
+
+
+							this.deleteObjects([joint]);
 						}
 
-						if(joint.GetType() === Box2D.e_prismaticJoint){
-							debugger;
-						}
-
-						flippedJoints.push(joint);
 					}
-				}
 
+				}
 
 				destroyJoints.forEach(joint => this.DestroyJoint(joint));
 
@@ -8164,8 +8236,6 @@ const _B2dEditor = function () {
 
 				object.x = nx;
 				object.y = ny;
-
-
 			}
 		})
 	}
