@@ -18,6 +18,7 @@ const conditions = ["rollover left", "rollover right", "rollover", "change", "0"
 
 const vec1 = new Box2D.b2Vec2();
 const vec2 = new Box2D.b2Vec2();
+const vec3 = new Box2D.b2Vec2();
 
 class SevenSegment extends PrefabManager.basePrefab {
     constructor(target) {
