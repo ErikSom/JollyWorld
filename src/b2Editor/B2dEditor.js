@@ -8026,7 +8026,6 @@ const _B2dEditor = function () {
 		const centerObject = prefabClass.lookupObject[centerObjectName];
 		const flippedJoints = [];
 
-		debugger;
 		objects.forEach(object =>{
 			if (object.mySprite){
 				// body
