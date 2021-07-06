@@ -57,7 +57,7 @@ class HammerPot extends BaseVehicle {
         this.maxRotateAccel = 8;
 
         this.mousePos = {x:0, y:0};
-        this.mouseControlled = false;
+        this.mouseControlled = true;
         this.mouseEase = 0.1;
 
 
@@ -104,61 +104,56 @@ class HammerPot extends BaseVehicle {
         if(this.character && this.character.attachedToVehicle){
             if(this.mouseControlled){
 
-                if(hammerEnd.oldPosition){
 
-                    const mx = hammerEnd.GetPosition().x - hammerEnd.oldPosition.x;
-                    const my = hammerEnd.GetPosition().y - hammerEnd.oldPosition.y;
+                this.mousePos.x += (hammerEnd.GetPosition().x - this.mousePos.x) * this.mouseEase;
+                this.mousePos.y += (hammerEnd.GetPosition().y - this.mousePos.y) * this.mouseEase;
 
-                    this.mousePos.x += mx;
-                    this.mousePos.y += my;
+                // console.log(this.mousePos.x, this.mousePos.y, 'checky')
 
-                    game.editor.debugGraphics.clear();
-                    const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.mousePos);
-                    game.levelCamera.matrix.apply(pixiPoint,pixiPoint);
-                    drawCircle(pixiPoint, 10);
+                game.editor.debugGraphics.clear();
+                const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.mousePos);
+                game.levelCamera.matrix.apply(pixiPoint,pixiPoint);
+                drawCircle(pixiPoint, 10);
 
-                    rotateJoint.EnableMotor(false);
-                    this.lookupObject['rotate_joint'].SetMaxMotorTorque(1);
+                rotateJoint.EnableMotor(false);
+                this.lookupObject['rotate_joint'].SetMaxMotorTorque(1);
 
-                    const rotator = this.lookupObject['rotator'];
+                const rotator = this.lookupObject['rotator'];
 
-                    const dx = this.mousePos.x - this.lookupObject['frame'].GetPosition().x;
-                    const dy = this.mousePos.y - this.lookupObject['frame'].GetPosition().y;
+                const dx = this.mousePos.x - this.lookupObject['body'].GetPosition().x;
+                const dy = this.mousePos.y - this.lookupObject['body'].GetPosition().y;
 
-                    const l = Math.sqrt(dx * dx + dy * dy);
+                const l = Math.sqrt(dx * dx + dy * dy);
 
-                    if(l > 1.0){
+                if(l > 1.0){
 
-                        const desiredAngle = Math.atan2(dy, dx) + Math.PI * 0.26; // arm offset
-                        const nextAngle = rotator.GetAngle() + rotator.GetAngularVelocity() / 60.0;
-                        let totalRotation = desiredAngle - nextAngle;
-                        while ( totalRotation < -180 * game.editor.DEG2RAD ) totalRotation += 360 * game.editor.DEG2RAD;
-                        while ( totalRotation >  180 * game.editor.DEG2RAD ) totalRotation -= 360 * game.editor.DEG2RAD;
-                        let desiredAngularVelocity = totalRotation * 60;
-                        const change = 200 * game.editor.DEG2RAD;
-                        desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
-                        const impulse = rotator.GetInertia() * desiredAngularVelocity * 2 * ((Math.abs(totalRotation)/Math.PI) * 20);
-                        rotator.ApplyAngularImpulse( impulse );
-                        rotator.SetAngularDamping(0.8);
-                    }
-
-                    const armDistance = l - 200;
-                    const maxTranslation = 126;
-                    const distanceProgress = Math.min(1, Math.max(0, armDistance / maxTranslation));
-
-
-                    const targetTranslation = maxTranslation * distanceProgress;
-                    const currentTranslation = moveJoint.GetJointTranslation();
-                    const translationDifference = targetTranslation - currentTranslation;
-
-                    console.log("Translation", translationDifference);
-
-                    // drive prismatic joint based on translation difference
-
+                    const desiredAngle = Math.atan2(dy, dx) + Math.PI * 0.26;// arm offset
+                    const nextAngle = rotator.GetAngle() + rotator.GetAngularVelocity() / 60.0;
+                    let totalRotation = desiredAngle - nextAngle;
+                    while ( totalRotation < -180 * game.editor.DEG2RAD ) totalRotation += 360 * game.editor.DEG2RAD;
+                    while ( totalRotation >  180 * game.editor.DEG2RAD ) totalRotation -= 360 * game.editor.DEG2RAD;
+                    let desiredAngularVelocity = totalRotation * 60;
+                    const change = 200 * game.editor.DEG2RAD;
+                    desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
+                    const impulse = rotator.GetInertia() * desiredAngularVelocity * 6
+                    rotator.ApplyAngularImpulse( impulse );
+                    console.log("Change:", impulse);
                 }
 
+                const armDistance = l - 200;
+                const maxTranslation = 126;
+                const distanceProgress = Math.min(1, Math.max(0, armDistance / maxTranslation));
+
+
+                const targetTranslation = maxTranslation * distanceProgress;
+                const currentTranslation = moveJoint.GetJointTranslation();
+                const translationDifference = targetTranslation - currentTranslation;
+
+                // drive prismatic joint based on translation difference
+
+
             }else{
-                console.log("Translation", moveJoint.GetJointTranslation());
+                // console.log("Translation", moveJoint.GetJointTranslation());
 
                 if(Key.isDown(Key.LEFT)){
                     if(this.rotateAccel <0) this.rotateAccel = 0;
@@ -191,7 +186,6 @@ class HammerPot extends BaseVehicle {
             }
         }
 
-        hammerEnd.oldPosition = {x: hammerEnd.GetPosition().x, y:hammerEnd.GetPosition().y}; // delete me
         super.update();
     }
 
