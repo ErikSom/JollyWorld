@@ -4,7 +4,7 @@ import {Humanoid} from '../humanoids/Humanoid';
 
 import { BaseVehicle } from './BaseVehicle';
 import { game } from '../../Game';
-import { b2SubVec2 } from '../../../libs/debugdraw';
+import { b2DotVV, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
 import { Key } from '../../../libs/Key';
 import { drawCircle } from '../../b2Editor/utils/drawing';
 import { Settings } from '../../Settings';
@@ -137,17 +137,46 @@ class HammerPot extends BaseVehicle {
                     desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
                     const impulse = rotator.GetInertia() * desiredAngularVelocity * 6
                     rotator.ApplyAngularImpulse( impulse );
-                    console.log("Change:", impulse);
                 }
 
-                const armDistance = l - 200;
-                const maxTranslation = 126;
-                const distanceProgress = Math.min(1, Math.max(0, armDistance / maxTranslation));
 
 
-                const targetTranslation = maxTranslation * distanceProgress;
-                const currentTranslation = moveJoint.GetJointTranslation();
-                const translationDifference = targetTranslation - currentTranslation;
+                const globalAxis = moveJoint.GetBodyA().GetWorldVector(moveJoint.GetLocalAxisA());
+                const rd = new Box2D.b2Vec2(hammerEnd.GetPosition().x - this.mousePos.x, hammerEnd.GetPosition().y - this.mousePos.y);
+                const rl = rd.Normalize();
+                if(rl > 0.2){
+                    const dot = b2DotVV(rd, globalAxis);
+                    const targetMotorSpeed = dot * rl * 10;
+
+                    moveJoint.SetMaxMotorForce(10000);
+                    moveJoint.SetMotorSpeed(-targetMotorSpeed);
+
+                    console.log('dottie', dot, rl, targetMotorSpeed);
+                }
+
+                // const armDistance = rl - 100;
+                // const maxTranslation = 126;
+                // const distanceProgress = Math.min(1, Math.max(0, armDistance / maxTranslation));
+
+
+                // const targetTranslation = maxTranslation * (1-distanceProgress);
+                // const currentTranslation = moveJoint.GetJointTranslation();
+                // const translationDifference = targetTranslation - currentTranslation;
+
+                // const distanceThreshold = 0;
+                // if(Math.abs(translationDifference) > distanceThreshold){
+                //     moveJoint.SetMaxMotorForce(10000);
+                // }else{
+                //     moveJoint.SetMaxMotorForce(0);
+                // }
+
+                // const targetMotorSpeed = translationDifference * 0.2;
+
+                // moveJoint.SetMotorSpeed(targetMotorSpeed);
+
+
+
+                // console.log("Translation", rl);
 
                 // drive prismatic joint based on translation difference
 
