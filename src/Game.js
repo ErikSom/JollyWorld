@@ -1427,8 +1427,8 @@ function Game() {
                 const bodyA = contact.GetFixtureA().GetBody();
                 const bodyB = contact.GetFixtureB().GetBody();
 
-                const velocityA = bodyA.GetLinearVelocity().Length();
-                const velocityB = bodyB.GetLinearVelocity().Length();
+                const velocityA = Math.max(bodyA.GetLinearVelocity().Length(), bodyA.GetAngularVelocity());
+                const velocityB = Math.max(bodyB.GetLinearVelocity().Length(), bodyB.GetAngularVelocity());
                 // let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().get_y(), bodyA.GetLinearVelocity().get_x()) : Math.atan2(bodyB.GetLinearVelocity().get_y(), bodyB.GetLinearVelocity().get_x());
                 // impactAngle *= game.editor.RAD2DEG + 180;
 
@@ -1448,6 +1448,7 @@ function Game() {
 
                     if(fastestBody.GetMass() > 1000) targetSounds = ['impact-heavy1', 'impact-heavy2'];
                     if(fastestBody.GetMass() > 100) targetSounds = ['impact-medium1', 'impact-medium2'];
+
                     AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, fastestBody.GetPosition());
                 }
             }

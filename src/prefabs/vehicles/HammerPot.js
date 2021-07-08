@@ -4,14 +4,12 @@ import {Humanoid} from '../humanoids/Humanoid';
 
 import { BaseVehicle } from './BaseVehicle';
 import { game } from '../../Game';
-import { b2DotVV, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
+import { b2DotVV } from '../../../libs/debugdraw';
 import { Key } from '../../../libs/Key';
 import { drawCircle } from '../../b2Editor/utils/drawing';
-import { Settings } from '../../Settings';
 
 
 const vec1 = new Box2D.b2Vec2(0, 0);
-const vec2 = new Box2D.b2Vec2(0, 0);
 
 class HammerPot extends BaseVehicle {
     constructor(target) {
@@ -166,7 +164,8 @@ class HammerPot extends BaseVehicle {
                 }
 
                 const globalAxis = moveJoint.GetBodyA().GetWorldVector(moveJoint.GetLocalAxisA());
-                const rd = new Box2D.b2Vec2(hammerEnd.GetPosition().x - this.mousePos.x, hammerEnd.GetPosition().y - this.mousePos.y);
+                const rd = vec1;
+                vec1.Set(hammerEnd.GetPosition().x - this.mousePos.x, hammerEnd.GetPosition().y - this.mousePos.y);
                 const rl = rd.Normalize();
                 if(rl > 0.2 && mouseMoved){
                     const dot = b2DotVV(rd, globalAxis);
@@ -228,9 +227,35 @@ class HammerPot extends BaseVehicle {
     initContactListener() {
         super.initContactListener();
         const self = this;
-        this.contactListener.PreSolve = function (contact) {
-		}
         this.contactListener.PostSolve = function (contact, impulse) {
+
+            const bodyA = contact.GetFixtureA().GetBody();
+            const bodyB = contact.GetFixtureB().GetBody();
+
+            let hammer;
+            if(bodyA === self.lookupObject.hammer) hammer = bodyA;
+            if(bodyB === self.lookupObject.hammer) hammer = bodyB;
+
+            if(hammer){
+
+                let force = 0;
+                for (let j = 0; j < impulse.get_count(); j++){
+                    if (impulse.get_normalImpulses(j) > force){
+                        force = impulse.get_normalImpulses(j);
+                    }
+                }
+
+                const velocityA = Math.max(bodyA.GetLinearVelocity().Length(), bodyA.GetAngularVelocity());
+                const velocityB = Math.max(bodyB.GetLinearVelocity().Length(), bodyB.GetAngularVelocity());
+
+                const velocitySum = velocityA + velocityB;
+
+                if (velocitySum > 2.0 && force > 150) {
+                    console.log('Check deze:', velocitySum, force)
+                    const targetSounds = ['squeak-1', 'squeak-2', 'squeak-3', 'squeak-4'];
+                    AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, hammer.GetPosition());
+                }
+            }
         }
     }
 }
