@@ -58,18 +58,13 @@ class HammerPot extends BaseVehicle {
 
         this.mousePos = {x:0, y:0};
         this.lastMoved = 0;
-        this.mouseControlled = true;
+        this.mouseControlled = false;
         this.mouseEase = 0.1;
 
 
-        document.addEventListener('pointerdown', ()=>{
-            if(document.pointerLockElement !== game.canvas){
-                game.canvas.requestPointerLock = game.canvas.requestPointerLock || game.canvas.mozRequestPointerLock;
-                game.canvas.requestPointerLock();
-            }
-        });
+        document.addEventListener('pointerdown', this.doPointerLock);
 
-        document.addEventListener('mousemove', e => {
+        document.addEventListener('pointermove', e => {
             const movementScaler = 0.04;
             const movementX = e.movementX || e.mozmovementX || e.webkitmovementX || 0;
             const movementY = e.movementY || e.mozmovementY || e.webkitmovementY || 0;
@@ -82,7 +77,19 @@ class HammerPot extends BaseVehicle {
             }
 
         })
+    }
 
+    doPointerLock(){
+        if(document.pointerLockElement !== game.canvas){
+            game.canvas.requestPointerLock = game.canvas.requestPointerLock || game.canvas.mozRequestPointerLock;
+            game.canvas.requestPointerLock();
+        }
+    }
+
+    reset(){
+        document.removeEventListener('pointerdown', this.doPointerLock);
+        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+        document.exitPointerLock();
     }
 
     update() {
@@ -102,26 +109,22 @@ class HammerPot extends BaseVehicle {
             this.mousePos.x = hammerEnd.GetPosition().x;
             this.mousePos.y = hammerEnd.GetPosition().y;
         }
+        game.editor.debugGraphics.clear();
 
+        this.mouseControlled = (document.pointerLockElement === game.canvas);
 
         const rotateJoint = this.lookupObject['rotate_joint'];
-
         const moveJoint = this.lookupObject['move_joint'];
 
         if(this.character && this.character.attachedToVehicle){
             if(this.mouseControlled){
 
-
                 this.mousePos.x += (hammerEnd.GetPosition().x - this.mousePos.x) * this.mouseEase;
                 this.mousePos.y += (hammerEnd.GetPosition().y - this.mousePos.y) * this.mouseEase;
 
-                game.editor.debugGraphics.clear();
                 const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.mousePos);
                 game.levelCamera.matrix.apply(pixiPoint,pixiPoint);
                 drawCircle(pixiPoint, 10, {}, {alpha:0});
-
-                // rotateJoint.EnableMotor(false);
-                // this.lookupObject['rotate_joint'].SetMaxMotorTorque(1);
 
                 const rotator = this.lookupObject['rotator'];
 
@@ -129,7 +132,6 @@ class HammerPot extends BaseVehicle {
                 const dy = this.mousePos.y - this.lookupObject['body'].GetPosition().y;
 
                 const l = Math.sqrt(dx * dx + dy * dy);
-
 
                 const maxIdleTime = 100;
                 const mouseMoved = Date.now() - this.lastMoved < maxIdleTime;
@@ -139,7 +141,14 @@ class HammerPot extends BaseVehicle {
                     rotateJoint.EnableMotor(false);
                     rotateJoint.SetMaxMotorTorque(1);
 
-                    const desiredAngle = Math.atan2(dy, dx) + Math.PI * 0.2616;// arm offset
+                    let desiredAngle;
+
+                    if(this.flipped){
+                        desiredAngle = Math.atan2(dy, dx) - Math.PI * 1.2616;// arm offset
+                    }else{
+                        desiredAngle = Math.atan2(dy, dx) + Math.PI * 0.2616;// arm offset
+                    }
+
                     const nextAngle = rotator.GetAngle() + rotator.GetAngularVelocity() / 60.0;
                     let totalRotation = desiredAngle - nextAngle;
                     while ( totalRotation < -180 * game.editor.DEG2RAD ) totalRotation += 360 * game.editor.DEG2RAD;
@@ -147,7 +156,8 @@ class HammerPot extends BaseVehicle {
                     let desiredAngularVelocity = totalRotation * 60;
                     const change = 200 * game.editor.DEG2RAD;
                     desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
-                    const impulse = rotator.GetInertia() * desiredAngularVelocity * 6
+                    const impulse = rotator.GetInertia() * desiredAngularVelocity * 6;
+
                     rotator.ApplyAngularImpulse( impulse );
                 }else{
                     rotateJoint.EnableMotor(true);
@@ -155,14 +165,12 @@ class HammerPot extends BaseVehicle {
                     rotateJoint.SetMaxMotorTorque(10000);
                 }
 
-
-
                 const globalAxis = moveJoint.GetBodyA().GetWorldVector(moveJoint.GetLocalAxisA());
                 const rd = new Box2D.b2Vec2(hammerEnd.GetPosition().x - this.mousePos.x, hammerEnd.GetPosition().y - this.mousePos.y);
                 const rl = rd.Normalize();
                 if(rl > 0.2 && mouseMoved){
                     const dot = b2DotVV(rd, globalAxis);
-                    const targetMotorSpeed = dot * rl * 10;
+                    const targetMotorSpeed = dot * rl * 8;
 
                     moveJoint.SetMaxMotorForce(10000);
                     moveJoint.SetMotorSpeed(-targetMotorSpeed);
@@ -172,6 +180,7 @@ class HammerPot extends BaseVehicle {
                 }
 
             }else{
+                rotateJoint.EnableMotor(true);
 
                 if(Key.isDown(Key.LEFT)){
                     if(this.rotateAccel <0) this.rotateAccel = 0;
