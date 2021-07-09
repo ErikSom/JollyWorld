@@ -6,10 +6,13 @@ import { BaseVehicle } from './BaseVehicle';
 import { game } from '../../Game';
 import { b2DotVV } from '../../../libs/debugdraw';
 import { Key } from '../../../libs/Key';
-import { drawCircle } from '../../b2Editor/utils/drawing';
+import { drawCircle, drawLine } from '../../b2Editor/utils/drawing';
+import { angleDifference } from '../../b2Editor/utils/extramath';
+import { Settings } from '../../Settings';
 
 
 const vec1 = new Box2D.b2Vec2(0, 0);
+const vec2 = new Box2D.b2Vec2(0, 0);
 
 class HammerPot extends BaseVehicle {
     constructor(target) {
@@ -41,6 +44,8 @@ class HammerPot extends BaseVehicle {
     }
 
     init() {
+
+        console.log('Frame:', this.lookupObject.frame);
         super.init();
 
         this.character.ignoreJointDamage = true;
@@ -59,6 +64,8 @@ class HammerPot extends BaseVehicle {
         this.mouseControlled = false;
         this.mouseEase = 0.1;
 
+        this.targetAngle = 0;
+        this.hillOffset = 0;
 
         document.addEventListener('pointerdown', this.doPointerLock);
 
@@ -212,8 +219,105 @@ class HammerPot extends BaseVehicle {
             }
         }
 
+        this.updateTargetAngle();
+
         super.update();
     }
+
+    updateTargetAngle(){
+        const frame = this.lookupObject.frame;
+
+        const gravity = game.editor.world.GetGravity();
+
+        const realBaseAngle = Math.atan2(gravity.y, gravity.x); 
+        const baseAngle = realBaseAngle - Settings.pihalve;
+
+
+        const potWidth = 1.2;
+        const depthCheck = 3.2;
+
+        const rayPositions = [];
+
+        [1, -1].forEach(dir => {
+
+            const offsetAngle = realBaseAngle - Settings.pihalve * dir;
+
+            const offsetX = potWidth * Math.cos(offsetAngle);
+            const offsetY = potWidth * Math.sin(offsetAngle);
+
+            const sp = vec1;
+            sp.Set(frame.GetPosition().x + offsetX, frame.GetPosition().y + offsetY);
+
+            const zOffsetX = depthCheck * Math.cos(realBaseAngle);
+            const zOffsetY = depthCheck * Math.sin(realBaseAngle);
+
+            const ep = vec2;
+            ep.Set(sp.x + zOffsetX, sp.y + zOffsetY);
+
+
+            const raycastCallback = new Box2D.JSRayCastCallback();
+            const callback = Object.assign(raycastCallback, {
+                ReportFixture: function (fixture_p, point_p, normal_p, fraction) {
+
+                    const fixture = Box2D.wrapPointer(fixture_p, Box2D.b2Fixture);
+                    const point = Box2D.wrapPointer(point_p, Box2D.b2Vec2);
+
+                    if(fixture.GetBody().mainCharacter) return -1;
+                    if (fixture.IsSensor()) return -1;
+                    this.m_hit = true;
+                    this.m_point = point;
+                    return fraction;
+                },
+                m_hit: false
+            });
+
+            game.world.RayCast(callback, sp, ep);
+
+            if(callback.m_hit){
+                rayPositions.push({ x:callback.m_point.x, y:callback.m_point.y });
+            }else{
+                rayPositions.push({ x:ep.x, y:ep.y });
+            }
+
+            Box2D.destroy(raycastCallback);
+
+
+            // const pixiSP = game.editor.getPIXIPointFromWorldPoint(sp);
+            // game.levelCamera.matrix.apply(pixiSP,pixiSP);
+
+            // const pixiEP = game.editor.getPIXIPointFromWorldPoint(ep);
+            // game.levelCamera.matrix.apply(pixiEP,pixiEP);
+
+            // drawLine(pixiSP, pixiEP);
+
+        })
+
+        const rdx = rayPositions[0].x - rayPositions[1].x;
+        const rdy = rayPositions[0].y - rayPositions[1].y;
+        const ra = Math.atan2(rdy, rdx);
+
+        const maxHillOffset = 0.2;
+        const newHillOffset = Math.max(-maxHillOffset, Math.min(maxHillOffset, angleDifference(baseAngle, ra)));
+
+        this.hillOffset = Math.max(-maxHillOffset, Math.min(maxHillOffset, angleDifference(baseAngle, ra)));
+
+
+        if(Key.isDown(Key.Y)){
+            console.log(this.hillOffset, newHillOffset);
+        }
+
+
+        const diff = angleDifference(this.targetAngle, baseAngle + this.hillOffset) ;
+
+        this.targetAngle += diff * 0.1;
+
+        while ( this.targetAngle < -180 * game.editor.DEG2RAD ) this.targetAngle += 360 * game.editor.DEG2RAD;
+        while ( this.targetAngle >  180 * game.editor.DEG2RAD ) this.targetAngle -= 360 * game.editor.DEG2RAD;
+
+        frame.SetTransform(frame.GetPosition(), this.targetAngle);
+
+    }
+
 
     lean() {
         // ignore
