@@ -118,6 +118,7 @@ function Game() {
     this.preloader = document.getElementById('preloader');
     this.tutorialMode = false;
     this.showLevelAfterTutorial = null;
+    this.lastPressedKeys = '';
 
     // path pixi for camera support
     // PathRenderTarget();
@@ -715,6 +716,30 @@ function Game() {
         Key.onKeydown(e);
         if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
         if(!this.gameState === this.GAMESTATE_MENU) e.preventDefault();
+
+
+        if(this.gameState === this.GAMESTATE_MENU){
+            this.lastPressedKeys += e.key.toLowerCase();
+            this.lastPressedKeys = this.lastPressedKeys.substr(Math.max(0, this.lastPressedKeys.length-20), this.lastPressedKeys.length);
+            const cheats = ['thegift'];
+
+            cheats.forEach(cheat => {
+                if(this.lastPressedKeys.endsWith(cheat)){
+                    const userData = SaveManager.getLocalUserdata();
+
+                    switch(cheat){
+                        case 'thegift':
+                            userData.cheats.goldenPot = !userData.cheats.goldenPot;
+                        break;
+                    }
+
+                    SaveManager.updateLocalUserData(userData);
+
+		            AudioManager.playSFX('badoom2', 0.6, 1.0);
+                }
+            });
+        }
+
 
         if (['ArrowDown', 'ArrowUp', ' '].includes(e.key)) {
             e.preventDefault();

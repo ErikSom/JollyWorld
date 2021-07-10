@@ -112,13 +112,29 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":271,"h":54},
 	"sourceSize": {"w":271,"h":54}
 },
+"Hammer_20000":
+{
+	"frame": {"x":440,"y":314,"w":289,"h":56},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":289,"h":56},
+	"sourceSize": {"w":289,"h":56}
+},
 "Pot0000":
 {
-	"frame": {"x":440,"y":314,"w":140,"h":161},
+	"frame": {"x":731,"y":314,"w":140,"h":161},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":140,"h":161},
 	"sourceSize": {"w":140,"h":161}
+},
+"Pot_20000":
+{
+	"frame": {"x":873,"y":314,"w":140,"h":162},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":140,"h":162},
+	"sourceSize": {"w":140,"h":162}
 },
 "SkateBoard_Board0000":
 {
@@ -138,7 +154,7 @@
 },
 "YogaBall0000":
 {
-	"frame": {"x":582,"y":314,"w":155,"h":155},
+	"frame": {"x":2,"y":478,"w":155,"h":155},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":155,"h":155},
@@ -146,7 +162,7 @@
 },
 "YogaBallHandle_Back0000":
 {
-	"frame": {"x":739,"y":314,"w":15,"h":35},
+	"frame": {"x":159,"y":478,"w":15,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":35},
@@ -154,7 +170,7 @@
 },
 "YogaBall_Handle_Front0000":
 {
-	"frame": {"x":756,"y":314,"w":17,"h":35},
+	"frame": {"x":176,"y":478,"w":17,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":17,"h":35},
@@ -165,7 +181,7 @@
 	"version": "20.0.3.25487",
 	"image": "Vehicles_1.png",
 	"format": "RGBA8888",
-	"size": {"w":1024,"h":512},
+	"size": {"w":1024,"h":1024},
 	"scale": "1"
 }
 }

@@ -9,6 +9,7 @@ import { Key } from '../../../libs/Key';
 import { drawCircle, drawLine } from '../../b2Editor/utils/drawing';
 import { angleDifference } from '../../b2Editor/utils/extramath';
 import { Settings } from '../../Settings';
+import * as SaveManager from '../../utils/SaveManager'
 
 
 const vec1 = new Box2D.b2Vec2(0, 0);
@@ -41,6 +42,19 @@ class FoddyCan extends BaseVehicle {
                                 ]
                             ];
         this.postInit = false;
+    }
+
+    postConstructor(){
+        const userData = SaveManager.getLocalUserdata();
+        this.goldMode = userData.cheats.goldenPot;
+
+        if(this.goldMode){
+            this.lookupObject.frame.myTexture.originalSprite.texture = PIXI.Texture.from('Pot_20000');
+            this.lookupObject.hammer.myTexture.originalSprite.texture = PIXI.Texture.from('Hammer_20000');
+        }else{
+            this.lookupObject.frame.myTexture.originalSprite.texture = PIXI.Texture.from('Pot0000');
+            this.lookupObject.hammer.myTexture.originalSprite.texture = PIXI.Texture.from('Hammer0000');
+        }
     }
 
     init() {
