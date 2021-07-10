@@ -14,30 +14,30 @@ import { Settings } from '../../Settings';
 const vec1 = new Box2D.b2Vec2(0, 0);
 const vec2 = new Box2D.b2Vec2(0, 0);
 
-class HammerPot extends BaseVehicle {
+class FoddyCan extends BaseVehicle {
     constructor(target) {
         super(target);
         this.destroyConnectedJoints = {
-            head:['neck_joint', 'pot_left_joint', 'pot_right_joint', 'hammer_left_joint', 'hammer_right_joint'],
-            body:['neck_joint', 'pot_left_joint', 'pot_right_joint', 'hammer_left_joint', 'hammer_right_joint'],
-            thigh_left:[],
-            thigh_right:[],
-            leg_left:[],
-            leg_right:[],
-            feet_left:[],
-            feet_right:[],
-            shoulder_left:['hammer_left_joint'],
-            shoulder_right:['hammer_right_joint'],
-            arm_left:['hammer_left_joint'],
-            arm_right:['hammer_right_joint'],
-            hand_left:['hammer_left_joint'],
-            hand_right:['hammer_right_joint'],
-            belly:['pot_left_joint', 'pot_right_joint']
+            head:['neck_joint', 'pot_left_joint', 'pot_right_joint', 'hammer_left_joint', 'hammer_right_joint', 'leg_joint_left', 'leg_joint_right', 'left_arm_hammer_spring', 'right_arm_hammer_spring', 'move_joint'],
+            body:['neck_joint', 'pot_left_joint', 'pot_right_joint', 'hammer_left_joint', 'hammer_right_joint', 'leg_joint_left', 'leg_joint_right', 'left_arm_hammer_spring', 'right_arm_hammer_spring', 'move_joint'],
+            thigh_left:['leg_joint_left'],
+            thigh_right:['leg_joint_right'],
+            leg_left:['leg_joint_left'],
+            leg_right:['leg_joint_right'],
+            feet_left:['leg_joint_left'],
+            feet_right:['leg_joint_right'],
+            shoulder_left:['hammer_left_joint', 'left_arm_hammer_spring'],
+            shoulder_right:['hammer_right_joint', 'right_arm_hammer_spring'],
+            arm_left:['hammer_left_joint', 'left_arm_hammer_spring'],
+            arm_right:['hammer_right_joint', 'right_arm_hammer_spring'],
+            hand_left:['hammer_left_joint', 'left_arm_hammer_spring'],
+            hand_right:['hammer_right_joint', 'right_arm_hammer_spring'],
+            belly:['pot_left_joint', 'pot_right_joint', 'leg_joint_left', 'leg_joint_right']
         }
-        this.vehicleName = 'HammerPot';
+        this.vehicleName = 'FoddyCan';
         this.limbsObserver = [
-                                [[Humanoid.BODY_PARTS.FEET_LEFT, Humanoid.BODY_PARTS.LEG_LEFT, Humanoid.BODY_PARTS.THIGH_LEFT],
-                                 [Humanoid.BODY_PARTS.FEET_RIGHT, Humanoid.BODY_PARTS.LEG_RIGHT, Humanoid.BODY_PARTS.THIGH_RIGHT]
+                                [[Humanoid.BODY_PARTS.ARM_LEFT, Humanoid.BODY_PARTS.SHOULDER_LEFT, Humanoid.BODY_PARTS.HAND_LEFT],
+                                 [Humanoid.BODY_PARTS.ARM_RIGHT, Humanoid.BODY_PARTS.SHOULDER_RIGHT, Humanoid.BODY_PARTS.HAND_RIGHT]
                                 ]
                             ];
         this.postInit = false;
@@ -93,8 +93,7 @@ class HammerPot extends BaseVehicle {
 
     reset(){
         document.removeEventListener('pointerdown', this.doPointerLock);
-        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
-        document.exitPointerLock();
+        game.exitPointerLock();
     }
 
     update() {
@@ -224,12 +223,29 @@ class HammerPot extends BaseVehicle {
         super.update();
     }
 
+    eject(){
+        game.editor.setBodyCollision(this.lookupObject['hammer'], [1, 1]);
+
+        const targetZSwap = [this.character.lookupObject.hand_right, this.character.lookupObject.arm_right, this.character.lookupObject.shoulder_right];
+
+        for(let i = 0; i<targetZSwap.length; i++){
+            const target = targetZSwap[i];
+            if(target && target.myTexture && !target.destroyed){
+                const targetIndex = target.myTexture.parent.getChildIndex(target.myTexture);
+                this.lookupObject.frame.myTexture.parent.addChildAt(this.lookupObject.frame.myTexture, targetIndex);
+                break;
+            }
+        }
+
+        game.editor.deleteObjects([this.lookupObject['move_joint']]);
+    }
+
     updateTargetAngle(){
         const frame = this.lookupObject.frame;
 
         const gravity = game.editor.world.GetGravity();
 
-        const realBaseAngle = Math.atan2(gravity.y, gravity.x); 
+        const realBaseAngle = Math.atan2(gravity.y, gravity.x);
         const baseAngle = realBaseAngle - Settings.pihalve;
 
 
@@ -297,15 +313,7 @@ class HammerPot extends BaseVehicle {
         const ra = Math.atan2(rdy, rdx);
 
         const maxHillOffset = 0.2;
-        const newHillOffset = Math.max(-maxHillOffset, Math.min(maxHillOffset, angleDifference(baseAngle, ra)));
-
         this.hillOffset = Math.max(-maxHillOffset, Math.min(maxHillOffset, angleDifference(baseAngle, ra)));
-
-
-        if(Key.isDown(Key.Y)){
-            console.log(this.hillOffset, newHillOffset);
-        }
-
 
         const diff = angleDifference(this.targetAngle, baseAngle + this.hillOffset) ;
 
@@ -336,36 +344,54 @@ class HammerPot extends BaseVehicle {
             const bodyA = contact.GetFixtureA().GetBody();
             const bodyB = contact.GetFixtureB().GetBody();
 
+            let force = 0;
+            for (let j = 0; j < impulse.get_count(); j++){
+                if (impulse.get_normalImpulses(j) > force){
+                    force = impulse.get_normalImpulses(j);
+                }
+            }
+
             let hammer;
             if(bodyA === self.lookupObject.hammer) hammer = bodyA;
             if(bodyB === self.lookupObject.hammer) hammer = bodyB;
 
             if(hammer){
 
-                let force = 0;
-                for (let j = 0; j < impulse.get_count(); j++){
-                    if (impulse.get_normalImpulses(j) > force){
-                        force = impulse.get_normalImpulses(j);
-                    }
-                }
-
-                const velocityA = Math.max(bodyA.GetLinearVelocity().Length(), bodyA.GetAngularVelocity());
-                const velocityB = Math.max(bodyB.GetLinearVelocity().Length(), bodyB.GetAngularVelocity());
+                const velocityA = Math.max(bodyA.GetLinearVelocity().Length(), Math.abs(bodyA.GetAngularVelocity()));
+                const velocityB = Math.max(bodyB.GetLinearVelocity().Length(), Math.abs(bodyB.GetAngularVelocity()));
 
                 const velocitySum = velocityA + velocityB;
 
                 if (velocitySum > 2.0 && force > 150) {
-                    console.log('Check deze:', velocitySum, force)
                     const targetSounds = ['squeak-1', 'squeak-2', 'squeak-3', 'squeak-4'];
                     AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, hammer.GetPosition());
                 }
             }
+
+
+
+            let frame;
+            if(bodyA === self.lookupObject.frame) frame = bodyA;
+            if(bodyB === self.lookupObject.frame) frame = bodyB;
+
+            if(frame){
+
+                const velocity = Math.max(frame.GetLinearVelocity().Length(), Math.abs(frame.GetAngularVelocity()));
+
+                if (velocity > 2.0 && force > 100) {
+                    const targetSounds = ['pot-impact'];
+                    AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, frame.GetPosition());
+                }
+            }
+
+
+
         }
     }
 }
 
-PrefabManager.prefabLibrary.HammerPot = {
-    json: '{"objects":[[0,-0.521,2.5031,-0.7501,".character#Character , .flesh","thigh_left",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-15.6484,75.5062,-0.7501,"","",1,"Normal_Thigh0000",0,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.6226,3.6311,1.0121,".character#Character , .flesh","leg_left",2,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-1.576,4.393,1.2391,".character#Character , .flesh","feet_left",3,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-18.7828,108.7649,1.0121,"","",4,"Normal_Leg0000",2,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-45.7649,131.8287,1.2391,"","",5,"Normal_Feet0000",3,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.2515,-1.04,-1.1696,".character#Character , .flesh","shoulder_left",6,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,1.107,-0.9614,-1.99,".character#Character , .flesh","arm_left",7,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-7.239,-31.6841,-1.1696,"","",8,"Normal_Shoulder0000",6,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,33.3468,-29.1064,-1.99,"","",9,"Normal_Arm0000",7,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,1.9805,-1.2852,-2.0424,".character#Character , .flesh","hand_left",10,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.513],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,59.843,-36.8089,-2.0424,"","",11,"Normal_Hand0000",10,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-1.2205,1.5118,-0.262,".character#Character , .flesh","belly",12,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[14.181],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-1.0522,-2.8309,-0.262,".character#Character , .flesh","head",13,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[30.393],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-1.1128,-0.2769,0.087,".character#Character , .flesh","body",14,["#999999"],["#000"],[0],false,true,[[{"x":-0.537,"y":1.202},{"x":-0.432,"y":-1.37},{"x":-0.15,"y":-1.828},{"x":0.132,"y":-1.793},{"x":0.555,"y":-1.123},{"x":0.555,"y":1.308},{"x":0.097,"y":1.801},{"x":-0.22,"y":1.801}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-35.3004,36.7069,-0.062,"","",15,"Normal_Belly0000",12,8.747,1.158,-0.2,false,"#FFFFFF",1,1,1,0,0,0,true],[1,-32.2562,-12.32,0.087,"","",16,"Normal_Core0000",14,4.169,1.384,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-30.0699,-87.5154,-0.262,"","",17,"Normal_Head_Idle0000",13,2.99,0.785,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.3547,2.3213,-0.8727,".character#Character , .flesh","thigh_right",18,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-0.3421,3.4823,0.8556,".character#Character , .flesh","leg_right",19,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-0.8512,-2.9949,-0.262,".character#Character","eye_left",20,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.534],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-10.6088,70.0515,-0.8727,"","",21,"Normal_Thigh0000",18,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-10.3928,104.3194,0.8556,"","",22,"Normal_Leg0000",19,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-25.5103,-90.4068,-0.262,"","",23,"Normal_Eye0000",20,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[0,-1.0858,4.3515,0.9246,".character#Character , .flesh","feet_right",24,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-31.1214,130.1133,0.9246,"","",25,"Normal_Feet0000",24,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.7038,-0.756,-0.5407,".character#Character , .flesh","shoulder_right",26,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,0.4314,-0.2623,-1.8156,".character#Character , .flesh","arm_right",27,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-0.1642,-3.2059,-0.262,".character#Character","eye_right",28,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.534],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-4.9003,-96.7368,-0.262,"","",29,"Normal_Eye0000",28,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[0,4.2818,-5.3734,-1.0472,".vehicle","hammer",30,["#999999","#999999"],["#000","#000"],[0,0],false,true,[[{"x":-6.5264,"y":0.1806},{"x":-6.5264,"y":-0.1708},{"x":2.3772,"y":-0.1708},{"x":2.3772,"y":0.1806}],[{"x":1.7179,"y":0.8686},{"x":1.7179,"y":-0.8784},{"x":2.4313,"y":-0.8784},{"x":2.4313,"y":0.8686}]],[1,3],[2,7],[0,0],"",[0,0],true,false,false,[1,1],[0.0,0.0],false,true,false,false,1],[0,-1.1215,2.9177,0,".vehicle","frame",31,["#999999","#999999"],["#000","#000"],[0,0],false,true,[[{"x":0.0083,"y":0.0847},{"x":0.0083,"y":0.0847}],[{"x":1.3151,"y":-2.6574},{"x":1.3151,"y":2.4879},{"x":-1.3316,"y":2.4879},{"x":-1.3316,"y":-2.6574}]],[1.0,1.0],[7,7],[70.9441,0],"",[0,0],true,false,false,[0.5,0.8],[0.2,0.2],true,true,false,false,1],[1,-33.1175,84.5534,0,"","",32,"Pot0000",31,3.0245,1.3957,0,false,"#FFFFFF",1,1,1,0,0,0,true],[1,98.3752,-107.1101,-1.0472,"","",33,"Hammer0000",30,61.8921,-3.1255,0,false,"#FFFFFF",1,1,1,0,0,0,true],[1,-20.5812,-22.8917,-0.5407,"","",34,"Normal_Shoulder0000",26,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,13.1227,-8.1057,-1.8156,"","",35,"Normal_Arm0000",27,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,1.3043,-0.4981,-2.3383,".character#Character , .flesh","hand_right",36,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.513],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,40.0477,-13.3964,-2.3383,"","",37,"Normal_Hand0000",36,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-1.0509,-0.3078,0,".vehicle","rotator",38,["#999999ff"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[2],[60],"",[0],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,5.2777,-7.1681,0,".vehicle","hammer_end",39,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[2],[30],"",[0],true,false,false,[0.5],[0.2],false,true,false,false,1],[2,5.111,94.0202,0.5411,".character#Character","leg_left_joint",40,2,0,0,false,false,1,10,true,0,-149,0,0,0,0,false],[2,-43.3951,122.0765,0.5411,".character#Character","feet_left_joint",41,3,2,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,13.8562,-21.3609,-0.7856,".character#Character","arm_left_joint",42,7,6,0,false,false,1,10,true,152,0,0,0,0,0,false],[2,51.0994,-37.8587,0.8374,".character#Character","hand_left_joint",43,10,7,0,false,false,1,10,true,60,-60,0,0,0,0,false],[2,-29.6664,52.6879,-0.262,".character#Character","thigh_left_joint",44,0,12,0,false,false,1,10,true,142,-16,0,0,0,0,false],[2,-24.4793,-39.8675,-0.262,".character#Character","shoulder_left_joint",45,6,14,0,false,false,1,10,true,180,-19,0,0,0,0,false],[2,-27.6494,-57.1021,-0.262,".character#Character","head_joint",46,13,14,0,false,false,1,10,true,58,-64,0,0,0,0,false],[2,11.8464,86.2995,0.6456,".character#Character","leg_right_joint",47,19,18,0,false,false,1,10,true,0,-149,0,0,0,0,false],[2,-31.6103,121.7932,0.4716,".character#Character","feet_right_joint",48,24,19,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,-6.8284,-93.7441,-0.262,".character#Character","eye_right_joint",49,28,13,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,-6.2503,-2.9313,-1.3441,".character#Character","arm_right_joint",50,27,26,0,false,false,1,10,true,152,0,0,0,0,0,false],[2,31.4669,-12.1595,0.4539,".character#Character","hand_right_joint",51,36,27,0,false,false,1,10,true,60,-60,0,0,0,0,false],[2,-29.5612,-39.7464,-1.1172,".character#Character","shoulder_right_joint",52,26,14,0,false,false,1,10,true,180,-19,0,0,0,0,false],[2,-27.0744,-89.3461,-0.262,".character#Character","eye_left_joint",53,20,13,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,-36.9834,39.4749,-0.262,".character#Character","belly_joint",54,14,12,0,false,false,1,10,true,10,-10,0,0,0,0,false],[2,-36.2234,53.9929,-0.262,".character#Character","thigh_right_joint",55,18,12,0,false,false,1,10,true,142,-16,0,0,0,0,false],[2,-56.9042,24.8983,0,".vehicle","pot_left_joint",56,31,14,2,false,false,1,10,false,0,0,0.5,8,0,0,true],[2,-10.885,26.2494,0,".vehicle","pot_right_joint",57,31,14,2,false,false,1,10,false,0,0,0.5,8,0,0,true],[2,-58.832,-50.4824,0,".vehicle","neck_joint",58,14,13,2,false,false,1,10,false,0,0,0.5,3,0,0,true],[2,57.4863,-39.3294,0,".vehicle","hammer_left_joint",59,10,30,0,false,true,100,0,false,0,0,1,10,0,0,true],[2,38.9127,-14.5909,0,".vehicle","hammer_right_joint",60,36,30,0,false,true,100,0,false,0,0,1,10,0,0,true],[2,-12.0067,106.6507,0,".vehicle","leg_joint_right",61,19,31,0,false,false,1,10,false,0,0,0,0,0,0,true],[2,-21.0608,108.7109,0,".vehicle","leg_joint_left",62,2,31,0,false,false,1,10,false,0,0,0,0,0,0,true],[2,-31.0273,-9.5279,0,".vehicle","rotate_joint",63,38,31,0,false,true,500,10,false,65,-135,0,0,0,0,true],[2,159.2152,-216.203,0,".vehicle","hammer_move_joint",64,39,30,0,false,false,1,10,false,0,0,0,0,0,0,true],[2,155.5762,-211.7904,0.576,".vehicle","move_joint",65,38,39,1,false,false,1,10,true,0,0,0,0,126,0,true],[2,-21.3014,-21.68,0,".vehicle","right_arm_hammer_spring",66,26,30,2,false,false,1,10,false,0,0,0.6,4,0,0,true],[2,-6.8421,-29.4363,0,".vehicle","left_arm_hammer_spring",67,6,30,2,false,false,1,10,false,0,0,0.6,4,0,0,true]]}',
-    class: HammerPot,
+PrefabManager.prefabLibrary.FoddyCan = {
+    json: '{"objects":[[0,-0.521,2.5031,-0.7501,".character#Character , .flesh","thigh_left",0,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-15.6487,75.5059,-0.7501,"","",1,"Normal_Thigh0000",0,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.6226,3.6311,1.0121,".character#Character , .flesh","leg_left",2,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-1.576,4.393,1.2391,".character#Character , .flesh","feet_left",3,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-18.7831,108.7646,1.0121,"","",4,"Normal_Leg0000",2,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-45.7651,131.8284,1.2391,"","",5,"Normal_Feet0000",3,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.2515,-1.04,-1.1696,".character#Character , .flesh","shoulder_left",6,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,1.107,-0.9614,-1.99,".character#Character , .flesh","arm_left",7,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-7.2392,-31.6844,-1.1696,"","",8,"Normal_Shoulder0000",6,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,33.3466,-29.1067,-1.99,"","",9,"Normal_Arm0000",7,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,1.9805,-1.2852,-2.0424,".character#Character , .flesh","hand_left",10,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.513],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,59.8428,-36.8092,-2.0424,"","",11,"Normal_Hand0000",10,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-1.2205,1.5118,-0.262,".character#Character , .flesh","belly",12,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[14.181],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-1.0522,-2.8309,-0.262,".character#Character , .flesh","head",13,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[30.393],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-1.1128,-0.2769,0.087,".character#Character , .flesh","body",14,["#999999"],["#000"],[0],false,true,[[{"x":-0.537,"y":1.202},{"x":-0.432,"y":-1.37},{"x":-0.15,"y":-1.828},{"x":0.132,"y":-1.793},{"x":0.555,"y":-1.123},{"x":0.555,"y":1.308},{"x":0.097,"y":1.801},{"x":-0.22,"y":1.801}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-35.3006,36.7066,-0.062,"","",15,"Normal_Belly0000",12,8.747,1.158,-0.2,false,"#FFFFFF",1,1,1,0,0,0,true],[1,-32.2564,-12.3203,0.087,"","",16,"Normal_Core0000",14,4.169,1.384,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-30.0701,-87.5157,-0.262,"","",17,"Normal_Head_Idle0000",13,2.99,0.785,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.3547,2.3213,-0.8727,".character#Character , .flesh","thigh_right",18,["#999999"],["#000"],[0],false,true,[[{"x":-0.202,"y":-1.031},{"x":0.196,"y":-1.044},{"x":0.17,"y":1.038},{"x":-0.164,"y":1.038}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-0.3421,3.4823,0.8556,".character#Character , .flesh","leg_right",19,["#999999"],["#000"],[0],false,true,[[{"x":-0.161,"y":-0.912},{"x":0.161,"y":-0.925},{"x":0.084,"y":0.912},{"x":-0.084,"y":0.925}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-0.8512,-2.9949,-0.262,".character#Character","eye_left",20,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.534],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-10.6091,70.0512,-0.8727,"","",21,"Normal_Thigh0000",18,0.413,-2.367,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-10.3931,104.3191,0.8556,"","",22,"Normal_Leg0000",19,0.199,-3.142,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,-25.5105,-90.4071,-0.262,"","",23,"Normal_Eye0000",20,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[0,-1.0858,4.3515,0.9246,".character#Character , .flesh","feet_right",24,["#999999"],["#000"],[0],false,true,[[{"x":-0.353,"y":-0.233},{"x":0.359,"y":0},{"x":0.359,"y":0.123},{"x":-0.365,"y":0.111}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-31.1217,130.113,0.9246,"","",25,"Normal_Feet0000",24,1.515,1.214,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-0.7038,-0.756,-0.5407,".character#Character , .flesh","shoulder_right",26,["#999999"],["#000"],[0],false,true,[[{"x":-0.185,"y":-0.859},{"x":0.193,"y":-0.842},{"x":0.111,"y":0.851},{"x":-0.119,"y":0.851}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,0.4314,-0.2623,-1.8156,".character#Character , .flesh","arm_right",27,["#999999"],["#000"],[0],false,true,[[{"x":-0.136,"y":-0.686},{"x":0.144,"y":-0.703},{"x":0.127,"y":0.694},{"x":-0.136,"y":0.694}]],[1],[7],[null],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,-0.1642,-3.2059,-0.262,".character#Character","eye_right",28,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.534],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,-4.9005,-96.7371,-0.262,"","",29,"Normal_Eye0000",28,0.561,1.264,0,null,"#FFFFFF",1,1,1,0,0,0,true],[0,4.2818,-5.3734,-1.0472,".vehicle","hammer",30,["#999999","#999999"],["#000","#000"],[0,0],false,true,[[{"x":-6.5264,"y":0.1806},{"x":-6.5264,"y":-0.1708},{"x":2.3772,"y":-0.1708},{"x":2.3772,"y":0.1806}],[{"x":1.7179,"y":0.8686},{"x":1.7179,"y":-0.8784},{"x":2.4313,"y":-0.8784},{"x":2.4313,"y":0.8686}]],[1,3],[2,7],[0,0],"",[0,0],true,false,false,[1,1],[0,0],false,true,false,false,1],[0,-1.1215,2.9177,0,".vehicle","frame",31,["#999999","#999999"],["#000","#000"],[0,0],false,true,[[{"x":0.0083,"y":0.0847},{"x":0.0083,"y":0.0847}],[{"x":1.3151,"y":-2.6574},{"x":1.3151,"y":2.4879},{"x":-1.3316,"y":2.4879},{"x":-1.3316,"y":-2.6574}]],[1,1],[7,7],[70.9441,0],"",[0,0],true,false,false,[0.5,0.8],[0.2,0.2],true,true,false,false,1],[1,-33.1178,84.5531,0,"","",32,"Pot0000",31,3.0245,1.3957,0,false,"#FFFFFF",1,1,1,0,0,0,true],[1,98.375,-107.1104,-1.0472,"","",33,"Hammer0000",30,61.8921,-3.1255,0,false,"#FFFFFF",1,1,1,0,0,0,true],[1,-20.5815,-22.892,-0.5407,"","",34,"Normal_Shoulder0000",26,0.573,-0.161,0,true,"#FFFFFF",1,1,1,0,0,0,true],[1,13.1225,-8.106,-1.8156,"","",35,"Normal_Arm0000",27,0.298,-0.894,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,1.3043,-0.4981,-2.3383,".character#Character , .flesh","hand_right",36,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[7],[7.513],"",[1],true,false,false,[0.5],[0.2],false,true,false,false,1],[1,40.0474,-13.3967,-2.3383,"","",37,"Normal_Hand0000",36,1.798,2.91,0,true,"#FFFFFF",1,1,1,0,0,0,true],[0,-1.0509,-0.3078,0,".vehicle","rotator",38,["#999999ff"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[2],[60],"",[0],true,false,false,[0.5],[0.2],false,true,false,false,1],[0,5.2777,-7.1681,0,".vehicle","hammer_end",39,["#999999"],["#000"],[0],false,true,[[{"x":0,"y":0},{"x":0,"y":0}]],[1],[2],[30],"",[0],true,false,false,[0.5],[0.2],false,true,false,false,1],[2,5.1113,94.0206,0.5411,".character#Character","leg_left_joint",40,2,0,0,false,false,1,10,true,0,-149,0,0,0,0,false],[2,-43.3948,122.0769,0.5411,".character#Character","feet_left_joint",41,3,2,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,13.8565,-21.3605,-0.7856,".character#Character","arm_left_joint",42,7,6,0,false,false,1,10,true,152,0,0,0,0,0,false],[2,51.0997,-37.8583,0.8374,".character#Character","hand_left_joint",43,10,7,0,false,false,1,10,true,60,-60,0,0,0,0,false],[2,-29.6661,52.6883,-0.262,".character#Character","thigh_left_joint",44,0,12,0,false,false,1,10,true,142,-16,0,0,0,0,false],[2,-24.479,-39.8671,-0.262,".character#Character","shoulder_left_joint",45,6,14,0,false,false,1,10,true,180,-19,0,0,0,0,false],[2,-27.6491,-57.1017,-0.262,".character#Character","head_joint",46,13,14,0,false,false,1,10,true,58,-64,0,0,0,0,false],[2,11.8467,86.2999,0.6456,".character#Character","leg_right_joint",47,19,18,0,false,false,1,10,true,0,-149,0,0,0,0,false],[2,-31.61,121.7936,0.4716,".character#Character","feet_right_joint",48,24,19,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,-6.8281,-93.7437,-0.262,".character#Character","eye_right_joint",49,28,13,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,-6.25,-2.9309,-1.3441,".character#Character","arm_right_joint",50,27,26,0,false,false,1,10,true,152,0,0,0,0,0,false],[2,31.4672,-12.1591,0.4539,".character#Character","hand_right_joint",51,36,27,0,false,false,1,10,true,60,-60,0,0,0,0,false],[2,-29.5609,-39.746,-1.1172,".character#Character","shoulder_right_joint",52,26,14,0,false,false,1,10,true,180,-19,0,0,0,0,false],[2,-27.0741,-89.3457,-0.262,".character#Character","eye_left_joint",53,20,13,0,false,false,1,10,true,0,0,0,0,0,0,false],[2,-36.9831,39.4753,-0.262,".character#Character","belly_joint",54,14,12,0,false,false,1,10,true,10,-10,0,0,0,0,false],[2,-36.2231,53.9933,-0.262,".character#Character","thigh_right_joint",55,18,12,0,false,false,1,10,true,142,-16,0,0,0,0,false],[2,-56.9039,24.8987,0,".character#Character","pot_left_joint",56,31,14,2,false,false,1,10,false,0,0,0.5,8,0,0,true],[2,-10.8847,26.2498,0,".character#Character","pot_right_joint",57,31,14,2,false,false,1,10,false,0,0,0.5,8,0,0,true],[2,-58.8317,-50.482,0,".character#Character","neck_joint",58,14,13,2,false,false,1,10,false,0,0,0.5,3,0,0,true],[2,57.4866,-39.329,0,".character#Character","hammer_left_joint",59,10,30,0,false,true,100,0,false,0,0,1,10,0,0,true],[2,38.913,-14.5905,0,".character#Character","hammer_right_joint",60,36,30,0,false,true,100,0,false,0,0,1,10,0,0,true],[2,-12.0064,106.6511,0,".character#Character","leg_joint_right",61,19,31,0,false,false,1,10,false,0,0,0,0,0,0,true],[2,-21.0605,108.7113,0,".character#Character","leg_joint_left",62,2,31,0,false,false,1,10,false,0,0,0,0,0,0,true],[2,-31.027,-9.5275,0,".vehicle","rotate_joint",63,38,31,0,false,true,500,10,false,65,-135,0,0,0,0,true],[2,159.2155,-216.2026,0,".vehicle","hammer_move_joint",64,39,30,0,false,false,1,10,false,0,0,0,0,0,0,true],[2,155.5765,-211.79,0.576,".vehicle","move_joint",65,38,39,1,false,false,1,10,true,0,0,0,0,126,0,true],[2,-21.3011,-21.6796,0,".character#Character","right_arm_hammer_spring",66,26,30,2,false,false,1,10,false,0,0,0.6,4,0,0,true],[2,-6.8418,-29.4359,0,".character#Character","left_arm_hammer_spring",67,6,30,2,false,false,1,10,false,0,0,0.6,4,0,0,true]]}',
+    class: FoddyCan,
     library: PrefabManager.LIBRARY_ADMIN,
 }

@@ -39,6 +39,10 @@ export class BaseVehicle extends PrefabManager.basePrefab {
         applyColorMatrixMultiple(textures, cm)
     }
 
+    eject(){
+        
+    }
+
     init() {
 
         super.init();

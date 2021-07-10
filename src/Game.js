@@ -962,6 +962,8 @@ function Game() {
         AudioManager.stopAllSounds();
         MobileController.hide();
 
+        this.exitPointerLock();
+
         if(window.pokiGPStart){
             PokiSDK.gameplayStop();
             window.pokiGPStart = false;
@@ -1094,6 +1096,8 @@ function Game() {
             MobileController.hide();
             GameTimer.show(false);
 
+            this.exitPointerLock();
+
         }
     }
     this.gameLose = function () {
@@ -1104,8 +1108,16 @@ function Game() {
             ui.showGameOver(s, d.ms);
             MobileController.hide();
             this.gameOver = true;
+
+            this.exitPointerLock();
         }
     }
+
+    this.exitPointerLock = function () {
+        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+        if(document.exitPointerLock) document.exitPointerLock();
+    }
+
     this.loadUserLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData;
@@ -1427,8 +1439,8 @@ function Game() {
                 const bodyA = contact.GetFixtureA().GetBody();
                 const bodyB = contact.GetFixtureB().GetBody();
 
-                const velocityA = Math.max(bodyA.GetLinearVelocity().Length(), bodyA.GetAngularVelocity());
-                const velocityB = Math.max(bodyB.GetLinearVelocity().Length(), bodyB.GetAngularVelocity());
+                const velocityA = Math.max(bodyA.GetLinearVelocity().Length(), Math.abs(bodyA.GetAngularVelocity()));
+                const velocityB = Math.max(bodyB.GetLinearVelocity().Length(), Math.abs(bodyB.GetAngularVelocity()));
                 // let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().get_y(), bodyA.GetLinearVelocity().get_x()) : Math.atan2(bodyB.GetLinearVelocity().get_y(), bodyB.GetLinearVelocity().get_x());
                 // impactAngle *= game.editor.RAD2DEG + 180;
 
