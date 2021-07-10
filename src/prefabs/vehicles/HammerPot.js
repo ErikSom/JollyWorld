@@ -85,6 +85,9 @@ class FoddyCan extends BaseVehicle {
     }
 
     doPointerLock(){
+
+        if(game.gameOver || game.levelWon || game.pause) return;
+
         if(document.pointerLockElement !== game.canvas){
             game.canvas.requestPointerLock = game.canvas.requestPointerLock || game.canvas.mozRequestPointerLock;
             game.canvas.requestPointerLock();
