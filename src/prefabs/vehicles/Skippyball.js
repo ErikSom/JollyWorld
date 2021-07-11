@@ -4,6 +4,8 @@ import { Settings } from '../../Settings';
 import * as AudioManager from '../../utils/AudioManager';
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
 import easing from '../../b2Editor/utils/easing';
+import * as TutorialManager from '../../utils/TutorialManager';
+
 
 const vec1 = new Box2D.b2Vec2();
 const vec2 = new Box2D.b2Vec2();
@@ -82,6 +84,7 @@ class Skippyball extends BaseVehicle {
 		})
 		this.pullBodies.forEach((b, i) => b.bounceIndex = i+1);
 		this.character.jointMaxForces = [1000000, 1000000, 1200000, 1200000];
+		TutorialManager.showTutorial(TutorialManager.TUTORIALS.SKIPPY);
     }
 
 	fixBalls(){

@@ -2,12 +2,31 @@ import * as SaveManager from "./SaveManager";
 import { isMobile } from "./MobileController";
 
 export const TUTORIALS = {
+	SKIPPY:{
+		type: 0,
+		text: 'Hold the down arrow key to charge a jump. You can also jump mid-air.',
+		mobileText: 'Hold the down arrow key to charge a jump. You can also jump mid-air.',
+		closeTime: 5000,
+	},
+	FODDY:{
+		type: 1,
+		text: 'This vehicle is homeage to Getting Over It with permission from Bennett Foddy',
+		mobileText: 'This vehicle is homeage to Getting Over It with permission from Bennett Foddy',
+		closeTime: 4000,
+		extraTutorials:['FODDY2'],
+	},
 	ROPEHELMET:{
 		type: 2,
 		text: 'You found a rope helmet, press <b>E</b> to shoot the rope, swing and move up and down using the <b>ARROW</b> keys',
 		mobileText: 'You found a rope helmet, touch the A button to shoot the rope, swing and move up and down using the <b>ARROWS</b>',
 		closeTime: 6000,
-	}
+	},
+	FODDY2:{
+		type: 3,
+		text: "Click the screen to play with the mouse, if you don't click the screen you can play with the arrow keys.",
+		mobileText: "Click the screen to play with the mouse, if you don't click the screen you can play with the arrow keys.",
+		closeTime: 4000,
+	},
 }
 let tutorialQueue = [];
 const typeSpeed = 26;

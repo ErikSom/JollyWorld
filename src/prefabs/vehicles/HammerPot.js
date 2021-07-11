@@ -10,6 +10,7 @@ import { drawCircle, drawLine } from '../../b2Editor/utils/drawing';
 import { angleDifference } from '../../b2Editor/utils/extramath';
 import { Settings } from '../../Settings';
 import * as SaveManager from '../../utils/SaveManager'
+import * as TutorialManager from '../../utils/TutorialManager';
 
 
 const vec1 = new Box2D.b2Vec2(0, 0);
@@ -58,8 +59,6 @@ class FoddyCan extends BaseVehicle {
     }
 
     init() {
-
-        console.log('Frame:', this.lookupObject.frame);
         super.init();
 
         this.character.ignoreJointDamage = true;
@@ -96,6 +95,8 @@ class FoddyCan extends BaseVehicle {
             }
 
         })
+
+		TutorialManager.showTutorial(TutorialManager.TUTORIALS.FODDY);
     }
 
     doPointerLock(){
