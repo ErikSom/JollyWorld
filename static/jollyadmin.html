@@ -166,7 +166,17 @@
 		const deleteButton = document.querySelector('.deleteButton');
 
 		loadButton.onclick = async ()=>{
-			if(levelInput.value !== '') setLevelData(levelInput.value);
+			if(levelInput.value !== ''){
+				let id = levelInput.value;
+				if(id.length > 21){
+					id = id.split('lvl=')[1];
+				}
+				if(id.length === 21){
+					setLevelData(id);
+				}else{
+					alert('incorrect id');
+				}
+			}
 		}
 
 		featureButton.onclick = async ()=>{

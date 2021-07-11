@@ -1306,10 +1306,16 @@ export const showLoadScreen = function () {
     importDiv.appendChild(importButton);
 
     importButton.onclick = ()=>{
-        if(input.value.length !== 21){
+
+        let id = input.value;
+        if(id.length > 21){
+            id = id.split('lvl=')[1];
+        }
+
+        if(id.length !== 21){
             alert('Invalid preview id');
         }else{
-            backendManager.getPublishedLevelInfo(input.value).then(data => {
+            backendManager.getPublishedLevelInfo(id).then(data => {
                 if(data.published){
                     alert("Can't import published levels");
                 }else{

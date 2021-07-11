@@ -1694,7 +1694,8 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         this.triggerActionID = actionID;
 
                         if(actionOptions[key].items === AudioManager.getAvailableAudioSprites()){
-                            playTriggerSound(value);
+                            AudioManager.stopAllSounds();
+                            playTriggerSound({file:value, pitch:1, volume:0.3, randomPitchOffset:0});
                         }
 
                     }.bind(actionController));

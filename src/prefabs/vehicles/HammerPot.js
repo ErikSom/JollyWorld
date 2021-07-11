@@ -380,7 +380,7 @@ class FoddyCan extends BaseVehicle {
                 const velocitySum = velocityA + velocityB;
 
                 if (velocitySum > 2.0 && force > 150) {
-                    const targetSounds = ['squeak-1', 'squeak-2', 'squeak-3', 'squeak-4'];
+                    const targetSounds = self.goldMode ? ['mjolner-1','mjolner-2', 'mjolner-3'] : ['squeak-1', 'squeak-2', 'squeak-3', 'squeak-4'];
                     AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, hammer.GetPosition());
                 }
             }
