@@ -38,6 +38,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.mouthPos = {x:41, y:59};
         this.releaseImmune = 0;
         this.skin = 0;
+        this.ignoreJointDamage = false;
     }
 
     postConstructor(){
@@ -202,6 +203,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
     processJointDamage() {
         const jointsToAnalyse = ['leg_left', 'leg_right','arm_left', 'arm_right'/*,'head_joint', 'belly_joint'*/ ];
+        if(this.ignoreJointDamage) return;
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
             if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]] || Date.now() < self.releaseImmune) continue;
@@ -211,6 +213,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
             if (reactionForce > this.jointMaxForces[i] || Math.abs(reactionTorque) > 600) {
+                console.log("SNAP JOINT!!!!", jointsToAnalyse[i]);
                 this.collisionUpdates.push({
                     type: Humanoid.GORE_SNAP,
                     target: jointsToAnalyse[i].split('_joint')[0],

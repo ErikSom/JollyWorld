@@ -118,6 +118,7 @@ function Game() {
     this.preloader = document.getElementById('preloader');
     this.tutorialMode = false;
     this.showLevelAfterTutorial = null;
+    this.lastPressedKeys = '';
 
     // path pixi for camera support
     // PathRenderTarget();
@@ -716,6 +717,30 @@ function Game() {
         if (this.editor.editing && !this.run) this.editor.onKeyDown(e);
         if(!this.gameState === this.GAMESTATE_MENU) e.preventDefault();
 
+
+        if(this.gameState === this.GAMESTATE_MENU){
+            this.lastPressedKeys += e.key.toLowerCase();
+            this.lastPressedKeys = this.lastPressedKeys.substr(Math.max(0, this.lastPressedKeys.length-20), this.lastPressedKeys.length);
+            const cheats = ['thegift'];
+
+            cheats.forEach(cheat => {
+                if(this.lastPressedKeys.endsWith(cheat)){
+                    const userData = SaveManager.getLocalUserdata();
+
+                    switch(cheat){
+                        case 'thegift':
+                            userData.cheats.goldenPot = !userData.cheats.goldenPot;
+                        break;
+                    }
+
+                    SaveManager.updateLocalUserData(userData);
+
+		            AudioManager.playSFX('badoom2', 0.6, 1.0);
+                }
+            });
+        }
+
+
         if (['ArrowDown', 'ArrowUp', ' '].includes(e.key)) {
             e.preventDefault();
         }
@@ -962,6 +987,8 @@ function Game() {
         AudioManager.stopAllSounds();
         MobileController.hide();
 
+        this.exitPointerLock();
+
         if(window.pokiGPStart){
             PokiSDK.gameplayStop();
             window.pokiGPStart = false;
@@ -1094,6 +1121,8 @@ function Game() {
             MobileController.hide();
             GameTimer.show(false);
 
+            this.exitPointerLock();
+
         }
     }
     this.gameLose = function () {
@@ -1104,8 +1133,16 @@ function Game() {
             ui.showGameOver(s, d.ms);
             MobileController.hide();
             this.gameOver = true;
+
+            this.exitPointerLock();
         }
     }
+
+    this.exitPointerLock = function () {
+        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+        if(document.exitPointerLock) document.exitPointerLock();
+    }
+
     this.loadUserLevelData = function (levelData) {
         return new Promise((resolve, reject) => {
             game.currentLevelData = levelData;
@@ -1427,8 +1464,8 @@ function Game() {
                 const bodyA = contact.GetFixtureA().GetBody();
                 const bodyB = contact.GetFixtureB().GetBody();
 
-                const velocityA = bodyA.GetLinearVelocity().Length();
-                const velocityB = bodyB.GetLinearVelocity().Length();
+                const velocityA = Math.max(bodyA.GetLinearVelocity().Length(), Math.abs(bodyA.GetAngularVelocity()));
+                const velocityB = Math.max(bodyB.GetLinearVelocity().Length(), Math.abs(bodyB.GetAngularVelocity()));
                 // let impactAngle = (velocityA > velocityB) ? Math.atan2(bodyA.GetLinearVelocity().get_y(), bodyA.GetLinearVelocity().get_x()) : Math.atan2(bodyB.GetLinearVelocity().get_y(), bodyB.GetLinearVelocity().get_x());
                 // impactAngle *= game.editor.RAD2DEG + 180;
 
@@ -1448,6 +1485,7 @@ function Game() {
 
                     if(fastestBody.GetMass() > 1000) targetSounds = ['impact-heavy1', 'impact-heavy2'];
                     if(fastestBody.GetMass() > 100) targetSounds = ['impact-medium1', 'impact-medium2'];
+
                     AudioManager.playSFX(targetSounds, 0.1, 1.4 + 0.4 * Math.random()-0.2, fastestBody.GetPosition());
                 }
             }

@@ -1692,6 +1692,12 @@ const addActionGUIToFolder = (action, actionString, actionFolder, targetID, acti
                         this.triggerActionKey = key;
                         this.triggerTargetID = targetID;
                         this.triggerActionID = actionID;
+
+                        if(actionOptions[key].items === AudioManager.getAvailableAudioSprites()){
+                            AudioManager.stopAllSounds();
+                            playTriggerSound({file:value, pitch:1, volume:0.3, randomPitchOffset:0});
+                        }
+
                     }.bind(actionController));
                     break;
                 case guitype_BOOL:

@@ -28,6 +28,7 @@ export class Character extends Humanoid {
         this.grabBodyLeft = null;
         this.grabJointRight = null;
         this.grabBodyRight = null;
+        this.vehicle = null;
 
     }
 
@@ -439,6 +440,7 @@ export class Character extends Humanoid {
     detachFromVehicle(force) {
         if (!force) force = 0;
         if (!this.attachedToVehicle) return;
+        this.ignoreJointDamage = true;
 
         const vehicleJoints = this.mainPrefabClass.destroyConnectedJoints['head'];
 
@@ -470,6 +472,11 @@ export class Character extends Humanoid {
                 b2MulVec2(dirForce, force)
                 body.ApplyForce(dirForce, body.GetPosition(), true);
             }
+        }
+
+
+        if(game.vehicle){
+            game.vehicle.eject();
         }
 
         this.attachedToVehicle = false;

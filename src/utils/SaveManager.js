@@ -33,7 +33,8 @@ export const getLocalUserdata = function(){
         discordShown: false,
         levelsPlayed: 0,
         levelsPublished: false,
-        country:'?'
+        country:'?',
+        cheats: {},
     }
 
     if(userData){
