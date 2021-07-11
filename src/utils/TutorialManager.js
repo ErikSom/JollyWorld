@@ -10,8 +10,8 @@ export const TUTORIALS = {
 	},
 	FODDY:{
 		type: 1,
-		text: 'This vehicle is homeage to Getting Over It with permission from Bennett Foddy',
-		mobileText: 'This vehicle is homeage to Getting Over It with permission from Bennett Foddy',
+		text: 'This vehicle is a homeage to Getting Over It with permission from Bennett Foddy',
+		mobileText: 'This vehicle is a homeage to Getting Over It with permission from Bennett Foddy',
 		closeTime: 4000,
 		extraTutorials:['FODDY2'],
 	},
