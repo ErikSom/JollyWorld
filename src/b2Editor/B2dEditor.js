@@ -2050,7 +2050,6 @@ const _B2dEditor = function () {
 			delete joint.myTriggers;
 			delete joint.spriteData;
 			delete joint.data;
-			delete joint.isFlipped;
 		}
 	}
 
@@ -8154,8 +8153,7 @@ const _B2dEditor = function () {
 
 							prismaticJointDef.set_localAxisA(joint.GetLocalAxisA());
 							prismaticJointDef.set_collideConnected(joint.GetCollideConnected());
-							const angleInc = joint.isFlipped ? Math.PI : -Math.PI;
-							prismaticJointDef.set_referenceAngle(joint.GetReferenceAngle() + angleInc);
+							prismaticJointDef.set_referenceAngle(joint.GetReferenceAngle() + 0);
 							prismaticJointDef.set_lowerTranslation(joint.GetLowerLimit());
 							prismaticJointDef.set_upperTranslation(joint.GetUpperLimit());
 							prismaticJointDef.set_maxMotorForce(joint.GetMaxMotorForce());
@@ -8163,12 +8161,7 @@ const _B2dEditor = function () {
 							prismaticJointDef.set_enableLimit(joint.IsLimitEnabled());
 							prismaticJointDef.set_enableMotor(joint.IsMotorEnabled());
 
-
-							console.log("JOINT:", joint);
-
 							const newJoint = Box2D.castObject(this.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
-
-							newJoint.isFlipped = !joint.isFlipped;
 
 							destroy(prismaticJointDef);
 

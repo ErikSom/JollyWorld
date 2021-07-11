@@ -146,7 +146,8 @@ class FoddyCan extends BaseVehicle {
 
                 const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.mousePos);
                 game.levelCamera.matrix.apply(pixiPoint,pixiPoint);
-                drawCircle(pixiPoint, 10, {}, {alpha:0});
+                drawCircle({x:pixiPoint.x-1, y:pixiPoint.y-1}, 10, {color:0x333333, size:1.6}, {alpha:0});
+                drawCircle(pixiPoint, 10, {size:1.6}, {alpha:0});
 
                 const rotator = this.lookupObject['rotator'];
 
