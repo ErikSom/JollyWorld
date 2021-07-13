@@ -102,6 +102,7 @@ function BackendManager() {
 				const { error } = data;
 
 				if(error){
+					console.info("Error:", error);
 					this.backendSignout();
 					return reject();
 				}
