@@ -139,6 +139,8 @@ function BackendManager() {
 				this.dispatchEvent('login');
 				this.getBackendUserData();
 			}
+		}).catch(err => {
+			console.info("Login error:", err)
 		})
 	}
 
