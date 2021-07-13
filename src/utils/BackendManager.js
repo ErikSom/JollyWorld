@@ -102,7 +102,7 @@ function BackendManager() {
 				const { error } = data;
 
 				if(error){
-					console.info("Error:", error);
+					console.info("Error:", error, betterLocalStorage.getItem('oauth-token'));
 					this.backendSignout();
 					return reject();
 				}
