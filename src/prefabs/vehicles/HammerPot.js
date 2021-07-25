@@ -206,13 +206,13 @@ class FoddyCan extends BaseVehicle {
             }else{
                 rotateJoint.EnableMotor(true);
 
-                if(Key.isDown(Key.LEFT)){
+                if(Key.isDown(Key.LEFT) || Key.isDown(Key.A)){
                     if(this.rotateAccel <0) this.rotateAccel = 0;
                     this.rotateAccel += this.rotateAccelInc;
                     this.rotateAccel *= this.rotateAccelMul;
                     this.rotateAccel = Math.min(this.maxRotateAccel, this.rotateAccel);
                     rotateJoint.SetMotorSpeed(this.rotateAccel);
-                } else if(Key.isDown(Key.RIGHT)){
+                } else if(Key.isDown(Key.RIGHT) || Key.isDown(Key.D)){
                     if(this.rotateAccel >0) this.rotateAccel = 0;
                     this.rotateAccel -= this.rotateAccelInc;
                     this.rotateAccel *= this.rotateAccelMul;
@@ -224,10 +224,10 @@ class FoddyCan extends BaseVehicle {
                     this.rotateAccel = 0;
                 }
 
-                if(Key.isDown(Key.UP)){
+                if(Key.isDown(Key.UP) || Key.isDown(Key.W)){
                     moveJoint.SetMaxMotorForce(10000);
                     moveJoint.SetMotorSpeed(-50);
-                }else if(Key.isDown(Key.DOWN)){
+                }else if(Key.isDown(Key.DOWN) || Key.isDown(Key.S)){
                     moveJoint.SetMaxMotorForce(10000);
                     moveJoint.SetMotorSpeed(6);
                 }else{
