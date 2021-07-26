@@ -2187,6 +2187,10 @@ const removeColorMatrixEditor = ()=>{
 
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
+    if(msg.toLowerCase && msg.toLowerCase().includes('script error')){
+        return;
+    }
+
     game.IS_ERROR = true;
 
     const loginGUIWidth = 500;
