@@ -82,7 +82,7 @@ class FoddyCan extends BaseVehicle {
 
         this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
 
-        document.addEventListener('pointerdown', this.doPointerLock);
+        document.addEventListener('pointerdown', ()=>this.doPointerLock());
 
         document.addEventListener('pointermove', e => {
             const movementScaler = 0.04;
@@ -108,6 +108,10 @@ class FoddyCan extends BaseVehicle {
         if(document.pointerLockElement !== game.canvas){
             game.canvas.requestPointerLock = game.canvas.requestPointerLock || game.canvas.mozRequestPointerLock;
             game.canvas.requestPointerLock();
+
+            const hammerEnd = this.lookupObject['hammer_end'];
+            this.mousePos.x = hammerEnd.GetPosition().x;
+            this.mousePos.y = hammerEnd.GetPosition().y;
         }
     }
 
@@ -149,8 +153,8 @@ class FoddyCan extends BaseVehicle {
                 const cameraMovementX = game.editor.cameraHolder.x - this.oldCameraPos.x;
                 const cameraMovementY = game.editor.cameraHolder.y - this.oldCameraPos.y;
 
-                this.mousePos.x -= cameraMovementX / Settings.PTM * 2;
-                this.mousePos.y -= cameraMovementY / Settings.PTM * 2;
+                this.mousePos.x -= (cameraMovementX / Settings.PTM) / game.editor.cameraHolder.x;
+                this.mousePos.y -= (cameraMovementY / Settings.PTM) / game.editor.cameraHolder.y;
                 this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
                 //
 
