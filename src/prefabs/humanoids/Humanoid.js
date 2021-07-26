@@ -39,6 +39,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.releaseImmune = 0;
         this.skin = 0;
         this.ignoreJointDamage = false;
+        this.jointMaxForces = [1000000, 1000000, 800000, 800000];
+        this.jointMaxTorque = 600;
     }
 
     postConstructor(){
@@ -75,7 +77,6 @@ export class Humanoid extends PrefabManager.basePrefab {
 
         this.vains = [];
         this.vainJoints = [];
-        this.jointMaxForces = [1000000, 1000000, 800000, 800000];
 
         game.editor.setBodyCollision(this.lookupObject.eye_left, [2]);
         game.editor.setBodyCollision(this.lookupObject.eye_right, [2]);
@@ -212,8 +213,8 @@ export class Humanoid extends PrefabManager.basePrefab {
             reactionForce = reactionForce.LengthSquared();
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
-            if (reactionForce > this.jointMaxForces[i] || Math.abs(reactionTorque) > 600) {
-                console.log("SNAP JOINT!!!!", jointsToAnalyse[i]);
+            if (reactionForce > this.jointMaxForces[i] || Math.abs(reactionTorque) > this.jointMaxTorque) {
+                console.log("SNAP JOINT!!!!", jointsToAnalyse[i], this.jointMaxForces[i], reactionForce);
                 this.collisionUpdates.push({
                     type: Humanoid.GORE_SNAP,
                     target: jointsToAnalyse[i].split('_joint')[0],

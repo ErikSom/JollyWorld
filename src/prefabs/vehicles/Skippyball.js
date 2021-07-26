@@ -83,9 +83,18 @@ class Skippyball extends BaseVehicle {
 			body.yogaBody = true;
 		})
 		this.pullBodies.forEach((b, i) => b.bounceIndex = i+1);
-		this.character.jointMaxForces = [1000000, 1000000, 1200000, 1200000];
+		this.cachedJointForces = this.character.jointMaxForces;
+		this.character.jointMaxForces = [1000000, 1000000, 2000000, 2000000];
+		this.character.jointMaxTorque = 1200;
 		TutorialManager.showTutorial(TutorialManager.TUTORIALS.SKIPPY);
     }
+
+	eject(){
+		super.eject();
+		if(this.character){
+			this.character.jointMaxForces = this.cachedJointForces;
+		}
+	}
 
 	fixBalls(){
 
@@ -148,7 +157,14 @@ class Skippyball extends BaseVehicle {
 			this.stretchSoundId = null;
 		}
 
-
+		const velocity = this.lookupObject.frame.GetAngularVelocity();
+		const velocityDamping = .6;
+		if(Math.abs(velocity) > 3){
+			this.lookupObject.frame.SetAngularVelocity(velocityDamping);
+			this.base.SetAngularDamping(60.0);
+		}else{
+			this.base.SetAngularDamping(10.0);
+		}
 		// do in our ray cast on every ball
 
     }
@@ -320,6 +336,7 @@ class Skippyball extends BaseVehicle {
 
 		return [vertices, uvs, indices]
 	}
+
 	initContactListener() {
         super.initContactListener();
         const self = this;
