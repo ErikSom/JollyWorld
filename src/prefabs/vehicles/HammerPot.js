@@ -80,14 +80,16 @@ class FoddyCan extends BaseVehicle {
         this.targetAngle = 0;
         this.hillOffset = 0;
 
+        this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
+
         document.addEventListener('pointerdown', this.doPointerLock);
 
         document.addEventListener('pointermove', e => {
             const movementScaler = 0.04;
             const movementX = e.movementX || e.mozmovementX || e.webkitmovementX || 0;
             const movementY = e.movementY || e.mozmovementY || e.webkitmovementY || 0;
-            this.mousePos.x += movementX * movementScaler;
-            this.mousePos.y += movementY * movementScaler;
+            this.mousePos.x += movementX * movementScaler / game.editor.cameraHolder.scale.x;
+            this.mousePos.y += movementY * movementScaler / game.editor.cameraHolder.scale.y;
 
             const minMovement = 0.1;
             if(Math.abs(movementX) > minMovement || Math.abs(movementY) > minMovement){
@@ -131,6 +133,7 @@ class FoddyCan extends BaseVehicle {
             this.mousePos.x = hammerEnd.GetPosition().x;
             this.mousePos.y = hammerEnd.GetPosition().y;
         }
+
         game.editor.debugGraphics.clear();
 
         this.mouseControlled = (document.pointerLockElement === game.canvas);
@@ -140,6 +143,17 @@ class FoddyCan extends BaseVehicle {
 
         if(this.character && this.character.attachedToVehicle){
             if(this.mouseControlled){
+
+
+                // do camera movement
+                const cameraMovementX = game.editor.cameraHolder.x - this.oldCameraPos.x;
+                const cameraMovementY = game.editor.cameraHolder.y - this.oldCameraPos.y;
+
+                this.mousePos.x -= cameraMovementX / Settings.PTM * 2;
+                this.mousePos.y -= cameraMovementY / Settings.PTM * 2;
+                this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
+                //
+
 
                 this.mousePos.x += (hammerEnd.GetPosition().x - this.mousePos.x) * this.mouseEase;
                 this.mousePos.y += (hammerEnd.GetPosition().y - this.mousePos.y) * this.mouseEase;
