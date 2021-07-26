@@ -82,7 +82,9 @@ class FoddyCan extends BaseVehicle {
 
         this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
 
-        document.addEventListener('pointerdown', ()=>this.doPointerLock());
+        this.bindPointerLock = this.doPointerLock.bind(this);
+
+        document.addEventListener('pointerdown', this.bindPointerLock);
 
         document.addEventListener('pointermove', e => {
             const movementScaler = 0.04;
@@ -116,7 +118,7 @@ class FoddyCan extends BaseVehicle {
     }
 
     reset(){
-        document.removeEventListener('pointerdown', this.doPointerLock);
+        document.removeEventListener('pointerdown', this.bindPointerLock);
         game.exitPointerLock();
     }
 
