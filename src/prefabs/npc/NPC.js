@@ -9,6 +9,7 @@ import { applyColorMatrixMultiple } from '../../b2Editor/utils/colorMatrixParser
 export class NPC extends PrefabManager.basePrefab {
     constructor(target) {
 		super(target);
+		this.isNPC = true;
 		this.flipped = false;
 		this.character = game.editor.activePrefabs[this.lookupObject.character.body.mySprite.data.subPrefabInstanceName].class;
 		this.character.calculateJointOffsets();

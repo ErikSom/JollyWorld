@@ -20,6 +20,7 @@ import { MidiPlayer } from '../../utils/MidiPlayer';
 import { b2AddVec2, b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from "../../../libs/debugdraw";
 import { isBodyGroup, setBodyGroupOpacity } from "../utils/groupEditing";
 import { disableCulling } from "../../utils/PIXICuller";
+import { crawlJointsUtility } from "../../prefabs/level/Finish";
 
 const { getPointer, NULL } = Box2D;
 
@@ -68,6 +69,10 @@ export const getActionsForObject = function (object) {
             actions.push("SetClockwise");
             actions.push("SetAnimating");
             actions.push("SetDuration");
+        }
+        if(prefab.class.isNPC){
+            actions.push('SetAwake');
+            actions.push('SetInteractivity');
         }
     } else {
         switch (object.data.type) {
@@ -519,6 +524,44 @@ export const doAction = function (actionData, target) {
                 prefab.class.flip();
             }
             if(actionData.toggle) actionData.flipped = !actionData.flipped;
+        break;
+        case "SetInteractivity":
+            if(actionData.interactivity === 'interactive'){
+                prefab.class.character.invincible = false;
+                prefab.class.character.dollMode = false;
+            }else if(actionData.interactivity === 'invincible'){
+                prefab.class.character.invincible = true;
+                prefab.class.character.dollMode = false;
+            }else if(actionData.interactivity === 'non-interactive'){
+                prefab.class.character.invincible = true;
+                prefab.class.character.dollMode = true;
+            }
+
+            if(actionData.interactivity === 'non-interactive'){
+                prefab.class.character.lookupObject._bodies.forEach(body => {
+                    game.editor.setBodyCollision(body, [2]);
+                })
+            }else{
+                prefab.class.character.lookupObject._bodies.forEach(body => {
+                    game.editor.setBodyCollision(body, body.mySprite.data.collision);
+                });
+
+                game.editor.setBodyCollision(prefab.class.character.lookupObject.eye_left, [1]);
+                game.editor.setBodyCollision(prefab.class.character.lookupObject.eye_right, [1]);
+            }
+
+        break;
+        case "SetAwake":
+            if (target.data.prefabInstanceName) {
+                prefab.class.isAwake = actionData.isAwake;
+                
+                const targetBodies = crawlJointsUtility(prefab.class.character.lookupObject._bodies[0], () => true);
+                targetBodies.push(prefab.class.character.lookupObject._bodies[0]);
+                targetBodies.forEach(body => {
+                    body.SetAwake(actionData.isAwake);
+                })
+            }
+            if(actionData.toggle) actionData.isAwake = !actionData.isAwake;
         break;
     }
 }
@@ -1289,6 +1332,31 @@ export const actionDictionary = {
         flipped: {
             type: guitype_BOOL,
         },
+    },
+    /*******************/
+    actionObject_SetInteractivity: {
+        type: 'SetInteractivity',
+        interactivity: 'interactive',
+    },
+    actionOptions_SetInteractivity: {
+        interactivity:{
+            type: guitype_LIST,
+            items: ['interactive', 'invincible', 'non-interactive'],
+        }
+    },
+    /*******************/
+    actionObject_SetAwake: {
+        type: 'SetAwake',
+        toggle: false,
+        isAwake: true,
+    },
+    actionOptions_SetAwake: {
+        toggle: {
+            type: guitype_BOOL,
+        },
+        isAwake:{
+            type: guitype_BOOL,
+        }
     },
     /*******************/
 }
