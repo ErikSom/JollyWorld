@@ -35,6 +35,15 @@ export class NPC extends PrefabManager.basePrefab {
 	init(){
 		super.init();
         this.character.life = this.prefabObject.settings.life;
+		if(this.prefabObject.settings.interactivity === 'invincible'){
+			this.character.invincible = true;
+		}else if(this.prefabObject.settings.interactivity === 'non-interactive'){
+			this.character.invincible = true;
+			this.character.dollMode = true;
+			this.character.lookupObject._bodies.forEach(body => {
+				game.editor.setBodyCollision(body, [2]);
+			})
+		}
 	}
 	positionLimb(limb){
         let x = this.prefabObject.settings.limbs[limb][0];
@@ -151,6 +160,7 @@ NPC.settings = Object.assign({}, NPC.settings, {
     "selectJointTarget": "body",
     "addJoint": prefab=>startAddingJoint(prefab),
     "setColorMatrix": prefab=>setColorMatrix(prefab),
+    "interactivity": 'interactive',
 });
 NPC.settingsOptions = Object.assign({}, NPC.settingsOptions, {
     "isFlipped": false,
@@ -173,4 +183,5 @@ NPC.settingsOptions = Object.assign({}, NPC.settingsOptions, {
     "selectJointTarget": [...Object.values(Humanoid.BODY_PARTS)],
     "addJoint": '$function',
 	"setColorMatrix": '$function',
+	'interactivity':['interactive', 'invincible', 'non-interactive'],
 });

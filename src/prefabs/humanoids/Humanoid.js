@@ -41,6 +41,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.ignoreJointDamage = false;
         this.jointMaxForces = [1000000, 1000000, 800000, 800000];
         this.jointMaxTorque = 600;
+        this.invincible = false;
+        this.dollMode = false;
     }
 
     postConstructor(){
@@ -149,6 +151,8 @@ export class Humanoid extends PrefabManager.basePrefab {
     update() {
         super.update();
 
+        if(this.dollMode) return;
+
         if (PrefabManager.timerReady(this.eyesTimer, Humanoid.TIME_EYES_CLOSE, true) || !this.alive) {
             if (this.lookupObject.eye_left && !this.lookupObject.eye_left.snapped){
                 const textureIndex = this.lookupObject.eye_left.myTexture.data.textureName.substr(this.lookupObject.eye_left.myTexture.data.textureName.length-4);
@@ -204,7 +208,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     }
     processJointDamage() {
         const jointsToAnalyse = ['leg_left', 'leg_right','arm_left', 'arm_right'/*,'head_joint', 'belly_joint'*/ ];
-        if(this.ignoreJointDamage) return;
+        if(this.ignoreJointDamage || this.invincible) return;
         for (var i = 0; i < jointsToAnalyse.length; i++) {
             let targetJoint = this.lookupObject[jointsToAnalyse[i]+'_joint'];
             if (!targetJoint || targetJoint.destroyed || !this.lookupObject[jointsToAnalyse[i]] || Date.now() < self.releaseImmune) continue;
@@ -264,6 +268,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         const maxSnapTicks = 30;
         let i;
         const jointsToAnalyse = ['leg_left', 'leg_right', 'head', 'belly', 'feet_left', 'feet_right', 'hand_left', 'hand_right', 'thigh_left', 'thigh_right', 'shoulder_left', 'shoulder_right'];
+
+        if(this.invincible) return;
 
         // check num frames
         for (i = 0; i < jointsToAnalyse.length; i++) {
@@ -343,7 +349,7 @@ export class Humanoid extends PrefabManager.basePrefab {
     static GORE_SNAP = 1;
 
     dealDamage(damage){
-        if(game.tutorialMode) return;
+        if(game.tutorialMode || this.invincible) return;
 
         this.life -= damage;
 

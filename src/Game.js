@@ -1444,9 +1444,6 @@ function Game() {
 
                         const slidingDecalSlider = 50;
                         const goreSize = Math.min(2, velocitySum/slidingDecalSlider);
-                        self.editor.queueDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
-
-                        emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
 
                         if(allowSound) AudioManager.playSFX(['bodyhit1', 'bodyhit2','bodyhit3'], 0.1, 1.4 + 0.4 * Math.random()-0.2, body.GetPosition());
 
@@ -1455,8 +1452,13 @@ function Game() {
 
                         const bodyClass = self.editor.retrieveSubClassFromBody(body);
                         if(bodyClass && bodyClass.dealDamage && !body.noDamage){
-                            const slidingDamageScalar = 50;
-                            bodyClass.dealDamage(velocitySum/slidingDamageScalar);
+
+                            if(!bodyClass.invincible){
+                                const slidingDamageScalar = 50;
+                                bodyClass.dealDamage(velocitySum/slidingDamageScalar);
+                                self.editor.queueDecalToBody(body, worldCollisionPoint, "Decal.png", true, goreSize);
+                                emitterManager.playOnceEmitter("blood", body, worldCollisionPoint, impactAngle);
+                            }
                         }
                     }
                 }
