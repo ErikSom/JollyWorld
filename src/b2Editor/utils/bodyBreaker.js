@@ -55,7 +55,6 @@ export const calculateBodyArea = vertices => {
 }
 
 const breakBody = body => {
-	debugger;
 	const fixturesToSplit = [];
 	for (let fixture = body.GetFixtureList(); getPointer(fixture) !== getPointer(NULL); fixture = fixture.GetNext()) {
 		fixturesToSplit.push(fixture);

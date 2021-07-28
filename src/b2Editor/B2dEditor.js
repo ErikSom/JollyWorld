@@ -2050,6 +2050,7 @@ const _B2dEditor = function () {
 			delete joint.myTriggers;
 			delete joint.spriteData;
 			delete joint.data;
+			delete joint.isSharpJoint;
 		}
 	}
 
@@ -8020,8 +8021,6 @@ const _B2dEditor = function () {
 			objects = objects.filter(body => !body.snapped);
 		}
 
-		console.log(objects);
-
 		const centerObject = prefabClass.lookupObject[centerObjectName];
 		const flippedJoints = [];
 
@@ -8177,7 +8176,6 @@ const _B2dEditor = function () {
 					}
 
 				}
-
 				destroyJoints.forEach(joint => this.DestroyJoint(joint));
 
 			}else{
