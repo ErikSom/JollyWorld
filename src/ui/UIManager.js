@@ -1431,7 +1431,7 @@ function UIManager() {
 
             const consentButton = buttons.querySelector('.consent');
             consentButton.onclick = ()=>{
-                window.__tcfapi('displayConsentUi', 2, () => {});
+                if(window.__tcfapi) window.__tcfapi('displayConsentUi', 2, () => {});
             }
 
             const backButton = buttons.querySelector('.back');

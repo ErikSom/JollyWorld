@@ -10342,6 +10342,10 @@ const _B2dEditor = function () {
 					worldObject = this.buildAnimationGroupFromObject(obj);
 					createdObjects._textures.push(worldObject);
 				}  else if (obj.type == this.object_TRIGGER) {
+					if(obj.triggerObjects.length !== obj.triggerActions.length){
+						obj.triggerObjects.length = 0;
+						obj.triggerActions.length = 0;
+					}
 
 					for (var j = 0; j < obj.triggerObjects.length; j++) {
 						if(obj.triggerObjects[j].length === 10){
