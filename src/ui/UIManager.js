@@ -148,7 +148,10 @@ function UIManager() {
                         <div class="newest-filter button"><span class="fit">${localize('mainmenu_newest')}</span></div>
                         <div class="oldest-filter button"><span class="fit">${localize('mainmenu_oldest')}</span></div>
                     </div>
-                    <div class="search-filter"></div>
+                    <div class="search-filter">
+                        <div class="search-icon"></div>
+                        <input class="search-input">
+                    </div>
                 </div>
                 <div class="game-scroll-block"></div>
                 <div class="page-footer">
@@ -212,6 +215,16 @@ function UIManager() {
                     }
                 }
             })
+
+            const searchInput = filters.querySelector('.search-input');
+            searchInput.addEventListener('keydown', e => {
+                if(e.key === 'Enter'){
+                    this.reloadMainMenuGames();
+                }
+            })
+            const searchIcon = filters.querySelector('.search-icon');
+            searchIcon.addEventListener('click', () => this.reloadMainMenuGames())
+
 
             if(backendManager.isLoggedIn()){
                 const bestFilter = filters.querySelector('.best-filter');
@@ -435,6 +448,10 @@ function UIManager() {
         const filters = mainMenu.querySelector('.filters')
         const featured = filters.querySelector('.featured-filter').classList.contains('checked');
 
+        let search = filters.querySelector('.search-input').value;
+
+        console.log(search);
+
         let sort = '';
         if(filters.querySelector('.mostplayed-filter').classList.contains('checked')) sort = this.FILTER_SORT_MOSTPLAYED;
         if(filters.querySelector('.best-filter').classList.contains('checked')) sort = this.FILTER_SORT_BEST;
@@ -448,6 +465,7 @@ function UIManager() {
         if(filters.querySelector('.today-filter').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
 
         return {
+            search,
             featured,
             sort,
             range
@@ -477,6 +495,10 @@ function UIManager() {
                 imageObserver.observe(game);
 
             })
+
+            while(games.children.length<12){
+                games.appendChild(document.createElement('div'))
+            }
         })
         gameTemplate.style.display = 'none';
     }

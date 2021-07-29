@@ -155,7 +155,7 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 		margin-top: 14px;
-		margin-right: 24px
+		margin-right: 14px
 	}
 	.games{
 		display: grid;
@@ -179,6 +179,7 @@
 		display: flex;
 		bottom: 60px;
 		margin-left: 8px;
+		width: 100%;
 		.button{
 			width: 116px !important;
 			margin-left: 8px;
@@ -237,6 +238,24 @@
 		.button{
 			&:not(.checked){
 				filter: brightness(0.5);
+			}
+		}
+		.search-filter{
+			margin: auto 20px auto auto;
+			.search-icon{
+				background-image: url(../../static/assets/images/gui/SearchIcon.png);
+				width: 42px;
+				height: 35px;
+				position: absolute;
+				right: 0;
+				margin: 0 4px;
+				transform: translate(-50%, 2px);
+			}
+			input{
+				height: 38px;
+				border-radius: 8px;
+				padding: 0 10px;
+				max-width: 150px;
 			}
 		}
 	}

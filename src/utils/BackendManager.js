@@ -370,11 +370,15 @@ function BackendManager() {
 				limit=nummer
 		*/
 
-		const {featured, sort, range} = filter;
+		const {search, featured, sort, range} = filter;
 
         return new Promise((resolve, reject) => {
 			const featuredQuery = featured ? '&featured=1' : '';
-			const query = `sort=${sort}&timespan=${range}${featuredQuery}&limit=${Settings.levelsPerRequest}`
+			let query = `sort=${sort}&timespan=${range}${featuredQuery}&limit=${Settings.levelsPerRequest}`;
+			if(search) query = `search=${search}&${query}`;
+
+			console.log(query);
+
 			const body = {
 				method: 'GET',
 			}
