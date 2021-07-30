@@ -9148,9 +9148,13 @@ const _B2dEditor = function () {
 		}
 
 		const key = body.myTexture.data.prefabInstanceName;
-		const rects = bodyParts.map(e => {
-			const t = PIXI.Texture.from(e.myTexture.data.textureName);
-			t.key = e.myTexture.data.textureName;
+		const rects = bodyParts.map(body => {
+			// from is locator, it not create new texture - it get from cache
+			// clone it
+			let t = PIXI.Texture.from(body.myTexture.data.textureName).clone();
+			t.key = body.myTexture.data.textureName +  '_' + body.mySprite.data.refName;
+			body.decalLookupKey = t.key;
+
 			return t;
 		});
 
@@ -9161,7 +9165,7 @@ const _B2dEditor = function () {
 
 		for(let body of bodyParts) {
 
-			const decal = system.getDecalFor(body.myTexture.data.textureName)
+			const decal = system.getDecalFor(body.decalLookupKey);
 
 			body.myRTCache = system;
 			body.myDecalEntry = decal;
