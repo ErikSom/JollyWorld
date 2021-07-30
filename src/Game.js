@@ -738,6 +738,16 @@ function Game() {
 		            AudioManager.playSFX('badoom2', 0.6, 1.0);
                 }
             });
+
+            if(e.key === '/'){
+                const searchInput = document.querySelector('.search-input');
+                if(searchInput){
+                    if(document.activeElement !== searchInput){
+                        searchInput.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
         }
 
 

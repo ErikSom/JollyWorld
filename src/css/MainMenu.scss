@@ -240,22 +240,50 @@
 				filter: brightness(0.5);
 			}
 		}
+
 		.search-filter{
 			margin: auto 20px auto auto;
+			position: absolute;
+			right: 0;
 			.search-icon{
 				background-image: url(../../static/assets/images/gui/SearchIcon.png);
 				width: 42px;
 				height: 35px;
 				position: absolute;
-				right: 0;
+				right: -21px;
 				margin: 0 4px;
 				transform: translate(-50%, 2px);
+				pointer-events: none;
+				cursor: pointer;
 			}
+
 			input{
 				height: 38px;
 				border-radius: 8px;
 				padding: 0 10px;
-				max-width: 150px;
+				max-width: 132px;
+				transition: width 0.2s ease-in;
+				&:focus{
+					max-width: 300px;
+					width: 300px;
+				}
+			}
+		}
+
+
+		& > *:not(.search-filter) {
+			transition: opacity 0.2s ease-in;
+			opacity: 1.0;
+		}
+
+		&.search-focussed{
+			&  > *:not(.search-filter) {
+				opacity: 0.1;
+			}
+			.search-filter{
+				.search-icon{
+					pointer-events: all;
+				}
 			}
 		}
 	}
@@ -464,6 +492,17 @@
 		}
 		.games{
 			padding: 0;
+		}
+
+		.search-filter{
+			.search-icon{
+				right: -29px;
+				margin: 0 4px;
+				transform: translate(-50%, 2px) scale(0.6);
+			}
+			input{
+				max-width: 38px;
+			}
 		}
 	}
 }

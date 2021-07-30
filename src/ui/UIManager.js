@@ -78,6 +78,8 @@ let smallLogo;
 let skipTutorial;
 let discordJoin;
 
+let lastSearch = '';
+
 function UIManager() {
 
     var self = this;
@@ -217,13 +219,29 @@ function UIManager() {
             })
 
             const searchInput = filters.querySelector('.search-input');
+
+
+            const shouldSearch = ()=> {
+                if(lastSearch !== searchInput.value){
+                    this.reloadMainMenuGames();
+                    lastSearch = searchInput.value;
+                }
+            }
+
             searchInput.addEventListener('keydown', e => {
                 if(e.key === 'Enter'){
-                    this.reloadMainMenuGames();
+                    searchInput.blur();
                 }
             })
+
+            searchInput.addEventListener('focus', ()=> filters.classList.add('search-focussed'));
+            searchInput.addEventListener('blur', ()=> {
+                filters.classList.remove('search-focussed');
+                shouldSearch();
+            });
+
             const searchIcon = filters.querySelector('.search-icon');
-            searchIcon.addEventListener('click', () => this.reloadMainMenuGames())
+            searchIcon.addEventListener('click', () => shouldSearch())
 
 
             if(backendManager.isLoggedIn()){
@@ -449,8 +467,6 @@ function UIManager() {
         const featured = filters.querySelector('.featured-filter').classList.contains('checked');
 
         let search = filters.querySelector('.search-input').value;
-
-        console.log(search);
 
         let sort = '';
         if(filters.querySelector('.mostplayed-filter').classList.contains('checked')) sort = this.FILTER_SORT_MOSTPLAYED;
