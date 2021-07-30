@@ -9134,40 +9134,6 @@ const _B2dEditor = function () {
 		texture.myBody = null;
 	}
 
-	this.getDecalTextureById = function (id = '', vacansion) {
-		let cache = DS.getDecalSystem(id);
-		let root = null;
-
-		while (cache && vacansion && cache.getDecalFor(vacansion)) {
-			root = cache;
-			cache = cache.next;
-		}
-
-		return {
-			cache,
-			root,
-		};
-	}
-
-	/**
-	 * 
-	 * @param {string} id 
-	 * @param {DS.DecalSystem} decalTextureCache 
-	 */
-	this.setDecalTextureById = function (id = '', decalTextureCache) {
-		
-		if (!DS.getDecalSystem(id))
-			DS.setDecalSystem(id, decalTextureCache);
-
-		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.maskRT));
-		// const p = new PIXI.Sprite(decalTextureCache.maskRT);
-
-		//p.scale.set(0.5);
-		//game.app.stage.addChild(p);
-	
-		return decalTextureCache;
-	}
-
 	this.prepareBodyForDecals = function (body) {
 		if (body.myRTCache)
 			return;
