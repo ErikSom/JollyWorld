@@ -169,6 +169,9 @@ function Game() {
         Settings.bloodEnabled = userData.bloodOn;
         Settings.goreEnabled = userData.goreOn;
 
+        PIXI.settings.SPRITE_BATCH_SIZE = 1024 * 10;
+        PIXI.GraphicsGeometry.BATCHABLE_SIZE = 1024 * 10;
+
         this.app = new PIXI.Application({
             view: this.canvas,
             backgroundColor: 0xD4D4D4,
