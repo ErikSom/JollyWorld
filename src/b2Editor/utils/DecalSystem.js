@@ -1,6 +1,63 @@
 import * as PIXI from 'pixi.js';
 import { MaxRectsPacker, Bin } from 'maxrects-packer';
 
+const vert = `
+  
+attribute vec2 aVertexPosition;
+
+uniform mat3 projectionMatrix;
+
+varying vec2 vTextureCoord;
+varying vec2 vNormCoord;
+
+uniform vec4 inputSize;
+uniform vec4 outputFrame;
+
+vec4 filterVertexPosition( void )
+{
+    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;
+
+    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+}
+
+vec2 filterTextureCoord( void )
+{
+    return aVertexPosition * (outputFrame.zw * inputSize.zw);
+}
+
+void main(void)
+{
+    gl_Position = filterVertexPosition();
+    vTextureCoord = filterTextureCoord();
+    vNormCoord = aVertexPosition.xy;
+}
+`;
+const fragment = `
+    varying vec2 vTextureCoord;
+    varying vec2 vNormCoord;
+
+    uniform sampler2D uSampler;
+    uniform sampler2D uMask;
+    uniform sampler2D uDecal;
+
+    void main(void) {
+        float mask = texture2D(uMask, vNormCoord).r;
+        vec4 decal = texture2D(uDecal, vNormCoord) * mask;
+        vec4 base = texture2D(uSampler, vTextureCoord) * mask;
+
+        gl_FragColor = decal +  (1.0 - decal.a) * base;
+    }
+`;
+
+class CompositeFilter extends PIXI.Filter {
+    constructor(mask, decal) {
+        super(vert, fragment, {
+            uMask: mask,
+            uDecal: decal
+        });
+    }
+}
+
 export class Decal {
     /**
      * 
@@ -87,7 +144,6 @@ export class DecalLayer {
         this._particleContainer = new PIXI.Container();
         this._combain = new PIXI.Container();
 
-
         const dim = {
             width: this._bin.width,
             height: this._bin.height
@@ -101,19 +157,12 @@ export class DecalLayer {
         const mask = new self.PIXI.heaven.Sprite(this._maskRT);
         mask.renderable = false;
 
-        const mask2 = new self.PIXI.heaven.Sprite(this._maskRT);
-        mask2.renderable = false;
-
-        this._sourceContainer.pluginName = 'batchMasked';
-        this._sourceContainer.maskSprite = mask2;
-
         decal.pluginName = 'batchMasked';
         decal.maskSprite =  mask;
         decal.addChild(mask);
 
-
         for(let rect of this._bin.rects) {
-            const s = new self.PIXI.heaven.Sprite(rect.texture);
+            const s = new PIXI.Sprite(rect.texture);
 
             s.x = rect.x;
             s.y = rect.y;
@@ -122,47 +171,38 @@ export class DecalLayer {
             this._sourceContainer.addChild(s);
         }
 
-        this._sourceContainer.addChild(mask2);
-
         this._combain.addChild(
             this._sourceContainer , decal
         );
 
         this.fill();
+
+        this._sourceContainer.filters = [
+            new CompositeFilter(
+                this._maskRT,
+                this._decalRT
+            )
+        ];
     }
 
     fill() {
 
-        const g = new self.PIXI.heaven.Sprite(PIXI.Texture.WHITE);
-        g.tint = 0;
-        g.width = this._maskRT.width;
-        g.height = this._maskRT.height;
-
-        // clear
-        this.app.renderer.render(g, this._maskRT, true);
-
         // render decal base texture
-        this.app.renderer.render(this._sourceContainer, {
-            renderTexture: this._resultRT,
-            clear: true
-        });
+        this.app.renderer.render(this._sourceContainer, {renderTexture: this._resultRT, clear: true});
 
+        // mask is full white with black background
+        const filter = new PIXI.filters.ColorMatrixFilter();
+        filter.matrix = [
+            0, 0, 0, 1, 0,
+            0, 0, 0, 1, 0,
+            0, 0, 0, 1, 0,
+            0, 0, 0, 0, 1
+        ];
 
-        this._sourceContainer.children.forEach((e)=>{
-            e.color.setLight(1, 1, 1);
-            e.color.setDark(1, 1, 1);
-        });
+        this._sourceContainer.filters = [filter];
+        this.app.renderer.render(this._sourceContainer, {renderTexture: this._maskRT, clear: false});
+        this._sourceContainer.filters = null;
 
-        // render
-        this.app.renderer.render(this._sourceContainer,{
-            renderTexture: this._maskRT,
-            clear: false
-        });
-
-        this._sourceContainer.children.forEach((e)=>{
-            e.color.setLight(1, 1, 1);
-            e.color.setDark(0, 0, 0);
-        });
     }
 
     /**
@@ -220,7 +260,10 @@ export class DecalLayer {
 
         parts.addChild(...tasks);
 
-        this.app.renderer.render(parts, this._decalRT, false);
+        this.app.renderer.render(parts, {
+            renderTexture: this._decalRT,
+            clear: false
+        });
 
         if (carversTask.length > 0) {
             parts.removeChildren();
@@ -231,7 +274,10 @@ export class DecalLayer {
                 c.tint = 0x0;
             }
 
-            this.app.renderer.render(parts, this._maskRT, false);
+            this.app.renderer.render(parts, {
+                renderTexture: this._maskRT,
+                clear: false
+            });
 
         }
 
@@ -244,7 +290,10 @@ export class DecalLayer {
      * Render to itself to apply mask to top - add holes
      */
     flushDecalTexture() {
-        this.app.renderer.render(this._combain,  this._resultRT, true );
+        this.app.renderer.render(this._combain,  {
+            renderTexture: this._resultRT,
+            clear: true
+        });
     }
 
     destroy() {
@@ -306,7 +355,9 @@ export class PackedDecalSystem {
         const pack = new MaxRectsPacker(
             PackedDecalSystem.ATLAS_MAX_SIZE,
             PackedDecalSystem.ATLAS_MAX_SIZE,
-            2, {pot: false, border: 2}
+            2, {
+                pot: false
+            }
         );
 
         const layers = this.layers;

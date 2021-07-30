@@ -169,6 +169,8 @@ const _B2dEditor = function () {
 	//emscripten specific
 	this.bodiesDestroyedThisFrame = [];
 
+	this.decalSystems = DS;
+
 	Object.defineProperty(this, 'cameraHolder', {
 		get: () => {
 			 if (this.container.camera) {
@@ -9171,7 +9173,14 @@ const _B2dEditor = function () {
 			return;
 
 		const bodyClass = this.retrieveClassFromBody(body);
-		const bodyParts = bodyClass ?  bodyClass.lookupObject._bodies : [body];
+		const bodyParts =
+			(bodyClass ?  bodyClass.lookupObject._bodies : [body])
+				.filter(e => !!e.myTexture);
+
+		if (bodyParts.length === 0) {
+			return;
+		}
+
 		const key = body.myTexture.data.prefabInstanceName;
 		const rects = bodyParts.map(e => {
 			const t = PIXI.Texture.from(e.myTexture.data.textureName);
@@ -9198,7 +9207,7 @@ const _B2dEditor = function () {
 			// change plugin, this is workground for bugged devices
 			// should solve
 			//body.myTexture.originalSprite.pluginName = 'batchMasked';
-			body.myTexture.originalSprite.texture = decal.maskRT;
+			body.myTexture.originalSprite.texture = decal.decalRT;
 
 		}
 	}
@@ -9239,6 +9248,11 @@ const _B2dEditor = function () {
 		 * @type {DS.Decal}
 		 */
 		const entry = body.myDecalEntry;
+
+		// not all elements can have decals
+		if (!cache || !entry) {
+			return;
+		}
 
 		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 		const tex = PIXI.Texture.from(textureName);
