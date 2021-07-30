@@ -6,3 +6,5 @@ build/
 CREDS_GoogleSpreadSheets.json
 BLUEPRINTS_SOURCE
 RECOVER_*
+
+.idea/
