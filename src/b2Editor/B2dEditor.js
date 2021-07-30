@@ -12,6 +12,7 @@ import * as jointTriggerLayer from './utils/jointTriggerLayer'
 import * as DS from './utils/DecalSystem';
 import * as camera from './utils/camera';
 import * as PIXI from 'pixi.js';
+import { MaxRectsPacker } from 'maxrects-packer'
 
 import easing from './utils/easing';
 
@@ -52,6 +53,7 @@ import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
 import * as BodyBreakable from './utils/bodyBreaker';
 import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
+import {getDecalSystem, setDecalSystem} from "./utils/DecalSystem";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -9168,41 +9170,37 @@ const _B2dEditor = function () {
 		if (body.myRTCache)
 			return;
 
-		/**
-		 * @type {PIXI.Texture}
-		 */
-		const tex = PIXI.Texture.from(body.myTexture.data.textureName);
-		const base = tex.baseTexture;
-		
-		const key = body.myTexture.data.prefabInstanceName + '_' + base.uid;
+		const bodyClass = this.retrieveClassFromBody(body);
+		const bodyParts = bodyClass ?  bodyClass.lookupObject._bodies : [body];
+		const key = body.myTexture.data.prefabInstanceName;
+		const rects = bodyParts.map(e => {
+			const t = PIXI.Texture.from(e.myTexture.data.textureName);
+			t.key = e.myTexture.data.textureName;
+			return t;
+		});
 
-		/**
-		 * @type {DS.DecalSystem}
-		 */
-		let { cache, root } = this.getDecalTextureById(key, tex.textureCacheIds[0]);
+		const system = getDecalSystem(key) || new DS.PackedDecalSystem(game.app, key);
+		setDecalSystem(key, system);
 
-		if (!cache) {
-			cache = new DS.DecalSystem(base, key, game.app, root);
+		system.generateLayerForGroup(rects);
 
-			this.setDecalTextureById(key, cache);
+		for(let body of bodyParts) {
+
+			const decal = system.getDecalFor(body.myTexture.data.textureName)
+
+			body.myRTCache = system;
+			body.myDecalEntry = decal;
+
+			if (body.isFlesh && body.myFlesh) {
+				body.myFlesh.pluginName = 'batchMasked';
+			}
+
+			// change plugin, this is workground for bugged devices
+			// should solve
+			//body.myTexture.originalSprite.pluginName = 'batchMasked';
+			body.myTexture.originalSprite.texture = decal.maskRT;
+
 		}
-
-		cache.usage ++;
-
-		const decal = cache.createDecalEntry(tex, tex.textureCacheIds[0]);
-
-		body.myRTCache = cache;
-		body.myDecalEntry = decal;
-
-		if (body.isFlesh && body.myFlesh) {
-			body.myFlesh.pluginName = 'batchMasked';
-		}
-
-		// change plugin, this is workground for bugged devices
-		// should solve
-		body.myTexture.originalSprite.pluginName = 'batchMasked';
-		body.myTexture.originalSprite.texture = decal.decalRT;
-	
 	}
 	this.processQueueDecalToBody = function(){
 		if(!this.decalQueue.length) return;
@@ -9230,10 +9228,7 @@ const _B2dEditor = function () {
 		size = size || 1;
 		rotation = rotation || 0;
 
-		// size = 1;
-		if (!body.myDecalRT) {
-			this.prepareBodyForDecals(body);
-		}
+		this.prepareBodyForDecals(body);
 
 		/**
 		 * @type {DS.DecalSystem}
@@ -9245,7 +9240,6 @@ const _B2dEditor = function () {
 		 */
 		const entry = body.myDecalEntry;
 
-
 		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 		const tex = PIXI.Texture.from(textureName);
 		// exist after preparation
@@ -9256,11 +9250,18 @@ const _B2dEditor = function () {
 		template.scale.set(1);
 
 		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
-		const texFrame = body.myTexture.originalSprite.texture.frame;
 
-		//rest		
-		localPosition.x += texFrame.x;
-		localPosition.y += texFrame.y;
+		if (!entry.sprite) {
+			const texFrame = body.myTexture.originalSprite.texture.frame;
+
+			//rest
+			localPosition.x += texFrame.x;
+			localPosition.y += texFrame.y;
+		} else {
+			localPosition.x += entry.sprite.x;
+			localPosition.y += entry.sprite.y;
+		}
+
 
 		template.position = localPosition;
 		template.rotation = rotation;

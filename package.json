@@ -58,6 +58,7 @@
     "http-server": "^0.11.1",
     "idb-keyval": "^5.0.4",
     "lz-string": "^1.4.4",
+    "maxrects-packer": "^2.7.2",
     "md5-file": "^5.0.0",
     "nanoid": "^1.2.3",
     "npm-run-all": "^4.1.2",
