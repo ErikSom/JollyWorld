@@ -297,10 +297,10 @@ export class DecalLayer {
     }
 
     destroy() {
-        this._maskRT && this._maskRT.destroy();
-        this._decalRT && this._decalRT.destroy();
-        this._resultRT && this._resultRT.destroy();
-        this._container && this._container.destroy();
+        this._maskRT && this._maskRT.destroy(true);
+        this._decalRT && this._decalRT.destroy(true);
+        this._resultRT && this._resultRT.destroy(true);
+        this._container && this._container.destroy({children: true});
 
         this._bin = null;
         this._maskRT = null;
