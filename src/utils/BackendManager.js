@@ -128,20 +128,28 @@ function BackendManager() {
 		.then(data=> {
 			betterLocalStorage.removeItem('oauth-handshake');
 
-			const {token, needs_to_register} = data;
-			betterLocalStorage.setItem('oauth-token', token);
-			if(needs_to_register){
-				betterLocalStorage.setItem('needsToRegister', needs_to_register);
-			}
+			const {token, needs_to_register, error} = data;
 
-			if(needs_to_register){
-				this.dispatchEvent('username');
+			if(error){
+				console.warn("JOLLYWORLD LOGIN ERROR: "+error);
+				if(error === 'user is not verified in Discord'){
+					alert('You need a verified Discord account to play JollyWorld. Discord > Settings > My Account > Resend Verification Email');
+				}
 			}else{
-				this.dispatchEvent('login');
-				this.getBackendUserData();
+				betterLocalStorage.setItem('oauth-token', token);
+				if(needs_to_register){
+					betterLocalStorage.setItem('needsToRegister', needs_to_register);
+				}
+
+				if(needs_to_register){
+					this.dispatchEvent('username');
+				}else{
+					this.dispatchEvent('login');
+					this.getBackendUserData();
+				}
 			}
 		}).catch(err => {
-			console.info("Login error:", err)
+			console.warn("JOLLYWORLD LOGIN ERROR:" + err.msg ? err.msg : err);
 		})
 	}
 
