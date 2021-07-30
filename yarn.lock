@@ -4054,6 +4054,11 @@ math-expression-evaluator@^1.2.14:
   resolved "https://registry.yarnpkg.com/math-expression-evaluator/-/math-expression-evaluator-1.3.7.tgz#1b62225db86af06f7ea1fd9576a34af605a5b253"
   integrity sha512-nrbaifCl42w37hYd6oRLvoymFK42tWB+WQTMFtksDGQMi5GvlJwnz/CsS30FFAISFLtX+A0csJ0xLiuuyyec7w==
 
+maxrects-packer@^2.7.2:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/maxrects-packer/-/maxrects-packer-2.7.2.tgz#47405e62353af117bab24874896839ec4f4e48db"
+  integrity sha512-akd5IRLPqQeWlpJyRJyfYq86VB05zzbMIdyTgLxRk4z1H0A8g4oTJW31Yo6zO9piSRsFNYdzmgudW7J2g1gEhQ==
+
 md5-file@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/md5-file/-/md5-file-5.0.0.tgz#e519f631feca9c39e7f9ea1780b63c4745012e20"

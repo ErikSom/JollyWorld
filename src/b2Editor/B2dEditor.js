@@ -12,6 +12,7 @@ import * as jointTriggerLayer from './utils/jointTriggerLayer'
 import * as DS from './utils/DecalSystem';
 import * as camera from './utils/camera';
 import * as PIXI from 'pixi.js';
+import { MaxRectsPacker } from 'maxrects-packer'
 
 import easing from './utils/easing';
 
@@ -52,6 +53,7 @@ import { MidiPlayer } from "../utils/MidiPlayer";
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw";
 import * as BodyBreakable from './utils/bodyBreaker';
 import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
+import {getDecalSystem, setDecalSystem} from "./utils/DecalSystem";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -166,6 +168,8 @@ const _B2dEditor = function () {
 
 	//emscripten specific
 	this.bodiesDestroyedThisFrame = [];
+
+	this.decalSystems = DS;
 
 	Object.defineProperty(this, 'cameraHolder', {
 		get: () => {
@@ -9130,79 +9134,52 @@ const _B2dEditor = function () {
 		texture.myBody = null;
 	}
 
-	this.getDecalTextureById = function (id = '', vacansion) {
-		let cache = DS.getDecalSystem(id);
-		let root = null;
-
-		while (cache && vacansion && cache.getDecalFor(vacansion)) {
-			root = cache;
-			cache = cache.next;
-		}
-
-		return {
-			cache,
-			root,
-		};
-	}
-
-	/**
-	 * 
-	 * @param {string} id 
-	 * @param {DS.DecalSystem} decalTextureCache 
-	 */
-	this.setDecalTextureById = function (id = '', decalTextureCache) {
-		
-		if (!DS.getDecalSystem(id))
-			DS.setDecalSystem(id, decalTextureCache);
-
-		//game.app.stage.addChild(new PIXI.Sprite(decalTextureCache.maskRT));
-		// const p = new PIXI.Sprite(decalTextureCache.maskRT);
-
-		//p.scale.set(0.5);
-		//game.app.stage.addChild(p);
-	
-		return decalTextureCache;
-	}
-
 	this.prepareBodyForDecals = function (body) {
 		if (body.myRTCache)
 			return;
 
-		/**
-		 * @type {PIXI.Texture}
-		 */
-		const tex = PIXI.Texture.from(body.myTexture.data.textureName);
-		const base = tex.baseTexture;
-		
-		const key = body.myTexture.data.prefabInstanceName + '_' + base.uid;
+		const bodyClass = this.retrieveClassFromBody(body);
+		const bodyParts =
+			(bodyClass ?  bodyClass.lookupObject._bodies : [body])
+				.filter(e => !!e.myTexture);
 
-		/**
-		 * @type {DS.DecalSystem}
-		 */
-		let { cache, root } = this.getDecalTextureById(key, tex.textureCacheIds[0]);
-
-		if (!cache) {
-			cache = new DS.DecalSystem(base, key, game.app, root);
-
-			this.setDecalTextureById(key, cache);
+		if (bodyParts.length === 0) {
+			return;
 		}
 
-		cache.usage ++;
+		const key = body.myTexture.data.prefabInstanceName;
+		const rects = bodyParts.map(body => {
+			// from is locator, it not create new texture - it get from cache
+			// clone it
+			let t = PIXI.Texture.from(body.myTexture.data.textureName).clone();
+			t.key = body.myTexture.data.textureName +  '_' + body.mySprite.data.refName;
+			body.decalLookupKey = t.key;
 
-		const decal = cache.createDecalEntry(tex, tex.textureCacheIds[0]);
+			return t;
+		});
 
-		body.myRTCache = cache;
-		body.myDecalEntry = decal;
+		const system = getDecalSystem(key) || new DS.PackedDecalSystem(game.app, key);
+		setDecalSystem(key, system);
 
-		if (body.isFlesh && body.myFlesh) {
-			body.myFlesh.pluginName = 'batchMasked';
+		system.generateLayerForGroup(rects);
+
+		for(let body of bodyParts) {
+
+			const decal = system.getDecalFor(body.decalLookupKey);
+
+			body.myRTCache = system;
+			body.myDecalEntry = decal;
+
+			if (body.isFlesh && body.myFlesh) {
+				body.myFlesh.pluginName = 'batchMasked';
+			}
+
+			// change plugin, this is workground for bugged devices
+			// should solve
+			//body.myTexture.originalSprite.pluginName = 'batchMasked';
+			body.myTexture.originalSprite.texture = decal.decalRT;
+
 		}
-
-		// change plugin, this is workground for bugged devices
-		// should solve
-		body.myTexture.originalSprite.pluginName = 'batchMasked';
-		body.myTexture.originalSprite.texture = decal.decalRT;
-	
 	}
 	this.processQueueDecalToBody = function(){
 		if(!this.decalQueue.length) return;
@@ -9230,10 +9207,7 @@ const _B2dEditor = function () {
 		size = size || 1;
 		rotation = rotation || 0;
 
-		// size = 1;
-		if (!body.myDecalRT) {
-			this.prepareBodyForDecals(body);
-		}
+		this.prepareBodyForDecals(body);
 
 		/**
 		 * @type {DS.DecalSystem}
@@ -9245,6 +9219,10 @@ const _B2dEditor = function () {
 		 */
 		const entry = body.myDecalEntry;
 
+		// not all elements can have decals
+		if (!cache || !entry) {
+			return;
+		}
 
 		const pixelPosition = this.getPIXIPointFromWorldPoint(worldPosition);
 		const tex = PIXI.Texture.from(textureName);
@@ -9256,11 +9234,18 @@ const _B2dEditor = function () {
 		template.scale.set(1);
 
 		const localPosition = body.myTexture.toLocal(pixelPosition, body.myTexture.parent);
-		const texFrame = body.myTexture.originalSprite.texture.frame;
 
-		//rest		
-		localPosition.x += texFrame.x;
-		localPosition.y += texFrame.y;
+		if (!entry.sprite) {
+			const texFrame = body.myTexture.originalSprite.texture.frame;
+
+			//rest
+			localPosition.x += texFrame.x;
+			localPosition.y += texFrame.y;
+		} else {
+			localPosition.x += entry.sprite.x;
+			localPosition.y += entry.sprite.y;
+		}
+
 
 		template.position = localPosition;
 		template.rotation = rotation;
