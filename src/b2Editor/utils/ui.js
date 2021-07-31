@@ -515,6 +515,8 @@ const doRegisterConfetti = () => {
         myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
         myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
     }, 250);
+
+    AudioManager.playSFX('confetti', 0.8, 1.0);
 }
 
 export const showUsernameScreen = function () {
