@@ -9138,7 +9138,7 @@ const _B2dEditor = function () {
 		if (body.myRTCache)
 			return;
 
-		const bodyClass = this.retrieveClassFromBody(body);
+		const bodyClass = this.retrieveSubClassFromBody(body) || this.retrieveClassFromBody(body);
 		const bodyParts =
 			(bodyClass ?  bodyClass.lookupObject._bodies : [body])
 				.filter(e => !!e.myTexture);

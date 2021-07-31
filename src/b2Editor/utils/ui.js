@@ -27,6 +27,8 @@ import * as AudioManager from "../../utils/AudioManager"
 import { applyColorMatrix, applyColorMatrixMultiple, colorMatrixEffects, guiToEffectProps, setEffectProperties } from "./colorMatrixParser";
 import { KeyboardEventKeys } from "../../../libs/Key";
 
+import confetti from "canvas-confetti";
+
 const nanoid = require('nanoid');
 
 let toolGUI;
@@ -136,7 +138,7 @@ const handleLoginStatusChange = function () {
             getStagePosition.x *= 1 / Settings.PTM;
             getStagePosition.y *= 1 / Settings.PTM;
 
-            if (game.gameState === game.GAMESTATE_EDITOR) emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, ['#7289da', '#7289da', '#7289da', '#7289da', '#ffffff', '#99aab5', '#2c2f33']);
+            if (game.gameState === game.GAMESTATE_EDITOR) emitterManager.playOnceEmitter("screenConfetti", null, getStagePosition, 0, ['#3844ea','#3844ea', '#4e5af0', '#202325', '#ffffff']);
 
             headerBar.querySelector('#loginButton').style.display = 'none';
             headerBar.querySelector('#profileButton').style.display = 'block';
@@ -473,6 +475,48 @@ export const showProfileScreen = async () => {
 
 }
 
+const doRegisterConfetti = () => {
+    const myCanvas = document.createElement('canvas');
+    myCanvas.style = `
+        position:absolute;
+        top:0;
+        left:0;
+        width: 100%;
+        height: 100%;
+        pointer-events:none;
+        z-index: 9999;
+    `
+    document.body.appendChild(myCanvas);
+    myCanvas.width = window.innerWidth;
+    myCanvas.height = window.innerHeight;
+
+
+    const myConfetti = confetti.create(myCanvas, {
+        resize: true
+    });
+
+    const duration = 3 * 1000;
+    window.animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0, colors: ['#3844ea','#3844ea', '#4e5af0', '#202325', '#ffffff'] };
+
+    const randomInRange = (min, max) =>  Math.random() * (max - min) + min;
+
+    const interval = setInterval(function() {
+        const timeLeft = window.animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            myConfetti.reset();
+            myCanvas.parentNode.removeChild(myCanvas);
+            return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        // since particles fall down, start a bit higher than random
+        myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+    }, 250);
+}
+
 export const showUsernameScreen = function () {
     if (!usernameScreen) {
         const loginGUIWidth = 300;
@@ -602,23 +646,26 @@ export const showUsernameScreen = function () {
         button.addEventListener('click', () => {
             if (errorChecks(true)) {
                 dotShell.classList.remove('hidden');
-                let oldText = button.innerHTML;
-                button.innerHTML = '';
-                button.appendChild(dotShell);
+                let oldText = button.innerText;
+                button.innerText = '';
 
                 backendManager.claimUsername(username.value)
                     .then(() => {
                         hidePanel(usernameScreen);
-                        dotShell.classList.add('hidden');;
-                        button.innerHTML = oldText;
+                        dotShell.classList.add('hidden');
+                        button.innerText = oldText;
+
+                        backendManager.getBackendUserData().then(()=>{
+                            doRegisterConfetti();
+
+                            handleLoginStatusChange();
+                        })
+
                     }).catch(error => {
-                        /*console.log("Backend responded with", error);
-                        let errorMessage = error.message;
-                        if (error.code == 'USERNAME_TAKEN')*/
                         const errorMessage = error;
                         errorSpan.innerText = errorMessage;
                         dotShell.classList.add('hidden');;
-                        button.innerHTML = oldText;
+                        button.innerText = oldText;
                     });
             }
         });
