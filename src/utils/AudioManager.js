@@ -139,7 +139,11 @@ export const stopPrefabUniqueLoopSFX = (prefabName, sfxName) => {
 	}
 	if(soundId){
 		howl.loop(false, soundId);
-		howl.stop(soundId);
+		try{
+			howl.stop(soundId);
+		}catch(e){
+			//
+		}
 		delete activeSounds[prefabName][sfxName];
 	}
 }
@@ -167,24 +171,28 @@ export const playSFX = (sfxName, volume, pitch=1, position) => {
 export const stopSFX = (sfxName, id) => {
 	const howl = getHowl(sfxName);
 	if(!howl) return;
-	howl.stop(id)
+	try{
+		howl.stop(id)
+	} catch(e){
+		//
+	}
 }
 export const stopAllSounds = ()=>{
-	Object.keys(activeSounds).forEach( key => {
-		const innerKeys = Object.keys(activeSounds[key]);
-		if(innerKeys){
-			innerKeys.forEach(innerKey => {
-				const howl = getHowl(innerKey);
-				if(howl){
-					const soundId = activeSounds[key][innerKey];
-					howl.loop(false, soundId);
-					howl.stop(soundId);
-				}
-			})
-		}
-	});
-
 	try{
+		Object.keys(activeSounds).forEach( key => {
+			const innerKeys = Object.keys(activeSounds[key]);
+			if(innerKeys){
+				innerKeys.forEach(innerKey => {
+					const howl = getHowl(innerKey);
+					if(howl){
+						const soundId = activeSounds[key][innerKey];
+						howl.loop(false, soundId);
+						howl.stop(soundId);
+					}
+				})
+			}
+		});
+
 		howls.forEach(howl=> howl.stop());
 	}catch(e){
 		//
