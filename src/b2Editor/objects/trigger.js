@@ -1465,6 +1465,16 @@ export const addTriggerGUI = function (dataJoint, _folder) {
         this.humanUpdate = true;
         this.targetValue = value
     });
+
+
+    if(ui.editorGUI.editData.repeatType === triggerRepeatType.once){
+        _folder.add(ui.editorGUI.editData, "checkpointPersistent").onChange(function (value) {
+            this.humanUpdate = true;
+            this.targetValue = value
+        });
+    }
+
+
     let label;
     ui.editorGUI.editData.selectTarget = function () {};
     label = "Add Target";

@@ -1978,6 +1978,7 @@ const _B2dEditor = function () {
 			delete body.broken;
 			delete body.breakPenalty;
 			delete body.oldDensities;
+			delete body.decalLookupKey;
 		}
 	}
 
@@ -2886,6 +2887,7 @@ const _B2dEditor = function () {
 		this.delay = 0;
 		this.repeatDelay = 0;
 		this.randomTarget = false;
+		this.checkpointPersistent = false;
 	}
 	this.textObject = function () {
 		this.type = self.object_TEXT;
@@ -9902,6 +9904,7 @@ const _B2dEditor = function () {
 			arr[17] = obj.delay;
 			arr[18] = obj.repeatDelay;
 			arr[19] = obj.randomTarget;
+			arr[20] = obj.checkpointPersistent;
 		} else if (arr[0] == this.object_TEXT) {
 			arr[6] = obj.ID;
 			arr[7] = obj.text;
@@ -10064,6 +10067,7 @@ const _B2dEditor = function () {
 			obj.delay = typeof arr[17] === "number" ? arr[17] : 0;
 			obj.repeatDelay = typeof arr[18] === "number" ? arr[18] : 0;
 			obj.randomTarget = typeof arr[19] === "boolean" ? arr[19] : false;
+			obj.checkpointPersistent = typeof arr[20] === "boolean" ? arr[20] : false;
 		} else if (arr[0] == this.object_TEXT) {
 			obj = new this.textObject();
 			obj.ID = arr[6];
@@ -10347,6 +10351,8 @@ const _B2dEditor = function () {
 						}
 					}
 					worldObject = this.buildTriggerFromObj(obj);
+
+					console.log(worldObject);
 
 					if(!prefabInstanceName) jointTriggerLayer.add(worldObject.mySprite);
 
