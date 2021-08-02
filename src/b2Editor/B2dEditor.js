@@ -5039,9 +5039,11 @@ const _B2dEditor = function () {
 					}
 				}
 			}
+			e.preventDefault();
 			game.triggerDebugDraw.debounceRedraw();
 		} else if (e.keyCode == 9) { // TAB
 			jointTriggerLayer.toggleHide();
+			e.preventDefault();
 		}
 	}
 
