@@ -910,7 +910,7 @@ function Game() {
 
                 if(this.checkPointData.persistentTriggers.length){
                     game.editor.textures.children.forEach(texture => {
-                        if(texture.data.type === game.editor.object_TRIGGER){
+                        if(texture.data && texture.data.type === game.editor.object_TRIGGER){
                             if(this.checkPointData.persistentTriggers.includes(texture.data.ID)){
                                 texture.myBody.class.doTrigger();
                             }
