@@ -297,7 +297,7 @@ const doPublishLevelData = function (publishButton, preview) {
                     hidePanel(levelEditScreen);
 
                 }).catch(error => {
-                    console.log(error);
+                    alert(error);
                     publishButton.style.backgroundColor = '';
                     publishButton.innerText = 'PUBLISH';
                 });
