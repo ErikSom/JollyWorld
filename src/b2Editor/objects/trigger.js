@@ -2118,6 +2118,11 @@ export class triggerCore {
                 }
             }
         }
+
+        if(this.data.checkpointPersistent && this.data.repeatType === triggerRepeatType.once){
+            game.editor.persistentTriggers.push(this.data.ID);
+        }
+
         this.triggeredThisTick = true;
     }
     setEnabled(enable) {

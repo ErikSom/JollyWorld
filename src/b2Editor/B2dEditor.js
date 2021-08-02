@@ -166,6 +166,8 @@ const _B2dEditor = function () {
 	this.physicsCamera;
 	this.bulletBodyCount = 0;
 
+	this.persistentTriggers = [];
+
 	//emscripten specific
 	this.bodiesDestroyedThisFrame = [];
 
@@ -6214,6 +6216,12 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.randomTarget = controller.targetValue;
 						}
+					} else if (controller.property == "checkpointPersistent") {
+						//trigger
+						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
+							body = this.selectedPhysicsBodies[j];
+							body.mySprite.data.checkpointPersistent = controller.targetValue;
+						}
 					}else if (controller.property == "triggerKey") {
 						//trigger
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
@@ -10563,6 +10571,7 @@ const _B2dEditor = function () {
 		this.parallaxObject = [];
 		this.animationGroups = [];
 		this.decalQueue = [];
+		this.persistentTriggers = [];
 
 		BodyBreakable.reset();
 		this.clearDebugGraphics();

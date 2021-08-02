@@ -907,6 +907,18 @@ function Game() {
                 this.checkPointData = checkPointData;
 
                 if(this.checkPointData.flipped) this.character.flip();
+
+                if(this.checkPointData.persistentTriggers.length){
+                    game.editor.textures.children.forEach(texture => {
+                        if(texture.data.type === game.editor.object_TRIGGER){
+                            if(this.checkPointData.persistentTriggers.includes(texture.data.ID)){
+                                texture.myBody.class.doTrigger();
+                            }
+                        }
+                    });
+                    game.editor.persistentTriggers = [...this.checkPointData.persistentTriggers];
+                }
+
             }
 
 
@@ -1099,6 +1111,7 @@ function Game() {
                 flipped:this.character.flipped,
                 time: performance.now() - this.levelStartTime,
                 frame: this.gameFrame,
+                persistentTriggers: [...new Set(this.editor.persistentTriggers)],
                 // save checkpoint time
             }
 
