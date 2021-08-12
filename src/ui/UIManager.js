@@ -138,6 +138,7 @@ function UIManager() {
                         <div class="week-filter button"><span class="fit">${localize('mainmenu_thisweek')}</span></div>
                         <div class="month-filter button"><span class="fit">${localize('mainmenu_thismonth')}</span></div>
                         <div class="anytime-filter button checked"><span class="fit">${localize('mainmenu_anytime')}</span></div>
+                        <div class="vehicle-filters"></div>
                     </div>
                     <div class="featured-filter button checked">
                     <svg class="check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58.7 50.4"><path d="M5.2 16.5c-2.8 0-4.2 1.4-4.2 4.2v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2z" fill="#333"/><path d="M1 20.7v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2c-2.8 0-4.2 1.4-4.2 4.2z" fill="none" stroke="#66cd32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g><path d="M58.1 1.6c-.2-.1-.5-.1-.7-.1C41.7 6.9 29 16.2 19.5 29.4l-4.6-6.8-.3-.3c-.2-.1-.3-.1-.5-.1H2.2c-.2 0-.5.1-.7.2-.2.2-.3.4-.3.6s0 .4.2.6l15 22.5c.1.2.3.3.5.4.2.1.4.1.6 0s.4-.2.5-.4C29 29.3 42.5 15 58.2 3.2c.2-.1.3-.3.4-.5 0-.3 0-.5-.1-.7 0-.2-.2-.3-.4-.4z"/><path d="M18.2 29.6l-5.4-8H1l15 22.5C27.1 27.2 40.6 12.8 56.5 1c-16 5.5-28.7 15-38.3 28.6z" fill="red"/><path d="M18.2 29.6C27.8 16 40.5 6.5 56.5 1 40.6 12.8 27.1 27.2 16 44.1L1 21.6h11.9l5.3 8z" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
@@ -182,6 +183,17 @@ function UIManager() {
                 mainMenu.classList.add('mobile');
             }
 
+            const vehicleFilters = mainMenu.querySelector('.vehicle-filters');
+            for(let i = 0; i<=Settings.availableVehicles.length; i++){
+                const vehicleFilter = document.createElement('div');
+                vehicleFilter.classList.add('button');
+                vehicleFilters.appendChild(vehicleFilter);
+
+                const vehicleIcon = new Image();
+                vehicleIcon.src = `./assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
+                vehicleFilter.appendChild(vehicleIcon);
+            }
+
             const filters = mainMenu.querySelector('.filters');
             Array.from(filters.querySelectorAll('.button')).forEach( button => {
                 if(button.classList.contains('featured-filter')){
@@ -194,11 +206,20 @@ function UIManager() {
                     button.onclick = () => dateFilters.classList.toggle('open');
                 }else if(button.parentNode.classList.contains('date-filters')){
                     const dateFilters = filters.querySelector('.date-filters');
-                    const buttons = Array.from(dateFilters.querySelectorAll('.button'));
+                    const buttons = Array.from(dateFilters.querySelectorAll(':scope > .button'));
                     button.onclick = ()=>{
                         buttons.forEach(button => button.classList.remove('checked'));
                         button.classList.add('checked');
-                        dateFilters.classList.remove('open');
+                        // dateFilters.classList.remove('open');
+                        this.reloadMainMenuGames();
+                    }
+                }else if(button.parentNode.classList.contains('vehicle-filters')){
+                    const buttons = Array.from(vehicleFilters.querySelectorAll('.button'));
+                    button.onclick = ()=>{
+                        const wasChecked = button.classList.contains('checked');
+                        buttons.forEach(button => button.classList.remove('checked'));
+                        if(!wasChecked) button.classList.add('checked');
+                        // dateFilters.classList.remove('open');
                         this.reloadMainMenuGames();
                     }
                 }else if(button.classList.contains('more')){
@@ -335,7 +356,6 @@ function UIManager() {
                 youtubeLogo.style.display = 'none';
                 facebookLogo.style.display = 'none';
             }
-
 
             window.addEventListener('resize', ()=> {this.mainMenuResize()})
             this.mainMenuResize();

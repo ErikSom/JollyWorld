@@ -227,14 +227,25 @@
 				margin-top: 10px;
 			}
 			&.open{
-				height: 200px;
+				height: 246px;
+			}
+			.vehicle-filters{
+				display: flex;
+				.button{
+					padding: 6px;
+					max-width: 42px;
+					display: flex;
+					img{
+						width: 100%;
+					}
+				}
 			}
 		}
-
 
 		.other-filters{
 			display: flex;
 		}
+
 		.button{
 			&:not(.checked){
 				filter: brightness(0.5);
