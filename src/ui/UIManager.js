@@ -485,6 +485,7 @@ function UIManager() {
     this.determineMainMenuFilter = ()=>{
         const filters = mainMenu.querySelector('.filters')
         const featured = filters.querySelector('.featured-filter').classList.contains('checked');
+        const vehicleFilters = filters.querySelector('.vehicle-filters');
 
         let search = filters.querySelector('.search-input').value;
 
@@ -500,11 +501,20 @@ function UIManager() {
         if(filters.querySelector('.week-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
         if(filters.querySelector('.today-filter').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
 
+
+        let vehicle = '';
+        const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
+        if(checkedVehicleFilter){
+            vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter);
+        }
+
+
         return {
             search,
             featured,
             sort,
-            range
+            range,
+            vehicle
         }
     }
     this.reloadMainMenuGames = ()=>{
