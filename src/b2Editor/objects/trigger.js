@@ -156,7 +156,7 @@ export const getActionOptions = function (action) {
     return actionDictionary[`actionOptions_${action}`];
 }
 
-export const doAction = function (actionData, target) {
+export const doAction = function (actionData, target, triggerClass) {
 
     let bodies;
     const prefab = (target && target.data) ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
@@ -200,7 +200,6 @@ export const doAction = function (actionData, target) {
         case "SetPosition":
                 let targetPos = vec1;
                 if (target.data.prefabInstanceName) {
-
                     if(prefab.class.isVehicle){
                         objects = prefab.class.getCurrentActiveBodies();
 
@@ -217,12 +216,15 @@ export const doAction = function (actionData, target) {
                     targetPos.Set(target.x, target.y);
                 }
 
-                if (actionData.setAdd == "fixed"){
+                if (actionData.setAdd === "fixed"){
                     targetPos.Set(actionData.X - targetPos.x, actionData.Y - targetPos.y)
-                } else {
+                } else if(actionData.setAdd === "add"){
                     targetPos.Set(actionData.X, actionData.Y);
+                } else if(actionData.setAdd === "relative"){
+                    const x = triggerClass.trigger.GetPosition().x * Settings.PTM - targetPos.x;
+                    const y = triggerClass.trigger.GetPosition().y * Settings.PTM - targetPos.y;
+                    targetPos.Set(x + actionData.X, y + actionData.Y);
                 }
-
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
             break;
         case "SetRotation":
@@ -241,7 +243,10 @@ export const doAction = function (actionData, target) {
                 targetRotation *= game.editor.RAD2DEG;
 
                 if (actionData.setAdd == "fixed") targetRotation = actionData.rotation-targetRotation;
-                else targetRotation = actionData.rotation;
+                else if (actionData.setAdd == "add") targetRotation = actionData.rotation;
+                else if (actionData.setAdd == "relative"){
+                    targetRotation = triggerClass.trigger.GetAngle() * game.editor.RAD2DEG - targetRotation + actionData.rotation;
+                }
 
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_ROTATE, targetRotation, objects);
             break;
@@ -634,7 +639,7 @@ export const actionDictionary = {
     actionOptions_SetPosition: {
         setAdd: {
             type: guitype_LIST,
-            items: ['fixed', 'add'],
+            items: ['fixed', 'add', 'relative'],
         },
         X: {
             type: guitype_MINMAX,
@@ -658,7 +663,7 @@ export const actionDictionary = {
     actionOptions_SetRotation: {
         setAdd: {
             type: guitype_LIST,
-            items: ['fixed', 'add'],
+            items: ['fixed', 'add', 'relative'],
         },
         rotation: {
             type: guitype_MINMAX,
@@ -1955,6 +1960,7 @@ export class triggerCore {
             this.followTarget = target;
             this.followLengthOffset = dl;
             this.followRotationOffset = targetRotation-da;
+            this.followRotationDifference = targetRotation - trigger.GetAngle();
 
         }
 
@@ -2000,13 +2006,13 @@ export class triggerCore {
                 let targetX = this.followTarget.mySprite ? this.followTarget.GetPosition().x : this.followTarget.x / Settings.PTM;
                 let targetY = this.followTarget.mySprite ? this.followTarget.GetPosition().y : this.followTarget.y / Settings.PTM;
                 let targetRot = this.followTarget.mySprite ? this.followTarget.GetAngle() : this.followTarget.rotation;
-                targetRot -= this.followRotationOffset;
-                targetX += this.followLengthOffset * Math.cos(targetRot);
-                targetY += this.followLengthOffset * Math.sin(targetRot);
+                const rotOffset = targetRot - this.followRotationOffset;
+                targetX += this.followLengthOffset * Math.cos(rotOffset);
+                targetY += this.followLengthOffset * Math.sin(rotOffset);
 
                 const tarPos = vec1;
                 tarPos.Set(targetX, targetY)
-                this.trigger.SetTransform(tarPos, this.trigger.GetAngle());
+                this.trigger.SetTransform(tarPos, targetRot - this.followRotationDifference);
             }
             if (this.runTriggerOnce && !this.destroy) {
                 this.activateTrigger();
@@ -2110,7 +2116,7 @@ export class triggerCore {
                 const triggerLength = this.data.triggerActions[i].length;
                 for (var j = 0; j < triggerLength; j++) {
                     actionData = this.data.triggerActions[i][j];
-                    doAction(actionData, targetObject);
+                    doAction(actionData, targetObject, this);
                     if(targetObject.destroyed){
                         i--;
                         j = triggerLength;
