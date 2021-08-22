@@ -37,7 +37,8 @@
     "audiosprites-pack2:copy": "cp -R ./static/assets/audio ./build/assets",
     "audiosprites-pack2:compress": "ffmpeg -i ./static/assets/audio/pack2-hq.ogg -c:a libvorbis -ab 32k -ar 22050 ./static/assets/audio/pack2-lq.ogg",
     "audiosprites-pack2:compressmp3": "ffmpeg -i ./static/assets/audio/pack2-hq.mp3 -q:a 9 -ac 1 ./static/assets/audio/pack2-lq.mp3",
-    "server": "http-server build"
+    "server": "http-server build",
+    "poki-upload": "poki upload"
   },
   "dependencies": {
     "@babel/cli": "^7.12.8",
@@ -80,6 +81,7 @@
     "webpack-shell-plugin": "^0.5.0"
   },
   "devDependencies": {
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "@poki/cli": "*"
   }
 }
