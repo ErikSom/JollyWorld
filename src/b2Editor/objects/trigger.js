@@ -242,8 +242,9 @@ export const doAction = function (actionData, target, triggerClass) {
                 }
                 targetRotation *= game.editor.RAD2DEG;
 
-                if (actionData.setAdd == "fixed") targetRotation = actionData.rotation-targetRotation;
-                else if (actionData.setAdd == "add") targetRotation = actionData.rotation;
+                if (actionData.setAdd == "fixed") {
+                    targetRotation = actionData.rotation-targetRotation;
+                }else if (actionData.setAdd == "add") targetRotation = actionData.rotation;
                 else if (actionData.setAdd == "relative"){
                     targetRotation = triggerClass.trigger.GetAngle() * game.editor.RAD2DEG - targetRotation + actionData.rotation;
                 }
@@ -416,6 +417,7 @@ export const doAction = function (actionData, target, triggerClass) {
             const currentScale = Math.abs(animation.scale.x);
             animation.scale.x = actionData.setMirrored ? -currentScale : currentScale;
             animation.data.mirrored = actionData.setMirrored;
+            target.data.mirrored = actionData.setMirrored;
             if(actionData.toggle) actionData.setMirrored = !actionData.setMirrored;
             break;
         case ACTION_GAME_WIN:
@@ -2006,13 +2008,24 @@ export class triggerCore {
                 let targetX = this.followTarget.mySprite ? this.followTarget.GetPosition().x : this.followTarget.x / Settings.PTM;
                 let targetY = this.followTarget.mySprite ? this.followTarget.GetPosition().y : this.followTarget.y / Settings.PTM;
                 let targetRot = this.followTarget.mySprite ? this.followTarget.GetAngle() : this.followTarget.rotation;
-                const rotOffset = targetRot - this.followRotationOffset;
+                let rotOffset = targetRot - this.followRotationOffset;
+
+                if((this.followTarget.mySprite && this.followTarget.mySprite.data.mirrored) || (this.followTarget.data && this.followTarget.data.mirrored)){
+                    rotOffset = Math.PI - rotOffset;
+                }
+
                 targetX += this.followLengthOffset * Math.cos(rotOffset);
                 targetY += this.followLengthOffset * Math.sin(rotOffset);
 
+                targetRot -= this.followRotationDifference;
+
+                if((this.followTarget.mySprite && this.followTarget.mySprite.data.mirrored) || (this.followTarget.data && this.followTarget.data.mirrored)){
+                    targetRot = Math.PI - targetRot;
+                }
+
                 const tarPos = vec1;
                 tarPos.Set(targetX, targetY)
-                this.trigger.SetTransform(tarPos, targetRot - this.followRotationDifference);
+                this.trigger.SetTransform(tarPos, targetRot);
             }
             if (this.runTriggerOnce && !this.destroy) {
                 this.activateTrigger();
