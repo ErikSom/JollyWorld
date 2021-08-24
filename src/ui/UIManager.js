@@ -75,6 +75,8 @@ let loginScreen;
 let leaderboard;
 let userPage;
 let smallLogo;
+let inGameRetryButton;
+let inGamePauseButton;
 let skipTutorial;
 let discordJoin;
 
@@ -1274,6 +1276,54 @@ function UIManager() {
     }
     this.hideSmallLogo = function(){
         if(smallLogo) smallLogo.style.display = 'none';
+    }
+
+    this.showInGameButs = function(){
+        if(!inGamePauseButton){
+            const margin = 10;
+            inGamePauseButton = new Image();
+            inGamePauseButton.src = `./assets/images/gui/${hashName(`Pause.png`)}`;
+            customGUIContainer.appendChild(inGamePauseButton);
+            inGamePauseButton.style = `
+                position:absolute;
+                top:0;
+                right:0;
+                margin:${margin}px;
+                width: 30px;
+                height: 53px;
+            `;
+            inGamePauseButton.classList.add('simple-button');
+            inGamePauseButton.onclick = ()=> {
+                if(!game.pause){
+                    game.pauseGame();
+               } else{
+                    game.unpauseGame();
+               }
+            }
+
+            inGameRetryButton = new Image();
+            inGameRetryButton.src = `./assets/images/gui/${hashName(`Retry.png`)}`;
+            customGUIContainer.appendChild(inGameRetryButton);
+            inGameRetryButton.style = `
+                position:absolute;
+                top:0;
+                right:40px;
+                margin:${margin}px;
+                width: 40px;
+                height: 54px;
+            `;
+            inGameRetryButton.classList.add('simple-button');
+            inGameRetryButton.onclick = () => {
+                game.resetWorld(true);
+            }
+        }
+        if(inGamePauseButton) inGamePauseButton.style.display = 'block';
+        if(inGameRetryButton) inGameRetryButton.style.display = 'block';
+    }
+
+    this.hideInGameButs = function(){
+        if(inGamePauseButton) inGamePauseButton.style.display = 'none';
+        if(inGameRetryButton) inGameRetryButton.style.display = 'none';
     }
 
     this.showSkipTutorialButton = function(){
