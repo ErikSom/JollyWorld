@@ -82,6 +82,7 @@ export default class Hat {
 	}
 	flip(){
 		this.hatBody.myTexture.scale.x *= -1;
+		this.hatBody.myTexture.data.texturePositionOffsetAngle = -(this.hatBody.myTexture.data.texturePositionOffsetAngle+Math.PI/2) - Math.PI/2;
 	}
 	destroy(){
 		this.detach();
