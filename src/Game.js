@@ -691,6 +691,12 @@ function Game() {
             }
         }
 
+        if (e.keyCode == Key.R) { //space
+            if (this.levelWon && this.run) {
+                this.resetWorld(true);
+            }
+        }
+
         if(this.gameState == this.GAMESTATE_NORMALPLAY){
             if(e.keyCode == Key.R && e.shiftKey){
                 this.resetWorld(false);

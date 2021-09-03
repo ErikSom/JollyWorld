@@ -150,19 +150,19 @@ class FoddyCan extends BaseVehicle {
         if(this.character && this.character.attachedToVehicle){
             if(this.mouseControlled){
 
+                this.mousePos.x += (hammerEnd.GetPosition().x - this.mousePos.x) * this.mouseEase;
+                this.mousePos.y += (hammerEnd.GetPosition().y - this.mousePos.y) * this.mouseEase;
 
                 // do camera movement
                 const cameraMovementX = game.editor.cameraHolder.x - this.oldCameraPos.x;
                 const cameraMovementY = game.editor.cameraHolder.y - this.oldCameraPos.y;
 
-                this.mousePos.x -= (cameraMovementX / Settings.PTM) / game.editor.cameraHolder.x;
-                this.mousePos.y -= (cameraMovementY / Settings.PTM) / game.editor.cameraHolder.y;
-                this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
+                this.mousePos.x -= (cameraMovementX / Settings.PTM);// / game.editor.cameraHolder.scale.x;
+                this.mousePos.y -= (cameraMovementY / Settings.PTM);// / game.editor.cameraHolder.y;
                 //
 
 
-                this.mousePos.x += (hammerEnd.GetPosition().x - this.mousePos.x) * this.mouseEase;
-                this.mousePos.y += (hammerEnd.GetPosition().y - this.mousePos.y) * this.mouseEase;
+
 
                 const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.mousePos);
                 game.levelCamera.matrix.apply(pixiPoint,pixiPoint);
@@ -256,6 +256,7 @@ class FoddyCan extends BaseVehicle {
                 }
             }
         }
+        this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
 
         this.updateTargetAngle();
 
