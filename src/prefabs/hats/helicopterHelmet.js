@@ -7,6 +7,7 @@ import {
 import { crawlJointsUtility } from '../level/Finish';
 import { b2MulVec2 } from '../../../libs/debugdraw';
 import setTint from '../../utils/setTint';
+import * as TutorialManager from '../../utils/TutorialManager';
 import * as AudioManager from '../../utils/AudioManager';
 
 
@@ -60,6 +61,8 @@ export class HelicopterHelmet extends Hat {
 
 		const hatSprite = new Sprite(PIXI.Texture.from("HelicopterHelmet0000"));
 		this.hatBody.myTexture.originalSprite.addChild(hatSprite);
+
+		TutorialManager.showTutorial(TutorialManager.TUTORIALS.HELIHELMET);
 	}
 
 	activate(){

@@ -27,6 +27,12 @@ export const TUTORIALS = {
 		mobileText: "Click the screen to play with the mouse, if you don't click the screen you can play with the arrow keys.",
 		closeTime: 4000,
 	},
+	HELIHELMET:{
+		type: 4,
+		text: 'You found a helicopter helmet, press <b>E</b> to swirl yourself in the air',
+		mobileText: 'You found a helicopter helmet, touch the A button to swirl yourself in the air',
+		closeTime: 4000,
+	},
 }
 let tutorialQueue = [];
 const typeSpeed = 26;
