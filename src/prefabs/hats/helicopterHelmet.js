@@ -87,14 +87,32 @@ export class HelicopterHelmet extends Hat {
 				this.frameSwitch = 0;
 			}
 
-			const force = 36 / Settings.timeStep * game.editor.deltaTime;
 			const head = this.character.lookupObject['head'];
+			let baseForce = 20;
+			const frame = this.character.mainPrefabClass.lookupObject['frame'];
+
+			if(this.boostingBodies.includes(frame)){
+				if(this.character.mainPrefabClass.vehicleName === 'DirtBike'){
+					baseForce = 100;
+				} else if(this.character.mainPrefabClass.vehicleName === 'Bike'){
+					baseForce = 36;
+				} else if(this.character.mainPrefabClass.vehicleName === 'FoddyCan'){
+					baseForce = 40;
+				} else if(this.character.mainPrefabClass.vehicleName === 'Skateboard'){
+					baseForce = 50;
+				}
+			}
+
+
+			const force = baseForce / Settings.timeStep * game.editor.deltaTime;
+
+
 			const hatAngle = head.GetAngle()-Settings.pihalve;
 			const dirForce = vec1;
 			dirForce.Set(Math.cos(hatAngle), Math.sin(hatAngle));
 			b2MulVec2(dirForce, force)
 			this.boostingBodies.forEach(body => {
-                body.ApplyForce(dirForce, body.GetPosition(), true);
+				body.ApplyForce(dirForce, body.GetPosition(), true);
 			})
 
 			// kill characters
