@@ -6,16 +6,20 @@ import {
 import {RopeHat} from '../hats/ropeHat'
 import {DirtBikeHelmet} from '../hats/dirtBikeHelmet'
 import {SkateHelmet} from '../hats/skateHelmet'
+import {HelicopterHelmet} from '../hats/helicopterHelmet'
+import { Sprite } from 'pixi.js';
 
 const HAT_TYPES = {
 	ROPE:'Rope',
 	DIRTBIKEHELMET:'DirtBike',
 	SKATE:'Skate',
+	HELICOPTER:'Helicopter',
 }
 const HAT_VISUAL_OFFSET = {
     [HAT_TYPES.ROPE]:-75,
     [HAT_TYPES.DIRTBIKEHELMET]: 0,
     [HAT_TYPES.SKATE]: 0,
+    [HAT_TYPES.HELICOPTER]: 0,
 }
 
 const HAT_TYPES_ARR = Object.values(HAT_TYPES);
@@ -24,6 +28,7 @@ const hatTypeToClass = {
     [HAT_TYPES.ROPE]:RopeHat,
 	[HAT_TYPES.DIRTBIKEHELMET]:DirtBikeHelmet,
 	[HAT_TYPES.SKATE]:SkateHelmet,
+	[HAT_TYPES.HELICOPTER]:HelicopterHelmet,
 }
 
 class HatUpgrade extends PrefabManager.basePrefab {
@@ -32,6 +37,7 @@ class HatUpgrade extends PrefabManager.basePrefab {
         this.hatType = HAT_TYPES.ROPE;
         this.shouldUpgrade = null;
         this.hatBody = this.lookupObject['hatBody'];
+        this.extraSprites = [];
     }
     init() {
         super.init();
@@ -55,9 +61,27 @@ class HatUpgrade extends PrefabManager.basePrefab {
     }
 
     setHatType(type){
+
+        if(this.extraSprites.length){
+            this.extraSprites.forEach(sprite => sprite.destroy());
+            this.extraSprites.length = 0;;
+        }
+
         this.hatType = type;
         this.hatBody.myTexture.originalSprite.texture = PIXI.Texture.from(type+'Helmet0000');
         this.hatBody.myTexture.originalSprite.y = HAT_VISUAL_OFFSET[type];
+
+        if(type === HAT_TYPES.HELICOPTER){
+            const heliSprite = new Sprite(PIXI.Texture.from("HelicopterHelmet_Heli0000"));
+            this.hatBody.myTexture.originalSprite.addChild(heliSprite);
+            heliSprite.x = -13;
+            heliSprite.y = -14;
+
+            const hatSprite = new Sprite(PIXI.Texture.from("HelicopterHelmet0000"));
+            this.hatBody.myTexture.originalSprite.addChild(hatSprite);
+            this.extraSprites.push(heliSprite, hatSprite);
+        }
+
     }
 
     initContactListener() {

@@ -3,6 +3,7 @@ import {
 	game
 } from "../../Game";
 
+
 export default class Hat {
 	constructor(character, head, body){
 		this.character = character;
