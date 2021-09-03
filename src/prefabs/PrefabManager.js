@@ -91,3 +91,4 @@ importAll(require.context('./level', true, /\.js$/));
 importAll(require.context('./guns', true, /\.js$/));
 importAll(require.context('./decoration', true, /\.js$/));
 importAll(require.context('./npc', true, /\.js$/));
+importAll(require.context('./hats', true, /\.js$/));
