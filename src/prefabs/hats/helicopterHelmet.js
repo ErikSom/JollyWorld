@@ -88,7 +88,7 @@ export class HelicopterHelmet extends Hat {
 			}
 
 			const head = this.character.lookupObject['head'];
-			let baseForce = 20;
+			let baseForce = 12;
 			const frame = this.character.mainPrefabClass.lookupObject['frame'];
 
 			if(this.boostingBodies.includes(frame)){
@@ -100,6 +100,8 @@ export class HelicopterHelmet extends Hat {
 					baseForce = 40;
 				} else if(this.character.mainPrefabClass.vehicleName === 'Skateboard'){
 					baseForce = 50;
+				} else if(this.character.mainPrefabClass.vehicleName === 'Skippyball'){
+					baseForce = 24;
 				}
 			}
 
