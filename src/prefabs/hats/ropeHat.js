@@ -126,6 +126,15 @@ export class RopeHat extends Hat {
 		this.touchedBodies.forEach(body=> delete body.ignorePhysicsCuller);
 		this.touchedBodies.length = 0;
 
+
+		if(this.character.attachedToVehicle){
+			const frame = this.character.mainPrefabClass.lookupObject['frame'];
+			if(frame){
+				if(this.character.mainPrefabClass.vehicleName === 'FoddyCan'){
+					frame.SetFixedRotation(true);
+				}
+			}
+		}
 	}
 
 	attachRope(point, body, precise) {
@@ -210,6 +219,12 @@ export class RopeHat extends Hat {
 				prismaticJointDef.set_maxMotorForce(20000);
 				prismaticJointDef.set_enableMotor(false);
 				this.pulleyFrameJoint = Box2D.castObject(game.editor.CreateJoint(prismaticJointDef), Box2D.b2PrismaticJoint);
+
+
+				if(this.character.mainPrefabClass.vehicleName === 'FoddyCan'){
+					frame.SetFixedRotation(false);
+				}
+
 			}
 		}
 	}

@@ -361,8 +361,7 @@ class FoddyCan extends BaseVehicle {
         while ( this.targetAngle < -180 * game.editor.DEG2RAD ) this.targetAngle += 360 * game.editor.DEG2RAD;
         while ( this.targetAngle >  180 * game.editor.DEG2RAD ) this.targetAngle -= 360 * game.editor.DEG2RAD;
 
-        frame.SetTransform(frame.GetPosition(), this.targetAngle);
-
+        if(frame.IsFixedRotation()) frame.SetTransform(frame.GetPosition(), this.targetAngle);
     }
 
 
