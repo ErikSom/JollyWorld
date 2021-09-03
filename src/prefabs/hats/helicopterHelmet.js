@@ -7,6 +7,7 @@ import {
 import { crawlJointsUtility } from '../level/Finish';
 import { b2MulVec2 } from '../../../libs/debugdraw';
 import setTint from '../../utils/setTint';
+import * as AudioManager from '../../utils/AudioManager';
 
 const BOOSTING_TICKS = 100;
 const BOOSTING_COOLDOWN_TICKS = 180;
@@ -51,6 +52,8 @@ export class HelicopterHelmet extends Hat {
 			const body = this.character.lookupObject['body'];
 		   	this.boostingBodies = crawlJointsUtility(body, ()=>true);
 			this.boostingBodies.push(body);
+
+			AudioManager.playSFX('helihat', 0.2, 1.0 + 0.4 * Math.random()-0.2, this.hatBody.GetPosition());
 		}
 	}
 
