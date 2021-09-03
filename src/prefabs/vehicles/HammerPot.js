@@ -80,7 +80,7 @@ class FoddyCan extends BaseVehicle {
         this.targetAngle = 0;
         this.hillOffset = 0;
 
-        this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
+        this.oldCameraPos = {x: this.lookupObject['frame'].x, y:this.lookupObject['frame'].y};
 
         this.bindPointerLock = this.doPointerLock.bind(this);
 
@@ -124,6 +124,7 @@ class FoddyCan extends BaseVehicle {
 
     update() {
         const hammerEnd = this.lookupObject['hammer_end'];
+        const frame = this.lookupObject['frame'];
 
         if(!this.postInit){
             this.character.lookupObject.shoulder_left_joint.EnableLimit(false);
@@ -150,18 +151,16 @@ class FoddyCan extends BaseVehicle {
         if(this.character && this.character.attachedToVehicle){
             if(this.mouseControlled){
 
-                this.mousePos.x += (hammerEnd.GetPosition().x - this.mousePos.x) * this.mouseEase;
-                this.mousePos.y += (hammerEnd.GetPosition().y - this.mousePos.y) * this.mouseEase;
-
                 // do camera movement
-                const cameraMovementX = game.editor.cameraHolder.x - this.oldCameraPos.x;
-                const cameraMovementY = game.editor.cameraHolder.y - this.oldCameraPos.y;
+                const cameraMovementX = frame.GetPosition().x - this.oldCameraPos.x;
+                const cameraMovementY = frame.GetPosition().y - this.oldCameraPos.y;
 
-                this.mousePos.x -= (cameraMovementX / Settings.PTM);// / game.editor.cameraHolder.scale.x;
-                this.mousePos.y -= (cameraMovementY / Settings.PTM);// / game.editor.cameraHolder.y;
+                this.mousePos.x += (cameraMovementX);// / game.editor.cameraHolder.scale.x;
+                this.mousePos.y += (cameraMovementY);// / game.editor.cameraHolder.y;
                 //
 
-
+                this.mousePos.x += (hammerEnd.GetPosition().x - this.mousePos.x) * this.mouseEase;
+                this.mousePos.y += (hammerEnd.GetPosition().y - this.mousePos.y) * this.mouseEase;
 
 
                 const pixiPoint = game.editor.getPIXIPointFromWorldPoint(this.mousePos);
@@ -256,7 +255,7 @@ class FoddyCan extends BaseVehicle {
                 }
             }
         }
-        this.oldCameraPos = {x: game.editor.cameraHolder.x, y:game.editor.cameraHolder.y};
+        this.oldCameraPos = {x: frame.GetPosition().x, y:frame.GetPosition().y};
 
         this.updateTargetAngle();
 
