@@ -43,6 +43,7 @@ class FoddyCan extends BaseVehicle {
                                 ]
                             ];
         this.postInit = false;
+        
     }
 
     postConstructor(){
@@ -99,6 +100,8 @@ class FoddyCan extends BaseVehicle {
             }
 
         })
+
+		this.character.jointMaxForces = [1000000, 1000000, 2000000, 2000000];
 
 		TutorialManager.showTutorial(TutorialManager.TUTORIALS.FODDY);
     }
