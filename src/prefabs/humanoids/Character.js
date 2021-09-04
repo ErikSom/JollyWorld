@@ -63,7 +63,7 @@ export class Character extends Humanoid {
         this.hat = new hatClass(this, this.lookupObject.head, this.lookupObject.body);
         if(this.flipped) this.hat.flip();
 
-        if(this.hat.isRopeHat){
+        if(this.hat.isRopeHat || this.hat.isTriggerHat){
             MobileController.showActionButton();
         }else{
             MobileController.hideActionButton();

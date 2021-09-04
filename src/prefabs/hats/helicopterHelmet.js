@@ -48,6 +48,7 @@ export class HelicopterHelmet extends Hat {
 		this.boostingCooldown = 0;
 		this.frameSwitch = 0;
 		this.currentFlashTicks = 0;
+		this.isTriggerHat = true;
 		this.attach();
 	}
 
