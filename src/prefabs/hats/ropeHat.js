@@ -316,6 +316,7 @@ export class RopeHat extends Hat {
 		this.releaseRope();
 
 		this.attachRope(offsetPoint, body, true);
+		this.oldDir = 0;
 
 	}
 	unBendRope() {
@@ -324,6 +325,7 @@ export class RopeHat extends Hat {
 
 		this.releaseRope();
 		this.attachRope(bendData.point, bendData.body, true);
+		this.oldDir = 0;
 	}
 	findFarthestPointFromBody(radius, point, body) {
 		const steps = 16;
