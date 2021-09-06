@@ -79,6 +79,10 @@ export class HelicopterHelmet extends Hat {
 		}
 	}
 
+	detachFromVehicle(){
+		this.boosting = false;
+	}
+
 	update(){
 		if(this.boosting){
 			this.frameSwitch++;
