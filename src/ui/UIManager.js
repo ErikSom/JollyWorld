@@ -172,6 +172,7 @@ function UIManager() {
                         <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
                         <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>
                         <a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>
+                        <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
                     </div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>

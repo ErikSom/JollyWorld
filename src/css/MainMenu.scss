@@ -350,11 +350,18 @@
 				background-image: url(../../static/assets/images/misc/youtube-icon.svg)
 			}
 			.jolly-facebook{
-				background-image: url(../../static/assets/images/misc/facebook-icon.svg)
+				background-image: url(../../static/assets/images/misc/facebook-icon.svg);
+			}
+			.powered-by-poki{
+				width: 108px;
+				height: 20px;
+				margin-top: 4px;
+				background-image: url(../../static/assets/images/gui/powered-by-poki.png);
 			}
 		}
 		.country{
 			@extend .country-select;
+			margin: 2px 6px;
 		}
 	}
 }

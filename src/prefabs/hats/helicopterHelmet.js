@@ -96,6 +96,12 @@ export class HelicopterHelmet extends Hat {
 			}
 
 			const head = this.character.lookupObject['head'];
+
+			if(!head){
+				this.boosting = false;
+				return;
+			}
+
 			let baseForce = 12;
 			const frame = this.character.mainPrefabClass.lookupObject['frame'];
 
