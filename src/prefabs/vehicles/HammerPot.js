@@ -85,7 +85,7 @@ class FoddyCan extends BaseVehicle {
 
         this.bindPointerLock = this.doPointerLock.bind(this);
 
-        document.addEventListener('pointerdown', this.bindPointerLock);
+        game.canvas.addEventListener('pointerdown', this.bindPointerLock);
 
         document.addEventListener('pointermove', e => {
             const movementScaler = 0.04;

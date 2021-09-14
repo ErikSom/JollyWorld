@@ -830,6 +830,9 @@ function Game() {
         window.pokiGPStart = true;
         MobileController.show();
         ui.showSmallLogo();
+        if(!MobileController.isMobile() && !this.tutorialMode){
+            ui.showInGameButs();
+        }
         this.playLevelMidi();
         GameTimer.show(true);
     }
@@ -959,6 +962,7 @@ function Game() {
         AudioManager.stopAllSounds();
         SlowmoUI.hide();
         ui.hideSmallLogo();
+        ui.hideInGameButs();
         MidiPlayer.stop();
         ReplayManager.stopRecording();
 

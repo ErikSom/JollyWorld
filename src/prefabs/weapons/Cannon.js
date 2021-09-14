@@ -112,7 +112,7 @@ class Cannon extends PrefabManager.basePrefab {
 		// drawCircle(pixiPoint, 10);
 
 		EffectsComposer.addEffect(EffectsComposer.effectTypes.shockWave, {radius:75, point:pixiPoint});
-        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.shootForce/600, point:pixiPoint});
+        EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:this.shootForce/1200, point:pixiPoint});
 
 		const angle = this.cannonBody.GetAngle() + (this.flipped ? Math.PI : 0);
 		const prefabData = PrefabBuilder.generatePrefab(worldPos, angle*game.editor.RAD2DEG, 'CannonBall', true);
