@@ -10790,7 +10790,6 @@ const _B2dEditor = function () {
 		var sprite = objects[0].mySprite ? objects[0].mySprite : objects[0];
 		var prefabObject = this.activePrefabs[sprite.data.prefabInstanceName];
 
-
 		// a hack to delete blueprint triggers
 		const prefabTriggersCreated = objects.filter(obj=> obj.mySprite && obj.mySprite.data.type == this.object_TRIGGER);
 		if(prefabTriggersCreated) this.deleteObjects(prefabTriggersCreated);
@@ -10799,6 +10798,32 @@ const _B2dEditor = function () {
 
 		return image;
 	}
+
+	window.renderJollyDataToImage = async compressedString => {
+		try{
+			const copyData = compressedString.substr(Settings.jollyDataPrefix.length, compressedString.length-Settings.jollyDataPrefix.length-1);
+
+			const copyJsonString = LZString.decompressFromEncodedURIComponent(copyData);
+			const jsonData = JSON.parse(copyJsonString);
+			if(jsonData){
+				let objects = this.buildJSON(jsonData);
+
+				objects = this.sortObjectsByIndex([].concat(objects._bodies, objects._textures));
+				const newContainer = new PIXI.Sprite();
+				for (let i = 0; i < objects.length; i++) {
+					const sprite = objects[i].mySprite ? objects[i].mySprite : objects[i];
+					sprite.parent.removeChild(sprite);
+					newContainer.addChild(sprite);
+				}
+				const image = game.app.renderer.plugins.extract.image(newContainer);
+				this.deleteObjects(objects);
+				return image;
+			}
+		}catch(err){
+			return null
+		}
+	}
+
 	// mesh circular texture fix
 
 	//CONSTS
