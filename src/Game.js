@@ -1172,8 +1172,12 @@ function Game() {
     }
 
     this.exitPointerLock = function () {
-        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
-        if(document.exitPointerLock) document.exitPointerLock();
+        try{
+            document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+            if(document.exitPointerLock) document.exitPointerLock();
+        }catch(err){
+
+        }
     }
 
     this.loadUserLevelData = function (levelData) {

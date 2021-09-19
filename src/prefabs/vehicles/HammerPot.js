@@ -107,12 +107,17 @@ class FoddyCan extends BaseVehicle {
     }
 
     doPointerLock(){
-
         if(game.gameOver || game.levelWon || game.pause) return;
 
         if(document.pointerLockElement !== game.canvas){
             game.canvas.requestPointerLock = game.canvas.requestPointerLock || game.canvas.mozRequestPointerLock;
-            game.canvas.requestPointerLock();
+            try{
+                game.canvas.requestPointerLock().catch(err=>{
+
+                });
+            }catch(err){
+
+            }
 
             const hammerEnd = this.lookupObject['hammer_end'];
             this.mousePos.x = hammerEnd.GetPosition().x;
@@ -374,6 +379,7 @@ class FoddyCan extends BaseVehicle {
 
 
     destroy(){
+        this.reset();
         super.destroy();
     }
 
