@@ -126,7 +126,7 @@ class FoddyCan extends BaseVehicle {
     }
 
     reset(){
-        document.removeEventListener('pointerdown', this.bindPointerLock);
+        game.canvas.removeEventListener('pointerdown', this.bindPointerLock);
         game.exitPointerLock();
     }
 
