@@ -45,6 +45,10 @@ class Sun extends PrefabManager.basePrefab {
 	reset(){
 		globalEvents.removeEventListener(GLOBAL_EVENTS.CHARACTER_DAMAGE, this.lookAtDamageFunction)
 	}
+	destroy(){
+		super.destroy();
+		this.reset();
+	}
 }
 
 PrefabManager.prefabLibrary.Sun = {
