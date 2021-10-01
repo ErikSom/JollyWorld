@@ -47,8 +47,8 @@ export const loadAudio = (name, json) => {
 	return new Promise(resolve => {
 		const howl = new Howl({
 			"src": [
-			`./assets/audio/${hashName(`${name}-${quality}.ogg`)}`,
-			`./assets/audio/${hashName(`${name}-${quality}.mp3`)}`,
+			`/assets/audio/${hashName(`${name}-${quality}.ogg`)}`,
+			`/assets/audio/${hashName(`${name}-${quality}.mp3`)}`,
 			],
 			sprite:json.sprite,
 			autoplay:false,

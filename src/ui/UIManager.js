@@ -195,7 +195,7 @@ function UIManager() {
                 vehicleFilters.appendChild(vehicleFilter);
 
                 const vehicleIcon = new Image();
-                vehicleIcon.src = `./assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
+                vehicleIcon.src = `/assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
                 vehicleFilter.appendChild(vehicleIcon);
             }
 
@@ -444,7 +444,7 @@ function UIManager() {
     this.setMainMenuCharacterImage = ()=> {
         const header = mainMenu.querySelector('.header');
         const characterSelect = header.querySelector('.character-select');
-        characterSelect.style.backgroundImage = `url(./assets/images/portraits/${hashName(`character${game.selectedCharacter+1}.png`)})`;
+        characterSelect.style.backgroundImage = `url(/assets/images/portraits/${hashName(`character${game.selectedCharacter+1}.png`)})`;
     }
 
     this.setLevelDataOnGameTile = (game, levelData) => {
@@ -482,7 +482,7 @@ function UIManager() {
         ratingText.innerText = scoreText;
 
         const vehicleLabel = game.querySelector('.vehicle-label');
-        vehicleLabel.style.backgroundImage = `url(./assets/images/portraits/${hashName(`mini-vehicle${levelData.forced_vehicle}.png`)})`;
+        vehicleLabel.style.backgroundImage = `url(/assets/images/portraits/${hashName(`mini-vehicle${levelData.forced_vehicle}.png`)})`;
 
         // const tags = game.querySelector('.tags');
     }
@@ -1004,7 +1004,7 @@ function UIManager() {
                 timeTextMili.innerText = d.ms;
 
                 const profile = entry.querySelector('.profile');
-                profile.style.backgroundImage = `url(./assets/images/portraits/${hashName(`profile${entryData.character+1}.png`)})`;
+                profile.style.backgroundImage = `url(/assets/images/portraits/${hashName(`profile${entryData.character+1}.png`)})`;
 
                 entries.appendChild(entry);
             })
@@ -1283,7 +1283,7 @@ function UIManager() {
         if(!inGamePauseButton){
             const margin = 10;
             inGamePauseButton = new Image();
-            inGamePauseButton.src = `./assets/images/gui/${hashName(`Pause.png`)}`;
+            inGamePauseButton.src = `/assets/images/gui/${hashName(`Pause.png`)}`;
             customGUIContainer.appendChild(inGamePauseButton);
             inGamePauseButton.style = `
                 position:absolute;
@@ -1303,7 +1303,7 @@ function UIManager() {
             }
 
             inGameRetryButton = new Image();
-            inGameRetryButton.src = `./assets/images/gui/${hashName(`Retry.png`)}`;
+            inGameRetryButton.src = `/assets/images/gui/${hashName(`Retry.png`)}`;
             customGUIContainer.appendChild(inGameRetryButton);
             inGameRetryButton.style = `
                 position:absolute;
@@ -1629,7 +1629,7 @@ function UIManager() {
                 const portraitHolder = document.createElement('div');
                 portraitHolder.style.order = customOrder[i];
                 const portrait =  document.createElement('img');
-                portrait.src = `./assets/images/portraits/${hashName(`character${i+1}.png`)}`
+                portrait.src = `/assets/images/portraits/${hashName(`character${i+1}.png`)}`
                 portrait.classList.add('portrait');
                 portraitHolder.appendChild(portrait)
 
@@ -1713,7 +1713,7 @@ function UIManager() {
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 const portrait =  document.createElement('img');
-                portrait.src = `./assets/images/portraits/${hashName(`vehicle${i+1}.png`)}`
+                portrait.src = `/assets/images/portraits/${hashName(`vehicle${i+1}.png`)}`
                 portrait.classList.add('portrait');
                 vehicles.appendChild(portrait);
 
@@ -2212,10 +2212,10 @@ function UIManager() {
 
 
             const billyDiscord = discordJoin.querySelector('.billyDiscord');
-            billyDiscord.style.backgroundImage = `url(./assets/images/misc/${hashName('jollyDiscord.png')})`
+            billyDiscord.style.backgroundImage = `url(/assets/images/misc/${hashName('jollyDiscord.png')})`
 
             const discordButton = discordJoin.querySelector('.discordButton');
-            discordButton.style.backgroundImage = `url(./assets/images/misc/${hashName('discordJoin.png')})`
+            discordButton.style.backgroundImage = `url(/assets/images/misc/${hashName('discordJoin.png')})`
 
             const back = discordJoin.querySelector('.back');
             back.onclick = ()=>{
