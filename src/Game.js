@@ -334,7 +334,7 @@ function Game() {
                 ui.showLevelBanner(levelData);
                 this.showLevelAfterTutorial = levelData;
             }).catch(_err =>{
-                history.replaceState({}, document.title, '')
+                if(!Settings.onPoki) history.replaceState({}, document.title, '')
             });
         }else{
             const username = urlParams.get('user');
@@ -799,7 +799,7 @@ function Game() {
         this.triggerDebugDraw.debounceRedraw();
         GameTimer.show(false);
 
-        history.replaceState({}, 'JollyWorld', '/');
+        if(!Settings.onPoki) history.replaceState({}, 'JollyWorld', '/');
     }
 
     this.runWorld = function () {

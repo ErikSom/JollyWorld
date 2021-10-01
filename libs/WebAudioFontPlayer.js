@@ -1635,7 +1635,7 @@ MIDIFile.Track = MIDIFileTrack;
 			var p = 1 * key.substr(0, 3);
 			return {
 				variable: '_tone_' + key,
-				url: '/assets/instruments/' + key + '.js',
+				url: 'assets/instruments/' + key + '.js',
 				title: this.instrumentTitles()[p]
 			};
 		};
@@ -1779,7 +1779,7 @@ MIDIFile.Track = MIDIFileTrack;
 			var p = 1 * key.substr(0, 2);
 			return {
 				variable: '_drum_' + key,
-				url: '/assets/instruments/128' + key + '.js',
+				url: 'assets/instruments/128' + key + '.js',
 				pitch: p,
 				title: this.drumTitles()[p]
 			};

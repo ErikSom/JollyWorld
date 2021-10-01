@@ -219,7 +219,7 @@ const _B2dEditor = function () {
 	this.bluePrintData = null;
 	this.downloadBluePrintKeys = ()=>{
 		if(this.bluePrintData !== null) return;
-		fetch(`/assets/blueprints/${hashName('blueprints.json')}`)
+		fetch(`assets/blueprints/${hashName('blueprints.json')}`)
 		.then(response => response.json())
 		.then(data => {
 			this.bluePrintData = {categories:[], urls:[]};
@@ -241,7 +241,7 @@ const _B2dEditor = function () {
 		const urlIndex = this.bluePrintData.categories.indexOf(category);
 		const url = this.bluePrintData.urls[urlIndex];
 		if(url){
-			fetch(`/assets/blueprints/${url}`)
+			fetch(`assets/blueprints/${url}`)
 			.then(response => response.json())
 			.then(data => {
 				const prefabNames = Object.keys(data);
