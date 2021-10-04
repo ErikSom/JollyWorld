@@ -1414,7 +1414,12 @@ function UIManager() {
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
                 this.hideGameOverMenu();
-                game.resetWorld(true);
+
+                PokiSDK.commercialBreak().then(
+                    () => {
+                        game.resetWorld(true);
+                    }
+                );
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
@@ -1794,7 +1799,12 @@ function UIManager() {
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
                 game.unpauseGame();
-                game.resetWorld(true);
+
+                PokiSDK.commercialBreak().then(
+                    () => {
+                        game.resetWorld(true);
+                    }
+                );
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
@@ -1881,7 +1891,12 @@ function UIManager() {
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
                 this.hideWinScreen();
-                game.resetWorld(true);
+
+                PokiSDK.commercialBreak().then(
+                    () => {
+                        game.resetWorld(true);
+                    }
+                );
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {

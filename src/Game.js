@@ -687,19 +687,34 @@ function Game() {
 
         if (e.keyCode == Key.SPACE || e.keyCode == Key.R) { //space
             if (this.gameOver && this.run) {
-                this.resetWorld(true);
+                this.run = false;
+                PokiSDK.commercialBreak().then(
+                    () => {
+                        this.resetWorld(true);
+                    }
+                );
             }
         }
 
         if (e.keyCode == Key.R) { //space
             if (this.levelWon && this.run) {
-                this.resetWorld(true);
+                this.run = false;
+                PokiSDK.commercialBreak().then(
+                    () => {
+                        this.resetWorld(true);
+                    }
+                );
             }
         }
 
         if(this.gameState == this.GAMESTATE_NORMALPLAY){
-            if(e.keyCode == Key.R && e.shiftKey){
-                this.resetWorld(false);
+            if(e.keyCode == Key.R && e.shiftKey && this.run){
+                this.run = false;
+                PokiSDK.commercialBreak().then(
+                    () => {
+                        this.resetWorld(true);
+                    }
+                );
             }else if((e.keyCode == Key.P || e.keyCode == Key.R || e.keyCode == Key.ESCAPE || e.keyCode == Key.TAB)){
                 if(!this.pause){
                      this.pauseGame();
@@ -709,7 +724,11 @@ function Game() {
                     window.pokiGPStart = true;
                     if(e.keyCode == Key.R){
                         // retry
-                        game.resetWorld(true);
+                        PokiSDK.commercialBreak().then(
+                            () => {
+                                this.resetWorld(true);
+                            }
+                        );
                     }
                 }
             }
