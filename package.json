@@ -22,6 +22,7 @@
     "blueprints:deleteold": "rm -rf ./static/assets/blueprints",
     "blueprints:makenew": "mkdir ./static/assets/blueprints",
     "blueprints:build": "node generateBlueprints.js",
+    "poki-upload": "poki upload",
     "audiosprites-core": "npm-run-all audiosprites-core:*",
     "audiosprites-core:sfx": "audiosprite --output ./static/assets/audio/sfx-hq --format howler2 --export ogg,mp3 ./asset_src/audio/core-sfx/*.ogg",
     "audiosprites-core:copy": "cp -R ./static/assets/audio ./build/assets",
