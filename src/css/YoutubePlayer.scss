@@ -4,6 +4,7 @@
 	@extend .main-window;
 	color:white;
     font-size: 14px;
+	max-height: 100vh;
 
 	.iframe{
 		width: 100%;
