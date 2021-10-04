@@ -10,29 +10,30 @@
 	}
 
 	.billyDiscord{
-		width: 334px;
-		height: 235px;
+		width: 200px;
+		height: 140px;
+		background-size: contain;
 		margin: auto;
 	}
 
 	.content{
 		text-align: center;
 		color: #fff;
-		margin: 20px 0px;
-		padding: 20px;
+		padding: 10px;
 	}
 
 	.discordButton{
 		@extend .simple-button;
-		width: 355px;
-		height: 126px;
+		width: 200px;
+		height: 71px;
+		background-size: contain;
 		margin: auto;
 		display: block;
 	}
 
 	.back{
 		width: 180px;
-		margin: 20px auto;
+		margin: 10px auto;
 		@extend .back-button;
 	}
 }
