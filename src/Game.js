@@ -396,7 +396,7 @@ function Game() {
             if(this.editor.shiftDown) return;
             try{
             if(e.clipboardData == false) return false;
-            e.clipboardData.items.forEach( el => {
+            [...e.clipboardData.items].forEach( el => {
                 if(el.type == 'text/plain'){
                 el.getAsString(s=>{
                         s = s.trim();
