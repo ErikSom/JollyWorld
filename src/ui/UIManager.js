@@ -1866,6 +1866,8 @@ function UIManager() {
                         <div class="vote-thumb"></div>
                     </div>
                 </div>
+                <div class="recommendations">
+                </div>
             `;
 
             winScreen = document.createElement('div');
@@ -1940,6 +1942,8 @@ function UIManager() {
 
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
 
+        this.showRecommendations(winScreen);
+
         if(game.tutorialMode){
             voteButtons.classList.add('hidden');
         }else{
@@ -1954,6 +1958,28 @@ function UIManager() {
     this.hideWinScreen = function () {
         if(winScreen){
             winScreen.style.display = 'none';
+        }
+    }
+
+    this.showRecommendations = target => {
+        const recommendations = target.querySelector('.recommendations');
+
+        while(recommendations.children.length>0){
+            recommendations.removeChild(recommendations.children[0]);
+        }
+
+        const gameTemplate = mainMenu.querySelector('.game-template');
+
+        for(let i = 0; i<3; i++){
+            const game = gameTemplate.cloneNode(true)
+            game.style.display = 'block';
+            game.classList.remove('game-template')
+            // this.setLevelDataOnGameTile(game, level);
+            recommendations.appendChild(game);
+            game.onclick = ()=> {
+                // this.showLevelBanner(level);
+            }
+            imageObserver.observe(game);
         }
     }
 
