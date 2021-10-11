@@ -81,6 +81,7 @@ let skipTutorial;
 let discordJoin;
 
 let lastSearch = '';
+let initialLevelBatch = [];
 
 function UIManager() {
 
@@ -533,6 +534,10 @@ function UIManager() {
 
         const filter = this.determineMainMenuFilter();
         backendManager.getPublishedLevels(filter).then(levels => {
+            if(initialLevelBatch.length === 0){
+                initialLevelBatch = levels;
+                console.log("INITIAL BATCH:", initialLevelBatch);
+            }
             levels.forEach( level => {
 
                 const game = gameTemplate.cloneNode(true)
@@ -1395,6 +1400,8 @@ function UIManager() {
                         <div class="vote-thumb"></div>
                     </div>
                 </div>
+                <div class="recommendations">
+                </div>
             `;
 
             gameOver = document.createElement('div');
@@ -1463,6 +1470,7 @@ function UIManager() {
 
         this.enableVoteButtons(voteUpButton, voteDownButton, game.currentLevelData);
 
+        this.showRecommendations(gameOver);
 
         setTimeout(()=>{
             if(gameOver && game.run){
@@ -1970,16 +1978,38 @@ function UIManager() {
 
         const gameTemplate = mainMenu.querySelector('.game-template');
 
-        for(let i = 0; i<3; i++){
-            const game = gameTemplate.cloneNode(true)
-            game.style.display = 'block';
-            game.classList.remove('game-template')
-            // this.setLevelDataOnGameTile(game, level);
-            recommendations.appendChild(game);
-            game.onclick = ()=> {
-                // this.showLevelBanner(level);
+        const levels = [...initialLevelBatch].sort(() => .5 - Math.random());
+
+        const maxRecommendations = Math.floor((window.innerWidth - 24 ) / (168 + 12));
+        const maxLevels = Math.min(levels.length, maxRecommendations);
+
+        for(let i = 0; i<maxLevels; i++){
+            const recommendedGame = gameTemplate.cloneNode(true)
+            recommendedGame.style.display = 'block';
+            recommendedGame.classList.remove('game-template')
+            const levelData = levels[i];
+            this.setLevelDataOnGameTile(recommendedGame, levelData);
+            recommendations.appendChild(recommendedGame);
+            recommendedGame.onclick = ()=> {
+                if (game.gameState === game.GAMESTATE_LOADINGDATA) return;
+                game.gameState = game.GAMESTATE_LOADINGDATA;
+
+                target.style.display = 'none';
+
+                this.hideWinScreen();
+                game.loadPublishedLevelData(levelData, ()=>{}).then(() => {
+                    if(levelData.forced_vehicle){
+                        game.selectedVehicle = levelData.forced_vehicle;
+                        this.playLevelFromMainMenu();
+                    }else{
+                        this.showVehicleSelect();
+                    }
+                }).catch(error => {
+                    // dafuq
+                    target.style.display = 'block';
+                });
             }
-            imageObserver.observe(game);
+            imageObserver.observe(recommendedGame);
         }
     }
 

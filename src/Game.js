@@ -686,13 +686,13 @@ function Game() {
         }
 
         if (e.keyCode == Key.SPACE || e.keyCode == Key.R) { //space
-            if (this.gameOver && this.run) {
+            if (this.gameOver && this.run && this.gameState !== this.GAMESTATE_LOADINGDATA) {
                 this.resetWorld(true);
             }
         }
 
         if (e.keyCode == Key.R) { //space
-            if (this.levelWon && this.run) {
+            if (this.levelWon && this.run && this.gameState !== this.GAMESTATE_LOADINGDATA) {
                 this.resetWorld(true);
             }
         }

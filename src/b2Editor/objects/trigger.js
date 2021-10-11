@@ -252,29 +252,39 @@ export const doAction = function (actionData, target, triggerClass) {
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_ROTATE, targetRotation, objects);
             break;
         case "SetVisibility":
-            if (target.myBody) {
-                if(target.myBody.myTexture){
+            let targetsToProcess = [target]
+            if (target.data.prefabInstanceName) {
+                targetsToProcess = [];
 
+                B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies.forEach(b => targetsToProcess.push(b.mySprite));
+                B2dEditor.lookupGroups[target.data.prefabInstanceName]._textures.forEach(t => targetsToProcess.push(t));
+            }
+
+            targetsToProcess.forEach(target => {
+                if (target.myBody) {
+                    if(target.myBody.myTexture){
+
+                        if(!actionData.setVisible){
+                            disableCulling(target.myBody.myTexture);
+                        }
+
+                        target.myBody.myTexture.renderable = actionData.setVisible;
+                        target.myBody.myTexture.forceRenderable = actionData.setVisible;
+                    }
                     if(!actionData.setVisible){
-                        disableCulling(target.myBody.myTexture);
+                        disableCulling(target);
+                    }
+                    target.renderable = actionData.setVisible;
+                    game.editor.updateBodyPosition(target.myBody);
+                }else{
+                    if(!actionData.setVisible){
+                        disableCulling(target);
                     }
 
-                    target.myBody.myTexture.renderable = actionData.setVisible;
-                    target.myBody.myTexture.forceRenderable = actionData.setVisible;
+                    target.renderable = actionData.setVisible;
+                    target.forceRenderable = actionData.setVisible;
                 }
-                if(!actionData.setVisible){
-                    disableCulling(target);
-                }
-                target.renderable = actionData.setVisible;
-                game.editor.updateBodyPosition(target.myBody);
-            }else{
-                if(!actionData.setVisible){
-                    disableCulling(target);
-                }
-
-                target.renderable = actionData.setVisible;
-                target.forceRenderable = actionData.setVisible;
-            }
+            })
             if(actionData.toggle) actionData.setVisible = !actionData.setVisible;
             break;
         case "MotorEnabled":
