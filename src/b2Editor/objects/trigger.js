@@ -497,7 +497,7 @@ export const doAction = function (actionData, target, triggerClass) {
         break;
         case "SetScreenShake":
             if(game.cameraFocusObject){
-                const pixiPoint = game.editor.getPIXIPointFromWorldPoint(game.cameraFocusObject);
+                const pixiPoint = game.editor.getPIXIPointFromWorldPoint(game.cameraFocusObject.GetPosition());
                 EffectsComposer.addEffect(EffectsComposer.effectTypes.screenShake, {amplitude:actionData.amplitude, point:pixiPoint});
             }
         break;

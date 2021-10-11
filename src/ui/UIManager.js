@@ -536,7 +536,6 @@ function UIManager() {
         backendManager.getPublishedLevels(filter).then(levels => {
             if(initialLevelBatch.length === 0){
                 initialLevelBatch = levels;
-                console.log("INITIAL BATCH:", initialLevelBatch);
             }
             levels.forEach( level => {
 
@@ -1976,12 +1975,35 @@ function UIManager() {
             recommendations.removeChild(recommendations.children[0]);
         }
 
+        if(game.tutorialMode || game.gameState === game.GAMESTATE_EDITOR){
+            recommendations.style.display = 'none'
+            return;
+        }
+
+        recommendations.style.display = 'flex';
+
         const gameTemplate = mainMenu.querySelector('.game-template');
 
-        const levels = [...initialLevelBatch].sort(() => .5 - Math.random());
+        const levels = [...initialLevelBatch].sort(() => .5 - Math.random()).filter(level => level.id !== game.currentLevelData.id);
+
 
         const maxRecommendations = Math.floor((window.innerWidth - 24 ) / (168 + 12));
         const maxLevels = Math.min(levels.length, maxRecommendations);
+
+
+        let hasAuthorLevel = false;
+        for(let i = 0; i<maxLevels; i++){
+            if(levels[i].author.username  === game.currentLevelData.author.username){
+                hasAuthorLevel = true;
+            }
+        }
+
+        if(!hasAuthorLevel){
+            const authorLevel = levels.find(level => level.author.username === game.currentLevelData.author.username);
+            if(authorLevel){
+                levels.unshift(authorLevel);
+            }
+        }
 
         for(let i = 0; i<maxLevels; i++){
             const recommendedGame = gameTemplate.cloneNode(true)
