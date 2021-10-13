@@ -559,6 +559,7 @@ function UIManager() {
     }
 
     this.showLevelBanner = levelData => {
+        console.trace();
         if(!levelBanner){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
@@ -1344,6 +1345,7 @@ function UIManager() {
             textFit(skipTutorial.querySelector('.fit'));
             skipTutorial.onclick = ()=> {
                 game.openMainMenu();
+                this.hideWinScreen();
                 this.hideSkipTutorialButton();
             }
         }
@@ -1957,14 +1959,13 @@ function UIManager() {
             voteButtons.classList.remove('hidden');
         }
 
-        this.hideSkipTutorialButton();
-
         AudioManager.playSFX('win', 0.5, 1.0);
     }
 
     this.hideWinScreen = function () {
         if(winScreen){
             winScreen.style.display = 'none';
+            this.hideSkipTutorialButton();
         }
     }
 
