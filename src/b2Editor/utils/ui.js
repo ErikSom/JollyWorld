@@ -2236,7 +2236,7 @@ const removeColorMatrixEditor = ()=>{
 
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
-    if(msg.toLowerCase && msg.toLowerCase().includes('script error')){
+    if(msg.toLowerCase && (msg.toLowerCase().includes('script error') || msg.toLowerCase().includes('instream/video') || msg.toLowerCase().includes('failed to fetch'))){
         return;
     }
 
