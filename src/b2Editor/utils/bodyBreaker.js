@@ -241,6 +241,11 @@ const breakBody = body => {
 
 		const otherBody = joint.GetBodyA() === body ? joint.GetBodyB() : joint.GetBodyA();
 
+		if(otherBody.isRopeEnd){
+			game.character?.hat?.detachRope();
+			return;
+		}
+
 		if (joint.GetType() == Box2D.e_revoluteJoint) {
 			const revoluteJointDef = new Box2D.b2RevoluteJointDef();
 

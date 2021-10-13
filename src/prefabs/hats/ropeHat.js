@@ -163,6 +163,7 @@ export class RopeHat extends Hat {
 		Box2D.destroy(bd);
 
 		this.ropeEnd.ignorePhysicsCuller = true;
+		this.ropeEnd.isRopeEnd = true;
 
 		body.ignorePhysicsCuller = true;
 		this.touchedBodies.push(body);

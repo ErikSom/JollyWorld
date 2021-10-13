@@ -1981,6 +1981,7 @@ const _B2dEditor = function () {
 			delete body.breakPenalty;
 			delete body.oldDensities;
 			delete body.decalLookupKey;
+			delete body.isRopeEnd;
 		}
 	}
 
