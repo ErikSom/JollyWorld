@@ -46,6 +46,7 @@ import {countries, countryToFlag, localize} from '../utils/Localization'
 import textFit from '../../libs/textFit';
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
+import { getModdedPortrait } from '../utils/ModManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -445,7 +446,11 @@ function UIManager() {
     this.setMainMenuCharacterImage = ()=> {
         const header = mainMenu.querySelector('.header');
         const characterSelect = header.querySelector('.character-select');
-        characterSelect.style.backgroundImage = `url(assets/images/portraits/${hashName(`character${game.selectedCharacter+1}.png`)})`;
+
+        getModdedPortrait(`character${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
+            console.log("URL:", url);
+            if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
+        })
     }
 
     this.setLevelDataOnGameTile = (game, levelData) => {
@@ -1520,7 +1525,7 @@ function UIManager() {
                     <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
                     <div class="modContainer">
                         <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></span></div>
-                        <a class="install" href="https://jollyworld.app/mod/"><span class="fit h3">${localize('settings_installmod')}</span></a>
+                        <a class="install" href="/mod"><span class="fit h3">${localize('settings_installmod')}</span></a>
                     </div>
                     <div class="back"><span class="fit h3">${localize('levelbanner_back')}</span></div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
@@ -1638,7 +1643,12 @@ function UIManager() {
                 const portraitHolder = document.createElement('div');
                 portraitHolder.style.order = customOrder[i];
                 const portrait =  document.createElement('img');
-                portrait.src = `assets/images/portraits/${hashName(`character${i+1}.png`)}`
+
+                getModdedPortrait(`character${i+1}.png`, 'assets/images/portraits/').then(url => {
+                    console.log(url);
+                    if(portrait) portrait.src = url;
+                });
+
                 portrait.classList.add('portrait');
                 portraitHolder.appendChild(portrait)
 

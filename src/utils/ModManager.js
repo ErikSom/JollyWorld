@@ -4,8 +4,30 @@ import {
 
 import * as idb from 'idb-keyval';
 import { Settings } from "../Settings";
+import { hashName } from "../AssetList";
 
 const folderName = 'jollymod';
+
+export const portraitModLookup = {};
+
+export const getModdedPortrait = async (name, fallback) => {
+	const saveKey = `${folderName}/portraits/${name}`;
+
+	if(portraitModLookup[name]) return portraitModLookup[name];
+
+	try{
+		const blob = await idb.get(saveKey);
+
+		if(blob){
+			const url = URL.createObjectURL(blob);
+			portraitModLookup[name] = url;
+			return url;
+		}
+	}catch(err){
+	};
+
+	return `${fallback}${hashName(name)}`;
+}
 
 export const init = ()=>{
 	try{
@@ -15,6 +37,7 @@ export const init = ()=>{
 			const vehicleMods = [];
 			const goreMods = [];
 			const textureMods = [];
+			const portraitMods = [];
 
 			if(keys.find( key => key.startsWith(folderName))){
 
