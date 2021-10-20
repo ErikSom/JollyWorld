@@ -1,3 +1,10 @@
+// **** DONT COPY ME ***
+// url for zip upload: https://s3.console.aws.amazon.com/s3/buckets/poki-game-cdn?region=eu-west-1&prefix=games/c06320df-92e9-4754-b751-0dce2e9402ec/versions/f1632123-581e-48ee-ac5f-18500cf38135/&showversions=false
+// *********************
+
+const url = new URLSearchParams(window.location.search);
+const autoInstallMod = url.get('install');
+
 const folderName = 'jollymod';
 const modNameKey = 'jollyModName';
 let filesToStore = 0;
@@ -55,7 +62,7 @@ function processFiles(files){
 
 		for(var i = 0; i<keys.length; i++){
 			var key = keys[i];
-			if(!key.endsWith('.png')) continue;
+			if(!key.endsWith('.png') && !key.endsWith('theme/settings.json')) continue;
 
 			var file = files[key];
 
@@ -77,7 +84,11 @@ function processFiles(files){
 				break;
 				case 'textures':
 				case 'vehicles':
+				case 'portraits':
 					processBasicMod(path, file);
+				break;
+				case 'theme':
+					processTheme(file);
 				break;
 			}
 		}
@@ -89,6 +100,11 @@ function finishMod(){
 	label.innerText = 'Mod installed';
 	dropZone.value = "";
 	updateModName();
+
+	if(autoInstallMod){
+		document.querySelector('#remove').style.display = 'none';
+		backButton.click();
+	}
 }
 
 function storeImage(file, target){
@@ -161,6 +177,7 @@ function clearOldMods(){
 	label.innerText = 'Removing old Mod...';
 	localStorage.removeItem(modNameKey);
 	updateModName();
+	removeTheme();
 
 	return new Promise((resolve, reject) => {
 		keys().then(keys => {
@@ -174,9 +191,46 @@ function clearOldMods(){
 	})
 }
 
+function processTheme(file){
+	file.async("blob").then(function (blob) {
+		blob.text().then( text => {
+			localStorage.setItem('jollyWorldTheme', text);
+		}).catch(err => {});
+	}).catch(err => {});;
+}
+function removeTheme(){
+	localStorage.removeItem('jollyWorldTheme');
+}
+
 document.querySelector('#remove').onclick = ()=> {
 	clearOldMods().then(()=>{
 		label.innerText = 'Drop mod .zip here to install';
 		updateModName();
 	});
+}
+
+if(autoInstallMod){
+	document.querySelector('#remove').style.display = 'none';
+	document.querySelector('#more').style.display = 'none';
+	document.querySelector('#back').style.display = 'none';
+	document.querySelector('#how').style.display = 'none';
+
+	label.innerText = 'Downloading and installing mod...';
+
+	const fetchUrl = `https://c06320df-92e9-4754-b751-0dce2e9402ec.poki-gdn.com/f1632123-581e-48ee-ac5f-18500cf38135/mods/${autoInstallMod}.zip`
+	fetch(fetchUrl).then(async transfer => {
+		const zipFile = await transfer.blob();
+
+		const zip = new JSZip();
+		zip.loadAsync(zipFile).then(function (zip) {
+			processFiles(zip.files);
+			localStorage.setItem(modNameKey, autoInstallMod);
+		}, function () {
+			alert("mod does not exist");
+			updateModName();
+			document.querySelector('#more').style.display = 'block';
+			document.querySelector('#back').style.display = 'block';
+			document.querySelector('#how').style.display = 'block';
+		});
+	}).catch(err=>console.log('error downloading mod', err));
 }
