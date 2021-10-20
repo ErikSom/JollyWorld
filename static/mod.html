@@ -167,7 +167,11 @@
 	<script>
 		const backButton = document.querySelector('#back');
 		backButton.onclick = function(){
-			window.location = window.location.href.split('/mod')[0];
+			if (document.referrer == "") {
+				window.open("https://jollyworld.app");
+			} else {
+				window.history.back();
+			}
 		}
 	</script>
 	<script>
