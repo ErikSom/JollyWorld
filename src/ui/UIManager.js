@@ -1525,7 +1525,7 @@ function UIManager() {
                     <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
                     <div class="modContainer">
                         <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></span></div>
-                        <a class="install" href="/mod"><span class="fit h3">${localize('settings_installmod')}</span></a>
+                        <a class="install" href="mod.html"><span class="fit h3">${localize('settings_installmod')}</span></a>
                     </div>
                     <div class="back"><span class="fit h3">${localize('levelbanner_back')}</span></div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
