@@ -318,7 +318,7 @@ function Game() {
 
         const urlParams = new URLSearchParams(window.location.search);
         const forceTutorial = urlParams.get('forceTutorial');
-        let uidHash = urlParams.get('lvl');
+        let uidHash = urlParams.get('lvl') || urlParams.get('gd-lvl');
 
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 

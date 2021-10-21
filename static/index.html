@@ -387,8 +387,8 @@
         {{{BLACKBOX}}}
     </script>
     <script>
-        var urlParams = new URLSearchParams(window.location.search);
-        var uidHash = urlParams.get('lvl');
+        const urlParams = new URLSearchParams(window.location.search);
+        const uidHash = urlParams.get('lvl') || urlParams.get('gd-lvl');
 
 
         if(uidHash && uidHash.length===21){
@@ -402,7 +402,7 @@
                     document.querySelector('meta[name="description"]').setAttribute("content", data.description);
                     document.title = 'JollyWorld - '+data.title;
                     document.querySelector('meta[property="og:title"]').setAttribute("content", data.title);
-                    var thumb_url = 'https://static.jollyworld.app/'+data.thumb_big_md5+'.png';
+                    const thumb_url = 'https://static.jollyworld.app/'+data.thumb_big_md5+'.png';
                     document.querySelector('meta[property="og:image"]').setAttribute("content", thumb_url);
                  }
 			});
@@ -429,6 +429,18 @@
         </div>
     </div>
     <script>
+        const modToInstall = urlParams.get('mod') || urlParams.get('gd-mod');
+        if(modToInstall && modToInstall.length){
+            const installedMod = localStorage.getItem('jollyModName');
+            if(installedMod !== modToInstall){
+                const failedModName = localStorage.getItem('jollyModNameFailed');
+                if(failedModName !== modToInstall){
+                    if(window.history) window.history.pushState({}, window.location.href);
+                    window.location.href = 'mod.html?install='+modToInstall;
+                }
+            }
+        }
+
         const theme = localStorage.getItem('jollyWorldTheme');
         if(theme){
             const themeSettings = JSON.parse(theme);

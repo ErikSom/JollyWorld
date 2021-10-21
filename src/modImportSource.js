@@ -103,7 +103,7 @@ function finishMod(){
 
 	if(autoInstallMod){
 		document.querySelector('#remove').style.display = 'none';
-		backButton.click();
+		navigateBack();
 	}
 }
 
@@ -176,6 +176,7 @@ function processBasicMod(path, file){
 function clearOldMods(){
 	label.innerText = 'Removing old Mod...';
 	localStorage.removeItem(modNameKey);
+	localStorage.removeItem('jollyModNameFailed');
 	updateModName();
 	removeTheme();
 
@@ -210,6 +211,10 @@ document.querySelector('#remove').onclick = ()=> {
 }
 
 if(autoInstallMod){
+	if(localStorage.getItem(modNameKey) === autoInstallMod){
+		finishMod();
+	}
+
 	document.querySelector('#remove').style.display = 'none';
 	document.querySelector('#more').style.display = 'none';
 	document.querySelector('#back').style.display = 'none';
@@ -227,10 +232,9 @@ if(autoInstallMod){
 			localStorage.setItem(modNameKey, autoInstallMod);
 		}, function () {
 			alert("mod does not exist");
-			updateModName();
-			document.querySelector('#more').style.display = 'block';
-			document.querySelector('#back').style.display = 'block';
-			document.querySelector('#how').style.display = 'block';
+			localStorage.setItem('jollyModNameFailed', autoInstallMod);
+			navigateBack();
 		});
 	}).catch(err=>console.log('error downloading mod', err));
 }
+
