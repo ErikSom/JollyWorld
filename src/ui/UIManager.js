@@ -1014,7 +1014,10 @@ function UIManager() {
                 timeTextMili.innerText = d.ms;
 
                 const profile = entry.querySelector('.profile');
-                profile.style.backgroundImage = `url(assets/images/portraits/${hashName(`profile${entryData.character+1}.png`)})`;
+
+                getModdedPortrait(`profile${entryData.character+1}.png`, 'assets/images/portraits/').then(url => {
+                    if(profile) profile.style.backgroundImage = `url(${url})`;;
+                });
 
                 entries.appendChild(entry);
             })
@@ -1732,7 +1735,11 @@ function UIManager() {
 
             for(let i = 0; i<Settings.availableVehicles.length; i++){
                 const portrait =  document.createElement('img');
-                portrait.src = `assets/images/portraits/${hashName(`vehicle${i+1}.png`)}`
+
+                getModdedPortrait(`vehicle${i+1}.png`, 'assets/images/portraits/').then(url => {
+                    if(portrait) portrait.src = url;
+                });
+
                 portrait.classList.add('portrait');
                 vehicles.appendChild(portrait);
 
