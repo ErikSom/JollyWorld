@@ -1640,7 +1640,15 @@ function UIManager() {
             const characters = characterSelect.querySelector('.characters');
 
             const customOrder = [1,2,3,4,11,16,8,9,10,6,12,15,5,13,7,14];
-            const charNames = ["Billy Joel", "Jeroen", "Marique", "Damien", "The Zuck!", "Bob Zombie", "Xenot", "Ronda", "Jack Lee", "Col. Jackson", "Hank", "Mrs. Kat", "Sean Bro", "Crashy", "Brittany", "Machote"]
+
+            let charNames = ["Billy Joel", "Jeroen", "Marique", "Damien", "The Zuck!", "Bob Zombie", "Xenot", "Ronda", "Jack Lee", "Col. Jackson", "Hank", "Mrs. Kat", "Sean Bro", "Crashy", "Brittany", "Machote"]
+            const theme = localStorage.getItem('jollyWorldTheme');
+            if(theme){
+                const themeSettings = JSON.parse(theme);
+                if(themeSettings && Array.isArray(themeSettings.charNames) && themeSettings.charNames.length === charNames.length){
+                    charNames = themeSettings.charNames;
+                }
+            }
 
             for(let i = 0; i<Settings.availableCharacters; i++){
                 const portraitHolder = document.createElement('div');
