@@ -1444,9 +1444,9 @@
     url "^0.11.0"
 
 "@poki/cli@*":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@poki/cli/-/cli-0.1.8.tgz#457f93cde4d64747dfe2f82614253a012d3d766c"
-  integrity sha512-If9r1Bc/OLq9r8V56USW/qe8lGo5cVx3oTX+fR1m74HKol+sPnL9rVGCqNJlkGeoZpOqln1IgWIAbzz4ltv+Wg==
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@poki/cli/-/cli-0.1.9.tgz#aa6268b2e1df9fda2fcca8e9183538271d35473d"
+  integrity sha512-xwL6X1o+rwEJx2WjtYnpLD1dvw9H9FTS4ID13FVOgEpc8CNirqBTuVCZxUFt1GUL1lhJLbbFDeqn8fqcnzNZMA==
   dependencies:
     archiver "^5.3.0"
     form-data "^4.0.0"
