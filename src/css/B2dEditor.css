@@ -101,21 +101,21 @@ body > canvas {
 
 .toolgui.main {
     background-color: #666666;
-    border-radius: 5px;
-    border: 1px solid black;
-    box-shadow: 2px 2px 0px #000000;
+    border-radius: 0 5px 5px 0;
+    border: 2px solid black;
+    border-left: 0;
     top: 14vh;
     width: 30px;
     position: absolute;
+    overflow: hidden;
 }
 
 .toolgui.button {
-    width: 30px;
+    width: 28px;
     height: 30px;
     background-color: #999999;
-    border: 1px solid black;
-    border-radius: 5px;
     cursor: pointer;
+    border-bottom: 2px solid #343434;
 }
 
 .toolgui.button:hover {

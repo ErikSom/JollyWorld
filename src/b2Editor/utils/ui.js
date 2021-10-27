@@ -1433,12 +1433,16 @@ const toolReferences = ['select', 'geometry', 'polydrawing', 'pen', 'joints', 'p
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
 
-    const icons = ['Icon_Mouse.png', 'Icon_Geometry.png', 'Icon_PolygonDrawing.png', 'Icon_Pen.png', 'Icon_Joints.png', 'Icon_Specials.png', 'Icon_Text.png' /*, 'Icon_Zoom.png'*/ , 'Icon_Art.png', 'Icon_Trigger.png', 'Icon_Settings.png'];
+    const icons = ['Icon_Mouse.svg', 'Icon_Geometry.svg', 'Icon_PolygonDrawing.svg', 'Icon_Pen.svg', 'Icon_Joints.svg', 'Icon_Specials.svg', 'Icon_Text.svg' /*, 'Icon_Zoom.svg'*/ , 'Icon_Art.svg', 'Icon_Trigger.svg', 'Icon_Settings.svg'];
     var buttonElement;
     var imgElement;
     for (var i = 0; i < icons.length; i++) {
         buttonElement = document.createElement("table");
         buttonElement.setAttribute('class', 'toolgui button');
+        buttonElement.style.borderSpacing = 0;
+        if(i === icons.length-1){
+            buttonElement.style.borderBottom = 'unset';
+        }
         buttonElement.setAttribute('data-tt', toolReferences[i]);
         var row = document.createElement("tr");
         buttonElement.appendChild(row);
