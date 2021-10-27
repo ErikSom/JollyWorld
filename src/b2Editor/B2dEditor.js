@@ -4795,6 +4795,7 @@ const _B2dEditor = function () {
 				const joint = this.attachJointPlaceHolder();
 				if(joint) jointTriggerLayer.add(joint);
 			}
+			e.preventDefault();
 		} else if (e.keyCode == 88) { // x
 			if (e.ctrlKey || e.metaKey) {
 				this.cutSelection();
@@ -4850,7 +4851,7 @@ const _B2dEditor = function () {
 				destroy(lower);
 				destroy(upper);
 			}
-		}else if ((e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
+		}else if (!this.ctrlDown && (e.keyCode == 87 || e.keyCode == 65 || e.keyCode == 83 || e.keyCode == 68) && Object.keys(this.selectedPrefabs).length === 0) { // W A S D
 			const minScale = 0.01;
 			const maxScale = 0.5;
 			const scaleMinMaxDiff = maxScale-minScale;
@@ -4904,6 +4905,11 @@ const _B2dEditor = function () {
 					});
 				}
 			}
+		}else if (this.ctrlDown && e.keyCode == 68){
+			// duplicate
+			this.copiedJSON = this.copySelection();
+			this.pasteSelection(true);
+			e.preventDefault();
 		}else if (e.keyCode == 46 || e.keyCode == 8) { //delete || backspace
 			if(e.keyCode == 8 && (this.selectedTool == this.tool_POLYDRAWING || this.selectedTool == this.tool_PEN)){
 				this.activeVertices.pop();
