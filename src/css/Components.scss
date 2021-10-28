@@ -55,11 +55,6 @@
 	@extend .base-button;
 }
 
-.inactive{
-	filter:brightness(0.2);
-	pointer-events: none !important;
-}
-
 .main-window{
 	border-radius: 4px;
     border: 2px solid black;

@@ -47,6 +47,7 @@ import textFit from '../../libs/textFit';
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
+import { getAdContainer } from '../utils/AdManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -62,6 +63,7 @@ let discordButton;
 let gameOver;
 let levelLoader;
 let levelBanner;
+let adContainer;
 let levelBannerYTFeed;
 let youtubePlayer;
 let characterSelect;
@@ -313,6 +315,13 @@ function UIManager() {
                 textFit(editorButton.querySelector('.fit'));
             }
 
+            mobileBG.onpointerup = () => {
+                if(mobileBG.classList.contains('open')){
+                    mobileBG.classList.toggle('open');
+                    headerButtons.classList.toggle('open');
+                }
+            }
+
             const volumeButton = header.querySelector('.volume');
             if(!Settings.sfxOn) volumeButton.classList.add('disabled');
 
@@ -368,6 +377,17 @@ function UIManager() {
             this.mainMenuResize();
 
             customGUIContainer.appendChild(mainMenu);
+
+            mainMenu.onpointerup = () => {
+                if(mainMenu.classList.contains('inactive')){
+                    this.hideLevelBanner();
+                    this.hideSocialShareMenu();
+                    this.hideSettingsMenu();
+                    this.hideCharacterSelect();
+                    this.hideVehicleSelect();
+                    game.gameState = game.GAMESTATE_MENU;
+                }
+            }
 
             // fit texts
             Array.from(mainMenu.querySelectorAll('.fit')).forEach( el => {
@@ -564,7 +584,6 @@ function UIManager() {
     }
 
     this.showLevelBanner = levelData => {
-        console.trace();
         if(!levelBanner){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
@@ -676,6 +695,8 @@ function UIManager() {
             });
         }
 
+        this.showAdContainer();
+
         levelBanner.style.display = 'block';
         mainMenu.classList.add('inactive');
 
@@ -744,6 +765,20 @@ function UIManager() {
         this.enableVoteButtons(voteUpButton, voteDownButton, levelData);
 
         this.setLevelBannerData(levelData);
+    }
+
+    this.showAdContainer = () => {
+        if(!adContainer){
+            adContainer = getAdContainer();
+            customGUIContainer.appendChild(adContainer);
+        }
+        adContainer.style.display = 'block';
+    }
+
+    this.hideAdContainer = () => {
+        if(adContainer){
+            adContainer.style.display = 'none';
+        }
     }
 
     this.showUserPage = (username, defaultChecked) => {
@@ -1619,8 +1654,10 @@ function UIManager() {
         settingsMenu.style.display = 'block';
     }
     this.hideSettingsMenu = ()=> {
-        mainMenu.classList.remove('inactive');
-        settingsMenu.style.display = 'none';
+        if(settingsMenu){
+            mainMenu.classList.remove('inactive');
+            settingsMenu.style.display = 'none';
+        }
     }
 
     this.showCharacterSelect = function(){
@@ -1698,8 +1735,10 @@ function UIManager() {
     }
 
     this.hideCharacterSelect = function () {
-        mainMenu.classList.remove('inactive');
-        characterSelect.style.display = 'none';
+        if(characterSelect){
+            mainMenu.classList.remove('inactive');
+            characterSelect.style.display = 'none';
+        }
     }
 
     this.playLevelFromMainMenu = function(delay){
@@ -1776,7 +1815,9 @@ function UIManager() {
     }
 
     this.hideVehicleSelect = function () {
-        vehicleSelect.style.display = 'none';
+        if(vehicleSelect){
+            vehicleSelect.style.display = 'none';
+        }
     }
 
     this.showPauseMenu = function(){
