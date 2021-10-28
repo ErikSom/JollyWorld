@@ -1,8 +1,10 @@
+import { isMobile } from "./MobileController";
+
 const adVisibleStates = {
-	["ad160x600"]: false,
-	["ad300x250"]: false,
-	["ad728x90"]: false,
-	["ad320x50"]: false,
+	["jr1"]: false, // ad160x600
+	["jr2"]: false, // ad300x250
+	["jr3"]: false, // ad728x90
+	["jr4"]: false, // ad320x50
 }
 
 const adElements = {}
@@ -24,5 +26,35 @@ export const getAdContainer = () => {
 }
 
 export const updateDisplayAds = () => {
+
 	if(!adContainer) return;
+	if(!adContainer.classList.contains('active')) return;
+
+	adKeys.forEach(key => {
+		switch(key){
+			case 'jr1':
+				setEnableAd(key, window.innerWidth >= 706 && window.innerHeight >= 600);
+			break;
+			case 'jr2':
+				setEnableAd(key, (window.innerWidth >= 1150 && window.innerHeight >= 350) || (window.innerWidth >= 620 && window.innerWidth <= 650 && window.innerHeight >= 350));
+			break;
+			case 'jr3':
+				setEnableAd(key, window.innerWidth >= 1134 && window.innerHeight >= 768);
+			break;
+			case 'jr4':
+				setEnableAd(key, isMobile() && window.innerWidth >= 320 && window.innerHeight >= 436);
+			break;
+			default:
+				setEnableAd(key, false)
+			break
+		}
+	})
+}
+
+const setEnableAd = (key, enabled) => {
+	adElements[key].style.display = enabled ? 'block' : 'none';
+}
+
+export const destroyAllAds = () => {
+
 }

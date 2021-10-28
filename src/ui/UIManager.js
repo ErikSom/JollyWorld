@@ -47,7 +47,7 @@ import textFit from '../../libs/textFit';
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
-import { getAdContainer } from '../utils/AdManager'
+import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -676,6 +676,10 @@ function UIManager() {
             levelBanner.classList.add('levelbanner');
             levelBanner.innerHTML = htmlStructure;
 
+            if(!Settings.disableAds){
+                levelBanner.classList.add('showAds');
+            }
+
             const authorButton = levelBanner.querySelector('.text-author');
             authorButton.onclick = ()=>{
                 this.showUserPage(authorButton.innerText, 'games');
@@ -772,12 +776,19 @@ function UIManager() {
             adContainer = getAdContainer();
             customGUIContainer.appendChild(adContainer);
         }
+
         adContainer.style.display = 'block';
+        adContainer.classList.add('active');
+        updateDisplayAds();
+
     }
 
     this.hideAdContainer = () => {
         if(adContainer){
             adContainer.style.display = 'none';
+            adContainer.classList.remove('active');
+
+            destroyAllAds();
         }
     }
 
@@ -1245,6 +1256,8 @@ function UIManager() {
 
             levelBanner.style.display = 'none';
             mainMenu.classList.remove('inactive');
+
+            this.hideAdContainer();
         }
     }
 

@@ -50,6 +50,7 @@ import { countries } from "./utils/Localization";
 
 import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
+import { updateDisplayAds } from "./utils/AdManager";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -567,6 +568,8 @@ function Game() {
         this.oldInnerHeight = window.innerHeight;
 
         b2DebugDrawManager.resize();
+
+        updateDisplayAds();
     }
 
     this.getBodyAtMouse = function () {

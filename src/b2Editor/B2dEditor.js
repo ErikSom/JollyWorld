@@ -54,6 +54,7 @@ import { b2CloneVec2, b2LinearStiffness, b2MulVec2 } from "../../libs/debugdraw"
 import * as BodyBreakable from './utils/bodyBreaker';
 import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
 import {getDecalSystem, setDecalSystem} from "./utils/DecalSystem";
+import { updateDisplayAds } from "../utils/AdManager";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
