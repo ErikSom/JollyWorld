@@ -33,13 +33,13 @@ export const updateDisplayAds = () => {
 	adKeys.forEach(key => {
 		switch(key){
 			case 'jr1':
-				setEnableAd(key, window.innerWidth >= 706 && window.innerHeight >= 600);
+				setEnableAd(key, !isMobile() && window.innerWidth >= 706 && window.innerHeight >= 600);
 			break;
 			case 'jr2':
-				setEnableAd(key, (window.innerWidth >= 1150 && window.innerHeight >= 350) || (window.innerWidth >= 620 && window.innerWidth <= 650 && window.innerHeight >= 350));
+				setEnableAd(key, !isMobile() && (window.innerWidth >= 1150 && window.innerHeight >= 350) || (window.innerWidth >= 620 && window.innerWidth <= 650 && window.innerHeight >= 350));
 			break;
 			case 'jr3':
-				setEnableAd(key, window.innerWidth >= 1134 && window.innerHeight >= 768);
+				setEnableAd(key, !isMobile() && window.innerWidth >= 1134 && window.innerHeight >= 768);
 			break;
 			case 'jr4':
 				setEnableAd(key, isMobile() && window.innerWidth >= 320 && window.innerHeight >= 436);
@@ -72,7 +72,6 @@ const setEnableAd = (key, enabled) => {
 					targetAd = '320x50';
 				break;
 			}
-
 			if(targetAd) window.PokiSDK?.displayAd(el, targetAd);
 		}else{
 			window.PokiSDK?.destroyAd(el);
