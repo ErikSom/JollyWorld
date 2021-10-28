@@ -676,7 +676,7 @@ function UIManager() {
             levelBanner.classList.add('levelbanner');
             levelBanner.innerHTML = htmlStructure;
 
-            if(!Settings.disableAds){
+            if(!Settings.disableAds && !Settings.onPoki){
                 levelBanner.classList.add('showAds');
             }
 

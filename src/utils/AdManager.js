@@ -52,9 +52,38 @@ export const updateDisplayAds = () => {
 }
 
 const setEnableAd = (key, enabled) => {
-	adElements[key].style.display = enabled ? 'block' : 'none';
+	const el = adElements[key];
+	el.style.display = enabled ? 'block' : 'none';
+
+	if(adVisibleStates[key] !== enabled){
+		if(enabled){
+			let targetAd = '';
+			switch(key){
+				case 'jr1':
+					targetAd = '160x600';
+				break;
+				case 'jr2':
+					targetAd = '300x250';
+				break;
+				case 'jr3':
+					targetAd = '728x90';
+				break;
+				case 'jr4':
+					targetAd = '320x50';
+				break;
+			}
+
+			if(targetAd) window.PokiSDK?.displayAd(el, targetAd);
+		}else{
+			window.PokiSDK?.destroyAd(el);
+		}
+
+		adVisibleStates[key] = enabled;
+	}
 }
 
 export const destroyAllAds = () => {
-
+	adKeys.forEach(key => {
+		setEnableAd(key, false);
+	})
 }
