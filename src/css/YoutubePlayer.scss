@@ -4,8 +4,9 @@
 	@extend .main-window;
 	color:white;
     font-size: 14px;
-	max-height: 100vh;
+	max-height: 80vh;
 	width: 600px;
+	max-width: 90vw;
 }
 
 .youtubeplayer, .youtubeplayercompact{

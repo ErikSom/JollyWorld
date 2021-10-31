@@ -2227,7 +2227,6 @@ function UIManager() {
         if(!youtubePlayer){
             youtubePlayer = document.createElement('div');
             const closeFunction = ()=>{
-                levelBanner.style.visibility = 'visible';
                 this.hideYouTubePlayer();
             }
             youtubePlayer = this.buildYouTubePlayer(youtubePlayer, closeFunction)
@@ -2295,6 +2294,7 @@ function UIManager() {
 
     this.hideYouTubePlayer = function(){
         if(youtubePlayer){
+            levelBanner.style.visibility = 'visible';
             youtubePlayer.style.display = 'none';
             YouTubePlayer.stopVideo();
         }
