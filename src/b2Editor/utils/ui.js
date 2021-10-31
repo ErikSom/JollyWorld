@@ -2524,7 +2524,7 @@ const removeVideoHelp = () => {
 
 const showEditorYoutubeVideo = id => {
     if(!editorYouTubePlayer){
-        const loginGUIWidth = 400;
+        const loginGUIWidth = 600;
 
         editorYouTubePlayer = new dat.GUI({
             autoPlace: false,
