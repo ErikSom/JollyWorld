@@ -385,6 +385,7 @@ function UIManager() {
                     this.hideSettingsMenu();
                     this.hideCharacterSelect();
                     this.hideVehicleSelect();
+                    this.hideYouTubePlayer();
                     game.gameState = game.GAMESTATE_MENU;
                 }
             }
@@ -2293,8 +2294,10 @@ function UIManager() {
     }
 
     this.hideYouTubePlayer = function(){
-        youtubePlayer.style.display = 'none';
-        YouTubePlayer.stopVideo();
+        if(youtubePlayer){
+            youtubePlayer.style.display = 'none';
+            YouTubePlayer.stopVideo();
+        }
     }
 
     this.showDiscordJoin = function(){
