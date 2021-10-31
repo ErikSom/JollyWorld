@@ -48,6 +48,7 @@ let notice;
 let prompt;
 let textEditor;
 let videoHelp;
+let editorYouTubePlayer;
 export let gradientEditor;
 export let colorMatrixEditor;
 export let helpScreen;
@@ -95,6 +96,7 @@ export const hideEditorPanels = function () {
     hidePanel(profileScreen);
     hidePublishSocialShareScreen();
     removeNotice();
+    hideEditorYoutubeVideo();
     removePrompt();
     removeTextEditor();
     removeShowHelp();
@@ -2464,7 +2466,8 @@ export const showVideoHelp = function () {
         playBut.innerHTML = YouTubePlayer.playButtonHTML;
 
         video.onclick = () => {
-            // this.showYouTubePlayer(ytId);
+            removeVideoHelp();
+            showEditorYoutubeVideo(data.id, customGUIContainer);
         }
 
         videoHolder.appendChild(video);
@@ -2516,6 +2519,62 @@ const removeVideoHelp = () => {
         videoHelp.domElement.parentNode.removeChild(videoHelp.domElement);
         videoHelp = null;
 
+    }
+}
+
+const showEditorYoutubeVideo = id => {
+    if(!editorYouTubePlayer){
+        const loginGUIWidth = 400;
+
+        editorYouTubePlayer = new dat.GUI({
+            autoPlace: false,
+            width: loginGUIWidth
+        });
+        editorYouTubePlayer.domElement.setAttribute('id', 'editorYouTubePlayer');
+
+        let folder = editorYouTubePlayer.addFolder('');
+        folder.domElement.classList.add('custom');
+        folder.domElement.style.textAlign = 'center';
+
+        folder.open();
+
+        const closeButton = document.createElement('div');
+        closeButton.setAttribute('class', 'closeWindowIcon');
+        folder.domElement.append(closeButton);
+        closeButton.addEventListener('click', () => {
+            hideEditorYoutubeVideo();
+        });
+
+        var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+        let divWrapper = document.createElement('div');
+
+        game.ui.buildYouTubePlayer(divWrapper, ()=>{
+            hideEditorYoutubeVideo();
+        }, true)
+
+        targetDomElement.appendChild(divWrapper);
+
+
+        customGUIContainer.appendChild(editorYouTubePlayer.domElement);
+
+        editorYouTubePlayer.domElement.style.left = '24px'
+        editorYouTubePlayer.domElement.style.top = 'calc(14vh - 10px)';
+
+        registerDragWindow(editorYouTubePlayer);
+
+        setHighestWindow(editorYouTubePlayer.domElement);
+
+    }
+
+    game.ui.setYouTubePlayer(editorYouTubePlayer.domElement, id);
+}
+
+const hideEditorYoutubeVideo = () => {
+    if(editorYouTubePlayer){
+        editorYouTubePlayer.domElement.parentNode.removeChild(editorYouTubePlayer.domElement);
+        editorYouTubePlayer = null;
+        YouTubePlayer.stopVideo();
     }
 }
 

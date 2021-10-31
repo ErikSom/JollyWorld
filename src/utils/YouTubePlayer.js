@@ -76,7 +76,7 @@ export class YouTubePlayer {
         YouTubePlayer.scrollTimeout = setTimeout(()=>{
             if(lastSpinnerEl){
                 const scrollElement = lastSpinnerEl.parentNode?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
-                if(scrollElement){
+                if(scrollElement && scrollElement.scrollTo){
                     scrollElement.scrollTo({
                         top: 0,
                         left: 0,

@@ -2224,47 +2224,27 @@ function UIManager() {
 
     this.showYouTubePlayer = function(id){
         if(!youtubePlayer){
-            const htmlStructure = /*html*/`
-                <div class="bar"><div class="close"></div></div>
-                <div id="YTPlayerHolder" class="yt-iframe"></div>
-                <div class="spinner">
-                    ${YouTubePlayer.spinnerHTML}
-                </div>
-                <div class="footer">
-                    <div class="text-author"></div>
-                    <div class="subscribe-button">
-                        ${YouTubePlayer.subscribeButtonHTML}
-                    </div>
-                </div>
-            `;
-
-
             youtubePlayer = document.createElement('div');
-            youtubePlayer.classList.add('youtubeplayer');
-            youtubePlayer.innerHTML = htmlStructure;
-
-
-            if(Settings.onPoki){
-                const subscribeButton = youtubePlayer.querySelector('.subscribe-button');
-                subscribeButton.style.display = 'none';
-            }
-
-            const close = youtubePlayer.querySelector('.close');
-            close.onclick = ()=>{
+            const closeFunction = ()=>{
                 levelBanner.style.visibility = 'visible';
                 this.hideYouTubePlayer();
             }
-
-
+            youtubePlayer = this.buildYouTubePlayer(youtubePlayer, closeFunction)
             customGUIContainer.appendChild(youtubePlayer);
         }
 
         levelBanner.style.visibility = 'hidden';
 
-        const footer = youtubePlayer.querySelector('.footer');
+        this.setYouTubePlayer(youtubePlayer, id);
+
+        youtubePlayer.style.display = 'block';
+    }
+
+    this.setYouTubePlayer = (player, id) => {
+        const footer = player.querySelector('.footer');
         const author = footer.querySelector('.text-author');
         const subscribe = footer.querySelector('.subscribe-button');
-        const spinner = youtubePlayer.querySelector('.spinner');
+        const spinner = player.querySelector('.spinner');
 
         YouTubePlayer.loadVideo('YTPlayerHolder', id, author, subscribe,spinner);
 
@@ -2275,82 +2255,46 @@ function UIManager() {
                 window.open(`https://www.youtube.com/channel/${channelID}?view_as=subscriber&sub_confirmation=1`);
             }
         }
+    }
 
-        youtubePlayer.style.display = 'block';
+    this.buildYouTubePlayer = function(targetDiv, closeFunction, compact){
+        const htmlStructure =
+        /*html*/`
+        ${compact ? '' : `<div class="bar"><div class="close"></div></div>`}
+        <div id="YTPlayerHolder" class="yt-iframe"></div>
+        <div class="spinner">
+            ${YouTubePlayer.spinnerHTML}
+        </div>
+        <div class="footer">
+            <div class="text-author"></div>
+            <div class="subscribe-button">
+                ${YouTubePlayer.subscribeButtonHTML}
+            </div>
+        </div>
+        `;
 
+        targetDiv.innerHTML = htmlStructure;
+
+        if(!compact){
+            targetDiv.classList.add('youtubeplayer');
+            const close = targetDiv.querySelector('.close');
+            close.onclick = closeFunction;
+        }else{
+            targetDiv.classList.add('youtubeplayercompact');
+        }
+
+
+        if(Settings.onPoki){
+            const subscribeButton = targetDiv.querySelector('.subscribe-button');
+            subscribeButton.style.display = 'none';
+        }
+
+        return targetDiv;
     }
 
     this.hideYouTubePlayer = function(){
         youtubePlayer.style.display = 'none';
         YouTubePlayer.stopVideo();
-    }
-
-
-    this.showYouTubePlayer2 = function(id){
-        if(!youtubePlayer){
-            const levelEditGUIWidth = 500;
-            youtubePlayer = new dat.GUI({
-                autoPlace: false,
-                width: levelEditGUIWidth
-            });
-            youtubePlayer.domElement.style.position = 'absolute';
-
-            let folder = youtubePlayer.addFolder('YouTube Player');
-            folder.domElement.classList.add('custom');
-
-            folder.open();
-
-            const closeButton = document.createElement('div');
-            closeButton.setAttribute('class', 'closeWindowIcon');
-            folder.domElement.append(closeButton);
-            closeButton.addEventListener('click', () => {
-                self.hideYouTubePlayer();
-            });
-
-            const targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
-            const divWrapper = document.createElement('div');
-            // divWrapper.innerText = 'Youtube player:'+id
-
-            const youtubePlayerHolder = document.createElement('div');
-            youtubePlayerHolder.setAttribute('id', 'YTPlayerHolder');
-            divWrapper.appendChild(youtubePlayerHolder);
-
-            const subscribeHolder = document.createElement('div');
-            subscribeHolder.classList.add('youtubeSubscribeHolder');
-            divWrapper.appendChild(subscribeHolder);
-
-            const authorSpan = document.createElement('div');
-            authorSpan.classList.add('youtubeAuthor');
-            subscribeHolder.appendChild(authorSpan);
-
-
-            const subscribeButton = document.createElement('button');
-            subscribeButton.innerHTML = YouTubePlayer.subscribeButtonHTML;
-            subscribeHolder.appendChild(subscribeButton);
-            subscribeButton.classList.add('youtubeSubscribe');
-
-            const ytSpinner = document.createElement('div');
-            ytSpinner.classList.add('youtubeSpinner');
-            ytSpinner.innerHTML = YouTubePlayer.spinnerHTML;
-            divWrapper.appendChild(ytSpinner)
-
-            divWrapper.classList.add('divWrapper');
-
-            targetDomElement.appendChild(divWrapper);
-
-            customGUIContainer.appendChild(youtubePlayer.domElement);
-        }
-
-        const authorSpanEl = youtubePlayer.domElement.querySelector('.youtubeAuthor');
-        const subscribeButtonEl = youtubePlayer.domElement.querySelector('.youtubeSubscribe');
-        const spinnerEl = youtubePlayer.domElement.querySelector('.youtubeSpinner');
-
-        YouTubePlayer.loadVideo('YTPlayerHolder', id, authorSpanEl, subscribeButtonEl,spinnerEl);
-
-        youtubePlayer.domElement.style.visibility = 'visible';
-        youtubePlayer.domElement.style.left = '50%';
-        youtubePlayer.domElement.style.top = '50%';
-        youtubePlayer.domElement.style.transform = 'translate(-50%, -50%)';
     }
 
     this.showDiscordJoin = function(){
