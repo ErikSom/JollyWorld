@@ -28,10 +28,12 @@ import { applyColorMatrix, applyColorMatrixMultiple, colorMatrixEffects, guiToEf
 import { KeyboardEventKeys } from "../../../libs/Key";
 
 import confetti from "canvas-confetti";
+import { YouTubePlayer } from "../../utils/YouTubePlayer";
 
 const nanoid = require('nanoid');
 
 let toolGUI;
+let helpButton;
 export let assetGUI;
 export let editorGUI;
 let headerBar;
@@ -45,6 +47,7 @@ let profileScreen;
 let notice;
 let prompt;
 let textEditor;
+let videoHelp;
 export let gradientEditor;
 export let colorMatrixEditor;
 export let helpScreen;
@@ -55,6 +58,7 @@ let customGUIContainer = document.getElementById('custom-gui');
 export const hide = function () {
     hideEditorPanels();
     toolGUI.style.display = 'none';
+    helpButton.style.display = 'none';
     headerBar.style.display = 'none';
     scrollBars.hide();
     destroyEditorGUI();
@@ -64,6 +68,10 @@ export const hide = function () {
 
 export const show = function () {
     toolGUI.style.display = 'block';
+    const userData = SaveManager.getLocalUserdata();
+    if (userData.showHelpButton){
+        helpButton.style.display = 'block';
+    }
     headerBar.style.display = 'block';
     scrollBars.show();
 }
@@ -1458,6 +1466,25 @@ export const createToolGUI = function () {
         };
         buttonElement.addEventListener('click', clickFunction(i));
     }
+
+    helpButton = document.createElement('div');
+    helpButton.style = `
+        position: absolute;
+        background: url(assets/images/gui/Icon_Help.svg);
+        width: 27px;
+        height: 30px;
+        top: 14vh;
+        left: 34px;
+        pointer: cursor;
+    `;
+    helpButton.classList.add('normalButton');
+
+    helpButton.addEventListener('pointerdown', () => {
+        showVideoHelp();
+    })
+
+    uiContainer.appendChild(helpButton);
+
     uiContainer.appendChild(toolGUI);
     const buttons = document.querySelectorAll('.toolgui .img');
     for (let i = 0; i < buttons.length; i++) {
@@ -2363,6 +2390,133 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
     }
     listItem.appendChild(imageDropDownContainer)
     targetDomElement.appendChild(listItem);
+}
+
+export const showHelpButton = ()=>{
+    if(helpButton){
+        helpButton.style.display = 'block';
+    }
+}
+
+export const showVideoHelp = function () {
+    removeVideoHelp();
+
+    const loginGUIWidth = 400;
+
+    videoHelp = new dat.GUI({
+        autoPlace: false,
+        width: loginGUIWidth
+    });
+    videoHelp.domElement.setAttribute('id', 'videoHelp');
+
+    let folder = videoHelp.addFolder('Video Tutorials');
+    folder.domElement.classList.add('custom');
+    folder.domElement.style.textAlign = 'center';
+
+    folder.open();
+
+    const closeButton = document.createElement('div');
+    closeButton.setAttribute('class', 'closeWindowIcon');
+    folder.domElement.append(closeButton);
+    closeButton.addEventListener('click', () => {
+        removeVideoHelp();
+    });
+
+    var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
+
+    let divWrapper = document.createElement('div');
+    divWrapper.style.padding = '0px';
+    divWrapper.style.marginTop = '20px';
+
+    // populate videos:
+    const videoData = [{
+        id: '5kAIsbXIYpo',
+    },
+    {
+        id: 'JeSVn7I6dxE',
+    },
+    {
+        id: 'YuUogoKbL4A',
+    }]
+
+    const videosDiv = document.createElement('div');
+    videosDiv.classList.add('jollyvideo');
+    videosDiv.innerHTML = `
+    <div class="videos">
+        <div class="video video-template">
+            <div class="play-button"></div>
+        </div>
+    </div>
+    `
+    divWrapper.appendChild(videosDiv);
+
+    const videoHolder = videosDiv.querySelector('.videos');
+
+    const videoTemplate = videosDiv.querySelector('.video-template')
+    videoTemplate.style.display = 'none';
+    videoData.forEach(data => {
+        const video = videoTemplate.cloneNode(true)
+        video.style.display = 'block';
+        video.classList.remove('video-template')
+        video.style.backgroundImage = `url(https://i.ytimg.com/vi/${data.id}/mqdefault.jpg)`;
+
+        const playBut = video.querySelector('.play-button');
+        playBut.innerHTML = YouTubePlayer.playButtonHTML;
+
+        video.onclick = () => {
+            // this.showYouTubePlayer(ytId);
+        }
+
+        videoHolder.appendChild(video);
+    });
+
+
+    const hideButton = document.createElement('div');
+    hideButton.innerHTML = `
+        <li class="cr boolean"><div><span class="property-name">stop showing help button</span><div class="c" style="
+        width: 10px;"><input type="checkbox"></div></div></li>
+    `;
+    folder.domElement.appendChild(hideButton);
+
+    hideButton.onpointerdown = e => {
+        const input = hideButton.querySelector('input')
+        if(e.target !== input){
+            input.checked = !input.checked;
+        }
+    }
+
+    targetDomElement.appendChild(divWrapper);
+
+    targetDomElement.appendChild(document.createElement('br'));
+
+
+    customGUIContainer.appendChild(videoHelp.domElement);
+
+    videoHelp.domElement.style.left = '24px'
+    videoHelp.domElement.style.top = 'calc(14vh - 10px)';
+
+    registerDragWindow(videoHelp);
+
+    setHighestWindow(videoHelp.domElement);
+
+    return false;
+}
+const removeVideoHelp = () => {
+    if (videoHelp) {
+
+        const checkButton = videoHelp.domElement.querySelector('input');
+        if(checkButton.checked){
+            helpButton.style.display = 'none';
+            // write new save setting
+
+            const userData = SaveManager.getLocalUserdata();
+            userData.showHelpButton = false;
+            SaveManager.updateLocalUserData(userData);
+        }
+        videoHelp.domElement.parentNode.removeChild(videoHelp.domElement);
+        videoHelp = null;
+
+    }
 }
 
 // WINDOW DRAGING
