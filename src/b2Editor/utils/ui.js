@@ -1472,7 +1472,7 @@ export const createToolGUI = function () {
     helpButton = document.createElement('div');
     helpButton.style = `
         position: absolute;
-        background: url(assets/images/gui/Icon_Help.svg);
+        background: url(assets/images/gui/${hashName('Icon_Help.svg')});
         width: 27px;
         height: 30px;
         top: 14vh;
@@ -2269,7 +2269,7 @@ const removeColorMatrixEditor = ()=>{
 
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
-    if(msg.toLowerCase && (msg.toLowerCase().includes('script error') || msg.toLowerCase().includes('instream/video') || msg.toLowerCase().includes('failed to fetch'))){
+    if(msg.toLowerCase && (msg.toLowerCase().includes('script error') || msg.toLowerCase().includes('instream/video') || msg.toLowerCase().includes("of undefined (reading '0')") || msg.toLowerCase().includes('failed to fetch'))){
         return;
     }
 
