@@ -73,6 +73,11 @@ export const show = function () {
     if (userData.showHelpButton){
         helpButton.style.display = 'block';
     }
+
+    if(!userData.helpClosed[toolReferences.indexOf('video help')]){
+        showVideoHelp();
+    }
+
     headerBar.style.display = 'block';
     scrollBars.show();
 }
@@ -1439,7 +1444,7 @@ export const createEditorStyledGUI = function (name) {
     element.appendChild(header);
     return element;
 }
-const toolReferences = ['select', 'geometry', 'polydrawing', 'pen', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings', 'camera', 'vertice editing'];
+const toolReferences = ['select', 'geometry', 'polydrawing', 'pen', 'joints', 'prefabs', 'text', 'art', 'trigger', 'settings', 'camera', 'vertice editing', 'video help'];
 
 export const createToolGUI = function () {
     toolGUI = createEditorStyledGUI('tools');
@@ -1481,6 +1486,7 @@ export const createToolGUI = function () {
         pointer: cursor;
     `;
     helpButton.classList.add('normalButton');
+    helpButton.classList.add('helpButton');
 
     helpButton.addEventListener('pointerdown', () => {
         showVideoHelp();
@@ -2422,6 +2428,11 @@ export const showVideoHelp = function () {
     closeButton.setAttribute('class', 'closeWindowIcon');
     folder.domElement.append(closeButton);
     closeButton.addEventListener('click', () => {
+
+        const userData = SaveManager.getLocalUserdata();
+        userData.helpClosed[toolReferences.indexOf('video help')] = true;
+        SaveManager.updateLocalUserData(userData);
+
         removeVideoHelp();
     });
 
@@ -2509,7 +2520,7 @@ const removeVideoHelp = () => {
     if (videoHelp) {
 
         const checkButton = videoHelp.domElement.querySelector('input');
-        if(checkButton.checked){
+        if(checkButton && checkButton.checked){
             helpButton.style.display = 'none';
             // write new save setting
 
@@ -2517,6 +2528,11 @@ const removeVideoHelp = () => {
             userData.showHelpButton = false;
             SaveManager.updateLocalUserData(userData);
         }
+
+        helpButton.classList.remove('faved')
+        void helpButton.offsetWidth;
+        helpButton.classList.add('faved')
+
         videoHelp.domElement.parentNode.removeChild(videoHelp.domElement);
         videoHelp = null;
 

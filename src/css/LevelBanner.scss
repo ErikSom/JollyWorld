@@ -193,6 +193,12 @@
 	}
 }
 
+.helpButton{
+	&.faved{
+		animation: .8s ease-in 1 forwards faved-anim;
+	}
+}
+
 .adContainer{
 	.jr1{
 		// width: 160px;
