@@ -4,7 +4,7 @@
 .mainmenu{
 	width: 100vw;
 	height: 100vh;
-	background-color: #9CACC6;
+	background-color: #E7B98A;
 
 	&.inactive{
 		filter: brightness(0.2);
@@ -182,7 +182,7 @@
 		margin: 10px 0 100px 0;
 	}
 	.game-scroll-block{
-		background: linear-gradient(0deg, #9CACC6 25%, rgba(231, 185, 138, 0) 70%);
+		background: linear-gradient(0deg, #E7B98A 25%, rgba(231, 185, 138, 0) 70%);
 		height: 80px;
 		width: 100%;
 		position: absolute;
