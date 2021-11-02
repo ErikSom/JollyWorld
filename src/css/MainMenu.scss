@@ -617,32 +617,9 @@
 					z-index: 2;
 				}
 			}
-			.hamburger{
-				display: block;
-				margin: 6px 16px;
-				top: 0;
-				right: 0;
-				z-index: 2;
-			}
 			.buttons{
-				flex-direction: row;
-				flex-wrap: wrap;
-				justify-content: flex-end;
-				z-index: 2;
-				margin: 64px 8px 0 0;
-				width: 300px;
-				display: none;
-
-				.editor, .discord{
-					order: 2;
-				}
-				& > div{
-					margin-bottom: 10px;
-				}
-
-				&.open{
-					display: flex;
-				}
+				transform: scale(0.6);
+				transform-origin: top right;
 			}
 		}
 		.games-scroll{
@@ -669,6 +646,40 @@
 
 				&.open{
 					height: 200px;
+				}
+			}
+		}
+	}
+}
+
+@media screen and (max-width:540px){
+	.mainmenu{
+		.header{
+			.hamburger{
+				display: block;
+				margin: 6px 16px;
+				top: 0;
+				right: 0;
+				z-index: 2;
+			}
+			.buttons{
+				flex-direction: row;
+				flex-wrap: wrap;
+				justify-content: flex-end;
+				z-index: 2;
+				margin: 64px 8px 0 0;
+				width: 300px;
+				display: none;
+
+				.editor, .discord{
+					order: 2;
+				}
+				& > div{
+					margin-bottom: 10px;
+				}
+
+				&.open{
+					display: flex;
 				}
 			}
 		}
