@@ -51,6 +51,7 @@ import { countries } from "./utils/Localization";
 import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
+import { setZoom } from "./b2Editor/utils/camera";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -997,6 +998,18 @@ function Game() {
         this.doAutoSave();
         this.editor.editing = true;
         ui.hide();
+
+        const minScreenSize = 640;
+        const maxScreenSize = 1300;
+        const screenSizeDif = maxScreenSize - minScreenSize;
+        const minScale = 0.4;
+        const maxScale = 1.0;
+        const scaleDiff = maxScale - minScale;
+
+        const screenPercent = Math.max(0, Math.min(1.0, (window.innerWidth - minScreenSize) / screenSizeDif));
+        const targetScale = scaleDiff * screenPercent + minScale;
+
+        setZoom({x:0, y:0}, targetScale)
 
         if(betterLocalStorage.getItem('needsToRegister')){
 			backendManager.dispatchEvent('username');
