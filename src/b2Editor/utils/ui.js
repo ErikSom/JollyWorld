@@ -96,6 +96,7 @@ export const hideEditorPanels = function () {
     hidePanel(profileScreen);
     hidePublishSocialShareScreen();
     removeNotice();
+    removeVideoHelp();
     hideEditorYoutubeVideo();
     removePrompt();
     removeTextEditor();
