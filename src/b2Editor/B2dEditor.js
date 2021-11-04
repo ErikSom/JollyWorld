@@ -3959,7 +3959,7 @@ const _B2dEditor = function () {
 
 			for (i = 0; i < objects.length; i++) {
 
-				if (objects[i].mySprite != undefined) {
+				if (objects[i].mySprite !== undefined) {
 
 					body = objects[i];
 					if (transformType == this.TRANSFORM_MOVE) {
@@ -3978,7 +3978,6 @@ const _B2dEditor = function () {
 
 					} else if (transformType == this.TRANSFORM_ROTATE) {
 						//split between per object / group rotation
-
 						group = (this.altDown || forceGroupRotation) ? "__altDownGroup" : body.mySprite.data.prefabInstanceName;
 
 						const oldAngle = body.GetAngle();

@@ -70,6 +70,9 @@ export default class Hat {
 		texture.parent.addChildAt(texture, texture.parent.getChildIndex(targetTextureSwap)+1);
 
 		this.hatBody.myTexture = texture;
+		// needed for TRANFORM_MOVE and TRANSFORM_ANGLE
+		this.hatBody.mySprite = texture;
+		this.hatBody.mySprite.data = { prefabInstanceName: this.head.mySprite.data.prefabInstanceName };
 	}
 	detach(){
 		game.editor.DestroyJoint(this.hatWeldJoint);

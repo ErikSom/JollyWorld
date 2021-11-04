@@ -49,7 +49,6 @@ export const addEffect = (type, props) =>{
 			effect = new PixiEffect(shockFilter, type, {...props, startTime:Date.now(), maxLife:600, stageX:effectTarget.x, stageY:effectTarget.y})
 		break;
 		case effectTypes.screenShake:
-			debugger;
 			const centerDistanceX = window.innerWidth / 2 - props.point.x;
 			const centerDistanceY = window.innerHeight / 2 - props.point.y;
 			const centerDistance = Math.sqrt(centerDistanceX * centerDistanceX + centerDistanceY * centerDistanceY);

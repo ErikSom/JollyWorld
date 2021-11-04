@@ -271,10 +271,11 @@ export class BaseVehicle extends PrefabManager.basePrefab {
     }
 
     getCurrentActiveBodies(){
+        let hatArr = this.character.hat ? [this.character.hat.hatBody] : [];
         if(this.character && this.character.attachedToVehicle){
-            return [...this.lookupObject._bodies, ...this.character.vains];
+            return [...this.lookupObject._bodies, ...this.character.vains, ...hatArr];
         }else{
-            return [...this.character.lookupObject._bodies, ...this.character.vains];
+            return [...this.character.lookupObject._bodies, ...this.character.vains, ...hatArr];
         }
     }
 

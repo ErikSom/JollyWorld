@@ -29,6 +29,7 @@ export class Character extends Humanoid {
         this.grabJointRight = null;
         this.grabBodyRight = null;
         this.vehicle = null;
+        this.teleportTicks = 0;
 
     }
 

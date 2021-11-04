@@ -178,7 +178,9 @@ export class Humanoid extends PrefabManager.basePrefab {
             this.setExpression(Humanoid.EXPRESSION_SPECIAL);
         }
 
-        if(!game.tutorialMode){
+        if(this.teleportTicks) this.teleportTicks--;
+        // no damage when teleporting for x ticks;
+        if(!game.tutorialMode && !this.teleportTicks){
             this.processJointDamage();
             this.processBodySeparation();
             this.processBloodSprays();

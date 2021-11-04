@@ -56,7 +56,7 @@ class DirtBike extends BaseVehicle {
         this.destroyTires = [];
         this.snapJoints = [];
 
-		this.character.jointMaxForces = [2000000, 2000000, 4000000, 4000000];
+		this.character.jointMaxForces = [3000000, 3000000, 5000000, 5000000];
     }
     update() {
         super.update();

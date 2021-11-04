@@ -162,6 +162,8 @@ export const doAction = function (actionData, target, triggerClass) {
     const prefab = (target && target.data) ? B2dEditor.activePrefabs[target.data.prefabInstanceName] : undefined;
     let objects;
     let animation;
+    let prefabLookupObject = null;
+    let affectedBodies = null;
 
     switch (actionData.type) {
         case "Impulse":
@@ -200,11 +202,21 @@ export const doAction = function (actionData, target, triggerClass) {
         case "SetPosition":
                 let targetPos = vec1;
                 if (target.data.prefabInstanceName) {
+                    prefabLookupObject = B2dEditor.lookupGroups[target.data.prefabInstanceName];
                     if(prefab.class.isVehicle){
                         objects = prefab.class.getCurrentActiveBodies();
+                        affectedBodies = objects;
 
+                        prefab.class.character.teleportTicks = 10;
+
+                        // handy trick to debug bodies
+                        // objects.forEach(b => b.SetEnabled(false));
+                        // setTimeout(()=>{
+                        //     objects.forEach(b => b.SetEnabled(true));
+                        // }, 2000);
                     }else{
-                        objects = [].concat(prefab.class.lookupObject._bodies, prefab.class.lookupObject._textures);
+                        objects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures);
+                        affectedBodies = prefabLookupObject._bodies;
                     }
                     targetPos.Set(target.x, target.y);
                 } else if (target.myBody) {
@@ -225,13 +237,45 @@ export const doAction = function (actionData, target, triggerClass) {
                     const y = triggerClass.trigger.GetPosition().y * Settings.PTM - targetPos.y;
                     targetPos.Set(x + actionData.X, y + actionData.Y);
                 }
+                if(affectedBodies) affectedBodies.forEach(b => {
+                    b._tempOldLinearVelocity = new Box2D.b2Vec2(b.GetLinearVelocity().x, b.GetLinearVelocity().x);
+                    b._tempOldAngularVelocity = b.GetAngularVelocity();
+                    b.SetType(Box2D.b2_staticBody);
+                });
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_MOVE, targetPos, objects);
+                if(affectedBodies) affectedBodies.forEach(b => {
+                    b.SetType(Box2D.b2_dynamicBody);
+                    b.SetLinearVelocity(b._tempOldLinearVelocity);
+                    b.SetAngularVelocity(b._tempOldAngularVelocity);
+                    Box2D.destroy(b._tempOldLinearVelocity);
+                    delete b._tempOldLinearVelocity;
+                    delete b._tempOldAngularVelocity;
+                });
+
             break;
         case "SetRotation":
                 let targetRotation;
 
                 if (target.data.prefabInstanceName) {
-                    objects = [].concat(B2dEditor.lookupGroups[target.data.prefabInstanceName]._bodies, B2dEditor.lookupGroups[target.data.prefabInstanceName]._textures);
+
+                    prefabLookupObject = B2dEditor.lookupGroups[target.data.prefabInstanceName];
+
+                    if(prefabLookupObject.frame){
+                        target = prefabLookupObject.frame.mySprite;
+                    }else if(prefabLookupObject.base){
+                        target = prefabLookupObject.base.mySprite;
+                    }else if(prefabLookupObject.body){
+                        target = prefabLookupObject.body.mySprite;
+                    }
+
+                    if(prefab.class.isVehicle){
+                        objects = prefab.class.getCurrentActiveBodies();
+                        affectedBodies = objects;
+                    }else {
+                        objects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures);
+                        affectedBodies = prefabLookupObject._bodies;
+                    }
+
                     targetRotation = target.rotation;
                 } else if (target.myBody) {
                     objects = [target.myBody];
@@ -249,7 +293,21 @@ export const doAction = function (actionData, target, triggerClass) {
                     targetRotation = triggerClass.trigger.GetAngle() * game.editor.RAD2DEG - targetRotation + actionData.rotation;
                 }
 
+                if(affectedBodies) affectedBodies.forEach(b => {
+                    b._tempOldLinearVelocity = new Box2D.b2Vec2(b.GetLinearVelocity().x, b.GetLinearVelocity().x);
+                    b._tempOldAngularVelocity = b.GetAngularVelocity();
+                    b.SetType(Box2D.b2_staticBody);
+                });
                 B2dEditor.applyToObjects(B2dEditor.TRANSFORM_ROTATE, targetRotation, objects);
+                if(affectedBodies) affectedBodies.forEach(b => {
+                    b.SetType(Box2D.b2_dynamicBody);
+                    b.SetLinearVelocity(b._tempOldLinearVelocity);
+                    b.SetAngularVelocity(b._tempOldAngularVelocity);
+                    Box2D.destroy(b._tempOldLinearVelocity);
+                    delete b._tempOldLinearVelocity;
+                    delete b._tempOldAngularVelocity;
+                });
+
             break;
         case "SetVisibility":
             let targetsToProcess = [target]
