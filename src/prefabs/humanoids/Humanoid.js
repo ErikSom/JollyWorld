@@ -265,7 +265,7 @@ export class Humanoid extends PrefabManager.basePrefab {
         }
     }
 
-    processBodySeparation(){
+    processBodySeparation(clearTicks){
         const snapSeperation = 0.2;
         const maxSnapTicks = 30;
         let i;
@@ -284,7 +284,7 @@ export class Humanoid extends PrefabManager.basePrefab {
             const distance = vec1;
             b2SubVec2(distance, vec2);
 
-            if(distance.Length() > snapSeperation){
+            if(distance.Length() > snapSeperation && !clearTicks){
                 if(targetJoint.snapTick === undefined) targetJoint.snapTick = 0;
                 targetJoint.snapTick++;
 
@@ -303,6 +303,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                 targetJoint.snapTick = 0;
             }
         }
+        if(clearTicks) return;
 
 
         for(i = 0; i<this.vains.length; i++){

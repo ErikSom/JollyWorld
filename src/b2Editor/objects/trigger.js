@@ -207,7 +207,7 @@ export const doAction = function (actionData, target, triggerClass) {
                         objects = prefab.class.getCurrentActiveBodies();
                         affectedBodies = objects;
 
-                        prefab.class.character.teleportTicks = 10;
+                        prefab.class.character.setTeleported();
 
                         // handy trick to debug bodies
                         // objects.forEach(b => b.SetEnabled(false));
@@ -1972,9 +1972,9 @@ export const containsTargetType = function (targetTrigger, body) {
     if(body.ignoreTriggers) return false;
     switch (targetTrigger.data.targetType) {
         case triggerTargetType.mainCharacter:
-            return body.mainCharacter;
+            return body.mainCharacter && !body.snapped;
         case triggerTargetType.anyCharacter:
-            return body.isHumanoid; //TODO
+            return body.isHumanoid && !body.snapped; //TODO
         case triggerTargetType.anyButMainCharacter:
             return !body.mainCharacter && body.isHumanoid;
         case triggerTargetType.allObjects:

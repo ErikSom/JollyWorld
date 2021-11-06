@@ -73,6 +73,11 @@ export class Character extends Humanoid {
         this.setExpression(Humanoid.EXPRESSION_SPECIAL);
     }
 
+    setTeleported(){
+        this.teleportTicks = 20;
+        this.processBodySeparation(true);
+    }
+
     grab(){
         const armLength = 3.43;
         if(this.grabJointLeft || this.grabJointRight || !this.alive){

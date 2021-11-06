@@ -2443,15 +2443,23 @@ export const showVideoHelp = function () {
     divWrapper.style.marginTop = '20px';
 
     // populate videos:
-    const videoData = [{
-        id: '5kAIsbXIYpo',
-    },
-    {
-        id: 'JeSVn7I6dxE',
-    },
-    {
-        id: 'YuUogoKbL4A',
-    }]
+    const videoData = [
+        {
+            id: '5kAIsbXIYpo',
+        },
+        {
+            id: 'JeSVn7I6dxE',
+        },
+        {
+            id: 'YuUogoKbL4A',
+        },
+        {
+            id: '3cpdpTYrKc8',
+        },
+        {
+            id: 'Z6BtFHyeQhw',
+        },
+    ]
 
     const videosDiv = document.createElement('div');
     videosDiv.classList.add('jollyvideo');
@@ -2560,6 +2568,7 @@ const showEditorYoutubeVideo = id => {
         folder.domElement.append(closeButton);
         closeButton.addEventListener('click', () => {
             hideEditorYoutubeVideo();
+            showVideoHelp();
         });
 
         var targetDomElement = folder.domElement.getElementsByTagName('ul')[0];
