@@ -1,3 +1,4 @@
+import { Sprite } from "@pixi/sprite";
 import { b2LinearStiffness } from "../../../libs/debugdraw";
 import {
 	game
@@ -61,6 +62,7 @@ export default class Hat {
 		textureObject.texturePositionOffsetAngle = this.hatOffsetAngle;
 		textureObject.textureAngleOffset = 0;
 
+		console.log("TEXTURE OBJECT", textureObject);
 		const texture = game.editor.buildTextureFromObj(textureObject);
 
 		let targetTextureSwap = this.head.myTexture;
@@ -71,7 +73,7 @@ export default class Hat {
 
 		this.hatBody.myTexture = texture;
 		// needed for TRANFORM_MOVE and TRANSFORM_ANGLE
-		this.hatBody.mySprite = texture;
+		this.hatBody.mySprite = new PIXI.Sprite();
 		this.hatBody.mySprite.data = { prefabInstanceName: this.head.mySprite.data.prefabInstanceName };
 	}
 	detach(){
