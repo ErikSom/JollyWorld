@@ -38,6 +38,7 @@ import * as ReplayManager from './utils/ReplayManager';
 import * as b2DebugDrawManager from './utils/b2DebugDrawManager'
 import * as BodyBreaker from './b2Editor/utils/bodyBreaker'
 import * as ModManager from './utils/ModManager'
+import './multiplayer/multiplayerManager'
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
