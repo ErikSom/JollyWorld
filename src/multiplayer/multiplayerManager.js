@@ -4,7 +4,7 @@ import { RippleCharacter } from './rippleCharacter';
 import server from './server';
 
 const players = {};
-
+let tickID = 0
 const ticksPerSecond = 20;
 let syncInterval = null;
 
@@ -12,9 +12,16 @@ export const startSyncPlayer = () => {
 	stopSyncPlayer();
 
 	syncInterval = setInterval(()=> {
-		const buffer = characterToBuffer(game.character);
-		server.send(buffer);
+		const buffer = characterToBuffer(game.character, tickID);
+		server.sendCharacterData(buffer);
+
+		tickID++;
+		if(tickID > 255){
+			tickID = 0;
+		}
 	}, 1000 / ticksPerSecond);
+
+
 }
 
 export const stopSyncPlayer = () => {
@@ -26,8 +33,15 @@ export const stopSyncPlayer = () => {
 export const updateMultiplayer = () => {
 	const data = server.getCharacterDataToProcess();
 	data.forEach(data => {
+		const ping = 100;
+		const time = Date.now() - ping;
+		const characterData = characterFromBuffer(data.buffer);
+		players[data.playerID].processServerData(characterData, time);
+	});
 
-	})
+	for(let playerID in players){
+		players[playerID].interpolatePosition();
+	}
 
 }
 
@@ -43,6 +57,6 @@ document.addEventListener('keydown', e => {
 
 		console.log(player.sprite);
 
-		// startSyncPlayer();
+		startSyncPlayer();
 	}
 })

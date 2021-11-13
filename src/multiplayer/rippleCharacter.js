@@ -3,6 +3,9 @@ import {
 } from "@pixi/display";
 import * as PIXI from 'pixi.js';
 
+const DEG2RAD = 0.017453292519943296;
+
+
 export class RippleCharacter {
 	constructor(id) {
 		this.id = id;
@@ -17,6 +20,8 @@ export class RippleCharacter {
 			handLeft: new SyncObject(),
 			handRight: new SyncObject(),
 		}
+		this.stateKeys = Object.keys(this.state);
+		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight];
 		this.spriteSheet = null;
 	}
 
@@ -36,9 +41,34 @@ export class RippleCharacter {
 		const body = new PIXI.Sprite(this.spriteSheet.textures['Normal_Core']);
 		this.sprite.addChild(body);
 	}
+
+	processServerData(data, time){
+		debugger;
+		this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
+
+		this.stateProcessList.forEach((state, i) => {
+			const stateData = data.parts[i];
+			state.updateServerPosition(stateData.id, stateData.x, stateData.y, stateData.r, time);
+		});
+	}
+
+	interpolatePosition(){
+		this.stateKeys.forEach(key => {
+			this.state[key].interpolatePosition();
+		});
+
+		// correct IK
+
+		// apply positions
+		this.sprite.x = this.state.body.x;
+		this.sprite.y = this.state.body.y;
+		this.sprite.angle = this.state.body.r;
+	}
 }
 
 const maxPreviousPosInterpolation = 5;
+const lagCompensation = 100;
+const syncSmooth = .4;
 
 class SyncObject {
 	constructor(x = 0, y = 0, r = 0) {
@@ -54,6 +84,11 @@ class SyncObject {
 			r,
 			time: -1,
 		}
+		this.targetPos = {
+			x,
+			y,
+			r,
+		}
 	}
 
 	forcePosition(id, x, y, r) {
@@ -66,6 +101,11 @@ class SyncObject {
 			x,
 			y,
 			r
+		}
+		this.targetPos = {
+			x,
+			y,
+			r,
 		}
 	}
 
@@ -90,8 +130,73 @@ class SyncObject {
 		}
 	}
 
+
+
+
+	angleDiff(sourceA, targetA) {
+		const mod = (a, n) => a - Math.floor(a/n) * n;
+		let a = targetA - sourceA
+		return mod(a + 180, 360) - 180
+	}
+
 	interpolatePosition() {
 		// use time difference for interpolation
+		// no data no interpolation
+		if(this.previousPos.length === 0) return;
+
+		// get movement
+		const movement = { x: 0, y: 0 }
+
+		if(this.previousPos.length > 0){
+			this.previousPos.forEach((pos, i) => {
+				const nextPos = (i === this.previousPos.length -1 ) ? this.serverPos : this.previousPos[i + 1];
+				movement.x += nextPos.x - pos.x;
+				movement.y += nextPos.y - pos.y;
+			})
+			movement.x /= this.previousPos.length;
+			movement.y /= this.previousPos.length;
+		}
+
+		const currentTime = Date.now() - lagCompensation;
+		const targetTime = this.serverPos.time;
+
+
+
+		const previousKnownPosition = this.previousPos[this.previousPos.length - 1];
+		// const timeDiff = targetTime - previousKnownPosition.time; // 100
+		// let realTimeDiff = currentTime - previousKnownPosition.time; // -200
+
+		// const progressOnTime = realTimeDiff / timeDiff;
+
+		// console.log("Progress on time:", progressOnTime)
+
+		// const lastStepDiff = {x: this.serverPos.x - previousKnownPosition.x, y: this.serverPos.y - previousKnownPosition.y};
+
+		// this.targetPos.x = previousKnownPosition.x + lastStepDiff.x * progressOnTime;
+		// this.targetPos.y = previousKnownPosition.y + lastStepDiff.y * progressOnTime;
+
+
+		const render_timestamp = Date.now() - (1000.0 / 20);
+
+		const x0 = previousKnownPosition.x;
+		const x1 = this.serverPos.x;
+		const y0 = previousKnownPosition.y;
+		const y1 = this.serverPos.y;
+		const r0 = previousKnownPosition.r;
+		const r1 = this.serverPos.r;
+		const t0 = previousKnownPosition.time;
+		const t1 = this.serverPos.time;
+
+		this.targetPos.x =	x0 + (x1 - x0) * (render_timestamp - t0) / (t1 - t0);
+		this.targetPos.y =	y0 + (y1 - y0) * (render_timestamp - t0) / (t1 - t0);
+		this.targetPos.r =	(r0 + this.angleDiff(r0, r1) * (render_timestamp - t0) / (t1 - t0)) % 360;
+
+		this.x += (this.targetPos.x - this.x) * syncSmooth;
+		this.y += (this.targetPos.y - this.y) * syncSmooth;
+		console.log("ANGL DIFF:", this.angleDiff(this.r, this.targetPos.r), this.r, this.targetPos.r);
+		this.r += this.angleDiff(this.r, this.targetPos.r) * syncSmooth;
+
+
 	}
 }
 

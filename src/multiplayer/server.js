@@ -7,14 +7,16 @@ class MultiplayerServer{
 	}
 
 	sendCharacterData(buffer){
-		receiveCharacterData(buffer);
+		this.receiveCharacterData(buffer);
 	}
-	receiveCharacterData(){
+	receiveCharacterData(buffer){
 		this.caracterDataToProcess.push({ playerID:this.getID(), buffer });
 	}
 
 	getCharacterDataToProcess(){
-		return this.caracterDataToProcess;
+		const returnData = [...this.caracterDataToProcess];
+		this.caracterDataToProcess.length = 0;
+		return returnData;
 	}
 }
 

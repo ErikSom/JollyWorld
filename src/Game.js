@@ -53,6 +53,7 @@ import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
+import { updateMultiplayer } from "./multiplayer/multiplayerManager";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -1614,6 +1615,8 @@ function Game() {
         if(this.needScreenshot) this.screenShotData = game.app.renderer.plugins.extract.canvas();
         PIXICuller.update();
         Key.update();
+
+        updateMultiplayer();
 
         this.stats.end();
     };
