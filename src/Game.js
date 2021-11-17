@@ -111,6 +111,7 @@ function Game() {
     this.checkPointData = null;
     this.selectedCharacter = 0;
     this.selectedVehicle = 0;
+    this.playedFirstLevel = false;
 
     this.needScreenshot = false;
     this.screenShotData = null;
@@ -839,6 +840,8 @@ function Game() {
         }
         this.playLevelMidi();
         GameTimer.show(true);
+
+        this.playedFirstLevel = true;
     }
 
     this.testWorld = function (firstEntry) {

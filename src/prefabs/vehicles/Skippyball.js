@@ -5,6 +5,7 @@ import * as AudioManager from '../../utils/AudioManager';
 import { b2CloneVec2, b2LinearStiffness, b2MulVec2, b2SubVec2 } from '../../../libs/debugdraw';
 import easing from '../../b2Editor/utils/easing';
 import * as TutorialManager from '../../utils/TutorialManager';
+import { game } from '../../Game';
 
 
 const vec1 = new Box2D.b2Vec2();
@@ -209,7 +210,7 @@ class Skippyball extends BaseVehicle {
 
 		// push away other dynamic objects
 		this.pointContacts.forEach( (contactBody, index)  => {
-			if(contactBody && contactBody.GetType() === Box2D.b2_dynamicBody){
+			if(contactBody && contactBody.GetType() === Box2D.b2_dynamicBody && contactBody?.mySprite?.data.type !== game.editor.object_TRIGGER){
 				const contactDecrease = 0.5;
 				const baseForce = vec2;
 				baseForce.Set(direction.x, direction.y);
