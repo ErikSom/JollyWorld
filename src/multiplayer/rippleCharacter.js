@@ -23,6 +23,7 @@ export class RippleCharacter {
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight];
 		this.spriteSheet = null;
+		this.spriteProcessList = [];
 	}
 
 	loadSkin(url){
@@ -38,17 +39,38 @@ export class RippleCharacter {
 	}
 
 	buildSprite() {
-		const body = new PIXI.Sprite(this.spriteSheet.textures['Normal_Core']);
-		this.sprite.addChild(body);
+		this.sprites = {
+			body: new PIXI.Sprite(this.spriteSheet.textures['Normal_Core']),
+			head: new PIXI.Sprite(this.spriteSheet.textures['Normal_Head_Idle']),
+			shoulderLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Shoulder']),
+			shoulderRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Shoulder']),
+			armLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Arm']),
+			armRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Arm']),
+			handLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Hand']),
+			handRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Hand']),
+		}
+
+		for(let obj in this.sprites){
+			this.sprites[obj].anchor.set(0.5, 0.5);
+		}
+
+		this.sprite.addChild(this.sprites.handLeft);
+		this.sprite.addChild(this.sprites.armLeft);
+		this.sprite.addChild(this.sprites.shoulderLeft);
+		this.sprite.addChild(this.sprites.body);
+		this.sprite.addChild(this.sprites.head);
+		this.sprite.addChild(this.sprites.shoulderRight);
+		this.sprite.addChild(this.sprites.armRight);
+		this.sprite.addChild(this.sprites.handRight);
+		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight];
 	}
 
 	processServerData(data, time){
-		debugger;
 		this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
 
 		this.stateProcessList.forEach((state, i) => {
 			const stateData = data.parts[i];
-			state.updateServerPosition(stateData.id, stateData.x, stateData.y, stateData.r, time);
+			state.updateServerPosition(data.id, stateData.x, stateData.y, stateData.r, time);
 		});
 	}
 
@@ -57,17 +79,22 @@ export class RippleCharacter {
 			this.state[key].interpolatePosition();
 		});
 
-		// correct IK
-
 		// apply positions
 		this.sprite.x = this.state.body.x;
 		this.sprite.y = this.state.body.y;
-		this.sprite.angle = this.state.body.r;
+		if(this.sprites && this.sprites.body) this.sprites.body.angle = this.state.body.r;
+
+		this.spriteProcessList.forEach((sprite, i) => {
+			sprite.x = this.stateProcessList[i].x;
+			sprite.y = this.stateProcessList[i].y;
+			sprite.angle = this.stateProcessList[i].r;
+		});
+
+		// correct IK
 	}
 }
 
 const maxPreviousPosInterpolation = 5;
-const lagCompensation = 100;
 const syncSmooth = .4;
 
 class SyncObject {
@@ -130,9 +157,6 @@ class SyncObject {
 		}
 	}
 
-
-
-
 	angleDiff(sourceA, targetA) {
 		const mod = (a, n) => a - Math.floor(a/n) * n;
 		let a = targetA - sourceA
@@ -144,37 +168,23 @@ class SyncObject {
 		// no data no interpolation
 		if(this.previousPos.length === 0) return;
 
-		// get movement
-		const movement = { x: 0, y: 0 }
+		// // get movement
+		// const movement = { x: 0, y: 0 }
 
-		if(this.previousPos.length > 0){
-			this.previousPos.forEach((pos, i) => {
-				const nextPos = (i === this.previousPos.length -1 ) ? this.serverPos : this.previousPos[i + 1];
-				movement.x += nextPos.x - pos.x;
-				movement.y += nextPos.y - pos.y;
-			})
-			movement.x /= this.previousPos.length;
-			movement.y /= this.previousPos.length;
-		}
+		// if(this.previousPos.length > 0){
+		// 	this.previousPos.forEach((pos, i) => {
+		// 		const nextPos = (i === this.previousPos.length -1 ) ? this.serverPos : this.previousPos[i + 1];
+		// 		movement.x += nextPos.x - pos.x;
+		// 		movement.y += nextPos.y - pos.y;
+		// 	})
+		// 	movement.x /= this.previousPos.length;
+		// 	movement.y /= this.previousPos.length;
+		// }
 
-		const currentTime = Date.now() - lagCompensation;
-		const targetTime = this.serverPos.time;
-
-
+		// const currentTime = Date.now() - lagCompensation;
+		// const targetTime = this.serverPos.time;
 
 		const previousKnownPosition = this.previousPos[this.previousPos.length - 1];
-		// const timeDiff = targetTime - previousKnownPosition.time; // 100
-		// let realTimeDiff = currentTime - previousKnownPosition.time; // -200
-
-		// const progressOnTime = realTimeDiff / timeDiff;
-
-		// console.log("Progress on time:", progressOnTime)
-
-		// const lastStepDiff = {x: this.serverPos.x - previousKnownPosition.x, y: this.serverPos.y - previousKnownPosition.y};
-
-		// this.targetPos.x = previousKnownPosition.x + lastStepDiff.x * progressOnTime;
-		// this.targetPos.y = previousKnownPosition.y + lastStepDiff.y * progressOnTime;
-
 
 		const render_timestamp = Date.now() - (1000.0 / 20);
 
@@ -193,7 +203,6 @@ class SyncObject {
 
 		this.x += (this.targetPos.x - this.x) * syncSmooth;
 		this.y += (this.targetPos.y - this.y) * syncSmooth;
-		console.log("ANGL DIFF:", this.angleDiff(this.r, this.targetPos.r), this.r, this.targetPos.r);
 		this.r += this.angleDiff(this.r, this.targetPos.r) * syncSmooth;
 
 

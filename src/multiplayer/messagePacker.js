@@ -53,12 +53,12 @@ const extractPosition = (body, target) => {
 	}else{
 		const refPosition = target ? {
 			x: target.GetPosition().x * Settings.PTM,
-			y: target.GetPosition().x * Settings.PTM,
+			y: target.GetPosition().y * Settings.PTM,
 		} : lastValidMainData;
 
 		return {
-			x: refPosition.x - body.GetPosition().x * Settings.PTM,
-			y: refPosition.y - body.GetPosition().y * Settings.PTM,
+			x: body.GetPosition().x * Settings.PTM - refPosition.x,
+			y: body.GetPosition().y * Settings.PTM - refPosition.y,
 			r: serializeAngle(body.GetAngle()),
 			state: BODY_STATE.NORMAL
 		}

@@ -33,7 +33,7 @@ export const stopSyncPlayer = () => {
 export const updateMultiplayer = () => {
 	const data = server.getCharacterDataToProcess();
 	data.forEach(data => {
-		const ping = 100;
+		const ping = 50;
 		const time = Date.now() - ping;
 		const characterData = characterFromBuffer(data.buffer);
 		players[data.playerID].processServerData(characterData, time);
