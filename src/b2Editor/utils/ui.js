@@ -257,6 +257,7 @@ const doSaveLevelData = async function (saveButton) {
         }, 2000);
     }).catch((error) => {
         alert("There was an error saving your level, please look in the console");
+        console.info("SAVE ERROR (saveLevelData):", error);
         saveButton.style.backgroundColor = '';
         saveButton.innerText = 'SAVE';
     });
