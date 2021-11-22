@@ -1384,56 +1384,56 @@ only screen and (max-width: 360px) and (max-height: 640px) and (orientation: por
 
 @font-face {
     font-family: 'Arapey';
-    src: url('./fonts/Arapey-Regular.ttf') format('truetype');
+    src: url('./fonts/Arapey-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Economica';
-    src: url('./fonts/Economica-Regular.ttf') format('truetype');
+    src: url('./fonts/Economica-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Erica One';
-    src: url('./fonts/EricaOne-Regular.ttf') format('truetype');
+    src: url('./fonts/EricaOne-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Karla';
-    src: url('./fonts/Karla-Regular.ttf') format('truetype');
+    src: url('./fonts/Karla-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Lily Script One';
-    src: url('./fonts/LilyScriptOne-Regular.ttf') format('truetype');
+    src: url('./fonts/LilyScriptOne-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Spinnaker';
-    src: url('./fonts/Spinnaker-Regular.ttf') format('truetype');
+    src: url('./fonts/Spinnaker-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Squada One';
-    src: url('./fonts/SquadaOne-Regular.ttf') format('truetype');
+    src: url('./fonts/SquadaOne-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Trochut';
-    src: url('./fonts/Trochut-Regular.ttf') format('truetype');
+    src: url('./fonts/Trochut-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
