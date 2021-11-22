@@ -95,15 +95,10 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="header">
                     <div class="logo"></div>
-                    <div class="sun"></div>
-                    <div class="clouds"></div>
-                    <div class="clouds-alpha"></div>
-                    <div class="grass1"></div>
-                    <div class="cycling-anim"></div>
-                    <div class="grass2"></div>
-                    <div class=bg-hider></div>
-                    <div class="mobile-bg"></div>
-                    <div class="hamburger"><span></span><span></span><span></span></div>
+                    <div class="search-filter">
+                        <div class="search-icon"></div>
+                        <input class="search-input">
+                    </div>
                     <div class="buttons">
                         <div class="discord"><span class="fit">${localize('mainmenu_login')}</span></div>
                         <div class="character-select">
@@ -137,34 +132,6 @@ function UIManager() {
                         </div>
                     </div>
                 </div>
-                <div class="filters">
-                    <div class="date-filter button checked">#</div>
-                    <div class ='date-filters'>
-                        <div class="today-filter button"><span class="fit">${localize('mainmenu_today')}</span></div>
-                        <div class="week-filter button"><span class="fit">${localize('mainmenu_thisweek')}</span></div>
-                        <div class="month-filter button"><span class="fit">${localize('mainmenu_thismonth')}</span></div>
-                        <div class="anytime-filter button checked"><span class="fit">${localize('mainmenu_anytime')}</span></div>
-                        <div class="vehicle-filters"></div>
-                    </div>
-                    <div class="featured-filter button checked">
-                    <svg class="check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58.7 50.4"><path d="M5.2 16.5c-2.8 0-4.2 1.4-4.2 4.2v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2z" fill="#333"/><path d="M1 20.7v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2c-2.8 0-4.2 1.4-4.2 4.2z" fill="none" stroke="#66cd32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g><path d="M58.1 1.6c-.2-.1-.5-.1-.7-.1C41.7 6.9 29 16.2 19.5 29.4l-4.6-6.8-.3-.3c-.2-.1-.3-.1-.5-.1H2.2c-.2 0-.5.1-.7.2-.2.2-.3.4-.3.6s0 .4.2.6l15 22.5c.1.2.3.3.5.4.2.1.4.1.6 0s.4-.2.5-.4C29 29.3 42.5 15 58.2 3.2c.2-.1.3-.3.4-.5 0-.3 0-.5-.1-.7 0-.2-.2-.3-.4-.4z"/><path d="M18.2 29.6l-5.4-8H1l15 22.5C27.1 27.2 40.6 12.8 56.5 1c-16 5.5-28.7 15-38.3 28.6z" fill="red"/><path d="M18.2 29.6C27.8 16 40.5 6.5 56.5 1 40.6 12.8 27.1 27.2 16 44.1L1 21.6h11.9l5.3 8z" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
-                    <div><span class="fit">${localize('mainmenu_featured')}</span></div>
-                    </div>
-                    <div style="position:relative">
-                        <div class="more button checked"><span class="fit">${localize('mainmenu_more')}</span></div>
-                        <div class="other-filters">
-                            <div class="best-filter button checked"><span class="fit">${localize('mainmenu_best_rated')}</span></div>
-                            <div class="mostplayed-filter button"><span class="fit">${localize('mainmenu_most_played')}</span></div>
-                            <div class="newest-filter button"><span class="fit">${localize('mainmenu_newest')}</span></div>
-                            <div class="oldest-filter button"><span class="fit">${localize('mainmenu_oldest')}</span></div>
-                        </div>
-                    </div>
-                    <div class="search-filter">
-                        <div class="search-icon"></div>
-                        <input class="search-input">
-                    </div>
-                </div>
-                <div class="game-scroll-block"></div>
                 <div class="page-footer">
                     <div class="text">
                         <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
@@ -192,63 +159,64 @@ function UIManager() {
                 mainMenu.classList.add('mobile');
             }
 
-            const vehicleFilters = mainMenu.querySelector('.vehicle-filters');
-            for(let i = 0; i<=Settings.availableVehicles.length; i++){
-                const vehicleFilter = document.createElement('div');
-                vehicleFilter.classList.add('button');
-                vehicleFilters.appendChild(vehicleFilter);
+            // const vehicleFilters = mainMenu.querySelector('.vehicle-filters');
+            // for(let i = 0; i<=Settings.availableVehicles.length; i++){
+            //     const vehicleFilter = document.createElement('div');
+            //     vehicleFilter.classList.add('button');
+            //     vehicleFilters.appendChild(vehicleFilter);
 
-                const vehicleIcon = new Image();
-                vehicleIcon.src = `assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
-                vehicleFilter.appendChild(vehicleIcon);
-            }
+            //     const vehicleIcon = new Image();
+            //     vehicleIcon.src = `assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
+            //     vehicleFilter.appendChild(vehicleIcon);
+            // }
 
-            const filters = mainMenu.querySelector('.filters');
-            Array.from(filters.querySelectorAll('.button')).forEach( button => {
-                if(button.classList.contains('featured-filter')){
-                    button.onclick = () => {
-                        button.classList.toggle('checked');
-                        this.reloadMainMenuGames();
-                    }
-                }else if(button.classList.contains('date-filter')){
-                    const dateFilters = filters.querySelector('.date-filters');
-                    button.onclick = () => dateFilters.classList.toggle('open');
-                }else if(button.parentNode.classList.contains('date-filters')){
-                    const dateFilters = filters.querySelector('.date-filters');
-                    const buttons = Array.from(dateFilters.querySelectorAll(':scope > .button'));
-                    button.onclick = ()=>{
-                        buttons.forEach(button => button.classList.remove('checked'));
-                        button.classList.add('checked');
-                        // dateFilters.classList.remove('open');
-                        this.reloadMainMenuGames();
-                    }
-                }else if(button.parentNode.classList.contains('vehicle-filters')){
-                    const buttons = Array.from(vehicleFilters.querySelectorAll('.button'));
-                    button.onclick = ()=>{
-                        const wasChecked = button.classList.contains('checked');
-                        buttons.forEach(button => button.classList.remove('checked'));
-                        if(!wasChecked) button.classList.add('checked');
-                        // dateFilters.classList.remove('open');
-                        this.reloadMainMenuGames();
-                    }
-                }else if(button.classList.contains('more')){
-                    const otherFilters = filters.querySelector('.other-filters');
-                    button.onclick = ()=>{
-                        otherFilters.classList.toggle('open');
-                    }
-                }else{
-                    const otherFilters = filters.querySelector('.other-filters');
-                    const buttons = Array.from(otherFilters.querySelectorAll('.button'));
-                    button.onclick = ()=>{
-                        buttons.forEach(button => button.classList.remove('checked'));
-                        button.classList.add('checked');
-                        otherFilters.classList.remove('open');
-                        this.reloadMainMenuGames();
-                    }
-                }
-            })
+            // const filters = mainMenu.querySelector('.filters');
+            // Array.from(filters.querySelectorAll('.button')).forEach( button => {
+            //     if(button.classList.contains('featured-filter')){
+            //         button.onclick = () => {
+            //             button.classList.toggle('checked');
+            //             this.reloadMainMenuGames();
+            //         }
+            //     }else if(button.classList.contains('date-filter')){
+            //         const dateFilters = filters.querySelector('.date-filters');
+            //         button.onclick = () => dateFilters.classList.toggle('open');
+            //     }else if(button.parentNode.classList.contains('date-filters')){
+            //         const dateFilters = filters.querySelector('.date-filters');
+            //         const buttons = Array.from(dateFilters.querySelectorAll(':scope > .button'));
+            //         button.onclick = ()=>{
+            //             buttons.forEach(button => button.classList.remove('checked'));
+            //             button.classList.add('checked');
+            //             // dateFilters.classList.remove('open');
+            //             this.reloadMainMenuGames();
+            //         }
+            //     }else if(button.parentNode.classList.contains('vehicle-filters')){
+            //         const buttons = Array.from(vehicleFilters.querySelectorAll('.button'));
+            //         button.onclick = ()=>{
+            //             const wasChecked = button.classList.contains('checked');
+            //             buttons.forEach(button => button.classList.remove('checked'));
+            //             if(!wasChecked) button.classList.add('checked');
+            //             // dateFilters.classList.remove('open');
+            //             this.reloadMainMenuGames();
+            //         }
+            //     }else if(button.classList.contains('more')){
+            //         const otherFilters = filters.querySelector('.other-filters');
+            //         button.onclick = ()=>{
+            //             otherFilters.classList.toggle('open');
+            //         }
+            //     }else{
+            //         const otherFilters = filters.querySelector('.other-filters');
+            //         const buttons = Array.from(otherFilters.querySelectorAll('.button'));
+            //         button.onclick = ()=>{
+            //             buttons.forEach(button => button.classList.remove('checked'));
+            //             button.classList.add('checked');
+            //             otherFilters.classList.remove('open');
+            //             this.reloadMainMenuGames();
+            //         }
+            //     }
+            // })
 
-            const searchInput = filters.querySelector('.search-input');
+            const header = mainMenu.querySelector('.header');
+            const searchInput = header.querySelector('.search-input');
 
 
             const shouldSearch = ()=> {
@@ -264,25 +232,24 @@ function UIManager() {
                 }
             })
 
-            searchInput.addEventListener('focus', ()=> filters.classList.add('search-focussed'));
+            searchInput.addEventListener('focus', ()=> header.classList.add('search-focussed'));
             searchInput.addEventListener('blur', ()=> {
-                filters.classList.remove('search-focussed');
+                header.classList.remove('search-focussed');
                 shouldSearch();
             });
 
-            const searchIcon = filters.querySelector('.search-icon');
+            const searchIcon = header.querySelector('.search-icon');
             searchIcon.addEventListener('click', () => shouldSearch())
 
 
-            if(backendManager.isLoggedIn()){
-                const bestFilter = filters.querySelector('.best-filter');
-                const mostFilter = filters.querySelector('.newest-filter');
+            // if(backendManager.isLoggedIn()){
+            //     const bestFilter = filters.querySelector('.best-filter');
+            //     const mostFilter = filters.querySelector('.newest-filter');
 
-                bestFilter.classList.remove('checked');
-                mostFilter.classList.add('checked');
-            }
+            //     bestFilter.classList.remove('checked');
+            //     mostFilter.classList.add('checked');
+            // }
 
-            const header = mainMenu.querySelector('.header');
 
             const characterSelect = header.querySelector('.character-select');
             characterSelect.onclick = ()=> {
@@ -302,25 +269,7 @@ function UIManager() {
                 }
             }
 
-            const hamburger = header.querySelector('.hamburger');
-            const mobileBG = header.querySelector('.mobile-bg');
             const headerButtons = header.querySelector('.buttons');
-            const discordButton = header.querySelector('.discord');
-            hamburger.onclick = ()=>{
-                mobileBG.classList.toggle('open');
-                headerButtons.classList.toggle('open');
-
-                textFit(discordButton.querySelector('.fit'));
-                textFit(characterSelect.querySelector('.fit'));
-                textFit(editorButton.querySelector('.fit'));
-            }
-
-            mobileBG.onpointerup = () => {
-                if(mobileBG.classList.contains('open')){
-                    mobileBG.classList.toggle('open');
-                    headerButtons.classList.toggle('open');
-                }
-            }
 
             const volumeButton = header.querySelector('.volume');
             if(!Settings.sfxOn) volumeButton.classList.add('disabled');
@@ -439,7 +388,7 @@ function UIManager() {
         if(window.innerWidth<820){
             gamesScroll.style.height = (window.innerHeight - 164)+'px';
         }else{
-            gamesScroll.style.height = (window.innerHeight - 188)+'px';
+            gamesScroll.style.height = (window.innerHeight - (70 + 42 + 14))+'px';
         }
     }
 
@@ -515,31 +464,36 @@ function UIManager() {
     }
 
     this.determineMainMenuFilter = ()=>{
-        const filters = mainMenu.querySelector('.filters')
-        const featured = filters.querySelector('.featured-filter').classList.contains('checked');
-        const vehicleFilters = filters.querySelector('.vehicle-filters');
+        // const filters = mainMenu.querySelector('.filters')
+        // const featured = filters.querySelector('.featured-filter').classList.contains('checked');
+        // const vehicleFilters = filters.querySelector('.vehicle-filters');
 
-        let search = filters.querySelector('.search-input').value;
+        // let search = filters.querySelector('.search-input').value;
 
-        let sort = '';
-        if(filters.querySelector('.mostplayed-filter').classList.contains('checked')) sort = this.FILTER_SORT_MOSTPLAYED;
-        if(filters.querySelector('.best-filter').classList.contains('checked')) sort = this.FILTER_SORT_BEST;
-        if(filters.querySelector('.newest-filter').classList.contains('checked')) sort = this.FILTER_SORT_NEWEST;
-        if(filters.querySelector('.oldest-filter').classList.contains('checked')) sort = this.FILTER_SORT_OLDEST;
+        // let sort = '';
+        // if(filters.querySelector('.mostplayed-filter').classList.contains('checked')) sort = this.FILTER_SORT_MOSTPLAYED;
+        // if(filters.querySelector('.best-filter').classList.contains('checked')) sort = this.FILTER_SORT_BEST;
+        // if(filters.querySelector('.newest-filter').classList.contains('checked')) sort = this.FILTER_SORT_NEWEST;
+        // if(filters.querySelector('.oldest-filter').classList.contains('checked')) sort = this.FILTER_SORT_OLDEST;
 
-        let range = '';
-        if(filters.querySelector('.anytime-filter').classList.contains('checked')) range = this.FILTER_RANGE_ANYTIME;
-        if(filters.querySelector('.month-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISMONTH;
-        if(filters.querySelector('.week-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
-        if(filters.querySelector('.today-filter').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
+        // let range = '';
+        // if(filters.querySelector('.anytime-filter').classList.contains('checked')) range = this.FILTER_RANGE_ANYTIME;
+        // if(filters.querySelector('.month-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISMONTH;
+        // if(filters.querySelector('.week-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
+        // if(filters.querySelector('.today-filter').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
 
 
-        let vehicle = '';
-        const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
-        if(checkedVehicleFilter){
-            vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter);
-        }
+        // let vehicle = '';
+        // const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
+        // if(checkedVehicleFilter){
+        //     vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter);
+        // }
 
+        const search = '';
+        const featured = true;
+        const sort = this.FILTER_SORT_MOSTPLAYED;
+        const range = this.FILTER_RANGE_ANYTIME;
+        const vehicle = '';
 
         return {
             search,
