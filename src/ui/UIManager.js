@@ -95,18 +95,13 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="header">
                     <div class="logo"></div>
-                    <div class="search-filter">
-                        <div class="search-icon"></div>
-                        <input class="search-input">
-                    </div>
                     <div class="buttons">
-                        <div class="discord"><span class="fit">${localize('mainmenu_login')}</span></div>
-                        <div class="character-select">
-                            <div class="text-change"><span class="fit">${localize('mainmenu_change')}</span></div>
+                        <div class="filters">Filters</div>
+                        <div class="search-filter">
+                            <div class="search-icon"></div>
+                            <input class="search-input">
                         </div>
-                        <div class="editor"><span class="fit h2">${localize('mainmenu_editor')}</span><span class="availablepc">${localize('mainmenu_availablepc')}</span></div>
-                        <div class="volume"></div>
-                        <div class="settings"></div>
+                        <div class="exit">Exit</div>
                     </div>
                 </div>
                 <div class = "games-scroll">
@@ -159,62 +154,6 @@ function UIManager() {
                 mainMenu.classList.add('mobile');
             }
 
-            // const vehicleFilters = mainMenu.querySelector('.vehicle-filters');
-            // for(let i = 0; i<=Settings.availableVehicles.length; i++){
-            //     const vehicleFilter = document.createElement('div');
-            //     vehicleFilter.classList.add('button');
-            //     vehicleFilters.appendChild(vehicleFilter);
-
-            //     const vehicleIcon = new Image();
-            //     vehicleIcon.src = `assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
-            //     vehicleFilter.appendChild(vehicleIcon);
-            // }
-
-            // const filters = mainMenu.querySelector('.filters');
-            // Array.from(filters.querySelectorAll('.button')).forEach( button => {
-            //     if(button.classList.contains('featured-filter')){
-            //         button.onclick = () => {
-            //             button.classList.toggle('checked');
-            //             this.reloadMainMenuGames();
-            //         }
-            //     }else if(button.classList.contains('date-filter')){
-            //         const dateFilters = filters.querySelector('.date-filters');
-            //         button.onclick = () => dateFilters.classList.toggle('open');
-            //     }else if(button.parentNode.classList.contains('date-filters')){
-            //         const dateFilters = filters.querySelector('.date-filters');
-            //         const buttons = Array.from(dateFilters.querySelectorAll(':scope > .button'));
-            //         button.onclick = ()=>{
-            //             buttons.forEach(button => button.classList.remove('checked'));
-            //             button.classList.add('checked');
-            //             // dateFilters.classList.remove('open');
-            //             this.reloadMainMenuGames();
-            //         }
-            //     }else if(button.parentNode.classList.contains('vehicle-filters')){
-            //         const buttons = Array.from(vehicleFilters.querySelectorAll('.button'));
-            //         button.onclick = ()=>{
-            //             const wasChecked = button.classList.contains('checked');
-            //             buttons.forEach(button => button.classList.remove('checked'));
-            //             if(!wasChecked) button.classList.add('checked');
-            //             // dateFilters.classList.remove('open');
-            //             this.reloadMainMenuGames();
-            //         }
-            //     }else if(button.classList.contains('more')){
-            //         const otherFilters = filters.querySelector('.other-filters');
-            //         button.onclick = ()=>{
-            //             otherFilters.classList.toggle('open');
-            //         }
-            //     }else{
-            //         const otherFilters = filters.querySelector('.other-filters');
-            //         const buttons = Array.from(otherFilters.querySelectorAll('.button'));
-            //         button.onclick = ()=>{
-            //             buttons.forEach(button => button.classList.remove('checked'));
-            //             button.classList.add('checked');
-            //             otherFilters.classList.remove('open');
-            //             this.reloadMainMenuGames();
-            //         }
-            //     }
-            // })
-
             const header = mainMenu.querySelector('.header');
             const searchInput = header.querySelector('.search-input');
 
@@ -251,62 +190,8 @@ function UIManager() {
             // }
 
 
-            const characterSelect = header.querySelector('.character-select');
-            characterSelect.onclick = ()=> {
-                mobileBG.classList.remove('open');
-                headerButtons.classList.remove('open');
-                this.showCharacterSelect();
-            }
-
-            const editorButton = header.querySelector('.editor');
-
-            if(MobileController.isMobile()){
-                editorButton.classList.add('mobile');
-            }else{
-                editorButton.onclick = ()=> {
-                    this.hideMainMenu();
-                    game.openEditor();
-                }
-            }
-
-            const headerButtons = header.querySelector('.buttons');
-
-            const volumeButton = header.querySelector('.volume');
-            if(!Settings.sfxOn) volumeButton.classList.add('disabled');
-
-            volumeButton.onclick = ()=>{
-                game.toggleMute();
-                if(!Settings.sfxOn){
-                    volumeButton.classList.add('disabled');
-                }else{
-                    volumeButton.classList.remove('disabled');
-                }
-            }
-            const loginButton = header.querySelector('.discord');
-            loginButton.onclick = ()=>{
-                if(backendManager.isLoggedIn()){
-                    // show profile page
-                    if(backendManager.userData && backendManager.userData.username){
-                        this.showUserPage(backendManager.userData.username, 'favorite');
-                    }
-                }else{
-                    this.openDiscordOauth();
-                }
-            }
-
-            backendManager.registerListener('login', ()=>this.handleLoginChange());
-            this.handleLoginChange();
-
-
             if(!MobileController.isMobile()){
                 new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
-            }
-
-            const settingsButton = header.querySelector('.settings');
-            settingsButton.onclick = ()=> {
-                mobileBG.classList.remove('open');
-                headerButtons.classList.remove('open');
-                this.showSettingsMenu()
             }
 
             const country = mainMenu.querySelector('.country');
@@ -321,9 +206,6 @@ function UIManager() {
                 youtubeLogo.style.display = 'none';
                 facebookLogo.style.display = 'none';
             }
-
-            window.addEventListener('resize', ()=> {this.mainMenuResize()})
-            this.mainMenuResize();
 
             customGUIContainer.appendChild(mainMenu);
 
@@ -344,8 +226,6 @@ function UIManager() {
                     textFit(el)
             });
         }
-
-        this.setMainMenuCharacterImage();
 
         mainMenu.style.display = 'block';
 
@@ -381,17 +261,6 @@ function UIManager() {
         selectFlag.className = `flag fflag fflag-${Settings.currentCountry.toUpperCase()} ff-lg ff-app`;
     }
 
-    this.mainMenuResize = ()=> {
-        customGUIContainer.style.height = window.innerHeight+'px';
-        mainMenu.style.height = window.innerHeight+'px';
-        const gamesScroll = mainMenu.querySelector('.games-scroll');
-        if(window.innerWidth<820){
-            gamesScroll.style.height = (window.innerHeight - 164)+'px';
-        }else{
-            gamesScroll.style.height = (window.innerHeight - (70 + 42 + 14))+'px';
-        }
-    }
-
     this.handleLoginChange = async ()=> {
         const header = mainMenu.querySelector('.header');
 
@@ -411,16 +280,6 @@ function UIManager() {
             span.innerText = 'Login';
             discordButton.style.fontSize = '36px';
         }
-    }
-
-    this.setMainMenuCharacterImage = ()=> {
-        const header = mainMenu.querySelector('.header');
-        const characterSelect = header.querySelector('.character-select');
-
-        getModdedPortrait(`character${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
-            console.log("URL:", url);
-            if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
-        })
     }
 
     this.setLevelDataOnGameTile = (game, levelData) => {

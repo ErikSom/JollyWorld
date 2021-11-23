@@ -28,21 +28,14 @@
 
 .base-button{
 	@extend .simple-button;
-	background-color: #51A328;
-	width: 200px;
-	height: 38px;
-	border-radius: 8px;
-	border: 2px solid black;
-	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
-	color: white;
+	background-color: #FFFFFF;
 	font-family: 'Montserrat', sans-serif;
-	text-shadow: 1.2px 2px black;
 	text-align: center;
-	line-height: 38px;
-	font-size: 23px;
-	text-rendering: geometricPrecision;
-	cursor: pointer;
+	font-size: 14px;
+	padding: 8px;
 	white-space: nowrap;
+	font-variation-settings: "wght" 600;
+	border: 2px solid #333333;
 }
 
 .back-button{
