@@ -96,27 +96,29 @@ function UIManager() {
                 <div class="header">
                     <div class="logo"></div>
                     <div class="buttons">
-                        <div class="filters">Filters
-                        <div class="filter-fold">
-                            <div>Featured Games</div>
-                            <div class="feature-toggle"></div>
-                            <div>Sorted By:</div>
-                            <label class="checkbox-container best-rated">Best Rated
-                                <input class="css-checkbox" type="checkbox" checked="checked">
-                                <i></i>
-                            </label>
-                            <label class="checkbox-container most-played">Most Played
-                                <input class="css-checkbox" type="checkbox" checked="checked">
-                                <i></i>
-                            </label>
-                            <label class="checkbox-container most-played">Newest
-                                <input class="css-checkbox" type="checkbox" checked="checked">
-                                <i></i>
-                            </label>
-                            <label class="checkbox-container most-played">Oldest
-                                <input class="css-checkbox" type="checkbox" checked="checked">
-                                <i></i>
-                            </label>
+                        <div class="filters-container">
+                            <div class="filters">Filters</div>
+                            <div class="filters-fold">
+                                <div>Featured Games</div>
+                                <div class="feature-toggle"></div>
+                                <div>Sorted By:</div>
+                                <label class="checkbox-container best-rated">Best Rated
+                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container most-played">Most Played
+                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container most-played">Newest
+                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container most-played">Oldest
+                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                    <i></i>
+                                </label>
+                            </div>
                         </div>
                         <div class="search-filter">
                             <div class="search-icon"></div>
@@ -176,8 +178,17 @@ function UIManager() {
             }
 
             const header = mainMenu.querySelector('.header');
-            const searchInput = header.querySelector('.search-input');
 
+            // FILTERS
+            const filterContainer = header.querySelector('.filters-container');
+            const filterButton = filterContainer.querySelector('.filters');
+
+            filterButton.addEventListener('click', ()=>{
+                filterContainer.classList.toggle('open');
+            })
+
+            // SEARCH
+            const searchInput = header.querySelector('.search-input');
 
             const shouldSearch = ()=> {
                 if(lastSearch !== searchInput.value){

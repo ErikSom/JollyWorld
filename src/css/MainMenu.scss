@@ -133,12 +133,35 @@
 				}
 			}
 
-			.filters{
-				z-index: 2;
-				.css-checkbox{
-					@include css-checkbox(24px, $selectedColor: #333333, $checkColor: #43F07C);
+			.filters-container{
+				z-index: 3;
+
+				.filters-fold{
+					position: absolute;
+					display: flex;
+					flex-direction: column;
+					background: white;
+					border: 2px solid #333333;
+					transform: translateY(-2px);
+					z-index: -1;
+					visibility: hidden;
+
+					.css-checkbox{
+						@include css-checkbox(24px, $selectedColor: #333333, $checkColor: #43F07C);
+					}
+				}
+
+				&.open{
+					.filters{
+						border-bottom: none;
+					}
+					.filters-fold{
+						visibility: visible;
+					}
 				}
 			}
+
+
 
 			.exit, .filters{
 				@extend .base-button;
