@@ -1,10 +1,76 @@
 //https://www.shadertoy.com/view/MtcGD7
 @use 'Components';
 
+@mixin css-checkbox($size: '16px',
+	$selectedColor: #444,
+	$defaultColor: white,
+	$checkColor: #FFF,
+	$valign: 'middle') {
+	display: none;
+
+	&:checked+i {
+		background: #{$selectedColor};
+		border-color: #{$selectedColor};
+
+		&:hover:after {
+			opacity: 1;
+		}
+
+		&:after {
+			opacity: 1;
+		}
+	}
+
+	+i {
+		box-sizing: border-box;
+
+		&:before,
+		&:after {
+			box-sizing: border-box;
+		}
+	}
+
+	+i {
+		position: relative;
+		display: inline-block;
+		top: -1px;
+		width: #{$size};
+		height: #{$size};
+		margin: 0;
+		vertical-align: #{$valign};
+		transition: background 200ms ease;
+		border-radius: 0;
+		background: #{$defaultColor};
+		font-size: #{$size};
+		cursor: pointer;
+
+		&:hover:after {
+			opacity: .2;
+		}
+
+		&:before,
+		&:after {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 3px;
+			height: 20px;
+			transform: rotate(45deg) translate(-50%, -50%);
+			transform-origin: top left;
+			transition: all 420ms;
+			content: '';
+			background-color: #{$checkColor};
+		}
+		&:after {
+			transform: rotate(-45deg) translate(-50%, -50%);
+		}
+	}
+}
+
 .mainmenu{
 	width: 100vw;
 	height: 100vh;
-	background-color: #FFFFFF;
+	padding-top: 68px;
 
 	&.inactive{
 		filter: brightness(0.2);
@@ -30,6 +96,7 @@
 			margin: 10px;
 			top:0;
 			left:0;
+			z-index: 0;
 		}
 		.buttons{
 			position: absolute;
@@ -37,7 +104,7 @@
 			right:0;
 			display: flex;
 			align-items: center;
-			gap: 4px;
+			gap: 6px;
 			margin: 10px;
 			.search-filter{
 				position: relative;
@@ -60,9 +127,16 @@
 					transition: width 0.2s ease-in;
 					border: 2px solid #333333;
 					&:focus{
-						max-width: 300px;
+						max-width: 80vw;
 						width: 300px;
 					}
+				}
+			}
+
+			.filters{
+				z-index: 2;
+				.css-checkbox{
+					@include css-checkbox(24px, $selectedColor: #333333, $checkColor: #43F07C);
 				}
 			}
 
@@ -76,7 +150,7 @@
 		height: calc(100vh - 140px);
 		overflow-x: hidden;
 		overflow-y: auto;
-		margin-right: 14px
+		margin: 0 14px 0 0;
 	}
 	.games{
 		display: grid;
@@ -310,3 +384,4 @@
 		}
 	}
 }
+

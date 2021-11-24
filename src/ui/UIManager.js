@@ -96,7 +96,28 @@ function UIManager() {
                 <div class="header">
                     <div class="logo"></div>
                     <div class="buttons">
-                        <div class="filters">Filters</div>
+                        <div class="filters">Filters
+                        <div class="filter-fold">
+                            <div>Featured Games</div>
+                            <div class="feature-toggle"></div>
+                            <div>Sorted By:</div>
+                            <label class="checkbox-container best-rated">Best Rated
+                                <input class="css-checkbox" type="checkbox" checked="checked">
+                                <i></i>
+                            </label>
+                            <label class="checkbox-container most-played">Most Played
+                                <input class="css-checkbox" type="checkbox" checked="checked">
+                                <i></i>
+                            </label>
+                            <label class="checkbox-container most-played">Newest
+                                <input class="css-checkbox" type="checkbox" checked="checked">
+                                <i></i>
+                            </label>
+                            <label class="checkbox-container most-played">Oldest
+                                <input class="css-checkbox" type="checkbox" checked="checked">
+                                <i></i>
+                            </label>
+                        </div>
                         <div class="search-filter">
                             <div class="search-icon"></div>
                             <input class="search-input">
