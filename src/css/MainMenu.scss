@@ -12,10 +12,6 @@
 		background: #{$selectedColor};
 		border-color: #{$selectedColor};
 
-		&:hover:after{
-			opacity: 1;
-		}
-
 		&:before,
 		&:after {
 			opacity: 1;
