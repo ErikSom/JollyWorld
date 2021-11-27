@@ -101,11 +101,11 @@ function UIManager() {
                             <div class="filters-fold">
                                 <div>Featured Games</div>
                                 <label class="feature-toggle switch">
-                                    <input type="checkbox" id="togBtn" checked>
+                                    <input type="checkbox" checked>
                                     <div class="slider round"></div>
                                 </label>
                                 <div>Sorted By:</div>
-                                <label class="checkbox-container best-rated">
+                                <label class="checkbox-container best-rated checked">
                                     <input class="css-checkbox" type="checkbox" checked>Best Rated
                                     <i></i>
                                 </label>
@@ -113,17 +113,17 @@ function UIManager() {
                                     <input class="css-checkbox" type="checkbox" >Most Played
                                     <i></i>
                                 </label>
-                                <label class="checkbox-container most-played">
+                                <label class="checkbox-container newest">
                                     <input class="css-checkbox" type="checkbox" >Newest
                                     <i></i>
                                 </label>
-                                <label class="checkbox-container most-played">
+                                <label class="checkbox-container oldest">
                                     <input class="css-checkbox" type="checkbox" >Oldest
                                     <i></i>
                                 </label>
                                 <div>Filters:</div>
                                 <div class="date">
-                                    <div class="all button">All Time</div>
+                                    <div class="all button checked">All Time</div>
                                     <div class="month button">This Month</div>
                                     <div class="week button">This Week</div>
                                     <div class="today button">Today</div>
@@ -194,6 +194,12 @@ function UIManager() {
 
             // FILTERS
             const filterContainer = header.querySelector('.filters-container');
+
+            const featureToggle = filterContainer.querySelector('.feature-toggle > input');
+            featureToggle.addEventListener('change', ()=>{
+                this.reloadMainMenuGames();
+            });
+
             const filterButton = filterContainer.querySelector('.filters');
 
             const setOpenFilters = bool => {
@@ -244,6 +250,7 @@ function UIManager() {
                 checkBox.addEventListener('click', () => {
                     checkBoxes.forEach(cb => cb.checked = false);
                     checkBox.checked = true;
+                    this.reloadMainMenuGames();
                 });
             });
 
@@ -258,9 +265,12 @@ function UIManager() {
                         dateButtons.forEach(but => {
                             but.style.display = 'none';
                             but.classList.remove('clicked');
+                            but.classList.remove('checked');
                         });
                         date.classList.remove('open');
                         button.style.display = 'block';
+                        button.classList.add('checked');
+                        this.reloadMainMenuGames();
                     }else{
                         date.classList.add('open');
                         dateButtons.forEach(but => but.style.display = 'block');
@@ -290,9 +300,12 @@ function UIManager() {
                         vehicleButtons.forEach(but => {
                             but.style.display = 'none';
                             but.classList.remove('clicked');
+                            but.classList.remove('checked');
                         });
                         vehicles.classList.remove('open');
                         button.style.display = 'block';
+                        button.classList.add('checked');
+                        this.reloadMainMenuGames();
                     }else{
                         vehicles.classList.add('open');
                         vehicleButtons.forEach(but => but.style.display = 'block');
@@ -467,38 +480,70 @@ function UIManager() {
 
         // const tags = game.querySelector('.tags');
     }
+    /*
+<div class="filters-container">
+                            <div class="filters">Filters</div>
+                            <div class="filters-fold">
+                                <div>Featured Games</div>
+                                <label class="feature-toggle switch">
+                                    <input type="checkbox" id="togBtn" checked>
+                                    <div class="slider round"></div>
+                                </label>
+                                <div>Sorted By:</div>
+                                <label class="checkbox-container best-rated">
+                                    <input class="css-checkbox" type="checkbox" checked>Best Rated
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container most-played">
+                                    <input class="css-checkbox" type="checkbox" >Most Played
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container newest">
+                                    <input class="css-checkbox" type="checkbox" >Newest
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container oldest">
+                                    <input class="css-checkbox" type="checkbox" >Oldest
+                                    <i></i>
+                                </label>
+                                <div>Filters:</div>
+                                <div class="date">
+                                    <div class="all button">All Time</div>
+                                    <div class="month button">This Month</div>
+                                    <div class="week button">This Week</div>
+                                    <div class="today button">Today</div>
+                                </div>
+                                <div class="vehicles">
+                                    <div class="all button">All Vehicles</div>
+                                </div>
+                            </div>
+    */
 
     this.determineMainMenuFilter = ()=>{
-        // const filters = mainMenu.querySelector('.filters')
-        // const featured = filters.querySelector('.featured-filter').classList.contains('checked');
-        // const vehicleFilters = filters.querySelector('.vehicle-filters');
+        const filters = mainMenu.querySelector('.filters-fold')
+        const featured = filters.querySelector('.feature-toggle > input').checked;
+        const vehicleFilters = filters.querySelector('.vehicles');
 
-        // let search = filters.querySelector('.search-input').value;
+        let search = mainMenu.querySelector('.search-input').value;
 
-        // let sort = '';
-        // if(filters.querySelector('.mostplayed-filter').classList.contains('checked')) sort = this.FILTER_SORT_MOSTPLAYED;
-        // if(filters.querySelector('.best-filter').classList.contains('checked')) sort = this.FILTER_SORT_BEST;
-        // if(filters.querySelector('.newest-filter').classList.contains('checked')) sort = this.FILTER_SORT_NEWEST;
-        // if(filters.querySelector('.oldest-filter').classList.contains('checked')) sort = this.FILTER_SORT_OLDEST;
+        let sort = '';
+        if(filters.querySelector('.most-played > input').checked) sort = this.FILTER_SORT_MOSTPLAYED;
+        if(filters.querySelector('.best-rated > input').checked) sort = this.FILTER_SORT_BEST;
+        if(filters.querySelector('.newest > input').checked) sort = this.FILTER_SORT_NEWEST;
+        if(filters.querySelector('.oldest > input').checked) sort = this.FILTER_SORT_OLDEST;
 
-        // let range = '';
-        // if(filters.querySelector('.anytime-filter').classList.contains('checked')) range = this.FILTER_RANGE_ANYTIME;
-        // if(filters.querySelector('.month-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISMONTH;
-        // if(filters.querySelector('.week-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
-        // if(filters.querySelector('.today-filter').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
+        let range = '';
+        if(filters.querySelector('.all').classList.contains('checked')) range = this.FILTER_RANGE_ANYTIME;
+        if(filters.querySelector('.month').classList.contains('checked')) range = this.FILTER_RANGE_THISMONTH;
+        if(filters.querySelector('.week').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
+        if(filters.querySelector('.today').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
 
 
-        // let vehicle = '';
-        // const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
-        // if(checkedVehicleFilter){
-        //     vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter);
-        // }
-
-        const search = '';
-        const featured = true;
-        const sort = this.FILTER_SORT_MOSTPLAYED;
-        const range = this.FILTER_RANGE_ANYTIME;
-        const vehicle = '';
+        let vehicle = '';
+        const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
+        if(checkedVehicleFilter){
+            vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter);
+        }
 
         return {
             search,
