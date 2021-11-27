@@ -100,24 +100,37 @@ function UIManager() {
                             <div class="filters">Filters</div>
                             <div class="filters-fold">
                                 <div>Featured Games</div>
-                                <div class="feature-toggle"></div>
+                                <label class="feature-toggle switch">
+                                    <input type="checkbox" id="togBtn" checked>
+                                    <div class="slider round"></div>
+                                </label>
                                 <div>Sorted By:</div>
-                                <label class="checkbox-container best-rated">Best Rated
-                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                <label class="checkbox-container best-rated">
+                                    <input class="css-checkbox" type="checkbox" checked>Best Rated
                                     <i></i>
                                 </label>
-                                <label class="checkbox-container most-played">Most Played
-                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                <label class="checkbox-container most-played">
+                                    <input class="css-checkbox" type="checkbox" >Most Played
                                     <i></i>
                                 </label>
-                                <label class="checkbox-container most-played">Newest
-                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                <label class="checkbox-container most-played">
+                                    <input class="css-checkbox" type="checkbox" >Newest
                                     <i></i>
                                 </label>
-                                <label class="checkbox-container most-played">Oldest
-                                    <input class="css-checkbox" type="checkbox" checked="checked">
+                                <label class="checkbox-container most-played">
+                                    <input class="css-checkbox" type="checkbox" >Oldest
                                     <i></i>
                                 </label>
+                                <div>Filters:</div>
+                                <div class="date">
+                                    <div class="all button">All Time</div>
+                                    <div class="month button">This Month</div>
+                                    <div class="week button">This Week</div>
+                                    <div class="today button">Today</div>
+                                </div>
+                                <div class="vehicles">
+                                    <div class="all button">All Vehicles</div>
+                                </div>
                             </div>
                         </div>
                         <div class="search-filter">
@@ -183,8 +196,109 @@ function UIManager() {
             const filterContainer = header.querySelector('.filters-container');
             const filterButton = filterContainer.querySelector('.filters');
 
+            const setOpenFilters = bool => {
+                if(bool){
+                    filterContainer.classList.add('open');
+
+                    if(this.filterOpenMouseEvent) return;
+
+                    this.filterOpenMouseEvent = event => {
+                        let targetElement = event.target;
+                        do {
+                            if (targetElement == filterContainer) return;
+                            targetElement = targetElement.parentNode;
+                        } while (targetElement);
+                       // close
+                       setOpenFilters(false);
+                    };
+                    document.addEventListener("click", this.filterOpenMouseEvent);
+                }else{
+                    filterContainer.classList.remove('open');
+
+                    Array.from(filterContainer.querySelectorAll('.open')).forEach(el => {
+                        el.classList.remove('open');
+                        Array.from(el.children).forEach(child => {
+                            if(child.classList.contains('clicked')){
+                                child.classList.remove('clicked');
+                            }else{
+                                child.style.display = 'none';
+                            }
+                        })
+                    });
+
+                    if(this.filterOpenMouseEvent){
+                        document.removeEventListener('click', this.filterOpenMouseEvent);
+                        delete this.filterOpenMouseEvent;
+                    }
+                }
+            }
+
             filterButton.addEventListener('click', ()=>{
-                filterContainer.classList.toggle('open');
+                setOpenFilters(!filterContainer.classList.contains('open'));
+            })
+            //
+
+            // SORT
+            const checkBoxes =filterContainer.querySelectorAll('.css-checkbox');
+            checkBoxes.forEach(checkBox => {
+                checkBox.addEventListener('click', () => {
+                    checkBoxes.forEach(cb => cb.checked = false);
+                    checkBox.checked = true;
+                });
+            });
+
+
+            // DATES
+            const date = filterContainer.querySelector('.date');
+    
+            const dateButtons = Array.from(date.querySelectorAll('.button'));
+            dateButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if(date.classList.contains('open')){
+                        dateButtons.forEach(but => {
+                            but.style.display = 'none';
+                            but.classList.remove('clicked');
+                        });
+                        date.classList.remove('open');
+                        button.style.display = 'block';
+                    }else{
+                        date.classList.add('open');
+                        dateButtons.forEach(but => but.style.display = 'block');
+                        button.classList.add('clicked');
+                    }
+                })
+            })
+
+
+            // VEHICLES
+            const vehicles = filterContainer.querySelector('.vehicles');
+            for(let i = 1; i<=Settings.availableVehicles.length; i++){
+                const vehicleFilter = document.createElement('div');
+                vehicleFilter.classList.add('button');
+                vehicles.appendChild(vehicleFilter);
+                vehicleFilter.style.display = 'none';
+
+                const vehicleIcon = new Image();
+                vehicleIcon.src = `assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
+                vehicleFilter.appendChild(vehicleIcon);
+            }
+
+            const vehicleButtons = Array.from(vehicles.querySelectorAll('.button'));
+            vehicleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if(vehicles.classList.contains('open')){
+                        vehicleButtons.forEach(but => {
+                            but.style.display = 'none';
+                            but.classList.remove('clicked');
+                        });
+                        vehicles.classList.remove('open');
+                        button.style.display = 'block';
+                    }else{
+                        vehicles.classList.add('open');
+                        vehicleButtons.forEach(but => but.style.display = 'block');
+                        button.classList.add('clicked');
+                    }
+                })
             })
 
             // SEARCH

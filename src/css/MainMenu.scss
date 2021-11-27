@@ -12,10 +12,11 @@
 		background: #{$selectedColor};
 		border-color: #{$selectedColor};
 
-		&:hover:after {
+		&:hover:after{
 			opacity: 1;
 		}
 
+		&:before,
 		&:after {
 			opacity: 1;
 		}
@@ -38,15 +39,10 @@
 		height: #{$size};
 		margin: 0;
 		vertical-align: #{$valign};
-		transition: background 200ms ease;
 		border-radius: 0;
 		background: #{$defaultColor};
 		font-size: #{$size};
 		cursor: pointer;
-
-		&:hover:after {
-			opacity: .2;
-		}
 
 		&:before,
 		&:after {
@@ -57,9 +53,9 @@
 			height: 20px;
 			transform: rotate(45deg) translate(-50%, -50%);
 			transform-origin: top left;
-			transition: all 420ms;
 			content: '';
 			background-color: #{$checkColor};
+			opacity: 0;
 		}
 		&:after {
 			transform: rotate(-45deg) translate(-50%, -50%);
@@ -67,10 +63,73 @@
 	}
 }
 
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 68px;
+	height: 34px;
+
+	input {
+		display:none;
+	}
+
+	input:checked + .slider {
+		background-color: #333333;
+	}
+
+	input:focus + .slider {
+		box-shadow: 0 0 1px #2196F3;
+	}
+
+	input:checked + .slider:before {
+		transform: translateX(34px);
+	}
+
+	input:checked + .slider:after{
+		content:'ON';
+		left: 32%;
+	}
+
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #333333;
+		border-radius: 34px;
+
+		&::before{
+			position: absolute;
+			content: "";
+			height: 26px;
+			width: 26px;
+			left: 4px;
+			bottom: 4px;
+			background-color: #43F07C;
+			transition: transform .25s;
+			border-radius: 50%;
+		}
+		&::after{
+			content:'OFF';
+			color: #43F07C;
+			display: block;
+			position: absolute;
+			transform: translate(-50%,-50%);
+			top: 50%;
+			left: 70%;
+			font-size: 12px;
+			font-family: Verdana, sans-serif;
+		}
+	}
+}
+
+
 .mainmenu{
 	width: 100vw;
 	height: 100vh;
-	padding-top: 68px;
+	// padding-top: 68px;
 
 	&.inactive{
 		filter: brightness(0.2);
@@ -134,6 +193,10 @@
 			}
 
 			.filters-container{
+				font-family: 'Montserrat', sans-serif;
+				font-variation-settings: "wght" 600;
+				font-size: 14px;
+
 				z-index: 3;
 
 				.filters-fold{
@@ -144,10 +207,61 @@
 					border: 2px solid #333333;
 					transform: translateY(-2px);
 					z-index: -1;
+					padding: 10px;
 					visibility: hidden;
+					gap: 6px;
+					min-width: 202px;
 
-					.css-checkbox{
-						@include css-checkbox(24px, $selectedColor: #333333, $checkColor: #43F07C);
+					.checkbox-container{
+						display: flex;
+						flex-direction: row-reverse;
+						gap: 10px;
+						justify-content: left;
+						align-items: center;
+
+						.css-checkbox{
+							@include css-checkbox(24px, $selectedColor: #333333, $defaultColor: #333333, $checkColor: #43F07C);
+						}
+						i{
+							float: left;
+						}
+					}
+
+					.date{
+						display: flex;
+						flex-direction: column;
+						gap: 6px;
+
+						.all, .month, .week, .today{
+							@extend .base-button;
+						}
+						.month, .week, .today{
+							display: none;
+						}
+
+						&.open{
+							border: 2px solid #CCCCCC;
+							padding: 6px;
+						}
+					}
+					.vehicles{
+						display: flex;
+						flex-direction: column;
+						gap: 6px;
+						.all, .button{
+							@extend .base-button;
+						}
+						.button{
+							img{
+								height: 14px;
+								transform: scale(1.6) translateY(1px);
+							}
+						}
+
+						&.open{
+							border: 2px solid #CCCCCC;
+							padding: 6px;
+						}
 					}
 				}
 
