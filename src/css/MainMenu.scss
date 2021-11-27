@@ -68,6 +68,7 @@
 	display: inline-block;
 	width: 68px;
 	height: 34px;
+	min-height: 34px;
 
 	input {
 		display:none;
@@ -211,6 +212,8 @@
 					visibility: hidden;
 					gap: 6px;
 					min-width: 202px;
+					max-height: 80vh;
+					overflow: scroll;
 
 					.checkbox-container{
 						display: flex;
