@@ -323,7 +323,9 @@
 		height: calc(100vh - 140px);
 		overflow-x: hidden;
 		overflow-y: auto;
-		margin: 0 14px 0 0;
+		margin: 0 10px;
+		background: gray;
+		border: 2px solid #333333;
 	}
 	.games{
 		display: grid;
@@ -390,9 +392,7 @@
 	padding: 5px;
 	background-color: #333333;
 	width: 210px;
-	height: 210px;
 	margin: auto;
-	box-shadow: 2px 2px 2px black;
 	opacity:0;
 	cursor: pointer;
 	position: relative;
@@ -410,22 +410,19 @@
 		position: absolute;
 		width: 32px;
 		height: 32px;
-		top: -6px;
-		left: 16px;
+		bottom: 4px;
+		right: 4px;
 		border-radius: 6px;
-		background-color: white;
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: 88%;
-		box-shadow: inset 0px -2px 0px #0000003b;
-		border: 3px solid #343434;
+		filter: invert(1);
 	}
 
 	.thumb{
 		width: 200px;
 		height: 150px;
 		background-color:gray;
-		border: 2px solid black;
 		border-bottom-width: 4px;
 		border-left-width: 3px;
 		background-color: black;
@@ -437,11 +434,12 @@
 		margin: 5px 0 0 0;
 		display: flex;
 		.text-holder{
-			width: 65%;
+			width: 80%;
 			height: 100%;
 			font-size: 12px;
 			color: white;
 			margin-left: 2px;
+			font-family: "Montserrat", sans-serif;
 			.text-level-name{
 				font-weight: 500;
 				white-space: nowrap;
@@ -454,7 +452,7 @@
 					font-weight: 200;
 				}
 				.text-author{
-					color: #00FF00;
+					color: #43F07C;
 					margin: 1px 0 0 2px;
 				}
 			}
@@ -462,50 +460,11 @@
 				display: flex;
 				font-size: 9px;
 				margin: 2px 0 0 0;
-				color: #00FF00;
+				color: #43F07C;
 
 				.tag{
 					margin: 0px 1px;
 				}
-			}
-		}
-		.rating{
-			width: 32%;
-			height: 100%;
-			display: flex;
-			font-size: 15px;
-			font-family: Arial;
-			font-weight: bold;
-			justify-content: center;
-			align-items: center;
-			margin-left: 4px;
-			margin-top: 2px;
-			pointer-events: none;
-
-			@extend .base-button;
-			.vote-thumb{
-				background-image: url(../../static/assets/images/gui/Thumb.png);
-				width: 30px;
-				height: 30px;
-				background-size: contain;
-				background-repeat: no-repeat;
-				background-position: 50%;
-				transform: scaleX(-1);
-				filter: drop-shadow(-2px 1px 0px black);
-				margin-right: 3px;
-			}
-
-			&.unknown{
-				background-color: #7B7B7B;
-			}
-			&.low{
-				background-color: #FF0000;
-				.vote-thumb{
-					transform: scaleX(-1) scaleY(-1);
-				}
-			}
-			&.ok{
-				background-color: #FF6600;
 			}
 		}
 	}

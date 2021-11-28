@@ -155,10 +155,6 @@ function UIManager() {
                                     <div class="tags">
                                     </div>
                                 </div>
-                                <div class="rating">
-                                    <div class="vote-thumb"></div>
-                                    <div class="text-rating">85%</div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -452,30 +448,6 @@ function UIManager() {
         title.innerText = levelData.title;
         const author = game.querySelector('.text-author');
         author.innerText = levelData.author.username;
-
-        const rating = game.querySelector('.rating');
-
-        const sumVotes = levelData.upvotes + levelData.downvotes;
-        let scoreText = "??";
-
-        if(sumVotes<Settings.minlevelVotes){
-            rating.classList.add('unknown');
-        }else {
-            const voteScore = Math.round((levelData.upvotes / sumVotes) * 100);
-
-            if(voteScore<55){
-                rating.classList.add('low');
-            } else if(voteScore<70){
-                rating.classList.add('ok');
-            }else{
-                rating.classList.add('good');
-            }
-
-            scoreText =  `${voteScore}%`;
-        }
-
-        const ratingText = rating.querySelector('.text-rating');
-        ratingText.innerText = scoreText;
 
         const vehicleLabel = game.querySelector('.vehicle-label');
         vehicleLabel.style.backgroundImage = `url(assets/images/portraits/${hashName(`mini-vehicle${levelData.forced_vehicle}.png`)})`;
