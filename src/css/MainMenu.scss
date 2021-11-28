@@ -213,14 +213,15 @@
 					flex-direction: column;
 					background: white;
 					border: 2px solid #333333;
-					transform: translateY(-2px);
+					transform: translateY(7px);
 					z-index: -1;
 					padding: 10px;
 					visibility: hidden;
 					gap: 6px;
 					min-width: 202px;
 					max-height: 80vh;
-					overflow: scroll;
+					overflow-y: auto;
+					overflow-x: hidden;
 
 					.checkbox-container{
 						display: flex;
@@ -256,8 +257,14 @@
 					}
 					.vehicles{
 						display: flex;
-						flex-direction: column;
+						flex-direction: row;
+						flex-wrap: wrap;
 						gap: 6px;
+						max-width: 178px;
+						justify-content: center;
+						.all{
+							width: 100%;
+						}
 						.all, .button{
 							@extend .base-button;
 						}
@@ -272,12 +279,31 @@
 							border: 2px solid #CCCCCC;
 							padding: 6px;
 						}
+
+						&:not(.open){
+							.button{
+								margin: auto;
+							}
+						}
 					}
 				}
 
 				&.open{
 					.filters{
 						border-bottom: none;
+						transform: translateY(-1px);
+						position: relative;
+						&:before{
+							content: '';
+							background: white;
+							width: calc(100% + 4px);
+							height: 12px;
+							position: absolute;
+							left: -2px;
+							bottom: -10px;
+							border-left: 2px solid #333333;
+							border-right: 2px solid #333333;
+						}
 					}
 					.filters-fold{
 						visibility: visible;

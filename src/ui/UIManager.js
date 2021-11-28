@@ -99,7 +99,7 @@ function UIManager() {
                         <div class="filters-container">
                             <div class="filters">Filters</div>
                             <div class="filters-fold">
-                                <div>Featured Games</div>
+                                <div>Only Featured</div>
                                 <label class="feature-toggle switch">
                                     <input type="checkbox" checked>
                                     <div class="slider round"></div>
@@ -285,8 +285,10 @@ function UIManager() {
             for(let i = 1; i<=Settings.availableVehicles.length; i++){
                 const vehicleFilter = document.createElement('div');
                 vehicleFilter.classList.add('button');
+                vehicleFilter.setAttribute('title', Settings.availableVehicles[i-1]);
                 vehicles.appendChild(vehicleFilter);
                 vehicleFilter.style.display = 'none';
+                vehicleFilter.style.width = '48px';
 
                 const vehicleIcon = new Image();
                 vehicleIcon.src = `assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
