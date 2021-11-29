@@ -477,7 +477,7 @@ function UIManager() {
 
         let vehicle = '';
         const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
-        if(checkedVehicleFilter && checkedVehicleFilter.classList.contains('all')){
+        if(checkedVehicleFilter && !checkedVehicleFilter.classList.contains('all')){
             vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter) - 1;
         }
 
