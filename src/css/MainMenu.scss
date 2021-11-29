@@ -326,6 +326,7 @@
 		margin: 0 10px;
 		background: gray;
 		border: 2px solid #333333;
+		box-sizing: content-box;
 	}
 	.games{
 		display: grid;
@@ -391,7 +392,7 @@
 .game{
 	padding: 5px;
 	background-color: #333333;
-	width: 210px;
+	width: 100%;
 	margin: auto;
 	opacity:0;
 	cursor: pointer;
@@ -420,8 +421,8 @@
 	}
 
 	.thumb{
-		width: 200px;
-		height: 150px;
+		width: 100%;
+		padding-top: 75%;
 		background-color:gray;
 		border-bottom-width: 4px;
 		border-left-width: 3px;
