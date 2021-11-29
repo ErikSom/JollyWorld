@@ -126,7 +126,8 @@
 .mainmenu{
 	width: 100vw;
 	height: 100vh;
-	// padding-top: 68px;
+	background: url(../../static/assets/images/gui/BG_Repeat.png);
+	background-color: #ffffff;
 
 	&.inactive{
 		filter: brightness(0.2);
@@ -144,10 +145,10 @@
 	}
 
 	.header{
-		height: 58px;
+		height: 78px;
 		.logo{
-			width: 178px;
-			height: 45px;
+			width: 204px;
+			height: 58px;
 			position: absolute;
 			margin: 10px;
 			top:0;
@@ -172,11 +173,11 @@
 			display: flex;
 			align-items: center;
 			gap: 6px;
-			margin: 10px;
+			margin: 20px 10px;
 			.search-filter{
 				position: relative;
 				.search-icon{
-					background: url(../../static/assets/images/gui/SearchIcon.png) no-repeat;
+					background: url(../../static/assets/images/gui/SearchIcon.svg) no-repeat;
 					width: 42px;
 					height: 38px;
 					position: absolute;
@@ -311,10 +312,11 @@
 				}
 			}
 
-
-
 			.exit, .filters{
 				@extend .base-button;
+			}
+			.exit{
+				background-color: #D70000;
 			}
 		}
 	}
