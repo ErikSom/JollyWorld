@@ -278,7 +278,7 @@ function UIManager() {
 
             // VEHICLES
             const vehicles = filterContainer.querySelector('.vehicles');
-            for(let i = 1; i<=Settings.availableVehicles.length; i++){
+            for(let i = 0; i<=Settings.availableVehicles.length; i++){
                 const vehicleFilter = document.createElement('div');
                 vehicleFilter.classList.add('button');
                 vehicleFilter.setAttribute('title', Settings.availableVehicles[i-1]);
@@ -454,44 +454,6 @@ function UIManager() {
 
         // const tags = game.querySelector('.tags');
     }
-    /*
-<div class="filters-container">
-                            <div class="filters">Filters</div>
-                            <div class="filters-fold">
-                                <div>Featured Games</div>
-                                <label class="feature-toggle switch">
-                                    <input type="checkbox" id="togBtn" checked>
-                                    <div class="slider round"></div>
-                                </label>
-                                <div>Sorted By:</div>
-                                <label class="checkbox-container best-rated">
-                                    <input class="css-checkbox" type="checkbox" checked>Best Rated
-                                    <i></i>
-                                </label>
-                                <label class="checkbox-container most-played">
-                                    <input class="css-checkbox" type="checkbox" >Most Played
-                                    <i></i>
-                                </label>
-                                <label class="checkbox-container newest">
-                                    <input class="css-checkbox" type="checkbox" >Newest
-                                    <i></i>
-                                </label>
-                                <label class="checkbox-container oldest">
-                                    <input class="css-checkbox" type="checkbox" >Oldest
-                                    <i></i>
-                                </label>
-                                <div>Filters:</div>
-                                <div class="date">
-                                    <div class="all button">All Time</div>
-                                    <div class="month button">This Month</div>
-                                    <div class="week button">This Week</div>
-                                    <div class="today button">Today</div>
-                                </div>
-                                <div class="vehicles">
-                                    <div class="all button">All Vehicles</div>
-                                </div>
-                            </div>
-    */
 
     this.determineMainMenuFilter = ()=>{
         const filters = mainMenu.querySelector('.filters-fold')
@@ -515,8 +477,8 @@ function UIManager() {
 
         let vehicle = '';
         const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
-        if(checkedVehicleFilter){
-            vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter);
+        if(checkedVehicleFilter && checkedVehicleFilter.classList.contains('all')){
+            vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter) - 1;
         }
 
         return {
