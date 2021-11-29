@@ -40,58 +40,45 @@
 
 .back-button{
 	margin: 5px;
-	height: 52px;
-	font-size: 36px;
-	line-height: 48px;
-	background-color: #7B7B7B;
+	font-size: 14px;
+	background-color: #D70000;
+	color: white;
 
 	@extend .base-button;
 }
 
 .main-window{
 	border-radius: 4px;
-    border: 2px solid black;
-    box-shadow: 2px 2px 0px black;
+    border: 2px solid #333333;
 	position: absolute;
 	left: 50%;
 	top: 50%;
 	width: 400px;
-	background-color: #666666;
+	background-color: #FFFFFF;
 	transform: translate(-50%, -50%);
 
-	.bar{
-		height: 20px;
-		width: 100%;
-		background-color: #4F4F4F;
-		background-image: url(../../static/assets/images/gui/DragableBar_Pattern.png);
-		border-bottom: 1px solid black;
-		border-top-left-radius: inherit;
-		border-top-right-radius: inherit;
-		.close{
-			position: absolute;
-			width: 21px;
-			height: 21px;
-			right: 0;
-			top: 0;
-			margin: -1px -1px 0 0;
-			background-color: red;
-			border: 1px solid black;
-			border-radius: 4px;
-			&:after{
-				content: "✕";
-				margin: 0 0px 0px 6px;
-				vertical-align: middle;
-				font-size: 10px;
-			}
-			@extend .simple-button;
+	.close{
+		position: absolute;
+		width: 21px;
+		height: 21px;
+		right: 0;
+		top: 0;
+		margin: -1px -1px 0 0;
+		background-color: red;
+		border: 1px solid black;
+		border-radius: 4px;
+		&:after{
+			content: "✕";
+			margin: 0 0px 0px 6px;
+			vertical-align: middle;
+			font-size: 10px;
 		}
+		@extend .simple-button;
 	}
 }
 
 .jollyfont{
-	color: white;
 	font-family: 'Montserrat', sans-serif;
-    text-shadow: 1.2px 2px black;
 }
 
 
@@ -110,6 +97,8 @@
 		
 	}
 	.vote-up{
+		background-color: #2D9E97;
+    	margin-right: 10px;
 		.vote-thumb{
 			filter: drop-shadow(2px 1px 0px black);
 
@@ -137,7 +126,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin: 0px 10px;
+		margin: 0px 5px;
 		&.disabled{
 			filter: brightness(0.2);
 		}
@@ -175,7 +164,6 @@
 }
 
 .leaderboard-entries{
-	color: white;
 	font-weight: 500;
 	font-size: 12px;
 
@@ -185,8 +173,10 @@
 		align-items: center;
 		padding: 0px 10px;
 		margin: 10px 0px;
+		color: black;
 		.text-header{
 			@extend .jollyfont;
+			font-variation-settings: "wght" 600;
 			font-size: 20px;
 			margin-top: 4px;
 			width: 260px;
@@ -194,8 +184,8 @@
 		.viewall{
 			width: 75px;
 			height: 24px;
-			font-size: 14px;
-			line-height: 24px;
+			font-size: 12px;
+			line-height: 6px;
 			@extend .base-button
 		}
 	}
@@ -203,6 +193,7 @@
 		display:flex;
 		flex-direction: column;
 		margin: 10px;
+		font-family: "Montserrat", sans-serif;
 		.entry-info{
 			height: 42px;
 			line-height: 42px;
@@ -216,6 +207,7 @@
 			border-top: 1px solid #333333;
 			height: 42px;
 			align-items: center;
+			font-variation-settings: "wght" 600;
 
 			.position{
 				display: flex;
@@ -232,7 +224,7 @@
 			}
 
 			.text-player-name{
-				color: #00FF00;
+				color: #1F9891;
 				width: 112px;
 				@extend .clean-text-button;
 			}
@@ -244,7 +236,7 @@
 					margin: 0 5px 0 0;
 				}
 				.text-time, .text-time-mili{
-					color: #00FF00;
+					color: #1F9891;
 				}
 				.text-time-mili{
 					font-size: 9px;

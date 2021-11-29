@@ -527,7 +527,6 @@ function UIManager() {
     this.showLevelBanner = levelData => {
         if(!levelBanner){
             const htmlStructure = /*html*/`
-                <div class="bar"></div>
                 <div class="level-info">
                     <div class="thumb"> </div>
                     <div class="text-holder">
@@ -577,8 +576,8 @@ function UIManager() {
                 </div>
                 <div class="leaderboard-bar">
                     <div class="header-bar">
-                        <div class="text-header"><span class="fit">${localize('levelbanner_leaderboard')}</span></div>
-                        <div class="viewall"><span class="fit">${localize('levelbanner_viewall')}</span></div>
+                        <div class="text-header">${localize('levelbanner_leaderboard')}</div>
+                        <div class="viewall">${localize('levelbanner_viewall')}</div>
                     </div>
                     <div class="entries offcharts">
                         <div class="entry-info">${localize('levelbanner_loading')}</div>
@@ -605,9 +604,9 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="nav-buttons">
-                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                    <div class="back button">${localize('levelbanner_back')}</div>
                     <div class="play button">
-                        <div class="text-play"><span class="fit h2">${localize('levelbanner_play')}</span></div>
+                        <div class="text-play">${localize('levelbanner_play')}</div>
                         <div class="progress"></div>
                     </div>
                 </div>

@@ -14,34 +14,31 @@
 			background-size: cover;
 		}
 		.text-holder{
-			margin: 0px 5px;
+			margin: 0px 10px;
 			font-size: 12px;
-			color: white;
+			color: black;
 			margin-top: -3px;
 			.text-level-name{
-				font-weight: 500;
+				font-family: "Montserrat", sans-serif;
+				font-variation-settings: "wght" 600;
 			}
 			.level-author{
 				display: flex;
-				.text-level-by{
-					font-weight: 200;
-				}
+				font-size: 11px;
 				.text-author{
 					@extend .clean-text-button;
-					color: #00FF00;
+					color: #1F9891;
 					margin: 1px 0 0 2px;
 				}
 			}
 		}
 		.description-holder{
 			font-size: 11px;
-			height: 78px;
+			height: 88px;
 			overflow-y: auto;
 			margin-top: 5px;
 			.description{
 				font-weight: 400;
-				letter-spacing: 1px;
-				font-style: italic;
 				text-rendering: geometricPrecision;
 				overflow-wrap: anywhere;
 			}
@@ -50,16 +47,15 @@
 			display: flex;
 			font-size: 9px;
 			margin: 2px 0 0 0;
-			color: #00FF00;
+			color: #1F9891;
 		}
 		.level-published{
 			display: flex;
 			margin-top: 5px;
-    		font-weight: bold;
 			font-size: 10px;
 			align-items: center;
 			.text-date-published, .text-date-updated{
-				color: #00FF00;
+				color: #1F9891;
 				margin-left: 5px;
 				white-space: nowrap;
 			}
@@ -74,7 +70,7 @@
 		}
 	}
 	.social-bar{
-		color: white;
+		color: black;
 		display: flex;
 		font-size: 12px;
 		text-align: center;
@@ -93,17 +89,16 @@
 	.gameinfo-bar{
 		display: flex;
 		justify-content: flex-end;
-		color: white;
+		color: black;
 		font-size: 10px;
 		margin: 0px 10px;
 		gap: 10px;
-		font-weight: bold;
 		.gameplays, .votes{
 			display: flex;
 			gap: 2px;
 		}
 		.gameplays-text, .votes-text{
-			color: #00FF00
+			color: #1F9891
 		}
 	}
 	.leaderboard-bar{
@@ -112,6 +107,7 @@
 	.nav-buttons{
 		display: flex;
 		padding: 5px;
+		justify-content: center;
 		.back{
 			@extend .back-button;
 		}
@@ -126,7 +122,7 @@
 				width: 100%;
 				height: 100%;
 				border-radius: inherit;
-				background-color: #51A328;
+				background-color: #1F9891;
 				clip-path: inset(0px 180px 0px 0px);
 				box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white;
 				display:none;
