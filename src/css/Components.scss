@@ -97,7 +97,7 @@
 		
 	}
 	.vote-up{
-		background-color: #2D9E97;
+		background-color: var(--secondary-bg-color);
     	margin-right: 10px;
 		.vote-thumb{
 			filter: drop-shadow(2px 1px 0px black);
@@ -108,7 +108,7 @@
 		}
 	}
 	.vote-down{
-		background-color: #FF0000;
+		background-color: var(--negative-button);
 		.vote-thumb{
 			transform: scale(-1);
 			filter: drop-shadow(-2px -1px 0px black);
