@@ -657,13 +657,14 @@ function UIManager() {
 
             const progressBar = playButton.querySelector('.progress');
             const progressFunction = progress => {
+                progress = Math.max(0, Math.min(1, progress));
                 const progressRounded = (progress*100).toFixed(2);
-                progressBar.style.clipPath = `inset(0px ${180-progressRounded}% 0px 0px)`;
+                progressBar.style.width = `${progressRounded}%`;
             }
 
             const finishLoading = ()=>{
                 playButton.classList.remove('loading');
-                playButtonText.innerText = 'Play';
+                playButtonText.innerText = localize('levelbanner_play');
             }
 
             game.loadPublishedLevelData(levelData, progressFunction).then(() => {
@@ -1014,8 +1015,7 @@ function UIManager() {
     this.showLeaderboard = levelData => {
         if(!leaderboard){
             const htmlStructure = /*html*/`
-                <div class="bar"></div>
-                <div class="header"><span class="fit h1">${localize('levelbanner_leaderboard')}</span></div>
+                <div class="header">${localize('levelbanner_leaderboard')}</div>
                 <div class="leaderboard-bar">
                     <div class="entries offcharts">
                         <div class="entry-info">${localize('levelbanner_loading')}</div>
@@ -1034,7 +1034,7 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="nav-buttons">
-                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                    <div class="back button">${localize('levelbanner_back')}</div>
                 </div>
             `;
 
@@ -1777,10 +1777,10 @@ function UIManager() {
         if(!pauseScreen){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header"><span class="fit h1">${localize('levelgui_pause')}</span></div>
+                <div class="header">${localize('levelgui_pause')}</div>
                 <div class="text-level-name">Level Name Goes Here</div>
                 <div class="level-author">
-                    <div class="text-level-by">${localize('mainmenu_by')}</div>
+                    <div class="text-level-by">${localize('mainmenu_by')}:</div>
                     <div class="text-author">Author Name</div>
                 </div>
                 <div class="share">
@@ -1802,10 +1802,10 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="buttons">
-                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
-                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
-                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
-                    <div class="resume"><span class="fit h2">${localize('levelgui_resume')}</span></div>
+                    <div class="reset">${localize('levelgui_reset')}</div>
+                    <div class="retry">${localize('levelgui_retry')}</div>
+                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="resume">${localize('levelgui_resume')}</div>
                 </div>
             `;
 

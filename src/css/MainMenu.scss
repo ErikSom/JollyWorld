@@ -1,6 +1,14 @@
 //https://www.shadertoy.com/view/MtcGD7
 @use 'Components';
 
+:root{
+	--main-bg-color: #ffffff;
+	--secondary-bg-color: #43F07C;
+	--dark-color: #333333;
+	--gray-color: #979797;
+	--negative-button: #D70000;
+}
+
 @mixin css-checkbox($size: '16px',
 	$selectedColor: #444,
 	$defaultColor: white,
@@ -178,12 +186,12 @@
 				position: relative;
 				.search-icon{
 					background: url(../../static/assets/images/gui/SearchIcon.svg) no-repeat;
-					width: 42px;
-					height: 38px;
+					width: 38px;
+					height: 28px;
 					position: absolute;
 					right: -21px;
 					margin: 0 4px;
-					transform: translate(-50%, 2px);
+					transform: translate(-50%, 5px);
 					pointer-events: none;
 					cursor: pointer;
 				}

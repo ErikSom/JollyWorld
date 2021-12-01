@@ -4,7 +4,9 @@
 	@extend .main-window;
 	.header{
 		@extend .jollyfont;
-		font-size: 40px;
+		font-size: 34px;
+		font-variation-settings: "wght" 800;
+		color: #333333;
 		text-align: center;
 	}
 
@@ -20,6 +22,7 @@
 	.nav-buttons{
 		display: flex;
 		padding: 5px;
+		justify-content: center;
 		.back{
 			@extend .back-button;
 		}

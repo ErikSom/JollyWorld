@@ -1227,45 +1227,38 @@ function Game() {
     this.loadPublishedLevelData = function (levelData, progressFunction) {
         return new Promise(async (resolve, reject) => {
             game.currentLevelData = levelData;
-            const self = this;
-            try{
-                let response = await fetch(`${Settings.STATIC}/${levelData.level_md5}.json`);
-                const reader = response.body.getReader();
-                const contentLength = +response.headers.get('Content-Length') || 1000000; // TODO: x-compressed-content-length
-                let receivedLength = 0;
-                let chunks = [];
-                if(progressFunction) progressFunction(0);
 
-                while(true) {
-                    const {done, value} = await reader.read();
-                    if (done) {
-                        break;
-                    }
-
-                    chunks.push(value);
-                    receivedLength += value.length;
-                    const progress = receivedLength/contentLength
-                    if(progressFunction) progressFunction(progress);
-                }
-                let chunksAll = new Uint8Array(receivedLength); // (4.1)
-                let position = 0;
-                for(let chunk of chunks) {
-                    chunksAll.set(chunk, position); // (4.2)
-                    position += chunk.length;
-                }
-                let result = new TextDecoder("utf-8").decode(chunksAll);
-
-                if(progressFunction) progressFunction(0);
-
-                self.currentLevelData.json = result;
+            const req = new XMLHttpRequest();
+            req.overrideMimeType("application/json");
+            req.open('GET', `${Settings.STATIC}/${levelData.level_md5}.json`, true);
+            req.onload  = ()=> {
+                self.currentLevelData.json = JSON.parse(req.responseText);
                 return resolve();
-            }catch(err){
+            };
+
+            req.onprogress = e => {
+                const progress = e.loaded / req.compressedContentLength;
+                console.log("PROGRESS:", progress, e, e.loaded, req.compressedContentLength);
+                progressFunction(progress);
+            }
+            req.onerror = () => {
                 console.log('fail', err);
                 game.gameState = game.GAMESTATE_MENU;
                 return reject({
                     message: err
                 });
             }
+            req.onreadystatechange = function() {
+                if(this.readyState == this.HEADERS_RECEIVED) {
+                    try{
+                        req.compressedContentLength = req.getResponseHeader("x-decompressed-content-length") || 1000000;
+                    }catch(e){
+                        req.compressedContentLength = 1000000;
+                    }
+                    console.log("compressedContentLength:", req.compressedContentLength);
+                }
+            }
+            req.send(null);
         });
     }
 
