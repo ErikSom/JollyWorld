@@ -749,14 +749,14 @@ function UIManager() {
                         <div class="gamestotalgameplays"><span>${localize('userpage_totalgameplays')}:</span><span class="value">?</span></div>
                     </div>
                     <div class="nav-buttons">
-                        <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                        <div class="back button">${localize('levelbanner_back')}</div>
                     </div>
                 </div>
                 <div class="titlebar">
                     <div class="toggletitle"><span>${localize('userpage_levels')}</span></div>
                     <div class="togglebuttons">
-                        <div class="games checked"><span class="fit">${localize('userpage_levels')}</span></div>
-                        <div class="favorites"><span class="fit">${localize('userpage_favorites')}</span></div>
+                        <div class="games checked">${localize('userpage_levels')}</div>
+                        <div class="favorites">${localize('userpage_favorites')}</div>
                     </div>
                 </div>
                 <div class = "games-scroll">
@@ -2058,14 +2058,14 @@ function UIManager() {
     this.buildSocialShare = ()=> {
         const htmlStructure = /*html*/`
             <div class="bar"><div class="close"></div></div>
-            <div class="header"><span class="fit h1">${localize('share_sharing')}</span></div>
+            <div class="header">${localize('share_sharing')}</div>
             <div class="padding">
-                <div class="text-level-link"><span class="fit">${localize('share_levellink')}</span></div>
+                <div class="text-level-link">${localize('share_levellink')}</div>
                 <div class="copy-url">
                     <input class="text-url" readonly>
                     <div class="copy-button"></div>
                 </div>
-                <div class="share-by"><span class="fit">${localize('share_shareby')}</span></div>
+                <div class="share-by">${localize('share_shareby')}</div>
                 <div class="social-share-holder"></div>
             </div>
         `;
