@@ -330,7 +330,7 @@ function Game() {
 
         if(urlParams.get('site_id') || urlParams.get('pokiDebug')) Settings.onPoki = true;
 
-        this.openSinglePlayer();
+        this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
@@ -776,13 +776,13 @@ function Game() {
         Key.onKeyUp(e);
         e.preventDefault();
     }
-    this.openSinglePlayer = function (levelData) {
+    this.openMainMenu = function (levelData) {
         //if(this.run) this.stopWorld();
 
         this.initLevel(levelsData.singlePlayerLevel);
         this.editor.ui.hide();
         ui.show();
-        ui.showSinglePlayer();
+        ui.showMainMenu();
         ui.hideGameOverMenu();
         this.gameState = this.GAMESTATE_MENU;
         this.interactive = false;

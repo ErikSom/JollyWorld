@@ -348,57 +348,6 @@
     	width: 100%;
 		margin: 10px 0 100px 0;
 	}
-
-	.page-footer{
-		position: absolute;
-		bottom: 0px;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		margin: 4px 0px;
-		.text{
-			display: flex;
-			font-size: 12px;
-			white-space: nowrap;
-			a{
-				margin:0px 4px;
-				@extend .clean-text-button;
-			}
-		}
-		.social-channels{
-			display: flex;
-			& > a{
-				margin: 2px 2px;
-				border-radius: 4px;
-				@extend .simple-button;
-			}
-			.jolly-discord{
-				width: 72px;
-				height: 24px;
-				background-image: url(../../static/assets/images/misc/discord.svg)
-			}
-			.jolly-youtube, .jolly-facebook{
-				width: 24px;
-				height: 24px;
-				background-color: white;
-				background-image: url(../../static/assets/images/misc/youtube-icon.svg)
-			}
-			.jolly-facebook{
-				background-image: url(../../static/assets/images/misc/facebook-icon.svg);
-			}
-			.powered-by-poki{
-				width: 108px;
-				height: 20px;
-				margin-top: 4px;
-				background-image: url(../../static/assets/images/gui/powered-by-poki.png);
-			}
-		}
-		.country{
-			@extend .country-select;
-			margin: 2px 6px;
-		}
-	}
 }
 
 .game{

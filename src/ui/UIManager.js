@@ -1,3 +1,4 @@
+import '../css/MainMenu.scss'
 import '../css/SinglePlayer.scss'
 import '../css/LevelBanner.scss'
 import '../css/ScrollBar.scss'
@@ -58,6 +59,7 @@ let imageObserver = new IntersectionObserver(entries => entries.forEach(entry =>
     imageObserver.unobserve(entry.target);
     }
 }));
+let mainMenu;
 let singlePlayer;
 let discordButton;
 let gameOver;
@@ -89,6 +91,54 @@ let initialLevelBatch = [];
 function UIManager() {
 
     var self = this;
+
+    this.showMainMenu = () =>{
+        if(!mainMenu){
+            const htmlStructure = /*html*/`
+                <div class="header">
+                    <div class="logo"></div>
+                    <div class="settings"></div>
+                    <div class="audio"></div>
+                </div>
+                <div class="menu-grid">
+                    <div class="singleplayer-but">Single Player</div>
+                    <div class="editor-but">Create levels!</div>
+                    <div class="discord-but">Sign Up!</div>
+                    <div class="characters-but">Characters</div>
+                </div>
+                ${this.getFooter()}
+            `
+
+            mainMenu = document.createElement('div');
+            mainMenu.classList.add('mainmenu');
+            mainMenu.innerHTML = htmlStructure;
+
+
+            customGUIContainer.appendChild(mainMenu);
+        }
+    }
+
+    this.getFooter = () => {
+        return /*html*/`
+        <div class="page-footer">
+            <div class="text">
+                <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
+                <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
+                &
+                <a href="https://jollyworld.app/terms/" class="terms">Terms of Service</a>
+                .
+                <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
+            </div>
+            <div class="social-channels">
+                <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
+                <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>
+                <a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>
+                <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
+            </div>
+            <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
+        </div>
+        `
+    }
 
     this.showSinglePlayer = ()=>{
         if(!singlePlayer){
