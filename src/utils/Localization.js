@@ -50,7 +50,7 @@ export const countries = ['de','nl','us','pt','fr','es','it','cz','jr'];
 
 const LOCALIZATION_DATA = [
     {
-        "textId": "mainmenu_featured",
+        "textId": "singleplayer_featured",
         "us": "Featured",
         "nl": "Aanbevolen",
         "de": "Empfohlen",
@@ -62,7 +62,7 @@ const LOCALIZATION_DATA = [
         "jr": "Scurvy Approved"
     },
     {
-        "textId": "mainmenu_best_rated",
+        "textId": "singleplayer_best_rated",
         "us": "Best Rated",
         "nl": "Best Beoordeeld",
         "de": "Beste Bewertung",
@@ -74,7 +74,7 @@ const LOCALIZATION_DATA = [
         "jr": "Most Bootyful"
     },
     {
-        "textId": "mainmenu_most_played",
+        "textId": "singleplayer_most_played",
         "us": "Most Played",
         "nl": "Gespeeld",
         "de": "Meistgespielt",
@@ -86,7 +86,7 @@ const LOCALIZATION_DATA = [
         "jr": "Most Plundered"
     },
     {
-        "textId": "mainmenu_newest",
+        "textId": "singleplayer_newest",
         "us": "Newest",
         "nl": "Nieuwste",
         "de": "Neuste",
@@ -98,7 +98,7 @@ const LOCALIZATION_DATA = [
         "jr": "Newly Discovered"
     },
     {
-        "textId": "mainmenu_oldest",
+        "textId": "singleplayer_oldest",
         "us": "Oldest",
         "nl": "Oudste",
         "de": "Älteste",
@@ -110,7 +110,7 @@ const LOCALIZATION_DATA = [
         "jr": "Ol' sea legends"
     },
     {
-        "textId": "mainmenu_editor",
+        "textId": "singleplayer_editor",
         "us": "Editor",
         "nl": "Editor",
         "de": "Editor",
@@ -122,7 +122,7 @@ const LOCALIZATION_DATA = [
         "jr": "Sea Buildin'"
     },
     {
-        "textId": "mainmenu_change",
+        "textId": "singleplayer_change",
         "us": "Change",
         "nl": "Verander",
         "de": "Ändern",
@@ -134,7 +134,7 @@ const LOCALIZATION_DATA = [
         "jr": "Pick a new captain"
     },
     {
-        "textId": "mainmenu_by",
+        "textId": "singleplayer_by",
         "us": "By",
         "nl": "Door",
         "de": "Von",
@@ -146,7 +146,7 @@ const LOCALIZATION_DATA = [
         "jr": "Aye"
     },
     {
-        "textId": "mainmenu_login",
+        "textId": "singleplayer_login",
         "us": "login",
         "nl": "inloggen",
         "de": "einloggen",
@@ -158,7 +158,7 @@ const LOCALIZATION_DATA = [
         "jr": "Set Sail"
     },
     {
-        "textId": "mainmenu_today",
+        "textId": "singleplayer_today",
         "us": "Today",
         "nl": "Vandaag",
         "de": "Heute",
@@ -170,7 +170,7 @@ const LOCALIZATION_DATA = [
         "jr": "Since this day"
     },
     {
-        "textId": "mainmenu_thisweek",
+        "textId": "singleplayer_thisweek",
         "us": "This Week",
         "nl": "Deze Week",
         "de": "Diese Woche",
@@ -182,7 +182,7 @@ const LOCALIZATION_DATA = [
         "jr": "Since 7 nights ago"
     },
     {
-        "textId": "mainmenu_thismonth",
+        "textId": "singleplayer_thismonth",
         "us": "This Month",
         "nl": "Deze Maand",
         "de": "Diesen Monat",
@@ -194,7 +194,7 @@ const LOCALIZATION_DATA = [
         "jr": "Since 1 moon ago"
     },
     {
-        "textId": "mainmenu_anytime",
+        "textId": "singleplayer_anytime",
         "us": "Anytime",
         "nl": "Alles",
         "de": "Jederzeit",
@@ -206,7 +206,7 @@ const LOCALIZATION_DATA = [
         "jr": "Since forever!"
     },
     {
-        "textId": "mainmenu_more",
+        "textId": "singleplayer_more",
         "us": "More",
         "nl": "Meer",
         "de": "Mehr",
@@ -218,7 +218,7 @@ const LOCALIZATION_DATA = [
         "jr": "Moarrgh"
     },
     {
-        "textId": "mainmenu_availablepc",
+        "textId": "singleplayer_availablepc",
         "us": "Available on PC",
         "nl": "Beschikbaar op PC",
         "de": "Auf PC Verfügbar",

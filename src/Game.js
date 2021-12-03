@@ -330,7 +330,7 @@ function Game() {
 
         if(urlParams.get('site_id') || urlParams.get('pokiDebug')) Settings.onPoki = true;
 
-        this.openMainMenu();
+        this.openSinglePlayer();
 
         if(uidHash && uidHash.length===21){
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
@@ -462,7 +462,7 @@ function Game() {
         game.loadPublishedLevelData(tutorialLevel, ()=>{}).then(() => {
             this.tutorialMode = true;
             ui.showSkipTutorialButton();
-            ui.playLevelFromMainMenu();
+            ui.playLevelFromSinglePlayer();
             this.preloader.querySelector('.cycling').classList.add('fall');
             ui.hideLevelBanner();
         }).catch(error => {
@@ -776,13 +776,13 @@ function Game() {
         Key.onKeyUp(e);
         e.preventDefault();
     }
-    this.openMainMenu = function (levelData) {
+    this.openSinglePlayer = function (levelData) {
         //if(this.run) this.stopWorld();
 
-        this.initLevel(levelsData.mainMenuLevel);
+        this.initLevel(levelsData.singlePlayerLevel);
         this.editor.ui.hide();
         ui.show();
-        ui.showMainMenu();
+        ui.showSinglePlayer();
         ui.hideGameOverMenu();
         this.gameState = this.GAMESTATE_MENU;
         this.interactive = false;

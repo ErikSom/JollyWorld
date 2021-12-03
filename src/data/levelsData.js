@@ -1,5 +1,5 @@
 export const levelsData = {
-    mainMenuLevel: {
+    singlePlayerLevel: {
         json: `{"objects":[]}`,
         title: '',
         description: '',

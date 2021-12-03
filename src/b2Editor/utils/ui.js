@@ -388,7 +388,7 @@ export const showHeaderBar = function () {
     headerBar.appendChild(button);
     button.addEventListener('click', () => {
 
-        game.openMainMenu();
+        game.openSinglePlayer();
 
     })
 
@@ -1260,7 +1260,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
             buildLevelList(levels);
         })
     }else{
-        backendManager.getPublishedLevels(game.ui.determineMainMenuFilter()).then((levels) => {
+        backendManager.getPublishedLevels(game.ui.determineSinglePlayerFilter()).then((levels) => {
             buildLevelList(levels);
         })
     }

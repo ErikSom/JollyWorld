@@ -1,4 +1,4 @@
-import '../css/MainMenu.scss'
+import '../css/SinglePlayer.scss'
 import '../css/LevelBanner.scss'
 import '../css/ScrollBar.scss'
 import '../css/VehicleSelect.scss'
@@ -58,7 +58,7 @@ let imageObserver = new IntersectionObserver(entries => entries.forEach(entry =>
     imageObserver.unobserve(entry.target);
     }
 }));
-let mainMenu;
+let singlePlayer;
 let discordButton;
 let gameOver;
 let levelLoader;
@@ -90,8 +90,8 @@ function UIManager() {
 
     var self = this;
 
-    this.showMainMenu = ()=>{
-        if(!mainMenu){
+    this.showSinglePlayer = ()=>{
+        if(!singlePlayer){
             const htmlStructure = /*html*/`
                 <div class="header">
                     <div class="logo"></div>
@@ -149,7 +149,7 @@ function UIManager() {
                                 <div class="text-holder">
                                     <div class="text-level-name">Level Name Goes Here</div>
                                     <div class="level-author">
-                                        <div class="text-level-by">${localize('mainmenu_by')}:</div>
+                                        <div class="text-level-by">${localize('singleplayer_by')}:</div>
                                         <div class="text-author">Author Name</div>
                                     </div>
                                     <div class="tags">
@@ -178,22 +178,22 @@ function UIManager() {
                 </div>
             `
 
-            mainMenu = document.createElement('div');
-            mainMenu.classList.add('mainmenu');
-            mainMenu.innerHTML = htmlStructure;
+            singlePlayer = document.createElement('div');
+            singlePlayer.classList.add('singleplayer');
+            singlePlayer.innerHTML = htmlStructure;
 
             if(MobileController.isMobile()){
-                mainMenu.classList.add('mobile');
+                singlePlayer.classList.add('mobile');
             }
 
-            const header = mainMenu.querySelector('.header');
+            const header = singlePlayer.querySelector('.header');
 
             // FILTERS
             const filterContainer = header.querySelector('.filters-container');
 
             const featureToggle = filterContainer.querySelector('.feature-toggle > input');
             featureToggle.addEventListener('change', ()=>{
-                this.reloadMainMenuGames();
+                this.reloadSinglePlayerGames();
             });
 
             const filterButton = filterContainer.querySelector('.filters');
@@ -246,7 +246,7 @@ function UIManager() {
                 checkBox.addEventListener('click', () => {
                     checkBoxes.forEach(cb => cb.checked = false);
                     checkBox.checked = true;
-                    this.reloadMainMenuGames();
+                    this.reloadSinglePlayerGames();
                 });
             });
 
@@ -266,7 +266,7 @@ function UIManager() {
                         date.classList.remove('open');
                         button.style.display = 'block';
                         button.classList.add('checked');
-                        this.reloadMainMenuGames();
+                        this.reloadSinglePlayerGames();
                     }else{
                         date.classList.add('open');
                         dateButtons.forEach(but => but.style.display = 'block');
@@ -303,7 +303,7 @@ function UIManager() {
                         vehicles.classList.remove('open');
                         button.style.display = 'block';
                         button.classList.add('checked');
-                        this.reloadMainMenuGames();
+                        this.reloadSinglePlayerGames();
                     }else{
                         vehicles.classList.add('open');
                         vehicleButtons.forEach(but => but.style.display = 'block');
@@ -317,7 +317,7 @@ function UIManager() {
 
             const shouldSearch = ()=> {
                 if(lastSearch !== searchInput.value){
-                    this.reloadMainMenuGames();
+                    this.reloadSinglePlayerGames();
                     lastSearch = searchInput.value;
                 }
             }
@@ -348,14 +348,14 @@ function UIManager() {
 
 
             if(!MobileController.isMobile()){
-                new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
+                new SimpleBar(singlePlayer.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
             }
 
-            const country = mainMenu.querySelector('.country');
+            const country = singlePlayer.querySelector('.country');
             this.makeCountrySelect(country);
 
 
-            const socialChannels = mainMenu.querySelector('.social-channels');
+            const socialChannels = singlePlayer.querySelector('.social-channels');
             const youtubeLogo = socialChannels.querySelector('.jolly-youtube');
             const facebookLogo = socialChannels.querySelector('.jolly-facebook');
 
@@ -364,10 +364,10 @@ function UIManager() {
                 facebookLogo.style.display = 'none';
             }
 
-            customGUIContainer.appendChild(mainMenu);
+            customGUIContainer.appendChild(singlePlayer);
 
-            mainMenu.onpointerup = () => {
-                if(mainMenu.classList.contains('inactive')){
+            singlePlayer.onpointerup = () => {
+                if(singlePlayer.classList.contains('inactive')){
                     this.hideLevelBanner();
                     this.hideSocialShareMenu();
                     this.hideSettingsMenu();
@@ -379,14 +379,14 @@ function UIManager() {
             }
 
             // fit texts
-            Array.from(mainMenu.querySelectorAll('.fit')).forEach( el => {
+            Array.from(singlePlayer.querySelectorAll('.fit')).forEach( el => {
                     textFit(el)
             });
         }
 
-        mainMenu.style.display = 'block';
+        singlePlayer.style.display = 'block';
 
-        this.reloadMainMenuGames();
+        this.reloadSinglePlayerGames();
     }
 
     this.makeCountrySelect = country => {
@@ -419,7 +419,7 @@ function UIManager() {
     }
 
     this.handleLoginChange = async ()=> {
-        const header = mainMenu.querySelector('.header');
+        const header = singlePlayer.querySelector('.header');
 
         // if we can't retrieve userdata quick enough
         if(backendManager.isLoggedIn() && !backendManager.userData){
@@ -455,12 +455,12 @@ function UIManager() {
         // const tags = game.querySelector('.tags');
     }
 
-    this.determineMainMenuFilter = ()=>{
-        const filters = mainMenu.querySelector('.filters-fold')
+    this.determineSinglePlayerFilter = ()=>{
+        const filters = singlePlayer.querySelector('.filters-fold')
         const featured = filters.querySelector('.feature-toggle > input').checked;
         const vehicleFilters = filters.querySelector('.vehicles');
 
-        let search = mainMenu.querySelector('.search-input').value;
+        let search = singlePlayer.querySelector('.search-input').value;
 
         let sort = '';
         if(filters.querySelector('.most-played > input').checked) sort = this.FILTER_SORT_MOSTPLAYED;
@@ -489,16 +489,16 @@ function UIManager() {
             vehicle
         }
     }
-    this.reloadMainMenuGames = ()=>{
-        const games = mainMenu.querySelector('.games');
+    this.reloadSinglePlayerGames = ()=>{
+        const games = singlePlayer.querySelector('.games');
 
         while(games.children.length>1){
             games.removeChild(games.children[1]);
         }
 
-        const gameTemplate = mainMenu.querySelector('.game-template');
+        const gameTemplate = singlePlayer.querySelector('.game-template');
 
-        const filter = this.determineMainMenuFilter();
+        const filter = this.determineSinglePlayerFilter();
         backendManager.getPublishedLevels(filter).then(levels => {
             if(initialLevelBatch.length === 0){
                 initialLevelBatch = levels;
@@ -532,7 +532,7 @@ function UIManager() {
                     <div class="text-holder">
                         <div class="text-level-name">Level Name Goes Here</div>
                         <div class="level-author">
-                            <div class="text-level-by">${localize('mainmenu_by')}:</div>
+                            <div class="text-level-by">${localize('singleplayer_by')}:</div>
                             <div class="text-author">Author Name</div>
                         </div>
                         <div class="tags">
@@ -642,7 +642,7 @@ function UIManager() {
         this.showAdContainer();
 
         levelBanner.style.display = 'block';
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
 
         const navButtons = levelBanner.querySelector('.nav-buttons');
         const playButton = navButtons.querySelector('.play');
@@ -671,7 +671,7 @@ function UIManager() {
                 this.hideLevelBanner();
                 if(levelData.forced_vehicle){
                     game.selectedVehicle = levelData.forced_vehicle;
-                    this.playLevelFromMainMenu();
+                    this.playLevelFromSinglePlayer();
                 }else{
                     this.showVehicleSelect();
                 }
@@ -884,7 +884,7 @@ function UIManager() {
             const toggleButtons = userPage.querySelector('.togglebuttons');
             const gamesChecked = toggleButtons.querySelector('.games');
 
-            const gameTemplate = mainMenu.querySelector('.game-template');
+            const gameTemplate = singlePlayer.querySelector('.game-template');
             const targetGames = gamesChecked.classList.contains('checked') ? userData.published_levels : userData.favorite_levels;
 
             targetGames.forEach( level => {
@@ -1195,7 +1195,7 @@ function UIManager() {
             thumb.style.backgroundImage = 'none';
 
             levelBanner.style.display = 'none';
-            mainMenu.classList.remove('inactive');
+            singlePlayer.classList.remove('inactive');
 
             this.hideAdContainer();
         }
@@ -1340,7 +1340,7 @@ function UIManager() {
             skipTutorial.innerHTML = `<span class="fit h2">${localize('tutorial_skip_button')}</span>`;
             textFit(skipTutorial.querySelector('.fit'));
             skipTutorial.onclick = ()=> {
-                game.openMainMenu();
+                game.openSinglePlayer();
                 this.hideWinScreen();
                 this.hideSkipTutorialButton();
             }
@@ -1368,8 +1368,8 @@ function UIManager() {
         customGUIContainer.style.display = 'block';
     }
 
-    this.hideMainMenu = function () {
-        mainMenu.style.display = "none";
+    this.hideSinglePlayer = function () {
+        singlePlayer.style.display = "none";
     }
 
     this.showGameOver = function (time, mili){
@@ -1412,7 +1412,7 @@ function UIManager() {
                 if(game.gameState == game.GAMESTATE_EDITOR){
                     game.resetWorld();
                 }else{
-                    game.openMainMenu(game.currentLevelData);
+                    game.openSinglePlayer(game.currentLevelData);
                 }
             };
             const retryButton = buttons.querySelector('.retry');
@@ -1423,7 +1423,7 @@ function UIManager() {
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
                 this.hideGameOverMenu();
-                game.openMainMenu();
+                game.openSinglePlayer();
             };
 
             const testButton = buttons.querySelector('.test');
@@ -1603,12 +1603,12 @@ function UIManager() {
         const modName = buttons.querySelector('.mod > div');
         modName.innerText = modKey || localize('settings_none');
 
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
         settingsMenu.style.display = 'block';
     }
     this.hideSettingsMenu = ()=> {
         if(settingsMenu){
-            mainMenu.classList.remove('inactive');
+            singlePlayer.classList.remove('inactive');
             settingsMenu.style.display = 'none';
         }
     }
@@ -1667,7 +1667,7 @@ function UIManager() {
                     userData.selectedCharacter = game.selectedCharacter;
                     SaveManager.updateLocalUserData(userData);
 
-                    this.setMainMenuCharacterImage();
+                    this.setSinglePlayerCharacterImage();
                     this.hideCharacterSelect();
                 }
             }
@@ -1679,7 +1679,7 @@ function UIManager() {
         }
 
         characterSelect.style.display = 'block';
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
 
         const back = characterSelect.querySelector('.back');
         back.onclick = ()=>{
@@ -1689,18 +1689,18 @@ function UIManager() {
 
     this.hideCharacterSelect = function () {
         if(characterSelect){
-            mainMenu.classList.remove('inactive');
+            singlePlayer.classList.remove('inactive');
             characterSelect.style.display = 'none';
         }
     }
 
-    this.playLevelFromMainMenu = function(delay){
+    this.playLevelFromSinglePlayer = function(delay){
 
         const continueToGame = ()=>{
-            mainMenu.classList.remove('inactive');
+            singlePlayer.classList.remove('inactive');
             game.preloader.classList.remove('hide');
             setTimeout(()=>{
-                this.hideMainMenu();
+                this.hideSinglePlayer();
                 game.initLevel(game.currentLevelData);
                 game.playWorld(true);
                 backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
@@ -1747,7 +1747,7 @@ function UIManager() {
                     if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
                         this.hideVehicleSelect();
                         game.selectedVehicle = i + 1;
-                        this.playLevelFromMainMenu();
+                        this.playLevelFromSinglePlayer();
                     }
                 }
                 // hide no vehicle
@@ -1757,7 +1757,7 @@ function UIManager() {
         }
 
         vehicleSelect.style.display = 'block';
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
 
         const back = vehicleSelect.querySelector('.back');
         back.onclick = ()=>{
@@ -1780,7 +1780,7 @@ function UIManager() {
                 <div class="header">${localize('levelgui_pause')}</div>
                 <div class="text-level-name">Level Name Goes Here</div>
                 <div class="level-author">
-                    <div class="text-level-by">${localize('mainmenu_by')}:</div>
+                    <div class="text-level-by">${localize('singleplayer_by')}:</div>
                     <div class="text-author">Author Name</div>
                 </div>
                 <div class="share">
@@ -1817,7 +1817,7 @@ function UIManager() {
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
                 game.unpauseGame();
-                game.openMainMenu(game.currentLevelData);
+                game.openSinglePlayer(game.currentLevelData);
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
@@ -1827,7 +1827,7 @@ function UIManager() {
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
                 game.unpauseGame();
-                game.openMainMenu();
+                game.openSinglePlayer();
             };
             const resumeButton = buttons.querySelector('.resume');
             resumeButton.onclick = () => {
@@ -1906,7 +1906,7 @@ function UIManager() {
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
                 this.hideWinScreen();
-                game.openMainMenu(game.currentLevelData);
+                game.openSinglePlayer(game.currentLevelData);
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
@@ -1916,7 +1916,7 @@ function UIManager() {
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
                 this.hideWinScreen();
-                game.openMainMenu();
+                game.openSinglePlayer();
             };
 
             const testButton = buttons.querySelector('.test');
@@ -2002,7 +2002,7 @@ function UIManager() {
 
         recommendations.style.display = 'flex';
 
-        const gameTemplate = mainMenu.querySelector('.game-template');
+        const gameTemplate = singlePlayer.querySelector('.game-template');
 
         const levels = [...initialLevelBatch].sort(() => .5 - Math.random()).filter(level => level.id !== game.currentLevelData.id);
 
@@ -2042,7 +2042,7 @@ function UIManager() {
                 game.loadPublishedLevelData(levelData, ()=>{}).then(() => {
                     if(levelData.forced_vehicle){
                         game.selectedVehicle = levelData.forced_vehicle;
-                        this.playLevelFromMainMenu();
+                        this.playLevelFromSinglePlayer();
                     }else{
                         this.showVehicleSelect();
                     }
@@ -2275,7 +2275,7 @@ function UIManager() {
         this.hideDiscordJoin = function(){
             if(discordJoin){
                 discordJoin.style.display = 'none';
-                mainMenu.classList.remove('inactive');
+                singlePlayer.classList.remove('inactive');
 
                 // we have shown the discord invite, don't bother again
                 const userData = SaveManager.getLocalUserdata();
@@ -2284,7 +2284,7 @@ function UIManager() {
             }
         }
 
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
 
         discordJoin.style.display = 'block';
     }

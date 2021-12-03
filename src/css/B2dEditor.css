@@ -310,7 +310,7 @@ body .dg .cr.function {
     opacity: 1;
 }
 
-#mainMenu.disable>.menuButton,
+#singlePlayer.disable>.menuButton,
 .menuButton.disable {
     pointer-events: none;
     filter: grayscale(1);
