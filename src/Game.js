@@ -776,18 +776,34 @@ function Game() {
         Key.onKeyUp(e);
         e.preventDefault();
     }
-    this.openMainMenu = function (levelData) {
-        //if(this.run) this.stopWorld();
-
+    this.cleanMenus = function(){
         this.initLevel(levelsData.singlePlayerLevel);
         this.editor.ui.hide();
         ui.show();
-        ui.showMainMenu();
+
+        ui.hideMainMenu();
+        ui.hideSinglePlayer();
         ui.hideGameOverMenu();
+    
         this.gameState = this.GAMESTATE_MENU;
         this.interactive = false;
         this.editor.editing = false;
         this.stopAutoSave();
+
+        this.triggerDebugDraw.debounceRedraw();
+        GameTimer.show(false);
+
+        if(!Settings.onPoki) history.replaceState({}, 'JollyWorld', '/');
+    }
+
+    this.openMainMenu = function(){
+        this.cleanMenus();
+        ui.showMainMenu();
+    }
+
+    this.openSinglePlayer = function (levelData) {
+        this.cleanMenus();
+        ui.showSinglePlayer();
 
         if(levelData){
             ui.showLevelBanner(levelData);
@@ -800,11 +816,6 @@ function Game() {
                 ui.showDiscordJoin();
             }
         }
-
-        this.triggerDebugDraw.debounceRedraw();
-        GameTimer.show(false);
-
-        if(!Settings.onPoki) history.replaceState({}, 'JollyWorld', '/');
     }
 
     this.runWorld = function () {

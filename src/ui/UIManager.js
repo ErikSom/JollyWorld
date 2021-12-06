@@ -100,11 +100,11 @@ function UIManager() {
                     <div class="settings"></div>
                     <div class="audio"></div>
                 </div>
-                <div class="menu-grid">
-                    <div class="singleplayer-but">Single Player</div>
-                    <div class="editor-but">Create levels!</div>
-                    <div class="discord-but">Sign Up!</div>
-                    <div class="characters-but">Characters</div>
+                <div class="menu-grid h2 v2">
+                    <div class="singleplayer-but h2 v2">Single Player</div>
+                    <div class="editor-but h2 v1">Create levels!</div>
+                    <div class="discord-but h1 v1">Sign Up!</div>
+                    <div class="characters-but h1 v1">Characters</div>
                 </div>
                 ${this.getFooter()}
             `
@@ -113,9 +113,30 @@ function UIManager() {
             mainMenu.classList.add('mainmenu');
             mainMenu.innerHTML = htmlStructure;
 
+            // buttons
+            const grid = mainMenu.querySelector('.menu-grid');
+            const singleplayerBut = grid.querySelector('.singleplayer-but');
+            singleplayerBut.onclick = () => {
+                this.hideMainMenu();
+                this.showSinglePlayer();
+            }
+
+            const editorBut = grid.querySelector('.editor-but');
+            if(MobileController.isMobile()){
+                editorBut.classList.add('mobile');
+            }else{
+                editorBut.onclick = ()=> {
+                    this.hideMainMenu();
+                    game.openEditor();
+                }
+            }
 
             customGUIContainer.appendChild(mainMenu);
         }
+        mainMenu.style.display = 'block';
+    }
+    this.hideMainMenu = () => {
+        if(mainMenu) mainMenu.style.display = "none";
     }
 
     this.getFooter = () => {
@@ -1419,7 +1440,7 @@ function UIManager() {
     }
 
     this.hideSinglePlayer = function () {
-        singlePlayer.style.display = "none";
+        if(singlePlayer) singlePlayer.style.display = "none";
     }
 
     this.showGameOver = function (time, mili){

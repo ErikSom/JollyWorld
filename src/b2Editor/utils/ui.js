@@ -388,7 +388,7 @@ export const showHeaderBar = function () {
     headerBar.appendChild(button);
     button.addEventListener('click', () => {
 
-        game.openSinglePlayer();
+        game.openMainMenu();
 
     })
 
