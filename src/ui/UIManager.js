@@ -408,6 +408,9 @@ function UIManager() {
             const searchIcon = header.querySelector('.search-icon');
             searchIcon.addEventListener('click', () => shouldSearch())
 
+            // EXIT
+            const exitButton = header.querySelector('.exit');
+            exitButton.addEventListener('click', () => game.openMainMenu())
 
             // if(backendManager.isLoggedIn()){
             //     const bestFilter = filters.querySelector('.best-filter');
