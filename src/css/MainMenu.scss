@@ -1,5 +1,6 @@
 :root{
-	--cellSize: 112px;
+	--cellSize: 98px;
+	--cellGap: 18px;
 }
 
 .mainmenu{
@@ -26,20 +27,21 @@
 		width: var(--cellSize);
 	}
 	.h2{
-		width: calc(var(--cellSize) * 2);
+		width: calc((var(--cellSize) * 2) + var(--cellGap));
 	}
 	.v1{
 		height: var(--cellSize);
 	}
 	.v2{
-		height: calc(var(--cellSize) * 2);
+		height: calc((var(--cellSize) * 2) + var(--cellGap));
 	}
 	.menu-grid{
 		display: grid;
 		grid-template-columns: repeat(auto-fit, var(--cellSize));
 		grid-template-rows: repeat(auto-fit, var(--cellSize));
-		min-width: calc(var(--cellSize) * 2);
-		max-width: calc(var(--cellSize) * 4);
+		min-width: calc((var(--cellSize) * 2) + (var(--cellGap) * 1));
+		max-width: calc((var(--cellSize) * 4) + (var(--cellGap) * 3));
+		gap: var(--cellGap);
 		margin: auto;
 		justify-content: center;
 
@@ -66,22 +68,22 @@
 			font-family: 'Montserrat', sans-serif;
 			font-variation-settings: "wght" 600;
 			cursor: pointer;
-			outline: 2px solid var(--dark-color);
+			outline: 4px solid var(--dark-color);
 
 			&.h1{
-				font-size: 20px;
+				font-size: 16px;
 			}
 			&.h2{
-				font-size: 32px;
+				font-size: 28px;
 			}
 		}
 	}
 }
 
-@media only screen and (max-width: 488px){
+@media only screen and (max-width: 546px){
 	.mainmenu{
 		.menu-grid{
-			max-width: calc(var(--cellSize) * 2);
+			max-width: calc((var(--cellSize) * 2) + (var(--cellGap) * 1));
 		}
 	}
 }
