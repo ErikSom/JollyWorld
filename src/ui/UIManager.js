@@ -1771,7 +1771,6 @@ function UIManager() {
     this.playLevelFromSinglePlayer = function(delay){
 
         const continueToGame = ()=>{
-            singlePlayer.classList.remove('inactive');
             game.preloader.classList.remove('hide');
             setTimeout(()=>{
                 this.hideSinglePlayer();

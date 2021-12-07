@@ -462,6 +462,7 @@ function Game() {
         game.loadPublishedLevelData(tutorialLevel, ()=>{}).then(() => {
             this.tutorialMode = true;
             ui.showSkipTutorialButton();
+            ui.hideMainMenu();
             ui.playLevelFromSinglePlayer();
             this.preloader.querySelector('.cycling').classList.add('fall');
             ui.hideLevelBanner();
