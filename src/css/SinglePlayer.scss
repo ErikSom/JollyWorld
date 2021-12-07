@@ -417,6 +417,8 @@
 				.text-author{
 					color: #43F07C;
 					margin: 1px 0 0 2px;
+					overflow: hidden;
+					text-overflow: ellipsis;
 				}
 			}
 			.tags{
@@ -447,6 +449,30 @@
 // MOBILE
 .singleplayer{
 	&.mobile{
+		.games{
+			margin: 0;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+	}
+}
+
+// collapse search
+@media only screen and (max-width: 398px){
+	.singleplayer{
+		.header{
+			.logo{
+				width: 124px;
+				height: 48px;
+			}
+			.buttons{
+				.search-filter{
+					input{
+						max-width: 46px;
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -454,20 +480,18 @@
 @media only screen and (max-width: 860px){
 	.singleplayer{
 		.games{
-			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-			grid-gap: 10px 0px;
+			grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
 		}
 	}
 	.game{
-		width: 150px;
-		height: 150px;
-
-		.thumb{
-			width: 140px;
-			height: 93px;
-		}
 		.footer{
-			height:40px;
+			.text-holder{
+				font-size: 10px;
+			}
+		}
+		.vehicle-label{
+			width: 22px;
+			height: 22px;
 		}
 	}
 }
