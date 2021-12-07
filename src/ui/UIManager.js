@@ -100,7 +100,7 @@ function UIManager() {
                     <div class="settings"></div>
                     <div class="audio"></div>
                 </div>
-                <div class="menu-grid h2 v2">
+                <div class="menu-grid">
                     <div class="singleplayer-but h2 v2">Single Player</div>
                     <div class="editor-but h2 v1">Create levels!</div>
                     <div class="discord-but h1 v1">Sign Up!</div>
