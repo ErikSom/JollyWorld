@@ -146,7 +146,7 @@ function UIManager() {
                 <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
                 <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
                 &
-                <a href="https://jollyworld.app/terms/" class="terms">Terms of Service</a>
+                <a href="https://jollyworld.app/terms/" class="terms">TOS</a>
                 .
                 <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
             </div>
@@ -235,7 +235,7 @@ function UIManager() {
                         <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
                         <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
                         &
-                        <a href="https://jollyworld.app/terms/" class="terms">Terms of Service</a>
+                        <a href="https://jollyworld.app/terms/" class="terms">TOS</a>
                         .
                         <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
                     </div>
