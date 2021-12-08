@@ -347,16 +347,14 @@
 
 	.flags{
 		display: none;
-		width: 136px;
-		flex-wrap: wrap;
+		flex-wrap: wrap-reverse;
+		flex-direction: column;
 		gap: 5px;
 		position: fixed;
-		bottom: 0;
-		right: 0;
+		bottom: 9px;
+		right: 5px;
 		z-index: 999;
-		background: #333333;
-		border: 2px solid black;
-		padding: 10px;
+		padding: 0px;
 		.flag{
 			font-size: 30px
 		}

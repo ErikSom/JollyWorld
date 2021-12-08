@@ -333,6 +333,7 @@ function Game() {
         this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
+            this.openSinglePlayer();
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
                 ui.showLevelBanner(levelData);
                 this.showLevelAfterTutorial = levelData;
@@ -342,6 +343,7 @@ function Game() {
         }else{
             const username = urlParams.get('user');
             if(username){
+                this.openSinglePlayer();
                 ui.showUserPage(username);
             }
         }
@@ -803,6 +805,7 @@ function Game() {
     }
 
     this.openSinglePlayer = function (levelData) {
+        console.log("CLICK");
         this.cleanMenus();
         ui.showSinglePlayer();
 
@@ -812,8 +815,9 @@ function Game() {
 
         const userdata = SaveManager.getLocalUserdata();
 
-        if(!userdata.discordShown){
-            if(userdata.levelsPlayed >=3 || userdata.levelsPublished){
+        if(!userdata.discordShown || true){
+            if(userdata.levelsPlayed >=3 || userdata.levelsPublished || true){
+                console.log("SHOW IT!!!");
                 ui.showDiscordJoin();
             }
         }

@@ -44,8 +44,6 @@ import * as TutorialManager from "../utils/TutorialManager"
 import SimpleBar from 'simplebar'
 import {countries, countryToFlag, localize} from '../utils/Localization'
 
-import textFit from '../../libs/textFit';
-
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
@@ -118,7 +116,7 @@ function UIManager() {
             const singleplayerBut = grid.querySelector('.singleplayer-but');
             singleplayerBut.onclick = () => {
                 this.hideMainMenu();
-                this.showSinglePlayer();
+                game.openSinglePlayer();
             }
 
             const editorBut = grid.querySelector('.editor-but');
@@ -130,6 +128,9 @@ function UIManager() {
                     game.openEditor();
                 }
             }
+
+            const country = mainMenu.querySelector('.country');
+            this.makeCountrySelect(country);
 
             customGUIContainer.appendChild(mainMenu);
         }
@@ -315,6 +316,7 @@ function UIManager() {
             const checkBoxes =filterContainer.querySelectorAll('.css-checkbox');
             checkBoxes.forEach(checkBox => {
                 checkBox.addEventListener('click', () => {
+                    if(checkBox.checked) return;
                     checkBoxes.forEach(cb => cb.checked = false);
                     checkBox.checked = true;
                     this.reloadSinglePlayerGames();
@@ -329,6 +331,8 @@ function UIManager() {
             dateButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     if(date.classList.contains('open')){
+                        const wasChecked = button.classList.contains('checked');
+    
                         dateButtons.forEach(but => {
                             but.style.display = 'none';
                             but.classList.remove('clicked');
@@ -337,7 +341,7 @@ function UIManager() {
                         date.classList.remove('open');
                         button.style.display = 'block';
                         button.classList.add('checked');
-                        this.reloadSinglePlayerGames();
+                        if(!wasChecked) this.reloadSinglePlayerGames();
                     }else{
                         date.classList.add('open');
                         dateButtons.forEach(but => but.style.display = 'block');
@@ -366,6 +370,8 @@ function UIManager() {
             vehicleButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     if(vehicles.classList.contains('open')){
+                        const wasChecked = button.classList.contains('checked');
+
                         vehicleButtons.forEach(but => {
                             but.style.display = 'none';
                             but.classList.remove('clicked');
@@ -374,7 +380,7 @@ function UIManager() {
                         vehicles.classList.remove('open');
                         button.style.display = 'block';
                         button.classList.add('checked');
-                        this.reloadSinglePlayerGames();
+                        if(!wasChecked) this.reloadSinglePlayerGames();
                     }else{
                         vehicles.classList.add('open');
                         vehicleButtons.forEach(but => but.style.display = 'block');
@@ -451,11 +457,6 @@ function UIManager() {
                     game.gameState = game.GAMESTATE_MENU;
                 }
             }
-
-            // fit texts
-            Array.from(singlePlayer.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
 
         singlePlayer.style.display = 'block';
@@ -706,11 +707,6 @@ function UIManager() {
                 this.hideLevelBanner();
             }
             customGUIContainer.appendChild(levelBanner);
-
-            // fit texts
-            Array.from(levelBanner.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
 
         this.showAdContainer();
@@ -853,11 +849,6 @@ function UIManager() {
                 this.hideUserPage();
             }
             customGUIContainer.appendChild(userPage);
-
-            // fit texts
-            Array.from(userPage.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
 
@@ -1122,11 +1113,6 @@ function UIManager() {
                 this.hideLeaderboard();
             }
             customGUIContainer.appendChild(leaderboard);
-
-            // fit texts
-            Array.from(leaderboard.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         leaderboard.style.display = 'block';
@@ -1412,7 +1398,6 @@ function UIManager() {
             skipTutorial.style.margin = '10px';
             customGUIContainer.appendChild(skipTutorial);
             skipTutorial.innerHTML = `<span class="fit h2">${localize('tutorial_skip_button')}</span>`;
-            textFit(skipTutorial.querySelector('.fit'));
             skipTutorial.onclick = ()=> {
                 game.openSinglePlayer();
                 this.hideWinScreen();
@@ -1507,11 +1492,6 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(gameOver);
-
-            // fit texts
-            Array.from(gameOver.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const buttons = gameOver.querySelector('.buttons');
@@ -1522,10 +1502,8 @@ function UIManager() {
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             gameOver.classList.add('editor');
-            textFit(testButton.querySelector('.fit'));
         }else{
             gameOver.classList.remove('editor');
-            textFit(exitButton.querySelector('.fit'));
         }
 
         const timeText = gameOver.querySelector('.text-time');
@@ -1650,11 +1628,6 @@ function UIManager() {
             this.makeCountrySelect(country);
 
             customGUIContainer.appendChild(settingsMenu);
-
-            // fit texts
-            Array.from(settingsMenu.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const userData = SaveManager.getLocalUserdata();
@@ -1746,10 +1719,6 @@ function UIManager() {
                 }
             }
             customGUIContainer.appendChild(characterSelect);
-            // fit texts
-            Array.from(characterSelect.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
 
         characterSelect.style.display = 'block';
@@ -1910,11 +1879,6 @@ function UIManager() {
             };
 
             customGUIContainer.appendChild(pauseScreen);
-
-            // fit texts
-            Array.from(pauseScreen.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const title = pauseScreen.querySelector('.text-level-name');
@@ -1999,11 +1963,6 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(winScreen);
-
-            // fit texts
-            Array.from(winScreen.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const buttons = winScreen.querySelector('.buttons');
@@ -2024,10 +1983,8 @@ function UIManager() {
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             winScreen.classList.add('editor');
-            textFit(testButton.querySelector('.fit'));
         }else{
             winScreen.classList.remove('editor');
-            textFit(exitButton.querySelector('.fit'));
         }
 
         const timeText = winScreen.querySelector('.text-time');
@@ -2221,11 +2178,6 @@ function UIManager() {
         if(!socialShareScreen){
             socialShareScreen = this.buildSocialShare();
             customGUIContainer.appendChild(socialShareScreen);
-
-            // fit texts
-            Array.from(socialShareScreen.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
         this.updateSocialShareLinks(socialShareScreen, level);
         socialShareScreen.style.display = 'block';
@@ -2316,11 +2268,11 @@ function UIManager() {
         if(!discordJoin){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header"><span class="fit h1">${localize('discord_getinvolved')}</span></div>
+                <div class="header">${localize('discord_getinvolved')}</div>
                 <div class="billyDiscord"></div>
                 <div class="content">${localize('discord_content')}</div>
                 <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="discordButton"></a>
-                <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                <div class="back button">${localize('levelbanner_back')}</div>
             `;
 
             discordJoin = document.createElement('div');
@@ -2340,10 +2292,6 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(discordJoin);
-            // fit texts
-            Array.from(discordJoin.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
         this.hideDiscordJoin = function(){
             if(discordJoin){

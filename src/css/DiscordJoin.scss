@@ -5,7 +5,9 @@
 
 	.header{
 		@extend .jollyfont;
-		font-size: 40px;
+		font-size: 34px;
+		color: var(--dark-color);
+		font-variation-settings: "wght" 800;
 		text-align: center;
 	}
 
@@ -18,7 +20,7 @@
 
 	.content{
 		text-align: center;
-		color: #fff;
+		color: var(--default-text-color);
 		padding: 10px;
 	}
 
