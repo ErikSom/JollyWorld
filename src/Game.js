@@ -815,9 +815,8 @@ function Game() {
 
         const userdata = SaveManager.getLocalUserdata();
 
-        if(!userdata.discordShown || true){
-            if(userdata.levelsPlayed >=3 || userdata.levelsPublished || true){
-                console.log("SHOW IT!!!");
+        if(!userdata.discordShown){
+            if(userdata.levelsPlayed >=3 || userdata.levelsPublished){
                 ui.showDiscordJoin();
             }
         }

@@ -316,7 +316,7 @@ function UIManager() {
             const checkBoxes =filterContainer.querySelectorAll('.css-checkbox');
             checkBoxes.forEach(checkBox => {
                 checkBox.addEventListener('click', () => {
-                    if(checkBox.checked) return;
+                    if(!checkBox.checked) return;
                     checkBoxes.forEach(cb => cb.checked = false);
                     checkBox.checked = true;
                     this.reloadSinglePlayerGames();
