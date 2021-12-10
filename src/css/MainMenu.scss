@@ -48,17 +48,67 @@
 		.singleplayer-but{
 			grid-column: auto / span 2;
 			grid-row: auto / span 2;
-			background: #F9B61F;
+			background: #6ec8e4;
+			position: relative;
+
+			&:after{
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/gui/single-player.png) no-repeat;
+				background-size: contain;
+				background-position-y: bottom;
+				width: 100%;
+				height: 110%;
+			}
 		}
 		.editor-but{
 			grid-column: auto / span 2;
 			background: #43F07C;
+			position: relative;
+
+			&:after{
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/gui/editor.png) no-repeat;
+				background-size: contain;
+				width: 100%;
+				height: 100%;
+			}
 		}
 		.discord-but{
 			background: #7586D6;
+			position: relative;
+
+			&:after{
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/misc/discord-icon.svg) no-repeat;
+				background-size: 66%;
+				background-position: center 26%;
+				width: 100%;
+				height: 100%;
+			}
 		}
 		.characters-but{
 			background: #F64F60;
+			position: relative;
+
+			&:after{
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/portraits/character_select1.png) no-repeat;
+				background-size: cover;
+				width: 100%;
+				height: 116%;
+			}
 		}
 
 		.singleplayer-but, .editor-but, .discord-but, .characters-but{
@@ -75,6 +125,11 @@
 			}
 			&.h2{
 				font-size: 28px;
+			}
+
+			span{
+				z-index: 1;
+				margin-bottom: 10px;
 			}
 		}
 	}

@@ -99,10 +99,10 @@ function UIManager() {
                     <div class="audio"></div>
                 </div>
                 <div class="menu-grid">
-                    <div class="singleplayer-but h2 v2">Single Player</div>
-                    <div class="editor-but h2 v1">Create levels!</div>
-                    <div class="discord-but h1 v1">Sign Up!</div>
-                    <div class="characters-but h1 v1">Characters</div>
+                    <div class="singleplayer-but h2 v2"><span>Single Player<span></div>
+                    <div class="editor-but h2 v1"><span>Create levels!</span></div>
+                    <div class="discord-but h1 v1"><span>Sign Up!</span></div>
+                    <div class="characters-but h1 v1"><span>Characters</span></div>
                 </div>
                 ${this.getFooter()}
             `

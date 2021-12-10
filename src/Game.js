@@ -805,7 +805,6 @@ function Game() {
     }
 
     this.openSinglePlayer = function (levelData) {
-        console.log("CLICK");
         this.cleanMenus();
         ui.showSinglePlayer();
 
