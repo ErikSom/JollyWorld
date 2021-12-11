@@ -135,8 +135,21 @@ function UIManager() {
                 this.showCharacterSelect();
             }
 
+            const discordButton = grid.querySelector('.discord-but');
+            discordButton.onclick = ()=>{
+                if(!backendManager.isLoggedIn()){
+                    this.openDiscordOauth();
+                } else {
+                    game.openSinglePlayer();
+                    this.showUserPage(backendManager.userData.username, 'favorite');
+                }
+            }
+
             const country = mainMenu.querySelector('.country');
             this.makeCountrySelect(country);
+
+            backendManager.registerListener('login', ()=>this.handleLoginChange());
+            this.handleLoginChange();
 
             customGUIContainer.appendChild(mainMenu);
         }
@@ -171,7 +184,7 @@ function UIManager() {
         `
     }
 
-    this.showSinglePlayer = ()=>{
+    this.showSinglePlayer = init =>{
         if(!singlePlayer){
             const htmlStructure = /*html*/`
                 <div class="header">
@@ -470,7 +483,7 @@ function UIManager() {
 
         singlePlayer.style.display = 'block';
 
-        this.reloadSinglePlayerGames();
+        if(!init) this.reloadSinglePlayerGames();
     }
 
     this.makeCountrySelect = country => {
@@ -503,7 +516,7 @@ function UIManager() {
     }
 
     this.handleLoginChange = async ()=> {
-        const header = singlePlayer.querySelector('.header');
+        const grid = mainMenu.querySelector('.menu-grid');
 
         // if we can't retrieve userdata quick enough
         if(backendManager.isLoggedIn() && !backendManager.userData){
@@ -511,15 +524,13 @@ function UIManager() {
             return;
         }
 
-        const discordButton = header.querySelector('.discord');
-        const span = discordButton.querySelector('.fit');
+        const discordButton = grid.querySelector('.discord-but');
+        const discordName = discordButton.querySelector('span');
 
         if(backendManager.isLoggedIn()){
-            span.innerText = backendManager.userData.username;
-            discordButton.style.fontSize = '26px';
+            discordName.innerText = backendManager.userData.username;
         }else{
-            span.innerText = 'Login';
-            discordButton.style.fontSize = '36px';
+            discordName.innerText = 'Sign up!';
         }
     }
 
