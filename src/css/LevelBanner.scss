@@ -116,6 +116,7 @@
 			@extend .back-button;
 			background-color: #1F9891;
 			position: relative;
+			min-width: 148px;
 			.progress{
 				position: absolute;
 				bottom: 0;

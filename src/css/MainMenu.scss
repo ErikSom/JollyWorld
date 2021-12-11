@@ -122,7 +122,7 @@
 		.singleplayer-but, .editor-but, .discord-but, .characters-but{
 			display: flex;
 			justify-content: center;
-			align-items: end;
+			align-items: flex-end;
 			font-family: 'Montserrat', sans-serif;
 			font-variation-settings: "wght" 600;
 			cursor: pointer;
@@ -139,7 +139,7 @@
 				z-index: 1;
 				margin-bottom: 10px;
 			}
-
+			transform: scale(1);
 			&:hover{
 				transform: scale(1.04);
 			}
