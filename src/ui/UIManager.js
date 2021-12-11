@@ -102,7 +102,7 @@ function UIManager() {
                     <div class="singleplayer-but h2 v2"><span>Single Player<span></div>
                     <div class="editor-but h2 v1"><span>Create levels!</span></div>
                     <div class="discord-but h1 v1"><span>Sign Up!</span></div>
-                    <div class="characters-but h1 v1"><span>Characters</span></div>
+                    <div class="characters-but h1 v1"><span>Characters</span><div class="character-image"></div></div>
                 </div>
                 ${this.getFooter()}
             `
@@ -111,6 +111,7 @@ function UIManager() {
             mainMenu.classList.add('mainmenu');
             mainMenu.innerHTML = htmlStructure;
 
+            
             // buttons
             const grid = mainMenu.querySelector('.menu-grid');
             const singleplayerBut = grid.querySelector('.singleplayer-but');
@@ -129,11 +130,19 @@ function UIManager() {
                 }
             }
 
+            const characterSelect = grid.querySelector('.characters-but');
+            characterSelect.onclick = ()=> {
+                this.showCharacterSelect();
+            }
+
             const country = mainMenu.querySelector('.country');
             this.makeCountrySelect(country);
 
             customGUIContainer.appendChild(mainMenu);
         }
+
+        this.setMainMenuCharacterImage();
+
         mainMenu.style.display = 'block';
     }
     this.hideMainMenu = () => {
@@ -1714,7 +1723,7 @@ function UIManager() {
                     userData.selectedCharacter = game.selectedCharacter;
                     SaveManager.updateLocalUserData(userData);
 
-                    this.setSinglePlayerCharacterImage();
+                    this.setMainMenuCharacterImage();
                     this.hideCharacterSelect();
                 }
             }
@@ -1722,7 +1731,6 @@ function UIManager() {
         }
 
         characterSelect.style.display = 'block';
-        singlePlayer.classList.add('inactive');
 
         const back = characterSelect.querySelector('.back');
         back.onclick = ()=>{
@@ -1732,9 +1740,20 @@ function UIManager() {
 
     this.hideCharacterSelect = function () {
         if(characterSelect){
-            singlePlayer.classList.remove('inactive');
             characterSelect.style.display = 'none';
         }
+    }
+
+    this.setMainMenuCharacterImage = ()=> {
+        const grid = mainMenu.querySelector('.menu-grid');
+        const characterSelect = grid.querySelector('.character-image');
+
+        console.log(characterSelect, grid);
+
+        getModdedPortrait(`character_select${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
+            console.log("URL:", url);
+            if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
+        })
     }
 
     this.playLevelFromSinglePlayer = function(delay){

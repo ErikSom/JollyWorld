@@ -99,8 +99,7 @@
 			background: #F64F60;
 			position: relative;
 
-			&:after{
-				content: '';
+			.character-image{
 				position: absolute;
 				bottom: 0;
 				left: 0;
