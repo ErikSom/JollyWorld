@@ -529,8 +529,11 @@ function UIManager() {
 
         if(backendManager.isLoggedIn()){
             discordName.innerText = backendManager.userData.username;
+            discordButton.classList.add('loggedIn');
         }else{
             discordName.innerText = 'Sign up!';
+            discordButton.classList.remove('loggedIn');
+
         }
     }
 
