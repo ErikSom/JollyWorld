@@ -839,6 +839,7 @@ function UIManager() {
                         <div class="gamestotalgameplays"><span>${localize('userpage_totalgameplays')}:</span><span class="value">?</span></div>
                     </div>
                     <div class="nav-buttons">
+                        <div class="logout button">${localize('editorheader_logout')}</div>
                         <div class="back button">${localize('levelbanner_back')}</div>
                     </div>
                 </div>
@@ -868,6 +869,13 @@ function UIManager() {
                 if(!Settings.onPoki) history.replaceState({}, 'JollyWorld', '/');
                 this.hideUserPage();
             }
+
+            const logoutButton = navButtons.querySelector('.logout');
+            logoutButton.onclick = ()=>{
+                backendManager.backendSignout();
+                logoutButton.style.display = 'none';
+            }
+
             customGUIContainer.appendChild(userPage);
         }
 
@@ -940,11 +948,18 @@ function UIManager() {
 
         const userData  = await backendManager.getUserProfile(username);
 
-
         if(userData){
             username_text.innerText = username;
             membersince_text.innerText = format.formatDMY(userData.created_at);
             gamespublished.innerText = userData.published_levels.length;
+
+            const logoutButton = userPage.querySelector('.logout');
+            if(!backendManager.isLoggedIn() || (!backendManager.userData || backendManager.userData.username !== username)){
+                logoutButton.style.display = 'none';
+            }else{
+                logoutButton.style.display = 'block';
+            }
+
 
             if(userData.published_levels.length > 0){
 

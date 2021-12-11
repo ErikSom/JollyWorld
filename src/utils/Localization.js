@@ -986,15 +986,15 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "editorheader_logout",
-        "us": "LOGOUT",
-        "nl": "UITLOGGEN",
-        "de": "AUSLOGGEN",
+        "us": "Logout",
+        "nl": "Uitloggen",
+        "de": "Ausloggen",
         "es": "Salir",
         "pt": "Deslogar",
         "cz": "Odhlásit se",
         "fr": "Se déconnecter",
         "it": "Partire",
-        "jr": "DROP ANCHOR"
+        "jr": "Drop anchor"
     },
     {
         "textId": "editorheader_new",

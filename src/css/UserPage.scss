@@ -25,7 +25,7 @@
 			.username{
 				color: var(--secondary-bg-color);
 				font-size: 36px;
-				margin-right: 80px;
+				margin-right: 10px;
 			}
 			.membersince{
 				font-size: 12px;
@@ -84,9 +84,15 @@
 
 	.nav-buttons{
 		margin-left: auto;
-		.back{
+		display: flex;
+		gap: 10px;
+		.button{
 			margin: 0px;
 			@extend .back-button;
+		}
+		.logout{
+			background: white;
+			color: black;
 		}
 	}
 }
