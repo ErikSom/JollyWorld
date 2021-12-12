@@ -292,23 +292,7 @@ function UIManager() {
                         </div>
                     </div>
                 </div>
-                <div class="page-footer">
-                    <div class="text">
-                        <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
-                        <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
-                        &
-                        <a href="https://jollyworld.app/terms/" class="terms">TOS</a>
-                        .
-                        <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
-                    </div>
-                    <div class="social-channels">
-                        <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
-                        <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>
-                        <a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>
-                        <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
-                    </div>
-                    <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
-                </div>
+                ${this.getFooter()}
             `
 
             singlePlayer = document.createElement('div');
