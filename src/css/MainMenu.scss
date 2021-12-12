@@ -8,6 +8,7 @@
 .mainmenu{
 	width: 100vw;
 	height: 100vh;
+	overflow-y: scroll;
 	background: url(../../static/assets/images/gui/BG_Repeat.png);
 	background-color: #ffffff;
 
@@ -24,6 +25,7 @@
 			height: 100%;
 			max-width: 366px;
 			background-position: center;
+			z-index: 0;
 		}
 
 		.settings, .audio{
@@ -64,6 +66,7 @@
 		gap: var(--cellGap);
 		margin: auto;
 		justify-content: center;
+		min-height: 74vh;
 
 		.singleplayer-but{
 			grid-column: auto / span 2;

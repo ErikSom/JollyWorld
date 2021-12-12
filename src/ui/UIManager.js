@@ -152,9 +152,6 @@ function UIManager() {
                 }
             }
 
-            const country = mainMenu.querySelector('.country');
-            this.makeCountrySelect(country);
-
             backendManager.registerListener('login', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
@@ -172,7 +169,12 @@ function UIManager() {
 
             }
             window.addEventListener('resize', gridOnlyEvenCells);
-            gridOnlyEvenCells();
+
+            mainMenu.style.visibility = 'hidden';
+            setTimeout(() => {
+                gridOnlyEvenCells();
+                mainMenu.style.visibility = 'visible';
+            }, 0);
 
             customGUIContainer.appendChild(mainMenu);
 
@@ -217,7 +219,6 @@ function UIManager() {
                 <a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>
                 <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
             </div>
-            <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
         </div>
         `
     }
@@ -490,10 +491,6 @@ function UIManager() {
             if(!MobileController.isMobile()){
                 new SimpleBar(singlePlayer.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
             }
-
-            const country = singlePlayer.querySelector('.country');
-            this.makeCountrySelect(country);
-
 
             const socialChannels = singlePlayer.querySelector('.social-channels');
             const youtubeLogo = socialChannels.querySelector('.jolly-youtube');
