@@ -531,7 +531,12 @@ function UIManager() {
                 flags.appendChild(flag);
             })
             flags.classList.add('init');
-            selectFlag.onclick = ()=>{flags.classList.add('open')}
+            selectFlag.onclick = ()=>{
+                flags.classList.add('open');
+                setTimeout(()=>{
+                    if(flags) flags.classList.remove('open');
+                }, 3000);
+            }
         }
         selectFlag.className = `flag fflag fflag-${Settings.currentCountry.toUpperCase()} ff-lg ff-app`;
     }

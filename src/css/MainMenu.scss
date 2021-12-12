@@ -1,5 +1,7 @@
+@use 'Components';
+
 :root{
-	--cellSize: max(20vmin, 89px);
+	--cellSize: max(20vmax, 89px);
 	--cellGap: 18px;
 }
 
@@ -23,25 +25,23 @@
 			background-position: center;
 		}
 
-		.settings{
+		.settings, .audio{
+			@extend .simple-button;
 			width: 44px;
 			height: 44px;
-			background: url(../../static/assets/images/gui/Settings_Icon.svg) no-repeat;
 			position: absolute;
 			top:0;
-			left:0;
 			margin: 10px;
 		}
 
-		.audio{
-			width: 44px;
-			height: 44px;
-			background: url(../../static/assets/images/gui/SoundOn_Icon.svg) no-repeat;
-			position: absolute;
-			top:0;
-			right:0;
-			margin: 10px;
+		.settings{
+			left:0;
+			background: url(../../static/assets/images/gui/Settings_Icon.svg) no-repeat;
+		}
 
+		.audio{
+			right: 0;
+			background: url(../../static/assets/images/gui/SoundOn_Icon.svg) no-repeat;
 
 			&.disabled{
 				background: url(../../static/assets/images/gui/SoundOff_Icon.svg) no-repeat;
