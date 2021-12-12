@@ -1,16 +1,6 @@
 //https://www.shadertoy.com/view/MtcGD7
 @use 'Components';
 
-:root{
-	--main-bg-color: #ffffff;
-	--secondary-bg-color: #1F9891;
-	--dark-color: #333333;
-	--alt-text-color: #ffffff;
-	--default-text-color: #000000;
-	--gray-color: #979797;
-	--negative-button: #D70000;
-}
-
 @mixin css-checkbox($size: '16px',
 	$selectedColor: #444,
 	$defaultColor: white,

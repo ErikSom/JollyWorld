@@ -32,6 +32,17 @@
     <script src="//game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
 
     <style>
+        :root{
+            --main-bg-color: #ffffff;
+            --main-bg: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmCAYAAACoPemuAAAA40lEQVRYhe2WwQ6DIAyG/4oaTbz5/s/oxZBIhO5g3DxsuE6GHPqdSGjIlzb8QMzMKJDqboFPqJgUFZOiYlLq2GYIAdbarbCu0XVdFingRMw5h3met8LMYtFRVtVru+/7v8scobMnyTkHAGjbNovQzqnYXRR7K1VMSrFi0RyTsK4rQggAAGMMjDGXzksm5r3HfsGJ6LJYslEew/iqFJAwx5j52bGj5K9owEpRMSkqJqVYsWTJ/y3TNGFZFgDAOI5omuZtXfaOee+f61iEZu/YMAyw1oKIot91TX4pKiZFxaQUK/YAGWpIaNSGNBMAAAAASUVORK5CYII=");
+            --secondary-bg-color: #1F9891;
+            --dark-color: #333333;
+            --alt-text-color: #ffffff;
+            --default-text-color: #000000;
+            --gray-color: #979797;
+            --negative-button: #D70000;
+        }
+
         html,
         body,
         div,
@@ -70,7 +81,7 @@
             transform:translate(0, -120%);
         }
         .preloaderDoor{
-            background: #3d7d1e;
+            background: var(--main-bg);
             width:100%;
             height:50vh;
             position:absolute;
@@ -82,8 +93,7 @@
         }
         .preloaderDoor.upper{
             top:0;
-            border-bottom: 2px solid #00000060;
-            box-shadow: 0px 2px 4px 0px #111;
+            border-bottom: 2px solid var(--dark-color);
         }
         #preloader .preloaderBar{
             width:200px;
@@ -91,16 +101,13 @@
             top: 100%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border: 1.6px solid white;
             margin-top: 2px;
-            background:#545454;
+            background: var(--gray-color);
             position: absolute;
-            border-radius: 10px;
         }
         .preloaderFill,  .innerBorder{
             width:100%;
             height:100%;
-            border-radius: 10px;
         }
         .preloaderBar .preloaderFill{
             background-image: -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, rgba(0, 0, 0, .2)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, rgba(0, 0, 0, .2)), color-stop(.75, rgba(0, 0, 0, .2)), color-stop(.75, transparent), to(transparent) );
@@ -109,12 +116,12 @@
             -webkit-animation: move 2s linear infinite;
             position:absolute;
             background-size: 50px 50px;
-            background-color: #d70201;
+            background-color: var(--secondary-bg-color);
             width: 0%;
         }
         .preloaderBar .innerBorder{
             position: absolute;
-            border: 2px solid black;
+            border: 2px solid var(--dark-color);
         }
         .cycling{
             position:absolute;
@@ -122,7 +129,7 @@
             transform-origin: bottom;
             transform: scale(0.6);
             left: 0;
-            top: -84px;
+            top: -82px;
             margin-left: -20px;
         }
         .cycling.fall{
