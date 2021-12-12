@@ -1801,7 +1801,7 @@ function UIManager() {
 
         console.log(characterSelect, grid);
 
-        getModdedPortrait(`character_select${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
+        getModdedPortrait(`characterselect${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
             console.log("URL:", url);
             if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
         })
