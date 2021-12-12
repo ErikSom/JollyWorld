@@ -22,6 +22,31 @@
 			width: auto;
 			background-position: center;
 		}
+
+		.settings{
+			width: 44px;
+			height: 44px;
+			background: url(../../static/assets/images/gui/Settings_Icon.svg) no-repeat;
+			position: absolute;
+			top:0;
+			left:0;
+			margin: 10px;
+		}
+
+		.audio{
+			width: 44px;
+			height: 44px;
+			background: url(../../static/assets/images/gui/SoundOn_Icon.svg) no-repeat;
+			position: absolute;
+			top:0;
+			right:0;
+			margin: 10px;
+
+
+			&.disabled{
+				background: url(../../static/assets/images/gui/SoundOff_Icon.svg) no-repeat;
+			}
+		}
 	}
 	.h1{
 		width: var(--cellSize);

@@ -111,7 +111,14 @@ function UIManager() {
             mainMenu.classList.add('mainmenu');
             mainMenu.innerHTML = htmlStructure;
 
-            
+
+            // header
+            const header = mainMenu.querySelector('.header');
+            const settings = header.querySelector('.settings');
+            settings.onclick = ()=> {
+                this.showSettingsMenu();
+            }
+
             // buttons
             const grid = mainMenu.querySelector('.menu-grid');
             const singleplayerBut = grid.querySelector('.singleplayer-but');
@@ -152,6 +159,20 @@ function UIManager() {
             this.handleLoginChange();
 
             customGUIContainer.appendChild(mainMenu);
+        }
+
+
+        const header = mainMenu.querySelector('.header');
+        const volumeButton = header.querySelector('.audio');
+        if(!Settings.sfxOn) volumeButton.classList.add('disabled');
+
+        volumeButton.onclick = ()=>{
+            game.toggleMute();
+            if(!Settings.sfxOn){
+                volumeButton.classList.add('disabled');
+            }else{
+                volumeButton.classList.remove('disabled');
+            }
         }
 
         this.setMainMenuCharacterImage();
@@ -1598,17 +1619,17 @@ function UIManager() {
                 <div class="bar"></div>
                 <div class="header"><span class="fit h1">${localize('settings_settings')}</span></div>
                 <div class="buttons">
-                    <div class="music"><div class="fit h3">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="blood"><div class="fit h3">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="gore"><div class="fit h3">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="fullscreen"><div class="fit h3">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
-                    <a class="credits" href="https://jollyworld.app/credits/"><span class="fit h3">${localize('settings_credits')}</span></a>
-                    <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
+                    <div class="music">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div>
+                    <div class="blood">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div>
+                    <div class="gore">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div>
+                    <div class="fullscreen">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div>
+                    <a class="credits" href="https://jollyworld.app/credits/">${localize('settings_credits')}</a>
+                    <div class="consent">${localize('settings_consent')}</div>
                     <div class="modContainer">
-                        <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></span></div>
-                        <a class="install" href="mod.html"><span class="fit h3">${localize('settings_installmod')}</span></a>
+                        <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></div>
+                        <a class="install" href="mod.html">${localize('settings_installmod')}</a>
                     </div>
-                    <div class="back"><span class="fit h3">${localize('levelbanner_back')}</span></div>
+                    <div class="back">${localize('levelbanner_back')}</div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
             `;
@@ -1688,12 +1709,10 @@ function UIManager() {
         const modName = buttons.querySelector('.mod > div');
         modName.innerText = modKey || localize('settings_none');
 
-        singlePlayer.classList.add('inactive');
         settingsMenu.style.display = 'block';
     }
     this.hideSettingsMenu = ()=> {
         if(settingsMenu){
-            singlePlayer.classList.remove('inactive');
             settingsMenu.style.display = 'none';
         }
     }
