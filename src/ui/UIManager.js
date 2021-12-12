@@ -165,9 +165,22 @@ function UIManager() {
                 }else{
                     grid.style.maxWidth = `${gridCell.width * 2 + gap}px`;
                 }
-
-
             }
+
+
+            const allButs = [singleplayerBut, editorBut, characterSelect, discordButton];
+            allButs.forEach(el => {
+                el.addEventListener('mouseover', () => {
+                    const bounds = el.getBoundingClientRect();
+                    const targetWidth = bounds.width + 10;
+                    const scale = targetWidth / bounds.width;
+                    el.style.transform = `scale(${scale})`;
+                });
+                el.addEventListener('mouseout', () => {
+                    el.style.transform = `scale(1.0)`;
+                })
+            });
+
             window.addEventListener('resize', gridOnlyEvenCells);
 
             mainMenu.style.visibility = 'hidden';
