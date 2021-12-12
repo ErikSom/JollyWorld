@@ -140,6 +140,20 @@
 		}
 	}
 }
+@media only screen and (max-width: 300px){
+	.page-footer{
+		.text{
+			font-size: 8px;
+			button{
+				margin:0px;
+			}
+
+			a{
+				margin:0px 2px;
+			}
+		}
+	}
+}
 
 
 .jollyfont{
