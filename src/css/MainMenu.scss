@@ -1,7 +1,7 @@
 @use 'Components';
 
 :root{
-	--cellSize: max(20vmax, 89px);
+	--cellSize: min(16vmax, 40vmin);
 	--cellGap: 18px;
 }
 
@@ -12,16 +12,17 @@
 	background-color: #ffffff;
 
 	.header{
+		display: flex;
+		justify-content: space-between;
 		width: 100%;
 		height: 20vmin;
+		min-height: 68px;
 		padding: 10px;
 
 		.logo{
 			position: relative;
 			height: 100%;
 			max-width: 366px;
-			margin: auto;
-			width: auto;
 			background-position: center;
 		}
 
@@ -29,18 +30,13 @@
 			@extend .simple-button;
 			width: 44px;
 			height: 44px;
-			position: absolute;
-			top:0;
-			margin: 10px;
 		}
 
 		.settings{
-			left:0;
 			background: url(../../static/assets/images/gui/Settings_Icon.svg) no-repeat;
 		}
 
 		.audio{
-			right: 0;
 			background: url(../../static/assets/images/gui/SoundOn_Icon.svg) no-repeat;
 
 			&.disabled{
@@ -65,7 +61,6 @@
 		grid-template-columns: repeat(auto-fit, var(--cellSize));
 		grid-template-rows: repeat(auto-fit, var(--cellSize));
 		min-width: calc((var(--cellSize) * 2) + (var(--cellGap) * 1));
-		max-width: calc((var(--cellSize) * 4) + (var(--cellGap) * 3));
 		gap: var(--cellGap);
 		margin: auto;
 		justify-content: center;
@@ -197,14 +192,5 @@
 	}
 	100% {
 	  transform: rotate(0);
-	}
-}
-
-
-@media only screen and (max-width: 546px){
-	.mainmenu{
-		.menu-grid{
-			max-width: calc((var(--cellSize) * 2) + (var(--cellGap) * 1));
-		}
 	}
 }

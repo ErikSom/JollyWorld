@@ -94,8 +94,8 @@ function UIManager() {
         if(!mainMenu){
             const htmlStructure = /*html*/`
                 <div class="header">
-                    <div class="logo"></div>
                     <div class="settings"></div>
+                    <div class="logo"></div>
                     <div class="audio"></div>
                 </div>
                 <div class="menu-grid">
@@ -158,7 +158,24 @@ function UIManager() {
             backendManager.registerListener('login', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
+            const gridOnlyEvenCells = ()=>{
+                const gridCell = characterSelect.getBoundingClientRect();
+                const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cellGap'));
+
+                const forCellGridWidth = gridCell.width * 4 + gap * 3;
+                if(forCellGridWidth < window.innerWidth - (gap * 2)){
+                    grid.style.maxWidth = `${forCellGridWidth}px`;
+                }else{
+                    grid.style.maxWidth = `${gridCell.width * 2 + gap}px`;
+                }
+
+
+            }
+            window.addEventListener('resize', gridOnlyEvenCells);
+            gridOnlyEvenCells();
+
             customGUIContainer.appendChild(mainMenu);
+
         }
 
 
