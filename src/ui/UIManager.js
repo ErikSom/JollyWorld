@@ -298,6 +298,18 @@ function UIManager() {
                                         <div class="text-level-by">${localize('singleplayer_by')}:</div>
                                         <div class="text-author">Author Name</div>
                                     </div>
+                                    <div class="rating">
+                                        <div class="bar">
+                                            <div class="fill"></div>
+                                        </div>
+                                        <div class="texts">
+                                            <div class="liked">
+                                                <div class="like-icon"></div>
+                                                <div class="votes">80</div>
+                                            </div>
+                                            <div class="share">(50%)</div>
+                                        </div>
+                                    </div>
                                     <div class="tags">
                                     </div>
                                 </div>
@@ -587,6 +599,27 @@ function UIManager() {
         const vehicleLabel = game.querySelector('.vehicle-label');
         vehicleLabel.style.backgroundImage = `url(assets/images/portraits/${hashName(`mini-vehicle${levelData.forced_vehicle}.png`)})`;
 
+        const rating = game.querySelector('.rating');
+        const likeIcon = rating.querySelector('.like-icon');
+        const fillColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-bg-color').split('#')[1];
+        likeIcon.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 37.6 36.1' style='enable-background:new 0 0 37.6 36.1' xml:space='preserve'%3E%3Cpath d='M2 20c0-.1 0-.1 0 0C.9 19.2.5 18.2.5 17c0-1.8.7-3 2.2-3.5.6-.3 2.3-.5 5.2-.8H12c-.3-.3-.8-1.4-1.7-3.5 0-.1 0-.1-.1-.2-.8-2.2-1.3-3.6-1.3-4.1 0-1 .2-1.9.5-2.6.2-.4.4-.7.6-1 .4-.4.9-.6 1.4-.6 1.3 0 2.5 1 3.4 3 .2.4.4.8.5 1.1.5.7.7 1.1.8 1.2.5.8 1 1.4 1.6 1.7.8.4 1.8.8 3 1.2 1.3.3 2.2.6 2.8.8 2 .6 3.4 1.8 4 3.6-.1-.8.2-1.3.9-1.4.2-.1.9-.1 2-.1 2.3 0 4 1.3 5.2 3.8 1 2 1.5 4.5 1.5 7.4v.2c0 2-.2 3.8-.7 5.4 0 .1-.1.3-.1.4-.7 2.2-1.9 3.3-3.4 3.3-.1.1-.2.1-.3.1h-.9c-.8 0-1.7-.2-2.8-.6l-2.2-1.1c-1 1.5-2.7 2.8-5.1 3.8-1.9.8-3.9 1.2-5.9 1.4-.3 0-.6 0-.9.1h-.1c-.3 0-.8 0-1.3-.1-1.7-.1-3-.3-3.8-.7-.7-.3-1.3-.7-1.7-1.2-.7-.9-.9-1.6-.9-2.5 0-.5 0-1-.1-1.4-.2-1.3-.8-2.1-1.8-2.6-.8-.3-1.3-.6-1.4-.8-.4-.4-.7-1-.7-1.9 0-.1.1-.5.2-1.2v-.2c.1-.8.2-1.2.2-1.4 0-.2 0-.3-.1-.5-.1-.5-.6-1-1.3-1.5' style='fill:%23${fillColor}'/%3E%3Cpath d='M26.6 20.3c-.1-2.3-.4-3.9.6-5.5 4.6 5.2-4.7 18.2 9 13.7-.7 2.4-1.9 3.3-3.6 3.5-1 .1-2.4 0-3.6-.6-.2 0-1.2-.7-2.4-1.1-1.1 1.4-2.6 2.7-5.1 3.7-1.9.8-3.9 1.2-5.8 1.4-4.1.2-9.3-.4-8.5-5.4 4 3.7 12.5 4.1 16.3.1.7-1.2 3.2-8.3 3.1-9.8m-23 1c-.1-.4-.5-.9-1-1.4 2.3.1 2.2 2 1 3.1 0-1 .1-1 0-1.7M9.1 4.7c0-1.2.2-2.3.9-3.3-.1 3.4 1.8 9.5 4.8 11.1l-.1.1h-2.6c-.1-.5-1-1.7-1.7-3.8-.8-2.2-1.3-3.5-1.3-4.1z' style='opacity:.2'/%3E%3Cpath d='M2 19.8s0-.1 0 0C1 19 .5 18 .5 16.8c0-1.8.7-3 2.2-3.5.6-.3 2.3-.5 5.2-.8H12c-.3-.3-.8-1.4-1.7-3.5 0-.1 0-.1-.1-.2-.8-2.1-1.3-3.5-1.3-4.1 0-1 .2-1.9.5-2.6.2-.4.4-.7.6-1 .4-.4.9-.6 1.4-.6 1.3 0 2.5 1 3.4 3 .2.4.4.8.5 1.1.4.7.6 1.2.6 1.3.5.8 1 1.4 1.6 1.7.8.4 1.8.8 3 1.2 1.3.3 2.2.6 2.8.8 2 .6 3.4 1.8 4 3.6-.1-.8.2-1.3.9-1.4.2-.1.9-.1 2-.1 2.3 0 4 1.3 5.2 3.8 1 2 1.5 4.5 1.5 7.4v.2c0 2-.2 3.8-.7 5.4 0 .1-.1.3-.1.4-.7 2.2-1.9 3.3-3.4 3.3-.1.1-.2.1-.3.1h-.9c-.8 0-1.7-.2-2.8-.6l-2.2-1.1c-1 1.5-2.7 2.8-5.1 3.8-1.9.8-3.9 1.2-5.9 1.4-.3 0-.6 0-.9.1h-.1c-.3 0-.8 0-1.3-.1-1.7-.1-3-.3-3.8-.7-.7-.3-1.3-.7-1.7-1.2-.5-.9-.7-1.7-.7-2.6 0-.5 0-1-.1-1.4-.2-1.3-.8-2.1-1.8-2.6-.8-.3-1.3-.6-1.4-.8-.4-.4-.7-1-.7-1.9 0-.1.1-.5.2-1.2v-.2c.1-.8.2-1.2.2-1.4 0-.2 0-.3-.1-.5-.1-.5-.6-1-1.3-1.5' style='fill:none;stroke:%23000;stroke-miterlimit:10'/%3E%3Cpath d='M10.2 27.5c-.3 0-.5-.1-.6-.3-.1-.1-.1-.2-.1-.4 0-.4 1.2-1 3.6-1.9.1 0 .1-.1.2-.1 2.2-.8 3.4-.7 3.4.2 0 .3-.2.6-.6.6-1 .2-1.8.4-2.3.6 0 0-.1 0-.2.1-.2.1-.7.3-1.5.6-1.1.5-1.7.6-1.9.6m5-8.2c-.3 0-1.2.2-2.7.4 0 0-.3.1-.8.2h-.1c-.1 0-.2 0-.3.1-.9.2-1.5.2-1.8.2-.2 0-.4 0-.5-.1-.3-.1-.5-.3-.5-.6s.8-.6 2.4-.9c.4-.1.8-.1 1.2-.2 2.4-.3 3.6-.2 3.6.5-.1.2-.3.3-.5.4z'/%3E%3C/svg%3E")`;
+
+        const sumVotes = levelData.upvotes + levelData.downvotes;
+        const votes = rating.querySelector('.votes');
+        votes.innerText = "??";
+
+        const share = rating.querySelector('.share');
+        const fill = rating.querySelector('.fill');
+        fill.style.width = '0%';
+
+        if(sumVotes>Settings.minlevelVotes){
+            votes.innerText = format.formatNumber(sumVotes);
+            const voteScore = Math.round((levelData.upvotes / sumVotes) * 100);
+            fill.style.width = `${voteScore}%`;
+            share.innerText = `${voteScore}%`;
+        }
+
+
         // const tags = game.querySelector('.tags');
     }
 
@@ -608,7 +641,6 @@ function UIManager() {
         if(filters.querySelector('.month').classList.contains('checked')) range = this.FILTER_RANGE_THISMONTH;
         if(filters.querySelector('.week').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
         if(filters.querySelector('.today').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
-
 
         let vehicle = '';
         const checkedVehicleFilter = vehicleFilters.querySelector('.checked');

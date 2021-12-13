@@ -342,7 +342,7 @@
 }
 
 .game{
-	padding: 5px;
+	padding: 2px;
 	background-color: #333333;
 	width: 100%;
 	margin: auto;
@@ -361,9 +361,9 @@
 
 	.vehicle-label{
 		position: absolute;
-		width: 32px;
-		height: 32px;
-		bottom: 4px;
+		width: 22px;
+		height: 22px;
+		bottom: 20px;
 		right: 4px;
 		border-radius: 6px;
 		background-position: center;
@@ -396,12 +396,14 @@
 			font-family: "Montserrat", sans-serif;
 			.text-level-name{
 				font-weight: 500;
+				line-height: 18px;
 				white-space: nowrap;
 				text-overflow: ellipsis;
 				overflow: hidden;
 			}
 			.level-author{
 				display: flex;
+				max-width: 72%;
 				.text-level-by{
 					font-weight: 200;
 				}
@@ -420,6 +422,58 @@
 
 				.tag{
 					margin: 0px 1px;
+				}
+			}
+		}
+
+		.rating{
+			width: 80px;
+			max-width: 36%;
+			position: absolute;
+			right: 10px;
+			bottom: 4px;
+
+			.bar{
+				position: relative;
+				background:var(--gray-color);
+				width:100%;
+				height: 2px;
+				.fill{
+					position: absolute;
+					top:0;
+					left:0;
+					width: 50%;
+					height: 100%;
+					background: var(--secondary-bg-color);
+				}
+			}
+			.texts{
+				display: flex;
+				margin: 3px 0 0 2px;
+
+				.liked{
+					display: flex;
+					gap: 2px;
+				}
+				.votes, .share{
+					font-size: 8px;
+				}
+
+				.votes{
+					color: var(--secondary-bg-color);
+				}
+
+				.share{
+					color: var(--gray-color);
+					margin-left: 4px;
+				}
+
+				.like-icon{
+					background: url(../../static/assets/images/misc/thumb.svg);
+					width: 10px;
+					height: 10px;
+					background-size: contain;
+					background-repeat: no-repeat;
 				}
 			}
 		}
@@ -480,8 +534,8 @@
 			}
 		}
 		.vehicle-label{
-			width: 22px;
-			height: 22px;
+			width: 18px;
+			height: 18px;
 		}
 	}
 }
