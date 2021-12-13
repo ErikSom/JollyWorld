@@ -156,6 +156,8 @@ function UIManager() {
             this.handleLoginChange();
 
             const gridOnlyEvenCells = ()=>{
+                if(mainMenu.style.display !== 'block') return;
+
                 const gridCell = characterSelect.getBoundingClientRect();
                 const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cellGap'));
 
