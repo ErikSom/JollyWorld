@@ -1509,7 +1509,7 @@ function UIManager() {
             customGUIContainer.appendChild(skipTutorial);
             skipTutorial.innerHTML = `<span class="fit h2">${localize('tutorial_skip_button')}</span>`;
             skipTutorial.onclick = ()=> {
-                game.openSinglePlayer();
+                game.openMainMenu();
                 this.hideWinScreen();
                 this.hideSkipTutorialButton();
             }
@@ -2036,10 +2036,10 @@ function UIManager() {
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit"><${localize('levelgui_exittomenu')}</div>
-                    <div class="test"><${localize('levelgui_exittest')}</div>
-                    <div class="reset"><${localize('levelgui_reset')}</div>
-                    <div class="retry"><${localize('levelgui_retry')}</div>
+                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="test">${localize('levelgui_exittest')}</div>
+                    <div class="reset">${localize('levelgui_reset')}</div>
+                    <div class="retry">${localize('levelgui_retry')}</div>
                 </div>
                 <div class="voting">
                     <div class="vote-down button">
@@ -2070,8 +2070,15 @@ function UIManager() {
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
+                const tutorialMode = game.tutorialMode;
+
                 this.hideWinScreen();
-                game.openSinglePlayer();
+
+                if(tutorialMode){
+                    game.openMainMenu();
+                } else {
+                    game.openSinglePlayer();
+                }
             };
 
             const testButton = buttons.querySelector('.test');
