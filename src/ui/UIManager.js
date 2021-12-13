@@ -1546,17 +1546,17 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
                 <div class="sun"></div>
-                <div class="header"><span class="fit h0">${localize('levelgui_youlose')}</span></div>
+                <div class="header">${localize('levelgui_youlose')}</div>
                 <div class="time">
                     <div class="text-label">${localize('levelbanner_time')}:</div>
                     <div class="text-time">00:00</div>
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
-                    <div class="test"><span class="fit h2">${localize('levelgui_exittest')}</span></div>
-                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
-                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
+                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="test">${localize('levelgui_exittest')}</div>
+                    <div class="reset">${localize('levelgui_reset')}</div>
+                    <div class="retry">${localize('levelgui_retry')}</div>
                 </div>
                 <div class="voting">
                     <div class="vote-down button">
@@ -2029,17 +2029,17 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
                 <div class="sun"></div>
-                <div class="header"><span class="fit h0">${localize('levelgui_youwin')}</span></div>
+                <div class="header">${localize('levelgui_youwin')}</div>
                 <div class="time">
                     <div class="text-label">${localize('levelbanner_time')}:</div>
                     <div class="text-time">00:00</div>
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
-                    <div class="test"><span class="fit h2">${localize('levelgui_exittest')}</span></div>
-                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
-                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
+                    <div class="exit"><${localize('levelgui_exittomenu')}</div>
+                    <div class="test"><${localize('levelgui_exittest')}</div>
+                    <div class="reset"><${localize('levelgui_reset')}</div>
+                    <div class="retry"><${localize('levelgui_retry')}</div>
                 </div>
                 <div class="voting">
                     <div class="vote-down button">
