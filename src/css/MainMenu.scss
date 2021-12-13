@@ -158,10 +158,10 @@
 			outline: 4px solid var(--dark-color);
 
 			&.h1{
-				font-size: 16px;
+				font-size: min(2.2vmax, 4vmin);
 			}
 			&.h2{
-				font-size: 28px;
+				font-size: min(3.6vmax, 6vmin);
 			}
 
 			span{
