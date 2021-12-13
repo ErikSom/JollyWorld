@@ -609,6 +609,7 @@ function UIManager() {
         votes.innerText = "??";
 
         const share = rating.querySelector('.share');
+        share.innerText = '';
         const fill = rating.querySelector('.fill');
         fill.style.width = '0%';
 
