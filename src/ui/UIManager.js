@@ -99,10 +99,10 @@ function UIManager() {
                     <div class="audio"></div>
                 </div>
                 <div class="menu-grid">
-                    <div class="singleplayer-but h2 v2"><span>Single Player<span></div>
-                    <div class="editor-but h2 v1"><span>Create levels!</span></div>
-                    <div class="discord-but h1 v1"><span>Sign Up!</span></div>
-                    <div class="characters-but h1 v1"><span>Characters</span><div class="character-image"></div></div>
+                    <div class="singleplayer-but h2 v2"><span>${localize('mainmenu_singleplayer')}<span></div>
+                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span></div>
+                    <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
+                    <div class="characters-but h1 v1"><span>${localize('mainmenu_characters')}</span><div class="character-image"></div></div>
                 </div>
                 ${this.getFooter()}
             `
@@ -235,8 +235,8 @@ function UIManager() {
             </div>
             <div class="social-channels">
                 <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
-                <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>
-                <a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>
+                ${Settings.onPoki ? '' : `<a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>`}
+                ${Settings.onPoki ? '' : `<a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>`}
                 <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
             </div>
         </div>
@@ -250,39 +250,39 @@ function UIManager() {
                     <div class="logo"></div>
                     <div class="buttons">
                         <div class="filters-container">
-                            <div class="filters">Filters</div>
+                            <div class="filters">${localize('mainmenu_filters')}</div>
                             <div class="filters-fold">
-                                <div>Only Featured</div>
+                                <div>${localize('mainmenu_onlyfeatured')}</div>
                                 <label class="feature-toggle switch">
                                     <input type="checkbox" checked>
                                     <div class="slider round"></div>
                                 </label>
-                                <div>Sorted By:</div>
+                                <div>${localize('mainmenu_sorted')}</div>
                                 <label class="checkbox-container best-rated checked">
-                                    <input class="css-checkbox" type="checkbox" checked>Best Rated
+                                    <input class="css-checkbox" type="checkbox" checked>${localize('mainmenu_best_rated')}
                                     <i></i>
                                 </label>
                                 <label class="checkbox-container most-played">
-                                    <input class="css-checkbox" type="checkbox" >Most Played
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_most_played')}
                                     <i></i>
                                 </label>
                                 <label class="checkbox-container newest">
-                                    <input class="css-checkbox" type="checkbox" >Newest
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_newest')}
                                     <i></i>
                                 </label>
                                 <label class="checkbox-container oldest">
-                                    <input class="css-checkbox" type="checkbox" >Oldest
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_oldest')}
                                     <i></i>
                                 </label>
-                                <div>Filters:</div>
+                                <div>${localize('mainmenu_filters')}</div>
                                 <div class="date">
-                                    <div class="all button checked">All Time</div>
-                                    <div class="month button">This Month</div>
-                                    <div class="week button">This Week</div>
-                                    <div class="today button">Today</div>
+                                    <div class="all button checked">${localize('mainmenu_anytime')}</div>
+                                    <div class="month button">${localize('mainmenu_thismonth')}</div>
+                                    <div class="week button">${localize('mainmenu_thisweek')}</div>
+                                    <div class="today button">${localize('mainmenu_today')}</div>
                                 </div>
                                 <div class="vehicles">
-                                    <div class="all button">All Vehicles</div>
+                                    <div class="all button">${localize('mainmenu_allvehicles')}</div>
                                 </div>
                             </div>
                         </div>
@@ -290,7 +290,7 @@ function UIManager() {
                             <div class="search-icon"></div>
                             <input class="search-input">
                         </div>
-                        <div class="exit">Exit</div>
+                        <div class="exit">${localize('editorheader_exit')}</div>
                     </div>
                 </div>
                 <div class = "games-scroll">
@@ -302,7 +302,7 @@ function UIManager() {
                                 <div class="text-holder">
                                     <div class="text-level-name">Level Name Goes Here</div>
                                     <div class="level-author">
-                                        <div class="text-level-by">${localize('singleplayer_by')}:</div>
+                                        <div class="text-level-by">${localize('mainmenu_by')}:</div>
                                         <div class="text-author">Author Name</div>
                                     </div>
                                     <div class="rating">
@@ -508,15 +508,6 @@ function UIManager() {
                 new SimpleBar(singlePlayer.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
             }
 
-            const socialChannels = singlePlayer.querySelector('.social-channels');
-            const youtubeLogo = socialChannels.querySelector('.jolly-youtube');
-            const facebookLogo = socialChannels.querySelector('.jolly-facebook');
-
-            if(Settings.onPoki){
-                youtubeLogo.style.display = 'none';
-                facebookLogo.style.display = 'none';
-            }
-
             customGUIContainer.appendChild(singlePlayer);
 
             singlePlayer.onpointerup = () => {
@@ -587,7 +578,7 @@ function UIManager() {
             discordName.innerText = backendManager.userData.username;
             discordButton.classList.add('loggedIn');
         }else{
-            discordName.innerText = 'Sign up!';
+            discordName.innerText = localize('mainmenu_signup');
             discordButton.classList.remove('loggedIn');
 
         }
@@ -707,7 +698,7 @@ function UIManager() {
                     <div class="text-holder">
                         <div class="text-level-name">Level Name Goes Here</div>
                         <div class="level-author">
-                            <div class="text-level-by">${localize('singleplayer_by')}:</div>
+                            <div class="text-level-by">${localize('mainmenu_by')}:</div>
                             <div class="text-author">Author Name</div>
                         </div>
                         <div class="tags">
@@ -1544,6 +1535,7 @@ function UIManager() {
 
     this.hideSinglePlayer = function () {
         if(singlePlayer) singlePlayer.style.display = "none";
+        this.hideLevelBanner();
     }
 
     this.showGameOver = function (time, mili){
@@ -1945,7 +1937,7 @@ function UIManager() {
                 <div class="header">${localize('levelgui_pause')}</div>
                 <div class="text-level-name">Level Name Goes Here</div>
                 <div class="level-author">
-                    <div class="text-level-by">${localize('singleplayer_by')}:</div>
+                    <div class="text-level-by">${localize('mainmenu_by')}:</div>
                     <div class="text-author">Author Name</div>
                 </div>
                 <div class="share">

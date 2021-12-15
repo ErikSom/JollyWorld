@@ -50,19 +50,47 @@ export const countries = ['de','nl','us','pt','fr','es','it','cz','jr'];
 
 const LOCALIZATION_DATA = [
     {
-        "textId": "singleplayer_featured",
-        "us": "Featured",
-        "nl": "Aanbevolen",
-        "de": "Empfohlen",
-        "es": "Recomendado",
-        "pt": "Recomendado",
-        "cz": "Doporučené",
-        "fr": "En vedette",
-        "it": "Raccomandato",
-        "jr": "Scurvy Approved"
+        "textId": "mainmenu_singleplayer",
+        "us": "Single Player",
+        "nl": "Een Speler"
     },
     {
-        "textId": "singleplayer_best_rated",
+        "textId": "mainmenu_createlevels",
+        "us": "Create levels!",
+        "nl": "Creëer levels!"
+    },
+    {
+        "textId": "mainmenu_signup",
+        "us": "Sign Up!",
+        "nl": "Inschrijven!"
+    },
+    {
+        "textId": "mainmenu_characters",
+        "us": "Characters left",
+        "nl": "Karakters"
+    },
+    {
+        "textId": "mainmenu_onlyfeatured",
+        "us": "Only Featured",
+        "nl": "Alleen Aanbevolen"
+    },
+    {
+        "textId": "mainmenu_sorted",
+        "us": "Sorted By:",
+        "nl": "Gesorteerd Op:"
+    },
+    {
+        "textId": "mainmenu_filters",
+        "us": "Filters",
+        "nl": "Filters"
+    },
+    {
+        "textId": "mainmenu_allvehicles",
+        "us": "All Vehicles",
+        "nl": "Alle Voertuigen"
+    },
+    {
+        "textId": "mainmenu_best_rated",
         "us": "Best Rated",
         "nl": "Best Beoordeeld",
         "de": "Beste Bewertung",
@@ -74,9 +102,9 @@ const LOCALIZATION_DATA = [
         "jr": "Most Bootyful"
     },
     {
-        "textId": "singleplayer_most_played",
+        "textId": "mainmenu_most_played",
         "us": "Most Played",
-        "nl": "Gespeeld",
+        "nl": "Meest Gespeeld",
         "de": "Meistgespielt",
         "es": "Mas Jugado",
         "pt": "Mais Jogadas",
@@ -86,7 +114,7 @@ const LOCALIZATION_DATA = [
         "jr": "Most Plundered"
     },
     {
-        "textId": "singleplayer_newest",
+        "textId": "mainmenu_newest",
         "us": "Newest",
         "nl": "Nieuwste",
         "de": "Neuste",
@@ -98,7 +126,7 @@ const LOCALIZATION_DATA = [
         "jr": "Newly Discovered"
     },
     {
-        "textId": "singleplayer_oldest",
+        "textId": "mainmenu_oldest",
         "us": "Oldest",
         "nl": "Oudste",
         "de": "Älteste",
@@ -110,7 +138,7 @@ const LOCALIZATION_DATA = [
         "jr": "Ol' sea legends"
     },
     {
-        "textId": "singleplayer_editor",
+        "textId": "mainmenu_editor",
         "us": "Editor",
         "nl": "Editor",
         "de": "Editor",
@@ -122,19 +150,7 @@ const LOCALIZATION_DATA = [
         "jr": "Sea Buildin'"
     },
     {
-        "textId": "singleplayer_change",
-        "us": "Change",
-        "nl": "Verander",
-        "de": "Ändern",
-        "es": "Cambiar",
-        "pt": "Mudar",
-        "cz": "Změnit",
-        "fr": "Changer",
-        "it": "Modificare",
-        "jr": "Pick a new captain"
-    },
-    {
-        "textId": "singleplayer_by",
+        "textId": "mainmenu_by",
         "us": "By",
         "nl": "Door",
         "de": "Von",
@@ -146,7 +162,7 @@ const LOCALIZATION_DATA = [
         "jr": "Aye"
     },
     {
-        "textId": "singleplayer_login",
+        "textId": "mainmenu_login",
         "us": "login",
         "nl": "inloggen",
         "de": "einloggen",
@@ -158,7 +174,7 @@ const LOCALIZATION_DATA = [
         "jr": "Set Sail"
     },
     {
-        "textId": "singleplayer_today",
+        "textId": "mainmenu_today",
         "us": "Today",
         "nl": "Vandaag",
         "de": "Heute",
@@ -170,7 +186,7 @@ const LOCALIZATION_DATA = [
         "jr": "Since this day"
     },
     {
-        "textId": "singleplayer_thisweek",
+        "textId": "mainmenu_thisweek",
         "us": "This Week",
         "nl": "Deze Week",
         "de": "Diese Woche",
@@ -182,7 +198,7 @@ const LOCALIZATION_DATA = [
         "jr": "Since 7 nights ago"
     },
     {
-        "textId": "singleplayer_thismonth",
+        "textId": "mainmenu_thismonth",
         "us": "This Month",
         "nl": "Deze Maand",
         "de": "Diesen Monat",
@@ -194,9 +210,9 @@ const LOCALIZATION_DATA = [
         "jr": "Since 1 moon ago"
     },
     {
-        "textId": "singleplayer_anytime",
-        "us": "Anytime",
-        "nl": "Alles",
+        "textId": "mainmenu_anytime",
+        "us": "All Time",
+        "nl": "Altijd",
         "de": "Jederzeit",
         "es": "Siempre",
         "pt": "Sempre",
@@ -206,7 +222,7 @@ const LOCALIZATION_DATA = [
         "jr": "Since forever!"
     },
     {
-        "textId": "singleplayer_more",
+        "textId": "mainmenu_more",
         "us": "More",
         "nl": "Meer",
         "de": "Mehr",
@@ -218,7 +234,7 @@ const LOCALIZATION_DATA = [
         "jr": "Moarrgh"
     },
     {
-        "textId": "singleplayer_availablepc",
+        "textId": "mainmenu_availablepc",
         "us": "Available on PC",
         "nl": "Beschikbaar op PC",
         "de": "Auf PC Verfügbar",
@@ -321,7 +337,9 @@ const LOCALIZATION_DATA = [
     {
         "textId": "settings_credits",
         "us": "Credits",
-        "nl": "Credits"
+        "nl": "Credits",
+        "de": "Beiträge",
+        "jr": "Crewmates"
     },
     {
         "textId": "settings_installedmod",
@@ -336,7 +354,8 @@ const LOCALIZATION_DATA = [
     {
         "textId": "settings_none",
         "us": "None",
-        "nl": "Geen"
+        "nl": "Geen",
+        "jr": "Nay"
     },
     {
         "textId": "characterselect_select_character",
@@ -986,15 +1005,15 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "editorheader_logout",
-        "us": "Logout",
-        "nl": "Uitloggen",
-        "de": "Ausloggen",
+        "us": "LOGOUT",
+        "nl": "UITLOGGEN",
+        "de": "AUSLOGGEN",
         "es": "Salir",
         "pt": "Deslogar",
         "cz": "Odhlásit se",
         "fr": "Se déconnecter",
         "it": "Partire",
-        "jr": "Drop anchor"
+        "jr": "DROP ANCHOR"
     },
     {
         "textId": "editorheader_new",
@@ -1022,15 +1041,15 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "editorheader_exit",
-        "us": "EXIT",
-        "nl": "VERLAAT",
-        "de": "VERLASSEN",
+        "us": "Exit",
+        "nl": "Verlaat",
+        "de": "Verlassen",
         "es": "Salir",
         "pt": "Sair",
         "cz": "Odejít",
         "fr": "Quitter",
         "it": "Partire",
-        "jr": "ABANDON SHIP"
+        "jr": "Abandon"
     },
     {
         "textId": "editorlevelbanner_publishsettings",
