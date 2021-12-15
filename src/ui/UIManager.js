@@ -116,6 +116,7 @@ function UIManager() {
             const header = mainMenu.querySelector('.header');
             const settings = header.querySelector('.settings');
             settings.onclick = ()=> {
+                this.hideCharacterSelect();
                 this.showSettingsMenu();
             }
 
@@ -139,6 +140,7 @@ function UIManager() {
 
             const characterSelect = grid.querySelector('.characters-but');
             characterSelect.onclick = ()=> {
+                this.hideSettingsMenu();
                 this.showCharacterSelect();
             }
 
@@ -147,6 +149,7 @@ function UIManager() {
                 if(!backendManager.isLoggedIn()){
                     this.openDiscordOauth();
                 } else {
+                    this.hideMainMenu();
                     game.openSinglePlayer();
                     this.showUserPage(backendManager.userData.username, 'favorite');
                 }
@@ -215,6 +218,8 @@ function UIManager() {
     }
     this.hideMainMenu = () => {
         if(mainMenu) mainMenu.style.display = "none";
+        this.hideCharacterSelect();
+        this.hideSettingsMenu();
     }
 
     this.getFooter = () => {
