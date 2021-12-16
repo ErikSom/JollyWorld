@@ -258,16 +258,16 @@ function UIManager() {
                                     <div class="slider round"></div>
                                 </label>
                                 <div>${localize('mainmenu_sorted')}</div>
-                                <label class="checkbox-container best-rated checked">
-                                    <input class="css-checkbox" type="checkbox" checked>${localize('mainmenu_best_rated')}
+                                <label class="checkbox-container best-rated">
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_best_rated')}
                                     <i></i>
                                 </label>
                                 <label class="checkbox-container most-played">
                                     <input class="css-checkbox" type="checkbox" >${localize('mainmenu_most_played')}
                                     <i></i>
                                 </label>
-                                <label class="checkbox-container newest">
-                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_newest')}
+                                <label class="checkbox-container newest checked">
+                                    <input class="css-checkbox" type="checkbox" checked>${localize('mainmenu_newest')}
                                     <i></i>
                                 </label>
                                 <label class="checkbox-container oldest">
