@@ -446,6 +446,8 @@ function Game() {
 
         PIXICuller.init(this.editor.textures, this.levelCamera);
 
+        // enable jolly in iframe rendering when everything is loaded
+        this.editor.initRenderJollyRendering();
 
         SlowmoUI.init();
         this.handleResize();

@@ -9,5 +9,50 @@
 <body>
 	<iframe src="./index.html" width="853px" height="480px" scrolling="no" frameborder="0" allow="fullscreen; autoplay; microphone; camera;" style="min-width: 66.6667px; min-height: 50px; background-color: deeppink;">
 	</iframe>
+	<script>
+		window.iframe=document.body.querySelector('iframe');
+		window.addEventListener('message', messageObject => {
+			if(messageObject.data.type === 'jollyImageRendered'){
+				const image = new Image();
+				image.src = messageObject.data.imageData;
+				document.body.appendChild(image);
+			}
+		})
+
+
+		const renderJollyDataToImage = (iframe, jollyData) => {
+			return new Promise((resolve, reject) => {
+				const sendJollyData = () => {
+					iframe.contentWindow.postMessage({type:'renderJollyImage', jollyData}, '*');
+				}
+
+				const tempMessageListener = messageData => {
+					if(messageData.data.type === 'jollyImageRenderingReady'){
+						window.jollyImageRendering = true;
+						clearInterval(window.tempJollyRenderReadyInterval);
+						sendJollyData();
+					}
+					if(messageData.data.type === 'renderJollyImage'){
+						window.removeEventListener('message', tempMessageListener);
+						resolve(messageData.data)
+					}
+				}
+				window.addEventListener('message', tempMessageListener);
+				if(!window.jollyImageRendering){
+					window.tempJollyRenderReadyInterval = setInterval(()=>{
+						iframe.contentWindow.postMessage({type:'jollyImageRenderingAckReady'}, '*');
+					}, 200)
+				}else{
+					sendJollyData();
+				}
+			});
+		}
+
+		renderJollyDataToImage(iframe, '<jollyData-N4Ig9gRgVgpgxgFwM4gFwG10AYA0BaARgDoAOAgZhJ2IIIE4A2HXEEHV5ndEAYjv4EgAul15ZxwrgREIATgFcYOOYq7pQADzR4ATDqIAWMgHZ2ATzQGiWclgYBfHJu17DJ89qs27j56ldGBKYgFqh4XrYOTiBa-vqBwaERPkIi6NJcWGlZ7AAiAJayCADiYAA2ACZs2DIKSgBmAIZlSA3NrZlEAKzZRDoiTS1KKm1DOIMdGehMXVYGBDp0+OTk3SQkOpwcHATsfAL8bGIS1JzqMdrGqyR0Bh6o5LREDHQkXb4XYVekt-d4j8QXm8PrFvjc7iFtADnq93tFQddfpCHk8ge8RAA7eRlMo4LE4vHY3H43EcXDkrZsEapexAA>');
+
+
+
+
+	</script>
 </body>
 </html>
