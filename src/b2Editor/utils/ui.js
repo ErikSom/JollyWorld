@@ -2443,7 +2443,7 @@ export const showVideoHelp = function () {
     divWrapper.style.padding = '0px';
     divWrapper.style.marginTop = '20px';
 
-    // populate videos:
+    // populate videos stress:
     const videoData = [
         {
             id: '5kAIsbXIYpo',
@@ -2459,6 +2459,9 @@ export const showVideoHelp = function () {
         },
         {
             id: 'Z6BtFHyeQhw',
+        },
+        {
+            id: 'XrH4XW0zX3I',
         },
     ]
 
