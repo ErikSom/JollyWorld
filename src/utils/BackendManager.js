@@ -329,12 +329,6 @@ function BackendManager() {
 				return console.log(error);
 			}
 		});
-
-		if(gtag){
-			gtag('event', 'play', {
-				event_category: 'level',
-			});
-		}
 	}
 
     this.deleteUserLevelData = function (details) {
