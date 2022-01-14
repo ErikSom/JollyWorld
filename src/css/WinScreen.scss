@@ -83,21 +83,22 @@
 		padding: 10px;
 		justify-content: flex-end;
 		.reset, .retry, .exit, .test{
-			max-width: 180px;
 			margin: 0;
-			width: 100%;
 			&.hidden{
 				display: none;
 			}
 			@extend .back-button;
 		}
 
+		.reset{
+			background-color: var(--gray-color);
+		}
+
 		.retry{
-			background-color: #51A328;
+			background-color: var(--secondary-bg-color);
 		}
 		.exit, .test{
-			background-color: red;
-			font-size: 30px;
+			background-color: var(--negative-button);
 		}
 		.test{
 			display: none;

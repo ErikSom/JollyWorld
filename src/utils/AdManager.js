@@ -1,3 +1,4 @@
+import { game } from "../Game";
 import { isMobile } from "./MobileController";
 
 const adVisibleStates = {
@@ -29,6 +30,7 @@ export const updateDisplayAds = () => {
 
 	if(!adContainer) return;
 	if(!adContainer.classList.contains('active')) return;
+	if(!game.playedFirstLevel) return;
 
 	adKeys.forEach(key => {
 		switch(key){

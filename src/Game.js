@@ -113,6 +113,7 @@ function Game() {
     this.checkPointData = null;
     this.selectedCharacter = 0;
     this.selectedVehicle = 0;
+    this.playedFirstLevel = false;
 
     this.needScreenshot = false;
     this.screenShotData = null;
@@ -334,6 +335,7 @@ function Game() {
         this.openMainMenu();
 
         if(uidHash && uidHash.length===21){
+            this.openSinglePlayer();
             backendManager.getPublishedLevelInfo(uidHash).then(levelData => {
                 ui.showLevelBanner(levelData);
                 this.showLevelAfterTutorial = levelData;
@@ -343,6 +345,7 @@ function Game() {
         }else{
             const username = urlParams.get('user');
             if(username){
+                this.openSinglePlayer();
                 ui.showUserPage(username);
             }
         }
@@ -445,6 +448,8 @@ function Game() {
 
         PIXICuller.init(this.editor.textures, this.levelCamera);
 
+        // enable jolly in iframe rendering when everything is loaded
+        this.editor.initRenderJollyRendering();
 
         SlowmoUI.init();
         this.handleResize();
@@ -463,7 +468,8 @@ function Game() {
         game.loadPublishedLevelData(tutorialLevel, ()=>{}).then(() => {
             this.tutorialMode = true;
             ui.showSkipTutorialButton();
-            ui.playLevelFromMainMenu();
+            ui.hideMainMenu();
+            ui.playLevelFromSinglePlayer();
             this.preloader.querySelector('.cycling').classList.add('fall');
             ui.hideLevelBanner();
         }).catch(error => {
@@ -777,18 +783,34 @@ function Game() {
         Key.onKeyUp(e);
         e.preventDefault();
     }
-    this.openMainMenu = function (levelData) {
-        //if(this.run) this.stopWorld();
-
-        this.initLevel(levelsData.mainMenuLevel);
+    this.cleanMenus = function(){
+        this.initLevel(levelsData.singlePlayerLevel);
         this.editor.ui.hide();
         ui.show();
-        ui.showMainMenu();
+
+        ui.hideMainMenu();
+        ui.hideSinglePlayer();
         ui.hideGameOverMenu();
+    
         this.gameState = this.GAMESTATE_MENU;
         this.interactive = false;
         this.editor.editing = false;
         this.stopAutoSave();
+
+        this.triggerDebugDraw.debounceRedraw();
+        GameTimer.show(false);
+
+        if(!Settings.onPoki) history.replaceState({}, 'JollyWorld', '/');
+    }
+
+    this.openMainMenu = function(){
+        this.cleanMenus();
+        ui.showMainMenu();
+    }
+
+    this.openSinglePlayer = function (levelData) {
+        this.cleanMenus();
+        ui.showSinglePlayer();
 
         if(levelData){
             ui.showLevelBanner(levelData);
@@ -801,11 +823,6 @@ function Game() {
                 ui.showDiscordJoin();
             }
         }
-
-        this.triggerDebugDraw.debounceRedraw();
-        GameTimer.show(false);
-
-        if(!Settings.onPoki) history.replaceState({}, 'JollyWorld', '/');
     }
 
     this.runWorld = function () {
@@ -841,6 +858,8 @@ function Game() {
         }
         this.playLevelMidi();
         GameTimer.show(true);
+
+        this.playedFirstLevel = true;
     }
 
     this.testWorld = function (firstEntry) {
@@ -1226,45 +1245,38 @@ function Game() {
     this.loadPublishedLevelData = function (levelData, progressFunction) {
         return new Promise(async (resolve, reject) => {
             game.currentLevelData = levelData;
-            const self = this;
-            try{
-                let response = await fetch(`${Settings.STATIC}/${levelData.level_md5}.json`);
-                const reader = response.body.getReader();
-                const contentLength = +response.headers.get('Content-Length') || 1000000; // TODO: x-compressed-content-length
-                let receivedLength = 0;
-                let chunks = [];
-                if(progressFunction) progressFunction(0);
 
-                while(true) {
-                    const {done, value} = await reader.read();
-                    if (done) {
-                        break;
-                    }
-
-                    chunks.push(value);
-                    receivedLength += value.length;
-                    const progress = receivedLength/contentLength
-                    if(progressFunction) progressFunction(progress);
-                }
-                let chunksAll = new Uint8Array(receivedLength); // (4.1)
-                let position = 0;
-                for(let chunk of chunks) {
-                    chunksAll.set(chunk, position); // (4.2)
-                    position += chunk.length;
-                }
-                let result = new TextDecoder("utf-8").decode(chunksAll);
-
-                if(progressFunction) progressFunction(0);
-
-                self.currentLevelData.json = result;
+            const req = new XMLHttpRequest();
+            req.overrideMimeType("application/json");
+            req.open('GET', `${Settings.STATIC}/${levelData.level_md5}.json`, true);
+            req.onload  = ()=> {
+                self.currentLevelData.json = JSON.parse(req.responseText);
                 return resolve();
-            }catch(err){
+            };
+
+            req.onprogress = e => {
+                const progress = e.loaded / req.compressedContentLength;
+                console.log("PROGRESS:", progress, e, e.loaded, req.compressedContentLength);
+                progressFunction(progress);
+            }
+            req.onerror = () => {
                 console.log('fail', err);
                 game.gameState = game.GAMESTATE_MENU;
                 return reject({
                     message: err
                 });
             }
+            req.onreadystatechange = function() {
+                if(this.readyState == this.HEADERS_RECEIVED) {
+                    try{
+                        req.compressedContentLength = req.getResponseHeader("x-decompressed-content-length") || 1000000;
+                    }catch(e){
+                        req.compressedContentLength = 1000000;
+                    }
+                    console.log("compressedContentLength:", req.compressedContentLength);
+                }
+            }
+            req.send(null);
         });
     }
 

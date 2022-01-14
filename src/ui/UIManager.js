@@ -1,4 +1,5 @@
 import '../css/MainMenu.scss'
+import '../css/SinglePlayer.scss'
 import '../css/LevelBanner.scss'
 import '../css/ScrollBar.scss'
 import '../css/VehicleSelect.scss'
@@ -43,8 +44,6 @@ import * as TutorialManager from "../utils/TutorialManager"
 import SimpleBar from 'simplebar'
 import {countries, countryToFlag, localize} from '../utils/Localization'
 
-import textFit from '../../libs/textFit';
-
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
@@ -59,6 +58,7 @@ let imageObserver = new IntersectionObserver(entries => entries.forEach(entry =>
     }
 }));
 let mainMenu;
+let singlePlayer;
 let discordButton;
 let gameOver;
 let levelLoader;
@@ -90,28 +90,207 @@ function UIManager() {
 
     var self = this;
 
-    this.showMainMenu = ()=>{
+    this.showMainMenu = () =>{
         if(!mainMenu){
             const htmlStructure = /*html*/`
                 <div class="header">
+                    <div class="settings"></div>
                     <div class="logo"></div>
-                    <div class="sun"></div>
-                    <div class="clouds"></div>
-                    <div class="clouds-alpha"></div>
-                    <div class="grass1"></div>
-                    <div class="cycling-anim"></div>
-                    <div class="grass2"></div>
-                    <div class=bg-hider></div>
-                    <div class="mobile-bg"></div>
-                    <div class="hamburger"><span></span><span></span><span></span></div>
+                    <div class="audio"></div>
+                </div>
+                <div class="menu-grid">
+                    <div class="singleplayer-but h2 v2"><span>${localize('mainmenu_singleplayer')}<span></div>
+                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span></div>
+                    <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
+                    <div class="characters-but h1 v1"><span>${localize('mainmenu_characters')}</span><div class="character-image"></div></div>
+                </div>
+                ${this.getFooter()}
+            `
+
+            mainMenu = document.createElement('div');
+            mainMenu.classList.add('mainmenu');
+            mainMenu.innerHTML = htmlStructure;
+
+
+            // header
+            const header = mainMenu.querySelector('.header');
+            const settings = header.querySelector('.settings');
+            settings.onclick = ()=> {
+                this.hideCharacterSelect();
+                this.showSettingsMenu();
+            }
+
+            // buttons
+            const grid = mainMenu.querySelector('.menu-grid');
+            const singleplayerBut = grid.querySelector('.singleplayer-but');
+            singleplayerBut.onclick = () => {
+                this.hideMainMenu();
+                game.openSinglePlayer();
+            }
+
+            const editorBut = grid.querySelector('.editor-but');
+            if(MobileController.isMobile()){
+                editorBut.classList.add('mobile');
+            }else{
+                editorBut.onclick = ()=> {
+                    this.hideMainMenu();
+                    game.openEditor();
+                }
+            }
+
+            const characterSelect = grid.querySelector('.characters-but');
+            characterSelect.onclick = ()=> {
+                this.hideSettingsMenu();
+                this.showCharacterSelect();
+            }
+
+            const discordButton = grid.querySelector('.discord-but');
+            discordButton.onclick = ()=>{
+                if(!backendManager.isLoggedIn()){
+                    this.openDiscordOauth();
+                } else {
+                    this.hideMainMenu();
+                    game.openSinglePlayer();
+                    this.showUserPage(backendManager.userData.username, 'favorite');
+                }
+            }
+
+            backendManager.registerListener('login', ()=>this.handleLoginChange());
+            this.handleLoginChange();
+
+            const gridOnlyEvenCells = ()=>{
+                if(mainMenu.style.display !== 'block') return;
+
+                const gridCell = characterSelect.getBoundingClientRect();
+                const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cellGap'));
+
+                const forCellGridWidth = gridCell.width * 4 + gap * 3;
+                if(forCellGridWidth < window.innerWidth - (gap * 2)){
+                    grid.style.maxWidth = `${forCellGridWidth}px`;
+                }else{
+                    grid.style.maxWidth = `${gridCell.width * 2 + gap}px`;
+                }
+            }
+
+
+            const allButs = [singleplayerBut, editorBut, characterSelect, discordButton];
+            allButs.forEach(el => {
+                el.addEventListener('mouseover', () => {
+                    const bounds = el.getBoundingClientRect();
+                    const targetWidth = bounds.width + 10;
+                    const scale = targetWidth / bounds.width;
+                    el.style.transform = `scale(${scale})`;
+                });
+                el.addEventListener('mouseout', () => {
+                    el.style.transform = `scale(1.0)`;
+                })
+            });
+
+            window.addEventListener('resize', gridOnlyEvenCells);
+
+            mainMenu.style.visibility = 'hidden';
+            setTimeout(() => {
+                gridOnlyEvenCells();
+                mainMenu.style.visibility = 'visible';
+            }, 0);
+
+            customGUIContainer.appendChild(mainMenu);
+
+        }
+
+
+        const header = mainMenu.querySelector('.header');
+        const volumeButton = header.querySelector('.audio');
+        if(!Settings.sfxOn) volumeButton.classList.add('disabled');
+
+        volumeButton.onclick = ()=>{
+            game.toggleMute();
+            if(!Settings.sfxOn){
+                volumeButton.classList.add('disabled');
+            }else{
+                volumeButton.classList.remove('disabled');
+            }
+        }
+
+        this.setMainMenuCharacterImage();
+
+        mainMenu.style.display = 'block';
+    }
+    this.hideMainMenu = () => {
+        if(mainMenu) mainMenu.style.display = "none";
+        this.hideCharacterSelect();
+        this.hideSettingsMenu();
+    }
+
+    this.getFooter = () => {
+        return /*html*/`
+        <div class="page-footer">
+            <div class="text">
+                <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
+                <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
+                &
+                <a href="https://jollyworld.app/terms/" class="terms">TOS</a>
+                .
+                <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
+            </div>
+            <div class="social-channels">
+                <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
+                ${Settings.onPoki ? '' : `<a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>`}
+                ${Settings.onPoki ? '' : `<a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>`}
+                <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
+            </div>
+        </div>
+        `
+    }
+
+    this.showSinglePlayer = init =>{
+        if(!singlePlayer){
+            const htmlStructure = /*html*/`
+                <div class="header">
+                    <div class="logo"></div>
                     <div class="buttons">
-                        <div class="discord"><span class="fit">${localize('mainmenu_login')}</span></div>
-                        <div class="character-select">
-                            <div class="text-change"><span class="fit">${localize('mainmenu_change')}</span></div>
+                        <div class="filters-container">
+                            <div class="filters">${localize('mainmenu_filters')}</div>
+                            <div class="filters-fold">
+                                <div>${localize('mainmenu_onlyfeatured')}</div>
+                                <label class="feature-toggle switch">
+                                    <input type="checkbox" checked>
+                                    <div class="slider round"></div>
+                                </label>
+                                <div>${localize('mainmenu_sorted')}</div>
+                                <label class="checkbox-container best-rated">
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_best_rated')}
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container most-played">
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_most_played')}
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container newest checked">
+                                    <input class="css-checkbox" type="checkbox" checked>${localize('mainmenu_newest')}
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container oldest">
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_oldest')}
+                                    <i></i>
+                                </label>
+                                <div>${localize('mainmenu_filters')}</div>
+                                <div class="date">
+                                    <div class="all button checked">${localize('mainmenu_anytime')}</div>
+                                    <div class="month button">${localize('mainmenu_thismonth')}</div>
+                                    <div class="week button">${localize('mainmenu_thisweek')}</div>
+                                    <div class="today button">${localize('mainmenu_today')}</div>
+                                </div>
+                                <div class="vehicles">
+                                    <div class="all button">${localize('mainmenu_allvehicles')}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="editor"><span class="fit h2">${localize('mainmenu_editor')}</span><span class="availablepc">${localize('mainmenu_availablepc')}</span></div>
-                        <div class="volume"></div>
-                        <div class="settings"></div>
+                        <div class="search-filter">
+                            <div class="search-icon"></div>
+                            <input class="search-input">
+                        </div>
+                        <div class="exit">${localize('editorheader_exit')}</div>
                     </div>
                 </div>
                 <div class = "games-scroll">
@@ -126,134 +305,173 @@ function UIManager() {
                                         <div class="text-level-by">${localize('mainmenu_by')}:</div>
                                         <div class="text-author">Author Name</div>
                                     </div>
+                                    <div class="rating">
+                                        <div class="bar">
+                                            <div class="fill"></div>
+                                        </div>
+                                        <div class="texts">
+                                            <div class="liked">
+                                                <div class="like-icon"></div>
+                                                <div class="votes">80</div>
+                                            </div>
+                                            <div class="share">(50%)</div>
+                                        </div>
+                                    </div>
                                     <div class="tags">
                                     </div>
-                                </div>
-                                <div class="rating">
-                                    <div class="vote-thumb"></div>
-                                    <div class="text-rating">85%</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="filters">
-                    <div class="date-filter button checked">#</div>
-                    <div class ='date-filters'>
-                        <div class="today-filter button"><span class="fit">${localize('mainmenu_today')}</span></div>
-                        <div class="week-filter button"><span class="fit">${localize('mainmenu_thisweek')}</span></div>
-                        <div class="month-filter button"><span class="fit">${localize('mainmenu_thismonth')}</span></div>
-                        <div class="anytime-filter button checked"><span class="fit">${localize('mainmenu_anytime')}</span></div>
-                        <div class="vehicle-filters"></div>
-                    </div>
-                    <div class="featured-filter button checked">
-                    <svg class="check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58.7 50.4"><path d="M5.2 16.5c-2.8 0-4.2 1.4-4.2 4.2v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2z" fill="#333"/><path d="M1 20.7v24.5c0 2.8 1.4 4.2 4.2 4.2h24.4c2.8 0 4.2-1.4 4.2-4.2V20.7c0-2.8-1.4-4.3-4.2-4.2H5.2c-2.8 0-4.2 1.4-4.2 4.2z" fill="none" stroke="#66cd32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g><path d="M58.1 1.6c-.2-.1-.5-.1-.7-.1C41.7 6.9 29 16.2 19.5 29.4l-4.6-6.8-.3-.3c-.2-.1-.3-.1-.5-.1H2.2c-.2 0-.5.1-.7.2-.2.2-.3.4-.3.6s0 .4.2.6l15 22.5c.1.2.3.3.5.4.2.1.4.1.6 0s.4-.2.5-.4C29 29.3 42.5 15 58.2 3.2c.2-.1.3-.3.4-.5 0-.3 0-.5-.1-.7 0-.2-.2-.3-.4-.4z"/><path d="M18.2 29.6l-5.4-8H1l15 22.5C27.1 27.2 40.6 12.8 56.5 1c-16 5.5-28.7 15-38.3 28.6z" fill="red"/><path d="M18.2 29.6C27.8 16 40.5 6.5 56.5 1 40.6 12.8 27.1 27.2 16 44.1L1 21.6h11.9l5.3 8z" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
-                    <div><span class="fit">${localize('mainmenu_featured')}</span></div>
-                    </div>
-                    <div style="position:relative">
-                        <div class="more button checked"><span class="fit">${localize('mainmenu_more')}</span></div>
-                        <div class="other-filters">
-                            <div class="best-filter button checked"><span class="fit">${localize('mainmenu_best_rated')}</span></div>
-                            <div class="mostplayed-filter button"><span class="fit">${localize('mainmenu_most_played')}</span></div>
-                            <div class="newest-filter button"><span class="fit">${localize('mainmenu_newest')}</span></div>
-                            <div class="oldest-filter button"><span class="fit">${localize('mainmenu_oldest')}</span></div>
-                        </div>
-                    </div>
-                    <div class="search-filter">
-                        <div class="search-icon"></div>
-                        <input class="search-input">
-                    </div>
-                </div>
-                <div class="game-scroll-block"></div>
-                <div class="page-footer">
-                    <div class="text">
-                        <div class="rights">JollyWorld © 2021 v${__VERSION__}. All rights reserved.</div>
-                        <a href="https://jollyworld.app/privacy-policy/" class="privacy">Privacy Policy</a>
-                        &
-                        <a href="https://jollyworld.app/terms/" class="terms">Terms of Service</a>
-                        .
-                        <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
-                    </div>
-                    <div class="social-channels">
-                        <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
-                        <a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>
-                        <a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>
-                        <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
-                    </div>
-                    <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
-                </div>
+                ${this.getFooter()}
             `
 
-            mainMenu = document.createElement('div');
-            mainMenu.classList.add('mainmenu');
-            mainMenu.innerHTML = htmlStructure;
+            singlePlayer = document.createElement('div');
+            singlePlayer.classList.add('singleplayer');
+            singlePlayer.innerHTML = htmlStructure;
 
             if(MobileController.isMobile()){
-                mainMenu.classList.add('mobile');
+                singlePlayer.classList.add('mobile');
             }
 
-            const vehicleFilters = mainMenu.querySelector('.vehicle-filters');
+            const header = singlePlayer.querySelector('.header');
+
+            // FILTERS
+            const filterContainer = header.querySelector('.filters-container');
+
+            const featureToggle = filterContainer.querySelector('.feature-toggle > input');
+            featureToggle.addEventListener('change', ()=>{
+                this.reloadSinglePlayerGames();
+            });
+
+            const filterButton = filterContainer.querySelector('.filters');
+
+            const setOpenFilters = bool => {
+                if(bool){
+                    filterContainer.classList.add('open');
+
+                    if(this.filterOpenMouseEvent) return;
+
+                    this.filterOpenMouseEvent = event => {
+                        let targetElement = event.target;
+                        do {
+                            if (targetElement == filterContainer) return;
+                            targetElement = targetElement.parentNode;
+                        } while (targetElement);
+                       // close
+                       setOpenFilters(false);
+                    };
+                    document.addEventListener("click", this.filterOpenMouseEvent);
+                }else{
+                    filterContainer.classList.remove('open');
+
+                    Array.from(filterContainer.querySelectorAll('.open')).forEach(el => {
+                        el.classList.remove('open');
+                        Array.from(el.children).forEach(child => {
+                            if(child.classList.contains('clicked')){
+                                child.classList.remove('clicked');
+                            }else{
+                                child.style.display = 'none';
+                            }
+                        })
+                    });
+
+                    if(this.filterOpenMouseEvent){
+                        document.removeEventListener('click', this.filterOpenMouseEvent);
+                        delete this.filterOpenMouseEvent;
+                    }
+                }
+            }
+
+            filterButton.addEventListener('click', ()=>{
+                setOpenFilters(!filterContainer.classList.contains('open'));
+            })
+            //
+
+            // SORT
+            const checkBoxes =filterContainer.querySelectorAll('.css-checkbox');
+            checkBoxes.forEach(checkBox => {
+                checkBox.addEventListener('click', () => {
+                    if(!checkBox.checked) return;
+                    checkBoxes.forEach(cb => cb.checked = false);
+                    checkBox.checked = true;
+                    this.reloadSinglePlayerGames();
+                });
+            });
+
+
+            // DATES
+            const date = filterContainer.querySelector('.date');
+    
+            const dateButtons = Array.from(date.querySelectorAll('.button'));
+            dateButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if(date.classList.contains('open')){
+                        const wasChecked = button.classList.contains('checked');
+    
+                        dateButtons.forEach(but => {
+                            but.style.display = 'none';
+                            but.classList.remove('clicked');
+                            but.classList.remove('checked');
+                        });
+                        date.classList.remove('open');
+                        button.style.display = 'block';
+                        button.classList.add('checked');
+                        if(!wasChecked) this.reloadSinglePlayerGames();
+                    }else{
+                        date.classList.add('open');
+                        dateButtons.forEach(but => but.style.display = 'block');
+                        button.classList.add('clicked');
+                    }
+                })
+            })
+
+
+            // VEHICLES
+            const vehicles = filterContainer.querySelector('.vehicles');
             for(let i = 0; i<=Settings.availableVehicles.length; i++){
                 const vehicleFilter = document.createElement('div');
                 vehicleFilter.classList.add('button');
-                vehicleFilters.appendChild(vehicleFilter);
+                vehicleFilter.setAttribute('title', Settings.availableVehicles[i-1]);
+                vehicles.appendChild(vehicleFilter);
+                vehicleFilter.style.display = 'none';
+                vehicleFilter.style.width = '48px';
 
                 const vehicleIcon = new Image();
                 vehicleIcon.src = `assets/images/portraits/${hashName(`mini-vehicle${i}.png`)}`;
                 vehicleFilter.appendChild(vehicleIcon);
             }
 
-            const filters = mainMenu.querySelector('.filters');
-            Array.from(filters.querySelectorAll('.button')).forEach( button => {
-                if(button.classList.contains('featured-filter')){
-                    button.onclick = () => {
-                        button.classList.toggle('checked');
-                        this.reloadMainMenuGames();
-                    }
-                }else if(button.classList.contains('date-filter')){
-                    const dateFilters = filters.querySelector('.date-filters');
-                    button.onclick = () => dateFilters.classList.toggle('open');
-                }else if(button.parentNode.classList.contains('date-filters')){
-                    const dateFilters = filters.querySelector('.date-filters');
-                    const buttons = Array.from(dateFilters.querySelectorAll(':scope > .button'));
-                    button.onclick = ()=>{
-                        buttons.forEach(button => button.classList.remove('checked'));
-                        button.classList.add('checked');
-                        // dateFilters.classList.remove('open');
-                        this.reloadMainMenuGames();
-                    }
-                }else if(button.parentNode.classList.contains('vehicle-filters')){
-                    const buttons = Array.from(vehicleFilters.querySelectorAll('.button'));
-                    button.onclick = ()=>{
+            const vehicleButtons = Array.from(vehicles.querySelectorAll('.button'));
+            vehicleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if(vehicles.classList.contains('open')){
                         const wasChecked = button.classList.contains('checked');
-                        buttons.forEach(button => button.classList.remove('checked'));
-                        if(!wasChecked) button.classList.add('checked');
-                        // dateFilters.classList.remove('open');
-                        this.reloadMainMenuGames();
-                    }
-                }else if(button.classList.contains('more')){
-                    const otherFilters = filters.querySelector('.other-filters');
-                    button.onclick = ()=>{
-                        otherFilters.classList.toggle('open');
-                    }
-                }else{
-                    const otherFilters = filters.querySelector('.other-filters');
-                    const buttons = Array.from(otherFilters.querySelectorAll('.button'));
-                    button.onclick = ()=>{
-                        buttons.forEach(button => button.classList.remove('checked'));
+
+                        vehicleButtons.forEach(but => {
+                            but.style.display = 'none';
+                            but.classList.remove('clicked');
+                            but.classList.remove('checked');
+                        });
+                        vehicles.classList.remove('open');
+                        button.style.display = 'block';
                         button.classList.add('checked');
-                        otherFilters.classList.remove('open');
-                        this.reloadMainMenuGames();
+                        if(!wasChecked) this.reloadSinglePlayerGames();
+                    }else{
+                        vehicles.classList.add('open');
+                        vehicleButtons.forEach(but => but.style.display = 'block');
+                        button.classList.add('clicked');
                     }
-                }
+                })
             })
 
-            const searchInput = filters.querySelector('.search-input');
-
+            // SEARCH
+            const searchInput = header.querySelector('.search-input');
 
             const shouldSearch = ()=> {
                 if(lastSearch !== searchInput.value){
-                    this.reloadMainMenuGames();
+                    this.reloadSinglePlayerGames();
                     lastSearch = searchInput.value;
                 }
             }
@@ -264,122 +482,36 @@ function UIManager() {
                 }
             })
 
-            searchInput.addEventListener('focus', ()=> filters.classList.add('search-focussed'));
+            searchInput.addEventListener('focus', ()=> header.classList.add('search-focussed'));
             searchInput.addEventListener('blur', ()=> {
-                filters.classList.remove('search-focussed');
+                header.classList.remove('search-focussed');
                 shouldSearch();
             });
 
-            const searchIcon = filters.querySelector('.search-icon');
+            const searchIcon = header.querySelector('.search-icon');
             searchIcon.addEventListener('click', () => shouldSearch())
 
+            // EXIT
+            const exitButton = header.querySelector('.exit');
+            exitButton.addEventListener('click', () => game.openMainMenu())
 
-            if(backendManager.isLoggedIn()){
-                const bestFilter = filters.querySelector('.best-filter');
-                const mostFilter = filters.querySelector('.newest-filter');
+            // if(backendManager.isLoggedIn()){
+            //     const bestFilter = filters.querySelector('.best-filter');
+            //     const mostFilter = filters.querySelector('.newest-filter');
 
-                bestFilter.classList.remove('checked');
-                mostFilter.classList.add('checked');
-            }
-
-            const header = mainMenu.querySelector('.header');
-
-            const characterSelect = header.querySelector('.character-select');
-            characterSelect.onclick = ()=> {
-                mobileBG.classList.remove('open');
-                headerButtons.classList.remove('open');
-                this.showCharacterSelect();
-            }
-
-            const editorButton = header.querySelector('.editor');
-
-            if(MobileController.isMobile()){
-                editorButton.classList.add('mobile');
-            }else{
-                editorButton.onclick = ()=> {
-                    this.hideMainMenu();
-                    game.openEditor();
-                }
-            }
-
-            const hamburger = header.querySelector('.hamburger');
-            const mobileBG = header.querySelector('.mobile-bg');
-            const headerButtons = header.querySelector('.buttons');
-            const discordButton = header.querySelector('.discord');
-            hamburger.onclick = ()=>{
-                mobileBG.classList.toggle('open');
-                headerButtons.classList.toggle('open');
-
-                textFit(discordButton.querySelector('.fit'));
-                textFit(characterSelect.querySelector('.fit'));
-                textFit(editorButton.querySelector('.fit'));
-            }
-
-            mobileBG.onpointerup = () => {
-                if(mobileBG.classList.contains('open')){
-                    mobileBG.classList.toggle('open');
-                    headerButtons.classList.toggle('open');
-                }
-            }
-
-            const volumeButton = header.querySelector('.volume');
-            if(!Settings.sfxOn) volumeButton.classList.add('disabled');
-
-            volumeButton.onclick = ()=>{
-                game.toggleMute();
-                if(!Settings.sfxOn){
-                    volumeButton.classList.add('disabled');
-                }else{
-                    volumeButton.classList.remove('disabled');
-                }
-            }
-            const loginButton = header.querySelector('.discord');
-            loginButton.onclick = ()=>{
-                if(backendManager.isLoggedIn()){
-                    // show profile page
-                    if(backendManager.userData && backendManager.userData.username){
-                        this.showUserPage(backendManager.userData.username, 'favorite');
-                    }
-                }else{
-                    this.openDiscordOauth();
-                }
-            }
-
-            backendManager.registerListener('login', ()=>this.handleLoginChange());
-            this.handleLoginChange();
+            //     bestFilter.classList.remove('checked');
+            //     mostFilter.classList.add('checked');
+            // }
 
 
             if(!MobileController.isMobile()){
-                new SimpleBar(mainMenu.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
+                new SimpleBar(singlePlayer.querySelector('.games-scroll'), { autoHide: false, scrollbarMinSize: 100 });
             }
 
-            const settingsButton = header.querySelector('.settings');
-            settingsButton.onclick = ()=> {
-                mobileBG.classList.remove('open');
-                headerButtons.classList.remove('open');
-                this.showSettingsMenu()
-            }
+            customGUIContainer.appendChild(singlePlayer);
 
-            const country = mainMenu.querySelector('.country');
-            this.makeCountrySelect(country);
-
-
-            const socialChannels = mainMenu.querySelector('.social-channels');
-            const youtubeLogo = socialChannels.querySelector('.jolly-youtube');
-            const facebookLogo = socialChannels.querySelector('.jolly-facebook');
-
-            if(Settings.onPoki){
-                youtubeLogo.style.display = 'none';
-                facebookLogo.style.display = 'none';
-            }
-
-            window.addEventListener('resize', ()=> {this.mainMenuResize()})
-            this.mainMenuResize();
-
-            customGUIContainer.appendChild(mainMenu);
-
-            mainMenu.onpointerup = () => {
-                if(mainMenu.classList.contains('inactive')){
+            singlePlayer.onpointerup = () => {
+                if(singlePlayer.classList.contains('inactive')){
                     this.hideLevelBanner();
                     this.hideSocialShareMenu();
                     this.hideSettingsMenu();
@@ -389,18 +521,11 @@ function UIManager() {
                     game.gameState = game.GAMESTATE_MENU;
                 }
             }
-
-            // fit texts
-            Array.from(mainMenu.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
 
-        this.setMainMenuCharacterImage();
+        singlePlayer.style.display = 'block';
 
-        mainMenu.style.display = 'block';
-
-        this.reloadMainMenuGames();
+        if(!init) this.reloadSinglePlayerGames();
     }
 
     this.makeCountrySelect = country => {
@@ -427,24 +552,18 @@ function UIManager() {
                 flags.appendChild(flag);
             })
             flags.classList.add('init');
-            selectFlag.onclick = ()=>{flags.classList.add('open')}
+            selectFlag.onclick = ()=>{
+                flags.classList.add('open');
+                setTimeout(()=>{
+                    if(flags) flags.classList.remove('open');
+                }, 3000);
+            }
         }
         selectFlag.className = `flag fflag fflag-${Settings.currentCountry.toUpperCase()} ff-lg ff-app`;
     }
 
-    this.mainMenuResize = ()=> {
-        customGUIContainer.style.height = window.innerHeight+'px';
-        mainMenu.style.height = window.innerHeight+'px';
-        const gamesScroll = mainMenu.querySelector('.games-scroll');
-        if(window.innerWidth<820){
-            gamesScroll.style.height = (window.innerHeight - 164)+'px';
-        }else{
-            gamesScroll.style.height = (window.innerHeight - 188)+'px';
-        }
-    }
-
     this.handleLoginChange = async ()=> {
-        const header = mainMenu.querySelector('.header');
+        const grid = mainMenu.querySelector('.menu-grid');
 
         // if we can't retrieve userdata quick enough
         if(backendManager.isLoggedIn() && !backendManager.userData){
@@ -452,26 +571,17 @@ function UIManager() {
             return;
         }
 
-        const discordButton = header.querySelector('.discord');
-        const span = discordButton.querySelector('.fit');
+        const discordButton = grid.querySelector('.discord-but');
+        const discordName = discordButton.querySelector('span');
 
         if(backendManager.isLoggedIn()){
-            span.innerText = backendManager.userData.username;
-            discordButton.style.fontSize = '26px';
+            discordName.innerText = backendManager.userData.username;
+            discordButton.classList.add('loggedIn');
         }else{
-            span.innerText = 'Login';
-            discordButton.style.fontSize = '36px';
+            discordName.innerText = localize('mainmenu_signup');
+            discordButton.classList.remove('loggedIn');
+
         }
-    }
-
-    this.setMainMenuCharacterImage = ()=> {
-        const header = mainMenu.querySelector('.header');
-        const characterSelect = header.querySelector('.character-select');
-
-        getModdedPortrait(`character${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
-            console.log("URL:", url);
-            if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
-        })
     }
 
     this.setLevelDataOnGameTile = (game, levelData) => {
@@ -484,62 +594,58 @@ function UIManager() {
         const author = game.querySelector('.text-author');
         author.innerText = levelData.author.username;
 
-        const rating = game.querySelector('.rating');
-
-        const sumVotes = levelData.upvotes + levelData.downvotes;
-        let scoreText = "??";
-
-        if(sumVotes<Settings.minlevelVotes){
-            rating.classList.add('unknown');
-        }else {
-            const voteScore = Math.round((levelData.upvotes / sumVotes) * 100);
-
-            if(voteScore<55){
-                rating.classList.add('low');
-            } else if(voteScore<70){
-                rating.classList.add('ok');
-            }else{
-                rating.classList.add('good');
-            }
-
-            scoreText =  `${voteScore}%`;
-        }
-
-        const ratingText = rating.querySelector('.text-rating');
-        ratingText.innerText = scoreText;
-
         const vehicleLabel = game.querySelector('.vehicle-label');
         vehicleLabel.style.backgroundImage = `url(assets/images/portraits/${hashName(`mini-vehicle${levelData.forced_vehicle}.png`)})`;
+
+        const rating = game.querySelector('.rating');
+        const likeIcon = rating.querySelector('.like-icon');
+        const fillColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-bg-color').split('#')[1];
+        likeIcon.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 37.6 36.1' style='enable-background:new 0 0 37.6 36.1' xml:space='preserve'%3E%3Cpath d='M2 20c0-.1 0-.1 0 0C.9 19.2.5 18.2.5 17c0-1.8.7-3 2.2-3.5.6-.3 2.3-.5 5.2-.8H12c-.3-.3-.8-1.4-1.7-3.5 0-.1 0-.1-.1-.2-.8-2.2-1.3-3.6-1.3-4.1 0-1 .2-1.9.5-2.6.2-.4.4-.7.6-1 .4-.4.9-.6 1.4-.6 1.3 0 2.5 1 3.4 3 .2.4.4.8.5 1.1.5.7.7 1.1.8 1.2.5.8 1 1.4 1.6 1.7.8.4 1.8.8 3 1.2 1.3.3 2.2.6 2.8.8 2 .6 3.4 1.8 4 3.6-.1-.8.2-1.3.9-1.4.2-.1.9-.1 2-.1 2.3 0 4 1.3 5.2 3.8 1 2 1.5 4.5 1.5 7.4v.2c0 2-.2 3.8-.7 5.4 0 .1-.1.3-.1.4-.7 2.2-1.9 3.3-3.4 3.3-.1.1-.2.1-.3.1h-.9c-.8 0-1.7-.2-2.8-.6l-2.2-1.1c-1 1.5-2.7 2.8-5.1 3.8-1.9.8-3.9 1.2-5.9 1.4-.3 0-.6 0-.9.1h-.1c-.3 0-.8 0-1.3-.1-1.7-.1-3-.3-3.8-.7-.7-.3-1.3-.7-1.7-1.2-.7-.9-.9-1.6-.9-2.5 0-.5 0-1-.1-1.4-.2-1.3-.8-2.1-1.8-2.6-.8-.3-1.3-.6-1.4-.8-.4-.4-.7-1-.7-1.9 0-.1.1-.5.2-1.2v-.2c.1-.8.2-1.2.2-1.4 0-.2 0-.3-.1-.5-.1-.5-.6-1-1.3-1.5' style='fill:%23${fillColor}'/%3E%3Cpath d='M26.6 20.3c-.1-2.3-.4-3.9.6-5.5 4.6 5.2-4.7 18.2 9 13.7-.7 2.4-1.9 3.3-3.6 3.5-1 .1-2.4 0-3.6-.6-.2 0-1.2-.7-2.4-1.1-1.1 1.4-2.6 2.7-5.1 3.7-1.9.8-3.9 1.2-5.8 1.4-4.1.2-9.3-.4-8.5-5.4 4 3.7 12.5 4.1 16.3.1.7-1.2 3.2-8.3 3.1-9.8m-23 1c-.1-.4-.5-.9-1-1.4 2.3.1 2.2 2 1 3.1 0-1 .1-1 0-1.7M9.1 4.7c0-1.2.2-2.3.9-3.3-.1 3.4 1.8 9.5 4.8 11.1l-.1.1h-2.6c-.1-.5-1-1.7-1.7-3.8-.8-2.2-1.3-3.5-1.3-4.1z' style='opacity:.2'/%3E%3Cpath d='M2 19.8s0-.1 0 0C1 19 .5 18 .5 16.8c0-1.8.7-3 2.2-3.5.6-.3 2.3-.5 5.2-.8H12c-.3-.3-.8-1.4-1.7-3.5 0-.1 0-.1-.1-.2-.8-2.1-1.3-3.5-1.3-4.1 0-1 .2-1.9.5-2.6.2-.4.4-.7.6-1 .4-.4.9-.6 1.4-.6 1.3 0 2.5 1 3.4 3 .2.4.4.8.5 1.1.4.7.6 1.2.6 1.3.5.8 1 1.4 1.6 1.7.8.4 1.8.8 3 1.2 1.3.3 2.2.6 2.8.8 2 .6 3.4 1.8 4 3.6-.1-.8.2-1.3.9-1.4.2-.1.9-.1 2-.1 2.3 0 4 1.3 5.2 3.8 1 2 1.5 4.5 1.5 7.4v.2c0 2-.2 3.8-.7 5.4 0 .1-.1.3-.1.4-.7 2.2-1.9 3.3-3.4 3.3-.1.1-.2.1-.3.1h-.9c-.8 0-1.7-.2-2.8-.6l-2.2-1.1c-1 1.5-2.7 2.8-5.1 3.8-1.9.8-3.9 1.2-5.9 1.4-.3 0-.6 0-.9.1h-.1c-.3 0-.8 0-1.3-.1-1.7-.1-3-.3-3.8-.7-.7-.3-1.3-.7-1.7-1.2-.5-.9-.7-1.7-.7-2.6 0-.5 0-1-.1-1.4-.2-1.3-.8-2.1-1.8-2.6-.8-.3-1.3-.6-1.4-.8-.4-.4-.7-1-.7-1.9 0-.1.1-.5.2-1.2v-.2c.1-.8.2-1.2.2-1.4 0-.2 0-.3-.1-.5-.1-.5-.6-1-1.3-1.5' style='fill:none;stroke:%23000;stroke-miterlimit:10'/%3E%3Cpath d='M10.2 27.5c-.3 0-.5-.1-.6-.3-.1-.1-.1-.2-.1-.4 0-.4 1.2-1 3.6-1.9.1 0 .1-.1.2-.1 2.2-.8 3.4-.7 3.4.2 0 .3-.2.6-.6.6-1 .2-1.8.4-2.3.6 0 0-.1 0-.2.1-.2.1-.7.3-1.5.6-1.1.5-1.7.6-1.9.6m5-8.2c-.3 0-1.2.2-2.7.4 0 0-.3.1-.8.2h-.1c-.1 0-.2 0-.3.1-.9.2-1.5.2-1.8.2-.2 0-.4 0-.5-.1-.3-.1-.5-.3-.5-.6s.8-.6 2.4-.9c.4-.1.8-.1 1.2-.2 2.4-.3 3.6-.2 3.6.5-.1.2-.3.3-.5.4z'/%3E%3C/svg%3E")`;
+
+        const sumVotes = levelData.upvotes + levelData.downvotes;
+        const votes = rating.querySelector('.votes');
+        votes.innerText = "??";
+
+        const share = rating.querySelector('.share');
+        share.innerText = '';
+        const fill = rating.querySelector('.fill');
+        fill.style.width = '0%';
+
+        if(sumVotes>Settings.minlevelVotes){
+            votes.innerText = format.formatNumber(sumVotes);
+            const voteScore = Math.round((levelData.upvotes / sumVotes) * 100);
+            fill.style.width = `${voteScore}%`;
+            share.innerText = `${voteScore}%`;
+        }
+
 
         // const tags = game.querySelector('.tags');
     }
 
-    this.determineMainMenuFilter = ()=>{
-        const filters = mainMenu.querySelector('.filters')
-        const featured = filters.querySelector('.featured-filter').classList.contains('checked');
-        const vehicleFilters = filters.querySelector('.vehicle-filters');
+    this.determineSinglePlayerFilter = ()=>{
+        const filters = singlePlayer.querySelector('.filters-fold')
+        const featured = filters.querySelector('.feature-toggle > input').checked;
+        const vehicleFilters = filters.querySelector('.vehicles');
 
-        let search = filters.querySelector('.search-input').value;
+        let search = singlePlayer.querySelector('.search-input').value;
 
         let sort = '';
-        if(filters.querySelector('.mostplayed-filter').classList.contains('checked')) sort = this.FILTER_SORT_MOSTPLAYED;
-        if(filters.querySelector('.best-filter').classList.contains('checked')) sort = this.FILTER_SORT_BEST;
-        if(filters.querySelector('.newest-filter').classList.contains('checked')) sort = this.FILTER_SORT_NEWEST;
-        if(filters.querySelector('.oldest-filter').classList.contains('checked')) sort = this.FILTER_SORT_OLDEST;
+        if(filters.querySelector('.most-played > input').checked) sort = this.FILTER_SORT_MOSTPLAYED;
+        if(filters.querySelector('.best-rated > input').checked) sort = this.FILTER_SORT_BEST;
+        if(filters.querySelector('.newest > input').checked) sort = this.FILTER_SORT_NEWEST;
+        if(filters.querySelector('.oldest > input').checked) sort = this.FILTER_SORT_OLDEST;
 
         let range = '';
-        if(filters.querySelector('.anytime-filter').classList.contains('checked')) range = this.FILTER_RANGE_ANYTIME;
-        if(filters.querySelector('.month-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISMONTH;
-        if(filters.querySelector('.week-filter').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
-        if(filters.querySelector('.today-filter').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
-
+        if(filters.querySelector('.all').classList.contains('checked')) range = this.FILTER_RANGE_ANYTIME;
+        if(filters.querySelector('.month').classList.contains('checked')) range = this.FILTER_RANGE_THISMONTH;
+        if(filters.querySelector('.week').classList.contains('checked')) range = this.FILTER_RANGE_THISWEEK;
+        if(filters.querySelector('.today').classList.contains('checked')) range = this.FILTER_RANGE_TODAY;
 
         let vehicle = '';
         const checkedVehicleFilter = vehicleFilters.querySelector('.checked');
-        if(checkedVehicleFilter){
-            vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter);
+        if(checkedVehicleFilter && !checkedVehicleFilter.classList.contains('all')){
+            vehicle = Array.from(vehicleFilters.children).indexOf(checkedVehicleFilter) - 1;
         }
-
 
         return {
             search,
@@ -549,16 +655,16 @@ function UIManager() {
             vehicle
         }
     }
-    this.reloadMainMenuGames = ()=>{
-        const games = mainMenu.querySelector('.games');
+    this.reloadSinglePlayerGames = ()=>{
+        const games = singlePlayer.querySelector('.games');
 
         while(games.children.length>1){
             games.removeChild(games.children[1]);
         }
 
-        const gameTemplate = mainMenu.querySelector('.game-template');
+        const gameTemplate = singlePlayer.querySelector('.game-template');
 
-        const filter = this.determineMainMenuFilter();
+        const filter = this.determineSinglePlayerFilter();
         backendManager.getPublishedLevels(filter).then(levels => {
             if(initialLevelBatch.length === 0){
                 initialLevelBatch = levels;
@@ -587,7 +693,6 @@ function UIManager() {
     this.showLevelBanner = levelData => {
         if(!levelBanner){
             const htmlStructure = /*html*/`
-                <div class="bar"></div>
                 <div class="level-info">
                     <div class="thumb"> </div>
                     <div class="text-holder">
@@ -637,8 +742,8 @@ function UIManager() {
                 </div>
                 <div class="leaderboard-bar">
                     <div class="header-bar">
-                        <div class="text-header"><span class="fit">${localize('levelbanner_leaderboard')}</span></div>
-                        <div class="viewall"><span class="fit">${localize('levelbanner_viewall')}</span></div>
+                        <div class="text-header">${localize('levelbanner_leaderboard')}</div>
+                        <div class="viewall">${localize('levelbanner_viewall')}</div>
                     </div>
                     <div class="entries offcharts">
                         <div class="entry-info">${localize('levelbanner_loading')}</div>
@@ -665,9 +770,9 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="nav-buttons">
-                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                    <div class="back button">${localize('levelbanner_back')}</div>
                     <div class="play button">
-                        <div class="text-play"><span class="fit h2">${localize('levelbanner_play')}</span></div>
+                        <div class="text-play">${localize('levelbanner_play')}</div>
                         <div class="progress"></div>
                     </div>
                 </div>
@@ -693,17 +798,12 @@ function UIManager() {
                 this.hideLevelBanner();
             }
             customGUIContainer.appendChild(levelBanner);
-
-            // fit texts
-            Array.from(levelBanner.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
 
         this.showAdContainer();
 
         levelBanner.style.display = 'block';
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
 
         const navButtons = levelBanner.querySelector('.nav-buttons');
         const playButton = navButtons.querySelector('.play');
@@ -718,20 +818,21 @@ function UIManager() {
 
             const progressBar = playButton.querySelector('.progress');
             const progressFunction = progress => {
+                progress = Math.max(0, Math.min(1, progress));
                 const progressRounded = (progress*100).toFixed(2);
-                progressBar.style.clipPath = `inset(0px ${180-progressRounded}% 0px 0px)`;
+                progressBar.style.width = `${progressRounded}%`;
             }
 
             const finishLoading = ()=>{
                 playButton.classList.remove('loading');
-                playButtonText.innerText = 'Play';
+                playButtonText.innerText = localize('levelbanner_play');
             }
 
             game.loadPublishedLevelData(levelData, progressFunction).then(() => {
                 this.hideLevelBanner();
                 if(levelData.forced_vehicle){
                     game.selectedVehicle = levelData.forced_vehicle;
-                    this.playLevelFromMainMenu();
+                    this.playLevelFromSinglePlayer();
                 }else{
                     this.showVehicleSelect();
                 }
@@ -809,14 +910,15 @@ function UIManager() {
                         <div class="gamestotalgameplays"><span>${localize('userpage_totalgameplays')}:</span><span class="value">?</span></div>
                     </div>
                     <div class="nav-buttons">
-                        <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                        <div class="logout button">${localize('editorheader_logout')}</div>
+                        <div class="back button">${localize('levelbanner_back')}</div>
                     </div>
                 </div>
                 <div class="titlebar">
                     <div class="toggletitle"><span>${localize('userpage_levels')}</span></div>
                     <div class="togglebuttons">
-                        <div class="games checked"><span class="fit">${localize('userpage_levels')}</span></div>
-                        <div class="favorites"><span class="fit">${localize('userpage_favorites')}</span></div>
+                        <div class="games checked">${localize('userpage_levels')}</div>
+                        <div class="favorites">${localize('userpage_favorites')}</div>
                     </div>
                 </div>
                 <div class = "games-scroll">
@@ -838,12 +940,14 @@ function UIManager() {
                 if(!Settings.onPoki) history.replaceState({}, 'JollyWorld', '/');
                 this.hideUserPage();
             }
-            customGUIContainer.appendChild(userPage);
 
-            // fit texts
-            Array.from(userPage.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
+            const logoutButton = navButtons.querySelector('.logout');
+            logoutButton.onclick = ()=>{
+                backendManager.backendSignout();
+                logoutButton.style.display = 'none';
+            }
+
+            customGUIContainer.appendChild(userPage);
         }
 
 
@@ -915,11 +1019,18 @@ function UIManager() {
 
         const userData  = await backendManager.getUserProfile(username);
 
-
         if(userData){
             username_text.innerText = username;
             membersince_text.innerText = format.formatDMY(userData.created_at);
             gamespublished.innerText = userData.published_levels.length;
+
+            const logoutButton = userPage.querySelector('.logout');
+            if(!backendManager.isLoggedIn() || (!backendManager.userData || backendManager.userData.username !== username)){
+                logoutButton.style.display = 'none';
+            }else{
+                logoutButton.style.display = 'block';
+            }
+
 
             if(userData.published_levels.length > 0){
 
@@ -944,7 +1055,7 @@ function UIManager() {
             const toggleButtons = userPage.querySelector('.togglebuttons');
             const gamesChecked = toggleButtons.querySelector('.games');
 
-            const gameTemplate = mainMenu.querySelector('.game-template');
+            const gameTemplate = singlePlayer.querySelector('.game-template');
             const targetGames = gamesChecked.classList.contains('checked') ? userData.published_levels : userData.favorite_levels;
 
             targetGames.forEach( level => {
@@ -1075,8 +1186,7 @@ function UIManager() {
     this.showLeaderboard = levelData => {
         if(!leaderboard){
             const htmlStructure = /*html*/`
-                <div class="bar"></div>
-                <div class="header"><span class="fit h1">${localize('levelbanner_leaderboard')}</span></div>
+                <div class="header">${localize('levelbanner_leaderboard')}</div>
                 <div class="leaderboard-bar">
                     <div class="entries offcharts">
                         <div class="entry-info">${localize('levelbanner_loading')}</div>
@@ -1095,7 +1205,7 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="nav-buttons">
-                    <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                    <div class="back button">${localize('levelbanner_back')}</div>
                 </div>
             `;
 
@@ -1109,11 +1219,6 @@ function UIManager() {
                 this.hideLeaderboard();
             }
             customGUIContainer.appendChild(leaderboard);
-
-            // fit texts
-            Array.from(leaderboard.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         leaderboard.style.display = 'block';
@@ -1256,7 +1361,7 @@ function UIManager() {
             thumb.style.backgroundImage = 'none';
 
             levelBanner.style.display = 'none';
-            mainMenu.classList.remove('inactive');
+            singlePlayer.classList.remove('inactive');
 
             this.hideAdContainer();
         }
@@ -1399,7 +1504,6 @@ function UIManager() {
             skipTutorial.style.margin = '10px';
             customGUIContainer.appendChild(skipTutorial);
             skipTutorial.innerHTML = `<span class="fit h2">${localize('tutorial_skip_button')}</span>`;
-            textFit(skipTutorial.querySelector('.fit'));
             skipTutorial.onclick = ()=> {
                 game.openMainMenu();
                 this.hideWinScreen();
@@ -1429,8 +1533,9 @@ function UIManager() {
         customGUIContainer.style.display = 'block';
     }
 
-    this.hideMainMenu = function () {
-        mainMenu.style.display = "none";
+    this.hideSinglePlayer = function () {
+        if(singlePlayer) singlePlayer.style.display = "none";
+        this.hideLevelBanner();
     }
 
     this.showGameOver = function (time, mili){
@@ -1438,17 +1543,17 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
                 <div class="sun"></div>
-                <div class="header"><span class="fit h0">${localize('levelgui_youlose')}</span></div>
+                <div class="header">${localize('levelgui_youlose')}</div>
                 <div class="time">
                     <div class="text-label">${localize('levelbanner_time')}:</div>
                     <div class="text-time">00:00</div>
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
-                    <div class="test"><span class="fit h2">${localize('levelgui_exittest')}</span></div>
-                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
-                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
+                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="test">${localize('levelgui_exittest')}</div>
+                    <div class="reset">${localize('levelgui_reset')}</div>
+                    <div class="retry">${localize('levelgui_retry')}</div>
                 </div>
                 <div class="voting">
                     <div class="vote-down button">
@@ -1473,7 +1578,7 @@ function UIManager() {
                 if(game.gameState == game.GAMESTATE_EDITOR){
                     game.resetWorld();
                 }else{
-                    game.openMainMenu(game.currentLevelData);
+                    game.openSinglePlayer(game.currentLevelData);
                 }
             };
             const retryButton = buttons.querySelector('.retry');
@@ -1484,7 +1589,7 @@ function UIManager() {
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
                 this.hideGameOverMenu();
-                game.openMainMenu();
+                game.openSinglePlayer();
             };
 
             const testButton = buttons.querySelector('.test');
@@ -1494,11 +1599,6 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(gameOver);
-
-            // fit texts
-            Array.from(gameOver.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const buttons = gameOver.querySelector('.buttons');
@@ -1509,10 +1609,8 @@ function UIManager() {
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             gameOver.classList.add('editor');
-            textFit(testButton.querySelector('.fit'));
         }else{
             gameOver.classList.remove('editor');
-            textFit(exitButton.querySelector('.fit'));
         }
 
         const timeText = gameOver.querySelector('.text-time');
@@ -1569,17 +1667,17 @@ function UIManager() {
                 <div class="bar"></div>
                 <div class="header"><span class="fit h1">${localize('settings_settings')}</span></div>
                 <div class="buttons">
-                    <div class="music"><div class="fit h3">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="blood"><div class="fit h3">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="gore"><div class="fit h3">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div></div>
-                    <div class="fullscreen"><div class="fit h3">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div></div>
-                    <a class="credits" href="https://jollyworld.app/credits/"><span class="fit h3">${localize('settings_credits')}</span></a>
-                    <div class="consent"><span class="fit h3">${localize('settings_consent')}</span></div>
+                    <div class="music">${localize('settings_music')}:<div class="choice on">${localize('settings_on')}</div></div>
+                    <div class="blood">${localize('settings_blood')}:<div class="choice on">${localize('settings_on')}</div></div>
+                    <div class="gore">${localize('settings_gore')}:<div class="choice on">${localize('settings_on')}</div></div>
+                    <div class="fullscreen">${localize('settings_fullscreen')}:<div class="choice off">${localize('settings_off')}</div></div>
+                    <a class="credits" href="https://jollyworld.app/credits/">${localize('settings_credits')}</a>
+                    <div class="consent">${localize('settings_consent')}</div>
                     <div class="modContainer">
-                        <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></span></div>
-                        <a class="install" href="mod.html"><span class="fit h3">${localize('settings_installmod')}</span></a>
+                        <div class="mod">${localize('settings_installedmod')}:<div class="modname">none</div></div>
+                        <a class="install" href="mod.html">${localize('settings_installmod')}</a>
                     </div>
-                    <div class="back"><span class="fit h3">${localize('levelbanner_back')}</span></div>
+                    <div class="back">${localize('levelbanner_back')}</div>
                     <div class="country"><div class="selectflag flag fflag ff-lg ff-app"></div><div class="flags"></div></div>
                 </div>
             `;
@@ -1637,11 +1735,6 @@ function UIManager() {
             this.makeCountrySelect(country);
 
             customGUIContainer.appendChild(settingsMenu);
-
-            // fit texts
-            Array.from(settingsMenu.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const userData = SaveManager.getLocalUserdata();
@@ -1664,12 +1757,10 @@ function UIManager() {
         const modName = buttons.querySelector('.mod > div');
         modName.innerText = modKey || localize('settings_none');
 
-        mainMenu.classList.add('inactive');
         settingsMenu.style.display = 'block';
     }
     this.hideSettingsMenu = ()=> {
         if(settingsMenu){
-            mainMenu.classList.remove('inactive');
             settingsMenu.style.display = 'none';
         }
     }
@@ -1733,14 +1824,9 @@ function UIManager() {
                 }
             }
             customGUIContainer.appendChild(characterSelect);
-            // fit texts
-            Array.from(characterSelect.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
 
         characterSelect.style.display = 'block';
-        mainMenu.classList.add('inactive');
 
         const back = characterSelect.querySelector('.back');
         back.onclick = ()=>{
@@ -1750,18 +1836,28 @@ function UIManager() {
 
     this.hideCharacterSelect = function () {
         if(characterSelect){
-            mainMenu.classList.remove('inactive');
             characterSelect.style.display = 'none';
         }
     }
 
-    this.playLevelFromMainMenu = function(delay){
+    this.setMainMenuCharacterImage = ()=> {
+        const grid = mainMenu.querySelector('.menu-grid');
+        const characterSelect = grid.querySelector('.character-image');
+
+        console.log(characterSelect, grid);
+
+        getModdedPortrait(`characterselect${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
+            console.log("URL:", url);
+            if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
+        })
+    }
+
+    this.playLevelFromSinglePlayer = function(delay){
 
         const continueToGame = ()=>{
-            mainMenu.classList.remove('inactive');
             game.preloader.classList.remove('hide');
             setTimeout(()=>{
-                this.hideMainMenu();
+                this.hideSinglePlayer();
                 game.initLevel(game.currentLevelData);
                 game.playWorld(true);
                 backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
@@ -1808,7 +1904,7 @@ function UIManager() {
                     if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
                         this.hideVehicleSelect();
                         game.selectedVehicle = i + 1;
-                        this.playLevelFromMainMenu();
+                        this.playLevelFromSinglePlayer();
                     }
                 }
                 // hide no vehicle
@@ -1818,7 +1914,7 @@ function UIManager() {
         }
 
         vehicleSelect.style.display = 'block';
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
 
         const back = vehicleSelect.querySelector('.back');
         back.onclick = ()=>{
@@ -1838,10 +1934,10 @@ function UIManager() {
         if(!pauseScreen){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header"><span class="fit h1">${localize('levelgui_pause')}</span></div>
+                <div class="header">${localize('levelgui_pause')}</div>
                 <div class="text-level-name">Level Name Goes Here</div>
                 <div class="level-author">
-                    <div class="text-level-by">${localize('mainmenu_by')}</div>
+                    <div class="text-level-by">${localize('mainmenu_by')}:</div>
                     <div class="text-author">Author Name</div>
                 </div>
                 <div class="share">
@@ -1863,10 +1959,10 @@ function UIManager() {
                     </div>
                 </div>
                 <div class="buttons">
-                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
-                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
-                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
-                    <div class="resume"><span class="fit h2">${localize('levelgui_resume')}</span></div>
+                    <div class="reset">${localize('levelgui_reset')}</div>
+                    <div class="retry">${localize('levelgui_retry')}</div>
+                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="resume">${localize('levelgui_resume')}</div>
                 </div>
             `;
 
@@ -1878,7 +1974,7 @@ function UIManager() {
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
                 game.unpauseGame();
-                game.openMainMenu(game.currentLevelData);
+                game.openSinglePlayer(game.currentLevelData);
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
@@ -1888,7 +1984,7 @@ function UIManager() {
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
                 game.unpauseGame();
-                game.openMainMenu();
+                game.openSinglePlayer();
             };
             const resumeButton = buttons.querySelector('.resume');
             resumeButton.onclick = () => {
@@ -1898,11 +1994,6 @@ function UIManager() {
             };
 
             customGUIContainer.appendChild(pauseScreen);
-
-            // fit texts
-            Array.from(pauseScreen.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const title = pauseScreen.querySelector('.text-level-name');
@@ -1935,17 +2026,17 @@ function UIManager() {
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
                 <div class="sun"></div>
-                <div class="header"><span class="fit h0">${localize('levelgui_youwin')}</span></div>
+                <div class="header">${localize('levelgui_youwin')}</div>
                 <div class="time">
                     <div class="text-label">${localize('levelbanner_time')}:</div>
                     <div class="text-time">00:00</div>
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit"><span class="fit h2">${localize('levelgui_exittomenu')}</span></div>
-                    <div class="test"><span class="fit h2">${localize('levelgui_exittest')}</span></div>
-                    <div class="reset"><span class="fit h2">${localize('levelgui_reset')}</span></div>
-                    <div class="retry"><span class="fit h2">${localize('levelgui_retry')}</span></div>
+                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="test">${localize('levelgui_exittest')}</div>
+                    <div class="reset">${localize('levelgui_reset')}</div>
+                    <div class="retry">${localize('levelgui_retry')}</div>
                 </div>
                 <div class="voting">
                     <div class="vote-down button">
@@ -1967,7 +2058,7 @@ function UIManager() {
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
                 this.hideWinScreen();
-                game.openMainMenu(game.currentLevelData);
+                game.openSinglePlayer(game.currentLevelData);
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
@@ -1976,8 +2067,15 @@ function UIManager() {
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
+                const tutorialMode = game.tutorialMode;
+
                 this.hideWinScreen();
-                game.openMainMenu();
+
+                if(tutorialMode){
+                    game.openMainMenu();
+                } else {
+                    game.openSinglePlayer();
+                }
             };
 
             const testButton = buttons.querySelector('.test');
@@ -1987,11 +2085,6 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(winScreen);
-
-            // fit texts
-            Array.from(winScreen.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
 
         const buttons = winScreen.querySelector('.buttons');
@@ -2012,10 +2105,8 @@ function UIManager() {
 
         if (game.gameState == game.GAMESTATE_EDITOR) {
             winScreen.classList.add('editor');
-            textFit(testButton.querySelector('.fit'));
         }else{
             winScreen.classList.remove('editor');
-            textFit(exitButton.querySelector('.fit'));
         }
 
         const timeText = winScreen.querySelector('.text-time');
@@ -2063,7 +2154,7 @@ function UIManager() {
 
         recommendations.style.display = 'flex';
 
-        const gameTemplate = mainMenu.querySelector('.game-template');
+        const gameTemplate = singlePlayer.querySelector('.game-template');
 
         const levels = [...initialLevelBatch].sort(() => .5 - Math.random()).filter(level => level.id !== game.currentLevelData.id);
 
@@ -2103,7 +2194,7 @@ function UIManager() {
                 game.loadPublishedLevelData(levelData, ()=>{}).then(() => {
                     if(levelData.forced_vehicle){
                         game.selectedVehicle = levelData.forced_vehicle;
-                        this.playLevelFromMainMenu();
+                        this.playLevelFromSinglePlayer();
                     }else{
                         this.showVehicleSelect();
                     }
@@ -2119,14 +2210,14 @@ function UIManager() {
     this.buildSocialShare = ()=> {
         const htmlStructure = /*html*/`
             <div class="bar"><div class="close"></div></div>
-            <div class="header"><span class="fit h1">${localize('share_sharing')}</span></div>
+            <div class="header">${localize('share_sharing')}</div>
             <div class="padding">
-                <div class="text-level-link"><span class="fit">${localize('share_levellink')}</span></div>
+                <div class="text-level-link">${localize('share_levellink')}</div>
                 <div class="copy-url">
                     <input class="text-url" readonly>
                     <div class="copy-button"></div>
                 </div>
-                <div class="share-by"><span class="fit">${localize('share_shareby')}</span></div>
+                <div class="share-by">${localize('share_shareby')}</div>
                 <div class="social-share-holder"></div>
             </div>
         `;
@@ -2209,11 +2300,6 @@ function UIManager() {
         if(!socialShareScreen){
             socialShareScreen = this.buildSocialShare();
             customGUIContainer.appendChild(socialShareScreen);
-
-            // fit texts
-            Array.from(socialShareScreen.querySelectorAll('.fit')).forEach( el => {
-                textFit(el)
-            });
         }
         this.updateSocialShareLinks(socialShareScreen, level);
         socialShareScreen.style.display = 'block';
@@ -2304,11 +2390,11 @@ function UIManager() {
         if(!discordJoin){
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
-                <div class="header"><span class="fit h1">${localize('discord_getinvolved')}</span></div>
+                <div class="header">${localize('discord_getinvolved')}</div>
                 <div class="billyDiscord"></div>
                 <div class="content">${localize('discord_content')}</div>
                 <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="discordButton"></a>
-                <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                <div class="back button">${localize('levelbanner_back')}</div>
             `;
 
             discordJoin = document.createElement('div');
@@ -2328,15 +2414,11 @@ function UIManager() {
             }
 
             customGUIContainer.appendChild(discordJoin);
-            // fit texts
-            Array.from(discordJoin.querySelectorAll('.fit')).forEach( el => {
-                    textFit(el)
-            });
         }
         this.hideDiscordJoin = function(){
             if(discordJoin){
                 discordJoin.style.display = 'none';
-                mainMenu.classList.remove('inactive');
+                singlePlayer.classList.remove('inactive');
 
                 // we have shown the discord invite, don't bother again
                 const userData = SaveManager.getLocalUserdata();
@@ -2345,7 +2427,7 @@ function UIManager() {
             }
         }
 
-        mainMenu.classList.add('inactive');
+        singlePlayer.classList.add('inactive');
 
         discordJoin.style.display = 'block';
     }

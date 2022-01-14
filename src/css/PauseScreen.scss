@@ -2,11 +2,13 @@
 
 .pausescreen{
 	@extend .main-window;
-	color: white;
-	font-size: 14px;
+	color: black;
+	font-size: 12px;
 	.header{
 		@extend .jollyfont;
-		font-size: 40px;
+		font-size: 34px;
+		color: var(--dark-color);
+		font-variation-settings: "wght" 800;
 		text-align: center;
 	}
 	.share{
@@ -24,16 +26,19 @@
 	.text-level-name{
 		margin: auto;
 		text-align: center;
-		font-weight: 500;
+		color: black;
+		font-size: 16px;
+		font-family: "Montserrat", sans-serif;
+		font-variation-settings: "wght" 800;
 	}
 	.level-author{
 		display: flex;
 		justify-content: center;
-		.text-level-by{
-			font-weight: 200;
-		}
+		color: black;
+		font-size: 11px;
+
 		.text-author{
-			color: #00FF00;
+			color: var(--secondary-bg-color);
 			margin: 1px 0 0 2px;
 		}
 	}
@@ -55,15 +60,16 @@
 		padding: 10px;
 		.reset, .retry, .exit, .resume{
 			margin: 0;
-			width: 100%;
 			@extend .back-button;
 		}
+		.reset, .retry{
+			background-color: var(--gray-color);
+		}
 		.resume{
-			background-color: #51A328;
+			background-color: var(--secondary-bg-color);
 		}
 		.exit{
-			background-color: red;
-			font-size: 30px;
+			background-color: var(--negative-button);
 		}
 	}
 }

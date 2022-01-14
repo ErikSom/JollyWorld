@@ -79,10 +79,12 @@ export const setZoom = function (pos, scale) {
     camera.scale.x = newScale.x;
     camera.scale.y = newScale.y;
 
-    var i;
-    for (i = 0; i < B2dEditor.editorIcons.length; i++) {
-        B2dEditor.editorIcons[i].scale.x = 1.0 / newScale.x;
-        B2dEditor.editorIcons[i].scale.y = 1.0 / newScale.y;
+    let guiUpscaleX = 1;
+    if(newScale.x < 1){
+        guiUpscaleX = Math.max(1, 6 * (1 - newScale.x));
+    }
+    for (let i = 0; i < B2dEditor.editorIcons.length; i++) {
+        B2dEditor.editorIcons[i].scale.x = B2dEditor.editorIcons[i].scale.y = (1.0 / newScale.x) / guiUpscaleX;
     }
     if(scrollBars.screenWidth/scale> editorSettings.worldSize.width){
         // small epsilon to prevent infinite loop zoom

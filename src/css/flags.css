@@ -211,9 +211,7 @@ For complete information visit: www.freakflagsprite.com
 
 /* ff-app = app icon look */
 .ff-app {
-	background-size: 155%;
 	background-clip: content-box;
-	border-radius: 21%;
 }
 .ff-app:before {
 	content: '';
@@ -227,5 +225,9 @@ For complete information visit: www.freakflagsprite.com
 }
 .ff-app.ff-sm:before, .ff-app.ff-sm {width: 12px; height: 12px}
 .ff-app.ff-md:before, .ff-app.ff-md {width: 18px; height: 18px}
-.ff-app.ff-lg:before, .ff-app.ff-lg {width: 24px; height: 24px}
+.ff-app.ff-lg:before, .ff-app.ff-lg {
+	width: 33px;
+    height: 23px;
+    outline: 2px solid #333;
+}
 .ff-app.ff-xl:before, .ff-app.ff-xl {width: 32px; height: 32px}

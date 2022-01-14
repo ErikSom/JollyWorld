@@ -3,24 +3,29 @@
 .userPage{
 	@extend .main-window;
 	width: 80%;
-	color: white;
+	color:var(--default-text-color);
+	padding: 10px;
+	max-height: 80vh;
+    overflow-y: auto;
+	z-index: 1;
+
 	.value{
 		font-size: 12px;
-		color: #00FF00;
+		color: var(--secondary-bg-color);
 		margin: 0 5px 0 2px;
 	}
 
 	.header{
-		padding: 10px;
 		display: flex;
 		flex-wrap: wrap;
+		align-items: center;
 		justify-content: space-between;
 		gap: 10px;
 		.userinfo{
 			.username{
-				color: #00FF00;
+				color: var(--secondary-bg-color);
 				font-size: 36px;
-				margin-right: 80px;
+				margin-right: 10px;
 			}
 			.membersince{
 				font-size: 12px;
@@ -35,11 +40,13 @@
 	}
 
 	.titlebar{
-		padding: 0px 10px;
 		display: flex;
+		flex-wrap: wrap;
+		margin: 10px 0;
 		.toggletitle{
 			@extend .jollyfont;
 			font-size: 24px;
+			font-variation-settings: "wght" 600;
 		}
 		.togglebuttons{
 			display: flex;
@@ -48,10 +55,7 @@
 		}
 		.games, .favorites{
 			@extend .base-button;
-			width: 75px;
-			height: 24px;
 			font-size: 14px;
-			line-height: 24px;
 
 			&:not(.checked){
 				filter: brightness(0.5);
@@ -64,8 +68,9 @@
 		height: 50vh;
 		overflow-x: hidden;
 		overflow-y: auto;
-		margin-top: 14px;
-		margin-right: 24px
+		border: 2px solid var(--dark-color);
+		box-sizing: content-box;
+
 	}
 
 	.gamesholder{
@@ -78,9 +83,16 @@
 	}
 
 	.nav-buttons{
-		.back{
+		margin-left: auto;
+		display: flex;
+		gap: 10px;
+		.button{
 			margin: 0px;
 			@extend .back-button;
+		}
+		.logout{
+			background: white;
+			color: black;
 		}
 	}
 }

@@ -257,6 +257,7 @@ const doSaveLevelData = async function (saveButton) {
         }, 2000);
     }).catch((error) => {
         alert("There was an error saving your level, please look in the console");
+        console.info("SAVE ERROR (saveLevelData):", error);
         saveButton.style.backgroundColor = '';
         saveButton.innerText = 'SAVE';
     });
@@ -1259,7 +1260,7 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
             buildLevelList(levels);
         })
     }else{
-        backendManager.getPublishedLevels(game.ui.determineMainMenuFilter()).then((levels) => {
+        backendManager.getPublishedLevels(game.ui.determineSinglePlayerFilter()).then((levels) => {
             buildLevelList(levels);
         })
     }
@@ -2442,7 +2443,7 @@ export const showVideoHelp = function () {
     divWrapper.style.padding = '0px';
     divWrapper.style.marginTop = '20px';
 
-    // populate videos:
+    // populate videos stress:
     const videoData = [
         {
             id: '5kAIsbXIYpo',
@@ -2458,6 +2459,9 @@ export const showVideoHelp = function () {
         },
         {
             id: 'Z6BtFHyeQhw',
+        },
+        {
+            id: 'XrH4XW0zX3I',
         },
     ]
 

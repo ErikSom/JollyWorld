@@ -56,6 +56,7 @@ export const saveTempEditorWorld = async function(data){
         await idb.set(SAVEKEYS.tempEditorWorld, data);
     }catch(err){
         // db error
+        console.info("SAVE ERROR (saveTempEditorWorld):", err);
     }
     return data;
 }

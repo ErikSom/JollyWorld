@@ -50,16 +50,61 @@ export const countries = ['de','nl','us','pt','fr','es','it','cz','jr'];
 
 const LOCALIZATION_DATA = [
     {
-        "textId": "mainmenu_featured",
-        "us": "Featured",
-        "nl": "Aanbevolen",
-        "de": "Empfohlen",
-        "es": "Recomendado",
-        "pt": "Recomendado",
-        "cz": "Doporučené",
-        "fr": "En vedette",
-        "it": "Raccomandato",
-        "jr": "Scurvy Approved"
+        "textId": "mainmenu_singleplayer",
+        "us": "Single Player",
+        "nl": "Een Speler",
+        "de": "Einzelspieler",
+        "cz": "Jeden hráč",
+        "jr": "Lon'ly Adventure"
+    },
+    {
+        "textId": "mainmenu_createlevels",
+        "us": "Create levels!",
+        "nl": "Creëer levels!",
+        "de": "Level erstellen!",
+        "cz": "Vytvoř level!"
+    },
+    {
+        "textId": "mainmenu_signup",
+        "us": "Sign Up!",
+        "nl": "Inschrijven!",
+        "de": "Registrieren!",
+        "cz": "Zaregistrovat se!"
+    },
+    {
+        "textId": "mainmenu_characters",
+        "us": "Characters",
+        "nl": "Karakters",
+        "de": "Charaktere",
+        "cz": "Postavy"
+    },
+    {
+        "textId": "mainmenu_onlyfeatured",
+        "us": "Only Featured",
+        "nl": "Alleen Aanbevolen",
+        "de": "Nur Empfohlene",
+        "cz": "Pouze doporučené"
+    },
+    {
+        "textId": "mainmenu_sorted",
+        "us": "Sorted By:",
+        "nl": "Gesorteerd Op:",
+        "de": "Sortiert nach:",
+        "cz": "Seřazeno podle"
+    },
+    {
+        "textId": "mainmenu_filters",
+        "us": "Filters",
+        "nl": "Filters",
+        "de": "Filter",
+        "cz": "Filtr"
+    },
+    {
+        "textId": "mainmenu_allvehicles",
+        "us": "All Vehicles",
+        "nl": "Alle Voertuigen",
+        "de": "Alle Fahrzeuge",
+        "cz": "Všechna vozidla"
     },
     {
         "textId": "mainmenu_best_rated",
@@ -76,7 +121,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "mainmenu_most_played",
         "us": "Most Played",
-        "nl": "Gespeeld",
+        "nl": "Meest Gespeeld",
         "de": "Meistgespielt",
         "es": "Mas Jugado",
         "pt": "Mais Jogadas",
@@ -120,18 +165,6 @@ const LOCALIZATION_DATA = [
         "fr": "Éditeur",
         "it": "Editor",
         "jr": "Sea Buildin'"
-    },
-    {
-        "textId": "mainmenu_change",
-        "us": "Change",
-        "nl": "Verander",
-        "de": "Ändern",
-        "es": "Cambiar",
-        "pt": "Mudar",
-        "cz": "Změnit",
-        "fr": "Changer",
-        "it": "Modificare",
-        "jr": "Pick a new captain"
     },
     {
         "textId": "mainmenu_by",
@@ -195,8 +228,8 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "mainmenu_anytime",
-        "us": "Anytime",
-        "nl": "Alles",
+        "us": "All Time",
+        "nl": "Altijd",
         "de": "Jederzeit",
         "es": "Siempre",
         "pt": "Sempre",
@@ -296,7 +329,7 @@ const LOCALIZATION_DATA = [
         "de": "Zwickel",
         "es": "Cornear",
         "pt": "Escornar",
-        "cz": "Klín",
+        "cz": "Úrazy",
         "fr": "Gore",
         "it": "Incornare",
         "jr": "Meat"
@@ -316,27 +349,41 @@ const LOCALIZATION_DATA = [
     {
         "textId": "settings_consent",
         "us": "Cookies",
-        "nl": "Cookies"
+        "nl": "Cookies",
+        "de": "Cookies",
+        "cz": "Cookies",
+        "jr": "Cookies"
     },
     {
         "textId": "settings_credits",
         "us": "Credits",
-        "nl": "Credits"
+        "nl": "Credits",
+        "de": "Beiträge",
+        "cz": "Autoři",
+        "jr": "Crewmates"
     },
     {
         "textId": "settings_installedmod",
         "us": "Mod active",
-        "nl": "Mod actief"
+        "nl": "Mod actief",
+        "de": "Aktive Mod",
+        "cz": "Aktivní mod",
+        "jr": "New Seas?"
     },
     {
         "textId": "settings_installmod",
         "us": "Modify",
-        "nl": "Modificeer"
+        "nl": "Modificeer",
+        "de": "Modifizieren",
+        "cz": "Modifikovat"
     },
     {
         "textId": "settings_none",
         "us": "None",
-        "nl": "Geen"
+        "nl": "Geen",
+        "de": "Keine",
+        "cz": "Žádný",
+        "jr": "Nay"
     },
     {
         "textId": "characterselect_select_character",
@@ -378,6 +425,8 @@ const LOCALIZATION_DATA = [
         "textId": "levelbanner_favorite",
         "us": "Favorite",
         "nl": "Favoriet",
+        "de": "Favorit",
+        "cz": "Oblíbené",
         "jr": "Treasure"
     },
     {
@@ -516,14 +565,18 @@ const LOCALIZATION_DATA = [
         "textId": "userpage_levelspublished",
         "us": "Levels Published",
         "nl": "Levels Gepubliceerd",
+        "de": "Level veröffentlicht",
+        "cz": "Zveřejněné levely",
         "jr": "Islands Mapped"
     },
     {
         "textId": "userpage_averagerating",
         "us": "Average Rating",
         "nl": "Gemiddelde beoordeling",
+        "de": "Durchschnittliche Bewertung",
         "es": "Puntuacion Average",
         "pt": "Pontuação média",
+        "cz": "Průměrné hodnocení",
         "fr": "Score moyen",
         "it": "Punteggio medio"
     },
@@ -531,14 +584,18 @@ const LOCALIZATION_DATA = [
         "textId": "userpage_levelsfeatured",
         "us": "Levels Featured",
         "nl": "Levels Aanbevolen",
+        "de": "Empfohlene Level",
+        "cz": "Doporučené levely",
         "jr": "Scurvy Approved Islands"
     },
     {
         "textId": "userpage_totalgameplays",
         "us": "Total Gameplays",
         "nl": "Totaal gespeeld",
+        "de": "Gesamte Spieleranzahl",
         "es": "Total de jugadas",
         "pt": "Total De Jogadas",
+        "cz": "Hráno celkem",
         "fr": "Total des jeux",
         "it": "Riproduzioni totali",
         "jr": "Total Voyages"
@@ -547,14 +604,18 @@ const LOCALIZATION_DATA = [
         "textId": "userpage_levels",
         "us": "Levels",
         "nl": "Levels",
+        "de": "Levels",
+        "cz": "Levely",
         "jr": "Islands"
     },
     {
         "textId": "userpage_favorites",
         "us": "Favorites",
         "nl": "Favorieten",
+        "de": "Favoriten",
         "es": "Favoritos",
         "pt": "Favoritos",
+        "cz": "Oblíbené",
         "fr": "Favoris",
         "it": "Preferiti",
         "jr": "Treasured"
@@ -563,8 +624,10 @@ const LOCALIZATION_DATA = [
         "textId": "userpage_membersince",
         "us": "Member since",
         "nl": "Lid sinds",
+        "de": "Spieler seit",
         "es": "Miembro desde",
         "pt": "Membro desde",
+        "cz": "Členem od",
         "fr": "Membre depuis",
         "it": "Membro da",
         "jr": "Set sea on"
@@ -608,12 +671,16 @@ const LOCALIZATION_DATA = [
     {
         "textId": "discord_getinvolved",
         "us": "Get Involved!",
-        "nl": "Doe Mee!"
+        "nl": "Doe Mee!",
+        "de": "Mach mit!",
+        "cz": "Přidej se!"
     },
     {
         "textId": "discord_content",
         "us": "Meet level creators, chat with fellow Jolly players, drop suggestions for the game, report bugs, share your creations or learn new tips on how to beat certain levels. This is also the place where new big updates will be announced first!",
-        "nl": "Ontmoet level ontwikkelaars, praat met andere Jolly spelers, drop suggesties for het spel, rapporteer bugs, deel jou creaties of leer nieuwe trucs om levels makkelijker te verslaan. Dit is ook de plek waar nieuwe grote updates als eerst worden aangekondigd!"
+        "nl": "Ontmoet level ontwikkelaars, praat met andere Jolly spelers, drop suggesties for het spel, rapporteer bugs, deel jou creaties of leer nieuwe trucs om levels makkelijker te verslaan. Dit is ook de plek waar nieuwe grote updates als eerst worden aangekondigd!",
+        "de": "Treffe Level Autoren, chatte mit anderen Spielern, melde Bugs, teile deine Kreationen oder lerne Tips um bestimmte Level zu bestehen. Neue Updates werden hier zuerst angekündigt!",
+        "cz": "Seznamte se s tvůrci levelů, chatujte s ostatními hráči, zanechte nám své návrhy na hru, hlaste chyby, sdílejte své výtvory nebo se naučte nové triky, jak pokořit určité úrovně. O nových aktualizacích se zde dozvíte jako první!"
     },
     {
         "textId": "levelgui_pause",
@@ -714,149 +781,199 @@ const LOCALIZATION_DATA = [
     {
         "textId": "tutorial_skip_button",
         "us": "Skip",
-        "nl": "Overslaan"
+        "nl": "Overslaan",
+        "de": "Überspringen",
+        "cz": "Přeskočit"
     },
     {
         "textId": "editor_tutorial_text_1",
         "us": "Welcome to the tutorial level!",
         "nl": "Welkom bij het tutorial level!",
+        "de": "Willkommen im Tutorial Level!",
+        "cz": "Vítejte v tutoriálu!",
         "jr": "Welcome to Tutorial land, where ye get shot in ye 'ead"
     },
     {
         "textId": "editor_tutorial_tip_title_1",
         "us": "Create a floor base",
         "nl": "Maak eerst een vloer",
+        "de": "Erstelle einen Boden Block",
+        "cz": "Vytvořte podlahovou základnu",
         "jr": "Lay down a deck"
     },
     {
         "textId": "editor_tutorial_tip_body_1",
         "us": "To create a floor base \\nplatform for the character\\nto ride on, select the \\nGeometry tool and draw \\na rectangle under the \\ncharacter.",
         "nl": "Om een vloer te maken\\n voor ons karakter om op te rijden \\n selecteer je de Geometry tool en\\nteken je een vierkant onder het \\nkarakter.",
+        "de": "Um eine Bodenplatform zu\\nerstellen, wähle das Geometriewerkzeug\\nund male ein Rechteck\\nunter dem Charakter.",
+        "cz": "Chcete-li vytvořit podlahovou základnu\\nplatformu pro postavu na které se budete pohybovat, vyberte nástroj Geometrie a nakreslete pod postavu obdélník. ",
         "jr": "To lay down a deck, \\nfor yer maties \\nto walk on, grab some \\nbasic land and chart out \\na rectangle under their \\nfeet."
     },
     {
         "textId": "editor_tutorial_title_1",
         "us": "Drag",
-        "nl": "Sleep"
+        "nl": "Sleep",
+        "de": "Ziehe die Maus",
+        "cz": "Přetáhněte pomocí myši"
     },
     {
         "textId": "editor_tutorial_title_2",
         "us": "Zoom In & Zoom Out",
         "nl": "Zoem in & Zoem uit",
+        "de": "Zoom rein & Zoom raus",
+        "cz": "Přiblížení a oddálení",
         "jr": "Adjust ye periscope"
     },
     {
         "textId": "editor_tutorial_title_3",
         "us": "Move the triangle",
-        "nl": "Verplaats de triangel"
+        "nl": "Verplaats de triangel",
+        "de": "Bewege das Dreieck",
+        "cz": "Posuňte trojúhelník"
     },
     {
         "textId": "editor_tutorial_title_4",
         "us": "Draw a square",
         "nl": "Teken een vierkant",
+        "de": "Plaziere ein Rechteck",
+        "cz": "Nakreslete čtverec",
         "jr": "Chart out a square"
     },
     {
         "textId": "editor_tutorial_title_5",
         "us": "Modify this square",
         "nl": "Pas dit vierkant aan",
+        "de": "Bearbeite dieses Rechteck",
+        "cz": "Upravte tento čtverec",
         "jr": "Tinker with the square"
     },
     {
         "textId": "editor_tutorial_title_6",
         "us": "Add Obstacles!",
         "nl": "Plaats obstakels!",
+        "de": "Füge Hindernisse hinzu!",
+        "cz": "Přidejte překážky!",
         "jr": "Set some booby traps"
     },
     {
         "textId": "editor_tutorial_title_7",
         "us": "Add Checkpoint",
         "nl": "Plaats een checkpoint",
+        "de": "Checkpoint hinzufügen",
+        "cz": "Přidejte kontrolní bod",
         "jr": "Build a lighthouse"
     },
     {
         "textId": "editor_tutorial_tip_title_2",
         "us": "Prefabs Settings",
-        "nl": "Prefabs instellingen"
+        "nl": "Prefabs instellingen",
+        "de": "Prefab Einstellungen",
+        "cz": "Prefabs nastavení"
     },
     {
         "textId": "editor_tutorial_tip_body_2",
         "us": "Some elements, including prefabs have\\ndifferent settings that you can modify\\njust left click on them to open the\\nsettings box.\\nIf you want a prefab to not move from\\nwhere you placed it, then tick the\\nIs Fixed Box and it will stay in place.",
         "nl": "Sommige elementen, waaronder prefabs hebben\\n verschillende instellingen die je aan kan passen.\\n Klik met linker muis knop om de instellingen te zien.\\n Als je wilt dat een Prefab niet beweegt\\n dan kan je isFixed aanklikken,\\n dit zorgt er voor dat hij niet verplaatst.",
+        "de": "Einige Elemente, zum Beispiel Prefabs, besitzen verschiedenste Einstellungen die bearbeitet werden können. Wähle dazu einfach das Objekt mit der linken Maustaste aus und öffne den Einstellungs-Reiter. Willst du das ein prefab statisch wird dann füge einen Haken bei isFixed hinzu. ",
+        "cz": "Některé prvky, včetně prefabs, mají různá nastavení, která můžete upravit. Stačí na ně kliknout levým tlačítkem a otevřít okno nastavení. Chcete-li, aby se panel nepohnul z místa, kde jste jej umístili, zaškrtněte políčko \"pevná pozice\". ",
         "jr": "Some parts, includin' booby traps, have different things to tinker 'round with."
     },
     {
         "textId": "editor_tutorial_title_8",
         "us": "Non-Static Objects",
         "nl": "Niet-Static objecten",
+        "de": "Nicht-statisches Objekt",
+        "cz": "Nehybné objekty",
         "jr": "Ships that move."
     },
     {
         "textId": "editor_tutorial_title_9",
         "us": "Add The Finish Line",
         "nl": "Plaats de Finish",
+        "de": "Füge eine Finish Line hinzu",
+        "cz": "Přidejte cílovou čáru",
         "jr": "Raise the Jolly Roger"
     },
     {
         "textId": "editor_tutorial_title_10",
         "us": "Test & Publish!",
-        "nl": "Test & Publiceer"
+        "nl": "Test & Publiceer",
+        "de": "Testen & Veröffentlichen!",
+        "cz": "Vyzkoušejte a zveřejněte!"
     },
     {
         "textId": "editor_tutorial_text_2",
         "us": "Learn how to build a level in 10 easy steps!",
-        "nl": "Leer om een level te bouwen in 10 simpele stappen!"
+        "nl": "Leer om een level te bouwen in 10 simpele stappen!",
+        "de": "Lerne in 10 einfachen Schritten ein Level zu bauen!",
+        "cz": "Naučte se jak vytvořit level v 10 snadných krocích!"
     },
     {
         "textId": "editor_tutorial_text_4",
         "us": "Press on your Keyboard",
-        "nl": "Druk op je Toetsenbord"
+        "nl": "Druk op je Toetsenbord",
+        "de": "Drücke auf der Tastatur",
+        "cz": "Stiskněte na klávesnici"
     },
     {
         "textId": "editor_tutorial_text_6",
         "us": "Mouse Wheel",
         "nl": "Muis Wiel",
+        "de": "Mausrad",
+        "cz": "Kolečko myši",
         "jr": "Steerin' Wheel"
     },
     {
         "textId": "editor_tutorial_text_3",
         "us": "Press Space on your Keyboard and Hold Right click",
-        "nl": "Druk Spatie op je Toetsenbord en houd rechter muis ingedrukt"
+        "nl": "Druk Spatie op je Toetsenbord en houd rechter muis ingedrukt",
+        "de": "Drücke die Spacebar und halte die rechte Maustaste gedrückt",
+        "cz": "Stiskněte mezerník na klávesnici a podržte pravé tlačítko myši"
     },
     {
         "textId": "editor_tutorial_text_5",
         "us": "or",
         "nl": "of",
+        "de": "oder",
+        "cz": "nebo",
         "jr": "orr"
     },
     {
         "textId": "editor_tutorial_text_7",
-        "us": "Is a good practice to add checkpoints \\nafter difficult obstacles",
+        "us": "It's a good practice to add checkpoints \\nafter difficult obstacles",
         "nl": "Het is aanbevolen om checkpoints\\n toe te voegen naar moeilijke stukken",
+        "de": "Es ist eine gute Angewohnheit Checkpoints \\n hinter schweren Hindernissen zu plazieren",
+        "cz": "Je dobrý nápad přidávat kontrolní body po obtížných překážkách ",
         "jr": "Tis polite to build lighthouses after laying down some traps. Or not, Arrrgh!"
     },
     {
         "textId": "editor_tutorial_text_8",
         "us": "Press T on your Keyboard\\nto test the level",
         "nl": "Druk T op je toetsenbord om je level te testen",
+        "de": "Drücke T auf der Tastatur \\n um dein Level zu testen",
+        "cz": "Stiskněte T na klávesnici a otestujte svůj level",
         "jr": "Press T on ye keyboard\\nto set foot on yer land."
     },
     {
         "textId": "editor_tutorial_text_9",
         "us": "Press this button \\nat the top right",
-        "nl": "Druk deze knop\\n die staat boven rechts"
+        "nl": "Druk deze knop\\n die staat boven rechts",
+        "de": "Drücke diesen Knopf \\n obenrechts",
+        "cz": "Stiskněte toto tlačítko nahoře vpravo"
     },
     {
         "textId": "editor_tutorial_text_10",
         "us": "Fill up all the info, then Save or hit publish!\\nPS: Don't publish this tutorial please ;P",
         "nl": "Vul alle informatie in, klik dan Save of Publish!\\n P.S. please publiceer dit tutorial level niet ;P",
+        "de": "Fülle alle Informationen aus. Im Anschluss kannst du das Level speichern oder veröffentlichen!\\n PS: Bitte dieses Tutorial nicht veröffentlichen ;P",
+        "cz": "Vyplňte všechny informace a poté uložte, nebo stiskněte zveřejnit! PS: Nezveřejňujte prosím tento návod ;P ",
         "jr": "Read up on everything ye can, then put it on the map.\\nDon't claim this land as yer own!"
     },
     {
         "textId": "editortoolgui_select",
         "us": "select",
         "nl": "selecteer",
-        "de": "auswählen",
+        "de": "Auswählen",
         "es": "Seleccionar",
         "pt": "selecionar",
         "cz": "Vybrat",
@@ -868,7 +985,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_geometry",
         "us": "geometry",
         "nl": "vormen",
-        "de": "formen",
+        "de": "Formen",
         "es": "Geometria",
         "pt": "Geometria",
         "cz": "Tvary",
@@ -880,7 +997,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_polydrawing",
         "us": "polydrawing",
         "nl": "polygon",
-        "de": "polygon",
+        "de": "Polygon",
         "es": "Dibujar Poly",
         "pt": "Desenho poligonal",
         "cz": "Polygon",
@@ -892,7 +1009,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_pen",
         "us": "pen",
         "nl": "pen",
-        "de": "stift",
+        "de": "Stift",
         "es": "Lapiz",
         "pt": "Caneta",
         "cz": "Pero",
@@ -904,7 +1021,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_joints",
         "us": "joints",
         "nl": "verbindingen",
-        "de": "bindungen",
+        "de": "Gelenk",
         "es": "Articulacion",
         "pt": "Juntas",
         "cz": "Spojení",
@@ -916,7 +1033,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_prefabs",
         "us": "prefabs",
         "nl": "fabrikaten",
-        "de": "fertigbauten",
+        "de": "Fertigbauten",
         "es": "Prefabricados",
         "pt": "Objetos prontos",
         "cz": "Předvytvořené",
@@ -928,7 +1045,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_text",
         "us": "text",
         "nl": "text",
-        "de": "text",
+        "de": "Text",
         "es": "Texto",
         "pt": "Texto",
         "cz": "Text",
@@ -940,7 +1057,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_art",
         "us": "art",
         "nl": "kunst",
-        "de": "grafiken",
+        "de": "Grafiken",
         "es": "Arte",
         "pt": "Arte",
         "cz": "Malování",
@@ -952,7 +1069,7 @@ const LOCALIZATION_DATA = [
         "textId": "editortoolgui_trigger",
         "us": "trigger",
         "nl": "trigger",
-        "de": "auslöser",
+        "de": "Auslöser",
         "es": "Gatillo",
         "pt": "Acionador",
         "cz": "Spouštěč",
@@ -1022,15 +1139,15 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "editorheader_exit",
-        "us": "EXIT",
-        "nl": "VERLAAT",
-        "de": "VERLASSEN",
+        "us": "Exit",
+        "nl": "Verlaat",
+        "de": "Verlassen",
         "es": "Salir",
         "pt": "Sair",
         "cz": "Odejít",
         "fr": "Quitter",
         "it": "Partire",
-        "jr": "ABANDON SHIP"
+        "jr": "Abandon"
     },
     {
         "textId": "editorlevelbanner_publishsettings",
@@ -1048,7 +1165,7 @@ const LOCALIZATION_DATA = [
         "textId": "editorlevelbanner_thumbnail",
         "us": "Thumbnail",
         "nl": "Afbeelding",
-        "de": "Schaubild",
+        "de": "Thumbnail",
         "es": "Imagen",
         "pt": "Miniatura",
         "cz": "Miniatura",
@@ -1060,7 +1177,7 @@ const LOCALIZATION_DATA = [
         "textId": "editorlevelbanner_clicktoadd",
         "us": "click to add",
         "nl": "click om t",
-        "de": "bild einfügen",
+        "de": "Bild einfügen",
         "es": "Click para agregar",
         "pt": "Click para adicionar",
         "cz": "Klikněte pro vložení",
@@ -1108,7 +1225,7 @@ const LOCALIZATION_DATA = [
         "textId": "editorlevelbanner_linkyoutubevideos",
         "us": "Link YouTube videos",
         "nl": "Voeg YouTube videos toe",
-        "de": "YouTube videos verknüpfen",
+        "de": "YouTube Videos verknüpfen",
         "es": "Vincular videos de YouTube",
         "pt": "Colocar video do Youtube",
         "cz": "Připojit YouTube videa",
@@ -1119,7 +1236,10 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_save",
         "us": "SAVE",
-        "nl": "OPSLAAN"
+        "nl": "OPSLAAN",
+        "de": "SPEICHERN",
+        "cz": "Uložit",
+        "jr": "BURY FOR NEXT TIME!"
     },
     {
         "textId": "editorlevelbanner_saveas",
@@ -1173,7 +1293,7 @@ const LOCALIZATION_DATA = [
         "textId": "editorlevelbanner_notice",
         "us": "Notice",
         "nl": "Melding",
-        "de": "Achtung",
+        "de": "Mitteilung",
         "es": "Aviso",
         "pt": "Aviso",
         "cz": "Upozornění",
@@ -1221,7 +1341,7 @@ const LOCALIZATION_DATA = [
         "textId": "editorlevelbanner_nope",
         "us": "NOPE!",
         "nl": "NEE!",
-        "de": "DOCH NICHT!",
+        "de": "NÖ!",
         "es": "Nop",
         "pt": "NOPE!",
         "cz": "Ne!",
@@ -1232,7 +1352,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_mintitlelength",
         "us": "Title must be at least 3 characters long",
-        "de": "Der Titel muss mindenstens 3 Buchstaben lang sein",
+        "de": "Der Titel muss mindestens drei Buchstaben lang sein",
         "es": "El titulo debe ser al menos 3 caracteres",
         "pt": "O Titulo precisa ter pelo menos 3 caracteres",
         "cz": "Název musí obsahovat nejméně 3 znaky",
@@ -1254,7 +1374,7 @@ const LOCALIZATION_DATA = [
     {
         "textId": "editorlevelbanner_nothumbnail",
         "us": "Your level needs a thumbnail before you can publish / preview it.",
-        "de": "Dein Level braucht ein Schaubild, bevor du es veröffentlichen / anschauen kannst.",
+        "de": "Dein Level braucht ein Thumbnail, bevor du es veröffentlichen / anschauen kannst.",
         "es": "Tu nivel necesita una imagen antes de publicarlo o hacer preview",
         "pt": "Seu mapa precisa de uma thumbnail antes de ser publicado",
         "cz": "Váš level potřebuje miniaturu než jej zveřejníte / zobrazíte náhled",

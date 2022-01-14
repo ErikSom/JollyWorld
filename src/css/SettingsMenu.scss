@@ -4,7 +4,9 @@
 	@extend .main-window;
 	.header{
 		@extend .jollyfont;
-		font-size: 40px;
+		font-size: 34px;
+		font-variation-settings: "wght" 800;
+		color: #333333;
 		text-align: center;
 	}
 
@@ -16,20 +18,18 @@
 		margin: 10px;
 
 		.music, .blood, .gore, .fullscreen{
-			height: 36px;
-			width: auto;
-			padding: 0px 20px;
+			background-color: var(--main-bg-color);
+			color: var(--default-text-color);
 			display: flex;
 			justify-content: center;
 			white-space: nowrap;
-			max-width: 90%;
 			.choice{
 				margin-left: 4px;
 				&.on{
-					color: #00FF00
+					color: var(--secondary-bg-color);
 				}
 				&.off{
-					color: #FF0000
+					color: var(--negative-button);
 				}
 			}
 			div.fit{
@@ -40,9 +40,8 @@
 		}
 		.back, .consent, .credits, .install{
 			@extend .back-button;
-			width: unset;
-			min-width: 100px;
-			height: 36px;
+			background-color: var(--main-bg-color);
+			color: var(--default-text-color);
 			display: flex;
 			justify-content: center;
 		}
@@ -55,12 +54,11 @@
 			width: 60%;
 			justify-content: center;
 			display: flex;
-			background: #484848;
-			font-family: "Lily Script One", cursive;
-			text-shadow: 1.2px 2px black;
-			color: white;
-			border: 7px dotted #666666;
+			background: var(--gray-color);
 			white-space: nowrap;
+			margin: 5px;
+			align-items: center;
+			border: 2px solid var(--dark-color);
 			div{
 				overflow: hidden;
     			text-overflow: ellipsis;
@@ -69,16 +67,19 @@
 		}
 		.install{
 			max-width: 136px;
-			background: #51A328;
+			background: var(--secondary-bg-color);
+			color: var(--alt-text-color);
 		}
 		.credits, .install{
 			text-decoration: none;
 		}
 		.back{
 			margin: 0 40%;
+			margin-top: 5px;
 		}
 		.country{
 			@extend .country-select;
+			margin: 10px;
 		}
 	}
 }

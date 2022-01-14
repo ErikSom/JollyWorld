@@ -1,0 +1,543 @@
+//https://www.shadertoy.com/view/MtcGD7
+@use 'Components';
+
+@mixin css-checkbox($size: '16px',
+	$selectedColor: #444,
+	$defaultColor: white,
+	$checkColor: #FFF,
+	$valign: 'middle') {
+	display: none;
+
+	&:checked+i {
+		background: #{$selectedColor};
+		border-color: #{$selectedColor};
+
+		&:before,
+		&:after {
+			opacity: 1;
+		}
+	}
+
+	+i {
+		box-sizing: border-box;
+
+		&:before,
+		&:after {
+			box-sizing: border-box;
+		}
+	}
+
+	+i {
+		position: relative;
+		display: inline-block;
+		top: -1px;
+		width: #{$size};
+		height: #{$size};
+		margin: 0;
+		vertical-align: #{$valign};
+		border-radius: 0;
+		background: #{$defaultColor};
+		font-size: #{$size};
+		cursor: pointer;
+
+		&:before,
+		&:after {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 3px;
+			height: 20px;
+			transform: rotate(45deg) translate(-50%, -50%);
+			transform-origin: top left;
+			content: '';
+			background-color: #{$checkColor};
+			opacity: 0;
+		}
+		&:after {
+			transform: rotate(-45deg) translate(-50%, -50%);
+		}
+	}
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 68px;
+	height: 34px;
+	min-height: 34px;
+
+	input {
+		display:none;
+	}
+
+	input:checked + .slider {
+		background-color: #333333;
+	}
+
+	input:focus + .slider {
+		box-shadow: 0 0 1px #2196F3;
+	}
+
+	input:checked + .slider:before {
+		transform: translateX(34px);
+	}
+
+	input:checked + .slider:after{
+		content:'ON';
+		left: 32%;
+	}
+
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #333333;
+		border-radius: 34px;
+
+		&::before{
+			position: absolute;
+			content: "";
+			height: 26px;
+			width: 26px;
+			left: 4px;
+			bottom: 4px;
+			background-color: #43F07C;
+			transition: transform .25s;
+			border-radius: 50%;
+		}
+		&::after{
+			content:'OFF';
+			color: #43F07C;
+			display: block;
+			position: absolute;
+			transform: translate(-50%,-50%);
+			top: 50%;
+			left: 70%;
+			font-size: 12px;
+			font-family: Verdana, sans-serif;
+		}
+	}
+}
+
+
+.singleplayer{
+	width: 100vw;
+	height: 100vh;
+	background: url(../../static/assets/images/gui/BG_Repeat.png);
+	background-color: #ffffff;
+
+	&.inactive{
+		filter: brightness(0.2);
+		pointer-events: none !important;
+		&:after{
+			content: '';
+			width: 100%;
+			height: 100%;
+			background: #00000001;
+			position: absolute;
+			top: 0;
+			pointer-events: all;
+			cursor: pointer;
+		}
+	}
+
+	.header{
+		height: 78px;
+		.logo{
+			width: min(30vw, 204px);
+			height: 58px;
+			position: absolute;
+			margin: 10px;
+			top:0;
+			left:0;
+			z-index: 0;
+		}
+
+		&.search-focussed{
+			.buttons{
+				.search-filter{
+					.search-icon{
+						pointer-events: all;
+					}
+				}
+			}
+		}
+
+		.buttons{
+			position: absolute;
+			top:0;
+			right:0;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			margin: 20px 10px;
+			.search-filter{
+				position: relative;
+				.search-icon{
+					background: url(../../static/assets/images/gui/SearchIcon.svg) no-repeat;
+					width: 38px;
+					height: 28px;
+					position: absolute;
+					right: -21px;
+					margin: 0 4px;
+					transform: translate(-50%, 5px);
+					pointer-events: none;
+					cursor: pointer;
+				}
+
+				input{
+					height: 38px;
+					padding: 0 10px;
+					max-width: 132px;
+					transition: width 0.2s ease-in;
+					border: 2px solid #333333;
+					&:focus{
+						max-width: 80vw;
+						width: 300px;
+					}
+				}
+			}
+
+			.filters-container{
+				font-family: 'Montserrat', sans-serif;
+				font-variation-settings: "wght" 600;
+				font-size: 14px;
+
+				z-index: 3;
+
+				.filters-fold{
+					position: absolute;
+					display: flex;
+					flex-direction: column;
+					background: white;
+					border: 2px solid #333333;
+					transform: translateY(7px);
+					z-index: -1;
+					padding: 10px;
+					visibility: hidden;
+					gap: 6px;
+					min-width: 202px;
+					max-height: 80vh;
+					overflow-y: auto;
+					overflow-x: hidden;
+
+					.checkbox-container{
+						display: flex;
+						flex-direction: row-reverse;
+						gap: 10px;
+						justify-content: left;
+						align-items: center;
+
+						.css-checkbox{
+							@include css-checkbox(24px, $selectedColor: #333333, $defaultColor: #333333, $checkColor: #43F07C);
+						}
+						i{
+							float: left;
+						}
+					}
+
+					.date{
+						display: flex;
+						flex-direction: column;
+						gap: 6px;
+
+						.all, .month, .week, .today{
+							@extend .base-button;
+						}
+						.month, .week, .today{
+							display: none;
+						}
+
+						&.open{
+							border: 2px solid #CCCCCC;
+							padding: 6px;
+						}
+					}
+					.vehicles{
+						display: flex;
+						flex-direction: row;
+						flex-wrap: wrap;
+						gap: 6px;
+						max-width: 178px;
+						justify-content: center;
+						.all{
+							width: 100%;
+						}
+						.all, .button{
+							@extend .base-button;
+						}
+						.button{
+							img{
+								height: 14px;
+								transform: scale(1.6) translateY(1px);
+							}
+						}
+
+						&.open{
+							border: 2px solid #CCCCCC;
+							padding: 6px;
+						}
+
+						&:not(.open){
+							.button{
+								margin: auto;
+							}
+						}
+					}
+				}
+
+				&.open{
+					.filters{
+						border-bottom: none;
+						transform: translateY(-1px);
+						position: relative;
+						&:before{
+							content: '';
+							background: white;
+							width: calc(100% + 4px);
+							height: 12px;
+							position: absolute;
+							left: -2px;
+							bottom: -10px;
+							border-left: 2px solid #333333;
+							border-right: 2px solid #333333;
+						}
+					}
+					.filters-fold{
+						visibility: visible;
+					}
+				}
+			}
+
+			.exit, .filters{
+				@extend .base-button;
+			}
+			.exit{
+				background-color: #D70000;
+				color: white;
+			}
+		}
+	}
+
+	.games-scroll{
+		height: calc(100vh - 140px);
+		overflow-x: hidden;
+		overflow-y: auto;
+		margin: 0 10px;
+		background: gray;
+		border: 2px solid #333333;
+		box-sizing: content-box;
+	}
+	.games{
+		display: grid;
+		grid-template-columns: repeat( auto-fit, minmax(210px, 1fr) );
+		grid-gap: 10px;
+		padding: 0px 44px 0px 14px;
+    	width: 100%;
+		margin: 10px 0 100px 0;
+	}
+}
+
+.game{
+	padding: 2px;
+	background-color: #333333;
+	width: 100%;
+	margin: auto;
+	opacity:0;
+	cursor: pointer;
+	position: relative;
+
+	&:hover{
+		background: #5d5d5d;
+	}
+
+	&.loaded{
+		display: block;
+		animation: 0.3s ease-in opacityFade forwards;
+	}
+
+	.vehicle-label{
+		position: absolute;
+		width: 22px;
+		height: 22px;
+		bottom: 20px;
+		right: 4px;
+		border-radius: 6px;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: 88%;
+		filter: invert(1);
+	}
+
+	.thumb{
+		width: 100%;
+		padding-top: 75%;
+		background-color:gray;
+		border-bottom-width: 4px;
+		border-left-width: 3px;
+		background-color: black;
+		background-size: cover;
+		filter: saturate(1.6);
+	}
+
+	.footer{
+		width: 100%;
+		margin: 5px 0 0 0;
+		display: flex;
+		.text-holder{
+			width: 80%;
+			height: 100%;
+			font-size: 12px;
+			color: white;
+			margin-left: 2px;
+			font-family: "Montserrat", sans-serif;
+			.text-level-name{
+				font-weight: 500;
+				line-height: 18px;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+			}
+			.level-author{
+				display: flex;
+				max-width: 72%;
+				.text-level-by{
+					font-weight: 200;
+				}
+				.text-author{
+					color: #43F07C;
+					margin: 1px 0 0 2px;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+			.tags{
+				display: flex;
+				font-size: 9px;
+				margin: 2px 0 0 0;
+				color: #43F07C;
+
+				.tag{
+					margin: 0px 1px;
+				}
+			}
+		}
+
+		.rating{
+			width: 80px;
+			max-width: 36%;
+			position: absolute;
+			right: 6px;
+			bottom: 4px;
+
+			.bar{
+				position: relative;
+				background:var(--gray-color);
+				width:100%;
+				height: 2px;
+				.fill{
+					position: absolute;
+					top:0;
+					left:0;
+					width: 50%;
+					height: 100%;
+					background: var(--secondary-bg-color);
+				}
+			}
+			.texts{
+				display: flex;
+				margin: 3px 0 0 2px;
+
+				.liked{
+					display: flex;
+					gap: 2px;
+				}
+				.votes, .share{
+					font-size: 8px;
+				}
+
+				.votes{
+					color: var(--secondary-bg-color);
+				}
+
+				.share{
+					color: var(--gray-color);
+					margin-left: 4px;
+				}
+
+				.like-icon{
+					background: url(../../static/assets/images/misc/thumb.svg);
+					width: 10px;
+					height: 10px;
+					background-size: contain;
+					background-repeat: no-repeat;
+				}
+			}
+		}
+	}
+}
+
+@keyframes opacityFade{
+	0%{
+		opacity:0;
+	}
+	100%{
+		opacity:1;
+	}
+}
+
+
+
+// MOBILE
+.singleplayer{
+	&.mobile{
+		.games{
+			margin: 0;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+	}
+}
+
+// collapse search
+@media only screen and (max-width: 398px){
+	.singleplayer{
+		.header{
+			.logo{
+				height: 48px;
+			}
+			.buttons{
+				.search-filter{
+					input{
+						max-width: 46px;
+					}
+				}
+			}
+		}
+	}
+}
+
+// compact game tiles
+@media only screen and (max-width: 860px){
+	.singleplayer{
+		.games{
+			grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+		}
+	}
+	.game{
+		.footer{
+			.text-holder{
+				font-size: 10px;
+			}
+		}
+		.vehicle-label{
+			width: 18px;
+			height: 18px;
+		}
+	}
+}
+

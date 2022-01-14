@@ -28,77 +28,137 @@
 
 .base-button{
 	@extend .simple-button;
-	background-color: #51A328;
-	width: 200px;
-	height: 38px;
-	border-radius: 8px;
-	border: 2px solid black;
-	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
-	color: white;
-	font-family: "Lily Script One", cursive;
-	text-shadow: 1.2px 2px black;
+	background-color: #FFFFFF;
+	font-family: 'Montserrat', sans-serif;
 	text-align: center;
-	line-height: 38px;
-	font-size: 23px;
-	text-rendering: geometricPrecision;
-	cursor: pointer;
+	font-size: 14px;
+	padding: 8px;
 	white-space: nowrap;
+	font-variation-settings: "wght" 600;
+	border: 2px solid #333333;
 }
 
 .back-button{
 	margin: 5px;
-	height: 52px;
-	font-size: 36px;
-	line-height: 48px;
-	background-color: #7B7B7B;
+	font-size: 20px;
+	background-color: #D70000;
+	color: white;
 
 	@extend .base-button;
 }
 
 .main-window{
-	border-radius: 4px;
-    border: 2px solid black;
-    box-shadow: 2px 2px 0px black;
+    border: 2px solid #333333;
 	position: absolute;
 	left: 50%;
 	top: 50%;
 	width: 400px;
-	background-color: #666666;
+	max-width: 100%;
+	background-color: #FFFFFF;
 	transform: translate(-50%, -50%);
+	max-height: calc(100% - 20px);
+	overflow-y: auto;
+	overflow-x: hidden;
 
-	.bar{
-		height: 20px;
-		width: 100%;
-		background-color: #4F4F4F;
-		background-image: url(../../static/assets/images/gui/DragableBar_Pattern.png);
-		border-bottom: 1px solid black;
-		border-top-left-radius: inherit;
-		border-top-right-radius: inherit;
-		.close{
-			position: absolute;
-			width: 21px;
-			height: 21px;
-			right: 0;
-			top: 0;
-			margin: -1px -1px 0 0;
-			background-color: red;
-			border: 1px solid black;
+	.close{
+		position: absolute;
+		width: 32px;
+		height: 32PX;
+		right: 0;
+		top: 0;
+		margin: -1px -1px 0 0;
+		background-color: var(--negative-button);
+		border: 2px solid var(--dark-color);
+		&:after{
+			content: "✕";
+			margin: 0px 0px 0px 6px;
+			vertical-align: middle;
+			font-size: 24px;
+			font-weight: bold;
+			color: var(--dark-color);
+		}
+		@extend .simple-button;
+	}
+}
+
+.page-footer{
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 10px 0px;
+	.text{
+		display: flex;
+		font-size: 12px;
+		white-space: nowrap;
+		margin-bottom: 2px;
+		a{
+			margin:0px 4px;
+			@extend .clean-text-button;
+		}
+	}
+	.social-channels{
+		display: flex;
+		& > a{
+			margin: 2px 2px;
 			border-radius: 4px;
-			&:after{
-				content: "✕";
-				margin: 0 0px 0px 6px;
-				vertical-align: middle;
-				font-size: 10px;
-			}
 			@extend .simple-button;
+		}
+		.jolly-discord{
+			width: 72px;
+			height: 24px;
+			background-image: url(../../static/assets/images/misc/discord.svg)
+		}
+		.jolly-youtube, .jolly-facebook{
+			width: 24px;
+			height: 24px;
+			background-color: white;
+			background-image: url(../../static/assets/images/misc/youtube-icon.svg)
+		}
+		.jolly-facebook{
+			background-image: url(../../static/assets/images/misc/facebook-icon.svg);
+		}
+		.powered-by-poki{
+			width: 108px;
+			height: 20px;
+			margin-top: 4px;
+			background-image: url(../../static/assets/images/gui/powered-by-poki.png);
 		}
 	}
 }
 
+@media only screen and (max-width: 860px){
+	.page-footer{
+		.text{
+			font-size: 9px;
+			button{
+				margin:0px;
+			}
+
+			a{
+				margin:0px 2px;
+			}
+		}
+	}
+}
+@media only screen and (max-width: 300px){
+	.page-footer{
+		.text{
+			font-size: 8px;
+			button{
+				margin:0px;
+			}
+
+			a{
+				margin:0px 2px;
+			}
+		}
+	}
+}
+
+
 .jollyfont{
-	color: white;
-	font-family: "Lily Script One", cursive;
-    text-shadow: 1.2px 2px black;
+	font-family: 'Montserrat', sans-serif;
 }
 
 
@@ -117,6 +177,8 @@
 		
 	}
 	.vote-up{
+		background-color: var(--secondary-bg-color);
+    	margin-right: 10px;
 		.vote-thumb{
 			filter: drop-shadow(2px 1px 0px black);
 
@@ -126,7 +188,7 @@
 		}
 	}
 	.vote-down{
-		background-color: #FF0000;
+		background-color: var(--negative-button);
 		.vote-thumb{
 			transform: scale(-1);
 			filter: drop-shadow(-2px -1px 0px black);
@@ -144,7 +206,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin: 0px 10px;
+		margin: 0px 5px;
 		&.disabled{
 			filter: brightness(0.2);
 		}
@@ -155,10 +217,11 @@
 .save-button{
 	text-align: center;
 	.heart-icon{
-		width: 38px;
-		height: 36px;
-		margin: 0 auto 9px auto;
-		background-image: url(../../static/assets/images/gui/Heart_Icon.png);
+		width: 34px;
+		height: 40px;
+		margin: 0 auto 5px auto;
+		background: url(../../static/assets/images/gui/heart.svg) no-repeat;
+		background-position-y: bottom;
 	}
 	&.disabled{
 		filter: grayscale(1);
@@ -173,16 +236,15 @@
 .share-button{
 	text-align: center;
 	.share-icon{
-		width: 30px;
+		width: 38px;
 		height: 40px;
 		margin: 0 auto 5px auto;
-		background-image: url(../../static/assets/images/gui/Share_Icon.png);
+		background: url(../../static/assets/images/gui/share.svg) no-repeat;
 	}
 	@extend .simple-button;
 }
 
 .leaderboard-entries{
-	color: white;
 	font-weight: 500;
 	font-size: 12px;
 
@@ -192,8 +254,10 @@
 		align-items: center;
 		padding: 0px 10px;
 		margin: 10px 0px;
+		color: black;
 		.text-header{
 			@extend .jollyfont;
+			font-variation-settings: "wght" 600;
 			font-size: 20px;
 			margin-top: 4px;
 			width: 260px;
@@ -201,8 +265,8 @@
 		.viewall{
 			width: 75px;
 			height: 24px;
-			font-size: 14px;
-			line-height: 24px;
+			font-size: 12px;
+			line-height: 6px;
 			@extend .base-button
 		}
 	}
@@ -210,6 +274,7 @@
 		display:flex;
 		flex-direction: column;
 		margin: 10px;
+		font-family: "Montserrat", sans-serif;
 		.entry-info{
 			height: 42px;
 			line-height: 42px;
@@ -223,6 +288,7 @@
 			border-top: 1px solid #333333;
 			height: 42px;
 			align-items: center;
+			font-variation-settings: "wght" 600;
 
 			.position{
 				display: flex;
@@ -239,7 +305,7 @@
 			}
 
 			.text-player-name{
-				color: #00FF00;
+				color: #1F9891;
 				width: 112px;
 				@extend .clean-text-button;
 			}
@@ -251,7 +317,7 @@
 					margin: 0 5px 0 0;
 				}
 				.text-time, .text-time-mili{
-					color: #00FF00;
+					color: #1F9891;
 				}
 				.text-time-mili{
 					font-size: 9px;
@@ -262,7 +328,18 @@
 				border-bottom: 1px solid #333333;
 			}
 			&.me{
-				background-color: #7b7b7b;
+				position: relative;
+
+				&::before {
+					content: "";
+					width: 100%;
+					height: 100%;
+					position: absolute;
+					left: 0;
+					background-color: var(--secondary-bg-color);
+					opacity: 0.2;
+    				z-index: -1;
+				}
 			}
 		}
 
@@ -281,7 +358,6 @@
 	position: absolute;
 	bottom: 0px;
 	right:0px;
-	margin:5px;
 
 	.selectflag{
 		font-size: 22px;
@@ -294,16 +370,14 @@
 
 	.flags{
 		display: none;
-		width: 136px;
-		flex-wrap: wrap;
-		gap: 5px;
+		flex-wrap: wrap-reverse;
+		flex-direction: column;
+		gap: 8px;
 		position: fixed;
-		bottom: 0;
-		right: 0;
+		bottom: 10px;
+		right: 10px;
 		z-index: 999;
-		background: #333333;
-		border: 2px solid black;
-		padding: 10px;
+		padding: 0px;
 		.flag{
 			font-size: 30px
 		}

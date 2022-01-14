@@ -1,721 +1,199 @@
-//https://www.shadertoy.com/view/MtcGD7
 @use 'Components';
+
+:root{
+	--cellSize: min(16vmax, 40vmin);
+	--cellGap: 18px;
+}
 
 .mainmenu{
 	width: 100vw;
 	height: 100vh;
-	background-color: #E7B98A;
-
-	&.inactive{
-		filter: brightness(0.2);
-		pointer-events: none !important;
-		&:after{
-			content: '';
-			width: 100%;
-			height: 100%;
-			background: #00000001;
-			position: absolute;
-			top: 0;
-			pointer-events: all;
-			cursor: pointer;
-		}
-	}
+	overflow-y: scroll;
+	background: url(../../static/assets/images/gui/BG_Repeat.png);
+	background-color: #ffffff;
 
 	.header{
-		height: 70px;
-		background-image: url(../../static/assets/images/gui/BG_Air.png);
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		height: 20vmin;
+		min-height: 68px;
+		padding: 10px;
+
 		.logo{
-			width: 260px;
-			height: 68px;
-			margin: 6px 20px;
-		}
-		.clouds{
-			height: 51px;
-			width: 100%;
-			top: 0;
-			position: absolute;
-			background-image: url(../../static/assets/images/gui/BG_Clouds.png);
-			animation: 32s linear cloud-anim infinite reverse;
-		}
-		.sun{
-			width: 63px;
-			height: 63px;
-			margin-left: 286px;
-			background-image: url(../../static/assets/images/gui/Sun_Small.png);
-		}
-		.grass1{
-			height: 28px;
-			width: 100%;
-			background-image: url(../../static/assets/images/gui/BG_Grass1.png);
-			position: absolute;
-			left: 0px;
-			top: 0;
-			margin: 43px 0 0 0;
-			animation: 26s linear grass1-anim infinite reverse;
-		}
-		.cycling-anim{
-			position: absolute;
-			transform-origin: bottom;
-			top: 0;
-			left: 354px;
-			transform: scale(0.8);
-		}
-		.grass2{
-			height: 36px;
-			width: 100%;
-			background-image: url(../../static/assets/images/gui/BG_Grass2.png);
-			position: absolute;
-			left: 0px;
-			top: 0;
-			margin: 60px 0 0 0;
-			animation: 16s linear grass2-anim infinite reverse;
-		}
-		.bg-hider{
-			position: absolute;
-			top:0;
-			right:0;
-			height: 70px;
-			width:172px;
-			background-image: url(../../static/assets/images/gui/BG_Air.png);
-			opacity: 0.6;
-		}
-		.buttons{
-
-			div{
-				margin: 0px 5px;
-			}
-
-			position: absolute;
-			top: 0;
-			right: 0;
-			margin: 8px 20px;
-			display: flex;
-			.discord{
-				background-color: #7586D6;
-				width: 148px;
-				height: 54px;
-				font-size: 36px;
-				line-height: 54px;
-				overflow: hidden;
-				white-space: nowrap;
-				text-overflow: ellipsis;
-				padding: 0px 10px;
-				font-size: 26px;
-				@extend .base-button;
-			}
-			.character-select{
-				width: 54px;
-				height: 54px;
-				border-radius: 0;
-				background-size: contain;
-				position:relative;
-				@extend .base-button;
-				.text-change{
-					width: 80px;
-					top: 30px;
-					left: -18px;
-					font-size: 17px;
-					position: absolute;
-				}
-			}
-			.editor{
-				width: 124px;
-				height: 54px;
-				font-size: 36px;
-				line-height: 54px;
-				.availablepc {
-					display:none;
-				}
-				&.mobile{
-					line-height: 34px !important;
-					filter: grayscale(1);
-
-					.availablepc{
-						display: block;
-						position: absolute;
-						top: 50%;
-						left: 50%;
-						transform: translate(-50%, -50%);
-						font-size: 12px;
-						margin-top: 14px;
-					}
-
-					.h2{
-						line-height: inherit !important;
-					}
-				}
-				@extend .base-button;
-			}
-			.volume{
-				width: 68px;
-				height: 55px;
-				background-repeat: no-repeat;
-				background-image: url(../../static/assets/images/gui/Volume_Icon.svg);
-				&.disabled{
-					filter:brightness(0.4) drop-shadow(2px 2px 2px black);
-				}
-				@extend .simple-button-shadow;
-			}
-			.settings{
-				width: 61px;
-				height: 60px;
-				background-repeat: no-repeat;
-				background-image: url(../../static/assets/images/gui/Settings_Icon.svg);
-				@extend .simple-button-shadow;
-			}
-		}
-	}
-
-	.games-scroll{
-		height: calc(100vh - 188px);
-		overflow-x: hidden;
-		overflow-y: auto;
-		margin-top: 14px;
-		margin-right: 14px
-	}
-	.games{
-		display: grid;
-		grid-template-columns: repeat( auto-fit, minmax(210px, 1fr) );
-		grid-gap: 10px;
-		padding: 0px 44px 0px 14px;
-    	width: 100%;
-		margin: 10px 0 100px 0;
-	}
-	.game-scroll-block{
-		background: linear-gradient(0deg, #E7B98A 25%, rgba(231, 185, 138, 0) 70%);
-		height: 80px;
-		width: 100%;
-		position: absolute;
-		bottom: 84px;
-		pointer-events: none;
-	}
-	.filters{
-		position: absolute;
-		z-index: 1;
-		display: flex;
-		bottom: 60px;
-		margin-left: 8px;
-		width: 100%;
-		.button{
-			width: 116px !important;
-			margin-left: 8px;
-			@extend .base-button;
-		}
-		.featured-filter{
 			position: relative;
-			width: 146px !important;
-			padding-left: 24px;
-			.check{
-				width: 38px;
-				position: absolute;
-				top: -4px;
-				left: 6px;
-			}
-			&:not(.checked){
-				svg g{
-					display:none;
-				}
-			}
-		}
-		.best-filter, .mostplayed-filter{
-			font-size: 18px !important;
-		}
-		.date-filter, .more{
-			width: 44px !important;
-		}
-
-		.more{
-			font-size: 16px;
-			line-height: 34px;
-			display: none;
-		}
-
-		.date-filters{
-			position: absolute;
-			bottom: 100%;
-			left: 0;
-			margin: 10px 0px;
-			height: 0px;
-			transition: height 0.2s ease-in;
-			overflow: hidden;
-			will-change: height;
-			.button{
-				margin-top: 10px;
-			}
-			&.open{
-				height: 246px;
-			}
-			.vehicle-filters{
-				display: flex;
-				.button{
-					padding: 6px;
-					max-width: 42px;
-					display: flex;
-					img{
-						width: 100%;
-					}
-				}
-			}
-		}
-
-		.other-filters{
-			display: flex;
-		}
-
-		.button{
-			&:not(.checked){
-				filter: brightness(0.5);
-			}
-		}
-
-		.search-filter{
-			margin: auto 20px auto auto;
-			position: absolute;
-			right: 0;
-			.search-icon{
-				background-image: url(../../static/assets/images/gui/SearchIcon.png);
-				width: 42px;
-				height: 35px;
-				position: absolute;
-				right: -21px;
-				margin: 0 4px;
-				transform: translate(-50%, 2px);
-				pointer-events: none;
-				cursor: pointer;
-			}
-
-			input{
-				height: 38px;
-				border-radius: 8px;
-				padding: 0 10px;
-				max-width: 132px;
-				transition: width 0.2s ease-in;
-				&:focus{
-					max-width: 300px;
-					width: 300px;
-				}
-			}
-		}
-
-
-		& > *:not(.search-filter) {
-			transition: opacity 0.2s ease-in;
-			opacity: 1.0;
-		}
-
-		&.search-focussed{
-			&  > *:not(.search-filter) {
-				opacity: 0.1;
-			}
-			.search-filter{
-				.search-icon{
-					pointer-events: all;
-				}
-			}
-		}
-	}
-	.hamburger{
-		width: 42px;
-		padding: 6px;
-		position: absolute;
-		display: none;
-		span{
-			display: block;
-			width: 26px;
-			height: 4px;
-			background: white;
-			border-radius: 3px;
-			margin: 0px auto 5px auto;
-			box-shadow: 1px 1px 0px black, -1px -1px 0px black, -1px 1px 0px black, 1px -1px 0px black;
-		}
-		@extend .base-button;
-	}
-	.page-footer{
-		position: absolute;
-		bottom: 0px;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		margin: 4px 0px;
-		.text{
-			display: flex;
-			font-size: 12px;
-			white-space: nowrap;
-			a{
-				margin:0px 4px;
-				@extend .clean-text-button;
-			}
-		}
-		.social-channels{
-			display: flex;
-			& > a{
-				margin: 2px 2px;
-				border-radius: 4px;
-				@extend .simple-button;
-			}
-			.jolly-discord{
-				width: 72px;
-				height: 24px;
-				background-image: url(../../static/assets/images/misc/discord.svg)
-			}
-			.jolly-youtube, .jolly-facebook{
-				width: 24px;
-				height: 24px;
-				background-color: white;
-				background-image: url(../../static/assets/images/misc/youtube-icon.svg)
-			}
-			.jolly-facebook{
-				background-image: url(../../static/assets/images/misc/facebook-icon.svg);
-			}
-			.powered-by-poki{
-				width: 108px;
-				height: 20px;
-				margin-top: 4px;
-				background-image: url(../../static/assets/images/gui/powered-by-poki.png);
-			}
-		}
-		.country{
-			@extend .country-select;
-			margin: 2px 6px;
-		}
-	}
-}
-
-.game{
-	padding: 5px;
-	background-color: #333333;
-	width: 210px;
-	height: 210px;
-	margin: auto;
-	box-shadow: 2px 2px 2px black;
-	opacity:0;
-	cursor: pointer;
-	position: relative;
-
-	&:hover{
-		background: #5d5d5d;
-	}
-
-	&.loaded{
-		display: block;
-		animation: 0.3s ease-in opacityFade forwards;
-	}
-
-	.vehicle-label{
-		position: absolute;
-		width: 32px;
-		height: 32px;
-		top: -6px;
-		left: 16px;
-		border-radius: 6px;
-		background-color: white;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: 88%;
-		box-shadow: inset 0px -2px 0px #0000003b;
-		border: 3px solid #343434;
-	}
-
-	.thumb{
-		width: 200px;
-		height: 150px;
-		background-color:gray;
-		border: 2px solid black;
-		border-bottom-width: 4px;
-		border-left-width: 3px;
-		background-color: black;
-		background-size: cover;
-	}
-
-	.footer{
-		width: 100%;
-		margin: 5px 0 0 0;
-		display: flex;
-		.text-holder{
-			width: 65%;
 			height: 100%;
-			font-size: 12px;
-			color: white;
-			margin-left: 2px;
-			.text-level-name{
-				font-weight: 500;
-				white-space: nowrap;
-				text-overflow: ellipsis;
-				overflow: hidden;
-			}
-			.level-author{
-				display: flex;
-				.text-level-by{
-					font-weight: 200;
-				}
-				.text-author{
-					color: #00FF00;
-					margin: 1px 0 0 2px;
-				}
-			}
-			.tags{
-				display: flex;
-				font-size: 9px;
-				margin: 2px 0 0 0;
-				color: #00FF00;
+			max-width: 366px;
+			background-position: center;
+			z-index: 0;
+		}
 
-				.tag{
-					margin: 0px 1px;
-				}
+		.settings, .audio{
+			@extend .simple-button;
+			width: 44px;
+			height: 44px;
+		}
+
+		.settings{
+			background: url(../../static/assets/images/gui/Settings_Icon.svg) no-repeat;
+		}
+
+		.audio{
+			background: url(../../static/assets/images/gui/SoundOn_Icon.svg) no-repeat;
+
+			&.disabled{
+				background: url(../../static/assets/images/gui/SoundOff_Icon.svg) no-repeat;
 			}
 		}
-		.rating{
-			width: 32%;
-			height: 100%;
-			display: flex;
-			font-size: 15px;
-			font-family: Arial;
-			font-weight: bold;
-			justify-content: center;
-			align-items: center;
-			margin-left: 4px;
-			margin-top: 2px;
-			pointer-events: none;
+	}
+	.h1{
+		width: var(--cellSize);
+	}
+	.h2{
+		width: calc((var(--cellSize) * 2) + var(--cellGap));
+	}
+	.v1{
+		height: var(--cellSize);
+	}
+	.v2{
+		height: calc((var(--cellSize) * 2) + var(--cellGap));
+	}
+	.menu-grid{
+		display: grid;
+		grid-template-columns: repeat(auto-fit, var(--cellSize));
+		grid-template-rows: repeat(auto-fit, var(--cellSize));
+		min-width: calc((var(--cellSize) * 2) + (var(--cellGap) * 1));
+		gap: var(--cellGap);
+		margin: auto;
+		justify-content: center;
+		min-height: 66vh;
 
-			@extend .base-button;
-			.vote-thumb{
-				background-image: url(../../static/assets/images/gui/Thumb.png);
-				width: 30px;
-				height: 30px;
+		.singleplayer-but{
+			grid-column: auto / span 2;
+			grid-row: auto / span 2;
+			background: #6ec8e4;
+			position: relative;
+
+			&:after{
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/gui/single-player.png) no-repeat;
 				background-size: contain;
-				background-repeat: no-repeat;
-				background-position: 50%;
-				transform: scaleX(-1);
-				filter: drop-shadow(-2px 1px 0px black);
-				margin-right: 3px;
-			}
-
-			&.unknown{
-				background-color: #7B7B7B;
-			}
-			&.low{
-				background-color: #FF0000;
-				.vote-thumb{
-					transform: scaleX(-1) scaleY(-1);
-				}
-			}
-			&.ok{
-				background-color: #FF6600;
+				background-position-y: bottom;
+				width: 100%;
+				height: 110%;
+				pointer-events: none;
 			}
 		}
-	}
-}
+		.editor-but{
+			grid-column: auto / span 2;
+			background: #43F07C;
+			position: relative;
 
-@keyframes opacityFade{
-	0%{
-		opacity:0;
-	}
-	100%{
-		opacity:1;
-	}
-}
-
-
-
-// MOBILE
-.mainmenu{
-	&.mobile{
-		.games-scroll{
-			margin-right: 0px;
-		}
-		.games{
-			padding: 0;
-		}
-
-		.search-filter{
-			.search-icon{
-				right: -29px;
-				margin: 0 4px;
-				transform: translate(-50%, 2px) scale(0.6);
-			}
-			input{
-				max-width: 38px;
-			}
-		}
-	}
-}
-
-// compact game tiles
-@media only screen and (max-width: 860px){
-	.mainmenu{
-		.games{
-			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-			grid-gap: 10px 0px;
-		}
-		.page-footer{
-			.text{
-				font-size: 8px;
-				button{
-					margin:0px;
-				}
-			}
-		}
-	}
-	.game{
-		width: 150px;
-		height: 150px;
-
-		.thumb{
-			width: 140px;
-			height: 93px;
-		}
-		.footer{
-			height:40px;
-		}
-	}
-}
-
-// fold header
-@media only screen and (max-width: 860px){
-	.mainmenu{
-		.header{
-			height: 50px;
-
-			.clouds{
-				top: -8px;
-			}
-			.sun{
-				margin-left: 198px;
-				transform: translateY(-12px) scale(0.6);
-			}
-			.grass1{
-				top: -20px;
-			}
-			.cycling-anim{
-				top: -16px;
-				left: 242px;
-				transform: scale(0.6);
-			}
-			.grass2{
-				top: -16px;
-			}
-
-			.logo{
-				width: 188px;
-				height: 52px;
-			}
-
-			.bg-hider{
-				display: none;
-			}
-
-			.mobile-bg{
-				&.open{
-					width: 100%;
-					height: 100%;
-					position: fixed;
-					background: black;
-					opacity: 0.6;
-					top: 0;
-					left: 0;
-					z-index: 2;
-				}
-			}
-			.buttons{
-				transform: scale(0.6);
-				transform-origin: top right;
-			}
-		}
-		.games-scroll{
-			height: calc(100vh - 164px);
-		}
-		.filters{
-			.more{
-				display: block;
-			}
-			.other-filters{
-				flex-direction: column-reverse;
-				justify-content: flex-end;
+			&:after{
+				content: '';
 				position: absolute;
-				right: 0;
-				bottom: 100%;
-				margin: 10px 0px;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/gui/editor.svg) no-repeat;
+				background-size: contain;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+			}
+		}
+		.discord-but{
+			background: #7586D6;
+			position: relative;
+
+			&.loggedIn{
+				&:after{
+					animation: 1s wiggle ease 1;
+				}
+			}
+
+			&:after{
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/misc/discord-icon.svg) no-repeat;
+				background-size: 66%;
+				background-position: center 26%;
+				width: 100%;
+				height: 100%;
+			}
+
+			span{
+				margin-bottom: 10px;
+				width: 100%;
 				overflow: hidden;
-				height: 0;
-				transition: height 0.2s ease-in;
-				will-change: height;
-				.button {
-					margin-top : 10px
-				}
-
-				&.open{
-					height: 200px;
-				}
+				text-overflow: ellipsis;
+				text-align: center;
+				text-transform: capitalize;
 			}
+		}
+		.characters-but{
+			background: #F64F60;
+			position: relative;
+
+			.character-image{
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				background: url(../../static/assets/images/portraits/characterselect1.png) no-repeat;
+				background-size: cover;
+				width: 100%;
+				height: 116%;
+				pointer-events: none;
+			}
+		}
+
+		.singleplayer-but, .editor-but, .discord-but, .characters-but{
+			display: flex;
+			justify-content: center;
+			align-items: flex-end;
+			font-family: 'Montserrat', sans-serif;
+			font-variation-settings: "wght" 600;
+			cursor: pointer;
+			outline: 4px solid var(--dark-color);
+
+			&.h1{
+				font-size: min(2.2vmax, 4vmin);
+			}
+			&.h2{
+				font-size: min(3.6vmax, 6vmin);
+			}
+
+			span{
+				z-index: 1;
+				margin-bottom: 10px;
+			}
+			transform: scale(1);
 		}
 	}
 }
 
-@media screen and (max-width:540px){
-	.mainmenu{
-		.header{
-			.hamburger{
-				display: block;
-				margin: 6px 16px;
-				top: 0;
-				right: 0;
-				z-index: 2;
-			}
-			.buttons{
-				flex-direction: row;
-				flex-wrap: wrap;
-				justify-content: flex-end;
-				z-index: 2;
-				margin: 64px 8px 0 0;
-				width: 300px;
-				display: none;
 
-				.editor, .discord{
-					order: 2;
-				}
-				& > div{
-					margin-bottom: 10px;
-				}
-
-				&.open{
-					display: flex;
-				}
-			}
-		}
-	}
-}
-
-@media screen and (max-height:480px){
-	.mainmenu{
-		.game-scroll-block{
-			bottom: 98px;
-		}
-	}
-}
-
-@keyframes cloud-anim {
+@keyframes wiggle {
 	0% {
-		background-position: -120px;
+	  transform: rotate(-3deg);
+	}
+	20% {
+	  transform: rotate(20deg);
+	}
+	40% {
+	  transform: rotate(-15deg);
+	}
+	60% {
+	  transform: rotate(5deg);
+	}
+	90% {
+	  transform: rotate(-1deg);
 	}
 	100% {
-		background-position: 340px;
+	  transform: rotate(0);
 	}
 }
-@keyframes grass1-anim {
-	0% {
-		background-position: 0px;
-	}
-	100% {
-		background-position: 600px;
-	}
-}
-@keyframes grass2-anim {
-	0% {
-		background-position: 0px;
-	}
-	100% {
-		background-position: 475px;
-	}
-}
-

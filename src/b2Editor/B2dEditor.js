@@ -10833,6 +10833,20 @@ const _B2dEditor = function () {
 		}
 	}
 
+	this.initRenderJollyRendering = ()=> {
+		window.addEventListener('message', async messageObject => {
+			const {type, jollyData} = messageObject.data;
+			if(type === 'renderJollyImage'){
+				const image = await window.renderJollyDataToImage(jollyData);
+				window.parent.postMessage({type:'jollyImageRendered', imageData: image.src}, '*');
+			}
+			if(type === 'jollyImageRenderingAckReady'){
+				window.parent.postMessage({type:'jollyImageRenderingReady'}, '*');
+			}
+		});
+	}
+
+
 	// mesh circular texture fix
 
 	//CONSTS
