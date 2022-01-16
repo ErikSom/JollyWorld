@@ -1,7 +1,7 @@
 import { BufferSchema } from '@geckos.io/typed-array-buffer-schema';
 import {
 	Network
-} from '../../../../poki/netlib/dist/netlib';
+} from '../../libs/netlib';
 import { globalEvents } from '../utils/EventDispatcher';
 import { characterModel } from './schemas';
 
