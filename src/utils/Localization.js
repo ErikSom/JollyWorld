@@ -58,6 +58,11 @@ const LOCALIZATION_DATA = [
         "jr": "Lon'ly Adventure"
     },
     {
+        "textId": "mainmenu_multiplayer",
+        "us": "Multiplayer",
+        "nl": "Meerdere Spelers"
+    },
+    {
         "textId": "mainmenu_createlevels",
         "us": "Create levels!",
         "nl": "Creëer levels!",
