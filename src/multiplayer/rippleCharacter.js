@@ -90,12 +90,14 @@ export class RippleCharacter {
 			sprite.angle = this.stateProcessList[i].r;
 		});
 
+		console.log("POS:", this.sprite.x, this.sprite.y);
+
 		// correct IK
 	}
 }
 
 const maxPreviousPosInterpolation = 5;
-const syncSmooth = .4;
+const syncSmooth = .2;
 
 class SyncObject {
 	constructor(x = 0, y = 0, r = 0) {
@@ -139,9 +141,10 @@ class SyncObject {
 	updateServerPosition(id, x, y, r, time) {
 		// ids go from 0 - 255, so when the id goes from 255 to 0 we still want to process it as a new id
 		// consider here extrapolation
+		console.log('checkum', id, time)
 		if (id > this.serverId || this.serverId - id > 100) {
 			if (this.serverPos.time > 0) {
-				this.previousPos.push(this.serverPos);
+				this.previousPos.push({...this.serverPos});
 				if (this.previousPos.length > maxPreviousPosInterpolation) {
 					this.previousPos.shift();
 				}
@@ -186,7 +189,8 @@ class SyncObject {
 
 		const previousKnownPosition = this.previousPos[this.previousPos.length - 1];
 
-		const render_timestamp = Date.now() - (1000.0 / 20);
+		const ping = 50
+		const render_timestamp = Date.now() + ping;
 
 		const x0 = previousKnownPosition.x;
 		const x1 = this.serverPos.x;
@@ -197,9 +201,15 @@ class SyncObject {
 		const t0 = previousKnownPosition.time;
 		const t1 = this.serverPos.time;
 
-		this.targetPos.x =	x0 + (x1 - x0) * (render_timestamp - t0) / (t1 - t0);
-		this.targetPos.y =	y0 + (y1 - y0) * (render_timestamp - t0) / (t1 - t0);
-		this.targetPos.r =	(r0 + this.angleDiff(r0, r1) * (render_timestamp - t0) / (t1 - t0)) % 360;
+		let td = (t1 - t0);
+		
+		if(td === 0){
+			debugger;
+		}
+
+		this.targetPos.x =	x0 + (x1 - x0) * (render_timestamp - t0) / td;
+		this.targetPos.y =	y0 + (y1 - y0) * (render_timestamp - t0) / td;
+		this.targetPos.r =	(r0 + this.angleDiff(r0, r1) * (render_timestamp - t0) / td) % 360;
 
 		this.x += (this.targetPos.x - this.x) * syncSmooth;
 		this.y += (this.targetPos.y - this.y) * syncSmooth;

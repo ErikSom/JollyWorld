@@ -901,12 +901,13 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
-"@geckos.io/typed-array-buffer-schema@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@geckos.io/typed-array-buffer-schema/-/typed-array-buffer-schema-1.0.2.tgz#e20d4a44e991d3f27d3a3df5d5e890307653568d"
-  integrity sha512-FbXn/zfr/deDjAMMgi3FRZqE0xza9N273TXS6bx66XAk1m7ga3n/YQ8l02fd1IjstAffNkNJ4BESE8647P+4wA==
+"@geckos.io/typed-array-buffer-schema@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@geckos.io/typed-array-buffer-schema/-/typed-array-buffer-schema-1.1.0.tgz#2cbe97566a63de739b97f00e4ccc777137ed9e94"
+  integrity sha512-gFd5PI9UYbR1BVNhLGBSytbNwhymYksC/E87144aDLde/VN2cs0Dmtrn6fp0oZ5gDBTBtVSdIlQCi986Wbrb/g==
   dependencies:
-    lodash "^4.17.19"
+    is-plain-object "^5.0.0"
+    lodash "^4.17.21"
 
 "@juggle/resize-observer@^3.3.1":
   version "3.3.1"
@@ -3969,6 +3970,11 @@ is-plain-object@^2.0.3, is-plain-object@^2.0.4:
   dependencies:
     isobject "^3.0.1"
 
+is-plain-object@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/is-plain-object/-/is-plain-object-5.0.0.tgz#4427f50ab3429e9025ea7d52e9043a9ef4159344"
+  integrity sha512-VRSzKkbMm5jMDoKLbltAkFQ5Qr7VDiTFGXxYFXXowVj387GeGNOCsOH6Msy00SGZ3Fp84b1Naa1psqgcCIEP5Q==
+
 is-reference@^1.1.2:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/is-reference/-/is-reference-1.2.1.tgz#8b2dac0b371f4bc994fdeaba9eb542d03002d0b7"
@@ -4266,7 +4272,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@^4.17.14, lodash@^4.17.19:
+lodash@^4.17.14, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
