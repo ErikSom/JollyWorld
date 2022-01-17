@@ -8,7 +8,7 @@
 .mainmenu{
 	width: 100vw;
 	height: 100vh;
-	overflow-y: scroll;
+	overflow-y: auto;
 	background: url(../../static/assets/images/gui/BG_Repeat.png);
 	background-color: #ffffff;
 
@@ -58,7 +58,7 @@
 	.v2{
 		height: calc((var(--cellSize) * 2) + var(--cellGap));
 	}
-	.menu-grid{
+	.menu-grid, .multiplayer-menu-grid{
 		display: grid;
 		grid-template-columns: repeat(auto-fit, var(--cellSize));
 		grid-template-rows: repeat(auto-fit, var(--cellSize));
@@ -170,7 +170,7 @@
 			}
 		}
 
-		.singleplayer-but, .editor-but, .discord-but, .characters-but, .multiplayer-but{
+		.singleplayer-but, .editor-but, .discord-but, .characters-but, .multiplayer-but, .quick-play-but, .create-game-but{
 			display: flex;
 			justify-content: center;
 			align-items: flex-end;
@@ -191,6 +191,12 @@
 				margin-bottom: 10px;
 			}
 			transform: scale(1);
+		}
+
+		.back-but{
+			.back-but-button{
+				@extend .back-button;
+			}
 		}
 	}
 }

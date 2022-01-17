@@ -2,6 +2,7 @@ import { BufferSchema } from '@geckos.io/typed-array-buffer-schema';
 import {
 	Network
 } from '../../libs/netlib';
+import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { characterModel } from './schemas';
 
@@ -26,7 +27,7 @@ class MultiplayerServer {
 	constructor() {
 		this.characterDataToProcess = [];
 
-		this.n = new Network('c06320df-92e9-4754-b751-0dce2e9402ec');
+		this.n = new Network('c06320df-92e9-4754-b751-0dce2e9402ec', Settings.MULTIPLAYER_SERVER);
 		this.id = '';
 
 		this.inLobby = false;

@@ -105,6 +105,12 @@ function UIManager() {
                     <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
                     <div class="characters-but h1 v1"><span>${localize('mainmenu_characters')}</span><div class="character-image"></div></div>
                 </div>
+                <div class="multiplayer-menu-grid">
+                    <div class="quick-play-but h1 v1"><span>${localize('mainmenu_quickplay')}<span></div>
+                    <div class="create-game-but h1 v1"><span>${localize('mainmenu_creategame')}</span></div>
+                    <div class="back-but h2 v1"><div class="back-but-button">${localize('levelbanner_back')}</div></div>
+
+                </div>
                 ${this.getFooter()}
             `
 
@@ -112,6 +118,7 @@ function UIManager() {
             mainMenu.classList.add('mainmenu');
             mainMenu.innerHTML = htmlStructure;
 
+            const multiPlayerGrid = mainMenu.querySelector('.multiplayer-menu-grid');
 
             // header
             const header = mainMenu.querySelector('.header');
@@ -171,6 +178,8 @@ function UIManager() {
                 }else{
                     grid.style.maxWidth = `${gridCell.width * 2 + gap}px`;
                 }
+
+                multiPlayerGrid.style.maxWidth = `${gridCell.width * 2 + gap}px`;
             }
 
 

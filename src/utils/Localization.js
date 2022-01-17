@@ -63,6 +63,16 @@ const LOCALIZATION_DATA = [
         "nl": "Meerdere Spelers"
     },
     {
+        "textId": "mainmenu_creategame",
+        "us": "Create Game",
+        "nl": "Maak Game"
+    },
+    {
+        "textId": "mainmenu_quickplay",
+        "us": "Quick Play",
+        "nl": "Snel Spelen"
+    },
+    {
         "textId": "mainmenu_createlevels",
         "us": "Create levels!",
         "nl": "Creëer levels!",
