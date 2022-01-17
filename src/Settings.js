@@ -96,7 +96,7 @@ export var Settings = {
     levelsPerRequest:250,
 
     /*MULIPLAYER*/
-    MULTIPLAYER_SERVER: 'ws://dubbelboer.com:8888/v0/signaling',
+    MULTIPLAYER_SERVER: 'wss://dubbelboer.com:8888/v0/signaling',
 
     /*KEYS*/
     keys:{
