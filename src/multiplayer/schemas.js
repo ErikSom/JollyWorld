@@ -16,7 +16,8 @@ const basePart = BufferSchema.schema('basePart', {
 })
 
 const characterSchema = BufferSchema.schema('player', {
-	mirror: uint8,
+	id: uint8,
+	mirrored: uint8,
 	main: [mainPart],
 	parts: [basePart]
 })

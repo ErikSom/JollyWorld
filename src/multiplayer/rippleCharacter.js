@@ -205,15 +205,18 @@ class SyncObject {
 		
 		if(td === 0){
 			debugger;
+		}else{
+
+			this.targetPos.x =	x0 + (x1 - x0) * (render_timestamp - t0) / td;
+			this.targetPos.y =	y0 + (y1 - y0) * (render_timestamp - t0) / td;
+			this.targetPos.r =	(r0 + this.angleDiff(r0, r1) * (render_timestamp - t0) / td) % 360;
+
+			this.x += (this.targetPos.x - this.x) * syncSmooth;
+			this.y += (this.targetPos.y - this.y) * syncSmooth;
+			this.r += this.angleDiff(this.r, this.targetPos.r) * syncSmooth;
 		}
 
-		this.targetPos.x =	x0 + (x1 - x0) * (render_timestamp - t0) / td;
-		this.targetPos.y =	y0 + (y1 - y0) * (render_timestamp - t0) / td;
-		this.targetPos.r =	(r0 + this.angleDiff(r0, r1) * (render_timestamp - t0) / td) % 360;
-
-		this.x += (this.targetPos.x - this.x) * syncSmooth;
-		this.y += (this.targetPos.y - this.y) * syncSmooth;
-		this.r += this.angleDiff(this.r, this.targetPos.r) * syncSmooth;
+		console.log(this.x, this.y, x0, x1, t0, t1 )
 
 
 	}

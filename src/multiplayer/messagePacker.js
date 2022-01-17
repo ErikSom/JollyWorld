@@ -70,6 +70,7 @@ export const characterToBuffer = (characterClass, id) => {
 	const lookup = characterClass.lookupObject;
 	const characterData = {
 		id,
+		mirrored: false,
 		main: [extractPosition(lookup[BODY_PARTS.BODY])],
 		parts:[
 			extractPosition(lookup[BODY_PARTS.HEAD], lookup[BODY_PARTS.BODY]),
