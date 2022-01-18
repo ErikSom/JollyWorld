@@ -64,9 +64,9 @@ class MultiplayerServer {
 
 		this.n.on('lobby', code => {
 			console.log(`lobby code ready: ${code} (and you are ${this.n.id})`);
-			alert(`${window.location.origin}${window.location.pathname}?lobbyID=${code} https://dev--jollyworld.netlify.app?lobbyID=${code}`);
+			if(!urlLobbyIDParam) alert(`${window.location.origin}${window.location.pathname}?lobbyID=${code} https://dev--jollyworld.netlify.app?lobbyID=${code}`);
 			this.inLobby = true;
-			globalEvents.dispatchEvent({type:SERVER_EVENTS.JOINED_LOBBY});
+			globalEvents.dispatchEvent({type:SERVER_EVENTS.JOINED_LOBBY, code});
 		})
 
 		this.n.on('signalingerror', this.webRTCError);
@@ -78,6 +78,7 @@ class MultiplayerServer {
 
 		this.n.on('peerdisconnected', peer => {
 			console.log(`peer disconnected ${peer.id} (${this.n.size} peers now)`);
+			globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_LEFT, id: peer.id});
 		});
 
 		this.n.on('peerconnected', peer => {

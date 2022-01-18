@@ -20,6 +20,8 @@ export class RippleCharacter {
 			handLeft: new SyncObject(),
 			handRight: new SyncObject(),
 		}
+		this.lastPackageID = -1;
+		this.connected = true;
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight];
 		this.spriteSheet = null;
@@ -66,6 +68,7 @@ export class RippleCharacter {
 	}
 
 	processServerData(data, time){
+		this.lastPackageID = data.id;
 		this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
 
 		this.stateProcessList.forEach((state, i) => {

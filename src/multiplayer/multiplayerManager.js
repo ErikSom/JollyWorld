@@ -11,15 +11,44 @@ let tickID = 0
 const ticksPerSecond = 20;
 let syncInterval = null;
 
+const debugWindow = document.createElement('div');
+debugWindow.classList.add('multiplayerDebug');
+debugWindow.style = `
+	position: absolute;
+	z-index: 9999;
+	top:0;
+	left:0;
+	background: white;
+`;
+debugWindow.innerHTML = `
+	<div>Lobby:<span class="lobbyText"></span></div>
+	<div>peersConnected:<span class="peersConnectedText"></span></div>
+	<ul class="playerList"></ul>
+`
+
+let multiplayerDebug = true;
+
+const debugData = {
+	lobby: '',
+	peersConnected: 0,
+	playerData: {},
+}
+
+
+
 export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.JOINED_LOBBY, joinLobby);
 	globalEvents.addEventListener(SERVER_EVENTS.LEFT_LOBBY, leaveLobby);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_JOINED, playerJoined);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_LEFT, playerLeft);
+
+	if(multiplayerDebug) document.body.appendChild(debugWindow);
+	console.log("DEBUG WINDOW:", debugWindow)
 }
 
-const joinLobby = () => {
+const joinLobby = ({code}) => {
 	// change UI
+	debugData.lobby = code;
 	startSyncPlayer();
 }
 
@@ -33,10 +62,15 @@ const playerJoined = ({id}) => {
 	player.loadSkin('./assets/images/characters/Multiplayer_Character.png');
 	players[id] = player;
 
+	debugData.peersConnected++;
+
 	return player;
 }
 
 const playerLeft = ({id}) => {
+
+	debugData.peersConnected--;
+	players[id].connected = false;
 	// do something
 }
 
@@ -55,8 +89,6 @@ export const startSyncPlayer = () => {
 			}
 		}
 	}, 1000 / ticksPerSecond);
-
-
 }
 
 export const stopSyncPlayer = () => {
@@ -89,13 +121,52 @@ export const updateMultiplayer = () => {
 					console.log("** ADD PLAYER TO GAME **");
 				}
 
-				player.interpolatePosition();
+				if(player.connected) player.interpolatePosition();
 			}
 		}
 	} catch(e){
 		console.log('ERROR MULTIPLAYER', e);
 		// stopSyncPlayer();
 	}
+
+	updateDebugData();
+
+}
+
+
+let lobbyText = null;
+let peersConnectedText = null;
+let playerList = null;
+let playerElement = document.createElement('li');
+playerElement.innerHTML = `
+<ul>
+ <li>Name:<span class="nameText"></span></li>
+ <li>Connected:<span class="connectedText"></span></li>
+ <li>PackageID:<span class="packageIDText"></span></li>
+ </ul>
+`;
+const updateDebugData = () =>{
+	if(!lobbyText){
+		lobbyText = debugWindow.querySelector('.lobbyText');
+		peersConnectedText = debugWindow.querySelector('.peersConnectedText');
+		playerList = debugWindow.querySelector('.playerList');
+	}
+	lobbyText.innerText = debugData.lobby;
+	peersConnectedText.innerText = debugData.peersConnected;
+
+
+	playerList.innerHTML = '';
+
+	const playerIds = Object.keys(players);
+	playerIds.forEach(id => {
+		const player = players[id];
+		const el = playerElement.cloneNode(true);
+		playerList.appendChild(el);
+
+		el.querySelector('.nameText').innerText = id;
+		el.querySelector('.connectedText').innerText = player.connected.toString();
+		el.querySelector('.packageIDText').innerText = player.lastPackageID.toString();
+	})
 
 }
 
