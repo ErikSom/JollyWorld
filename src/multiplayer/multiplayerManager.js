@@ -143,6 +143,7 @@ playerElement.innerHTML = `
  <li>Name:<span class="nameText"></span></li>
  <li>Connected:<span class="connectedText"></span></li>
  <li>PackageID:<span class="packageIDText"></span></li>
+ <li>Position:<span class="positionText"></span></li>
  </ul>
 `;
 const updateDebugData = () =>{
@@ -166,6 +167,11 @@ const updateDebugData = () =>{
 		el.querySelector('.nameText').innerText = id;
 		el.querySelector('.connectedText').innerText = player.connected.toString();
 		el.querySelector('.packageIDText').innerText = player.lastPackageID.toString();
+		el.querySelector('.positionText').innerHTML = 
+		`<ul>
+			<li>X:${player.sprite.position.x}</li>
+			<li>Y:${player.sprite.position.y}</li>
+		</ul>`
 	})
 
 }
