@@ -90,8 +90,6 @@ export class RippleCharacter {
 			sprite.angle = this.stateProcessList[i].r;
 		});
 
-		console.log("POS:", this.sprite.x, this.sprite.y);
-
 		// correct IK
 	}
 }
@@ -157,6 +155,8 @@ class SyncObject {
 			}
 			this.serverId = id;
 			this.serverTime = time;
+		}else{
+			console.log("DROP ID:", id, 'MY ID:', this.serverId);
 		}
 	}
 
@@ -215,10 +215,6 @@ class SyncObject {
 			this.y += (this.targetPos.y - this.y) * syncSmooth;
 			this.r += this.angleDiff(this.r, this.targetPos.r) * syncSmooth;
 		}
-
-		console.log(this.x, this.y, x0, x1, t0, t1 )
-
-
 	}
 }
 

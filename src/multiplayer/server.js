@@ -64,7 +64,7 @@ class MultiplayerServer {
 
 		this.n.on('lobby', code => {
 			console.log(`lobby code ready: ${code} (and you are ${this.n.id})`);
-			alert(`${window.location.origin}${window.location.pathname}?lobbyID=${code}`);
+			alert(`${window.location.origin}${window.location.pathname}?lobbyID=${code} https://dev--jollyworld.netlify.app?lobbyID=${code}`);
 			this.inLobby = true;
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.JOINED_LOBBY});
 		})
