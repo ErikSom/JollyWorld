@@ -68,9 +68,15 @@ const playerJoined = ({id}) => {
 }
 
 const playerLeft = ({id}) => {
-
+	console.log("********** PLAYER LEFT:", id)
 	debugData.peersConnected--;
-	players[id].connected = false;
+	players[id].sprite.destroy(
+		{
+			children: true,
+			texture: false, // TO DO MAKE THIS TRUE WHEN TEXTURES ARE TRANSFERRED
+			baseTexture: false
+		})
+	delete players[id];
 	// do something
 }
 

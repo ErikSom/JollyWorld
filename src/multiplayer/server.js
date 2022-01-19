@@ -50,7 +50,6 @@ class MultiplayerServer {
 			this.n.on('message', (peer, channel, data) => {
 				if(data instanceof ArrayBuffer){
 					const id = BufferSchema.getIdFromBuffer(data);
-					console.log("BUFFER SCHEMA ID:", id, characterModel.schema.id);
 
 					if(id === characterModel.schema.id){
 						this.receiveCharacterData(peer.id, data);

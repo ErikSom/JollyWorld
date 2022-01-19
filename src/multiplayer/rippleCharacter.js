@@ -10,6 +10,8 @@ export class RippleCharacter {
 	constructor(id) {
 		this.id = id;
 		this.sprite = new Container();
+		this.sprite.visible = false;
+		this.sprite.rippleCharacterClass = this;
 		this.state = {
 			body: new SyncObject(),
 			head: new SyncObject(),
@@ -20,8 +22,11 @@ export class RippleCharacter {
 			handLeft: new SyncObject(),
 			handRight: new SyncObject(),
 		}
+
 		this.lastPackageID = -1;
 		this.connected = true;
+		this.addedToGame = false;
+
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight];
 		this.spriteSheet = null;
@@ -68,12 +73,21 @@ export class RippleCharacter {
 	}
 
 	processServerData(data, time){
+		if(this.lastPackageID === -1){
+			this.sprite.visible = true;
+		}
+
 		this.lastPackageID = data.id;
 		this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
 
 		this.stateProcessList.forEach((state, i) => {
 			const stateData = data.parts[i];
-			state.updateServerPosition(data.id, stateData.x, stateData.y, stateData.r, time);
+
+			if(this.lastPackageID === -1){
+				this.forcePosition(data.id, stateData.x, stateData.y, stateData.r, time);
+			}else{
+				state.updateServerPosition(data.id, stateData.x, stateData.y, stateData.r, time);
+			}
 		});
 	}
 
@@ -142,7 +156,6 @@ class SyncObject {
 	updateServerPosition(id, x, y, r, time) {
 		// ids go from 0 - 255, so when the id goes from 255 to 0 we still want to process it as a new id
 		// consider here extrapolation
-		console.log('checkum', id, time)
 		if (id > this.serverId || this.serverId - id > 100) {
 			if (this.serverPos.time > 0) {
 				this.previousPos.push({...this.serverPos});
