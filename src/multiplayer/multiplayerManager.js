@@ -23,6 +23,8 @@ debugWindow.style = `
 debugWindow.innerHTML = `
 	<div>Lobby:<span class="lobbyText"></span></div>
 	<div>peersConnected:<span class="peersConnectedText"></span></div>
+	<div>Misc data:<span class="miscDataText"></span></div>
+	<div>Last Package Sent:<span class="lastPackageSent"></span></div>
 	<ul class="playerList"></ul>
 `
 
@@ -31,6 +33,8 @@ let multiplayerDebug = true;
 const debugData = {
 	lobby: '',
 	peersConnected: 0,
+	misc: '',
+	sendPackageID: -1,
 	playerData: {},
 }
 
@@ -85,6 +89,7 @@ export const startSyncPlayer = () => {
 
 	console.log("** START SYNC PLAYER **")
 	syncInterval = setInterval(()=> {
+		debugData.misc = `hasChar:${(!!game.character).toString()}, gameRun:${game.run}`
 		if(game.character && game.run){
 			const buffer = characterToBuffer(game.character, tickID);
 			server.sendCharacterData(buffer);
@@ -93,6 +98,8 @@ export const startSyncPlayer = () => {
 			if(tickID > 255){
 				tickID = 0;
 			}
+
+			debugData.sendPackageID = tickID;
 		}
 	}, 1000 / ticksPerSecond);
 }
@@ -106,12 +113,14 @@ export const stopSyncPlayer = () => {
 
 export const updateMultiplayer = () => {
 	const data = server.getCharacterDataToProcess();
-	data.forEach(data => {
-		const ping = 50;
-		const time = Date.now() - ping;
-		const characterData = characterFromBuffer(data.buffer);
-		players[data.playerID].processServerData(characterData, time);
-	});
+		data.forEach(data => {
+			if(players[data.playerID]){
+				const ping = 50;
+				const time = Date.now() - ping;
+				const characterData = characterFromBuffer(data.buffer);
+				players[data.playerID].processServerData(characterData, time);
+			}
+		});
 
 	try{
 		if(game.character && game.run){
@@ -142,6 +151,8 @@ export const updateMultiplayer = () => {
 
 let lobbyText = null;
 let peersConnectedText = null;
+let miscText = null;
+let lastSendID = null;
 let playerList = null;
 let playerElement = document.createElement('li');
 playerElement.innerHTML = `
@@ -152,15 +163,20 @@ playerElement.innerHTML = `
  <li>Position:<span class="positionText"></span></li>
  </ul>
 `;
+
+
 const updateDebugData = () =>{
 	if(!lobbyText){
 		lobbyText = debugWindow.querySelector('.lobbyText');
 		peersConnectedText = debugWindow.querySelector('.peersConnectedText');
+		miscText = debugWindow.querySelector('.miscDataText');
+		lastSendID = debugWindow.querySelector('.lastPackageSent');
 		playerList = debugWindow.querySelector('.playerList');
 	}
 	lobbyText.innerText = debugData.lobby;
 	peersConnectedText.innerText = debugData.peersConnected;
-
+	miscText.innerText = debugData.misc;
+	lastSendID.innerText = debugData.sendPackageID;
 
 	playerList.innerHTML = '';
 
