@@ -53,6 +53,8 @@ class MultiplayerServer {
 
 					if(id === characterModel.schema.id){
 						this.receiveCharacterData(peer.id, data);
+					} else {
+						console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
 					}
 				}
 				if (channel === MESSAGE_TYPE.RELIABLE) {
@@ -108,7 +110,8 @@ class MultiplayerServer {
 	receiveCharacterData(peer, buffer) {
 		this.characterDataToProcess.push({
 			playerID: peer,
-			buffer
+			buffer,
+			time: performance.now(),
 		});
 	}
 

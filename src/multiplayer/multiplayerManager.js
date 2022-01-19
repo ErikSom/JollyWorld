@@ -116,7 +116,7 @@ export const updateMultiplayer = () => {
 		data.forEach(data => {
 			if(players[data.playerID]){
 				const ping = 50;
-				const time = Date.now() - ping;
+				const time = data.time - ping;
 				const characterData = characterFromBuffer(data.buffer);
 				players[data.playerID].processServerData(characterData, time);
 			}

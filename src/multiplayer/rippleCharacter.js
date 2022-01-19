@@ -86,7 +86,11 @@ export class RippleCharacter {
 		}
 
 		this.lastPackageID = data.id;
-		this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
+		if(this.lastPackageID === -1){
+			this.state.body.forcePosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
+		} else {
+			this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
+		}
 
 		this.stateProcessList.forEach((state, i) => {
 			const stateData = data.parts[i];
@@ -214,7 +218,7 @@ class SyncObject {
 		const previousKnownPosition = this.previousPos[this.previousPos.length - 1];
 
 		const ping = 50
-		const render_timestamp = Date.now() + ping;
+		const render_timestamp = performance.now() + ping;
 
 		const x0 = previousKnownPosition.x;
 		const x1 = this.serverPos.x;
@@ -226,7 +230,7 @@ class SyncObject {
 		const t1 = this.serverPos.time;
 
 		let td = (t1 - t0);
-		
+
 		if(td === 0){
 			debugger;
 		}else{
