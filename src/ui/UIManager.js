@@ -47,6 +47,7 @@ import {countries, countryToFlag, localize} from '../utils/Localization'
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
+import { generateLobby } from './lobby'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -109,8 +110,8 @@ function UIManager() {
                     <div class="quick-play-but h1 v1"><span>${localize('mainmenu_quickplay')}<span></div>
                     <div class="create-game-but h1 v1"><span>${localize('mainmenu_creategame')}</span></div>
                     <div class="back-but h2 v1"><div class="back-but-button">${localize('levelbanner_back')}</div></div>
-
                 </div>
+                <div class="multiplayer-lobby"></div>
                 ${this.getFooter()}
             `
 
@@ -119,6 +120,8 @@ function UIManager() {
             mainMenu.innerHTML = htmlStructure;
 
             const multiPlayerGrid = mainMenu.querySelector('.multiplayer-menu-grid');
+            const multiPlayerLobby = mainMenu.querySelector('.multiplayer-lobby');
+            multiPlayerLobby.appendChild(generateLobby());
 
             // header
             const header = mainMenu.querySelector('.header');
@@ -128,12 +131,17 @@ function UIManager() {
                 this.showSettingsMenu();
             }
 
-            // buttons
+            // buttons main
             const grid = mainMenu.querySelector('.menu-grid');
             const singleplayerBut = grid.querySelector('.singleplayer-but');
             singleplayerBut.onclick = () => {
                 this.hideMainMenu();
                 game.openSinglePlayer();
+            }
+
+            const multiplayerBut = grid.querySelector('.multiplayer-but');
+            multiplayerBut.onclick = () => {
+                this.setMainMenuActive('multiplayer');
             }
 
             const editorBut = grid.querySelector('.editor-but');
@@ -162,6 +170,19 @@ function UIManager() {
                     this.showUserPage(backendManager.userData.username, 'favorite');
                 }
             }
+
+            // buttons multiplayer
+            const multiplayerBackButton = multiPlayerGrid.querySelector('.back-but');
+            multiplayerBackButton.onclick = () => {
+                this.setMainMenuActive('main');
+            }
+
+            const makeMultiplayerGameButton = multiPlayerGrid.querySelector('.create-game-but');
+            makeMultiplayerGameButton.onclick = () => {
+                this.setMainMenuActive('lobby');
+            }
+
+            // misc
 
             backendManager.registerListener('login', ()=>this.handleLoginChange());
             this.handleLoginChange();
@@ -222,10 +243,21 @@ function UIManager() {
             }
         }
 
+        this.setMainMenuActive('main');
+
         this.setMainMenuCharacterImage();
 
         mainMenu.style.display = 'block';
     }
+
+    this.setMainMenuActive = menuName => {
+        const mainGrid = mainMenu.querySelector('.menu-grid');
+        const multiplayerGrid = mainMenu.querySelector('.multiplayer-menu-grid');
+
+        mainGrid.style.display = menuName === 'main' ? 'grid' : 'none';
+        multiplayerGrid.style.display = menuName === 'multiplayer' ? 'grid' : 'none'
+    }
+
     this.hideMainMenu = () => {
         if(mainMenu) mainMenu.style.display = "none";
         this.hideCharacterSelect();

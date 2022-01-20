@@ -18,11 +18,6 @@ const MESSAGE_TYPE = {
 	UNRELIABLE: 'unreliable',
 }
 
-const searchParams = new URLSearchParams(window.location.search);
-const urlLobbyIDParam = searchParams.get('lobbyID');
-
-console.log("URL PARAMS:", urlLobbyIDParam)
-
 class MultiplayerServer {
 	constructor() {
 		this.characterDataToProcess = [];
@@ -30,22 +25,24 @@ class MultiplayerServer {
 		this.n = new Network('c06320df-92e9-4754-b751-0dce2e9402ec', Settings.MULTIPLAYER_SERVER);
 		this.id = '';
 
+		this.admin = false;
 		this.inLobby = false;
 
 		this.initWebRTC();
 	}
 
+	createLobby(){
+		this.admin = true;
+		this.n.create();
+	}
+
+	joinLobby(lobby){
+		this.n.join(lobby);
+	}
 
 	initWebRTC(){
 		this.n.on('ready', () => {
 			console.log('network ready', this.n.id);
-
-
-			if(urlLobbyIDParam){
-				this.n.join(urlLobbyIDParam);
-			}else{
-				this.n.create();
-			}
 
 			this.n.on('message', (peer, channel, data) => {
 				if(data instanceof ArrayBuffer){
@@ -65,7 +62,7 @@ class MultiplayerServer {
 
 		this.n.on('lobby', code => {
 			console.log(`lobby code ready: ${code} (and you are ${this.n.id})`);
-			if(!urlLobbyIDParam) alert(`${window.location.origin}${window.location.pathname}?lobbyID=${code} https://dev--jollyworld.netlify.app?lobbyID=${code}`);
+			if(this.admin) alert(`${window.location.origin}${window.location.pathname}?lobbyID=${code} https://dev--jollyworld.netlify.app?lobbyID=${code}`);
 			this.inLobby = true;
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.JOINED_LOBBY, code});
 		})

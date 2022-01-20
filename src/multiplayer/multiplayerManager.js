@@ -41,22 +41,25 @@ const debugData = {
 
 
 export const startMultiplayer = () => {
-	globalEvents.addEventListener(SERVER_EVENTS.JOINED_LOBBY, joinLobby);
-	globalEvents.addEventListener(SERVER_EVENTS.LEFT_LOBBY, leaveLobby);
+	globalEvents.addEventListener(SERVER_EVENTS.JOINED_LOBBY, didJoinLobby);
+	globalEvents.addEventListener(SERVER_EVENTS.LEFT_LOBBY, didLeaveLobby);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_JOINED, playerJoined);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_LEFT, playerLeft);
 
 	if(multiplayerDebug) document.body.appendChild(debugWindow);
-	console.log("DEBUG WINDOW:", debugWindow)
 }
 
-const joinLobby = ({code}) => {
+export const createLobby = () => {
+	server.createLobby();
+}
+
+const didJoinLobby = ({code}) => {
 	// change UI
 	debugData.lobby = code;
 	startSyncPlayer();
 }
 
-const leaveLobby = () => {
+const didLeaveLobby = () => {
 	// go back to main menu
 	stopSyncPlayer();
 }
