@@ -855,10 +855,11 @@ function UIManager() {
 
         const navButtons = levelBanner.querySelector('.nav-buttons');
         const playButton = navButtons.querySelector('.play');
+        const playButtonText = playButton.querySelector('.text-play');
 
 
         if(game.gameState === game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
-            playButton.innerText = localize('levelbanner_select');
+            playButtonText.innerText = localize('levelbanner_select');
             playButton.onclick = () => {
                 selectMultiplayerLevel(levelData);
 
@@ -867,14 +868,13 @@ function UIManager() {
                 game.ui.setMainMenuActive('lobby');
             }
         }else{
-            playButton.innerText = localize('levelbanner_play');
+            playButtonText.innerText = localize('levelbanner_play');
             const playLevelFunction = () => {
                 if (game.gameState != game.GAMESTATE_MENU) return;
                 game.gameState = game.GAMESTATE_LOADINGDATA;
 
                 playButton.classList.add('loading');
 
-                const playButtonText = playButton.querySelector('.text-play');
                 playButtonText.innerText = 'Loading';
 
                 const progressBar = playButton.querySelector('.progress');

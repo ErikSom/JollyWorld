@@ -40,6 +40,28 @@ export const generateLobby = () => {
 					</div>
 				</div>
 			</div>
+
+
+			<div class="player-list">
+				<div class="players-title">${localize('mainmenu_players')}</div>
+				<div class="entries">
+					<div class="entry entry-template">
+						<div class="position">
+							<div class="profile"></div>
+							<div class="text-position">1st</div>
+						</div>
+						<div class="text-player-name">Smerik</div>
+						<div class="player-status waiting">${localize('mainmenu_admin')}</div>
+						<div class="kick-but">${localize('mainmenu_kick')}</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="nav-buttons">
+				<div class="leave-but">${localize('mainmenu_leave')}</div>
+				<div class="ready-but">${localize('mainmenu_ready')}</div>
+				<div class="start-but">${localize('mainmenu_ready')}: 4/8</div>
+			</div>
 		`;
 
 		lobby = document.createElement('div');

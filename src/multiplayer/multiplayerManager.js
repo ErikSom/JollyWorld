@@ -39,8 +39,6 @@ const debugData = {
 	playerData: {},
 }
 
-
-
 export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.JOINED_LOBBY, didJoinLobby);
 	globalEvents.addEventListener(SERVER_EVENTS.LEFT_LOBBY, didLeaveLobby);

@@ -10,7 +10,7 @@
 		@extend .jollyfont;
 		font-size: 34px;
 		font-variation-settings: "wght" 800;
-		color: #333333;
+		color: var(--dark-color);
 		text-align: center;
 	}
 	.level-info{
@@ -94,6 +94,50 @@
 					display: none;
 				}
 			}
+		}
+	}
+
+	.player-list{
+		@extend .leaderboard-entries;
+
+		.players-title{
+			color: var(--dark-color);
+			margin: 0 10px;
+			font-size: 16px;
+			font-family: "Montserrat", sans-serif;
+			font-variation-settings: "wght" 800;
+		}
+
+		.player-status{
+			.waiting{
+				color: var(--gray-color);
+			}
+		}
+
+		.kick-but{
+			@extend .back-button;
+			font-size: inherit;
+		}
+	}
+
+	.nav-buttons{
+		display: flex;
+		gap: 5px;
+		justify-content: center;
+		.leave-but{
+			@extend .back-button;
+		}
+
+		.ready-but, .start-but{
+			@extend .base-button;
+			background-color: #1F9891;
+			color: white;
+		}
+
+		.ready-but, .leave-but, .start-but{
+			font-size: 20px;
+			height: fit-content;
+			margin: 0;
 		}
 	}
 }
