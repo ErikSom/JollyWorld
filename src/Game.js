@@ -1677,6 +1677,8 @@ function Game() {
     this.GAMESTATE_EDITOR = 1;
     this.GAMESTATE_NORMALPLAY = 2;
     this.GAMESTATE_LOADINGDATA = 3;
+    this.GAMESTATE_LOBBY = 4;
+    this.GAMESTATE_MULTIPLAYER_LEVELSELECT = 5;
 }
 export var game = new Game();
 setTimeout(() => {

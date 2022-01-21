@@ -2,6 +2,10 @@
 
 .lobby{
 	@extend .main-window;
+	position: unset;
+    transform: unset;
+    margin: auto;
+
 	.title{
 		@extend .jollyfont;
 		font-size: 34px;
@@ -13,10 +17,6 @@
 		display: flex;
 		padding: 10px;
 		justify-content: center;
-
-		&.select{
-			opacity:0;
-		}
 
 		.thumb{
 			border: 4px solid black;
@@ -35,6 +35,7 @@
 				height: fit-content;
 			}
 		}
+
 		.text-holder{
 			&.select{
 				display: none;

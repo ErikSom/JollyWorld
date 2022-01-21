@@ -29,25 +29,6 @@ export const localize = id =>{
 
 export const countries = ['de','nl','us','pt','fr','es','it','cz','jr'];
 
-
-// export const countryToFlag = country => {
-//     switch(country){
-//         case 'de': return '🇩🇪'
-//         case 'nl': return '🇳🇱'
-//         case 'us': return '🇺🇸'
-//         case 'pt': return '🇵🇹'
-//         case 'fr': return '🇫🇷'
-//         case 'es': return '🇪🇸'
-//         case 'it': return '🇮🇹'
-//     }
-// }
-// export const countryToLanguage = country => {
-//     let language = country
-//     if(['uk', 'ca', 'us', 'ie'].includes(country)) language = 'en';
-//     if(['br'].includes(country)) language = 'pt';
-//     if(['be'].includes(country)) language = 'nl';
-// }
-
 const LOCALIZATION_DATA = [
     {
         "textId": "mainmenu_singleplayer",
@@ -66,6 +47,17 @@ const LOCALIZATION_DATA = [
         "textId": "mainmenu_creategame",
         "us": "Create Game",
         "nl": "Maak Game"
+    },
+    {
+        "textId": "mainmenu_changelevel",
+        "us": "Change",
+        "nl": "Verander"
+    },
+    {
+        "textId": "mainmenu_selectlevel",
+        "us": "Select Level",
+        "nl": "Selecteer Level",
+        "de": " "
     },
     {
         "textId": "mainmenu_quickplay",
@@ -575,6 +567,11 @@ const LOCALIZATION_DATA = [
         "fr": "Aucun score",
         "it": "Non c'è nulla",
         "jr": "Treasure unclaimed"
+    },
+    {
+        "textId": "levelbanner_select",
+        "us": "Select",
+        "nl": "Selecteer"
     },
     {
         "textId": "userpage_levelspublished",

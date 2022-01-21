@@ -40,14 +40,14 @@ import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
 import { YouTubePlayer } from '../utils/YouTubePlayer';
 import * as AudioManager from "../utils/AudioManager"
-import * as TutorialManager from "../utils/TutorialManager"
 import SimpleBar from 'simplebar'
-import {countries, countryToFlag, localize} from '../utils/Localization'
+import {countries, localize} from '../utils/Localization'
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
-import { generateLobby } from './lobby'
+import { generateLobby, updateLobbyUI } from './lobby'
+import { selectMultiplayerLevel } from '../multiplayer/multiplayerManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -256,6 +256,12 @@ function UIManager() {
 
         mainGrid.style.display = menuName === 'main' ? 'grid' : 'none';
         multiplayerGrid.style.display = menuName === 'multiplayer' ? 'grid' : 'none'
+
+
+        if(menuName === 'lobby'){
+            updateLobbyUI();
+        }
+
     }
 
     this.hideMainMenu = () => {
@@ -849,41 +855,55 @@ function UIManager() {
 
         const navButtons = levelBanner.querySelector('.nav-buttons');
         const playButton = navButtons.querySelector('.play');
-        const playLevelFunction = () => {
-            if (game.gameState != game.GAMESTATE_MENU) return;
-            game.gameState = game.GAMESTATE_LOADINGDATA;
 
-            playButton.classList.add('loading');
 
-            const playButtonText = playButton.querySelector('.text-play');
-            playButtonText.innerText = 'Loading';
+        if(game.gameState === game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+            playButton.innerText = localize('levelbanner_select');
+            playButton.onclick = () => {
+                selectMultiplayerLevel(levelData);
 
-            const progressBar = playButton.querySelector('.progress');
-            const progressFunction = progress => {
-                progress = Math.max(0, Math.min(1, progress));
-                const progressRounded = (progress*100).toFixed(2);
-                progressBar.style.width = `${progressRounded}%`;
+                game.openMainMenu();
+                game.gameState = game.GAMESTATE_LOBBY;
+                game.ui.setMainMenuActive('lobby');
             }
+        }else{
+            playButton.innerText = localize('levelbanner_play');
+            const playLevelFunction = () => {
+                if (game.gameState != game.GAMESTATE_MENU) return;
+                game.gameState = game.GAMESTATE_LOADINGDATA;
 
-            const finishLoading = ()=>{
-                playButton.classList.remove('loading');
-                playButtonText.innerText = localize('levelbanner_play');
-            }
+                playButton.classList.add('loading');
 
-            game.loadPublishedLevelData(levelData, progressFunction).then(() => {
-                this.hideLevelBanner();
-                if(levelData.forced_vehicle){
-                    game.selectedVehicle = levelData.forced_vehicle;
-                    this.playLevelFromSinglePlayer();
-                }else{
-                    this.showVehicleSelect();
+                const playButtonText = playButton.querySelector('.text-play');
+                playButtonText.innerText = 'Loading';
+
+                const progressBar = playButton.querySelector('.progress');
+                const progressFunction = progress => {
+                    progress = Math.max(0, Math.min(1, progress));
+                    const progressRounded = (progress*100).toFixed(2);
+                    progressBar.style.width = `${progressRounded}%`;
                 }
-                finishLoading();
-            }).catch(error => {
-                finishLoading();
-            });
+
+                const finishLoading = ()=>{
+                    playButton.classList.remove('loading');
+                    playButtonText.innerText = localize('levelbanner_play');
+                }
+
+                game.loadPublishedLevelData(levelData, progressFunction).then(() => {
+                    this.hideLevelBanner();
+                    if(levelData.forced_vehicle){
+                        game.selectedVehicle = levelData.forced_vehicle;
+                        this.playLevelFromSinglePlayer();
+                    }else{
+                        this.showVehicleSelect();
+                    }
+                    finishLoading();
+                }).catch(error => {
+                    finishLoading();
+                });
+            }
+            playButton.onclick = playLevelFunction;
         }
-        playButton.onclick = playLevelFunction;
 
         const socialBar = levelBanner.querySelector('.social-bar');
         const shareButton = socialBar.querySelector('.share')

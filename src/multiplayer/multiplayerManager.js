@@ -29,6 +29,7 @@ debugWindow.innerHTML = `
 `
 
 let multiplayerDebug = true;
+let selectedLevel = null;
 
 const debugData = {
 	lobby: '',
@@ -51,6 +52,15 @@ export const startMultiplayer = () => {
 
 export const createLobby = () => {
 	server.createLobby();
+}
+
+export const selectMultiplayerLevel = levelData => {
+	selectedLevel = levelData;
+	game.openMainMenu();
+}
+
+export const getSelectedMultiplayerLevelData = ()=> {
+	return selectedLevel;
 }
 
 const didJoinLobby = ({code}) => {
