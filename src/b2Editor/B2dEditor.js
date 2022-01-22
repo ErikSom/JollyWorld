@@ -275,7 +275,20 @@ const _B2dEditor = function () {
 
 			})
 			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
-			if(this.blueprintsSelectedCategory === category) this.refreshPrefablist();
+			if(this.blueprintsSelectedCategory === category){
+				this.refreshPrefablist();
+				if(page !== 1){
+					debugger;
+					const elementContainer = ui.editorGUI.domElement.querySelector('.inner-blueprints-folder');
+					const targetIndex = (page-1) * 20 + 2;
+					const targetElement = elementContainer.children[targetIndex];
+					if(targetElement){
+						setTimeout(()=>{
+							targetElement.scrollIntoView();
+						}, 0);
+					}
+				}
+			}
 		});
 		const loadingDiv = document.createElement('div');
 		loadingDiv.innerText = page === 1 ? 'Loading...' : 'Loading more...';
@@ -321,6 +334,7 @@ const _B2dEditor = function () {
 			});
 
 			let innerFolder = folder.domElement.querySelector('ul');
+			innerFolder.classList.add(`inner-${folderName.toLowerCase()}-folder`)
 
 			let targetLibrary;
 
