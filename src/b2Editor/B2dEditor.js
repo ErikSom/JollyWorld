@@ -254,7 +254,8 @@ const _B2dEditor = function () {
 
 			prefabs.forEach(prefab => {
 				const [id, blueprintName, blueprintData] = prefab;
-				const trimmedName = blueprintName.replace(/\s+/g, '');
+
+				const trimmedName = blueprintName.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 				const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
 				prefabKeys.push(prefabKey);
 
