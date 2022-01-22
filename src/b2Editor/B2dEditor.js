@@ -218,17 +218,18 @@ const _B2dEditor = function () {
 	this.prefabSelectedCategory = '';
 	this.blueprintsSelectedCategory = '';
 	this.bluePrintData = null;
+	this.bluePrintDownloading = false;
 	this.downloadBluePrintKeys = ()=>{
-		const approved = window.location.origin.includes('blueprints.') < 0 && window.location.origin.includes('localhost:')
+		const approved = window.location.origin.includes('blueprints--') < 0 && window.location.origin.includes('localhost:') < 0;
 		if(this.bluePrintData !== null) return;
-		fetch(`https://warze.org/blueprints/tags?approved=${approved}`)
+		fetch(`https://warze.org/blueprints/tags?approved=${+approved}`)
 		.then(response => response.json())
 		.then(categories => {
-			this.bluePrintData = {categories, urls:[], page:[]};
+			this.bluePrintData = {categories, urls:[], page:[], loadedAllPages:{}};
 			categories.forEach(category => {
 				const url = `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&tag=${category}&page=`;
 				this.bluePrintData.urls.push(url);
-				this.bluePrintData.page.push(1);
+				this.bluePrintData.page.push(0);
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
 				// PrefabManager.prefabLibrary[PrefabManager.LIBRARY_BLUEPRINTS+obj.prefabName].json
 			})
@@ -237,14 +238,23 @@ const _B2dEditor = function () {
 		this.bluePrintData = false;
 	}
 	
-	this.downloadBluePrints = category => {
-		if(Array.isArray(PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category])) return;
+	this.downloadBluePrints = (category, innerFolder, init) => {
+		if(init && Array.isArray(PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category])) return;
 		const urlIndex = this.bluePrintData.categories.indexOf(category);
-		const page = this.bluePrintData.page[urlIndex];
+		const page = ++this.bluePrintData.page[urlIndex];
 		const url = `${this.bluePrintData.urls[urlIndex]}${page}`;
+		console.log("DOWNLOADING PAGE... ", page);
+		this.bluePrintDownloading = true;
+
 		fetch(url)
 		.then(response => response.json())
 		.then(prefabs => {
+			this.bluePrintDownloading = false;
+			if(!prefabs.length){
+				this.blueprintData.loadedAllPages[category] = true;
+				return;
+			}
+
 			const categoryTrimmed = category.replace(/\s+/g, '');
 			const prefabKeys = [];
 
@@ -265,8 +275,14 @@ const _B2dEditor = function () {
 
 			})
 			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
-			this.refreshPrefablist();
+			if(this.blueprintsSelectedCategory === category) this.refreshPrefablist();
 		});
+		const loadingDiv = document.createElement('div');
+		loadingDiv.innerText = page === 1 ? 'Loading...' : 'Loading more...';
+		loadingDiv.classList.add('spinner');
+
+		innerFolder.appendChild(loadingDiv);
+
 		PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category] = Settings.DEFAULT_TEXTS.downloading_blueprints;
 	}
 
@@ -315,7 +331,7 @@ const _B2dEditor = function () {
 				// do nothing
 			}else if(folderName === BLUEPRINTS && (!targetLibrary || targetLibrary === Settings.DEFAULT_TEXTS.downloading_blueprints)){
 				// download blueprints for category
-				this.downloadBluePrints(this.blueprintsSelectedCategory);
+				this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder, true);
 			}else{
 				for (let i = 0; i < targetLibrary.length; i++) {
 					const prefabName = targetLibrary[i];
@@ -396,6 +412,17 @@ const _B2dEditor = function () {
 					}
 					guiFunction.addEventListener('click', clickFunction);
 					guiFunction.addEventListener('dragend', clickFunction);
+				}
+
+				if(this.blueprintsSelectedCategory && targetLibrary.length % 20 === 0 && !this.bluePrintData.loadedAllPages[this.blueprintsSelectedCategory]){
+					// add scroll detection
+					ui.editorGUI.domElement.addEventListener('scroll', ()=>{
+						if(!this.bluePrintDownloading){
+							if (ui.editorGUI.domElement.offsetHeight + ui.editorGUI.domElement.scrollTop >= ui.editorGUI.domElement.scrollHeight) {
+								this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder);
+							}
+						}
+					})
 				}
 			}
 		});
