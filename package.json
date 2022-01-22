@@ -62,7 +62,7 @@
     "lz-string": "^1.4.4",
     "maxrects-packer": "^2.7.2",
     "md5-file": "^5.0.0",
-    "nanoid": "^1.2.3",
+    "nanoid": "^3.1.31",
     "npm-run-all": "^4.1.2",
     "pixi-filters": "^2.6.1",
     "pixi-particles": "^4.3.0",
