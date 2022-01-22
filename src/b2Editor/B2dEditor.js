@@ -219,16 +219,16 @@ const _B2dEditor = function () {
 	this.blueprintsSelectedCategory = '';
 	this.bluePrintData = null;
 	this.downloadBluePrintKeys = ()=>{
+		const approved = window.location.origin.includes('blueprints.') < 0 && window.location.origin.includes('localhost:')
 		if(this.bluePrintData !== null) return;
-		fetch(`assets/blueprints/${hashName('blueprints.json')}`)
+		fetch(`https://warze.org/blueprints/tags?approved=${approved}`)
 		.then(response => response.json())
-		.then(data => {
-			this.bluePrintData = {categories:[], urls:[]};
-			if(!data.files) return;
-			data.files.forEach(blueprint => {
-				const [name, url] = blueprint;
-				this.bluePrintData.categories.push(name.toLowerCase());
+		.then(categories => {
+			this.bluePrintData = {categories, urls:[], page:[]};
+			categories.forEach(category => {
+				const url = `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&tag=${category}&page=`;
 				this.bluePrintData.urls.push(url);
+				this.bluePrintData.page.push(1);
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
 				// PrefabManager.prefabLibrary[PrefabManager.LIBRARY_BLUEPRINTS+obj.prefabName].json
 			})
@@ -240,24 +240,32 @@ const _B2dEditor = function () {
 	this.downloadBluePrints = category => {
 		if(Array.isArray(PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category])) return;
 		const urlIndex = this.bluePrintData.categories.indexOf(category);
-		const url = this.bluePrintData.urls[urlIndex];
-		if(url){
-			fetch(`assets/blueprints/${url}`)
-			.then(response => response.json())
-			.then(data => {
-				const prefabNames = Object.keys(data);
-				const prefabKeys = [];
-				const categoryTrimmed = category.replace(/\s+/g, '');
-				prefabNames.forEach(prefabName => {
-					const trimmedName = prefabName.replace(/\s+/g, '');
-					const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
-					prefabKeys.push(prefabKey);
-					PrefabManager.prefabLibrary[prefabKey] = {json:data[prefabName], class:PrefabManager.basePrefab};
-				})
-				PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = prefabKeys;
-				this.refreshPrefablist();
-			});
-		}
+		const page = this.bluePrintData.page[urlIndex];
+		const url = `${this.bluePrintData.urls[urlIndex]}${page}`;
+		fetch(url)
+		.then(response => response.json())
+		.then(prefabs => {
+			const categoryTrimmed = category.replace(/\s+/g, '');
+			const prefabKeys = [];
+
+			if(page === 1){
+				PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = [];
+			}
+
+			prefabs.forEach(prefab => {
+				const [id, blueprintName, blueprintData] = prefab;
+				const trimmedName = blueprintName.replace(/\s+/g, '');
+				const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
+				prefabKeys.push(prefabKey);
+
+				const jsonString = LZString.decompressFromEncodedURIComponent(blueprintData);
+
+				PrefabManager.prefabLibrary[prefabKey] = {json:jsonString, class:PrefabManager.basePrefab};
+
+			})
+			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
+			this.refreshPrefablist();
+		});
 		PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category] = Settings.DEFAULT_TEXTS.downloading_blueprints;
 	}
 
