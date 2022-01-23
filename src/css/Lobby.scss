@@ -118,6 +118,11 @@
 			@extend .back-button;
 			font-size: inherit;
 		}
+
+		.entries{
+			position: relative;
+			z-index: 0;
+		}
 	}
 
 	.nav-buttons{

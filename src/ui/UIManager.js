@@ -184,8 +184,8 @@ function UIManager() {
             }
 
             // misc
-
             backendManager.registerListener('login', ()=>this.handleLoginChange());
+            backendManager.registerListener('logout', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
             const gridOnlyEvenCells = ()=>{
@@ -254,10 +254,11 @@ function UIManager() {
     this.setMainMenuActive = menuName => {
         const mainGrid = mainMenu.querySelector('.menu-grid');
         const multiplayerGrid = mainMenu.querySelector('.multiplayer-menu-grid');
+        const lobbyHolder = mainMenu.querySelector('.multiplayer-lobby');
 
         mainGrid.style.display = menuName === 'main' ? 'grid' : 'none';
         multiplayerGrid.style.display = menuName === 'multiplayer' ? 'grid' : 'none'
-
+        lobbyHolder.style.display = menuName === 'lobby' ? 'block' : 'none'
 
         if(menuName === 'lobby'){
             updateLobbyUI();

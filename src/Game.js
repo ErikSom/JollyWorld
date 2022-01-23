@@ -53,7 +53,7 @@ import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
-import { updateMultiplayer } from "./multiplayer/multiplayerManager";
+import { autoConnectLobby, updateMultiplayer } from "./multiplayer/multiplayerManager";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -324,6 +324,8 @@ function Game() {
         const urlParams = new URLSearchParams(window.location.search);
         const forceTutorial = urlParams.get('forceTutorial');
         let uidHash = urlParams.get('lvl') || urlParams.get('gd-lvl');
+        const username = urlParams.get('user');
+        const lobbyID = urlParams.get('lobbyID');
 
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 
@@ -342,12 +344,13 @@ function Game() {
             }).catch(_err =>{
                 if(!Settings.onPoki) history.replaceState({}, document.title, '')
             });
-        }else{
-            const username = urlParams.get('user');
-            if(username){
-                this.openSinglePlayer();
-                ui.showUserPage(username);
-            }
+        }else if(username){
+            this.openSinglePlayer();
+            ui.showUserPage(username);
+        }else if(lobbyID){
+            // start network manager
+		    ui.setMainMenuActive('lobby');
+            autoConnectLobby(lobbyID);
         }
 
         if(window.dafadfgjiwrgj || urlParams.get('disableAds')) Settings.disableAds = true;

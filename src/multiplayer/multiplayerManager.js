@@ -1,11 +1,10 @@
 import { game } from '../Game'
+import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
-import { characterFromBuffer, characterToBuffer, dataFromIntroductionBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromIntroductionBuffer, dataToIntroductionBuffer } from './messagePacker';
 import { RippleCharacter } from './rippleCharacter';
 import server, { SERVER_EVENTS } from './server';
-
-const urlParams = new URLSearchParams(location.search);
 
 let tickID = 0
 const ticksPerSecond = 20;
@@ -19,15 +18,19 @@ export const LOBBY_STATE = {
 }
 
 export const multiplayerState = {
-	debug: false,
+	debug: true,
+	ready: false,
 	lobby: '',
 	peersConnected: 0,
 	misc: '',
 	sendPackageID: -1,
 	players: {},
 	selectedLevel: null,
-	lobbyState: LOBBY_STATE.LOADING
+	lobbyState: LOBBY_STATE.LOADING,
+	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
+
+window.multiplayerState = multiplayerState;
 
 export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.JOINED_LOBBY, didJoinLobby);
@@ -41,9 +44,16 @@ export const startMultiplayer = () => {
 }
 
 export const networkReady = () => {
-	const lobbyID = urlParams.get('lobbyID');
-	if(lobbyID){
-		server.joinLobby(lobbyID)
+	multiplayerState.ready = true;
+}
+
+export const autoConnectLobby = id => {
+	if(multiplayerState.ready){
+		server.joinLobby(id);
+	}else{
+		setTimeout(()=>{
+			autoConnectLobby(id);
+		}, 100);
 	}
 }
 
@@ -73,11 +83,11 @@ const playerJoined = ({id}) => {
 	multiplayerState.players[id] = player;
 
 	multiplayerState.peersConnected++;
-	
+
 	// send my introduction
-	const name = backendManager.userData?.username;
+	const name = backendManager.userData?.username || multiplayerState.fakeUsername;
 	const lobbyState = multiplayerState.lobbyState;
-	const introductionBuffer = dataToIntroductionBuffer({ name, lobbyState });
+	const introductionBuffer = dataToIntroductionBuffer(name, lobbyState);
 	server.sendIntroduction(introductionBuffer, id);
 
 	return player;
@@ -93,12 +103,17 @@ const playerLeft = ({id}) => {
 			baseTexture: false
 		})
 	delete multiplayerState.players[id];
+
+	updateLobbyUI();
 	// do something
+
 }
 
 const playerIntroduction = ({peer, buffer}) => {
 	const introductionData = dataFromIntroductionBuffer(buffer);
 	multiplayerState.players[peer].playerState = introductionData;
+
+	updateLobbyUI();
 }
 
 export const startSyncPlayer = () => {

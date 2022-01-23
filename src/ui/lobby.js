@@ -1,8 +1,9 @@
 import { formatDMY } from '../b2Editor/utils/formatString';
 import '../css/Lobby.scss'
 import { game } from '../Game';
-import { multiplayerState } from '../multiplayer/multiplayerManager';
+import { LOBBY_STATE, multiplayerState } from '../multiplayer/multiplayerManager';
 import { Settings } from '../Settings';
+import { backendManager } from '../utils/BackendManager';
 import { localize } from '../utils/Localization';
 
 let lobby = null
@@ -86,6 +87,7 @@ export const updateLobbyUI = () => {
 	const thumb = lobby.querySelector('.thumb');
 	const textHolder = lobby.querySelector('.text-holder');
 	const levelSelectButton = lobby.querySelector('.selectBut');
+	const entries = lobby.querySelector('.entries');
 
 	if(levelData){
 		thumb.classList.remove('select');
@@ -122,4 +124,51 @@ export const updateLobbyUI = () => {
 		thumb.style.backgroundImage = 'unset';
 		levelSelectButton.innerText = localize('mainmenu_selectlevel');
 	}
+
+	// do players
+	const template = entries.querySelector('.entry-template');
+	template.style.display = 'none';
+
+	const myPlayer = {
+		playerState: {
+			name: backendManager.userData?.username || multiplayerState.fakeUsername,
+			lobbyState: multiplayerState.lobbyState
+		}
+	}
+
+	while(entries.children.length>1){
+		entries.removeChild(entries.children[1]);
+	}
+
+	const otherPlayers = Object.values(multiplayerState.players);
+	const players = [myPlayer, ...otherPlayers];
+
+	players.forEach(({ playerState }, index) => {
+		const entry = template.cloneNode(true);
+		entry.style.display = 'flex';
+		entry.classList.remove('entry-template');
+
+		const username = entry.querySelector('.text-player-name')
+		username.innerText = playerState.name;
+
+		if(index === 0){
+			entry.classList.add('me');
+		}
+
+		const status = entry.querySelector('.player-status');
+
+		status.classList.remove('waiting');
+		if(playerState.lobbyState === LOBBY_STATE.LOADING){
+			status.innerText = 'Connecting'
+			status.classList.remove('loading');
+		} else if(playerState.lobbyState === LOBBY_STATE.WAITING){
+			status.innerText = 'Waiting'
+			status.classList.remove('waiting');
+		} else if(playerState.lobbyState === LOBBY_STATE.READY){
+			status.innerText = 'Ready'
+			status.classList.remove('ready');
+		}
+
+		entries.appendChild(entry);
+	})
 }
