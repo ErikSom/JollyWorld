@@ -4,11 +4,14 @@ import {
 } from '../../libs/netlib';
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
-import { characterModel } from './schemas';
+import { introductionBuffer } from './messagePacker';
+import { characterModel, introductionModel } from './schemas';
 
 export const SERVER_EVENTS = {
+	NETWORK_READY: 'networkReady',
 	PLAYER_JOINED: 'playerJoined',
 	PLAYER_LEFT: 'playerLeft',
+	PLAYER_INTRODUCTION: 'playerIntroduction',
 	JOINED_LOBBY: 'lobbyJoined',
 	LEFT_LOBBY: 'lobbyLeft',
 }
@@ -43,22 +46,27 @@ class MultiplayerServer {
 	initWebRTC(){
 		this.n.on('ready', () => {
 			console.log('network ready', this.n.id);
+			globalEvents.dispatchEvent({type:SERVER_EVENTS.NETWORK_READY});
 
 			this.n.on('message', (peer, channel, data) => {
 				if(data instanceof ArrayBuffer){
 					const id = BufferSchema.getIdFromBuffer(data);
 
-					if(id === characterModel.schema.id){
-						this.receiveCharacterData(peer.id, data);
-					} else {
-						console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
+
+					switch(id){
+						case characterModel.schema.id:
+							this.receiveCharacterData(peer.id, data);
+							break;
+						case introductionModel.schema.id:
+							this.receivePlayerIntroduction(peer.id, data);
+							break;
+						default:
+							console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
+							break;
 					}
 				}
-				if (channel === MESSAGE_TYPE.RELIABLE) {
-					console.log(`${peer.id} said "${data}" via ${channel}`);
-				}
-			})
-		})
+			});
+		});
 
 		this.n.on('lobby', code => {
 			console.log(`lobby code ready: ${code} (and you are ${this.n.id})`);
@@ -82,16 +90,10 @@ class MultiplayerServer {
 		this.n.on('peerconnected', peer => {
 			console.log(`peer connected: ${peer.id} (${this.n.size} peers now)`);
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_JOINED, id: peer.id});
-			this.introduceMyself(peer.id);
 
 		});
 	}
 
-	introduceMyself(id){
-		this.n.send(MESSAGE_TYPE.RELIABLE, id, {
-			name: 'Erik'
-		})
-	}
 
 	webRTCError(error){
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.LEFT_LOBBY, error});
@@ -101,9 +103,18 @@ class MultiplayerServer {
 		return this.n.id
 	}
 
+	sendIntroduction(buffer, id){
+		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
+	}
+
+	receivePlayerIntroduction(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_INTRODUCTION, peer, buffer});
+	}
+
 	sendCharacterData(buffer) {
 		this.n.broadcast(MESSAGE_TYPE.UNRELIABLE, buffer);
 	}
+
 	receiveCharacterData(peer, buffer) {
 		this.characterDataToProcess.push({
 			playerID: peer,

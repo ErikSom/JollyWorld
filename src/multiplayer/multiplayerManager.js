@@ -1,51 +1,50 @@
 import { game } from '../Game'
+import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
-import { characterFromBuffer, characterToBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromIntroductionBuffer } from './messagePacker';
 import { RippleCharacter } from './rippleCharacter';
 import server, { SERVER_EVENTS } from './server';
 
+const urlParams = new URLSearchParams(location.search);
 
-
-const players = {};
 let tickID = 0
 const ticksPerSecond = 20;
 let syncInterval = null;
 
-const debugWindow = document.createElement('div');
-debugWindow.classList.add('multiplayerDebug');
-debugWindow.style = `
-	position: absolute;
-	z-index: 9999;
-	top:0;
-	left:0;
-	background: white;
-`;
-debugWindow.innerHTML = `
-	<div>Lobby:<span class="lobbyText"></span></div>
-	<div>peersConnected:<span class="peersConnectedText"></span></div>
-	<div>Misc data:<span class="miscDataText"></span></div>
-	<div>Last Package Sent:<span class="lastPackageSent"></span></div>
-	<ul class="playerList"></ul>
-`
+export const LOBBY_STATE = {
+	LOADING: 0,
+	WAITING: 1,
+	READY: 2,
+	PLAYING: 3,
+}
 
-let multiplayerDebug = true;
-let selectedLevel = null;
-
-const debugData = {
+export const multiplayerState = {
+	debug: false,
 	lobby: '',
 	peersConnected: 0,
 	misc: '',
 	sendPackageID: -1,
-	playerData: {},
+	players: {},
+	selectedLevel: null,
+	lobbyState: LOBBY_STATE.LOADING
 }
 
 export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.JOINED_LOBBY, didJoinLobby);
 	globalEvents.addEventListener(SERVER_EVENTS.LEFT_LOBBY, didLeaveLobby);
+	globalEvents.addEventListener(SERVER_EVENTS.NETWORK_READY, networkReady);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_JOINED, playerJoined);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_LEFT, playerLeft);
+	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_INTRODUCTION, playerIntroduction);
 
-	if(multiplayerDebug) document.body.appendChild(debugWindow);
+	if(multiplayerState.debug) document.body.appendChild(debugWindow);
+}
+
+export const networkReady = () => {
+	const lobbyID = urlParams.get('lobbyID');
+	if(lobbyID){
+		server.joinLobby(lobbyID)
+	}
 }
 
 export const createLobby = () => {
@@ -53,17 +52,13 @@ export const createLobby = () => {
 }
 
 export const selectMultiplayerLevel = levelData => {
-	selectedLevel = levelData;
+	multiplayerState.selectedLevel = levelData;
 	game.openMainMenu();
-}
-
-export const getSelectedMultiplayerLevelData = ()=> {
-	return selectedLevel;
 }
 
 const didJoinLobby = ({code}) => {
 	// change UI
-	debugData.lobby = code;
+	multiplayerState.lobby = code;
 	startSyncPlayer();
 }
 
@@ -75,24 +70,35 @@ const didLeaveLobby = () => {
 const playerJoined = ({id}) => {
 	const player = new RippleCharacter(id);
 	player.loadSkin('./assets/images/characters/Multiplayer_Character.png');
-	players[id] = player;
+	multiplayerState.players[id] = player;
 
-	debugData.peersConnected++;
+	multiplayerState.peersConnected++;
+	
+	// send my introduction
+	const name = backendManager.userData?.username;
+	const lobbyState = multiplayerState.lobbyState;
+	const introductionBuffer = dataToIntroductionBuffer({ name, lobbyState });
+	server.sendIntroduction(introductionBuffer, id);
 
 	return player;
 }
 
 const playerLeft = ({id}) => {
 	console.log("********** PLAYER LEFT:", id)
-	debugData.peersConnected--;
-	players[id].sprite.destroy(
+	multiplayerState.peersConnected--;
+	multiplayerState.players[id].sprite.destroy(
 		{
 			children: true,
 			texture: false, // TO DO MAKE THIS TRUE WHEN TEXTURES ARE TRANSFERRED
 			baseTexture: false
 		})
-	delete players[id];
+	delete multiplayerState.players[id];
 	// do something
+}
+
+const playerIntroduction = ({peer, buffer}) => {
+	const introductionData = dataFromIntroductionBuffer(buffer);
+	multiplayerState.players[peer].playerState = introductionData;
 }
 
 export const startSyncPlayer = () => {
@@ -100,7 +106,7 @@ export const startSyncPlayer = () => {
 
 	console.log("** START SYNC PLAYER **")
 	syncInterval = setInterval(()=> {
-		debugData.misc = `hasChar:${(!!game.character).toString()}, gameRun:${game.run}`
+		multiplayerState.misc = `hasChar:${(!!game.character).toString()}, gameRun:${game.run}`
 		if(game.character && game.run){
 			const buffer = characterToBuffer(game.character, tickID);
 			server.sendCharacterData(buffer);
@@ -110,7 +116,7 @@ export const startSyncPlayer = () => {
 				tickID = 0;
 			}
 
-			debugData.sendPackageID = tickID;
+			multiplayerState.sendPackageID = tickID;
 		}
 	}, 1000 / ticksPerSecond);
 }
@@ -125,19 +131,19 @@ export const stopSyncPlayer = () => {
 export const updateMultiplayer = () => {
 	const data = server.getCharacterDataToProcess();
 		data.forEach(data => {
-			if(players[data.playerID]){
+			if(multiplayerState.players[data.playerID]){
 				const ping = 50;
 				const time = data.time - ping;
 				const characterData = characterFromBuffer(data.buffer);
-				players[data.playerID].processServerData(characterData, time);
+				multiplayerState.players[data.playerID].processServerData(characterData, time);
 			}
 		});
 
 	try{
 		if(game.character && game.run){
-			for(let playerID in players){
+			for(let playerID in multiplayerState.players){
 
-				const player = players[playerID];
+				const player = multiplayerState.players[playerID];
 
 				if(!player.addedToGame){
 					const targetTexture = game.character.lookupObject._bodies[0].mySprite;
@@ -158,6 +164,24 @@ export const updateMultiplayer = () => {
 	updateDebugData();
 
 }
+
+// DEBUG STUFF
+const debugWindow = document.createElement('div');
+debugWindow.classList.add('multiplayerDebug');
+debugWindow.style = `
+	position: absolute;
+	z-index: 9999;
+	top:0;
+	left:0;
+	background: white;
+`;
+debugWindow.innerHTML = `
+	<div>Lobby:<span class="lobbyText"></span></div>
+	<div>peersConnected:<span class="peersConnectedText"></span></div>
+	<div>Misc data:<span class="miscDataText"></span></div>
+	<div>Last Package Sent:<span class="lastPackageSent"></span></div>
+	<ul class="playerList"></ul>
+`
 
 
 let lobbyText = null;
@@ -184,16 +208,16 @@ const updateDebugData = () =>{
 		lastSendID = debugWindow.querySelector('.lastPackageSent');
 		playerList = debugWindow.querySelector('.playerList');
 	}
-	lobbyText.innerText = debugData.lobby;
-	peersConnectedText.innerText = debugData.peersConnected;
-	miscText.innerText = debugData.misc;
-	lastSendID.innerText = debugData.sendPackageID;
+	lobbyText.innerText = multiplayerState.lobby;
+	peersConnectedText.innerText = multiplayerState.peersConnected;
+	miscText.innerText = multiplayerState.misc;
+	lastSendID.innerText = multiplayerState.sendPackageID;
 
 	playerList.innerHTML = '';
 
-	const playerIds = Object.keys(players);
+	const playerIds = Object.keys(multiplayerState.players);
 	playerIds.forEach(id => {
-		const player = players[id];
+		const player = multiplayerState.players[id];
 		const el = playerElement.cloneNode(true);
 		playerList.appendChild(el);
 

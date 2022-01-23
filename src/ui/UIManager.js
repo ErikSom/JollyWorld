@@ -47,7 +47,7 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { selectMultiplayerLevel } from '../multiplayer/multiplayerManager'
+import { createLobby, selectMultiplayerLevel } from '../multiplayer/multiplayerManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -179,6 +179,7 @@ function UIManager() {
 
             const makeMultiplayerGameButton = multiPlayerGrid.querySelector('.create-game-but');
             makeMultiplayerGameButton.onclick = () => {
+                createLobby();
                 this.setMainMenuActive('lobby');
             }
 

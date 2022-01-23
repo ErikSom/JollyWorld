@@ -1,7 +1,7 @@
 import { formatDMY } from '../b2Editor/utils/formatString';
 import '../css/Lobby.scss'
 import { game } from '../Game';
-import { getSelectedMultiplayerLevelData } from '../multiplayer/multiplayerManager';
+import { multiplayerState } from '../multiplayer/multiplayerManager';
 import { Settings } from '../Settings';
 import { localize } from '../utils/Localization';
 
@@ -81,7 +81,7 @@ export const generateLobby = () => {
 }
 
 export const updateLobbyUI = () => {
-	const levelData = getSelectedMultiplayerLevelData();
+	const levelData = multiplayerState.selectedLevel;
 
 	const thumb = lobby.querySelector('.thumb');
 	const textHolder = lobby.querySelector('.text-holder');

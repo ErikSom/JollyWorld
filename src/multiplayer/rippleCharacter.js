@@ -5,13 +5,6 @@ import * as PIXI from 'pixi.js';
 
 const DEG2RAD = 0.017453292519943296;
 
-export const MULTIPLAYER_GAME_STATE = {
-	LOADING: 'loading',
-	WAITING: 'waiting',
-	PLAYING: 'playing',
-	FINISHED: 'finished',
-}
-
 export class RippleCharacter {
 	constructor(id) {
 		this.id = id;
@@ -29,7 +22,10 @@ export class RippleCharacter {
 			handRight: new SyncObject(),
 		}
 
-		this.gameState = MULTIPLAYER_GAME_STATE.LOADING;
+		this.playerState = {
+			name: '...',
+			lobbyState: 0,
+		}
 
 		this.lastPackageID = -1;
 		this.connected = true;

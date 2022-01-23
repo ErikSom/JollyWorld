@@ -22,5 +22,12 @@ const characterSchema = BufferSchema.schema('player', {
 	parts: [basePart]
 })
 
-export const characterModel = new Model(characterSchema)
+export const characterModel = new Model(characterSchema);
 
+
+const introduction = BufferSchema.schema('introduction', {
+	name: string8,
+	lobbyState: uint8,
+})
+
+export const introductionModel = new Model(introduction);

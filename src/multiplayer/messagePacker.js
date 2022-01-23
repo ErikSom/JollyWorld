@@ -1,4 +1,4 @@
-import { characterModel } from "./schemas"
+import { characterModel, introductionModel } from "./schemas"
 import {
 	Settings
 } from '../Settings'
@@ -93,4 +93,15 @@ export const characterFromBuffer = buffer => {
 		p.r = fixAngle(p.r);
 	});
 	return characterData;
+}
+
+
+export const dataToIntroductionBuffer = (name, lobbyState) => {
+	const buffer = introductionModel.toBuffer({name, lobbyState})
+	return buffer;
+}
+
+export const dataFromIntroductionBuffer = buffer => {
+	const introductionData = introductionModel.fromBuffer(buffer);
+	return introductionData;
 }
