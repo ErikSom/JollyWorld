@@ -21,7 +21,6 @@ const characterSchema = BufferSchema.schema('player', {
 	main: [mainPart],
 	parts: [basePart]
 })
-
 export const characterModel = new Model(characterSchema);
 
 
@@ -29,5 +28,19 @@ const introduction = BufferSchema.schema('introduction', {
 	name: string8,
 	lobbyState: uint8,
 })
-
 export const introductionModel = new Model(introduction);
+
+export const SIMPLE_MESSAGE_TYPES = {
+	PLAYER_READY: 0,
+	PLAYER_NOT_READY: 1,
+}
+
+const simpleMessage = BufferSchema.schema('simpleMessage', {
+	type: uint8,
+})
+export const simpleMessageModel = new Model(simpleMessage);
+
+const startLoadLevel = BufferSchema.schema('startLoadLevel', {
+	id: string8,
+})
+export const startLoadLevelModel = new Model(startLoadLevel);

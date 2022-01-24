@@ -5,7 +5,7 @@ import {
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
-import { characterModel, introductionModel } from './schemas';
+import { characterModel, introductionModel, simpleMessageModel } from './schemas';
 
 export const SERVER_EVENTS = {
 	NETWORK_READY: 'networkReady',
@@ -14,6 +14,7 @@ export const SERVER_EVENTS = {
 	PLAYER_INTRODUCTION: 'playerIntroduction',
 	JOINED_LOBBY: 'lobbyJoined',
 	LEFT_LOBBY: 'lobbyLeft',
+	SIMPLE_MESSAGE: 'simpleMessage',
 }
 
 const MESSAGE_TYPE = {
@@ -52,6 +53,7 @@ class MultiplayerServer {
 				if(data instanceof ArrayBuffer){
 					const id = BufferSchema.getIdFromBuffer(data);
 
+					console.log("RECEIVE MESSAGE:", id)
 
 					switch(id){
 						case characterModel.schema.id:
@@ -59,6 +61,10 @@ class MultiplayerServer {
 							break;
 						case introductionModel.schema.id:
 							this.receivePlayerIntroduction(peer.id, data);
+							break;
+						case simpleMessageModel.schema.id:
+							console.log("RECEIVE SIMPLE MESSAGE:", id)
+							this.receiveSimpleMessage(peer.id, data);
 							break;
 						default:
 							console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
@@ -72,7 +78,7 @@ class MultiplayerServer {
 			console.log(`lobby code ready: ${code} (and you are ${this.n.id})`);
 			if(this.admin) alert(`${window.location.origin}${window.location.pathname}?lobbyID=${code} https://dev--jollyworld.netlify.app?lobbyID=${code}`);
 			this.inLobby = true;
-			globalEvents.dispatchEvent({type:SERVER_EVENTS.JOINED_LOBBY, code});
+			globalEvents.dispatchEvent({type:SERVER_EVENTS.JOINED_LOBBY, code, admin: this.admin});
 		})
 
 		this.n.on('signalingerror', this.webRTCError);
@@ -105,6 +111,18 @@ class MultiplayerServer {
 
 	sendIntroduction(buffer, id){
 		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
+	}
+
+	sendSimpleMessageAll(buffer){
+		this.n.broadcast(MESSAGE_TYPE.RELIABLE, buffer);
+	}
+
+	sendSimpleMessage(buffer, id){
+		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
+	}
+
+	receiveSimpleMessage(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.SIMPLE_MESSAGE, peer, buffer});
 	}
 
 	receivePlayerIntroduction(peer, buffer){

@@ -1,7 +1,7 @@
 import { formatDMY } from '../b2Editor/utils/formatString';
 import '../css/Lobby.scss'
 import { game } from '../Game';
-import { LOBBY_STATE, multiplayerState } from '../multiplayer/multiplayerManager';
+import { LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
 import { Settings } from '../Settings';
 import { backendManager } from '../utils/BackendManager';
 import { localize } from '../utils/Localization';
@@ -52,7 +52,7 @@ export const generateLobby = () => {
 							<div class="text-position">1st</div>
 						</div>
 						<div class="text-player-name">Smerik</div>
-						<div class="player-status waiting">${localize('mainmenu_admin')}</div>
+						<div class="player-status connecting">${localize('mainmenu_admin')}</div>
 						<div class="kick-but">${localize('mainmenu_kick')}</div>
 					</div>
 				</div>
@@ -61,7 +61,6 @@ export const generateLobby = () => {
 			<div class="nav-buttons">
 				<div class="leave-but">${localize('mainmenu_leave')}</div>
 				<div class="ready-but">${localize('mainmenu_ready')}</div>
-				<div class="start-but">${localize('mainmenu_ready')}: 4/8</div>
 			</div>
 		`;
 
@@ -82,6 +81,7 @@ export const generateLobby = () => {
 }
 
 export const updateLobbyUI = () => {
+	// LEVEL DATA
 	const levelData = multiplayerState.selectedLevel;
 
 	const thumb = lobby.querySelector('.thumb');
@@ -125,11 +125,13 @@ export const updateLobbyUI = () => {
 		levelSelectButton.innerText = localize('mainmenu_selectlevel');
 	}
 
-	// do players
+	// PLAYERS
+
 	const template = entries.querySelector('.entry-template');
 	template.style.display = 'none';
 
 	const myPlayer = {
+		admin: multiplayerState.admin,
 		playerState: {
 			name: backendManager.userData?.username || multiplayerState.fakeUsername,
 			lobbyState: multiplayerState.lobbyState
@@ -143,7 +145,9 @@ export const updateLobbyUI = () => {
 	const otherPlayers = Object.values(multiplayerState.players);
 	const players = [myPlayer, ...otherPlayers];
 
-	players.forEach(({ playerState }, index) => {
+	let playersReady = 1;
+
+	players.forEach(({ admin, playerState }, index) => {
 		const entry = template.cloneNode(true);
 		entry.style.display = 'flex';
 		entry.classList.remove('entry-template');
@@ -157,18 +161,55 @@ export const updateLobbyUI = () => {
 
 		const status = entry.querySelector('.player-status');
 
-		status.classList.remove('waiting');
-		if(playerState.lobbyState === LOBBY_STATE.LOADING){
-			status.innerText = 'Connecting'
-			status.classList.remove('loading');
+		status.classList.remove('connecting');
+
+		if(admin){
+			status.innerText = localize('mainmenu_admin');
+			status.classList.add('waiting');
+		}else if(playerState.lobbyState === LOBBY_STATE.CONNECTING){
+			status.innerText = localize('mainmenu_connecting');
+			status.classList.add('connecting');
 		} else if(playerState.lobbyState === LOBBY_STATE.WAITING){
-			status.innerText = 'Waiting'
-			status.classList.remove('waiting');
+			status.innerText = localize('mainmenu_waiting');
+			status.classList.add('waiting');
 		} else if(playerState.lobbyState === LOBBY_STATE.READY){
-			status.innerText = 'Ready'
-			status.classList.remove('ready');
+			status.innerText = localize('mainmenu_ready');
+			status.classList.add('ready');
+		}
+
+		if(playerState.lobbyState === LOBBY_STATE.READY){
+			playersReady++;
 		}
 
 		entries.appendChild(entry);
-	})
+	});
+
+	// BUTTONS
+	const navButtons = lobby.querySelector('.nav-buttons');
+
+	const readyButton = navButtons.querySelector('.ready-but');
+
+	readyButton.classList.remove('ready');
+
+	if(multiplayerState.admin){
+		if(players.length === 1){
+			readyButton.innerText = localize('mainmenu_waiting');
+		}else if(players.length === playersReady){
+			readyButton.innerText = localize('mainmenu_start');
+		}else if(players.length === playersReady){
+			readyButton.innerText = `${localize('mainmenu_ready')} ${playersReady}/${players.length}`;
+			readyButton.classList.add('ready');
+		}
+	}else{
+		if(myPlayer.playerState.lobbyState === LOBBY_STATE.READY){
+			readyButton.innerText = `${localize('mainmenu_waiting')} ${playersReady}/${players.length}`;
+		}else{
+			readyButton.classList.add('ready');
+			readyButton.innerText = localize('mainmenu_ready');
+		}
+
+		readyButton.onclick = () => {
+			setLobbyStateReady(!(myPlayer.playerState.lobbyState === LOBBY_STATE.READY))
+		}
+	}
 }

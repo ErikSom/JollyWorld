@@ -2,8 +2,9 @@ import { game } from '../Game'
 import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
-import { characterFromBuffer, characterToBuffer, dataFromIntroductionBuffer, dataToIntroductionBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer } from './messagePacker';
 import { RippleCharacter } from './rippleCharacter';
+import { SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
 
 let tickID = 0
@@ -11,7 +12,7 @@ const ticksPerSecond = 20;
 let syncInterval = null;
 
 export const LOBBY_STATE = {
-	LOADING: 0,
+	CONNECTING: 0,
 	WAITING: 1,
 	READY: 2,
 	PLAYING: 3,
@@ -19,6 +20,7 @@ export const LOBBY_STATE = {
 
 export const multiplayerState = {
 	debug: true,
+	admin: false,
 	ready: false,
 	lobby: '',
 	peersConnected: 0,
@@ -26,7 +28,7 @@ export const multiplayerState = {
 	sendPackageID: -1,
 	players: {},
 	selectedLevel: null,
-	lobbyState: LOBBY_STATE.LOADING,
+	lobbyState: LOBBY_STATE.CONNECTING,
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
 
@@ -39,6 +41,7 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_JOINED, playerJoined);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_LEFT, playerLeft);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_INTRODUCTION, playerIntroduction);
+	globalEvents.addEventListener(SERVER_EVENTS.SIMPLE_MESSAGE, handleSimpleMessage);
 
 	if(multiplayerState.debug) document.body.appendChild(debugWindow);
 }
@@ -61,15 +64,32 @@ export const createLobby = () => {
 	server.createLobby();
 }
 
+export const setLobbyStateReady = ready => {
+	multiplayerState.lobbyState = ready ? LOBBY_STATE.READY : LOBBY_STATE.WAITING;
+
+	const messageType = ready ? SIMPLE_MESSAGE_TYPES.PLAYER_READY : SIMPLE_MESSAGE_TYPES.PLAYER_NOT_READY;
+	sendSimpleMessageAll(messageType);
+
+	updateLobbyUI();
+}
+
 export const selectMultiplayerLevel = levelData => {
 	multiplayerState.selectedLevel = levelData;
 	game.openMainMenu();
 }
 
-const didJoinLobby = ({code}) => {
+export const sendSimpleMessageAll = messageType => {
+	const simpleMessageBuffer = dataToSimpleMessageBuffer(messageType);
+	server.sendSimpleMessageAll(simpleMessageBuffer);
+}
+
+const didJoinLobby = ({code, admin}) => {
 	// change UI
 	multiplayerState.lobby = code;
+	multiplayerState.admin = admin;
 	startSyncPlayer();
+
+	updateLobbyUI();
 }
 
 const didLeaveLobby = () => {
@@ -84,11 +104,13 @@ const playerJoined = ({id}) => {
 
 	multiplayerState.peersConnected++;
 
-	// send my introduction
+	multiplayerState.lobbyState = LOBBY_STATE.WAITING;
 	const name = backendManager.userData?.username || multiplayerState.fakeUsername;
 	const lobbyState = multiplayerState.lobbyState;
 	const introductionBuffer = dataToIntroductionBuffer(name, lobbyState);
 	server.sendIntroduction(introductionBuffer, id);
+
+	updateLobbyUI();
 
 	return player;
 }
@@ -111,9 +133,29 @@ const playerLeft = ({id}) => {
 
 const playerIntroduction = ({peer, buffer}) => {
 	const introductionData = dataFromIntroductionBuffer(buffer);
-	multiplayerState.players[peer].playerState = introductionData;
+	const player = multiplayerState.players[peer];
+	player.playerState = introductionData;
 
 	updateLobbyUI();
+}
+
+const handleSimpleMessage = ({peer, buffer}) => {
+	const { type } = dataFromSimpleMessageBuffer(buffer);
+
+	console.log("RECIVE SIMPLE MESSAGE TYPE:", type, dataFromSimpleMessageBuffer(buffer))
+
+	const player = multiplayerState.players[peer];
+
+	switch(type){
+		case SIMPLE_MESSAGE_TYPES.PLAYER_READY:
+			player.playerState.lobbyState = LOBBY_STATE.READY;
+			updateLobbyUI();
+			break;
+		case SIMPLE_MESSAGE_TYPES.PLAYER_NOT_READY:
+			player.playerState.lobbyState = LOBBY_STATE.WAITING;
+			updateLobbyUI();
+			break;
+	}
 }
 
 export const startSyncPlayer = () => {

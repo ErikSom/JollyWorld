@@ -1,4 +1,4 @@
-import { characterModel, introductionModel } from "./schemas"
+import { characterModel, introductionModel, simpleMessageModel } from "./schemas"
 import {
 	Settings
 } from '../Settings'
@@ -104,4 +104,14 @@ export const dataToIntroductionBuffer = (name, lobbyState) => {
 export const dataFromIntroductionBuffer = buffer => {
 	const introductionData = introductionModel.fromBuffer(buffer);
 	return introductionData;
+}
+
+export const dataToSimpleMessageBuffer = type => {
+	const buffer = simpleMessageModel.toBuffer({type});
+	return buffer;
+}
+
+export const dataFromSimpleMessageBuffer = buffer => {
+	const simpleMessageData = simpleMessageModel.fromBuffer(buffer);
+	return simpleMessageData;
 }

@@ -80,6 +80,11 @@ const LOCALIZATION_DATA = [
         "nl": "Admin"
     },
     {
+        "textId": "mainmenu_connecting",
+        "us": "Connecting",
+        "nl": "Verbinden"
+    },
+    {
         "textId": "mainmenu_waiting",
         "us": "Waiting",
         "nl": "Wachten"

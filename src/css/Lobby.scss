@@ -109,8 +109,14 @@
 		}
 
 		.player-status{
-			.waiting{
+			&.waiting{
 				color: var(--gray-color);
+			}
+			&.ready{
+				color: var(--secondary-bg-color);
+			}
+			&.connecting{
+				color: var(--negative-button);
 			}
 		}
 
@@ -133,10 +139,13 @@
 			@extend .back-button;
 		}
 
-		.ready-but, .start-but{
+		.ready-but{
 			@extend .base-button;
-			background-color: #1F9891;
-			color: white;
+
+			&.ready{
+				background-color: var(--secondary-bg-color);
+				color: white;
+			}
 		}
 
 		.ready-but, .leave-but, .start-but{
