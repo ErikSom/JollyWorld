@@ -196,9 +196,9 @@ export const updateLobbyUI = () => {
 			readyButton.innerText = localize('mainmenu_waiting');
 		}else if(players.length === playersReady){
 			readyButton.innerText = localize('mainmenu_start');
-		}else if(players.length === playersReady){
-			readyButton.innerText = `${localize('mainmenu_ready')} ${playersReady}/${players.length}`;
 			readyButton.classList.add('ready');
+		}else {
+			readyButton.innerText = `${localize('mainmenu_ready')} ${playersReady}/${players.length}`;
 		}
 	}else{
 		if(myPlayer.playerState.lobbyState === LOBBY_STATE.READY){
