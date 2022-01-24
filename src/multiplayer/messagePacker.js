@@ -1,4 +1,4 @@
-import { characterModel, introductionModel, simpleMessageModel } from "./schemas"
+import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
 import {
 	Settings
 } from '../Settings'
@@ -95,7 +95,18 @@ export const characterFromBuffer = buffer => {
 	return characterData;
 }
 
+// ADMIN INTRODUCTION
+export const dataToAdminIntroductionBuffer = (name, levelID) => {
+	const buffer = adminIntroductionModel.toBuffer({name, levelID})
+	return buffer;
+}
 
+export const dataFromAdminIntroductionBuffer = buffer => {
+	const introductionData = adminIntroductionModel.fromBuffer(buffer);
+	return introductionData;
+}
+
+// PEER INTRODUCTION
 export const dataToIntroductionBuffer = (name, lobbyState) => {
 	const buffer = introductionModel.toBuffer({name, lobbyState})
 	return buffer;
@@ -106,6 +117,7 @@ export const dataFromIntroductionBuffer = buffer => {
 	return introductionData;
 }
 
+// SIMPLE MESSAGE
 export const dataToSimpleMessageBuffer = type => {
 	const buffer = simpleMessageModel.toBuffer({type});
 	return buffer;
@@ -115,3 +127,28 @@ export const dataFromSimpleMessageBuffer = buffer => {
 	const simpleMessageData = simpleMessageModel.fromBuffer(buffer);
 	return simpleMessageData;
 }
+
+// START LOAD LEVEL
+export const dataToStartLoadLevelBuffer = levelID => {
+	const buffer = startLoadLevelModel.toBuffer({levelID});
+	return buffer;
+}
+
+export const dataFromStartLoadLevelBuffer = buffer => {
+	const simpleMessageData = startLoadLevelModel.fromBuffer(buffer);
+	return simpleMessageData;
+}
+
+// CHANGE LEVEL
+export const dataToChangeServerLevelBuffer = levelID => {
+	const buffer = changeServerLevelModel.toBuffer({levelID});
+	return buffer;
+}
+
+export const dataFromChangeServerLevelBuffer = buffer => {
+	const simpleMessageData = changeServerLevelModel.fromBuffer(buffer);
+	return simpleMessageData;
+}
+
+
+

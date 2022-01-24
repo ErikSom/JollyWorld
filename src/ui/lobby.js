@@ -82,7 +82,7 @@ export const generateLobby = () => {
 
 export const updateLobbyUI = () => {
 	// LEVEL DATA
-	const levelData = multiplayerState.selectedLevel;
+	const levelData = multiplayerState.selectedLevelData;
 
 	const thumb = lobby.querySelector('.thumb');
 	const textHolder = lobby.querySelector('.text-holder');

@@ -2,9 +2,9 @@ import { game } from '../Game'
 import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
-import { characterFromBuffer, characterToBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer } from './messagePacker';
 import { RippleCharacter } from './rippleCharacter';
-import { SIMPLE_MESSAGE_TYPES } from './schemas';
+import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
 
 let tickID = 0
@@ -27,7 +27,8 @@ export const multiplayerState = {
 	misc: '',
 	sendPackageID: -1,
 	players: {},
-	selectedLevel: null,
+	selectedLevel: '',
+	selectedLevelData: null,
 	lobbyState: LOBBY_STATE.CONNECTING,
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
@@ -42,6 +43,8 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_LEFT, playerLeft);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_INTRODUCTION, playerIntroduction);
 	globalEvents.addEventListener(SERVER_EVENTS.SIMPLE_MESSAGE, handleSimpleMessage);
+	globalEvents.addEventListener(SERVER_EVENTS.CHANGE_LEVEL, handleChangeLevel);
+	globalEvents.addEventListener(SERVER_EVENTS.START_LOAD_LEVEL, handleStartLoadLevel);
 
 	if(multiplayerState.debug) document.body.appendChild(debugWindow);
 }
@@ -74,7 +77,10 @@ export const setLobbyStateReady = ready => {
 }
 
 export const selectMultiplayerLevel = levelData => {
-	multiplayerState.selectedLevel = levelData;
+	multiplayerState.selectedLevel = levelData.id;
+	multiplayerState.selectedLevelData = levelData;
+	const messageBuffer = dataToChangeServerLevelBuffer(multiplayerState.selectedLevel);
+	server.sendSimpleMessageAll(messageBuffer);
 	game.openMainMenu();
 }
 
@@ -82,6 +88,7 @@ export const sendSimpleMessageAll = messageType => {
 	const simpleMessageBuffer = dataToSimpleMessageBuffer(messageType);
 	server.sendSimpleMessageAll(simpleMessageBuffer);
 }
+
 
 const didJoinLobby = ({code, admin}) => {
 	// change UI
@@ -107,7 +114,14 @@ const playerJoined = ({id}) => {
 	multiplayerState.lobbyState = LOBBY_STATE.WAITING;
 	const name = backendManager.userData?.username || multiplayerState.fakeUsername;
 	const lobbyState = multiplayerState.lobbyState;
-	const introductionBuffer = dataToIntroductionBuffer(name, lobbyState);
+
+	let introductionBuffer = null;
+	if(multiplayerState.admin){
+		introductionBuffer = dataToAdminIntroductionBuffer(name, multiplayerState.selectedLevel);
+	}else{
+		introductionBuffer = dataToIntroductionBuffer(name, lobbyState);
+	}
+	
 	server.sendIntroduction(introductionBuffer, id);
 
 	updateLobbyUI();
@@ -131,12 +145,41 @@ const playerLeft = ({id}) => {
 
 }
 
-const playerIntroduction = ({peer, buffer}) => {
-	const introductionData = dataFromIntroductionBuffer(buffer);
+const playerIntroduction = ({peer, buffer, admin}) => {
+	let introductionData = null;
+	
+	if(!admin) introductionData = dataFromIntroductionBuffer(buffer);
+	else introductionData = dataFromAdminIntroductionBuffer(buffer);
+
 	const player = multiplayerState.players[peer];
-	player.playerState = introductionData;
+
+	if(admin){
+		player.playerState = {
+			name: introductionData.name,
+			lobbyState: LOBBY_STATE.WAITING,
+		}
+		player.admin = true;
+		if(introductionData.selectedLevel){
+			fetchLevelInfo(introductionData.selectedLevel);
+		}
+	} else {
+		player.playerState = introductionData;
+
+	}
 
 	updateLobbyUI();
+}
+
+const handleChangeLevel = ({buffer}) => {
+	const { levelID } = dataFromChangeServerLevelBuffer(buffer);
+
+	console.log("LOADING LEVEL ID:", levelID);
+	fetchLevelInfo(levelID);
+}
+
+const handleStartLoadLevel = ({buffer}) => {
+	const { levelID } = dataFromStartLoadLevelBuffer(buffer);
+	alert("START LOADING LEVEL: "+levelID);
 }
 
 const handleSimpleMessage = ({peer, buffer}) => {
@@ -219,7 +262,20 @@ export const updateMultiplayer = () => {
 	}
 
 	updateDebugData();
+}
 
+const fetchLevelInfo = async id => {
+	multiplayerState.selectedLevel = id;
+
+	try{
+		const levelData = await backendManager.getPublishedLevelInfo(id);
+		if(multiplayerState.selectedLevel === id){
+			multiplayerState.selectedLevelData = levelData;
+			updateLobbyUI();
+		}
+	}catch(err){
+		// something went wrong fetching this level
+	}
 }
 
 // DEBUG STUFF

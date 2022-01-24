@@ -5,7 +5,7 @@ import {
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
-import { characterModel, introductionModel, simpleMessageModel } from './schemas';
+import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, simpleMessageModel, startLoadLevelModel } from './schemas';
 
 export const SERVER_EVENTS = {
 	NETWORK_READY: 'networkReady',
@@ -15,6 +15,8 @@ export const SERVER_EVENTS = {
 	JOINED_LOBBY: 'lobbyJoined',
 	LEFT_LOBBY: 'lobbyLeft',
 	SIMPLE_MESSAGE: 'simpleMessage',
+	CHANGE_LEVEL: 'changeLevel',
+	START_LOAD_LEVEL: 'startLoadLevel',
 }
 
 const MESSAGE_TYPE = {
@@ -62,9 +64,17 @@ class MultiplayerServer {
 						case introductionModel.schema.id:
 							this.receivePlayerIntroduction(peer.id, data);
 							break;
+						case adminIntroductionModel.schema.id:
+							this.receivePlayerIntroduction(peer.id, data, true);
+							break;
 						case simpleMessageModel.schema.id:
-							console.log("RECEIVE SIMPLE MESSAGE:", id)
 							this.receiveSimpleMessage(peer.id, data);
+							break;
+						case changeServerLevelModel.schema.id:
+							this.receiveChangeServerLevel(peer.id, data);
+							break;
+						case startLoadLevelModel.schema.id:
+							this.receiveStartLoadLevel(peer.id, data);
 							break;
 						default:
 							console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
@@ -125,8 +135,16 @@ class MultiplayerServer {
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.SIMPLE_MESSAGE, peer, buffer});
 	}
 
-	receivePlayerIntroduction(peer, buffer){
-		globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_INTRODUCTION, peer, buffer});
+	receivePlayerIntroduction(peer, buffer, admin = false){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_INTRODUCTION, peer, buffer, admin});
+	}
+
+	receiveChangeServerLevel(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.CHANGE_LEVEL, peer, buffer});
+	}
+
+	receiveStartLoadLevel(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.START_LOAD_LEVEL, peer, buffer});
 	}
 
 	sendCharacterData(buffer) {
