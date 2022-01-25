@@ -2,7 +2,7 @@ import { game } from '../Game'
 import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
-import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
@@ -12,10 +12,12 @@ const ticksPerSecond = 20;
 let syncInterval = null;
 
 export const LOBBY_STATE = {
+	OFFLINE: -1,
 	CONNECTING: 0,
 	WAITING: 1,
 	READY: 2,
-	PLAYING: 3,
+	LOADING_LEVEL: 3,
+	PLAYING: 4,
 }
 
 export const multiplayerState = {
@@ -29,7 +31,7 @@ export const multiplayerState = {
 	players: {},
 	selectedLevel: '',
 	selectedLevelData: null,
-	lobbyState: LOBBY_STATE.CONNECTING,
+	lobbyState: LOBBY_STATE.OFFLINE,
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
 
@@ -54,6 +56,8 @@ export const networkReady = () => {
 }
 
 export const autoConnectLobby = id => {
+	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
+	game.gameState = game.GAMESTATE_LOBBY;
 	if(multiplayerState.ready){
 		server.joinLobby(id);
 	}else{
@@ -64,6 +68,7 @@ export const autoConnectLobby = id => {
 }
 
 export const createLobby = () => {
+	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
 	server.createLobby();
 }
 
@@ -77,6 +82,7 @@ export const setLobbyStateReady = ready => {
 }
 
 export const selectMultiplayerLevel = levelData => {
+	if(!multiplayerState.admin) return;
 	multiplayerState.selectedLevel = levelData.id;
 	multiplayerState.selectedLevelData = levelData;
 	const messageBuffer = dataToChangeServerLevelBuffer(multiplayerState.selectedLevel);
@@ -159,8 +165,8 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 			lobbyState: LOBBY_STATE.WAITING,
 		}
 		player.admin = true;
-		if(introductionData.selectedLevel){
-			fetchLevelInfo(introductionData.selectedLevel);
+		if(introductionData.levelID){
+			fetchLevelInfo(introductionData.levelID);
 		}
 	} else {
 		player.playerState = introductionData;
@@ -172,14 +178,76 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 
 const handleChangeLevel = ({buffer}) => {
 	const { levelID } = dataFromChangeServerLevelBuffer(buffer);
-
-	console.log("LOADING LEVEL ID:", levelID);
 	fetchLevelInfo(levelID);
 }
 
-const handleStartLoadLevel = ({buffer}) => {
+const handleStartLoadLevel = async ({buffer}) => {
 	const { levelID } = dataFromStartLoadLevelBuffer(buffer);
-	alert("START LOADING LEVEL: "+levelID);
+	console.log("START LOAD LEVEL:", levelID);
+	startLoadLevel(levelID);
+}
+
+export const adminStartLoadLevel = () => {
+	let playersReady = 0;
+
+	const players = Object.values(multiplayerState.players);
+	players.forEach(player => {
+		if(player.playerState.lobbyState === LOBBY_STATE.READY){
+			playersReady++;
+		}
+	});
+
+	if(playersReady === players.length && multiplayerState.selectedLevelData){
+		const startLoadLevelBuffer = dataToStartLoadLevelBuffer(multiplayerState.selectedLevel);
+		server.sendSimpleMessageAll(startLoadLevelBuffer);
+
+		startLoadLevel(multiplayerState.selectedLevel);
+	}else{
+		if(!multiplayerState.selectedLevelData){
+			alert("First select a level before clicking start");
+		}else{
+			alert("Not all players are ready");
+		}
+	}
+}
+
+const startLoadLevel = async id => {
+	if (game.gameState != game.GAMESTATE_LOBBY) return;
+	game.gameState = game.GAMESTATE_LOADINGDATA;
+
+	multiplayerState.lobbyState = LOBBY_STATE.LOADING_LEVEL;
+
+	const players = Object.values(multiplayerState.players);
+	players.forEach(player => {
+		if(player.playerState.lobbyState !== LOBBY_STATE.PLAYING){
+			player.playerState.lobbyState = LOBBY_STATE.LOADING_LEVEL;
+		}
+	});
+	updateLobbyUI();
+
+	await fetchLevelInfo(id);
+
+	const progressFunction = progress => {
+		progress = Math.max(0, Math.min(1, progress));
+		const progressRounded = (progress*100).toFixed(2);
+	}
+
+	const finishLoading = ()=>{
+	}
+
+	const levelData = multiplayerState.selectedLevelData;
+
+	game.loadPublishedLevelData(levelData, progressFunction).then(() => {
+		if(levelData.forced_vehicle){
+			game.selectedVehicle = levelData.forced_vehicle;
+			game.ui.playLevelFromSinglePlayer();
+		}else{
+			game.ui.showVehicleSelect();
+		}
+		finishLoading();
+	}).catch(error => {
+		finishLoading();
+	});
 }
 
 const handleSimpleMessage = ({peer, buffer}) => {

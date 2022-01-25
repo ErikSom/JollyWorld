@@ -47,7 +47,7 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { createLobby, selectMultiplayerLevel } from '../multiplayer/multiplayerManager'
+import { createLobby, LOBBY_STATE, multiplayerState, selectMultiplayerLevel } from '../multiplayer/multiplayerManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -1931,11 +1931,18 @@ function UIManager() {
             }, Settings.levelBuildDelayTime);
         }
 
-        PokiSDK.commercialBreak().then(
-            () => {
-                continueToGame();
-            }
-        );
+        const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
+
+        if(multiplayer){
+            this.hideMainMenu();
+            continueToGame();
+        }else{
+            PokiSDK.commercialBreak().then(
+                () => {
+                    continueToGame();
+                }
+            );
+        }
     }
 
     this.showVehicleSelect = function(){

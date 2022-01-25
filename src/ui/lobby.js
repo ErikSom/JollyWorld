@@ -1,7 +1,7 @@
 import { formatDMY } from '../b2Editor/utils/formatString';
 import '../css/Lobby.scss'
 import { game } from '../Game';
-import { LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
+import { adminStartLoadLevel, LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
 import { Settings } from '../Settings';
 import { backendManager } from '../utils/BackendManager';
 import { localize } from '../utils/Localization';
@@ -191,12 +191,19 @@ export const updateLobbyUI = () => {
 
 	readyButton.classList.remove('ready');
 
+	readyButton.onclick = ()=>{};
+
 	if(multiplayerState.admin){
 		if(players.length === 1){
 			readyButton.innerText = localize('mainmenu_waiting');
 		}else if(players.length === playersReady){
 			readyButton.innerText = localize('mainmenu_start');
 			readyButton.classList.add('ready');
+
+			readyButton.onclick = () => {
+				adminStartLoadLevel();
+			}
+
 		}else {
 			readyButton.innerText = `${localize('mainmenu_ready')} ${playersReady}/${players.length}`;
 		}
