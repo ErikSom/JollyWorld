@@ -16,8 +16,9 @@ export const generateLobby = () => {
 			</div>
 
 			<div class="level-info">
-				<div class="thumb select">
+				<div class="thumb select admin">
 					<div class="selectBut">${localize('mainmenu_selectlevel')}</div>
+					<div class="hostPicking">${localize('mainmenu_nolevel')}</div>
 				</div>
 				<div class="text-holder select">
 					<div class="text-level-name">Level Name Goes Here</div>
@@ -123,6 +124,12 @@ export const updateLobbyUI = () => {
 		textHolder.classList.add('select');
 		thumb.style.backgroundImage = 'unset';
 		levelSelectButton.innerText = localize('mainmenu_selectlevel');
+	}
+
+	if(multiplayerState.admin){
+		thumb.classList.add('admin');
+	}else{
+		thumb.classList.remove('admin');
 	}
 
 	// PLAYERS

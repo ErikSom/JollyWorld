@@ -349,6 +349,10 @@ function Game() {
             ui.showUserPage(username);
         }else if(lobbyID){
             // start network manager
+
+            // we need the single player menu build for recommendations
+            ui.showSinglePlayer();
+            ui.hideSinglePlayer();
 		    ui.setMainMenuActive('lobby');
             autoConnectLobby(lobbyID);
         }

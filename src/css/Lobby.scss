@@ -5,6 +5,7 @@
 	position: unset;
     transform: unset;
     margin: auto;
+	padding: 10px;
 
 	.title{
 		@extend .jollyfont;
@@ -33,6 +34,30 @@
 				@extend .base-button;
 				width: fit-content;
 				height: fit-content;
+				display: none;
+			}
+
+			.hostPicking{
+				color: white;
+				max-width: 160px;
+				text-align: center;
+				display: none;
+			}
+
+			&.select{
+				.hostPicking{
+					display: block;
+				}
+			}
+
+			&.admin{
+				.selectBut{
+					display: block;
+				}
+
+				.hostPicking{
+					display: none;
+				}
 			}
 		}
 
@@ -102,7 +127,6 @@
 
 		.players-title{
 			color: var(--dark-color);
-			margin: 0 10px;
 			font-size: 16px;
 			font-family: "Montserrat", sans-serif;
 			font-variation-settings: "wght" 800;
@@ -127,6 +151,7 @@
 
 		.entries{
 			position: relative;
+			margin: 10px 0;
 			z-index: 0;
 		}
 	}

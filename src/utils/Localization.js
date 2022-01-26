@@ -65,6 +65,11 @@ const LOCALIZATION_DATA = [
         "nl": "Spelers"
     },
     {
+        "textId": "mainmenu_nolevel",
+        "us": "Admin is selecting level",
+        "nl": "Admin is level aan het uitzoeken"
+    },
+    {
         "textId": "mainmenu_ready",
         "us": "Ready",
         "nl": "Gereed"
