@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>JollyWorld - Blueprint Uploader</title>
+	<link rel="shortcut icon" href="https://warze.org/static/jollyworld/favicon-32x32.png" />
+	<meta property="og:title" content="JollyWorld blueprints" />
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content="https://warze.org/static/jollyworld/jollyworld-bp.png"/>
+	<meta property="og:description" content="User-friendly Tool for talented artists in the JollyWorld community to upload blueprints easily and have them appear in the Editor." />
+	<meta property="description" content="User-friendly Tool for talented artists in the JollyWorld community to upload blueprints easily and have them appear in the Editor." />
+	<meta name="theme-color" content="#3d7d1e">
+	<meta name="google" content="notranslate">
+	<link rel="stylesheet" href="https://warze.org/static/jollyworld/blueprints.css">
+	<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+	<img src="/static/jollyworld/jollyblueprintssmall.png">
+	<div id="page">
+		<div id="stepbox" style="display:none">
+			<button class="stepbutton" id="navstep1" onclick="goToStep(0)">1</button>
+			<button class="stepbutton" id="navstep2" onclick="goToStep(1)" disabled>2</button>
+			<button class="stepbutton" id="navstep3" onclick="goToStep(2)" disabled>3</button>
+		</div>
+		<div id="step1" class="section">
+			<h1>Step 1/3 - JollyData</h1>
+			<hr class="mainhr">
+			<textarea id="jollydatainput" placeholder="Paste JollyData here" oninput="readData(this.value)"></textarea>
+			<h1 style="color:red; display:none" id="jollydataerror">Invalid JollyData</h1>
+			<button class="button" id="continuebutton1" disabled onclick="goToStep(1)">Continue</button>
+		</div>
+		<div id="step2" class="section">
+			<h1>Step 2/3 - Tagging</h1>
+			<hr class="mainhr">
+			<div id="tags"></div>
+			<span onclick="addTag(prompt('Enter Tag Name'), true)" id="customtagtext">No fitting tag? Click here to add your own.</span>
+			<button class="button" style="display:block" id="continuebutton2" disabled onclick="goToStep(2)">Continue</button>
+		</div>
+		<div id="step3" class="section">
+			<h1>Step 3/3 - Name</h1>
+			<hr class="mainhr">
+			<span>Describe the object in your blueprint shortly</span>
+			<input type="name" id="blueprintname" placeholder="Enter name here" oninput="readName(this.value)">
+			<button class="button" id="continuebutton3" disabled onclick="goToConfirm()">Continue</button>
+		</div>
+		<div id="step4" class="section">
+			<h1>Confirm before Uploading</h1>
+		</div>
+		<div id="step5" class="section">
+			<img id="billyjoel" src="/static/jollyworld/billyjoel.png">
+			<div id="thankyou">
+				<h1>Success!</h1>
+				<span>You've uploaded your blueprint! Thank you for contributing to JollyWorld.</span>
+			</div>
+			<a class="button wide blue redirect" href="/blueprints/">Upload another blueprint</button>
+			<a class="button wide red redirect" href="/blueprintmanager/">Manage blueprints</a>
+			<a class="button wide redirect" href="/">Go back to JollyWorld</a>
+		</div>
+	</div>
+	<div id="previewwindow" style="right: -400px; display:none">
+		<h1>Preview</h1>
+		<button id="previewbutton" onclick="togglePreview()"><</button>
+		<img src="" id="previewimage">
+		<hr class="previewhr">
+		<span class="label">Selected Tag:</span>
+		<div class="tag" id="selectedtag" style="">None</div>
+		<hr class="previewhr">
+		<span class="label">Selected Name:</span>
+		<h1 id="selectedname" style="display:inline"></h1>
+		<button id="uploadbutton" class="button red" onclick="upload()" disabled>Upload</button>
+	</div>
+	<img id="themebutton" src="https://warze.org/static/jollyworld/thememain.png" onclick="toggleTheme()">
+	<lottie-player id="confetti" src="https://assets8.lottiefiles.com/packages/lf20_rovf9gzu.json" background="transparent" speed="1"></lottie-player>
+	<script type="text/javascript" src="https://warze.org/static/jollyworld/blueprints.js"></script>
+</body>
+</html>

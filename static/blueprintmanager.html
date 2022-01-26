@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>JollyWorld - Blueprint Manager</title>
+	<link rel="shortcut icon" href="https://warze.org/static/jollyworld/favicon-32x32.png" />
+	<meta property="og:title" content="JollyWorld Blueprints" />
+	<meta property="og:type" content="website"/>
+	<meta property="og:image" content="https://warze.org/static/jollyworld/jollyworld-bp.png"/>
+	<meta property="og:description" content="User-friendly Tool for talented artists in the JollyWorld community to upload blueprints easily and have them appear in the Editor." />
+	<meta property="description" content="User-friendly Tool for talented artists in the JollyWorld community to upload blueprints easily and have them appear in the Editor." />
+	<meta name="theme-color" content="#0485AD">
+	<meta name="google" content="notranslate">
+	<link rel="stylesheet" href="https://warze.org/static/jollyworld/bpmanager.css">
+	<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+	<img src="/static/jollyworld/jollyblueprintssmall.png">
+	<img id="themebutton" src="https://warze.org/static/jollyworld/thememain.png" onclick="toggleTheme()">
+	<div class="section">
+		<div id="detailedsearch">
+			<div class="detailedsearchsection">
+				<label>Search:</label>
+				<input id="searchblueprint" type="text" name="SearchBlueprint" placeholder="Search Blueprints">
+			</div>
+			<div class="detailedsearchsection">
+				<label>Author:</label>
+				<input id="searchauthor" type="text" name="SearchAuthor" placeholder="Search Author">
+			</div>
+			<div class="detailedsearchsection">
+				<label>Tag:</label>
+				<select id="tagdropdown" name="Tag">
+					<option value="All">All</option>
+				</select>
+			</div>
+			<div class="detailedsearchsection">
+				<label>Only unapproved:</label>
+				<input type="checkbox" id="unapproved">
+			</div>
+		</div>
+		<button class="button" onclick="searchButton(1)" style="display: inline-block">Search</button>
+	</div>
+	<div id="pagination" style="display:none">
+		<span class="pagebutton" id="pageprev" onclick="searchButton(selected_page - 1)"><</span>
+		<span class="pagebutton" id="pagenumber" onclick="enterPageNum()">Page 1</span>
+		<span class="pagebutton" id="pagenext" onclick="searchButton(selected_page + 1)">></span>
+		<span class="pagebutton" onclick="toggleDisplay()">
+			<img id="displayicon" src="https://warze.org/static/jollyworld/formatdetailed.png">
+		</span>
+	</div>
+	<div class="section" id="blueprintresults"></div>
+	<script src="https://warze.org/static/jollyworld/bpmanager.js"></script>
+</body>
+</html>
