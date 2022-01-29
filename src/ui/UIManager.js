@@ -1102,20 +1102,8 @@ function UIManager() {
 
         const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, limit)];
         let [myPosition, leaderboardData] = await Promise.all(promises);
-
-        // const usernames = ["Goku", "Vegeta", "Krillin", "Gohan", "Freeza", "Cell", "Goten", "Gotenks", "Trunks"];
-        // leaderboardData = [];
-        // let fill = Math.round(Math.random()*100)+1
-        // for(let i = 0; i<fill; i++){
-        //     leaderboardData.push(
-        //         {
-        //             character: Math.round(Math.random()*10)+1,
-        //             time: Math.random()*50000,
-        //             username: usernames[Math.floor(Math.random() * usernames.length)],
-        //         }
-        //     )
-        // }
-
+        myPosition = Array.isArray(myPosition) ? myPosition[0] : myPosition;
+    
         if(backendManager.isLoggedIn() && !backendManager.userData){
             // if we have not yet retreived the userdata fetch it
             await backendManager.getBackendUserData();
@@ -1148,7 +1136,7 @@ function UIManager() {
                 if(i<(limit-1) || !offcharts){
                     position.innerText = format.makeOrdinal(i+1);
                 }else{
-                    position.innerText = "??"
+                    position.innerText = entryData.position ? format.makeOrdinal(entryData.position) : '??';
                 }
 
                 const username = entry.querySelector('.text-player-name')
