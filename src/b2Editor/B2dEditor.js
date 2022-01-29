@@ -1804,8 +1804,6 @@ const _B2dEditor = function () {
 					this.parallaxObject = this.parallaxObject.filter(obj=> obj !== sprite);
 				}
 
-
-				sprite.parent.removeChild(sprite);
 				sprite.destroy({
 					children: true,
 					texture: false,
@@ -1841,7 +1839,6 @@ const _B2dEditor = function () {
 					}
 				}
 				b.mySprite.destroyed = true;
-				b.mySprite.parent.removeChild(b.mySprite);
 				b.mySprite.destroy({
 					children: true,
 					texture: false,
@@ -1870,7 +1867,6 @@ const _B2dEditor = function () {
 				}
 				if (b.myTexture) {
 					var sprite = b.myTexture;
-					sprite.parent.removeChild(sprite);
 					sprite.destroy({
 						children: true,
 						texture: false,
@@ -10829,6 +10825,7 @@ const _B2dEditor = function () {
 				return image;
 			}
 		}catch(err){
+			console.log('ERROR PARSING IMAGE:', err);
 			return null
 		}
 	}
