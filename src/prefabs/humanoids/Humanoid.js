@@ -778,9 +778,18 @@ export class Humanoid extends PrefabManager.basePrefab {
                 extraParticles.push('Normal_Arm_Gore1');
             break;
         }
+
+        if(this.noGoreParticles){
+            extraParticles.length = 0;
+            // NO EXTRA GORE FOR KIDS & BABY
+        }
+
         const goreParticleMaxSpeed = 50;
         const particlesToGenerate = meatParticles.concat(extraParticles);
         const targetBody = this.lookupObject[targetBodyPart];
+
+        const targetChildIndex = targetBody.mySprite.parent.getChildIndex(targetBody.mySprite);
+
         particlesToGenerate.forEach((particle)=>{
             let offsetX = 0;
             let offsetY = 0;
@@ -813,6 +822,9 @@ export class Humanoid extends PrefabManager.basePrefab {
                 const targetFrame = String(this.skin).padStart(4, '0');
                 goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+targetFrame);
             }
+
+            targetBody.mySprite.parent.addChildAt(goreLookupObject._textures[0], targetChildIndex);
+
         });
     }
 
