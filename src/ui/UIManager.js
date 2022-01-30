@@ -158,7 +158,7 @@ function UIManager() {
             backendManager.registerListener('login', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
-            const gridOnlyEvenCells = ()=>{
+            this.gridOnlyEvenCells = ()=>{
                 if(mainMenu.style.display !== 'block') return;
 
                 const gridCell = characterSelect.getBoundingClientRect();
@@ -186,11 +186,11 @@ function UIManager() {
                 })
             });
 
-            window.addEventListener('resize', gridOnlyEvenCells);
+            window.addEventListener('resize', this.gridOnlyEvenCells);
 
             mainMenu.style.visibility = 'hidden';
             setTimeout(() => {
-                gridOnlyEvenCells();
+                this.gridOnlyEvenCells();
                 mainMenu.style.visibility = 'visible';
             }, 0);
 
@@ -215,6 +215,8 @@ function UIManager() {
         this.setMainMenuCharacterImage();
 
         mainMenu.style.display = 'block';
+        this.gridOnlyEvenCells();
+
     }
     this.hideMainMenu = () => {
         if(mainMenu) mainMenu.style.display = "none";
