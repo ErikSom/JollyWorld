@@ -823,7 +823,9 @@ export class Humanoid extends PrefabManager.basePrefab {
                 goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+targetFrame);
             }
 
-            targetBody.mySprite.parent.addChildAt(goreLookupObject._textures[0], targetChildIndex);
+            goreLookupObject._textures.forEach(texture => {
+                targetBody.mySprite.parent.addChildAt(texture, targetChildIndex);
+            });
 
         });
     }
