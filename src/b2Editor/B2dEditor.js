@@ -277,11 +277,9 @@ const _B2dEditor = function () {
 			this.bluePrintDownloading = false;
 			if(!prefabs.length){
 				this.bluePrintData.loadedAllPages[category] = true;
-				if(page === 1){
-					const spinner = innerFolder.querySelector('.spinner');
-					if(spinner){
-						spinner.innerText = 'No search results..';
-					}
+				const spinner = innerFolder.querySelector('.spinner');
+				if(spinner){
+					spinner.innerText = 'No more results..';
 				}
 				return;
 			}
@@ -367,11 +365,14 @@ const _B2dEditor = function () {
 
 			if(folderName === BLUEPRINTS){
 				folder.add(self, "blueprintsSearchQuery").name('search blueprints:').onFinishChange(function (value) {
-					if(self.blueprintsSelectedCategory !== value){
-						self.blueprintsSelectedCategory = value;
-						self.prefabSelectedCategory = '';
-						self.refreshPrefablist();
-					}
+						setTimeout(()=> {
+							// prevent crash on clicking next to window
+							if(self.selectedTool === self.tool_SPECIALS){
+								self.blueprintsSelectedCategory = value;
+								self.prefabSelectedCategory = '';
+								self.refreshPrefablist();
+							}
+						}, 0);
 				});
 			}
 
