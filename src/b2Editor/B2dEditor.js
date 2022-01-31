@@ -217,6 +217,7 @@ const _B2dEditor = function () {
 	this.prefabListGuiState = {};
 	this.prefabSelectedCategory = '';
 	this.blueprintsSelectedCategory = '';
+	this.blueprintsSearchQuery = '';
 	this.bluePrintData = null;
 	this.bluePrintDownloading = false;
 	this.downloadBluePrintKeys = ()=>{
@@ -225,25 +226,49 @@ const _B2dEditor = function () {
 		fetch(`https://warze.org/blueprints/tags?approved=${+approved}`)
 		.then(response => response.json())
 		.then(categories => {
-			this.bluePrintData = {categories, urls:[], page:[], loadedAllPages:{}};
-			categories.forEach(category => {
+			this.bluePrintData = {categories, urls:[], page:{}, loadedAllPages:{}};
+			categories.forEach((category, i) => {
 				const url = `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&collection=${category}&page=`;
 				this.bluePrintData.urls.push(url);
-				this.bluePrintData.page.push(0);
+				this.bluePrintData.page[category] = 0;
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
 				// PrefabManager.prefabLibrary[PrefabManager.LIBRARY_BLUEPRINTS+obj.prefabName].json
 			})
+			// this is for search queries
+			this.bluePrintData.page[-1] = 0;
 			this.refreshPrefablist();
 		});
 		this.bluePrintData = false;
 	}
 	
 	this.downloadBluePrints = (category, innerFolder, init) => {
+		if(this.bluePrintsSearchedQuery && this.bluePrintsSearchedQuery !== category){
+			delete this.bluePrintData.page[this.bluePrintsSearchedQuery];
+			delete this.bluePrintData.loadedAllPages[this.bluePrintsSearchedQuery];
+			delete this.bluePrintsSearchedQuery;
+
+			// consider cleaning up data in PrefabManager.prefabLibrary (its a mess >_< );
+		}
+
 		if(init && Array.isArray(PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category])) return;
-		const urlIndex = this.bluePrintData.categories.indexOf(category);
-		const page = ++this.bluePrintData.page[urlIndex];
-		const url = `${this.bluePrintData.urls[urlIndex]}${page}`;
-		console.log("DOWNLOADING PAGE... ", page);
+
+		if(!this.bluePrintData.page[category]){
+			this.bluePrintData.page[category] = 0;
+		}
+
+		const page = ++this.bluePrintData.page[category];
+		let url;
+
+		const categoryIndex = this.bluePrintData.categories.indexOf(category);
+		if(categoryIndex >= 0){
+			url = `${this.bluePrintData.urls[categoryIndex]}${page}`;
+		} else {
+			const approved = window.location.origin.includes('blueprints--') < 0 && window.location.origin.includes('localhost:') < 0;
+			url= `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
+
+			this.bluePrintsSearchedQuery = category;
+		}
+
 		this.bluePrintDownloading = true;
 
 		fetch(url)
@@ -251,7 +276,13 @@ const _B2dEditor = function () {
 		.then(prefabs => {
 			this.bluePrintDownloading = false;
 			if(!prefabs.length){
-				this.blueprintData.loadedAllPages[category] = true;
+				this.bluePrintData.loadedAllPages[category] = true;
+				if(page === 1){
+					const spinner = innerFolder.querySelector('.spinner');
+					if(spinner){
+						spinner.innerText = 'No search results..';
+					}
+				}
 				return;
 			}
 
@@ -328,10 +359,21 @@ const _B2dEditor = function () {
 					folder = targetFolder.__folders[propt];
 					self.prefabListGuiState[propt] = folder.closed;
 				}
+				self.blueprintsSearchQuery = '';
 				if(folderName === PREFABS) self.blueprintsSelectedCategory = '';
 				if(folderName === BLUEPRINTS) self.prefabSelectedCategory = '';
 				self.refreshPrefablist();
 			});
+
+			if(folderName === BLUEPRINTS){
+				folder.add(self, "blueprintsSearchQuery").name('search blueprints:').onFinishChange(function (value) {
+					if(self.blueprintsSelectedCategory !== value){
+						self.blueprintsSelectedCategory = value;
+						self.prefabSelectedCategory = '';
+						self.refreshPrefablist();
+					}
+				});
+			}
 
 			let innerFolder = folder.domElement.querySelector('ul');
 			innerFolder.classList.add(`inner-${folderName.toLowerCase()}-folder`)
