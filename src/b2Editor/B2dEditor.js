@@ -227,7 +227,7 @@ const _B2dEditor = function () {
 		.then(categories => {
 			this.bluePrintData = {categories, urls:[], page:[], loadedAllPages:{}};
 			categories.forEach(category => {
-				const url = `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&tag=${category}&page=`;
+				const url = `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&collection=${category}&page=`;
 				this.bluePrintData.urls.push(url);
 				this.bluePrintData.page.push(0);
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
@@ -271,7 +271,7 @@ const _B2dEditor = function () {
 
 				const jsonString = LZString.decompressFromEncodedURIComponent(blueprintData);
 
-				PrefabManager.prefabLibrary[prefabKey] = {json:jsonString, class:PrefabManager.basePrefab};
+				PrefabManager.prefabLibrary[prefabKey] = {json:jsonString, class:PrefabManager.basePrefab, img:`https://warze.org/static/jollyworld/blueprints/${id}.png`};
 
 			})
 			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
@@ -321,7 +321,7 @@ const _B2dEditor = function () {
 			const prefabPages = folderName === PREFABS ? [...PrefabManager.getLibraryKeys()] : (this.bluePrintData ? [...this.bluePrintData.categories] : [Settings.DEFAULT_TEXTS.downloading_blueprints]);
 			prefabPages.unshift('');
 
-			folder.add(self, folderName === PREFABS ? "prefabSelectedCategory" : "blueprintsSelectedCategory", prefabPages).name('choose category').onChange(function (value) {
+			folder.add(self, folderName === PREFABS ? "prefabSelectedCategory" : "blueprintsSelectedCategory", prefabPages).name('choose collection').onChange(function (value) {
 
 				let folder;
 				for (var propt in targetFolder.__folders) {
@@ -350,7 +350,13 @@ const _B2dEditor = function () {
 				for (let i = 0; i < targetLibrary.length; i++) {
 					const prefabName = targetLibrary[i];
 
-					let image = this.renderPrefabToImage(prefabName);
+					let image;
+					if(PrefabManager.prefabLibrary[prefabName].img){
+						image = new Image();
+						image.src = PrefabManager.prefabLibrary[prefabName].img;
+					}else{
+						image = this.renderPrefabToImage(prefabName);
+					}
 					const guiFunction = document.createElement('li');
 					guiFunction.innerHTML = '<div><img src=""></img><div class="c"><div class="button"></div></div></div>';
 					guiFunction.classList.add('cr', 'function');
@@ -398,6 +404,13 @@ const _B2dEditor = function () {
 						const x = domx / camera.scale.x - camera.x / camera.scale.x;
 						const y = domy / camera.scale.y - camera.y / camera.scale.x;
 
+
+						this.selectTool(this.tool_SELECT);
+
+						self.selectedPhysicsBodies = [];
+						self.selectedTextures = [];
+						self.selectedPrefabs = {};
+
 						if(folderName === 'Prefabs'){
 							const data = new self.prefabObject;
 							data.x = x;
@@ -405,12 +418,16 @@ const _B2dEditor = function () {
 							data.prefabName = guiFunction.getAttribute('prefabName');
 							data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
 							self.buildPrefabFromObj(data);
+
+							self.selectedPrefabs[data.key] = true;
+
 						}else if(folderName === 'Blueprints'){
 							const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[prefabName].json));
 							const buildPrefabs = [];
 							let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
 							for(let j = 0; j<allObjects.length; j++){
 								const object = allObjects[j];
+
 								const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
 								if(prefabInstanceName){
 									const targetPrefab = this.activePrefabs[prefabInstanceName];
@@ -419,10 +436,18 @@ const _B2dEditor = function () {
 										targetPrefab.x += x;
 										targetPrefab.y += y;
 									}
+									self.selectedPrefabs[prefabInstanceName] = true;
+
+								}else if(object.mySprite){
+									self.selectedPhysicsBodies.push(object);
+								} else{
+									self.selectedTextures.push(object);
 								}
 							}
 							this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
 						}
+
+						this.updateSelection();
 					}
 					guiFunction.addEventListener('click', clickFunction);
 					guiFunction.addEventListener('dragend', clickFunction);
