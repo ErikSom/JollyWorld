@@ -287,9 +287,7 @@ const _B2dEditor = function () {
 			const categoryTrimmed = category.replace(/\s+/g, '');
 			const prefabKeys = [];
 
-			if(page === 1){
-				PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = [];
-			}
+			if(page === 1) PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = [];
 
 			prefabs.forEach(prefab => {
 				const [id, blueprintName, blueprintData] = prefab;
@@ -324,7 +322,7 @@ const _B2dEditor = function () {
 
 		innerFolder.appendChild(loadingDiv);
 
-		PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category] = Settings.DEFAULT_TEXTS.downloading_blueprints;
+		if(page === 1) PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category] = Settings.DEFAULT_TEXTS.downloading_blueprints;
 	}
 
 	this.refreshPrefablist = function(){
@@ -366,9 +364,10 @@ const _B2dEditor = function () {
 				folder.add(self, "blueprintsSearchQuery").name('search blueprints:').onFinishChange(function (value) {
 						setTimeout(()=> {
 							// prevent crash on clicking next to window
-							if(self.selectedTool === self.tool_SPECIALS){
+							if(self.blueprintsSelectedCategory !== value && self.selectedTool === self.tool_SPECIALS){
 								self.blueprintsSelectedCategory = value;
 								self.prefabSelectedCategory = '';
+								ui.editorGUI.domElement.scrollTop = 0;
 								self.refreshPrefablist();
 							}
 						}, 0);
@@ -380,8 +379,6 @@ const _B2dEditor = function () {
 
 			let targetLibrary;
 
-			debugger;
-
 			if(folderName === PREFABS) targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[this.prefabSelectedCategory];
 			else if(folderName === BLUEPRINTS) targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+(this.blueprintsSelectedCategory.replace(/\s+/g, ''))];
 
@@ -391,6 +388,8 @@ const _B2dEditor = function () {
 				// download blueprints for category
 				this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder, true);
 			}else{
+
+				this.prefabImagesLoading = targetLibrary.length;
 				for (let i = 0; i < targetLibrary.length; i++) {
 					const prefabName = targetLibrary[i];
 
@@ -418,6 +417,7 @@ const _B2dEditor = function () {
 					let functionHeight = 100;
 
 					guiFunctionImg.onload = () => {
+						this.prefabImagesLoading--;
 						if(guiFunctionImg.width>guiFunctionImg.height){
 							let targetWidth = guiFunctionImg.width;
 							if(guiFunctionImg.width>maxImageWidth){
@@ -503,12 +503,11 @@ const _B2dEditor = function () {
 				if(this.blueprintsSelectedCategory && targetLibrary.length % 20 === 0 && !this.bluePrintData.loadedAllPages[this.blueprintsSelectedCategory]){
 					// add scroll detection
 					ui.editorGUI.domElement.addEventListener('scroll', ()=>{
-						console.log("SCROLL!!");
-						// if(!this.bluePrintDownloading){
-						// 	if (ui.editorGUI.domElement.offsetHeight + ui.editorGUI.domElement.scrollTop >= ui.editorGUI.domElement.scrollHeight) {
-						// 		this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder);
-						// 	}
-						// }
+						if(!this.bluePrintDownloading && !this.prefabImagesLoading){
+							if (ui.editorGUI.domElement.offsetHeight + ui.editorGUI.domElement.scrollTop >= ui.editorGUI.domElement.scrollHeight) {
+								this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder);
+							}
+						}
 					})
 				}
 			}
@@ -10487,8 +10486,6 @@ const _B2dEditor = function () {
 						}
 					}
 					worldObject = this.buildTriggerFromObj(obj);
-
-					console.log(worldObject);
 
 					if(!prefabInstanceName) jointTriggerLayer.add(worldObject.mySprite);
 
