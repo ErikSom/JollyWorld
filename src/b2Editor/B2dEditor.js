@@ -223,7 +223,7 @@ const _B2dEditor = function () {
 	this.downloadBluePrintKeys = ()=>{
 		const approved = window.location.origin.includes('blueprints--') < 0 && window.location.origin.includes('localhost:') < 0;
 		if(this.bluePrintData !== null) return;
-		fetch(`https://warze.org/blueprints/tags?approved=${+approved}`)
+		fetch(`https://warze.org/blueprints/collections?approved=${+approved}`)
 		.then(response => response.json())
 		.then(categories => {
 			this.bluePrintData = {categories, urls:[], page:{}, loadedAllPages:{}};
@@ -307,7 +307,6 @@ const _B2dEditor = function () {
 			if(this.blueprintsSelectedCategory === category){
 				this.refreshPrefablist();
 				if(page !== 1){
-					debugger;
 					const elementContainer = ui.editorGUI.domElement.querySelector('.inner-blueprints-folder');
 					const targetIndex = (page-1) * 20 + 2;
 					const targetElement = elementContainer.children[targetIndex];
@@ -381,6 +380,8 @@ const _B2dEditor = function () {
 
 			let targetLibrary;
 
+			debugger;
+
 			if(folderName === PREFABS) targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[this.prefabSelectedCategory];
 			else if(folderName === BLUEPRINTS) targetLibrary = PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+(this.blueprintsSelectedCategory.replace(/\s+/g, ''))];
 
@@ -408,8 +409,11 @@ const _B2dEditor = function () {
 					guiFunctionImg.src = image.src;
 					guiFunctionImg.setAttribute('title', prefabName);
 
+
 					const maxImageHeight = 90;
 					const maxImageWidth = 174;
+
+					guiFunctionImg.style.height = `${maxImageHeight}px`;
 
 					let functionHeight = 100;
 
@@ -499,11 +503,12 @@ const _B2dEditor = function () {
 				if(this.blueprintsSelectedCategory && targetLibrary.length % 20 === 0 && !this.bluePrintData.loadedAllPages[this.blueprintsSelectedCategory]){
 					// add scroll detection
 					ui.editorGUI.domElement.addEventListener('scroll', ()=>{
-						if(!this.bluePrintDownloading){
-							if (ui.editorGUI.domElement.offsetHeight + ui.editorGUI.domElement.scrollTop >= ui.editorGUI.domElement.scrollHeight) {
-								this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder);
-							}
-						}
+						console.log("SCROLL!!");
+						// if(!this.bluePrintDownloading){
+						// 	if (ui.editorGUI.domElement.offsetHeight + ui.editorGUI.domElement.scrollTop >= ui.editorGUI.domElement.scrollHeight) {
+						// 		this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder);
+						// 	}
+						// }
 					})
 				}
 			}
