@@ -13,7 +13,7 @@
 	<meta name="google" content="notranslate">
 	<link rel="stylesheet" href="https://warze.org/static/jollyworld/blueprints.css">
 	<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-</head>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
 <body>
 	<img src="https://warze.org/static/jollyworld/jollyblueprintssmall.png">
 	<div id="page">
@@ -30,10 +30,13 @@
 			<button class="button" id="continuebutton1" disabled onclick="goToStep(1)">Continue</button>
 		</div>
 		<div id="step2" class="section">
-			<h1>Step 2/3 - Tagging</h1>
+			<h1>Step 2/3 - Collection</h1>
 			<hr class="mainhr">
-			<div id="tags"></div>
-			<span onclick="addTag(prompt('Enter Tag Name'), true)" id="customtagtext">No fitting tag? Click here to add your own.</span>
+			<select id="collectiondropdown" onchange="selectCollection(this.value)" name="Collection">
+				<option id="customcollectionplaceholder" value="Select Collection">Select Collection</option>
+			</select>
+			<br>
+			<span onclick="setCustomCollection()" id="customcollectiontext">No fitting collection? Click here to add your own.</span>
 			<button class="button" style="display:block" id="continuebutton2" disabled onclick="goToStep(2)">Continue</button>
 		</div>
 		<div id="step3" class="section">
@@ -62,15 +65,13 @@
 		<button id="previewbutton" onclick="togglePreview()"><</button>
 		<img src="" id="previewimage">
 		<hr class="previewhr">
-		<span class="label">Selected Tag:</span>
-		<div class="tag" id="selectedtag" style="">None</div>
+		<span class="label">Selected Collection:<b id="selectedcollection">None</b></span>
 		<hr class="previewhr">
-		<span class="label">Selected Name:</span>
-		<h1 id="selectedname" style="display:inline"></h1>
+		<span class="label">Selected Name:<b id="selectedname">None</b></span>
 		<button id="uploadbutton" class="button red" onclick="upload()" disabled>Upload</button>
 	</div>
 	<img id="themebutton" src="https://warze.org/static/jollyworld/thememain.png" onclick="toggleTheme()">
 	<lottie-player id="confetti" src="https://assets8.lottiefiles.com/packages/lf20_rovf9gzu.json" background="transparent" speed="1"></lottie-player>
 	<script type="text/javascript" src="https://warze.org/static/jollyworld/blueprints.js"></script>
-</body>
+<script type="text/javascript">(function(){window['__CF$cv$params']={r:'6d6c57ddab410115',m:'atJ4_JP0VAN.466Fzl8T7FhvrPyUIOF45ZQYUE8DYo4-1643730708-0-ASi9ZHwouiE0k/nqEQj6EZ04YuF7IqwsI+RU/M7ctT+i4tPS+2Rl7wjyfSF1tkKTFibZkqRKLxuYOjJexAemzLb4hZM42Z3tktq0rQUBpgqsbZey419vG3jeSx6VompkL1veKyOMqVE6ptQ+EcdCYmzcbuxvO5SI4QLsMF7gQ7kZiUl+l06/3agp+PvzKGH2bgO5HplUPdRMwbrPi70aoNY=',s:[0xe6550f8e18,0xdee67f8a45],}})();</script></body>
 </html>
