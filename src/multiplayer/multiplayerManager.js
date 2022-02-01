@@ -3,7 +3,7 @@ import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
-import { RippleCharacter } from './rippleCharacter';
+import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
 
@@ -70,6 +70,8 @@ export const autoConnectLobby = id => {
 export const createLobby = () => {
 	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
 	server.createLobby();
+
+	prepareSkinForSending();
 }
 
 export const setLobbyStateReady = ready => {
@@ -330,6 +332,55 @@ export const updateMultiplayer = () => {
 	}
 
 	updateDebugData();
+}
+
+
+const prepareSkinForSending = () => {
+	const skinCanvas = document.createElement('canvas');
+	skinCanvas.width = skinCanvas.height = 256;
+	const skinContext = skinCanvas.getContext('2d', {alpha:true});
+	document.body.appendChild(skinCanvas);
+
+
+	skinCanvas.style = `
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		z-index: 9999999;
+	`
+
+	// draw parts
+	const skin = 0;
+	const targetFrame = String(skin).padStart(4, '0');
+	Object.keys(multiplayerAtlas.frames).forEach(partKey => {
+		const resourceName = `${partKey}${targetFrame}`;
+		const {x, y} = multiplayerAtlas.frames[partKey].frame;
+
+		const texture = PIXI.Texture.from(resourceName);
+
+		const imageResource = texture.baseTexture.resource.source;
+		const sourceFrame = texture.frame;
+
+		skinContext.drawImage(imageResource, sourceFrame.x, sourceFrame.y, sourceFrame.width, sourceFrame.height, x, y, sourceFrame.width, sourceFrame.height);
+	});
+
+	// MAKING A BLOB
+	// const blob = $0.toBlob(blob => {
+	// 	window.blobby = blob;
+	// 	}, 'image/png');
+
+
+	// ON THE OTHER SIDE
+	// var myImage = new Image();
+	// var objectURL = URL.createObjectURL(window.blobby);
+	// myImage.src = objectURL;
+
+	// document.body.appendChild(myImage)
+
+	console.log("************ CANVAS *************");
+	console.log(skinCanvas);
+	console.log("*********************************");
+
 }
 
 const fetchLevelInfo = async id => {

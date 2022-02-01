@@ -42,7 +42,7 @@ export class RippleCharacter {
 		const key = `character_${this.id}`;
 		loader.add(key, url);
 		loader.load((_, resources) =>{
-			this.spriteSheet = new PIXI.Spritesheet(resources[key].texture, atlasData);
+			this.spriteSheet = new PIXI.Spritesheet(resources[key].texture, multiplayerAtlas);
 			this.spriteSheet.parse(()=>{
 				this.buildSprite();
 			})
@@ -242,209 +242,119 @@ class SyncObject {
 	}
 }
 
-
-const atlasData = {
+export const multiplayerAtlas = {
 	"frames": {
-
-		"Mouth_Idle": {
-			"frame": {
-				"x": 209,
-				"y": 139,
-				"w": 43,
-				"h": 31
-			},
+		"Mouth_Idle":
+		{
+			"frame": {"x":178,"y":198,"w":43,"h":31},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 43,
-				"h": 31
-			},
-			"sourceSize": {
-				"w": 43,
-				"h": 31
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
+			"sourceSize": {"w":43,"h":31}
 		},
-		"Mouth_Pain": {
-			"frame": {
-				"x": 2,
-				"y": 114,
-				"w": 43,
-				"h": 31
-			},
+		"Mouth_Pain":
+		{
+			"frame": {"x":88,"y":190,"w":43,"h":31},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 43,
-				"h": 31
-			},
-			"sourceSize": {
-				"w": 43,
-				"h": 31
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
+			"sourceSize": {"w":43,"h":31}
 		},
-		"Mouth_Special": {
-			"frame": {
-				"x": 47,
-				"y": 114,
-				"w": 43,
-				"h": 31
-			},
+		"Mouth_Special":
+		{
+			"frame": {"x":133,"y":190,"w":43,"h":31},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 43,
-				"h": 31
-			},
-			"sourceSize": {
-				"w": 43,
-				"h": 31
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
+			"sourceSize": {"w":43,"h":31}
 		},
-		"Normal_Arm": {
-			"frame": {
-				"x": 170,
-				"y": 101,
-				"w": 37,
-				"h": 58
-			},
+		"Normal_Arm":
+		{
+			"frame": {"x":88,"y":115,"w":36,"h":58},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 37,
-				"h": 58
-			},
-			"sourceSize": {
-				"w": 37,
-				"h": 58
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":36,"h":58},
+			"sourceSize": {"w":36,"h":58}
 		},
-		"Normal_Core": {
-			"frame": {
-				"x": 2,
-				"y": 2,
-				"w": 122,
-				"h": 110
-			},
+		"Normal_Belly":
+		{
+			"frame": {"x":2,"y":115,"w":84,"h":48},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 122,
-				"h": 110
-			},
-			"sourceSize": {
-				"w": 122,
-				"h": 110
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":84,"h":48},
+			"sourceSize": {"w":84,"h":48}
 		},
-		"Normal_Eye": {
-			"frame": {
-				"x": 225,
-				"y": 2,
-				"w": 23,
-				"h": 23
-			},
+		"Normal_Core":
+		{
+			"frame": {"x":2,"y":2,"w":122,"h":111},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 23,
-				"h": 23
-			},
-			"sourceSize": {
-				"w": 23,
-				"h": 23
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":122,"h":111},
+			"sourceSize": {"w":122,"h":111}
 		},
-		"Normal_Eye_Closed": {
-			"frame": {
-				"x": 225,
-				"y": 27,
-				"w": 23,
-				"h": 22
-			},
+		"Normal_Eye":
+		{
+			"frame": {"x":224,"y":2,"w":23,"h":23},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 23,
-				"h": 22
-			},
-			"sourceSize": {
-				"w": 23,
-				"h": 22
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":23,"h":23},
+			"sourceSize": {"w":23,"h":23}
 		},
-		"Normal_Hand": {
-			"frame": {
-				"x": 209,
-				"y": 101,
-				"w": 40,
-				"h": 36
-			},
+		"Normal_Eye_Closed":
+		{
+			"frame": {"x":224,"y":27,"w":23,"h":23},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 40,
-				"h": 36
-			},
-			"sourceSize": {
-				"w": 40,
-				"h": 36
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":23,"h":23},
+			"sourceSize": {"w":23,"h":23}
 		},
-		"Normal_Head_Idle": {
-			"frame": {
-				"x": 126,
-				"y": 2,
-				"w": 97,
-				"h": 97
-			},
+		"Normal_Feet":
+		{
+			"frame": {"x":182,"y":174,"w":62,"h":22},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 97,
-				"h": 97
-			},
-			"sourceSize": {
-				"w": 97,
-				"h": 97
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":62,"h":22},
+			"sourceSize": {"w":62,"h":22}
 		},
-		"Normal_Shoulder": {
-			"frame": {
-				"x": 126,
-				"y": 101,
-				"w": 42,
-				"h": 71
-			},
+		"Normal_Hand":
+		{
+			"frame": {"x":46,"y":165,"w":40,"h":36},
 			"rotated": false,
 			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 42,
-				"h": 71
-			},
-			"sourceSize": {
-				"w": 42,
-				"h": 71
-			}
+			"spriteSourceSize": {"x":0,"y":0,"w":40,"h":36},
+			"sourceSize": {"w":40,"h":36}
+		},
+		"Normal_Head_Idle":
+		{
+			"frame": {"x":126,"y":2,"w":96,"h":96},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
+			"sourceSize": {"w":96,"h":96}
+		},
+		"Normal_Leg":
+		{
+			"frame": {"x":182,"y":100,"w":50,"h":72},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":50,"h":72},
+			"sourceSize": {"w":50,"h":72}
+		},
+		"Normal_Shoulder":
+		{
+			"frame": {"x":2,"y":165,"w":42,"h":70},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":42,"h":70},
+			"sourceSize": {"w":42,"h":70}
+		},
+		"Normal_Thigh":
+		{
+			"frame": {"x":126,"y":100,"w":54,"h":88},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":54,"h":88},
+			"sourceSize": {"w":54,"h":88}
 		}
 	},
 	"meta": {
@@ -452,10 +362,7 @@ const atlasData = {
 		"version": "21.0.7.42652",
 		"image": "Multiplayer_Character.png",
 		"format": "RGBA8888",
-		"size": {
-			"w": 256,
-			"h": 256
-		},
+		"size": {"w":256,"h":256},
 		"scale": "1"
 	}
 }
