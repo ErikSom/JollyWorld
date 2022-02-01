@@ -469,6 +469,9 @@ const _B2dEditor = function () {
 
 							fetch(`https://warze.org/blueprints/getdata?id=${fetchID}`).then(response => response.text()).then(blueprintData => {
 
+								// exit if we are doing weird stuff during loading
+								if (game.gameState !== game.GAMESTATE_EDITOR || game.run || this.selectedTool !== this.tool_SELECT) return;
+
 								const jsonString = LZString.decompressFromEncodedURIComponent(blueprintData);
 								console.log("*** DOWNLOADED JSON:", jsonString)
 
