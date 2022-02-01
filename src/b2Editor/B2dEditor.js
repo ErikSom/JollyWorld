@@ -228,7 +228,7 @@ const _B2dEditor = function () {
 		.then(categories => {
 			this.bluePrintData = {categories, urls:[], page:{}, loadedAllPages:{}};
 			categories.forEach((category, i) => {
-				const url = `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&collection=${category}&page=`;
+				const url = `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&collection=${category}&page=`;
 				this.bluePrintData.urls.push(url);
 				this.bluePrintData.page[category] = 0;
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
@@ -264,7 +264,7 @@ const _B2dEditor = function () {
 			url = `${this.bluePrintData.urls[categoryIndex]}${page}`;
 		} else {
 			const approved = window.location.origin.includes('blueprints--') < 0 && window.location.origin.includes('localhost:') < 0;
-			url= `https://warze.org/blueprints/request?approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
+			url= `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
 
 			this.bluePrintsSearchedQuery = category;
 		}
@@ -290,17 +290,14 @@ const _B2dEditor = function () {
 			if(page === 1) PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = [];
 
 			prefabs.forEach(prefab => {
-				const [id, blueprintName, blueprintData] = prefab;
+				const [id, blueprintName, fetchID] = prefab;
 
 				const trimmedName = blueprintName.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 				const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
 				prefabKeys.push(prefabKey);
+				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://warze.org/static/jollyworld/blueprints/${id}.png`};
+			});
 
-				const jsonString = LZString.decompressFromEncodedURIComponent(blueprintData);
-
-				PrefabManager.prefabLibrary[prefabKey] = {json:jsonString, class:PrefabManager.basePrefab, img:`https://warze.org/static/jollyworld/blueprints/${id}.png`};
-
-			})
 			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
 			if(this.blueprintsSelectedCategory === category){
 				this.refreshPrefablist();
@@ -318,6 +315,7 @@ const _B2dEditor = function () {
 		});
 		const loadingDiv = document.createElement('div');
 		loadingDiv.innerText = page === 1 ? 'Loading...' : 'Loading more...';
+		loadingDiv.style.marginLeft = '5px';
 		loadingDiv.classList.add('spinner');
 
 		innerFolder.appendChild(loadingDiv);
@@ -348,6 +346,7 @@ const _B2dEditor = function () {
 			prefabPages.unshift('');
 
 			folder.add(self, folderName === PREFABS ? "prefabSelectedCategory" : "blueprintsSelectedCategory", prefabPages).name('choose collection').onChange(function (value) {
+				if(value === Settings.DEFAULT_TEXTS.downloading_blueprints) return;
 
 				let folder;
 				for (var propt in targetFolder.__folders) {
@@ -408,11 +407,8 @@ const _B2dEditor = function () {
 					guiFunctionImg.src = image.src;
 					guiFunctionImg.setAttribute('title', prefabName);
 
-
 					const maxImageHeight = 90;
 					const maxImageWidth = 174;
-
-					guiFunctionImg.style.height = `${maxImageHeight}px`;
 
 					let functionHeight = 100;
 
@@ -469,29 +465,37 @@ const _B2dEditor = function () {
 							self.selectedPrefabs[data.key] = true;
 
 						}else if(folderName === 'Blueprints'){
-							const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[prefabName].json));
-							const buildPrefabs = [];
-							let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
-							for(let j = 0; j<allObjects.length; j++){
-								const object = allObjects[j];
+							const fetchID = PrefabManager.prefabLibrary[prefabName].json;
 
-								const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
-								if(prefabInstanceName){
-									const targetPrefab = this.activePrefabs[prefabInstanceName];
-									if(!buildPrefabs.includes(targetPrefab)){
-										buildPrefabs.push(targetPrefab);
-										targetPrefab.x += x;
-										targetPrefab.y += y;
+							fetch(`https://warze.org/blueprints/getdata?id=${fetchID}`).then(response => response.text()).then(blueprintData => {
+
+								const jsonString = LZString.decompressFromEncodedURIComponent(blueprintData);
+								console.log("*** DOWNLOADED JSON:", jsonString)
+
+								const prefabLookupObject = this.buildJSON(JSON.parse(jsonString));
+								const buildPrefabs = [];
+								let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
+								for(let j = 0; j<allObjects.length; j++){
+									const object = allObjects[j];
+
+									const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
+									if(prefabInstanceName){
+										const targetPrefab = this.activePrefabs[prefabInstanceName];
+										if(!buildPrefabs.includes(targetPrefab)){
+											buildPrefabs.push(targetPrefab);
+											targetPrefab.x += x;
+											targetPrefab.y += y;
+										}
+										self.selectedPrefabs[prefabInstanceName] = true;
+
+									}else if(object.mySprite){
+										self.selectedPhysicsBodies.push(object);
+									} else{
+										self.selectedTextures.push(object);
 									}
-									self.selectedPrefabs[prefabInstanceName] = true;
-
-								}else if(object.mySprite){
-									self.selectedPhysicsBodies.push(object);
-								} else{
-									self.selectedTextures.push(object);
 								}
-							}
-							this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
+								this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
+							})
 						}
 
 						this.updateSelection();
