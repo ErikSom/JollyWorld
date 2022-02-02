@@ -221,7 +221,7 @@ const _B2dEditor = function () {
 	this.bluePrintData = null;
 	this.bluePrintDownloading = false;
 	this.downloadBluePrintKeys = ()=>{
-		const approved = window.location.origin.includes('blueprints--') < 0 && window.location.origin.includes('localhost:') < 0;
+		const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
 		if(this.bluePrintData !== null) return;
 		fetch(`https://warze.org/blueprints/collections?approved=${+approved}`)
 		.then(response => response.json())
@@ -263,7 +263,7 @@ const _B2dEditor = function () {
 		if(categoryIndex >= 0){
 			url = `${this.bluePrintData.urls[categoryIndex]}${page}`;
 		} else {
-			const approved = window.location.origin.includes('blueprints--') < 0 && window.location.origin.includes('localhost:') < 0;
+			const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
 			url= `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
 
 			this.bluePrintsSearchedQuery = category;
