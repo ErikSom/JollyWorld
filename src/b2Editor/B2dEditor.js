@@ -3179,7 +3179,7 @@ const _B2dEditor = function () {
 
 	this.onMouseDown = function (evt) {
 		const camera = B2dEditor.container.camera || B2dEditor.container;
-		if (this.editing) {
+		if (this.editing && evt.which !== 2) {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
 			} else if (this.selectingTriggerTarget) {
