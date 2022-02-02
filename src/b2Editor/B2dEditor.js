@@ -10952,7 +10952,7 @@ const _B2dEditor = function () {
 				return image;
 			}
 		}catch(err){
-			console.warn("IMAGE PARSING ERROR:", err)
+			console.warn("JOLLY IMAGE PARSING ERROR:", err);
 			return null
 		}
 	}
