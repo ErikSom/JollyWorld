@@ -2,6 +2,7 @@ import { formatDMY } from '../b2Editor/utils/formatString';
 import '../css/Lobby.scss'
 import { game } from '../Game';
 import { adminStartLoadLevel, LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
+import { multiplayerAtlas } from '../multiplayer/rippleCharacter';
 import { Settings } from '../Settings';
 import { backendManager } from '../utils/BackendManager';
 import { localize } from '../utils/Localization';
@@ -141,8 +142,9 @@ export const updateLobbyUI = () => {
 		admin: multiplayerState.admin,
 		playerState: {
 			name: backendManager.userData?.username || multiplayerState.fakeUsername,
-			lobbyState: multiplayerState.lobbyState
-		}
+			lobbyState: multiplayerState.lobbyState,
+		},
+		skinBlob: multiplayerState.skinBlob
 	}
 
 	while(entries.children.length>1){
@@ -154,10 +156,22 @@ export const updateLobbyUI = () => {
 
 	let playersReady = 1;
 
-	players.forEach(({ admin, playerState }, index) => {
+	players.forEach(({ admin, playerState, skinBlob }, index) => {
 		const entry = template.cloneNode(true);
 		entry.style.display = 'flex';
 		entry.classList.remove('entry-template');
+
+		const profile = entry.querySelector('.profile');
+
+		if(skinBlob){
+			const resolution = 2;
+			profile.style.backgroundImage = `url(${URL.createObjectURL(skinBlob)})`;
+			profile.style.backgroundSize = `${256 / resolution}px`;
+			const frame = multiplayerAtlas.frames.profile.frame;
+			profile.style.backgroundPosition = `${frame.x / resolution}px ${frame.y / resolution}px`;
+		}else{
+			profile.style.backgroundImage = '';
+		}
 
 		const username = entry.querySelector('.text-player-name')
 		username.innerText = playerState.name;

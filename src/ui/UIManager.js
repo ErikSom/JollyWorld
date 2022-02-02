@@ -47,7 +47,7 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { createLobby, LOBBY_STATE, multiplayerState, selectMultiplayerLevel } from '../multiplayer/multiplayerManager'
+import { createLobby, LOBBY_STATE, multiplayerState, selectMultiplayerLevel, startMultiplayer } from '../multiplayer/multiplayerManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -142,6 +142,7 @@ function UIManager() {
             const multiplayerBut = grid.querySelector('.multiplayer-but');
             multiplayerBut.onclick = () => {
                 this.setMainMenuActive('multiplayer');
+                startMultiplayer();
             }
 
             const editorBut = grid.querySelector('.editor-but');

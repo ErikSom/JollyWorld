@@ -2,6 +2,7 @@ import { game } from '../Game'
 import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
+import { getModdedPortrait } from '../utils/ModManager';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
@@ -32,6 +33,7 @@ export const multiplayerState = {
 	selectedLevel: '',
 	selectedLevelData: null,
 	lobbyState: LOBBY_STATE.OFFLINE,
+	skinBlob: null,
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
 
@@ -49,6 +51,8 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.START_LOAD_LEVEL, handleStartLoadLevel);
 
 	if(multiplayerState.debug) document.body.appendChild(debugWindow);
+
+	prepareSkinForSending();
 }
 
 export const networkReady = () => {
@@ -70,8 +74,6 @@ export const autoConnectLobby = id => {
 export const createLobby = () => {
 	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
 	server.createLobby();
-
-	prepareSkinForSending();
 }
 
 export const setLobbyStateReady = ready => {
@@ -155,7 +157,7 @@ const playerLeft = ({id}) => {
 
 const playerIntroduction = ({peer, buffer, admin}) => {
 	let introductionData = null;
-	
+
 	if(!admin) introductionData = dataFromIntroductionBuffer(buffer);
 	else introductionData = dataFromAdminIntroductionBuffer(buffer);
 
@@ -185,7 +187,6 @@ const handleChangeLevel = ({buffer}) => {
 
 const handleStartLoadLevel = async ({buffer}) => {
 	const { levelID } = dataFromStartLoadLevelBuffer(buffer);
-	console.log("START LOAD LEVEL:", levelID);
 	startLoadLevel(levelID);
 }
 
@@ -335,7 +336,10 @@ export const updateMultiplayer = () => {
 }
 
 
-const prepareSkinForSending = () => {
+const prepareSkinForSending = async () => {
+
+	if(multiplayerState.skinBlob) return multiplayerState.skinBlob;
+
 	const skinCanvas = document.createElement('canvas');
 	skinCanvas.width = skinCanvas.height = 256;
 	const skinContext = skinCanvas.getContext('2d', {alpha:true});
@@ -348,27 +352,45 @@ const prepareSkinForSending = () => {
 		left: 0;
 		z-index: 9999999;
 	`
+	const skin = game.selectedCharacter;
+
+	//
+	const profilePic = await getModdedPortrait(`profile${skin+1}.png`, 'assets/images/portraits/');
+	const profileImage = new Image();
+	await new Promise(resolve => {
+		profileImage.src = profilePic;
+		profileImage.onload = resolve;
+	});
 
 	// draw parts
-	const skin = 0;
 	const targetFrame = String(skin).padStart(4, '0');
 	Object.keys(multiplayerAtlas.frames).forEach(partKey => {
 		const resourceName = `${partKey}${targetFrame}`;
 		const {x, y} = multiplayerAtlas.frames[partKey].frame;
 
-		const texture = PIXI.Texture.from(resourceName);
-
-		const imageResource = texture.baseTexture.resource.source;
-		const sourceFrame = texture.frame;
+		let imageResource, sourceFrame;
+		if(partKey === 'profile'){
+			imageResource = profileImage;
+			sourceFrame = profileImage;
+		} else {
+			const texture = PIXI.Texture.from(resourceName);
+			imageResource = texture.baseTexture.resource.source;
+			sourceFrame = texture.frame;
+		}
 
 		skinContext.drawImage(imageResource, sourceFrame.x, sourceFrame.y, sourceFrame.width, sourceFrame.height, x, y, sourceFrame.width, sourceFrame.height);
 	});
 
-	// MAKING A BLOB
-	// const blob = $0.toBlob(blob => {
-	// 	window.blobby = blob;
-	// 	}, 'image/png');
+	await new Promise(resolve => {
+		skinCanvas.toBlob(blob => {
+			multiplayerState.skinBlob = blob;
+			resolve();
+		}, 'image/png')
+	});
 
+	updateLobbyUI();
+
+	return multiplayerState.skinBlob;
 
 	// ON THE OTHER SIDE
 	// var myImage = new Image();
@@ -376,11 +398,6 @@ const prepareSkinForSending = () => {
 	// myImage.src = objectURL;
 
 	// document.body.appendChild(myImage)
-
-	console.log("************ CANVAS *************");
-	console.log(skinCanvas);
-	console.log("*********************************");
-
 }
 
 const fetchLevelInfo = async id => {
@@ -462,7 +479,4 @@ const updateDebugData = () =>{
 			<li>Y:${player.sprite.position.y}</li>
 		</ul>`
 	})
-
 }
-
-startMultiplayer();

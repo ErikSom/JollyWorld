@@ -246,7 +246,7 @@ export const multiplayerAtlas = {
 	"frames": {
 		"Mouth_Idle":
 		{
-			"frame": {"x":178,"y":198,"w":43,"h":31},
+			"frame": {"x":156,"y":199,"w":43,"h":31},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
@@ -254,7 +254,7 @@ export const multiplayerAtlas = {
 		},
 		"Mouth_Pain":
 		{
-			"frame": {"x":88,"y":190,"w":43,"h":31},
+			"frame": {"x":108,"y":205,"w":43,"h":31},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
@@ -262,7 +262,7 @@ export const multiplayerAtlas = {
 		},
 		"Mouth_Special":
 		{
-			"frame": {"x":133,"y":190,"w":43,"h":31},
+			"frame": {"x":208,"y":185,"w":43,"h":31},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
@@ -270,7 +270,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Arm":
 		{
-			"frame": {"x":88,"y":115,"w":36,"h":58},
+			"frame": {"x":208,"y":125,"w":36,"h":58},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":36,"h":58},
@@ -278,7 +278,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Belly":
 		{
-			"frame": {"x":2,"y":115,"w":84,"h":48},
+			"frame": {"x":156,"y":75,"w":84,"h":48},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":84,"h":48},
@@ -294,7 +294,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Eye":
 		{
-			"frame": {"x":224,"y":2,"w":23,"h":23},
+			"frame": {"x":126,"y":75,"w":23,"h":23},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":23,"h":23},
@@ -302,7 +302,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Eye_Closed":
 		{
-			"frame": {"x":224,"y":27,"w":23,"h":23},
+			"frame": {"x":201,"y":218,"w":23,"h":23},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":23,"h":23},
@@ -310,7 +310,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Feet":
 		{
-			"frame": {"x":182,"y":174,"w":62,"h":22},
+			"frame": {"x":44,"y":213,"w":62,"h":22},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":62,"h":22},
@@ -318,7 +318,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Hand":
 		{
-			"frame": {"x":46,"y":165,"w":40,"h":36},
+			"frame": {"x":2,"y":213,"w":40,"h":36},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":40,"h":36},
@@ -326,7 +326,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Head_Idle":
 		{
-			"frame": {"x":126,"y":2,"w":96,"h":96},
+			"frame": {"x":2,"y":115,"w":96,"h":96},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
@@ -334,7 +334,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Leg":
 		{
-			"frame": {"x":182,"y":100,"w":50,"h":72},
+			"frame": {"x":156,"y":125,"w":50,"h":72},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":50,"h":72},
@@ -342,7 +342,7 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Shoulder":
 		{
-			"frame": {"x":2,"y":165,"w":42,"h":70},
+			"frame": {"x":199,"y":2,"w":42,"h":70},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":42,"h":70},
@@ -350,11 +350,19 @@ export const multiplayerAtlas = {
 		},
 		"Normal_Thigh":
 		{
-			"frame": {"x":126,"y":100,"w":54,"h":88},
+			"frame": {"x":100,"y":115,"w":54,"h":88},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {"x":0,"y":0,"w":54,"h":88},
 			"sourceSize": {"w":54,"h":88}
+		},
+		"profile":
+		{
+			"frame": {"x":126,"y":2,"w":71,"h":71},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":71,"h":71},
+			"sourceSize": {"w":71,"h":71}
 		}
 	},
 	"meta": {
