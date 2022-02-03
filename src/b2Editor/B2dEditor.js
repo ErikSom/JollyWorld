@@ -217,48 +217,110 @@ const _B2dEditor = function () {
 	this.prefabListGuiState = {};
 	this.prefabSelectedCategory = '';
 	this.blueprintsSelectedCategory = '';
+	this.blueprintsSearchQuery = '';
 	this.bluePrintData = null;
+	this.bluePrintDownloading = false;
 	this.downloadBluePrintKeys = ()=>{
+		const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
 		if(this.bluePrintData !== null) return;
-		fetch(`assets/blueprints/${hashName('blueprints.json')}`)
+		fetch(`https://warze.org/blueprints/collections?approved=${+approved}`)
 		.then(response => response.json())
-		.then(data => {
-			this.bluePrintData = {categories:[], urls:[]};
-			if(!data.files) return;
-			data.files.forEach(blueprint => {
-				const [name, url] = blueprint;
-				this.bluePrintData.categories.push(name.toLowerCase());
+		.then(categories => {
+			this.bluePrintData = {categories, urls:[], page:{}, loadedAllPages:{}};
+			categories.forEach((category, i) => {
+				const url = `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&collection=${category}&page=`;
 				this.bluePrintData.urls.push(url);
+				this.bluePrintData.page[category] = 0;
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
 				// PrefabManager.prefabLibrary[PrefabManager.LIBRARY_BLUEPRINTS+obj.prefabName].json
 			})
+			// this is for search queries
+			this.bluePrintData.page[-1] = 0;
 			this.refreshPrefablist();
 		});
 		this.bluePrintData = false;
 	}
 	
-	this.downloadBluePrints = category => {
-		if(Array.isArray(PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category])) return;
-		const urlIndex = this.bluePrintData.categories.indexOf(category);
-		const url = this.bluePrintData.urls[urlIndex];
-		if(url){
-			fetch(`assets/blueprints/${url}`)
-			.then(response => response.json())
-			.then(data => {
-				const prefabNames = Object.keys(data);
-				const prefabKeys = [];
-				const categoryTrimmed = category.replace(/\s+/g, '');
-				prefabNames.forEach(prefabName => {
-					const trimmedName = prefabName.replace(/\s+/g, '');
-					const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
-					prefabKeys.push(prefabKey);
-					PrefabManager.prefabLibrary[prefabKey] = {json:data[prefabName], class:PrefabManager.basePrefab};
-				})
-				PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = prefabKeys;
-				this.refreshPrefablist();
-			});
+	this.downloadBluePrints = (category, innerFolder, init) => {
+		if(this.bluePrintsSearchedQuery && this.bluePrintsSearchedQuery !== category){
+			delete this.bluePrintData.page[this.bluePrintsSearchedQuery];
+			delete this.bluePrintData.loadedAllPages[this.bluePrintsSearchedQuery];
+			delete this.bluePrintsSearchedQuery;
+
+			// consider cleaning up data in PrefabManager.prefabLibrary (its a mess >_< );
 		}
-		PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category] = Settings.DEFAULT_TEXTS.downloading_blueprints;
+
+		if(init && Array.isArray(PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category])) return;
+
+		if(!this.bluePrintData.page[category]){
+			this.bluePrintData.page[category] = 0;
+		}
+
+		const page = ++this.bluePrintData.page[category];
+		let url;
+
+		const categoryIndex = this.bluePrintData.categories.indexOf(category);
+		if(categoryIndex >= 0){
+			url = `${this.bluePrintData.urls[categoryIndex]}${page}`;
+		} else {
+			const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
+			url= `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
+
+			this.bluePrintsSearchedQuery = category;
+		}
+
+		this.bluePrintDownloading = true;
+
+		fetch(url)
+		.then(response => response.json())
+		.then(prefabs => {
+			this.bluePrintDownloading = false;
+			if(!prefabs.length){
+				this.bluePrintData.loadedAllPages[category] = true;
+				const spinner = innerFolder.querySelector('.spinner');
+				if(spinner){
+					spinner.innerText = 'No more results..';
+				}
+				return;
+			}
+
+			const categoryTrimmed = category.replace(/\s+/g, '');
+			const prefabKeys = [];
+
+			if(page === 1) PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed] = [];
+
+			prefabs.forEach(prefab => {
+				const [id, blueprintName, fetchID] = prefab;
+
+				const trimmedName = blueprintName.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
+				const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
+				prefabKeys.push(prefabKey);
+				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://warze.org/static/jollyworld/blueprints/${id}.png`};
+			});
+
+			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
+			if(this.blueprintsSelectedCategory === category){
+				this.refreshPrefablist();
+				if(page !== 1){
+					const elementContainer = ui.editorGUI.domElement.querySelector('.inner-blueprints-folder');
+					const targetIndex = (page-1) * 20 + 2;
+					const targetElement = elementContainer.children[targetIndex];
+					if(targetElement){
+						setTimeout(()=>{
+							targetElement.scrollIntoView();
+						}, 0);
+					}
+				}
+			}
+		});
+		const loadingDiv = document.createElement('div');
+		loadingDiv.innerText = page === 1 ? 'Loading...' : 'Loading more...';
+		loadingDiv.style.marginLeft = '5px';
+		loadingDiv.classList.add('spinner');
+
+		innerFolder.appendChild(loadingDiv);
+
+		if(page === 1) PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+category] = Settings.DEFAULT_TEXTS.downloading_blueprints;
 	}
 
 	this.refreshPrefablist = function(){
@@ -283,19 +345,36 @@ const _B2dEditor = function () {
 			const prefabPages = folderName === PREFABS ? [...PrefabManager.getLibraryKeys()] : (this.bluePrintData ? [...this.bluePrintData.categories] : [Settings.DEFAULT_TEXTS.downloading_blueprints]);
 			prefabPages.unshift('');
 
-			folder.add(self, folderName === PREFABS ? "prefabSelectedCategory" : "blueprintsSelectedCategory", prefabPages).name('choose category').onChange(function (value) {
+			folder.add(self, folderName === PREFABS ? "prefabSelectedCategory" : "blueprintsSelectedCategory", prefabPages).name('choose collection').onChange(function (value) {
+				if(value === Settings.DEFAULT_TEXTS.downloading_blueprints) return;
 
 				let folder;
 				for (var propt in targetFolder.__folders) {
 					folder = targetFolder.__folders[propt];
 					self.prefabListGuiState[propt] = folder.closed;
 				}
+				self.blueprintsSearchQuery = '';
 				if(folderName === PREFABS) self.blueprintsSelectedCategory = '';
 				if(folderName === BLUEPRINTS) self.prefabSelectedCategory = '';
 				self.refreshPrefablist();
 			});
 
+			if(folderName === BLUEPRINTS){
+				folder.add(self, "blueprintsSearchQuery").name('search blueprints:').onFinishChange(function (value) {
+						setTimeout(()=> {
+							// prevent crash on clicking next to window
+							if(self.blueprintsSelectedCategory !== value && self.selectedTool === self.tool_SPECIALS){
+								self.blueprintsSelectedCategory = value;
+								self.prefabSelectedCategory = '';
+								ui.editorGUI.domElement.scrollTop = 0;
+								self.refreshPrefablist();
+							}
+						}, 0);
+				});
+			}
+
 			let innerFolder = folder.domElement.querySelector('ul');
+			innerFolder.classList.add(`inner-${folderName.toLowerCase()}-folder`)
 
 			let targetLibrary;
 
@@ -306,12 +385,20 @@ const _B2dEditor = function () {
 				// do nothing
 			}else if(folderName === BLUEPRINTS && (!targetLibrary || targetLibrary === Settings.DEFAULT_TEXTS.downloading_blueprints)){
 				// download blueprints for category
-				this.downloadBluePrints(this.blueprintsSelectedCategory);
+				this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder, true);
 			}else{
+
+				this.prefabImagesLoading = targetLibrary.length;
 				for (let i = 0; i < targetLibrary.length; i++) {
 					const prefabName = targetLibrary[i];
 
-					let image = this.renderPrefabToImage(prefabName);
+					let image;
+					if(PrefabManager.prefabLibrary[prefabName].img){
+						image = new Image();
+						image.src = PrefabManager.prefabLibrary[prefabName].img;
+					}else{
+						image = this.renderPrefabToImage(prefabName);
+					}
 					const guiFunction = document.createElement('li');
 					guiFunction.innerHTML = '<div><img src=""></img><div class="c"><div class="button"></div></div></div>';
 					guiFunction.classList.add('cr', 'function');
@@ -326,6 +413,7 @@ const _B2dEditor = function () {
 					let functionHeight = 100;
 
 					guiFunctionImg.onload = () => {
+						this.prefabImagesLoading--;
 						if(guiFunctionImg.width>guiFunctionImg.height){
 							let targetWidth = guiFunctionImg.width;
 							if(guiFunctionImg.width>maxImageWidth){
@@ -359,6 +447,13 @@ const _B2dEditor = function () {
 						const x = domx / camera.scale.x - camera.x / camera.scale.x;
 						const y = domy / camera.scale.y - camera.y / camera.scale.x;
 
+
+						this.selectTool(this.tool_SELECT);
+
+						self.selectedPhysicsBodies = [];
+						self.selectedTextures = [];
+						self.selectedPrefabs = {};
+
 						if(folderName === 'Prefabs'){
 							const data = new self.prefabObject;
 							data.x = x;
@@ -366,27 +461,61 @@ const _B2dEditor = function () {
 							data.prefabName = guiFunction.getAttribute('prefabName');
 							data.settings = JSON.parse(JSON.stringify(PrefabManager.prefabLibrary[data.prefabName].class.settings));
 							self.buildPrefabFromObj(data);
+
+							self.selectedPrefabs[data.key] = true;
+
 						}else if(folderName === 'Blueprints'){
-							const prefabLookupObject = this.buildJSON(JSON.parse(PrefabManager.prefabLibrary[prefabName].json));
-							const buildPrefabs = [];
-							let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
-							for(let j = 0; j<allObjects.length; j++){
-								const object = allObjects[j];
-								const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
-								if(prefabInstanceName){
-									const targetPrefab = this.activePrefabs[prefabInstanceName];
-									if(!buildPrefabs.includes(targetPrefab)){
-										buildPrefabs.push(targetPrefab);
-										targetPrefab.x += x;
-										targetPrefab.y += y;
+							const fetchID = PrefabManager.prefabLibrary[prefabName].json;
+
+							fetch(`https://warze.org/blueprints/getdata?id=${fetchID}`).then(response => response.text()).then(blueprintData => {
+
+								// exit if we are doing weird stuff during loading
+								if (game.gameState !== game.GAMESTATE_EDITOR || game.run || this.selectedTool !== this.tool_SELECT) return;
+
+								const jsonString = LZString.decompressFromEncodedURIComponent(blueprintData);
+								console.log("*** DOWNLOADED JSON:", jsonString)
+
+								const prefabLookupObject = this.buildJSON(JSON.parse(jsonString));
+								const buildPrefabs = [];
+								let allObjects = [].concat(prefabLookupObject._bodies, prefabLookupObject._textures, prefabLookupObject._joints)
+								for(let j = 0; j<allObjects.length; j++){
+									const object = allObjects[j];
+
+									const prefabInstanceName = object.mySprite ? object.mySprite.data.prefabInstanceName : object.data.prefabInstanceName;
+									if(prefabInstanceName){
+										const targetPrefab = this.activePrefabs[prefabInstanceName];
+										if(!buildPrefabs.includes(targetPrefab)){
+											buildPrefabs.push(targetPrefab);
+											targetPrefab.x += x;
+											targetPrefab.y += y;
+										}
+										self.selectedPrefabs[prefabInstanceName] = true;
+
+									}else if(object.mySprite){
+										self.selectedPhysicsBodies.push(object);
+									} else{
+										self.selectedTextures.push(object);
 									}
 								}
-							}
-							this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
+								this.applyToObjects(this.TRANSFORM_MOVE, {x, y}, allObjects);
+							})
 						}
+
+						this.updateSelection();
 					}
 					guiFunction.addEventListener('click', clickFunction);
 					guiFunction.addEventListener('dragend', clickFunction);
+				}
+
+				if(this.blueprintsSelectedCategory && targetLibrary.length % 20 === 0 && !this.bluePrintData.loadedAllPages[this.blueprintsSelectedCategory]){
+					// add scroll detection
+					ui.editorGUI.domElement.addEventListener('scroll', ()=>{
+						if(!this.bluePrintDownloading && !this.prefabImagesLoading){
+							if (ui.editorGUI.domElement.offsetHeight + ui.editorGUI.domElement.scrollTop >= ui.editorGUI.domElement.scrollHeight) {
+								this.downloadBluePrints(this.blueprintsSelectedCategory, innerFolder);
+							}
+						}
+					})
 				}
 			}
 		});
@@ -1804,8 +1933,6 @@ const _B2dEditor = function () {
 					this.parallaxObject = this.parallaxObject.filter(obj=> obj !== sprite);
 				}
 
-
-				sprite.parent.removeChild(sprite);
 				sprite.destroy({
 					children: true,
 					texture: false,
@@ -1841,7 +1968,6 @@ const _B2dEditor = function () {
 					}
 				}
 				b.mySprite.destroyed = true;
-				b.mySprite.parent.removeChild(b.mySprite);
 				b.mySprite.destroy({
 					children: true,
 					texture: false,
@@ -1870,7 +1996,6 @@ const _B2dEditor = function () {
 				}
 				if (b.myTexture) {
 					var sprite = b.myTexture;
-					sprite.parent.removeChild(sprite);
 					sprite.destroy({
 						children: true,
 						texture: false,
@@ -3054,7 +3179,7 @@ const _B2dEditor = function () {
 
 	this.onMouseDown = function (evt) {
 		const camera = B2dEditor.container.camera || B2dEditor.container;
-		if (this.editing) {
+		if (this.editing && evt.which !== 2) {
 			if (this.spaceDown) {
 				this.spaceCameraDrag = true;
 			} else if (this.selectingTriggerTarget) {
@@ -10369,8 +10494,6 @@ const _B2dEditor = function () {
 					}
 					worldObject = this.buildTriggerFromObj(obj);
 
-					console.log(worldObject);
-
 					if(!prefabInstanceName) jointTriggerLayer.add(worldObject.mySprite);
 
 					createdObjects._bodies.push(worldObject);
@@ -10834,6 +10957,7 @@ const _B2dEditor = function () {
 				return image;
 			}
 		}catch(err){
+			console.warn("JOLLY IMAGE PARSING ERROR:", err);
 			return null
 		}
 	}

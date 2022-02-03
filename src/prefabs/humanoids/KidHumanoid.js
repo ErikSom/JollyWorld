@@ -8,6 +8,7 @@ export class KidHumanoid extends Humanoid {
         super(target);
         this.mouthTextureName = 'KidMouth';
         this.mouthPos = {x:40, y:56};
+        this.noGoreParticles = true;
     }
 }
 

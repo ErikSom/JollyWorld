@@ -189,7 +189,7 @@ function UIManager() {
             backendManager.registerListener('logout', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
-            const gridOnlyEvenCells = ()=>{
+            this.gridOnlyEvenCells = ()=>{
                 if(mainMenu.style.display !== 'block') return;
 
                 const gridCell = characterSelect.getBoundingClientRect();
@@ -219,11 +219,11 @@ function UIManager() {
                 })
             });
 
-            window.addEventListener('resize', gridOnlyEvenCells);
+            window.addEventListener('resize', this.gridOnlyEvenCells);
 
             mainMenu.style.visibility = 'hidden';
             setTimeout(() => {
-                gridOnlyEvenCells();
+                this.gridOnlyEvenCells();
                 mainMenu.style.visibility = 'visible';
             }, 0);
 
@@ -250,6 +250,8 @@ function UIManager() {
         this.setMainMenuCharacterImage();
 
         mainMenu.style.display = 'block';
+        this.gridOnlyEvenCells();
+
     }
 
     this.setMainMenuActive = menuName => {
@@ -1167,20 +1169,8 @@ function UIManager() {
 
         const promises = [backendManager.getLeaderboardPosition(levelid), backendManager.getLeaderboard(levelid, limit)];
         let [myPosition, leaderboardData] = await Promise.all(promises);
-
-        // const usernames = ["Goku", "Vegeta", "Krillin", "Gohan", "Freeza", "Cell", "Goten", "Gotenks", "Trunks"];
-        // leaderboardData = [];
-        // let fill = Math.round(Math.random()*100)+1
-        // for(let i = 0; i<fill; i++){
-        //     leaderboardData.push(
-        //         {
-        //             character: Math.round(Math.random()*10)+1,
-        //             time: Math.random()*50000,
-        //             username: usernames[Math.floor(Math.random() * usernames.length)],
-        //         }
-        //     )
-        // }
-
+        myPosition = Array.isArray(myPosition) ? myPosition[0] : myPosition;
+    
         if(backendManager.isLoggedIn() && !backendManager.userData){
             // if we have not yet retreived the userdata fetch it
             await backendManager.getBackendUserData();
@@ -1190,7 +1180,7 @@ function UIManager() {
 
         entries.classList.remove('offcharts');
         let offcharts = false;
-        if(!inRankings && myPosition){
+        if(!inRankings && myPosition && myPosition.time !== 0){
             myPosition.username = backendManager.userData.username;
             leaderboardData[limit-1] = myPosition;
             entries.classList.add('offcharts');
@@ -1213,7 +1203,7 @@ function UIManager() {
                 if(i<(limit-1) || !offcharts){
                     position.innerText = format.makeOrdinal(i+1);
                 }else{
-                    position.innerText = "??"
+                    position.innerText = entryData.position ? format.makeOrdinal(entryData.position) : '??';
                 }
 
                 const username = entry.querySelector('.text-player-name')
@@ -2164,6 +2154,7 @@ function UIManager() {
         const retryButton = buttons.querySelector('.retry');
         const resetButton = buttons.querySelector('.reset');
         const testButton = buttons.querySelector('.test');
+        const header = winScreen.querySelector('.header');
 
         winScreen.style.display = 'block';
 
@@ -2185,6 +2176,26 @@ function UIManager() {
         timeText.innerText = time;
         const miliText = winScreen.querySelector('.text-time-mili');
         miliText.innerText = mili;
+
+
+        header.innerText = localize('levelgui_youwin');
+        let targetlevel = game.currentLevelData.id;
+        setTimeout(()=>{
+            if(game.currentLevelData.id !== targetlevel) return;
+            backendManager.getLeaderboardPosition(game.currentLevelData.id).then(myPositionData => {
+                if(header && header.innerText && Array.isArray(myPositionData)){
+                    const rank = myPositionData[0].position;
+                    if(rank === 1){
+                        header.innerText = `${localize('levelgui_youwin')}🥇`;
+                    } else if(rank === 2){
+                        header.innerText = `${localize('levelgui_youwin')}🥈`;
+                    } else if(rank === 3){
+                        header.innerText = `${localize('levelgui_youwin')}🥉`;
+                    }
+                }
+            })
+        }, 1000)
+
 
         const voteButtons = winScreen.querySelector('.voting');
         const voteUpButton = voteButtons.querySelector('.vote-up');

@@ -477,7 +477,7 @@ function BackendManager() {
 			},
 		}
 
-		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/my`, body);
+		const result = await fetch(`${Settings.API}/leaderboard/${levelid}/me?limit=0`, body);
 
 		if(result.status === 404) return null;
 
@@ -489,8 +489,8 @@ function BackendManager() {
 		}else{
 			return json
 		}
-
 	}
+
 	this.getLeaderboard = async (levelid, limit) => {
 		// GET /leaderboard/:id/get ?limit=10
 		const body = {

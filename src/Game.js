@@ -1266,7 +1266,7 @@ function Game() {
                 console.log("PROGRESS:", progress, e, e.loaded, req.compressedContentLength);
                 progressFunction(progress);
             }
-            req.onerror = () => {
+            req.onerror = err => {
                 console.log('fail', err);
                 game.gameState = game.GAMESTATE_MENU;
                 return reject({
