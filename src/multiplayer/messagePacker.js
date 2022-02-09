@@ -103,6 +103,8 @@ export const dataToAdminIntroductionBuffer = (name, levelID) => {
 
 export const dataFromAdminIntroductionBuffer = buffer => {
 	const introductionData = adminIntroductionModel.fromBuffer(buffer);
+	introductionData.name = introductionData.name.trim();
+	introductionData.levelID = introductionData.levelID.trim();
 	return introductionData;
 }
 
@@ -114,6 +116,7 @@ export const dataToIntroductionBuffer = (name, lobbyState) => {
 
 export const dataFromIntroductionBuffer = buffer => {
 	const introductionData = introductionModel.fromBuffer(buffer);
+	introductionData.name = introductionData.name.trim();
 	return introductionData;
 }
 

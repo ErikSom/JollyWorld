@@ -53,7 +53,7 @@ import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
-import { autoConnectLobby, updateMultiplayer } from "./multiplayer/multiplayerManager";
+import { autoConnectLobby, startMultiplayer, updateMultiplayer } from "./multiplayer/multiplayerManager";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -354,6 +354,7 @@ function Game() {
             ui.showSinglePlayer();
             ui.hideSinglePlayer();
 		    ui.setMainMenuActive('lobby');
+            startMultiplayer();
             autoConnectLobby(lobbyID);
         }
 

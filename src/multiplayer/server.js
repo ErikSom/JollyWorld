@@ -43,6 +43,7 @@ class MultiplayerServer {
 	}
 
 	joinLobby(lobby){
+		console.log("JOIN LOBBY:", lobby);
 		this.n.join(lobby);
 	}
 
@@ -52,6 +53,7 @@ class MultiplayerServer {
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.NETWORK_READY});
 
 			this.n.on('message', (peer, channel, data) => {
+				console.log('RECEIVED DATA:', typeof data)
 				if(data instanceof ArrayBuffer){
 					const id = BufferSchema.getIdFromBuffer(data);
 
@@ -81,6 +83,9 @@ class MultiplayerServer {
 							break;
 					}
 				}
+				if(data instanceof Blob){
+					console.log(data);
+				}
 			});
 		});
 
@@ -94,16 +99,16 @@ class MultiplayerServer {
 		this.n.on('signalingerror', this.webRTCError);
 		this.n.on('rtcerror', this.webRTCError);
 
-		this.n.on('peerconnecting', peer => {
+		this.n.on('connecting', peer => {
 			console.log(`peer connecting ${peer.id}`);
 		});
 
-		this.n.on('peerdisconnected', peer => {
+		this.n.on('disconnected', peer => {
 			console.log(`peer disconnected ${peer.id} (${this.n.size} peers now)`);
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_LEFT, id: peer.id});
 		});
 
-		this.n.on('peerconnected', peer => {
+		this.n.on('connected', peer => {
 			console.log(`peer connected: ${peer.id} (${this.n.size} peers now)`);
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_JOINED, id: peer.id});
 
@@ -121,6 +126,11 @@ class MultiplayerServer {
 
 	sendIntroduction(buffer, id){
 		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
+	}
+
+	sendSkinBlob(blob, id){
+		console.log("SEND BLOBBY");
+		this.n.send(MESSAGE_TYPE.RELIABLE, id, blob);
 	}
 
 	sendSimpleMessageAll(buffer){

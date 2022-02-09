@@ -39,10 +39,10 @@ export const multiplayerState = {
 
 window.multiplayerState = multiplayerState;
 
+
 export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.JOINED_LOBBY, didJoinLobby);
 	globalEvents.addEventListener(SERVER_EVENTS.LEFT_LOBBY, didLeaveLobby);
-	globalEvents.addEventListener(SERVER_EVENTS.NETWORK_READY, networkReady);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_JOINED, playerJoined);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_LEFT, playerLeft);
 	globalEvents.addEventListener(SERVER_EVENTS.PLAYER_INTRODUCTION, playerIntroduction);
@@ -55,13 +55,19 @@ export const startMultiplayer = () => {
 	prepareSkinForSending();
 }
 
+// TO DO: STOP MULTIPLAYER
+
 export const networkReady = () => {
 	multiplayerState.ready = true;
 }
+// TO DO, WHEN SERVER CAN GO ON AND OFF PUT THIS BACK IN START MULTIPLAYER
+globalEvents.addEventListener(SERVER_EVENTS.NETWORK_READY, networkReady);
+
 
 export const autoConnectLobby = id => {
 	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
 	game.gameState = game.GAMESTATE_LOBBY;
+
 	if(multiplayerState.ready){
 		server.joinLobby(id);
 	}else{
@@ -102,6 +108,7 @@ export const sendSimpleMessageAll = messageType => {
 
 const didJoinLobby = ({code, admin}) => {
 	// change UI
+	console.log("DID JOIN LOBBY?!");
 	multiplayerState.lobby = code;
 	multiplayerState.admin = admin;
 	startSyncPlayer();
@@ -114,7 +121,7 @@ const didLeaveLobby = () => {
 	stopSyncPlayer();
 }
 
-const playerJoined = ({id}) => {
+const playerJoined = async ({id}) => {
 	const player = new RippleCharacter(id);
 	player.loadSkin('./assets/images/characters/Multiplayer_Character.png');
 	multiplayerState.players[id] = player;
@@ -131,8 +138,11 @@ const playerJoined = ({id}) => {
 	}else{
 		introductionBuffer = dataToIntroductionBuffer(name, lobbyState);
 	}
-	
+
 	server.sendIntroduction(introductionBuffer, id);
+
+	const skinBlob = await prepareSkinForSending();
+	server.sendSkinBlob(skinBlob);
 
 	updateLobbyUI();
 
@@ -169,7 +179,8 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 			lobbyState: LOBBY_STATE.WAITING,
 		}
 		player.admin = true;
-		if(introductionData.levelID){
+
+		if(introductionData.levelID.trim()){
 			fetchLevelInfo(introductionData.levelID);
 		}
 	} else {
@@ -343,15 +354,7 @@ const prepareSkinForSending = async () => {
 	const skinCanvas = document.createElement('canvas');
 	skinCanvas.width = skinCanvas.height = 256;
 	const skinContext = skinCanvas.getContext('2d', {alpha:true});
-	document.body.appendChild(skinCanvas);
 
-
-	skinCanvas.style = `
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		z-index: 9999999;
-	`
 	const skin = game.selectedCharacter;
 
 	//
