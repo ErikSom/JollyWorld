@@ -29,7 +29,7 @@ export const getModdedPortrait = async (name, fallback) => {
 	return `${fallback}${hashName(name)}`;
 }
 
-export const init = ()=>{
+export const init = ()=> new Promise(resolve => {
 	try{
 		idb.keys().then(keys => {
 
@@ -71,19 +71,17 @@ export const init = ()=>{
 				if(textureMods.length > 0){
 					modTexture(textureMods);
 				}
-
-				// var url = URL.createObjectURL(blob);
-				// var image = new Image();
-				// document.body.appendChild(image);
-				// image.src = url;
 			}
+			resolve();
 		}).catch(e => {
 			// err
+			resolve();
 		})
 	}catch(e){
 		//
+		resolve();
 	}
-}
+});
 
 const modCharacters = characterMods => {
 	modAtlas('Characters_1.json_image', 'Characters_1.json', characterMods);

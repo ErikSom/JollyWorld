@@ -38,15 +38,11 @@ export class RippleCharacter {
 	}
 
 	loadSkin(url){
-		const loader = new PIXI.Loader();
-		const key = `character_${this.id}`;
-		loader.add(key, url);
-		loader.load((_, resources) =>{
-			this.spriteSheet = new PIXI.Spritesheet(resources[key].texture, multiplayerAtlas);
-			this.spriteSheet.parse(()=>{
-				this.buildSprite();
-			})
-		})
+		const texture = PIXI.Texture.from(url);
+		this.spriteSheet = new PIXI.Spritesheet(texture, multiplayerAtlas);
+		this.spriteSheet.parse(()=>{
+			this.buildSprite();
+		});
 	}
 
 	buildSprite() {

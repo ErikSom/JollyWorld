@@ -49,6 +49,7 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.SIMPLE_MESSAGE, handleSimpleMessage);
 	globalEvents.addEventListener(SERVER_EVENTS.CHANGE_LEVEL, handleChangeLevel);
 	globalEvents.addEventListener(SERVER_EVENTS.START_LOAD_LEVEL, handleStartLoadLevel);
+	globalEvents.addEventListener(SERVER_EVENTS.RECEIVE_SKIN, handleReceiveSkin);
 
 	if(multiplayerState.debug) document.body.appendChild(debugWindow);
 
@@ -123,7 +124,6 @@ const didLeaveLobby = () => {
 
 const playerJoined = async ({id}) => {
 	const player = new RippleCharacter(id);
-	player.loadSkin('./assets/images/characters/Multiplayer_Character.png');
 	multiplayerState.players[id] = player;
 
 	multiplayerState.peersConnected++;
@@ -268,8 +268,6 @@ const startLoadLevel = async id => {
 const handleSimpleMessage = ({peer, buffer}) => {
 	const { type } = dataFromSimpleMessageBuffer(buffer);
 
-	console.log("RECIVE SIMPLE MESSAGE TYPE:", type, dataFromSimpleMessageBuffer(buffer))
-
 	const player = multiplayerState.players[peer];
 
 	switch(type){
@@ -282,6 +280,14 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			updateLobbyUI();
 			break;
 	}
+}
+
+const handleReceiveSkin = ({peer, buffer}) => {
+	const blob = new Blob( [ buffer ], { type: "image/png" } );
+    const urlCreator = window.URL || window.webkitURL;
+    const imageUrl = urlCreator.createObjectURL( blob );
+	const player = multiplayerState.players[peer];
+	player.loadSkin(imageUrl);
 }
 
 export const startSyncPlayer = () => {
@@ -394,14 +400,18 @@ const prepareSkinForSending = async () => {
 
 	updateLobbyUI();
 
+
+	const image = new Image();
+	image.src = URL.createObjectURL(multiplayerState.skinBlob);
+	image.style = `
+	position: absolute;
+	top:0;
+	left:0;
+	z-index:9999;
+	`;
+	document.body.appendChild(image);
+
 	return multiplayerState.skinBlob;
-
-	// ON THE OTHER SIDE
-	// var myImage = new Image();
-	// var objectURL = URL.createObjectURL(window.blobby);
-	// myImage.src = objectURL;
-
-	// document.body.appendChild(myImage)
 }
 
 const fetchLevelInfo = async id => {

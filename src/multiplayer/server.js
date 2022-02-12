@@ -17,6 +17,7 @@ export const SERVER_EVENTS = {
 	SIMPLE_MESSAGE: 'simpleMessage',
 	CHANGE_LEVEL: 'changeLevel',
 	START_LOAD_LEVEL: 'startLoadLevel',
+	RECEIVE_SKIN: 'receiveSkin',
 }
 
 const MESSAGE_TYPE = {
@@ -53,7 +54,6 @@ class MultiplayerServer {
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.NETWORK_READY});
 
 			this.n.on('message', (peer, channel, data) => {
-				console.log('RECEIVED DATA:', typeof data)
 				// MAKE SURE BINARY TYPE IS ARRAY BUFFER
 				if(data instanceof ArrayBuffer){
 					const id = BufferSchema.getIdFromBuffer(data);
@@ -81,7 +81,7 @@ class MultiplayerServer {
 							break;
 						default:
 							if(id.indexOf('PNG') >= 0){
-								console.log("RECEIVED SKIN!!");
+								this.receiveSkin(peer.id, data);
 							}else{
 								console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
 							}
@@ -133,7 +133,6 @@ class MultiplayerServer {
 	}
 
 	sendSkinBuffer(buffer, id){
-		console.log("SEND BUFFER");
 		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
 	}
 
@@ -151,6 +150,10 @@ class MultiplayerServer {
 
 	receivePlayerIntroduction(peer, buffer, admin = false){
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_INTRODUCTION, peer, buffer, admin});
+	}
+
+	receiveSkin(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.RECEIVE_SKIN, peer, buffer})
 	}
 
 	receiveChangeServerLevel(peer, buffer){

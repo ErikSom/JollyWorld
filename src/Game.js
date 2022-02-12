@@ -249,9 +249,9 @@ function Game() {
 
     };
 
-    this.gameSetup = function () {
+    this.gameSetup = async function () {
         // first thing we do is mod the textures
-        ModManager.init();
+        await ModManager.init();
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
