@@ -54,6 +54,7 @@ class MultiplayerServer {
 
 			this.n.on('message', (peer, channel, data) => {
 				console.log('RECEIVED DATA:', typeof data)
+				// MAKE SURE BINARY TYPE IS ARRAY BUFFER
 				if(data instanceof ArrayBuffer){
 					const id = BufferSchema.getIdFromBuffer(data);
 
@@ -79,12 +80,15 @@ class MultiplayerServer {
 							this.receiveStartLoadLevel(peer.id, data);
 							break;
 						default:
-							console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
+							if(id.indexOf('PNG') >= 0){
+								console.log("RECEIVED SKIN!!");
+							}else{
+								console.info("******** Can't map BufferSchema *******", id, characterModel.schema.id);
+							}
 							break;
 					}
-				}
-				if(data instanceof Blob){
-					console.log(data);
+				}else{
+					console.warn("Invalid data type")
 				}
 			});
 		});
@@ -128,9 +132,9 @@ class MultiplayerServer {
 		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
 	}
 
-	sendSkinBlob(blob, id){
-		console.log("SEND BLOBBY");
-		this.n.send(MESSAGE_TYPE.RELIABLE, id, blob);
+	sendSkinBuffer(buffer, id){
+		console.log("SEND BUFFER");
+		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
 	}
 
 	sendSimpleMessageAll(buffer){

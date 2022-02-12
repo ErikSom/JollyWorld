@@ -142,7 +142,8 @@ const playerJoined = async ({id}) => {
 	server.sendIntroduction(introductionBuffer, id);
 
 	const skinBlob = await prepareSkinForSending();
-	server.sendSkinBlob(skinBlob);
+	const skinBuffer = await skinBlob.arrayBuffer();
+	server.sendSkinBuffer(skinBuffer, id);
 
 	updateLobbyUI();
 
