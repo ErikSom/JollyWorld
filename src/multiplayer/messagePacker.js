@@ -7,21 +7,22 @@ const RAD2DEG = 57.29577951308232;
 const BODY_PARTS = {
 	HEAD: 'head',
 	BODY: 'body',
+	THIGH_LEFT: 'thigh_left',
+	THIGH_RIGHT: 'thigh_right',
+	LEG_LEFT: 'leg_left',
+	LEG_RIGHT: 'leg_right',
+	FEET_LEFT: 'feet_left',
+	FEET_RIGHT: 'feet_right',
 	SHOULDER_LEFT: 'shoulder_left',
 	SHOULDER_RIGHT: 'shoulder_right',
 	ARM_LEFT: 'arm_left',
 	ARM_RIGHT: 'arm_right',
 	HAND_LEFT: 'hand_left',
 	HAND_RIGHT: 'hand_right',
+	BELLY: 'belly',
 }
 
 let lastValidMainData = {x: 0, y: 0};
-
-export const BODY_STATE = {
-	NORMAL: 0,
-	SNAPPED: 1,
-	BASHED: 2,
-}
 
 const serializeAngle = radians => {
 	let deg = (radians * RAD2DEG) % 360;
@@ -39,7 +40,6 @@ const extractPosition = (body, target) => {
 			x:0,
 			y:0,
 			r: 0,
-			state: BODY_STATE.BASHED,
 		}
 	}
 	if(!target){
@@ -47,7 +47,6 @@ const extractPosition = (body, target) => {
 			x: body.GetPosition().x * Settings.PTM,
 			y: body.GetPosition().y * Settings.PTM,
 			r: serializeAngle(body.GetAngle()),
-			state: BODY_STATE.NORMAL
 		}
 		return lastValidMainData;
 	}else{
@@ -60,7 +59,6 @@ const extractPosition = (body, target) => {
 			x: body.GetPosition().x * Settings.PTM - refPosition.x,
 			y: body.GetPosition().y * Settings.PTM - refPosition.y,
 			r: serializeAngle(body.GetAngle()),
-			state: BODY_STATE.NORMAL
 		}
 	}
 }
@@ -80,6 +78,13 @@ export const characterToBuffer = (characterClass, id) => {
 			extractPosition(lookup[BODY_PARTS.ARM_RIGHT], lookup[BODY_PARTS.BODY]),
 			extractPosition(lookup[BODY_PARTS.HAND_LEFT], lookup[BODY_PARTS.BODY]),
 			extractPosition(lookup[BODY_PARTS.HAND_RIGHT], lookup[BODY_PARTS.BODY]),
+			extractPosition(lookup[BODY_PARTS.BELLY], lookup[BODY_PARTS.BODY]),
+			extractPosition(lookup[BODY_PARTS.THIGH_LEFT], lookup[BODY_PARTS.BODY]),
+			extractPosition(lookup[BODY_PARTS.THIGH_RIGHT], lookup[BODY_PARTS.BODY]),
+			extractPosition(lookup[BODY_PARTS.LEG_LEFT], lookup[BODY_PARTS.BODY]),
+			extractPosition(lookup[BODY_PARTS.LEG_RIGHT], lookup[BODY_PARTS.BODY]),
+			extractPosition(lookup[BODY_PARTS.FEET_LEFT], lookup[BODY_PARTS.BODY]),
+			extractPosition(lookup[BODY_PARTS.FEET_RIGHT], lookup[BODY_PARTS.BODY]),
 		]
 	}
 	const buffer = characterModel.toBuffer(characterData);

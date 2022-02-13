@@ -20,6 +20,13 @@ export class RippleCharacter {
 			armRight: new SyncObject(),
 			handLeft: new SyncObject(),
 			handRight: new SyncObject(),
+			belly: new SyncObject(),
+			thighLeft: new SyncObject(),
+			thighRight: new SyncObject(),
+			legLeft: new SyncObject(),
+			legRight: new SyncObject(),
+			feetLeft: new SyncObject(),
+			feetRight: new SyncObject(),
 		}
 
 		this.playerState = {
@@ -32,7 +39,7 @@ export class RippleCharacter {
 		this.addedToGame = false;
 
 		this.stateKeys = Object.keys(this.state);
-		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight];
+		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight, this.state.belly, this.state.thighLeft, this.state.thighRight, this.state.legLeft, this.state.legRight, this.state.feetLeft, this.state.feetRight];
 		this.spriteSheet = null;
 		this.spriteProcessList = [];
 	}
@@ -55,6 +62,13 @@ export class RippleCharacter {
 			armRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Arm']),
 			handLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Hand']),
 			handRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Hand']),
+			belly: new PIXI.Sprite(this.spriteSheet.textures['Normal_Belly']),
+			thighLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Thigh']),
+			thighRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Thigh']),
+			legLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Leg']),
+			legRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Leg']),
+			feetLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Feet']),
+			feetRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Feet']),
 		}
 
 		for(let obj in this.sprites){
@@ -64,12 +78,20 @@ export class RippleCharacter {
 		this.sprite.addChild(this.sprites.handLeft);
 		this.sprite.addChild(this.sprites.armLeft);
 		this.sprite.addChild(this.sprites.shoulderLeft);
+		this.sprite.addChild(this.sprites.thighLeft);
+		this.sprite.addChild(this.sprites.legLeft);
+		this.sprite.addChild(this.sprites.feetLeft);
+		this.sprite.addChild(this.sprites.belly);
 		this.sprite.addChild(this.sprites.body);
 		this.sprite.addChild(this.sprites.head);
+		this.sprite.addChild(this.sprites.thighRight);
+		this.sprite.addChild(this.sprites.legRight);
+		this.sprite.addChild(this.sprites.feetRight);
 		this.sprite.addChild(this.sprites.shoulderRight);
 		this.sprite.addChild(this.sprites.armRight);
 		this.sprite.addChild(this.sprites.handRight);
-		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight];
+
+		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight, this.sprites.belly, this.sprites.thighLeft, this.sprites.thighRight, this.sprites.legLeft, this.sprites.legRight, this.sprites.feetLeft, this.sprites.feetRight];
 	}
 
 	processServerData(data, time){

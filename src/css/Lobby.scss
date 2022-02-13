@@ -122,6 +122,20 @@
 		}
 	}
 
+	.copy-url{
+		.level-link-text{
+			font-weight: bold;
+			white-space: nowrap;
+		}
+		input{
+			padding: 5px;
+			margin: 0px 5px;
+			font-size: 12px;
+			background: white;
+		}
+		margin: 0px 0px 10px;
+	}
+
 	.player-list{
 		@extend .leaderboard-entries;
 

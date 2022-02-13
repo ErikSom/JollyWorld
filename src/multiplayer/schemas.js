@@ -5,14 +5,12 @@ const mainPart = BufferSchema.schema('mainPart', {
 	x: { type: int32, digits: 1 },
 	y: { type: int32, digits: 1 },
 	r: uint8,
-	state: uint8
 })
 
 const basePart = BufferSchema.schema('basePart', {
 	x: { type: int16, digits: 1 },
 	y: { type: int16, digits: 1 },
 	r: uint8,
-	state: uint8
 })
 
 const characterSchema = BufferSchema.schema('player', {

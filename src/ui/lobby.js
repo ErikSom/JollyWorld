@@ -44,6 +44,11 @@ export const generateLobby = () => {
 				</div>
 			</div>
 
+			<div class="copy-url">
+				<div class="level-link-text">Invite link:</div>
+				<input class="text-url" readonly>
+				<div class="copy-button"></div>
+			</div>
 
 			<div class="player-list">
 				<div class="players-title">${localize('mainmenu_players')}</div>
@@ -75,6 +80,19 @@ export const generateLobby = () => {
 			game.openSinglePlayer();
 			game.gameState = game.GAMESTATE_MULTIPLAYER_LEVELSELECT;
 		}
+
+		const input = lobby.querySelector('input');
+		const copyButton = lobby.querySelector('.copy-button');
+        copyButton.addEventListener('click', () => {
+            const copyText = '(copied) ';
+            if (input.value.startsWith(copyText)) {
+                input.value = input.value.substr(copyText.length);
+            }
+            input.select();
+            input.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            input.value = copyText + input.value;
+        });
 	}
 
 	updateLobbyUI();
@@ -90,6 +108,7 @@ export const updateLobbyUI = () => {
 	const textHolder = lobby.querySelector('.text-holder');
 	const levelSelectButton = lobby.querySelector('.selectBut');
 	const entries = lobby.querySelector('.entries');
+	const link = lobby.querySelector('input');
 
 	if(levelData){
 		thumb.classList.remove('select');
@@ -131,6 +150,10 @@ export const updateLobbyUI = () => {
 		thumb.classList.add('admin');
 	}else{
 		thumb.classList.remove('admin');
+	}
+
+	if(multiplayerState.lobby){
+		link.value = `${window.location.origin}${window.location.pathname}?lobbyID=${multiplayerState.lobby}`;
 	}
 
 	// PLAYERS

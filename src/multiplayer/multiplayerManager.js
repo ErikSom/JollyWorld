@@ -109,7 +109,6 @@ export const sendSimpleMessageAll = messageType => {
 
 const didJoinLobby = ({code, admin}) => {
 	// change UI
-	console.log("DID JOIN LOBBY?!");
 	multiplayerState.lobby = code;
 	multiplayerState.admin = admin;
 	startSyncPlayer();
@@ -399,17 +398,6 @@ const prepareSkinForSending = async () => {
 	});
 
 	updateLobbyUI();
-
-
-	const image = new Image();
-	image.src = URL.createObjectURL(multiplayerState.skinBlob);
-	image.style = `
-	position: absolute;
-	top:0;
-	left:0;
-	z-index:9999;
-	`;
-	document.body.appendChild(image);
 
 	return multiplayerState.skinBlob;
 }
