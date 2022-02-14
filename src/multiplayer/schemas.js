@@ -17,7 +17,8 @@ const characterSchema = BufferSchema.schema('player', {
 	id: uint8,
 	mirrored: uint8,
 	main: [mainPart],
-	parts: [basePart]
+	parts: [basePart],
+	vehicleParts: [basePart],
 })
 export const characterModel = new Model(characterSchema);
 

@@ -85,7 +85,8 @@ export const characterToBuffer = (characterClass, id) => {
 			extractPosition(lookup[BODY_PARTS.LEG_RIGHT], lookup[BODY_PARTS.BODY]),
 			extractPosition(lookup[BODY_PARTS.FEET_LEFT], lookup[BODY_PARTS.BODY]),
 			extractPosition(lookup[BODY_PARTS.FEET_RIGHT], lookup[BODY_PARTS.BODY]),
-		]
+		],
+		vehicleParts:[],
 	}
 	const buffer = characterModel.toBuffer(characterData);
 	return buffer;

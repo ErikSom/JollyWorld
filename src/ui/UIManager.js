@@ -1927,6 +1927,8 @@ function UIManager() {
         if(multiplayer){
             this.hideMainMenu();
             continueToGame();
+
+            // send vehicle choice
         }else{
             PokiSDK.commercialBreak().then(
                 () => {

@@ -2,6 +2,7 @@ import {
 	Container
 } from "@pixi/display";
 import * as PIXI from 'pixi.js';
+import { RippleVehicle } from "./rippleVehicle";
 
 const DEG2RAD = 0.017453292519943296;
 
@@ -42,6 +43,8 @@ export class RippleCharacter {
 		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight, this.state.belly, this.state.thighLeft, this.state.thighRight, this.state.legLeft, this.state.legRight, this.state.feetLeft, this.state.feetRight];
 		this.spriteSheet = null;
 		this.spriteProcessList = [];
+
+		this.vehicle = new RippleVehicle(this.sprite);
 	}
 
 	loadSkin(url){
@@ -50,6 +53,8 @@ export class RippleCharacter {
 		this.spriteSheet.parse(()=>{
 			this.buildSprite();
 		});
+
+		this.vehicle.selectVehicle(1);
 	}
 
 	buildSprite() {
@@ -140,7 +145,7 @@ export class RippleCharacter {
 const maxPreviousPosInterpolation = 5;
 const syncSmooth = .2;
 
-class SyncObject {
+export class SyncObject {
 	constructor(x = 0, y = 0, r = 0) {
 		this.x = x;
 		this.y = y;
