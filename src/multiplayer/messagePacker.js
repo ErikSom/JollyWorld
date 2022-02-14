@@ -2,6 +2,7 @@ import { adminIntroductionModel, changeServerLevelModel, characterModel, introdu
 import {
 	Settings
 } from '../Settings'
+import { game } from "../Game";
 const RAD2DEG = 57.29577951308232;
 
 const BODY_PARTS = {
@@ -88,6 +89,20 @@ export const characterToBuffer = (characterClass, id) => {
 		],
 		vehicleParts:[],
 	}
+
+
+	if(game.vehicle){
+		if(game.selectedVehicle === 1){
+			const vehicleLookup = game.vehicle.lookupObject;
+			characterData.vehicleParts = [
+				extractPosition(vehicleLookup.frame, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.wheel_back, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.wheel_front, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.pedal, lookup[BODY_PARTS.BODY]),
+			]
+		}
+	}
+
 	const buffer = characterModel.toBuffer(characterData);
 	return buffer;
 }
@@ -98,6 +113,10 @@ export const characterFromBuffer = buffer => {
 	characterData.parts.forEach( p => {
 		p.r = fixAngle(p.r);
 	});
+	characterData.vehicleParts.forEach( p => {
+		p.r = fixAngle(p.r);
+	});
+	console.log("CHARACTER DATA:", characterData);
 	return characterData;
 }
 

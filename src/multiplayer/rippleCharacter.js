@@ -53,8 +53,6 @@ export class RippleCharacter {
 		this.spriteSheet.parse(()=>{
 			this.buildSprite();
 		});
-
-		this.vehicle.selectVehicle(1);
 	}
 
 	buildSprite() {
@@ -115,11 +113,15 @@ export class RippleCharacter {
 			const stateData = data.parts[i];
 
 			if(this.lastPackageID === -1){
-				this.forcePosition(data.id, stateData.x, stateData.y, stateData.r, time);
+				state.forcePosition(data.id, stateData.x, stateData.y, stateData.r, time);
 			}else{
 				state.updateServerPosition(data.id, stateData.x, stateData.y, stateData.r, time);
 			}
 		});
+
+		if(data.vehicleParts.length){
+			this.vehicle.processServerData(data.vehicleParts, data.id, time);
+		}
 	}
 
 	interpolatePosition(){
@@ -139,6 +141,7 @@ export class RippleCharacter {
 		});
 
 		// correct IK
+		this.vehicle.interpolatePosition();
 	}
 }
 

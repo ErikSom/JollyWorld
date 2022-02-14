@@ -278,6 +278,11 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			player.playerState.lobbyState = LOBBY_STATE.WAITING;
 			updateLobbyUI();
 			break;
+		default:
+			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
+				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
+				player.vehicle.selectVehicle(vehicleIndex);
+			}
 	}
 }
 

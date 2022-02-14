@@ -58,8 +58,6 @@ class MultiplayerServer {
 				if(data instanceof ArrayBuffer){
 					const id = BufferSchema.getIdFromBuffer(data);
 
-					console.log("RECEIVE MESSAGE:", id)
-
 					switch(id){
 						case characterModel.schema.id:
 							this.receiveCharacterData(peer.id, data);

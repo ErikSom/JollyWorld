@@ -1,5 +1,6 @@
 
 import * as PIXI from 'pixi.js';
+import { SyncObject } from './rippleCharacter';
 
 export class RippleVehicle {
 	constructor(container) {
@@ -21,13 +22,47 @@ export class RippleVehicle {
 		}
 	}
 
+	processServerData(parts, id, time){
+		if(!this.vehicle || parts.length !== this.vehicle.stateProcessList.length) return;
+		this.vehicle.stateProcessList.forEach((state, i) => {
+			const stateData = parts[i];
+			if(this.lastPackageID === -1){
+				state.forcePosition(id, stateData.x, stateData.y, stateData.r, time);
+			}else{
+				state.updateServerPosition(id, stateData.x, stateData.y, stateData.r, time);
+			}
+		});
+	}
+
 	interpolatePosition(){
+		if(!this.vehicle) return;
+
+		this.vehicle.stateKeys.forEach(key => {
+			this.vehicle.state[key].interpolatePosition();
+		});
+
+		this.vehicle.spriteProcessList.forEach((sprite, i) => {
+			sprite.x = this.vehicle.stateProcessList[i].x;
+			sprite.y = this.vehicle.stateProcessList[i].y;
+			sprite.angle = this.vehicle.stateProcessList[i].r;
+		});
+
 	}
 }
 
 export class RippleBike {
 	constructor(container){
 		this.sprite = container;
+
+		this.state = {
+			body: new SyncObject(),
+			wheelBack: new SyncObject(),
+			wheelFront: new SyncObject(),
+			pedals: new SyncObject(),
+		}
+		this.stateKeys = Object.keys(this.state);
+		this.stateProcessList = [this.state.body, this.state.wheelBack, this.state.wheelFront, this.state.pedals];
+
 		this.buildSprite();
 	}
 

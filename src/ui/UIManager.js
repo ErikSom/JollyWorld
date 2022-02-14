@@ -47,7 +47,8 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { createLobby, LOBBY_STATE, multiplayerState, selectMultiplayerLevel, startMultiplayer } from '../multiplayer/multiplayerManager'
+import { createLobby, LOBBY_STATE, multiplayerState, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
+import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -1927,6 +1928,8 @@ function UIManager() {
         if(multiplayer){
             this.hideMainMenu();
             continueToGame();
+
+            sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE + game.selectedVehicle);
 
             // send vehicle choice
         }else{

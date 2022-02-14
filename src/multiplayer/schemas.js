@@ -13,12 +13,18 @@ const basePart = BufferSchema.schema('basePart', {
 	r: uint8,
 })
 
+const vehiclePart = BufferSchema.schema('vehiclePart', {
+	x: { type: int16, digits: 1 },
+	y: { type: int16, digits: 1 },
+	r: uint8,
+})
+
 const characterSchema = BufferSchema.schema('player', {
 	id: uint8,
 	mirrored: uint8,
 	main: [mainPart],
 	parts: [basePart],
-	vehicleParts: [basePart],
+	vehicleParts: [vehiclePart],
 })
 export const characterModel = new Model(characterSchema);
 
@@ -42,6 +48,7 @@ export const introductionModel = new Model(introduction);
 export const SIMPLE_MESSAGE_TYPES = {
 	PLAYER_READY: 0,
 	PLAYER_NOT_READY: 1,
+	SELECT_VEHICLE: 100,
 }
 
 const simpleMessage = BufferSchema.schema('simpleMessage', {
