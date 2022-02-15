@@ -43,6 +43,7 @@ export class RippleCharacter {
 		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight, this.state.belly, this.state.thighLeft, this.state.thighRight, this.state.legLeft, this.state.legRight, this.state.feetLeft, this.state.feetRight];
 		this.spriteSheet = null;
 		this.spriteProcessList = [];
+		this.mirror = false;
 
 		this.vehicle = new RippleVehicle(this.sprite);
 	}
@@ -102,9 +103,14 @@ export class RippleCharacter {
 			this.sprite.visible = true;
 		}
 
+		const flipped = this.mirror != data.mirror;
+		this.mirror = data.mirror;
+
+		console.log("FLIPPED:", flipped, data.mirror);
+
 		this.lastPackageID = data.id;
-		if(this.lastPackageID === -1){
-			this.state.body.forcePosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
+		if(this.lastPackageID === -1 || flipped){
+			this.state.body.forcePosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, data.mirror, time);
 		} else {
 			this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
 		}
@@ -112,16 +118,17 @@ export class RippleCharacter {
 		this.stateProcessList.forEach((state, i) => {
 			const stateData = data.parts[i];
 
-			if(this.lastPackageID === -1){
-				state.forcePosition(data.id, stateData.x, stateData.y, stateData.r, time);
+			if(this.lastPackageID === -1 || flipped){
+				state.forcePosition(data.id, stateData.x, stateData.y, stateData.r, data.mirror, time);
 			}else{
 				state.updateServerPosition(data.id, stateData.x, stateData.y, stateData.r, time);
 			}
 		});
 
 		if(data.vehicleParts.length){
-			this.vehicle.processServerData(data.vehicleParts, data.id, time);
+			this.vehicle.processServerData(data.vehicleParts, data.id, data.mirror, time);
 		}
+
 	}
 
 	interpolatePosition(){
@@ -132,12 +139,15 @@ export class RippleCharacter {
 		// apply positions
 		this.sprite.x = this.state.body.x;
 		this.sprite.y = this.state.body.y;
+		this.sprites.body.scale.x = this.state.body.mirror ? -1 : 1;
 		if(this.sprites && this.sprites.body) this.sprites.body.angle = this.state.body.r;
 
 		this.spriteProcessList.forEach((sprite, i) => {
-			sprite.x = this.stateProcessList[i].x;
-			sprite.y = this.stateProcessList[i].y;
-			sprite.angle = this.stateProcessList[i].r;
+			const state = this.stateProcessList[i];
+			sprite.x = state.x;
+			sprite.y = state.y;
+			sprite.angle = state.r;
+			sprite.scale.x = state.mirror ? -1 : 1;
 		});
 
 		// correct IK
@@ -153,6 +163,7 @@ export class SyncObject {
 		this.x = x;
 		this.y = y;
 		this.r = r;
+		this.mirror = false;
 		this.previousPos = [];
 		this.serverId = -1;
 		this.serverTime = 0;
@@ -169,10 +180,11 @@ export class SyncObject {
 		}
 	}
 
-	forcePosition(id, x, y, r) {
+	forcePosition(id, x, y, r, mirror) {
 		this.x = x;
 		this.y = y;
 		this.r = r;
+		this.mirror = mirror;
 		this.previousPos = [];
 		this.serverId = id;
 		this.serverPos = {

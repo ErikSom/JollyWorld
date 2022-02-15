@@ -7,6 +7,7 @@ export class RippleVehicle {
 		this.container = container;
 		this.currentVehicle = -1;
 		this.vehicle = null;
+		this.mirror = false;
 		this.vehicleClasses = [ RippleBike/*, RippleDirtBike, null,  RippleSkateboard, RippleSkippyBall, RippleFoddyCan*/]
 		this.state = {
 		}
@@ -22,12 +23,16 @@ export class RippleVehicle {
 		}
 	}
 
-	processServerData(parts, id, time){
+	processServerData(parts, id, mirror, time){
 		if(!this.vehicle || parts.length !== this.vehicle.stateProcessList.length) return;
+
+		const flipped = this.mirror !== mirror;
+		this.mirror = mirror;
+
 		this.vehicle.stateProcessList.forEach((state, i) => {
 			const stateData = parts[i];
-			if(this.lastPackageID === -1){
-				state.forcePosition(id, stateData.x, stateData.y, stateData.r, time);
+			if(this.lastPackageID === -1 || flipped){
+				state.forcePosition(id, stateData.x, stateData.y, stateData.r, mirror, time);
 			}else{
 				state.updateServerPosition(id, stateData.x, stateData.y, stateData.r, time);
 			}
@@ -42,9 +47,11 @@ export class RippleVehicle {
 		});
 
 		this.vehicle.spriteProcessList.forEach((sprite, i) => {
-			sprite.x = this.vehicle.stateProcessList[i].x;
-			sprite.y = this.vehicle.stateProcessList[i].y;
-			sprite.angle = this.vehicle.stateProcessList[i].r;
+			const state = this.vehicle.stateProcessList[i];
+			sprite.x = state.x;
+			sprite.y = state.y;
+			sprite.angle = state.r;
+			sprite.scale.x = state.mirror ? -1 : 1;
 		});
 
 	}
