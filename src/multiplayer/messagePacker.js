@@ -38,27 +38,33 @@ const fixAngle = uint => {
 const extractPosition = (body, target) => {
 	if(!body){
 		return {
-			x:0,
-			y:0,
+			x: 0,
+			y: 0,
 			r: 0,
 		}
 	}
+
+	const bodySprite = body.myTexture || body.mySprite;
+
 	if(!target){
 		lastValidMainData = {
-			x: body.GetPosition().x * Settings.PTM,
-			y: body.GetPosition().y * Settings.PTM,
+			x: bodySprite.position.x,
+			y: bodySprite.position.y,
 			r: serializeAngle(body.GetAngle()),
 		}
 		return lastValidMainData;
 	}else{
+
+		const targetSprite = target.myTexture || target.mySprite;
+
 		const refPosition = target ? {
-			x: target.GetPosition().x * Settings.PTM,
-			y: target.GetPosition().y * Settings.PTM,
+			x: targetSprite.position.x,
+			y: targetSprite.position.y,
 		} : lastValidMainData;
 
 		return {
-			x: body.GetPosition().x * Settings.PTM - refPosition.x,
-			y: body.GetPosition().y * Settings.PTM - refPosition.y,
+			x: bodySprite.position.x - refPosition.x,
+			y: bodySprite.position.y - refPosition.y,
 			r: serializeAngle(body.GetAngle()),
 		}
 	}
@@ -116,7 +122,6 @@ export const characterFromBuffer = buffer => {
 	characterData.vehicleParts.forEach( p => {
 		p.r = fixAngle(p.r);
 	});
-	console.log("CHARACTER DATA:", characterData);
 	return characterData;
 }
 
