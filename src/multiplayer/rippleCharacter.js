@@ -73,6 +73,9 @@ export class RippleCharacter {
 			legRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Leg']),
 			feetLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Feet']),
 			feetRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Feet']),
+			eyeLeft: new PIXI.Sprite(this.spriteSheet.textures['Normal_Eye']),
+			eyeRight: new PIXI.Sprite(this.spriteSheet.textures['Normal_Eye']),
+			mouth: new PIXI.Sprite(this.spriteSheet.textures['Mouth_Idle']),
 		}
 
 		for(let obj in this.sprites){
@@ -88,6 +91,17 @@ export class RippleCharacter {
 		this.sprite.addChild(this.sprites.belly);
 		this.sprite.addChild(this.sprites.body);
 		this.sprite.addChild(this.sprites.head);
+
+		this.sprites.head.addChild(this.sprites.eyeLeft);
+		this.sprites.eyeLeft.x = 5;
+		this.sprites.eyeLeft.y = -1;
+		this.sprites.head.addChild(this.sprites.eyeRight);
+		this.sprites.eyeRight.x = 27;
+		this.sprites.eyeRight.y = -1;
+		this.sprites.head.addChild(this.sprites.mouth);
+		this.sprites.mouth.x = 14.5;
+		this.sprites.mouth.y = 26.5;
+
 		this.sprite.addChild(this.sprites.thighRight);
 		this.sprite.addChild(this.sprites.legRight);
 		this.sprite.addChild(this.sprites.feetRight);
@@ -105,8 +119,6 @@ export class RippleCharacter {
 
 		const flipped = this.mirror != data.mirror;
 		this.mirror = data.mirror;
-
-		console.log("FLIPPED:", flipped, data.mirror);
 
 		this.lastPackageID = data.id;
 		if(this.lastPackageID === -1 || flipped){
