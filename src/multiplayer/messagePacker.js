@@ -3,6 +3,7 @@ import {
 	Settings
 } from '../Settings'
 import { game } from "../Game";
+
 const RAD2DEG = 57.29577951308232;
 
 const BODY_PARTS = {
@@ -73,9 +74,26 @@ const extractPosition = (body, target) => {
 // id 0 - 255
 export const characterToBuffer = (characterClass, id) => {
 	const lookup = characterClass.lookupObject;
+
+
+	// build expression uint
+	// 2 5 5 values ( eyes (3), expression (6), empty (6))
+	let eyesBit = 0;
+	const eyeLeftCache = lookup.eye_left?.myTexture?.originalSprite?.texture?.textureCacheIds;
+	const eyeRightCache = lookup.eye_right?.myTexture?.originalSprite?.texture?.textureCacheIds;
+	if((eyeLeftCache.length && eyeLeftCache[0].indexOf('Closed') >= 0) || (eyeRightCache.length && eyeRightCache[0].indexOf('Closed') >= 0)){
+		eyesBit = 100;
+	}
+	let expressionBit = 0;
+	if(characterClass.expression === 'Pain') expressionBit = 10;
+	if(characterClass.expression === 'Special') expressionBit = 20;
+	const expression = eyesBit + expressionBit;
+	//
+
 	const characterData = {
 		id,
 		mirror: +characterClass.flipped,
+		expression,
 		main: [extractPosition(lookup[BODY_PARTS.BODY])],
 		parts:[
 			extractPosition(lookup[BODY_PARTS.HEAD], lookup[BODY_PARTS.BODY]),

@@ -117,6 +117,28 @@ export class RippleCharacter {
 			this.sprite.visible = true;
 		}
 
+		let packedExpression = data.expression;
+		const eyeBit = Math.floor(packedExpression / 100);
+		packedExpression -= eyeBit * 100;
+		const mouthBit = Math.floor(packedExpression / 10);
+
+		if(eyeBit === 0){
+			this.sprites.eyeLeft.texture = this.spriteSheet.textures['Normal_Eye'];
+			this.sprites.eyeRight.texture = this.spriteSheet.textures['Normal_Eye'];
+		}else if(eyeBit === 1){
+			this.sprites.eyeLeft.texture = this.spriteSheet.textures['Normal_Eye_Closed'];
+			this.sprites.eyeRight.texture = this.spriteSheet.textures['Normal_Eye_Closed'];
+		}
+
+		if(mouthBit === 0){
+			this.sprites.mouth.texture = this.spriteSheet.textures['Mouth_Idle'];
+		} else if(mouthBit === 1){
+			this.sprites.mouth.texture = this.spriteSheet.textures['Mouth_Pain'];
+		} else if(mouthBit === 2){
+			this.sprites.mouth.texture = this.spriteSheet.textures['Mouth_Special'];
+		}
+
+
 		const flipped = this.mirror != data.mirror;
 		this.mirror = data.mirror;
 

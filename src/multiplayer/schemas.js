@@ -22,6 +22,7 @@ const vehiclePart = BufferSchema.schema('vehiclePart', {
 const characterSchema = BufferSchema.schema('player', {
 	id: uint8,
 	mirror: uint8,
+	expression: uint8,
 	main: [mainPart],
 	parts: [basePart],
 	vehicleParts: [vehiclePart],
