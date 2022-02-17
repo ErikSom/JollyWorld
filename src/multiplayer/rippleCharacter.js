@@ -36,6 +36,7 @@ export class RippleCharacter {
 		}
 
 		this.lastPackageID = -1;
+		this.ping = -1;
 		this.connected = true;
 		this.addedToGame = false;
 
@@ -285,8 +286,8 @@ export class SyncObject {
 
 		const previousKnownPosition = this.previousPos[this.previousPos.length - 1];
 
-		const ping = 50
-		const render_timestamp = performance.now() + ping;
+		const lookForward = 100;
+		const render_timestamp = performance.now() + lookForward;
 
 		const x0 = previousKnownPosition.x;
 		const x1 = this.serverPos.x;

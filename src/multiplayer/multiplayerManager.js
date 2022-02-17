@@ -325,8 +325,8 @@ export const updateMultiplayer = () => {
 	const data = server.getCharacterDataToProcess();
 		data.forEach(data => {
 			if(multiplayerState.players[data.playerID]){
-				const ping = 50;
-				const time = data.time - ping;
+				multiplayerState.players[data.playerID].ping = data.ping;
+				const time = data.time - data.ping;
 				const characterData = characterFromBuffer(data.buffer);
 				multiplayerState.players[data.playerID].processServerData(characterData, time);
 			}
@@ -451,7 +451,7 @@ playerElement.innerHTML = `
  <li>Name:<span class="nameText"></span></li>
  <li>Connected:<span class="connectedText"></span></li>
  <li>PackageID:<span class="packageIDText"></span></li>
- <li>Position:<span class="positionText"></span></li>
+ <li>Info:<span class="infoText"></span></li>
  </ul>
 `;
 
@@ -480,10 +480,11 @@ const updateDebugData = () =>{
 		el.querySelector('.nameText').innerText = id;
 		el.querySelector('.connectedText').innerText = player.connected.toString();
 		el.querySelector('.packageIDText').innerText = player.lastPackageID.toString();
-		el.querySelector('.positionText').innerHTML = 
+		el.querySelector('.infoText').innerHTML = 
 		`<ul>
 			<li>X:${player.sprite.position.x}</li>
 			<li>Y:${player.sprite.position.y}</li>
+			<li>Ping:${player.ping}</li>
 		</ul>`
 	})
 }

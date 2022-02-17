@@ -60,7 +60,7 @@ class MultiplayerServer {
 
 					switch(id){
 						case characterModel.schema.id:
-							this.receiveCharacterData(peer.id, data);
+							this.receiveCharacterData(peer, data);
 							break;
 						case introductionModel.schema.id:
 							this.receivePlayerIntroduction(peer.id, data);
@@ -111,8 +111,8 @@ class MultiplayerServer {
 
 		this.n.on('connected', peer => {
 			console.log(`peer connected: ${peer.id} (${this.n.size} peers now)`);
+			console.log(peer, peer.latency);
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.PLAYER_JOINED, id: peer.id});
-
 		});
 	}
 
@@ -167,9 +167,10 @@ class MultiplayerServer {
 
 	receiveCharacterData(peer, buffer) {
 		this.characterDataToProcess.push({
-			playerID: peer,
+			playerID: peer.id,
 			buffer,
 			time: performance.now(),
+			ping: peer.latency.last,
 		});
 	}
 
