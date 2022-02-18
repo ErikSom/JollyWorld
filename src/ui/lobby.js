@@ -154,6 +154,7 @@ export const updateLobbyUI = () => {
 
 	if(multiplayerState.lobby){
 		link.value = `${window.location.origin}${window.location.pathname}?lobbyID=${multiplayerState.lobby}`;
+		// link.value = `https://friendly-snake-42.loca.lt?lobbyID=${multiplayerState.lobby}`;
 	}
 
 	// PLAYERS

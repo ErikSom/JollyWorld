@@ -143,8 +143,15 @@ export class RippleCharacter {
 		const flipped = this.mirror != data.mirror;
 		this.mirror = data.mirror;
 
+
+		const dX = data.main[0].x - this.state.body.x;
+		const dY = data.main[0].x - this.state.body.x;
+		const d = Math.sqrt(dX * dX + dY * dY);
+
+		const teleport = d > 300;
+
 		this.lastPackageID = data.id;
-		if(this.lastPackageID === -1 || flipped){
+		if(this.lastPackageID === -1 || flipped || teleport){
 			this.state.body.forcePosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, data.mirror, time);
 		} else {
 			this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
@@ -153,7 +160,7 @@ export class RippleCharacter {
 		this.stateProcessList.forEach((state, i) => {
 			const stateData = data.parts[i];
 
-			if(this.lastPackageID === -1 || flipped){
+			if(this.lastPackageID === -1 || flipped || teleport){
 				state.forcePosition(data.id, stateData.x, stateData.y, stateData.r, data.mirror, time);
 			}else{
 				state.updateServerPosition(data.id, stateData.x, stateData.y, stateData.r, time);
@@ -190,7 +197,7 @@ export class RippleCharacter {
 	}
 }
 
-const maxPreviousPosInterpolation = 5;
+const maxPreviousPosInterpolation = 10;
 const syncSmooth = .2;
 
 export class SyncObject {
@@ -266,28 +273,12 @@ export class SyncObject {
 	interpolatePosition() {
 		// use time difference for interpolation
 		// no data no interpolation
-		if(this.previousPos.length === 0) return;
+		if(this.previousPos.length < 2) return;
 
-		// // get movement
-		// const movement = { x: 0, y: 0 }
+		const previousKnownPosition = this.previousPos[this.previousPos.length - 2];
 
-		// if(this.previousPos.length > 0){
-		// 	this.previousPos.forEach((pos, i) => {
-		// 		const nextPos = (i === this.previousPos.length -1 ) ? this.serverPos : this.previousPos[i + 1];
-		// 		movement.x += nextPos.x - pos.x;
-		// 		movement.y += nextPos.y - pos.y;
-		// 	})
-		// 	movement.x /= this.previousPos.length;
-		// 	movement.y /= this.previousPos.length;
-		// }
-
-		// const currentTime = Date.now() - lagCompensation;
-		// const targetTime = this.serverPos.time;
-
-		const previousKnownPosition = this.previousPos[this.previousPos.length - 1];
-
-		const lookForward = 100;
-		const render_timestamp = performance.now() + lookForward;
+		const lookForward = 0;
+		let render_timestamp = performance.now() + lookForward;
 
 		const x0 = previousKnownPosition.x;
 		const x1 = this.serverPos.x;
@@ -300,7 +291,14 @@ export class SyncObject {
 
 		let td = (t1 - t0);
 
+		const maxExtrapolation = this.ping + 100;
+		if((render_timestamp - this.serverPos.time) > maxExtrapolation){
+			render_timestamp = this.serverPos.time + maxExtrapolation;
+			// show lag thingy?
+		}
+
 		if(td === 0){
+			// i messed up?
 			debugger;
 		}else{
 

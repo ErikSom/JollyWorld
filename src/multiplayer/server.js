@@ -170,7 +170,7 @@ class MultiplayerServer {
 			playerID: peer.id,
 			buffer,
 			time: performance.now(),
-			ping: peer.latency.last,
+			ping: peer.latency.average,
 		});
 	}
 

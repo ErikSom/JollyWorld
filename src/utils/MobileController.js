@@ -307,29 +307,37 @@ export const fireKeyboardEvent = (down, key) => {
 
 export const openFullscreen = userTriggered => {
 	if ((isMobile() && window.location.hostname !== 'localhost') || userTriggered) {
-		const fullscreenElement = document.body;
-		if (fullscreenElement.requestFullscreen) {
-			fullscreenElement.requestFullscreen();
-		} else if (fullscreenElement.mozRequestFullScreen) {
-			/* Firefox */
-			fullscreenElement.mozRequestFullScreen();
-		} else if (fullscreenElement.webkitRequestFullscreen) {
-			/* Chrome, Safari and Opera */
-			fullscreenElement.webkitRequestFullscreen();
-		} else if (fullscreenElement.msRequestFullscreen) {
-			/* IE/Edge */
-			fullscreenElement.msRequestFullscreen();
+		try{
+			const fullscreenElement = document.body;
+			if (fullscreenElement.requestFullscreen) {
+				fullscreenElement.requestFullscreen();
+			} else if (fullscreenElement.mozRequestFullScreen) {
+				/* Firefox */
+				fullscreenElement.mozRequestFullScreen();
+			} else if (fullscreenElement.webkitRequestFullscreen) {
+				/* Chrome, Safari and Opera */
+				fullscreenElement.webkitRequestFullscreen();
+			} else if (fullscreenElement.msRequestFullscreen) {
+				/* IE/Edge */
+				fullscreenElement.msRequestFullscreen();
+			}
+		}catch(err){
+			// err
 		}
 	}
 }
 export const exitFullscreen = ()=> {
 	/* Close fullscreen */
-	if (document.exitFullscreen) {
-	  document.exitFullscreen();
-	} else if (document.webkitExitFullscreen) { /* Safari */
-	  document.webkitExitFullscreen();
-	} else if (document.msExitFullscreen) { /* IE11 */
-	  document.msExitFullscreen();
+	try{
+		if (document.exitFullscreen) {
+		document.exitFullscreen();
+		} else if (document.webkitExitFullscreen) { /* Safari */
+		document.webkitExitFullscreen();
+		} else if (document.msExitFullscreen) { /* IE11 */
+		document.msExitFullscreen();
+		}
+	}catch(err){
+		// err
 	}
 }
 export const toggleFullscreen = userTriggered =>{
