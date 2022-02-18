@@ -30,6 +30,8 @@ export class RippleCharacter {
 			feetRight: new SyncObject(),
 		}
 
+		this.state.body.overflow = true;
+
 		this.playerState = {
 			name: '...',
 			lobbyState: 0,
@@ -145,12 +147,13 @@ export class RippleCharacter {
 
 
 		const dX = data.main[0].x - this.state.body.x;
-		const dY = data.main[0].x - this.state.body.x;
+		const dY = data.main[0].y - this.state.body.y;
 		const d = Math.sqrt(dX * dX + dY * dY);
 
 		const teleport = d > 300;
 
 		this.lastPackageID = data.id;
+		this.state.body.ping = this.ping;
 		if(this.lastPackageID === -1 || flipped || teleport){
 			this.state.body.forcePosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, data.mirror, time);
 		} else {
@@ -160,6 +163,7 @@ export class RippleCharacter {
 		this.stateProcessList.forEach((state, i) => {
 			const stateData = data.parts[i];
 
+			state.ping = this.ping;
 			if(this.lastPackageID === -1 || flipped || teleport){
 				state.forcePosition(data.id, stateData.x, stateData.y, stateData.r, data.mirror, time);
 			}else{
@@ -205,7 +209,9 @@ export class SyncObject {
 		this.x = x;
 		this.y = y;
 		this.r = r;
+		this.overflow = false;
 		this.mirror = false;
+		this.ping = 0;
 		this.previousPos = [];
 		this.serverId = -1;
 		this.serverTime = 0;
@@ -292,7 +298,11 @@ export class SyncObject {
 		let td = (t1 - t0);
 
 		const maxExtrapolation = this.ping + 100;
-		if((render_timestamp - this.serverPos.time) > maxExtrapolation){
+		const overFlowTime = render_timestamp - this.serverPos.time;
+
+		const didOverflow = overFlowTime > maxExtrapolation;
+
+		if(!this.overflow && didOverflow){
 			render_timestamp = this.serverPos.time + maxExtrapolation;
 			// show lag thingy?
 		}
@@ -301,10 +311,10 @@ export class SyncObject {
 			// i messed up?
 			debugger;
 		}else{
-
-			this.targetPos.x =	x0 + (x1 - x0) * (render_timestamp - t0) / td;
-			this.targetPos.y =	y0 + (y1 - y0) * (render_timestamp - t0) / td;
-			this.targetPos.r =	(r0 + this.angleDiff(r0, r1) * (render_timestamp - t0) / td) % 360;
+			const interpolationTime = render_timestamp - t0;
+			this.targetPos.x =	x0 + ((x1 - x0) / td) * interpolationTime;
+			this.targetPos.y =	y0 + ((y1 - y0) / td) * interpolationTime;
+			if(!didOverflow || !this.overflow) this.targetPos.r = (r0 + (this.angleDiff(r0, r1) / td) * interpolationTime) % 360;
 		}
 
 		this.x += (this.targetPos.x - this.x) * syncSmooth;

@@ -112,7 +112,6 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.lobby = code;
 	multiplayerState.admin = admin;
 
-
 	// ******* TODO REMOVE:
 	// if(admin){
 	// 	// auto select level for development:
