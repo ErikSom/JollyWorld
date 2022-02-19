@@ -2,6 +2,7 @@ import {
 	Container
 } from "@pixi/display";
 import * as PIXI from 'pixi.js';
+import { game } from "../Game";
 import { RippleVehicle } from "./rippleVehicle";
 
 const DEG2RAD = 0.017453292519943296;
@@ -121,14 +122,36 @@ export class RippleCharacter {
 		this.cloud.arrow = new PIXI.Graphics();
 		const arrowSpread = 12 * DEG2RAD;
 		this.cloud.addChild(this.cloud.arrow);
-		this.cloud.arrow.target = new PIXI.Point(100, 0);
 		this.cloud.arrow.fixArrow = () => {
+
+			const point = game.editor.container.toGlobal(new PIXI.Point(this.sprite.x, this.sprite.y));
+			if (game.editor.container.camera) {
+				game.editor.container.camera.toScreenPoint(point, point);
+			}
+
+			this.cloud.x = point.x;
+			this.cloud.y = point.y - 200;
+
+			const screenMargin = 60;
+
+			if(this.cloud.x < screenMargin) this.cloud.x = screenMargin;
+			if(this.cloud.x > window.innerWidth - screenMargin) this.cloud.x = window.innerWidth - screenMargin;
+
+			if(this.cloud.y < screenMargin) this.cloud.y = screenMargin;
+			if(this.cloud.y > window.innerHeight - screenMargin) this.cloud.y = window.innerHeight - screenMargin;
+
 			this.cloud.arrow.clear();
 			const fixedCloudSize = cloudSize - 2;
 			this.cloud.arrow.lineStyle(4, 0x000000).beginFill(0xFFFFFF);
-			const a = Math.atan2(this.cloud.arrow.target.y, this.cloud.arrow.target.x);
+
+
+			const dx = point.x - this.cloud.x;
+			const dy = point.y - this.cloud.y;
+			const a = Math.atan2(dy, dx);
+
+			const arrowLength = 50;
 			this.cloud.arrow.moveTo(fixedCloudSize * Math.cos(a - arrowSpread), fixedCloudSize * Math.sin(a - arrowSpread));
-			this.cloud.arrow.lineTo(this.cloud.arrow.target.x, this.cloud.arrow.target.y);
+			this.cloud.arrow.lineTo((fixedCloudSize + arrowLength) * Math.cos(a), (fixedCloudSize + arrowLength) * Math.sin(a));
 			this.cloud.arrow.lineTo(fixedCloudSize * Math.cos(a + arrowSpread), fixedCloudSize * Math.sin(a + arrowSpread));
 		}
 
@@ -151,7 +174,7 @@ export class RippleCharacter {
 		this.cloud.mouth.y = this.sprites.mouth.y;
 		this.cloud.scale.x = this.cloud.scale.y = .5;
 
-		this.sprite.addChild(this.cloud);
+		game.hudContainer.addChild(this.cloud);
 
 		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight, this.sprites.belly, this.sprites.thighLeft, this.sprites.thighRight, this.sprites.legLeft, this.sprites.legRight, this.sprites.feetLeft, this.sprites.feetRight];
 	}

@@ -285,6 +285,9 @@ function Game() {
         this.myEffectsContainer = new PIXI.Container();
         this.stage.addChild(this.myEffectsContainer);
 
+        this.hudContainer = new PIXI.Container();
+        this.stage.addChild(this.hudContainer);
+
         this.triggerDebugDraw = new PIXI.Graphics();
         this.triggerDebugDraw.debounceRedraw = ()=>{
             while(game.triggerDebugDraw.children.length > 0){
