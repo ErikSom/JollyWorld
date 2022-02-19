@@ -114,8 +114,24 @@ export class RippleCharacter {
 		this.sprite.addChild(this.sprites.handRight);
 
 		this.cloud = new PIXI.Container();
-		this.cloud.bg = new PIXI.Graphics().lineStyle(4, 0x000000).beginFill(0xFFFFFF).drawCircle(0, 0, 50);
+		const cloudSize = 50;
+		this.cloud.bg = new PIXI.Graphics().lineStyle(4, 0x000000).beginFill(0xFFFFFF).drawCircle(0, 0, cloudSize);
 		this.cloud.addChild(this.cloud.bg);
+
+		this.cloud.arrow = new PIXI.Graphics();
+		const arrowSpread = 12 * DEG2RAD;
+		this.cloud.addChild(this.cloud.arrow);
+		this.cloud.arrow.target = new PIXI.Point(100, 0);
+		this.cloud.arrow.fixArrow = () => {
+			this.cloud.arrow.clear();
+			const fixedCloudSize = cloudSize - 2;
+			this.cloud.arrow.lineStyle(4, 0x000000).beginFill(0xFFFFFF);
+			const a = Math.atan2(this.cloud.arrow.target.y, this.cloud.arrow.target.x);
+			this.cloud.arrow.moveTo(fixedCloudSize * Math.cos(a - arrowSpread), fixedCloudSize * Math.sin(a - arrowSpread));
+			this.cloud.arrow.lineTo(this.cloud.arrow.target.x, this.cloud.arrow.target.y);
+			this.cloud.arrow.lineTo(fixedCloudSize * Math.cos(a + arrowSpread), fixedCloudSize * Math.sin(a + arrowSpread));
+		}
+
 		this.cloud.head = new PIXI.Sprite(this.spriteSheet.textures['Normal_Head_Idle']);
 		this.cloud.head.anchor.set(0.5, 0.5);
 		this.cloud.addChild(this.cloud.head);
@@ -133,7 +149,7 @@ export class RippleCharacter {
 		this.cloud.eyeRight.y = this.sprites.eyeRight.y;
 		this.cloud.mouth.x = this.sprites.mouth.x;
 		this.cloud.mouth.y = this.sprites.mouth.y;
-
+		this.cloud.scale.x = this.cloud.scale.y = .5;
 
 		this.sprite.addChild(this.cloud);
 
@@ -223,6 +239,8 @@ export class RippleCharacter {
 
 		// correct IK
 		this.vehicle.interpolatePosition();
+
+		this.cloud.arrow.fixArrow();
 	}
 }
 
