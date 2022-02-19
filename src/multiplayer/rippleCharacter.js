@@ -158,6 +158,14 @@ export class RippleCharacter {
 		this.cloud.head = new PIXI.Sprite(this.spriteSheet.textures['Normal_Head_Idle']);
 		this.cloud.head.anchor.set(0.5, 0.5);
 		this.cloud.addChild(this.cloud.head);
+		this.cloud.head.scale.x = this.cloud.head.scale.y = .8;
+		this.cloud.head.y = -10;
+
+		const distanceTextStyle = {textColor:'#000', textAlign:'left', fontSize:18, fontName:'Verdana', text:'9999m'};
+		this.cloud.distanceText = game.editor.buildTextGraphicFromObj(distanceTextStyle);
+		this.cloud.distanceText.pivot.set(this.cloud.distanceText.width/2, this.cloud.distanceText.height/2);
+		this.cloud.distanceText.y = 30;
+		this.cloud.addChild(this.cloud.distanceText);
 
 		this.cloud.eyeLeft = new PIXI.Sprite(this.spriteSheet.textures['Normal_Eye']);
 		this.cloud.eyeLeft.anchor.set(0.5, 0.5);
