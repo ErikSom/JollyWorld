@@ -81,6 +81,7 @@ export class RippleCharacter {
 			mouth: new PIXI.Sprite(this.spriteSheet.textures['Mouth_Idle']),
 		}
 
+
 		for(let obj in this.sprites){
 			this.sprites[obj].anchor.set(0.5, 0.5);
 		}
@@ -111,6 +112,30 @@ export class RippleCharacter {
 		this.sprite.addChild(this.sprites.shoulderRight);
 		this.sprite.addChild(this.sprites.armRight);
 		this.sprite.addChild(this.sprites.handRight);
+
+		this.cloud = new PIXI.Container();
+		this.cloud.bg = new PIXI.Graphics().lineStyle(4, 0x000000).beginFill(0xFFFFFF).drawCircle(0, 0, 50);
+		this.cloud.addChild(this.cloud.bg);
+		this.cloud.head = new PIXI.Sprite(this.spriteSheet.textures['Normal_Head_Idle']);
+		this.cloud.head.anchor.set(0.5, 0.5);
+		this.cloud.addChild(this.cloud.head);
+
+		this.cloud.eyeLeft = new PIXI.Sprite(this.spriteSheet.textures['Normal_Eye']);
+		this.cloud.eyeLeft.anchor.set(0.5, 0.5);
+		this.cloud.eyeRight = new PIXI.Sprite(this.spriteSheet.textures['Normal_Eye']);
+		this.cloud.eyeRight.anchor.set(0.5, 0.5);
+		this.cloud.mouth = new PIXI.Sprite(this.spriteSheet.textures['Mouth_Idle']);
+		this.cloud.mouth.anchor.set(0.5, 0.5);
+		this.cloud.head.addChild(this.cloud.eyeLeft, this.cloud.eyeRight, this.cloud.mouth);
+		this.cloud.eyeLeft.x = this.sprites.eyeLeft.x;
+		this.cloud.eyeLeft.y = this.sprites.eyeLeft.y;
+		this.cloud.eyeRight.x = this.sprites.eyeRight.x;
+		this.cloud.eyeRight.y = this.sprites.eyeRight.y;
+		this.cloud.mouth.x = this.sprites.mouth.x;
+		this.cloud.mouth.y = this.sprites.mouth.y;
+
+
+		this.sprite.addChild(this.cloud);
 
 		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight, this.sprites.belly, this.sprites.thighLeft, this.sprites.thighRight, this.sprites.legLeft, this.sprites.legRight, this.sprites.feetLeft, this.sprites.feetRight];
 	}
