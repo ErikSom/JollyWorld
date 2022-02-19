@@ -129,6 +129,8 @@ export class RippleCharacter {
 		this.cloud.addChild(this.cloud.arrow);
 		this.cloud.arrow.fixArrow = () => {
 
+			nameText.scale.x = nameText.scale.y = 1 / game.editor.cameraHolder.scale.x;
+
 			const point = game.editor.container.toGlobal(new PIXI.Point(this.sprite.x, this.sprite.y));
 			if (game.editor.container.camera) {
 				game.editor.container.camera.toScreenPoint(point, point);
