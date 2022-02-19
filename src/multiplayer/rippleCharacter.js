@@ -114,6 +114,11 @@ export class RippleCharacter {
 		this.sprite.addChild(this.sprites.armRight);
 		this.sprite.addChild(this.sprites.handRight);
 
+		const nameText = new PIXI.Text(this.playerState.name, new PIXI.TextStyle({fontFamily:'Montserrat', fontWeight: 800, lineJoin:'round', fontSize: 24, fill: 0xFFFFFF, stroke: 0x000000, strokeThickness: 4}))
+		nameText.pivot.set(nameText.width / 2, nameText.height / 2);
+		nameText.y = -140;
+		this.sprite.addChild(nameText);
+
 		this.cloud = new PIXI.Container();
 		const cloudSize = 50;
 		this.cloud.bg = new PIXI.Graphics().lineStyle(4, 0x000000).beginFill(0xFFFFFF).drawCircle(0, 0, cloudSize);
