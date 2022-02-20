@@ -4,13 +4,13 @@ import { LOBBY_STATE, multiplayerState } from './multiplayerManager';
 
 export const HUD_STATES = {
 	WAITING_PLAYERS: 'waitingPlayers',
-	COUNTDOWN: 'waitingPlayers',
+	COUNTDOWN: 'countDown',
 }
 let hudState = '';
 let multiplayerHud = null;
 let multiPlayerHudLookup = {};
 
-export const setMultiplayerHud = state => {
+export const setMultiplayerHud = (state, data) => {
 	if(!multiplayerHud){
 		multiplayerHud = new PIXI.Container();
 		game.hudContainer.addChild(multiplayerHud);
@@ -18,7 +18,7 @@ export const setMultiplayerHud = state => {
 	if(hudState !== state){
 		clearState();
 		hudState = state;
-		buildState();
+		buildState(data);
 	}
 }
 
@@ -36,20 +36,46 @@ export const updateMultiplayerHud = () => {
 				playersReady++;
 			}
 		}
-		lu.waitingText.text = `Waiting for other players ${playerCount} / ${playersReady}`
+		lu.waitingText.text = `Waiting for other players ${playersReady} / ${playerCount}`;
+	}else if(hudState === HUD_STATES.COUNTDOWN){
+		const timeLeft = Math.max(0, Math.ceil(lu.countDownTime / 1000));
+
+		lu.countDownTime -= game.editor.deltaTime;
+
+		if(lu.countDownTime > 0){
+			lu.countDownText.text = `Starting in ${timeLeft}..`;
+		} else {
+			lu.countDownText.text = 'GO!!!';
+			game.run = true;
+
+			if(lu.countDownTime < -1000){
+				setMultiplayerHud('');
+			}
+		}
 	}
 
 }
 
-const buildState = () => {
+const buildState = data => {
 	const lu = multiPlayerHudLookup;
+	const wordWrapWidth = 300;
+
 	if(hudState === HUD_STATES.WAITING_PLAYERS){
-		const wordWrapWidth = 300;
 		const style = new PIXI.TextStyle({fontFamily:'Montserrat', fontWeight: 800, align:'center', lineJoin:'round', fontSize: 32, fill: 0xFFFFFF, stroke: 0x000000, strokeThickness: 4, wordWrap: true, wordWrapWidth});
 		lu.waitingText = new PIXI.Text('Waiting for other players', style);
 		multiplayerHud.addChild(lu.waitingText);
-		lu.waitingText.x = window.innerWidth / 2 - (wordWrapWidth / 2);
+		lu.waitingText.anchor.set(0.5, 0.5);
+		lu.waitingText.x = window.innerWidth / 2;
 		lu.waitingText.y = 80;
+	} else if(hudState === HUD_STATES.COUNTDOWN){
+		lu.countDownTime = 3000 - data.ping;
+		const style = new PIXI.TextStyle({fontFamily:'Montserrat', fontWeight: 800, align:'center', lineJoin:'round', fontSize: 32, fill: 0xFFFFFF, stroke: 0x000000, strokeThickness: 4, wordWrap: true, wordWrapWidth});
+		lu.countDownText = new PIXI.Text('Starting in 3..', style);
+		multiplayerHud.addChild(lu.countDownText);
+		lu.countDownText.anchor.set(0.5, 0.5);
+		lu.countDownText.x = window.innerWidth / 2;
+		lu.countDownText.y = 80;
+		// show time
 	}
 }
 
@@ -57,8 +83,8 @@ const buildState = () => {
 const clearState = () => {
 	if(multiplayerHud){
 		multiPlayerHudLookup = {};
-		while(multiplayerHud.children.length>1){
-            multiplayerHud.removeChild(multiplayerHud.children[1]);
+		while(multiplayerHud.children.length>0){
+            multiplayerHud.removeChild(multiplayerHud.children[0]);
         }
 	}
 }

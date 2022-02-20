@@ -160,6 +160,18 @@ export class RippleCharacter {
 			this.cloud.arrow.moveTo(fixedCloudSize * Math.cos(a - arrowSpread), fixedCloudSize * Math.sin(a - arrowSpread));
 			this.cloud.arrow.lineTo((fixedCloudSize + arrowLength) * Math.cos(a), (fixedCloudSize + arrowLength) * Math.sin(a));
 			this.cloud.arrow.lineTo(fixedCloudSize * Math.cos(a + arrowSpread), fixedCloudSize * Math.sin(a + arrowSpread));
+
+			const cameraDX = window.innerWidth / 2 - point.x;
+			const cameraDY = window.innerHeight / 2 - point.y;
+			const meterInPixels = 130;
+			const distanceToCamera = Math.sqrt(cameraDX * cameraDX + cameraDY * cameraDY);
+			const distanceInMeters = Math.round(distanceToCamera / meterInPixels);
+
+			if(distanceInMeters < 10000){
+				this.cloud.distanceText.text = `${distanceInMeters}m`;
+			} else{
+				this.cloud.distanceText.text = `9999+`;
+			}
 		}
 
 		this.cloud.head = new PIXI.Sprite(this.spriteSheet.textures['Normal_Head_Idle']);
@@ -168,9 +180,9 @@ export class RippleCharacter {
 		this.cloud.head.scale.x = this.cloud.head.scale.y = .8;
 		this.cloud.head.y = -10;
 
-		const distanceTextStyle = {textColor:'#000', textAlign:'left', fontSize:18, fontName:'Verdana', text:'9999m'};
+		const distanceTextStyle = {textColor:'#000', textAlign:'center', fontSize:18, fontName:'Verdana', text:'0m', wordWrap: true, wordWrapWidth: 200};
 		this.cloud.distanceText = game.editor.buildTextGraphicFromObj(distanceTextStyle);
-		this.cloud.distanceText.pivot.set(this.cloud.distanceText.width/2, this.cloud.distanceText.height/2);
+		this.cloud.distanceText.anchor.set(0.5, 0.5);
 		this.cloud.distanceText.y = 30;
 		this.cloud.addChild(this.cloud.distanceText);
 

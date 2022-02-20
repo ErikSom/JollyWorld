@@ -25,7 +25,7 @@ export const LOBBY_STATE = {
 }
 
 export const multiplayerState = {
-	debug: true,
+	debug: false,
 	admin: false,
 	ready: false,
 	lobby: '',
@@ -114,17 +114,17 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.admin = admin;
 
 	// ******* TODO REMOVE:
-	if(admin){
-		// auto select level for development:
-		backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
-			selectMultiplayerLevel(levelData);
-			game.openMainMenu();
-			game.gameState = game.GAMESTATE_LOBBY;
-			game.ui.setMainMenuActive('lobby');
-		});
-	} else {
-		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	}
+	// if(admin){
+	// 	// auto select level for development:
+	// 	backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
+	// 		selectMultiplayerLevel(levelData);
+	// 		game.openMainMenu();
+	// 		game.gameState = game.GAMESTATE_LOBBY;
+	// 		game.ui.setMainMenuActive('lobby');
+	// 	});
+	// } else {
+	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	// }
 	// ********************
 
 	startSyncPlayer();
@@ -300,6 +300,10 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			player.playerState.lobbyState = LOBBY_STATE.FINISHED_LOADING_LEVEL;
 			updateLobbyUI();
 			break;
+		case SIMPLE_MESSAGE_TYPES.START_COUNTDOWN:
+			setMultiplayerHud(HUD_STATES.COUNTDOWN, {ping: player.ping});
+			updateLobbyUI();
+			break;
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
 				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
@@ -375,6 +379,22 @@ export const updateMultiplayer = () => {
 	} catch(e){
 		console.log('ERROR MULTIPLAYER', e);
 		// stopSyncPlayer();
+	}
+
+
+
+	if(multiplayerState.admin && multiplayerState.lobbyState === LOBBY_STATE.LOADING_LEVEL){
+		let playersReady = true;
+		for(let playerID in multiplayerState.players){
+			if(multiplayerState.players[playerID].playerState.lobbyState !== LOBBY_STATE.FINISHED_LOADING_LEVEL){
+				playersReady = false;
+			}
+		}
+		if(playersReady){
+			sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.START_COUNTDOWN);
+			multiplayerState.lobbyState = LOBBY_STATE.PLAYING;
+			setMultiplayerHud(HUD_STATES.COUNTDOWN, {ping:0});
+		}
 	}
 
 	if(Key.isPressed(Key.I)){
