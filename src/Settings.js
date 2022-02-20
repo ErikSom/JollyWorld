@@ -28,6 +28,8 @@ export var Settings = {
     levelAdmin:false,
     disableAds:false,
     onPoki:false,
+    /*MULTIPLAYER*/
+    maxMultiplayerPlayers: 8,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,
