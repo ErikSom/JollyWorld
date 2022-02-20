@@ -1,8 +1,10 @@
+import { Key } from '../../libs/Key';
 import { game } from '../Game'
 import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
+import { HUD_STATES, setMultiplayerHud } from './hud';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
@@ -18,7 +20,8 @@ export const LOBBY_STATE = {
 	WAITING: 1,
 	READY: 2,
 	LOADING_LEVEL: 3,
-	PLAYING: 4,
+	FINISHED_LOADING_LEVEL: 4,
+	PLAYING: 5,
 }
 
 export const multiplayerState = {
@@ -50,8 +53,6 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.CHANGE_LEVEL, handleChangeLevel);
 	globalEvents.addEventListener(SERVER_EVENTS.START_LOAD_LEVEL, handleStartLoadLevel);
 	globalEvents.addEventListener(SERVER_EVENTS.RECEIVE_SKIN, handleReceiveSkin);
-
-	if(multiplayerState.debug) document.body.appendChild(debugWindow);
 
 	prepareSkinForSending();
 }
@@ -113,17 +114,17 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.admin = admin;
 
 	// ******* TODO REMOVE:
-	// if(admin){
-	// 	// auto select level for development:
-	// 	backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
-	// 		selectMultiplayerLevel(levelData);
-	// 		game.openMainMenu();
-	// 		game.gameState = game.GAMESTATE_LOBBY;
-	// 		game.ui.setMainMenuActive('lobby');
-	// 	});
-	// } else {
-	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	// }
+	if(admin){
+		// auto select level for development:
+		backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
+			selectMultiplayerLevel(levelData);
+			game.openMainMenu();
+			game.gameState = game.GAMESTATE_LOBBY;
+			game.ui.setMainMenuActive('lobby');
+		});
+	} else {
+		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	}
 	// ********************
 
 	startSyncPlayer();
@@ -262,6 +263,7 @@ const startLoadLevel = async id => {
 	}
 
 	const finishLoading = ()=>{
+		game.run = false;
 	}
 
 	const levelData = multiplayerState.selectedLevelData;
@@ -273,6 +275,7 @@ const startLoadLevel = async id => {
 		}else{
 			game.ui.showVehicleSelect();
 		}
+		setMultiplayerHud(HUD_STATES.WAITING_PLAYERS);
 		finishLoading();
 	}).catch(error => {
 		finishLoading();
@@ -291,6 +294,10 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			break;
 		case SIMPLE_MESSAGE_TYPES.PLAYER_NOT_READY:
 			player.playerState.lobbyState = LOBBY_STATE.WAITING;
+			updateLobbyUI();
+			break;
+		case SIMPLE_MESSAGE_TYPES.PLAYER_FINISHED_LOADING:
+			player.playerState.lobbyState = LOBBY_STATE.FINISHED_LOADING_LEVEL;
 			updateLobbyUI();
 			break;
 		default:
@@ -315,8 +322,8 @@ export const startSyncPlayer = () => {
 
 	console.log("** START SYNC PLAYER **")
 	syncInterval = setInterval(()=> {
-		multiplayerState.misc = `hasChar:${(!!game.character).toString()}, gameRun:${game.run}`
-		if(game.character && game.run){
+		multiplayerState.misc = `hasChar:${(!!game.character).toString()}`
+		if(game.character){
 			const buffer = characterToBuffer(game.character, tickID);
 			server.sendCharacterData(buffer);
 
@@ -349,7 +356,7 @@ export const updateMultiplayer = () => {
 		});
 
 	try{
-		if(game.character && game.run){
+		if(game.character){
 			for(let playerID in multiplayerState.players){
 
 				const player = multiplayerState.players[playerID];
@@ -370,7 +377,15 @@ export const updateMultiplayer = () => {
 		// stopSyncPlayer();
 	}
 
-	updateDebugData();
+	if(Key.isPressed(Key.I)){
+		if(multiplayerState.debug){
+			document.body.removeChild(debugWindow);
+		}else{
+			document.body.appendChild(debugWindow);
+		}
+		multiplayerState.debug = !multiplayerState.debug;
+	}
+	if(multiplayerState.debug) updateDebugData();
 }
 
 

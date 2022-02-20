@@ -54,6 +54,7 @@ import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
 import { autoConnectLobby, startMultiplayer, updateMultiplayer } from "./multiplayer/multiplayerManager";
+import { updateMultiplayerHud } from "./multiplayer/hud";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -1637,9 +1638,11 @@ function Game() {
 
         if(this.needScreenshot) this.screenShotData = game.app.renderer.plugins.extract.canvas();
         PIXICuller.update();
-        Key.update();
 
         updateMultiplayer();
+        updateMultiplayerHud();
+
+        Key.update();
 
         this.stats.end();
     };

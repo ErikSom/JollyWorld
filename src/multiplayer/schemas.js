@@ -49,6 +49,7 @@ export const introductionModel = new Model(introduction);
 export const SIMPLE_MESSAGE_TYPES = {
 	PLAYER_READY: 0,
 	PLAYER_NOT_READY: 1,
+	PLAYER_FINISHED_LOADING: 2,
 	SELECT_VEHICLE: 100,
 }
 

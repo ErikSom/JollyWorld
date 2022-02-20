@@ -1910,6 +1910,8 @@ function UIManager() {
 
     this.playLevelFromSinglePlayer = function(delay){
 
+        const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
+
         const continueToGame = ()=>{
             game.preloader.classList.remove('hide');
             setTimeout(()=>{
@@ -1917,13 +1919,23 @@ function UIManager() {
                 game.initLevel(game.currentLevelData);
                 game.playWorld(true);
                 backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+
+                if(multiplayer){
+                    // we want to wait for other players
+                    game.run = false;
+                    game.gameCamera(true);
+                }
+
                 setTimeout(()=>{
                     game.preloader.classList.add('hide');
+
+                    if(multiplayer){
+                        sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.PLAYER_FINISHED_LOADING);
+                    }
+
                 }, Settings.levelBuildDelayTime);
             }, Settings.levelBuildDelayTime);
         }
-
-        const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
 
         if(multiplayer){
             this.hideMainMenu();

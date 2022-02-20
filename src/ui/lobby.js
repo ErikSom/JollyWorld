@@ -7,7 +7,7 @@ import { Settings } from '../Settings';
 import { backendManager } from '../utils/BackendManager';
 import { localize } from '../utils/Localization';
 
-let lobby = null
+let lobby = null;
 
 export const generateLobby = () => {
 	if(!lobby){
