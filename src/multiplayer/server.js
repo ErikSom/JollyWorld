@@ -5,7 +5,7 @@ import {
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
-import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, simpleMessageModel, startLoadLevelModel } from './schemas';
+import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from './schemas';
 
 export const SERVER_EVENTS = {
 	NETWORK_READY: 'networkReady',
@@ -18,6 +18,7 @@ export const SERVER_EVENTS = {
 	CHANGE_LEVEL: 'changeLevel',
 	START_LOAD_LEVEL: 'startLoadLevel',
 	RECEIVE_SKIN: 'receiveSkin',
+	LEVEL_WON: 'levelWon',
 }
 
 const MESSAGE_TYPE = {
@@ -76,6 +77,9 @@ class MultiplayerServer {
 							break;
 						case startLoadLevelModel.schema.id:
 							this.receiveStartLoadLevel(peer.id, data);
+							break;
+						case levelWonModel.schema.id:
+							this.receiveLevelWon(peer.id, data);
 							break;
 						default:
 							if(id.indexOf('PNG') >= 0){
@@ -159,6 +163,10 @@ class MultiplayerServer {
 
 	receiveStartLoadLevel(peer, buffer){
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.START_LOAD_LEVEL, peer, buffer});
+	}
+	
+	receiveLevelWon(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.LEVEL_WON, peer, buffer});
 	}
 
 	sendCharacterData(buffer) {

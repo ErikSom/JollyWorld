@@ -5,6 +5,8 @@ import { LOBBY_STATE, multiplayerState } from './multiplayerManager';
 export const HUD_STATES = {
 	WAITING_PLAYERS: 'waitingPlayers',
 	COUNTDOWN: 'countDown',
+	GAME_WIN_CAM: 'gameWinCam',
+	PICK_NEXT_LEVEL: 'gameWinCam',
 }
 let hudState = '';
 let multiplayerHud = null;

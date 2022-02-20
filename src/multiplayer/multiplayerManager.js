@@ -1,11 +1,12 @@
 import { Key } from '../../libs/Key';
+import { timeFormat } from '../b2Editor/utils/formatString';
 import { game } from '../Game'
 import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
 import { HUD_STATES, setMultiplayerHud } from './hud';
-import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
@@ -53,6 +54,7 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.CHANGE_LEVEL, handleChangeLevel);
 	globalEvents.addEventListener(SERVER_EVENTS.START_LOAD_LEVEL, handleStartLoadLevel);
 	globalEvents.addEventListener(SERVER_EVENTS.RECEIVE_SKIN, handleReceiveSkin);
+	globalEvents.addEventListener(SERVER_EVENTS.LEVEL_WON, handleReceiveLevelWon);
 
 	prepareSkinForSending();
 }
@@ -114,17 +116,17 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.admin = admin;
 
 	// ******* TODO REMOVE:
-	// if(admin){
-	// 	// auto select level for development:
-	// 	backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
-	// 		selectMultiplayerLevel(levelData);
-	// 		game.openMainMenu();
-	// 		game.gameState = game.GAMESTATE_LOBBY;
-	// 		game.ui.setMainMenuActive('lobby');
-	// 	});
-	// } else {
-	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	// }
+	if(admin){
+		// auto select level for development:
+		backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
+			selectMultiplayerLevel(levelData);
+			game.openMainMenu();
+			game.gameState = game.GAMESTATE_LOBBY;
+			game.ui.setMainMenuActive('lobby');
+		});
+	} else {
+		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	}
 	// ********************
 
 	startSyncPlayer();
@@ -470,6 +472,23 @@ const fetchLevelInfo = async id => {
 	}catch(err){
 		// something went wrong fetching this level
 	}
+}
+
+export const sendLevelWon = time => {
+	setMultiplayerHud(HUD_STATES.GAME_WIN_CAM);
+	const messageBuffer = dataToLevelWonBuffer(time);
+	server.sendSimpleMessageAll(messageBuffer);
+}
+
+const handleReceiveLevelWon = ({peer, buffer}) => {
+	const { time } = dataFromLevelWonBuffer(buffer);
+
+	const d = timeFormat(time);
+	const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.${d.ms}`;
+
+	const player = multiplayerState.players[peer];
+
+	console.log(`PLAYER ${player.playerState.name} FINISHED WITH TIME: ${s}`);
 }
 
 // DEBUG STUFF

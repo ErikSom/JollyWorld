@@ -51,6 +51,9 @@ export const SIMPLE_MESSAGE_TYPES = {
 	PLAYER_NOT_READY: 1,
 	PLAYER_FINISHED_LOADING: 2,
 	START_COUNTDOWN: 3,
+	LEVEL_WON: 4,
+	LEVEL_FAILED: 5,
+	LEVEL_CHECKPOINT: 6,
 	SELECT_VEHICLE: 100,
 }
 
@@ -71,4 +74,9 @@ const changeServerLevel = BufferSchema.schema('changeServerLevel', {
 })
 export const changeServerLevelModel = new Model(changeServerLevel);
 
+// LEVEL WON
+const levelWon = BufferSchema.schema('levelWon', {
+	time: { type: int32 },
+})
+export const levelWonModel = new Model(levelWon);
 

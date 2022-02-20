@@ -1,4 +1,4 @@
-import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
+import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
 import {
 	Settings
 } from '../Settings'
@@ -201,5 +201,15 @@ export const dataFromChangeServerLevelBuffer = buffer => {
 	return simpleMessageData;
 }
 
+// LEVEL WON
+export const dataToLevelWonBuffer = time => {
+	const buffer = levelWonModel.toBuffer({time});
+	return buffer;
+}
+
+export const dataFromLevelWonBuffer = buffer => {
+	const simpleMessageData = levelWonModel.fromBuffer(buffer);
+	return simpleMessageData;
+}
 
 

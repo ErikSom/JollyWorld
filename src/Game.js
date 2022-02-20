@@ -38,7 +38,6 @@ import * as ReplayManager from './utils/ReplayManager';
 import * as b2DebugDrawManager from './utils/b2DebugDrawManager'
 import * as BodyBreaker from './b2Editor/utils/bodyBreaker'
 import * as ModManager from './utils/ModManager'
-import './multiplayer/multiplayerManager'
 
 import { Camera as PIXICamera } from './utils/PIXICameraV6';
 import { YouTubePlayer } from "./utils/YouTubePlayer";
@@ -53,7 +52,7 @@ import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
-import { autoConnectLobby, startMultiplayer, updateMultiplayer } from "./multiplayer/multiplayerManager";
+import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE } from "./multiplayer/multiplayerManager";
 import { updateMultiplayerHud } from "./multiplayer/hud";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
@@ -1181,30 +1180,37 @@ function Game() {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             // GAME STATE NORMAL
-            if(this.gameState == this.GAMESTATE_NORMALPLAY){
-                await backendManager.submitTime(game.currentLevelData.id);
-            }
 
-            let d;
-            if(window.wqhjfu){
-               d = timeFormat(window.wqhjfu);
+            const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
+            if(!multiplayer){
+                if(this.gameState == this.GAMESTATE_NORMALPLAY){
+                    await backendManager.submitTime(game.currentLevelData.id);
+                }
+
+                let d;
+                if(window.wqhjfu){
+                d = timeFormat(window.wqhjfu);
+                }else{
+                d = timeFormat(this.gameFrame * (1/60) * 1000);
+                }
+
+                const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
+                if(this.gameState == this.GAMESTATE_EDITOR){
+                    ui.show();
+                    ui.showWinScreen(s, d.ms);
+                }else if(this.gameState == this.GAMESTATE_NORMALPLAY){;
+                    ui.showWinScreen(s, d.ms);
+                }
             }else{
-               d = timeFormat(this.gameFrame * (1/60) * 1000);
+                const d = this.gameFrame * (1/60) * 1000;
+                sendLevelWon(d);
             }
 
-            const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
-            if(this.gameState == this.GAMESTATE_EDITOR){
-                ui.show();
-                ui.showWinScreen(s, d.ms);
-            }else if(this.gameState == this.GAMESTATE_NORMALPLAY){;
-                ui.showWinScreen(s, d.ms);
-            }
             this.editor.ui.showConfetti();
-            MobileController.hide();
-            GameTimer.show(false);
+                MobileController.hide();
+                GameTimer.show(false);
 
             this.exitPointerLock();
-
         }
     }
     this.gameLose = function () {
