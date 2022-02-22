@@ -67,7 +67,7 @@ export const updateMultiplayerHud = () => {
 			game.run = true;
 
 			if(lu.countDownTime < -1000){
-				setMultiplayerHud('');
+				setMultiplayerHud(HUD_STATES.GAME_WIN_CAM);
 			}
 		}
 	}
@@ -92,11 +92,47 @@ const buildState = data => {
 		multiplayerHud.appendChild(lu.countDownText);
 		// show time
 	} else if(hudState === HUD_STATES.GAME_WIN_CAM){
-		// lu.winText = new PIXI.Text('You Won!', basicTextStyle);
-		// multiplayerHud.addChild(lu.winText);
-		// lu.winText.x = window.innerWidth / 2;
-		// lu.winText.y = basicTextHeight;
+		lu.winCam = document.createElement('div');
+		lu.winCam.classList.add('content');
+		multiplayerHud.appendChild(lu.winCam);
 
+
+		const winText = document.createElement('div');
+		winText.innerText = 'You Win!';
+
+		const waitingText = document.createElement('div');
+		waitingText.innerText = 'Waiting for other players to finish';
+		waitingText.style.fontSize = '14px';
+
+		const switchCameraBut = document.createElement('button');
+		switchCameraBut.innerText = 'Switch Camera';
+		switchCameraBut.classList.add('switch-cam');
+
+		switchCameraBut.onclick = () => {
+			console.log('BEAM! switched camera');
+			const playerID = Object.keys(multiplayerState.players)[0];
+			game.cameraFocusObject = {
+				GetPosition: () => {
+					const x = multiplayerState.players[playerID].sprite.x  / Settings.PTM;
+					const y = multiplayerState.players[playerID].sprite.y  / Settings.PTM;
+					return {x, y};
+				},
+				GetLinearVelocity: () => {
+					const x = multiplayerState.players[playerID].sprite.velocity.x  / Settings.PTM;
+					const y = multiplayerState.players[playerID].sprite.velocity.y  / Settings.PTM;;
+					return {x, y};
+				}
+			}
+		}
+
+		const gameEnds = document.createElement('div');
+		gameEnds.innerText = 'Game ends in 60s';
+		gameEnds.style.margin = '60px 0px';
+
+		lu.winCam.appendChild(winText);
+		lu.winCam.appendChild(waitingText);
+		lu.winCam.appendChild(switchCameraBut);
+		lu.winCam.appendChild(gameEnds);
 
 		// lu.waitingText = new PIXI.Text('Waiting for other players to finish', basicTextStyle);
 		// multiplayerHud.addChild(lu.waitingText);

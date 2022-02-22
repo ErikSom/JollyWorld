@@ -11,6 +11,7 @@ export class RippleCharacter {
 	constructor(id) {
 		this.id = id;
 		this.sprite = new Container();
+		this.sprite.velocity = {x: 0, y: 0};
 		this.sprite.visible = false;
 		this.sprite.rippleCharacterClass = this;
 		this.state = {
@@ -241,7 +242,7 @@ export class RippleCharacter {
 		const dY = data.main[0].y - this.state.body.y;
 		const d = Math.sqrt(dX * dX + dY * dY);
 
-		const teleport = d > 300;
+		const teleport = d > 600;
 
 		this.lastPackageID = data.id;
 		this.state.body.ping = this.ping;
@@ -274,6 +275,8 @@ export class RippleCharacter {
 		});
 
 		// apply positions
+		this.sprite.velocity.x = this.state.body.x - this.sprite.x;
+		this.sprite.velocity.y = this.state.body.y - this.sprite.y;
 		this.sprite.x = this.state.body.x;
 		this.sprite.y = this.state.body.y;
 		this.sprites.body.scale.x = this.state.body.mirror ? -1 : 1;
