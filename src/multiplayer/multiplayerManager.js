@@ -1,6 +1,7 @@
 import { Key } from '../../libs/Key';
 import { timeFormat } from '../b2Editor/utils/formatString';
 import { game } from '../Game'
+import { Settings } from '../Settings';
 import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
@@ -23,6 +24,8 @@ export const LOBBY_STATE = {
 	LOADING_LEVEL: 3,
 	FINISHED_LOADING_LEVEL: 4,
 	PLAYING: 5,
+	WON_LEVEL: 6,
+	VOTING: 7,
 }
 
 export const multiplayerState = {
@@ -37,6 +40,8 @@ export const multiplayerState = {
 	selectedLevel: '',
 	selectedLevelData: null,
 	lobbyState: LOBBY_STATE.OFFLINE,
+	endTime: 0,
+	finishTime: 0,
 	skinBlob: null,
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
@@ -303,8 +308,21 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			updateLobbyUI();
 			break;
 		case SIMPLE_MESSAGE_TYPES.START_COUNTDOWN:
+			multiplayerState.lobbyState = LOBBY_STATE.PLAYING;
 			setMultiplayerHud(HUD_STATES.COUNTDOWN, {ping: player.ping});
 			updateLobbyUI();
+			break;
+		case SIMPLE_MESSAGE_TYPES.END_COUNTDOWN:
+			multiplayerState.endTime = Settings.endGameTimer - player.ping;
+			if(multiplayerState.lobbyState !== LOBBY_STATE.WON_LEVEL){
+				setMultiplayerHud(HUD_STATES.GAME_END_COUNTDOWN);
+			}
+			updateLobbyUI();
+			break;
+		case SIMPLE_MESSAGE_TYPES.FINISH_END_COUNTDOWN:
+			if(multiplayerState.endTime > 0){
+				multiplayerState.endTime = 1;
+			}
 			break;
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
@@ -377,6 +395,14 @@ export const updateMultiplayer = () => {
 
 				if(player.connected) player.interpolatePosition();
 			}
+
+			if([LOBBY_STATE.PLAYING, LOBBY_STATE.WON_LEVEL].includes(multiplayerState.lobbyState) && multiplayerState.endTime > 0){
+				multiplayerState.endTime -= game.editor.deltaTime;
+				if(multiplayerState.endTime < 0){
+					multiplayerState.lobbyState = LOBBY_STATE.VOTING;
+					setMultiplayerHud(HUD_STATES.PICK_NEXT_LEVEL);
+				}
+			}
 		}
 	} catch(e){
 		console.log('ERROR MULTIPLAYER', e);
@@ -406,6 +432,10 @@ export const updateMultiplayer = () => {
 			document.body.appendChild(debugWindow);
 		}
 		multiplayerState.debug = !multiplayerState.debug;
+	}
+
+	if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
+		sendLevelWon(10000);
 	}
 	if(multiplayerState.debug) updateDebugData();
 }
@@ -475,9 +505,17 @@ const fetchLevelInfo = async id => {
 }
 
 export const sendLevelWon = time => {
+	console.log("SEND LEVEL WON!!!");
 	setMultiplayerHud(HUD_STATES.GAME_WIN_CAM);
 	const messageBuffer = dataToLevelWonBuffer(time);
 	server.sendSimpleMessageAll(messageBuffer);
+
+	multiplayerState.finishTime = time;
+
+	multiplayerState.lobbyState = LOBBY_STATE.WON_LEVEL;
+
+	checkEndLevelTimer();
+
 }
 
 const handleReceiveLevelWon = ({peer, buffer}) => {
@@ -488,7 +526,40 @@ const handleReceiveLevelWon = ({peer, buffer}) => {
 
 	const player = multiplayerState.players[peer];
 
+	player.playerState.lobbyState = LOBBY_STATE.WON_LEVEL;
+	player.playerState.finishTime = time;
+
 	console.log(`PLAYER ${player.playerState.name} FINISHED WITH TIME: ${s}`);
+
+	checkEndLevelTimer();
+}
+
+const checkEndLevelTimer = () => {
+	if(multiplayerState.admin){
+		if(!multiplayerState.endTime){
+			multiplayerState.endTime = Settings.endGameTimer;
+
+			if(multiplayerState.lobbyState !== LOBBY_STATE.WON_LEVEL){
+				setMultiplayerHud(HUD_STATES.GAME_END_COUNTDOWN);
+			}
+
+			sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.END_COUNTDOWN);
+		}else {
+
+			let allPlayersFinished = true;
+			const players = Object.values(multiplayerState.players);
+			players.forEach(player => {
+				if(player.playerState.lobbyState !== LOBBY_STATE.WON_LEVEL){
+					allPlayersFinished = false;
+				}
+			});
+
+			if(allPlayersFinished && multiplayerState.endTime > 1000){
+				sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.FINISH_END_COUNTDOWN);
+				multiplayerState.endTime = 1;
+			}
+		}
+	}
 }
 
 // DEBUG STUFF

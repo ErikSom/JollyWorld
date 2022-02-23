@@ -30,6 +30,8 @@ export var Settings = {
     onPoki:false,
     /*MULTIPLAYER*/
     maxMultiplayerPlayers: 8,
+    startGameTimer: 3000,
+    endGameTimer: 10000,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,

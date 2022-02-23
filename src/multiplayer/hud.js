@@ -67,9 +67,14 @@ export const updateMultiplayerHud = () => {
 			game.run = true;
 
 			if(lu.countDownTime < -1000){
-				setMultiplayerHud(HUD_STATES.GAME_WIN_CAM);
+				if(hudState === HUD_STATES.COUNTDOWN){
+					setMultiplayerHud('');
+				}
 			}
 		}
+	} else if([HUD_STATES.GAME_WIN_CAM, HUD_STATES.GAME_END_COUNTDOWN].includes(hudState)){
+		const timeLeft = Math.max(0, Math.ceil(multiplayerState.endTime / 1000));
+		lu.gameEnds.innerText = `Game ends in ${timeLeft}s`;
 	}
 }
 
@@ -85,7 +90,7 @@ const buildState = data => {
 		buildLeaderboard();
 
 	} else if(hudState === HUD_STATES.COUNTDOWN){
-		lu.countDownTime = 3000 - data.ping;
+		lu.countDownTime = Settings.startGameTimer - data.ping;
 		lu.countDownText = document.createElement('div');
 		lu.countDownText.classList.add('content');
 		lu.countDownText.innerText = 'Starting in 3..';
@@ -125,19 +130,34 @@ const buildState = data => {
 			}
 		}
 
-		const gameEnds = document.createElement('div');
-		gameEnds.innerText = 'Game ends in 60s';
-		gameEnds.style.margin = '60px 0px';
+		lu.gameEnds = document.createElement('div');
+		lu.gameEnds.innerText = 'Game ends in 60s';
+		lu.gameEnds.style.margin = '60px 0px';
 
 		lu.winCam.appendChild(winText);
 		lu.winCam.appendChild(waitingText);
 		lu.winCam.appendChild(switchCameraBut);
-		lu.winCam.appendChild(gameEnds);
+		lu.winCam.appendChild(lu.gameEnds);
+	} else if(hudState === HUD_STATES.GAME_END_COUNTDOWN){
+		lu.winCam = document.createElement('div');
+		lu.winCam.classList.add('content');
+		multiplayerHud.appendChild(lu.winCam);
 
-		// lu.waitingText = new PIXI.Text('Waiting for other players to finish', basicTextStyle);
-		// multiplayerHud.addChild(lu.waitingText);
-		// lu.waitingText.x = window.innerWidth / 2;
-		// lu.waitingText.y = basicTextHeight;
+
+		const endText = document.createElement('div');
+		endText.innerText = 'Players finished, game is ending soon..';
+
+		lu.gameEnds = document.createElement('div');
+		lu.gameEnds.innerText = 'Game ends in 60s';
+		lu.gameEnds.style.margin = '60px 0px';
+
+		lu.winCam.appendChild(endText);
+		lu.winCam.appendChild(lu.gameEnds);
+	} else if(hudState === HUD_STATES.PICK_NEXT_LEVEL){
+		lu.waitingText = document.createElement('div');
+		lu.waitingText.classList.add('content');
+		lu.waitingText.innerText = 'Game finished, vote for next level';
+		multiplayerHud.appendChild(lu.waitingText);
 	}
 }
 

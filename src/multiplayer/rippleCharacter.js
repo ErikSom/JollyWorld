@@ -37,6 +37,7 @@ export class RippleCharacter {
 		this.playerState = {
 			name: '...',
 			lobbyState: 0,
+			finishTime: -1
 		}
 
 		this.lastPackageID = -1;
