@@ -100,6 +100,27 @@ export const setLobbyStateReady = ready => {
 	updateLobbyUI();
 }
 
+export const returnToLobby = () => {
+	resetMultiplayer();
+
+	game.stopWorld();
+	game.openMainMenu();
+	game.ui.setMainMenuActive('lobby');
+	game.gameState = game.GAMESTATE_LOBBY;
+
+	updateLobbyUI();
+}
+
+export const resetMultiplayer = () => {
+	const players = Object.values(multiplayerState.players);
+	players.forEach(player => {
+		player.playerState.lobbyState = LOBBY_STATE.WAITING;
+		player.playerState.ready = false;
+	});
+	multiplayerState.endTime = 0;
+	multiplayerState.lobbyState = LOBBY_STATE.WAITING;
+}
+
 export const selectMultiplayerLevel = levelData => {
 	if(!multiplayerState.admin) return;
 	multiplayerState.selectedLevel = levelData.id;
@@ -225,6 +246,7 @@ const handleStartLoadLevel = async ({buffer}) => {
 }
 
 export const adminStartLoadLevel = () => {
+	debugger;
 	let playersReady = 0;
 
 	const players = Object.values(multiplayerState.players);
@@ -246,6 +268,10 @@ export const adminStartLoadLevel = () => {
 			alert("Not all players are ready");
 		}
 	}
+}
+
+export const adminReturnToLobby = () => {
+	sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.RETURN_TO_LOBBY);
 }
 
 const startLoadLevel = async id => {
@@ -324,6 +350,9 @@ const handleSimpleMessage = ({peer, buffer}) => {
 				multiplayerState.endTime = 1;
 			}
 			break;
+		case SIMPLE_MESSAGE_TYPES.RETURN_TO_LOBBY:
+			returnToLobby();
+			break;
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
 				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
@@ -385,7 +414,7 @@ export const updateMultiplayer = () => {
 
 				const player = multiplayerState.players[playerID];
 
-				if(!player.addedToGame){
+				if(!player.addedToGame && game.run){
 					const targetTexture = game.character.lookupObject._bodies[0].mySprite;
 					const index = targetTexture.parent.getChildIndex(targetTexture);
 					targetTexture.parent.addChildAt(player.sprite, index);
@@ -393,7 +422,7 @@ export const updateMultiplayer = () => {
 					console.log("** ADD PLAYER TO GAME **");
 				}
 
-				if(player.connected) player.interpolatePosition();
+				if(player.connected && player.addedToGame) player.interpolatePosition();
 			}
 
 			if([LOBBY_STATE.PLAYING, LOBBY_STATE.WON_LEVEL].includes(multiplayerState.lobbyState) && multiplayerState.endTime > 0){

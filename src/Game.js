@@ -1084,6 +1084,9 @@ function Game() {
         this.levelWon = false;
         this.gameOver = false;
         this.checkPointData = null;
+        this.character = null;
+        this.vehicle = null;
+        this.cameraFocusObject = null;
     }
     
     this.autoSaveTimeOutID;

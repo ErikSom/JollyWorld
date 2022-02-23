@@ -4,7 +4,7 @@ import * as PIXI from 'pixi.js';
 import { game } from '../Game';
 import { Settings } from '../Settings';
 import { getModdedPortrait } from '../utils/ModManager';
-import { LOBBY_STATE, multiplayerState } from './multiplayerManager';
+import { adminReturnToLobby, LOBBY_STATE, multiplayerState, returnToLobby } from './multiplayerManager';
 import { multiplayerAtlas } from './rippleCharacter';
 import { backendManager } from '../utils/BackendManager';
 
@@ -158,6 +158,20 @@ const buildState = data => {
 		lu.waitingText.classList.add('content');
 		lu.waitingText.innerText = 'Game finished, vote for next level';
 		multiplayerHud.appendChild(lu.waitingText);
+
+		if(multiplayerState.admin){
+			const exitToLobby = document.createElement('button');
+			exitToLobby.innerText = 'Return to Lobby';
+			exitToLobby.classList.add('return-lobby');
+
+			exitToLobby.onclick = () => {
+				adminReturnToLobby();
+				returnToLobby();
+			}
+
+			lu.waitingText.appendChild(exitToLobby);
+		}
+
 	}
 }
 
@@ -182,6 +196,7 @@ const buildLeaderboard = () => {
 		leaderboardContainer.removeChild(leaderboardContainer.firstChild);
 	}
 
+
 	for(let i = 0; i< Settings.maxMultiplayerPlayers; i++){
 
 		const entry = document.createElement('div');
@@ -202,6 +217,8 @@ const buildLeaderboard = () => {
 	for(let playerID in multiplayerState.players){
 		leaderboardIds.push(playerID);
 	}
+
+	buildChat();
 
 	updateLeaderboard();
 }
@@ -229,4 +246,17 @@ export const updateLeaderboard = () => {
 			leaderboardProfiles[i + 1].parentNode.style.display = 'none';
 		}
 	}
+}
+
+const buildChat = () => {
+	const chatBox = document.createElement('div');
+	chatBox.classList.add('mp-chat');
+
+	chatBox.innerHTML = `
+		<div class="icon">icon</div>
+		<textarea class="chat-area"></textarea>
+		<input class="input" maxlength=200 placheholder="To chat click here or press "/" key"></input>
+	`;
+
+	leaderboardContainer.appendChild(chatBox);
 }
