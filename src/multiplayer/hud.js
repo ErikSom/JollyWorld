@@ -4,9 +4,10 @@ import * as PIXI from 'pixi.js';
 import { game } from '../Game';
 import { Settings } from '../Settings';
 import { getModdedPortrait } from '../utils/ModManager';
-import { adminReturnToLobby, LOBBY_STATE, multiplayerState, returnToLobby } from './multiplayerManager';
+import { adminReturnToLobby, LOBBY_STATE, multiplayerState, returnToLobby, sendChatMessage } from './multiplayerManager';
 import { multiplayerAtlas } from './rippleCharacter';
 import { backendManager } from '../utils/BackendManager';
+import { Key } from '../../libs/Key';
 
 export const HUD_STATES = {
 	WAITING_PLAYERS: 'waitingPlayers',
@@ -14,6 +15,13 @@ export const HUD_STATES = {
 	GAME_END_COUNTDOWN: 'gameEndCountDown',
 	GAME_WIN_CAM: 'gameWinCam',
 	PICK_NEXT_LEVEL: 'pickNextLevel',
+}
+
+export const CHAT_AUTHOR_TYPES = {
+	DEFAULT: 0,
+	VIP: 1,
+	// VIP?
+	// MODERATOR?
 }
 
 const customGUIContainer = document.getElementById('game-ui-container');
@@ -26,6 +34,9 @@ let leaderboardContainer = null;
 const leaderboardProfiles = [];
 const leaderboardNames = [];
 const leaderboardIds = [];
+
+let chat = null;
+let chatArea = null;
 
 export const setMultiplayerHud = (state, data) => {
 	if(!multiplayerHud){
@@ -42,6 +53,13 @@ export const setMultiplayerHud = (state, data) => {
 
 
 export const updateMultiplayerHud = () => {
+	if(Key.isPressed(Key.SLASH)){
+		if(chat){
+			const input = chat.querySelector('.input');
+			input.focus();
+		}
+	}
+
 	if(!hudState) return;
 
 	const lu = multiPlayerHudLookup;
@@ -86,9 +104,6 @@ const buildState = data => {
 		lu.waitingText.classList.add('content');
 		lu.waitingText.innerText = 'Waiting for other players';
 		multiplayerHud.appendChild(lu.waitingText);
-
-		buildLeaderboard();
-
 	} else if(hudState === HUD_STATES.COUNTDOWN){
 		lu.countDownTime = Settings.startGameTimer - data.ping;
 		lu.countDownText = document.createElement('div');
@@ -171,7 +186,6 @@ const buildState = data => {
 
 			lu.waitingText.appendChild(exitToLobby);
 		}
-
 	}
 }
 
@@ -185,7 +199,7 @@ const clearState = () => {
 	}
 }
 
-const buildLeaderboard = () => {
+export const buildLeaderboard = () => {
 	if(!leaderboardContainer){
 		leaderboardContainer = document.createElement('div');
 		leaderboardContainer.classList.add('mp-leaderboard');
@@ -196,6 +210,9 @@ const buildLeaderboard = () => {
 		leaderboardContainer.removeChild(leaderboardContainer.firstChild);
 	}
 
+	leaderboardIds.length = 0;
+	leaderboardProfiles.length = 0;
+	leaderboardNames.length = 0;
 
 	for(let i = 0; i< Settings.maxMultiplayerPlayers; i++){
 
@@ -213,7 +230,6 @@ const buildLeaderboard = () => {
 		leaderboardNames.push(name);
 		entry.appendChild(name);
 	}
-
 	for(let playerID in multiplayerState.players){
 		leaderboardIds.push(playerID);
 	}
@@ -224,8 +240,10 @@ const buildLeaderboard = () => {
 }
 
 export const updateLeaderboard = () => {
-	leaderboardProfiles[0].style.backgroundImage = `url(${URL.createObjectURL(multiplayerState.skinBlob)})`;
-	leaderboardNames[0].innerText = backendManager.userData?.username || multiplayerState.fakeUsername;
+	if(multiplayerState.skinBlob){
+		leaderboardProfiles[0].style.backgroundImage = `url(${URL.createObjectURL(multiplayerState.skinBlob)})`;
+		leaderboardNames[0].innerText = backendManager.userData?.username || multiplayerState.fakeUsername;
+	}
 
 	for(let i = 0; i< Settings.maxMultiplayerPlayers - 1; i++){
 		const id = leaderboardIds[i];
@@ -248,15 +266,88 @@ export const updateLeaderboard = () => {
 	}
 }
 
+let disableChatAreaTimeout = -1;
 const buildChat = () => {
-	const chatBox = document.createElement('div');
-	chatBox.classList.add('mp-chat');
+	if(!chat){
+		chat = document.createElement('div');
+		chat.classList.add('mp-chat');
 
-	chatBox.innerHTML = `
-		<div class="icon">icon</div>
-		<textarea class="chat-area"></textarea>
-		<input class="input" maxlength=200 placheholder="To chat click here or press "/" key"></input>
-	`;
+		chat.innerHTML = `
+		<div class="chat-area"></div>
+		<input class="input" maxlength=200 placeholder="To chat click here or press '/' key"></input>
+		`;
 
-	leaderboardContainer.appendChild(chatBox);
+		const input = chat.querySelector('.input');
+		input.addEventListener("keydown", event => {
+			if (event.key === "Enter") {
+				if(input.value)	sendChatMessage(input.value);
+				input.value = '';
+			}else if(event.key === "Escape"){
+				input.value = '';
+				input.blur();
+			}
+		});
+
+		const focusChat = () => {
+			clearTimeout(disableChatAreaTimeout);
+			chat.classList.add('active');
+		}
+
+		const blurChat = () => {
+			if(document.activeElement !== input){
+				disableChatAreaTimeout = setTimeout(()=>{
+					chat.classList.remove('active');
+				}, Settings.chatBlurTimeout);
+			}
+		}
+
+		chat.onpointerover = focusChat;
+		chat.onpointerleave = blurChat;
+		input.onfocus = focusChat;
+		input.onblur = blurChat;
+
+		chatArea = chat.querySelector('.chat-area');
+
+		focusChat();
+		blurChat();
+	}
+
+	leaderboardContainer.appendChild(chat);
+}
+
+export const processChatMessage = (name, type, admin, message) => {
+	if(chatArea){
+		const messageDiv = document.createElement('div');
+		messageDiv.classList.add('message');
+
+		const author = document.createElement('div');
+		author.innerText = `${name}:`;
+		author.classList.add('author');
+
+		if(admin) author.classList.add('admin');
+
+		const text = document.createElement('div');
+		text.innerText = message;
+		author.classList.add('text');
+
+		messageDiv.appendChild(author);
+		messageDiv.appendChild(text);
+
+
+		const rest = chatArea.scrollHeight - chatArea.scrollTop;
+		let autoScroll = false;
+		if(Math.abs(chatArea.clientHeight - rest) < 3){
+			autoScroll = true;
+		};
+
+		chatArea.appendChild(messageDiv);
+
+		if(chatArea.children.length > Settings.maxChatMessages){
+			chatArea.removeChild(chatArea.firstChild);
+		}
+
+		if(autoScroll){
+			chatArea.scrollTop = chatArea.scrollHeight;
+		}
+	}
 }

@@ -5,7 +5,7 @@ import {
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
-import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from './schemas';
+import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from './schemas';
 
 export const SERVER_EVENTS = {
 	NETWORK_READY: 'networkReady',
@@ -19,6 +19,7 @@ export const SERVER_EVENTS = {
 	START_LOAD_LEVEL: 'startLoadLevel',
 	RECEIVE_SKIN: 'receiveSkin',
 	LEVEL_WON: 'levelWon',
+	CHAT_MESSAGE: 'chatMessage',
 }
 
 const MESSAGE_TYPE = {
@@ -80,6 +81,9 @@ class MultiplayerServer {
 							break;
 						case levelWonModel.schema.id:
 							this.receiveLevelWon(peer.id, data);
+							break;
+						case chatMessageModel.schema.id:
+							this.receiveChatMessage(peer.id, data);
 							break;
 						default:
 							if(id.indexOf('PNG') >= 0){
@@ -167,6 +171,9 @@ class MultiplayerServer {
 	
 	receiveLevelWon(peer, buffer){
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.LEVEL_WON, peer, buffer});
+	}
+	receiveChatMessage(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.CHAT_MESSAGE, peer, buffer});
 	}
 
 	sendCharacterData(buffer) {

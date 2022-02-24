@@ -1,4 +1,4 @@
-import { BufferSchema, Model } from '@geckos.io/typed-array-buffer-schema'
+import { BufferSchema, Model, string16 } from '@geckos.io/typed-array-buffer-schema'
 import { uint8, int16, int32, string8 } from '@geckos.io/typed-array-buffer-schema'
 
 const mainPart = BufferSchema.schema('mainPart', {
@@ -83,3 +83,8 @@ const levelWon = BufferSchema.schema('levelWon', {
 })
 export const levelWonModel = new Model(levelWon);
 
+
+const chatMessage = BufferSchema.schema('chatMessage', {
+	message: {type: string16, length: 200},
+});
+export const chatMessageModel = new Model(chatMessage);

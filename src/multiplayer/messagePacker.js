@@ -1,4 +1,4 @@
-import { adminIntroductionModel, changeServerLevelModel, characterModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
+import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
 import {
 	Settings
 } from '../Settings'
@@ -212,4 +212,15 @@ export const dataFromLevelWonBuffer = buffer => {
 	return simpleMessageData;
 }
 
+// CHAT MESSAGE
+export const dataToChatMessageBuffer = message => {
+	const slicedMessage = message.substr(0, Settings.maxChatLength);
+	const buffer = chatMessageModel.toBuffer({message:slicedMessage});
+	return buffer;
+}
 
+export const dataFromChatMessageBuffer = buffer => {
+	const chatMessageData = chatMessageModel.fromBuffer(buffer);
+	chatMessageData.message = chatMessageData.message.substr(0, Settings.maxChatLength).trim();
+	return chatMessageData;
+}

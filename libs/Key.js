@@ -53,6 +53,7 @@ export const Key = {
     COMMAND:91,
     MOUSE:1000,
     SPACE:32,
+    SLASH: 191,
     isDown: function (keyCode) {
         if(keyCode instanceof Array){
             var i;
@@ -135,6 +136,7 @@ export const KeyNames = [
     'DELETE',
     'COMMAND',
     'SPACE',
+    'SLASH',
     '0',
     '1',
     '2',

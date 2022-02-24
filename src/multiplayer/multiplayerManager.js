@@ -6,8 +6,8 @@ import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
-import { HUD_STATES, setMultiplayerHud } from './hud';
-import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromIntroductionBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToIntroductionBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
+import { buildLeaderboard, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud } from './hud';
+import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromIntroductionBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToIntroductionBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
@@ -41,6 +41,7 @@ export const multiplayerState = {
 	selectedLevelData: null,
 	lobbyState: LOBBY_STATE.OFFLINE,
 	endTime: 0,
+	vip: false,
 	finishTime: 0,
 	skinBlob: null,
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
@@ -60,7 +61,9 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.START_LOAD_LEVEL, handleStartLoadLevel);
 	globalEvents.addEventListener(SERVER_EVENTS.RECEIVE_SKIN, handleReceiveSkin);
 	globalEvents.addEventListener(SERVER_EVENTS.LEVEL_WON, handleReceiveLevelWon);
+	globalEvents.addEventListener(SERVER_EVENTS.CHAT_MESSAGE, handleReceiveChatMessage);
 
+	buildLeaderboard();
 	prepareSkinForSending();
 }
 
@@ -133,6 +136,16 @@ export const selectMultiplayerLevel = levelData => {
 export const sendSimpleMessageAll = messageType => {
 	const simpleMessageBuffer = dataToSimpleMessageBuffer(messageType);
 	server.sendSimpleMessageAll(simpleMessageBuffer);
+}
+
+export const sendChatMessage = message => {
+	const chatMessageBuffer = dataToChatMessageBuffer(message);
+	server.sendSimpleMessageAll(chatMessageBuffer);
+
+	const name = backendManager.userData?.username || multiplayerState.fakeUsername;
+	const type = CHAT_AUTHOR_TYPES.DEFAULT;
+	if(multiplayerState.vip) type = CHAT_AUTHOR_TYPES.VIP;
+	processChatMessage(name, type, multiplayerState.admin, message);
 }
 
 
@@ -588,6 +601,19 @@ const checkEndLevelTimer = () => {
 				multiplayerState.endTime = 1;
 			}
 		}
+	}
+}
+
+const handleReceiveChatMessage = ({peer, buffer}) => {
+	const { message } = dataFromChatMessageBuffer(buffer);
+
+	const player = multiplayerState.players[peer];
+	if(player && player.playerState.name){
+		const name = player.playerState.name
+		let type = CHAT_AUTHOR_TYPES.DEFAULT;
+		if(player.vip) type = CHAT_AUTHOR_TYPES.VIP;
+
+		processChatMessage(name, type, player.admin, message);
 	}
 }
 

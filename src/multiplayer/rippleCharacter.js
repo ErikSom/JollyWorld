@@ -40,6 +40,8 @@ export class RippleCharacter {
 			finishTime: -1
 		}
 
+		this.admin = false;
+		this.vip = false;
 		this.lastPackageID = -1;
 		this.ping = -1;
 		this.connected = true;

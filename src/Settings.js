@@ -32,6 +32,9 @@ export var Settings = {
     maxMultiplayerPlayers: 8,
     startGameTimer: 3000,
     endGameTimer: 10000,
+    maxChatLength: 200,
+    maxChatMessages: 50,
+    chatBlurTimeout: 3000,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,
