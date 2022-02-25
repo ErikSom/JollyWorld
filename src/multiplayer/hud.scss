@@ -50,12 +50,16 @@
 }
 
 .mp-chat{
+	position: absolute;
+	top: 56px;
+	right: 10px;
 	background: rgba(0, 0, 0, 0.0);
-	transition: background 0.3s ease-in;
+	transition: background 0.3s ease-in, opacity 0.3s ease-in;
+	opacity: 1;
 
 	.chat-area{
 		min-height: 40px;
-		width: 224px;
+		width: 244px;
 		max-height: 200px;
 		overflow-x: hidden;
 		overflow-y: hidden;
@@ -104,5 +108,9 @@
 		.input{
 			opacity: 1;
 		}
+	}
+
+	&.fadeout{
+		opacity: 0;
 	}
 }

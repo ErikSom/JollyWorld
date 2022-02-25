@@ -725,7 +725,9 @@ function Game() {
                 this.resetWorld(false);
             }else if((e.keyCode == Key.P || e.keyCode == Key.R || e.keyCode == Key.ESCAPE || e.keyCode == Key.TAB)){
                 if(!this.pause){
-                     this.pauseGame();
+                    // when we have the chat open we dont want to open pause when escing
+                    console.log("PAUSE GAME!!")
+                    this.pauseGame();
                 } else{
                     this.unpauseGame();
                     PokiSDK.gameplayStart();

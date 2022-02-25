@@ -53,11 +53,18 @@ export const setMultiplayerHud = (state, data) => {
 
 
 export const updateMultiplayerHud = () => {
-	if(Key.isPressed(Key.SLASH)){
+	if(Key.isPressed(Key.ENTER)){
 		if(chat){
 			const input = chat.querySelector('.input');
-			input.focus();
+			if(document.activeElement !== input){
+				input.focus();
+				Key.reset();
+			}
 		}
+	}
+
+	if(chat && !chat.classList.contains('active') && lastChatMessage && lastChatMessage + Settings.chatIdleHideTime < performance.now()){
+		chat.classList.add('fadeout');
 	}
 
 	if(!hudState) return;
@@ -104,6 +111,8 @@ const buildState = data => {
 		lu.waitingText.classList.add('content');
 		lu.waitingText.innerText = 'Waiting for other players';
 		multiplayerHud.appendChild(lu.waitingText);
+
+		updateLeaderboard();
 	} else if(hudState === HUD_STATES.COUNTDOWN){
 		lu.countDownTime = Settings.startGameTimer - data.ping;
 		lu.countDownText = document.createElement('div');
@@ -237,6 +246,9 @@ export const buildLeaderboard = () => {
 	buildChat();
 
 	updateLeaderboard();
+
+	showLeaderboard(false);
+	showChat(false);
 }
 
 export const updateLeaderboard = () => {
@@ -266,6 +278,12 @@ export const updateLeaderboard = () => {
 	}
 }
 
+export const showLeaderboard = bool => {
+	if(bool) leaderboardContainer.style.display = 'block';
+	else leaderboardContainer.style.display = 'none';
+}
+
+
 let disableChatAreaTimeout = -1;
 const buildChat = () => {
 	if(!chat){
@@ -274,7 +292,7 @@ const buildChat = () => {
 
 		chat.innerHTML = `
 		<div class="chat-area"></div>
-		<input class="input" maxlength=200 placeholder="To chat click here or press '/' key"></input>
+		<input class="input" maxlength=200 placeholder="To chat click here or press 'Enter' key"></input>
 		`;
 
 		const input = chat.querySelector('.input');
@@ -285,18 +303,22 @@ const buildChat = () => {
 			}else if(event.key === "Escape"){
 				input.value = '';
 				input.blur();
+				console.log("INPUT BLUR!!");
+				event.stopPropagation();
 			}
 		});
 
 		const focusChat = () => {
 			clearTimeout(disableChatAreaTimeout);
 			chat.classList.add('active');
+			chat.classList.remove('fadeout');
 		}
 
 		const blurChat = () => {
 			if(document.activeElement !== input){
 				disableChatAreaTimeout = setTimeout(()=>{
 					chat.classList.remove('active');
+					lastChatMessage = performance.now();
 				}, Settings.chatBlurTimeout);
 			}
 		}
@@ -311,10 +333,10 @@ const buildChat = () => {
 		focusChat();
 		blurChat();
 	}
-
-	leaderboardContainer.appendChild(chat);
+	customGUIContainer.appendChild(chat);
 }
 
+let lastChatMessage = 0;
 export const processChatMessage = (name, type, admin, message) => {
 	if(chatArea){
 		const messageDiv = document.createElement('div');
@@ -349,5 +371,13 @@ export const processChatMessage = (name, type, admin, message) => {
 		if(autoScroll){
 			chatArea.scrollTop = chatArea.scrollHeight;
 		}
+
+		chat.classList.remove('fadeout');
+		lastChatMessage = performance.now();
 	}
+}
+
+export const showChat = bool => {
+	if(bool) chat.style.display = 'block';
+	else chat.style.display = 'none';
 }

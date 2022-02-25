@@ -74,7 +74,6 @@ export const Key = {
     },
 
     onKeydown: function (event) {
-
         if(!this._down[event.keyCode]) this._pressed[event.keyCode] = true;
         this._down[event.keyCode] = true;
 
@@ -90,7 +89,6 @@ export const Key = {
     },
 
     onKeyUp: function (event) {
-
         delete this._down[event.keyCode];
         this._released[event.keyCode] = true;
 
