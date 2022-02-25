@@ -100,7 +100,7 @@ function UIManager() {
                 </div>
                 <div class="menu-grid">
                     <div class="singleplayer-but h2 v2"><span>${localize('mainmenu_singleplayer')}<span></div>
-                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span></div>
+                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span><span class="available-pc">${localize('mainmenu_availablepc')}</span></div>
                     <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
                     <div class="characters-but h1 v1"><span>${localize('mainmenu_characters')}</span><div class="character-image"></div></div>
                 </div>
