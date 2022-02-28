@@ -31,7 +31,7 @@ export var Settings = {
     /*MULTIPLAYER*/
     maxMultiplayerPlayers: 8,
     startGameTimer: 3000,
-    endGameTimer: 60000,
+    endGameTimer: 3000,
     maxChatLength: 200,
     maxChatMessages: 50,
     chatBlurTimeout: 3000,

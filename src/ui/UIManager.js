@@ -547,7 +547,15 @@ function UIManager() {
 
             // EXIT
             const exitButton = header.querySelector('.exit');
-            exitButton.addEventListener('click', () => game.openMainMenu())
+            exitButton.addEventListener('click', () =>{
+                if(game.gameState === game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+                    game.openMainMenu();
+                    game.gameState = game.GAMESTATE_LOBBY;
+                    game.ui.setMainMenuActive('lobby');
+                }else{
+                    game.openMainMenu();
+                }
+            });
 
             // if(backendManager.isLoggedIn()){
             //     const bestFilter = filters.querySelector('.best-filter');

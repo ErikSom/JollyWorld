@@ -7,7 +7,7 @@ import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
 import { buildLeaderboard, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard } from './hud';
-import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromIntroductionBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToIntroductionBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
@@ -44,6 +44,9 @@ export const multiplayerState = {
 	vip: false,
 	finishTime: 0,
 	skinBlob: null,
+	voteLevels: [],
+	levelVoters: {},
+	levelVotes: [0, 0, 0, 0],
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
 
@@ -62,6 +65,8 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.RECEIVE_SKIN, handleReceiveSkin);
 	globalEvents.addEventListener(SERVER_EVENTS.LEVEL_WON, handleReceiveLevelWon);
 	globalEvents.addEventListener(SERVER_EVENTS.CHAT_MESSAGE, handleReceiveChatMessage);
+	globalEvents.addEventListener(SERVER_EVENTS.END_COUNTDOWN, handleEndCountDownMessage);
+	globalEvents.addEventListener(SERVER_EVENTS.LEVEL_VOTES, handleLevelVotesMessage);
 
 	buildLeaderboard();
 	prepareSkinForSending();
@@ -159,17 +164,19 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.admin = admin;
 
 	// ******* TODO REMOVE:
-	// if(admin){
-	// 	// auto select level for development:
-	// 	backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
-	// 		selectMultiplayerLevel(levelData);
-	// 		game.openMainMenu();
-	// 		game.gameState = game.GAMESTATE_LOBBY;
-	// 		game.ui.setMainMenuActive('lobby');
-	// 	});
-	// } else {
-	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	// }
+	if(admin){
+		// auto select level for development:
+		backendManager.getPublishedLevelInfo('uYBmHnBc7BuRz5ReyxhwX').then(levelData => {
+			selectMultiplayerLevel(levelData);
+			game.ui.showSinglePlayer();
+			game.ui.hideSinglePlayer();
+			game.openMainMenu();
+			game.gameState = game.GAMESTATE_LOBBY;
+			game.ui.setMainMenuActive('lobby');
+		});
+	} else {
+		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	}
 	// ********************
 
 	showChat(true);
@@ -358,13 +365,6 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			setMultiplayerHud(HUD_STATES.COUNTDOWN, {ping: player.ping});
 			updateLobbyUI();
 			break;
-		case SIMPLE_MESSAGE_TYPES.END_COUNTDOWN:
-			multiplayerState.endTime = Settings.endGameTimer - player.ping;
-			if(multiplayerState.lobbyState !== LOBBY_STATE.WON_LEVEL){
-				setMultiplayerHud(HUD_STATES.GAME_END_COUNTDOWN);
-			}
-			updateLobbyUI();
-			break;
 		case SIMPLE_MESSAGE_TYPES.FINISH_END_COUNTDOWN:
 			if(multiplayerState.endTime > 0){
 				multiplayerState.endTime = 1;
@@ -373,12 +373,55 @@ const handleSimpleMessage = ({peer, buffer}) => {
 		case SIMPLE_MESSAGE_TYPES.RETURN_TO_LOBBY:
 			returnToLobby();
 			break;
+
+		case SIMPLE_MESSAGE_TYPES.VOTE_LEVEL_1:
+		case SIMPLE_MESSAGE_TYPES.VOTE_LEVEL_2:
+		case SIMPLE_MESSAGE_TYPES.VOTE_LEVEL_3:
+		case SIMPLE_MESSAGE_TYPES.VOTE_LEVEL_4:
+			if(multiplayerState.admin){
+				const levelVote = type - SIMPLE_MESSAGE_TYPES.VOTE_LEVEL_1;
+				multiplayerState.levelVoters[peer] = levelVote;
+				multiplayerState.levelVotes = [0, 0, 0, 0];
+				Object.values(multiplayerState.levelVoters).forEach(val => {
+					multiplayerState.levelVotes[val]++;
+				});
+
+				const messageBuffer = dataToLevelVotesMessageBuffer(multiplayerState.levelVotes);
+				server.sendSimpleMessageAll(messageBuffer);
+			}
+			break;
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
 				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
 				player.vehicle.selectVehicle(vehicleIndex);
 			}
 	}
+}
+
+const handleEndCountDownMessage = ({peer, buffer}) => {
+	const player = multiplayerState.players[peer];
+
+	if(!player.admin) return;
+
+
+	const { levelIds } = dataFromEndCountDownMessageBuffer(buffer);
+
+	const promises = levelIds.map( id => backendManager.getPublishedLevelInfo(id));
+
+	Promise.all(promises).then(voteLevels => {
+		multiplayerState.voteLevels = [multiplayerState.selectedLevelData, ...voteLevels];
+	})
+
+	multiplayerState.endTime = Settings.endGameTimer - player.ping;
+	if(multiplayerState.lobbyState !== LOBBY_STATE.WON_LEVEL){
+		setMultiplayerHud(HUD_STATES.GAME_END_COUNTDOWN);
+	}
+	updateLobbyUI();
+}
+
+const handleLevelVotesMessage = ({peer, buffer}) => {
+	const { votes } = dataFromLevelVotesMessageBuffer(buffer);
+	multiplayerState.levelVotes = votes;
 }
 
 const handleReceiveSkin = ({peer, buffer}) => {
@@ -592,7 +635,13 @@ const checkEndLevelTimer = () => {
 				setMultiplayerHud(HUD_STATES.GAME_END_COUNTDOWN);
 			}
 
-			sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.END_COUNTDOWN);
+			backendManager.getRandomPublishedLevels(3).then(data => {
+				console.log("RANDOM LEVELS:", data)
+				multiplayerState.voteLevels = [multiplayerState.selectedLevelData, ...data];
+				const voteLevelIds = data.map(level => level.id);
+				const messageBuffer = dataToEndCountDownMessageBuffer(voteLevelIds);
+				server.sendSimpleMessageAll(messageBuffer);
+			})
 		}else {
 
 			let allPlayersFinished = true;
@@ -605,6 +654,7 @@ const checkEndLevelTimer = () => {
 
 			if(allPlayersFinished && multiplayerState.endTime > 1000){
 				sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.FINISH_END_COUNTDOWN);
+
 				multiplayerState.endTime = 1;
 			}
 		}

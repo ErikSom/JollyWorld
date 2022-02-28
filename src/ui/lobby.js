@@ -93,6 +93,13 @@ export const generateLobby = () => {
             document.execCommand("copy");
             input.value = copyText + input.value;
         });
+
+		const navButtons = lobby.querySelector('.nav-buttons');
+		const leaveButton = navButtons.querySelector('.leave-but');
+		leaveButton.onclick = () => {
+			// disconnect everything
+			game.openMainMenu();
+		}
 	}
 
 	updateLobbyUI();

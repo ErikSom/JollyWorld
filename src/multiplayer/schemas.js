@@ -54,9 +54,12 @@ export const SIMPLE_MESSAGE_TYPES = {
 	LEVEL_WON: 4,
 	LEVEL_FAILED: 5,
 	LEVEL_CHECKPOINT: 6,
-	END_COUNTDOWN: 7,
-	FINISH_END_COUNTDOWN: 8,
-	RETURN_TO_LOBBY: 9,
+	FINISH_END_COUNTDOWN: 7,
+	RETURN_TO_LOBBY: 8,
+	VOTE_LEVEL_1: 9,
+	VOTE_LEVEL_2: 10,
+	VOTE_LEVEL_3: 11,
+	VOTE_LEVEL_4: 12,
 	SELECT_VEHICLE: 100,
 }
 
@@ -83,8 +86,25 @@ const levelWon = BufferSchema.schema('levelWon', {
 })
 export const levelWonModel = new Model(levelWon);
 
-
+// CHAT MESSAGE
 const chatMessage = BufferSchema.schema('chatMessage', {
 	message: {type: string16, length: 200},
 });
 export const chatMessageModel = new Model(chatMessage);
+
+// END COUNTDOWN MESSAGE
+const endCountDownMessage = BufferSchema.schema('endCountDownMessage', {
+	level1: {type: string8, length: 21},
+	level2: {type: string8, length: 21},
+	level3: {type: string8, length: 21},
+});
+export const endCountDownMessageModel = new Model(endCountDownMessage);
+
+// LEVEL VOTES
+const levelVotesMessage = BufferSchema.schema('levelVotesMessage', {
+	level1: { type: uint8 },
+	level2: { type: uint8 },
+	level3: { type: uint8 },
+	level4: { type: uint8 },
+});
+export const levelVotesMessageModel = new Model(levelVotesMessage);

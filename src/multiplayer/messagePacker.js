@@ -1,4 +1,4 @@
-import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
+import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
 import {
 	Settings
 } from '../Settings'
@@ -223,4 +223,28 @@ export const dataFromChatMessageBuffer = buffer => {
 	const chatMessageData = chatMessageModel.fromBuffer(buffer);
 	chatMessageData.message = chatMessageData.message.substr(0, Settings.maxChatLength).trim();
 	return chatMessageData;
+}
+
+// END COUNTDOWN MESSAGE
+export const dataToEndCountDownMessageBuffer = levelIds => {
+	const buffer = endCountDownMessageModel.toBuffer({level1:levelIds[0], level2:levelIds[1], level3:levelIds[2]});
+	return buffer;
+}
+
+export const dataFromEndCountDownMessageBuffer = buffer => {
+	const endCountDownMessageData = endCountDownMessageModel.fromBuffer(buffer);
+	endCountDownMessageData.levelIds = [endCountDownMessageData.level1, endCountDownMessageData.level2, endCountDownMessageData.level3];
+	return endCountDownMessageData;
+}
+
+// LEVEL VOTES MESSAGE
+export const dataToLevelVotesMessageBuffer = votes => {
+	const buffer = levelVotesMessageModel.toBuffer({level1:votes[0], level2:votes[1], level3:votes[2], level4:votes[3]});
+	return buffer;
+}
+
+export const dataFromLevelVotesMessageBuffer = buffer => {
+	const levelVotesMessageData = levelVotesMessageModel.fromBuffer(buffer);
+	levelVotesMessageData.votes = [levelVotesMessageData.level1, levelVotesMessageData.level2, levelVotesMessageData.level3, levelVotesMessageData.level4];
+	return levelVotesMessageData;
 }

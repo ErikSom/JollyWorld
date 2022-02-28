@@ -5,7 +5,7 @@ import {
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
-import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, introductionModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from './schemas';
+import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from './schemas';
 
 export const SERVER_EVENTS = {
 	NETWORK_READY: 'networkReady',
@@ -20,6 +20,8 @@ export const SERVER_EVENTS = {
 	RECEIVE_SKIN: 'receiveSkin',
 	LEVEL_WON: 'levelWon',
 	CHAT_MESSAGE: 'chatMessage',
+	END_COUNTDOWN: 'endCountDown',
+	LEVEL_VOTES: 'levelVotes',
 }
 
 const MESSAGE_TYPE = {
@@ -84,6 +86,12 @@ class MultiplayerServer {
 							break;
 						case chatMessageModel.schema.id:
 							this.receiveChatMessage(peer.id, data);
+							break;
+						case endCountDownMessageModel.schema.id:
+							this.receiveEndCountDownMessage(peer.id, data);
+							break;
+						case levelVotesMessageModel.schema.id:
+							this.receiveLevelVotesMessage(peer.id, data);
 							break;
 						default:
 							if(id.indexOf('PNG') >= 0){
@@ -174,6 +182,12 @@ class MultiplayerServer {
 	}
 	receiveChatMessage(peer, buffer){
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.CHAT_MESSAGE, peer, buffer});
+	}
+	receiveEndCountDownMessage(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.END_COUNTDOWN, peer, buffer});
+	}
+	receiveLevelVotesMessage(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.LEVEL_VOTES, peer, buffer});
 	}
 
 	sendCharacterData(buffer) {

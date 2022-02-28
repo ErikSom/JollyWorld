@@ -4,10 +4,11 @@ import * as PIXI from 'pixi.js';
 import { game } from '../Game';
 import { Settings } from '../Settings';
 import { getModdedPortrait } from '../utils/ModManager';
-import { adminReturnToLobby, LOBBY_STATE, multiplayerState, returnToLobby, sendChatMessage } from './multiplayerManager';
+import { adminReturnToLobby, LOBBY_STATE, multiplayerState, returnToLobby, sendChatMessage, sendSimpleMessageAll } from './multiplayerManager';
 import { multiplayerAtlas } from './rippleCharacter';
 import { backendManager } from '../utils/BackendManager';
 import { Key } from '../../libs/Key';
+import { SIMPLE_MESSAGE_TYPES } from './schemas';
 
 export const HUD_STATES = {
 	WAITING_PLAYERS: 'waitingPlayers',
@@ -100,6 +101,22 @@ export const updateMultiplayerHud = () => {
 	} else if([HUD_STATES.GAME_WIN_CAM, HUD_STATES.GAME_END_COUNTDOWN].includes(hudState)){
 		const timeLeft = Math.max(0, Math.ceil(multiplayerState.endTime / 1000));
 		lu.gameEnds.innerText = `Game ends in ${timeLeft}s`;
+	} else if(hudState === HUD_STATES.PICK_NEXT_LEVEL){
+		if(multiplayerState.levelVotes){
+			lu.votesCounts.forEach((el, i) => el.innerText = multiplayerState.levelVotes[i]);
+
+			lu.voteButtonTexts.forEach((el, i) => {
+				if(multiplayerState.admin){
+					el.innerText = i === 0 ? 'Replay' : 'Select';
+				}else{
+					if(el.classList.contains('selected')){
+						el.innerText = 'Voted';
+					}else {
+						el.innerText = i === 0 ? 'Replay' : 'Vote';
+					}
+				}
+			});
+		}
 	}
 }
 
@@ -182,6 +199,96 @@ const buildState = data => {
 		lu.waitingText.classList.add('content');
 		lu.waitingText.innerText = 'Game finished, vote for next level';
 		multiplayerHud.appendChild(lu.waitingText);
+
+		const voteContainer = document.createElement('div');
+		voteContainer.classList.add('vote-container');
+		lu.waitingText.appendChild(voteContainer);
+
+		const voteInnerContainers = [];
+		const gameTemplates = [];
+
+		const singlePlayer = customGUIContainer.querySelector('.singleplayer');
+        const gameTemplate = singlePlayer.querySelector('.game-template');
+
+
+		for(let i = 0; i<4; i++){
+			let innerContainer = null;
+			if(i % 2 === 0){
+				innerContainer = document.createElement('div');
+				innerContainer.classList.add('vote-inner-container');
+				voteContainer.appendChild(innerContainer);
+				voteInnerContainers.push(innerContainer);
+			}else{
+				innerContainer = voteInnerContainers[Math.floor(i/2)];
+			}
+			const voteLevel = document.createElement('div');
+			voteLevel.classList.add('vote-level');
+			innerContainer.appendChild(voteLevel);
+
+			const levelInfo = gameTemplate.cloneNode(true)
+            levelInfo.style.display = 'block';
+            levelInfo.classList.remove('game-template');
+			gameTemplates.push(levelInfo);
+
+			voteLevel.appendChild(levelInfo);
+
+			if(!lu.voteButtonTexts){
+				lu.voteButtonTexts = [];
+				lu.votesCounts = [];
+			}
+
+			const voteButtonContainer = document.createElement('div');
+			voteButtonContainer.classList.add('vote-button-container');
+			voteLevel.appendChild(voteButtonContainer);
+
+			const voteButton = document.createElement('div');
+			voteButton.classList.add('vote-button');
+			voteButton.innerText = i === 0 ? 'Replay' : 'Vote';
+			voteButtonContainer.appendChild(voteButton);
+			lu.voteButtonTexts.push(voteButton);
+
+			voteButton.onclick = voteLevel.onclick = () => {
+				if(multiplayerState.admin){
+					// play this level
+				} else {
+					if(!voteButton.classList.contains('selected')){
+						sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES[`VOTE_LEVEL_${i+1}`]);
+						lu.voteButtonTexts.forEach(but => but.classList.remove('selected'));
+						voteButton.classList.add('selected');
+					}
+				}
+			}
+
+			const voteCount = document.createElement('div');
+			voteCount.classList.add('vote-count-container');
+			voteCount.innerText = 'Votes:';
+			voteButtonContainer.appendChild(voteCount);
+
+			const votes = document.createElement('div');
+			votes.classList.add('vote-count')
+			votes.innerText = '0';
+			voteCount.appendChild(votes);
+			lu.votesCounts.push(votes);
+		}
+
+		const buildVoteLevels = () => {
+			if(hudState === HUD_STATES.PICK_NEXT_LEVEL){
+				if(multiplayerState.voteLevels.length){
+					multiplayerState.voteLevels.forEach((levelData, i) => {
+						const gameTemplate = gameTemplates[i];
+						game.ui.setLevelDataOnGameTile(gameTemplate, levelData);
+
+						const thumb = gameTemplate.querySelector('.thumb');
+						thumb.style.backgroundImage = `url(${thumb.getAttribute('data-src')})`;
+						gameTemplate.classList.add('loaded')
+					});
+				} else {
+					setTimeout(buildVoteLevels, 100); // try again in 100ms
+				}
+			}
+		}
+
+		buildVoteLevels();
 
 		if(multiplayerState.admin){
 			const exitToLobby = document.createElement('button');
