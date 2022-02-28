@@ -9,6 +9,7 @@ import { multiplayerAtlas } from './rippleCharacter';
 import { backendManager } from '../utils/BackendManager';
 import { Key } from '../../libs/Key';
 import { SIMPLE_MESSAGE_TYPES } from './schemas';
+import { localize } from '../utils/Localization';
 
 export const HUD_STATES = {
 	WAITING_PLAYERS: 'waitingPlayers',
@@ -80,16 +81,16 @@ export const updateMultiplayerHud = () => {
 				playersReady++;
 			}
 		}
-		lu.waitingText.innerText = `Waiting for other players ${playersReady} / ${playerCount}`;
+		lu.waitingText.innerText = `${localize('multiplayer_waitingplayers').replace('%%', playersReady).replace('**',playerCount)}`;
 	}else if(hudState === HUD_STATES.COUNTDOWN){
 		const timeLeft = Math.max(0, Math.ceil(lu.countDownTime / 1000));
 
 		lu.countDownTime -= game.editor.deltaTime;
 
 		if(lu.countDownTime > 0){
-			lu.countDownText.innerText = `Starting in ${timeLeft}..`;
+			lu.countDownText.innerText = `${localize('multiplayer_startingin').replace('%%', timeLeft)}`;
 		} else {
-			lu.countDownText.innerText = 'GO!!!';
+			lu.countDownText.innerText = localize('multiplayer_go');
 			game.run = true;
 
 			if(lu.countDownTime < -1000){
@@ -100,19 +101,27 @@ export const updateMultiplayerHud = () => {
 		}
 	} else if([HUD_STATES.GAME_WIN_CAM, HUD_STATES.GAME_END_COUNTDOWN].includes(hudState)){
 		const timeLeft = Math.max(0, Math.ceil(multiplayerState.endTime / 1000));
-		lu.gameEnds.innerText = `Game ends in ${timeLeft}s`;
+		lu.gameEnds.innerText = `${localize('multiplayer_countdown').replace('%%', timeLeft)}`;
 	} else if(hudState === HUD_STATES.PICK_NEXT_LEVEL){
 		if(multiplayerState.levelVotes){
-			lu.votesCounts.forEach((el, i) => el.innerText = multiplayerState.levelVotes[i]);
+			lu.votesCounts.forEach((el, i) => {
+				const count = multiplayerState.levelVotes[i];
+				el.innerText = count;
+				if(count>0){
+					el.classList.add('not-zero');
+				}else{
+					el.classList.remove('not-zero');
+				}
+			});
 
 			lu.voteButtonTexts.forEach((el, i) => {
 				if(multiplayerState.admin){
-					el.innerText = i === 0 ? 'Replay' : 'Select';
+					el.innerText = i === 0 ? localize('multiplayer_replay') : localize('levelbanner_select');
 				}else{
 					if(el.classList.contains('selected')){
-						el.innerText = 'Voted';
+						el.innerText = localize('multiplayer_voted');
 					}else {
-						el.innerText = i === 0 ? 'Replay' : 'Vote';
+						el.innerText = i === 0 ? localize('multiplayer_replay') : localize('multiplayer_vote');
 					}
 				}
 			});
@@ -123,35 +132,37 @@ export const updateMultiplayerHud = () => {
 const buildState = data => {
 	const lu = multiPlayerHudLookup;
 
+	const content = document.createElement('div');
+	content.classList.add('content');
+	if(hudState) multiplayerHud.appendChild(content);
+
 	if(hudState === HUD_STATES.WAITING_PLAYERS){
 		lu.waitingText = document.createElement('div');
-		lu.waitingText.classList.add('content');
-		lu.waitingText.innerText = 'Waiting for other players';
-		multiplayerHud.appendChild(lu.waitingText);
+		lu.waitingText.classList.add('header');
+		lu.waitingText.innerText = localize('multiplayer_waitingplayers').replace('%%', '?').replace('**', '?');
+		content.appendChild(lu.waitingText);
 
 		updateLeaderboard();
 	} else if(hudState === HUD_STATES.COUNTDOWN){
 		lu.countDownTime = Settings.startGameTimer - data.ping;
 		lu.countDownText = document.createElement('div');
-		lu.countDownText.classList.add('content');
-		lu.countDownText.innerText = 'Starting in 3..';
-		multiplayerHud.appendChild(lu.countDownText);
+		lu.countDownText.classList.add('header');
+		lu.countDownText.innerText = localize('multiplayer_startingin').replace('%%', Settings.startGameTimer / 1000);
+		content.appendChild(lu.countDownText);
 		// show time
 	} else if(hudState === HUD_STATES.GAME_WIN_CAM){
-		lu.winCam = document.createElement('div');
-		lu.winCam.classList.add('content');
-		multiplayerHud.appendChild(lu.winCam);
-
-
 		const winText = document.createElement('div');
-		winText.innerText = 'You Win!';
+		winText.innerText = localize('levelgui_youwin');
+		winText.classList.add('header');
 
 		const waitingText = document.createElement('div');
-		waitingText.innerText = 'Waiting for other players to finish';
+		waitingText.innerText = localize('multiplayer_waitingforothers');
+		waitingText.classList.add('header');
 		waitingText.style.fontSize = '14px';
 
+
 		const switchCameraBut = document.createElement('button');
-		switchCameraBut.innerText = 'Switch Camera';
+		switchCameraBut.innerText = localize('multiplayer_switchcamera');
 		switchCameraBut.classList.add('switch-cam');
 
 		switchCameraBut.onclick = () => {
@@ -172,37 +183,38 @@ const buildState = data => {
 		}
 
 		lu.gameEnds = document.createElement('div');
-		lu.gameEnds.innerText = 'Game ends in 60s';
+		lu.gameEnds.innerText = localize('multiplayer_countdown').replace('%%', Settings.endGameTimer / 1000);
 		lu.gameEnds.style.margin = '60px 0px';
+		lu.gameEnds.classList.add('header');
 
-		lu.winCam.appendChild(winText);
-		lu.winCam.appendChild(waitingText);
-		lu.winCam.appendChild(switchCameraBut);
-		lu.winCam.appendChild(lu.gameEnds);
+
+		content.appendChild(winText);
+		content.appendChild(waitingText);
+		content.appendChild(switchCameraBut);
+		content.appendChild(lu.gameEnds);
 	} else if(hudState === HUD_STATES.GAME_END_COUNTDOWN){
-		lu.winCam = document.createElement('div');
-		lu.winCam.classList.add('content');
-		multiplayerHud.appendChild(lu.winCam);
-
 
 		const endText = document.createElement('div');
-		endText.innerText = 'Players finished, game is ending soon..';
+		endText.innerText = localize('multiplayer_gameendssoon');
+		endText.classList.add('header');
 
 		lu.gameEnds = document.createElement('div');
-		lu.gameEnds.innerText = 'Game ends in 60s';
+		lu.gameEnds.innerText = localize('multiplayer_countdown').replace('%%', Settings.endGameTimer / 1000);
 		lu.gameEnds.style.margin = '60px 0px';
+		lu.gameEnds.classList.add('header');
 
-		lu.winCam.appendChild(endText);
-		lu.winCam.appendChild(lu.gameEnds);
+
+		content.appendChild(endText);
+		content.appendChild(lu.gameEnds);
 	} else if(hudState === HUD_STATES.PICK_NEXT_LEVEL){
 		lu.waitingText = document.createElement('div');
-		lu.waitingText.classList.add('content');
-		lu.waitingText.innerText = 'Game finished, vote for next level';
-		multiplayerHud.appendChild(lu.waitingText);
+		lu.waitingText.classList.add('header');
+		lu.waitingText.innerText = multiplayerState.admin ? localize('multiplayer_gamefinished_admin') : localize('multiplayer_gamefinished_client');
+		content.appendChild(lu.waitingText);
 
 		const voteContainer = document.createElement('div');
 		voteContainer.classList.add('vote-container');
-		lu.waitingText.appendChild(voteContainer);
+		content.appendChild(voteContainer);
 
 		const voteInnerContainers = [];
 		const gameTemplates = [];
@@ -243,7 +255,7 @@ const buildState = data => {
 
 			const voteButton = document.createElement('div');
 			voteButton.classList.add('vote-button');
-			voteButton.innerText = i === 0 ? 'Replay' : 'Vote';
+			voteButton.innerText = i === 0 ? localize('multiplayer_replay') : localize('multiplayer_vote');
 			voteButtonContainer.appendChild(voteButton);
 			lu.voteButtonTexts.push(voteButton);
 
@@ -261,7 +273,7 @@ const buildState = data => {
 
 			const voteCount = document.createElement('div');
 			voteCount.classList.add('vote-count-container');
-			voteCount.innerText = 'Votes:';
+			voteCount.innerText = `${localize('levelbanner_votes')}:`;
 			voteButtonContainer.appendChild(voteCount);
 
 			const votes = document.createElement('div');
@@ -292,7 +304,7 @@ const buildState = data => {
 
 		if(multiplayerState.admin){
 			const exitToLobby = document.createElement('button');
-			exitToLobby.innerText = 'Return to Lobby';
+			exitToLobby.innerText = localize('multiplayer_returntolobby');
 			exitToLobby.classList.add('return-lobby');
 
 			exitToLobby.onclick = () => {
@@ -300,7 +312,7 @@ const buildState = data => {
 				returnToLobby();
 			}
 
-			lu.waitingText.appendChild(exitToLobby);
+			content.appendChild(exitToLobby);
 		}
 	}
 }
@@ -399,7 +411,7 @@ const buildChat = () => {
 
 		chat.innerHTML = `
 		<div class="chat-area"></div>
-		<input class="input" maxlength=200 placeholder="To chat click here or press 'Enter' key"></input>
+		<input class="input" maxlength=200 placeholder="${localize('multiplayer_tochat')}"></input>
 		`;
 
 		const input = chat.querySelector('.input');
@@ -410,7 +422,6 @@ const buildChat = () => {
 			}else if(event.key === "Escape"){
 				input.value = '';
 				input.blur();
-				console.log("INPUT BLUR!!");
 				event.stopPropagation();
 			}
 		});

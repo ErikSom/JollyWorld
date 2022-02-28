@@ -34,13 +34,18 @@
 		left: 50%;
 		top: 80px;
 		transform: translate(-50%, 0%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 
-		font-family: 'Montserrat', sans-serif;
-		font-size: 26px;
-		text-align: center;
-		font-variation-settings: "wght" 600;
-		color: #FFF;
-		text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+		.header{
+			font-family: 'Montserrat', sans-serif;
+			font-size: 26px;
+			text-align: center;
+			font-variation-settings: "wght" 600;
+			color: #FFF;
+			text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+		}
 
 		.switch-cam, .return-lobby{
 			@extend .base-button;
@@ -85,15 +90,16 @@
 						color:white;
 						background: var(--dark-color);
 						display: flex;
-						position: absolute;
-						bottom: 0px;
-						left: 50%;
-						transform: translate(-50%, 100%);
+						justify-content: center;
 						padding: 4px;
 						.vote-count{
-							background: white;
+							background: var(--negative-button);
 							padding: 0 4px;
 							margin: 0 0 0 4px;
+
+							&.not-zero{
+								background: var(--secondary-bg-color);
+							}
 						}
 					}
 				}

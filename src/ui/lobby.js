@@ -45,7 +45,7 @@ export const generateLobby = () => {
 			</div>
 
 			<div class="copy-url">
-				<div class="level-link-text">Invite link:</div>
+				<div class="level-link-text">${localize('multiplayer_invitelink')}:</div>
 				<input class="text-url" readonly>
 				<div class="copy-button"></div>
 			</div>
@@ -84,7 +84,7 @@ export const generateLobby = () => {
 		const input = lobby.querySelector('input');
 		const copyButton = lobby.querySelector('.copy-button');
         copyButton.addEventListener('click', () => {
-            const copyText = '(copied) ';
+            const copyText = `(${localize('multiplayer_copied')}) `;
             if (input.value.startsWith(copyText)) {
                 input.value = input.value.substr(copyText.length);
             }
