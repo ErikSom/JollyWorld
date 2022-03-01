@@ -110,7 +110,7 @@
 
 .mp-chat{
 	position: absolute;
-	top: 56px;
+	top: 100px;
 	right: 10px;
 	background: rgba(0, 0, 0, 0.0);
 	transition: background 0.3s ease-in, opacity 0.3s ease-in;
@@ -157,6 +157,10 @@
 		transition: opacity 0.3s ease-in;
 	}
 
+	&.disabled{
+		visibility: hidden;
+		pointer-events: none;
+	}
 
 	&.active{
 		background: rgba(0, 0, 0, 0.6);
@@ -172,5 +176,35 @@
 
 	&.fadeout{
 		opacity: 0;
+	}
+}
+
+.chat-button{
+	position: absolute;
+    top: 48px;
+    right: -10px;
+    margin: 10px;
+    width: 44px;
+    height: 44px;
+	cursor: pointer;
+
+	.update{
+		visibility: hidden;
+	}
+
+	&.has-update{
+		.update{
+			visibility: visible;
+		}
+	}
+
+	.bg{
+		fill: white;
+	}
+
+	&.disabled{
+		.bg{
+			fill:gray;
+		}
 	}
 }
