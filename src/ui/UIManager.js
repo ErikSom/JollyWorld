@@ -101,11 +101,11 @@ function UIManager() {
                     <div class="audio"></div>
                 </div>
                 <div class="menu-grid">
-                    <div class="singleplayer-but h2 v1"><span>${localize('mainmenu_singleplayer')}<span></div>
-                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span></div>
-                    <div class="multiplayer-but h2 v1"><span>${localize('mainmenu_multiplayer')}<span></div>
-                    <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
+                    <div class="singleplayer-but h2 v2"><span>${localize('mainmenu_singleplayer')}<span></div>
                     <div class="characters-but h1 v1"><span>${localize('mainmenu_characters')}</span><div class="character-image"></div></div>
+                    <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
+                    <div class="multiplayer-but h2 v2"><span>${localize('mainmenu_multiplayer')}<span></div>
+                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span></div>
                 </div>
                 <div class="multiplayer-menu-grid">
                     <div class="quick-play-but h1 v1"><span>${localize('mainmenu_quickplay')}<span></div>
@@ -179,6 +179,8 @@ function UIManager() {
                 this.setMainMenuActive('main');
             }
 
+            const joinMultiplayerGameButton = multiPlayerGrid.querySelector('.quick-play-but');
+
             const makeMultiplayerGameButton = multiPlayerGrid.querySelector('.create-game-but');
             makeMultiplayerGameButton.onclick = () => {
                 createLobby();
@@ -207,7 +209,7 @@ function UIManager() {
             }
 
 
-            const allButs = [singleplayerBut, editorBut, characterSelect, discordButton];
+            const allButs = [singleplayerBut, editorBut, characterSelect, discordButton, multiplayerBut, joinMultiplayerGameButton, makeMultiplayerGameButton];
             allButs.forEach(el => {
                 el.addEventListener('mouseover', () => {
                     const bounds = el.getBoundingClientRect();
