@@ -272,7 +272,6 @@ const handleStartLoadLevel = async ({buffer}) => {
 }
 
 export const adminStartLoadLevel = () => {
-	debugger;
 	let playersReady = 0;
 
 	const players = Object.values(multiplayerState.players);
@@ -282,7 +281,7 @@ export const adminStartLoadLevel = () => {
 		}
 	});
 
-	if(playersReady === players.length && multiplayerState.selectedLevelData){
+	if((playersReady === players.length && multiplayerState.selectedLevelData) || multiplayerState.lobbyState === LOBBY_STATE.VOTING){
 		const startLoadLevelBuffer = dataToStartLoadLevelBuffer(multiplayerState.selectedLevel);
 		server.sendSimpleMessageAll(startLoadLevelBuffer);
 
@@ -301,10 +300,16 @@ export const adminReturnToLobby = () => {
 }
 
 const startLoadLevel = async id => {
-	if (game.gameState != game.GAMESTATE_LOBBY) return;
+	if (game.gameState !== game.GAMESTATE_LOBBY && multiplayerState.lobbyState !== LOBBY_STATE.VOTING) return;
 	game.gameState = game.GAMESTATE_LOADINGDATA;
 
 	multiplayerState.lobbyState = LOBBY_STATE.LOADING_LEVEL;
+
+
+	// reset all other params
+	multiplayerState.endTime = 0;
+
+
 	showLeaderboard(true);
 
 	const players = Object.values(multiplayerState.players);

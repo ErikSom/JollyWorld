@@ -4,7 +4,7 @@ import * as PIXI from 'pixi.js';
 import { game } from '../Game';
 import { Settings } from '../Settings';
 import { getModdedPortrait } from '../utils/ModManager';
-import { adminReturnToLobby, LOBBY_STATE, multiplayerState, returnToLobby, sendChatMessage, sendSimpleMessageAll } from './multiplayerManager';
+import { adminReturnToLobby, adminStartLoadLevel, LOBBY_STATE, multiplayerState, returnToLobby, sendChatMessage, sendSimpleMessageAll } from './multiplayerManager';
 import { multiplayerAtlas } from './rippleCharacter';
 import { backendManager } from '../utils/BackendManager';
 import { Key } from '../../libs/Key';
@@ -259,9 +259,13 @@ const buildState = data => {
 			voteButtonContainer.appendChild(voteButton);
 			lu.voteButtonTexts.push(voteButton);
 
-			voteButton.onclick = voteLevel.onclick = () => {
-				if(multiplayerState.admin){
-					// play this level
+			voteLevel.onclick = () => {
+				if(multiplayerState.admin && game.gameState !== game.GAMESTATE_LOADINGDATA){
+					// TODO: put multiple prompts here
+					multiplayerState.selectedLevelData = multiplayerState.voteLevels[i];
+					multiplayerState.selectedLevel = multiplayerState.selectedLevelData.id;
+
+					adminStartLoadLevel();
 				} else {
 					if(!voteButton.classList.contains('selected')){
 						sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES[`VOTE_LEVEL_${i+1}`]);
