@@ -6,7 +6,7 @@ import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
-import { buildLeaderboard, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard } from './hud';
+import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard } from './hud';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
@@ -68,7 +68,7 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.END_COUNTDOWN, handleEndCountDownMessage);
 	globalEvents.addEventListener(SERVER_EVENTS.LEVEL_VOTES, handleLevelVotesMessage);
 
-	buildLeaderboard();
+	initHud();
 	prepareSkinForSending();
 }
 
@@ -121,6 +121,11 @@ export const returnToLobby = () => {
 	showLeaderboard(false);
 
 	updateLobbyUI();
+}
+
+export const leaveMultiplayer = () => {
+	showLeaderboard(false);
+	showChat(false);
 }
 
 export const resetMultiplayer = () => {

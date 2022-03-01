@@ -1,7 +1,7 @@
 import { formatDMY } from '../b2Editor/utils/formatString';
 import '../css/Lobby.scss'
 import { game } from '../Game';
-import { adminStartLoadLevel, LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
+import { adminStartLoadLevel, leaveMultiplayer, LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
 import { multiplayerAtlas } from '../multiplayer/rippleCharacter';
 import { Settings } from '../Settings';
 import { backendManager } from '../utils/BackendManager';
@@ -98,6 +98,7 @@ export const generateLobby = () => {
 		const leaveButton = navButtons.querySelector('.leave-but');
 		leaveButton.onclick = () => {
 			// disconnect everything
+			leaveMultiplayer();
 			game.openMainMenu();
 		}
 	}
@@ -181,6 +182,8 @@ export const updateLobbyUI = () => {
 	while(entries.children.length>1){
 		entries.removeChild(entries.children[1]);
 	}
+
+	console.log("UPDATE LOBBY UI:", multiplayerState.players.length, multiplayerState.players);
 
 	const otherPlayers = Object.values(multiplayerState.players);
 	const players = [myPlayer, ...otherPlayers];

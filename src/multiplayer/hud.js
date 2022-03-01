@@ -38,6 +38,7 @@ const leaderboardNames = [];
 const leaderboardIds = [];
 
 let chat = null;
+let chatButton = null;
 let chatArea = null;
 
 export const setMultiplayerHud = (state, data) => {
@@ -142,6 +143,7 @@ const buildState = data => {
 		lu.waitingText.innerText = localize('multiplayer_waitingplayers').replace('%%', '?').replace('**', '?');
 		content.appendChild(lu.waitingText);
 
+		initLeaderboard();
 		updateLeaderboard();
 	} else if(hudState === HUD_STATES.COUNTDOWN){
 		lu.countDownTime = Settings.startGameTimer - data.ping;
@@ -331,7 +333,7 @@ const clearState = () => {
 	}
 }
 
-export const buildLeaderboard = () => {
+export const initHud = () => {
 	if(!leaderboardContainer){
 		leaderboardContainer = document.createElement('div');
 		leaderboardContainer.classList.add('mp-leaderboard');
@@ -362,9 +364,6 @@ export const buildLeaderboard = () => {
 		leaderboardNames.push(name);
 		entry.appendChild(name);
 	}
-	for(let playerID in multiplayerState.players){
-		leaderboardIds.push(playerID);
-	}
 
 	buildChat();
 
@@ -372,6 +371,13 @@ export const buildLeaderboard = () => {
 
 	showLeaderboard(false);
 	showChat(false);
+}
+
+export const initLeaderboard = () => {
+	leaderboardIds.length = 0;
+	for(let playerID in multiplayerState.players){
+		leaderboardIds.push(playerID);
+	}
 }
 
 export const updateLeaderboard = () => {
@@ -418,7 +424,7 @@ const buildChat = () => {
 		<input class="input" maxlength=200 placeholder="${localize('multiplayer_tochat')}"></input>
 		`;
 
-		const chatButton = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+		chatButton = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
 		chatButton.classList.add('chat-button');
 		chatButton.innerHTML = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 44.2 53.6" style="enable-background:new 0 0 44.2 53.6" xml:space="preserve"><style>.st0{fill:#fff}.st1{fill:none;stroke:#333;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.st2{fill:#333}</style><path class="st0 bg" d="M34.9 41.8V14.1c0-2.7-1.3-4-4-4H5c-2.7 0-4 1.3-4 4v28.4c0 2.7 1.3 4 4 4h9.8l-3.4 6.2 10-6.2h9.4c2.7 0 4-1.3 4-4v-.7z"/><path class="st1" d="M34.9 41.2V14.1c0-2.7-1.3-4-4-4H5c-2.7 0-4 1.3-4 4v28.4c0 2.7 1.3 4 4 4h9.8l-3.4 6.2 10-6.2h9.4c2.7 0 4-1.3 4-4v-.7"/><path class="st2" d="M31.6 19.3c0-.5-.2-.9-.5-1.3-.3-.3-.8-.5-1.3-.5h-24c-.5 0-.9.2-1.3.5-.3.4-.5.8-.5 1.3s.2.9.5 1.3c.3.3.8.5 1.3.5h24c.5 0 .9-.2 1.3-.5.4-.4.5-.8.5-1.3zM31.6 26.8c0-.5-.2-.9-.5-1.3-.3-.3-.8-.5-1.3-.5h-24c-.5 0-.9.2-1.3.5-.3.4-.5.8-.5 1.3s.2.9.5 1.3c.3.3.8.5 1.3.5h24c.5 0 .9-.2 1.3-.5.4-.4.5-.8.5-1.3zM5.8 32.5c-.5 0-.9.2-1.3.5s-.5.8-.5 1.3.2.9.5 1.3c.3.3.8.5 1.3.5h14c.5 0 .9-.2 1.3-.5.3-.3.5-.8.5-1.3s-.2-.9-.5-1.3-.8-.5-1.3-.5h-14z"/><g class="update"><path d="M30.1 14.1c1.5 1.5 3.3 2.2 5.5 2.2 2.1 0 3.9-.7 5.4-2.2 1.5-1.5 2.2-3.3 2.2-5.4 0-2.1-.7-3.9-2.2-5.4C39.5 1.8 37.7 1 35.6 1c-2.1 0-4 .8-5.5 2.2-1.5 1.5-2.2 3.3-2.2 5.4 0 2.2.8 4 2.2 5.5z" style="fill:#d70000"/><path id="Unread_State_0_Layer1_0_1_STROKES" class="st1" d="M35.6 16.3c-2.1 0-4-.7-5.5-2.2-1.5-1.5-2.2-3.3-2.2-5.4 0-2.1.7-3.9 2.2-5.4C31.6 1.8 33.5 1 35.6 1s3.9.8 5.4 2.2c1.5 1.5 2.2 3.3 2.2 5.4 0 2.1-.7 3.9-2.2 5.4-1.5 1.6-3.3 2.3-5.4 2.3z"/><path class="st0" d="M35.4 11.9c-.2-.2-.4-.2-.7-.2-.3 0-.5.1-.7.2-.2.2-.2.4-.2.7 0 .3.1.5.2.6.2.2.4.2.7.2.2 0 .5-.1.7-.2s.3-.4.3-.6c0-.3-.1-.5-.3-.7M37 4.2c.1 0 .1 0 0 0 .1-.5-.3-.7-1.1-.7-.4 0-.7 0-.8.2l-.8 6.6h1.2L37 4.2z"/></g></svg>';
 		customGUIContainer.appendChild(chatButton);
@@ -518,6 +524,11 @@ export const processChatMessage = (name, type, admin, message) => {
 }
 
 export const showChat = bool => {
-	if(bool) chat.style.display = 'block';
-	else chat.style.display = 'none';
+	if(bool){
+		chat.style.display = 'block';
+		chatButton.style.display = 'block';
+	} else {
+		chat.style.display = 'none';
+		chatButton.style.display = 'none';
+	}
 }
