@@ -465,6 +465,8 @@ const buildChat = () => {
 			}
 			chatButton.classList.toggle('disabled');
 			chat.classList.toggle('disabled');
+
+			chatButton.classList.remove('has-update');
 		}
 
 		chatButton.onpointerover = focusChat;
@@ -520,6 +522,11 @@ export const processChatMessage = (name, type, admin, message) => {
 
 		chat.classList.remove('fadeout');
 		lastChatMessage = performance.now();
+
+
+		if(chatButton.classList.contains('disabled')){
+			chatButton.classList.add('has-update');
+		}
 	}
 }
 
