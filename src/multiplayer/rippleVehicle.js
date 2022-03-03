@@ -8,7 +8,7 @@ export class RippleVehicle {
 		this.currentVehicle = -1;
 		this.vehicle = null;
 		this.mirror = false;
-		this.vehicleClasses = [ RippleBike/*, RippleDirtBike, null,  RippleSkateboard, RippleSkippyBall, RippleFoddyCan*/]
+		this.vehicleClasses = [ RippleBike, RippleDirtBike, null,  RippleSkateboard, null/*RippleSkippyBall*/, RippleFoddyCan]
 		this.state = {
 		}
 	}
@@ -18,7 +18,11 @@ export class RippleVehicle {
 			if(this.vehicle){
 				this.vehicle.destroy();
 			}
-			this.vehicle = new this.vehicleClasses[vehicle-1](this.container);
+			if(this.vehicleClasses[vehicle-1]){
+				this.vehicle = new this.vehicleClasses[vehicle-1](this.container);
+			} else{
+				this.vehicle = null;
+			}
 			this.currentVehicle = vehicle;
 		}
 	}
@@ -57,7 +61,7 @@ export class RippleVehicle {
 	}
 }
 
-export class RippleBike {
+class RippleBike {
 	constructor(container){
 		this.sprite = container;
 
@@ -93,6 +97,131 @@ export class RippleBike {
 		this.sprite.addChildAt(this.sprites.pedals, injectIndex);
 
 		this.spriteProcessList = [this.sprites.body, this.sprites.wheelBack, this.sprites.wheelFront, this.sprites.pedals];
+	}
+
+	destroy(){
+		this.spriteProcessList.forEach(sprite => sprite.destroy());
+	}
+}
+
+class RippleDirtBike {
+	constructor(container){
+		this.sprite = container;
+
+		this.state = {
+			body: new SyncObject(),
+			wheelBack: new SyncObject(),
+			wheelFront: new SyncObject(),
+			frontSuspension: new SyncObject(),
+			backSuspension: new SyncObject(),
+		}
+		this.stateKeys = Object.keys(this.state);
+		this.stateProcessList = [this.state.body, this.state.wheelBack, this.state.wheelFront, this.state.frontSuspension, this.state.backSuspension];
+
+		this.buildSprite();
+	}
+
+	buildSprite(){
+		this.sprites = {
+			body: new PIXI.Sprite(PIXI.Texture.from('DirtBike_Body0000')),
+			wheelBack: new PIXI.Sprite(PIXI.Texture.from('DirtBike_WheelBack0000')),
+			wheelFront: new PIXI.Sprite(PIXI.Texture.from('DirtBike_WheelFront0000')),
+			frontSuspension: new PIXI.Sprite(PIXI.Texture.from('DirtBike_Axis0000')),
+			backSuspension: new PIXI.Sprite(PIXI.Texture.from('DirtBike_WheelSupport0000')),
+		}
+
+		for(let obj in this.sprites){
+			this.sprites[obj].anchor.set(0.5, 0.5);
+		}
+
+		const injectIndex = 3;
+
+		this.sprite.addChildAt(this.sprites.body, injectIndex);
+		this.sprite.addChildAt(this.sprites.frontSuspension, injectIndex);
+		this.sprite.addChildAt(this.sprites.backSuspension, injectIndex);
+		this.sprite.addChildAt(this.sprites.wheelBack, injectIndex);
+		this.sprite.addChildAt(this.sprites.wheelFront, injectIndex);
+
+		this.spriteProcessList = [this.sprites.body, this.sprites.wheelBack, this.sprites.wheelFront, this.sprites.frontSuspension, this.sprites.backSuspension];
+	}
+
+	destroy(){
+		this.spriteProcessList.forEach(sprite => sprite.destroy());
+	}
+}
+
+class RippleSkateboard {
+	constructor(container){
+		this.sprite = container;
+
+		this.state = {
+			body: new SyncObject(),
+			wheelBack: new SyncObject(),
+			wheelFront: new SyncObject(),
+		}
+		this.stateKeys = Object.keys(this.state);
+		this.stateProcessList = [this.state.body, this.state.wheelBack, this.state.wheelFront];
+
+		this.buildSprite();
+	}
+
+	buildSprite(){
+		this.sprites = {
+			body: new PIXI.Sprite(PIXI.Texture.from('SkateBoard_Board0000')),
+			wheelBack: new PIXI.Sprite(PIXI.Texture.from('Skateboard_Wheel0000')),
+			wheelFront: new PIXI.Sprite(PIXI.Texture.from('Skateboard_Wheel0000')),
+		}
+
+		for(let obj in this.sprites){
+			this.sprites[obj].anchor.set(0.5, 0.5);
+		}
+
+		const injectIndex = 3;
+
+		this.sprite.addChildAt(this.sprites.body, injectIndex);
+		this.sprite.addChildAt(this.sprites.wheelBack, injectIndex);
+		this.sprite.addChildAt(this.sprites.wheelFront, injectIndex);
+
+		this.spriteProcessList = [this.sprites.body, this.sprites.wheelBack, this.sprites.wheelFront];
+	}
+
+	destroy(){
+		this.spriteProcessList.forEach(sprite => sprite.destroy());
+	}
+}
+
+// SKIPPY BALL
+
+class RippleFoddyCan {
+	constructor(container){
+		this.sprite = container;
+
+		this.state = {
+			body: new SyncObject(),
+			hammer: new SyncObject(),
+		}
+		this.stateKeys = Object.keys(this.state);
+		this.stateProcessList = [this.state.body, this.state.hammer];
+
+		this.buildSprite();
+	}
+
+	buildSprite(){
+		this.sprites = {
+			body: new PIXI.Sprite(PIXI.Texture.from('Pot0000')),
+			hammer: new PIXI.Sprite(PIXI.Texture.from('Hammer0000')),
+		}
+
+		for(let obj in this.sprites){
+			this.sprites[obj].anchor.set(0.5, 0.5);
+		}
+
+		const injectIndex = 12;
+
+		this.sprite.addChildAt(this.sprites.hammer, injectIndex);
+		this.sprite.addChildAt(this.sprites.body, injectIndex);
+
+		this.spriteProcessList = [this.sprites.body, this.sprites.hammer];
 	}
 
 	destroy(){

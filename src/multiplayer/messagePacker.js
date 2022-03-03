@@ -116,14 +116,44 @@ export const characterToBuffer = (characterClass, id) => {
 
 
 	if(game.vehicle){
-		if(game.selectedVehicle === 1){
+		if(game.selectedVehicle === 1){ // BIKE
 			const vehicleLookup = game.vehicle.lookupObject;
 			characterData.vehicleParts = [
 				extractPosition(vehicleLookup.frame, lookup[BODY_PARTS.BODY]),
 				extractPosition(vehicleLookup.wheel_back, lookup[BODY_PARTS.BODY]),
 				extractPosition(vehicleLookup.wheel_front, lookup[BODY_PARTS.BODY]),
 				extractPosition(vehicleLookup.pedal, lookup[BODY_PARTS.BODY]),
-			]
+			];
+		} else if(game.selectedVehicle === 2){ // DIRTBIKE
+			const vehicleLookup = game.vehicle.lookupObject;
+			characterData.vehicleParts = [
+				extractPosition(vehicleLookup.frame, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.wheel_back, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.wheel_front, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.front_axis, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.back_axis, lookup[BODY_PARTS.BODY]),
+			];
+		} else if(game.selectedVehicle === 3){ // NOVEHICLE
+			characterData.vehicleParts = [
+				extractPosition(null),
+			];
+		} else if(game.selectedVehicle === 4){
+			const vehicleLookup = game.vehicle.lookupObject;
+			characterData.vehicleParts = [
+				extractPosition(vehicleLookup.frame, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.wheel_back, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.wheel_front, lookup[BODY_PARTS.BODY]),
+			];
+		} else if(game.selectedVehicle === 5){ // SKIPPYBALL
+			characterData.vehicleParts = [
+				extractPosition(null),
+			];
+		} else if(game.selectedVehicle === 6){ // FODDYCAN
+			const vehicleLookup = game.vehicle.lookupObject;
+			characterData.vehicleParts = [
+				extractPosition(vehicleLookup.frame, lookup[BODY_PARTS.BODY]),
+				extractPosition(vehicleLookup.hammer, lookup[BODY_PARTS.BODY]),
+			];
 		}
 	}
 
