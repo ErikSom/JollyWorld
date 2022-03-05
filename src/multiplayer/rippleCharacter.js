@@ -30,7 +30,9 @@ export class RippleCharacter {
 			legRight: new SyncObject(),
 			feetLeft: new SyncObject(),
 			feetRight: new SyncObject(),
+			cameraObject: new SyncObject(),
 		}
+		this.cloud = null;
 
 		this.state.body.overflow = true;
 
@@ -121,8 +123,15 @@ export class RippleCharacter {
 		const nameText = new PIXI.Text(this.playerState.name, new PIXI.TextStyle({fontFamily:'Montserrat', fontWeight: 800, lineJoin:'round', fontSize: 24, fill: 0xFFFFFF, stroke: 0x000000, strokeThickness: 4}))
 		nameText.pivot.set(nameText.width / 2, nameText.height / 2);
 		nameText.y = -140;
+		this.sprite.nameText = nameText;
 		this.sprite.addChild(nameText);
 
+		this.buildCloud();
+
+		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight, this.sprites.belly, this.sprites.thighLeft, this.sprites.thighRight, this.sprites.legLeft, this.sprites.legRight, this.sprites.feetLeft, this.sprites.feetRight];
+	}
+
+	buildCloud(){
 		this.cloud = new PIXI.Container();
 		const cloudSize = 50;
 		this.cloud.bg = new PIXI.Graphics().lineStyle(4, 0x000000).beginFill(0xFFFFFF).drawCircle(0, 0, cloudSize);
@@ -133,48 +142,74 @@ export class RippleCharacter {
 		this.cloud.addChild(this.cloud.arrow);
 		this.cloud.arrow.fixArrow = () => {
 
-			nameText.scale.x = nameText.scale.y = 1 / game.editor.cameraHolder.scale.x;
+			this.sprite.nameText.scale.x = this.sprite.nameText.scale.y = 1 / game.editor.cameraHolder.scale.x;
 
-			const point = game.editor.container.toGlobal(new PIXI.Point(this.sprite.x, this.sprite.y));
+			const point = game.editor.container.toGlobal(new PIXI.Point(this.state.cameraObject.x, this.state.cameraObject.y));
 			if (game.editor.container.camera) {
 				game.editor.container.camera.toScreenPoint(point, point);
 			}
 
 			this.cloud.x = point.x;
-			this.cloud.y = point.y - 200;
+			this.cloud.y = point.y;
 
 			const screenMargin = 60;
+			let insideScreen = true;
 
-			if(this.cloud.x < screenMargin) this.cloud.x = screenMargin;
-			if(this.cloud.x > window.innerWidth - screenMargin) this.cloud.x = window.innerWidth - screenMargin;
+			if(this.cloud.x < screenMargin){
+				this.cloud.x = screenMargin;
+				insideScreen = false;
+			}
+			if(this.cloud.x > window.innerWidth - screenMargin) {
+				this.cloud.x = window.innerWidth - screenMargin;
+				insideScreen = false;
+			}
 
-			if(this.cloud.y < screenMargin) this.cloud.y = screenMargin;
-			if(this.cloud.y > window.innerHeight - screenMargin) this.cloud.y = window.innerHeight - screenMargin;
+			if(this.cloud.y < screenMargin) {
+				this.cloud.y = screenMargin;
+				insideScreen = false;
+			}
+			if(this.cloud.y > window.innerHeight - screenMargin) {
+				this.cloud.y = window.innerHeight - screenMargin;
+				insideScreen = false;
+			}
 
 			this.cloud.arrow.clear();
-			const fixedCloudSize = cloudSize - 2;
-			this.cloud.arrow.lineStyle(4, 0x000000).beginFill(0xFFFFFF);
+
+			if(!insideScreen){
+				this.cloud.visible = true;
+
+				const fixedCloudSize = cloudSize - 2;
+				this.cloud.arrow.lineStyle(4, 0x000000).beginFill(0xFFFFFF);
 
 
-			const dx = point.x - this.cloud.x;
-			const dy = point.y - this.cloud.y;
-			const a = Math.atan2(dy, dx);
+				const dx = point.x - this.cloud.x;
+				const dy = point.y - this.cloud.y;
+				const a = Math.atan2(dy, dx);
 
-			const arrowLength = 50;
-			this.cloud.arrow.moveTo(fixedCloudSize * Math.cos(a - arrowSpread), fixedCloudSize * Math.sin(a - arrowSpread));
-			this.cloud.arrow.lineTo((fixedCloudSize + arrowLength) * Math.cos(a), (fixedCloudSize + arrowLength) * Math.sin(a));
-			this.cloud.arrow.lineTo(fixedCloudSize * Math.cos(a + arrowSpread), fixedCloudSize * Math.sin(a + arrowSpread));
+				const arrowLength = 50;
+				this.cloud.arrow.moveTo(fixedCloudSize * Math.cos(a - arrowSpread), fixedCloudSize * Math.sin(a - arrowSpread));
+				this.cloud.arrow.lineTo((fixedCloudSize + arrowLength) * Math.cos(a), (fixedCloudSize + arrowLength) * Math.sin(a));
+				this.cloud.arrow.lineTo(fixedCloudSize * Math.cos(a + arrowSpread), fixedCloudSize * Math.sin(a + arrowSpread));
 
-			const cameraDX = window.innerWidth / 2 - point.x;
-			const cameraDY = window.innerHeight / 2 - point.y;
-			const meterInPixels = 130;
-			const distanceToCamera = Math.sqrt(cameraDX * cameraDX + cameraDY * cameraDY);
-			const distanceInMeters = Math.round(distanceToCamera / meterInPixels);
+				const cameraDX = window.innerWidth / 2 - point.x;
+				const cameraDY = window.innerHeight / 2 - point.y;
+				const meterInPixels = 130;
+				const distanceToCamera = Math.sqrt(cameraDX * cameraDX + cameraDY * cameraDY) / game.editor.cameraHolder.scale.x;
+				const distanceInMeters = Math.round(distanceToCamera / meterInPixels);
 
-			if(distanceInMeters < 10000){
-				this.cloud.distanceText.text = `${distanceInMeters}m`;
-			} else{
-				this.cloud.distanceText.text = `9999+`;
+				if(distanceInMeters < 10000){
+					this.cloud.distanceText.text = `${distanceInMeters}m`;
+				} else{
+					this.cloud.distanceText.text = `9999+`;
+				}
+
+			}else{
+				const minMargin = 10;
+				if(Math.abs(this.state.cameraObject.x - this.state.body.x) < minMargin && Math.abs(this.state.cameraObject.y - this.state.body.y) < minMargin){
+					this.cloud.visible = false;
+				}else{
+					this.cloud.visible = true;
+				}
 			}
 		}
 
@@ -206,8 +241,6 @@ export class RippleCharacter {
 		this.cloud.scale.x = this.cloud.scale.y = .5;
 
 		game.hudContainer.addChild(this.cloud);
-
-		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight, this.sprites.belly, this.sprites.thighLeft, this.sprites.thighRight, this.sprites.legLeft, this.sprites.legRight, this.sprites.feetLeft, this.sprites.feetRight];
 	}
 
 	processServerData(data, time){
@@ -251,8 +284,18 @@ export class RippleCharacter {
 		this.state.body.ping = this.ping;
 		if(this.lastPackageID === -1 || flipped || teleport){
 			this.state.body.forcePosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, data.mirror, time);
+			if(data.main[1]){
+				this.state.cameraObject.forcePosition(data.id, data.main[1].x, data.main[1].y, data.main[1].r, data.mirror, time);
+			} else{
+				this.state.cameraObject.forcePosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, data.mirror, time);
+			}
 		} else {
 			this.state.body.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
+			if(data.main[1]){
+				this.state.cameraObject.updateServerPosition(data.id, data.main[1].x, data.main[1].y, data.main[1].r, time);
+			} else {
+				this.state.cameraObject.updateServerPosition(data.id, data.main[0].x, data.main[0].y, data.main[0].r, time);
+			}
 		}
 
 		this.stateProcessList.forEach((state, i) => {

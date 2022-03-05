@@ -1,5 +1,6 @@
 
 import * as PIXI from 'pixi.js';
+import { Settings } from '../Settings';
 import { SyncObject } from './rippleCharacter';
 
 export class RippleVehicle {
@@ -8,7 +9,7 @@ export class RippleVehicle {
 		this.currentVehicle = -1;
 		this.vehicle = null;
 		this.mirror = false;
-		this.vehicleClasses = [ RippleBike, RippleDirtBike, null,  RippleSkateboard, null/*RippleSkippyBall*/, RippleFoddyCan]
+		this.vehicleClasses = [ RippleBike, RippleDirtBike, null,  RippleSkateboard, RippleSkippyBall, RippleFoddyCan]
 		this.state = {
 		}
 	}
@@ -35,6 +36,7 @@ export class RippleVehicle {
 
 		this.vehicle.stateProcessList.forEach((state, i) => {
 			const stateData = parts[i];
+
 			if(this.lastPackageID === -1 || flipped){
 				state.forcePosition(id, stateData.x, stateData.y, stateData.r, mirror, time);
 			}else{
@@ -50,7 +52,11 @@ export class RippleVehicle {
 			this.vehicle.state[key].interpolatePosition();
 		});
 
-		this.vehicle.spriteProcessList.forEach((sprite, i) => {
+		if(this.vehicle.customUpdate){
+			this.vehicle.customUpdate();
+		}
+
+		this.vehicle.spriteProcessList?.forEach((sprite, i) => {
 			const state = this.vehicle.stateProcessList[i];
 			sprite.x = state.x;
 			sprite.y = state.y;
@@ -190,7 +196,130 @@ class RippleSkateboard {
 	}
 }
 
-// SKIPPY BALL
+class RippleSkippyBall {
+	constructor(container){
+		this.sprite = container;
+
+		this.state = {
+			base: new SyncObject(),
+			p1: new SyncObject(),
+			p2: new SyncObject(),
+			p3: new SyncObject(),
+			p4: new SyncObject(),
+			p5: new SyncObject(),
+			p6: new SyncObject(),
+			p7: new SyncObject(),
+			p8: new SyncObject(),
+			p9: new SyncObject(),
+			p10: new SyncObject(),
+			p11: new SyncObject(),
+			p12: new SyncObject(),
+		}
+		this.stateKeys = Object.keys(this.state);
+		this.stateProcessList = [this.state.base, this.state.p1, this.state.p2, this.state.p3, this.state.p4, this.state.p5, this.state.p6, this.state.p7, this.state.p8, this.state.p9, this.state.p10, this.state.p11, this.state.p12];
+
+		this.buildMesh();
+	}
+
+	destroy(){
+		this.spriteProcessList.forEach(sprite => sprite.destroy());
+	}
+
+	buildMesh(){
+
+		this.containerSprite = new PIXI.Container();
+
+		const t = PIXI.Texture.from('YogaBall0000')
+		this.mesh = new PIXI.SimpleMesh(t, ...this.getMeshData());
+		this.mesh.isMesh = true;
+
+		const injectIndex = 3;
+		this.containerSprite.addChild(this.mesh);
+
+		this.sprite.addChildAt(this.containerSprite, injectIndex);
+
+		this.handleFront = new PIXI.Sprite(PIXI.Texture.from('YogaBall_Handle_Front0000'));
+		this.handleBack = new PIXI.Sprite(PIXI.Texture.from('YogaBallHandle_Back0000'));
+
+		this.containerSprite.addChild(this.handleFront);
+		this.containerSprite.addChildAt(this.handleBack, 0);
+	}
+
+	updateMesh(){
+		const [vertices, uvs] = this.getMeshData();
+
+		this.mesh.verticesBuffer.update(vertices);
+		this.mesh.uvBuffer.update(uvs);
+	}
+
+	updateHandles(){
+		this.handleFront.position.x = -20;
+		this.handleBack.position.x = -6.5;
+		const baseYOffset = this.wobbafett || 34;
+
+		const dx = this.state.p1.x - this.state.base.x;
+		const dy = this.state.p1.y - this.state.base.y;
+		const l = Math.sqrt(dx * dx + dy * dy);
+		const y = -l - baseYOffset;
+
+		this.handleFront.position.y = y;
+		this.handleBack.position.y = y;
+	}
+
+
+	getMeshData(){
+		const radiusAr = [];
+		const vertices = [0,0];
+		const indices = [];
+
+		const steps = 12;
+		const step = 360 / steps;
+
+
+		const rInc = 16;
+		for(let i = 0; i < steps; i++) {
+
+
+			const targetBodyIndex = (i + (this.offsetIndex || 3)) % steps + 1;
+
+			const p = this.state[`p${targetBodyIndex}`];
+
+			const dx = this.state.base.x - p.x;
+			const dy = this.state.base.y - p.y;
+			const l = Math.sqrt(dx * dx + dy * dy);
+			radiusAr.push(l);
+
+			const r = radiusAr[i] + rInc;
+			vertices.push( Math.cos(Math.PI * i * step / 180)*r, Math.sin(Math.PI * i * step / 180)*r);
+			indices.push(0, i + 1, i);
+		}
+
+		indices.push(0, 1, steps);
+
+
+		const uvs = vertices.map((e, i) => {
+			let r;
+			if(i <= 1){
+				r = 75;
+			}else{
+				const vindex = Math.floor((i-2) / 2);
+				r = radiusAr[vindex] + rInc;
+			}
+			return 0.5 + e / r / 2;
+		});
+
+		return [vertices, uvs, indices]
+	}
+
+	customUpdate()	{
+		this.containerSprite.x = this.state.base.x;
+		this.containerSprite.y = this.state.base.y;
+		this.containerSprite.angle = this.state.base.r;
+
+		this.updateMesh();
+		this.updateHandles();
+	}
+}
 
 class RippleFoddyCan {
 	constructor(container){

@@ -47,6 +47,12 @@ const extractPosition = (body, target) => {
 
 	const bodySprite = body.myTexture || body.mySprite;
 
+
+	if(!bodySprite.visible){
+		bodySprite.position.x = body.GetPosition().x * Settings.PTM;
+		bodySprite.position.y = body.GetPosition().y * Settings.PTM;
+	}
+
 	if(!target){
 		lastValidMainData = {
 			x: bodySprite.position.x,
@@ -145,9 +151,19 @@ export const characterToBuffer = (characterClass, id) => {
 				extractPosition(vehicleLookup.wheel_front, lookup[BODY_PARTS.BODY]),
 			];
 		} else if(game.selectedVehicle === 5){ // SKIPPYBALL
+			const vehicleLookup = game.vehicle.lookupObject;
+
 			characterData.vehicleParts = [
-				extractPosition(null),
+				extractPosition(vehicleLookup.frame, lookup[BODY_PARTS.BODY]),
 			];
+
+			const steps = 12;
+			for(let i = 1; i<= steps; i+=1){
+				const bouncyBall = vehicleLookup['b'+i];
+				if(bouncyBall){
+					characterData.vehicleParts.push(extractPosition(bouncyBall, lookup[BODY_PARTS.BODY]));
+				}
+			}
 		} else if(game.selectedVehicle === 6){ // FODDYCAN
 			const vehicleLookup = game.vehicle.lookupObject;
 			characterData.vehicleParts = [
@@ -155,6 +171,10 @@ export const characterToBuffer = (characterClass, id) => {
 				extractPosition(vehicleLookup.hammer, lookup[BODY_PARTS.BODY]),
 			];
 		}
+	}
+
+	if(game.cameraFocusObject && game.cameraFocusObject !== game.cameraFocusCharacterObject && !game.cameraFocusObject.destroyed){
+		characterData.main.push(extractPosition(game.cameraFocusObject));
 	}
 
 	const buffer = characterModel.toBuffer(characterData);
