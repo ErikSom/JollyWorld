@@ -582,7 +582,10 @@ function UIManager() {
                     this.hideCharacterSelect();
                     this.hideVehicleSelect();
                     this.hideYouTubePlayer();
-                    game.gameState = game.GAMESTATE_MENU;
+
+                    if(game.gameState !== game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+                        game.gameState = game.GAMESTATE_MENU;
+                    }
                 }
             }
         }
