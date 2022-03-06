@@ -172,6 +172,8 @@ const buildState = data => {
 			const playerID = Object.keys(multiplayerState.players)[0];
 			game.cameraFocusObject = {
 				GetPosition: () => {
+					// TODO: IF PLAYER EXISTS
+
 					const x = multiplayerState.players[playerID].sprite.x  / Settings.PTM;
 					const y = multiplayerState.players[playerID].sprite.y  / Settings.PTM;
 					return {x, y};
