@@ -36,6 +36,7 @@ export var Settings = {
     maxChatMessages: 50,
     chatBlurTimeout: 3000,
     chatIdleHideTime: 10000,
+    destroyedPosition: 13337,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,

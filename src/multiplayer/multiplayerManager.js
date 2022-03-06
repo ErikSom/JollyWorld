@@ -171,19 +171,19 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.admin = admin;
 
 	// ******* TODO REMOVE:
-	// if(admin){
-	// 	// auto select level for development:
-	// 	backendManager.getPublishedLevelInfo('Z~lbng9r4S5ZG55Rxjl3O').then(levelData => {
-	// 		selectMultiplayerLevel(levelData);
-	// 		game.ui.showSinglePlayer();
-	// 		game.ui.hideSinglePlayer();
-	// 		game.openMainMenu();
-	// 		game.gameState = game.GAMESTATE_LOBBY;
-	// 		game.ui.setMainMenuActive('lobby');
-	// 	});
-	// } else {
-	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	// }
+	if(admin){
+		// auto select level for development:
+		backendManager.getPublishedLevelInfo('eahVwbywlO83IvTWeps20').then(levelData => {
+			selectMultiplayerLevel(levelData);
+			game.ui.showSinglePlayer();
+			game.ui.hideSinglePlayer();
+			game.openMainMenu();
+			game.gameState = game.GAMESTATE_LOBBY;
+			game.ui.setMainMenuActive('lobby');
+		});
+	} else {
+		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	}
 	// ********************
 
 	showChat(true);
@@ -491,7 +491,7 @@ export const updateMultiplayer = () => {
 				const player = multiplayerState.players[playerID];
 
 				if(!player.addedToGame && game.run){
-					const targetTexture = game.character.lookupObject._bodies[0].mySprite;
+					const targetTexture = game.character.lookupObject._bodies[0]?.mySprite || game.editor.textures.children[game.editor.textures.children.length-1];
 					const index = targetTexture.parent.getChildIndex(targetTexture);
 					targetTexture.parent.addChildAt(player.sprite, index);
 					player.addedToGame = true;

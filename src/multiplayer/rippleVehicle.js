@@ -62,6 +62,7 @@ export class RippleVehicle {
 			sprite.y = state.y;
 			sprite.angle = state.r;
 			sprite.scale.x = state.mirror ? -1 : 1;
+			sprite.visible = !(state.serverPos.x === Settings.destroyedPosition && state.serverPos.y === Settings.destroyedPosition && state.serverPos.r === 360);
 		});
 
 	}
@@ -315,6 +316,7 @@ class RippleSkippyBall {
 		this.containerSprite.x = this.state.base.x;
 		this.containerSprite.y = this.state.base.y;
 		this.containerSprite.angle = this.state.base.r;
+		this.containerSprite.visible = !(this.state.serverPos.x === Settings.destroyedPosition && this.state.serverPos.y === Settings.destroyedPosition && this.state.serverPos.r === 360);
 
 		this.updateMesh();
 		this.updateHandles();

@@ -39,9 +39,9 @@ const fixAngle = uint => {
 const extractPosition = (body, target) => {
 	if(!body){
 		return {
-			x: 0,
-			y: 0,
-			r: 0,
+			x: Settings.destroyedPosition,
+			y: Settings.destroyedPosition,
+			r: 255,
 		}
 	}
 
@@ -85,8 +85,9 @@ export const characterToBuffer = (characterClass, id) => {
 	// build expression uint
 	// 2 5 5 values ( eyes (3), expression (6), empty (6))
 	let eyesBit = 0;
-	const eyeLeftCache = lookup.eye_left?.myTexture?.originalSprite?.texture?.textureCacheIds;
-	const eyeRightCache = lookup.eye_right?.myTexture?.originalSprite?.texture?.textureCacheIds;
+
+	const eyeLeftCache = lookup.eye_left?.myTexture?.originalSprite?.texture?.textureCacheIds || [];
+	const eyeRightCache = lookup.eye_right?.myTexture?.originalSprite?.texture?.textureCacheIds || [];
 	if((eyeLeftCache.length && eyeLeftCache[0].indexOf('Closed') >= 0) || (eyeRightCache.length && eyeRightCache[0].indexOf('Closed') >= 0)){
 		eyesBit = 100;
 	}

@@ -3,6 +3,7 @@ import {
 } from "@pixi/display";
 import * as PIXI from 'pixi.js';
 import { game } from "../Game";
+import { Settings } from "../Settings";
 import { RippleVehicle } from "./rippleVehicle";
 
 const DEG2RAD = 0.017453292519943296;
@@ -326,6 +327,7 @@ export class RippleCharacter {
 		this.sprite.x = this.state.body.x;
 		this.sprite.y = this.state.body.y;
 		this.sprites.body.scale.x = this.state.body.mirror ? -1 : 1;
+		this.sprites.body.visible = !(this.state.body.serverPos.x === Settings.destroyedPosition && this.state.body.serverPos.y === Settings.destroyedPosition && this.state.body.serverPos.r === 360);
 		if(this.sprites && this.sprites.body) this.sprites.body.angle = this.state.body.r;
 
 		this.spriteProcessList.forEach((sprite, i) => {
@@ -334,6 +336,7 @@ export class RippleCharacter {
 			sprite.y = state.y;
 			sprite.angle = state.r;
 			sprite.scale.x = state.mirror ? -1 : 1;
+			sprite.visible = !(state.serverPos.x === Settings.destroyedPosition && state.serverPos.y === Settings.destroyedPosition && state.serverPos.r === 360);
 		});
 
 		// correct IK
