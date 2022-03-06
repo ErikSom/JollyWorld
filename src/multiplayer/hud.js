@@ -308,6 +308,8 @@ const buildState = data => {
 
 		buildVoteLevels();
 
+		game.ui.hideGameOverMenu();
+
 		if(multiplayerState.admin){
 			const exitToLobby = document.createElement('button');
 			exitToLobby.innerText = localize('multiplayer_returntolobby');

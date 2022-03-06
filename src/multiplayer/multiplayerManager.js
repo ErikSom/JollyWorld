@@ -136,6 +136,8 @@ export const resetMultiplayer = () => {
 	});
 	multiplayerState.endTime = 0;
 	multiplayerState.lobbyState = LOBBY_STATE.WAITING;
+	multiplayerState.levelVoters = {};
+	multiplayerState.levelVotes = [0, 0, 0, 0];
 }
 
 export const selectMultiplayerLevel = levelData => {
@@ -306,10 +308,11 @@ export const adminReturnToLobby = () => {
 
 const startLoadLevel = async id => {
 	if (game.gameState !== game.GAMESTATE_LOBBY && multiplayerState.lobbyState !== LOBBY_STATE.VOTING) return;
+	resetMultiplayer();
+
 	game.gameState = game.GAMESTATE_LOADINGDATA;
 
 	multiplayerState.lobbyState = LOBBY_STATE.LOADING_LEVEL;
-
 
 	// reset all other params
 	multiplayerState.endTime = 0;

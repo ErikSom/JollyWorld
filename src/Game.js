@@ -1219,7 +1219,12 @@ function Game() {
         }
     }
     this.gameLose = function () {
-        if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
+
+        const multiplayerAllowed = multiplayerState.lobbyState === LOBBY_STATE.OFFLINE || LOBBY_STATE.PLAYING;
+
+
+        if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR) && multiplayerAllowed) {
+
             const d = timeFormat(this.gameFrame * (1/60) * 1000);
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             ui.show();
