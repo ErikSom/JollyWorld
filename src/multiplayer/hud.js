@@ -180,7 +180,8 @@ const buildState = data => {
 					const x = multiplayerState.players[playerID].sprite.velocity.x  / Settings.PTM;
 					const y = multiplayerState.players[playerID].sprite.velocity.y  / Settings.PTM;;
 					return {x, y};
-				}
+				},
+				isMultiplayerCamera: true
 			}
 		}
 

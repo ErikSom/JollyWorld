@@ -1220,7 +1220,7 @@ function Game() {
     }
     this.gameLose = function () {
 
-        const multiplayerAllowed = multiplayerState.lobbyState === LOBBY_STATE.OFFLINE || LOBBY_STATE.PLAYING;
+        const multiplayerAllowed = multiplayerState.lobbyState === LOBBY_STATE.OFFLINE || multiplayerState.lobbyState === LOBBY_STATE.PLAYING;
 
 
         if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR) && multiplayerAllowed) {

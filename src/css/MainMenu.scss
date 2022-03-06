@@ -1,7 +1,7 @@
 @use 'Components';
 
 :root{
-	--cellSize: min(16vmax, 40vmin);
+	--cellSize: min(12vmax, 40vmin);
 	--cellGap: 18px;
 }
 
@@ -216,10 +216,10 @@
 			outline: 4px solid var(--dark-color);
 
 			&.h1{
-				font-size: min(2.2vmax, 4vmin);
+				font-size: min(1.8vmax, 3.6vmin);
 			}
 			&.h2{
-				font-size: min(3.6vmax, 6vmin);
+				font-size: min(2.6vmax, 5vmin);
 			}
 
 			span{

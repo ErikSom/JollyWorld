@@ -173,7 +173,7 @@ export const characterToBuffer = (characterClass, id) => {
 		}
 	}
 
-	if(game.cameraFocusObject && game.cameraFocusObject !== game.cameraFocusCharacterObject && !game.cameraFocusObject.destroyed){
+	if(game.cameraFocusObject && game.cameraFocusObject !== game.cameraFocusCharacterObject && !game.cameraFocusObject.destroyed && !game.cameraFocusObject.isMultiplayerCamera){
 		characterData.main.push(extractPosition(game.cameraFocusObject));
 	}
 

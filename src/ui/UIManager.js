@@ -2260,7 +2260,7 @@ function UIManager() {
             recommendations.removeChild(recommendations.children[0]);
         }
 
-        if(game.tutorialMode || game.gameState === game.GAMESTATE_EDITOR){
+        if((game.tutorialMode || game.gameState === game.GAMESTATE_EDITOR) || multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
             recommendations.style.display = 'none'
             return;
         }
