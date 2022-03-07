@@ -5,7 +5,7 @@ import { game } from '../Game';
 import { Settings } from '../Settings';
 import { getModdedPortrait } from '../utils/ModManager';
 import { adminReturnToLobby, adminStartLoadLevel, LOBBY_STATE, multiplayerState, returnToLobby, sendChatMessage, sendSimpleMessageAll } from './multiplayerManager';
-import { multiplayerAtlas } from './rippleCharacter';
+import { multiplayerAtlas, PLAYER_STATUS } from './rippleCharacter';
 import { backendManager } from '../utils/BackendManager';
 import { Key } from '../../libs/Key';
 import { SIMPLE_MESSAGE_TYPES } from './schemas';
@@ -34,6 +34,7 @@ let multiPlayerHudLookup = {};
 
 let leaderboardContainer = null;
 const leaderboardProfiles = [];
+const leaderboardStatuses = [];
 const leaderboardNames = [];
 const leaderboardIds = [];
 
@@ -151,6 +152,7 @@ const buildState = data => {
 		lu.countDownText.classList.add('header');
 		lu.countDownText.innerText = localize('multiplayer_startingin').replace('%%', Settings.startGameTimer / 1000);
 		content.appendChild(lu.countDownText);
+		updateLeaderboard();
 		// show time
 	} else if(hudState === HUD_STATES.GAME_WIN_CAM){
 		const winText = document.createElement('div');
@@ -351,6 +353,7 @@ export const initHud = () => {
 
 	leaderboardIds.length = 0;
 	leaderboardProfiles.length = 0;
+	leaderboardStatuses.length = 0;
 	leaderboardNames.length = 0;
 
 	for(let i = 0; i< Settings.maxMultiplayerPlayers; i++){
@@ -363,6 +366,15 @@ export const initHud = () => {
 		profile.classList.add('profile');
 		leaderboardProfiles.push(profile);
 		entry.appendChild(profile);
+
+		const status = document.createElement('div');
+		status.classList.add('status');
+		leaderboardStatuses.push(status);
+		profile.appendChild(status);
+
+		const flasher = document.createElement('div');
+		flasher.classList.add('flasher');
+		status.appendChild(flasher);
 
 		const name = document.createElement('div');
 		name.classList.add('name');
@@ -401,6 +413,43 @@ export const updateLeaderboard = () => {
 				}
 				if(player.playerState.name){
 					leaderboardNames[i + 1].innerText = player.playerState.name;
+				}
+
+				console.log(player.lastStatusChange, 'checky');
+				if(player.lastStatusChange === 0){
+					const statusDiv = leaderboardStatuses[i + 1];
+
+					const flasher = statusDiv.querySelector('.flasher');
+					console.log("******** WE ARE RUNNING THIS CODE");
+
+
+					const targetScale = 0.44;
+
+					if(player.playerState.status === PLAYER_STATUS.DEATH){
+						const statusTextures = PIXI.Texture.from('statusIcons0000');
+						statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
+						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetScale}px ${statusTextures.baseTexture.width * targetScale}px`;
+						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetScale + 1}px ${-statusTextures._frame.y * targetScale + 1}px`;
+
+						flasher.style.background = '#BD0000';
+					} else if(player.playerState.status === PLAYER_STATUS.CHECKPOINT){
+						const statusTextures = PIXI.Texture.from('statusIcons0002');
+						statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
+						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetScale}px ${statusTextures.baseTexture.width * targetScale}px`;
+						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetScale + 1}px ${-statusTextures._frame.y * targetScale + 1}px`;
+
+						flasher.style.background = '#00B6B6';
+					}
+
+					if(player.playerState.status === PLAYER_STATUS.IDLE){
+						statusDiv.style.opacity = 0;
+					} else {
+						statusDiv.style.opacity = 1;
+
+						flasher.classList.remove('flash')
+						void flasher.offsetWidth;
+						flasher.classList.add('flash')
+					}
 				}
 			}else{
 				// show disconnect

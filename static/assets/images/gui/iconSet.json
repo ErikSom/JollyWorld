@@ -2,7 +2,7 @@
 
 "Icon_SlowmoClock0000":
 {
-	"frame": {"x":2,"y":2,"w":49,"h":58},
+	"frame": {"x":170,"y":58,"w":49,"h":58},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":58},
@@ -10,7 +10,7 @@
 },
 "Icon_Slowmo_Arrows0000":
 {
-	"frame": {"x":157,"y":90,"w":64,"h":16},
+	"frame": {"x":90,"y":166,"w":64,"h":16},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":16},
@@ -18,7 +18,7 @@
 },
 "distanceJoint0000":
 {
-	"frame": {"x":53,"y":2,"w":50,"h":50},
+	"frame": {"x":2,"y":114,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -26,7 +26,7 @@
 },
 "layerDown0000":
 {
-	"frame": {"x":209,"y":2,"w":34,"h":34},
+	"frame": {"x":210,"y":118,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -34,7 +34,7 @@
 },
 "layerUp0000":
 {
-	"frame": {"x":209,"y":38,"w":34,"h":34},
+	"frame": {"x":210,"y":154,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -42,7 +42,7 @@
 },
 "mirrorIcon0000":
 {
-	"frame": {"x":157,"y":54,"w":34,"h":34},
+	"frame": {"x":54,"y":166,"w":34,"h":34},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":34,"h":34},
@@ -50,7 +50,7 @@
 },
 "pinJoint0000":
 {
-	"frame": {"x":105,"y":2,"w":50,"h":50},
+	"frame": {"x":54,"y":114,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -58,7 +58,7 @@
 },
 "ropeJoint0000":
 {
-	"frame": {"x":157,"y":2,"w":50,"h":50},
+	"frame": {"x":106,"y":114,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -66,15 +66,71 @@
 },
 "slidingJoint0000":
 {
-	"frame": {"x":53,"y":54,"w":50,"h":50},
+	"frame": {"x":158,"y":118,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
 	"sourceSize": {"w":50,"h":50}
 },
+"statusIcons0000":
+{
+	"frame": {"x":2,"y":2,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":54},
+	"sourceSize": {"w":54,"h":54}
+},
+"statusIcons0001":
+{
+	"frame": {"x":58,"y":2,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":54},
+	"sourceSize": {"w":54,"h":54}
+},
+"statusIcons0002":
+{
+	"frame": {"x":114,"y":2,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":54},
+	"sourceSize": {"w":54,"h":54}
+},
+"statusIcons0003":
+{
+	"frame": {"x":170,"y":2,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":54},
+	"sourceSize": {"w":54,"h":54}
+},
+"statusIcons0004":
+{
+	"frame": {"x":2,"y":58,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":54},
+	"sourceSize": {"w":54,"h":54}
+},
+"statusIcons0005":
+{
+	"frame": {"x":58,"y":58,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":54},
+	"sourceSize": {"w":54,"h":54}
+},
+"statusIcons0006":
+{
+	"frame": {"x":114,"y":58,"w":54,"h":54},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":54},
+	"sourceSize": {"w":54,"h":54}
+},
 "wheelJoint0000":
 {
-	"frame": {"x":105,"y":54,"w":50,"h":50},
+	"frame": {"x":2,"y":166,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -85,7 +141,7 @@
 	"version": "21.0.7.42652",
 	"image": "iconSet.png",
 	"format": "RGBA8888",
-	"size": {"w":256,"h":128},
+	"size": {"w":256,"h":256},
 	"scale": "1"
 }
 }

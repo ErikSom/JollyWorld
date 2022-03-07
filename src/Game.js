@@ -52,7 +52,7 @@ import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
-import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE } from "./multiplayer/multiplayerManager";
+import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE, sendGameOver, sendCheckpoint } from "./multiplayer/multiplayerManager";
 import { updateMultiplayerHud } from "./multiplayer/hud";
 
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
@@ -1178,6 +1178,10 @@ function Game() {
                 // save checkpoint time
             }
 
+            if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
+                sendCheckpoint();
+            }
+
             window.SVGCache[3]();
         }
     }
@@ -1233,6 +1237,10 @@ function Game() {
             this.gameOver = true;
 
             this.exitPointerLock();
+
+            if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
+                sendGameOver();
+            }
         }
     }
 

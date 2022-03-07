@@ -8,7 +8,7 @@ import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
 import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard } from './hud';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
-import { multiplayerAtlas, RippleCharacter } from './rippleCharacter';
+import { multiplayerAtlas, PLAYER_STATUS, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
 
@@ -173,7 +173,7 @@ const didJoinLobby = ({code, admin}) => {
 	// ******* TODO REMOVE:
 	if(admin){
 		// auto select level for development:
-		backendManager.getPublishedLevelInfo('eahVwbywlO83IvTWeps20').then(levelData => {
+		backendManager.getPublishedLevelInfo('Z~lbng9r4S5ZG55Rxjl3O').then(levelData => {
 			selectMultiplayerLevel(levelData);
 			game.ui.showSinglePlayer();
 			game.ui.hideSinglePlayer();
@@ -385,6 +385,13 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			break;
 		case SIMPLE_MESSAGE_TYPES.RETURN_TO_LOBBY:
 			returnToLobby();
+			break;
+		case SIMPLE_MESSAGE_TYPES.LEVEL_FAILED:
+			player.setPlayerState(PLAYER_STATUS.DEATH);
+			console.log("***** FAILED AT IT!");
+			break;
+		case SIMPLE_MESSAGE_TYPES.LEVEL_CHECKPOINT:
+			player.setPlayerState(PLAYER_STATUS.CHECKPOINT);
 			break;
 
 		case SIMPLE_MESSAGE_TYPES.VOTE_LEVEL_1:
@@ -620,7 +627,14 @@ export const sendLevelWon = time => {
 	multiplayerState.lobbyState = LOBBY_STATE.WON_LEVEL;
 
 	checkEndLevelTimer();
+}
 
+export const sendGameOver = () => {
+	sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.LEVEL_FAILED);
+}
+
+export const sendCheckpoint = () => {
+	sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.LEVEL_CHECKPOINT);
 }
 
 const handleReceiveLevelWon = ({peer, buffer}) => {

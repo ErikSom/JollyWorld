@@ -4,9 +4,17 @@ import {
 import * as PIXI from 'pixi.js';
 import { game } from "../Game";
 import { Settings } from "../Settings";
+import { updateLeaderboard } from "./hud";
 import { RippleVehicle } from "./rippleVehicle";
 
 const DEG2RAD = 0.017453292519943296;
+
+
+export const PLAYER_STATUS = {
+	IDLE: 0,
+	DEATH: 1,
+	CHECKPOINT: 2,
+}
 
 export class RippleCharacter {
 	constructor(id) {
@@ -40,6 +48,7 @@ export class RippleCharacter {
 		this.playerState = {
 			name: '...',
 			lobbyState: 0,
+			status: 0,
 			finishTime: -1
 		}
 
@@ -49,6 +58,8 @@ export class RippleCharacter {
 		this.ping = -1;
 		this.connected = true;
 		this.addedToGame = false;
+
+		this.lastStatusChange = 0;
 
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.head, this.state.shoulderLeft, this.state.shoulderRight, this.state.armLeft, this.state.armRight, this.state.handLeft, this.state.handRight, this.state.belly, this.state.thighLeft, this.state.thighRight, this.state.legLeft, this.state.legRight, this.state.feetLeft, this.state.feetRight];
@@ -316,6 +327,13 @@ export class RippleCharacter {
 
 	}
 
+	setPlayerState(state){
+		this.playerState.status = state;
+		this.lastStatusChange = 0;
+
+		updateLeaderboard();
+	}
+
 	interpolatePosition(){
 		this.stateKeys.forEach(key => {
 			this.state[key].interpolatePosition();
@@ -343,6 +361,13 @@ export class RippleCharacter {
 		this.vehicle.interpolatePosition();
 
 		this.cloud.arrow.fixArrow();
+
+		if(this.playerState.status){
+			this.lastStatusChange += game.editor.deltaTime;
+			if(this.lastStatusChange > 3000){
+				this.setPlayerState(0);
+			}
+		}
 	}
 }
 

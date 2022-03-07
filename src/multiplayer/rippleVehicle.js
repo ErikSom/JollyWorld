@@ -316,7 +316,7 @@ class RippleSkippyBall {
 		this.containerSprite.x = this.state.base.x;
 		this.containerSprite.y = this.state.base.y;
 		this.containerSprite.angle = this.state.base.r;
-		this.containerSprite.visible = !(this.state.serverPos.x === Settings.destroyedPosition && this.state.serverPos.y === Settings.destroyedPosition && this.state.serverPos.r === 360);
+		this.containerSprite.visible = !(this.state.base.serverPos.x === Settings.destroyedPosition && this.state.base.serverPos.y === Settings.destroyedPosition && this.state.base.serverPos.r === 360);
 
 		this.updateMesh();
 		this.updateHandles();

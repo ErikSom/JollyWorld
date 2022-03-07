@@ -1,6 +1,15 @@
 
 @use '../css/Components.scss';
 
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 .mp-leaderboard{
 	position: absolute;
 	top: 56px;
@@ -15,6 +24,25 @@
 			background-position: 46px 1px;
 			width: 25px;
 			height: 25px;
+			position: relative;
+
+			.status, .flasher{
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 25px;
+				height: 25px;
+				opacity: 0;
+			}
+
+			.flasher{
+				background: white;
+				border-radius: 50%;
+
+				&.flash{
+					animation: 0.3s ease-in 0s 1 fadeOut forwards;
+				}
+			}
 		}
 
 		.name{
