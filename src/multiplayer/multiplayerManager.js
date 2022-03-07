@@ -6,7 +6,7 @@ import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
-import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard } from './hud';
+import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard, updateLeaderboard } from './hud';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, PLAYER_STATUS, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
@@ -171,19 +171,19 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.admin = admin;
 
 	// ******* TODO REMOVE:
-	if(admin){
-		// auto select level for development:
-		backendManager.getPublishedLevelInfo('Z~lbng9r4S5ZG55Rxjl3O').then(levelData => {
-			selectMultiplayerLevel(levelData);
-			game.ui.showSinglePlayer();
-			game.ui.hideSinglePlayer();
-			game.openMainMenu();
-			game.gameState = game.GAMESTATE_LOBBY;
-			game.ui.setMainMenuActive('lobby');
-		});
-	} else {
-		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	}
+	// if(admin){
+	// 	// auto select level for development:
+	// 	backendManager.getPublishedLevelInfo('Z~lbng9r4S5ZG55Rxjl3O').then(levelData => {
+	// 		selectMultiplayerLevel(levelData);
+	// 		game.ui.showSinglePlayer();
+	// 		game.ui.hideSinglePlayer();
+	// 		game.openMainMenu();
+	// 		game.gameState = game.GAMESTATE_LOBBY;
+	// 		game.ui.setMainMenuActive('lobby');
+	// 	});
+	// } else {
+	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	// }
 	// ********************
 
 	showChat(true);
@@ -238,6 +238,7 @@ const playerLeft = ({id}) => {
 	delete multiplayerState.players[id];
 
 	updateLobbyUI();
+	updateLeaderboard();
 	// do something
 
 }

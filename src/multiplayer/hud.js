@@ -405,6 +405,9 @@ export const updateLeaderboard = () => {
 
 	for(let i = 0; i< Settings.maxMultiplayerPlayers - 1; i++){
 		const id = leaderboardIds[i];
+
+		const targetStatusScale = 0.44;
+
 		if(id){
 			const player = multiplayerState.players[id];
 			if(player){
@@ -423,20 +426,19 @@ export const updateLeaderboard = () => {
 					console.log("******** WE ARE RUNNING THIS CODE");
 
 
-					const targetScale = 0.44;
 
 					if(player.playerState.status === PLAYER_STATUS.DEATH){
 						const statusTextures = PIXI.Texture.from('statusIcons0000');
 						statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
-						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetScale}px ${statusTextures.baseTexture.width * targetScale}px`;
-						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetScale + 1}px ${-statusTextures._frame.y * targetScale + 1}px`;
+						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
 
 						flasher.style.background = '#BD0000';
 					} else if(player.playerState.status === PLAYER_STATUS.CHECKPOINT){
 						const statusTextures = PIXI.Texture.from('statusIcons0002');
 						statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
-						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetScale}px ${statusTextures.baseTexture.width * targetScale}px`;
-						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetScale + 1}px ${-statusTextures._frame.y * targetScale + 1}px`;
+						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
 
 						flasher.style.background = '#00B6B6';
 					}
@@ -453,6 +455,12 @@ export const updateLeaderboard = () => {
 				}
 			}else{
 				// show disconnect
+				const statusDiv = leaderboardStatuses[i + 1];
+				const statusTextures = PIXI.Texture.from('statusIcons0001');
+				statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
+				statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+				statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
+				statusDiv.style.opacity = 1;
 			}
 			leaderboardProfiles[i + 1].parentNode.style.display = 'flex';
 		}else{
