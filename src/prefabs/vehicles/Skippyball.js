@@ -196,7 +196,7 @@ class Skippyball extends BaseVehicle {
 
 				const baseForce = vec2;
 				baseForce.Set(direction.x, direction.y);
-				b2MulVec2(baseForce, (impulse * forceSpread * contactDecrease)) ;
+				b2MulVec2(baseForce, ((impulse / game.editor.editorSettingsObject.gameSpeed) * forceSpread * contactDecrease)) ;
 
 				this.lookupObject._bodies.forEach(body=>{
 					if(!body.snapped){
