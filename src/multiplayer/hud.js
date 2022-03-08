@@ -398,15 +398,23 @@ export const initLeaderboard = () => {
 }
 
 export const updateLeaderboard = () => {
+	const playersWon = [];
+
 	if(multiplayerState.skinBlob){
 		leaderboardProfiles[0].style.backgroundImage = `url(${URL.createObjectURL(multiplayerState.skinBlob)})`;
 		leaderboardNames[0].innerText = backendManager.userData?.username || multiplayerState.fakeUsername;
+
+		if(multiplayerState.finishTime >= 0){
+			playersWon.push({player:{playerState:{finishTime: multiplayerState.finishTime}}, index: -1})
+		} else {
+			leaderboardStatuses[0].style.opacity = 0;
+		}
 	}
+	const targetStatusScale = 0.44;
 
 	for(let i = 0; i< Settings.maxMultiplayerPlayers - 1; i++){
 		const id = leaderboardIds[i];
 
-		const targetStatusScale = 0.44;
 
 		if(id){
 			const player = multiplayerState.players[id];
@@ -423,7 +431,7 @@ export const updateLeaderboard = () => {
 					const statusDiv = leaderboardStatuses[i + 1];
 
 					const flasher = statusDiv.querySelector('.flasher');
-					console.log("******** WE ARE RUNNING THIS CODE");
+					console.log("******** WE ARE RUNNING THIS CODE", player.playerState.status);
 
 
 
@@ -453,6 +461,11 @@ export const updateLeaderboard = () => {
 						flasher.classList.add('flash')
 					}
 				}
+
+				if(player.playerState.finishTime >= 0){
+					playersWon.push({player, index: i})
+				}
+
 			}else{
 				// show disconnect
 				const statusDiv = leaderboardStatuses[i + 1];
@@ -467,6 +480,38 @@ export const updateLeaderboard = () => {
 			leaderboardProfiles[i + 1].parentNode.style.display = 'none';
 		}
 	}
+
+	playersWon.sort((a, b) => a.player.playerState.finishTime - b.player.playerState.finishTime);
+
+	playersWon.forEach((obj, position) => {
+		const { player, index } = obj;
+
+
+		console.log("POSITION:", position, "FINISH TIME:", player.playerState.finishTime);
+
+		const statusDiv = leaderboardStatuses[index + 1];
+
+		let statusTextures = null;
+		if(position === 0){
+			statusTextures = PIXI.Texture.from('statusIcons0003');
+		} else if(position === 1){
+			statusTextures = PIXI.Texture.from('statusIcons0004');
+		} else if(position === 2){
+			statusTextures = PIXI.Texture.from('statusIcons0005');
+		} else {
+			statusTextures = PIXI.Texture.from('statusIcons0006');
+		}
+		if(statusDiv.style.backgroundImage !== `url(${statusTextures.baseTexture.resource.source.src})`){
+			const flasher = statusDiv.querySelector('.flasher');
+			flasher.classList.remove('flash')
+			void flasher.offsetWidth;
+			flasher.classList.add('flash')
+		}
+		statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
+		statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+		statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
+		statusDiv.style.opacity = 1;
+	})
 }
 
 export const showLeaderboard = bool => {

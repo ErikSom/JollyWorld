@@ -59,8 +59,8 @@ export const generateLobby = () => {
 							<div class="text-position">1st</div>
 						</div>
 						<div class="text-player-name">Smerik</div>
-						<div class="player-status connecting">${localize('mainmenu_admin')}</div>
 						<div class="kick-but">${localize('mainmenu_kick')}</div>
+						<div class="player-status connecting">${localize('mainmenu_admin')}</div>
 					</div>
 				</div>
 			</div>
@@ -183,8 +183,6 @@ export const updateLobbyUI = () => {
 		entries.removeChild(entries.children[1]);
 	}
 
-	console.log("UPDATE LOBBY UI:", multiplayerState.players.length, multiplayerState.players);
-
 	const otherPlayers = Object.values(multiplayerState.players);
 	const players = [myPlayer, ...otherPlayers];
 
@@ -230,6 +228,13 @@ export const updateLobbyUI = () => {
 		} else if(playerState.lobbyState === LOBBY_STATE.READY){
 			status.innerText = localize('mainmenu_ready');
 			status.classList.add('ready');
+		}
+
+		const kickButton = entry.querySelector('.kick-but');
+		if(!multiplayerState.admin || index === 0){
+			kickButton.style.opacity = '0';
+		} else {
+			// add kick functionality
 		}
 
 		if(playerState.lobbyState === LOBBY_STATE.READY){

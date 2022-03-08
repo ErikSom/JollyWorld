@@ -42,7 +42,7 @@ export const multiplayerState = {
 	lobbyState: LOBBY_STATE.OFFLINE,
 	endTime: 0,
 	vip: false,
-	finishTime: 0,
+	finishTime: -1,
 	skinBlob: null,
 	voteLevels: [],
 	levelVoters: {},
@@ -133,8 +133,12 @@ export const resetMultiplayer = () => {
 	players.forEach(player => {
 		player.playerState.lobbyState = LOBBY_STATE.WAITING;
 		player.playerState.ready = false;
+		player.playerState.status = 0;
+		player.playerState.finishTime = -1;
+		player.lastStatusChange = 0;
 	});
 	multiplayerState.endTime = 0;
+	multiplayerState.finishTime = -1;
 	multiplayerState.lobbyState = LOBBY_STATE.WAITING;
 	multiplayerState.levelVoters = {};
 	multiplayerState.levelVotes = [0, 0, 0, 0];
@@ -548,7 +552,7 @@ export const updateMultiplayer = () => {
 	}
 
 	if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
-		sendLevelWon(10000);
+		sendLevelWon(game.gameFrame * (1/60) * 1000);
 	}
 	if(multiplayerState.debug) updateDebugData();
 }
@@ -627,6 +631,8 @@ export const sendLevelWon = time => {
 
 	multiplayerState.lobbyState = LOBBY_STATE.WON_LEVEL;
 
+	updateLeaderboard();
+
 	checkEndLevelTimer();
 }
 
@@ -650,6 +656,8 @@ const handleReceiveLevelWon = ({peer, buffer}) => {
 	player.playerState.finishTime = time;
 
 	console.log(`PLAYER ${player.playerState.name} FINISHED WITH TIME: ${s}`);
+
+	updateLeaderboard();
 
 	checkEndLevelTimer();
 }

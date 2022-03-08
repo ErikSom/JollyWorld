@@ -1192,6 +1192,9 @@ function Game() {
 
             const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
             if(!multiplayer){
+
+                if(multiplayerState.lobbyState === LOBBY_STATE.VOTING) return;
+
                 if(this.gameState == this.GAMESTATE_NORMALPLAY){
                     await backendManager.submitTime(game.currentLevelData.id);
                 }
