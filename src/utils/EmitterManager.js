@@ -64,13 +64,14 @@ export const playOnceEmitter = function (type, body, point, angle, randomColors)
     if (!angle) angle = 0;
     if (!body) body = globalBody;
 
+
     const maxEmitters = body === globalBody ? 30 : Settings.emittersPerBody;
     if (body && body.emitterCount && body.emitterCount >= maxEmitters) return;
+
 
     let emitter = getEmitter(type);
     if(!emitter) return;
     emitter.spawnPos = new PIXI.Point(point.x * Settings.PTM, point.y * Settings.PTM);
-
 
     if(type === 'blood'){
         emitter.acceleration.x = game.world.GetGravity().x * 200;
@@ -158,7 +159,7 @@ export const destroyEmitter = emitter =>{
     emitter.destroy();
 }
 
-const ingorePool = {
+const ignorePool = {
     "jetfire": true,
     "cannonShoot": true,
     "sparksMetal": true
@@ -169,7 +170,7 @@ export const getEmitter = function (type, pool = true, init = false) {
         if (!emittersPool[type]) emittersPool[type] = [];
         if (emittersPool[type].length > 0) return emittersPool[type].shift();
         // some particles ignore the pool
-        if(!init && !ingorePool[type]) return;
+        if(!init && ignorePool[type]) return;
     }
 
     let emitter;

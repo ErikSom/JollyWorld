@@ -6,6 +6,9 @@ import { game } from "../Game";
 import { Settings } from "../Settings";
 import { updateLeaderboard } from "./hud";
 import { RippleVehicle } from "./rippleVehicle";
+import * as emitterManager from '../utils/EmitterManager';
+import * as AudioManager from '../utils/AudioManager';
+
 
 const DEG2RAD = 0.017453292519943296;
 
@@ -334,6 +337,21 @@ export class RippleCharacter {
 		updateLeaderboard();
 	}
 
+	explodePart(sprite){
+		const pos = {x :0, y: 0};
+
+		if(this.state.body.serverPos.x === Settings.destroyedPosition && this.state.body.serverPos.y === Settings.destroyedPosition && this.state.body.serverPos.r === 360){
+			pos.x = (this.sprite.lastValidPos.x + sprite.lastValidPos.x) / Settings.PTM;
+			pos.y = (this.sprite.lastValidPos.y + sprite.lastValidPos.y) / Settings.PTM;
+		} else {
+			pos.x = (this.sprite.x + sprite.x) / Settings.PTM;
+			pos.y = (this.sprite.y + sprite.y) / Settings.PTM;
+		}
+
+		emitterManager.playOnceEmitter("gorecloud", null, pos);
+		AudioManager.playSFX(['bash1', 'bash2', 'bash3', 'bash4'], 0.3, 1.0+Math.random()*.2-.1, pos);
+	}
+
 	interpolatePosition(){
 		this.stateKeys.forEach(key => {
 			this.state[key].interpolatePosition();
@@ -342,20 +360,38 @@ export class RippleCharacter {
 		// apply positions
 		this.sprite.velocity.x = this.state.body.x - this.sprite.x;
 		this.sprite.velocity.y = this.state.body.y - this.sprite.y;
-		this.sprite.x = this.state.body.x;
-		this.sprite.y = this.state.body.y;
-		this.sprites.body.scale.x = this.state.body.mirror ? -1 : 1;
+
+		const wasVisible = this.sprites.body.visible;
 		this.sprites.body.visible = !(this.state.body.serverPos.x === Settings.destroyedPosition && this.state.body.serverPos.y === Settings.destroyedPosition && this.state.body.serverPos.r === 360);
+		if(wasVisible && !this.sprites.body.visible){
+			this.sprite.lastValidPos = {x: this.sprite.x, y: this.sprite.y};
+			this.spriteProcessList.forEach(sprite => {
+				sprite.lastValidPos = {x: sprite.x, y: sprite.y};
+			});
+			this.explodePart(this.sprites.body)
+		}
+
 		if(this.sprites && this.sprites.body) this.sprites.body.angle = this.state.body.r;
 
 		this.spriteProcessList.forEach((sprite, i) => {
 			const state = this.stateProcessList[i];
+
+			const wasSpriteVisible = sprite.visible;
+			sprite.visible = !(state.serverPos.x === Settings.destroyedPosition && state.serverPos.y === Settings.destroyedPosition && state.serverPos.r === 360);
+			if(wasSpriteVisible && !sprite.visible){
+				this.explodePart(sprite)
+			}
+
 			sprite.x = state.x;
 			sprite.y = state.y;
 			sprite.angle = state.r;
 			sprite.scale.x = state.mirror ? -1 : 1;
-			sprite.visible = !(state.serverPos.x === Settings.destroyedPosition && state.serverPos.y === Settings.destroyedPosition && state.serverPos.r === 360);
 		});
+
+		// we must do this afterwards else we cant explode in right place
+		this.sprite.x = this.state.body.x;
+		this.sprite.y = this.state.body.y;
+		this.sprites.body.scale.x = this.state.body.mirror ? -1 : 1;
 
 		// correct IK
 		this.vehicle.interpolatePosition();
@@ -479,7 +515,7 @@ export class SyncObject {
 
 		if(td === 0){
 			// i messed up?
-			debugger;
+			// debugger;
 		}else{
 			const interpolationTime = render_timestamp - t0;
 			this.targetPos.x =	x0 + ((x1 - x0) / td) * interpolationTime;
