@@ -223,7 +223,10 @@ class RippleSkippyBall {
 	}
 
 	destroy(){
-		this.spriteProcessList.forEach(sprite => sprite.destroy());
+		if(this.containerSprite){
+			this.containerSprite.destroy();
+			this.containerSprite = null;
+		}
 	}
 
 	buildMesh(){
