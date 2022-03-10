@@ -8,6 +8,7 @@ import { updateLeaderboard } from "./hud";
 import { RippleVehicle } from "./rippleVehicle";
 import * as emitterManager from '../utils/EmitterManager';
 import * as AudioManager from '../utils/AudioManager';
+import { generateGoreParticles } from "../utils/GenerateGoreParticles";
 
 
 const DEG2RAD = 0.017453292519943296;
@@ -350,6 +351,28 @@ export class RippleCharacter {
 
 		emitterManager.playOnceEmitter("gorecloud", null, pos);
 		AudioManager.playSFX(['bash1', 'bash2', 'bash3', 'bash4'], 0.3, 1.0+Math.random()*.2-.1, pos);
+
+
+		// add gore:
+
+		let gorePartName = 'body';
+		if(sprite === this.sprites.head) gorePartName = 'head';
+		if(sprite === this.sprites.shoulderLeft) gorePartName = 'shoulderLeft';
+		if(sprite === this.sprites.shoulderRight) gorePartName = 'shoulderRight';
+		if(sprite === this.sprites.armLeft) gorePartName = 'arm_left';
+		if(sprite === this.sprites.armRight) gorePartName = 'arm_right';
+		if(sprite === this.sprites.handLeft) gorePartName = 'hand_left';
+		if(sprite === this.sprites.handRight) gorePartName = 'hand_right';
+		if(sprite === this.sprites.belly) gorePartName = 'belly';
+		if(sprite === this.sprites.thighLeft) gorePartName = 'thigh_left';
+		if(sprite === this.sprites.thighRight) gorePartName = 'thigh_right';
+		if(sprite === this.sprites.legLeft) gorePartName = 'leg_left';
+		if(sprite === this.sprites.legRight) gorePartName = 'leg_right';
+		if(sprite === this.sprites.feetLeft) gorePartName = 'feet_left';
+		if(sprite === this.sprites.feetRight) gorePartName = 'feet_right';
+
+		const velocity = new Box2D.b2Vec2(this.sprite.velocity.x / 1000, this.sprite.velocity.y / 1000);
+		generateGoreParticles(gorePartName, this.sprite, pos, sprite.rotation, velocity, false, -1);
 	}
 
 	interpolatePosition(){
@@ -364,7 +387,7 @@ export class RippleCharacter {
 		const wasVisible = this.sprites.body.visible;
 		this.sprites.body.visible = !(this.state.body.serverPos.x === Settings.destroyedPosition && this.state.body.serverPos.y === Settings.destroyedPosition && this.state.body.serverPos.r === 360);
 		if(wasVisible && !this.sprites.body.visible){
-			this.sprite.lastValidPos = {x: this.sprite.x, y: this.sprite.y};
+			this.sprite.lastValidPos = this.sprites.body.lastValidPos = {x: this.sprite.x, y: this.sprite.y};
 			this.spriteProcessList.forEach(sprite => {
 				sprite.lastValidPos = {x: sprite.x, y: sprite.y};
 			});

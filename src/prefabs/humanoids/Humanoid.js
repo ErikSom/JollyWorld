@@ -10,6 +10,7 @@ import * as AudioManager from '../../utils/AudioManager';
 import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils/extramath';
 import { editorSettings } from '../../b2Editor/utils/editorSettings';
 import { b2CloneVec2, b2DotVV, b2SubVec2 } from '../../../libs/debugdraw';
+import { generateGoreParticles } from '../../utils/GenerateGoreParticles';
 
 
 const vec1 = new Box2D.b2Vec2(0, 0);
@@ -575,7 +576,7 @@ export class Humanoid extends PrefabManager.basePrefab {
                         }
                     }
 
-                    this.generateGoreParticles(update.target);
+                    generateGoreParticles(update.target, targetBody.mySprite, targetBody.GetPosition(), targetBody.GetAngle(), targetBody.GetLinearVelocity(), this.noGoreParticles, this.skin);
                     emitterManager.playOnceEmitter("gorecloud", targetBody, targetBody.GetPosition());
                     AudioManager.playSFX(['bash1', 'bash2', 'bash3', 'bash4'], 0.3, 1.0+Math.random()*.2-.1, targetBody.GetPosition());
 
@@ -733,101 +734,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                 break;
         }
 
-    }
-    generateGoreParticles(targetBodyPart){
-        if(!Settings.goreEnabled) return;
-        let meatParticles = ["Gore_Meat", "Gore_Meat", "Gore_Meat"];
-        let extraParticles = [];
-        switch(targetBodyPart){
-            case 'head':
-                extraParticles.push('Gore_Brain', 'Normal_Head_Gore1', 'Normal_Head_Gore2');
-                meatParticles.push("Gore_Meat", "Gore_Meat");
-            break
-            case 'body':
-                extraParticles.push('Gore_LungRight', 'Gore_LungLeft', 'Gore_Stomach','Gore_Liver', 'Normal_Core_Gore2', 'Normal_Core_Gore1');
-                meatParticles.push("Gore_Meat", "Gore_Meat","Gore_Meat", "Gore_Meat");
-            break;
-            case 'belly':
-                extraParticles.push('Gore_Intestine');
-                extraParticles.push('Normal_Belly_Gore1');
-            break;
-            case 'thigh_left':
-            case 'thigh_right':
-                extraParticles.push('Normal_Thigh_Gore1');
-                meatParticles.push("Gore_Meat");
-            break;
-            case 'leg_left':
-            case 'leg_right':
-                extraParticles.push('Normal_Leg_Gore1');
-                meatParticles.push("Gore_Meat");
-            break;
-            case 'hand_left':
-            case 'hand_right':
-                meatParticles = ['Gore_Meat'];
-            break;
-            case 'feet_left':
-            case 'feet_right':
-                meatParticles = ['Gore_Meat', 'Gore_Meat'];
-            break;
-            case 'shoulder_left':
-            case 'shoulder_right':
-                extraParticles.push('Normal_Shoulder_Gore1');
-            break;
-            case 'arm_left':
-            case 'arm_right':
-                extraParticles.push('Normal_Arm_Gore1');
-            break;
-        }
-
-        if(this.noGoreParticles){
-            extraParticles.length = 0;
-            // NO EXTRA GORE FOR KIDS & BABY
-        }
-
-        const goreParticleMaxSpeed = 50;
-        const particlesToGenerate = meatParticles.concat(extraParticles);
-        const targetBody = this.lookupObject[targetBodyPart];
-
-        const targetChildIndex = targetBody.mySprite.parent.getChildIndex(targetBody.mySprite);
-
-        particlesToGenerate.forEach((particle)=>{
-            let offsetX = 0;
-            let offsetY = 0;
-
-            if(['Normal_Head_Gore1', 'Normal_Head_Gore2', 'Normal_Core_Gore1', 'Normal_Core_Gore2'].includes(particle)){
-                let bodyAngle = targetBody.GetAngle() + Settings.pihalve/2;
-
-                if(particle.charAt(particle.length -1) === '1'){
-                    bodyAngle += Math.PI;
-                }
-
-                const offsetLength = 14;
-                offsetX = offsetLength * Math.cos(bodyAngle);
-                offsetY = offsetLength * Math.sin(bodyAngle);
-            }
-
-            const gorePrefab = `{"objects":[[4,${targetBody.GetPosition().x * Settings.PTM + offsetX},${targetBody.GetPosition().y * Settings.PTM + offsetY},0,{},"${particle}"]]}`;
-            const goreLookupObject = game.editor.buildJSON(JSON.parse(gorePrefab));
-            const impulse = vec1;
-            impulse.Set((Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed), (Math.random()*(goreParticleMaxSpeed*2)-goreParticleMaxSpeed));
-            goreLookupObject._bodies.forEach((body)=>{
-                body.SetLinearVelocity(targetBody.GetLinearVelocity());
-                body.ApplyForce(impulse, targetBody.GetPosition());
-            });
-
-            if(particle == 'Gore_Meat'){
-                const ranId = Math.floor(Math.random()*6)+1;
-                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+ranId+'0000');
-            }else if(particle.indexOf('Normal_') === 0){
-                const targetFrame = String(this.skin).padStart(4, '0');
-                goreLookupObject._textures[0].children[0].texture = PIXI.Texture.from(particle+targetFrame);
-            }
-
-            goreLookupObject._textures.forEach(texture => {
-                targetBody.mySprite.parent.addChildAt(texture, targetChildIndex);
-            });
-
-        });
     }
 
     addJoint(joint, bodyB){

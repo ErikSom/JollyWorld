@@ -17,13 +17,14 @@ const activeParticles = [];
 export const init = ()=> {
 	for(let i = 0; i<poolSize; i++){
 		const sprite = new PIXI.Sprite(PIXI.Texture.from('Gore_Meat10000'));
+		sprite.isPhysicsParticleSprite = true;
 		disableCulling(sprite);
 		sprite.data = {};
 		spritePool.push(sprite);
 	}
 }
 
-export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[], rotation=0, offset=[0,0]) => {
+export const emit = (textures, worldPosition, amount, size, force, randomTexture = true, tints=[], rotation=0, offset=[0,0], baseVelocity={x:0, y:0}, spriteIndex=-1, addTextureZeroes=true) => {
 
 	let force2 = force*2;
 	size = size / Settings.PTM;
@@ -56,7 +57,11 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 			sprite.myBody = body;
 			body.mySprite = sprite;
 
-			game.myEffectsContainer.addChild(sprite);
+			if(spriteIndex >= 0){
+				game.editor.textures.addChildAt(sprite, spriteIndex);
+			}else{
+				game.editor.textures.addChild(sprite);
+			}
 			disableCulling(sprite);
 			activeParticles.push(sprite);
 
@@ -71,7 +76,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 			body.GetFixtureList().GetShape().set_m_radius(size);
 		}
 		if(!randomTexture){
-			sprite.texture = PIXI.Texture.from(textures[i%textures.length]+'0000');
+			sprite.texture = PIXI.Texture.from(textures[i%textures.length]+ (addTextureZeroes ? '0000' : ''));
 		}else{
 			const randomTexture = textures[Math.floor(Math.random()*textures.length)];
 			sprite.texture = PIXI.Texture.from(randomTexture+'0000');
@@ -116,7 +121,7 @@ export const emit = (textures, worldPosition, amount, size, force, randomTexture
 		sprite.x = targetPosition.get_x()*Settings.PTM;
 		sprite.y = targetPosition.get_y()*Settings.PTM;
 
-		impulse.Set(Math.random()*force2-force, Math.random()*force2-force)
+		impulse.Set(Math.random()*force2-force + baseVelocity.x, Math.random()*force2-force + baseVelocity.y)
 		body.SetLinearVelocity(impulse)
 
 		if(tints.length>0){
@@ -134,7 +139,7 @@ export const update = clean => {
 			if(!clean) game.editor.DestroyBody(sprite.myBody);
 			delete sprite.myBody;
 
-			sprite.parent.removeChild(sprite);
+			if(sprite.parent) sprite.parent.removeChild(sprite);
 			activeParticles.splice(i, 1);
 			spritePool.push(sprite);
 

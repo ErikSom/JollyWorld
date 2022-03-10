@@ -10687,7 +10687,9 @@ const _B2dEditor = function () {
 			if(sprite.rippleCharacterClass){
 				sprite.parent.removeChild(sprite);
 				sprite.rippleCharacterClass.addedToGame = false;
-			}else{
+			} else if(sprite.isPhysicsParticleSprite){
+				sprite.parent.removeChild(sprite);
+			} else{
 				sprite.destroy({
 					children: true,
 					texture: destroyAll,
