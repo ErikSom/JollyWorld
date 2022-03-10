@@ -122,6 +122,23 @@
 				height: 100%;
 				pointer-events: none;
 			}
+
+			.available-pc{
+				position: absolute;
+				top: 64%;
+				left: 50%;
+				width: 100%;
+				transform: translate(-50%, -50%);
+				text-align: center;
+				display: none;
+			}
+
+			&.mobile{
+				filter: grayscale(1);
+				.available-pc{
+					display: block;
+				}
+			}
 		}
 		.discord-but{
 			background: #7586D6;
