@@ -579,7 +579,7 @@ export class SyncObject {
 
 		let td = (t1 - t0);
 
-		const maxExtrapolation = this.ping + 100;
+		const maxExtrapolation = this.ping + Settings.maxExtrapolation;
 		const overFlowTime = render_timestamp - this.serverPos.time;
 
 		const didOverflow = overFlowTime > maxExtrapolation;

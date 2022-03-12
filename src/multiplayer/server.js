@@ -199,7 +199,7 @@ class MultiplayerServer {
 			playerID: peer.id,
 			buffer,
 			time: performance.now(),
-			ping: peer.latency.average,
+			ping: Math.min(peer.latency.average, peer.latency.last, Settings.maxTolerableLatency * 2) / 2,
 		});
 	}
 

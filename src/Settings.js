@@ -37,6 +37,8 @@ export var Settings = {
     chatBlurTimeout: 3000,
     chatIdleHideTime: 10000,
     destroyedPosition: 133.7,
+    maxTolerableLatency: 200,
+    maxExtrapolation: 100,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,
