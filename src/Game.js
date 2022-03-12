@@ -54,7 +54,7 @@ import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
 import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE, sendGameOver, sendCheckpoint } from "./multiplayer/multiplayerManager";
 import { updateMultiplayerHud } from "./multiplayer/hud";
-
+import FontFaceObserver from "fontfaceobserver";
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
 const {b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef} = Box2D;
@@ -1724,5 +1724,11 @@ function Game() {
 }
 export var game = new Game();
 setTimeout(() => {
-    game.gameInit();
+    const font = new FontFaceObserver('Montserrat');
+    font.load().then(() => {
+        console.log('MONTSERRAT has loaded.');
+        game.gameInit();
+    }).catch(err => {
+        game.gameInit();
+    });
 }, 1); // guarantee all context is loaded and fix webpack order issue

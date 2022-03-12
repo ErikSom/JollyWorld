@@ -539,7 +539,7 @@ const buildChat = () => {
 		const input = chat.querySelector('.input');
 		input.addEventListener("keydown", event => {
 			if (event.key === "Enter") {
-				if(input.value)	sendChatMessage(input.value);
+				if(input.value && input.value.trim())	sendChatMessage(input.value);
 				input.value = '';
 			}else if(event.key === "Escape"){
 				input.value = '';

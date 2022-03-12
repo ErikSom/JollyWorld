@@ -46,6 +46,7 @@ export class RippleCharacter {
 			cameraObject: new SyncObject(),
 		}
 		this.cloud = null;
+		this.chatBox = null;
 
 		this.state.body.overflow = true;
 
@@ -136,7 +137,9 @@ export class RippleCharacter {
 		this.sprite.addChild(this.sprites.armRight);
 		this.sprite.addChild(this.sprites.handRight);
 
-		const nameText = new PIXI.Text(this.playerState.name, new PIXI.TextStyle({fontFamily:'Montserrat', fontWeight: 800, lineJoin:'round', fontSize: 24, fill: 0xFFFFFF, stroke: 0x000000, strokeThickness: 4}))
+		this.buildChatBox();
+
+		const nameText = new PIXI.Text(this.playerState.name, new PIXI.TextStyle({fontFamily:'Montserrat', fontWeight: 400, lineJoin:'round', fontSize: 24, fill: 0xFFFFFF, stroke: 0x000000, strokeThickness: 4}))
 		nameText.pivot.set(nameText.width / 2, nameText.height / 2);
 		nameText.y = -140;
 		this.sprite.nameText = nameText;
@@ -257,6 +260,51 @@ export class RippleCharacter {
 		this.cloud.scale.x = this.cloud.scale.y = .5;
 
 		game.hudContainer.addChild(this.cloud);
+	}
+
+	buildChatBox(){
+		this.chatBox = new PIXI.Container();
+
+		this.chatBox.lastChatMessage = 0;
+		this.chatBox.alpha = 0;
+		
+		this.chatBox.bg = new PIXI.Graphics();
+		this.chatBox.addChild(this.chatBox.bg);
+
+		this.chatBox.textSprite = new PIXI.Text('', new PIXI.TextStyle({fontFamily:'Montserrat', fontWeight: 400, fontSize: 16, fill: 0x000000, wordWrap: true, wordWrapWidth: 360}))
+		this.chatBox.textSprite.resolution = 2;
+		this.chatBox.textSprite.anchor.set(0.5, 0.5);
+		this.chatBox.addChild(this.chatBox.textSprite);
+		
+		this.chatBox.setText = text => {
+			const textSprite = this.chatBox.textSprite;
+			textSprite.text = text;
+			this.chatBox.bg.clear();
+			this.chatBox.bg.lineStyle(4, 0x000000).beginFill(0xFFFFFF);
+			const padding = 10;
+			this.chatBox.bg.drawRect(-textSprite.width / 2 - padding, -textSprite.height / 2 - padding, textSprite.width + padding * 2, textSprite.height + padding * 2);
+
+			this.chatBox.scale.x = this.chatBox.scale.y = 1 / game.editor.cameraHolder.scale.x;
+
+			textSprite.y = this.chatBox.bg.y = - textSprite.height / 2 - padding;
+
+			this.chatBox.alpha = 1;
+			this.chatBox.lastChatMessage = performance.now();
+		}
+
+		this.chatBox.arrow = new PIXI.Graphics().lineStyle(4, 0x000000).beginFill(0xFFFFFF);
+		this.chatBox.arrow.y = -2;
+		const arrowSpread = 10;
+		this.chatBox.addChild(this.chatBox.arrow);
+
+		const arrowLength = 50;
+		this.chatBox.arrow.moveTo(-arrowSpread, 0);
+		this.chatBox.arrow.lineTo(0, arrowLength);
+		this.chatBox.arrow.lineTo(arrowSpread, 0);
+
+		this.chatBox.y = -210;
+
+		this.sprite.addChild(this.chatBox);
 	}
 
 	processServerData(data, time){
@@ -426,6 +474,11 @@ export class RippleCharacter {
 			if(this.lastStatusChange > 3000){
 				this.setPlayerState(0);
 			}
+		}
+
+		// update chatbox
+		if(performance.now() > this.chatBox.lastChatMessage + Settings.chatBlurTimeout && this.chatBox.alpha > 0){
+			this.chatBox.alpha = this.chatBox.alpha - 0.05;
 		}
 	}
 }

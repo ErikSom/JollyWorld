@@ -175,19 +175,19 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.admin = admin;
 
 	// ******* TODO REMOVE:
-	// if(admin){
-	// 	// auto select level for development:
-	// 	backendManager.getPublishedLevelInfo('Z~lbng9r4S5ZG55Rxjl3O').then(levelData => {
-	// 		selectMultiplayerLevel(levelData);
-	// 		game.ui.showSinglePlayer();
-	// 		game.ui.hideSinglePlayer();
-	// 		game.openMainMenu();
-	// 		game.gameState = game.GAMESTATE_LOBBY;
-	// 		game.ui.setMainMenuActive('lobby');
-	// 	});
-	// } else {
-	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	// }
+	if(admin){
+		// auto select level for development:
+		backendManager.getPublishedLevelInfo('Z~lbng9r4S5ZG55Rxjl3O').then(levelData => {
+			selectMultiplayerLevel(levelData);
+			game.ui.showSinglePlayer();
+			game.ui.hideSinglePlayer();
+			game.openMainMenu();
+			game.gameState = game.GAMESTATE_LOBBY;
+			game.ui.setMainMenuActive('lobby');
+		});
+	} else {
+		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	}
 	// ********************
 
 	showChat(true);
@@ -707,6 +707,8 @@ const handleReceiveChatMessage = ({peer, buffer}) => {
 		if(player.vip) type = CHAT_AUTHOR_TYPES.VIP;
 
 		processChatMessage(name, type, player.admin, message);
+
+		player.chatBox?.setText?.(message);
 	}
 }
 
