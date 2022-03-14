@@ -558,45 +558,84 @@ export class SyncObject {
 		return mod(a + 180, 360) - 180
 	}
 
+
+	estimateFuturePositions (){
+		const positions = [];
+		const lookForward = 0;
+			let render_timestamp = performance.now() + lookForward;
+		for(let i = 0; i < (this.overflow ? maxPreviousPosInterpolation : 1); i++){
+			const previousKnownPosition = this.previousPos[this.previousPos.length - 2 - i];
+
+			if(!previousKnownPosition) break;
+
+			const x0 = previousKnownPosition.x;
+			const x1 = this.serverPos.x;
+			const y0 = previousKnownPosition.y;
+			const y1 = this.serverPos.y;
+			const r0 = previousKnownPosition.r;
+			const r1 = this.serverPos.r;
+			const t0 = previousKnownPosition.time;
+			const t1 = this.serverPos.time;
+
+			let td = (t1 - t0);
+
+			const maxExtrapolation = this.ping + Settings.maxExtrapolation;
+			const overFlowTime = render_timestamp - this.serverPos.time;
+
+			const didOverflow = overFlowTime > maxExtrapolation;
+
+			if(!this.overflow && didOverflow && i === 0){
+				render_timestamp = this.serverPos.time + maxExtrapolation;
+				// show lag thingy?
+			}
+
+			if(td === 0){
+				// i messed up?
+				// debugger;
+			}else{
+				const pos = {};
+				const interpolationTime = render_timestamp - t0;
+				pos.x =	x0 + ((x1 - x0) / td) * interpolationTime;
+				pos.y =	y0 + ((y1 - y0) / td) * interpolationTime;
+
+				if(positions.length === 0){
+					pos.r = this.targetPos.r;
+					if(!didOverflow || !this.overflow) pos.r = (r0 + (this.angleDiff(r0, r1) / td) * interpolationTime) % 360;
+				}else {
+					pos.r = positions[0].r;
+				}
+
+
+				let lastTruthShare = 1;
+				if(i === 0) lastTruthShare = 6; // last info is most reliable
+				if(i === 1) lastTruthShare = 3;
+				for(let j = 0; j< (this.overflow ? lastTruthShare : 1); j++){
+					positions.push(pos);
+				}
+			}
+		}
+		return positions;
+	}
+
 	interpolatePosition() {
 		// use time difference for interpolation
 		// no data no interpolation
 		if(this.previousPos.length < 2) return;
 
-		const previousKnownPosition = this.previousPos[this.previousPos.length - 2];
+		const positions = this.estimateFuturePositions();
 
-		const lookForward = 0;
-		let render_timestamp = performance.now() + lookForward;
-
-		const x0 = previousKnownPosition.x;
-		const x1 = this.serverPos.x;
-		const y0 = previousKnownPosition.y;
-		const y1 = this.serverPos.y;
-		const r0 = previousKnownPosition.r;
-		const r1 = this.serverPos.r;
-		const t0 = previousKnownPosition.time;
-		const t1 = this.serverPos.time;
-
-		let td = (t1 - t0);
-
-		const maxExtrapolation = this.ping + Settings.maxExtrapolation;
-		const overFlowTime = render_timestamp - this.serverPos.time;
-
-		const didOverflow = overFlowTime > maxExtrapolation;
-
-		if(!this.overflow && didOverflow){
-			render_timestamp = this.serverPos.time + maxExtrapolation;
-			// show lag thingy?
-		}
-
-		if(td === 0){
-			// i messed up?
-			// debugger;
-		}else{
-			const interpolationTime = render_timestamp - t0;
-			this.targetPos.x =	x0 + ((x1 - x0) / td) * interpolationTime;
-			this.targetPos.y =	y0 + ((y1 - y0) / td) * interpolationTime;
-			if(!didOverflow || !this.overflow) this.targetPos.r = (r0 + (this.angleDiff(r0, r1) / td) * interpolationTime) % 360;
+		if(positions.length){
+			this.targetPos.x = 0;
+			this.targetPos.y = 0;
+			this.targetPos.r = 0;
+			positions.forEach( ({x, y, r}) => {
+				this.targetPos.x += x;
+				this.targetPos.y += y;
+				this.targetPos.r += r;
+			});
+			this.targetPos.x /= positions.length;
+			this.targetPos.y /= positions.length;
+			this.targetPos.r /= positions.length;
 		}
 
 		this.x += (this.targetPos.x - this.x) * syncSmooth;
