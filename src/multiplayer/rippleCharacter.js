@@ -279,14 +279,34 @@ export class RippleCharacter {
 		this.chatBox.setText = text => {
 			const textSprite = this.chatBox.textSprite;
 			textSprite.text = text;
+
+			if(this.chatBox.emoji) this.chatBox.emoji.destroy();
+			delete this.chatBox.emoji;
+
+			let targetSprite = textSprite;
+			if(text.startsWith('%%')){
+				const num = parseInt(text.split('%%')[1]);
+				if(num < Settings.numEmojis){
+					textSprite.text = '';
+	
+					const emojiTexture = PIXI.Texture.from(`emojis00${num.toString().padStart(2, '0')}`);
+					this.chatBox.emoji = new PIXI.Sprite(emojiTexture);
+					this.chatBox.emoji.anchor.set(0.5, 0.5);
+					this.chatBox.emoji.scale.x = this.chatBox.emoji.scale.y = 0.6;
+					this.chatBox.addChild(this.chatBox.emoji);
+					targetSprite = this.chatBox.emoji;
+				}
+			}
+
+
 			this.chatBox.bg.clear();
 			this.chatBox.bg.lineStyle(4, 0x000000).beginFill(0xFFFFFF);
 			const padding = 10;
-			this.chatBox.bg.drawRect(-textSprite.width / 2 - padding, -textSprite.height / 2 - padding, textSprite.width + padding * 2, textSprite.height + padding * 2);
+			this.chatBox.bg.drawRect(-targetSprite.width / 2 - padding, -targetSprite.height / 2 - padding, targetSprite.width + padding * 2, targetSprite.height + padding * 2);
 
 			this.chatBox.scale.x = this.chatBox.scale.y = 1 / game.editor.cameraHolder.scale.x;
 
-			textSprite.y = this.chatBox.bg.y = - textSprite.height / 2 - padding;
+			targetSprite.y = this.chatBox.bg.y = - targetSprite.height / 2 - padding;
 
 			this.chatBox.alpha = 1;
 			this.chatBox.lastChatMessage = performance.now();

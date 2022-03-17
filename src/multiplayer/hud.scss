@@ -185,6 +185,30 @@
 		transition: opacity 0.3s ease-in;
 	}
 
+	.emoji-picker{
+		position: absolute;
+		top: 100%;
+		right: 0;
+		.emoji-button{
+			width: 40px;
+			height: 40px;
+			cursor: pointer;
+		}
+		.emojis{
+			display: none;
+			flex-wrap: wrap;
+		}
+
+		&.open{
+			.emoji-main{
+				display: none;
+			}
+			.emojis{
+				display: flex;
+			}
+		}
+	}
+
 	&.disabled{
 		visibility: hidden;
 		pointer-events: none;
@@ -215,6 +239,7 @@
     width: 44px;
     height: 44px;
 	cursor: pointer;
+	z-index: 9;
 
 	.update{
 		visibility: hidden;

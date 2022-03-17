@@ -1643,11 +1643,15 @@ function UIManager() {
             const buttons = gameOver.querySelector('.buttons');
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
-                this.hideGameOverMenu();
                 if(game.gameState == game.GAMESTATE_EDITOR){
                     game.resetWorld();
                 }else{
-                    game.openSinglePlayer(game.currentLevelData);
+                    // game.openSinglePlayer(game.currentLevelData);
+                    if(game.currentLevelData.forced_vehicle){
+                        game.resetWorld();
+                    } else {
+                        this.showVehicleSelect();
+                    }
                 }
             };
             const retryButton = buttons.querySelector('.retry');
@@ -1994,7 +1998,11 @@ function UIManager() {
 
                 portrait.onclick = () => {
                     if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
+                        game.unpauseGame()
                         this.hideVehicleSelect();
+                        this.hideWinScreen();
+                        this.hideGameOverMenu();
+                        this.hidePauseMenu();
                         game.selectedVehicle = i + 1;
                         this.playLevelFromSinglePlayer();
                     }
@@ -2005,14 +2013,25 @@ function UIManager() {
             customGUIContainer.appendChild(vehicleSelect);
         }
 
+        vehicleSelect.parentNode.appendChild(vehicleSelect);
+
         vehicleSelect.style.display = 'block';
         singlePlayer.classList.add('inactive');
 
         const back = vehicleSelect.querySelector('.back');
         back.onclick = ()=>{
             this.hideVehicleSelect();
-            game.gameState = game.GAMESTATE_MENU;
-            this.showLevelBanner(game.currentLevelData);
+            if(game.gameState === game.GAMESTATE_LOADINGDATA){
+                game.gameState = game.GAMESTATE_MENU;
+                this.showLevelBanner(game.currentLevelData);
+            }
+        }
+
+        const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
+        if(multiplayer && game.gameState === game.GAMESTATE_LOADINGDATA){
+            back.style.display = 'none';
+        } else {
+            back.style.display = 'block';
         }
     }
 
@@ -2065,8 +2084,12 @@ function UIManager() {
             const buttons = pauseScreen.querySelector('.buttons');
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
-                game.unpauseGame();
-                game.openSinglePlayer(game.currentLevelData);
+                if(game.currentLevelData.forced_vehicle){
+                    game.unpauseGame();
+                    game.resetWorld();
+                } else {
+                    this.showVehicleSelect();
+                }
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
@@ -2110,7 +2133,9 @@ function UIManager() {
         pauseScreen.style.display = 'block';
     }
     this.hidePauseMenu = function () {
-        pauseScreen.style.display = 'none';
+        if(pauseScreen){
+            pauseScreen.style.display = 'none';
+        }
     }
 
     this.showWinScreen = function(time, mili){
@@ -2149,8 +2174,11 @@ function UIManager() {
             const buttons = winScreen.querySelector('.buttons');
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
-                this.hideWinScreen();
-                game.openSinglePlayer(game.currentLevelData);
+                if(game.currentLevelData.forced_vehicle){
+                    game.resetWorld();
+                } else {
+                    this.showVehicleSelect();
+                }
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {

@@ -39,6 +39,7 @@ export var Settings = {
     destroyedPosition: 133.7,
     maxTolerableLatency: 200,
     maxExtrapolation: 100,
+    numEmojis:10,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,

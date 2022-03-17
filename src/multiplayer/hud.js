@@ -210,7 +210,6 @@ const buildState = data => {
 		lu.gameEnds.style.margin = '60px 0px';
 		lu.gameEnds.classList.add('header');
 
-
 		content.appendChild(endText);
 		content.appendChild(lu.gameEnds);
 	} else if(hudState === HUD_STATES.PICK_NEXT_LEVEL){
@@ -438,14 +437,14 @@ export const updateLeaderboard = () => {
 					if(player.playerState.status === PLAYER_STATUS.DEATH){
 						const statusTextures = PIXI.Texture.from('statusIcons0000');
 						statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
-						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.height * targetStatusScale}px`;
 						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
 
 						flasher.style.background = '#BD0000';
 					} else if(player.playerState.status === PLAYER_STATUS.CHECKPOINT){
 						const statusTextures = PIXI.Texture.from('statusIcons0002');
 						statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
-						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+						statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.height * targetStatusScale}px`;
 						statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
 
 						flasher.style.background = '#00B6B6';
@@ -471,7 +470,7 @@ export const updateLeaderboard = () => {
 				const statusDiv = leaderboardStatuses[i + 1];
 				const statusTextures = PIXI.Texture.from('statusIcons0001');
 				statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
-				statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+				statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.height * targetStatusScale}px`;
 				statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
 				statusDiv.style.opacity = 1;
 			}
@@ -485,9 +484,6 @@ export const updateLeaderboard = () => {
 
 	playersWon.forEach((obj, position) => {
 		const { player, index } = obj;
-
-
-		console.log("POSITION:", position, "FINISH TIME:", player.playerState.finishTime);
 
 		const statusDiv = leaderboardStatuses[index + 1];
 
@@ -529,6 +525,10 @@ const buildChat = () => {
 		chat.innerHTML = `
 		<div class="chat-area"></div>
 		<input class="input" maxlength=200 placeholder="${localize('multiplayer_tochat')}"></input>
+		<div class="emoji-picker">
+			<div class="emoji-button emoji-main"></div>
+			<div class="emojis"></div>
+		</div>
 		`;
 
 		chatButton = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
@@ -585,6 +585,38 @@ const buildChat = () => {
 
 		chatArea = chat.querySelector('.chat-area');
 
+		// emoji button
+		const emojiPicker = chat.querySelector('.emoji-picker');
+		const emojiButton = emojiPicker.querySelector('.emoji-button');
+		const targetStatusScale = 0.3;
+
+		let emojiTexture = PIXI.Texture.from('emojis0001');
+		emojiButton.style.backgroundImage = `url(${emojiTexture.baseTexture.resource.source.src})`;
+		emojiButton.style.backgroundSize = `${emojiTexture.baseTexture.width * targetStatusScale}px ${emojiTexture.baseTexture.height * targetStatusScale}px`;
+		emojiButton.style.backgroundPosition = `${-emojiTexture._frame.x * targetStatusScale + 1}px ${-emojiTexture._frame.y * targetStatusScale + 1}px`;
+
+		emojiButton.onclick = () => {
+			emojiPicker.classList.toggle('open');
+		}
+
+		const emojisHolder = emojiPicker.querySelector('.emojis');
+
+		for(let i = 0; i<Settings.numEmojis; i++){
+			const emoji = document.createElement('div');
+			emoji.classList.add('emoji-button');
+
+			emojiTexture = PIXI.Texture.from(`emojis00${i.toString().padStart(2, '0')}`);
+			emoji.style.backgroundImage = `url(${emojiTexture.baseTexture.resource.source.src})`;
+			emoji.style.backgroundSize = `${emojiTexture.baseTexture.width * targetStatusScale}px ${emojiTexture.baseTexture.height * targetStatusScale}px`;
+			emoji.style.backgroundPosition = `${-emojiTexture._frame.x * targetStatusScale + 1}px ${-emojiTexture._frame.y * targetStatusScale + 1}px`;
+			emojisHolder.appendChild(emoji);
+
+			emoji.onclick = () => {
+				sendChatMessage(`%%${i}`);
+				emojiPicker.classList.remove('open');
+			}
+		}
+
 		focusChat();
 		blurChat();
 	}
@@ -606,6 +638,22 @@ export const processChatMessage = (name, type, admin, message) => {
 		const text = document.createElement('div');
 		text.innerText = message;
 		author.classList.add('text');
+
+		if(message.startsWith('%%')){
+			const num = parseInt(message.split('%%')[1]);
+			if(num < Settings.numEmojis){
+				text.innerText = '';
+
+				const targetStatusScale = 0.3;
+				const emojiTexture = PIXI.Texture.from(`emojis00${num.toString().padStart(2, '0')}`);
+				text.style.backgroundImage = `url(${emojiTexture.baseTexture.resource.source.src})`;
+				text.style.backgroundSize = `${emojiTexture.baseTexture.width * targetStatusScale}px ${emojiTexture.baseTexture.height * targetStatusScale}px`;
+				text.style.backgroundPosition = `${-emojiTexture._frame.x * targetStatusScale + 1}px ${-emojiTexture._frame.y * targetStatusScale + 1}px`;
+				text.style.width = text.style.height = '40px';
+				author.style.float = 'none';
+			}
+		}
+
 
 		messageDiv.appendChild(author);
 		messageDiv.appendChild(text);
