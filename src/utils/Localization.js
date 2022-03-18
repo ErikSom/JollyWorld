@@ -909,18 +909,6 @@ const LOCALIZATION_DATA = [
         "jr": "Stop the ship"
     },
     {
-        "textId": "levelgui_exittomenu",
-        "us": "Exit to Menu",
-        "nl": "Naar hoofdmenu",
-        "de": "Zum Menü",
-        "es": "Salir Al Menu",
-        "pt": "Sair para o menu",
-        "cz": "Zpět do menu",
-        "fr": "Quitter vers le menu",
-        "it": "Esci dal menu",
-        "jr": "Walk the plank"
-    },
-    {
         "textId": "levelgui_resume",
         "us": "Resume",
         "nl": "Hervat",

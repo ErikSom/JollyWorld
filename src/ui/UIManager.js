@@ -47,7 +47,7 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { createLobby, LOBBY_STATE, multiplayerState, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
+import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
 import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
 
 let customGUIContainer = document.getElementById('game-ui-container');
@@ -1619,7 +1619,7 @@ function UIManager() {
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="exit">${localize('editorheader_exit')}</div>
                     <div class="test">${localize('levelgui_exittest')}</div>
                     <div class="reset">${localize('levelgui_reset')}</div>
                     <div class="retry">${localize('levelgui_retry')}</div>
@@ -1662,7 +1662,15 @@ function UIManager() {
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
                 this.hideGameOverMenu();
-                game.openSinglePlayer();
+
+                const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
+
+                if(!multiplayerAdmin){
+                    game.openSinglePlayer();
+                } else {
+                    adminReturnToLobby();
+                    returnToLobby();
+                }
             };
 
             const testButton = buttons.querySelector('.test');
@@ -1677,6 +1685,15 @@ function UIManager() {
         const buttons = gameOver.querySelector('.buttons');
         const exitButton = buttons.querySelector('.exit');
         const testButton = buttons.querySelector('.test');
+
+        const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
+
+        if(!multiplayerAdmin){
+            exitButton.innerText = localize('editorheader_exit');
+        } else {
+            exitButton.innerText = 'Lobby';
+        }
+
 
         if(gameOver && game.run) gameOver.style.display = 'block';
 
@@ -2072,7 +2089,7 @@ function UIManager() {
                 <div class="buttons">
                     <div class="reset">${localize('levelgui_reset')}</div>
                     <div class="retry">${localize('levelgui_retry')}</div>
-                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="exit">${localize('editorheader_exit')}</div>
                     <div class="resume">${localize('levelgui_resume')}</div>
                 </div>
             `;
@@ -2098,8 +2115,15 @@ function UIManager() {
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
+                const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
                 game.unpauseGame();
-                game.openSinglePlayer();
+
+                if(!multiplayerAdmin){
+                    game.openSinglePlayer();
+                } else {
+                    adminReturnToLobby();
+                    returnToLobby();
+                }
             };
             const resumeButton = buttons.querySelector('.resume');
             resumeButton.onclick = () => {
@@ -2109,6 +2133,17 @@ function UIManager() {
             };
 
             customGUIContainer.appendChild(pauseScreen);
+        }
+
+        const buttons = pauseScreen.querySelector('.buttons');
+        const exitButton = buttons.querySelector('.exit');
+
+        const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
+
+        if(!multiplayerAdmin){
+            exitButton.innerText = localize('editorheader_exit');
+        } else {
+            exitButton.innerText = 'Lobby';
         }
 
         const title = pauseScreen.querySelector('.text-level-name');
@@ -2150,7 +2185,7 @@ function UIManager() {
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="exit">${localize('editorheader_exit')}</div>
                     <div class="test">${localize('levelgui_exittest')}</div>
                     <div class="reset">${localize('levelgui_reset')}</div>
                     <div class="retry">${localize('levelgui_retry')}</div>
