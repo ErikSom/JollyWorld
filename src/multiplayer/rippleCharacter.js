@@ -23,6 +23,7 @@ export const PLAYER_STATUS = {
 export class RippleCharacter {
 	constructor(id) {
 		this.id = id;
+		this.playerIndex = -1;
 		this.sprite = new Container();
 		this.sprite.velocity = {x: 0, y: 0};
 		this.sprite.visible = false;

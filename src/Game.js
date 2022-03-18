@@ -53,7 +53,7 @@ import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
 import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE, sendGameOver, sendCheckpoint } from "./multiplayer/multiplayerManager";
-import { updateMultiplayerHud } from "./multiplayer/hud";
+import { hudState, HUD_STATES, updateMultiplayerHud } from "./multiplayer/hud";
 import FontFaceObserver from "fontfaceobserver";
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
@@ -1078,7 +1078,9 @@ function Game() {
     }
     this.unpauseGame = function(){
         this.pause = false;
-        this.run = true;
+        if(![HUD_STATES.WAITING_PLAYERS, HUD_STATES.COUNTDOWN].includes(hudState)){
+            this.run = true;
+        }
         ui.hidePauseMenu();
         MobileController.show();
     }

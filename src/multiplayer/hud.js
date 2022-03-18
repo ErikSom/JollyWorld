@@ -28,7 +28,7 @@ export const CHAT_AUTHOR_TYPES = {
 
 const customGUIContainer = document.getElementById('game-ui-container');
 
-let hudState = '';
+export let hudState = '';
 let multiplayerHud = null;
 let multiPlayerHudLookup = {};
 
@@ -504,7 +504,7 @@ export const updateLeaderboard = () => {
 			flasher.classList.add('flash')
 		}
 		statusDiv.style.backgroundImage = `url(${statusTextures.baseTexture.resource.source.src})`;
-		statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.width * targetStatusScale}px`;
+		statusDiv.style.backgroundSize = `${statusTextures.baseTexture.width * targetStatusScale}px ${statusTextures.baseTexture.height * targetStatusScale}px`;
 		statusDiv.style.backgroundPosition = `${-statusTextures._frame.x * targetStatusScale + 1}px ${-statusTextures._frame.y * targetStatusScale + 1}px`;
 		statusDiv.style.opacity = 1;
 	})

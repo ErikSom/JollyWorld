@@ -6,7 +6,7 @@ import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
-import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard, updateLeaderboard } from './hud';
+import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard, updateLeaderboard, hudState } from './hud';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, PLAYER_STATUS, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
@@ -205,6 +205,8 @@ const didLeaveLobby = () => {
 const playerJoined = async ({id}) => {
 	const player = new RippleCharacter(id);
 	multiplayerState.players[id] = player;
+
+	player.playerIndex = Object.keys(multiplayerState.players).length;
 
 	multiplayerState.peersConnected++;
 
@@ -488,10 +490,22 @@ export const stopSyncPlayer = () => {
 export const updateMultiplayer = () => {
 	const data = server.getCharacterDataToProcess();
 		data.forEach(data => {
-			if(multiplayerState.players[data.playerID]){
-				multiplayerState.players[data.playerID].ping = data.ping;
+			const player = multiplayerState.players[data.playerID];
+			if(player){
+				player.ping = data.ping;
 				const time = data.time - data.ping;
 				const characterData = characterFromBuffer(data.buffer);
+
+				if(!game.run && [HUD_STATES.WAITING_PLAYERS, HUD_STATES.COUNTDOWN].includes(hudState)){
+					// ************ offset player at the start of a match
+					const spreadOffset = -4 * (player.playerIndex + 1);
+					characterData.main.forEach(data => {
+						data.x += spreadOffset * Math.cos(player.sprites.head.rotation);
+						data.y += spreadOffset * Math.sin(player.sprites.head.rotation);
+					});
+					// ***************************************************
+				}
+
 				multiplayerState.players[data.playerID].processServerData(characterData, time);
 			}
 		});
@@ -502,7 +516,7 @@ export const updateMultiplayer = () => {
 
 				const player = multiplayerState.players[playerID];
 
-				if(!player.addedToGame && game.run){
+				if(!player.addedToGame){
 					const targetTexture = game.character.lookupObject._bodies[0]?.mySprite || game.editor.textures.children[game.editor.textures.children.length-1];
 					const index = targetTexture.parent.getChildIndex(targetTexture);
 					targetTexture.parent.addChildAt(player.sprite, index);
