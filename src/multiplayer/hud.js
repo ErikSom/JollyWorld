@@ -617,6 +617,15 @@ const buildChat = () => {
 			}
 		}
 
+		const closeButton = document.createElement('div');
+		closeButton.innerText = '✖';
+		emojisHolder.appendChild(closeButton);
+		closeButton.classList.add('close');
+
+		closeButton.onclick = () => {
+			emojiPicker.classList.remove('open');
+		}
+
 		focusChat();
 		blurChat();
 	}

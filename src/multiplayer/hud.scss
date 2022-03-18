@@ -194,6 +194,18 @@
 			height: 40px;
 			cursor: pointer;
 		}
+
+		.close {
+			font-family: "Montserrat", sans-serif;
+			font-variation-settings: "wght" 800;
+			font-size: 22px;
+			width: 40px;
+			height: 40px;
+			line-height: 40px;
+			text-align: center;
+			user-select: none;
+			cursor: pointer;
+		}
 		.emojis{
 			display: none;
 			flex-wrap: wrap;
