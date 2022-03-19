@@ -169,24 +169,49 @@ const buildState = data => {
 		switchCameraBut.innerText = localize('multiplayer_switchcamera');
 		switchCameraBut.classList.add('switch-cam');
 
-		switchCameraBut.onclick = () => {
-			console.log('BEAM! switched camera');
-			const playerID = Object.keys(multiplayerState.players)[0];
-			game.cameraFocusObject = {
-				GetPosition: () => {
-					// TODO: IF PLAYER EXISTS
+		const switchCamera = () => {
+			let targetIndex = 0;
+			const playerKeys = Object.keys(multiplayerState.players);
 
-					const x = multiplayerState.players[playerID].sprite.x  / Settings.PTM;
-					const y = multiplayerState.players[playerID].sprite.y  / Settings.PTM;
-					return {x, y};
+			if(game.cameraFocusObject && game.cameraFocusObject.isMultiplayerCamera){
+				targetIndex = playerKeys.indexOf(game.cameraFocusObject.playerID);
+				targetIndex++;
+				if(targetIndex >= playerKeys.length) targetIndex = 0;
+			}
+
+			const playerID = playerKeys[targetIndex];
+			game.cameraFocusObject = {
+				playerID,
+				GetPosition: () => {
+					const player = multiplayerState.players[playerID];
+					if(player){
+						const x = player.sprite.x  / Settings.PTM;
+						const y = player.sprite.y  / Settings.PTM;
+						return {x, y};
+					} else {
+						if(Object.keys(multiplayerState.players).length > 0){
+							// playerID will return -1 in targetIndex which will be set to 0 with the ++
+							switchCamera();
+						}
+						return game.lastKnownCameraPoint;
+					}
 				},
 				GetLinearVelocity: () => {
-					const x = multiplayerState.players[playerID].sprite.velocity.x  / Settings.PTM;
-					const y = multiplayerState.players[playerID].sprite.velocity.y  / Settings.PTM;;
-					return {x, y};
+					const player = multiplayerState.players[playerID];
+					if(player){
+						const x = player.sprite.velocity.x  / Settings.PTM;
+						const y = player.sprite.velocity.y  / Settings.PTM;;
+						return {x, y};
+					} else {
+						return {x:0, y:0};
+					}
 				},
 				isMultiplayerCamera: true
 			}
+		}
+
+		switchCameraBut.onclick = () => {
+			switchCamera();
 		}
 
 		lu.gameEnds = document.createElement('div');

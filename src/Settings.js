@@ -30,8 +30,8 @@ export var Settings = {
     onPoki:false,
     /*MULTIPLAYER*/
     maxMultiplayerPlayers: 8,
-    startGameTimer: 3000,
-    endGameTimer: 3000,
+    startGameTimer: 5000,
+    endGameTimer: 60000,
     maxChatLength: 200,
     maxChatMessages: 50,
     chatBlurTimeout: 3000,
