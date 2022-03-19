@@ -458,6 +458,7 @@ const handleReceiveSkin = ({peer, buffer}) => {
 	const player = multiplayerState.players[peer];
 	player.skinBlob = blob;
 	player.loadSkin(imageUrl);
+	updateLobbyUI();
 }
 
 export const startSyncPlayer = () => {
