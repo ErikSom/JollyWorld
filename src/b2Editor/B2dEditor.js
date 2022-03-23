@@ -55,6 +55,7 @@ import * as BodyBreakable from './utils/bodyBreaker';
 import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
 import {getDecalSystem, setDecalSystem} from "./utils/DecalSystem";
 import { updateDisplayAds } from "../utils/AdManager";
+import { backendManager } from "../utils/BackendManager";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -233,7 +234,16 @@ const _B2dEditor = function () {
 				this.bluePrintData.page[category] = 0;
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
 				// PrefabManager.prefabLibrary[PrefabManager.LIBRARY_BLUEPRINTS+obj.prefabName].json
-			})
+			});
+
+
+			if(backendManager.isLoggedIn() && backendManager.userData){
+				const categoryName = 'My Uploads'
+				categories.unshift(categoryName);
+				this.bluePrintData.page[categoryName] = 0;
+				const url = `https://warze.org/blueprints/request?authorsearch=${backendManager.userData.username}&approved=2&nodata=1&page=`;
+				this.bluePrintData.urls.unshift(url);
+			}
 			// this is for search queries
 			this.bluePrintData.page[-1] = 0;
 			this.refreshPrefablist();
@@ -279,7 +289,7 @@ const _B2dEditor = function () {
 				this.bluePrintData.loadedAllPages[category] = true;
 				const spinner = innerFolder.querySelector('.spinner');
 				if(spinner){
-					spinner.innerText = 'No more results..';
+					spinner.innerText = 'No results..';
 				}
 				return;
 			}
@@ -315,7 +325,9 @@ const _B2dEditor = function () {
 		});
 		const loadingDiv = document.createElement('div');
 		loadingDiv.innerText = page === 1 ? 'Loading...' : 'Loading more...';
-		loadingDiv.style.marginLeft = '5px';
+		loadingDiv.style.margin = '0 0 5px 5px';
+		loadingDiv.style.color = '#b1b1b1';
+
 		loadingDiv.classList.add('spinner');
 
 		innerFolder.appendChild(loadingDiv);
@@ -328,6 +340,10 @@ const _B2dEditor = function () {
 		ui.buildEditorGUI();
 		this.showPrefabList();
 		ui.registerDragWindow(ui.editorGUI);
+	}
+
+	this.openBluePrintsPage = () => {
+		window.open(window.location.origin+'/blueprints', '_blank').focus();
 	}
 
 	this.showPrefabList = function () {
@@ -344,6 +360,10 @@ const _B2dEditor = function () {
 			let self = this;
 			const prefabPages = folderName === PREFABS ? [...PrefabManager.getLibraryKeys()] : (this.bluePrintData ? [...this.bluePrintData.categories] : [Settings.DEFAULT_TEXTS.downloading_blueprints]);
 			prefabPages.unshift('');
+
+			if(folderName === BLUEPRINTS){
+				folder.add(self, 'openBluePrintsPage').name('Upload blueprints');
+			}
 
 			folder.add(self, folderName === PREFABS ? "prefabSelectedCategory" : "blueprintsSelectedCategory", prefabPages).name('choose collection').onChange(function (value) {
 				if(value === Settings.DEFAULT_TEXTS.downloading_blueprints) return;
