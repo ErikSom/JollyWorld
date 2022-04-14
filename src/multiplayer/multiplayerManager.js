@@ -67,19 +67,17 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.CHAT_MESSAGE, handleReceiveChatMessage);
 	globalEvents.addEventListener(SERVER_EVENTS.END_COUNTDOWN, handleEndCountDownMessage);
 	globalEvents.addEventListener(SERVER_EVENTS.LEVEL_VOTES, handleLevelVotesMessage);
+	globalEvents.addEventListener(SERVER_EVENTS.NETWORK_READY, networkReady);
+
+	server.connect();
 
 	initHud();
 	prepareSkinForSending();
 }
 
-// TO DO: STOP MULTIPLAYER
-
 export const networkReady = () => {
 	multiplayerState.ready = true;
 }
-// TO DO, WHEN SERVER CAN GO ON AND OFF PUT THIS BACK IN START MULTIPLAYER
-globalEvents.addEventListener(SERVER_EVENTS.NETWORK_READY, networkReady);
-
 
 export const autoConnectLobby = id => {
 	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
@@ -123,9 +121,26 @@ export const returnToLobby = () => {
 	updateLobbyUI();
 }
 
+export const returnToMultiplayer = () => {
+	resetMultiplayer();
+
+	setMultiplayerHud('');
+
+	game.stopWorld();
+	game.openMainMenu();
+	game.ui.setMainMenuActive('multiplayer');
+	game.gameState = game.GAMESTATE_MENU;
+
+	showLeaderboard(false);
+
+	updateLobbyUI();
+}
+
 export const leaveMultiplayer = () => {
+	server.disconnect();
 	showLeaderboard(false);
 	showChat(false);
+	multiplayerState.lobbyState = LOBBY_STATE.OFFLINE;
 }
 
 export const resetMultiplayer = () => {
@@ -313,6 +328,11 @@ export const adminReturnToLobby = () => {
 	sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.RETURN_TO_LOBBY);
 }
 
+export const kickPlayer = (id, messageType) => {
+	const simpleMessageBuffer = dataToSimpleMessageBuffer(messageType);
+	server.sendSimpleMessage(simpleMessageBuffer, id);
+}
+
 const startLoadLevel = async id => {
 	if (game.gameState !== game.GAMESTATE_LOBBY && multiplayerState.lobbyState !== LOBBY_STATE.VOTING) return;
 	resetMultiplayer();
@@ -417,6 +437,20 @@ const handleSimpleMessage = ({peer, buffer}) => {
 				server.sendSimpleMessageAll(messageBuffer);
 			}
 			break;
+
+		case SIMPLE_MESSAGE_TYPES.KICKED_BY_ADMIN:
+			alert("You have been kicked by the admin");
+			returnToMultiplayer();
+			break;
+		case SIMPLE_MESSAGE_TYPES.KICKED_GAME_FULL:
+			alert("The game is full");
+			returnToMultiplayer();
+			break;
+		case SIMPLE_MESSAGE_TYPES.KICKED_GAME_STARTED:
+			alert("The game has already started");
+			returnToMultiplayer();
+			break;
+
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
 				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;

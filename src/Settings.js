@@ -107,10 +107,6 @@ export var Settings = {
     YTAPIKEY:'AIzaSyDjy-Fw9ocqXRL2Axjj5zvBhgIXTJLcLY0',
     levelsPerRequest:250,
 
-    /*MULIPLAYER*/
-    MULTIPLAYER_SERVER: 'wss://dubbelboer.com:8888/v0/signaling',
-    // MULTIPLAYER_SERVER: 'ws://localhost:8080/v0/signaling',
-
     /*KEYS*/
     keys:{
         grab: Key.F

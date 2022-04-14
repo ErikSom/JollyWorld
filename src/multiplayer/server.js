@@ -33,13 +33,22 @@ class MultiplayerServer {
 	constructor() {
 		this.characterDataToProcess = [];
 
-		this.n = new Network('c06320df-92e9-4754-b751-0dce2e9402ec', Settings.MULTIPLAYER_SERVER);
+		this.n = null;
+
 		this.id = '';
 
 		this.admin = false;
 		this.inLobby = false;
+	}
 
+	connect(){
+		this.n = new Network('c06320df-92e9-4754-b751-0dce2e9402ec');
 		this.initWebRTC();
+	}
+
+	disconnect(){
+		this.n.close();
+		this.n = null;
 	}
 
 	createLobby(){

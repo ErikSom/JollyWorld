@@ -3,6 +3,7 @@ import '../css/Lobby.scss'
 import { game } from '../Game';
 import { adminStartLoadLevel, leaveMultiplayer, LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
 import { multiplayerAtlas } from '../multiplayer/rippleCharacter';
+import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas';
 import { Settings } from '../Settings';
 import { backendManager } from '../utils/BackendManager';
 import { localize } from '../utils/Localization';
@@ -188,7 +189,7 @@ export const updateLobbyUI = () => {
 
 	let playersReady = 1;
 
-	players.forEach(({ admin, playerState, skinBlob }, index) => {
+	players.forEach(({ id, admin, playerState, skinBlob }, index) => {
 		const entry = template.cloneNode(true);
 		entry.style.display = 'flex';
 		entry.classList.remove('entry-template');
@@ -234,7 +235,9 @@ export const updateLobbyUI = () => {
 		if(!multiplayerState.admin || index === 0){
 			kickButton.style.opacity = '0';
 		} else {
-			// add kick functionality
+			kickButton.onclick = () => {
+				multiplayerState.kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_BY_ADMIN);
+			}
 		}
 
 		if(playerState.lobbyState === LOBBY_STATE.READY){

@@ -822,6 +822,11 @@ function Game() {
     }
 
     this.openSinglePlayer = function (levelData) {
+
+        if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
+            multiplayerState.leaveLobby();
+        }
+
         this.cleanMenus();
         ui.showSinglePlayer();
 
