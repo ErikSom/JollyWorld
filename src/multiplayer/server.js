@@ -1,11 +1,14 @@
 import { BufferSchema } from '@geckos.io/typed-array-buffer-schema';
-import {
-	Network
-} from '../../libs/netlib';
+import 
+	{ Network }
+ from '../../libs/netlib';
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
 import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from './schemas';
+
+
+console.log('***NETWORK:', Network);
 
 export const SERVER_EVENTS = {
 	NETWORK_READY: 'networkReady',
@@ -63,7 +66,7 @@ class MultiplayerServer {
 
 	initWebRTC(){
 		this.n.on('ready', () => {
-			console.log('network ready', this.n.id);
+			console.log('network ready', this.n);
 			globalEvents.dispatchEvent({type:SERVER_EVENTS.NETWORK_READY});
 
 			this.n.on('message', (peer, channel, data) => {
