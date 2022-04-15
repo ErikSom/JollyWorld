@@ -387,7 +387,6 @@ export const showHeaderBar = function () {
     button.innerHTML = "EXIT";
     headerBar.appendChild(button);
     button.addEventListener('click', () => {
-
         game.openMainMenu();
 
     })
@@ -404,7 +403,6 @@ export const showHeaderBar = function () {
     headerBar.appendChild(button);
 
     button.addEventListener('click', () => {
-
         showPrompt(`${Settings.DEFAULT_TEXTS.new_level}`, Settings.DEFAULT_TEXTS.confirm, Settings.DEFAULT_TEXTS.decline).then(() => {
             game.newLevel();
             hideEditorPanels();
@@ -1242,6 +1240,9 @@ export const generateLevelList = function (divWrapper, buttonName, buttonFunctio
                 uiHelper.clampDot(itemDescription, 3, 14);
 
                 itemBarClone.querySelector('.itemDate').innerText = format.formatDMY(level.created_at);
+
+                itemBarClone.setAttribute('data-published', (level.published_id !== null).toString());
+
                 // using %2F because '/' does not work for private urls
 
                 if (level.thumb_small_md5) itemBarClone.querySelector('#thumbImage').src = `${Settings.STATIC}/${level.thumb_small_md5}.png`;
@@ -1348,23 +1349,12 @@ export const showLoadScreen = function () {
     importDiv.style = `
         height: 40px;
         align-items: center;
+        background-color: #6b6b6b;
     `
 
     const input = document.createElement('input');
     input.setAttribute('placeholder', 'Paste preview levelId')
     importDiv.appendChild(input);
-    input.style = `
-        margin: 5px;
-        width: 78%;
-        font-size: 18px;
-        height: 30px;
-        font-weight: bold;
-        margin-bottom: 5px;
-        background-color: rgb(68, 68, 68);
-        padding: 0px 5px;
-        border: none;
-        color: rgb(0, 255, 0);
-    `
 
     const importButton = document.createElement('div');
     importButton.innerText = 'IMPORT';
@@ -1394,9 +1384,85 @@ export const showLoadScreen = function () {
             })
         }
     }
-
+    input.addEventListener('keydown', e => {
+        if(e.key === 'Enter'){
+            importButton.onclick();
+        }
+    })
     innerLevelListElement.appendChild(importDiv);
 
+
+    const searchDiv = document.createElement('div');
+    searchDiv.classList.add('listItem');
+    searchDiv.style = `
+        height: 40px;
+        align-items: center;
+    `
+
+    const searchFilter = document.createElement('input');
+    searchFilter.setAttribute('placeholder', 'Search your levels');
+    searchFilter.style = input.style = `
+        margin: 5px;
+        width: 78%;
+        font-size: 18px;
+        height: 30px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        background-color: rgb(68, 68, 68);
+        padding: 0px 5px;
+        border: none;
+        color: rgb(0, 255, 0);
+    `
+    searchDiv.appendChild(searchFilter);
+
+
+    const searchButton = document.createElement('div');
+    searchButton.innerText = 'SEARCH';
+    searchButton.classList.add('headerButton', 'save', 'buttonOverlay', 'dark')
+    searchDiv.appendChild(searchButton);
+
+    searchButton.onclick = () => {
+        const splitSearch = searchFilter.value.split(' ');
+        Array.from(innerLevelListElement.children).forEach((item, index) => {
+            let showElement = index < 2;
+
+            if (searchFilter.value.length === 0) showElement = true;
+
+            if(searchFilter.value.length > 0 && index >= 2){
+                splitSearch.forEach(search => {
+                    search = search.toLowerCase();
+                    const title = item.querySelector('.itemTitle').innerText.toLowerCase();
+                    const description = item.querySelector('.itemDescription').innerText.toLowerCase();
+
+                    console.log(title, description, search);
+                    if(title.indexOf(search) >= 0 || description.indexOf(search) >= 0){
+                        showElement = true;
+                    }
+
+                    if(search === 'published'){
+                        if(item.getAttribute('data-published') === 'true'){
+                            showElement = true;
+                        }
+                    }
+
+                });
+            }
+
+            if(showElement){
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        })
+    }
+
+    searchFilter.addEventListener('keydown', e => {
+        if(e.key === 'Enter'){
+            searchButton.onclick();
+        }
+    })
+
+    innerLevelListElement.appendChild(searchDiv);
 
     loadScreen.domElement.style.top = '10px';
     loadScreen.domElement.style.left = `${window.innerWidth-400-20}px`
@@ -1407,8 +1473,6 @@ const editorGUIPos = {
     x: Math.max(-10, Math.min(userData.editorGuiPos.x, window.innerWidth-300)),
     y: Math.max(-10, Math.min(userData.editorGuiPos.y, window.innerHeight-300))
 };
-
-console.log(userData.editorGuiPos, window.innerWidth-300);
 
 
 export const buildEditorGUI = function () {

@@ -1,4 +1,4 @@
-var staticMusicHostingUrl = 'https://c06320df-92e9-4754-b751-0dce2e9402ec.poki-gdn.com/64268518-e585-45bc-b105-3a61c76721bf/assets/';
+var staticMusicHostingUrl = 'https://c06320df-92e9-4754-b751-0dce2e9402ec.poki-gdn.com/64268518-e585-45bc-b105-3a61c76721bf/assets';
 var UTF8 = {
 	// non UTF8 encoding detection (cf README file for details)
 	'isNotUTF8': function (bytes, byteOffset, byteLength) {
