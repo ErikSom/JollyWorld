@@ -674,7 +674,7 @@ body .dg .cr.function {
 .itemList {
     width: 640px;
     min-height: 200px;
-    max-height: 50vh;
+    max-height: 70vh;
     overflow: auto;
 }
 
