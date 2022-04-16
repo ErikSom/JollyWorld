@@ -1421,14 +1421,51 @@ export const showLoadScreen = function () {
     searchButton.classList.add('headerButton', 'save', 'buttonOverlay', 'dark')
     searchDiv.appendChild(searchButton);
 
+    searchFilter.addEventListener('keydown', e => {
+        if(e.key === 'Enter'){
+            searchButton.onclick();
+        }
+    })
+
+    innerLevelListElement.appendChild(searchDiv);
+
+
+    const publishedToggle = document.createElement('div');
+    publishedToggle.classList.add('listItem');
+    publishedToggle.style = `
+        height: 40px;
+        align-items: center;
+    `;
+
+    const threewayToggle = document.createElement('div');
+    threewayToggle.innerHTML = `
+    <div class="threeway-toggle">
+        <input label="published" type="radio" id="male" name="gender" value="male" >
+        <input label="all" type="radio" id="female" name="gender" value="female" checked>
+        <input label="not published" type="radio" id="other" name="gender" value="other">
+    </div>
+    `;
+
+    publishedToggle.appendChild(threewayToggle);
+
+    innerLevelListElement.appendChild(publishedToggle);
+
+
+
     searchButton.onclick = () => {
         const splitSearch = searchFilter.value.split(' ');
+
+        const showOnlyPublished = threewayToggle.querySelector('#male').checked;
+        const showOnlyNotPublished = threewayToggle.querySelector('#other').checked;
+
+        const nonListItems = 3;
+    
         Array.from(innerLevelListElement.children).forEach((item, index) => {
-            let showElement = index < 2;
+            let showElement = index < nonListItems;
 
             if (searchFilter.value.length === 0) showElement = true;
 
-            if(searchFilter.value.length > 0 && index >= 2){
+            if(searchFilter.value.length > 0 && index >= nonListItems){
                 splitSearch.forEach(search => {
                     search = search.toLowerCase();
                     const title = item.querySelector('.itemTitle').innerText.toLowerCase();
@@ -1438,31 +1475,30 @@ export const showLoadScreen = function () {
                     if(title.indexOf(search) >= 0 || description.indexOf(search) >= 0){
                         showElement = true;
                     }
-
-                    if(search === 'published'){
-                        if(item.getAttribute('data-published') === 'true'){
-                            showElement = true;
-                        }
-                    }
-
                 });
             }
 
             if(showElement){
                 item.style.display = 'flex';
+
+                if(index >= nonListItems){
+                    if(showOnlyPublished && item.getAttribute('data-published') !== 'true'){
+                        item.style.display = 'none';
+                    } else if(showOnlyNotPublished && item.getAttribute('data-published') === 'true'){
+                        item.style.display = 'none';
+                    }
+                }
+
             } else {
                 item.style.display = 'none';
             }
         })
     }
 
-    searchFilter.addEventListener('keydown', e => {
-        if(e.key === 'Enter'){
-            searchButton.onclick();
-        }
-    })
 
-    innerLevelListElement.appendChild(searchDiv);
+    Array.from(threewayToggle.querySelectorAll('input')).forEach(input => {
+        input.onchange = () => searchButton.onclick();
+    });
 
     loadScreen.domElement.style.top = '10px';
     loadScreen.domElement.style.left = `${window.innerWidth-400-20}px`

@@ -1486,3 +1486,37 @@ select {
 .select option {
 	font-weight:normal;
 }
+
+
+
+.threeway-toggle {
+	padding: 4px;
+	position: relative;
+}
+
+.threeway-toggle input {
+	width: auto !important;
+	height: 100%;
+	appearance: none;
+	outline: none;
+	cursor: pointer;
+	padding: 4px 8px;
+	background: #444444;
+	color: #bdbdbdbd;
+	font-size: 14px;
+    font-weight: bold;
+	transition: all 100ms linear;
+    margin: 0 4px;
+}
+
+.threeway-toggle input:checked {
+	background-color: gray;
+	color: #fff;
+}
+
+.threeway-toggle input:before {
+	content: attr(label);
+	display: inline-block;
+	text-align: center;
+	width: 100%;
+}
