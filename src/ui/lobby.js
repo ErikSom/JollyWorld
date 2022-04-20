@@ -1,7 +1,7 @@
 import { formatDMY } from '../b2Editor/utils/formatString';
 import '../css/Lobby.scss'
 import { game } from '../Game';
-import { adminStartLoadLevel, leaveMultiplayer, LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
+import { adminStartLoadLevel, kickPlayer, leaveMultiplayer, LOBBY_STATE, multiplayerState, setLobbyStateReady } from '../multiplayer/multiplayerManager';
 import { multiplayerAtlas } from '../multiplayer/rippleCharacter';
 import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas';
 import { Settings } from '../Settings';
@@ -236,7 +236,7 @@ export const updateLobbyUI = () => {
 			kickButton.style.opacity = '0';
 		} else {
 			kickButton.onclick = () => {
-				multiplayerState.kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_BY_ADMIN);
+				kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_BY_ADMIN);
 			}
 		}
 

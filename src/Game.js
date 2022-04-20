@@ -52,7 +52,7 @@ import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
-import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE, sendGameOver, sendCheckpoint } from "./multiplayer/multiplayerManager";
+import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE, sendGameOver, sendCheckpoint, leaveMultiplayer } from "./multiplayer/multiplayerManager";
 import { hudState, HUD_STATES, updateMultiplayerHud } from "./multiplayer/hud";
 import FontFaceObserver from "fontfaceobserver";
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
@@ -824,7 +824,7 @@ function Game() {
     this.openSinglePlayer = function (levelData) {
 
         if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
-            multiplayerState.leaveLobby();
+            leaveMultiplayer();
         }
 
         this.cleanMenus();
