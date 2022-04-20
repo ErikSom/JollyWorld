@@ -78,6 +78,9 @@ export const generateLobby = () => {
 
 		const levelSelectButton = lobby.querySelector('.selectBut');
 		levelSelectButton.onclick = ()=>{
+			// we need to set the gameState twice, because the first time we make sure we dont leave multiplayer, then
+			// openSinglePlayer resets it, so we set it again
+			game.gameState = game.GAMESTATE_MULTIPLAYER_LEVELSELECT;
 			game.openSinglePlayer();
 			game.gameState = game.GAMESTATE_MULTIPLAYER_LEVELSELECT;
 		}

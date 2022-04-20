@@ -189,6 +189,10 @@ const didJoinLobby = ({code, admin}) => {
 	multiplayerState.lobby = code;
 	multiplayerState.admin = admin;
 
+	if(admin){
+		multiplayerState.lobbyState = LOBBY_STATE.WAITING;
+	}
+
 	// ******* TODO REMOVE:
 	// if(admin){
 	// 	// auto select level for development:
@@ -218,6 +222,17 @@ const didLeaveLobby = () => {
 }
 
 const playerJoined = async ({id}) => {
+
+	if(multiplayerState.admin){
+		if(multiplayerState.lobbyState !== LOBBY_STATE.WAITING){
+			kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_GAME_STARTED);
+			return;
+		} else if(multiplayerState.peersConnected >= Settings.maxMultiplayerPlayers - 1){
+			kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_GAME_FULL);
+			return;
+		}
+	}
+
 	const player = new RippleCharacter(id);
 	multiplayerState.players[id] = player;
 
@@ -226,6 +241,7 @@ const playerJoined = async ({id}) => {
 	multiplayerState.peersConnected++;
 
 	multiplayerState.lobbyState = LOBBY_STATE.WAITING;
+
 	const name = backendManager.userData?.username || multiplayerState.fakeUsername;
 	const lobbyState = multiplayerState.lobbyState;
 
@@ -249,14 +265,16 @@ const playerJoined = async ({id}) => {
 
 const playerLeft = ({id}) => {
 	console.log("********** PLAYER LEFT:", id)
-	multiplayerState.peersConnected--;
-	multiplayerState.players[id].sprite.destroy(
-		{
-			children: true,
-			texture: false, // TO DO MAKE THIS TRUE WHEN TEXTURES ARE TRANSFERRED
-			baseTexture: false
-		})
-	delete multiplayerState.players[id];
+	if(multiplayerState.players[id]){
+		multiplayerState.peersConnected--;
+		multiplayerState.players[id]?.sprite.destroy(
+			{
+				children: true,
+				texture: false, // TO DO MAKE THIS TRUE WHEN TEXTURES ARE TRANSFERRED
+				baseTexture: false
+			})
+		delete multiplayerState.players[id];
+	}
 
 	updateLobbyUI();
 	updateLeaderboard();
@@ -271,6 +289,8 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 	else introductionData = dataFromAdminIntroductionBuffer(buffer);
 
 	const player = multiplayerState.players[peer];
+
+	if(!player) return;
 
 	if(admin){
 		player.playerState = {
@@ -439,16 +459,22 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			break;
 
 		case SIMPLE_MESSAGE_TYPES.KICKED_BY_ADMIN:
-			alert("You have been kicked by the admin");
-			returnToMultiplayer();
+			if(!multiplayerState.admin){
+				alert("You have been kicked by the admin");
+				returnToMultiplayer();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.KICKED_GAME_FULL:
-			alert("The game is full");
-			returnToMultiplayer();
+			if(!multiplayerState.admin){
+				alert("The game is full");
+				returnToMultiplayer();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.KICKED_GAME_STARTED:
-			alert("The game has already started");
-			returnToMultiplayer();
+			if(!multiplayerState.admin){
+				alert("The game has already started");
+				returnToMultiplayer();
+			}
 			break;
 
 		default:
@@ -486,10 +512,12 @@ const handleLevelVotesMessage = ({peer, buffer}) => {
 }
 
 const handleReceiveSkin = ({peer, buffer}) => {
+	const player = multiplayerState.players[peer];
+	if(!player) return;
+
 	const blob = new Blob( [ buffer ], { type: "image/png" } );
     const urlCreator = window.URL || window.webkitURL;
     const imageUrl = urlCreator.createObjectURL( blob );
-	const player = multiplayerState.players[peer];
 	player.skinBlob = blob;
 	player.loadSkin(imageUrl);
 	updateLobbyUI();
