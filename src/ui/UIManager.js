@@ -143,7 +143,6 @@ function UIManager() {
             const multiplayerBut = grid.querySelector('.multiplayer-but');
             multiplayerBut.onclick = () => {
                 this.setMainMenuActive('multiplayer');
-                startMultiplayer();
             }
 
             const editorBut = grid.querySelector('.editor-but');
@@ -183,6 +182,7 @@ function UIManager() {
 
             const makeMultiplayerGameButton = multiPlayerGrid.querySelector('.create-game-but');
             makeMultiplayerGameButton.onclick = () => {
+                startMultiplayer();
                 createLobby();
                 this.setMainMenuActive('lobby');
             }

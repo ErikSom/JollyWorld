@@ -93,8 +93,7 @@ export const autoConnectLobby = id => {
 }
 
 export const createLobby = () => {
-	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
-	server.createLobby();
+	autoConnectLobby('')
 }
 
 export const setLobbyStateReady = ready => {
@@ -131,7 +130,7 @@ export const returnToMultiplayer = () => {
 	game.ui.setMainMenuActive('multiplayer');
 	game.gameState = game.GAMESTATE_MENU;
 
-	showLeaderboard(false);
+	leaveMultiplayer();
 
 	updateLobbyUI();
 }
@@ -141,6 +140,7 @@ export const leaveMultiplayer = () => {
 	showLeaderboard(false);
 	showChat(false);
 	multiplayerState.lobbyState = LOBBY_STATE.OFFLINE;
+	multiplayerState.ready = false;
 }
 
 export const resetMultiplayer = () => {

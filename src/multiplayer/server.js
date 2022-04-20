@@ -55,11 +55,16 @@ class MultiplayerServer {
 	}
 
 	createLobby(){
+		console.log("CREATE LOBBY");
 		this.admin = true;
 		this.n.create();
 	}
 
 	joinLobby(lobby){
+		if(lobby === ""){
+			this.createLobby();
+			return;
+		}
 		console.log("JOIN LOBBY:", lobby);
 		this.n.join(lobby);
 	}
