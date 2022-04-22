@@ -161,6 +161,8 @@ class SevenSegment extends PrefabManager.basePrefab {
         }else{
             this.linkedSegment = null;
         }
+        this.serializeProps();
+
         game.editor.updateSelection();
     }
     linkTrigger(targetSprite){
@@ -330,6 +332,7 @@ const selectLinkTarget = prefab=>{
         game.editor.customPrefabMouseMove = null;
     } else{
         prefab.class.linkedSegment = null;
+        prefab.class.serializeProps();
         game.editor.updateSelection();
     }
 }
@@ -381,6 +384,7 @@ const addCustomTriggerConditionGUI = (prefabObject, editData, targetFolder) => {
 
         const removeFunction = ()=>{
             prefabClass.linkedTriggers.splice(index, 1);
+            prefabClass.serializeProps();
             game.editor.updateSelection();
         }
 

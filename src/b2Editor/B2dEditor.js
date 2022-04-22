@@ -2387,7 +2387,7 @@ const _B2dEditor = function () {
 			data = copyArray[i].data;
 			if (data.type == this.object_TRIGGER) {
 				for (j = 0; j < data.triggerObjects.length; j++) {
-					var foundBody = -1;
+					let foundBody = -1;
 					let realIndex = 0;
 					for (k = 0; k < copyArray.length; k++) {
 						if (data.triggerObjects[j] == copyArray[k].ID) {
@@ -2412,7 +2412,9 @@ const _B2dEditor = function () {
 			data = copyArray[i].data;
 			if (data.type == this.object_PREFAB) {
 				const propertiesToFix = PrefabManager.copyFixProperties[data.prefabName] || [];
+
 				propertiesToFix.forEach( property => {
+					const idOffset = property === 'linkedSegmentId' ? 1 : 0;
 					const targetObject = data.settings[property];
 					if(targetObject && Array.isArray(targetObject)){
 						const newArr = [];
@@ -2420,13 +2422,21 @@ const _B2dEditor = function () {
 							let foundBody = -1;
 							let realIndex = 0;
 							for (k = 0; k < copyArray.length; k++) {
-								if (pid == copyArray[k].ID) {
+
+								if(property === 'linkedTriggerData'){
+									if(Array.isArray(pid) && pid[0] === copyArray[k].ID){
+										foundBody = [realIndex, pid[1]];
+										break;
+									}
+								}else if (pid == copyArray[k].ID + idOffset) {
 									foundBody = realIndex;
 									break;
 								}
+
+
 								realIndex += copyArray[k].childCount || 1;
 							}
-							if (foundBody >= 0){
+							if (foundBody >= 0 || Array.isArray(foundBody)){
 								newArr.push(foundBody);
 							};
 						});
@@ -10448,7 +10458,6 @@ const _B2dEditor = function () {
 					}
 					const prefabStartChildIndex = this.textures.children.length;
 					const prefabObjects = this.buildPrefabFromObj(obj);
-
 					// fix reference ids
 					const propertiesToFix = PrefabManager.copyFixProperties[obj.prefabName] || [];
 					propertiesToFix.forEach(property => {
