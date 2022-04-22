@@ -40,13 +40,15 @@ import * as MobileController from '../utils/MobileController';
 import * as SaveManager from "../utils/SaveManager"
 import { YouTubePlayer } from '../utils/YouTubePlayer';
 import * as AudioManager from "../utils/AudioManager"
-import * as TutorialManager from "../utils/TutorialManager"
 import SimpleBar from 'simplebar'
-import {countries, countryToFlag, localize} from '../utils/Localization'
+import {countries, localize} from '../utils/Localization'
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
+import { generateLobby, updateLobbyUI } from './lobby'
+import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
+import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -100,10 +102,17 @@ function UIManager() {
                 </div>
                 <div class="menu-grid">
                     <div class="singleplayer-but h2 v2"><span>${localize('mainmenu_singleplayer')}<span></div>
-                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span><span class="available-pc">${localize('mainmenu_availablepc')}</span></div>
-                    <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
                     <div class="characters-but h1 v1"><span>${localize('mainmenu_characters')}</span><div class="character-image"></div></div>
+                    <div class="discord-but h1 v1"><span>${localize('mainmenu_signup')}</span></div>
+                    <div class="multiplayer-but h2 v2"><span>${localize('mainmenu_multiplayer')}<span></div>
+                    <div class="editor-but h2 v1"><span>${localize('mainmenu_createlevels')}</span><span class="available-pc">${localize('mainmenu_availablepc')}</span></div>
                 </div>
+                <div class="multiplayer-menu-grid">
+                    <div class="quick-play-but h1 v1"><span>${localize('mainmenu_quickplay')}<span></div>
+                    <div class="create-game-but h1 v1"><span>${localize('mainmenu_creategame')}</span></div>
+                    <div class="back-but h2 v1"><div class="back-but-button">${localize('levelbanner_back')}</div></div>
+                </div>
+                <div class="multiplayer-lobby"></div>
                 ${this.getFooter()}
             `
 
@@ -111,6 +120,9 @@ function UIManager() {
             mainMenu.classList.add('mainmenu');
             mainMenu.innerHTML = htmlStructure;
 
+            const multiPlayerGrid = mainMenu.querySelector('.multiplayer-menu-grid');
+            const multiPlayerLobby = mainMenu.querySelector('.multiplayer-lobby');
+            multiPlayerLobby.appendChild(generateLobby());
 
             // header
             const header = mainMenu.querySelector('.header');
@@ -120,12 +132,17 @@ function UIManager() {
                 this.showSettingsMenu();
             }
 
-            // buttons
+            // buttons main
             const grid = mainMenu.querySelector('.menu-grid');
             const singleplayerBut = grid.querySelector('.singleplayer-but');
             singleplayerBut.onclick = () => {
                 this.hideMainMenu();
                 game.openSinglePlayer();
+            }
+
+            const multiplayerBut = grid.querySelector('.multiplayer-but');
+            multiplayerBut.onclick = () => {
+                this.setMainMenuActive('multiplayer');
             }
 
             const editorBut = grid.querySelector('.editor-but');
@@ -155,7 +172,24 @@ function UIManager() {
                 }
             }
 
+            // buttons multiplayer
+            const multiplayerBackButton = multiPlayerGrid.querySelector('.back-but');
+            multiplayerBackButton.onclick = () => {
+                this.setMainMenuActive('main');
+            }
+
+            const joinMultiplayerGameButton = multiPlayerGrid.querySelector('.quick-play-but');
+
+            const makeMultiplayerGameButton = multiPlayerGrid.querySelector('.create-game-but');
+            makeMultiplayerGameButton.onclick = () => {
+                startMultiplayer();
+                createLobby();
+                this.setMainMenuActive('lobby');
+            }
+
+            // misc
             backendManager.registerListener('login', ()=>this.handleLoginChange());
+            backendManager.registerListener('logout', ()=>this.handleLoginChange());
             this.handleLoginChange();
 
             this.gridOnlyEvenCells = ()=>{
@@ -170,10 +204,12 @@ function UIManager() {
                 }else{
                     grid.style.maxWidth = `${gridCell.width * 2 + gap}px`;
                 }
+
+                multiPlayerGrid.style.maxWidth = `${gridCell.width * 2 + gap}px`;
             }
 
 
-            const allButs = [singleplayerBut, editorBut, characterSelect, discordButton];
+            const allButs = [singleplayerBut, editorBut, characterSelect, discordButton, multiplayerBut, joinMultiplayerGameButton, makeMultiplayerGameButton];
             allButs.forEach(el => {
                 el.addEventListener('mouseover', () => {
                     const bounds = el.getBoundingClientRect();
@@ -212,12 +248,30 @@ function UIManager() {
             }
         }
 
+        this.setMainMenuActive('main');
+
         this.setMainMenuCharacterImage();
 
         mainMenu.style.display = 'block';
         this.gridOnlyEvenCells();
 
     }
+
+    this.setMainMenuActive = menuName => {
+        const mainGrid = mainMenu.querySelector('.menu-grid');
+        const multiplayerGrid = mainMenu.querySelector('.multiplayer-menu-grid');
+        const lobbyHolder = mainMenu.querySelector('.multiplayer-lobby');
+
+        mainGrid.style.display = menuName === 'main' ? 'grid' : 'none';
+        multiplayerGrid.style.display = menuName === 'multiplayer' ? 'grid' : 'none'
+        lobbyHolder.style.display = menuName === 'lobby' ? 'block' : 'none'
+
+        if(menuName === 'lobby'){
+            updateLobbyUI();
+        }
+
+    }
+
     this.hideMainMenu = () => {
         if(mainMenu) mainMenu.style.display = "none";
         this.hideCharacterSelect();
@@ -495,7 +549,15 @@ function UIManager() {
 
             // EXIT
             const exitButton = header.querySelector('.exit');
-            exitButton.addEventListener('click', () => game.openMainMenu())
+            exitButton.addEventListener('click', () =>{
+                if(game.gameState === game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+                    game.openMainMenu();
+                    game.gameState = game.GAMESTATE_LOBBY;
+                    game.ui.setMainMenuActive('lobby');
+                }else{
+                    game.openMainMenu();
+                }
+            });
 
             // if(backendManager.isLoggedIn()){
             //     const bestFilter = filters.querySelector('.best-filter');
@@ -520,7 +582,10 @@ function UIManager() {
                     this.hideCharacterSelect();
                     this.hideVehicleSelect();
                     this.hideYouTubePlayer();
-                    game.gameState = game.GAMESTATE_MENU;
+
+                    if(game.gameState !== game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+                        game.gameState = game.GAMESTATE_MENU;
+                    }
                 }
             }
         }
@@ -809,41 +874,55 @@ function UIManager() {
 
         const navButtons = levelBanner.querySelector('.nav-buttons');
         const playButton = navButtons.querySelector('.play');
-        const playLevelFunction = () => {
-            if (game.gameState != game.GAMESTATE_MENU) return;
-            game.gameState = game.GAMESTATE_LOADINGDATA;
+        const playButtonText = playButton.querySelector('.text-play');
 
-            playButton.classList.add('loading');
 
-            const playButtonText = playButton.querySelector('.text-play');
-            playButtonText.innerText = 'Loading';
+        if(game.gameState === game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+            playButtonText.innerText = localize('levelbanner_select');
+            playButton.onclick = () => {
+                selectMultiplayerLevel(levelData);
 
-            const progressBar = playButton.querySelector('.progress');
-            const progressFunction = progress => {
-                progress = Math.max(0, Math.min(1, progress));
-                const progressRounded = (progress*100).toFixed(2);
-                progressBar.style.width = `${progressRounded}%`;
+                game.openMainMenu();
+                game.gameState = game.GAMESTATE_LOBBY;
+                game.ui.setMainMenuActive('lobby');
             }
+        }else{
+            playButtonText.innerText = localize('levelbanner_play');
+            const playLevelFunction = () => {
+                if (game.gameState != game.GAMESTATE_MENU) return;
+                game.gameState = game.GAMESTATE_LOADINGDATA;
 
-            const finishLoading = ()=>{
-                playButton.classList.remove('loading');
-                playButtonText.innerText = localize('levelbanner_play');
-            }
+                playButton.classList.add('loading');
 
-            game.loadPublishedLevelData(levelData, progressFunction).then(() => {
-                this.hideLevelBanner();
-                if(levelData.forced_vehicle){
-                    game.selectedVehicle = levelData.forced_vehicle;
-                    this.playLevelFromSinglePlayer();
-                }else{
-                    this.showVehicleSelect();
+                playButtonText.innerText = 'Loading';
+
+                const progressBar = playButton.querySelector('.progress');
+                const progressFunction = progress => {
+                    progress = Math.max(0, Math.min(1, progress));
+                    const progressRounded = (progress*100).toFixed(2);
+                    progressBar.style.width = `${progressRounded}%`;
                 }
-                finishLoading();
-            }).catch(error => {
-                finishLoading();
-            });
+
+                const finishLoading = ()=>{
+                    playButton.classList.remove('loading');
+                    playButtonText.innerText = localize('levelbanner_play');
+                }
+
+                game.loadPublishedLevelData(levelData, progressFunction).then(() => {
+                    this.hideLevelBanner();
+                    if(levelData.forced_vehicle){
+                        game.selectedVehicle = levelData.forced_vehicle;
+                        this.playLevelFromSinglePlayer();
+                    }else{
+                        this.showVehicleSelect();
+                    }
+                    finishLoading();
+                }).catch(error => {
+                    finishLoading();
+                });
+            }
+            playButton.onclick = playLevelFunction;
         }
-        playButton.onclick = playLevelFunction;
 
         const socialBar = levelBanner.querySelector('.social-bar');
         const shareButton = socialBar.querySelector('.share')
@@ -1540,7 +1619,7 @@ function UIManager() {
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="exit">${localize('editorheader_exit')}</div>
                     <div class="test">${localize('levelgui_exittest')}</div>
                     <div class="reset">${localize('levelgui_reset')}</div>
                     <div class="retry">${localize('levelgui_retry')}</div>
@@ -1564,11 +1643,15 @@ function UIManager() {
             const buttons = gameOver.querySelector('.buttons');
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
-                this.hideGameOverMenu();
                 if(game.gameState == game.GAMESTATE_EDITOR){
                     game.resetWorld();
                 }else{
-                    game.openSinglePlayer(game.currentLevelData);
+                    // game.openSinglePlayer(game.currentLevelData);
+                    if(game.currentLevelData.forced_vehicle){
+                        game.resetWorld();
+                    } else {
+                        this.showVehicleSelect();
+                    }
                 }
             };
             const retryButton = buttons.querySelector('.retry');
@@ -1579,7 +1662,15 @@ function UIManager() {
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
                 this.hideGameOverMenu();
-                game.openSinglePlayer();
+
+                const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
+
+                if(!multiplayerAdmin){
+                    game.openSinglePlayer();
+                } else {
+                    adminReturnToLobby();
+                    returnToLobby();
+                }
             };
 
             const testButton = buttons.querySelector('.test');
@@ -1594,6 +1685,15 @@ function UIManager() {
         const buttons = gameOver.querySelector('.buttons');
         const exitButton = buttons.querySelector('.exit');
         const testButton = buttons.querySelector('.test');
+
+        const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
+
+        if(!multiplayerAdmin){
+            exitButton.innerText = localize('editorheader_exit');
+        } else {
+            exitButton.innerText = 'Lobby';
+        }
+
 
         if(gameOver && game.run) gameOver.style.display = 'block';
 
@@ -1844,6 +1944,8 @@ function UIManager() {
 
     this.playLevelFromSinglePlayer = function(delay){
 
+        const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
+
         const continueToGame = ()=>{
             game.preloader.classList.remove('hide');
             setTimeout(()=>{
@@ -1851,17 +1953,38 @@ function UIManager() {
                 game.initLevel(game.currentLevelData);
                 game.playWorld(true);
                 backendManager.increasePlayCountPublishedLevel(game.currentLevelData);
+
+                if(multiplayer){
+                    // we want to wait for other players
+                    game.run = false;
+                    game.gameCamera(true);
+                }
+
                 setTimeout(()=>{
                     game.preloader.classList.add('hide');
+
+                    if(multiplayer){
+                        sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.PLAYER_FINISHED_LOADING);
+                    }
+
                 }, Settings.levelBuildDelayTime);
             }, Settings.levelBuildDelayTime);
         }
 
-        PokiSDK.commercialBreak().then(
-            () => {
-                continueToGame();
-            }
-        );
+        if(multiplayer){
+            this.hideMainMenu();
+            continueToGame();
+
+            sendSimpleMessageAll(SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE + game.selectedVehicle);
+
+            // send vehicle choice
+        }else{
+            PokiSDK.commercialBreak().then(
+                () => {
+                    continueToGame();
+                }
+            );
+        }
     }
 
     this.showVehicleSelect = function(){
@@ -1892,7 +2015,11 @@ function UIManager() {
 
                 portrait.onclick = () => {
                     if (!game.currentLevelData.forced_vehicle || (i + 1) === game.currentLevelData.forced_vehicle) {
+                        game.unpauseGame()
                         this.hideVehicleSelect();
+                        this.hideWinScreen();
+                        this.hideGameOverMenu();
+                        this.hidePauseMenu();
                         game.selectedVehicle = i + 1;
                         this.playLevelFromSinglePlayer();
                     }
@@ -1903,14 +2030,25 @@ function UIManager() {
             customGUIContainer.appendChild(vehicleSelect);
         }
 
+        vehicleSelect.parentNode.appendChild(vehicleSelect);
+
         vehicleSelect.style.display = 'block';
         singlePlayer.classList.add('inactive');
 
         const back = vehicleSelect.querySelector('.back');
         back.onclick = ()=>{
             this.hideVehicleSelect();
-            game.gameState = game.GAMESTATE_MENU;
-            this.showLevelBanner(game.currentLevelData);
+            if(game.gameState === game.GAMESTATE_LOADINGDATA){
+                game.gameState = game.GAMESTATE_MENU;
+                this.showLevelBanner(game.currentLevelData);
+            }
+        }
+
+        const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
+        if(multiplayer && game.gameState === game.GAMESTATE_LOADINGDATA){
+            back.style.display = 'none';
+        } else {
+            back.style.display = 'block';
         }
     }
 
@@ -1951,7 +2089,7 @@ function UIManager() {
                 <div class="buttons">
                     <div class="reset">${localize('levelgui_reset')}</div>
                     <div class="retry">${localize('levelgui_retry')}</div>
-                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="exit">${localize('editorheader_exit')}</div>
                     <div class="resume">${localize('levelgui_resume')}</div>
                 </div>
             `;
@@ -1963,8 +2101,12 @@ function UIManager() {
             const buttons = pauseScreen.querySelector('.buttons');
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
-                game.unpauseGame();
-                game.openSinglePlayer(game.currentLevelData);
+                if(game.currentLevelData.forced_vehicle){
+                    game.unpauseGame();
+                    game.resetWorld();
+                } else {
+                    this.showVehicleSelect();
+                }
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
@@ -1973,8 +2115,15 @@ function UIManager() {
             };
             const exitButton = buttons.querySelector('.exit');
             exitButton.onclick = () => {
+                const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
                 game.unpauseGame();
-                game.openSinglePlayer();
+
+                if(!multiplayerAdmin){
+                    game.openSinglePlayer();
+                } else {
+                    adminReturnToLobby();
+                    returnToLobby();
+                }
             };
             const resumeButton = buttons.querySelector('.resume');
             resumeButton.onclick = () => {
@@ -1984,6 +2133,17 @@ function UIManager() {
             };
 
             customGUIContainer.appendChild(pauseScreen);
+        }
+
+        const buttons = pauseScreen.querySelector('.buttons');
+        const exitButton = buttons.querySelector('.exit');
+
+        const multiplayerAdmin = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && multiplayerState.admin;
+
+        if(!multiplayerAdmin){
+            exitButton.innerText = localize('editorheader_exit');
+        } else {
+            exitButton.innerText = 'Lobby';
         }
 
         const title = pauseScreen.querySelector('.text-level-name');
@@ -2008,7 +2168,9 @@ function UIManager() {
         pauseScreen.style.display = 'block';
     }
     this.hidePauseMenu = function () {
-        pauseScreen.style.display = 'none';
+        if(pauseScreen){
+            pauseScreen.style.display = 'none';
+        }
     }
 
     this.showWinScreen = function(time, mili){
@@ -2023,7 +2185,7 @@ function UIManager() {
                     <div class="text-time-mili">00:00</div>
                 </div>
                 <div class="buttons">
-                    <div class="exit">${localize('levelgui_exittomenu')}</div>
+                    <div class="exit">${localize('editorheader_exit')}</div>
                     <div class="test">${localize('levelgui_exittest')}</div>
                     <div class="reset">${localize('levelgui_reset')}</div>
                     <div class="retry">${localize('levelgui_retry')}</div>
@@ -2047,8 +2209,11 @@ function UIManager() {
             const buttons = winScreen.querySelector('.buttons');
             const resetButton = buttons.querySelector('.reset');
             resetButton.onclick = () => {
-                this.hideWinScreen();
-                game.openSinglePlayer(game.currentLevelData);
+                if(game.currentLevelData.forced_vehicle){
+                    game.resetWorld();
+                } else {
+                    this.showVehicleSelect();
+                }
             };
             const retryButton = buttons.querySelector('.retry');
             retryButton.onclick = () => {
@@ -2158,7 +2323,7 @@ function UIManager() {
             recommendations.removeChild(recommendations.children[0]);
         }
 
-        if(game.tutorialMode || game.gameState === game.GAMESTATE_EDITOR){
+        if((game.tutorialMode || game.gameState === game.GAMESTATE_EDITOR) || multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
             recommendations.style.display = 'none'
             return;
         }

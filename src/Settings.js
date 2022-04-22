@@ -28,6 +28,18 @@ export var Settings = {
     levelAdmin:false,
     disableAds:false,
     onPoki:false,
+    /*MULTIPLAYER*/
+    maxMultiplayerPlayers: 8,
+    startGameTimer: 5000,
+    endGameTimer: 60000,
+    maxChatLength: 200,
+    maxChatMessages: 50,
+    chatBlurTimeout: 3000,
+    chatIdleHideTime: 10000,
+    destroyedPosition: 133.7,
+    maxTolerableLatency: 200,
+    maxExtrapolation: 100,
+    numEmojis:10,
     /*SOUND*/
     sfxOn:true,
     midiMusicVolume: 1.0,

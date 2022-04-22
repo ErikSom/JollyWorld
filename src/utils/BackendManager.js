@@ -363,7 +363,7 @@ function BackendManager() {
 		// level search
 		// (GET) levels/?
 		/* QUERY PARAMS:
-		(req - niet nodig met search) 	sort=oldest|newest|mostplayed|best
+		(req - niet nodig met search) 	sort=oldest|newest|mostplayed|best|random
 		(req) 	timespan=today|week|month|anytime
 		(req)	search=string
 				forcedVehicle=nummer
@@ -379,6 +379,25 @@ function BackendManager() {
 			let query = `sort=${sort}&timespan=${range}${featuredQuery}&limit=${Settings.levelsPerRequest}`;
 			if(search) query = `search=${search}&${query}`;
 			if(vehicle !== '') query += `&forcedVehicle=${vehicle}`;
+
+			const body = {
+				method: 'GET',
+			}
+
+			fetch(`${Settings.API}/levels/?${query}`, body)
+			.then(result => result.json())
+			.then(async data => {
+				const {error} = data;
+				if(error) return reject(error);
+
+				resolve(data);
+
+			});
+        });
+    }
+	this.getRandomPublishedLevels = function (amount) {
+        return new Promise((resolve, reject) => {
+			const query = `sort=random&timespan=anytime&featured=1&limit=${amount}`;
 
 			const body = {
 				method: 'GET',

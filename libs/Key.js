@@ -53,6 +53,7 @@ export const Key = {
     COMMAND:91,
     MOUSE:1000,
     SPACE:32,
+    SLASH: 191,
     isDown: function (keyCode) {
         if(keyCode instanceof Array){
             var i;
@@ -73,7 +74,6 @@ export const Key = {
     },
 
     onKeydown: function (event) {
-
         if(!this._down[event.keyCode]) this._pressed[event.keyCode] = true;
         this._down[event.keyCode] = true;
 
@@ -89,7 +89,6 @@ export const Key = {
     },
 
     onKeyUp: function (event) {
-
         delete this._down[event.keyCode];
         this._released[event.keyCode] = true;
 
@@ -135,6 +134,7 @@ export const KeyNames = [
     'DELETE',
     'COMMAND',
     'SPACE',
+    'SLASH',
     '0',
     '1',
     '2',

@@ -1,0 +1,131 @@
+﻿{"frames": {
+
+"Mouth_Idle":
+{
+	"frame": {"x":156,"y":199,"w":43,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
+	"sourceSize": {"w":43,"h":31}
+},
+"Mouth_Pain":
+{
+	"frame": {"x":108,"y":205,"w":43,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
+	"sourceSize": {"w":43,"h":31}
+},
+"Mouth_Special":
+{
+	"frame": {"x":208,"y":185,"w":43,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":31},
+	"sourceSize": {"w":43,"h":31}
+},
+"Normal_Arm":
+{
+	"frame": {"x":208,"y":125,"w":36,"h":58},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":58},
+	"sourceSize": {"w":36,"h":58}
+},
+"Normal_Belly":
+{
+	"frame": {"x":156,"y":75,"w":84,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":84,"h":48},
+	"sourceSize": {"w":84,"h":48}
+},
+"Normal_Core":
+{
+	"frame": {"x":2,"y":2,"w":122,"h":111},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":122,"h":111},
+	"sourceSize": {"w":122,"h":111}
+},
+"Normal_Eye":
+{
+	"frame": {"x":126,"y":75,"w":23,"h":23},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":23},
+	"sourceSize": {"w":23,"h":23}
+},
+"Normal_Eye_Closed":
+{
+	"frame": {"x":201,"y":218,"w":23,"h":23},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":23},
+	"sourceSize": {"w":23,"h":23}
+},
+"Normal_Feet":
+{
+	"frame": {"x":44,"y":213,"w":62,"h":22},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":62,"h":22},
+	"sourceSize": {"w":62,"h":22}
+},
+"Normal_Hand":
+{
+	"frame": {"x":2,"y":213,"w":40,"h":36},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":36},
+	"sourceSize": {"w":40,"h":36}
+},
+"Normal_Head_Idle":
+{
+	"frame": {"x":2,"y":115,"w":96,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":96},
+	"sourceSize": {"w":96,"h":96}
+},
+"Normal_Leg":
+{
+	"frame": {"x":156,"y":125,"w":50,"h":72},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":72},
+	"sourceSize": {"w":50,"h":72}
+},
+"Normal_Shoulder":
+{
+	"frame": {"x":199,"y":2,"w":42,"h":70},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":42,"h":70},
+	"sourceSize": {"w":42,"h":70}
+},
+"Normal_Thigh":
+{
+	"frame": {"x":100,"y":115,"w":54,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":88},
+	"sourceSize": {"w":54,"h":88}
+},
+"profile instance 1":
+{
+	"frame": {"x":126,"y":2,"w":71,"h":71},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":71,"h":71},
+	"sourceSize": {"w":71,"h":71}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "21.0.7.42652",
+	"image": "Multiplayer_Character.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":256},
+	"scale": "1"
+}
+}

@@ -52,7 +52,9 @@ import {b2CloneVec2, b2LinearStiffness, b2MulVec2} from '../libs/debugdraw'
 import * as betterLocalStorage from './utils/LocalStorageWrapper'
 import { updateDisplayAds } from "./utils/AdManager";
 import { setZoom } from "./b2Editor/utils/camera";
-
+import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE, sendGameOver, sendCheckpoint, leaveMultiplayer } from "./multiplayer/multiplayerManager";
+import { hudState, HUD_STATES, updateMultiplayerHud } from "./multiplayer/hud";
+import FontFaceObserver from "fontfaceobserver";
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
 const {b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef} = Box2D;
@@ -247,9 +249,9 @@ function Game() {
 
     };
 
-    this.gameSetup = function () {
+    this.gameSetup = async function () {
         // first thing we do is mod the textures
-        ModManager.init();
+        await ModManager.init();
 
         this.world = new b2World(
             new b2Vec2(0, 10) //gravity
@@ -282,6 +284,9 @@ function Game() {
         //container
         this.myEffectsContainer = new PIXI.Container();
         this.stage.addChild(this.myEffectsContainer);
+
+        this.hudContainer = new PIXI.Container();
+        this.stage.addChild(this.hudContainer);
 
         this.triggerDebugDraw = new PIXI.Graphics();
         this.triggerDebugDraw.debounceRedraw = ()=>{
@@ -322,6 +327,8 @@ function Game() {
         const urlParams = new URLSearchParams(window.location.search);
         const forceTutorial = urlParams.get('forceTutorial');
         let uidHash = urlParams.get('lvl') || urlParams.get('gd-lvl');
+        const username = urlParams.get('user');
+        const lobbyID = urlParams.get('lobbyID');
 
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 
@@ -340,12 +347,18 @@ function Game() {
             }).catch(_err =>{
                 if(!Settings.onPoki) history.replaceState({}, document.title, '')
             });
-        }else{
-            const username = urlParams.get('user');
-            if(username){
-                this.openSinglePlayer();
-                ui.showUserPage(username);
-            }
+        }else if(username){
+            this.openSinglePlayer();
+            ui.showUserPage(username);
+        }else if(lobbyID){
+            // start network manager
+
+            // we need the single player menu build for recommendations
+            ui.showSinglePlayer();
+            ui.hideSinglePlayer();
+		    ui.setMainMenuActive('lobby');
+            startMultiplayer();
+            autoConnectLobby(lobbyID);
         }
 
         if(window.dafadfgjiwrgj || urlParams.get('disableAds')) Settings.disableAds = true;
@@ -452,7 +465,7 @@ function Game() {
         SlowmoUI.init();
         this.handleResize();
 
-        if((!userData.tutorialFinished && !backendManager.isLoggedIn() && !MobileController.isMobile()) || forceTutorial){
+        if((!userData.tutorialFinished && !backendManager.isLoggedIn() && !MobileController.isMobile() && !lobbyID) || forceTutorial){
             this.showInitialTutorial();
         }else{
             this.preloader.classList.add('hide');
@@ -712,7 +725,9 @@ function Game() {
                 this.resetWorld(false);
             }else if((e.keyCode == Key.P || e.keyCode == Key.R || e.keyCode == Key.ESCAPE || e.keyCode == Key.TAB)){
                 if(!this.pause){
-                     this.pauseGame();
+                    // when we have the chat open we dont want to open pause when escing
+                    console.log("PAUSE GAME!!")
+                    this.pauseGame();
                 } else{
                     this.unpauseGame();
                     PokiSDK.gameplayStart();
@@ -807,6 +822,11 @@ function Game() {
     }
 
     this.openSinglePlayer = function (levelData) {
+
+        if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && game.gameState !== game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+            leaveMultiplayer();
+        }
+
         this.cleanMenus();
         ui.showSinglePlayer();
 
@@ -1063,7 +1083,9 @@ function Game() {
     }
     this.unpauseGame = function(){
         this.pause = false;
-        this.run = true;
+        if(![HUD_STATES.WAITING_PLAYERS, HUD_STATES.COUNTDOWN].includes(hudState)){
+            this.run = true;
+        }
         ui.hidePauseMenu();
         MobileController.show();
     }
@@ -1071,6 +1093,9 @@ function Game() {
         this.levelWon = false;
         this.gameOver = false;
         this.checkPointData = null;
+        this.character = null;
+        this.vehicle = null;
+        this.cameraFocusObject = null;
     }
     
     this.autoSaveTimeOutID;
@@ -1160,6 +1185,10 @@ function Game() {
                 // save checkpoint time
             }
 
+            if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
+                sendCheckpoint();
+            }
+
             window.SVGCache[3]();
         }
     }
@@ -1167,34 +1196,49 @@ function Game() {
         if (!this.gameOver && !this.levelWon) {
             this.levelWon = true;
             // GAME STATE NORMAL
-            if(this.gameState == this.GAMESTATE_NORMALPLAY){
-                await backendManager.submitTime(game.currentLevelData.id);
-            }
 
-            let d;
-            if(window.wqhjfu){
-               d = timeFormat(window.wqhjfu);
+            const multiplayer = multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE;
+            if(!multiplayer){
+
+                if(multiplayerState.lobbyState === LOBBY_STATE.VOTING) return;
+
+                if(this.gameState == this.GAMESTATE_NORMALPLAY){
+                    await backendManager.submitTime(game.currentLevelData.id);
+                }
+
+                let d;
+                if(window.wqhjfu){
+                d = timeFormat(window.wqhjfu);
+                }else{
+                d = timeFormat(this.gameFrame * (1/60) * 1000);
+                }
+
+                const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
+                if(this.gameState == this.GAMESTATE_EDITOR){
+                    ui.show();
+                    ui.showWinScreen(s, d.ms);
+                }else if(this.gameState == this.GAMESTATE_NORMALPLAY){;
+                    ui.showWinScreen(s, d.ms);
+                }
             }else{
-               d = timeFormat(this.gameFrame * (1/60) * 1000);
+                const d = this.gameFrame * (1/60) * 1000;
+                sendLevelWon(d);
             }
 
-            const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
-            if(this.gameState == this.GAMESTATE_EDITOR){
-                ui.show();
-                ui.showWinScreen(s, d.ms);
-            }else if(this.gameState == this.GAMESTATE_NORMALPLAY){;
-                ui.showWinScreen(s, d.ms);
-            }
             this.editor.ui.showConfetti();
-            MobileController.hide();
-            GameTimer.show(false);
+                MobileController.hide();
+                GameTimer.show(false);
 
             this.exitPointerLock();
-
         }
     }
     this.gameLose = function () {
-        if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR)) {
+
+        const multiplayerAllowed = multiplayerState.lobbyState === LOBBY_STATE.OFFLINE || multiplayerState.lobbyState === LOBBY_STATE.PLAYING;
+
+
+        if (!this.gameOver && !this.levelWon && (this.gameState === this.GAMESTATE_NORMALPLAY || this.gameState === this.GAMESTATE_EDITOR) && multiplayerAllowed) {
+
             const d = timeFormat(this.gameFrame * (1/60) * 1000);
             const s = d.hh !== '00' ? `${d.hh}:${d.mm}:${d.ss}.` : `${d.mm}:${d.ss}.`;
             ui.show();
@@ -1203,6 +1247,10 @@ function Game() {
             this.gameOver = true;
 
             this.exitPointerLock();
+
+            if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE){
+                sendGameOver();
+            }
         }
     }
 
@@ -1624,6 +1672,10 @@ function Game() {
 
         if(this.needScreenshot) this.screenShotData = game.app.renderer.plugins.extract.canvas();
         PIXICuller.update();
+
+        updateMultiplayer();
+        updateMultiplayerHud();
+
         Key.update();
 
         this.stats.end();
@@ -1673,8 +1725,17 @@ function Game() {
     this.GAMESTATE_EDITOR = 1;
     this.GAMESTATE_NORMALPLAY = 2;
     this.GAMESTATE_LOADINGDATA = 3;
+    this.GAMESTATE_LOBBY = 4;
+    this.GAMESTATE_MULTIPLAYER_LEVELSELECT = 5;
+    this.GAMESTATE_MULTIPLAYERPLAY = 6;
 }
 export var game = new Game();
 setTimeout(() => {
-    game.gameInit();
+    const font = new FontFaceObserver('Montserrat');
+    font.load().then(() => {
+        console.log('MONTSERRAT has loaded.');
+        game.gameInit();
+    }).catch(err => {
+        game.gameInit();
+    });
 }, 1); // guarantee all context is loaded and fix webpack order issue

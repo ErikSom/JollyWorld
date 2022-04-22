@@ -29,82 +29,249 @@ export const localize = id =>{
 
 export const countries = ['de','nl','us','pt','fr','es','it','cz','jr'];
 
-
-// export const countryToFlag = country => {
-//     switch(country){
-//         case 'de': return '🇩🇪'
-//         case 'nl': return '🇳🇱'
-//         case 'us': return '🇺🇸'
-//         case 'pt': return '🇵🇹'
-//         case 'fr': return '🇫🇷'
-//         case 'es': return '🇪🇸'
-//         case 'it': return '🇮🇹'
-//     }
-// }
-// export const countryToLanguage = country => {
-//     let language = country
-//     if(['uk', 'ca', 'us', 'ie'].includes(country)) language = 'en';
-//     if(['br'].includes(country)) language = 'pt';
-//     if(['be'].includes(country)) language = 'nl';
-// }
-
 const LOCALIZATION_DATA = [
     {
         "textId": "mainmenu_singleplayer",
         "us": "Single Player",
         "nl": "Een Speler",
         "de": "Einzelspieler",
+        "es": "Un solo jugador",
+        "pt": "Único jogador",
         "cz": "Jeden hráč",
+        "fr": "Joueur unique",
+        "it": "Giocatore singolo",
         "jr": "Lon'ly Adventure"
+    },
+    {
+        "textId": "mainmenu_multiplayer",
+        "us": "Multiplayer",
+        "nl": "Meerdere Spelers",
+        "de": "Multiplayer.",
+        "es": "Multijugador",
+        "pt": "Multiplayer.",
+        "cz": "Multiplayer.",
+        "fr": "Multijoueur",
+        "it": "Multiplayer"
+    },
+    {
+        "textId": "mainmenu_creategame",
+        "us": "Create Game",
+        "nl": "Maak Game",
+        "de": "Spiel erstellen",
+        "es": "Crear juego",
+        "pt": "Criar jogo",
+        "cz": "Vytvořit hru",
+        "fr": "Créer un jeu",
+        "it": "Crea game."
+    },
+    {
+        "textId": "mainmenu_changelevel",
+        "us": "Change",
+        "nl": "Verander",
+        "de": "Ändern",
+        "es": "Cambiar",
+        "pt": "Mudar",
+        "cz": "Změna",
+        "fr": "Changement",
+        "it": "Modificare"
+    },
+    {
+        "textId": "mainmenu_selectlevel",
+        "us": "Select Level",
+        "nl": "Selecteer Level",
+        "de": "Stufe auswählen",
+        "es": "Selecciona el nivel",
+        "pt": "Selecione o nível",
+        "cz": "Vyberte úroveň",
+        "fr": "Choisir le niveau",
+        "it": "Seleziona livello"
+    },
+    {
+        "textId": "mainmenu_players",
+        "us": "Players",
+        "nl": "Spelers",
+        "de": "Spieler",
+        "es": "Jugadores",
+        "pt": "Jogadoras",
+        "cz": "Hráči",
+        "fr": "Joueurs",
+        "it": "Giocatori"
+    },
+    {
+        "textId": "mainmenu_nolevel",
+        "us": "Admin is selecting level",
+        "nl": "Admin is level aan het uitzoeken",
+        "de": "Administrator sucht Level",
+        "es": "El administrador es seleccionando nivel",
+        "pt": "Admin está selecionando nível",
+        "cz": "Admin je výběr úrovně",
+        "fr": "Admin est la sélection de niveau",
+        "it": "L'amministratore sta selezionando il livello"
+    },
+    {
+        "textId": "mainmenu_ready",
+        "us": "Ready",
+        "nl": "Gereed",
+        "de": "Bereit",
+        "es": "Listo",
+        "pt": "Preparar",
+        "cz": "Připravený",
+        "fr": "Prêt",
+        "it": "Pronto"
+    },
+    {
+        "textId": "mainmenu_start",
+        "us": "Start",
+        "nl": "Start",
+        "de": "Start",
+        "es": "Comienzo",
+        "pt": "Começar",
+        "cz": "Start",
+        "fr": "Démarrer",
+        "it": "Cominciare"
+    },
+    {
+        "textId": "mainmenu_admin",
+        "us": "Admin",
+        "nl": "Admin",
+        "de": "Administrator",
+        "es": "Administración",
+        "pt": "Admin.",
+        "cz": "Admin",
+        "fr": "Admin",
+        "it": "Amministratore"
+    },
+    {
+        "textId": "mainmenu_connecting",
+        "us": "Connecting",
+        "nl": "Verbinden",
+        "de": "Anschluss",
+        "es": "Conexión",
+        "pt": "Conectando",
+        "cz": "Spojovací",
+        "fr": "De liaison",
+        "it": "Collegamento"
+    },
+    {
+        "textId": "mainmenu_waiting",
+        "us": "Waiting",
+        "nl": "Wachten",
+        "de": "Warten",
+        "es": "Esperando",
+        "pt": "Espera",
+        "cz": "Čekání",
+        "fr": "Attendre",
+        "it": "In attesa"
+    },
+    {
+        "textId": "mainmenu_kick",
+        "us": "Kick",
+        "nl": "Trap",
+        "de": "Trete",
+        "es": "Patear",
+        "pt": "Chute",
+        "cz": "Kop",
+        "fr": "Donner un coup",
+        "it": "Calcio"
+    },
+    {
+        "textId": "mainmenu_leave",
+        "us": "Leave",
+        "nl": "Verlaat",
+        "de": "Verlassen",
+        "es": "Salir",
+        "pt": "Sair",
+        "cz": "Odejít",
+        "fr": "Quitter",
+        "it": "Lasciare"
+    },
+    {
+        "textId": "mainmenu_quickplay",
+        "us": "Quick Play",
+        "nl": "Snel Spelen",
+        "de": "Schnelles Spiel",
+        "es": "Juego rápido",
+        "pt": "Jogo rápido",
+        "cz": "Rychlá hra",
+        "fr": "Jeu rapide",
+        "it": "Partita veloce"
     },
     {
         "textId": "mainmenu_createlevels",
         "us": "Create levels!",
         "nl": "Creëer levels!",
         "de": "Level erstellen!",
-        "cz": "Vytvoř level!"
+        "es": "¡Crea niveles!",
+        "pt": "Criar níveis!",
+        "cz": "Vytvoř level!",
+        "fr": "Créer des niveaux!",
+        "it": "Crea livelli!"
     },
     {
         "textId": "mainmenu_signup",
         "us": "Sign Up!",
         "nl": "Inschrijven!",
         "de": "Registrieren!",
-        "cz": "Zaregistrovat se!"
+        "es": "¡Inscribirse!",
+        "pt": "Inscrever-se!",
+        "cz": "Zaregistrovat se!",
+        "fr": "S'inscrire!",
+        "it": "Iscrizione!"
     },
     {
         "textId": "mainmenu_characters",
         "us": "Characters",
         "nl": "Karakters",
         "de": "Charaktere",
-        "cz": "Postavy"
+        "es": "Caracteres",
+        "pt": "Personagens",
+        "cz": "Postavy",
+        "fr": "Personnages",
+        "it": "Personaggi"
     },
     {
         "textId": "mainmenu_onlyfeatured",
         "us": "Only Featured",
         "nl": "Alleen Aanbevolen",
         "de": "Nur Empfohlene",
-        "cz": "Pouze doporučené"
+        "es": "Solo destacado",
+        "pt": "Apenas destaque",
+        "cz": "Pouze doporučené",
+        "fr": "Seulement présenté",
+        "it": "Solo in primo piano"
     },
     {
         "textId": "mainmenu_sorted",
         "us": "Sorted By:",
         "nl": "Gesorteerd Op:",
         "de": "Sortiert nach:",
-        "cz": "Seřazeno podle"
+        "es": "Ordenado por:",
+        "pt": "Classificado por:",
+        "cz": "Seřazeno podle",
+        "fr": "Trié par:",
+        "it": "Ordinato per:"
     },
     {
         "textId": "mainmenu_filters",
         "us": "Filters",
         "nl": "Filters",
         "de": "Filter",
-        "cz": "Filtr"
+        "es": "Filtros",
+        "pt": "Filtros",
+        "cz": "Filtr",
+        "fr": "Filtres",
+        "it": "Filtri"
     },
     {
         "textId": "mainmenu_allvehicles",
         "us": "All Vehicles",
         "nl": "Alle Voertuigen",
         "de": "Alle Fahrzeuge",
-        "cz": "Všechna vozidla"
+        "es": "Todos los vehiculos",
+        "pt": "Todos os veículos",
+        "cz": "Všechna vozidla",
+        "fr": "Tous les véhicules",
+        "it": "Tutti i veicoli"
     },
     {
         "textId": "mainmenu_best_rated",
@@ -348,18 +515,18 @@ const LOCALIZATION_DATA = [
     },
     {
         "textId": "settings_consent",
-        "us": "Cookies",
-        "nl": "Cookies",
-        "de": "Cookies",
-        "cz": "Cookies",
-        "jr": "Cookies"
+        "us": "Cookies"
     },
     {
         "textId": "settings_credits",
         "us": "Credits",
         "nl": "Credits",
         "de": "Beiträge",
+        "es": "Créditos",
+        "pt": "Créditos",
         "cz": "Autoři",
+        "fr": "Crédits",
+        "it": "Crediti",
         "jr": "Crewmates"
     },
     {
@@ -367,7 +534,11 @@ const LOCALIZATION_DATA = [
         "us": "Mod active",
         "nl": "Mod actief",
         "de": "Aktive Mod",
+        "es": "MOD activo",
+        "pt": "Mod ativo.",
         "cz": "Aktivní mod",
+        "fr": "Mod actif",
+        "it": "Mod Active.",
         "jr": "New Seas?"
     },
     {
@@ -375,14 +546,22 @@ const LOCALIZATION_DATA = [
         "us": "Modify",
         "nl": "Modificeer",
         "de": "Modifizieren",
-        "cz": "Modifikovat"
+        "es": "Modificar",
+        "pt": "Modificar",
+        "cz": "Modifikovat",
+        "fr": "Modifier",
+        "it": "Modificare"
     },
     {
         "textId": "settings_none",
         "us": "None",
         "nl": "Geen",
         "de": "Keine",
+        "es": "Ninguna",
+        "pt": "Nenhum",
         "cz": "Žádný",
+        "fr": "Aucun",
+        "it": "Nessuno",
         "jr": "Nay"
     },
     {
@@ -426,7 +605,11 @@ const LOCALIZATION_DATA = [
         "us": "Favorite",
         "nl": "Favoriet",
         "de": "Favorit",
+        "es": "Favorito",
+        "pt": "Favorito",
         "cz": "Oblíbené",
+        "fr": "Favori",
+        "it": "Preferito",
         "jr": "Treasure"
     },
     {
@@ -562,11 +745,26 @@ const LOCALIZATION_DATA = [
         "jr": "Treasure unclaimed"
     },
     {
+        "textId": "levelbanner_select",
+        "us": "Select",
+        "nl": "Selecteer",
+        "de": "Auswählen",
+        "es": "Seleccione",
+        "pt": "Selecione.",
+        "cz": "Vybrat",
+        "fr": "Sélectionner",
+        "it": "Selezionare"
+    },
+    {
         "textId": "userpage_levelspublished",
         "us": "Levels Published",
         "nl": "Levels Gepubliceerd",
         "de": "Level veröffentlicht",
+        "es": "Niveles publicados",
+        "pt": "Níveis publicados",
         "cz": "Zveřejněné levely",
+        "fr": "Niveaux publiés",
+        "it": "Livelli pubblicati",
         "jr": "Islands Mapped"
     },
     {
@@ -585,7 +783,11 @@ const LOCALIZATION_DATA = [
         "us": "Levels Featured",
         "nl": "Levels Aanbevolen",
         "de": "Empfohlene Level",
+        "es": "Niveles destacados",
+        "pt": "Níveis apresentados",
         "cz": "Doporučené levely",
+        "fr": "Niveaux en vedette",
+        "it": "Livelli in evidenza",
         "jr": "Scurvy Approved Islands"
     },
     {
@@ -605,7 +807,11 @@ const LOCALIZATION_DATA = [
         "us": "Levels",
         "nl": "Levels",
         "de": "Levels",
+        "es": "Niveles",
+        "pt": "Níveis",
         "cz": "Levely",
+        "fr": "Niveaux",
+        "it": "Livelli",
         "jr": "Islands"
     },
     {
@@ -673,14 +879,22 @@ const LOCALIZATION_DATA = [
         "us": "Get Involved!",
         "nl": "Doe Mee!",
         "de": "Mach mit!",
-        "cz": "Přidej se!"
+        "es": "¡Involucrarse!",
+        "pt": "Se envolver!",
+        "cz": "Přidej se!",
+        "fr": "Être impliqué!",
+        "it": "Mettersi in gioco!"
     },
     {
         "textId": "discord_content",
         "us": "Meet level creators, chat with fellow Jolly players, drop suggestions for the game, report bugs, share your creations or learn new tips on how to beat certain levels. This is also the place where new big updates will be announced first!",
         "nl": "Ontmoet level ontwikkelaars, praat met andere Jolly spelers, drop suggesties for het spel, rapporteer bugs, deel jou creaties of leer nieuwe trucs om levels makkelijker te verslaan. Dit is ook de plek waar nieuwe grote updates als eerst worden aangekondigd!",
         "de": "Treffe Level Autoren, chatte mit anderen Spielern, melde Bugs, teile deine Kreationen oder lerne Tips um bestimmte Level zu bestehen. Neue Updates werden hier zuerst angekündigt!",
-        "cz": "Seznamte se s tvůrci levelů, chatujte s ostatními hráči, zanechte nám své návrhy na hru, hlaste chyby, sdílejte své výtvory nebo se naučte nové triky, jak pokořit určité úrovně. O nových aktualizacích se zde dozvíte jako první!"
+        "es": "Conozca a los creadores de nivel, chatea con los compañeros jugadores de Jolly, sugerencias de caída para el juego, reportar errores, compartir sus creaciones o aprender nuevos consejos sobre cómo superar ciertos niveles. ¡Este es también el lugar donde se anunciarán las nuevas actualizaciones grandes!",
+        "pt": "Conheça os criadores de nível, converse com colegas jogadores alegres, drop sugestões para o jogo, relatam erros, compartilhe suas criações ou aprenda novas dicas sobre como vencer certos níveis. Este é também o lugar onde novas grandes atualizações serão anunciadas primeiro!",
+        "cz": "Seznamte se s tvůrci levelů, chatujte s ostatními hráči, zanechte nám své návrhy na hru, hlaste chyby, sdílejte své výtvory nebo se naučte nové triky, jak pokořit určité úrovně. O nových aktualizacích se zde dozvíte jako první!",
+        "fr": "Rencontrez des créateurs de niveau, discutez avec des joueurs de Jolly, des suggestions de goutte pour le jeu, des bogues de rapport, partagez vos créations ou apprenez de nouveaux conseils sur la manière de battre certains niveaux. C'est aussi l'endroit où de nouvelles mises à jour seront annoncées en premier!",
+        "it": "Incontra i creatori di livello, chattare con compagni jolly giocatori, drop suggerimenti per il gioco, segnalare bugs, condividere le tue creazioni o apprendono nuovi suggerimenti su come battere determinati livelli. Questo è anche il luogo in cui saranno annunciati nuovi nuovi aggiornamenti!"
     },
     {
         "textId": "levelgui_pause",
@@ -693,18 +907,6 @@ const LOCALIZATION_DATA = [
         "fr": "Pause",
         "it": "Pausa",
         "jr": "Stop the ship"
-    },
-    {
-        "textId": "levelgui_exittomenu",
-        "us": "Exit to Menu",
-        "nl": "Naar hoofdmenu",
-        "de": "Zum Menü",
-        "es": "Salir Al Menu",
-        "pt": "Sair para o menu",
-        "cz": "Zpět do menu",
-        "fr": "Quitter vers le menu",
-        "it": "Esci dal menu",
-        "jr": "Walk the plank"
     },
     {
         "textId": "levelgui_resume",
@@ -783,359 +985,11 @@ const LOCALIZATION_DATA = [
         "us": "Skip",
         "nl": "Overslaan",
         "de": "Überspringen",
-        "cz": "Přeskočit"
-    },
-    {
-        "textId": "editor_tutorial_text_1",
-        "us": "Welcome to the tutorial level!",
-        "nl": "Welkom bij het tutorial level!",
-        "de": "Willkommen im Tutorial Level!",
-        "cz": "Vítejte v tutoriálu!",
-        "jr": "Welcome to Tutorial land, where ye get shot in ye 'ead"
-    },
-    {
-        "textId": "editor_tutorial_tip_title_1",
-        "us": "Create a floor base",
-        "nl": "Maak eerst een vloer",
-        "de": "Erstelle einen Boden Block",
-        "cz": "Vytvořte podlahovou základnu",
-        "jr": "Lay down a deck"
-    },
-    {
-        "textId": "editor_tutorial_tip_body_1",
-        "us": "To create a floor base \\nplatform for the character\\nto ride on, select the \\nGeometry tool and draw \\na rectangle under the \\ncharacter.",
-        "nl": "Om een vloer te maken\\n voor ons karakter om op te rijden \\n selecteer je de Geometry tool en\\nteken je een vierkant onder het \\nkarakter.",
-        "de": "Um eine Bodenplatform zu\\nerstellen, wähle das Geometriewerkzeug\\nund male ein Rechteck\\nunter dem Charakter.",
-        "cz": "Chcete-li vytvořit podlahovou základnu\\nplatformu pro postavu na které se budete pohybovat, vyberte nástroj Geometrie a nakreslete pod postavu obdélník. ",
-        "jr": "To lay down a deck, \\nfor yer maties \\nto walk on, grab some \\nbasic land and chart out \\na rectangle under their \\nfeet."
-    },
-    {
-        "textId": "editor_tutorial_title_1",
-        "us": "Drag",
-        "nl": "Sleep",
-        "de": "Ziehe die Maus",
-        "cz": "Přetáhněte pomocí myši"
-    },
-    {
-        "textId": "editor_tutorial_title_2",
-        "us": "Zoom In & Zoom Out",
-        "nl": "Zoem in & Zoem uit",
-        "de": "Zoom rein & Zoom raus",
-        "cz": "Přiblížení a oddálení",
-        "jr": "Adjust ye periscope"
-    },
-    {
-        "textId": "editor_tutorial_title_3",
-        "us": "Move the triangle",
-        "nl": "Verplaats de triangel",
-        "de": "Bewege das Dreieck",
-        "cz": "Posuňte trojúhelník"
-    },
-    {
-        "textId": "editor_tutorial_title_4",
-        "us": "Draw a square",
-        "nl": "Teken een vierkant",
-        "de": "Plaziere ein Rechteck",
-        "cz": "Nakreslete čtverec",
-        "jr": "Chart out a square"
-    },
-    {
-        "textId": "editor_tutorial_title_5",
-        "us": "Modify this square",
-        "nl": "Pas dit vierkant aan",
-        "de": "Bearbeite dieses Rechteck",
-        "cz": "Upravte tento čtverec",
-        "jr": "Tinker with the square"
-    },
-    {
-        "textId": "editor_tutorial_title_6",
-        "us": "Add Obstacles!",
-        "nl": "Plaats obstakels!",
-        "de": "Füge Hindernisse hinzu!",
-        "cz": "Přidejte překážky!",
-        "jr": "Set some booby traps"
-    },
-    {
-        "textId": "editor_tutorial_title_7",
-        "us": "Add Checkpoint",
-        "nl": "Plaats een checkpoint",
-        "de": "Checkpoint hinzufügen",
-        "cz": "Přidejte kontrolní bod",
-        "jr": "Build a lighthouse"
-    },
-    {
-        "textId": "editor_tutorial_tip_title_2",
-        "us": "Prefabs Settings",
-        "nl": "Prefabs instellingen",
-        "de": "Prefab Einstellungen",
-        "cz": "Prefabs nastavení"
-    },
-    {
-        "textId": "editor_tutorial_tip_body_2",
-        "us": "Some elements, including prefabs have\\ndifferent settings that you can modify\\njust left click on them to open the\\nsettings box.\\nIf you want a prefab to not move from\\nwhere you placed it, then tick the\\nIs Fixed Box and it will stay in place.",
-        "nl": "Sommige elementen, waaronder prefabs hebben\\n verschillende instellingen die je aan kan passen.\\n Klik met linker muis knop om de instellingen te zien.\\n Als je wilt dat een Prefab niet beweegt\\n dan kan je isFixed aanklikken,\\n dit zorgt er voor dat hij niet verplaatst.",
-        "de": "Einige Elemente, zum Beispiel Prefabs, besitzen verschiedenste Einstellungen die bearbeitet werden können. Wähle dazu einfach das Objekt mit der linken Maustaste aus und öffne den Einstellungs-Reiter. Willst du das ein prefab statisch wird dann füge einen Haken bei isFixed hinzu. ",
-        "cz": "Některé prvky, včetně prefabs, mají různá nastavení, která můžete upravit. Stačí na ně kliknout levým tlačítkem a otevřít okno nastavení. Chcete-li, aby se panel nepohnul z místa, kde jste jej umístili, zaškrtněte políčko \"pevná pozice\". ",
-        "jr": "Some parts, includin' booby traps, have different things to tinker 'round with."
-    },
-    {
-        "textId": "editor_tutorial_title_8",
-        "us": "Non-Static Objects",
-        "nl": "Niet-Static objecten",
-        "de": "Nicht-statisches Objekt",
-        "cz": "Nehybné objekty",
-        "jr": "Ships that move."
-    },
-    {
-        "textId": "editor_tutorial_title_9",
-        "us": "Add The Finish Line",
-        "nl": "Plaats de Finish",
-        "de": "Füge eine Finish Line hinzu",
-        "cz": "Přidejte cílovou čáru",
-        "jr": "Raise the Jolly Roger"
-    },
-    {
-        "textId": "editor_tutorial_title_10",
-        "us": "Test & Publish!",
-        "nl": "Test & Publiceer",
-        "de": "Testen & Veröffentlichen!",
-        "cz": "Vyzkoušejte a zveřejněte!"
-    },
-    {
-        "textId": "editor_tutorial_text_2",
-        "us": "Learn how to build a level in 10 easy steps!",
-        "nl": "Leer om een level te bouwen in 10 simpele stappen!",
-        "de": "Lerne in 10 einfachen Schritten ein Level zu bauen!",
-        "cz": "Naučte se jak vytvořit level v 10 snadných krocích!"
-    },
-    {
-        "textId": "editor_tutorial_text_4",
-        "us": "Press on your Keyboard",
-        "nl": "Druk op je Toetsenbord",
-        "de": "Drücke auf der Tastatur",
-        "cz": "Stiskněte na klávesnici"
-    },
-    {
-        "textId": "editor_tutorial_text_6",
-        "us": "Mouse Wheel",
-        "nl": "Muis Wiel",
-        "de": "Mausrad",
-        "cz": "Kolečko myši",
-        "jr": "Steerin' Wheel"
-    },
-    {
-        "textId": "editor_tutorial_text_3",
-        "us": "Press Space on your Keyboard and Hold Right click",
-        "nl": "Druk Spatie op je Toetsenbord en houd rechter muis ingedrukt",
-        "de": "Drücke die Spacebar und halte die rechte Maustaste gedrückt",
-        "cz": "Stiskněte mezerník na klávesnici a podržte pravé tlačítko myši"
-    },
-    {
-        "textId": "editor_tutorial_text_5",
-        "us": "or",
-        "nl": "of",
-        "de": "oder",
-        "cz": "nebo",
-        "jr": "orr"
-    },
-    {
-        "textId": "editor_tutorial_text_7",
-        "us": "It's a good practice to add checkpoints \\nafter difficult obstacles",
-        "nl": "Het is aanbevolen om checkpoints\\n toe te voegen naar moeilijke stukken",
-        "de": "Es ist eine gute Angewohnheit Checkpoints \\n hinter schweren Hindernissen zu plazieren",
-        "cz": "Je dobrý nápad přidávat kontrolní body po obtížných překážkách ",
-        "jr": "Tis polite to build lighthouses after laying down some traps. Or not, Arrrgh!"
-    },
-    {
-        "textId": "editor_tutorial_text_8",
-        "us": "Press T on your Keyboard\\nto test the level",
-        "nl": "Druk T op je toetsenbord om je level te testen",
-        "de": "Drücke T auf der Tastatur \\n um dein Level zu testen",
-        "cz": "Stiskněte T na klávesnici a otestujte svůj level",
-        "jr": "Press T on ye keyboard\\nto set foot on yer land."
-    },
-    {
-        "textId": "editor_tutorial_text_9",
-        "us": "Press this button \\nat the top right",
-        "nl": "Druk deze knop\\n die staat boven rechts",
-        "de": "Drücke diesen Knopf \\n obenrechts",
-        "cz": "Stiskněte toto tlačítko nahoře vpravo"
-    },
-    {
-        "textId": "editor_tutorial_text_10",
-        "us": "Fill up all the info, then Save or hit publish!\\nPS: Don't publish this tutorial please ;P",
-        "nl": "Vul alle informatie in, klik dan Save of Publish!\\n P.S. please publiceer dit tutorial level niet ;P",
-        "de": "Fülle alle Informationen aus. Im Anschluss kannst du das Level speichern oder veröffentlichen!\\n PS: Bitte dieses Tutorial nicht veröffentlichen ;P",
-        "cz": "Vyplňte všechny informace a poté uložte, nebo stiskněte zveřejnit! PS: Nezveřejňujte prosím tento návod ;P ",
-        "jr": "Read up on everything ye can, then put it on the map.\\nDon't claim this land as yer own!"
-    },
-    {
-        "textId": "editortoolgui_select",
-        "us": "select",
-        "nl": "selecteer",
-        "de": "Auswählen",
-        "es": "Seleccionar",
-        "pt": "selecionar",
-        "cz": "Vybrat",
-        "fr": "Sélectionner",
-        "it": "Selezionare",
-        "jr": "Move yer rocks"
-    },
-    {
-        "textId": "editortoolgui_geometry",
-        "us": "geometry",
-        "nl": "vormen",
-        "de": "Formen",
-        "es": "Geometria",
-        "pt": "Geometria",
-        "cz": "Tvary",
-        "fr": "Géometrie",
-        "it": "Geometria",
-        "jr": "Basic Land"
-    },
-    {
-        "textId": "editortoolgui_polydrawing",
-        "us": "polydrawing",
-        "nl": "polygon",
-        "de": "Polygon",
-        "es": "Dibujar Poly",
-        "pt": "Desenho poligonal",
-        "cz": "Polygon",
-        "fr": "Dessin polygonal",
-        "it": "Disegna Poly",
-        "jr": "Janky Quill"
-    },
-    {
-        "textId": "editortoolgui_pen",
-        "us": "pen",
-        "nl": "pen",
-        "de": "Stift",
-        "es": "Lapiz",
-        "pt": "Caneta",
-        "cz": "Pero",
-        "fr": "Stylo",
-        "it": "Matita",
-        "jr": "Smoothin' Quill"
-    },
-    {
-        "textId": "editortoolgui_joints",
-        "us": "joints",
-        "nl": "verbindingen",
-        "de": "Gelenk",
-        "es": "Articulacion",
-        "pt": "Juntas",
-        "cz": "Spojení",
-        "fr": "Joints",
-        "it": "Comune",
-        "jr": "Carpentry"
-    },
-    {
-        "textId": "editortoolgui_prefabs",
-        "us": "prefabs",
-        "nl": "fabrikaten",
-        "de": "Fertigbauten",
-        "es": "Prefabricados",
-        "pt": "Objetos prontos",
-        "cz": "Předvytvořené",
-        "fr": "Préfabs",
-        "it": "Prefabbricato",
-        "jr": "Treasures"
-    },
-    {
-        "textId": "editortoolgui_text",
-        "us": "text",
-        "nl": "text",
-        "de": "Text",
-        "es": "Texto",
-        "pt": "Texto",
-        "cz": "Text",
-        "fr": "Texte",
-        "it": "Testo",
-        "jr": "Parchment"
-    },
-    {
-        "textId": "editortoolgui_art",
-        "us": "art",
-        "nl": "kunst",
-        "de": "Grafiken",
-        "es": "Arte",
-        "pt": "Arte",
-        "cz": "Malování",
-        "fr": "Dessin",
-        "it": "Arte",
-        "jr": "ARRRRT"
-    },
-    {
-        "textId": "editortoolgui_trigger",
-        "us": "trigger",
-        "nl": "trigger",
-        "de": "Auslöser",
-        "es": "Gatillo",
-        "pt": "Acionador",
-        "cz": "Spouštěč",
-        "fr": "Déclencheur",
-        "it": "Trigger",
-        "jr": "Booby Traps"
-    },
-    {
-        "textId": "editorheader_test",
-        "us": "test",
-        "nl": "test",
-        "de": "test",
-        "es": "Probar",
-        "pt": "Teste",
-        "cz": "Test",
-        "fr": "Tester",
-        "it": "Provare",
-        "jr": "Set Foot"
-    },
-    {
-        "textId": "editorheader_profilescreen",
-        "us": "Profile Screen",
-        "nl": "Profiel scherm",
-        "de": "Profil Fenster",
-        "es": "Menu de Perfil",
-        "pt": "Foto de Perfil",
-        "cz": "Obrazovka profilu",
-        "fr": "Profile",
-        "it": "Menu profilo",
-        "jr": "Captain's Quarters"
-    },
-    {
-        "textId": "editorheader_logout",
-        "us": "LOGOUT",
-        "nl": "UITLOGGEN",
-        "de": "AUSLOGGEN",
-        "es": "Salir",
-        "pt": "Deslogar",
-        "cz": "Odhlásit se",
-        "fr": "Se déconnecter",
-        "it": "Partire",
-        "jr": "DROP ANCHOR"
-    },
-    {
-        "textId": "editorheader_new",
-        "us": "NEW",
-        "nl": "NIEUW",
-        "de": "NEU",
-        "es": "Nuevo",
-        "pt": "Novo",
-        "cz": "Nový",
-        "fr": "Nouveau",
-        "it": "Nuovo",
-        "jr": "NEW MAP"
-    },
-    {
-        "textId": "editorheader_load",
-        "us": "LOAD",
-        "nl": "LAAD",
-        "de": "LADEN",
-        "es": "Cargar",
-        "pt": "Carregar",
-        "cz": "Načíst",
-        "fr": "Charger",
-        "it": "Caricare",
-        "jr": "FIND MAP"
+        "es": "Saltar",
+        "pt": "Pular",
+        "cz": "Přeskočit",
+        "fr": "Sauter",
+        "it": "Saltare"
     },
     {
         "textId": "editorheader_exit",
@@ -1150,259 +1004,186 @@ const LOCALIZATION_DATA = [
         "jr": "Abandon"
     },
     {
-        "textId": "editorlevelbanner_publishsettings",
-        "us": "Publish Settings",
-        "nl": "Publiceer Instellingen",
-        "de": "Veröffentlichungseinstellungen",
-        "es": "Ajustes de publicacion",
-        "pt": "Publicar informações",
-        "cz": "Zveřejnit nastavení",
-        "fr": "Paramètres de publication",
-        "it": "Impostazioni post",
-        "jr": "Island Settings"
+        "textId": "editorheader_logout",
+        "us": "LOGOUT",
+        "nl": "UITLOGGEN",
+        "de": "AUSLOGGEN",
+        "es": "Salir",
+        "pt": "Deslogar",
+        "cz": "Odhlásit se",
+        "fr": "Se déconnecter",
+        "it": "Partire",
+        "jr": "DROP ANCHOR"
     },
     {
-        "textId": "editorlevelbanner_thumbnail",
-        "us": "Thumbnail",
-        "nl": "Afbeelding",
-        "de": "Thumbnail",
-        "es": "Imagen",
-        "pt": "Miniatura",
-        "cz": "Miniatura",
-        "fr": "Miniature",
-        "it": "Immagine",
-        "jr": "Flag"
+        "textId": "multiplayer_vote",
+        "us": "Vote",
+        "nl": "Stem",
+        "de": "Abstimmung",
+        "es": "Votar",
+        "pt": "Voto",
+        "cz": "Hlasování",
+        "fr": "Voter",
+        "it": "Votazione"
     },
     {
-        "textId": "editorlevelbanner_clicktoadd",
-        "us": "click to add",
-        "nl": "click om t",
-        "de": "Bild einfügen",
-        "es": "Click para agregar",
-        "pt": "Click para adicionar",
-        "cz": "Klikněte pro vložení",
-        "fr": "Cliquer pour ajouter",
-        "it": "Fare clic per aggiungere",
-        "jr": "Click to raise flag"
+        "textId": "multiplayer_replay",
+        "us": "Replay",
+        "nl": "Opnieuw",
+        "de": "Wiederholung",
+        "es": "Repetición",
+        "pt": "Replay",
+        "cz": "Přehrát",
+        "fr": "Rejouer",
+        "it": "Rigiocare"
     },
     {
-        "textId": "editorlevelbanner_title",
-        "us": "Title",
-        "nl": "Titel",
-        "de": "Titel",
-        "es": "Titulo",
-        "pt": "Título",
-        "cz": "Název",
-        "fr": "Titre",
-        "it": "Titolo",
-        "jr": "Island Name"
+        "textId": "multiplayer_gamefinished_client",
+        "us": "Game finished, vote for next level",
+        "nl": "Game beëindigd, stem voor het volgende level",
+        "de": "Spiel fertig, stimme für Next Level",
+        "es": "Juego terminado, vote por el siguiente nivel.",
+        "pt": "Jogo terminado, voto para o próximo nível",
+        "cz": "Hra dokončena, hlasujte pro další úroveň",
+        "fr": "Jeu fini, vote pour le niveau suivant",
+        "it": "Gioco finito, vota per il livello successivo"
     },
     {
-        "textId": "editorlevelbanner_charactersleft",
-        "us": "Characters left",
-        "nl": "Letters over",
-        "de": "Buchstaben übrig",
-        "es": "Caracteres restantes",
-        "pt": "Personagens restantes",
-        "cz": "Zbývá znaků",
-        "fr": "Personnages restants",
-        "it": "Caratteri rimanenti",
-        "jr": "Blots of ink left"
+        "textId": "multiplayer_gamefinished_admin",
+        "us": "Game finished, pick the next level",
+        "nl": "Game beëindigd, kies het volgende level",
+        "de": "Spiel fertig, wählen Sie die nächste Ebene",
+        "es": "Juego terminado, elige el siguiente nivel.",
+        "pt": "Jogo terminou, escolha o próximo nível",
+        "cz": "Hra hotová, vyberte další úroveň",
+        "fr": "Jeu fini, choisissez le niveau suivant",
+        "it": "Gioco finito, scegli il livello successivo"
     },
     {
-        "textId": "editorlevelbanner_description",
-        "us": "Description",
-        "nl": "Beschrijving",
-        "de": "Beschreibung",
-        "es": "Descripcion",
-        "pt": "Descrição",
-        "cz": "Popis",
-        "fr": "Description",
-        "it": "Descrizione",
-        "jr": "Captain's Log"
+        "textId": "multiplayer_gameendssoon",
+        "us": "Players finished, game is ending soon..",
+        "nl": "Spelers zijn gefinished, game zal snel eindigen..",
+        "de": "Spieler fertig, das Spiel endet bald ..",
+        "es": "Los jugadores terminaron, el juego está terminando pronto ..",
+        "pt": "Jogadores terminados, o jogo está terminando em breve ..",
+        "cz": "Hráči skončili, hra skončí brzy.",
+        "fr": "Les joueurs ont terminé, le jeu se termine bientôt ..",
+        "it": "I giocatori hanno finito, il gioco sta finendo presto .."
     },
     {
-        "textId": "editorlevelbanner_linkyoutubevideos",
-        "us": "Link YouTube videos",
-        "nl": "Voeg YouTube videos toe",
-        "de": "YouTube Videos verknüpfen",
-        "es": "Vincular videos de YouTube",
-        "pt": "Colocar video do Youtube",
-        "cz": "Připojit YouTube videa",
-        "fr": "Lien vers les vidéos YouTube",
-        "it": "Video di YouTube link",
-        "jr": "Log videos o' YouTube"
+        "textId": "multiplayer_countdown",
+        "us": "Game ends in %%s",
+        "nl": "Game eindigt in %%s",
+        "de": "Spiel endet in %% s",
+        "es": "El juego termina en %% s",
+        "pt": "Jogo termina em %% s",
+        "cz": "Hra končí v %% s",
+        "fr": "Le jeu se termine en %% s",
+        "it": "Il gioco finisce in %% s"
     },
     {
-        "textId": "editorlevelbanner_save",
-        "us": "SAVE",
-        "nl": "OPSLAAN",
-        "de": "SPEICHERN",
-        "cz": "Uložit",
-        "jr": "BURY FOR NEXT TIME!"
+        "textId": "multiplayer_switchcamera",
+        "us": "Switch Camera",
+        "nl": "Wissel Camera",
+        "de": "Schalter Kamera",
+        "es": "Cambiar de cámara",
+        "pt": "Comutam a câmera",
+        "cz": "Přepněte fotoaparát",
+        "fr": "Caméra",
+        "it": "Cambio macchina fotografica"
     },
     {
-        "textId": "editorlevelbanner_saveas",
-        "us": "SAVE AS",
-        "nl": "OPSLAAN ALS",
-        "de": "SPEICHERN ALS",
-        "es": "Salvar como",
-        "pt": "Salvar como",
-        "cz": "Uložit jako",
-        "fr": "Sauvegarder en tant que",
-        "it": "Salva come",
-        "jr": "CHART NEW LAND"
+        "textId": "multiplayer_waitingforothers",
+        "us": "Waiting for other players to finish",
+        "nl": "Wachten tot andere spelers klaar zijn",
+        "de": "Warten auf andere Spieler, um fertig zu werden",
+        "es": "Esperando a que otros jugadores terminen.",
+        "pt": "Esperando por outros jogadores terminar",
+        "cz": "Čekám na další hráče",
+        "fr": "En attendant que d'autres joueurs finissent",
+        "it": "Aspettando che altri giocatori finiscano"
     },
     {
-        "textId": "editorlevelbanner_delete",
-        "us": "DELETE",
-        "nl": "VERWIJDER",
-        "de": "LÖSCHEN",
-        "es": "Borrar",
-        "pt": "Deletar",
-        "cz": "Smazat",
-        "fr": "Supprimer",
-        "it": "Cancellare",
-        "jr": "DESTROY"
+        "textId": "multiplayer_startingin",
+        "us": "Starting in %%..",
+        "nl": "Beginnend in %% ..",
+        "de": "Beginnend in %% ..",
+        "es": "A partir de %% ..",
+        "pt": "Começando em %% ..",
+        "cz": "Začíná v %% ..",
+        "fr": "À partir de %% ..",
+        "it": "A partire da %% .."
     },
     {
-        "textId": "editorlevelbanner_preview",
-        "us": "PREVIEW",
-        "nl": "VOORBEELD",
-        "de": "VORSCHAU",
-        "es": "Anticipar",
-        "pt": "Pré-visualizar",
-        "cz": "Náhled",
-        "fr": "Prévisualiser",
-        "it": "Anticipare",
-        "jr": "UNMARKED VISIT"
+        "textId": "multiplayer_voted",
+        "us": "Voted",
+        "nl": "Gestemd",
+        "de": "Gewählt",
+        "es": "Votado",
+        "pt": "Votado",
+        "cz": "Hlasovaný",
+        "fr": "Voté",
+        "it": "Votato"
     },
     {
-        "textId": "editorlevelbanner_publish",
-        "us": "PUBLISH",
-        "nl": "PUBLICEER",
-        "de": "VERÖFFENTLICHEN",
-        "es": "Publicar",
-        "pt": "Publicar",
-        "cz": "Zveřejnit",
-        "fr": "Publier",
-        "it": "Per pubblicare",
-        "jr": "MARK THE SPOT"
+        "textId": "multiplayer_go",
+        "us": "GO!!!",
+        "nl": "GAAN!!!",
+        "de": "GEHEN!!!",
+        "es": "¡¡¡IR!!!",
+        "pt": "IR!!!",
+        "cz": "JÍT!!!",
+        "fr": "VA!!!",
+        "it": "ANDARE!!!"
     },
     {
-        "textId": "editorlevelbanner_notice",
-        "us": "Notice",
-        "nl": "Melding",
-        "de": "Mitteilung",
-        "es": "Aviso",
-        "pt": "Aviso",
-        "cz": "Upozornění",
-        "fr": "Remarquer",
-        "it": "Avviso",
-        "jr": "Ahoy there!"
+        "textId": "multiplayer_waitingplayers",
+        "us": "Waiting for other players %% / **",
+        "nl": "Op andere spelers wachten %% / **",
+        "de": "Warten auf andere Spieler %% / **",
+        "es": "Esperando a otros jugadores %% / **",
+        "pt": "Esperando por outros jogadores %% / **",
+        "cz": "Čekání na ostatní hráče %% / **",
+        "fr": "En attente d'autres joueurs %% / **",
+        "it": "Aspettando altri giocatori %% / **"
     },
     {
-        "textId": "editorlevelbanner_prompt",
-        "us": "Prompt",
-        "nl": "Keuze",
-        "de": "Aufforderung",
-        "es": "Puntual",
-        "pt": "Console",
-        "cz": "Výzva",
-        "fr": "Alerte",
-        "it": "Puntuale",
-        "jr": "There be danger lying thee!"
+        "textId": "multiplayer_returntolobby",
+        "us": "Return to Lobby",
+        "nl": "Keer terug naar de lobby",
+        "de": "Rückkehr zur Lobby",
+        "es": "Volver al lobby",
+        "pt": "Volte para o lobby",
+        "cz": "Návrat do lobby.",
+        "fr": "Retourner dans le hall",
+        "it": "Torna alla lobby."
     },
     {
-        "textId": "editorlevelbanner_ok",
-        "us": "OK",
-        "nl": "OK",
-        "de": "OK",
-        "es": "OK",
-        "pt": "OK!",
-        "cz": "OK",
-        "fr": "Ok",
-        "it": "OK",
-        "jr": "Aye!"
+        "textId": "multiplayer_tochat",
+        "us": "To chat click here or press 'Enter' key",
+        "nl": "Voor chatten klik hier of druk 'Enter' toets"
     },
     {
-        "textId": "editorlevelbanner_yes",
-        "us": "Yes!",
-        "nl": "Ja!",
-        "de": "Ja!",
-        "es": "Si",
-        "pt": "SIM!",
-        "cz": "Ano!",
-        "fr": "Oui !",
-        "it": "Sì",
-        "jr": "Aye aye!"
+        "textId": "multiplayer_invitelink",
+        "us": "Invite link",
+        "nl": "Uitnodigings link",
+        "de": "Einladungslink.",
+        "es": "Enlace de invitación",
+        "pt": "Link de convite",
+        "cz": "Pozvánka",
+        "fr": "Lien d'invitation",
+        "it": "Link di invito"
     },
     {
-        "textId": "editorlevelbanner_nope",
-        "us": "NOPE!",
-        "nl": "NEE!",
-        "de": "NÖ!",
-        "es": "Nop",
-        "pt": "NOPE!",
-        "cz": "Ne!",
-        "fr": "Nan !",
-        "it": "Nop",
-        "jr": "AVAST!"
-    },
-    {
-        "textId": "editorlevelbanner_mintitlelength",
-        "us": "Title must be at least 3 characters long",
-        "de": "Der Titel muss mindestens drei Buchstaben lang sein",
-        "es": "El titulo debe ser al menos 3 caracteres",
-        "pt": "O Titulo precisa ter pelo menos 3 caracteres",
-        "cz": "Název musí obsahovat nejméně 3 znaky",
-        "fr": "Le titre doit faire au moins 3 caractères",
-        "it": "Il titolo deve contenere almeno 3 caratteri",
-        "jr": "Ye must call yer island with at least 3 letters"
-    },
-    {
-        "textId": "editorlevelbanner_savefirst",
-        "us": "You first need to save the level before you can publish / preview it.",
-        "de": "Du musst dein Level speichern, bevor du es veröffentlichen / anschauen kannst.",
-        "es": "Primero debes salvar tu nivel antes de publicarlo o hacer preview",
-        "pt": "Você precisa salvar o mapa primeiro antes de publicar",
-        "cz": "Nejdříve musíte level uložit než jej zveřejníte / zobrazíte náhled",
-        "fr": "Tu dois sauvegarder le niveau avant de le publier / prévisualiser.",
-        "it": "Devi prima salvare il tuo livello prima di pubblicarlo o visualizzarlo in anteprima.",
-        "jr": "Ye need to mark the spot before ye put this island on the map."
-    },
-    {
-        "textId": "editorlevelbanner_nothumbnail",
-        "us": "Your level needs a thumbnail before you can publish / preview it.",
-        "de": "Dein Level braucht ein Thumbnail, bevor du es veröffentlichen / anschauen kannst.",
-        "es": "Tu nivel necesita una imagen antes de publicarlo o hacer preview",
-        "pt": "Seu mapa precisa de uma thumbnail antes de ser publicado",
-        "cz": "Váš level potřebuje miniaturu než jej zveřejníte / zobrazíte náhled",
-        "fr": "Ton niveau a besoin d'une miniature avant d'être publié / prévisualisé.",
-        "it": "Il tuo livello necessita di un'immagine prima di pubblicarla o visualizzarla in anteprima",
-        "jr": "There be no flag on yer land. How your mates gonna know what to expect?"
-    },
-    {
-        "textId": "editorlevelbanner_unsavedchanges",
-        "us": "You have unsaved changes to your level, are you sure you wish to proceed?",
-        "de": "Dein Level hat ungespeicherte Änderungen, möchtest du trotzdem fortfahren?",
-        "es": "Tienes cambios sin salvar en tu nivel, estas seguro que quieres continuar?",
-        "pt": "Você não salvou as modificações do seu mapa, tem certeza que quer prosseguir?",
-        "cz": "Máte neuložené změny ve vašem levelu, jste si jisti, že chcete pokračovat?",
-        "fr": "Ton niveau a des changements non sauvegardés, es-tu sûr de vouloir continuer ?",
-        "it": "Hai modifiche non salvate nel tuo livello, sei sicuro di voler continuare?",
-        "jr": "Ye didn't chart your location. Do ye still want to set sail?"
-    },
-    {
-        "textId": "editorlevelbanner_deleteconfirm",
-        "us": "Are you sure you want to delete this level?",
-        "de": "Bist du sicher, dass du dieses Level löschen willst?",
-        "es": "Estas seguro que quieres borrar este nivel?",
-        "pt": "Você tem certeza que quer deletar o mapa?",
-        "cz": "Jste si jisti, že chcete smazat tento level?",
-        "fr": "Es-tu sûr de vouloir supprimer ce niveau ?",
-        "it": "Sei sicuro di voler eliminare questo livello?",
-        "jr": "Do ye want to send this level to Davy Jones's locker?"
+        "textId": "multiplayer_copied",
+        "us": "copied",
+        "nl": "gekopieerd",
+        "de": "kopiert",
+        "es": "copiado",
+        "pt": "copiado",
+        "cz": "zkopírovaný",
+        "fr": "copié",
+        "it": "copiato"
     }
 ]
 init();

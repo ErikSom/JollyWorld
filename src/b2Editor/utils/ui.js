@@ -2376,8 +2376,16 @@ const removeColorMatrixEditor = ()=>{
 }
 
 const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
+    const falsePositives = ['fullscreen error', 'script error', 'instream/video', "of undefined (reading '0')", 'failed to fetch'];
 
-    if(msg.toLowerCase && (msg.toLowerCase().includes('script error') || msg.toLowerCase().includes('instream/video') || msg.toLowerCase().includes("of undefined (reading '0')") || msg.toLowerCase().includes('failed to fetch'))){
+    let falsePositive = false;
+    falsePositives.forEach(errorTxt => {
+        if(msg.toLowerCase && msg.toLowerCase().indexOf(errorTxt) >= 0){
+            falsePositive = true;
+        }
+    })
+
+    if(falsePositive){
         return;
     }
 

@@ -1,0 +1,275 @@
+
+@use '../css/Components.scss';
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.mp-leaderboard{
+	position: absolute;
+	top: 56px;
+	left: 10px;
+
+	.entry{
+		display: flex;
+		align-items: center;
+
+		.profile{
+			background-size: 88px;
+			background-position: 46px 1px;
+			width: 25px;
+			height: 25px;
+			position: relative;
+
+			.status, .flasher{
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 25px;
+				height: 25px;
+				opacity: 0;
+			}
+
+			.flasher{
+				background: white;
+				border-radius: 50%;
+
+				&.flash{
+					animation: 0.3s ease-in 0s 1 fadeOut forwards;
+				}
+			}
+		}
+
+		.name{
+			margin: 0 5px;
+			font-family: 'Montserrat', sans-serif;
+			font-size: 14px;
+			font-variation-settings: "wght" 600;
+			color: #FFF;
+			text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+		}
+	}
+}
+
+.mp-hud{
+	.content{
+		position: absolute;
+		left: 50%;
+		top: 80px;
+		transform: translate(-50%, 0%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		.header{
+			font-family: 'Montserrat', sans-serif;
+			font-size: 26px;
+			text-align: center;
+			font-variation-settings: "wght" 600;
+			color: #FFF;
+			text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+		}
+
+		.switch-cam, .return-lobby{
+			@extend .base-button;
+			margin: 10px 0px;
+		}
+	}
+
+	.vote-container{
+		width: 100vw;
+		padding: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		justify-content: center;
+		margin: 20px 0px;
+
+		.vote-inner-container{
+			display: flex;
+			width: 100%;
+			max-width: 440px;
+			gap: 8px;
+
+			.vote-level{
+				width: 50%;
+				position: relative;
+
+				.vote-button-container{
+					position: absolute;
+					top: 40%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					.vote-button{
+						@extend .base-button;
+
+						&.selected{
+							background-color: var(--secondary-bg-color);
+						}
+					}
+					.vote-count-container{
+						font-family: 'Montserrat', sans-serif;
+						font-size: 12px;
+						color:white;
+						background: var(--dark-color);
+						display: flex;
+						justify-content: center;
+						padding: 4px;
+						.vote-count{
+							background: var(--negative-button);
+							padding: 0 4px;
+							margin: 0 0 0 4px;
+
+							&.not-zero{
+								background: var(--secondary-bg-color);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.mp-chat{
+	position: absolute;
+	top: 100px;
+	right: 10px;
+	background: rgba(0, 0, 0, 0.0);
+	transition: background 0.3s ease-in, opacity 0.3s ease-in;
+	opacity: 1;
+	z-index: 9;
+
+	.chat-area{
+		min-height: 40px;
+		width: 244px;
+		max-height: 200px;
+		overflow-x: hidden;
+		overflow-y: hidden;
+		font-family: "Montserrat", sans-serif;
+		font-variation-settings: "wght" 500;
+		font-size: 12px;
+		padding: 5px;
+
+		color: white;
+		text-shadow: 1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black;
+
+		.message{
+			margin: 5px 0px;
+			.author{
+				margin: 0 6px 0 0;
+				font-variation-settings: "wght" 700;
+				float: left;
+
+				&.admin{
+					color: red;
+				}
+			}
+		}
+	}
+	.input{
+		font-family: "Montserrat", sans-serif;
+		font-variation-settings: "wght" 500;
+		font-size: 12px;
+		width: 100%;
+		background: var(--main-bg-color);
+		border: 2px solid rgba(0,0,0,0.6);
+		margin: 0;
+		padding: 1px 4px;
+		opacity: 0;
+		transition: opacity 0.3s ease-in;
+	}
+
+	.emoji-picker{
+		position: absolute;
+		top: 100%;
+		right: 0;
+		.emoji-button{
+			width: 40px;
+			height: 40px;
+			cursor: pointer;
+		}
+
+		.close {
+			font-family: "Montserrat", sans-serif;
+			font-variation-settings: "wght" 800;
+			font-size: 22px;
+			width: 40px;
+			height: 40px;
+			line-height: 40px;
+			text-align: center;
+			user-select: none;
+			cursor: pointer;
+		}
+		.emojis{
+			display: none;
+			flex-wrap: wrap;
+		}
+
+		&.open{
+			.emoji-main{
+				display: none;
+			}
+			.emojis{
+				display: flex;
+			}
+		}
+	}
+
+	&.disabled{
+		visibility: hidden;
+		pointer-events: none;
+	}
+
+	&.active{
+		background: rgba(0, 0, 0, 0.6);
+
+		.chat-area{
+			overflow-y: auto;
+		}
+
+		.input{
+			opacity: 1;
+		}
+	}
+
+	&.fadeout{
+		opacity: 0;
+	}
+}
+
+.chat-button{
+	position: absolute;
+    top: 48px;
+    right: -10px;
+    margin: 10px;
+    width: 44px;
+    height: 44px;
+	cursor: pointer;
+	z-index: 9;
+
+	.update{
+		visibility: hidden;
+	}
+
+	&.has-update{
+		.update{
+			visibility: visible;
+		}
+	}
+
+	.bg{
+		fill: white;
+	}
+
+	&.disabled{
+		.bg{
+			fill:gray;
+		}
+	}
+}

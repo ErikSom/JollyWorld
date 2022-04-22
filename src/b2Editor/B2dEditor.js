@@ -10712,12 +10712,19 @@ const _B2dEditor = function () {
 				&& !sprite.isMesh) destroyAll = true;
 			}
 
-
-			sprite.destroy({
-				children: true,
-				texture: destroyAll,
-				baseTexture: destroyAll
-			});
+			// detect multiplayer ripple player
+			if(sprite.rippleCharacterClass){
+				sprite.parent.removeChild(sprite);
+				sprite.rippleCharacterClass.addedToGame = false;
+			} else if(sprite.isPhysicsParticleSprite){
+				sprite.parent.removeChild(sprite);
+			} else{
+				sprite.destroy({
+					children: true,
+					texture: destroyAll,
+					baseTexture: destroyAll
+				});
+			}
 			i--;
 		}
 
