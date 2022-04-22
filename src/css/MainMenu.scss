@@ -210,6 +210,9 @@
 			background: #F9B61F;
 			position: relative;
 
+			grid-column: span 2;
+			margin-left: calc(var(--cellSize) / 2 + var(--cellGap) / 2);
+
 			&:after{
 				content: '';
 				position: absolute;
@@ -244,6 +247,10 @@
 				margin-bottom: 4px;
 			}
 			transform: scale(1);
+		}
+
+		.quick-play-but{
+			display: none; // TODO REMOVE
 		}
 
 		.back-but{
