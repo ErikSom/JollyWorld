@@ -1868,8 +1868,6 @@ function UIManager() {
             customGUIContainer.appendChild(characterSelect);
 
             window.addEventListener('message', message => {
-                console.log("DATA:", message);
-
                 try{
                     const data = typeof message.data === 'string' ? JSON.parse(message.data) : message.data;
 
@@ -1883,6 +1881,7 @@ function UIManager() {
                         SaveManager.updateLocalUserData(userData);
 
                         this.setMainMenuCharacterImage();
+                    } else if(type === 'jollyCloseCharacterSelect'){
                         this.hideCharacterSelect();
                     }
                 }catch(e){
