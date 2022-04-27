@@ -85,6 +85,7 @@ function processFiles(files){
 				case 'textures':
 				case 'vehicles':
 				case 'portraits':
+				case 'helmets':
 					processBasicMod(path, file);
 				break;
 				case 'theme':

@@ -39,10 +39,12 @@ export const init = ()=> new Promise(resolve => {
 			const textureMods = [];
 			const portraitMods = [];
 
+			debugger
+
 			if(keys.find( key => key.startsWith(folderName))){
 
 				keys.forEach(key => {
-					if(key.indexOf(`${folderName}/characters`) === 0 || key.indexOf(`${folderName}/kids`) === 0 || key.indexOf(`${folderName}/babies`) === 0){
+					if(key.indexOf(`${folderName}/characters`) === 0 || key.indexOf(`${folderName}/kids`) === 0 || key.indexOf(`${folderName}/babies`) === 0 || key.indexOf(`${folderName}/helmets`) === 0){
 						characterMods.push(key);
 					}
 					if(key.indexOf(`${folderName}/vehicles`) === 0){
