@@ -85,7 +85,7 @@ function processFiles(files){
 				case 'textures':
 				case 'vehicles':
 				case 'portraits':
-				case 'helmets':
+				case 'hats':
 					processBasicMod(path, file);
 				break;
 				case 'theme':
@@ -167,10 +167,17 @@ function processGoreMod(path, file){
 }
 
 function processBasicMod(path, file){
-	if(path[path.length-1] !== ""){
+	let targetPath = path[0];
+	const textureName = path[path.length-1];
+
+	if(['DirtBikeHelmet0000.png', 'SkateHelmet0000.png'].includes(textureName)){
+		targetPath = 'hats';
+	}
+
+	if(textureName !== ""){
 		filesToStore++;
-		storeImage(file, `${folderName}/${path[0]}/${path[path.length-1]}`);
-		console.log("Processing basic mod:", path[path.length-1]);
+		storeImage(file, `${folderName}/${targetPath}/${textureName}`);
+		console.log("Processing basic mod:", textureName);
 	}
 }
 
@@ -238,4 +245,3 @@ if(autoInstallMod){
 		});
 	}).catch(err=>console.log('error downloading mod', err));
 }
-
