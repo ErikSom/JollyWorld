@@ -1,5 +1,5 @@
 const bicycle = document.querySelector('.bicycle');
-const scroll = document.querySelector('.scroll')
+const scroll = document.querySelector('.scroll');
 var old_scroll_top = 0;
 document.body.onresize = updateBicycle;
 scroll.onscroll = updateBicycle;
