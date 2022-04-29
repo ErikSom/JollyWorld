@@ -1,429 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Jolly World - Modder</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+	<title>JollyWorld - Modder</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
-	<style>
-		html,
-		body {
-			width: 100%;
-			height: 100%;
-			margin: 0;
-			padding: 0;
-			background: #e7b98a;
-			overflow: hidden;
-		}
-
-		#logo{
-			display: block;
-			margin: 20px auto;
-		}
-
-		#dropzone {
-			background: rgb(211 161 109);
-			border: 7px dotted #e7b98a;
-			position: relative;
-			width: 400px;
-			height: 200px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			margin: auto;
-			cursor: pointer;
-		}
-		#dropzone input{
-			cursor: pointer;
-		}
-
-		#label {
-			color: #9CF6FF;
-			font-family: "Lily Script One", cursive;
-			text-shadow: 2.2px 2px #000;
-			text-align: center;
-			line-height: 38px;
-			font-size: 24px;
-			text-rendering: geometricPrecision;
-		}
-
-		#files {
-			opacity: 0;
-			width: 100%;
-			height: 100%;
-			position: absolute;
-		}
-
-		h1,
-		h2 {
-			color: #fff;
-			font-family: "Lily Script One", cursive;
-			text-shadow: 2.2px 2px #000;
-			text-align: center;
-			text-rendering: geometricPrecision;
-		}
-
-		h1 {
-			font-size: 56px;
-		}
-
-		h2 {
-			font-size: 24px;
-		}
-		.button{
-			cursor:pointer;
-			background-color: red;
-			width: 200px;
-			height: 38px;
-			border-radius: 8px;
-			border: 2px solid black;
-			box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
-			color: white;
-			font-family: "Lily Script One", cursive;
-			text-shadow: 1.2px 2px black;
-			text-align: center;
-			line-height: 38px;
-			font-size: 23px;
-			text-rendering: geometricPrecision;
-			cursor: pointer;
-			white-space: nowrap;
-			margin: 20px auto;
-		}
-		.button:hover{
-			filter: brightness(1.2);
-		}
-		#more, #back{
-			display:block;
-			text-decoration: none;
-			background-color: #FF6600;
-		}
-		#back{
-			background-color: #7B7B7B;
-		}
-
-		#how{
-			color: black;
-			font-family: sans-serif;
-			margin: 80px auto;
-			width: fit-content;
-			text-align: center;
-		}
-
-		#list{
-			width: fit-content;
-    		text-align: left;
-			text-decoration: none;
-			line-height: 24px;
-		}
-		#list a{
-			color: #9CF6FF;
-			font-weight: bold;
-			text-shadow: 2px 2px black;
-			text-decoration: none;
-		}
-		.scroll{
-			width: 100%;
-			height: 100%;
-			overflow-y: scroll;
-		}
-
-		@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
-	</style>
+	<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+	<link rel="stylesheet" type="text/css" href="mod/styles.css">
 </head>
-
-<body>
-	<div class="scroll">
-		<img src="terms/JollyModder.png" id="logo"></img>
-		<div id="dropzone">
-			<input type="file" id="files" name="drop" />
-			<h2 id="label">Drop mod .zip here to install</h2>
+<body ondrop="handleFileSelect()">
+	<div class="closebutton" onclick="closeModWindow()">
+		<svg height="50" width="50">
+			<line x1="10" y1="10" x2="40" y2="40" style="stroke:#FFF; stroke-width:5; stroke-linecap:round" />
+			<line x1="10" y1="40" x2="40" y2="10" style="stroke:#FFF; stroke-width:5; stroke-linecap:round" />
+ 		</svg>
+	</div>
+	<div class="section">
+		<div class="dashboardSection" style="height:440px">
+			<h1 id="defaultCharacters">Default Characters:</h1>
+			<div id="defaultCharacterSelection"></div>
 		</div>
-		<h2 id="installed">
-			Installed Mod:
-			<span>none</span>
-		</h2>
-		<div id="remove" class="button">
-			Remove Mod
+		<div class="dashboardSection" style="height:440px">
+			<h1 id="currentMod">Current Character:</h1>
+			<h1 id="installedMod"></h1>
+			<div class="singleModCanvas" id="currentModThumb"></div>
 		</div>
-		<a id="more" class="button" href="https://discord.gg/ZbtZMupFzG" target="_blank" rel="noopener noreferrer">
-			More Mods
-		</a>
-		<div id="back" class="button">
-			Back to Game
-		</div>
-
-		<div id="how">
-			Steps to modify the game textures:
-			<ol id="list">
-				<li>Download the game textures <a id="link" href="jollymod.zip" target="_blank" rel="noopener noreferrer">HERE</a></li>
-				<li>Read the instructions inside <i>_README.txt</i></li>
-				<li>Upload your modified zip</li>
-			</ol>
+		<div class="dashboardSection">
+			<button onclick="openModEditor()" class="button" id="create" style="background-color: #FF6600;">Create your own Mod</button>
+			<button onclick="loadWardrobeContents();$('zipFileInput').click()" class="button" id="create" style="background-color: #AA00AA;">Import from .zip</button>
+			<!--<button onclick="exportMod()" class="button" style="background-color: #7B7B7B">Export current Mod</button>-->
+			<button onclick="toggleTheme()" class="button" id="darkmodebutton" style="background-color:#262626">Dark Theme</button>
+			<button onclick="closeModWindow()" class="button" style="background-color: #D70000">Back to Game</button>
 		</div>
 	</div>
+	<div class="section">
+		<h1>All Public Mods:</h1>
+		<div id="publicMods">
+		</div>
+	</div>
+	<div id="loadingbackground" style="opacity:0;pointer-events:none;">
+		<div id="loadingwindow">
+			<h1 id="loadingtitle">Loading...</h1>
+			<div id="loadingbar">
+				<div id="loadingbarprogress"></div>
+			</div>
+		</div>
+	</div>
+	<div id="creatorbackground" style="opacity:0;pointer-events:none;">
+		<div id="creatorwindow">
+			<div class="createmodoption" style="background-color:#23FD12" onclick="closeModEditor();openModWardrobe();">
+				<div class="hoveroverlay"></div>
+				<h1 class="createmodoptiontitle">Create from Wardrobe</h1>
+				<p class="createmodoptiondescription">Easiest and fastest</p>
+				<span class="difficultystarslabel">Difficulty:</span>
+				<div class="difficultystars" style="width:40px"></div>
+				<img class="createmodicon" src="mod/pageassets/createfromwardrobe.png">
+			</div>
+			<div class="createmodoption" style="background-color:#FDFD12; pointer-events: none; opacity:0.5;">
+				<div class="hoveroverlay"></div>
+				<h1 class="createmodoptiontitle">Create in Online Editor</h1>
+				<p class="createmodoptiondescription">Coming at a later point</p>
+				<span class="difficultystarslabel">Difficulty:</span>
+				<div class="difficultystars" style="width:80px"></div>
+				<img class="createmodicon" src="mod/pageassets/createinonlineeditor.png">
+			</div>
+			<a class="createmodoption" style="background-color:#FD4812" href="https://warze.org/static/jollyworld/mods/jollymod.zip">
+				<div class="hoveroverlay"></div>
+				<h1 class="createmodoptiontitle">Download .zip Template</h1>
+				<p class="createmodoptiondescription">Requires extra art software</p>
+				<span class="difficultystarslabel">Difficulty:</span>
+				<div class="difficultystars" style="width:120px"></div>
+				<img class="createmodicon" src="mod/pageassets/downloadtemplate.png">
+			</a>
+			<button class="button" style="background-color:#888" onclick="closeModEditor()">Cancel</button>
+		</div>
+	</div>
+	<div id="modwardrobewindow" style="top:100vh;opacity:0;">
+		<div class="closebutton" onclick="closeModWardrobe()">
+			<svg height="50" width="50">
+   				<line x1="10" y1="10" x2="40" y2="40" style="stroke:#FFF; stroke-width:5; stroke-linecap:round" />
+   				<line x1="10" y1="40" x2="40" y2="10" style="stroke:#FFF; stroke-width:5; stroke-linecap:round" />
+ 			</svg>
+		</div>
+		<div class="modwardrobepreview">
+			<div onclick="viewPreviousVehicle()" class="vehiclePreviewButton">
+				<svg height="100" width="50" id="vehiclePreviewButtonLeft">
+					<polygon points="50,0 50,100 0,50" style="fill:black;" />
+				</svg> 
+			</div>
+			<div id="modwardrobepreviewcanvas" class="singleModCanvas"></div>
+			<div onclick="viewNextVehicle()" class="vehiclePreviewButton">
+				<svg height="100" width="50" id="vehiclePreviewButtonRight">
+					<polygon points="0,0 50,50 0,100" style="fill:black;" />
+				</svg> 
+			</div>
+		</div>
+		<h1 id="modwardrobestepcounter">
+			<button class="button" onclick="previousWardrobePage()" style="background-color:#7B7B7B;display:inline-block;">Undo</button>
+			Step
+			<span id="modwardrobestep">1</span>
+			/
+			<span id="modwardrobetotalsteps">Loading...</span>
+		</h1>
+		<div id="modwardrobesteps">
+		</div>
+		<div id="modwardrobefinal">
+			<h1>Your character is done!</h1>
+			<button class="button" style="background-color:#3F7D20" id="modwardrobeadditionalsettingsbutton" onclick="showAdditionalSettings()">More Customizations</button>
+			<div id="modwardrobeadditionalsettings" style="display:none;">
+				<div style="text-align: left;">
+					<label>Character Name:</label>
+					<input type="text" oninput="modWardrobeCharacterName = this.value" value="Billy Joel" placeholder="Character Name">
+					<br>
+					<label>Door Color:</label>
+					<input type="color" oninput="modWardrobeDoorColor = this.value; $('doorPreviewContainer').style.backgroundColor = this.value;" id="doorcolor">
+					<br>
+					<label>Preloader Color:</label>
+					<input type="color" oninput="modWardrobePreloaderColor = this.value; $('doorPreviewLoadingBar').style.backgroundColor = this.value;" id="preloadercolor">
+					<div id="doorPreviewContainer" style="background-color: #3d7d1e;left:0px;top:0px;">
+						<div id="doorPreviewLoadingBar" class="doorPreviewComponent" style="background-color: #d70201;left:87px;top:32px;"></div>
+						<img src="mod/pageassets/doorPreview.png" style="left:85px;" class="doorPreviewComponent">
+					</div>
+				</div>
+			</div>
+			<button class="button" style="background-color:#A0A" onclick="processWardrobe(false)">Download as .zip</button>
+			<button class="button" style="background-color:#4BD748" onclick="processWardrobe(true)">Apply this character</button>
+			<div id="pointingarrowcontainer">
+				<img src="mod/pageassets/arrow.png" id="pointingarrow">
+			</div>
+		</div>
+		<lottie-player id="confetti" src="https://assets8.lottiefiles.com/packages/lf20_rovf9gzu.json" background="transparent" speed="1"></lottie-player>
+	</div>
+	<input type="file" id="zipFileInput" style="display:none" accept=".zip" onchange="handleFileSelect()">
 	<script>
-		const navigateBack = ()=>{
-			if (document.referrer == "") {
-				window.open("https://jollyworld.app");
-			} else {
-				window.history.back();
-			}
-		}
-		const backButton = document.querySelector('#back');
-		backButton.onclick = function(){
-			navigateBack();
-		}
+		const all_public_mods = [
+			["Cirilla", "Ocularist"],
+			["Darkmode", "TriggerTitan"],
+			["TrudyWalker", "Anonymous Frog"],
+			["piconjomod", "Anonymous Frog"],
+			["jollyMattShea", "JollyBoy"],
+			["warzemod", "Warze"],
+			["JunpeiZaki", "JollyBoy"],
+		];
 	</script>
-	<script>
-		const url = new URLSearchParams(window.location.search);
-		const autoInstallMod = url.get('install');
-
-		const folderName = 'jollymod';
-		const modNameKey = 'jollyModName';
-		let filesToStore = 0;
-		let filesStored = 0;
-
-		const {get, set, keys, del} = window.idbKeyval;
-
-		function updateModName(){
-			const modName = localStorage.getItem(modNameKey);
-			if(modName){
-				document.querySelector('#remove').style.display = 'block';
-			}else{
-				document.querySelector('#remove').style.display = 'none';
-			}
-			document.querySelector('#installed > span').innerText = modName || 'none';
-		}
-		updateModName();
-
-		function handleFileSelect(evt) {
-			evt.stopPropagation();
-			evt.preventDefault();
-
-			const files = evt.dataTransfer ? evt.dataTransfer.files : evt.target.files;
-
-			for (let i = 0, f; f = files[i]; i++) {
-				const zip = new JSZip();
-				zip.loadAsync(f).then(function (zip) {
-					processFiles(zip.files);
-					localStorage.setItem(modNameKey, f.name);
-				}, function () {
-					alert("Not a valid zip file")
-				});
-
-			}
-		}
-		const dropZone = document.getElementById('files');
-		dropZone.addEventListener('change', handleFileSelect, false);
-
-		const label = document.getElementById('label');
-
-		function handleDragOver(evt) {
-			evt.stopPropagation();
-			evt.preventDefault();
-			evt.dataTransfer.dropEffect = 'copy';
-		}
-
-		dropZone.addEventListener('dragover', handleDragOver, false);
-		dropZone.addEventListener('drop', handleFileSelect, false);
-
-		function processFiles(files){
-			clearOldMods().then(()=>{
-				label.innerText = 'Installing Mod...';
-
-				const keys = Object.keys(files);
-
-				for(var i = 0; i<keys.length; i++){
-					var key = keys[i];
-					if(!key.endsWith('.png') && !key.endsWith('theme/settings.json')) continue;
-
-					var file = files[key];
-
-					var path = key.split('/');
-					path.shift();
-
-					switch(path[0]){
-						case 'characters':
-							processCharacterMod(path, file);
-						break;
-						case 'kids':
-							processKidMod(path, file);
-						break;
-						case 'babies':
-							processBabyMod(path, file);
-						break;
-						case 'gore':
-							processGoreMod(path, file);
-						break;
-						case 'textures':
-						case 'vehicles':
-						case 'portraits':
-						case 'hats':
-							processBasicMod(path, file);
-						break;
-						case 'theme':
-							processTheme(file);
-						break;
-					}
-				}
-			});
-		}
-		function finishMod(){
-			filesToStore = 0;
-			filesStored = 0;
-			label.innerText = 'Mod installed';
-			dropZone.value = "";
-			updateModName();
-
-			if(autoInstallMod){
-				document.querySelector('#remove').style.display = 'none';
-				navigateBack();
-			}
-		}
-
-		function storeImage(file, target){
-			file.async("blob").then(function (blob) {
-				set(target, blob).then(()=>{
-					filesStored++;
-					label.innerText = `Installing Mod... ${filesStored}/${filesToStore}`;
-					if(filesStored === filesToStore){
-						finishMod();
-					}
-				})
-			})
-		}
-
-		function processCharacterMod(path, file){
-			const charNameArray = ['billyjoel', 'jeroen', 'marique', 'damien', 'thezuck', 'bobzombie', 'xenot', 'ronda', 'jacklee', 'coljackson', 'hank', 'mrskat', 'seanbro', 'crashy', 'brittany', 'machote']
-			let characterIndex = charNameArray.indexOf(path[1]);
-			if(characterIndex !== -1 && path[2] !== ""){
-				filesToStore++;
-				storeImage(file, `${folderName}/characters/${characterIndex}/${path[2]}`);
-			}
-		}
-
-		function processKidMod(path, file){
-			const charNameArray = ['kid1', 'kid2', 'kid3']
-			let characterIndex = charNameArray.indexOf(path[1]);
-			if(characterIndex !== -1 && path[2] !== ""){
-				filesToStore++;
-				storeImage(file, `${folderName}/kids/${characterIndex}/${path[2]}`);
-			}
-		}
-
-		function processBabyMod(path, file){
-			const charNameArray = ['baby1', 'baby2', 'baby3']
-			let characterIndex = charNameArray.indexOf(path[1]);
-			if(characterIndex !== -1 && path[2] !== ""){
-				filesToStore++;
-				storeImage(file, `${folderName}/babies/${characterIndex}/${path[2]}`);
-			}
-		}
-
-		function processGoreMod(path, file){
-			const subFolder = path[1];
-			const lastPath = path[path.length-1];
-
-			if(lastPath === "") return;
-
-			switch(subFolder){
-				case 'chunks':
-				case 'organs':
-					filesToStore++;
-					storeImage(file, `${folderName}/gore/${lastPath}`);
-				break;
-				case 'skin':
-					filesToStore++;
-					storeImage(file, `${folderName}/characters/0/${lastPath}`);
-				break;
-			}
-		}
-
-		function processBasicMod(path, file){
-			let targetPath = path[0];
-			const textureName = path[path.length-1];
-
-			if(['DirtBikeHelmet0000.png', 'SkateHelmet0000.png'].includes(textureName)){
-				targetPath = 'hats';
-			}
-
-			if(textureName !== ""){
-				filesToStore++;
-				storeImage(file, `${folderName}/${targetPath}/${textureName}`);
-				console.log("Processing basic mod:", textureName);
-			}
-		}
-
-		function clearOldMods(){
-			label.innerText = 'Removing old Mod...';
-			localStorage.removeItem(modNameKey);
-			localStorage.removeItem('jollyModNameFailed');
-			updateModName();
-			removeTheme();
-
-			return new Promise((resolve, reject) => {
-				keys().then(keys => {
-					keys.forEach(key => {
-						if(key.indexOf(folderName) === 0){
-							del(key);
-						}
-					})
-					resolve();
-				});
-			})
-		}
-
-		function processTheme(file){
-			file.async("blob").then(function (blob) {
-				blob.text().then( text => {
-					localStorage.setItem('jollyWorldTheme', text);
-				}).catch(err => {});
-			}).catch(err => {});;
-		}
-		function removeTheme(){
-			localStorage.removeItem('jollyWorldTheme');
-		}
-
-		document.querySelector('#remove').onclick = ()=> {
-			clearOldMods().then(()=>{
-				label.innerText = 'Drop mod .zip here to install';
-				updateModName();
-			});
-		}
-
-		if(autoInstallMod){
-			if(localStorage.getItem(modNameKey) === autoInstallMod){
-				finishMod();
-			}
-
-			document.querySelector('#remove').style.display = 'none';
-			document.querySelector('#more').style.display = 'none';
-			document.querySelector('#back').style.display = 'none';
-			document.querySelector('#how').style.display = 'none';
-
-			label.innerText = 'Downloading and installing mod...';
-
-			const fetchUrl = `https://c06320df-92e9-4754-b751-0dce2e9402ec.poki-gdn.com/f1632123-581e-48ee-ac5f-18500cf38135/mods/${autoInstallMod}.zip`
-			fetch(fetchUrl).then(async transfer => {
-				const zipFile = await transfer.blob();
-
-				const zip = new JSZip();
-				zip.loadAsync(zipFile).then(function (zip) {
-					processFiles(zip.files);
-					localStorage.setItem(modNameKey, autoInstallMod);
-				}, function () {
-					alert("mod does not exist");
-					localStorage.setItem('jollyModNameFailed', autoInstallMod);
-					navigateBack();
-				});
-			}).catch(err=>console.log('error downloading mod', err));
-		}
-
-
-	</script>
+	<script type="text/javascript" src="mod/modWardrobe.js"></script>
+	<script type="text/javascript" src="mod/modImportSource.js"></script>
+	<script type="text/javascript" src="mod/characterSelection.js"></script>
 </body>
-
 </html>
