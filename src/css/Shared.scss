@@ -1,12 +1,12 @@
 @media screen and (max-width: 1032px) {
-	.characterSelect, .pausescreen, .levelbanner, .discordJoin, .vehicleselect{
+	.pausescreen, .levelbanner, .discordJoin, .vehicleselect{
 		transform: translate(-50%, -50%) scale(0.9);
 		max-width: 110%;
 		max-height: 110%;
 	}
 }
 @media screen and (max-width: 860px) {
-	.characterSelect, .pausescreen, .levelbanner, .discordJoin, .vehicleselect{
+	.pausescreen, .levelbanner, .discordJoin, .vehicleselect{
 		transform: translate(-50%, -50%) scale(0.7);
 		max-width: 150%;
 		max-height: 150%;
@@ -14,7 +14,7 @@
 }
 
 @media screen and (max-width: 650px) {
-	.characterSelect, .pausescreen, .levelbanner, .discordJoin, .vehicleselect{
+	.pausescreen, .levelbanner, .discordJoin, .vehicleselect{
 		transform: translate(-50%, -50%) scale(0.5);
 		max-width: 200%;
 		max-height: 200%;

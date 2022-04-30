@@ -1858,70 +1858,39 @@ function UIManager() {
     this.showCharacterSelect = function(){
         if(!characterSelect){
             const htmlStructure = /*html*/`
-                <div class="bar"></div>
-                <div class="header"><span class="fit h1">${localize('characterselect_select_character')}</span></div>
-                <div class="characters">
-                </div>
-                <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
+                <iframe class="mod-frame" frameBorder="0" src="https://jollyworldmodder.netlify.app/mod"></iframe>
             `;
 
             characterSelect = document.createElement('div');
             characterSelect.classList.add('characterSelect');
             characterSelect.innerHTML = htmlStructure;
 
-            const characters = characterSelect.querySelector('.characters');
+            customGUIContainer.appendChild(characterSelect);
 
-            const customOrder = [1,2,3,4,11,16,8,9,10,6,12,15,5,13,7,14];
+            window.addEventListener('message', message => {
+                try{
+                    const data = typeof message.data === 'string' ? JSON.parse(message.data) : message.data;
 
-            let charNames = ["Billy Joel", "Jeroen", "Marique", "Damien", "The Zuck!", "Bob Zombie", "Xenot", "Ronda", "Jack Lee", "Col. Jackson", "Hank", "Mrs. Kat", "Sean Bro", "Crashy", "Brittany", "Machote"]
-            const theme = localStorage.getItem('jollyWorldTheme');
-            if(theme){
-                const themeSettings = JSON.parse(theme);
-                if(themeSettings && Array.isArray(themeSettings.charNames) && themeSettings.charNames.length === charNames.length){
-                    charNames = themeSettings.charNames;
-                }
-            }
+                    const {type, character} = data;
 
-            for(let i = 0; i<Settings.availableCharacters; i++){
-                const portraitHolder = document.createElement('div');
-                portraitHolder.style.order = customOrder[i];
-                const portrait =  document.createElement('img');
+                    if(type === 'jollySelectCharacter'){
+                        game.selectedCharacter = parseInt(character);
 
-                getModdedPortrait(`character${i+1}.png`, 'assets/images/portraits/').then(url => {
-                    console.log(url);
-                    if(portrait) portrait.src = url;
-                });
+                        const userData = SaveManager.getLocalUserdata();
+                        userData.selectedCharacter = game.selectedCharacter;
+                        SaveManager.updateLocalUserData(userData);
 
-                portrait.classList.add('portrait');
-                portraitHolder.appendChild(portrait)
-
-                const nameDiv = document.createElement('div');
-                nameDiv.classList.add('name');
-                nameDiv.innerText = charNames[i];
-                portraitHolder.appendChild(nameDiv);
-
-                characters.appendChild(portraitHolder);
-
-                portrait.onclick = () => {
-                    game.selectedCharacter = i;
-
-                    const userData = SaveManager.getLocalUserdata();
-                    userData.selectedCharacter = game.selectedCharacter;
-                    SaveManager.updateLocalUserData(userData);
-
-                    this.setMainMenuCharacterImage();
+                        this.setMainMenuCharacterImage();
+                    } else if(type === 'jollyCloseCharacterSelect'){
+                        this.hideCharacterSelect();
+                    }
+                }catch(e){
                     this.hideCharacterSelect();
                 }
-            }
-            customGUIContainer.appendChild(characterSelect);
+            });
         }
 
         characterSelect.style.display = 'block';
-
-        const back = characterSelect.querySelector('.back');
-        back.onclick = ()=>{
-            this.hideCharacterSelect();
-        }
     }
 
     this.hideCharacterSelect = function () {
