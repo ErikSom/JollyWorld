@@ -651,11 +651,11 @@ function processWardrobe(apply) {
 	const yogaball_folder = vehicles_folder.folder('yogaball')
 	const foddycan_folder = vehicles_folder.folder('foddycan')
 
-	//const gore_folder = main_folder.folder('gore');
-	//const chunks_folder = gore_folder.folder('chunks').folder('billyjoel')
-	//for (let item = 0; item < 9; item ++) {
-	//	chunks_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
-	//}
+	const gore_folder = main_folder.folder('gore');
+	const chunks_folder = gore_folder.folder('chunks').folder('billyjoel')
+	for (let item = 0; item < 9; item ++) {
+		chunks_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
+	}
 
 	const settings_json = `{
 		"doorColor": "${modWardrobeDoorColor}",
