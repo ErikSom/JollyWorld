@@ -195,7 +195,10 @@ function handleFileSelect() {
 			var all_modded_imgs = {}
 			all_asset_paths.forEach(async(item) => {
 				try {
-					zip.file(item.substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel')).async("blob").then(function(blob) {
+					console.log(item)
+					var file_path = item.replace('mod','').substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel');
+					zip.file(file_path).async("blob").then(function(blob) {
+						console.log(item.split("/")[item.split("/").length - 1])
 						all_modded_imgs[item.split("/")[item.split("/").length - 1]] = blobToImage(blob)
 					})
 				} catch (err) {}
