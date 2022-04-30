@@ -198,7 +198,7 @@ function handleFileSelect() {
 					zip.file(item.substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel')).async("blob").then(function(blob) {
 						all_modded_imgs[item.split("/")[item.split("/").length - 1]] = blobToImage(blob)
 					})
-				} catch (err) {console.log(err)}
+				} catch (err) {}
 			})
 			setTimeout(function() {
 				var preview_img = generateModPreview(all_asset_imgs, all_modded_imgs).toDataURL()
