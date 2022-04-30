@@ -634,8 +634,6 @@ function showAdditionalSettings() {
 
 const total_wardrobe_steps = wardrobe_features.length;
 
-const generateRandom = size => [...Array(size)].map(() => Math.floor(Math.random() * 36).toString(36)).join('');
-
 function processWardrobe(apply) {
 	const zip = new JSZip();
 	const main_folder = zip.folder('jollymod')
@@ -649,10 +647,8 @@ function processWardrobe(apply) {
 
 	const gore_folder = main_folder.folder('gore');
 	const chunks_folder = gore_folder.folder('chunks').folder('billyjoel')
-	const skin_folder = gore_folder.folder('skin').folder('adult')
-	for (let item = 0; item < 10; item ++) {
-		const dest_folder = ((item == 9 ? skin_folder : chunks_folder))
-		dest_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
+	for (let item = 0; item < 9; item ++) {
+		chunks_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
 	}
 
 	const settings_json = `{
@@ -708,7 +704,7 @@ function processWardrobe(apply) {
 	} else {
 		zip.generateAsync({type:"blob"})
 		.then(function(content) {
-			saveAs(content, "jollymod-" + modWardrobeCharacterName + "-" + generateRandom(6) + ".zip");
+			saveAs(content, "jollymod-" + modWardrobeCharacterName + ".zip");
 		});
 	}
 }

@@ -1037,17 +1037,16 @@ const wardrobe_features = [
 	],
 ]
 
-const gore_path = location.origin + "/mod/jollymod/gore"
+const gore_path = location.origin + "/mod/jollymod/gore/chunks/billyjoel/"
 const gore_item_paths = [
-	"/chunks/billyjoel/Normal_Arm_Gore10000.png",
-	"/chunks/billyjoel/Normal_Belly_Gore10000.png",
-	"/chunks/billyjoel/Normal_Core_Gore10000.png",
-	"/chunks/billyjoel/Normal_Core_Gore20000.png",
-	"/chunks/billyjoel/Normal_Head_Gore10000.png",
-	"/chunks/billyjoel/Normal_Head_Gore20000.png",
-	"/chunks/billyjoel/Normal_Leg_Gore10000.png",
-	"/chunks/billyjoel/Normal_Shoulder_Gore10000.png",
-	"/chunks/billyjoel/Normal_Thigh_Gore10000.png",
-	"/skin/adult/Normal_Arm_Flesh0000.png"
+	"Normal_Arm_Gore10000.png",
+	"Normal_Belly_Gore10000.png",
+	"Normal_Core_Gore10000.png",
+	"Normal_Core_Gore20000.png",
+	"Normal_Head_Gore10000.png",
+	"Normal_Head_Gore20000.png",
+	"Normal_Leg_Gore10000.png",
+	"Normal_Shoulder_Gore10000.png",
+	"Normal_Thigh_Gore10000.png",
 ];
 const gore_item_imgs = [0,0,0,0,0,0,0,0,0,0];
