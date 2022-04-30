@@ -650,7 +650,7 @@ function processWardrobe(apply) {
 	const skin_folder = gore_folder.folder('skin').folder('adult')
 	for (let item = 0; item < 9; item ++) {
 		const dest_folder = ((item == 10 ? skin_folder : chunks_folder))
-		dest_folder.file(gore_item_paths[item].split("/")[5], gore_item_imgs[item], {base64: true})
+		dest_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
 	}
 
 	const settings_json = `{
