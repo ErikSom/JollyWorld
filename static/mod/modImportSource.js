@@ -195,7 +195,6 @@ function handleFileSelect() {
 			var all_modded_imgs = {}
 			all_asset_paths.forEach(async(item) => {
 				try {
-					console.log(item)
 					var file_path = item.replace('mod','').substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel');
 					zip.file(file_path).async("blob").then(function(blob) {
 						console.log(item.split("/")[item.split("/").length - 1])
@@ -651,8 +650,8 @@ function processWardrobe(apply) {
 	const gore_folder = main_folder.folder('gore');
 	const chunks_folder = gore_folder.folder('chunks').folder('billyjoel')
 	const skin_folder = gore_folder.folder('skin').folder('adult')
-	for (let item = 0; item < 9; item ++) {
-		const dest_folder = ((item == 10 ? skin_folder : chunks_folder))
+	for (let item = 0; item < 10; item ++) {
+		const dest_folder = ((item == 9 ? skin_folder : chunks_folder))
 		dest_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
 	}
 
