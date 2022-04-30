@@ -184,7 +184,7 @@ const bike_positions = [
 	{asset: 'Normal_Eye0000.png', x: 1709, y: 47, r: 0.05, w: 22, h: 22},
 ]
 
-const wardrobe_path = location.origin + "/static/mod/wardrobe/"
+const wardrobe_path = location.origin + "/mod/wardrobe/"
 const wardrobe_features = [
 	// Skintones
 	[
@@ -1037,7 +1037,7 @@ const wardrobe_features = [
 	],
 ]
 
-const gore_path = location.origin + "/static/mod/jollymod/gore"
+const gore_path = location.origin + "/mod/jollymod/gore"
 const gore_item_paths = [
 	"/chunks/billyjoel/Normal_Arm_Gore10000.png",
 	"/chunks/billyjoel/Normal_Belly_Gore10000.png",
