@@ -999,6 +999,13 @@ const wardrobe_features = [
 				["SkateBoard_Board0000.png", "SkateBoard_Board0001.png"],
 				["Skateboard_Wheel0000.png", "Skateboard_Wheel0001.png"]
 			]
+		},
+		{
+			thumb: "SkateBoard_Board0002.png",
+			overwrite: [
+				["SkateBoard_Board0000.png", "SkateBoard_Board0002.png"],
+				["Skateboard_Wheel0000.png", "Skateboard_Wheel0000.png"]
+			]
 		}
 	],
 	// Skippyball
@@ -1018,6 +1025,22 @@ const wardrobe_features = [
 				["YogaBallHandle_Back0000.png", "YogaBallHandle_Back0001.png"],
 				["YogaBall_Handle_Front0000.png", "YogaBall_Handle_Front0001.png"]
 			]
+		},
+		{
+			thumb: "YogaBall0002.png",
+			overwrite: [
+				["YogaBall0000.png", "YogaBall0002.png"],
+				["YogaBallHandle_Back0000.png", "YogaBallHandle_Back0002.png"],
+				["YogaBall_Handle_Front0000.png", "YogaBall_Handle_Front0002.png"]
+			]
+		},
+		{
+			thumb: "YogaBall0003.png",
+			overwrite: [
+				["YogaBall0000.png", "YogaBall0003.png"],
+				["YogaBallHandle_Back0000.png", "YogaBallHandle_Back0003.png"],
+				["YogaBall_Handle_Front0000.png", "YogaBall_Handle_Front0003.png"]
+			]
 		}
 	],
 	// Foddycan
@@ -1025,13 +1048,22 @@ const wardrobe_features = [
 		{
 			thumb: "Pot0000.png",
 			overwrite: [
-				["Pot0000.png", "Pot0000.png"]
+				["Pot0000.png", "Pot0000.png"],
+				["Hammer0000.png", "Hammer0000.png"]
 			]
 		},
 		{
 			thumb: "Pot0001.png",
 			overwrite: [
-				["Pot0000.png", "Pot0001.png"]
+				["Pot0000.png", "Pot0001.png"],
+				["Hammer0000.png", "Hammer0000.png"]
+			]
+		},
+		{
+			thumb: "Pot0002.png",
+			overwrite: [
+				["Pot0000.png", "Pot0002.png"],
+				["Hammer0000.png", "Hammer0001.png"]
 			]
 		}
 	],
