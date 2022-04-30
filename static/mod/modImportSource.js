@@ -197,7 +197,6 @@ function handleFileSelect() {
 				try {
 					var file_path = item.replace('mod','').substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel');
 					zip.file(file_path).async("blob").then(function(blob) {
-						console.log(item.split("/")[item.split("/").length - 1])
 						all_modded_imgs[item.split("/")[item.split("/").length - 1]] = blobToImage(blob)
 					})
 				} catch (err) {}
@@ -645,11 +644,11 @@ function processWardrobe(apply) {
 	const yogaball_folder = vehicles_folder.folder('yogaball')
 	const foddycan_folder = vehicles_folder.folder('foddycan')
 
-	const gore_folder = main_folder.folder('gore');
-	const chunks_folder = gore_folder.folder('chunks').folder('billyjoel')
-	for (let item = 0; item < 9; item ++) {
-		chunks_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
-	}
+	//const gore_folder = main_folder.folder('gore');
+	//const chunks_folder = gore_folder.folder('chunks').folder('billyjoel')
+	//for (let item = 0; item < 9; item ++) {
+	//	chunks_folder.file(gore_item_paths[item].split("/")[gore_item_paths[item].split("/").length - 1], gore_item_imgs[item], {base64: true})
+	//}
 
 	const settings_json = `{
 		"doorColor": "${modWardrobeDoorColor}",
