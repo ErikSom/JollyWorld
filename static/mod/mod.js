@@ -13,10 +13,12 @@ function $(element) {
 
 function adjustBodySize() {
 	let size;
-	if (window.innerWidth > 1000) {
+	if (window.innerWidth > 1200) {
 		size = 1500;
-	} else {
+	} else if (window.innerWidth > 600) {
 		size = 1000;
+	} else {
+		size = 600;
 	}
 	document.body.style.width = size + "px"
 	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + (size + 25) / window.innerWidth + ')')
@@ -407,11 +409,15 @@ function openModWardrobe() {
 
 	$('modwardrobewindow').style.top = "0px";
 	$('modwardrobewindow').style.opacity = 1;
+	$('modwardrobewindow').style.display = 'block';
 }
 function closeModWardrobe() {
 	unlockScrolling();
 	$('modwardrobewindow').style.top = "100vh";
 	$('modwardrobewindow').style.opacity = 0
+	setTimeout(function() {
+		$('modwardrobewindow').style.display = 'none'
+	}, 400)
 }
 
 function updateWardrobePreview() {
