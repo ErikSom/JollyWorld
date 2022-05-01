@@ -18,6 +18,7 @@ function adjustBodySize() {
 	} else {
 		size = 1000;
 	}
+	document.body.style.width = size + "px"
 	document.body.style.transform = 'scale(' + window.innerWidth / (size + 25) + ')'
 }
 adjustBodySize();

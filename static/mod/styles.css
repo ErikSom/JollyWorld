@@ -40,15 +40,9 @@ html {
 	scrollbar-color: var(--text) var(--main);
   	scrollbar-width: thin;
 }
-@media screen and (max-width: 1000px) {
-	body {
-		width: 1000px;
-	}
-}
 body {
 	background: var(--back);
 	text-align: center;
-	width: 1500px;
 	transform-origin: top left;
 }
 h1, p, span, input, label {
