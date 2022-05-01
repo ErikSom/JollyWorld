@@ -82,9 +82,6 @@ function downloadZip(name) {
 	const url = `mod/zips/${name}.zip`;
 	fetch(url).then(async transfer => {
 		showLoadingScreen();
-
-		const zipFile = await transfer.blob();
-		zipFile.text().then((value) => localStorage.setItem('currentlyLoadedZip', value))
 		
 		const zip = new JSZip();
 		zip.loadAsync(zipFile).then(function (zip) {
