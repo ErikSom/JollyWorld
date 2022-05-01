@@ -44,6 +44,7 @@ body {
 	background: var(--back);
 	text-align: center;
 	transform-origin: top left;
+	overflow-x: hidden;
 }
 h1, p, span, input, label {
 	font-family: "Montserrat";
@@ -221,7 +222,7 @@ a.button {
 	z-index: 9;
 }
 .fixed {
-	transform-origin: top-left;
+	transform-origin: top left;
 }
 #loadingwindow {
 	position: fixed;
