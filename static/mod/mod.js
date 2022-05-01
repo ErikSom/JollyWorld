@@ -15,7 +15,9 @@ let globalSize;
 let windowSize;
 function adjustBodySize() {
 	windowSize = 1;
-	if (window.innerWidth > 1100) {
+	if (window.innerWidth > 1500) {
+		globalSize = 2000;
+	} else if (window.innerWidth > 1100) {
 		globalSize = 1500;
 	} else if (window.innerWidth > 800) {
 		globalSize = 1000;
