@@ -357,7 +357,7 @@ const wardrobe_features = [
 	// Nose
 	[
 		{
-			thumb: "Normal_Head_Nose9999.png",
+			thumb: "empty.png",
 			overwrite: []
 		},
 		{
@@ -400,7 +400,7 @@ const wardrobe_features = [
 	// Mouth
 	[
 		{
-			thumb: "Mouth_Idle9999.png",
+			thumb: "empty.png",
 			overwrite: [
 				["Mouth_Idle0000.png", "Mouth_Idle9998.png"]
 			]
@@ -463,7 +463,7 @@ const wardrobe_features = [
 	// Eyes
 	[
 		{
-			thumb: "Normal_Eye9999.png",
+			thumb: "empty.png",
 			overwrite: [
 				["Normal_Eye0000.png", "Normal_Eye9998.png"]
 			]
@@ -549,7 +549,7 @@ const wardrobe_features = [
 	// Hair
 	[
 		{
-			thumb: "Normal_Head_Idle9999.png",
+			thumb: "empty.png",
 			overwrite: []
 		},
 		{
@@ -886,7 +886,7 @@ const wardrobe_features = [
 	// Overlay Head
 	[
 		{
-			thumb: "Normal_Head_Overlay9999.png",
+			thumb: "empty.png",
 			overwrite: []
 		},
 		{
