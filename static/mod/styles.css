@@ -45,6 +45,7 @@ body {
 	text-align: center;
 	transform-origin: top left;
 	overflow-x: hidden;
+	margin: -10px 0px 0px 0px;
 }
 h1, p, span, input, label {
 	font-family: "Montserrat";
