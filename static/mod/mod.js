@@ -49,11 +49,13 @@ function closeModWindow() {
 }
 
 function showLoadingScreen() {
+	lockScrolling();
 	$('loadingbackground').style.pointerEvents = 'all';
 	$('loadingbackground').style.opacity = 1;
 	$('loadingbarprogress').style.width = "0%"
 }
 function hideLoadingScreen() {
+	unlockScrolling();
 	$('loadingbackground').style.pointerEvents = 'none';
 	$('loadingbackground').style.opacity = 0;
 }
@@ -371,17 +373,27 @@ function removeTheme(){
 	localStorage.removeItem('jollyWorldTheme');
 }
 function openModEditor() {
+	lockScrolling();
 	$('creatorbackground').style.opacity = 1;
 	$('creatorbackground').style.pointerEvents = "all"
 }
 function closeModEditor() {
+	unlockScrolling();
 	$('creatorbackground').style.opacity = 0;
 	$('creatorbackground').style.pointerEvents = "none"
+}
+function lockScrolling() {
+	window.scrollTo(0, 0)
+	document.body.style.overflowY = "hidden";
+}
+function unlockScrolling() {
+	document.body.style.overflowY = "scroll";
 }
 
 var current_wardrobe_page;
 var current_wardrobe_vehicle;
 function openModWardrobe() {
+	lockScrolling()
 	document.querySelectorAll('.wardrobeitemselected').forEach((item) => item.classList.remove('wardrobeitemselected'))
 	$('modwardrobefinal').style.display = 'none'
 	$('modwardrobestepcounter').style.display = 'block'
@@ -395,12 +407,11 @@ function openModWardrobe() {
 
 	$('modwardrobewindow').style.top = "0px";
 	$('modwardrobewindow').style.opacity = 1;
-	document.body.style.overflowY = "hidden";
 }
 function closeModWardrobe() {
+	unlockScrolling();
 	$('modwardrobewindow').style.top = "100vh";
 	$('modwardrobewindow').style.opacity = 0
-	document.body.style.overflowY = "scroll";
 }
 
 function updateWardrobePreview() {
