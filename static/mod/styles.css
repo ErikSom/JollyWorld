@@ -43,7 +43,8 @@ html {
 body {
 	background: var(--back);
 	text-align: center;
-	width: fit-content;
+	width: 1000px;
+	transform-origin: top left;
 }
 h1, p, span, input, label {
 	font-family: "Montserrat";

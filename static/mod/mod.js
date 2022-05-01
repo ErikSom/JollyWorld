@@ -11,6 +11,13 @@ function $(element) {
 	return document.getElementById(element)
 }
 
+function adjustBodySize() {
+	document.body.style.transform = 'scale(' + window.innerWidth / 1020 + ')'
+}
+adjustBodySize();
+
+document.body.onresize = adjustBodySize
+
 function toggleTheme() {
 	var old_theme = document.documentElement.getAttribute('theme')
 	var new_theme = (old_theme == 'dark' ? 'main' : 'dark')
