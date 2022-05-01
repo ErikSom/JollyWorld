@@ -12,7 +12,13 @@ function $(element) {
 }
 
 function adjustBodySize() {
-	document.body.style.transform = 'scale(' + window.innerWidth / 1020 + ')'
+	let size;
+	if (window.innerWidth > 1000) {
+		size = 1500;
+	} else {
+		size = 1000;
+	}
+	document.body.style.transform = 'scale(' + window.innerWidth / (size + 25) + ')'
 }
 adjustBodySize();
 
