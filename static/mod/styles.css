@@ -220,6 +220,9 @@ a.button {
 	transition: opacity 0.1s linear;
 	z-index: 9;
 }
+.fixed {
+	transform-origin: top-left;
+}
 #loadingwindow {
 	position: fixed;
 	width: 500px;

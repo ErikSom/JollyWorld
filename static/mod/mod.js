@@ -19,7 +19,7 @@ function adjustBodySize() {
 		size = 1000;
 	}
 	document.body.style.width = size + "px"
-	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + window.innerWidth / (size + 25) + ')')
+	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + (size + 25) / window.innerWidth + ')')
 	document.body.style.transform = 'scale(' + window.innerWidth / (size + 25) + ')'
 }
 adjustBodySize();
