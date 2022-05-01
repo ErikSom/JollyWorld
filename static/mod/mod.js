@@ -159,7 +159,7 @@ function updateModName(){
 	} catch (err) {}
 	if (modName === null) {
 		$('installedMod').innerText = 'Billy Joel';
-		$('currentModThumb').style.backgroundImage = 'url(mod/thumbs/Billy Joel.png)';
+		$('currentModThumb').style.backgroundImage = 'url(mod/thumbs/Billy%20Joel.png)';
 	} else {
 		$('installedMod').innerText = modName;
 		if (modCustomPreview === null) {
