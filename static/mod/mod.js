@@ -358,6 +358,8 @@ function processBasicMod(path, file){
 
 function clearOldMods(){
 	removeTheme();
+	var message = {type: 'jollySelectCharacter', character: 0}
+	window.parent.postMessage(message, '*')
 
 	return new Promise((resolve, reject) => {
 		keys().then(keys => {
