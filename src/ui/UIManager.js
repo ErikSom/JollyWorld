@@ -44,7 +44,7 @@ import SimpleBar from 'simplebar'
 import {countries, localize} from '../utils/Localization'
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
-import { getModdedPortrait } from '../utils/ModManager'
+import { getModdedPortrait, init as initModManager } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
 import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
@@ -1880,9 +1880,13 @@ function UIManager() {
                         userData.selectedCharacter = game.selectedCharacter;
                         SaveManager.updateLocalUserData(userData);
 
-                        this.setMainMenuCharacterImage();
                     } else if(type === 'jollyCloseCharacterSelect'){
-                        this.hideCharacterSelect();
+                        characterSelect.style.pointerEvents = 'none';
+                        initModManager().then(() => {
+                            this.hideCharacterSelect();
+                            this.setMainMenuCharacterImage();
+                            characterSelect.style.pointerEvents = 'all';
+                        });
                     }
                 }catch(e){
                     this.hideCharacterSelect();
