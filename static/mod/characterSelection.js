@@ -11,8 +11,7 @@ portraits.onload = function() {
 			clearOldMods();
 			localStorage.removeItem('jollyModCustomPreview')
 			localStorage.setItem('jollyModName', allDefaultCharacters[this.num])
-			var message = {type: 'jollySelectCharacter', character: customOrder[this.num]}
-			window.parent.postMessage(message, '*')
+			sendDefaultChar(customOrder[this.num])
 			updateModName()
 		}
 		

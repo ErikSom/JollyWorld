@@ -238,6 +238,11 @@ function handleFileSelect() {
 	}
 }
 
+function sendDefaultChar(id = 0) {
+	var message = {type: 'jollySelectCharacter', character: id}
+	window.parent.postMessage(message, '*')
+}
+
 function processFiles(files){
 	clearOldMods().then(()=>{
 		const keys = Object.keys(files);
@@ -358,8 +363,7 @@ function processBasicMod(path, file){
 
 function clearOldMods(){
 	removeTheme();
-	var message = {type: 'jollySelectCharacter', character: 0}
-	window.parent.postMessage(message, '*')
+	sendDefaultChar();
 
 	return new Promise((resolve, reject) => {
 		keys().then(keys => {
