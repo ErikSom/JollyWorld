@@ -83,6 +83,7 @@ function downloadZip(name) {
 	fetch(url).then(async transfer => {
 		showLoadingScreen();
 		
+		const zipFile = await transfer.blob();
 		const zip = new JSZip();
 		zip.loadAsync(zipFile).then(function (zip) {
 			processFiles(zip.files);
