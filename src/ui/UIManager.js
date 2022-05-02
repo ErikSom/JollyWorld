@@ -1880,11 +1880,11 @@ function UIManager() {
                         userData.selectedCharacter = game.selectedCharacter;
                         SaveManager.updateLocalUserData(userData);
 
-                        this.setMainMenuCharacterImage();
                     } else if(type === 'jollyCloseCharacterSelect'){
                         characterSelect.style.pointerEvents = 'none';
                         initModManager().then(() => {
                             this.hideCharacterSelect();
+                            this.setMainMenuCharacterImage();
                             characterSelect.style.pointerEvents = 'all';
                         });
                     }
