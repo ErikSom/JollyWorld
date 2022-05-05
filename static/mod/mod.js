@@ -30,8 +30,13 @@ function adjustBodySize() {
 	$('modwardrobewindow').style.width = (globalSize + 25) + "px";
 	$('modwardrobewindow').style.height = window.innerHeight * (globalSize + 25) + "px"
 	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + (globalSize + 25) / window.innerWidth + ')')
-	document.body.style.width = globalSize + "px";
-	document.body.style.transform = 'scale(' + window.innerWidth / (globalSize + 25) + ')'
+	if (!zip_editor_open) {
+		document.body.style.width = globalSize + "px";
+		document.body.style.transform = 'scale(' + window.innerWidth / (globalSize + 25) + ')'
+	} else {
+		document.body.style.width = "";
+		document.body.style.transform = "";
+	}
 }
 adjustBodySize();
 

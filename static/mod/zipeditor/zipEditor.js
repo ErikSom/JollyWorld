@@ -2,6 +2,8 @@ let ctx;
 let tempctx;
 let zip_loaded_text_files;
 let zip_loaded_images;
+let zip_editor_open;
+let loaded_zip;
 let loaded_zip_name;
 let current_tool = "Pencil";
 let current_tool_size = 1;
@@ -31,7 +33,7 @@ pixelcvs.width = 1;
 pixelcvs.height = 1;
 const pixelctx = pixelcvs.getContext('2d');
  
-function zipEditorInit() {
+function zipEditorInit(importDefault = false) {
 	try {
 		if (navigator.userAgentData.mobile) {
 			alert("The online .zip editor is not usable on mobile devices");
@@ -137,13 +139,39 @@ function zipEditorInit() {
 	document.body.onkeydown = keyDown;
 	document.body.onkeyup = keyUp;
 	document.body.style.transform = ""
-	document.body.width = ""
+	document.body.width = "";
 	imgcanvas = document.querySelector('.ze .main .imageedit canvas');
 	imgctx = imgcanvas.getContext('2d');
 	imgcanvascontainer = document.querySelector('.ze .main .imageedit .canvascontainer');
+	zip_editor_open = true;
 	setTimeout(function() {
 		document.querySelector('.ze').style.top = 0;
 	}, 1)
+	if (importDefault) {
+		setTimeout(function() {
+			zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
+		}, 500)
+	}
+}
+
+async function zipEditorLoadExternalZip(url) {
+	loaded_zip_name = "jollymod";
+	zip_loaded_text_files = {};
+	zip_loaded_images = {};
+	new JSZip.external.Promise(function (resolve, reject) {
+		JSZipUtils.getBinaryContent(url, function(err, data) {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(data);
+			}
+		});
+	})
+	.then(JSZip.loadAsync)
+	.then((zip) => {
+		loaded_zip = zip;
+		zipEditorImportFile(zip);
+	})
 }
 
 function toggleTheme() {
@@ -286,7 +314,9 @@ function zipEditorAddLoading() {
 }
 
 function zipEditorClose() {
-	document.querySelector('.ze').style.top = "100vh"
+	document.querySelector('.ze').style.top = "100vh";
+	zip_editor_open = false;
+	adjustBodySize();
 	setTimeout(function() {
 		document.querySelector('.ze').remove();
 	}, 500)
@@ -297,88 +327,91 @@ function zipEditorImportZip() {
 	closeAllTools()
 	const files = event.dataTransfer ? event.dataTransfer.files : event.target.files;
 	for (let i = 0, f; f = files[i]; i++) {
-		const loadedZip = new JSZip();
+		loaded_zip = new JSZip();
 		loaded_zip_name = f.name;
 		zip_loaded_text_files = {}
 		zip_loaded_images = {}
 		document.querySelector('.sidebar').innerHTML = '';
-		loadedZip.loadAsync(f).then(function (zip) {
-			const folders = new Set();
-			for (const [key, value] of Object.entries(zip.files)) {
-				const itemPath = key.split("/")
-				if (itemPath[0] !== "__MACOSX") {
-					for (let i = 1; i < itemPath.length; i ++) {
-						folders.add(itemPath.slice(0, i).join("/"))
-					};
-				};
-			};
-			const sortedFilePaths = Array.from(folders).sort()
-			for (let p = 0; p < sortedFilePaths.length; p ++) {
-				const item = sortedFilePaths[p];
-				const itemArray = item.split("/")
-				const folderName = itemArray.pop()
-				var prefixDot = "";
-				if (itemArray.length) {
-					prefixDot = " ."
-				}
-				const destination = '.ze .sidebar' + prefixDot + itemArray.join(" .")
-				document.querySelector(destination).innerHTML += `
-				<div class="zipEditorFolder ${folderName}" onclick="toggleFolder(this)" style="height:30px">
-					<p class="zipEditorFolderText">${folderName}</p>
-					<svg height="10000" width="25">
-						<line x1="4" y1="4" x2="21" y2="4" style="stroke:#555; stroke-width:3; stroke-linecap:round" />
-						<line x1="21" y1="4" x2="21" y2="10000" style="stroke:#555; stroke-width:3; stroke-linecap:round" />
-					</svg>
-				</div>
-				`
-			}
-			for (const [key, value] of Object.entries(zip.files)) {
-				const itemPath = key.split("/")
-				if (itemPath[0] !== "__MACOSX") {
-					const temp = itemPath[itemPath.length - 1].split(".");
-					itemExtension = temp[temp.length-1]
-					if (itemExtension == 'png') {
-						const imagePathString = key;
-						const imagePathArray = imagePathString.split("/");
-						const imageName = imagePathArray.pop()
-						var prefixDot = "";
-						if (imagePathArray.length) {
-							prefixDot = " ."
-						}
-						const destinationPath = '.ze .sidebar' + prefixDot + imagePathArray.join(" .") + ' .images'
-						if (document.querySelector(destinationPath) == null) {
-							document.querySelector(destinationPath.replace('.images', '')).innerHTML += 
-							`<div class="images"></div>`
-						}
-						loadedZip.file(imagePathString).async("blob").then(function(blob) {
-							const src = URL.createObjectURL(blob)
-							zip_loaded_images[imagePathString] = src;
-							document.querySelector(destinationPath).innerHTML += 
-							`<img path="${imagePathString}" id="${imagePathString.replaceAll('.','').replaceAll('/','')}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeImageEditor(zip_loaded_images[path],path)}" name="${imageName}" src="${src}">`
-						})
-					} else if (['txt','json','html','js','css'].includes(itemExtension)) {
-						const filePathString = key;
-						const filePathArray = filePathString.split("/");
-						const fileName = filePathArray.pop()
-						var prefixDot = "";
-						if (filePathArray.length) {
-							prefixDot = " ."
-						}
-						const destinationPath = '.ze .sidebar' + prefixDot + filePathArray.join(" .")
-						loadedZip.file(filePathString).async("blob").then(function(blob) {
-							blob.text().then(function (text) {
-								zip_loaded_text_files[filePathString] = text;
-								document.querySelector(destinationPath).innerHTML += 
-								`<p path="${filePathString}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeTextarea(zip_loaded_text_files[path],path)}" class="zipEditorFileName">${fileName}</p>`
-							})
-						})
-					}
-				}
-			};
-		}, function () {
+		loaded_zip.loadAsync(f).then(zip => zipEditorImportFile(zip) 
+		, function () {
 			alert("Not a valid zip file")
 		});
 	}
+}
+
+function zipEditorImportFile(zip) {
+	const folders = new Set();
+	for (const [key, value] of Object.entries(zip.files)) {
+		const itemPath = key.split("/")
+		if (itemPath[0] !== "__MACOSX") {
+			for (let i = 1; i < itemPath.length; i ++) {
+				folders.add(itemPath.slice(0, i).join("/"))
+			};
+		};
+	};
+	const sortedFilePaths = Array.from(folders).sort()
+	for (let p = 0; p < sortedFilePaths.length; p ++) {
+		const item = sortedFilePaths[p];
+		const itemArray = item.split("/")
+		const folderName = itemArray.pop()
+		var prefixDot = "";
+		if (itemArray.length) {
+			prefixDot = " ."
+		}
+		const destination = '.ze .sidebar' + prefixDot + itemArray.join(" .")
+		document.querySelector(destination).innerHTML += `
+		<div class="zipEditorFolder ${folderName}" onclick="toggleFolder(this)" style="height:30px">
+			<p class="zipEditorFolderText">${folderName}</p>
+			<svg height="10000" width="25">
+				<line x1="4" y1="4" x2="21" y2="4" style="stroke:#555; stroke-width:3; stroke-linecap:round" />
+				<line x1="21" y1="4" x2="21" y2="10000" style="stroke:#555; stroke-width:3; stroke-linecap:round" />
+			</svg>
+		</div>
+		`
+	}
+	for (const [key, value] of Object.entries(zip.files)) {
+		const itemPath = key.split("/")
+		if (itemPath[0] !== "__MACOSX") {
+			const temp = itemPath[itemPath.length - 1].split(".");
+			itemExtension = temp[temp.length-1]
+			if (itemExtension == 'png') {
+				const imagePathString = key;
+				const imagePathArray = imagePathString.split("/");
+				const imageName = imagePathArray.pop()
+				var prefixDot = "";
+				if (imagePathArray.length) {
+					prefixDot = " ."
+				}
+				const destinationPath = '.ze .sidebar' + prefixDot + imagePathArray.join(" .") + ' .images'
+				if (document.querySelector(destinationPath) == null) {
+					document.querySelector(destinationPath.replace('.images', '')).innerHTML += 
+					`<div class="images"></div>`
+				}
+				loaded_zip.file(imagePathString).async("blob").then(function(blob) {
+					const src = URL.createObjectURL(blob)
+					zip_loaded_images[imagePathString] = src;
+					document.querySelector(destinationPath).innerHTML += 
+					`<img path="${imagePathString}" id="${imagePathString.replaceAll('.','').replaceAll('/','')}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeImageEditor(zip_loaded_images[path],path)}" name="${imageName}" src="${src}">`
+				})
+			} else if (['txt','json','html','js','css'].includes(itemExtension)) {
+				const filePathString = key;
+				const filePathArray = filePathString.split("/");
+				const fileName = filePathArray.pop()
+				var prefixDot = "";
+				if (filePathArray.length) {
+					prefixDot = " ."
+				}
+				const destinationPath = '.ze .sidebar' + prefixDot + filePathArray.join(" .")
+				loaded_zip.file(filePathString).async("blob").then(function(blob) {
+					blob.text().then(function (text) {
+						zip_loaded_text_files[filePathString] = text;
+						document.querySelector(destinationPath).innerHTML += 
+						`<p path="${filePathString}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeTextarea(zip_loaded_text_files[path],path)}" class="zipEditorFileName">${fileName}</p>`
+					})
+				})
+			}
+		}
+	};
 }
 
 function checkIfSaved() {
