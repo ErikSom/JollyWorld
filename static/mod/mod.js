@@ -35,7 +35,7 @@ function adjustBodySize() {
 }
 adjustBodySize();
 
-document.body.onresize = adjustBodySize
+document.body.onresize = adjustBodySize;
 
 function toggleTheme() {
 	var old_theme = document.documentElement.getAttribute('theme')

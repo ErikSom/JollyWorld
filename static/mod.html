@@ -8,7 +8,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
 	<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+	<script src="mod/zipEditor/zipEditor.js"></script>
 	<link rel="stylesheet" type="text/css" href="mod/styles.css">
+	<link rel="stylesheet" type="text/css" href="mod/zipEditor/zipEditor.css">
 	<meta name="viewport" content="width=600, initial-scale=1">
 </head>
 <body ondrop="handleFileSelect()">
@@ -58,10 +60,10 @@
 				<div class="difficultystars" style="width:40px"></div>
 				<img class="createmodicon" src="mod/pageassets/createfromwardrobe.png">
 			</div>
-			<div class="createmodoption" style="background-color:#FDFD12; pointer-events: none; opacity:0.5;">
+			<div class="createmodoption" style="background-color:#FDFD12;" onclick="zipEditorInit()">
 				<div class="hoveroverlay"></div>
 				<h1 class="createmodoptiontitle">Create in Online Editor</h1>
-				<p class="createmodoptiondescription">Coming at a later point</p>
+				<p class="createmodoptiondescription">Versatile and simple but needs PC</p>
 				<span class="difficultystarslabel">Difficulty:</span>
 				<div class="difficultystars" style="width:80px"></div>
 				<img class="createmodicon" src="mod/pageassets/createinonlineeditor.png">
