@@ -13,6 +13,7 @@ export const hashName = name => {
 export const LoadCoreAssets = function (loader){
     loader.add("Characters_1.json", `assets/images/characters/${hashName('Characters_1.json')}`)
         .add("Characters_Gore.json", `assets/images/characters/${hashName('Characters_Gore.json')}`)
+        .add("Masks.json", `assets/images/characters/${hashName('Masks.json')}`)
         .add("Vehicles_1.json", `assets/images/vehicles/${hashName('Vehicles_1.json')}`)
         .add("Mech.json", `assets/images/vehicles/${hashName('Mech.json')}`)
         .add("Movement.json", `assets/images/prefabs/${hashName('Movement.json')}`)

@@ -37,7 +37,7 @@ export const init = ()=> new Promise(resolve => {
 			const vehicleMods = [];
 			const goreMods = [];
 			const textureMods = [];
-			const portraitMods = [];
+			const maskMods = [];
 
 			if(keys.find( key => key.startsWith(folderName))){
 
@@ -53,6 +53,9 @@ export const init = ()=> new Promise(resolve => {
 					}
 					if(key.indexOf(`${folderName}/textures`) === 0){
 						textureMods.push(key);
+					}
+					if(key.indexOf(`${folderName}/masks`) === 0){
+						maskMods.push(key);
 					}
 				})
 
@@ -70,6 +73,10 @@ export const init = ()=> new Promise(resolve => {
 
 				if(textureMods.length > 0){
 					modTexture(textureMods);
+				}
+
+				if(maskMods.length > 0){
+					modMasks(maskMods);
 				}
 			}
 			resolve();
@@ -93,6 +100,10 @@ const modVehicles = vehicleMods => {
 
 const modGore = goreMods => {
 	modAtlas('Characters_Gore.json_image', 'Characters_Gore.json', goreMods);
+}
+
+const modMasks = maskMods => {
+	modAtlas('Masks.json_image', 'Masks.json', maskMods);
 }
 
 const modTexture = textureMods => {

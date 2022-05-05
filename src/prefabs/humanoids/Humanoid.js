@@ -11,6 +11,7 @@ import { clampAngleToRange, rotateVectorAroundPoint } from '../../b2Editor/utils
 import { editorSettings } from '../../b2Editor/utils/editorSettings';
 import { b2CloneVec2, b2DotVV, b2SubVec2 } from '../../../libs/debugdraw';
 import { generateGoreParticles } from '../../utils/GenerateGoreParticles';
+import * as PhysicsParticleEmitter from '../../utils/PhysicsParticleEmitter';
 
 
 const vec1 = new Box2D.b2Vec2(0, 0);
@@ -39,6 +40,8 @@ export class Humanoid extends PrefabManager.basePrefab {
         this.mouthPos = {x:41, y:59};
         this.releaseImmune = 0;
         this.skin = 0;
+        this.mask = 1;
+        this.maskSprite = null;
         this.ignoreJointDamage = false;
         this.jointMaxForces = [1300000, 1300000, 1300000, 1300000];
         this.jointMaxTorque = 600;
@@ -145,6 +148,38 @@ export class Humanoid extends PrefabManager.basePrefab {
         }
         this.mouth.texture = PIXI.Texture.from(`${this.mouthTextureName}_Idle${targetFrame}`);
     }
+
+    setMask(mask){
+        if(mask){
+            const body = this.lookupObject['eye_right'];
+
+            this.maskSprite = new PIXI.Sprite(PIXI.Texture.from(`masks${(mask-1).toString().padStart(4, '0')}`));
+
+            body.myTexture.addChild(this.maskSprite);
+
+            this.maskSprite.x = -62.4; // offset to position on head correctly
+            this.maskSprite.y = -34.6;
+        }
+    }
+
+    dropMask(){
+        if(this.maskSprite){
+            const body = this.lookupObject['eye_right'];
+            const head = this.lookupObject['head'];
+
+            if(body && head){
+                const childIndex = body.myTexture.parent.getChildIndex(body.myTexture);
+                const [maskTextureName] = this.maskSprite.texture.textureCacheIds;
+
+                this.maskSprite.destroy();
+
+                PhysicsParticleEmitter.emit([maskTextureName], body.GetPosition(), 1, 5, 20, false, undefined, body.GetAngle(), undefined, head.GetLinearVelocity(), childIndex, false);
+            }
+
+            this.maskSprite = null;
+        }
+    }
+
     flip(){
         this.flipped = !this.flipped;
         game.editor.mirrorPrefab(this, 'body');
@@ -563,6 +598,15 @@ export class Humanoid extends PrefabManager.basePrefab {
     doCollisionUpdate(update) {
         if(game.tutorialMode) return;
         if ((update.target == 'head' || update.target == 'body') && this.bleedTimer < 0) this.bleedTimer = 0;
+
+        // drop mask
+        if(update.target === 'eye_right' || update.target === 'head'){
+            const targetBody = this.lookupObject['eye_right'];
+            if (targetBody) {
+                this.dropMask();
+            }
+        }
+
         switch (update.type) {
             case Humanoid.GORE_BASH:
 

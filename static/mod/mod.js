@@ -273,6 +273,7 @@ function processFiles(files){
 				case 'vehicles':
 				case 'portraits':
 				case 'helmets':
+				case 'masks':
 					processBasicMod(path, file);
 				break;
 				case 'theme':

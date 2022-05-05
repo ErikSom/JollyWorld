@@ -1871,13 +1871,15 @@ function UIManager() {
                 try{
                     const data = typeof message.data === 'string' ? JSON.parse(message.data) : message.data;
 
-                    const {type, character} = data;
+                    const {type, character, mask} = data;
 
                     if(type === 'jollySelectCharacter'){
                         game.selectedCharacter = parseInt(character);
+                        game.selectedMask = parseInt(mask);
 
                         const userData = SaveManager.getLocalUserdata();
                         userData.selectedCharacter = game.selectedCharacter;
+                        userData.selectedMask = game.selectedMask;
                         SaveManager.updateLocalUserData(userData);
 
                     } else if(type === 'jollyCloseCharacterSelect'){
