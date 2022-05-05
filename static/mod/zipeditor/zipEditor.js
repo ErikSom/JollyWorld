@@ -148,9 +148,8 @@ function zipEditorInit(importDefault = false) {
 		document.querySelector('.ze').style.top = 0;
 	}, 1)
 	if (importDefault) {
-		setTimeout(function() {
-			zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
-		}, 500)
+		document.querySelector('.ze .loading').style.display = 'block'
+		zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
 	}
 }
 
@@ -170,6 +169,7 @@ async function zipEditorLoadExternalZip(url) {
 	.then(JSZip.loadAsync)
 	.then((zip) => {
 		loaded_zip = zip;
+		document.querySelector('.ze .loading').style.display = 'none';
 		zipEditorImportFile(zip);
 	})
 }
