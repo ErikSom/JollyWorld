@@ -474,7 +474,7 @@ function initWardrobe() {
 var loaded_images = 0;
 function increaseLoadedImages() {
 	loaded_images ++;
-	if (loaded_images == 40) {
+	if (loaded_images == 41) {
 		setTimeout(function() {
 			$('modwardrobesteps').innerHTML = ""
 			for (var section = 0; section < total_wardrobe_steps; section ++) {
@@ -701,6 +701,7 @@ function processWardrobe(apply) {
 	const skateboard_folder = vehicles_folder.folder('skateboard')
 	const yogaball_folder = vehicles_folder.folder('yogaball')
 	const foddycan_folder = vehicles_folder.folder('foddycan')
+	const masks_folder = main_folder.folder('masks');
 
 	const gore_folder = main_folder.folder('gore');
 	const chunks_folder = gore_folder.folder('chunks').folder('billyjoel')
@@ -743,6 +744,9 @@ function processWardrobe(apply) {
 			case "H":
 			case "P":
 				dest_folder = foddycan_folder;
+				break;
+			case "m":
+				dest_folder = masks_folder;
 				break;
 			default:
 				dest_folder = character_folder;

@@ -24,6 +24,8 @@ const all_asset_paths = [
 	'mod/jollymod/vehicles/foddycan/Pot0000.png',
 	'mod/jollymod/vehicles/foddycan/Pot_20000.png',
 
+	'mod/jollymod/masks/masks0000.png',
+
 	'mod/wardrobe/Normal_Belly0000.png',
 	'mod/wardrobe/Normal_Core0000.png',
 	'mod/wardrobe/Normal_Thigh0000.png',
@@ -72,6 +74,7 @@ const bike_positions = [
 	{asset: 'Mouth_Idle0000.png', x: 185, y: 59, r: 0.05, w: 42, h: 30},
 	{asset: 'Normal_Eye0000.png', x: 186, y: 36, r: 0.05, w: 22, h: 22},
 	{asset: 'Normal_Eye0000.png', x: 208, y: 37, r: 0.05, w: 22, h: 22},
+	{asset: 'masks0000.png', x: 148, y: -1, r: 0.05, w: 96, h: 96},
 
 	// Dirtbike
 	{asset: 'Normal_Thigh0000.png', x: 541, y: 177, r: -0.70, w: 54, h: 88},
@@ -104,6 +107,7 @@ const bike_positions = [
 	{asset: 'Mouth_Idle0000.png', x: 595, y: 46, r: 0.05, w: 42, h: 30},
 	{asset: 'Normal_Eye0000.png', x: 596, y: 23, r: 0.05, w: 22, h: 22},
 	{asset: 'Normal_Eye0000.png', x: 618, y: 24, r: 0.05, w: 22, h: 22},
+	{asset: 'masks0000.png', x: 558, y: -14, r: 0.05, w: 96, h: 96},
 	{asset: 'DirtBikeHelmet0000.png', x: 564, y: -10, w: 78, h: 91},
 
 	// Skateboard
@@ -135,6 +139,7 @@ const bike_positions = [
 	{asset: 'Mouth_Idle0000.png', x: 995, y: 61, r: 0.05, w: 42, h: 30},
 	{asset: 'Normal_Eye0000.png', x: 996, y: 38, r: 0.05, w: 22, h: 22},
 	{asset: 'Normal_Eye0000.png', x: 1018, y: 39, r: 0.05, w: 22, h: 22},
+	{asset: 'masks0000.png', x: 958, y: 1, r: 0.05, w: 96, h: 96},
 
 	// Yogaball
 	{asset: 'Normal_Thigh0000.png', x: 1335, y: 193, r: -0.81, w: 54, h: 88},
@@ -162,6 +167,7 @@ const bike_positions = [
 	{asset: 'Mouth_Idle0000.png', x: 1385, y: 59, r: 0.05, w: 42, h: 30},
 	{asset: 'Normal_Eye0000.png', x: 1386, y: 36, r: 0.05, w: 22, h: 22},
 	{asset: 'Normal_Eye0000.png', x: 1408, y: 37, r: 0.05, w: 22, h: 22},
+	{asset: 'masks0000.png', x: 1348, y: -1, r: 0.05, w: 96, h: 96},
 
 	// Foddycan
 	{asset: 'Hammer_20000.png', x: 1723, y: 297, r: -0.08, w: 271, h: 54},
@@ -182,6 +188,7 @@ const bike_positions = [
 	{asset: 'Mouth_Idle0000.png', x: 1686, y: 69, r: 0.05, w: 42, h: 30},
 	{asset: 'Normal_Eye0000.png', x: 1687, y: 46, r: 0.05, w: 22, h: 22},
 	{asset: 'Normal_Eye0000.png', x: 1709, y: 47, r: 0.05, w: 22, h: 22},
+	{asset: 'masks0000.png', x: 1650, y: 9, r: 0.05, w: 96, h: 96},
 ]
 
 const wardrobe_path = location.origin + "/mod/wardrobe/"
@@ -619,12 +626,6 @@ const wardrobe_features = [
 			]
 		},
 		{
-			thumb: "Normal_Head_Idle0016.png",
-			overwrite: [
-				["Normal_Head_Idle0000.png", "Normal_Head_Idle0016.png", 1]
-			]
-		},
-		{
 			thumb: "Normal_Head_Idle0017.png",
 			overwrite: [
 				["Normal_Head_Idle0000.png", "Normal_Head_Idle0017.png", 1]
@@ -883,52 +884,52 @@ const wardrobe_features = [
 			]
 		}
 	],
-	// Overlay Head
+	// Masks
 	[
 		{
 			thumb: "empty.png",
 			overwrite: []
 		},
 		{
-			thumb: "Normal_Head_Overlay0000.png",
+			thumb: "masks0000.png",
 			overwrite: [
-				["Normal_Head_Idle0000.png", "Normal_Head_Overlay0000.png", 1]
+				["masks0000.png", "masks0000.png"]
 			]
 		},
 		{
-			thumb: "Normal_Head_Overlay0001.png",
+			thumb: "masks0001.png",
 			overwrite: [
-				["Normal_Head_Idle0000.png", "Normal_Head_Overlay0001.png", 1]
+				["masks0000.png", "masks0001.png"]
 			]
 		},
 		{
-			thumb: "Normal_Head_Overlay0002.png",
+			thumb: "masks0002.png",
 			overwrite: [
-				["Normal_Head_Idle0000.png", "Normal_Head_Overlay0002.png", 1]
+				["masks0000.png", "masks0002.png"]
 			]
 		},
 		{
-			thumb: "Normal_Head_Overlay0003.png",
+			thumb: "masks0003.png",
 			overwrite: [
-				["Normal_Head_Idle0000.png", "Normal_Head_Overlay0003.png", 1],
-				// Sunglasses remove the other eye textures
-				["Normal_Eye0000.png", "Normal_Eye9998.png"],
-				["Normal_Eye_Closed0000.png", "Normal_Eye9998.png"]
+				["masks0000.png", "masks0003.png"],
 			]
 		},
 		{
-			thumb: "Normal_Head_Overlay0005.png",
+			thumb: "masks0005.png",
 			overwrite: [
-				["Normal_Head_Idle0000.png", "Normal_Head_Overlay0005.png", 1],
-				// Sunglasses remove the other eye textures
-				["Normal_Eye0000.png", "Normal_Eye9998.png"],
-				["Normal_Eye_Closed0000.png", "Normal_Eye9998.png"]
+				["masks0000.png", "masks0005.png"],
 			]
 		},
 		{
-			thumb: "Normal_Head_Overlay0004.png",
+			thumb: "masks0004.png",
 			overwrite: [
-				["Normal_Head_Idle0000.png", "Normal_Head_Overlay0004.png", 1]
+				["masks0000.png", "masks0004.png"]
+			]
+		},
+		{
+			thumb: "masks0006.png",
+			overwrite: [
+				["masks0000.png", "masks0006.png"]
 			]
 		}
 	],
