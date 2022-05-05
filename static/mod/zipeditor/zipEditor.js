@@ -42,7 +42,7 @@ function zipEditorInit(importDefault = false) {
 	} catch (err) {}
 	document.body.innerHTML += 
 	`
-	<div class="ze" style="top:100vh" onmouseup="releaseWindows();" onmousemove="moveWindows();">
+	<div class="ze" onmouseup="releaseWindows();" onmousemove="moveWindows();">
 		<div class="loading" style="display:none;">
 			<h1>Please wait...</h1>
 			<h2>This may take a few seconds.</h2>
@@ -144,9 +144,6 @@ function zipEditorInit(importDefault = false) {
 	imgctx = imgcanvas.getContext('2d');
 	imgcanvascontainer = document.querySelector('.ze .main .imageedit .canvascontainer');
 	zip_editor_open = true;
-	setTimeout(function() {
-		document.querySelector('.ze').style.top = 0;
-	}, 1)
 	if (importDefault) {
 		document.querySelector('.ze .loading').style.display = 'block'
 		zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
@@ -314,12 +311,9 @@ function zipEditorAddLoading() {
 }
 
 function zipEditorClose() {
-	document.querySelector('.ze').style.top = "100vh";
+	document.querySelector('.ze').remove();
 	zip_editor_open = false;
 	adjustBodySize();
-	setTimeout(function() {
-		document.querySelector('.ze').remove();
-	}, 500)
 }
 
 function zipEditorImportZip() {
