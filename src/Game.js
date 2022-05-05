@@ -112,6 +112,7 @@ function Game() {
     this.gameOver = false;
     this.checkPointData = null;
     this.selectedCharacter = 0;
+    this.selectedMask = 0;
     this.selectedVehicle = 0;
     this.playedFirstLevel = false;
 
@@ -334,6 +335,7 @@ function Game() {
 
         const userData = SaveManager.getLocalUserdata();
         game.selectedCharacter = userData.selectedCharacter;
+        game.selectedMask = userData.selectedMask;
 
         if(urlParams.get('site_id') || urlParams.get('pokiDebug')) Settings.onPoki = true;
 

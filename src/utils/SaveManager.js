@@ -30,6 +30,7 @@ export const getLocalUserdata = function(){
         goreOn:true,
         tutorials:[],
         selectedCharacter: 0,
+        selectedMask: 0,
         tutorialFinished: false,
         discordShown: false,
         levelsPlayed: 0,

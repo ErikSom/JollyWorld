@@ -36,6 +36,7 @@ export class Character extends Humanoid {
     postConstructor(){
         super.postConstructor();
         this.setSkin(game.selectedCharacter);
+        this.setMask(game.selectedMask);
     }
 
     init() {
