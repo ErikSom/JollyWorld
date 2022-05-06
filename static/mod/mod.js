@@ -370,8 +370,8 @@ function processBasicMod(path, file){
 
 function clearOldMods(){
 	removeTheme();
-	sendDefaultChar();
 	wearing_mask = 0;
+	sendDefaultChar();
 
 	return new Promise((resolve, reject) => {
 		keys().then(keys => {
@@ -759,6 +759,7 @@ function processWardrobe(apply) {
 		localStorage.setItem('jollyModName', "Created in Wardrobe")
 		processFiles(zip.files)
 		wearing_mask = 1;
+		sendDefaultChar();
 		setTimeout(function() {
 			const preview_img = generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL()
 			localStorage.setItem('jollyModCustomPreview', preview_img);
