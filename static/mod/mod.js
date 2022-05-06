@@ -413,12 +413,6 @@ function unlockScrolling() {
 	document.body.style.overflowY = "scroll";
 }
 
-function renameCharacter() {
-	const new_name = prompt("Enter new name:");
-	$('installedMod').innerText = new_name;
-	localStorage.setItem('jollyModName', new_name)
-}
-
 var current_wardrobe_page;
 var current_wardrobe_vehicle;
 function openModWardrobe() {
