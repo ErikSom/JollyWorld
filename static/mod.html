@@ -31,10 +31,10 @@
 			<div class="singleModCanvas" id="currentModThumb"></div>
 		</div>
 		<div class="dashboardSection">
-			<button onclick="openModEditor()" class="button" id="create" style="background-color: #FF6600;">Create a new Mod</button>
-			<button onclick="loadWardrobeContents();$('zipFileInput').click()" class="button" id="create" style="background-color: #AA00AA;">Import from .zip</button>
+			<button class="button" id="createbutton" style="background-color: #FF6600;">Create a new Mod</button>
+			<button onclick="loadWardrobeContents();$('zipFileInput').click()" class="button" id="importzipbutton" style="background-color: #AA00AA;">Import from .zip</button>
 			<button onclick="toggleTheme()" class="button" id="darkmodebutton" style="background-color:#262626">Dark Theme</button>
-			<button onclick="closeModWindow()" class="button" style="background-color: #D70000">Back to Game</button>
+			<button onclick="closeModWindow()" class="button" id="backtogamebutton" style="background-color: #D70000">Back to Game</button>
 		</div>
 	</div>
 	<div class="section">

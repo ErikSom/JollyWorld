@@ -783,3 +783,11 @@ function processWardrobe(apply, importEditor = false) {
 		}
 	}
 }
+
+if ("ontouchstart" in document.documentElement) {
+	$('createbutton').onclick = function() {openModWardrobe()};
+	$('importzipbutton').style.display = 'none';
+} else {
+	$('createbutton').onclick = function() {openModEditor()};
+	$('importzipbutton').style.display = 'block';
+}

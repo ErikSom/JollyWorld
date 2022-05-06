@@ -128,9 +128,6 @@ a.button {
 	vertical-align: top;
 	padding: 10px;
 }
-#installedMod {
-	cursor: pointer;
-}
 #currentModThumb {
 	width: 400px;
 	height: 350px;
