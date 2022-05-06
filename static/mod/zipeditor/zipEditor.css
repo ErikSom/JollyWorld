@@ -348,6 +348,16 @@ html {
 	top: 0;
 	background-color: #0090FF40;
 }
+.ze .main .imageedit .characterpreview {
+	width: 400px;
+	height: 350px;
+	position: absolute;
+	bottom:	0px;
+	left: 400px;
+	animation: cyclethroughcharacters 8s cubic-bezier(.26,-0.01,.01,1.01) infinite 1s;
+	transition: left 0.2s ease-out;
+	pointer-events: none;
+}
 .zipEditorFolder {
 	padding-left: 25px;
 	font-size: 25px;

@@ -1,8 +1,11 @@
 const allDefaultCharacters = ["Billy Joel", "Jeroen", "Marique", "Damien", "Sean Bro", "Col. Jackson", "Brittany", "Xenot", "Ronda", "Jack Lee", "The Zuck!", "Hank", "Crashy", "Bob Zombie", "Mrs. Kat", "Machote"]
 const customOrder = [0,1,2,3,12,9,14,6,7,8,4,10,13,5,11,15];
-var portraits = new Image()
+
+const portraits = new Image()
 portraits.src = "mod/pageassets/allportraits.png"
-portraits.onload = function() {
+portraits.onload = loadCharacters
+function loadCharacters() {
+	$('defaultCharacterSelection').innerHTML = ""
 	for (var i = 0; i < allDefaultCharacters.length; i ++) {
 		var button = document.createElement('div');
 		button.classList.add('singleDefaultCharacter');
@@ -21,7 +24,7 @@ portraits.onload = function() {
 		var ctx = thumb.getContext('2d');
 		var x = i % 4 * 90
 		var y = Math.floor(i / 4) * 90
-		ctx.drawImage(this, x, y, 90, 90, 5, 5, 90, 90)
+		ctx.drawImage(portraits, x, y, 90, 90, 5, 5, 90, 90)
 		thumb.classList.add('singleDefaultCharacterThumb')
 
 		var characterName = document.createElement('h1');
@@ -33,7 +36,6 @@ portraits.onload = function() {
 
 		$('defaultCharacterSelection').appendChild(button);
 	}
-	this.remove()
-	all_public_mods.forEach(mod => addToPublicMods(mod))
-	updateModName();
 }
+all_public_mods.forEach(mod => addToPublicMods(mod))
+updateModName();

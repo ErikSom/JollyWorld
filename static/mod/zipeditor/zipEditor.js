@@ -67,6 +67,7 @@ function zipEditorInit(importDefault = false) {
 		<div class="topbar">
 			<button class="button" onclick="zipEditorImport()">Import</button>
 			<button class="button" onclick="zipEditorExport()">Export</button>
+			<button class="button" onclick="zipEditorExport(true)" style="color:#0D0;">Apply Mod</button>
 			<div class="darkbutton" onclick="toggleTheme()">
 				<svg viewBox="0 0 512 512"><path fill="white" d="M283.211 512c78.962 0 151.079-35.925 198.857-94.792 7.068-8.708-.639-21.43-11.562-19.35-124.203 23.654-238.262-71.576-238.262-196.954 0-72.222 38.662-138.635 101.498-174.394 9.686-5.512 7.25-20.197-3.756-22.23A258.156 258.156 0 0 0 283.211 0c-141.309 0-256 114.511-256 256 0 141.309 114.511 256 256 256z"/></svg>
 			</div>
@@ -125,6 +126,8 @@ function zipEditorInit(importDefault = false) {
 					<canvas id="layer0"></canvas>
 					<canvas class="tempcanvas"></canvas>
 					<div class="cursor"></div>
+				</div>
+				<div class="characterpreview">
 				</div>
 			</div>
 			<button class="savechangesbutton" onclick="saveChanges()" style="display:none">Save Changes</button>
@@ -270,19 +273,22 @@ function moveWindows() {
 function toggleSidebar() {
 	const sidebar = document.querySelector('.ze .sidebar')
 	const sidebarbutton = document.querySelector('.ze .sidebarbutton')
+	const characterpreview = document.querySelector('.ze .main .imageedit .characterpreview');
 	if (sidebar.style.transform === "translateX(-350px)") {
 		sidebar.style.transform = ""
 		sidebarbutton.style.transform = "";
+		characterpreview.style.left = "400px"
 	} else {
 		sidebar.style.transform = "translateX(-350px)"
 		sidebarbutton.style.transform = "rotateZ(180deg)";
+		characterpreview.style.left = "50px"
 	}
 }
 
 function zipEditorImport() {
 	document.querySelector('.ze #zipinput').click();
 }
-function zipEditorExport() {
+function zipEditorExport(apply = false) {
 	document.querySelector('.ze .loading').style.display = 'block'
 	generated_zip = new JSZip();
 	generated_zip_remaining_images = Object.keys(zip_loaded_images).length;
@@ -295,18 +301,41 @@ function zipEditorExport() {
     	.then(blobFile => new File([blobFile], key.split("/")[key.split("/").length-1], { type: "image/png" }))
     	.then((blobFile) => {
     		generated_zip.file(key, blobFile)
-    		zipEditorAddLoading();
+    		zipEditorAddLoading(apply);
     	})
 	}
 }
-function zipEditorAddLoading() {
+function zipEditorAddLoading(apply = false) {
 	generated_zip_remaining_images --;
 	if (generated_zip_remaining_images == 0) {
-		generated_zip.generateAsync({type:"blob"})
-		.then((content) => {
-			saveAs(content, loaded_zip_name);
-			document.querySelector('.ze .loading').style.display = 'none'
-		});
+		if (apply) {
+			processFiles(generated_zip.files)
+			zipEditorClose();
+			try {
+				document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
+			} catch (err) {}
+			const folder_name = Object.keys(generated_zip)[0].split("/")[0]
+			var all_modded_imgs = {}
+			all_asset_paths.forEach(async(item) => {
+				try {
+					var file_path = item.replace('mod','').substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel');
+					generated_zip.file(file_path).async("blob").then(function(blob) {
+						all_modded_imgs[item.split("/")[item.split("/").length - 1]] = blobToImage(blob)
+					})
+				} catch (err) {}
+			})
+			setTimeout(function() {
+				var preview_img = generateModPreview(all_asset_imgs, all_modded_imgs).toDataURL()
+				localStorage.setItem('jollyModCustomPreview', preview_img);
+				updateModName();
+			}, 100)
+		} else {
+			generated_zip.generateAsync({type:"blob"})
+			.then((content) => {
+				document.querySelector('.ze .loading').style.display = 'none'
+				saveAs(content, loaded_zip_name);
+			});
+		}
 	}
 }
 
@@ -314,6 +343,7 @@ function zipEditorClose() {
 	document.querySelector('.ze').remove();
 	zip_editor_open = false;
 	adjustBodySize();
+	loadCharacters();
 }
 
 function zipEditorImportZip() {
@@ -399,8 +429,10 @@ function zipEditorImportFile(zip) {
 				loaded_zip.file(filePathString).async("blob").then(function(blob) {
 					blob.text().then(function (text) {
 						zip_loaded_text_files[filePathString] = text;
-						document.querySelector(destinationPath).innerHTML += 
-						`<p path="${filePathString}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeTextarea(zip_loaded_text_files[path],path)}" class="zipEditorFileName">${fileName}</p>`
+						try {
+							document.querySelector(destinationPath).innerHTML += 
+							`<p path="${filePathString}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeTextarea(zip_loaded_text_files[path],path)}" class="zipEditorFileName">${fileName}</p>`
+						} catch (err) {}
 					})
 				})
 			}
@@ -819,6 +851,7 @@ function goBackToLastSnapshot() {
 	}
 	img.src = data;
 	undo_history.pop();
+	unsavedChanges();
 }
 
 function unsavedChanges() {
@@ -841,6 +874,9 @@ function saveChanges() {
 			const objurl = URL.createObjectURL(blob);
 			zip_loaded_images[path] = objurl;
 			document.getElementById(path.replaceAll('/','').replaceAll('.','')).src = objurl;
+			setTimeout(function() {
+				updateZipEditorPreview();
+			}, 100)
 		})
 	}
 	const save_button = document.querySelector('.ze .main .savechangesbutton');
@@ -998,4 +1034,17 @@ function hslToHex(hsl) {
 		return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
 	};
 	return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function updateZipEditorPreview() {
+	const previewimg = document.querySelector('.ze .main .imageedit .characterpreview');
+	const all_zipped_imgs = {};
+	for (const [key, value] of Object.entries(zip_loaded_images)) {
+	    const tempimg = new Image();
+	    tempimg.src = value;
+	        all_zipped_imgs[key.split("/")[key.split("/").length-1]] = tempimg;
+	}
+	
+	const tempcvs = generateModPreview(all_asset_imgs, all_zipped_imgs )
+	previewimg.style.backgroundImage = `url(${tempcvs.toDataURL()})`
 }
