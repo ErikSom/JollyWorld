@@ -58,7 +58,7 @@ if (localStorage.getItem('jwbpTheme') == 'dark') {
 
 function closeModWindow() {
 	if (window.self !== window.top) {
-		var message = {type: 'jollyCloseCharacterSelect', mask: wearing_mask}
+		var message = {type: 'jollyCloseCharacterSelect'}
 		window.parent.postMessage(message, '*')
 	} else {
 		window.location = "/"
@@ -245,7 +245,7 @@ function handleFileSelect() {
 }
 
 function sendDefaultChar(id = 0) {
-	var message = {type: 'jollySelectCharacter', character: id}
+	var message = {type: 'jollySelectCharacter', character: id, mask: wearing_mask}
 	window.parent.postMessage(message, '*')
 }
 
