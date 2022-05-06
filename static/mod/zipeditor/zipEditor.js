@@ -190,18 +190,23 @@ if (localStorage.getItem('jwbpTheme') == 'dark') {
 function keyDown() {
 	switch (event.key) {
 		case "1":
+		case "b":
+		case "p":
 			selectTool('Pencil');
 			break;
 		case "2":
+		case "e":
 			selectTool('Eraser');
 			break;
 		case "3":
+		case "k":
 			selectTool('Eyedropper');
 			break;
 		case "4":
 			selectTool('Selection');
 			break;
 		case "5":
+		case "f":
 			selectTool('Fill');
 			break;
 		case "a":
@@ -665,13 +670,15 @@ function checkNeighbouring(x, y) {
 		const ny = y + neighbours[n][1];
 		if (!checked_pixels.has(nx+','+ny) && nx >= f.x && ny >= f.y && nx < f.w && ny < f.h) {
 			checked_pixels.add(nx+','+ny)
+			pixelctx.clearRect(0, 0, 1, 1)
 			pixelctx.drawImage(imgcanvas, Math.round(nx), Math.round(ny), 1, 1, 0, 0, 1, 1)
 			const this_pixel_values = pixelctx.getImageData(0,0,1,1).data;
 			let diff = 0;
 			for (var i = 0; i < 4; i ++) {
 				diff += Math.abs(this_pixel_values[i] - original_pixel_values[i])
 			}
-			if (diff < fill_tolerance) {
+			console.log(this_pixel_values[3])
+			if (diff < fill_tolerance && this_pixel_values[3] > 0) {
 				imgctx.globalAlpha = current_tool_alpha;
 				imgctx.fillRect(nx, ny, 1, 1)
 				setTimeout(function() {
