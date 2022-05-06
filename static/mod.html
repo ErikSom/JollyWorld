@@ -27,11 +27,11 @@
 		</div>
 		<div class="dashboardSection" style="height:440px">
 			<h1 id="currentMod">Current Character:</h1>
-			<h1 id="installedMod"></h1>
+			<h1 id="installedMod" onclick="renameCharacter()"></h1>
 			<div class="singleModCanvas" id="currentModThumb"></div>
 		</div>
 		<div class="dashboardSection">
-			<button onclick="openModEditor()" class="button" id="create" style="background-color: #FF6600;">Create your own Mod</button>
+			<button onclick="openModEditor()" class="button" id="create" style="background-color: #FF6600;">Create a new Mod</button>
 			<button onclick="loadWardrobeContents();$('zipFileInput').click()" class="button" id="create" style="background-color: #AA00AA;">Import from .zip</button>
 			<button onclick="toggleTheme()" class="button" id="darkmodebutton" style="background-color:#262626">Dark Theme</button>
 			<button onclick="closeModWindow()" class="button" style="background-color: #D70000">Back to Game</button>
@@ -60,7 +60,7 @@
 				<div class="difficultystars" style="width:40px"></div>
 				<img class="createmodicon" src="mod/pageassets/createfromwardrobe.png">
 			</div>
-			<div class="createmodoption" style="background-color:#FDFD12;" onclick="zipEditorInit(true)">
+			<div class="createmodoption" style="background-color:#FDFD12;" onclick="closeModEditor();zipEditorInit(true)">
 				<div class="hoveroverlay"></div>
 				<h1 class="createmodoptiontitle">Create in Online Editor</h1>
 				<p class="createmodoptiondescription">Versatile and simple but needs PC</p>
@@ -127,7 +127,8 @@
 					</div>
 				</div>
 			</div>
-			<button class="button" style="background-color:#A0A" onclick="processWardrobe(false)">Download as .zip</button>
+			<button class="button" style="background-color:#AA00AA" onclick="processWardrobe(false)">Download as .zip</button>
+			<button class="button" style="background-color:#E81F58" onclick="processWardrobe(false, true);">Import into Editor</button>
 			<button class="button" style="background-color:#4BD748" onclick="processWardrobe(true)">Apply this character</button>
 			<div id="pointingarrowcontainer">
 				<img src="mod/pageassets/arrow.png" id="pointingarrow">

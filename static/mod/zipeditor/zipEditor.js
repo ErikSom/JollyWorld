@@ -323,6 +323,7 @@ function zipEditorAddLoading(apply = false) {
 				document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
 			} catch (err) {}
 			localStorage.setItem('jollyModCustomPreview', preview_img);
+			localStorage.setItem('jollyModName', "Created in Editor");
 			updateModName();
 		} else {
 			generated_zip.generateAsync({type:"blob"})
@@ -359,6 +360,8 @@ function zipEditorImportZip() {
 }
 
 function zipEditorImportFile(zip) {
+	zip_loaded_text_files = {};
+	zip_loaded_images = {};
 	const folders = new Set();
 	for (const [key, value] of Object.entries(zip.files)) {
 		const itemPath = key.split("/")
@@ -409,8 +412,10 @@ function zipEditorImportFile(zip) {
 				loaded_zip.file(imagePathString).async("blob").then(function(blob) {
 					const src = URL.createObjectURL(blob)
 					zip_loaded_images[imagePathString] = src;
-					document.querySelector(destinationPath).innerHTML += 
-					`<img path="${imagePathString}" id="${imagePathString.replaceAll('.','').replaceAll('/','')}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeImageEditor(zip_loaded_images[path],path)}" name="${imageName}" src="${src}">`
+					try {
+						document.querySelector(destinationPath).innerHTML += 
+						`<img path="${imagePathString}" id="${imagePathString.replaceAll('.','').replaceAll('/','')}" onclick="if (checkIfSaved()) {closeAllTools();let path=this.getAttribute('path');initializeImageEditor(zip_loaded_images[path],path)}" name="${imageName}" src="${src}">`
+					} catch (err) {}
 				})
 			} else if (['txt','json','html','js','css'].includes(itemExtension)) {
 				const filePathString = key;
@@ -679,7 +684,6 @@ function checkNeighbouring(x, y) {
 			for (var i = 0; i < 4; i ++) {
 				diff += Math.abs(this_pixel_values[i] - original_pixel_values[i])
 			}
-			console.log(this_pixel_values[3])
 			if (diff < fill_tolerance && this_pixel_values[3] > 0) {
 				imgctx.globalAlpha = current_tool_alpha;
 				imgctx.fillRect(nx, ny, 1, 1)

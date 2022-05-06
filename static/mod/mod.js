@@ -413,6 +413,12 @@ function unlockScrolling() {
 	document.body.style.overflowY = "scroll";
 }
 
+function renameCharacter() {
+	const new_name = prompt("Enter new name:");
+	$('installedMod').innerText = new_name;
+	localStorage.setItem('jollyModName', new_name)
+}
+
 var current_wardrobe_page;
 var current_wardrobe_vehicle;
 function openModWardrobe() {
@@ -693,7 +699,7 @@ function showAdditionalSettings() {
 
 const total_wardrobe_steps = wardrobe_features.length;
 
-function processWardrobe(apply) {
+function processWardrobe(apply, importEditor = false) {
 	const zip = new JSZip();
 	const main_folder = zip.folder('jollymod')
 	const character_folder = main_folder.folder('characters').folder('billyjoel');
@@ -755,21 +761,31 @@ function processWardrobe(apply) {
 		}
 		dest_folder.file(img_name, file, {base64: true});
 	}
-	if (apply) {
-		localStorage.setItem('jollyModName', "Created in Wardrobe")
-		processFiles(zip.files)
-		wearing_mask = 1;
-		sendDefaultChar();
+	if (importEditor) {
+		zipEditorInit();
+		loaded_zip = zip;
+		zipEditorImportFile(zip)
+		closeModWardrobe();
 		setTimeout(function() {
-			const preview_img = generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL()
-			localStorage.setItem('jollyModCustomPreview', preview_img);
-			closeModWardrobe();
-			updateModName();
-		}, 100)
+			updateZipEditorPreview();
+		}, 1000)
 	} else {
-		zip.generateAsync({type:"blob"})
-		.then(function(content) {
-			saveAs(content, "jollymod-" + modWardrobeCharacterName + ".zip");
-		});
+		if (apply) {
+			localStorage.setItem('jollyModName', "Created in Wardrobe")
+			processFiles(zip.files)
+			wearing_mask = 1;
+			sendDefaultChar();
+			setTimeout(function() {
+				const preview_img = generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL()
+				localStorage.setItem('jollyModCustomPreview', preview_img);
+				closeModWardrobe();
+				updateModName();
+			}, 100)
+		} else {
+			zip.generateAsync({type:"blob"})
+			.then(function(content) {
+				saveAs(content, "jollymod-" + modWardrobeCharacterName + ".zip");
+			});
+		}
 	}
 }
