@@ -109,7 +109,7 @@
 		<div id="modwardrobesteps">
 		</div>
 		<div id="modwardrobefinal">
-			<h1>Your character is done!</h1>
+			<h1>🎉 Your character is done! 🎉</h1>
 			<button class="button" style="background-color:#3F7D20" id="modwardrobeadditionalsettingsbutton" onclick="showAdditionalSettings()">More Customizations</button>
 			<div id="modwardrobeadditionalsettings" style="display:none;">
 				<div style="text-align: left;">
@@ -127,8 +127,8 @@
 					</div>
 				</div>
 			</div>
-			<button class="button" style="background-color:#AA00AA" onclick="processWardrobe(false)">Download as .zip</button>
-			<button class="button" style="background-color:#E81F58" onclick="processWardrobe(false, true);">Import into Editor</button>
+			<button class="button" style="background-color:#AA00AA" id="wardrobedownload" onclick="processWardrobe(false)">Download as .zip</button>
+			<button class="button" style="background-color:#E81F58" id="wardrobeimporteditor" onclick="processWardrobe(false, true);">Import into Editor</button>
 			<button class="button" style="background-color:#4BD748" onclick="processWardrobe(true)">Apply this character</button>
 			<div id="pointingarrowcontainer">
 				<img src="mod/pageassets/arrow.png" id="pointingarrow">

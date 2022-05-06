@@ -1,3 +1,8 @@
+let mobile_view = false;
+if ("ontouchstart" in document.documentElement) {
+	mobile_view = true;
+}
+
 const url = new URLSearchParams(window.location.search);
 const autoInstallMod = url.get('install');
 
@@ -651,7 +656,9 @@ function nextWardrobePage() {
 			$('modwardrobestepcounter').style.display = 'none';
 			$('modwardrobepreviewcanvas').style.animation = 'cyclethroughcharacters 8s cubic-bezier(.26,-0.01,.01,1.01) infinite'
 			document.querySelectorAll('.vehiclePreviewButton').forEach((elem) => elem.style.display = 'none')
-			$('confetti').play();
+			if (!mobile_view) {
+				$('confetti').play();
+			}
 			break;
 	}
 }
@@ -784,10 +791,14 @@ function processWardrobe(apply, importEditor = false) {
 	}
 }
 
-if ("ontouchstart" in document.documentElement) {
+if (mobile_view) {
 	$('createbutton').onclick = function() {openModWardrobe()};
 	$('importzipbutton').style.display = 'none';
+	$('wardrobedownload').style.display = 'none';
+	$('wardrobeimporteditor').style.display = 'none';
 } else {
 	$('createbutton').onclick = function() {openModEditor()};
 	$('importzipbutton').style.display = 'block';
+	$('wardrobedownload').style.display = 'block';
+	$('wardrobeimporteditor').style.display = 'block';
 }
