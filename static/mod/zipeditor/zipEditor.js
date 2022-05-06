@@ -309,26 +309,14 @@ function zipEditorAddLoading(apply = false) {
 	generated_zip_remaining_images --;
 	if (generated_zip_remaining_images == 0) {
 		if (apply) {
+			var preview_img = document.querySelector('.ze .main .imageedit .characterpreview').style.backgroundImage.replace("url(","").replace(")","")
 			processFiles(generated_zip.files)
 			zipEditorClose();
 			try {
 				document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
 			} catch (err) {}
-			const folder_name = Object.keys(generated_zip)[0].split("/")[0]
-			var all_modded_imgs = {}
-			all_asset_paths.forEach(async(item) => {
-				try {
-					var file_path = item.replace('mod','').substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel');
-					generated_zip.file(file_path).async("blob").then(function(blob) {
-						all_modded_imgs[item.split("/")[item.split("/").length - 1]] = blobToImage(blob)
-					})
-				} catch (err) {}
-			})
-			setTimeout(function() {
-				var preview_img = generateModPreview(all_asset_imgs, all_modded_imgs).toDataURL()
-				localStorage.setItem('jollyModCustomPreview', preview_img);
-				updateModName();
-			}, 100)
+			localStorage.setItem('jollyModCustomPreview', preview_img);
+			updateModName();
 		} else {
 			generated_zip.generateAsync({type:"blob"})
 			.then((content) => {
