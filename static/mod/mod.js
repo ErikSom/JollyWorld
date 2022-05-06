@@ -4,6 +4,7 @@ const autoInstallMod = url.get('install');
 const folderName = 'jollymod';
 let filesToStore = 0;
 let filesStored = 0;
+let wearing_mask = 0;
 
 const {get, set, keys, del} = window.idbKeyval;
 
@@ -57,7 +58,7 @@ if (localStorage.getItem('jwbpTheme') == 'dark') {
 
 function closeModWindow() {
 	if (window.self !== window.top) {
-		var message = {type: 'jollyCloseCharacterSelect'}
+		var message = {type: 'jollyCloseCharacterSelect', mask: wearing_mask}
 		window.parent.postMessage(message, '*')
 	} else {
 		window.location = "/"
@@ -370,6 +371,7 @@ function processBasicMod(path, file){
 function clearOldMods(){
 	removeTheme();
 	sendDefaultChar();
+	wearing_mask = 0;
 
 	return new Promise((resolve, reject) => {
 		keys().then(keys => {
@@ -756,6 +758,7 @@ function processWardrobe(apply) {
 	if (apply) {
 		localStorage.setItem('jollyModName', "Created in Wardrobe")
 		processFiles(zip.files)
+		wearing_mask = 1;
 		setTimeout(function() {
 			const preview_img = generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL()
 			localStorage.setItem('jollyModCustomPreview', preview_img);
