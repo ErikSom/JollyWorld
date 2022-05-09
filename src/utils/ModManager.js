@@ -10,6 +10,8 @@ const folderName = 'jollymod';
 
 export const portraitModLookup = {};
 
+const moddedTextures = [];
+
 export const getModdedPortrait = async (name, fallback) => {
 	const saveKey = `${folderName}/portraits/${name}`;
 
@@ -158,11 +160,18 @@ const modAtlas = (textureName, jsonName, textures) => {
 				ctx.clearRect(x, y, w, h);
 				ctx.drawImage(image, x, y, w, h);
 				finishedMods++;
+
 				if(finishedMods === expectedMods){
+					if(!targetBaseTextureCache.originalResource){
+						targetBaseTextureCache.originalResource = targetBaseTextureCache.resource;
+						moddedTextures.push(targetBaseTextureCache);
+					} else {
+						targetBaseTextureCache.resource.dispose();
+					}
+					delete targetBaseTextureCache.resource;
+
 					if(jsonName){
 						const canvasResource = new PIXI.CanvasResource(canvas);
-						targetBaseTextureCache.resource.dispose();
-						delete targetBaseTextureCache.resource;
 						targetBaseTextureCache.setResource(canvasResource);
 						targetBaseTextureCache.dirtyId++;
 					}else{
@@ -170,8 +179,6 @@ const modAtlas = (textureName, jsonName, textures) => {
 						imageResource.src = canvas.toDataURL();
 						imageResource.onload = ()=>{
 							const imageResourceClass = new PIXI.ImageResource(imageResource);
-							targetBaseTextureCache.resource.dispose();
-							delete targetBaseTextureCache.resource;
 							targetBaseTextureCache.setResource(imageResourceClass);
 							targetBaseTextureCache.dirtyId++;
 						}
@@ -182,4 +189,14 @@ const modAtlas = (textureName, jsonName, textures) => {
 			// error
 		});
 	})
+}
+
+export const cleanMods = () => {
+	moddedTextures.forEach(baseTexture => {
+		delete baseTexture.resource;
+		baseTexture.setResource(baseTexture.originalResource);
+		baseTexture.dirtyId++;
+		delete baseTexture.originalResource;
+	});
+	moddedTextures.length = 0;
 }
