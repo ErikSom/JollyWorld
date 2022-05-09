@@ -27,7 +27,7 @@ export const localize = id =>{
 	return text;
 }
 
-export const countries = ['de','nl','us','pt','fr','es','it','cz','jr'];
+export const countries = ['us','de','jp','pt','fr','es','it','nl','cz','jr'];
 
 const LOCALIZATION_DATA = [
     {
@@ -36,22 +36,25 @@ const LOCALIZATION_DATA = [
         "nl": "Een Speler",
         "de": "Einzelspieler",
         "es": "Un solo jugador",
-        "pt": "Único jogador",
+        "pt": "Um jogador",
         "cz": "Jeden hráč",
-        "fr": "Joueur unique",
+        "fr": "Joueur solo",
         "it": "Giocatore singolo",
-        "jr": "Lon'ly Adventure"
+        "jr": "Lon'ly Adventure",
+        "jp": "シングルプレーヤー\r\n"
     },
     {
         "textId": "mainmenu_multiplayer",
         "us": "Multiplayer",
         "nl": "Meerdere Spelers",
-        "de": "Multiplayer.",
+        "de": "Multiplayer",
         "es": "Multijugador",
-        "pt": "Multiplayer.",
-        "cz": "Multiplayer.",
+        "pt": "Multiplayer",
+        "cz": "Multiplayer",
         "fr": "Multijoueur",
-        "it": "Multiplayer"
+        "it": "Multiplayer",
+        "jr": "Play in a crew",
+        "jp": "マルチプレイヤー\r"
     },
     {
         "textId": "mainmenu_creategame",
@@ -62,18 +65,21 @@ const LOCALIZATION_DATA = [
         "pt": "Criar jogo",
         "cz": "Vytvořit hru",
         "fr": "Créer un jeu",
-        "it": "Crea game."
+        "it": "Crea gioco",
+        "jr": "Start Crew",
+        "jp": "クリエイトゲームズ"
     },
     {
         "textId": "mainmenu_changelevel",
         "us": "Change",
         "nl": "Verander",
         "de": "Ändern",
-        "es": "Cambiar",
+        "es": "Cambio",
         "pt": "Mudar",
         "cz": "Změna",
-        "fr": "Changement",
-        "it": "Modificare"
+        "fr": "Changer",
+        "it": "Modificare",
+        "jp": "変更レベル"
     },
     {
         "textId": "mainmenu_selectlevel",
@@ -84,7 +90,9 @@ const LOCALIZATION_DATA = [
         "pt": "Selecione o nível",
         "cz": "Vyberte úroveň",
         "fr": "Choisir le niveau",
-        "it": "Seleziona livello"
+        "it": "Seleziona livello",
+        "jr": "Pick an island",
+        "jp": "レベルを選択する"
     },
     {
         "textId": "mainmenu_players",
@@ -95,18 +103,22 @@ const LOCALIZATION_DATA = [
         "pt": "Jogadoras",
         "cz": "Hráči",
         "fr": "Joueurs",
-        "it": "Giocatori"
+        "it": "Giocatori",
+        "jr": "Mates",
+        "jp": "選手紹介"
     },
     {
         "textId": "mainmenu_nolevel",
         "us": "Admin is selecting level",
         "nl": "Admin is level aan het uitzoeken",
-        "de": "Administrator sucht Level",
-        "es": "El administrador es seleccionando nivel",
-        "pt": "Admin está selecionando nível",
-        "cz": "Admin je výběr úrovně",
-        "fr": "Admin est la sélection de niveau",
-        "it": "L'amministratore sta selezionando il livello"
+        "de": "Admin wählt die Ebene aus",
+        "es": "El administrador está seleccionando el nivel",
+        "pt": "Admin está selecionando o nível",
+        "cz": "Admin vybírá úroveň",
+        "fr": "L'administrateur sélectionne le niveau",
+        "it": "L'amministratore sta selezionando il livello",
+        "jr": "Captain's steerin' the ship",
+        "jp": "管理者がレベルを選択中"
     },
     {
         "textId": "mainmenu_ready",
@@ -115,9 +127,10 @@ const LOCALIZATION_DATA = [
         "de": "Bereit",
         "es": "Listo",
         "pt": "Preparar",
-        "cz": "Připravený",
+        "cz": "Připraven",
         "fr": "Prêt",
-        "it": "Pronto"
+        "it": "Pronto",
+        "jp": "レディ"
     },
     {
         "textId": "mainmenu_start",
@@ -128,7 +141,8 @@ const LOCALIZATION_DATA = [
         "pt": "Começar",
         "cz": "Start",
         "fr": "Démarrer",
-        "it": "Cominciare"
+        "it": "Inizio",
+        "jp": "スタート"
     },
     {
         "textId": "mainmenu_admin",
@@ -136,21 +150,25 @@ const LOCALIZATION_DATA = [
         "nl": "Admin",
         "de": "Administrator",
         "es": "Administración",
-        "pt": "Admin.",
+        "pt": "Admin",
         "cz": "Admin",
-        "fr": "Admin",
-        "it": "Amministratore"
+        "fr": "Administrer",
+        "it": "Amministratore",
+        "jr": "Captain",
+        "jp": "管理者"
     },
     {
         "textId": "mainmenu_connecting",
         "us": "Connecting",
         "nl": "Verbinden",
-        "de": "Anschluss",
+        "de": "Verbinden",
         "es": "Conexión",
         "pt": "Conectando",
         "cz": "Spojovací",
         "fr": "De liaison",
-        "it": "Collegamento"
+        "it": "Connessione",
+        "jr": "Boardin' ship",
+        "jp": "コネクティング"
     },
     {
         "textId": "mainmenu_waiting",
@@ -158,10 +176,12 @@ const LOCALIZATION_DATA = [
         "nl": "Wachten",
         "de": "Warten",
         "es": "Esperando",
-        "pt": "Espera",
+        "pt": "Esperando",
         "cz": "Čekání",
         "fr": "Attendre",
-        "it": "In attesa"
+        "it": "In attesa",
+        "jr": "Waitin'",
+        "jp": "待機中"
     },
     {
         "textId": "mainmenu_kick",
@@ -169,21 +189,25 @@ const LOCALIZATION_DATA = [
         "nl": "Trap",
         "de": "Trete",
         "es": "Patear",
-        "pt": "Chute",
+        "pt": "Pontapé",
         "cz": "Kop",
         "fr": "Donner un coup",
-        "it": "Calcio"
+        "it": "Calcio",
+        "jr": "Throw overboard",
+        "jp": "キックアウトする"
     },
     {
         "textId": "mainmenu_leave",
         "us": "Leave",
         "nl": "Verlaat",
         "de": "Verlassen",
-        "es": "Salir",
-        "pt": "Sair",
+        "es": "Abandonar",
+        "pt": "Deixar",
         "cz": "Odejít",
         "fr": "Quitter",
-        "it": "Lasciare"
+        "it": "Lasciare",
+        "jr": "Avast!",
+        "jp": "去る"
     },
     {
         "textId": "mainmenu_quickplay",
@@ -194,7 +218,9 @@ const LOCALIZATION_DATA = [
         "pt": "Jogo rápido",
         "cz": "Rychlá hra",
         "fr": "Jeu rapide",
-        "it": "Partita veloce"
+        "it": "Partita veloce",
+        "jr": "Free sailin'",
+        "jp": "クイックプレイ"
     },
     {
         "textId": "mainmenu_createlevels",
@@ -202,10 +228,12 @@ const LOCALIZATION_DATA = [
         "nl": "Creëer levels!",
         "de": "Level erstellen!",
         "es": "¡Crea niveles!",
-        "pt": "Criar níveis!",
+        "pt": "Crie níveis!",
         "cz": "Vytvoř level!",
         "fr": "Créer des niveaux!",
-        "it": "Crea livelli!"
+        "it": "Crea livelli!",
+        "jr": "Build an island base",
+        "jp": "レベル作成"
     },
     {
         "textId": "mainmenu_signup",
@@ -216,7 +244,8 @@ const LOCALIZATION_DATA = [
         "pt": "Inscrever-se!",
         "cz": "Zaregistrovat se!",
         "fr": "S'inscrire!",
-        "it": "Iscrizione!"
+        "it": "Iscriviti!",
+        "jp": "アカウント作成"
     },
     {
         "textId": "mainmenu_characters",
@@ -227,18 +256,22 @@ const LOCALIZATION_DATA = [
         "pt": "Personagens",
         "cz": "Postavy",
         "fr": "Personnages",
-        "it": "Personaggi"
+        "it": "Caratteri",
+        "jr": "Buccaneers",
+        "jp": "キャラクター"
     },
     {
         "textId": "mainmenu_onlyfeatured",
         "us": "Only Featured",
         "nl": "Alleen Aanbevolen",
         "de": "Nur Empfohlene",
-        "es": "Solo destacado",
-        "pt": "Apenas destaque",
+        "es": "Solo presentado",
+        "pt": "Apenas em destaque",
         "cz": "Pouze doporučené",
-        "fr": "Seulement présenté",
-        "it": "Solo in primo piano"
+        "fr": "Seulement en vedette",
+        "it": "Solo in primo piano",
+        "jr": "Only Mapped",
+        "jp": "特別なレベルのみ"
     },
     {
         "textId": "mainmenu_sorted",
@@ -249,7 +282,9 @@ const LOCALIZATION_DATA = [
         "pt": "Classificado por:",
         "cz": "Seřazeno podle",
         "fr": "Trié par:",
-        "it": "Ordinato per:"
+        "it": "Ordinato per:",
+        "jr": "Marked as",
+        "jp": "ソート順"
     },
     {
         "textId": "mainmenu_filters",
@@ -260,7 +295,8 @@ const LOCALIZATION_DATA = [
         "pt": "Filtros",
         "cz": "Filtr",
         "fr": "Filtres",
-        "it": "Filtri"
+        "it": "Filtri",
+        "jp": "フィルター類"
     },
     {
         "textId": "mainmenu_allvehicles",
@@ -271,7 +307,9 @@ const LOCALIZATION_DATA = [
         "pt": "Todos os veículos",
         "cz": "Všechna vozidla",
         "fr": "Tous les véhicules",
-        "it": "Tutti i veicoli"
+        "it": "Tutti i veicoli",
+        "jr": "All ships",
+        "jp": "諸車"
     },
     {
         "textId": "mainmenu_best_rated",
@@ -283,7 +321,8 @@ const LOCALIZATION_DATA = [
         "cz": "Nejlépe hodnocené",
         "fr": "Mieux noté",
         "it": "I più votati",
-        "jr": "Most Bootyful"
+        "jr": "Most Bootyful",
+        "jp": "最高品質"
     },
     {
         "textId": "mainmenu_most_played",
@@ -295,7 +334,8 @@ const LOCALIZATION_DATA = [
         "cz": "Nejhranější ",
         "fr": "Les plus joués",
         "it": "Più giocato",
-        "jr": "Most Plundered"
+        "jr": "Most Plundered",
+        "jp": "一番人気"
     },
     {
         "textId": "mainmenu_newest",
@@ -307,7 +347,8 @@ const LOCALIZATION_DATA = [
         "cz": "Nejnovější",
         "fr": "Plus récents",
         "it": "Più nuovo",
-        "jr": "Newly Discovered"
+        "jr": "Newly Discovered",
+        "jp": "最新"
     },
     {
         "textId": "mainmenu_oldest",
@@ -319,7 +360,8 @@ const LOCALIZATION_DATA = [
         "cz": "Nejstarší",
         "fr": "Plus anciens",
         "it": "Più vecchio",
-        "jr": "Ol' sea legends"
+        "jr": "Ol' sea legends",
+        "jp": "最古の"
     },
     {
         "textId": "mainmenu_editor",
@@ -331,7 +373,8 @@ const LOCALIZATION_DATA = [
         "cz": "Editor",
         "fr": "Éditeur",
         "it": "Editor",
-        "jr": "Sea Buildin'"
+        "jr": "Sea Buildin'",
+        "jp": "エディター"
     },
     {
         "textId": "mainmenu_by",
@@ -341,9 +384,10 @@ const LOCALIZATION_DATA = [
         "es": "De",
         "pt": "De",
         "cz": "Od",
-        "fr": "Paramètres",
+        "fr": "Par",
         "it": "Da",
-        "jr": "Aye"
+        "jr": "Aye",
+        "jp": "執筆者"
     },
     {
         "textId": "mainmenu_login",
@@ -355,7 +399,8 @@ const LOCALIZATION_DATA = [
         "cz": "Přihlásit se",
         "fr": "Se connecter",
         "it": "Entra",
-        "jr": "Set Sail"
+        "jr": "Set Sail",
+        "jp": "サインイン"
     },
     {
         "textId": "mainmenu_today",
@@ -367,7 +412,8 @@ const LOCALIZATION_DATA = [
         "cz": "Dnes",
         "fr": "Aujourd'hui",
         "it": "Oggi",
-        "jr": "Since this day"
+        "jr": "Since this day",
+        "jp": "今日"
     },
     {
         "textId": "mainmenu_thisweek",
@@ -379,7 +425,8 @@ const LOCALIZATION_DATA = [
         "cz": "Tento týden",
         "fr": "Cette semaine",
         "it": "Questa settimana",
-        "jr": "Since 7 nights ago"
+        "jr": "Since 7 nights ago",
+        "jp": "今週は"
     },
     {
         "textId": "mainmenu_thismonth",
@@ -391,7 +438,8 @@ const LOCALIZATION_DATA = [
         "cz": "Tento měsíc",
         "fr": "Ce mois",
         "it": "Questo mese",
-        "jr": "Since 1 moon ago"
+        "jr": "Since 1 moon ago",
+        "jp": "今月は"
     },
     {
         "textId": "mainmenu_anytime",
@@ -403,7 +451,8 @@ const LOCALIZATION_DATA = [
         "cz": "Kdykoli",
         "fr": "N'importe quand",
         "it": "Per sempre",
-        "jr": "Since forever!"
+        "jr": "Since forever!",
+        "jp": "オールタイム"
     },
     {
         "textId": "mainmenu_more",
@@ -415,7 +464,8 @@ const LOCALIZATION_DATA = [
         "cz": "Více",
         "fr": "Plus",
         "it": "Di più",
-        "jr": "Moarrgh"
+        "jr": "Moarrgh",
+        "jp": "もっと見る"
     },
     {
         "textId": "mainmenu_availablepc",
@@ -427,7 +477,8 @@ const LOCALIZATION_DATA = [
         "cz": "K dispozici na PC",
         "fr": "Disponible sur PC",
         "it": "Disponibile su PC",
-        "jr": "Available on Pirate Crew"
+        "jr": "Available on Pirate Crew",
+        "jp": "PCのみ"
     },
     {
         "textId": "settings_settings",
@@ -439,7 +490,8 @@ const LOCALIZATION_DATA = [
         "cz": "Nastavení",
         "fr": "Paramètres",
         "it": "Impostazioni",
-        "jr": "Mess with yer boat"
+        "jr": "Mess with yer boat",
+        "jp": "設定"
     },
     {
         "textId": "settings_on",
@@ -451,7 +503,8 @@ const LOCALIZATION_DATA = [
         "cz": "Zapnout",
         "fr": "Activé",
         "it": "Attivato",
-        "jr": "Aye"
+        "jr": "Aye",
+        "jp": "於"
     },
     {
         "textId": "settings_off",
@@ -463,7 +516,8 @@ const LOCALIZATION_DATA = [
         "cz": "Vypnout",
         "fr": "Désactivé",
         "it": "Spento",
-        "jr": "Nay"
+        "jr": "Nay",
+        "jp": "オフ"
     },
     {
         "textId": "settings_music",
@@ -475,7 +529,8 @@ const LOCALIZATION_DATA = [
         "cz": "Hudba",
         "fr": "Musique",
         "it": "Musica",
-        "jr": "Shanties"
+        "jr": "Shanties",
+        "jp": "音楽"
     },
     {
         "textId": "settings_blood",
@@ -487,7 +542,8 @@ const LOCALIZATION_DATA = [
         "cz": "Krev",
         "fr": "Sang",
         "it": "Sangue",
-        "jr": "Juice"
+        "jr": "Juice",
+        "jp": "血"
     },
     {
         "textId": "settings_gore",
@@ -499,7 +555,8 @@ const LOCALIZATION_DATA = [
         "cz": "Úrazy",
         "fr": "Gore",
         "it": "Incornare",
-        "jr": "Meat"
+        "jr": "Meat",
+        "jp": "臓物"
     },
     {
         "textId": "settings_fullscreen",
@@ -511,11 +568,14 @@ const LOCALIZATION_DATA = [
         "cz": "Celá obrazovka",
         "fr": "Plein écran",
         "it": "Schermo intero",
-        "jr": "Take of yer eyepatch"
+        "jr": "Take of yer eyepatch",
+        "jp": "最大画面"
     },
     {
         "textId": "settings_consent",
-        "us": "Cookies"
+        "us": "Cookies",
+        "jr": "Crackers",
+        "jp": "クッキー"
     },
     {
         "textId": "settings_credits",
@@ -527,19 +587,21 @@ const LOCALIZATION_DATA = [
         "cz": "Autoři",
         "fr": "Crédits",
         "it": "Crediti",
-        "jr": "Crewmates"
+        "jr": "Crewmates",
+        "jp": "てんすう"
     },
     {
         "textId": "settings_installedmod",
         "us": "Mod active",
         "nl": "Mod actief",
         "de": "Aktive Mod",
-        "es": "MOD activo",
-        "pt": "Mod ativo.",
+        "es": "Mod activo",
+        "pt": "Mod ativo",
         "cz": "Aktivní mod",
         "fr": "Mod actif",
-        "it": "Mod Active.",
-        "jr": "New Seas?"
+        "it": "Mod attivo",
+        "jr": "New Seas?",
+        "jp": "アクティブMOD"
     },
     {
         "textId": "settings_installmod",
@@ -550,7 +612,9 @@ const LOCALIZATION_DATA = [
         "pt": "Modificar",
         "cz": "Modifikovat",
         "fr": "Modifier",
-        "it": "Modificare"
+        "it": "Modificare",
+        "jr": "Decorate yer ship",
+        "jp": "MODを追加する"
     },
     {
         "textId": "settings_none",
@@ -560,9 +624,10 @@ const LOCALIZATION_DATA = [
         "es": "Ninguna",
         "pt": "Nenhum",
         "cz": "Žádný",
-        "fr": "Aucun",
+        "fr": "Rien",
         "it": "Nessuno",
-        "jr": "Nay"
+        "jr": "Nay",
+        "jp": "何もない"
     },
     {
         "textId": "characterselect_select_character",
@@ -574,7 +639,8 @@ const LOCALIZATION_DATA = [
         "cz": "Vybrat postavu",
         "fr": "Sélectionnez un personnage",
         "it": "Seleziona personaggio",
-        "jr": "Pick yer captain"
+        "jr": "Pick yer captain",
+        "jp": "キャラクターを選択する"
     },
     {
         "textId": "vehicleselect_select_vehicle",
@@ -586,7 +652,8 @@ const LOCALIZATION_DATA = [
         "cz": "Vybrat vozidlo",
         "fr": "Sélectionner un véhicule",
         "it": "Scegli un veicolo",
-        "jr": "Pick yer boat"
+        "jr": "Pick yer boat",
+        "jp": "車両を選択する"
     },
     {
         "textId": "levelbanner_share",
@@ -598,7 +665,8 @@ const LOCALIZATION_DATA = [
         "cz": "Sdílet",
         "fr": "Partager",
         "it": "Condividere",
-        "jr": "Share with yer maties"
+        "jr": "Share with yer maties",
+        "jp": "分け合う"
     },
     {
         "textId": "levelbanner_favorite",
@@ -608,9 +676,10 @@ const LOCALIZATION_DATA = [
         "es": "Favorito",
         "pt": "Favorito",
         "cz": "Oblíbené",
-        "fr": "Favori",
+        "fr": "Préféré",
         "it": "Preferito",
-        "jr": "Treasure"
+        "jr": "Treasure",
+        "jp": "お気に入り登録"
     },
     {
         "textId": "levelbanner_gameplays",
@@ -622,7 +691,8 @@ const LOCALIZATION_DATA = [
         "cz": "Hry",
         "fr": "Joué",
         "it": "Gioca",
-        "jr": "Voyages"
+        "jr": "Voyages",
+        "jp": "再生回数"
     },
     {
         "textId": "levelbanner_votes",
@@ -634,7 +704,8 @@ const LOCALIZATION_DATA = [
         "cz": "Hlasování",
         "fr": "Votes",
         "it": "Voti",
-        "jr": "Ayes"
+        "jr": "Ayes",
+        "jp": "投票スコア"
     },
     {
         "textId": "levelbanner_viewall",
@@ -646,7 +717,8 @@ const LOCALIZATION_DATA = [
         "cz": "Zobrazit vše",
         "fr": "Voir tous",
         "it": "Vedi tutto",
-        "jr": "All landlubbers"
+        "jr": "All landlubbers",
+        "jp": "すべてのエントリーを表示"
     },
     {
         "textId": "levelbanner_play",
@@ -658,7 +730,8 @@ const LOCALIZATION_DATA = [
         "cz": "Hrát",
         "fr": "Jouer",
         "it": "Giocare",
-        "jr": "Start the raid!"
+        "jr": "Start the raid!",
+        "jp": "プレイ"
     },
     {
         "textId": "levelbanner_back",
@@ -670,7 +743,8 @@ const LOCALIZATION_DATA = [
         "cz": "Zpět",
         "fr": "Fermer",
         "it": "Ritornare",
-        "jr": "Avast!"
+        "jr": "Avast!",
+        "jp": "戻る"
     },
     {
         "textId": "levelbanner_leaderboard",
@@ -682,7 +756,8 @@ const LOCALIZATION_DATA = [
         "cz": "Žebříček",
         "fr": "Meilleurs scores",
         "it": "Posizioni",
-        "jr": "Most Wanted Pirates"
+        "jr": "Most Wanted Pirates",
+        "jp": "スコアボード"
     },
     {
         "textId": "levelbanner_loading",
@@ -694,7 +769,8 @@ const LOCALIZATION_DATA = [
         "cz": "Načítání",
         "fr": "Chargement",
         "it": "Ricarica",
-        "jr": "Sailin' to the destination"
+        "jr": "Sailin' to the destination",
+        "jp": "ローディング"
     },
     {
         "textId": "levelbanner_time",
@@ -706,7 +782,8 @@ const LOCALIZATION_DATA = [
         "cz": "Čas",
         "fr": "Temps",
         "it": "Tempo",
-        "jr": "Knots"
+        "jr": "Knots",
+        "jp": "時間"
     },
     {
         "textId": "levelbanner_published",
@@ -718,7 +795,8 @@ const LOCALIZATION_DATA = [
         "cz": "Zveřejněno",
         "fr": "Publié",
         "it": "Pubblicato",
-        "jr": "Discovered"
+        "jr": "Discovered",
+        "jp": "発売時期"
     },
     {
         "textId": "levelbanner_updated",
@@ -730,7 +808,8 @@ const LOCALIZATION_DATA = [
         "cz": "Aktualizováno",
         "fr": "Mise à jour",
         "it": "Aggiornato",
-        "jr": "Revisited"
+        "jr": "Revisited",
+        "jp": "最終更新日"
     },
     {
         "textId": "levelbanner_noentries",
@@ -742,7 +821,8 @@ const LOCALIZATION_DATA = [
         "cz": "Žádné záznamy",
         "fr": "Aucun score",
         "it": "Non c'è nulla",
-        "jr": "Treasure unclaimed"
+        "jr": "Treasure unclaimed",
+        "jp": "スコアなし"
     },
     {
         "textId": "levelbanner_select",
@@ -750,10 +830,12 @@ const LOCALIZATION_DATA = [
         "nl": "Selecteer",
         "de": "Auswählen",
         "es": "Seleccione",
-        "pt": "Selecione.",
+        "pt": "Selecione",
         "cz": "Vybrat",
         "fr": "Sélectionner",
-        "it": "Selezionare"
+        "it": "Selezionare",
+        "jr": "Pick",
+        "jp": "選択"
     },
     {
         "textId": "userpage_levelspublished",
@@ -765,7 +847,8 @@ const LOCALIZATION_DATA = [
         "cz": "Zveřejněné levely",
         "fr": "Niveaux publiés",
         "it": "Livelli pubblicati",
-        "jr": "Islands Mapped"
+        "jr": "Islands Mapped",
+        "jp": "作成されたレベル"
     },
     {
         "textId": "userpage_averagerating",
@@ -776,19 +859,22 @@ const LOCALIZATION_DATA = [
         "pt": "Pontuação média",
         "cz": "Průměrné hodnocení",
         "fr": "Score moyen",
-        "it": "Punteggio medio"
+        "it": "Punteggio medio",
+        "jr": "Reputation",
+        "jp": "レベルの平均品質"
     },
     {
         "textId": "userpage_levelsfeatured",
         "us": "Levels Featured",
         "nl": "Levels Aanbevolen",
         "de": "Empfohlene Level",
-        "es": "Niveles destacados",
+        "es": "Niveles presentados",
         "pt": "Níveis apresentados",
         "cz": "Doporučené levely",
         "fr": "Niveaux en vedette",
-        "it": "Livelli in evidenza",
-        "jr": "Scurvy Approved Islands"
+        "it": "Livelli presenti",
+        "jr": "Scurvy Approved Islands",
+        "jp": "スペシャル・レベル"
     },
     {
         "textId": "userpage_totalgameplays",
@@ -800,19 +886,21 @@ const LOCALIZATION_DATA = [
         "cz": "Hráno celkem",
         "fr": "Total des jeux",
         "it": "Riproduzioni totali",
-        "jr": "Total Voyages"
+        "jr": "Total Voyages",
+        "jp": "総プレイ数"
     },
     {
         "textId": "userpage_levels",
         "us": "Levels",
         "nl": "Levels",
         "de": "Levels",
-        "es": "Niveles",
+        "es": "Nivel",
         "pt": "Níveis",
         "cz": "Levely",
         "fr": "Niveaux",
         "it": "Livelli",
-        "jr": "Islands"
+        "jr": "Islands",
+        "jp": "レベル"
     },
     {
         "textId": "userpage_favorites",
@@ -824,7 +912,8 @@ const LOCALIZATION_DATA = [
         "cz": "Oblíbené",
         "fr": "Favoris",
         "it": "Preferiti",
-        "jr": "Treasured"
+        "jr": "Treasured",
+        "jp": "お気に入りレベル"
     },
     {
         "textId": "userpage_membersince",
@@ -836,7 +925,8 @@ const LOCALIZATION_DATA = [
         "cz": "Členem od",
         "fr": "Membre depuis",
         "it": "Membro da",
-        "jr": "Set sea on"
+        "jr": "Set sea on",
+        "jp": "JollyWorldに参加した日"
     },
     {
         "textId": "share_sharing",
@@ -848,7 +938,8 @@ const LOCALIZATION_DATA = [
         "cz": "Sdílení",
         "fr": "Partager",
         "it": "Condividere",
-        "jr": "Share with yer mates."
+        "jr": "Share with yer mates.",
+        "jp": "シェアリング"
     },
     {
         "textId": "share_levellink",
@@ -860,7 +951,8 @@ const LOCALIZATION_DATA = [
         "cz": "Odkaz",
         "fr": "Relier",
         "it": "Link",
-        "jr": "Island coordinates"
+        "jr": "Island coordinates",
+        "jp": "レベルへのリンク"
     },
     {
         "textId": "share_shareby",
@@ -872,7 +964,8 @@ const LOCALIZATION_DATA = [
         "cz": "Nebo sdílet s",
         "fr": "Partagé par",
         "it": "Condiviso da",
-        "jr": "Alternate routes"
+        "jr": "Alternate routes",
+        "jp": "ソーシャルメディアで共有する"
     },
     {
         "textId": "discord_getinvolved",
@@ -880,21 +973,25 @@ const LOCALIZATION_DATA = [
         "nl": "Doe Mee!",
         "de": "Mach mit!",
         "es": "¡Involucrarse!",
-        "pt": "Se envolver!",
+        "pt": "Envolver-se!",
         "cz": "Přidej se!",
         "fr": "Être impliqué!",
-        "it": "Mettersi in gioco!"
+        "it": "Mettersi in gioco!",
+        "jr": "Join the tavern",
+        "jp": "私たちの活動に参加してください"
     },
     {
         "textId": "discord_content",
         "us": "Meet level creators, chat with fellow Jolly players, drop suggestions for the game, report bugs, share your creations or learn new tips on how to beat certain levels. This is also the place where new big updates will be announced first!",
         "nl": "Ontmoet level ontwikkelaars, praat met andere Jolly spelers, drop suggesties for het spel, rapporteer bugs, deel jou creaties of leer nieuwe trucs om levels makkelijker te verslaan. Dit is ook de plek waar nieuwe grote updates als eerst worden aangekondigd!",
         "de": "Treffe Level Autoren, chatte mit anderen Spielern, melde Bugs, teile deine Kreationen oder lerne Tips um bestimmte Level zu bestehen. Neue Updates werden hier zuerst angekündigt!",
-        "es": "Conozca a los creadores de nivel, chatea con los compañeros jugadores de Jolly, sugerencias de caída para el juego, reportar errores, compartir sus creaciones o aprender nuevos consejos sobre cómo superar ciertos niveles. ¡Este es también el lugar donde se anunciarán las nuevas actualizaciones grandes!",
-        "pt": "Conheça os criadores de nível, converse com colegas jogadores alegres, drop sugestões para o jogo, relatam erros, compartilhe suas criações ou aprenda novas dicas sobre como vencer certos níveis. Este é também o lugar onde novas grandes atualizações serão anunciadas primeiro!",
+        "es": "Conozca a los creadores de nivel, chatee con otros jugadores alegre, elimine sugerencias para el juego, informe a los errores, comparta sus creaciones o aprende nuevos consejos sobre cómo superar ciertos niveles. ¡Este es también el lugar donde primero se anunciarán las nuevas grandes actualizaciones!",
+        "pt": "Conheça criadores de nível, converse com colegas jogadores, soltem sugestões para o jogo, relatem bugs, compartilhem suas criações ou aprendam novas dicas sobre como superar determinados níveis. Este também é o lugar onde novas grandes atualizações serão anunciadas primeiro!",
         "cz": "Seznamte se s tvůrci levelů, chatujte s ostatními hráči, zanechte nám své návrhy na hru, hlaste chyby, sdílejte své výtvory nebo se naučte nové triky, jak pokořit určité úrovně. O nových aktualizacích se zde dozvíte jako první!",
-        "fr": "Rencontrez des créateurs de niveau, discutez avec des joueurs de Jolly, des suggestions de goutte pour le jeu, des bogues de rapport, partagez vos créations ou apprenez de nouveaux conseils sur la manière de battre certains niveaux. C'est aussi l'endroit où de nouvelles mises à jour seront annoncées en premier!",
-        "it": "Incontra i creatori di livello, chattare con compagni jolly giocatori, drop suggerimenti per il gioco, segnalare bugs, condividere le tue creazioni o apprendono nuovi suggerimenti su come battere determinati livelli. Questo è anche il luogo in cui saranno annunciati nuovi nuovi aggiornamenti!"
+        "fr": "Rencontrez des créateurs de niveau, discutez avec ses collègues joueurs Jolly, déposez des suggestions pour le jeu, signalez des bugs, partagez vos créations ou apprenez de nouveaux conseils sur la façon de battre certains niveaux. C'est aussi l'endroit où de nouvelles grandes mises à jour seront annoncées en premier!",
+        "it": "Incontra i creatori di livelli, chatta con altri jolly giocatori, drop suggerimenti per il gioco, segnala bug, condividi le tue creazioni o impara nuovi suggerimenti su come battere determinati livelli. Questo è anche il luogo in cui verranno annunciati nuovi grandi aggiornamenti!",
+        "jr": "Hang out with yer mates and fellow ship-builders, drop suggestions for the game, fix yer ship, share your creations or learn new tips on how to beat certain levels. This also be the place where new big updates will be announced first! (NOT FINISHED)",
+        "jp": "レベルクリエイターとの出会い、JollyWorldの仲間とのチャット、ゲームへの提案、バグの報告、自分の作品の共有、あるレベルの倒し方の新しいヒントを学ぶことができます。また、ここは新しい大型アップデートが最初に発表される場所でもあります。"
     },
     {
         "textId": "levelgui_pause",
@@ -906,7 +1003,8 @@ const LOCALIZATION_DATA = [
         "cz": "Pauza",
         "fr": "Pause",
         "it": "Pausa",
-        "jr": "Stop the ship"
+        "jr": "Stop the ship",
+        "jp": "あいだをおく"
     },
     {
         "textId": "levelgui_resume",
@@ -918,7 +1016,8 @@ const LOCALIZATION_DATA = [
         "cz": "Pokračovat",
         "fr": "Continuer",
         "it": "Ricapitolare",
-        "jr": "Continue fightin'"
+        "jr": "Continue fightin'",
+        "jp": "レジュメ"
     },
     {
         "textId": "levelgui_reset",
@@ -930,7 +1029,8 @@ const LOCALIZATION_DATA = [
         "cz": "Restartovat",
         "fr": "Reset",
         "it": "Resettare",
-        "jr": "Start the raid all over"
+        "jr": "Start the raid all over",
+        "jp": "リセット"
     },
     {
         "textId": "levelgui_retry",
@@ -942,7 +1042,8 @@ const LOCALIZATION_DATA = [
         "cz": "Opakovat",
         "fr": "Recommencer",
         "it": "Riprova",
-        "jr": "Pick up where ye last left off"
+        "jr": "Pick up where ye last left off",
+        "jp": "再試行"
     },
     {
         "textId": "levelgui_exittest",
@@ -954,7 +1055,8 @@ const LOCALIZATION_DATA = [
         "cz": "Opustit test",
         "fr": "Quitter le test",
         "it": "Esci dal test",
-        "jr": "Swim back to shore"
+        "jr": "Swim back to shore",
+        "jp": "テストモードの終了"
     },
     {
         "textId": "levelgui_youlose",
@@ -966,7 +1068,8 @@ const LOCALIZATION_DATA = [
         "cz": "Prohrál jsi",
         "fr": "Tu as perdu !",
         "it": "Hai perso",
-        "jr": "Yer with Davy Jones!"
+        "jr": "Yer with Davy Jones!",
+        "jp": "お前の負けだ！"
     },
     {
         "textId": "levelgui_youwin",
@@ -978,18 +1081,21 @@ const LOCALIZATION_DATA = [
         "cz": "Vyhrál jsi",
         "fr": "Tu as gagné !",
         "it": "Ha vinto",
-        "jr": "Ye found the treasure!"
+        "jr": "Ye found the treasure!",
+        "jp": "私のホバークラフトはウナギでいっぱいです"
     },
     {
         "textId": "tutorial_skip_button",
         "us": "Skip",
         "nl": "Overslaan",
         "de": "Überspringen",
-        "es": "Saltar",
+        "es": "Saltear",
         "pt": "Pular",
         "cz": "Přeskočit",
         "fr": "Sauter",
-        "it": "Saltare"
+        "it": "Saltare",
+        "jr": "Nah",
+        "jp": "スキップ"
     },
     {
         "textId": "editorheader_exit",
@@ -1001,7 +1107,8 @@ const LOCALIZATION_DATA = [
         "cz": "Odejít",
         "fr": "Quitter",
         "it": "Partire",
-        "jr": "Abandon"
+        "jr": "Abandon",
+        "jp": "でぐち"
     },
     {
         "textId": "editorheader_logout",
@@ -1013,7 +1120,8 @@ const LOCALIZATION_DATA = [
         "cz": "Odhlásit se",
         "fr": "Se déconnecter",
         "it": "Partire",
-        "jr": "DROP ANCHOR"
+        "jr": "DROP ANCHOR",
+        "jp": "ログアウト"
     },
     {
         "textId": "multiplayer_vote",
@@ -1023,8 +1131,10 @@ const LOCALIZATION_DATA = [
         "es": "Votar",
         "pt": "Voto",
         "cz": "Hlasování",
-        "fr": "Voter",
-        "it": "Votazione"
+        "fr": "Vote",
+        "it": "Votazione",
+        "jr": "Vote",
+        "jp": "投票"
     },
     {
         "textId": "multiplayer_replay",
@@ -1035,84 +1145,98 @@ const LOCALIZATION_DATA = [
         "pt": "Replay",
         "cz": "Přehrát",
         "fr": "Rejouer",
-        "it": "Rigiocare"
+        "it": "Rigiocare",
+        "jr": "Plunder again",
+        "jp": "リプレイ"
     },
     {
         "textId": "multiplayer_gamefinished_client",
         "us": "Game finished, vote for next level",
         "nl": "Game beëindigd, stem voor het volgende level",
-        "de": "Spiel fertig, stimme für Next Level",
-        "es": "Juego terminado, vote por el siguiente nivel.",
-        "pt": "Jogo terminado, voto para o próximo nível",
-        "cz": "Hra dokončena, hlasujte pro další úroveň",
-        "fr": "Jeu fini, vote pour le niveau suivant",
-        "it": "Gioco finito, vota per il livello successivo"
+        "de": "Spiel beendet, stimmen Sie für das nächste Level ab",
+        "es": "Juego terminado, vote por el siguiente nivel",
+        "pt": "Jogo terminado, vote no próximo nível",
+        "cz": "Hra skončila, hlasujte pro další úroveň",
+        "fr": "Jeu terminé, votez pour le niveau suivant",
+        "it": "Il gioco è finito, vota per il livello successivo",
+        "jr": "Voyage over, let the Captain know where ye want to go",
+        "jp": "ゲーム終了、次のレベルへの投票"
     },
     {
         "textId": "multiplayer_gamefinished_admin",
         "us": "Game finished, pick the next level",
         "nl": "Game beëindigd, kies het volgende level",
-        "de": "Spiel fertig, wählen Sie die nächste Ebene",
-        "es": "Juego terminado, elige el siguiente nivel.",
-        "pt": "Jogo terminou, escolha o próximo nível",
-        "cz": "Hra hotová, vyberte další úroveň",
-        "fr": "Jeu fini, choisissez le niveau suivant",
-        "it": "Gioco finito, scegli il livello successivo"
+        "de": "Spiel beendet, die nächste Level auswählen",
+        "es": "Juego terminado, elige el siguiente nivel",
+        "pt": "Jogo terminado, escolha o próximo nível",
+        "cz": "Hra skončila, vyberte další úroveň",
+        "fr": "Jeu terminé, choisissez le niveau suivant",
+        "it": "Gioco finito, scegli il livello successivo",
+        "jr": "Voyage over, start the next one",
+        "jp": "ゲーム終了、次のレベルを選択"
     },
     {
         "textId": "multiplayer_gameendssoon",
         "us": "Players finished, game is ending soon..",
         "nl": "Spelers zijn gefinished, game zal snel eindigen..",
-        "de": "Spieler fertig, das Spiel endet bald ..",
-        "es": "Los jugadores terminaron, el juego está terminando pronto ..",
-        "pt": "Jogadores terminados, o jogo está terminando em breve ..",
-        "cz": "Hráči skončili, hra skončí brzy.",
-        "fr": "Les joueurs ont terminé, le jeu se termine bientôt ..",
-        "it": "I giocatori hanno finito, il gioco sta finendo presto .."
+        "de": "Die Spieler beenden, das Spiel endet bald.",
+        "es": "Los jugadores terminaron, el juego termina pronto.",
+        "pt": "Os jogadores terminaram, o jogo está terminando em breve ..",
+        "cz": "Hráči skončili, hra skončí brzy ..",
+        "fr": "Les joueurs terminés, le jeu se termine bientôt.",
+        "it": "I giocatori finiti, il gioco finisce presto ..",
+        "jr": "Yer crew's bored, endin' soon.",
+        "jp": "プレイヤーは終了、ゲームはまもなく終了"
     },
     {
         "textId": "multiplayer_countdown",
         "us": "Game ends in %%s",
         "nl": "Game eindigt in %%s",
-        "de": "Spiel endet in %% s",
-        "es": "El juego termina en %% s",
-        "pt": "Jogo termina em %% s",
+        "de": "Das Spiel endet in %% s",
+        "es": "El juego termina en %% S",
+        "pt": "O jogo termina em %% s",
         "cz": "Hra končí v %% s",
-        "fr": "Le jeu se termine en %% s",
-        "it": "Il gioco finisce in %% s"
+        "fr": "Le jeu se termine par %% S",
+        "it": "Il gioco termina in %% s",
+        "jp": "でゲーム終了 %%s"
     },
     {
         "textId": "multiplayer_switchcamera",
         "us": "Switch Camera",
         "nl": "Wissel Camera",
-        "de": "Schalter Kamera",
-        "es": "Cambiar de cámara",
-        "pt": "Comutam a câmera",
-        "cz": "Přepněte fotoaparát",
-        "fr": "Caméra",
-        "it": "Cambio macchina fotografica"
+        "de": "Kamera wechseln",
+        "es": "Cámara de cambio",
+        "pt": "Câmera de troca",
+        "cz": "Přepněte kameru",
+        "fr": "Commutation de la caméra",
+        "it": "Switch Camera",
+        "jp": "スイッチカメラ"
     },
     {
         "textId": "multiplayer_waitingforothers",
         "us": "Waiting for other players to finish",
         "nl": "Wachten tot andere spelers klaar zijn",
-        "de": "Warten auf andere Spieler, um fertig zu werden",
-        "es": "Esperando a que otros jugadores terminen.",
-        "pt": "Esperando por outros jogadores terminar",
-        "cz": "Čekám na další hráče",
-        "fr": "En attendant que d'autres joueurs finissent",
-        "it": "Aspettando che altri giocatori finiscano"
+        "de": "Warten darauf, dass andere Spieler fertig sind",
+        "es": "Esperando que otros jugadores terminen",
+        "pt": "Esperando que outros jogadores terminem",
+        "cz": "Čekání na dokončení ostatních hráčů",
+        "fr": "En attendant que les autres joueurs finissent",
+        "it": "Aspettando che altri giocatori finiscano",
+        "jr": "Waitin' for other maties to catch up",
+        "jp": "他のプレイヤーのプレイ終了を待つ"
     },
     {
         "textId": "multiplayer_startingin",
         "us": "Starting in %%..",
         "nl": "Beginnend in %% ..",
         "de": "Beginnend in %% ..",
-        "es": "A partir de %% ..",
+        "es": "Comenzando en %% ..",
         "pt": "Começando em %% ..",
-        "cz": "Začíná v %% ..",
-        "fr": "À partir de %% ..",
-        "it": "A partire da %% .."
+        "cz": "Počínaje %% ..",
+        "fr": "Commencer en %% ..",
+        "it": "A partire da %% ..",
+        "jr": "Plunderin' in %% ..",
+        "jp": "でゲーム開始予定 %%"
     },
     {
         "textId": "multiplayer_voted",
@@ -1121,20 +1245,23 @@ const LOCALIZATION_DATA = [
         "de": "Gewählt",
         "es": "Votado",
         "pt": "Votado",
-        "cz": "Hlasovaný",
+        "cz": "Hlasoval",
         "fr": "Voté",
-        "it": "Votato"
+        "it": "Votato",
+        "jp": "投票済み"
     },
     {
         "textId": "multiplayer_go",
         "us": "GO!!!",
         "nl": "GAAN!!!",
         "de": "GEHEN!!!",
-        "es": "¡¡¡IR!!!",
-        "pt": "IR!!!",
+        "es": "¡¡¡VAMOS!!!",
+        "pt": "VAI!!!",
         "cz": "JÍT!!!",
-        "fr": "VA!!!",
-        "it": "ANDARE!!!"
+        "fr": "ALLER!!!",
+        "it": "ANDARE!!!",
+        "jr": "LAND HO!",
+        "jp": "ゴー!!!"
     },
     {
         "textId": "multiplayer_waitingplayers",
@@ -1143,36 +1270,47 @@ const LOCALIZATION_DATA = [
         "de": "Warten auf andere Spieler %% / **",
         "es": "Esperando a otros jugadores %% / **",
         "pt": "Esperando por outros jogadores %% / **",
-        "cz": "Čekání na ostatní hráče %% / **",
+        "cz": "Čekání na další hráče %% / **",
         "fr": "En attente d'autres joueurs %% / **",
-        "it": "Aspettando altri giocatori %% / **"
+        "it": "Aspettando altri giocatori %% / **",
+        "jp": "他のプレイヤーを待っている %% / **"
     },
     {
         "textId": "multiplayer_returntolobby",
         "us": "Return to Lobby",
         "nl": "Keer terug naar de lobby",
-        "de": "Rückkehr zur Lobby",
-        "es": "Volver al lobby",
-        "pt": "Volte para o lobby",
-        "cz": "Návrat do lobby.",
-        "fr": "Retourner dans le hall",
-        "it": "Torna alla lobby."
+        "de": "Kehren Sie zur Lobby zurück",
+        "es": "Regresar al lobby",
+        "pt": "Voltar ao lobby",
+        "cz": "Návrat do lobby",
+        "fr": "Retour au hall",
+        "it": "Torna alla lobby",
+        "jr": "Return to port",
+        "jp": "ロビーに戻る"
     },
     {
         "textId": "multiplayer_tochat",
         "us": "To chat click here or press 'Enter' key",
-        "nl": "Voor chatten klik hier of druk 'Enter' toets"
+        "nl": "Voor chatten klik hier of druk 'Enter' toets",
+        "es": "Para chatear click aqui o presiona enter",
+        "pt": "Para Chat clique aqui ou pressione enter",
+        "fr": "Pour Chat, cliquez ici ou appuyez sur Entrée",
+        "it": "Per chattare clicca qui o premi invio",
+        "jr": "To talk, click here or press the Enter key",
+        "jp": "チャットするにはここをクリックするか、'Enter'キーを押してください。"
     },
     {
         "textId": "multiplayer_invitelink",
         "us": "Invite link",
         "nl": "Uitnodigings link",
-        "de": "Einladungslink.",
+        "de": "Einladungslink",
         "es": "Enlace de invitación",
-        "pt": "Link de convite",
-        "cz": "Pozvánka",
+        "pt": "Link para convite",
+        "cz": "Odkaz na pozvání",
         "fr": "Lien d'invitation",
-        "it": "Link di invito"
+        "it": "Link di invito",
+        "jr": "X marks the spot",
+        "jp": "招待コード"
     },
     {
         "textId": "multiplayer_copied",
@@ -1181,9 +1319,10 @@ const LOCALIZATION_DATA = [
         "de": "kopiert",
         "es": "copiado",
         "pt": "copiado",
-        "cz": "zkopírovaný",
+        "cz": "zkopírováno",
         "fr": "copié",
-        "it": "copiato"
+        "it": "copiato",
+        "jp": "コピー"
     }
 ]
 init();

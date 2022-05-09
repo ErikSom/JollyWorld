@@ -9,9 +9,14 @@ export class RippleVehicle {
 		this.currentVehicle = -1;
 		this.vehicle = null;
 		this.mirror = false;
+		this.spriteSheet = null;
 		this.vehicleClasses = [ RippleBike, RippleDirtBike, null,  RippleSkateboard, RippleSkippyBall, RippleFoddyCan]
 		this.state = {
 		}
+	}
+
+	buildSprite(spriteSheet){
+		this.spriteSheet = spriteSheet;
 	}
 
 	selectVehicle(vehicle){
@@ -21,6 +26,10 @@ export class RippleVehicle {
 			}
 			if(this.vehicleClasses[vehicle-1]){
 				this.vehicle = new this.vehicleClasses[vehicle-1](this.container);
+				if(this.spriteSheet){
+					this.vehicle.buildSprite(this.spriteSheet);
+					this.vehicle.spriteBuild = true;
+				}
 			} else{
 				this.vehicle = null;
 			}
@@ -47,6 +56,10 @@ export class RippleVehicle {
 
 	interpolatePosition(){
 		if(!this.vehicle) return;
+		if(this.spriteSheet && !this.vehicle.spriteBuild){
+			this.vehicle.buildSprite(this.spriteSheet);
+			this.vehicle.spriteBuild = true;
+		}
 
 		this.vehicle.stateKeys.forEach(key => {
 			this.vehicle.state[key].interpolatePosition();
@@ -80,16 +93,14 @@ class RippleBike {
 		}
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.body, this.state.wheelBack, this.state.wheelFront, this.state.pedals];
-
-		this.buildSprite();
 	}
 
-	buildSprite(){
+	buildSprite(spriteSheet){
 		this.sprites = {
-			body: new PIXI.Sprite(PIXI.Texture.from('Bicycle_Body0000')),
-			wheelBack: new PIXI.Sprite(PIXI.Texture.from('Bicycle_WheelBack0000')),
-			wheelFront: new PIXI.Sprite(PIXI.Texture.from('Bicycle_WheelFront0000')),
-			pedals: new PIXI.Sprite(PIXI.Texture.from('Bicycle_Pedals0000')),
+			body: new PIXI.Sprite(spriteSheet.textures['Bicycle_Body']),
+			wheelBack: new PIXI.Sprite(spriteSheet.textures['Bicycle_WheelBack']),
+			wheelFront: new PIXI.Sprite(spriteSheet.textures['Bicycle_WheelFront']),
+			pedals: new PIXI.Sprite(spriteSheet.textures['Bicycle_Pedals']),
 		}
 
 		for(let obj in this.sprites){
@@ -124,17 +135,15 @@ class RippleDirtBike {
 		}
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.body, this.state.wheelBack, this.state.wheelFront, this.state.frontSuspension, this.state.backSuspension];
-
-		this.buildSprite();
 	}
 
-	buildSprite(){
+	buildSprite(spriteSheet){
 		this.sprites = {
-			body: new PIXI.Sprite(PIXI.Texture.from('DirtBike_Body0000')),
-			wheelBack: new PIXI.Sprite(PIXI.Texture.from('DirtBike_WheelBack0000')),
-			wheelFront: new PIXI.Sprite(PIXI.Texture.from('DirtBike_WheelFront0000')),
-			frontSuspension: new PIXI.Sprite(PIXI.Texture.from('DirtBike_Axis0000')),
-			backSuspension: new PIXI.Sprite(PIXI.Texture.from('DirtBike_WheelSupport0000')),
+			body: new PIXI.Sprite(spriteSheet.textures['DirtBike_Body']),
+			wheelBack: new PIXI.Sprite(spriteSheet.textures['DirtBike_WheelBack']),
+			wheelFront: new PIXI.Sprite(spriteSheet.textures['DirtBike_WheelFront']),
+			frontSuspension: new PIXI.Sprite(spriteSheet.textures['DirtBike_Axis']),
+			backSuspension: new PIXI.Sprite(spriteSheet.textures['DirtBike_WheelSupport']),
 		}
 
 		for(let obj in this.sprites){
@@ -168,15 +177,13 @@ class RippleSkateboard {
 		}
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.body, this.state.wheelBack, this.state.wheelFront];
-
-		this.buildSprite();
 	}
 
-	buildSprite(){
+	buildSprite(spriteSheet){
 		this.sprites = {
-			body: new PIXI.Sprite(PIXI.Texture.from('SkateBoard_Board0000')),
-			wheelBack: new PIXI.Sprite(PIXI.Texture.from('Skateboard_Wheel0000')),
-			wheelFront: new PIXI.Sprite(PIXI.Texture.from('Skateboard_Wheel0000')),
+			body: new PIXI.Sprite(spriteSheet.textures['SkateBoard_Board']),
+			wheelBack: new PIXI.Sprite(spriteSheet.textures['Skateboard_Wheel']),
+			wheelFront: new PIXI.Sprite(spriteSheet.textures['Skateboard_Wheel']),
 		}
 
 		for(let obj in this.sprites){
@@ -218,8 +225,6 @@ class RippleSkippyBall {
 		}
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.base, this.state.p1, this.state.p2, this.state.p3, this.state.p4, this.state.p5, this.state.p6, this.state.p7, this.state.p8, this.state.p9, this.state.p10, this.state.p11, this.state.p12];
-
-		this.buildMesh();
 	}
 
 	destroy(){
@@ -229,11 +234,15 @@ class RippleSkippyBall {
 		}
 	}
 
-	buildMesh(){
+	buildSprite(spriteSheet){
+		this.buildMesh(spriteSheet);
+	}
+
+	buildMesh(spriteSheet){
 
 		this.containerSprite = new PIXI.Container();
 
-		const t = PIXI.Texture.from('YogaBall0000')
+		const t = spriteSheet.textures['YogaBall'];
 		this.mesh = new PIXI.SimpleMesh(t, ...this.getMeshData());
 		this.mesh.isMesh = true;
 
@@ -242,8 +251,8 @@ class RippleSkippyBall {
 
 		this.sprite.addChildAt(this.containerSprite, injectIndex);
 
-		this.handleFront = new PIXI.Sprite(PIXI.Texture.from('YogaBall_Handle_Front0000'));
-		this.handleBack = new PIXI.Sprite(PIXI.Texture.from('YogaBallHandle_Back0000'));
+		this.handleFront = new PIXI.Sprite(spriteSheet.textures['YogaBall_Handle_Front']);
+		this.handleBack = new PIXI.Sprite(spriteSheet.textures['YogaBallHandle_Back']);
 
 		this.containerSprite.addChild(this.handleFront);
 		this.containerSprite.addChildAt(this.handleBack, 0);
@@ -316,6 +325,8 @@ class RippleSkippyBall {
 	}
 
 	customUpdate()	{
+		if(!this.containerSprite) return;
+		
 		this.containerSprite.x = this.state.base.x;
 		this.containerSprite.y = this.state.base.y;
 		this.containerSprite.angle = this.state.base.r;
@@ -336,14 +347,12 @@ class RippleFoddyCan {
 		}
 		this.stateKeys = Object.keys(this.state);
 		this.stateProcessList = [this.state.body, this.state.hammer];
-
-		this.buildSprite();
 	}
 
-	buildSprite(){
+	buildSprite(spriteSheet){
 		this.sprites = {
-			body: new PIXI.Sprite(PIXI.Texture.from('Pot0000')),
-			hammer: new PIXI.Sprite(PIXI.Texture.from('Hammer0000')),
+			body: new PIXI.Sprite(spriteSheet.textures['Pot']),
+			hammer: new PIXI.Sprite(spriteSheet.textures['Hammer']),
 		}
 
 		for(let obj in this.sprites){
