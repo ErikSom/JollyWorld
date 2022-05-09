@@ -200,11 +200,11 @@ export const updateLobbyUI = () => {
 		const profile = entry.querySelector('.profile');
 
 		if(skinBlob){
-			const resolution = 2;
+			const resolution = 1.8;
 			profile.style.backgroundImage = `url(${URL.createObjectURL(skinBlob)})`;
-			profile.style.backgroundSize = `${256 / resolution}px`;
+			profile.style.backgroundSize = `${1024 / resolution}px`;
 			const frame = multiplayerAtlas.frames.profile.frame;
-			profile.style.backgroundPosition = `${frame.x / resolution}px ${frame.y / resolution}px`;
+			profile.style.backgroundPosition = `${-frame.x / resolution}px ${-frame.y / resolution}px`;
 		}else{
 			profile.style.backgroundImage = '';
 		}

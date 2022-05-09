@@ -640,7 +640,7 @@ const prepareSkinForSending = async () => {
 	if(multiplayerState.skinBlob) return multiplayerState.skinBlob;
 
 	const skinCanvas = document.createElement('canvas');
-	skinCanvas.width = skinCanvas.height = 256;
+	skinCanvas.width = skinCanvas.height = 1024;
 	const skinContext = skinCanvas.getContext('2d', {alpha:true});
 
 	const skin = game.selectedCharacter;
@@ -675,6 +675,7 @@ const prepareSkinForSending = async () => {
 	await new Promise(resolve => {
 		skinCanvas.toBlob(blob => {
 			multiplayerState.skinBlob = blob;
+			console.log("BLOB", blob)
 			resolve();
 		}, 'image/png')
 	});

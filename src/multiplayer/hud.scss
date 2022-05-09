@@ -20,8 +20,10 @@
 		align-items: center;
 
 		.profile{
-			background-size: 88px;
-			background-position: 46px 1px;
+			--resolution: 2.8;
+			background-size: calc(1024px / var(--resolution));
+			background-position-x: calc(-701px / var(--resolution));
+			background-position-y: calc(-306px / var(--resolution));
 			width: 25px;
 			height: 25px;
 			position: relative;
