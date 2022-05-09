@@ -81,6 +81,7 @@ export class RippleCharacter {
 		this.spriteSheet = new PIXI.Spritesheet(texture, multiplayerAtlas);
 		this.spriteSheet.parse(()=>{
 			this.buildSprite();
+			this.vehicle.buildSprite(this.spriteSheet);
 		});
 	}
 
