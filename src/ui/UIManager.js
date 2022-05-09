@@ -44,7 +44,7 @@ import SimpleBar from 'simplebar'
 import {countries, localize} from '../utils/Localization'
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
-import { getModdedPortrait, init as initModManager } from '../utils/ModManager'
+import { cleanMods, getModdedPortrait, init as initModManager } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
 import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
@@ -1889,6 +1889,8 @@ function UIManager() {
                             this.setMainMenuCharacterImage();
                             characterSelect.style.pointerEvents = 'all';
                         });
+                    } else if(type === 'jollyCleanMod'){
+                        cleanMods();
                     }
                 }catch(e){
                     this.hideCharacterSelect();
