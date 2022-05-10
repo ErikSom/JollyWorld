@@ -792,13 +792,22 @@ function processWardrobe(apply, importEditor = false) {
 }
 
 function importToEditorFromCurrentMod() {
-	zipEditorInit();
-	loaded_zip = new JSZip();
-	loaded_zip_name = localStorage.getItem('jollyModName')
-	zip_loaded_text_files = {}
-	zip_loaded_images = {}
-	let loaded_files = 0;
+	if (mobile_view) {
+		alert("You can't edit your mod on mobile.")
+		return
+	}
 	window.idbKeyval.keys().then((keys) => {
+		if (keys.length <= 1) {
+			document.querySelector('.ze .loading').style.display = 'block'
+			zipEditorLoadExternalZip('/mod/zips/jollymod.zip');
+			return;
+		}
+		zipEditorInit();
+		loaded_zip = new JSZip();
+		loaded_zip_name = localStorage.getItem('jollyModName')
+		zip_loaded_text_files = {}
+		zip_loaded_images = {}
+		let loaded_files = 0;
 		keys.forEach((key) => {
 			if (key != "tempEditorWorld") {
 				window.idbKeyval.get(key).then((value) => {
@@ -807,11 +816,7 @@ function importToEditorFromCurrentMod() {
 					if (loaded_files == keys.length) {
 						const preview = document.querySelector('.ze .main .imageedit .characterpreview')
 						preview.style.backgroundImage = $('currentModThumb').style.backgroundImage;
-						if (loaded_files > 1) {
-							zipEditorImportFile(loaded_zip);
-						} else {
-							zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
-						}
+						zipEditorImportFile(loaded_zip);
 					}
 				})
 			} else {
@@ -832,9 +837,3 @@ if (mobile_view) {
 	$('wardrobedownload').style.display = 'block';
 	$('wardrobeimporteditor').style.display = 'block';	
 }
-
-window.idbKeyval.keys().then((keys) => {
-	if (keys.length > 0) {
-		$('currentmodbutton').style.display = 'block';
-	}
-})
