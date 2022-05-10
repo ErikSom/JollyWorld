@@ -2425,8 +2425,14 @@ function UIManager() {
         return socialShareElement;
     }
 
-    this.updateSocialShareLinks = (element, level) => {
-        const url = encodeURIComponent(`${Settings.GAMEURI}/?lvl=${level.id}`);
+    this.updateSocialShareLinks = async (element, level) => {
+        let url = '';
+        if(!Settings.onPoki){
+            url = encodeURIComponent(`${Settings.GAMEURI}/?lvl=${level.id}`);
+        }else {
+            url = await PokiSDK.shareableURL({lvl:level.id});
+            url = encodeURIComponent(url);
+        }
         const body = encodeURIComponent('Check out this level in JollyWorld! ' + level.description);
 
         const socialHTML = `
