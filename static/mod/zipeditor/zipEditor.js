@@ -47,7 +47,7 @@ function zipEditorInit(importDefault = false) {
 	ze.onmouseup = releaseWindows;
 	ze.onmousemove = moveWindows;
 	ze.innerHTML = `
-	<div class="ze" onmouseup="releaseWindows();" onmousemove="moveWindows();">
+	<div class="ze">
 		<div class="loading" style="display:none;">
 			<h1>Please wait...</h1>
 			<h2>This may take a few seconds.</h2>
