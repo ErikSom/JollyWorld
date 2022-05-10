@@ -849,11 +849,12 @@ const updateDebugData = () =>{
 		el.querySelector('.nameText').innerText = id;
 		el.querySelector('.connectedText').innerText = player.connected.toString();
 		el.querySelector('.packageIDText').innerText = player.lastPackageID.toString();
-		el.querySelector('.infoText').innerHTML = 
+		el.querySelector('.infoText').innerHTML =
 		`<ul>
 			<li>X:${player.sprite.position.x}</li>
 			<li>Y:${player.sprite.position.y}</li>
 			<li>Ping:${player.ping}</li>
+			<li>Skin: vehicle:${!!player.vehicle?.vehicle}, sheet:${!!player.vehicle?.spriteSheet}, spriteBuild:${!!player.vehicle?.vehicle?.spriteBuild}</li>
 		</ul>`
 	})
 }

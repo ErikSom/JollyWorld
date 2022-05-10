@@ -28,6 +28,7 @@ export class RippleVehicle {
 				this.vehicle = new this.vehicleClasses[vehicle-1](this.container);
 				if(this.spriteSheet){
 					this.vehicle.buildSprite(this.spriteSheet);
+					console.log("built sprite 1");
 					this.vehicle.spriteBuild = true;
 				}
 			} else{
@@ -58,6 +59,7 @@ export class RippleVehicle {
 		if(!this.vehicle) return;
 		if(this.spriteSheet && !this.vehicle.spriteBuild){
 			this.vehicle.buildSprite(this.spriteSheet);
+			console.log("built sprite 2");
 			this.vehicle.spriteBuild = true;
 		}
 
