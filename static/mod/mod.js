@@ -800,13 +800,15 @@ function importToEditorFromCurrentMod() {
 	let loaded_files = 0;
 	window.idbKeyval.keys().then((keys) => {
 		keys.forEach((key) => {
-			window.idbKeyval.get(key).then((value) => {
-				loaded_zip.file(key.replace("/0/","/billyjoel/"), value)
-				loaded_files ++;
-				if (loaded_files == keys.length) {
-					zipEditorImportFile(loaded_zip);
-				}
-			})
+			if (key != "tempEditorWorld") {
+				window.idbKeyval.get(key).then((value) => {
+					loaded_zip.file(key.replace("/0/","/billyjoel/"), value)
+					loaded_files ++;
+					if (loaded_files == keys.length) {
+						zipEditorImportFile(loaded_zip);
+					}
+				})
+			}
 		})
 	})
 }
