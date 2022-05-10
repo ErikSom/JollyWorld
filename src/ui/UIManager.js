@@ -931,6 +931,7 @@ function UIManager() {
 
         document.title = 'JollyWorld - '+levelData.title;
         if(!Settings.onPoki) history.replaceState({}, document.title, `?lvl=${levelData.id}`);
+        else PokiSDK.shareableURL({lvl:levelData.id}).catch(err=>{});
 
         const voteButtons = levelBanner.querySelector('.voting');
         const voteUpButton = voteButtons.querySelector('.vote-up');

@@ -326,9 +326,9 @@ function Game() {
 
         const urlParams = new URLSearchParams(window.location.search);
         const forceTutorial = urlParams.get('forceTutorial');
-        let uidHash = urlParams.get('lvl') || urlParams.get('gd-lvl');
+        let uidHash = PokiSDK.getURLParam('lvl');
         const username = urlParams.get('user');
-        const lobbyID = urlParams.get('lobbyID');
+        const lobbyID = PokiSDK.getURLParam('lobbyID');
 
         if(!uidHash) uidHash = location.hash.split('/')[0].substr(1);
 

@@ -165,7 +165,13 @@ export const updateLobbyUI = () => {
 	}
 
 	if(multiplayerState.lobby){
-		link.value = `${window.location.origin}${window.location.pathname}?lobbyID=${multiplayerState.lobby}`;
+		if(!Settings.onPoki){
+			link.value = `${window.location.origin}${window.location.pathname}?lobbyID=${multiplayerState.lobby}`;
+		} else {
+			PokiSDK.shareableURL({lobbyID:multiplayerState.lobby}).then(url => {
+				link.value = url;
+			}).catch(err => {});
+		}
 		// link.value = `https://friendly-snake-42.loca.lt?lobbyID=${multiplayerState.lobby}`;
 	}
 
