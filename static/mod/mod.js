@@ -805,9 +805,15 @@ function importToEditorFromCurrentMod() {
 					loaded_zip.file(key.replace("/0/","/billyjoel/"), value)
 					loaded_files ++;
 					if (loaded_files == keys.length) {
-						zipEditorImportFile(loaded_zip);
+						if (loaded_files > 1) {
+							zipEditorImportFile(loaded_zip);
+						} else {
+							zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
+						}
 					}
 				})
+			} else {
+				loaded_files ++;
 			}
 		})
 	})
