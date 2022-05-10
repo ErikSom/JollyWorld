@@ -149,13 +149,27 @@ function Game() {
             let country = 'us';
             let userLang = navigator.language || navigator.userLanguage;
             if(userLang){
-                const userCountry = userLang.split('-')[1];
+                const userCountry = userLang.split('-')[0];
                 if(userCountry){
+                    let userCountryLC = userCountry.toLowerCase();
+
+                    if(userCountryLC === 'en'){
+                        userCountryLC = 'us';
+                    }
+
+                    if(userCountryLC === 'cs'){
+                        userCountryLC = 'cz';
+                    }
+
+                    if(userCountryLC === 'ja'){
+                        userCountryLC = 'jp';
+                    }
+
                     countries.forEach(c => {
-                        if(c === userCountry.toLowerCase()){
+                        if(c === userCountryLC){
                             country = c;
                         }
-                    })
+                    });
                 }
             }
 
