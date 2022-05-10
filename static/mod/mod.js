@@ -797,12 +797,12 @@ function importToEditorFromCurrentMod() {
 		return
 	}
 	window.idbKeyval.keys().then((keys) => {
+		zipEditorInit();
 		if (keys.length <= 1) {
 			document.querySelector('.ze .loading').style.display = 'block'
 			zipEditorLoadExternalZip('/mod/zips/jollymod.zip');
 			return;
 		}
-		zipEditorInit();
 		loaded_zip = new JSZip();
 		loaded_zip_name = localStorage.getItem('jollyModName')
 		zip_loaded_text_files = {}
