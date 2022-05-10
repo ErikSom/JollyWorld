@@ -40,8 +40,14 @@ function zipEditorInit(importDefault = false) {
 			return;
 		}
 	} catch (err) {}
-	document.body.innerHTML += 
-	`
+
+	console.log($('createbutton').onclick)
+
+	const ze = document.createElement('div');
+	ze.classList.add('ze');
+	ze.onmouseup = releaseWindows;
+	ze.onmousemove = moveWindows;
+	ze.innerHTML = `
 	<div class="ze" onmouseup="releaseWindows();" onmousemove="moveWindows();">
 		<div class="loading" style="display:none;">
 			<h1>Please wait...</h1>
@@ -139,6 +145,7 @@ function zipEditorInit(importDefault = false) {
 		<input id="zipinput" type="file" style="display:none" accept=".zip" onchange="zipEditorImportZip()">
 	</div>
 	`
+	document.body.appendChild(ze);
 	document.body.onkeydown = keyDown;
 	document.body.onkeyup = keyUp;
 	document.body.style.transform = ""
@@ -348,9 +355,6 @@ function zipEditorClose() {
 	zip_editor_open = false;
 	adjustBodySize();
 	loadCharacters();
-	document.querySelectorAll('.singleModItem').forEach((elem) => 
-		elem.onclick = function() {downloadMod(elem.id)}
-	)
 }
 
 function zipEditorImportZip() {
