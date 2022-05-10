@@ -791,6 +791,26 @@ function processWardrobe(apply, importEditor = false) {
 	}
 }
 
+function importToEditorFromCurrentMod() {
+	zipEditorInit();
+	loaded_zip = new JSZip();
+	loaded_zip_name = localStorage.getItem('jollyModName')
+	zip_loaded_text_files = {}
+	zip_loaded_images = {}
+	let loaded_files = 0;
+	window.idbKeyval.keys().then((keys) => {
+		keys.forEach((key) => {
+			window.idbKeyval.get(key).then((value) => {
+				loaded_zip.file(key.replace("/0/","/billyjoel/"), value)
+				loaded_files ++;
+				if (loaded_files == keys.length) {
+					zipEditorImportFile(loaded_zip);
+				}
+			})
+		})
+	})
+}
+
 if (mobile_view) {
 	$('createbutton').onclick = function() {openModWardrobe()};
 	$('importzipbutton').style.display = 'none';
@@ -800,5 +820,11 @@ if (mobile_view) {
 	$('createbutton').onclick = function() {openModEditor()};
 	$('importzipbutton').style.display = 'block';
 	$('wardrobedownload').style.display = 'block';
-	$('wardrobeimporteditor').style.display = 'block';
+	$('wardrobeimporteditor').style.display = 'block';	
 }
+
+window.idbKeyval.keys().then((keys) => {
+	if (keys.length > 0) {
+		$('currentmodbutton').style.display = 'block';
+	}
+})

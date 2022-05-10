@@ -151,6 +151,7 @@ function zipEditorInit(importDefault = false) {
 		document.querySelector('.ze .loading').style.display = 'block'
 		zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
 	}
+	loadWardrobeContents()
 }
 
 async function zipEditorLoadExternalZip(url) {
@@ -294,6 +295,10 @@ function zipEditorImport() {
 	document.querySelector('.ze #zipinput').click();
 }
 function zipEditorExport(apply = false) {
+	if (unsaved_changes_warning) {
+		alert("You have unsaved changes, please save first.")
+		return;
+	}
 	document.querySelector('.ze .loading').style.display = 'block'
 	generated_zip = new JSZip();
 	generated_zip_remaining_images = Object.keys(zip_loaded_images).length;
@@ -340,6 +345,9 @@ function zipEditorClose() {
 	zip_editor_open = false;
 	adjustBodySize();
 	loadCharacters();
+	document.querySelectorAll('.singleModItem').forEach((elem) => 
+		elem.onclick = function() {downloadMod(elem.id)}
+	)
 }
 
 function zipEditorImportZip() {
@@ -1043,7 +1051,7 @@ function updateZipEditorPreview() {
 	for (const [key, value] of Object.entries(zip_loaded_images)) {
 	    const tempimg = new Image();
 	    tempimg.src = value;
-	        all_zipped_imgs[key.split("/")[key.split("/").length-1]] = tempimg;
+	    all_zipped_imgs[key.split("/")[key.split("/").length-1]] = tempimg;
 	}
 	
 	const tempcvs = generateModPreview(all_asset_imgs, all_zipped_imgs )
