@@ -805,6 +805,8 @@ function importToEditorFromCurrentMod() {
 					loaded_zip.file(key.replace("/0/","/billyjoel/"), value)
 					loaded_files ++;
 					if (loaded_files == keys.length) {
+						const preview = document.querySelector('.ze .main .imageedit .characterpreview')
+						preview.style.backgroundImage = $('currentModThumb').style.backgroundImage;
 						if (loaded_files > 1) {
 							zipEditorImportFile(loaded_zip);
 						} else {
