@@ -341,6 +341,9 @@ function zipEditorAddLoading(apply = false) {
 }
 
 function zipEditorClose() {
+	if (unsaved_changes_warning && !confirm("You have unsaved, proceed anyway?")) {
+		return;
+	}
 	document.querySelector('.ze').remove();
 	zip_editor_open = false;
 	adjustBodySize();
