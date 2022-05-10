@@ -654,8 +654,9 @@ const prepareSkinForSending = async () => {
 	});
 
 	// draw parts
-	const targetFrame = String(skin).padStart(4, '0');
+	const targetSkinFrame = String(skin).padStart(4, '0');
 	Object.keys(multiplayerAtlas.frames).forEach(partKey => {
+		const targetFrame = (partKey.startsWith('Normal') || partKey.startsWith('Mouth')) ? targetSkinFrame : '0000';
 		const resourceName = `${partKey}${targetFrame}`;
 		const {x, y} = multiplayerAtlas.frames[partKey].frame;
 
@@ -854,7 +855,6 @@ const updateDebugData = () =>{
 			<li>X:${player.sprite.position.x}</li>
 			<li>Y:${player.sprite.position.y}</li>
 			<li>Ping:${player.ping}</li>
-			<li>Skin: vehicle:${!!player.vehicle?.vehicle}, sheet:${!!player.vehicle?.spriteSheet}, spriteBuild:${!!player.vehicle?.vehicle?.spriteBuild}</li>
 		</ul>`
 	})
 }
