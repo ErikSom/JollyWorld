@@ -27,6 +27,7 @@ let imgctx;
 let fill_tolerance = 100;
 let fill_glow = 0.25;
 let fill_boundaries = {x: 0, y: 0, w: 0, h: 0};
+let shape_drawtype = "OnlyStroke"
 let effect_parameters = [0,50,0];
 const pixelcvs = document.createElement('canvas');
 pixelcvs.width = 1;
@@ -40,8 +41,6 @@ function zipEditorInit(importDefault = false) {
 			return;
 		}
 	} catch (err) {}
-
-	console.log($('createbutton').onclick)
 
 	const ze = document.createElement('div');
 	ze.classList.add('ze');
@@ -112,6 +111,11 @@ function zipEditorInit(importDefault = false) {
 							<p class="label">Fill Glow:</p>
 							<input type="range" min="0" max="1" step="0.01" value="0.25" oninput="fill_glow = this.value;" >
 						</div>
+						<div class="shapecontents" style="display:none;">
+							<button class="squarebutton onlystroke selecteddrawtype" onclick="selectDrawType('OnlyStroke')"></button>
+							<button class="squarebutton onlyfill" onclick="selectDrawType('OnlyFill')"></button>
+							<button class="squarebutton fillandstroke" onclick="selectDrawType('FillAndStroke')"></button>
+						</div>
 					</div>
 				</div>
 				<div class="window" style="left:410px;top:350px" onmousedown="startWindowDrag(this);">
@@ -122,9 +126,12 @@ function zipEditorInit(importDefault = false) {
 						<button class="squarebutton eyedropper" onclick="selectTool('Eyedropper')"></button>
 						<button class="squarebutton selection" onclick="selectTool('Selection')"></button>
 						<button class="squarebutton fill" onclick="selectTool('Fill')"></button>
+						<button class="squarebutton line" onclick="selectTool('Line')"></button>
+						<button class="squarebutton rectangle" onclick="selectTool('Rectangle')"></button>
+						<button class="squarebutton circle" onclick="selectTool('Circle')"></button>
 					</div>
 					<p>Extras</p>
-					<div class="contents" style="">
+					<div class="contents" style="text-align:center;">
 						<button class="effectsbutton" onclick="openEffect(0)">Hue & Saturation</button>
 					</div>
 				</div>
@@ -216,6 +223,21 @@ function keyDown() {
 		case "5":
 		case "f":
 			selectTool('Fill');
+			break;
+		case "6":
+		case "l":
+			selectTool('Line');
+			break;
+		//case "7":
+		//	selectTool('Curve');
+		//	break;
+		case "8":
+		case "r":
+			selectTool('Rectangle');
+			break;
+		case "9":
+		case "o":
+			selectTool('Circle');
 			break;
 		case "a":
 			if (event.ctrlKey) {
@@ -578,7 +600,7 @@ function canvasActionUp() {
 	if ((event.which === 1 || event.which === 3) && !buttons_held.has(" ")) {
 		switch (current_tool) {
 			case "Pencil":
-				const secondary = (event.which === 3)
+				var secondary = (event.which === 3)
 				drawBuffer(false, secondary)
 				takeImageSnapshot();
 				break;
@@ -590,6 +612,17 @@ function canvasActionUp() {
 				if (oldselectionbox && (oldselectionbox.style.width == "0px" || oldselectionbox.style.height == "0px")) {
 					deleteSelection()
 				}
+				break;
+			case "Line":
+				var secondary = (event.which === 3)
+				drawBuffer(false, secondary)
+				takeImageSnapshot();
+				break;
+			case "Rectangle":
+			case "Circle":
+				var secondary = (event.which === 3)
+				drawShape(current_tool, event.shiftKey, false, secondary)
+				takeImageSnapshot()
 				break;
 		}
 	} 
@@ -658,6 +691,16 @@ function canvasActionDown() {
 					}
 					last_pixel_amt = checked_pixels.size;
 				}, 10)
+				break;
+			case "Line":
+			//case "Curve":
+			case "Rectangle":
+			case "Circle":
+				if (event.which === 1 || event.which === 3) {
+					current_tool_buffer = [[x, y],[x+0.01,y+0.01]];
+					const secondary = (event.which === 3)
+					drawBuffer(true, secondary)
+				}
 				break;
 		}
 	}
@@ -771,6 +814,21 @@ function canvasActionMove() {
 					}
 				}
 				break;
+			case "Line":
+				if (event.buttons === 1 || event.buttons === 2) {
+					current_tool_buffer[1] = [x, y];
+					const secondary = (event.buttons === 2)
+					drawBuffer(true, secondary)
+				}
+				break;
+			case "Rectangle":
+			case "Circle":
+				if (event.buttons === 1 || event.buttons === 2) {
+					current_tool_buffer[1] = [x, y];
+					const secondary = (event.buttons === 2)
+					drawShape(current_tool, event.shiftKey, true, secondary)
+				}
+				break;
 		}
 	}
 }
@@ -786,12 +844,19 @@ function selectTool(tool) {
 	current_tool = tool;
 	document.querySelector('.ze .main .imageedit .canvascontainer .cursor').style.display = (["Pencil","Eraser"].includes(tool) ? 'block' : 'none')
 	document.querySelector('.ze .main .imageedit .currenttooltext').innerText = tool;
-	document.querySelector('.ze .main .imageedit .selectedtool').classList.remove('selectedtool')
+	try {
+		document.querySelector('.ze .main .imageedit .selectedtool').classList.remove('selectedtool')
+	} catch (err) {}
 	document.querySelector('.ze .main .imageedit .' + tool.toLowerCase()).classList.add('selectedtool');
 	if (tool === "Fill") {
 		document.querySelector('.ze .main .imageedit .fillcontents').style.display = 'block';
 	} else {
 		document.querySelector('.ze .main .imageedit .fillcontents').style.display = 'none';
+	}
+	if (["Circle","Rectangle"].includes(tool)) {
+		document.querySelector('.ze .main .imageedit .shapecontents').style.display = 'block';
+	} else {
+		document.querySelector('.ze .main .imageedit .shapecontents').style.display = 'none';
 	}
 }
 function changeToolColor(value, secondary) {
@@ -813,6 +878,13 @@ function changeToolAlpha(value, selfinflicted) {
 	}
 	document.querySelector('.ze .main .imageedit .window .brushalpha #toolalpha').setAttribute('fill-opacity', value);
 	current_tool_alpha = value;
+}
+function selectDrawType(type) {
+	shape_drawtype = type;
+	try {
+		document.querySelector('.ze .main .imageedit .selecteddrawtype').classList.remove('selecteddrawtype');
+	} catch (err) {}
+	document.querySelector('.ze .main .imageedit .' + type.toLowerCase()).classList.add('selecteddrawtype');
 }
 
 function drawBuffer(temp, colorSlot) {
@@ -843,6 +915,67 @@ function drawBuffer(temp, colorSlot) {
 		context.restore();
 	}
 }
+function drawShape(shapeType, equalSides, temp, colorSlot) {
+	const context = (temp ? tempctx : ctx)
+	tempctx.clearRect(0, 0, 10000, 10000)
+	context.globalAlpha = current_tool_alpha;
+	context.lineWidth = current_tool_size;
+	if (current_selection) {
+		context.save();
+		context.beginPath()
+		context.rect(current_selection.x, current_selection.y, current_selection.w, current_selection.h);
+		context.clip();
+	}
+	context.beginPath();
+	switch (shapeType) {
+		case "Rectangle":
+			var x = Math.min(current_tool_buffer[0][0],current_tool_buffer[1][0]);
+			var y = Math.min(current_tool_buffer[0][1],current_tool_buffer[1][1]);
+			var w = Math.abs(current_tool_buffer[0][0]-current_tool_buffer[1][0]);
+			var h = Math.abs(current_tool_buffer[0][1]-current_tool_buffer[1][1]);
+			if (equalSides) {
+				w = h = Math.min(w, h)
+			}
+			context.rect(x, y, w, h)
+			break;
+		case "Circle":
+			var x = (current_tool_buffer[0][0]+current_tool_buffer[1][0])/2;
+			var y = (current_tool_buffer[0][1]+current_tool_buffer[1][1])/2;
+			var w = Math.abs(current_tool_buffer[0][0]-current_tool_buffer[1][0])/2;
+			var h = Math.abs(current_tool_buffer[0][1]-current_tool_buffer[1][1])/2;
+			if (equalSides) {
+				w = h = Math.min(w, h)
+			}
+			context.ellipse(x, y, w, h, 0, 0, Math.PI * 2)
+			break;
+	}
+	if (w > 1 || h > 1) {
+		switch (shape_drawtype) {
+			case "OnlyFill":
+				context.fillStyle = (colorSlot ? current_tool_secondary_color : current_tool_color)
+				context.fill();
+				break;
+			case "OnlyStroke":
+				context.strokeStyle = (colorSlot ? current_tool_secondary_color : current_tool_color)
+				context.stroke();
+				break;
+			case "FillAndStroke":
+				context.strokeStyle = (colorSlot ? current_tool_secondary_color : current_tool_color)
+				context.fillStyle = (colorSlot ? current_tool_color : current_tool_secondary_color)
+				context.fill();
+				context.stroke();
+				break;
+		}
+	}
+	if (!temp) {
+		current_tool_buffer = []
+	}
+	context.globalAlpha = 1;
+	if (current_selection) {
+		context.restore();
+	}
+}
+
 function wipeCanvas() {
 	if (current_selection) {
 		const s = current_selection;
