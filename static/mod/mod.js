@@ -375,6 +375,8 @@ function processBasicMod(path, file){
 
 function clearOldMods(){
 	removeTheme();
+	var message = {type: 'jollyCleanMod'}
+	window.parent.postMessage(message, '*')
 	wearing_mask = 0;
 	sendDefaultChar();
 
@@ -789,6 +791,14 @@ function processWardrobe(apply, importEditor = false) {
 			});
 		}
 	}
+}
+
+function wipeCurrentMod() {
+	clearOldMods();
+	localStorage.removeItem('jollyModCustomPreview')
+	localStorage.setItem('jollyModName', "Billy Joel")
+	sendDefaultChar(0)
+	updateModName()
 }
 
 function importToEditorFromCurrentMod() {
