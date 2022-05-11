@@ -256,6 +256,7 @@ function sendDefaultChar(id = 0) {
 
 function processFiles(files){
 	clearOldMods().then(()=>{
+		wearing_mask = 0;
 		const keys = Object.keys(files);
 
 		for(var i = 0; i<keys.length; i++){
@@ -280,11 +281,12 @@ function processFiles(files){
 				case 'gore':
 					processGoreMod(path, file);
 				break;
+				case 'masks':
+					wearing_mask = 1;
 				case 'textures':
 				case 'vehicles':
 				case 'portraits':
 				case 'helmets':
-				case 'masks':
 					processBasicMod(path, file);
 				break;
 				case 'theme':
@@ -292,6 +294,7 @@ function processFiles(files){
 				break;
 			}
 		}
+		sendDefaultChar();
 	});
 }
 function finishMod(){
