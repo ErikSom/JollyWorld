@@ -826,7 +826,7 @@ function importToEditorFromCurrentMod() {
 		zipEditorInit();
 		if (keys.length <= 1) {
 			document.querySelector('.ze .loading').style.display = 'block'
-			zipEditorLoadExternalZip('/mod/zips/jollymod.zip');
+			zipEditorLoadExternalZip('/mod/zips/jollymodlight.zip');
 			return;
 		}
 		loaded_zip = new JSZip();
