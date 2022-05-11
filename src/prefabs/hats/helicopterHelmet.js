@@ -60,7 +60,7 @@ export class HelicopterHelmet extends Hat {
 		this.heliSprite.x = -13;
 		this.heliSprite.y = -14;
 
-		const hatSprite = new Sprite(PIXI.Texture.from("HelicopterHelmet0000"));
+		const hatSprite = new Sprite(PIXI.Texture.from(this.texture));
 		this.hatBody.myTexture.originalSprite.addChild(hatSprite);
 
 		TutorialManager.showTutorial(TutorialManager.TUTORIALS.HELIHELMET);
