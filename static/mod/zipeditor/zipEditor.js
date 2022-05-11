@@ -163,7 +163,7 @@ function zipEditorInit(importDefault = false) {
 	zip_editor_open = true;
 	if (importDefault) {
 		document.querySelector('.ze .loading').style.display = 'block'
-		zipEditorLoadExternalZip('/mod/zips/jollymod.zip')
+		zipEditorLoadExternalZip('/mod/zips/jollymodlight.zip')
 	}
 	loadWardrobeContents()
 }
