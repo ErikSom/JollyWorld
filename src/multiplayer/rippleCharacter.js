@@ -169,8 +169,6 @@ export class RippleCharacter {
 			}
 			this.sprites.hat.anchor.set(0.5, 0.5);
 
-			console.log("VALUES:", hatOffsetLength, hatOffsetAngle)
-
 			this.sprites.hat.x = -hatOffsetLength * Math.cos(hatOffsetAngle);
 			this.sprites.hat.y = -hatOffsetLength * Math.sin(hatOffsetAngle);
 

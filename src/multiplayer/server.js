@@ -211,7 +211,6 @@ class MultiplayerServer {
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.LEVEL_VOTES, peer, buffer});
 	}
 	receiveSelectHatMessage(peer, buffer){
-		console.log("******** RECEIVE HAT");
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.SELECT_HAT, peer, buffer});
 	}
 

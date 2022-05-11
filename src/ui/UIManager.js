@@ -1013,9 +1013,6 @@ function UIManager() {
             userPage.classList.add('userPage');
             userPage.innerHTML = htmlStructure;
 
-            // const simpleBar = new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false });
-            // console.log(simpleBar);
-
             const navButtons = userPage.querySelector('.nav-buttons');
             const backButton = navButtons.querySelector('.back');
             backButton.onclick = ()=>{
@@ -1347,8 +1344,6 @@ function UIManager() {
     }
 
     this.setLevelBannerData = levelData => {
-        console.log('levelData:', levelData)
-
         const thumb = levelBanner.querySelector('.thumb');
         const thumbSrc = `${Settings.STATIC}/${levelData.thumb_big_md5}.png`;
         thumb.style.backgroundImage = `url(${thumbSrc})`;
@@ -1889,7 +1884,6 @@ function UIManager() {
                 const portrait =  document.createElement('img');
 
                 getModdedPortrait(`character${i+1}.png`, 'assets/images/portraits/').then(url => {
-                    console.log(url);
                     if(portrait) portrait.src = url;
                 });
 
@@ -1935,10 +1929,7 @@ function UIManager() {
         const grid = mainMenu.querySelector('.menu-grid');
         const characterSelect = grid.querySelector('.character-image');
 
-        console.log(characterSelect, grid);
-
         getModdedPortrait(`characterselect${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
-            console.log("URL:", url);
             if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
         })
     }
