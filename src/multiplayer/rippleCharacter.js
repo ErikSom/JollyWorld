@@ -72,6 +72,7 @@ export class RippleCharacter {
 		this.spriteSheet = null;
 		this.spriteProcessList = [];
 		this.mirror = false;
+		this.hatTexture = "";
 
 		this.vehicle = new RippleVehicle(this.sprite);
 	}
@@ -150,6 +151,29 @@ export class RippleCharacter {
 		this.buildCloud();
 
 		this.spriteProcessList = [this.sprites.head, this.sprites.shoulderLeft, this.sprites.shoulderRight, this.sprites.armLeft, this.sprites.armRight, this.sprites.handLeft, this.sprites.handRight, this.sprites.belly, this.sprites.thighLeft, this.sprites.thighRight, this.sprites.legLeft, this.sprites.legRight, this.sprites.feetLeft, this.sprites.feetRight];
+	}
+
+	selectHat(texture, hatOffsetLength, hatOffsetAngle){
+		this.hatTexture = texture;
+
+		if(this.sprites.hat){
+			this.sprites.hat.destroy();
+			delete this.sprites.hat;
+		}
+
+		if(this.hatTexture && this.spriteProcessList.length){
+			if(['DirtBikeHelmet', 'SkateHelmet'].includes(this.hatTexture)){
+				this.sprites.hat = new PIXI.Sprite(this.spriteSheet.textures[this.hatTexture]);
+			} else {
+				this.sprites.hat = new PIXI.Sprite(PIXI.Texture.from(this.hatTexture));
+			}
+			this.sprites.hat.anchor.set(0.5, 0.5);
+
+			this.sprites.hat.x = -hatOffsetLength * Math.cos(hatOffsetAngle);
+			this.sprites.hat.y = -hatOffsetLength * Math.sin(hatOffsetAngle);
+
+			this.sprites.head.addChild(this.sprites.hat)
+		}
 	}
 
 	buildCloud(){

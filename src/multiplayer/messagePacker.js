@@ -1,10 +1,11 @@
-import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
+import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, selectHatMessageModel, simpleMessageModel, startLoadLevelModel } from "./schemas"
 import {
 	Settings
 } from '../Settings'
 import { game } from "../Game";
 
 const RAD2DEG = 57.29577951308232;
+const DEG2RAD = 0.017453292519943296;
 
 const BODY_PARTS = {
 	HEAD: 'head',
@@ -299,3 +300,18 @@ export const dataFromLevelVotesMessageBuffer = buffer => {
 	levelVotesMessageData.votes = [levelVotesMessageData.level1, levelVotesMessageData.level2, levelVotesMessageData.level3, levelVotesMessageData.level4];
 	return levelVotesMessageData;
 }
+
+
+// SELECT HAT MESSAGE
+export const dataToSelectHatMessageBuffer = (hat, hatOffsetLength, hatOffsetAngle) => {
+	hatOffsetAngle = serializeAngle(hatOffsetAngle);
+	const buffer = selectHatMessageModel.toBuffer({hat, hatOffsetLength, hatOffsetAngle});
+	return buffer;
+}
+
+export const dataFromSelectHatMessageBuffer = buffer => {
+	const selectHatMessageData = selectHatMessageModel.fromBuffer(buffer);
+	selectHatMessageData.hatOffsetAngle = fixAngle(selectHatMessageData.hatOffsetAngle) * DEG2RAD;
+	return selectHatMessageData;
+}
+

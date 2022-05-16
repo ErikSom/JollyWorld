@@ -62,7 +62,6 @@ export default class Hat {
 		textureObject.texturePositionOffsetAngle = this.hatOffsetAngle;
 		textureObject.textureAngleOffset = 0;
 
-		console.log("TEXTURE OBJECT", textureObject);
 		const texture = game.editor.buildTextureFromObj(textureObject);
 
 		let targetTextureSwap = this.head.myTexture;

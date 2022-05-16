@@ -111,3 +111,11 @@ const levelVotesMessage = BufferSchema.schema('levelVotesMessage', {
 	level4: { type: uint8 },
 });
 export const levelVotesMessageModel = new Model(levelVotesMessage);
+
+// SELECT HAT
+const selectHatMessage = BufferSchema.schema('selectHatMessage', {
+	hat: { type: uint8 },
+	hatOffsetLength: { type: uint8 },
+	hatOffsetAngle: { type: uint8 },
+});
+export const selectHatMessageModel = new Model(selectHatMessage);

@@ -150,13 +150,27 @@ function Game() {
             let country = 'us';
             let userLang = navigator.language || navigator.userLanguage;
             if(userLang){
-                const userCountry = userLang.split('-')[1];
+                const userCountry = userLang.split('-')[0];
                 if(userCountry){
+                    let userCountryLC = userCountry.toLowerCase();
+
+                    if(userCountryLC === 'en'){
+                        userCountryLC = 'us';
+                    }
+
+                    if(userCountryLC === 'cs'){
+                        userCountryLC = 'cz';
+                    }
+
+                    if(userCountryLC === 'ja'){
+                        userCountryLC = 'jp';
+                    }
+
                     countries.forEach(c => {
-                        if(c === userCountry.toLowerCase()){
+                        if(c === userCountryLC){
                             country = c;
                         }
-                    })
+                    });
                 }
             }
 
@@ -515,8 +529,6 @@ function Game() {
 
                 this.mouseJoint = this.editor.CreateJoint(md);
 
-                console.log(this.mouseJoint);
-
                 body.SetAwake(true);
 
                 Box2D.destroy(md);
@@ -728,7 +740,6 @@ function Game() {
             }else if((e.keyCode == Key.P || e.keyCode == Key.R || e.keyCode == Key.ESCAPE || e.keyCode == Key.TAB)){
                 if(!this.pause){
                     // when we have the chat open we dont want to open pause when escing
-                    console.log("PAUSE GAME!!")
                     this.pauseGame();
                 } else{
                     this.unpauseGame();
@@ -1304,7 +1315,6 @@ function Game() {
 
             req.onprogress = e => {
                 const progress = e.loaded / req.compressedContentLength;
-                console.log("PROGRESS:", progress, e, e.loaded, req.compressedContentLength);
                 progressFunction(progress);
             }
             req.onerror = err => {
@@ -1321,7 +1331,6 @@ function Game() {
                     }catch(e){
                         req.compressedContentLength = 1000000;
                     }
-                    console.log("compressedContentLength:", req.compressedContentLength);
                 }
             }
             req.send(null);
@@ -1735,7 +1744,6 @@ export var game = new Game();
 setTimeout(() => {
     const font = new FontFaceObserver('Montserrat');
     font.load().then(() => {
-        console.log('MONTSERRAT has loaded.');
         game.gameInit();
     }).catch(err => {
         game.gameInit();

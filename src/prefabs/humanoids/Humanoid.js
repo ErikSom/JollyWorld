@@ -256,7 +256,6 @@ export class Humanoid extends PrefabManager.basePrefab {
             let reactionTorque = targetJoint.GetReactionTorque(1 / Settings.physicsTimeStep);
 
             if (reactionForce > this.jointMaxForces[i] || Math.abs(reactionTorque) > this.jointMaxTorque) {
-                console.log("PROCESS JOINT !! SNAP JOINT!!!!", jointsToAnalyse[i], this.jointMaxForces[i], reactionForce);
                 this.collisionUpdates.push({
                     type: Humanoid.GORE_SNAP,
                     target: jointsToAnalyse[i].split('_joint')[0],
@@ -330,9 +329,6 @@ export class Humanoid extends PrefabManager.basePrefab {
                         type: Humanoid.GORE_SNAP,
                         target: jointsToAnalyse[i].split('_joint')[0],
                     });
-
-                    console.log("PROCESS BODY SEPARATION !! SNAP JOINT!!!!");
-
                     targetJoint.snapTick = 0;
                 }
             }else{

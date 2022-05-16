@@ -64,8 +64,6 @@ class MidiPlayerClass {
 			})
 			return obj;
 		})();
-
-		console.log(this);
 	}
 
 	setSpeed(speed){

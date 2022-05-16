@@ -7,7 +7,7 @@ import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
 import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard, updateLeaderboard, hudState } from './hud';
-import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
+import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSelectHatMessageBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSelectHatMessageBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, PLAYER_STATUS, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
 import server, { SERVER_EVENTS } from './server';
@@ -47,8 +47,11 @@ export const multiplayerState = {
 	voteLevels: [],
 	levelVoters: {},
 	levelVotes: [0, 0, 0, 0],
+	syncedHat: null,
 	fakeUsername: `Jolly${(Math.floor(Math.random()*100000)).toString().padStart(5, '0')}`,
 }
+
+export const multiplayerHatTextureLookup = ["DirtBikeHelmet0000", "SkateHelmet0000", "RopeHelmet0000", "HelicopterHelmet0000"];
 
 window.multiplayerState = multiplayerState;
 
@@ -68,6 +71,7 @@ export const startMultiplayer = () => {
 	globalEvents.addEventListener(SERVER_EVENTS.END_COUNTDOWN, handleEndCountDownMessage);
 	globalEvents.addEventListener(SERVER_EVENTS.LEVEL_VOTES, handleLevelVotesMessage);
 	globalEvents.addEventListener(SERVER_EVENTS.NETWORK_READY, networkReady);
+	globalEvents.addEventListener(SERVER_EVENTS.SELECT_HAT, handleSelectHatMessage);
 
 	server.connect();
 
@@ -194,19 +198,19 @@ const didJoinLobby = ({code, admin}) => {
 	}
 
 	// ******* TODO REMOVE:
-	// if(admin){
-	// 	// auto select level for development:
-	// 	backendManager.getPublishedLevelInfo('Z~lbng9r4S5ZG55Rxjl3O').then(levelData => {
-	// 		selectMultiplayerLevel(levelData);
-	// 		game.ui.showSinglePlayer();
-	// 		game.ui.hideSinglePlayer();
-	// 		game.openMainMenu();
-	// 		game.gameState = game.GAMESTATE_LOBBY;
-	// 		game.ui.setMainMenuActive('lobby');
-	// 	});
-	// } else {
-	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	// }
+	if(admin){
+		// auto select level for development:
+		backendManager.getPublishedLevelInfo('~dWsEMCOrxgB90Wik8o04').then(levelData => {
+			selectMultiplayerLevel(levelData);
+			game.ui.showSinglePlayer();
+			game.ui.hideSinglePlayer();
+			game.openMainMenu();
+			game.gameState = game.GAMESTATE_LOBBY;
+			game.ui.setMainMenuActive('lobby');
+		});
+	} else {
+		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	}
 	// ********************
 
 	showChat(true);
@@ -222,6 +226,7 @@ const didLeaveLobby = () => {
 }
 
 const playerJoined = async ({id}) => {
+	console.log("********** PLAYER JOINT:", id)
 
 	if(multiplayerState.admin){
 		if(multiplayerState.lobbyState !== LOBBY_STATE.WAITING){
@@ -270,11 +275,14 @@ const playerLeft = ({id}) => {
 		multiplayerState.players[id]?.sprite.destroy(
 			{
 				children: true,
-				texture: false, // TO DO MAKE THIS TRUE WHEN TEXTURES ARE TRANSFERRED
+				texture: false,
 				baseTexture: false
 			})
 		delete multiplayerState.players[id];
 	}
+
+	//TODO what if this was an admin? Someone should claim admin
+	// admin claim - random ID, distribute to players
 
 	updateLobbyUI();
 	updateLeaderboard();
@@ -435,7 +443,6 @@ const handleSimpleMessage = ({peer, buffer}) => {
 			break;
 		case SIMPLE_MESSAGE_TYPES.LEVEL_FAILED:
 			player.setPlayerState(PLAYER_STATUS.DEATH);
-			console.log("***** FAILED AT IT!");
 			break;
 		case SIMPLE_MESSAGE_TYPES.LEVEL_CHECKPOINT:
 			player.setPlayerState(PLAYER_STATUS.CHECKPOINT);
@@ -511,6 +518,18 @@ const handleLevelVotesMessage = ({peer, buffer}) => {
 	multiplayerState.levelVotes = votes;
 }
 
+const handleSelectHatMessage = ({peer, buffer}) => {
+
+	const player = multiplayerState.players[peer];
+
+	const { hat, hatOffsetLength, hatOffsetAngle } = dataFromSelectHatMessageBuffer(buffer);
+
+	const hatTexture = multiplayerHatTextureLookup[hat];
+
+	player.selectHat(hatTexture, hatOffsetLength, hatOffsetAngle);
+
+}
+
 const handleReceiveSkin = ({peer, buffer}) => {
 	const player = multiplayerState.players[peer];
 	if(!player) return;
@@ -532,6 +551,17 @@ export const startSyncPlayer = () => {
 		if(game.character){
 			const buffer = characterToBuffer(game.character, tickID);
 			server.sendCharacterData(buffer);
+
+			const { hat } = game.character;
+
+			if(hat !== multiplayerState.syncedHat){
+				multiplayerState.syncedHat = hat;
+				const hatIndex = hat ? multiplayerHatTextureLookup.indexOf(hat.texture) : -1;
+				const hatOffsetLength = hat ? hat.hatOffsetLength : 0;
+				const hatOffsetAngle = hat ? hat.hatOffsetAngle : 0;
+				const messageBuffer = dataToSelectHatMessageBuffer(hatIndex, hatOffsetLength, hatOffsetAngle);
+				server.sendSimpleMessageAll(messageBuffer);
+			}
 
 			tickID++;
 			if(tickID > 255){
@@ -654,8 +684,9 @@ const prepareSkinForSending = async () => {
 	});
 
 	// draw parts
-	const targetFrame = String(skin).padStart(4, '0');
+	const targetSkinFrame = String(skin).padStart(4, '0');
 	Object.keys(multiplayerAtlas.frames).forEach(partKey => {
+		const targetFrame = (partKey.startsWith('Normal') || partKey.startsWith('Mouth')) ? targetSkinFrame : '0000';
 		const resourceName = `${partKey}${targetFrame}`;
 		const {x, y} = multiplayerAtlas.frames[partKey].frame;
 
@@ -675,7 +706,6 @@ const prepareSkinForSending = async () => {
 	await new Promise(resolve => {
 		skinCanvas.toBlob(blob => {
 			multiplayerState.skinBlob = blob;
-			console.log("BLOB", blob)
 			resolve();
 		}, 'image/png')
 	});
@@ -700,7 +730,6 @@ const fetchLevelInfo = async id => {
 }
 
 export const sendLevelWon = time => {
-	console.log("SEND LEVEL WON!!!");
 	setMultiplayerHud(HUD_STATES.GAME_WIN_CAM);
 	const messageBuffer = dataToLevelWonBuffer(time);
 	server.sendSimpleMessageAll(messageBuffer);
@@ -750,7 +779,6 @@ const checkEndLevelTimer = () => {
 			}
 
 			backendManager.getRandomPublishedLevels(3).then(data => {
-				console.log("RANDOM LEVELS:", data)
 				multiplayerState.voteLevels = [multiplayerState.selectedLevelData, ...data];
 				const voteLevelIds = data.map(level => level.id);
 				const messageBuffer = dataToEndCountDownMessageBuffer(voteLevelIds);
@@ -849,7 +877,7 @@ const updateDebugData = () =>{
 		el.querySelector('.nameText').innerText = id;
 		el.querySelector('.connectedText').innerText = player.connected.toString();
 		el.querySelector('.packageIDText').innerText = player.lastPackageID.toString();
-		el.querySelector('.infoText').innerHTML = 
+		el.querySelector('.infoText').innerHTML =
 		`<ul>
 			<li>X:${player.sprite.position.x}</li>
 			<li>Y:${player.sprite.position.y}</li>

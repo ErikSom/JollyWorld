@@ -5,7 +5,7 @@ import
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
-import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, simpleMessageModel, startLoadLevelModel } from './schemas';
+import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, selectHatMessageModel, simpleMessageModel, startLoadLevelModel } from './schemas';
 
 
 console.log('***NETWORK:', Network);
@@ -25,6 +25,7 @@ export const SERVER_EVENTS = {
 	CHAT_MESSAGE: 'chatMessage',
 	END_COUNTDOWN: 'endCountDown',
 	LEVEL_VOTES: 'levelVotes',
+	SELECT_HAT: 'selectHat',
 }
 
 const MESSAGE_TYPE = {
@@ -109,6 +110,9 @@ class MultiplayerServer {
 							break;
 						case levelVotesMessageModel.schema.id:
 							this.receiveLevelVotesMessage(peer.id, data);
+							break;
+						case selectHatMessageModel.schema.id:
+							this.receiveSelectHatMessage(peer.id, data);
 							break;
 						default:
 							if(id.indexOf('PNG') >= 0){
@@ -205,6 +209,9 @@ class MultiplayerServer {
 	}
 	receiveLevelVotesMessage(peer, buffer){
 		globalEvents.dispatchEvent({type:SERVER_EVENTS.LEVEL_VOTES, peer, buffer});
+	}
+	receiveSelectHatMessage(peer, buffer){
+		globalEvents.dispatchEvent({type:SERVER_EVENTS.SELECT_HAT, peer, buffer});
 	}
 
 	sendCharacterData(buffer) {

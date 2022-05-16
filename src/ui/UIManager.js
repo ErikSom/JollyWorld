@@ -44,7 +44,7 @@ import SimpleBar from 'simplebar'
 import {countries, localize} from '../utils/Localization'
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
-import { cleanMods, getModdedPortrait, init as initModManager } from '../utils/ModManager'
+import { getModdedPortrait } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
 import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
@@ -1013,9 +1013,6 @@ function UIManager() {
             userPage.classList.add('userPage');
             userPage.innerHTML = htmlStructure;
 
-            // const simpleBar = new SimpleBar(userPage.querySelector('.games-scroll'), { autoHide: false });
-            // console.log(simpleBar);
-
             const navButtons = userPage.querySelector('.nav-buttons');
             const backButton = navButtons.querySelector('.back');
             backButton.onclick = ()=>{
@@ -1347,8 +1344,6 @@ function UIManager() {
     }
 
     this.setLevelBannerData = levelData => {
-        console.log('levelData:', levelData)
-
         const thumb = levelBanner.querySelector('.thumb');
         const thumbSrc = `${Settings.STATIC}/${levelData.thumb_big_md5}.png`;
         thumb.style.backgroundImage = `url(${thumbSrc})`;
@@ -1859,47 +1854,69 @@ function UIManager() {
     this.showCharacterSelect = function(){
         if(!characterSelect){
             const htmlStructure = /*html*/`
-                <iframe class="mod-frame" frameBorder="0" src="/mod"></iframe>
+                <div class="bar"></div>
+                <div class="header"><span class="fit h1">${localize('characterselect_select_character')}</span></div>
+                <div class="characters">
+                </div>
+                <div class="back button"><span class="fit h2">${localize('levelbanner_back')}</span></div>
             `;
 
             characterSelect = document.createElement('div');
             characterSelect.classList.add('characterSelect');
             characterSelect.innerHTML = htmlStructure;
 
-            customGUIContainer.appendChild(characterSelect);
+            const characters = characterSelect.querySelector('.characters');
 
-            window.addEventListener('message', message => {
-                try{
-                    const data = typeof message.data === 'string' ? JSON.parse(message.data) : message.data;
+            const customOrder = [1,2,3,4,11,16,8,9,10,6,12,15,5,13,7,14];
 
-                    const {type, character, mask} = data;
+            let charNames = ["Billy Joel", "Jeroen", "Marique", "Damien", "The Zuck!", "Bob Zombie", "Xenot", "Ronda", "Jack Lee", "Col. Jackson", "Hank", "Mrs. Kat", "Sean Bro", "Crashy", "Brittany", "Machote"]
+            const theme = localStorage.getItem('jollyWorldTheme');
+            if(theme){
+                const themeSettings = JSON.parse(theme);
+                if(themeSettings && Array.isArray(themeSettings.charNames) && themeSettings.charNames.length === charNames.length){
+                    charNames = themeSettings.charNames;
+                }
+            }
 
-                    if(type === 'jollySelectCharacter'){
-                        game.selectedCharacter = parseInt(character);
-                        game.selectedMask = parseInt(mask);
+            for(let i = 0; i<Settings.availableCharacters; i++){
+                const portraitHolder = document.createElement('div');
+                portraitHolder.style.order = customOrder[i];
+                const portrait =  document.createElement('img');
 
-                        const userData = SaveManager.getLocalUserdata();
-                        userData.selectedCharacter = game.selectedCharacter;
-                        userData.selectedMask = game.selectedMask;
-                        SaveManager.updateLocalUserData(userData);
+                getModdedPortrait(`character${i+1}.png`, 'assets/images/portraits/').then(url => {
+                    if(portrait) portrait.src = url;
+                });
 
-                    } else if(type === 'jollyCloseCharacterSelect'){
-                        characterSelect.style.pointerEvents = 'none';
-                        initModManager().then(() => {
-                            this.hideCharacterSelect();
-                            this.setMainMenuCharacterImage();
-                            characterSelect.style.pointerEvents = 'all';
-                        });
-                    } else if(type === 'jollyCleanMod'){
-                        cleanMods();
-                    }
-                }catch(e){
+                portrait.classList.add('portrait');
+                portraitHolder.appendChild(portrait)
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('name');
+                nameDiv.innerText = charNames[i];
+                portraitHolder.appendChild(nameDiv);
+
+                characters.appendChild(portraitHolder);
+
+                portrait.onclick = () => {
+                    game.selectedCharacter = i;
+
+                    const userData = SaveManager.getLocalUserdata();
+                    userData.selectedCharacter = game.selectedCharacter;
+                    SaveManager.updateLocalUserData(userData);
+
+                    this.setMainMenuCharacterImage();
                     this.hideCharacterSelect();
                 }
-            });
+            }
+            customGUIContainer.appendChild(characterSelect);
         }
 
         characterSelect.style.display = 'block';
+
+        const back = characterSelect.querySelector('.back');
+        back.onclick = ()=>{
+            this.hideCharacterSelect();
+        }
     }
 
     this.hideCharacterSelect = function () {
@@ -1912,10 +1929,7 @@ function UIManager() {
         const grid = mainMenu.querySelector('.menu-grid');
         const characterSelect = grid.querySelector('.character-image');
 
-        console.log(characterSelect, grid);
-
         getModdedPortrait(`characterselect${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
-            console.log("URL:", url);
             if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
         })
     }
