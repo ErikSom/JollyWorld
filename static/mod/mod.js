@@ -837,7 +837,11 @@ function importToEditorFromCurrentMod() {
 		keys.forEach((key) => {
 			if (key != "tempEditorWorld") {
 				window.idbKeyval.get(key).then((value) => {
-					loaded_zip.file(key.replace("/0/","/billyjoel/"), value)
+					var trimmedkey = key;
+					for (var k = 0; k < 16; k ++) {
+						trimmedkey = trimmedkey.replace("/" + k + "/", "/" + allDefaultCharactersTrimmed[k] + "/")
+					}
+					loaded_zip.file(trimmedkey, value)
 					loaded_files ++;
 					if (loaded_files == keys.length) {
 						const preview = document.querySelector('.ze .main .imageedit .characterpreview')

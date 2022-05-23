@@ -1,4 +1,5 @@
 const allDefaultCharacters = ["Billy Joel", "Jeroen", "Marique", "Damien", "Sean Bro", "Col. Jackson", "Brittany", "Xenot", "Ronda", "Jack Lee", "The Zuck!", "Hank", "Crashy", "Bob Zombie", "Mrs. Kat", "Machote"]
+const allDefaultCharactersTrimmed = ["billyjoel", "jeroen", "marique", "damien", "seanbro", "coljackson", "brittany", "xenot", "ronda", "jacklee", "thezuck", "hank", "crashy", "bobzombie", "mrskat", "machote"]
 const customOrder = [0,1,2,3,12,9,14,6,7,8,4,10,13,5,11,15];
 
 const portraits = new Image()
