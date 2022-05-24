@@ -198,19 +198,19 @@ const didJoinLobby = ({code, admin}) => {
 	}
 
 	// ******* TODO REMOVE:
-	if(admin){
-		// auto select level for development:
-		backendManager.getPublishedLevelInfo('~dWsEMCOrxgB90Wik8o04').then(levelData => {
-			selectMultiplayerLevel(levelData);
-			game.ui.showSinglePlayer();
-			game.ui.hideSinglePlayer();
-			game.openMainMenu();
-			game.gameState = game.GAMESTATE_LOBBY;
-			game.ui.setMainMenuActive('lobby');
-		});
-	} else {
-		setTimeout(()=>{setLobbyStateReady(true);}, 1000);
-	}
+	// if(admin){
+	// 	// auto select level for development:
+	// 	backendManager.getPublishedLevelInfo('~dWsEMCOrxgB90Wik8o04').then(levelData => {
+	// 		selectMultiplayerLevel(levelData);
+	// 		game.ui.showSinglePlayer();
+	// 		game.ui.hideSinglePlayer();
+	// 		game.openMainMenu();
+	// 		game.gameState = game.GAMESTATE_LOBBY;
+	// 		game.ui.setMainMenuActive('lobby');
+	// 	});
+	// } else {
+	// 	setTimeout(()=>{setLobbyStateReady(true);}, 1000);
+	// }
 	// ********************
 
 	showChat(true);
