@@ -38,5 +38,3 @@ function loadCharacters() {
 		$('defaultCharacterSelection').appendChild(button);
 	}
 }
-all_public_mods.forEach(mod => addToPublicMods(mod))
-updateModName();
