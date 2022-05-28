@@ -79,22 +79,6 @@ function loadWardrobeContents() {
 			}
 		}
 		
-		// Turning all of the image paths into actual images
-		for (var i = 0; i < all_asset_paths.length; i ++) {
-			const img = new Image();
-			const cvs = document.createElement('canvas');
-			const ctx = cvs.getContext('2d');
-			img.src = all_asset_paths[i];
-			img.onload = function() {
-				increaseLoadedImages()
-				var img_name = this.src.split("/")[this.src.split("/").length - 1]
-				all_asset_imgs[img_name] = this;
-				cvs.width = this.width;
-				cvs.height = this.height;
-				ctx.drawImage(this, 0, 0)
-				all_wardrobe_imgs[img_name] = cvs;
-			}
-		}
 		loaded_wardrobe = true;
 	}
 }
@@ -293,8 +277,7 @@ function processWardrobe(apply, importEditor = false) {
 			wearing_mask = 1;
 			sendDefaultChar();
 			setTimeout(function() {
-				const preview_img = generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL()
-				localStorage.setItem('jollyModCustomPreview', preview_img);
+				const preview_img = generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL();
 				closeModWardrobe();
 				updateModName();
 			}, 100)

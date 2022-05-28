@@ -349,12 +349,12 @@ function zipEditorAddLoading(apply = false) {
 	if (generated_zip_remaining_images == 0) {
 		if (apply) {
 			var preview_img = document.querySelector('.ze .main .imageedit .characterpreview').style.backgroundImage.replace("url(","").replace(")","")
+			localStorage.setItem('jollyModName', 'Created in Editor');
 			processFiles(generated_zip.files)
 			zipEditorClose();
 			try {
 				document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
 			} catch (err) {}
-			localStorage.setItem('jollyModCustomPreview', preview_img);
 			updateModName();
 		} else {
 			generated_zip.generateAsync({type:"blob"})

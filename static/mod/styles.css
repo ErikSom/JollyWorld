@@ -172,7 +172,8 @@ a.button {
 .publicModThumb {
 	width: 300px;
 	background-size: auto 250px;
-	background-position-x: -25px;
+	background-position-x: 15px;
+	background-repeat: no-repeat;
 }
 .singleModItem {
 	display: inline-block;

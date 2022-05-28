@@ -82,25 +82,6 @@ function hideLoadingScreen() {
 	$('loadingbackground').style.opacity = 0;
 }
 
-function generateModPreview(defaultImgs, moddedImgs = {}) {
-	let cvs = document.createElement('canvas');
-	let ctx = cvs.getContext('2d');
-
-	cvs.width  = 2000;
-	cvs.height = 350;
-	cvs.classList.add('singleModCanvas');
-
-	character_positions.forEach((part) => {
-		var asset = (moddedImgs[part.asset] ? moddedImgs[part.asset] : defaultImgs[part.asset])
-		ctx.save()
-		ctx.translate(part.x, part.y)
-		ctx.rotate(part.r)
-		ctx.drawImage(asset, 0, 0, part.w, part.h)
-		ctx.restore()
-	})
-	return cvs;
-}
-
 function blobToImage(blob) {
 	const url = URL.createObjectURL(blob);
 	const image = new Image();
@@ -108,57 +89,25 @@ function blobToImage(blob) {
 	return image;
 }
 
-async function loadExternalZip(url) {
-	var all_modded_imgs = {}
-	new JSZip.external.Promise(function (resolve, reject) {
-		JSZipUtils.getBinaryContent(url, function(err, data) {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(data);
-			}
-		});
-	})
-	.then(JSZip.loadAsync) 
-	.then(function(zip) {
-		all_asset_paths.forEach(async(item) => {
-			try {
-				zip.file(item.substring(1)).async("blob").then(function(blob) {
-					all_modded_imgs[item] = blobToImage(blob)
-				})
-			} catch (err) {}
-		})
-	})
-	.then(function() {
-		setTimeout(function() {
-			generateModPreview(all_asset_imgs, all_modded_imgs)
-		}, 100)
-	})
-}
-
 function updateModName(){
-	const modName = localStorage.getItem('jollyModName');
-	const modCustomPreview = localStorage.getItem('jollyModCustomPreview')
 	try {
 		document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
 	} catch (err) {}
+	let modName = localStorage.getItem('jollyModName');
 	if (modName === null) {
-		$('installedMod').innerText = 'Billy Joel';
-		$('currentModThumb').style.backgroundImage = 'url(mod/thumbs/Billy%20Joel.png)';
+		modName = 'Billy Joel';
+	}
+	$('installedMod').innerText = modName;
+	if (allDefaultCharacters.includes(modName)) {
+		$('currentModThumb').style.backgroundImage = `url(mod/thumbs/${modName.replace(' ','%20')}.png)`;
 	} else {
-		$('installedMod').innerText = modName;
-		if (modCustomPreview === null) {
-			$('currentModThumb').style.backgroundImage = `url(mod/thumbs/${modName.replace(" ","%20")}.png)`;
-			try {
-				$(modName).classList.add('singleModItemSelected')
-			} catch (err) {}
-		} else {
-			$('currentModThumb').style.backgroundImage = `url(${modCustomPreview})`;
-		}
+		generateModPreviewFromIDB();
+		try {
+			$(modName).classList.add('singleModItemSelected')
+		} catch (err) {}
 	}
 }
 
-var x;
 function handleFileSelect() {
 	event.stopPropagation();
 	event.preventDefault();
@@ -169,28 +118,15 @@ function handleFileSelect() {
 		const zip = new JSZip();
 		zip.loadAsync(f).then(function (zip) {
 			showLoadingScreen();
+			const modName = f.name.replace('.zip','');
+			localStorage.setItem('jollyModName', modName);
+			$('installedMod').innerText = modName;
 			processFiles(zip.files);
 
 			try {
 				document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
 			} catch (err) {}
-			localStorage.setItem('jollyModName', f.name.replace('.zip',''))
-
-			const folder_name = Object.keys(zip.files)[0].split("/")[0]
-			var all_modded_imgs = {}
-			all_asset_paths.forEach(async(item) => {
-				try {
-					var file_path = item.replace('mod','').substring(1).replace('jollymod',folder_name).replace('wardrobe','jollymod/characters/billyjoel');
-					zip.file(file_path).async("blob").then(function(blob) {
-						all_modded_imgs[item.split("/")[item.split("/").length - 1]] = blobToImage(blob)
-					})
-				} catch (err) {}
-			})
-			setTimeout(function() {
-				var preview_img = generateModPreview(all_asset_imgs, all_modded_imgs).toDataURL()
-				localStorage.setItem('jollyModCustomPreview', preview_img);
-				updateModName();
-			}, 100)
+			sendDefaultChar(0);
 		}, function () {
 			alert("Not a valid zip file")
 		});
@@ -198,6 +134,7 @@ function handleFileSelect() {
 }
 
 function sendDefaultChar(id = 0) {
+	localStorage.setItem('jollyModCharacter', id);
 	var message = {type: 'jollySelectCharacter', character: id, mask: wearing_mask}
 	window.parent.postMessage(message, '*')
 }
@@ -243,6 +180,10 @@ function processFiles(files){
 			}
 		}
 		sendDefaultChar();
+	}).then(() => {
+		setTimeout(function() {
+			generateModPreviewFromIDB();
+		}, 50)
 	});
 }
 function finishMod(){
@@ -265,8 +206,7 @@ function storeImage(file, target){
 }
 
 function processCharacterMod(path, file){
-	const charNameArray = ['billyjoel', 'jeroen', 'marique', 'damien', 'thezuck', 'bobzombie', 'xenot', 'ronda', 'jacklee', 'coljackson', 'hank', 'mrskat', 'seanbro', 'crashy', 'brittany', 'machote']
-	let characterIndex = charNameArray.indexOf(path[1]);
+	let characterIndex = allDefaultCharactersTrimmed.indexOf(path[1]);
 	if(characterIndex !== -1 && path[2] !== ""){
 		filesToStore++;
 		storeImage(file, `${folderName}/characters/${characterIndex}/${path[2]}`);
@@ -451,7 +391,6 @@ function wipeCurrentMod() {
 		return;
 	}
 	clearOldMods();
-	localStorage.removeItem('jollyModCustomPreview')
 	localStorage.setItem('jollyModName', "Billy Joel")
 	sendDefaultChar(0)
 	updateModName()
@@ -470,9 +409,9 @@ function importToEditorFromCurrentMod() {
 			return;
 		}
 		loaded_zip = new JSZip();
-		loaded_zip_name = localStorage.getItem('jollyModName')
-		zip_loaded_text_files = {}
-		zip_loaded_images = {}
+		loaded_zip_name = localStorage.getItem('jollyModName');
+		zip_loaded_text_files = {};
+		zip_loaded_images = {};
 		let loaded_files = 0;
 		keys.forEach((key) => {
 			if (key != "tempEditorWorld") {

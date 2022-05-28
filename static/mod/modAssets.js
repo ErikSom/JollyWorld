@@ -42,6 +42,28 @@ const all_asset_imgs = {}
 const all_wardrobe_imgs = {};
 var all_wardrobe_modified_imgs = {};
 
+// Turning all of the image paths into actual images
+let loaded_assets = 0;
+for (var i = 0; i < all_asset_paths.length; i ++) {
+	const img = new Image();
+	const cvs = document.createElement('canvas');
+	const ctx = cvs.getContext('2d');
+	img.src = all_asset_paths[i];
+	img.onload = function() {
+		increaseLoadedImages()
+		var img_name = this.src.split("/")[this.src.split("/").length - 1]
+		all_asset_imgs[img_name] = this;
+		cvs.width = this.width;
+		cvs.height = this.height;
+		ctx.drawImage(this, 0, 0)
+		all_wardrobe_imgs[img_name] = cvs;
+		loaded_assets ++;
+		if (loaded_assets === all_asset_paths.length) {
+			updateModName();
+		}
+	}
+}
+
 const character_positions = [
 	// Bike
 	{asset: 'Normal_Thigh0000.png', x: 135, y: 183, r: -0.71, w: 54, h: 88},

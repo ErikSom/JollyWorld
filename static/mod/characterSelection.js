@@ -38,3 +38,9 @@ function loadCharacters() {
 		$('defaultCharacterSelection').appendChild(button);
 	}
 }
+
+function changeModCharacter(id = 0) {
+	localStorage.setItem('jollyModCharacter', id);
+	sendDefaultChar(id);
+	updateModName();
+}
