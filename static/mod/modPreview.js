@@ -5,16 +5,19 @@ const promiseBlobToImage = function(blob) {
 		image.src = url;
 		image.onload = function() {
 			resolve(this);
-		}
+		};
 	});
 }
 
-function generateModPreviewFromIDB() {
+function generateModPreviewFromIDB(updatecharacterselection = true) {
+	if (updatecharacterselection) {
+		$('currentModCharacters').innerHTML = '';
+	}
 	window.idbKeyval.keys().then((keys) => {
 		let all_modded_imgs = {};
 		let loaded_files = 0;
 		keys.forEach((key) => {
-			if (key != "tempEditorWorld") {
+			if (key.includes('characters') || key.includes('vehicles')) {
 				window.idbKeyval.get(key).then((value) => {
 					var trimmedkey = key.split("/")[key.split("/").length-1];
 					promiseBlobToImage(value).then((img) => {
@@ -25,6 +28,20 @@ function generateModPreviewFromIDB() {
 							const preview_img = cvs.toDataURL()
 							$('currentModThumb').style.backgroundImage = `url(${cvs.toDataURL()}`;
 						}
+					})
+				})
+			} else if (key.includes('portraits/character') && updatecharacterselection) {
+				loaded_files ++;
+				window.idbKeyval.get(key).then((value) => {
+					promiseBlobToImage(value).then((img) => {
+						const character_img = blobToImage(value);
+						const character_id = key.replace(/\D/g, "") - 1;
+						character_img.classList.add('currentModCharacterImg')
+						character_img.setAttribute('characterid', character_id)
+						character_img.onclick = function() {
+							changeModCharacter(this.getAttribute('characterid'))
+						}
+						$('currentModCharacters').appendChild(character_img);
 					})
 				})
 			} else {

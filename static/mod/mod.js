@@ -102,9 +102,9 @@ function updateModName(){
 		$('currentModThumb').style.backgroundImage = `url(mod/thumbs/${modName.replace(' ','%20')}.png)`;
 	} else {
 		generateModPreviewFromIDB();
-		try {
+		if ($(modName)) {
 			$(modName).classList.add('singleModItemSelected')
-		} catch (err) {}
+		}
 	}
 }
 
@@ -183,7 +183,7 @@ function processFiles(files){
 	}).then(() => {
 		setTimeout(function() {
 			generateModPreviewFromIDB();
-		}, 50)
+		}, 100)
 	});
 }
 function finishMod(){

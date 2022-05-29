@@ -21,16 +21,19 @@
  		</svg>
 	</div>
 	<div class="section">
-		<div class="dashboardSection" style="height:440px">
+		<div class="dashboardSection">
 			<h1 id="defaultCharacters">Default Characters:</h1>
 			<div id="defaultCharacterSelection"></div>
 		</div>
-		<div class="dashboardSection" style="height:440px">
+		<div class="dashboardSection">
 			<h1 id="currentMod">Current Mod:</h1>
 			<h1 id="installedMod"></h1>
-			<div class="singleModCanvas" id="currentModThumb"></div>
+			<div class="singleModCanvas" id="currentModThumb">
+				<div id="currentModCharacters">
+				</div>
+			</div>
 		</div>
-		<div class="dashboardSection">
+		<div class="dashboardSection" style="min-height:0px">
 			<button class="button" id="createbutton" style="background-color: #FF6600;">Create a new Mod</button>
 			<button onclick="loadWardrobeContents();$('zipFileInput').click()" class="button" id="importzipbutton" style="background-color: #AA00AA;">Import from .zip</button>
 			<button onclick="toggleTheme()" class="button" id="darkmodebutton" style="background-color:#262626">Dark Theme</button>
