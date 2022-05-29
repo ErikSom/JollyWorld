@@ -31,9 +31,9 @@ function addToPublicMods(mod_id) {
 		const imgid = (ids[i] === "0" ? "" : ids[i]);
 		const offset = -i * (150 / ids.length);
 		const zindex = ids.length - i;
-		const opacity = 1 - i / ids.length;
+		const opacity = i / ids.length;
 		characterimgs += `
-		<div class="publicModThumbSubContainer" style="z-index:${zindex};opacity:${opacity}">
+		<div class="publicModThumbSubContainer" style="z-index:${zindex};filter:grayscale(${opacity}) brightness(${1+opacity/2})">
 			<img 
 			style="transform: translateX(${offset}px);"
 			class="publicModThumb" 

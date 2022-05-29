@@ -47,6 +47,7 @@ html {
 	top: 0;
 	left: 0;
 	text-align: left;
+	z-index: 20;
 }
 .ze * {
 	font-family: "Montserrat";
