@@ -9,7 +9,7 @@ function openModWardrobe() {
 	document.querySelectorAll('.vehiclePreviewButton').forEach((elem) => elem.style.display = 'inline-block')
 	wardrobe_saved_states = []
 
-	current_wardrobe_page = -1;
+	current_wardrobe_page = 0;
 	viewSetVehicle(0)
 	loadWardrobeContents();
 
