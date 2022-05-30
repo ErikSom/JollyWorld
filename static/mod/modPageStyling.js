@@ -12,14 +12,15 @@ function adjustBodySize() {
 	} else if (window.innerWidth < 1500) {
 		globalSize = 1500;
 	}
+	const edge = 15;
 	$('creatorwindow').style.transform = `scale(${windowSize})`;
 	$('loadingwindow').style.transform = `scale(${windowSize})`;
-	$('modwardrobewindow').style.width = (globalSize + 25) + "px";
-	$('modwardrobewindow').style.height = window.innerHeight * (globalSize + 25) + "px"
-	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + (globalSize + 25) / window.innerWidth + ')')
+	$('modwardrobewindow').style.width = (globalSize + edge) + "px";
+	$('modwardrobewindow').style.height = window.innerHeight * (globalSize + edge) + "px"
+	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + (globalSize + edge) / window.innerWidth + ')')
 	if (!zip_editor_open) {
 		document.body.style.width = globalSize + "px";
-		document.body.style.transform = 'scale(' + window.innerWidth / (globalSize + 25) + ')'
+		document.body.style.transform = 'scale(' + window.innerWidth / (globalSize + edge) + ')'
 	} else {
 		document.body.style.width = "";
 		document.body.style.transform = "";
