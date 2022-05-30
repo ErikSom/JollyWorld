@@ -453,7 +453,7 @@ function importToEditorFromCurrentMod() {
 	})
 }
 
-if (mobile_view || true) {
+if (mobile_view) {
 	$('createbutton').onclick = openModWardrobe;
 	$('importzipbutton').style.display = 'none';
 	$('wardrobedownload').style.display = 'none';
