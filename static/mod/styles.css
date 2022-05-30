@@ -129,26 +129,62 @@ a.button {
 	vertical-align: top;
 	padding: 10px;
 }
+#installedMod {
+	cursor: pointer;
+}
+#installedMod input {
+	width: 100%;
+	border: none;
+	outline: none;
+	text-align: left;
+}
 #currentModThumb {
 	width: 400px;
 	height: 350px;
 	display: inline-block;
 	box-shadow: inset 0px -20px #999;
-	animation: cyclethroughcharacters 8s cubic-bezier(.26,-0.01,.01,1.01) infinite 1s;
 	background-repeat: repeat-x;
+	position: relative;
 }
 #currentModCharacters {
-	opacity: 0;
-	transition: opacity 0.2s;
+	opacity: 0.1;
+	transition: all 0.2s;
+	position: absolute;
+	top: 3px;
+	filter: brightness(0.8) grayscale(1);
+	width: 100%;
 }
 #currentModThumb:hover #currentModCharacters {
 	opacity: 1;
+	filter: brightness(1) grayscale(0);
+}
+#currentModThumbCvs {
+	overflow: hidden;
 }
 .currentModCharacterImg {
 	width: 80px;
 	margin: 0px 3px 0px 3px;
 	cursor: pointer;
+	display: inline-block;
 	pointer-events: all;
+}
+.currentModCharacterImg img {
+	width: 80px;
+}
+.currentModCharacterImg h1 {
+	color: black;
+	font-size: 14.5px;
+}
+.previewModCanvas {
+	animation: modpreviewcycle 8s cubic-bezier(.26,-0.01,.01,1.01) infinite 1s;
+}
+@keyframes modpreviewcycle {
+	0%  {transform: translateX(0px);}
+	20% {transform: translateX(-400px);}
+	40% {transform: translateX(-800px);}
+	60% {transform: translateX(-1200px);}
+	80% {transform: translateX(-1600px);}
+	100%{transform: translateX(0px);}
 }
 @keyframes cyclethroughcharacters {
 	0%  {background-position-x: 0px;}

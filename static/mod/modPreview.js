@@ -25,8 +25,10 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 						loaded_files ++;
 						if (loaded_files === keys.length) {
 							const cvs = generateModPreview(all_asset_imgs, all_modded_imgs)
-							const preview_img = cvs.toDataURL()
-							$('currentModThumb').style.backgroundImage = `url(${cvs.toDataURL()}`;
+							$('currentModThumbCvs').innerHTML = "";
+							cvs.classList.remove('singleModCanvas');
+							cvs.classList.add('previewModCanvas');
+							$('currentModThumbCvs').appendChild(cvs);
 						}
 					})
 				})
@@ -34,14 +36,29 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 				loaded_files ++;
 				window.idbKeyval.get(key).then((value) => {
 					promiseBlobToImage(value).then((img) => {
-						const character_img = blobToImage(value);
+						const character_container = document.createElement('div');
+						character_container.classList.add('currentModCharacterImg');
 						const character_id = key.replace(/\D/g, "") - 1;
-						character_img.classList.add('currentModCharacterImg')
-						character_img.setAttribute('characterid', character_id)
-						character_img.onclick = function() {
+						character_container.setAttribute('characterid', character_id)
+						character_container.onclick = function() {
 							changeModCharacter(this.getAttribute('characterid'))
 						}
-						$('currentModCharacters').appendChild(character_img);
+
+						const character_img = blobToImage(value);
+						character_container.appendChild(character_img)
+
+						const character_name = document.createElement('h1');
+
+						try {
+							character_name.innerText = JSON.parse(localStorage.getItem('jollyWorldTheme')).charNames[character_id]
+						}
+						catch (err) {
+							character_name.innerText = allDefaultCharacters[character_id]
+						}
+
+						character_container.appendChild(character_name)
+
+						$('currentModCharacters').appendChild(character_container);
 					})
 				})
 			} else {
@@ -73,7 +90,7 @@ function generateModPreview(defaultImgs, moddedImgs = {}) {
 			ctx.drawImage(asset, 0, 0, part.w, part.h)
 		}
 		catch (err) {
-			console.error(part)
+			console.error(asset)
 		}
 		ctx.restore()
 	})

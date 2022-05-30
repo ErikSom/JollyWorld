@@ -349,13 +349,12 @@ function zipEditorAddLoading(apply = false) {
 	if (generated_zip_remaining_images == 0) {
 		if (apply) {
 			var preview_img = document.querySelector('.ze .main .imageedit .characterpreview').style.backgroundImage.replace("url(","").replace(")","")
-			localStorage.setItem('jollyModName', 'Created in Editor');
 			processFiles(generated_zip.files)
 			zipEditorClose();
 			try {
 				document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
 			} catch (err) {}
-			updateModName();
+			setTimeout(updateModName, 100);
 		} else {
 			generated_zip.generateAsync({type:"blob"})
 			.then((content) => {
@@ -370,6 +369,8 @@ function zipEditorClose() {
 	if (unsaved_changes_warning && !confirm("You have unsaved, proceed anyway?")) {
 		return;
 	}
+	document.body.onkeydown = null;
+	document.body.onkeyup = null;
 	document.querySelector('.ze').remove();
 	zip_editor_open = false;
 	adjustBodySize();

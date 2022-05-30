@@ -4,13 +4,7 @@ const all_public_mods = [
 	{name: "TrudyWalker", author: "Anonymous Frog"},
 	{name: "piconjomod", author: "Anonymous Frog"},
 	{name: "jollyMattShea", author: "JollyBoy"},
-	{name: "RickAndMorty", author: "JollyBoy", characters: {
-	0: "Rick", 
-	1: "Morty", 
-	2: "Jerry", 
-	3: "Beth", 
-	12: "Summer"
-	}},
+	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12]},
 	{name: "JunpeiZaki", author: "JollyBoy"},
 	{name: "Mario", author: "Warze"},
 	{name: "warzemod", author: "Warze"},
@@ -21,17 +15,16 @@ function addToPublicMods(mod_id) {
 	const name = mod_object.name;
 	const author = mod_object.author;
 	const characters = mod_object.characters;
-	let characters_obj = {"0":name}
+	let characters_array = [0]
 	if (mod_object.characters) {
-		characters_obj = mod_object.characters;
+		characters_array = mod_object.characters;
 	}
 	let characterimgs = '';
-	const ids = Object.keys(characters_obj);
-	for (var i = 0; i < ids.length; i ++) {
-		const imgid = (ids[i] === "0" ? "" : ids[i]);
-		const offset = -i * (150 / ids.length);
-		const zindex = ids.length - i;
-		const opacity = i / ids.length;
+	for (var i = 0; i < characters_array.length; i ++) {
+		const imgid = (characters_array[i] === 0 ? "" : characters_array[i]);
+		const offset = -i * (150 / characters_array.length);
+		const zindex = characters_array.length - i;
+		const opacity = i / characters_array.length;
 		characterimgs += `
 		<div class="publicModThumbSubContainer" style="z-index:${zindex};filter:grayscale(${opacity}) brightness(${1+opacity/2})">
 			<img 

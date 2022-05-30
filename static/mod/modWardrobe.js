@@ -27,7 +27,7 @@ function closeModWardrobe() {
 }
 
 function updateWardrobePreview() {
-	$('modwardrobepreviewcanvas').style.backgroundImage = 'url(' + generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL() + ')'
+	$('modwardrobepreviewcanvas').style.backgroundImage = 'url(' + generateModPreview(all_asset_imgs, all_wardrobe_modified_imgs).toDataURL() + ')'
 }
 
 var modWardrobeDoorColor;
@@ -50,9 +50,9 @@ function initWardrobe() {
 
 	all_wardrobe_modified_imgs = {}
 
-	const all_keys = Object.keys(all_wardrobe_imgs)
+	const all_keys = Object.keys(all_asset_imgs)
 	for (var item = 0; item < all_keys.length; item ++) {
-		all_wardrobe_modified_imgs[all_keys[item]] = all_wardrobe_imgs[all_keys[item]]
+		all_wardrobe_modified_imgs[all_keys[item]] = all_asset_imgs[all_keys[item]]
 	}
 
 	setTimeout(updateWardrobePreview, 50)
@@ -98,7 +98,7 @@ function wardrobeSaveState() {
 	wardrobe_saved_states.push(saved_data)
 }
 function wardrobeLoadState() {
-	const all_wardrobe_keys = Object.keys(all_wardrobe_imgs)
+	const all_wardrobe_keys = Object.keys(all_asset_imgs)
 	const loaded_state = wardrobe_saved_states.pop()
 	for (var item = 0; item < all_wardrobe_keys.length; item ++) {
 		var img = new Image();
@@ -277,7 +277,7 @@ function processWardrobe(apply, importEditor = false) {
 			wearing_mask = 1;
 			sendDefaultChar();
 			setTimeout(function() {
-				const preview_img = generateModPreview(all_wardrobe_imgs, all_wardrobe_modified_imgs).toDataURL();
+				const preview_img = generateModPreview(all_asset_imgs, all_wardrobe_modified_imgs).toDataURL();
 				closeModWardrobe();
 				updateModName();
 			}, 100)
