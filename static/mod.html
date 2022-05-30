@@ -7,14 +7,13 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
-	<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 	<script src="mod/zipEditor/zipEditor.js"></script>
 	<link rel="stylesheet" type="text/css" href="mod/styles.css">
 	<link rel="stylesheet" type="text/css" href="mod/zipEditor/zipEditor.css">
 	<meta name="viewport" content="width=600, initial-scale=1">
 </head>
-<body ondrop="handleFileSelect()">
-	<div class="closebutton" onclick="closeModWindow()">
+<body>
+	<div class="closebutton" onclick="closeModWindow();">
 		<svg height="50" width="50">
 			<line x1="10" y1="10" x2="40" y2="40" style="stroke:#FFF; stroke-width:5; stroke-linecap:round" />
 			<line x1="10" y1="40" x2="40" y2="10" style="stroke:#FFF; stroke-width:5; stroke-linecap:round" />
@@ -141,14 +140,16 @@
 				<img src="mod/pageassets/arrow.png" id="pointingarrow">
 			</div>
 		</div>
-		<lottie-player id="confetti" src="https://assets8.lottiefiles.com/packages/lf20_rovf9gzu.json" background="transparent" speed="1"></lottie-player>
 	</div>
 	<input type="file" id="zipFileInput" style="display:none" accept=".zip" onchange="handleFileSelect()">
+	<script type="text/javascript" src="mod/modFunctions.js"></script>
+	<script type="text/javascript" src="mod/modLoadingScreen.js"></script>
 	<script type="text/javascript" src="mod/modPreview.js"></script>
 	<script type="text/javascript" src="mod/modAssets.js"></script>
 	<script type="text/javascript" src="mod/modWardrobe.js"></script>
 	<script type="text/javascript" src="mod/mod.js"></script>
 	<script type="text/javascript" src="mod/characterSelection.js"></script>
 	<script type="text/javascript" src="mod/publicMods.js"></script>
+	<script type="text/javascript" src="mod/modPageStyling.js"></script>
 </body>
 </html>

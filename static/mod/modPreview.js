@@ -1,13 +1,39 @@
-const promiseBlobToImage = function(blob) {
-	return new Promise((resolve, reject) => {
-		const url = URL.createObjectURL(blob);
-		const image = new Image();
-		image.src = url;
-		image.onload = function() {
-			resolve(this);
-		};
-	});
+function updateModName(){
+	try {
+		document.querySelector('.singleModItemSelected').classList.remove('singleModItemSelected')
+	} catch (err) {}
+	let modName = localStorage.getItem('jollyModName');
+	if (modName === null) {
+		modName = 'Billy Joel';
+	}
+	$('installedMod').innerText = modName;
+	if (allDefaultCharacters.includes(modName)) {
+		$('currentModThumbCvs').innerHTML = `<img class="previewModCanvas" src="mod/thumbs/${modName.replace(' ','%20')}.png">`;
+	} else {
+		generateModPreviewFromIDB();
+		const selectedModElement = $(modName);
+		if (selectedModElement) {
+			selectedModElement.classList.add('singleModItemSelected')
+		}
+	}
 }
+
+function setModNameManually() {
+	const input = document.createElement('input');
+	input.type = 'text'
+	input.setAttribute('placeholder', $('installedMod').innerHTML);
+	$('installedMod').innerHTML = '';
+	$('installedMod').appendChild(input);
+	$('installedMod').onclick = null;
+	input.onkeydown = function() {
+		if (event.key === 'Enter') {
+			$('installedMod').innerHTML = input.value;
+			$('installedMod').onclick = setModNameManually;
+		}
+	}
+	input.select()
+}
+$('installedMod').onclick = setModNameManually;
 
 function generateModPreviewFromIDB(updatecharacterselection = true) {
 	let characters_element = $('currentModCharacters')

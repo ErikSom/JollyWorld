@@ -1,5 +1,7 @@
 var current_wardrobe_page;
 var current_wardrobe_vehicle;
+var all_wardrobe_modified_imgs = {};
+
 function openModWardrobe() {
 	lockScrolling()
 	document.querySelectorAll('.wardrobeitemselected').forEach((item) => item.classList.remove('wardrobeitemselected'))
@@ -162,9 +164,6 @@ function nextWardrobePage() {
 			$('modwardrobestepcounter').style.display = 'none';
 			$('modwardrobepreviewcanvas').style.animation = 'cyclethroughcharacters 8s cubic-bezier(.26,-0.01,.01,1.01) infinite'
 			document.querySelectorAll('.vehiclePreviewButton').forEach((elem) => elem.style.display = 'none')
-			if (!mobile_view) {
-				$('confetti').play();
-			}
 			break;
 	}
 }
@@ -278,7 +277,11 @@ function processWardrobe(apply, importEditor = false) {
 		}, 1000)
 	} else {
 		if (apply) {
-			localStorage.setItem('jollyModName', "Created in Wardrobe")
+			if (modWardrobeCharacterName === 'Billy Joel') {
+				localStorage.setItem('jollyModName', 'Created in Wardrobe');
+			} else {
+				localStorage.setItem('jollyModName', modWardrobeCharacterName);
+			}
 			processFiles(zip.files)
 			wearing_mask = 1;
 			sendDefaultChar();

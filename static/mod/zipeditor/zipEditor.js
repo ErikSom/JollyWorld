@@ -165,7 +165,8 @@ function zipEditorInit(importDefault = false) {
 		document.querySelector('.ze .loading').style.display = 'block'
 		zipEditorLoadExternalZip('/mod/zips/jollymodlight.zip')
 	}
-	loadWardrobeContents()
+	loadWardrobeContents();
+	lockScrolling();
 }
 
 async function zipEditorLoadExternalZip(url) {
@@ -375,6 +376,7 @@ function zipEditorClose() {
 	zip_editor_open = false;
 	adjustBodySize();
 	loadCharacters();
+	unlockScrolling();
 }
 
 function zipEditorImportZip() {
@@ -1183,6 +1185,7 @@ function hslToHex(hsl) {
 	return `#${f(0)}${f(8)}${f(4)}`;
 }
 
+// JollyWorld specific
 function updateZipEditorPreview() {
 	const previewimg = document.querySelector('.ze .main .imageedit .characterpreview');
 	const all_zipped_imgs = {};
@@ -1194,4 +1197,43 @@ function updateZipEditorPreview() {
 	
 	const tempcvs = generateModPreview(all_asset_imgs, all_zipped_imgs )
 	previewimg.style.backgroundImage = `url(${tempcvs.toDataURL()})`
+}
+
+function importToEditorFromCurrentMod() {
+	if (mobile_view) {
+		alert("You can't edit your mod on mobile.");
+		return;
+	}
+	window.idbKeyval.keys().then((keys) => {
+		zipEditorInit();
+		if (keys.length <= 1) {
+			document.querySelector('.ze .loading').style.display = 'block'
+			zipEditorLoadExternalZip('/mod/zips/jollymodlight.zip');
+			return;
+		}
+		loaded_zip = new JSZip();
+		loaded_zip_name = localStorage.getItem('jollyModName');
+		zip_loaded_text_files = {};
+		zip_loaded_images = {};
+		let loaded_files = 0;
+		keys.forEach((key) => {
+			if (key != "tempEditorWorld") {
+				window.idbKeyval.get(key).then((value) => {
+					var trimmedkey = key;
+					for (var k = 0; k < 16; k ++) {
+						trimmedkey = trimmedkey.replace("/" + k + "/", "/" + allDefaultCharactersTrimmed[k] + "/")
+					}
+					loaded_zip.file(trimmedkey, value)
+					loaded_files ++;
+					if (loaded_files == keys.length) {
+						const preview = document.querySelector('.ze .main .imageedit .characterpreview')
+						preview.style.backgroundImage = $('currentModThumb').style.backgroundImage;
+						zipEditorImportFile(loaded_zip);
+					}
+				})
+			} else {
+				loaded_files ++;
+			}
+		})
+	})
 }
