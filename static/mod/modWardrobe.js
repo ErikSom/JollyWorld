@@ -69,7 +69,6 @@ function loadWardrobeContents() {
 			img.src = gore_path + gore_item_paths[i];
 			img.num = i;
 			img.onload = function() {
-				increaseLoadedImages()
 				const cvs = document.createElement('canvas');
 				const ctx = cvs.getContext('2d');
 				cvs.width = this.width;

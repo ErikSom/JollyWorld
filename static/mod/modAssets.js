@@ -42,24 +42,105 @@ const all_asset_imgs = {}
 var all_wardrobe_modified_imgs = {};
 
 // Turning all of the image paths into actual images
-let loaded_assets = 0;
-for (var i = 0; i < all_asset_paths.length; i ++) {
-	const img = new Image();
-	img.src = all_asset_paths[i];
-	img.onload = function() {
-		increaseLoadedImages()
-		var img_name = this.src.split("/")[this.src.split("/").length - 1]
-		const cvs = document.createElement('canvas');
-		const ctx = cvs.getContext('2d');
-		cvs.width = this.width;
-		cvs.height = this.height;
-		ctx.drawImage(this, 0, 0)
-		all_asset_imgs[img_name] = cvs;
-		loaded_assets ++;
-		if (loaded_assets === all_asset_paths.length) {
+//let loaded_assets = 0;
+//for (var i = 0; i < all_asset_paths.length; i ++) {
+//	const img = new Image();
+//	img.src = all_asset_paths[i];
+//	img.onload = function() {
+//		increaseLoadedImages()
+//		var img_name = this.src.split("/")[this.src.split("/").length - 1]
+//		const cvs = document.createElement('canvas');
+//		const ctx = cvs.getContext('2d');
+//		cvs.width = this.width;
+//		cvs.height = this.height;
+//		ctx.drawImage(this, 0, 0)
+//		all_asset_imgs[img_name] = cvs;
+//		loaded_assets ++;
+//		if (loaded_assets === all_asset_paths.length) {
+//			updateModName();
+//		}
+//	}
+//}
+
+const bundle = new Image();
+bundle.src = 'mod/wardrobe/bundle.png';
+bundle.onload = function() {
+	fetch('mod/wardrobe/bundle.json').then((response) => {
+		response.json().then((object) => {
+			object.forEach((item) => {
+				const cvs = document.createElement('canvas');
+				const ctx = cvs.getContext('2d');
+				cvs.width = item.w;
+				cvs.height = item.h;
+				ctx.drawImage(bundle, item.x, item.y, item.w, item.h, 0, 0, item.w, item.h)
+				all_asset_imgs[item.name] = cvs;
+			});
 			updateModName();
-		}
-	}
+			$('modwardrobesteps').innerHTML = ""
+			for (var section = 0; section < total_wardrobe_steps; section ++) {
+				var new_section = document.createElement('div')
+				new_section.classList.add('modwardrobesection')
+				new_section.id = 'modwardrobesection' + section;
+				new_section.style.display = 'none'
+				for (var item = 0; item < wardrobe_features[section].length; item ++) {
+					var new_container = document.createElement('div');
+					new_container.classList.add('wardrobeitem');
+					var new_button = document.createElement('img');
+					new_button.classList.add('wardrobeitemimg')
+					new_button.src = all_asset_imgs[wardrobe_features[section][item].thumb].toDataURL();
+					new_container.section = section;
+					new_container.item = item;
+					new_container.onclick = function() {
+						wardrobeSaveState()
+						var items_to_be_overwritten = wardrobe_features[this.section][this.item].overwrite
+						var done_overwriting = 0;
+						for (var overwritten_item = 0; overwritten_item < items_to_be_overwritten.length; overwritten_item ++) {
+							const old_item = items_to_be_overwritten[overwritten_item][0]
+							const new_item = all_asset_imgs[items_to_be_overwritten[overwritten_item][1]].toDataURL();
+							const preserve_old_item = items_to_be_overwritten[overwritten_item][2]
+							const old_img = all_wardrobe_modified_imgs[old_item]
+							const new_img = new Image()
+							const cvs = document.createElement('canvas')
+							cvs.width = old_img.width;
+							cvs.height = old_img.height;
+							const ctx = cvs.getContext('2d')
+							if (preserve_old_item) {
+								ctx.drawImage(old_img, 0, 0)
+							}
+							new_img.dest = old_item
+							new_img.src = new_item
+							new_img.onload = function() {
+								done_overwriting ++;
+								ctx.drawImage(this, 0, 0)
+								all_wardrobe_modified_imgs[this.dest] = cvs;
+								if (done_overwriting >= items_to_be_overwritten.length) {
+									updateWardrobePreview();
+									nextWardrobePage()
+								}
+							}
+						}
+						if (items_to_be_overwritten.length == 0) {
+							updateWardrobePreview();
+							nextWardrobePage()
+						}
+					}
+					new_container.appendChild(new_button)
+					new_section.appendChild(new_container)
+				}
+				const random_button = document.createElement('button');
+				random_button.classList.add('button')
+				random_button.innerText = "Select random";
+				random_button.style.backgroundColor = "#FF6600"
+				random_button.onclick = function() {
+					const all_options = document.querySelectorAll(`#${this.parentElement.id} .wardrobeitem`)
+					all_options[Math.floor(Math.random() * all_options.length)].click();
+				}
+				new_section.appendChild(random_button)
+				$('modwardrobesteps').appendChild(new_section)
+			}
+			initWardrobe();
+		});
+	});
 }
 
 const character_positions = [
