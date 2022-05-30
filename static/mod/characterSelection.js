@@ -13,30 +13,26 @@ function loadCharacters() {
 		button.classList.add('singleDefaultCharacter');
 		button.num = i;
 		button.onclick = function() {
-			let characters_element = $('currentModCharacters')
-			if (!characters_element) {
-				characters_element = $('currentModCharactersMobile')
-			}
-			characters_element.innerHTML = '';
+			wipeCharactersElement();
 			clearOldMods();
-			localStorage.removeItem('jollyModCustomPreview')
-			localStorage.setItem('jollyModName', allDefaultCharacters[this.num])
-			sendDefaultChar(customOrder[this.num])
-			updateModName()
+			localStorage.removeItem('jollyModCustomPreview');
+			localStorage.setItem('jollyModName', allDefaultCharacters[this.num]);
+			sendDefaultChar(customOrder[this.num]);
+			updateModName();
 		}
 		
 		var thumb = document.createElement('canvas');
 		thumb.width = 100;
 		thumb.height = 100;
 		var ctx = thumb.getContext('2d');
-		var x = i % 4 * ps
-		var y = Math.floor(i / 4) * ps
-		ctx.drawImage(portraits, x, y, ps, ps, 5, 5, ps, ps)
-		thumb.classList.add('singleDefaultCharacterThumb')
+		var x = i % 4 * ps;
+		var y = Math.floor(i / 4) * ps;
+		ctx.drawImage(portraits, x, y, ps, ps, 5, 5, ps, ps);
+		thumb.classList.add('singleDefaultCharacterThumb');
 
 		var characterName = document.createElement('h1');
 		characterName.innerText = allDefaultCharacters[i];
-		characterName.classList.add('singleDefaultCharacterName')
+		characterName.classList.add('singleDefaultCharacterName');
 
 		button.appendChild(thumb);
 		button.appendChild(characterName);

@@ -405,13 +405,22 @@ function increaseLoadedImages() {
 }
 
 function wipeCurrentMod() {
+	lwipeCharactersElement();
 	if (!confirm("Are you sure you want to delete your current mod?")) {
 		return;
 	}
 	clearOldMods();
 	localStorage.setItem('jollyModName', "Billy Joel")
-	sendDefaultChar(0)
-	updateModName()
+	sendDefaultChar(0);
+	updateModName();
+}
+
+function wipeCharactersElement() {
+	let characters_element = $('currentModCharacters')
+	if (!characters_element) {
+		characters_element = $('currentModCharactersMobile')
+	}
+	characters_element.innerHTML = '';
 }
 
 function importToEditorFromCurrentMod() {
