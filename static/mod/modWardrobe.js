@@ -51,10 +51,16 @@ function initWardrobe() {
 
 	all_wardrobe_modified_imgs = {}
 
+	const valid_files = [];
+	all_asset_paths.forEach((key) => {
+		valid_files.push(key.split("/")[key.split("/").length - 1])
+	})
 	const all_keys = Object.keys(all_asset_imgs)
-	for (var item = 0; item < all_keys.length; item ++) {
-		all_wardrobe_modified_imgs[all_keys[item]] = all_asset_imgs[all_keys[item]]
-	}
+	all_keys.forEach((key) => {
+		if (valid_files.includes(key)) {
+			all_wardrobe_modified_imgs[key] = all_asset_imgs[key];
+		}
+	})
 
 	setTimeout(updateWardrobePreview, 50)
 }
