@@ -13,6 +13,11 @@ function loadCharacters() {
 		button.classList.add('singleDefaultCharacter');
 		button.num = i;
 		button.onclick = function() {
+			let characters_element = $('currentModCharacters')
+			if (!characters_element) {
+				characters_element = $('currentModCharactersMobile')
+			}
+			characters_element.innerHTML = '';
 			clearOldMods();
 			localStorage.removeItem('jollyModCustomPreview')
 			localStorage.setItem('jollyModName', allDefaultCharacters[this.num])

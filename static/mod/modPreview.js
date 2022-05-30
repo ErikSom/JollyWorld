@@ -10,8 +10,12 @@ const promiseBlobToImage = function(blob) {
 }
 
 function generateModPreviewFromIDB(updatecharacterselection = true) {
+	let characters_element = $('currentModCharacters')
+	if (!characters_element) {
+		characters_element = $('currentModCharactersMobile')
+	}
 	if (updatecharacterselection) {
-		$('currentModCharacters').innerHTML = '';
+		characters_element.innerHTML = '';
 	}
 	window.idbKeyval.keys().then((keys) => {
 		let all_modded_imgs = {};
@@ -58,7 +62,7 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 
 						character_container.appendChild(character_name)
 
-						$('currentModCharacters').appendChild(character_container);
+						characters_element.appendChild(character_container);
 					})
 				})
 			} else {

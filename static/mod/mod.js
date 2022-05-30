@@ -453,11 +453,12 @@ function importToEditorFromCurrentMod() {
 	})
 }
 
-if (mobile_view) {
+if (mobile_view || true) {
 	$('createbutton').onclick = openModWardrobe;
 	$('importzipbutton').style.display = 'none';
 	$('wardrobedownload').style.display = 'none';
 	$('wardrobeimporteditor').style.display = 'none';
+	$('currentModCharacters').id = 'currentModCharactersMobile'
 } else {
 	$('createbutton').onclick = openModEditor;
 	$('importzipbutton').style.display = 'block';

@@ -146,7 +146,7 @@ a.button {
 	background-repeat: repeat-x;
 	position: relative;
 }
-#currentModCharacters {
+#currentModCharacters, #currentModCharactersMobile {
 	opacity: 0.1;
 	transition: all 0.2s;
 	position: absolute;
@@ -154,7 +154,7 @@ a.button {
 	filter: brightness(0.8) grayscale(1);
 	width: 100%;
 }
-#currentModThumb:hover #currentModCharacters {
+#currentModThumb:hover #currentModCharacters, #currentModCharactersMobile {
 	opacity: 1;
 	filter: brightness(1) grayscale(0);
 }
@@ -162,11 +162,13 @@ a.button {
 	overflow: hidden;
 }
 .currentModCharacterImg {
-	width: 80px;
-	margin: 0px 3px 0px 3px;
+	width: 100px;
 	cursor: pointer;
 	display: inline-block;
 	pointer-events: all;
+}
+.currentModCharacterImg:hover {
+	filter: brightness(1.2);
 }
 .currentModCharacterImg img {
 	width: 80px;
