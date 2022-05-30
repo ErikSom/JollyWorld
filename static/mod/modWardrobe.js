@@ -34,6 +34,7 @@ var modWardrobeDoorColor;
 var modWardrobePreloaderColor;
 var modWardrobeCharacterName;
 function initWardrobe() {
+	sendDefaultChar()
 	$('modwardrobetotalsteps').innerText = total_wardrobe_steps
 
 	current_wardrobe_page = -1;
