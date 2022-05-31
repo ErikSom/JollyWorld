@@ -44,10 +44,6 @@ function addToPublicMods(mod_id) {
 	</div>`
 }
 
-for (var mod = 0; mod < all_public_mods.length; mod ++) {
-	addToPublicMods(mod);
-}
-
 function downloadPublicMod(mod_id) {
 	const mod_object = all_public_mods[mod_id];
 	const name = mod_object.name;

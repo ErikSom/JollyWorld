@@ -38,6 +38,10 @@ function loadCharacters() {
 		button.appendChild(characterName);
 
 		$('defaultCharacterSelection').appendChild(button);
+
+		for (var mod = 0; mod < all_public_mods.length; mod ++) {
+			addToPublicMods(mod);
+		}
 	}
 }
 
