@@ -55,6 +55,18 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 						loaded_files ++;
 						if (loaded_files === keys.length) {
 							const cvs = generateModPreview(all_asset_imgs, all_modded_imgs)
+
+							//temp
+							const portraitcvs = document.createElement('canvas');
+							portraitcvs.width = 332;
+							portraitcvs.height= 361;
+							const portraitctx = portraitcvs.getContext('2d');
+							portraitctx.drawImage(cvs, 49, 0, 303, 330, 0, 0, 332, 361)
+							portraitcvs.toBlob(function(blob) {
+								set('jollyModMenuPortrait', blob)
+							});
+							//temp ends
+
 							$('currentModThumbCvs').innerHTML = "";
 							cvs.classList.remove('singleModCanvas');
 							cvs.classList.add('previewModCanvas');
