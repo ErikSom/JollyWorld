@@ -38,9 +38,8 @@ function loadCharacters() {
 		button.appendChild(characterName);
 
 		$('defaultCharacterSelection').appendChild(button);
-
-		addAllPublicMods();
 	}
+	addAllPublicMods();
 }
 
 function changeModCharacter(id = 0) {
