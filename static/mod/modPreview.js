@@ -61,7 +61,7 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 							portraitcvs.width = 332;
 							portraitcvs.height= 361;
 							const portraitctx = portraitcvs.getContext('2d');
-							portraitctx.drawImage(cvs, 49, 0, 303, 330, 0, 0, 332, 361)
+							portraitctx.drawImage(cvs, 92, 0, 216, 235, 0, 0, 332, 361)
 							portraitcvs.toBlob(function(blob) {
 								set('jollyModMenuPortrait', blob)
 							});
