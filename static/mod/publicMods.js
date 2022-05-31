@@ -9,6 +9,7 @@ const all_public_mods = [
 	{name: "Mario", author: "Warze"},
 	{name: "warzemod", author: "Warze"},
 ];
+let all_public_mods_added = false;
 
 function addToPublicMods(mod_id) {
 	const mod_object = all_public_mods[mod_id];
@@ -42,6 +43,13 @@ function addToPublicMods(mod_id) {
 		<p class="singleModTitle">${name}</p>
 		<p class="singleModAuthor">${author}</p>
 	</div>`
+}
+
+function addAllPublicMods() {
+	if (all_public_mods_added) return;
+	for (var mod = 0; mod < all_public_mods.length; mod ++) {
+		addToPublicMods(mod);
+	}
 }
 
 function downloadPublicMod(mod_id) {

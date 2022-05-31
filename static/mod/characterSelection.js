@@ -39,9 +39,7 @@ function loadCharacters() {
 
 		$('defaultCharacterSelection').appendChild(button);
 
-		for (var mod = 0; mod < all_public_mods.length; mod ++) {
-			addToPublicMods(mod);
-		}
+		addAllPublicMods();
 	}
 }
 
