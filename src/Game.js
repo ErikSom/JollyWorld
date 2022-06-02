@@ -1171,8 +1171,8 @@ function Game() {
         if (game.currentLevelData.json != game.editor.stringifyWorldJSON()) return true;
         return false;
     }
-    this.gameCheckpoint = function (object) {
-        if(!this.checkPointData || ( Math.abs(this.checkPointData.x - object.GetPosition().x) > 1 || Math.abs(this.checkPointData.y - object.GetPosition().y) > 1)){
+    this.gameCheckpoint = function (object, id) {
+        if(!this.checkPointData || id !== this.checkPointData.id){
             const confettiPosition = vec1;
             confettiPosition.Set(object.GetPosition().x, object.GetPosition().y);
             const confettiOffset = 3.0;
@@ -1193,6 +1193,7 @@ function Game() {
                 time: performance.now() - this.levelStartTime,
                 frame: this.gameFrame,
                 persistentTriggers: [...new Set(this.editor.persistentTriggers)],
+                id,
                 // save checkpoint time
             }
 
