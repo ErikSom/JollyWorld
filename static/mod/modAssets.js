@@ -738,6 +738,66 @@ const wardrobe_features = [
 			overwrite: [
 				["Normal_Head_Idle0000.png", "Normal_Head_Idle0022.png", 1]
 			]
+		},
+		{
+			thumb: "Normal_Head_Idle0023.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0023.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0024.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0024.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0025.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0025.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0026.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0026.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0027.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0027.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0028.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0028.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0029.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0029.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0030.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0030.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0031.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0031.png", 1]
+			]
+		},
+		{
+			thumb: "Normal_Head_Idle0032.png",
+			overwrite: [
+				["Normal_Head_Idle0000.png", "Normal_Head_Idle0032.png", 1]
+			]
 		}
 	],
 	// Pants
@@ -993,21 +1053,147 @@ const wardrobe_features = [
 			]
 		},
 		{
-			thumb: "masks0005.png",
+			thumb: "masks0004.png",
 			overwrite: [
-				["masks0000.png", "masks0005.png"],
+				["masks0000.png", "masks0004.png"],
 			]
 		},
 		{
-			thumb: "masks0004.png",
+			thumb: "masks0005.png",
 			overwrite: [
-				["masks0000.png", "masks0004.png"]
+				["masks0000.png", "masks0005.png"]
 			]
 		},
 		{
 			thumb: "masks0006.png",
 			overwrite: [
 				["masks0000.png", "masks0006.png"]
+			]
+		},
+		{
+			thumb: "masks0007.png",
+			overwrite: [
+				["masks0000.png", "masks0007.png"]
+			]
+		},
+		{
+			thumb: "masks0008.png",
+			overwrite: [
+				["masks0000.png", "masks0008.png"]
+			]
+		},
+		{
+			thumb: "masks0009.png",
+			overwrite: [
+				["masks0000.png", "masks0009.png"]
+			]
+		},
+		{
+			thumb: "masks0010.png",
+			overwrite: [
+				["masks0000.png", "masks0010.png"]
+			]
+		},
+		{
+			thumb: "masks0011.png",
+			overwrite: [
+				["masks0000.png", "masks0011.png"]
+			]
+		},
+		{
+			thumb: "masks0012.png",
+			overwrite: [
+				["masks0000.png", "masks0012.png"]
+			]
+		},
+		{
+			thumb: "masks0013.png",
+			overwrite: [
+				["masks0000.png", "masks0013.png"]
+			]
+		},
+		{
+			thumb: "masks0014.png",
+			overwrite: [
+				["masks0000.png", "masks0014.png"]
+			]
+		},
+		{
+			thumb: "masks0015.png",
+			overwrite: [
+				["masks0000.png", "masks0015.png"]
+			]
+		},
+		{
+			thumb: "masks0016.png",
+			overwrite: [
+				["masks0000.png", "masks0016.png"]
+			]
+		},
+		{
+			thumb: "masks0017.png",
+			overwrite: [
+				["masks0000.png", "masks0017.png"]
+			]
+		},
+		{
+			thumb: "masks0018.png",
+			overwrite: [
+				["masks0000.png", "masks0018.png"]
+			]
+		},
+		{
+			thumb: "masks0019.png",
+			overwrite: [
+				["masks0000.png", "masks0019.png"]
+			]
+		},
+		{
+			thumb: "masks0020.png",
+			overwrite: [
+				["masks0000.png", "masks0020.png"]
+			]
+		},
+		{
+			thumb: "masks0021.png",
+			overwrite: [
+				["masks0000.png", "masks0021.png"]
+			]
+		},
+		{
+			thumb: "masks0022.png",
+			overwrite: [
+				["masks0000.png", "masks0022.png"]
+			]
+		},
+		{
+			thumb: "masks0023.png",
+			overwrite: [
+				["masks0000.png", "masks0023.png"]
+			]
+		},
+		{
+			thumb: "masks0024.png",
+			overwrite: [
+				["masks0000.png", "masks0024.png"]
+			]
+		},
+		{
+			thumb: "masks0025.png",
+			overwrite: [
+				["masks0000.png", "masks0025.png"]
+			]
+		},
+		{
+			thumb: "masks0026.png",
+			overwrite: [
+				["masks0000.png", "masks0026.png"]
+			]
+		},
+		{
+			thumb: "masks0027.png",
+			overwrite: [
+				["masks0000.png", "masks0027.png"]
 			]
 		}
 	],
