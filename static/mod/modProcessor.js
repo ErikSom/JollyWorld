@@ -172,6 +172,7 @@ function processBasicMod(path, file){
 }
 
 function clearOldMods(){
+	del('jollyModMenuPortrait');
 	removeTheme();
 	var message = {type: 'jollyCleanMod'}
 	window.parent.postMessage(message, '*')

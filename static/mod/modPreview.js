@@ -56,7 +56,6 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 						if (loaded_files === keys.length) {
 							const cvs = generateModPreview(all_asset_imgs, all_modded_imgs)
 
-							//temp
 							const portraitcvs = document.createElement('canvas');
 							portraitcvs.width = 332;
 							portraitcvs.height= 361;
@@ -65,7 +64,6 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 							portraitcvs.toBlob(function(blob) {
 								set('jollyModMenuPortrait', blob)
 							});
-							//temp ends
 
 							$('currentModThumbCvs').innerHTML = "";
 							cvs.classList.remove('singleModCanvas');
