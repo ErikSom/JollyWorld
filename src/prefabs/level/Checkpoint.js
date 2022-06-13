@@ -26,6 +26,8 @@ class Checkpoint extends PrefabManager.basePrefab {
 
 		this.hitCheck = this.base.CreateFixture(fixDef);
 
+        this.id = '';
+
         Box2D.destroy(shape);
         Box2D.destroy(fixDef);
 
@@ -38,6 +40,8 @@ class Checkpoint extends PrefabManager.basePrefab {
         }else{
             this.base.SetType(Box2D.b2_dynamicBody);
         }
+
+        this.id = `${this.base.GetPosition().x}-${this.base.GetPosition().y}`;
     }
     update() {
         super.update();
@@ -54,7 +58,7 @@ class Checkpoint extends PrefabManager.basePrefab {
                 const prefabClass = game.editor.retrieveClassFromBody(otherBody);
                 if(prefabClass && prefabClass.character) prefabClass.character.setExpression(Humanoid.EXPRESSION_SPECIAL);
 
-                game.gameCheckpoint(self.base);
+                game.gameCheckpoint(self.base, self.id);
             }
         }
     }

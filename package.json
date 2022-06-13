@@ -1,6 +1,6 @@
 {
   "name": "jollywheels",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "This game is not for kids, its physics / gore and fun!",
   "main": "./build/index.html",
   "repository": "https://smerik@bitbucket.org/smerik/jollywheels.git",
