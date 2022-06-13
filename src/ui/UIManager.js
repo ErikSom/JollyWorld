@@ -44,7 +44,7 @@ import SimpleBar from 'simplebar'
 import {countries, localize} from '../utils/Localization'
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
-import { cleanMods, getModdedPortrait, init as initModManager } from '../utils/ModManager'
+import { cleanMods, getCustomModdedPortrait, getModdedPortrait, init as initModManager } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
 import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
@@ -1914,8 +1914,7 @@ function UIManager() {
 
         console.log(characterSelect, grid);
 
-        getModdedPortrait(`characterselect${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
-            console.log("URL:", url);
+        getCustomModdedPortrait(`characterselect${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
             if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;
         })
     }

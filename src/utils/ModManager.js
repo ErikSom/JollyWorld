@@ -8,27 +8,39 @@ import { hashName } from "../AssetList";
 
 const folderName = 'jollymod';
 
-export const portraitModLookup = {};
-
 const moddedTextures = [];
 
 export const getModdedPortrait = async (name, fallback) => {
 	const saveKey = `${folderName}/portraits/${name}`;
-
-	if(portraitModLookup[name]) return portraitModLookup[name];
 
 	try{
 		const blob = await idb.get(saveKey);
 
 		if(blob){
 			const url = URL.createObjectURL(blob);
-			portraitModLookup[name] = url;
 			return url;
 		}
 	}catch(err){
 	};
 
 	return `${fallback}${hashName(name)}`;
+}
+
+export const getCustomModdedPortrait = async (name, fallback) => {
+	const saveKey = `jollyModMenuPortrait`;
+
+	try{
+		const blob = await idb.get(saveKey);
+		if(blob){
+			const url = URL.createObjectURL(blob);
+			return url;
+		}
+	}catch(err){
+	};
+
+	const altPortrait = await getModdedPortrait(name, fallback);
+
+	return altPortrait;
 }
 
 export const init = ()=> new Promise(resolve => {
