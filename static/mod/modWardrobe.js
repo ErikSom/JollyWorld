@@ -109,13 +109,15 @@ function wardrobeLoadState() {
 	const all_wardrobe_keys = Object.keys(all_asset_imgs)
 	const loaded_state = wardrobe_saved_states.pop()
 	for (var item = 0; item < all_wardrobe_keys.length; item ++) {
-		var img = new Image();
-		if (loaded_state[all_wardrobe_keys[item]] instanceof HTMLImageElement) {
-			img = loaded_state[all_wardrobe_keys[item]];
-		} else {
-			img.src = loaded_state[all_wardrobe_keys[item]].toDataURL();
-		}
-		all_wardrobe_modified_imgs[all_wardrobe_keys[item]] = img;
+		try {
+			var img = new Image();
+			if (loaded_state[all_wardrobe_keys[item]] instanceof HTMLImageElement) {
+				img = loaded_state[all_wardrobe_keys[item]];
+			} else {
+				img.src = loaded_state[all_wardrobe_keys[item]].toDataURL();
+			}
+			all_wardrobe_modified_imgs[all_wardrobe_keys[item]] = img;
+		} catch (err) {};
 	}
 	setTimeout(function() {
 		updateWardrobePreview()
