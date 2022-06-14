@@ -3,6 +3,7 @@ var current_wardrobe_vehicle;
 var all_wardrobe_modified_imgs = {};
 
 function openModWardrobe() {
+	changeModCharacter();
 	lockScrolling()
 	document.querySelectorAll('.wardrobeitemselected').forEach((item) => item.classList.remove('wardrobeitemselected'))
 	$('modwardrobefinal').style.display = 'none'
