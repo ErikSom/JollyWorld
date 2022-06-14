@@ -152,6 +152,7 @@ function zipEditorInit(importDefault = false) {
 		<input id="zipinput" type="file" style="display:none" accept=".zip" onchange="zipEditorImportZip()">
 	</div>
 	`
+	changeModCharacter();
 	document.body.appendChild(ze);
 	document.body.onkeydown = keyDown;
 	document.body.onkeyup = keyUp;
@@ -349,6 +350,7 @@ function zipEditorAddLoading(apply = false) {
 	generated_zip_remaining_images --;
 	if (generated_zip_remaining_images == 0) {
 		if (apply) {
+			changeModCharacter();
 			var preview_img = document.querySelector('.ze .main .imageedit .characterpreview').style.backgroundImage.replace("url(","").replace(")","")
 			processFiles(generated_zip.files)
 			zipEditorClose();
