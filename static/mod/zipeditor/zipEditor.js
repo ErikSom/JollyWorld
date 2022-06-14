@@ -351,6 +351,7 @@ function zipEditorAddLoading(apply = false) {
 	generated_zip_remaining_images --;
 	if (generated_zip_remaining_images == 0) {
 		if (apply) {
+			showLoadingScreen()
 			wipeCharactersElement();
 			changeModCharacter();
 			var preview_img = document.querySelector('.ze .main .imageedit .characterpreview').style.backgroundImage.replace("url(","").replace(")","")
