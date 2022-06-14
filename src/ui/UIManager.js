@@ -1869,11 +1869,15 @@ function UIManager() {
             customGUIContainer.appendChild(characterSelect);
 
             window.addEventListener('message', message => {
+                let data;
                 try{
-                    const data = typeof message.data === 'string' ? JSON.parse(message.data) : message.data;
+                    data = typeof message.data === 'string' ? JSON.parse(message.data) : message.data;
+                } catch(e){
+                    return;
+                }
 
+                try{
                     const {type, character, mask} = data;
-
                     if(type === 'jollySelectCharacter'){
                         game.selectedCharacter = parseInt(character);
                         game.selectedMask = parseInt(mask);
