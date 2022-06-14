@@ -152,6 +152,7 @@ function zipEditorInit(importDefault = false) {
 		<input id="zipinput" type="file" style="display:none" accept=".zip" onchange="zipEditorImportZip()">
 	</div>
 	`
+	clearOldMods();
 	changeModCharacter();
 	document.body.appendChild(ze);
 	document.body.onkeydown = keyDown;
