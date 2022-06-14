@@ -1,5 +1,5 @@
 const all_public_mods = [
-	{name: "Cirilla", author: "Ocularist"},
+	{name: "Cirilla", author: "Taurus"},
 	{name: "Darkmode", author: "TriggerTitan"},
 	{name: "TrudyWalker", author: "Anonymous Frog"},
 	{name: "piconjomod", author: "Anonymous Frog"},
