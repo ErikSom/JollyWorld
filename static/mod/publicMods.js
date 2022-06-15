@@ -55,6 +55,7 @@ function addAllPublicMods() {
 function downloadPublicMod(mod_id) {
 	const mod_object = all_public_mods[mod_id];
 	const name = mod_object.name;
+	fetch('https://warze.org/jwmod/count?mod=' + name)
 	let characters = `{"0":"${name}"}`
 	if (mod_object.characters) {
 		characters = JSON.stringify(mod_object.characters)
