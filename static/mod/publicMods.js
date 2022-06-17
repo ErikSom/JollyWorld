@@ -7,6 +7,7 @@ const all_public_mods = [
 	{name: "jollyMattShea", author: "JollyBoy"},
 	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12]},
 	{name: "JunpeiZaki", author: "JollyBoy"},
+	{name: "hellboy69", author: "lara"},
 	{name: "Mario", author: "Warze"},
 	{name: "warzemod", author: "Warze"},
 ];
