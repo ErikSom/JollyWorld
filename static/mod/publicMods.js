@@ -3,6 +3,7 @@ const all_public_mods = [
 	{name: "Darkmode", author: "TriggerTitan"},
 	{name: "TrudyWalker", author: "Anonymous Frog"},
 	{name: "piconjomod", author: "Anonymous Frog"},
+	{name: "Lolita", author: "PetiteCass"},
 	{name: "jollyMattShea", author: "JollyBoy"},
 	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12]},
 	{name: "JunpeiZaki", author: "JollyBoy"},
