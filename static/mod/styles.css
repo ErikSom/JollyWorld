@@ -225,6 +225,7 @@ a.button {
 .publicModThumbContainer {
 	overflow: hidden;
 	width: 240px;
+	position: relative;
 }
 .publicModThumbSubContainer {
 	position: absolute;
@@ -238,6 +239,18 @@ a.button {
 	image-rendering: initial;
 	margin-top: 5px;
 	width: 210px;
+}
+.publicModDownloadCount {
+	z-index: 20;
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	border-radius: 5px;
+	padding: 5px;
+	background-color: #FFFB;
+}
+.publicModDownloadCountText {
+	color: black;
 }
 .singleModItem {
 	display: inline-block;
