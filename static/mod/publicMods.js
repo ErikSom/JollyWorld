@@ -41,6 +41,14 @@ function addToPublicMods(mod_id) {
 	<div class="singleModItem" id="${name}" onclick="downloadPublicMod(${mod_id});">
 		<div class="publicModThumbContainer singleModCanvas">
 			${characterimgs}
+			<p class="publicModDownloadCount">
+				<span class="publicModDownloadCountText" id="downloadCount${name}">
+					?
+				</span>
+				<svg width="12" height="12">
+					<path d="M3,0 9,0 9,6 12,6 6,12 0,6 3,6 3,0" fill="black">
+				</svg>
+			</p>
 		</div>
 		<p class="singleModTitle">${name}</p>
 		<p class="singleModAuthor">${author}</p>
@@ -51,7 +59,16 @@ function addAllPublicMods() {
 	if (all_public_mods_added) return;
 	for (var mod = 0; mod < all_public_mods.length; mod ++) {
 		addToPublicMods(mod);
-	}
+	};
+	fetch('https://warze.org/jwmod/getall').then((response) => {
+        response.text().then((text) => {
+            const obj = JSON.parse(text.replaceAll("'",'"'));
+			
+			for (const [key, value] of Object.entries(obj)) {
+				$('downloadCount' + key).innerText = value;
+			};
+        });
+    });
 }
 
 function downloadPublicMod(mod_id) {
