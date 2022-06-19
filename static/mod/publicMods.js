@@ -1,8 +1,8 @@
 const all_public_mods = [
 	{name: "Cirilla", author: "Taurus"},
 	{name: "Darkmode", author: "TriggerTitan"},
-	{name: "TrudyWalker", author: "Anonymous Frog"},
-	{name: "piconjomod", author: "Anonymous Frog"},
+	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
+	{name: "Piconjo", author: "Anonymous Frog", about: "g0d of teh pr0tal on newgr0unds and in teh j0llyw0ld: <a href='https://piconjo.newgrounds.com/'>piconjo.newgrounds.com</a>"},
 	{name: "Lolita", author: "PetiteCass"},
 	{name: "jollyMattShea", author: "JollyBoy"},
 	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12]},
@@ -40,7 +40,10 @@ function addToPublicMods(mod_id) {
 		</div>
 		`
 	}
-	const aboutsection = (about === undefined ? '' : `<p class="publicModAboutHover">?</p><p class="publicModAbout">${about}</p>`);
+	const aboutsection = (about === undefined ? '' : `<p class="publicModAboutHover">
+		?
+		<p class="publicModAbout">${about}</p>
+	</p>`);
 	$('publicMods').innerHTML += `
 	<div class="singleModItem" id="${name}" onclick="downloadPublicMod(${mod_id});">
 		<div class="publicModThumbContainer singleModCanvas">
@@ -71,7 +74,9 @@ function addAllPublicMods() {
             const obj = JSON.parse(text.replaceAll("'",'"'));
 			
 			for (const [key, value] of Object.entries(obj)) {
-				$('downloadCount' + key).innerText = value;
+				try {
+					$('downloadCount' + key).innerText = value;
+				} catch (err) {};
 			};
         });
     });
