@@ -10,7 +10,7 @@ const all_public_mods = [
 	{name: "hellboy69", author: "lara"},
 	{name: "DianeNguyen", author: "lara"},
 	{name: "WalterWhite", author: "Warze"},
-	{name: "Mario", author: "Warze"},
+	{name: "Mario", author: "Warze", about: "The iconic italian plumber."},
 	{name: "warzemod", author: "Warze"},
 ];
 let all_public_mods_added = false;
@@ -19,6 +19,7 @@ function addToPublicMods(mod_id) {
 	const mod_object = all_public_mods[mod_id];
 	const name = mod_object.name;
 	const author = mod_object.author;
+	const about = mod_object.about;
 	const characters = mod_object.characters;
 	let characters_array = [0]
 	if (mod_object.characters) {
@@ -39,10 +40,12 @@ function addToPublicMods(mod_id) {
 		</div>
 		`
 	}
+	const aboutsection = (about === undefined ? '' : `<p class="publicModAboutHover">?</p><p class="publicModAbout">${about}</p>`);
 	$('publicMods').innerHTML += `
 	<div class="singleModItem" id="${name}" onclick="downloadPublicMod(${mod_id});">
 		<div class="publicModThumbContainer singleModCanvas">
 			${characterimgs}
+			${aboutsection}
 			<p class="publicModDownloadCount">
 				<span class="publicModDownloadCountText" id="downloadCount${name}">
 					0

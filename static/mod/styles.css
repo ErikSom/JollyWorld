@@ -252,6 +252,43 @@ a.button {
 .publicModDownloadCountText {
 	color: black;
 }
+.publicModAboutHover {
+	position: absolute;
+	right: 0;
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	font-size: 25px;
+	border-radius: 50%;
+	background-color: #BBBB;
+	color: black;
+	z-index: 20;
+	pointer-events: all;
+	cursor: pointer;
+}
+.publicModAboutHover:hover {
+	background-color: #FFFB;
+}
+.publicModAbout {
+	opacity: 0;
+	transition: 0.3s ease-out;
+	pointer-events: none;
+	display: inline-block;
+	width: 240px;
+	min-height: 32px;
+	background-color: var(--back);
+	color: var(--text);
+	border-radius: 15px;
+	font-size: 15px;
+	z-index: 19;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 21;
+}
+.publicModAboutHover:hover + .publicModAbout {
+	opacity: 1;
+}
 .singleModItem {
 	display: inline-block;
 	transition: box-shadow 0.2s ease-out;
