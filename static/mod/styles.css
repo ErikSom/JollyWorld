@@ -5,6 +5,7 @@
 	--text: #000000;
 	--inpb: #ffffff;
 	--subt: #888888;
+	--char: #d4d4d4;
 	--invt: 0;
 }
 [theme="dark"] {
@@ -14,6 +15,7 @@
 	--text: #fafafa;
 	--inpb: #292929;
 	--subt: #7f7f7f;
+	--char: #6a6a6a;
 	--invt: 1;
 }
 * {
@@ -218,7 +220,7 @@ a.button {
 .singleModCanvas {
 	border: 4px solid var(--dark);
 	margin: 2px;
-	background: #D4D4D4;
+	background: var(--char);
 	box-shadow: inset 0px -15px #999;
 	height: 250px;
 }
