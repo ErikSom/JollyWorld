@@ -1,7 +1,7 @@
 const all_public_mods = [
 	{name: "Cirilla", author: "Taurus"},
-	{name: "Darkmode", author: "TriggerTitan"},
-	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
+	{name: "Darkmode", author: "TriggerTitan", about: "Simple things are good, especially if they don't burn out your eyes. Darkmode for Billy Joel and all the vehicles"},
+	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='http://highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
 	{name: "Piconjo", author: "Anonymous Frog", about: "g0d of teh pr0tal on newgr0unds and in teh j0llyw0ld: <a href='https://piconjo.newgrounds.com/'>piconjo.newgrounds.com</a>"},
 	{name: "Lolita", author: "PetiteCass"},
 	{name: "jollyMattShea", author: "JollyBoy", about: "A popular YouTuber that has featured JollyWorld on his channel: <a href='https://youtube.com/mattsheatv/'>youtube.com/mattsheatv</a>"},
