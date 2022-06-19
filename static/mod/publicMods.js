@@ -4,14 +4,14 @@ const all_public_mods = [
 	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
 	{name: "Piconjo", author: "Anonymous Frog", about: "g0d of teh pr0tal on newgr0unds and in teh j0llyw0ld: <a href='https://piconjo.newgrounds.com/'>piconjo.newgrounds.com</a>"},
 	{name: "Lolita", author: "PetiteCass"},
-	{name: "jollyMattShea", author: "JollyBoy"},
-	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12]},
-	{name: "JunpeiZaki", author: "JollyBoy"},
-	{name: "hellboy69", author: "lara"},
-	{name: "DianeNguyen", author: "lara"},
-	{name: "WalterWhite", author: "Warze"},
-	{name: "Mario", author: "Warze", about: "The iconic italian plumber."},
-	{name: "warzemod", author: "Warze"},
+	{name: "jollyMattShea", author: "JollyBoy", about: "A popular YouTuber that has featured JollyWorld on his channel: <a href='https://youtube.com/mattsheatv/'>youtube.com/mattsheatv</a>"},
+	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12], about: "5 characters from the animated series. Rick, Morty, Jerry, Beth and Summer."},
+	{name: "JunpeiZaki", author: "JollyBoy", about: "A popular creator that has featured JollyWorld on his TikTok: <a href='https://www.tiktok.com/@junpei.zaki'>tiktok.com/@junpei.zaki</a>"},
+	{name: "hellboy69", author: "lara", about: "A character inspired by Medusa, but with added cool."},
+	{name: "DianeNguyen", author: "lara", about: "A main protagonist in the famous show Bojack Horseman."},
+	{name: "WalterWhite", author: "Warze", about: "The main character of the iconic show Breaking Bad."},
+	{name: "Mario", author: "Warze", about: "The iconic italian plumber from the most popular gaming franchise in history."},
+	{name: "warzemod", author: "Warze", about: "A representation of Warze in JollyWorld's artstyle."},
 ];
 let all_public_mods_added = false;
 
