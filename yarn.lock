@@ -1461,6 +1461,13 @@
     open "^8.2.1"
     yargs "^17.1.1"
 
+"@poki/netlib-test@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@poki/netlib-test/-/netlib-test-0.0.1.tgz#ced565b825ffa30ff64ff0747f5405dac2453aaa"
+  integrity sha512-oc7BMMgrK7dd58FTY827v99Nmm6nGM/d+aEsipBAzL/8eFOaWLB793JXD2FIGnWKrUvdASTAYB+iUkVcOUbgeA==
+  dependencies:
+    eventemitter3 "^4.0.7"
+
 "@types/earcut@^2.1.0":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@types/earcut/-/earcut-2.1.1.tgz#573a0af609f17005c751f6f4ffec49cfe358ea51"
@@ -4614,11 +4621,6 @@ neo-async@^2.5.0, neo-async@^2.6.1, neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
-
-"netlib@file:../../poki/netlib":
-  version "0.0.1"
-  dependencies:
-    eventemitter3 "^4.0.7"
 
 nice-try@^1.0.4:
   version "1.0.5"
