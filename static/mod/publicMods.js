@@ -9,6 +9,7 @@ const all_public_mods = [
 	{name: "JunpeiZaki", author: "JollyBoy", about: "A popular creator that has featured JollyWorld on his TikTok: <a href='https://www.tiktok.com/@junpei.zaki'>tiktok.com/@junpei.zaki</a>"},
 	{name: "hellboy69", author: "lara", about: "A character inspired by Medusa, but with added cool."},
 	{name: "DianeNguyen", author: "lara", about: "A main protagonist in the famous show Bojack Horseman."},
+	{name: "Hellbenders", author: "Warze", characters: [0,1], about: "The adventures of two young boys, Chris and Zack, who live in a world surrounded by not so normal things. <a href='https://youtube.com/watch?v=vNlMwK-HyRw'>YouTube Animation</a>"},
 	{name: "WalterWhite", author: "Warze", about: "The main character of the iconic show Breaking Bad."},
 	{name: "Mario", author: "Warze", about: "The iconic italian plumber from the most popular gaming franchise in history."},
 	{name: "warzemod", author: "Warze", about: "A representation of Warze in JollyWorld's artstyle."},
