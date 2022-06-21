@@ -487,6 +487,9 @@ export const doAction = function (actionData, target, triggerClass) {
             animation.data.mirrored = actionData.setMirrored;
             target.data.mirrored = actionData.setMirrored;
             if(actionData.toggle) actionData.setMirrored = !actionData.setMirrored;
+            if (target.myBody){
+                game.editor.updateBodyPosition(target.myBody);
+            }
             break;
         case ACTION_GAME_WIN:
             game.gameWin();
