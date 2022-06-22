@@ -15,8 +15,8 @@ function adjustBodySize() {
 	const edge = 15;
 	$('creatorwindow').style.transform = `scale(${windowSize})`;
 	$('loadingwindow').style.transform = `scale(${windowSize})`;
-	$('modwardrobewindow').style.width = (globalSize + edge) + "px";
-	$('modwardrobewindow').style.height = window.innerHeight * (globalSize + edge) + "px"
+	$('modwardrobewindow').style.width = globalSize + edge + "px";
+	$('modwardrobewindow').style.height = (window.innerHeight + edge) * (globalSize / window.innerWidth) + "px"
 	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + (globalSize + edge) / window.innerWidth + ')')
 	if (!zip_editor_open) {
 		document.body.style.width = globalSize + "px";
