@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>bundler</title>
+</head>
+<body>
+	<canvas width="2048" height="2048"></canvas>
+	<script type="text/javascript">
+		const imgs = ['Bicycle_Body0000.png', 'Bicycle_Body0001.png', 'Bicycle_Body0002.png', 'Bicycle_Body0003.png', 'Bicycle_Body0004.png', 'Bicycle_Pedals0000.png', 'Bicycle_WheelBack0000.png', 'Bicycle_WheelBack_Bended0000.png', 'Bicycle_WheelFront0000.png', 'Bicycle_WheelFront_Bended0000.png', 'DirtBikeHelmet0000.png', 'DirtBikeHelmet0001.png', 'DirtBike_Axis0000.png', 'DirtBike_Body0000.png', 'DirtBike_Body0001.png', 'DirtBike_WheelBack0000.png', 'DirtBike_WheelBack_Bended0000.png', 'DirtBike_WheelFront0000.png', 'DirtBike_WheelFront_Bended0000.png', 'DirtBike_WheelSupport0000.png', 'DirtBike_WheelSupport0001.png', 'empty.png', 'Hammer0000.png', 'Hammer0001.png', 'Hammer_20000.png', 'masks0000.png', 'masks0001.png', 'masks0002.png', 'masks0003.png', 'masks0004.png', 'masks0005.png', 'masks0006.png', 'masks0007.png', 'masks0008.png', 'masks0009.png', 'masks0010.png', 'masks0011.png', 'masks0012.png', 'masks0013.png', 'masks0014.png', 'masks0015.png', 'masks0016.png', 'masks0017.png', 'masks0018.png', 'masks0019.png', 'masks0020.png', 'masks0021.png', 'masks0022.png', 'masks0023.png', 'masks0024.png', 'masks0025.png', 'masks0026.png', 'masks0027.png', 'Mouth_Idle0000.png', 'Mouth_Idle0001.png', 'Mouth_Idle0002.png', 'Mouth_Idle0003.png', 'Mouth_Idle0004.png', 'Mouth_Idle0005.png', 'Mouth_Idle0006.png', 'Mouth_Idle0007.png', 'Mouth_Idle0008.png', 'Mouth_Idle9998.png', 'Mouth_Pain0000.png', 'Mouth_Special0000.png', 'Normal_Arm0000.png', 'Normal_Arm0001.png', 'Normal_Arm0002.png', 'Normal_Arm0003.png', 'Normal_Arm0004.png', 'Normal_Arm1000.png', 'Normal_Arm1001.png', 'Normal_Arm1002.png', 'Normal_Arm1003.png', 'Normal_Arm1004.png', 'Normal_Arm1005.png', 'Normal_Arm1006.png', 'Normal_Belly0000.png', 'Normal_Belly0001.png', 'Normal_Belly0002.png', 'Normal_Belly0003.png', 'Normal_Belly0004.png', 'Normal_Belly0005.png', 'Normal_Belly0006.png', 'Normal_Belly0007.png', 'Normal_Belly0008.png', 'Normal_Belly0009.png', 'Normal_Belly0010.png', 'Normal_Belly0011.png', 'Normal_Belly1000.png', 'Normal_Belly1001.png', 'Normal_Belly1002.png', 'Normal_Belly1003.png', 'Normal_Belly1004.png', 'Normal_Belly1005.png', 'Normal_Belly1006.png', 'Normal_Core0000.png', 'Normal_Core0001.png', 'Normal_Core0002.png', 'Normal_Core0003.png', 'Normal_Core0004.png', 'Normal_Core0005.png', 'Normal_Core0006.png', 'Normal_Core0007.png', 'Normal_Core0008.png', 'Normal_Core0009.png', 'Normal_Core0010.png', 'Normal_Core0011.png', 'Normal_Core0012.png', 'Normal_Core0013.png', 'Normal_Core0014.png', 'Normal_Core0015.png', 'Normal_Core0016.png', 'Normal_Core0017.png', 'Normal_Core0018.png', 'Normal_Core0019.png', 'Normal_Core0020.png', 'Normal_Core1000.png', 'Normal_Core1001.png', 'Normal_Core1002.png', 'Normal_Core1003.png', 'Normal_Core1004.png', 'Normal_Core1005.png', 'Normal_Core1006.png', 'Normal_Eye0000.png', 'Normal_Eye0001.png', 'Normal_Eye0002.png', 'Normal_Eye0003.png', 'Normal_Eye0004.png', 'Normal_Eye0005.png', 'Normal_Eye0006.png', 'Normal_Eye0007.png', 'Normal_Eye0008.png', 'Normal_Eye0009.png', 'Normal_Eye0010.png', 'Normal_Eye0012.png', 'Normal_Eye0013.png', 'Normal_Eye0014.png', 'Normal_Eye0015.png', 'Normal_Eye0016.png', 'Normal_Eye1000.png', 'Normal_Eye1001.png', 'Normal_Eye1002.png', 'Normal_Eye1003.png', 'Normal_Eye1004.png', 'Normal_Eye1005.png', 'Normal_Eye1006.png', 'Normal_Eye9998.png', 'Normal_Eye_Closed0000.png', 'Normal_Eye_Closed0001.png', 'Normal_Eye_Closed0002.png', 'Normal_Eye_Closed0003.png', 'Normal_Eye_Closed0004.png', 'Normal_Eye_Closed0005.png', 'Normal_Eye_Closed1000.png', 'Normal_Eye_Closed1001.png', 'Normal_Eye_Closed1002.png', 'Normal_Eye_Closed1003.png', 'Normal_Eye_Closed1004.png', 'Normal_Eye_Closed1005.png', 'Normal_Eye_Closed1006.png', 'Normal_Feet0000.png', 'Normal_Feet0001.png', 'Normal_Feet0002.png', 'Normal_Feet0003.png', 'Normal_Feet0004.png', 'Normal_Feet0005.png', 'Normal_Hand0000.png', 'Normal_Hand0001.png', 'Normal_Hand0002.png', 'Normal_Hand0003.png', 'Normal_Hand0004.png', 'Normal_Hand1000.png', 'Normal_Hand1001.png', 'Normal_Hand1002.png', 'Normal_Hand1003.png', 'Normal_Hand1004.png', 'Normal_Hand1005.png', 'Normal_Hand1006.png', 'Normal_Head_Idle0000.png', 'Normal_Head_Idle0001.png', 'Normal_Head_Idle0002.png', 'Normal_Head_Idle0003.png', 'Normal_Head_Idle0004.png', 'Normal_Head_Idle0005.png', 'Normal_Head_Idle0006.png', 'Normal_Head_Idle0007.png', 'Normal_Head_Idle0008.png', 'Normal_Head_Idle0009.png', 'Normal_Head_Idle0010.png', 'Normal_Head_Idle0011.png', 'Normal_Head_Idle0012.png', 'Normal_Head_Idle0013.png', 'Normal_Head_Idle0014.png', 'Normal_Head_Idle0015.png', 'Normal_Head_Idle0017.png', 'Normal_Head_Idle0018.png', 'Normal_Head_Idle0019.png', 'Normal_Head_Idle0020.png', 'Normal_Head_Idle0021.png', 'Normal_Head_Idle0022.png', 'Normal_Head_Idle0023.png', 'Normal_Head_Idle0024.png', 'Normal_Head_Idle0025.png', 'Normal_Head_Idle0026.png', 'Normal_Head_Idle0027.png', 'Normal_Head_Idle0028.png', 'Normal_Head_Idle0029.png', 'Normal_Head_Idle0030.png', 'Normal_Head_Idle0031.png', 'Normal_Head_Idle0032.png', 'Normal_Head_Idle1000.png', 'Normal_Head_Idle1001.png', 'Normal_Head_Idle1002.png', 'Normal_Head_Idle1003.png', 'Normal_Head_Idle1004.png', 'Normal_Head_Idle1005.png', 'Normal_Head_Idle1006.png', 'Normal_Head_Idle9998.png', 'Normal_Head_Nose0000.png', 'Normal_Head_Nose0001.png', 'Normal_Head_Nose0002.png', 'Normal_Head_Nose0003.png', 'Normal_Head_Nose0004.png', 'Normal_Head_Nose0005.png', 'Normal_Leg0000.png', 'Normal_Leg0001.png', 'Normal_Leg0002.png', 'Normal_Leg0003.png', 'Normal_Leg0004.png', 'Normal_Leg0005.png', 'Normal_Leg0006.png', 'Normal_Leg0007.png', 'Normal_Leg0008.png', 'Normal_Leg0009.png', 'Normal_Leg0010.png', 'Normal_Leg0011.png', 'Normal_Leg0012.png', 'Normal_Leg0013.png', 'Normal_Leg0014.png', 'Normal_Leg1000.png', 'Normal_Leg1001.png', 'Normal_Leg1002.png', 'Normal_Leg1003.png', 'Normal_Leg1004.png', 'Normal_Leg1005.png', 'Normal_Leg1006.png', 'Normal_Shoulder0000.png', 'Normal_Shoulder0001.png', 'Normal_Shoulder0002.png', 'Normal_Shoulder0003.png', 'Normal_Shoulder0004.png', 'Normal_Shoulder0005.png', 'Normal_Shoulder0006.png', 'Normal_Shoulder0007.png', 'Normal_Shoulder0008.png', 'Normal_Shoulder0009.png', 'Normal_Shoulder0010.png', 'Normal_Shoulder0011.png', 'Normal_Shoulder0012.png', 'Normal_Shoulder0013.png', 'Normal_Shoulder0014.png', 'Normal_Shoulder0015.png', 'Normal_Shoulder0016.png', 'Normal_Shoulder0017.png', 'Normal_Shoulder0018.png', 'Normal_Shoulder0019.png', 'Normal_Shoulder0020.png', 'Normal_Shoulder1000.png', 'Normal_Shoulder1001.png', 'Normal_Shoulder1002.png', 'Normal_Shoulder1003.png', 'Normal_Shoulder1004.png', 'Normal_Shoulder1005.png', 'Normal_Shoulder1006.png', 'Normal_Thigh0000.png', 'Normal_Thigh0001.png', 'Normal_Thigh0002.png', 'Normal_Thigh0003.png', 'Normal_Thigh0004.png', 'Normal_Thigh0005.png', 'Normal_Thigh0006.png', 'Normal_Thigh0007.png', 'Normal_Thigh0008.png', 'Normal_Thigh0009.png', 'Normal_Thigh0010.png', 'Normal_Thigh0011.png', 'Normal_Thigh1000.png', 'Normal_Thigh1001.png', 'Normal_Thigh1002.png', 'Normal_Thigh1003.png', 'Normal_Thigh1004.png', 'Normal_Thigh1005.png', 'Normal_Thigh1006.png', 'Pot0000.png', 'Pot0001.png', 'Pot0002.png', 'Pot_20000.png', 'SkateBoard_Board0000.png', 'SkateBoard_Board0001.png', 'SkateBoard_Board0002.png', 'Skateboard_Wheel0000.png', 'Skateboard_Wheel0001.png', 'YogaBall0000.png', 'YogaBall0001.png', 'YogaBall0002.png', 'YogaBall0003.png', 'YogaBallHandle_Back0000.png', 'YogaBallHandle_Back0001.png', 'YogaBallHandle_Back0002.png', 'YogaBallHandle_Back0003.png', 'YogaBall_Handle_Front0000.png', 'YogaBall_Handle_Front0001.png', 'YogaBall_Handle_Front0002.png', 'YogaBall_Handle_Front0003.png'];
+
+		cvs = document.querySelector('canvas');
+		ctx = cvs.getContext('2d')
+
+		output_json = []
+
+		x = 0;
+		y = 0;
+		biggest_height = 0;
+		loaded = 0
+		for (i in imgs) {
+			const elem = document.createElement('img');
+			elem.src = imgs[i];
+			elem.setAttribute('path', imgs[i])
+			elem.onload = function() {
+				biggest_height = Math.max(biggest_height, this.height);
+				if (x + this.width > 2048) {
+					x = 0;
+					y += biggest_height;
+					biggest_height = 0;
+				}
+				const obj = {name: this.getAttribute('path'), x: x, y: y, w: this.width, h: this.height};
+				console.log(obj)
+				output_json.push(obj)
+				ctx.drawImage(this, x, y)
+				x += this.width;
+				loaded ++;
+				if (loaded === imgs.length) {
+					const textarea = document.createElement('textarea');
+					textarea.value = JSON.stringify(output_json)
+					textarea.style.position = 'fixed'
+					textarea.style.left = 0
+					textarea.style.top = 0
+					document.body.appendChild(textarea)
+				}
+			}
+		}
+	</script>
+</body>
+</html>
