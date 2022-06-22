@@ -12,12 +12,22 @@ function adjustBodySize() {
 	} else if (window.innerWidth < 1500) {
 		globalSize = 1500;
 	}
-	const edge = 15;
+	const edge = 7.5;
 	$('creatorwindow').style.transform = `scale(${windowSize})`;
 	$('loadingwindow').style.transform = `scale(${windowSize})`;
 	$('modwardrobewindow').style.width = globalSize + edge + "px";
 	$('modwardrobewindow').style.height = (window.innerHeight + edge) * (globalSize / window.innerWidth) + "px"
 	document.querySelectorAll('.fixed').forEach((elem) => elem.style.transform = 'scale(' + (globalSize + edge) / window.innerWidth + ')')
+	const preview_size = Math.min(1, window.innerHeight / 800);
+	document.querySelector('.modwardrobepreview').style.transform = `scale(${preview_size})`;
+	document.querySelector('.modwardrobepreview').style.height = 358 * preview_size + "px";
+	try {
+		document.querySelectorAll('.wardrobeitem').forEach((elem) => {
+			elem.style.width = 100 * preview_size + "px";
+			elem.style.height =	100 * preview_size + "px"; 
+			elem.style.margin = 5 * preview_size + "px";
+		});
+	} catch (err) {}
 	if (!zip_editor_open) {
 		document.body.style.width = globalSize + "px";
 		document.body.style.transform = 'scale(' + window.innerWidth / (globalSize + edge) + ')'

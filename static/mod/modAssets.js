@@ -117,6 +117,7 @@ bundle.onload = function() {
 				$('modwardrobesteps').appendChild(new_section)
 			}
 			initWardrobe();
+			adjustBodySize();
 		});
 	});
 }
