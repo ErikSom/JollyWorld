@@ -1859,7 +1859,7 @@ function UIManager() {
     this.showCharacterSelect = function(){
         if(!characterSelect){
             const htmlStructure = /*html*/`
-                <iframe class="mod-frame" frameBorder="0" src="/mod"></iframe>
+                <iframe class="mod-frame" frameBorder="0" src="./mod"></iframe>
             `;
 
             characterSelect = document.createElement('div');
