@@ -269,7 +269,7 @@ const character_positions = [
 	{asset: 'masks0000.png', x: 1650, y: 9, r: 0.05, w: 96, h: 96},
 ]
 
-const wardrobe_path = location.origin + "/mod/wardrobe/"
+const wardrobe_path = "./mod/wardrobe/"
 const wardrobe_features = [
 	// Skintones
 	[
@@ -1334,7 +1334,7 @@ const wardrobe_features = [
 	],
 ]
 
-const gore_path = location.origin + "/mod/jollymod/gore/chunks/billyjoel/"
+const gore_path = "./mod/jollymod/gore/chunks/billyjoel/"
 const gore_item_paths = [
 	"Normal_Arm_Gore10000.png",
 	"Normal_Belly_Gore10000.png",

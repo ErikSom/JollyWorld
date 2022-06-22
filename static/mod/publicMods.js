@@ -16,6 +16,10 @@ const all_public_mods = [
 ];
 let all_public_mods_added = false;
 
+function urlCleanString(string){
+	return string.toLowerCase().replace(/[^a-zA-Z0-9]/g, "");
+}
+
 function addToPublicMods(mod_id) {
 	const mod_object = all_public_mods[mod_id];
 	const name = mod_object.name;
@@ -37,7 +41,7 @@ function addToPublicMods(mod_id) {
 			<img 
 			style="transform: translateX(${offset}px);"
 			class="publicModThumb" 
-			src="mod/thumbs/${name}${imgid}.png">
+			src="mod/thumbs/${urlCleanString(name)}${imgid}.png">
 		</div>
 		`
 	}
@@ -93,7 +97,7 @@ function downloadPublicMod(mod_id) {
 	}
 	localStorage.setItem('jollyModName', name);
 	localStorage.setItem('jollyModAvailableCharacters', characters);
-	const url = `mod/zips/${name}.zip`;
+	const url = `mod/zips/${urlCleanString(name)}.zip`;
 	$('installedMod').innerText = name;
 	document.querySelectorAll('.singleModItemSelected').forEach(e => e.classList.remove('singleModItemSelected'))
 	try {
