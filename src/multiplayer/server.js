@@ -1,12 +1,9 @@
 import { BufferSchema } from '@geckos.io/typed-array-buffer-schema';
-import { Network } from '@poki/netlib-test';
+import { Network } from '@poki/netlib';
 import { Settings } from '../Settings';
 import { globalEvents } from '../utils/EventDispatcher';
 import { introductionBuffer } from './messagePacker';
 import { adminIntroductionModel, changeServerLevelModel, characterModel, chatMessageModel, endCountDownMessageModel, introductionModel, levelVotesMessageModel, levelWonModel, selectHatMessageModel, simpleMessageModel, startLoadLevelModel } from './schemas';
-
-
-console.log('***NETWORK:', Network);
 
 export const SERVER_EVENTS = {
 	NETWORK_READY: 'networkReady',
