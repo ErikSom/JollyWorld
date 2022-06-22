@@ -4,11 +4,11 @@ function updateModName(){
 	} catch (err) {}
 	let modName = localStorage.getItem('jollyModName');
 	if (modName === null) {
-		modName = 'Billy Joel';
+		modName = 'billyjoel';
 	}
 	$('installedMod').innerText = modName;
 	if (allDefaultCharacters.includes(modName)) {
-		$('currentModThumbCvs').innerHTML = `<img class="previewModCanvas" src="mod/thumbs/${modName.replace(' ','%20')}.png">`;
+		$('currentModThumbCvs').innerHTML = `<img class="previewModCanvas" src="mod/thumbs/${modName.toLowerCase().replaceAll(' ','')}.png">`;
 	} else {
 		generateModPreviewFromIDB();
 		const selectedModElement = $(modName);
