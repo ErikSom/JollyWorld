@@ -36,7 +36,6 @@ function addToPublicMods(mod_id) {
 	for (var i = 0; i < characters_array.length; i ++) {
 		const imgid = (characters_array[i] === 0 ? "" : characters_array[i]);
 		const offset = (-i + (characters_array.length - 1) / 2) * (150 / characters_array.length);
-		console.log(offset)
 		const zindex = characters_array.length - i;
 		const opacity = i / characters_array.length;
 		characterimgs += `
