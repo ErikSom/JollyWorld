@@ -2,6 +2,7 @@ const all_public_mods = [
 	{name: "Cirilla", author: "Taurus", about: "Cirilla Fiona Elen Riannon, better known as Ciri, from The Witcher: <a href='https://www.thewitcher.com/en/witcher3'>thewitcher.com/en/witcher3</a>"}, 
 	{name: "Darkmode", author: "TriggerTitan", about: "Simple things are good, especially if they don't burn out your eyes. Darkmode for Billy Joel and all the vehicles"},
 	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='http://highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
+	{name: "Jollygrounds", author: "Anonymous Frog", about: "A collection of 16 well-known Newgrounds characters. <a href='https://newgrounds.com/'>newgrounds.com</a>Brought to you by Anonymous-Frog<a href='https://anonymous-frog.newgrounds.com/'>anonymous-frog.newgrounds.com</a>", characters: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]},
 	{name: "Piconjo", author: "Anonymous Frog", about: "g0d of teh pr0tal on newgr0unds and in teh j0llyw0ld: <a href='https://piconjo.newgrounds.com/'>piconjo.newgrounds.com</a>"},
 	{name: "Lolita", author: "PetiteCass"},
 	{name: "jollyMattShea", author: "JollyBoy", about: "A popular YouTuber that has featured JollyWorld on his channel: <a href='https://youtube.com/mattsheatv/'>youtube.com/mattsheatv</a>"},
@@ -13,6 +14,7 @@ const all_public_mods = [
 	{name: "WalterWhite", author: "Warze", about: "The main character of the iconic show Breaking Bad."},
 	{name: "Mario", author: "Warze", about: "The iconic italian plumber from the most popular gaming franchise in history."},
 	{name: "warzemod", author: "Warze", about: "A representation of Warze in JollyWorld's artstyle."},
+	{name: "gachipack", author: "N.", characters: [0,9,12,15]}
 ];
 let all_public_mods_added = false;
 
@@ -33,7 +35,7 @@ function addToPublicMods(mod_id) {
 	let characterimgs = '';
 	for (var i = 0; i < characters_array.length; i ++) {
 		const imgid = (characters_array[i] === 0 ? "" : characters_array[i]);
-		const offset = -i * (150 / characters_array.length);
+		const offset = (-i + (characters_array.length - 1) / 2) * (150 / characters_array.length);
 		const zindex = characters_array.length - i;
 		const opacity = i / characters_array.length;
 		characterimgs += `
