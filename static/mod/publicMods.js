@@ -15,6 +15,7 @@ const all_public_mods = [
 	{name: "Mario", author: "Warze", about: "The iconic italian plumber from the most popular gaming franchise in history."},
 	{name: "PeterGriffin", author: "Warze", about: "Heheheh hey Lois, look! I'm in JollyWorld heheheh"},
 	{name: "warzemod", author: "Warze", about: "A representation of Warze in JollyWorld's artstyle."},
+	{name: "Ronald", author: "N."},
 	{name: "gachipack", author: "N.", characters: [0,9,12,15]}
 ];
 let all_public_mods_added = false;
