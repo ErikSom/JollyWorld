@@ -14,6 +14,7 @@ const all_public_mods = [
 	{name: "WalterWhite", author: "Warze", about: "The main character of the iconic show Breaking Bad."},
 	{name: "Mario", author: "Warze", about: "The iconic italian plumber from the most popular gaming franchise in history."},
 	{name: "warzemod", author: "Warze", about: "A representation of Warze in JollyWorld's artstyle."},
+	{name: "Ronald", author: "N."},
 	{name: "gachipack", author: "N.", characters: [0,9,12,15]}
 ];
 let all_public_mods_added = false;
