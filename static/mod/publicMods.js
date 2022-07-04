@@ -13,6 +13,7 @@ const all_public_mods = [
 	{name: "Hellbenders", author: "Warze", characters: [0,1], about: "The adventures of two young boys, Chris and Zack, who live in a world surrounded by not so normal things. <a href='https://youtube.com/watch?v=vNlMwK-HyRw'>YouTube Animation</a>"},
 	{name: "WalterWhite", author: "Warze", about: "The main character of the iconic show Breaking Bad."},
 	{name: "Mario", author: "Warze", about: "The iconic italian plumber from the most popular gaming franchise in history."},
+	{name: "PeterGriffin", author: "Warze", about: "Heheheh hey Lois, look! I'm in JollyWorld heheheh"},
 	{name: "warzemod", author: "Warze", about: "A representation of Warze in JollyWorld's artstyle."},
 	{name: "gachipack", author: "N.", characters: [0,9,12,15]}
 ];
