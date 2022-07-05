@@ -4,7 +4,7 @@ const all_public_mods = [
 	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='http://highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
 	{name: "Jollygrounds", author: "Anonymous Frog", about: "A collection of 16 well-known Newgrounds characters. <a href='https://newgrounds.com/'>newgrounds.com</a>Brought to you by Anonymous-Frog<a href='https://anonymous-frog.newgrounds.com/'>anonymous-frog.newgrounds.com</a>", characters: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]},
 	{name: "Piconjo", author: "Anonymous Frog", about: "g0d of teh pr0tal on newgr0unds and in teh j0llyw0ld: <a href='https://piconjo.newgrounds.com/'>piconjo.newgrounds.com</a>"},
-	{name: "Lolita", author: "PetiteCass"},
+	{name: "Lolita", author: "PetiteCass", about: "Lolita is a rebellious little girl letting nothing stop her."},
 	{name: "jollyMattShea", author: "JollyBoy", about: "A popular YouTuber that has featured JollyWorld on his channel: <a href='https://youtube.com/mattsheatv/'>youtube.com/mattsheatv</a>"},
 	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12], about: "5 characters from the animated series. Rick, Morty, Jerry, Beth and Summer."},
 	{name: "JunpeiZaki", author: "JollyBoy", about: "A popular creator that has featured JollyWorld on his TikTok: <a href='https://www.tiktok.com/@junpei.zaki'>tiktok.com/@junpei.zaki</a>"},
