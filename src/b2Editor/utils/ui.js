@@ -121,7 +121,7 @@ export const showPanel = panel => {
     }
 }
 export const setLevelSpecifics = function () {
-    headerbarLevelName.innerHTML = game.currentLevelData.title;
+    headerbarLevelName.innerText = game.currentLevelData.title;
 }
 export const setNewLevelData = function () {
     if (levelEditScreen) {
