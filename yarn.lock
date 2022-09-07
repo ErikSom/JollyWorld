@@ -1461,10 +1461,10 @@
     open "^8.2.1"
     yargs "^17.1.1"
 
-"@poki/netlib@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@poki/netlib/-/netlib-0.0.3.tgz#c1059a0334e33da1ce508a70310a985cf88c88ba"
-  integrity sha512-MiGywrMmchxGmVwbp4Aj0BDgW9WCgSfkTTjEh91a6N0HynuAPOEK5QKMfQJC0nw5ndT6EI+H7KtfUERTzStX0Q==
+"@poki/netlib@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@poki/netlib/-/netlib-0.0.7.tgz#cd1dfc8fe8574d160e36eb41192ba0d423dfb6b9"
+  integrity sha512-rrZxJr1roUqg/NpyM/49K2Tl/L71himzoMdu6HpC5joIk9tqg97Vors9X/keQW9uAtkFJqAH8ZjHVOc/w5h/XA==
   dependencies:
     eventemitter3 "^4.0.7"
 
