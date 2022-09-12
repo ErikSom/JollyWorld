@@ -660,7 +660,7 @@ const LOCALIZATION_DATA = [
         "it": "Modificare",
         "jr": "Decorate yer ship",
         "jp": "MODを追加する",
-        "ru": "Модификации"
+        "ru": "Моды"
     },
     {
         "textId": "settings_none",
@@ -674,7 +674,7 @@ const LOCALIZATION_DATA = [
         "it": "Nessuno",
         "jr": "Nay",
         "jp": "何もない",
-        "ru": "Ничего"
+        "ru": "Нет"
     },
     {
         "textId": "characterselect_select_character",
