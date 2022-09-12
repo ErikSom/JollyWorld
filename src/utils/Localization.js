@@ -1052,7 +1052,7 @@ const LOCALIZATION_DATA = [
         "it": "Mettersi in gioco!",
         "jr": "Join the tavern",
         "jp": "私たちの活動に参加してください",
-        "ru": "Быть упомянутым"
+        "ru": "Станьте частью нашего дискорд сервера"
     },
     {
         "textId": "discord_content",
