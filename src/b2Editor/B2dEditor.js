@@ -305,7 +305,7 @@ const _B2dEditor = function () {
 				const trimmedName = blueprintName.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 				const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
 				prefabKeys.push(prefabKey);
-				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://warze.org/static/jollyworld/blueprints/${id}.png`};
+				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://warze.org/blueprints/get/${id}`};
 			});
 
 			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
