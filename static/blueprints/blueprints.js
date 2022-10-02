@@ -257,7 +257,7 @@ function triggerNotification(message) {
 function toggleTheme() {
 	var new_theme = (document.documentElement.getAttribute('theme') == 'dark' ? 'main' : 'dark')
 	document.documentElement.setAttribute('theme', new_theme);
-	$('themebutton').src = '/static/blueprints/theme' + new_theme + '.png'
+	$('themebutton').src = '/blueprints/theme' + new_theme + '.png'
 	localStorage.setItem('jwbpTheme', new_theme)
 }
 

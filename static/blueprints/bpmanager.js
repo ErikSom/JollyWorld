@@ -93,7 +93,7 @@ function resultsListener() {
 		$('blueprintresults').innerHTML +=
 		`<div class="singletagsection" id="${bp[0]}" ${(displayType == 'compact' ? 'style="display:inline-block;margin:5px;"' : '')}>
 			<div class="previewcontainer" onclick='getBlueprintData(${bp[0]});'>
-				<img class="singletagimagecopyicon" src="/static/blueprints/copy.png">
+				<img class="singletagimagecopyicon" src="/blueprints/copy.png">
 				<div class="previewsubcontainer">
 					<img id="image${bp[0]}" src="https://warze.org/blueprints/get/${bp[0]}" class="singletagimage">
 				</div>
@@ -196,7 +196,7 @@ function enterPageNum() {
 var displayType = "detailed"
 function toggleDisplay() {
 	displayType = (displayType == "detailed" ? "compact" : "detailed")
-	$('displayicon').src = "/static/blueprints/format" + displayType + ".png";
+	$('displayicon').src = "/blueprints/format" + displayType + ".png";
 	var all_elems = document.querySelectorAll('.singletagsection')
 	for (var i = 0; i < all_elems.length; i ++){
 		all_elems[i].style.display = (displayType == "detailed" ? "block" : "inline-block")
@@ -211,7 +211,7 @@ function toggleDisplay() {
 function toggleTheme() {
 	var new_theme = (document.documentElement.getAttribute('theme') == 'dark' ? 'main' : 'dark')
 	document.documentElement.setAttribute('theme', new_theme);
-	$('themebutton').src = '/static/blueprints/theme' + new_theme + '.png'
+	$('themebutton').src = '/blueprints/theme' + new_theme + '.png'
 	localStorage.setItem('jwbpTheme', new_theme)
 }
 
