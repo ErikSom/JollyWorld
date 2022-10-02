@@ -16,11 +16,11 @@
 }
 @font-face {
 	font-family: "Lily Script One";
-	src: url("/static/blueprints/LilyScriptOne-Regular.ttf");
+	src: url("/blueprints/LilyScriptOne-Regular.ttf");
 }
 @font-face {
 	font-family: "Montserrat";
-	src: url("/static/blueprints/Montserrat-Regular.ttf");
+	src: url("/blueprints/Montserrat-Regular.ttf");
 }
 body {
 	text-align: center;
