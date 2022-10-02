@@ -1,0 +1,317 @@
+:root {
+	--main: #e7b98a;
+	--back: #f2bf8c;
+	--dark: #d3A16d;
+	--text: #000000;
+	--inpb: #ffffff;
+	--invt: 0;
+	--edit: 'block';
+}
+[theme="dark"] {
+	--main: #1d1d1d;
+	--back: #060606;
+	--dark: #000000;
+	--text: #fafafa;
+	--inpb: #292929;
+	--invt: 1;
+}
+@font-face {
+	font-family: "Lily Script One";
+	src: url("/static/jollyworld/LilyScriptOne-Regular.ttf");
+}
+@font-face {
+	font-family: "Montserrat";
+	src: url("/static/jollyworld/Montserrat-Regular.ttf");
+}
+* {
+	font-family: "Lily Script One";
+}
+body {
+	text-align: center;
+	overflow-y: scroll;
+	background-color: var(--back);
+}
+*:focus {
+	outline: none;
+}
+::-webkit-scrollbar {
+	width: 10px;
+}
+::-webkit-scrollbar-track {
+	background: var(--main);
+}
+::-webkit-scrollbar-thumb {
+	background: var(--dark);
+}
+::-webkit-scrollbar-thumb:hover {
+	opacity: 0.8;
+}
+h1, input {
+	font-size: 30px;
+}
+.collection {
+	font-family: "Montserrat";
+}
+h1, input, .tag, span, label {
+	color: var(--text);
+}
+input, select {
+	background-color: var(--inpb);
+}
+.button {
+	background-color: #4BD748;
+	width: 200px;
+	height: 50px;
+	border-radius: 8px;
+	border: 2px solid black;
+	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+	color: white;
+	text-shadow: 1.2px 2px black;
+	text-align: center;
+	line-height: 38px;
+	font-size: 40px;
+	cursor: pointer;
+	white-space: nowrap;
+	display: inline-block;
+	user-select: none;
+	transition: background-color 0.3s ease-out;
+}
+.red {
+	background-color: #D70000;
+}
+.blue {
+	background-color: #0485AD;
+}
+.yellow {
+	background-color: #EFA812;
+}
+.button:hover {
+	box-shadow: inset 0px -2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+}
+.disabled {
+	opacity: 0.2;
+	filter: saturate(50%);
+	pointer-events: none;
+}
+.section {
+	border: 2px solid var(--dark);
+	background-color: var(--main);
+	padding-top: 20px;
+	margin: 10px 0px 10px 0px;
+	padding-bottom: 20px;
+	text-align: center;
+	border-radius: 10px;
+}
+select {
+	font-size: 24px;
+	color: var(--text);
+}
+label {
+	font-size: 26px;
+	text-align: center;
+	display: inline-block;
+	background-color: var(--dark);
+	padding-left: 10px;
+	padding-right: 10px;
+	vertical-align: top;
+}
+.detailedsearch {
+	display: block;
+}
+.detailedsearchsection {
+	display: inline-block;
+	margin: 2px;
+	vertical-align: top;
+}
+.notification {
+	width: 400px;
+	font-size: 30px;
+	background-color: var(--main);
+	border: 2px solid var(--dark);
+	position: fixed;
+	right: 5px;
+	bottom: 5px;
+	padding-bottom: 25px;
+	pointer-events: none;
+}
+input, select {
+	border: none;
+}
+input[type=text] {
+	width: 250px;
+	font-size: 25px;
+}
+input[type=checkbox] {
+	height: 40px;
+	width: 40px;
+	filter: hue-rotate(261deg) brightness(120%);
+	margin: 0;
+}
+@keyframes appear {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+.idcontainer {
+	width: 80px;
+	height: 80px;
+	border: 2px solid var(--dark);
+	display: inline-block;
+	vertical-align: top;
+	text-align: center;
+	border-radius: 50%;
+	display: none;
+}
+.idtext {
+	margin-top: 20px;
+}
+.previewcontainer {
+	height: 200px;
+	width: 200px;
+	border: 2px solid var(--dark);
+	display: inline-block;
+	text-align: left;
+	cursor: pointer;
+}
+.previewsubcontainer {
+	height: 200px;
+	width: 200px;
+	display:table-cell;
+	vertical-align:middle;
+	text-align:center
+}
+.singletagimage {
+	max-height: 200px;
+	max-width: 200px;
+}
+.singletagimagecopyicon {
+	position: absolute;
+	opacity: 0;
+	margin: 72px 0px 0px 72px;
+	z-index: 2;
+	filter: invert(var(--invt));
+}
+.previewcontainer:hover .singletagimagecopyicon {
+	opacity: 1;
+}
+.previewcontainer:hover .singletagimage {
+	opacity: 0.8;
+	filter: brightness(0.8);
+}
+.blueprintright {
+	display: inline-block;
+	vertical-align: top;
+	width: 500px;
+	height: 200px;
+}
+.blueprintinformation {
+	border: 2px solid var(--dark);
+	text-align: left;
+	position: absolute;
+	width: 500px;
+	height: 200px;
+}
+.blueprintsingleinfo {
+	margin-bottom: 2px;
+	vertical-align: top;
+}
+.blueprintupdatebutton {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	height: 34px;
+	font-size: 26px;
+	background-color: #4BD748;
+    border-radius: 8px;
+    border: 2px solid black;
+    box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+    color: white;
+    text-shadow: 1.2px 2px black;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    transition: background-color 0.3s ease-out;
+}
+.blueprintdeletebutton {
+	position: absolute;
+	bottom: 34px;
+	right: 0;
+	height: 34px;
+	font-size: 26px;
+	background-color: #F63A2C;
+    border-radius: 8px;
+    border: 2px solid black;
+    box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+    color: white;
+    text-shadow: 1.2px 2px black;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    transition: background-color 0.3s ease-out;
+}
+.blueprintauthor {
+	font-size: 26px;
+}
+.tag {
+	background-color: var(--dark);
+	display: inline-block;
+	font-size: 25px;
+	vertical-align: top;
+	padding: 0px 10px 0px 20px;
+	border-radius: 30px 0px 0px 30px;
+	user-select: none;
+	margin: 6px 0px 0px 2px;
+}
+.uploaded {
+	display: inline;
+}
+.blueprintjollydatasection {
+	display: inline-block;
+	vertical-align: top;
+}
+.blueprintjollydata {
+	height: 196px;
+	width: 300px;
+	resize: none;
+	border: 2px solid var(--dark);
+	overflow-y: scroll;
+	font-size: 20px;
+}
+.pagebutton {
+	user-select: none;
+	font-size: 37px;
+	display: inline-block;
+	border: 2px solid var(--dark);
+	background-color: var(--main);
+	transition: opacity 0.2s;
+	min-width: 50px;
+	height: 50px;
+	vertical-align: top;
+	cursor: pointer;
+}
+.pagedisabled {
+	opacity: 0.3;
+	pointer-events: none;
+}
+#pagenumberinput, #pagenumber {
+	width: 150px;
+	text-align: center;
+}
+#displayicon {
+	filter: invert(var(--invt));
+}
+#themebutton {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	width: 70px;
+	height: 70px;
+	cursor: pointer;
+}

@@ -1,0 +1,259 @@
+:root {
+	--main: #e7b98a;
+	--back: #f2bf8c;
+	--dark: #d3A16d;
+	--text: #000000;
+	--inpb: #ffffff;
+	--invt: 0;
+}
+[theme="dark"] {
+	--main: #1d1d1d;
+	--back: #060606;
+	--dark: #000000;
+	--text: #fafafa;
+	--inpb: #292929;
+	--invt: 1;
+}
+@font-face {
+	font-family: "Lily Script One";
+	src: url("/static/blueprints/LilyScriptOne-Regular.ttf");
+}
+@font-face {
+	font-family: "Montserrat";
+	src: url("/static/blueprints/Montserrat-Regular.ttf");
+}
+body {
+	text-align: center;
+	margin: 100px;
+	background-color: var(--back);
+}
+*:focus {
+	outline: none;
+}
+::-webkit-scrollbar {
+	width: 10px;
+}
+::-webkit-scrollbar-track {
+	background: var(--main);
+}
+::-webkit-scrollbar-thumb {
+	background: var(--dark);
+}
+::-webkit-scrollbar-thumb:hover {
+	opacity: 0.8;
+}
+h1, input, select {
+	font-family: "Lily Script One";
+	font-size: 30px;
+}
+span, .tag {
+	font-family: "Montserrat";
+}
+h1, input, .tag, span {
+	color: var(--text);
+}
+input {
+	background-color: var(--inpb);
+	border: none;
+}
+select {
+	font-size: 24px;
+	color: var(--text);
+	background-color: var(--inpb);
+}
+a {
+	display: flex;
+	align-items:center;
+	justify-content:center;
+	text-decoration: none;
+	color: white;
+}
+.button {
+	background-color: #4BD748;
+	width: 200px;
+	height: 50px;
+	border-radius: 8px;
+	border: 2px solid black;
+	box-shadow: inset 0px 2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+	color: white;
+	font-family: "Lily Script One";
+	text-shadow: 1.2px 2px black;
+	text-align: center;
+	line-height: 38px;
+	font-size: 40px;
+	cursor: pointer;
+	white-space: nowrap;
+	margin: 20px auto;
+	user-select: none;
+	transition: background-color 0.3s ease-out;
+}
+.red {
+	background-color: #D70000;
+}
+.blue {
+	background-color: #0485AD;
+}
+.wide {
+	width: 500px;
+}
+.button:hover {
+	box-shadow: inset 0px -2px 1px rgb(255 255 255 / 60%), 0px 0px 0px 1px white, 2px 2px 2px black;
+}
+.button:disabled {
+	opacity: 0.2;
+	filter: saturate(50%);
+	pointer-events: none;
+}
+.mainhr {
+	border: none;
+	border-bottom: 4px solid var(--dark);
+	width: 80%;
+}
+.previewhr {
+	border: none;
+	border-bottom: 2px solid var(--dark);
+	width: 80%;
+}
+#page {
+	border: 4px solid var(--dark);
+	padding: 50px;
+	background-color: var(--main);
+	border-radius: 10px;
+}
+textarea {
+	border: none;
+	height: 200px;
+	width: 80%;
+	font-size: 20px;
+	resize: none;
+	background-color: var(--inpb);
+	color: var(--text);
+}
+.notification {
+	width: 400px;
+	font-family: "Lily Script One";
+	font-size: 30px;
+	background-color: var(--main);
+	border: 2px solid var(--dark);
+	position: fixed;
+	right: 5px;
+	bottom: 5px;
+	padding-bottom: 25px;
+	pointer-events: none;
+}
+#selected {
+	color: white;
+	background-color: #4BC748;
+}
+#blueprintname {
+	width: 80%;
+}
+.section {
+	border: 2px solid var(--dark);
+	margin: 20px;
+	padding: 20px;
+	background-color: var(--main);
+	position: relative;
+	transition: transform 0.3s ease-in, opacity 0.3s linear;
+}
+
+#step2, #step3, #step4, #step5 {
+	display: none;
+}
+#previewwindow {
+	width: 400px;
+	height: 600px;
+	position: fixed;
+	top: calc(50% - 300px);
+	background-color: var(--main);
+	border: 2px solid var(--dark);
+	transition: right 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+	padding: 20px;
+	text-align: center;
+}
+#previewbutton {
+	position: absolute;
+	top: 275px;
+	left: -25px;
+	height: 50px;
+	width: 50px;
+	border-radius: 25px;
+	background-color: var(--main);
+	border: 2px solid var(--dark);
+	font-size: 30px;
+	text-align: center;
+	color: var(--text);
+	cursor: pointer;
+	transition: transform 0.3s linear;
+}
+#previewimage {
+	max-width: 300px;
+	max-height: 300px;
+}
+.label {
+	font-size: 30px;
+	font-family: "Lily Script One";
+}
+.buttonback {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 50px;
+	height: 50px;
+}
+#stepbox {
+	position: absolute;
+	top: 200px;
+	left: 175px;
+}
+.stepbutton {
+	width: 50px;
+	height: 50px;
+	border-radius: 50px;
+	border: none;
+	color: var(--text);
+	background-color: var(--main);
+	border: 2px solid var(--dark);
+	font-size: 30px;
+	font-family: "Lily Script One";
+	cursor: pointer;
+	transition: transform 0.3s ease-out;
+}
+.stepbutton:disabled {
+	cursor: default;
+	transform: scale(0.8);
+	opacity: 0.5;
+}
+span {
+	font-size: 20px;
+}
+lottie-player {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	pointer-events: none;
+}
+#thankyou {
+	display: inline-block;
+	width: 300px;
+	vertical-align: top;
+}
+#continuebutton1 {
+	display: block;
+}
+#themebutton {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	width: 70px;
+	height: 70px;
+	cursor: pointer;
+}
+#billyjoel {
+	border: 2px solid var(--dark);
+}
+#customcollectiontext:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
