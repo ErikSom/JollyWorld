@@ -14,6 +14,7 @@ export const SAVEKEYS = {
     levelsVoted:"levelsVoted",
     levelsFavorites:"levelsFavorites",
     userData:'userData',
+    recentlyPlayed:'recentlyPlayed',
 }
 
 export const getLocalUserdata = function(){

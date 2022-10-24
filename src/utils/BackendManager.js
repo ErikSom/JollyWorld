@@ -12,6 +12,7 @@ import {
 import nanoid from 'nanoid';
 
 import * as betterLocalStorage from '../utils/LocalStorageWrapper'
+import { getRecentlyPlayed } from './RecentlyPlayedManager';
 
 
 // static assets van een level:
@@ -382,6 +383,12 @@ function BackendManager() {
 
 			const body = {
 				method: 'GET',
+			}
+
+			if(sort === 'recently'){
+				const levelData = getRecentlyPlayed();
+				// do additional filtering
+				return resolve(levelData);
 			}
 
 			fetch(`${Settings.API}/levels/?${query}`, body)

@@ -49,6 +49,7 @@ import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdMana
 import { generateLobby, updateLobbyUI } from './lobby'
 import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
 import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
+import { saveRecentlyPlayed } from '../utils/RecentlyPlayedManager'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -328,6 +329,10 @@ function UIManager() {
                                 </label>
                                 <label class="checkbox-container oldest">
                                     <input class="css-checkbox" type="checkbox" >${localize('mainmenu_oldest')}
+                                    <i></i>
+                                </label>
+                                <label class="checkbox-container recently">
+                                    <input class="css-checkbox" type="checkbox" >${localize('mainmenu_recently')}
                                     <i></i>
                                 </label>
                                 <div>${localize('mainmenu_filters')}</div>
@@ -701,6 +706,7 @@ function UIManager() {
         if(filters.querySelector('.best-rated > input').checked) sort = this.FILTER_SORT_BEST;
         if(filters.querySelector('.newest > input').checked) sort = this.FILTER_SORT_NEWEST;
         if(filters.querySelector('.oldest > input').checked) sort = this.FILTER_SORT_OLDEST;
+        if(filters.querySelector('.recently > input').checked) sort = this.FILTER_SORT_RECENTLY;
 
         let range = '';
         if(filters.querySelector('.all').classList.contains('checked')) range = this.FILTER_RANGE_ANYTIME;
@@ -907,6 +913,8 @@ function UIManager() {
                     playButton.classList.remove('loading');
                     playButtonText.innerText = localize('levelbanner_play');
                 }
+
+                saveRecentlyPlayed(levelData);
 
                 game.loadPublishedLevelData(levelData, progressFunction).then(() => {
                     this.hideLevelBanner();
@@ -2599,6 +2607,7 @@ function UIManager() {
     this.FILTER_SORT_BEST = "best";
     this.FILTER_SORT_NEWEST = "newest";
     this.FILTER_SORT_OLDEST = "oldest";
+    this.FILTER_SORT_RECENTLY = "recently";
 
     this.FILTER_RANGE_TODAY = "today";
     this.FILTER_RANGE_THISWEEK = "week";
