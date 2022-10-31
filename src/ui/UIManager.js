@@ -47,7 +47,7 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { cleanMods, getCustomModdedPortrait, getModdedPortrait, init as initModManager } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { adminReturnToLobby, createLobby, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
+import { adminReturnToLobby, createLobby, leaveMultiplayer, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
 import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
 import { saveRecentlyPlayed } from '../utils/RecentlyPlayedManager'
 
@@ -596,6 +596,7 @@ function UIManager() {
         }
 
         singlePlayer.style.display = 'block';
+        singlePlayer.classList.remove('inactive');
 
         if(!init) this.reloadSinglePlayerGames();
     }
@@ -2108,7 +2109,12 @@ function UIManager() {
                 game.unpauseGame();
 
                 if(!multiplayerAdmin){
-                    game.openSinglePlayer();
+                    if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && game.gameState !== game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
+                        leaveMultiplayer();
+                    }
+
+                    game.openMainMenu();
+                    this.setMainMenuActive('multiplayer');
                 } else {
                     adminReturnToLobby();
                     returnToLobby();

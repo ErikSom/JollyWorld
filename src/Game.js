@@ -835,7 +835,6 @@ function Game() {
     }
 
     this.openSinglePlayer = function (levelData) {
-
         if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && game.gameState !== game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
             leaveMultiplayer();
         }

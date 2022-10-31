@@ -33,7 +33,9 @@ export const characterModel = new Model(characterSchema);
 // ADMIN INTRODUCTION
 const adminIntroduction = BufferSchema.schema('adminIntroduction', {
 	name: { type: string8, length: 32 },
-	levelID: { type: string8, length: 21 }
+	levelID: { type: string8, length: 21 },
+	lobbyState: uint8,
+	selectedVehicle: uint8,
 });
 
 export const adminIntroductionModel = new Model(adminIntroduction);
@@ -42,6 +44,7 @@ export const adminIntroductionModel = new Model(adminIntroduction);
 const introduction = BufferSchema.schema('introduction', {
 	name: { type: string8, length: 32 },
 	lobbyState: uint8,
+	selectedVehicle: uint8,
 })
 export const introductionModel = new Model(introduction);
 

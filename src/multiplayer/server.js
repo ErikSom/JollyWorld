@@ -150,7 +150,8 @@ class MultiplayerServer {
 
 
 	webRTCError(error){
-		globalEvents.dispatchEvent({type:SERVER_EVENTS.LEFT_LOBBY, error});
+		console.log("WEBRTC ERROR:", error);
+		// globalEvents.dispatchEvent({type:SERVER_EVENTS.LEFT_LOBBY, error});
 	}
 
 	getID() {

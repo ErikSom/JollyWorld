@@ -354,6 +354,8 @@ export class RippleCharacter {
 	}
 
 	processServerData(data, time){
+		if(!this.sprites) return;
+
 		if(this.lastPackageID === -1){
 			this.sprite.visible = true;
 		}
@@ -470,6 +472,8 @@ export class RippleCharacter {
 	}
 
 	interpolatePosition(){
+		if(!this.sprites) return;
+
 		this.stateKeys.forEach(key => {
 			this.state[key].interpolatePosition();
 		});

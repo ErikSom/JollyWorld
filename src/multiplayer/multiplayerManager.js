@@ -6,7 +6,7 @@ import { updateLobbyUI } from '../ui/lobby';
 import { backendManager } from '../utils/BackendManager';
 import { globalEvents } from '../utils/EventDispatcher';
 import { getModdedPortrait } from '../utils/ModManager';
-import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard, updateLeaderboard, hudState } from './hud';
+import { initHud, CHAT_AUTHOR_TYPES, HUD_STATES, processChatMessage, setMultiplayerHud, showChat, showLeaderboard, updateLeaderboard, hudState, initLeaderboard } from './hud';
 import { characterFromBuffer, characterToBuffer, dataFromAdminIntroductionBuffer, dataFromChangeServerLevelBuffer, dataFromChatMessageBuffer, dataFromEndCountDownMessageBuffer, dataFromIntroductionBuffer, dataFromLevelVotesMessageBuffer, dataFromLevelWonBuffer, dataFromSelectHatMessageBuffer, dataFromSimpleMessageBuffer, dataFromStartLoadLevelBuffer, dataToAdminIntroductionBuffer, dataToChangeServerLevelBuffer, dataToChatMessageBuffer, dataToEndCountDownMessageBuffer, dataToIntroductionBuffer, dataToLevelVotesMessageBuffer, dataToLevelWonBuffer, dataToSelectHatMessageBuffer, dataToSimpleMessageBuffer, dataToStartLoadLevelBuffer } from './messagePacker';
 import { multiplayerAtlas, PLAYER_STATUS, RippleCharacter } from './rippleCharacter';
 import { introductionModel, SIMPLE_MESSAGE_TYPES } from './schemas';
@@ -229,10 +229,15 @@ const playerJoined = async ({id}) => {
 	console.log("********** PLAYER JOINT:", id)
 
 	if(multiplayerState.admin){
+	console.log("********** ADMIN", multiplayerState.lobbyState)
 		if(multiplayerState.lobbyState !== LOBBY_STATE.WAITING){
-			kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_GAME_STARTED);
-			return;
+			console.log("********** WAITING AND SEND")
+			// kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_GAME_STARTED);
+			// Force users to load the level
+			const startLoadLevelBuffer = dataToStartLoadLevelBuffer(multiplayerState.selectedLevel);
+			server.sendSimpleMessage(startLoadLevelBuffer, id);
 		} else if(multiplayerState.peersConnected >= Settings.maxMultiplayerPlayers - 1){
+			console.log("********** KICK FULL")
 			kickPlayer(id, SIMPLE_MESSAGE_TYPES.KICKED_GAME_FULL);
 			return;
 		}
@@ -245,16 +250,14 @@ const playerJoined = async ({id}) => {
 
 	multiplayerState.peersConnected++;
 
-	multiplayerState.lobbyState = LOBBY_STATE.WAITING;
-
 	const name = backendManager.userData?.username || multiplayerState.fakeUsername;
 	const lobbyState = multiplayerState.lobbyState;
 
 	let introductionBuffer = null;
 	if(multiplayerState.admin){
-		introductionBuffer = dataToAdminIntroductionBuffer(name, multiplayerState.selectedLevel);
+		introductionBuffer = dataToAdminIntroductionBuffer(name, multiplayerState.selectedLevel, lobbyState, game.selectedVehicle);
 	}else{
-		introductionBuffer = dataToIntroductionBuffer(name, lobbyState);
+		introductionBuffer = dataToIntroductionBuffer(name, lobbyState, game.selectedVehicle);
 	}
 
 	server.sendIntroduction(introductionBuffer, id);
@@ -307,13 +310,16 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 		}
 		player.admin = true;
 
+		multiplayerState.lobbyState = LOBBY_STATE.WAITING;
+
 		if(introductionData.levelID.trim()){
 			fetchLevelInfo(introductionData.levelID);
 		}
 	} else {
 		player.playerState = introductionData;
-
 	}
+
+	player.playerState.lobbyState = LOBBY_STATE.WAITING;
 
 	updateLobbyUI();
 }
@@ -486,6 +492,7 @@ const handleSimpleMessage = ({peer, buffer}) => {
 
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
+				console.log("SELECT VEHICLE");
 				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
 				player.vehicle.selectVehicle(vehicleIndex);
 			}
@@ -540,6 +547,7 @@ const handleReceiveSkin = ({peer, buffer}) => {
 	player.skinBlob = blob;
 	player.loadSkin(imageUrl);
 	updateLobbyUI();
+	updateLeaderboard();
 }
 
 export const startSyncPlayer = () => {
@@ -581,6 +589,7 @@ export const stopSyncPlayer = () => {
 }
 
 export const updateMultiplayer = () => {
+
 	const data = server.getCharacterDataToProcess();
 		data.forEach(data => {
 			const player = multiplayerState.players[data.playerID];
@@ -593,12 +602,13 @@ export const updateMultiplayer = () => {
 					// ************ offset player at the start of a match
 					const spreadOffset = -4 * (player.playerIndex + 1);
 					characterData.main.forEach(data => {
-						data.x += spreadOffset * Math.cos(player.sprites.head.rotation);
-						data.y += spreadOffset * Math.sin(player.sprites.head.rotation);
+						if(player.sprites){
+							data.x += spreadOffset * Math.cos(player.sprites.head.rotation);
+							data.y += spreadOffset * Math.sin(player.sprites.head.rotation);
+						}
 					});
 					// ***************************************************
 				}
-
 				multiplayerState.players[data.playerID].processServerData(characterData, time);
 			}
 		});
@@ -614,6 +624,8 @@ export const updateMultiplayer = () => {
 					const index = targetTexture.parent.getChildIndex(targetTexture);
 					targetTexture.parent.addChildAt(player.sprite, index);
 					player.addedToGame = true;
+					initLeaderboard();
+					updateLeaderboard();
 					console.log("** ADD PLAYER TO GAME **");
 				}
 

@@ -196,8 +196,8 @@ export const characterFromBuffer = buffer => {
 }
 
 // ADMIN INTRODUCTION
-export const dataToAdminIntroductionBuffer = (name, levelID) => {
-	const buffer = adminIntroductionModel.toBuffer({name, levelID})
+export const dataToAdminIntroductionBuffer = (name, levelID, lobbyState, selectedVehicle) => {
+	const buffer = adminIntroductionModel.toBuffer({name, levelID, lobbyState, selectedVehicle});
 	return buffer;
 }
 
@@ -205,18 +205,22 @@ export const dataFromAdminIntroductionBuffer = buffer => {
 	const introductionData = adminIntroductionModel.fromBuffer(buffer);
 	introductionData.name = introductionData.name.trim();
 	introductionData.levelID = introductionData.levelID.trim();
+	introductionData.lobbyState = introductionData.lobbyState;
+	introductionData.selectedVehicle = introductionData.selectedVehicle;
 	return introductionData;
 }
 
 // PEER INTRODUCTION
-export const dataToIntroductionBuffer = (name, lobbyState) => {
-	const buffer = introductionModel.toBuffer({name, lobbyState})
+export const dataToIntroductionBuffer = (name, lobbyState, selectedVehicle) => {
+	const buffer = introductionModel.toBuffer({name, lobbyState, selectedVehicle})
 	return buffer;
 }
 
 export const dataFromIntroductionBuffer = buffer => {
 	const introductionData = introductionModel.fromBuffer(buffer);
 	introductionData.name = introductionData.name.trim();
+	introductionData.lobbyState = introductionData.lobbyState;
+	introductionData.selectedVehicle = introductionData.selectedVehicle;
 	return introductionData;
 }
 
