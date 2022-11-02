@@ -156,10 +156,26 @@ a.button {
 	top: 3px;
 	filter: brightness(0.8) grayscale(1);
 	width: 100%;
-	transform: translateY(-70px)
+	transform: translateY(-70px);
+}
+#currentModCharacters {
+	animation: firstAppear 4s ease-in-out;
+}
+@keyframes firstAppear {
+	0% {
+		opacity: 1;
+		filter: brightness(1) grayscale(0);
+	}
+	70% {
+		opacity: 1;
+		filter: brightness(1) grayscale(0);
+	}
+	100% {
+		opacity: 0.05;
+	}
 }
 #currentModThumb:hover #currentModCharacters, #currentModCharactersMobile {
-	opacity: 1;
+	opacity: 1 !important;
 	filter: brightness(1) grayscale(0);
 }
 #currentModThumbCvs {
