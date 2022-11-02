@@ -346,6 +346,9 @@ const handleChangeLevel = ({buffer}) => {
 
 const handleStartLoadLevel = async ({buffer}) => {
 	const { levelID } = dataFromStartLoadLevelBuffer(buffer);
+
+	console.log("RECEIVE START LOAD LEVEL");
+
 	startLoadLevel(levelID);
 }
 
@@ -382,8 +385,12 @@ export const kickPlayer = (id, messageType) => {
 	server.sendSimpleMessage(simpleMessageBuffer, id);
 }
 
+export const requestGameState = () => {
+	const simpleMessageBuffer = dataToSimpleMessageBuffer(SIMPLE_MESSAGE_TYPES.REQUEST_GAME_STATE);
+	server.sendSimpleMessageAll(simpleMessageBuffer);
+}
+
 const startLoadLevel = async id => {
-	if (game.gameState !== game.GAMESTATE_LOBBY && multiplayerState.lobbyState !== LOBBY_STATE.VOTING) return;
 	resetMultiplayer();
 
 	game.gameState = game.GAMESTATE_LOADINGDATA;
@@ -506,10 +513,20 @@ const handleSimpleMessage = ({peer, buffer}) => {
 				returnToMultiplayer();
 			}
 			break;
+		case SIMPLE_MESSAGE_TYPES.REQUEST_GAME_STATE:
+			if(multiplayerState.admin){
+				// check game state and send correct state
+				if([HUD_STATES.GAME_END_COUNTDOWN, HUD_STATES.GAME_WIN_CAM].includes(hudState)){
+					multiplayerState.voteLevels = [multiplayerState.selectedLevelData, ...multiplayerState.rawVoteLevels];
+					const voteLevelIds = multiplayerState.rawVoteLevels.map(level => level.id);
+					const messageBuffer = dataToEndCountDownMessageBuffer(voteLevelIds, Settings.endGameTimer - multiplayerState.endTime);
+					server.sendSimpleMessage(messageBuffer, peer);
+				}
+			}
+			break;
 
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
-				console.log("SELECT VEHICLE");
 				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
 				player.vehicle.selectVehicle(vehicleIndex);
 			}
@@ -522,7 +539,7 @@ const handleEndCountDownMessage = ({peer, buffer}) => {
 	if(!player.admin) return;
 
 
-	const { levelIds } = dataFromEndCountDownMessageBuffer(buffer);
+	const { levelIds, timeOffset } = dataFromEndCountDownMessageBuffer(buffer);
 
 	const promises = levelIds.map( id => backendManager.getPublishedLevelInfo(id));
 
@@ -530,7 +547,10 @@ const handleEndCountDownMessage = ({peer, buffer}) => {
 		multiplayerState.voteLevels = [multiplayerState.selectedLevelData, ...voteLevels];
 	})
 
-	multiplayerState.endTime = Settings.endGameTimer - player.ping;
+	// make sure to set the game to run if we receive this message
+	game.run = true;
+
+	multiplayerState.endTime = Settings.endGameTimer - player.ping - timeOffset;
 	if(multiplayerState.lobbyState !== LOBBY_STATE.WON_LEVEL){
 		setMultiplayerHud(HUD_STATES.GAME_END_COUNTDOWN);
 	}
@@ -687,9 +707,9 @@ export const updateMultiplayer = () => {
 		multiplayerState.debug = !multiplayerState.debug;
 	}
 
-	// if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
-	// 	sendLevelWon(game.gameFrame * (1/60) * 1000);
-	// }
+	if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
+		sendLevelWon(game.gameFrame * (1/60) * 1000);
+	}
 	if(multiplayerState.debug) updateDebugData();
 }
 
@@ -808,9 +828,10 @@ const checkEndLevelTimer = () => {
 			}
 
 			backendManager.getRandomPublishedLevels(3).then(data => {
+				multiplayerState.rawVoteLevels = data;
 				multiplayerState.voteLevels = [multiplayerState.selectedLevelData, ...data];
 				const voteLevelIds = data.map(level => level.id);
-				const messageBuffer = dataToEndCountDownMessageBuffer(voteLevelIds);
+				const messageBuffer = dataToEndCountDownMessageBuffer(voteLevelIds, Settings.endGameTimer - multiplayerState.endTime);
 				server.sendSimpleMessageAll(messageBuffer);
 			})
 		}else {

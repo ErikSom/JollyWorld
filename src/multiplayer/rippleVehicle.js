@@ -26,7 +26,7 @@ export class RippleVehicle {
 
 	selectVehicle(vehicle){
 		if(this.currentVehicle !== vehicle){
-			if(this.vehicle){
+			if(this.vehicle && this.spriteBuild){
 				this.vehicle.destroy();
 			}
 			if(this.vehicleClasses[vehicle-1]){

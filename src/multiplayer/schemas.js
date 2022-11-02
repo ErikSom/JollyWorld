@@ -66,6 +66,7 @@ export const SIMPLE_MESSAGE_TYPES = {
 	KICKED_BY_ADMIN: 13,
 	KICKED_GAME_FULL: 14,
 	KICKED_GAME_STARTED: 15,
+	REQUEST_GAME_STATE: 16,
 	SELECT_VEHICLE: 100,
 }
 
@@ -103,6 +104,7 @@ const endCountDownMessage = BufferSchema.schema('endCountDownMessage', {
 	level1: {type: string8, length: 21},
 	level2: {type: string8, length: 21},
 	level3: {type: string8, length: 21},
+	timeOffset: {type: int32},
 });
 export const endCountDownMessageModel = new Model(endCountDownMessage);
 

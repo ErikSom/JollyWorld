@@ -47,7 +47,7 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { cleanMods, getCustomModdedPortrait, getModdedPortrait, init as initModManager } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { adminReturnToLobby, createLobby, leaveMultiplayer, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
+import { adminReturnToLobby, createLobby, leaveMultiplayer, LOBBY_STATE, multiplayerState, requestGameState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
 import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
 import { saveRecentlyPlayed } from '../utils/RecentlyPlayedManager'
 import { HUD_STATES, setMultiplayerHud } from '../multiplayer/hud'
@@ -1950,9 +1950,14 @@ function UIManager() {
                     game.run = false;
 
                     if(multiplayerState.currentGameState >= LOBBY_STATE.LOADING_LEVEL){
+
+                        // the admin is already started, so lets request the game state and already start the countdown
                         multiplayerState.lobbyState = LOBBY_STATE.PLAYING;
                         setMultiplayerHud(HUD_STATES.COUNTDOWN, {ping: 0});
                         multiplayerState.currentGameState = null;
+
+                        // request the game state for the end counter + vote picking
+                        requestGameState();
                     }
 
                     game.gameCamera(true);

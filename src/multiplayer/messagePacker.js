@@ -282,14 +282,15 @@ export const dataFromChatMessageBuffer = buffer => {
 }
 
 // END COUNTDOWN MESSAGE
-export const dataToEndCountDownMessageBuffer = levelIds => {
-	const buffer = endCountDownMessageModel.toBuffer({level1:levelIds[0], level2:levelIds[1], level3:levelIds[2]});
+export const dataToEndCountDownMessageBuffer = (levelIds, timeOffset) => {
+	const buffer = endCountDownMessageModel.toBuffer({level1:levelIds[0], level2:levelIds[1], level3:levelIds[2], timeOffset});
 	return buffer;
 }
 
 export const dataFromEndCountDownMessageBuffer = buffer => {
 	const endCountDownMessageData = endCountDownMessageModel.fromBuffer(buffer);
 	endCountDownMessageData.levelIds = [endCountDownMessageData.level1, endCountDownMessageData.level2, endCountDownMessageData.level3];
+	endCountDownMessageData.timeOffset = endCountDownMessageData.timeOffset;
 	return endCountDownMessageData;
 }
 
