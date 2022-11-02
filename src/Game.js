@@ -4,7 +4,7 @@ import {
 import {
     B2dEditor
 } from "./b2Editor/B2dEditor";
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js';
 import {
     ui
 } from "./ui/UIManager";

@@ -1,4 +1,3 @@
-import { Sprite } from "@pixi/sprite";
 import { b2LinearStiffness } from "../../../libs/debugdraw";
 import {
 	game

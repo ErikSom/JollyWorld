@@ -1,6 +1,3 @@
-import {
-	Container
-} from "@pixi/display";
 import * as PIXI from 'pixi.js';
 import { game } from "../Game";
 import { Settings } from "../Settings";
@@ -24,7 +21,7 @@ export class RippleCharacter {
 	constructor(id) {
 		this.id = id;
 		this.playerIndex = -1;
-		this.sprite = new Container();
+		this.sprite = new PIXI.Container();
 		this.sprite.velocity = {x: 0, y: 0};
 		this.sprite.visible = false;
 		this.sprite.rippleCharacterClass = this;
