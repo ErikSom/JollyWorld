@@ -39,6 +39,7 @@ export const multiplayerState = {
 	players: {},
 	selectedLevel: '',
 	selectedLevelData: null,
+	currentGameState: null, // received from introduction to see if the game already started
 	lobbyState: LOBBY_STATE.OFFLINE,
 	endTime: 0,
 	vip: false,
@@ -312,6 +313,19 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 
 		multiplayerState.lobbyState = LOBBY_STATE.WAITING;
 
+
+		/*
+		LOADING_LEVEL: 3,
+		FINISHED_LOADING_LEVEL: 4,
+		PLAYING: 5,
+		WON_LEVEL: 6,
+		VOTING: 7,
+		*/
+
+		if(introductionData.lobbyState >= LOBBY_STATE.LOADING_LEVEL){
+			multiplayerState.currentGameState = introductionData.lobbyState;
+		}
+
 		if(introductionData.levelID.trim()){
 			fetchLevelInfo(introductionData.levelID);
 		}
@@ -319,6 +333,7 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 		player.playerState = introductionData;
 	}
 
+	player.vehicle.initialVehicle = introductionData.selectedVehicle;
 	player.playerState.lobbyState = LOBBY_STATE.WAITING;
 
 	updateLobbyUI();
@@ -409,7 +424,9 @@ const startLoadLevel = async id => {
 		}else{
 			game.ui.showVehicleSelect();
 		}
+
 		setMultiplayerHud(HUD_STATES.WAITING_PLAYERS);
+
 		finishLoading();
 	}).catch(error => {
 		finishLoading();
@@ -670,9 +687,9 @@ export const updateMultiplayer = () => {
 		multiplayerState.debug = !multiplayerState.debug;
 	}
 
-	if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
-		sendLevelWon(game.gameFrame * (1/60) * 1000);
-	}
+	// if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
+	// 	sendLevelWon(game.gameFrame * (1/60) * 1000);
+	// }
 	if(multiplayerState.debug) updateDebugData();
 }
 

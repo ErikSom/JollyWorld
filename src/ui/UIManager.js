@@ -50,6 +50,7 @@ import { generateLobby, updateLobbyUI } from './lobby'
 import { adminReturnToLobby, createLobby, leaveMultiplayer, LOBBY_STATE, multiplayerState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
 import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
 import { saveRecentlyPlayed } from '../utils/RecentlyPlayedManager'
+import { HUD_STATES, setMultiplayerHud } from '../multiplayer/hud'
 
 let customGUIContainer = document.getElementById('game-ui-container');
 let imageObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -1947,6 +1948,13 @@ function UIManager() {
                 if(multiplayer){
                     // we want to wait for other players
                     game.run = false;
+
+                    if(multiplayerState.currentGameState >= LOBBY_STATE.LOADING_LEVEL){
+                        multiplayerState.lobbyState = LOBBY_STATE.PLAYING;
+                        setMultiplayerHud(HUD_STATES.COUNTDOWN, {ping: 0});
+                        multiplayerState.currentGameState = null;
+                    }
+
                     game.gameCamera(true);
                 }
 

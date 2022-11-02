@@ -7,6 +7,7 @@ export class RippleVehicle {
 	constructor(container) {
 		this.container = container;
 		this.currentVehicle = -1;
+		this.initialVehicle = -1; // from introduction
 		this.vehicle = null;
 		this.mirror = false;
 		this.spriteSheet = null;
@@ -17,6 +18,10 @@ export class RippleVehicle {
 
 	buildSprite(spriteSheet){
 		this.spriteSheet = spriteSheet;
+
+		if(this.initialVehicle !== -1){
+			this.selectVehicle(this.initialVehicle);
+		}
 	}
 
 	selectVehicle(vehicle){
