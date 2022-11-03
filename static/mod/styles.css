@@ -341,6 +341,27 @@ a.button {
 	cursor: default;
 	pointer-events: none;
 }
+.newMod {
+	outline: 2px solid #22DD00;
+	position: relative;
+}
+.newMod::before {
+	content: 'NEW!';
+	font-family: "Montserrat";
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	color: black;
+	background-color: #22DD00;
+	padding: 10px;
+	border-bottom-right-radius: 10px;
+	border-right: 6px solid var(--dark);
+	border-bottom: 6px solid var(--dark);
+}
+.newMod:hover {
+	box-shadow: 0px 0px 10px #00FF00;
+}
 .singleModTitle {
 	font-size: 30px;
 	margin: 5px;
@@ -496,6 +517,7 @@ a.button {
 	background-color: var(--dark);
 	transition: background-color 0.2s;
 	cursor: pointer;
+	z-index: 9;
 }
 .closebutton:hover {
 	background-color: red;

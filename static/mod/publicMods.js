@@ -1,4 +1,5 @@
 const all_public_mods = [
+	{name: "Jellyslogo", author: "Warze", characters: [0,1], about: "A mod for Jelly and Slogoman on YouTube <a href='https://youtube.com/jellyyt'>Jelly on YouTube</a> <a href='https://youtube.com/slogo'>Slogo on YouTube</a>", "new": true},
 	{name: "Cirilla", author: "Taurus", about: "Cirilla Fiona Elen Riannon, better known as Ciri, from The Witcher: <a href='https://www.thewitcher.com/en/witcher3'>thewitcher.com/en/witcher3</a>"}, 
 	{name: "Darkmode", author: "TriggerTitan", about: "Simple things are good, especially if they don't burn out your eyes. Darkmode for Billy Joel and all the vehicles"},
 	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='http://highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
@@ -15,8 +16,8 @@ const all_public_mods = [
 	{name: "Mario", author: "Warze", about: "The iconic italian plumber from the most popular gaming franchise in history."},
 	{name: "PeterGriffin", author: "Warze", about: "Heheheh hey Lois, look! I'm in JollyWorld heheheh"},
 	{name: "warzemod", author: "Warze", about: "A representation of Warze in JollyWorld's artstyle."},
-	{name: "Ronald", author: "N."},
-	{name: "gachipack", author: "N.", characters: [0,9,12,15]}
+	{name: "Ronald", author: "garf"},
+	{name: "gachipack", author: "garf", characters: [0,9,12,15]}
 ];
 let all_public_mods_added = false;
 
@@ -35,26 +36,29 @@ function addToPublicMods(mod_id) {
 		characters_array = mod_object.characters;
 	}
 	let characterimgs = '';
-	for (var i = 0; i < characters_array.length; i ++) {
-		const imgid = (characters_array[i] === 0 ? "" : characters_array[i]);
-		const offset = (-i + (characters_array.length - 1) / 2) * (150 / characters_array.length);
-		const zindex = characters_array.length - i;
-		const opacity = i / characters_array.length;
+	let character_index = 0;
+	let character_amount = characters_array.length;
+	const new_mod = (mod_object.new ? 'newMod' : '');
+	characters_array.forEach((char) => {
+		const imgid = (char === 0 ? "" : char);
+		const offset = (-character_index + (characters_array.length - 1) / 2) * (150 / characters_array.length);
+		const zindex = character_amount - character_index;
 		characterimgs += `
-		<div class="publicModThumbSubContainer" style="z-index:${zindex};filter:grayscale(${opacity}) brightness(${1+opacity/2})">
+		<div class="publicModThumbSubContainer" style="z-index:${zindex};">
 			<img 
 			style="transform: translateX(${offset}px);"
 			class="publicModThumb" 
 			src="mod/thumbs/${urlCleanString(name)}${imgid}.png">
 		</div>
 		`
-	}
+		character_index ++;
+	});
 	const aboutsection = (about === undefined ? '' : `<p class="publicModAboutHover">
 		?
 		<p class="publicModAbout">${about}</p>
 	</p>`);
 	$('publicMods').innerHTML += `
-	<div class="singleModItem" id="${name}" onclick="downloadPublicMod(${mod_id});">
+	<div class="singleModItem ${new_mod}" id="${name}" onclick="downloadPublicMod(${mod_id});">
 		<div class="publicModThumbContainer singleModCanvas">
 			${characterimgs}
 			${aboutsection}
