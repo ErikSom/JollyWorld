@@ -57,8 +57,10 @@ class GiphyPlayer extends PrefabManager.basePrefab {
 	}
 
 	reset(){
-		this.videoPlayer.pause();
-		this.videoPlayer.currentTime = 0;
+		if(this.videoPlayer){
+			this.videoPlayer.pause();
+			this.videoPlayer.currentTime = 0;
+		}
 	}
 
 	update(){
