@@ -197,7 +197,7 @@ export const characterFromBuffer = buffer => {
 
 // ADMIN INTRODUCTION
 export const dataToAdminIntroductionBuffer = (name, levelID, lobbyState, selectedVehicle) => {
-	const buffer = adminIntroductionModel.toBuffer({name, levelID, lobbyState, selectedVehicle});
+	const buffer = adminIntroductionModel.toBuffer({name, levelID, lobbyState, selectedVehicle, gameVersion: __VERSION__});
 	return buffer;
 }
 
@@ -207,6 +207,7 @@ export const dataFromAdminIntroductionBuffer = buffer => {
 	introductionData.levelID = introductionData.levelID.trim();
 	introductionData.lobbyState = introductionData.lobbyState;
 	introductionData.selectedVehicle = introductionData.selectedVehicle;
+	introductionData.gameVersion = introductionData.gameVersion;
 	return introductionData;
 }
 

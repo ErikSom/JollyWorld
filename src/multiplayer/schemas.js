@@ -36,6 +36,7 @@ const adminIntroduction = BufferSchema.schema('adminIntroduction', {
 	levelID: { type: string8, length: 21 },
 	lobbyState: uint8,
 	selectedVehicle: uint8,
+	gameVersion: { type: string8, length: 12 },
 });
 
 export const adminIntroductionModel = new Model(adminIntroduction);

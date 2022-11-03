@@ -305,6 +305,14 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 	if(!player) return;
 
 	if(admin){
+
+		// check version mismatch
+		if(introductionData.gameVersion.trim() !== __VERSION__.trim()){
+			alert("Game version mismatch. Please update your game.");
+			returnToMultiplayer();
+			return;
+		}
+
 		player.playerState = {
 			name: introductionData.name,
 			lobbyState: LOBBY_STATE.WAITING,
@@ -312,7 +320,6 @@ const playerIntroduction = ({peer, buffer, admin}) => {
 		player.admin = true;
 
 		multiplayerState.lobbyState = LOBBY_STATE.WAITING;
-
 
 		/*
 		LOADING_LEVEL: 3,
