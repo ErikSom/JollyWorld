@@ -190,9 +190,6 @@
 			background: #43F07C;
 			position: relative;
 
-			filter: grayscale(1);
-			pointer-events: none; // TODO REMOVE
-
 			&:after{
 				content: '';
 				position: absolute;
@@ -210,8 +207,8 @@
 			background: #F9B61F;
 			position: relative;
 
-			grid-column: span 2;
-			margin-left: calc(var(--cellSize) / 2 + var(--cellGap) / 2);
+			// grid-column: span 2;
+			// margin-left: calc(var(--cellSize) / 2 + var(--cellGap) / 2);
 
 			&:after{
 				content: '';
@@ -247,10 +244,6 @@
 				margin-bottom: 4px;
 			}
 			transform: scale(1);
-		}
-
-		.quick-play-but{
-			display: none; // TODO REMOVE
 		}
 
 		.back-but{
