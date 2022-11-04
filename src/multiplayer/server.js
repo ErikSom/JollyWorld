@@ -65,6 +65,12 @@ class MultiplayerServer {
 		this.n.join(lobby);
 	}
 
+	async listLobbies(){
+		// TODO: filter for the future
+		const list = await this.n.list();
+		return list;
+	}
+
 	initWebRTC(){
 		this.n.on('ready', () => {
 			console.log('network ready', this.n);

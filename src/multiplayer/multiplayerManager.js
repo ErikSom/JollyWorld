@@ -101,6 +101,34 @@ export const createLobby = () => {
 	autoConnectLobby('')
 }
 
+const autoQuickJoinLobby = async () => {
+	multiplayerState.lobbyState = LOBBY_STATE.CONNECTING;
+	game.gameState = game.GAMESTATE_LOBBY;
+
+	if(multiplayerState.ready){
+		const lobbies = await server.listLobbies();
+		const availableLobbies = lobbies.filter(lobby => lobby.playerCount < Settings.maxMultiplayerPlayers);
+
+		if(availableLobbies.length > 0){
+			const randomLobby = availableLobbies[Math.floor(Math.random() * availableLobbies.length)];
+			server.joinLobby(randomLobby.code);
+		} else {
+			server.joinLobby('');
+		}
+
+
+	}else{
+		setTimeout(()=>{
+			autoQuickJoinLobby();
+		}, 300);
+	}
+}
+
+
+export const quickJoinLobby = () => {
+	autoQuickJoinLobby();
+}
+
 export const setLobbyStateReady = ready => {
 	multiplayerState.lobbyState = ready ? LOBBY_STATE.READY : LOBBY_STATE.WAITING;
 

@@ -47,7 +47,7 @@ import * as betterLocalStorage from '../utils/LocalStorageWrapper'
 import { cleanMods, getCustomModdedPortrait, getModdedPortrait, init as initModManager } from '../utils/ModManager'
 import { destroyAllAds, getAdContainer, updateDisplayAds } from '../utils/AdManager'
 import { generateLobby, updateLobbyUI } from './lobby'
-import { adminReturnToLobby, createLobby, leaveMultiplayer, LOBBY_STATE, multiplayerState, requestGameState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
+import { adminReturnToLobby, createLobby, leaveMultiplayer, LOBBY_STATE, multiplayerState, quickJoinLobby, requestGameState, returnToLobby, selectMultiplayerLevel, sendSimpleMessageAll, startMultiplayer } from '../multiplayer/multiplayerManager'
 import { SIMPLE_MESSAGE_TYPES } from '../multiplayer/schemas'
 import { saveRecentlyPlayed } from '../utils/RecentlyPlayedManager'
 import { HUD_STATES, setMultiplayerHud } from '../multiplayer/hud'
@@ -181,6 +181,12 @@ function UIManager() {
             }
 
             const joinMultiplayerGameButton = multiPlayerGrid.querySelector('.quick-play-but');
+
+            joinMultiplayerGameButton.onclick = () => {
+                startMultiplayer();
+                quickJoinLobby();
+                this.setMainMenuActive('lobby');
+            };
 
             const makeMultiplayerGameButton = multiPlayerGrid.querySelector('.create-game-but');
             makeMultiplayerGameButton.onclick = () => {
