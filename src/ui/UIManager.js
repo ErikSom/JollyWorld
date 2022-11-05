@@ -1908,6 +1908,7 @@ function UIManager() {
                         initModManager().then(() => {
                             this.hideCharacterSelect();
                             this.setMainMenuCharacterImage();
+                            window.modLoadingDoors();
                             characterSelect.style.pointerEvents = 'all';
                         });
                     } else if(type === 'jollyCleanMod'){
