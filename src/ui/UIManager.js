@@ -1957,6 +1957,8 @@ function UIManager() {
 
                     if(multiplayerState.currentGameState >= LOBBY_STATE.LOADING_LEVEL){
 
+                        console.log("THIS IS THE CASE");
+
                         // the admin is already started, so lets request the game state and already start the countdown
                         multiplayerState.lobbyState = LOBBY_STATE.PLAYING;
                         setMultiplayerHud(HUD_STATES.COUNTDOWN, {ping: 0});
@@ -1964,6 +1966,8 @@ function UIManager() {
 
                         // request the game state for the end counter + vote picking
                         requestGameState();
+                    } else {
+                        setMultiplayerHud(HUD_STATES.WAITING_PLAYERS);
                     }
 
                     game.gameCamera(true);
