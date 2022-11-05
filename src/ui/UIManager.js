@@ -240,6 +240,10 @@ function UIManager() {
 
             customGUIContainer.appendChild(mainMenu);
 
+            if(!singlePlayer){
+                this.showSinglePlayer();
+                this.hideSinglePlayer();
+            }
         }
 
 

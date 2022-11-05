@@ -481,16 +481,22 @@ const handleSimpleMessage = ({peer, buffer}) => {
 
 	switch(type){
 		case SIMPLE_MESSAGE_TYPES.PLAYER_READY:
-			player.playerState.lobbyState = LOBBY_STATE.READY;
-			updateLobbyUI();
+			if(player){
+				player.playerState.lobbyState = LOBBY_STATE.READY;
+				updateLobbyUI();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.PLAYER_NOT_READY:
-			player.playerState.lobbyState = LOBBY_STATE.WAITING;
-			updateLobbyUI();
+			if(player){
+				player.playerState.lobbyState = LOBBY_STATE.WAITING;
+				updateLobbyUI();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.PLAYER_FINISHED_LOADING:
-			player.playerState.lobbyState = LOBBY_STATE.FINISHED_LOADING_LEVEL;
-			updateLobbyUI();
+			if(player){
+				player.playerState.lobbyState = LOBBY_STATE.FINISHED_LOADING_LEVEL;
+				updateLobbyUI();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.START_COUNTDOWN:
 			multiplayerState.lobbyState = LOBBY_STATE.PLAYING;
@@ -561,8 +567,10 @@ const handleSimpleMessage = ({peer, buffer}) => {
 
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
-				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
-				player.vehicle.selectVehicle(vehicleIndex);
+				if(player){
+					const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
+					player.vehicle.selectVehicle(vehicleIndex);
+				}
 			}
 	}
 }
