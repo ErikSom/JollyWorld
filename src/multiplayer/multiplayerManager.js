@@ -171,6 +171,7 @@ export const returnToMultiplayer = () => {
 export const leaveMultiplayer = () => {
 	server.disconnect();
 	showLeaderboard(false);
+	setMultiplayerHud('');
 	showChat(false);
 	multiplayerState.lobbyState = LOBBY_STATE.OFFLINE;
 	multiplayerState.ready = false;
@@ -467,8 +468,6 @@ const startLoadLevel = async id => {
 			game.ui.showVehicleSelect();
 		}
 
-		setMultiplayerHud(HUD_STATES.WAITING_PLAYERS);
-
 		finishLoading();
 	}).catch(error => {
 		finishLoading();
@@ -719,7 +718,7 @@ export const updateMultiplayer = () => {
 
 
 
-	if(multiplayerState.admin && multiplayerState.lobbyState === LOBBY_STATE.LOADING_LEVEL){
+	if(multiplayerState.admin && multiplayerState.lobbyState === LOBBY_STATE.LOADING_LEVEL && hudState === HUD_STATES.WAITING_PLAYERS){
 		let playersReady = true;
 		for(let playerID in multiplayerState.players){
 			if(multiplayerState.players[playerID].playerState.lobbyState !== LOBBY_STATE.FINISHED_LOADING_LEVEL){
