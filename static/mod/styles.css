@@ -158,7 +158,7 @@ a.button {
 	width: 100%;
 	transform: translateY(-70px);
 }
-#currentModCharacters {
+#currentModCharacters.firstAppear {
 	animation: firstAppear 4s ease-in-out;
 }
 @keyframes firstAppear {
