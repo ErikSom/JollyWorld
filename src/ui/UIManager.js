@@ -2135,10 +2135,10 @@ function UIManager() {
                 if(!multiplayerAdmin){
                     if(multiplayerState.lobbyState !== LOBBY_STATE.OFFLINE && game.gameState !== game.GAMESTATE_MULTIPLAYER_LEVELSELECT){
                         leaveMultiplayer();
+                        this.setMainMenuActive('multiplayer');
                     }
 
                     game.openMainMenu();
-                    this.setMainMenuActive('multiplayer');
                 } else {
                     adminReturnToLobby();
                     returnToLobby();
