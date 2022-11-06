@@ -56,6 +56,7 @@ import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
 import {getDecalSystem, setDecalSystem} from "./utils/DecalSystem";
 import { updateDisplayAds } from "../utils/AdManager";
 import { backendManager } from "../utils/BackendManager";
+import { setBackground } from "../utils/BackgroundManager";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -196,6 +197,12 @@ const _B2dEditor = function () {
 		this.initialPTM = _PTM;
 		this.PTM = _PTM;
 		this.world.SetContactListener(this.B2dEditorContactListener);
+
+		//Background
+		this.background = new PIXI.Container();
+		this.container.addChild(this.background);
+		setBackground('ShapeHills');
+
 		//Texture Draw
 		this.textures = new PIXI.Graphics();
 		this.activePrefabs = {};
@@ -723,6 +730,17 @@ const _B2dEditor = function () {
 					game.app.renderer.backgroundColor = hexToNumberHex(val);
 				});
 
+
+				const backgroundGUI = targetFolder.add(ui.editorGUI.editData, "background", Settings.backgroundNames);
+				backgroundGUI.domElement.parentNode.parentNode.style.display = 'none';
+
+				const selectedTextureIndex = Settings.textureNames.indexOf(ui.editorGUI.editData.background);
+
+				ui.createImageDropDown(targetFolder, Settings.backgroundNames, selectedTextureIndex, index => {
+					backgroundGUI.humanUpdate = true;
+					backgroundGUI.targetValue = Settings.textureNames[index];
+				}, 'background', './assets/images/backgrounds/');
+
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
 					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.container, colorMatrix=>{
 						this.editorSettingsObject.colorMatrix = colorMatrix;
@@ -1181,7 +1199,7 @@ const _B2dEditor = function () {
 				ui.createImageDropDown(visualsFolder, Settings.textureNames, selectedTextureIndex, index => {
 					tileTextureGUI.humanUpdate = true;
 					tileTextureGUI.targetValue = Settings.textureNames[index];
-				});
+				}, 'tileTexture');
 
 				const multiBodyColor = ui.editorGUI.editData.colorFill.length > 1;
 
@@ -1382,7 +1400,7 @@ const _B2dEditor = function () {
 				ui.createImageDropDown(visualsFolder, Settings.textureNames, selectedTextureIndex, index => {
 					tileTextureGUI.humanUpdate = true;
 					tileTextureGUI.targetValue = Settings.textureNames[index];
-				});
+				}, 'tileTexture');
 
 				visualsFolder.add(ui.editorGUI.editData, "gradient", ['', Settings.DEFAULT_TEXTS.newGradient, ...this.levelGradientsNames]).onChange(function (value) {
 					this.humanUpdate = true;
@@ -3101,6 +3119,7 @@ const _B2dEditor = function () {
 		this.showPlayerHistory = false;
 		this.showCameraLines = true;
 		this.backgroundColor = 0xD4D4D4;
+		this.background = '';
 		this.cameraZoom = Settings.defaultCameraZoom;
 		this.cameraEase = Settings.defaultCameraEase;
 		this.gameSpeed = 1.0;
@@ -10105,6 +10124,7 @@ const _B2dEditor = function () {
 			arr[7] = obj.autoPlayMidi;
 			arr[8] = obj.resetMidiOnRetry;
 			arr[9] = obj.cameraEase;
+			arr[10] = obj.background;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -10268,6 +10288,7 @@ const _B2dEditor = function () {
 			obj.autoPlayMidi = arr[7] !== undefined ? arr[7] : true;
 			obj.resetMidiOnRetry = arr[8] !== undefined ? arr[8] : true;
 			obj.cameraEase = arr[9] !== undefined ? arr[9] : Settings.defaultCameraEase;
+			obj.background = arr[10] !== undefined ? arr[10] : '';
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();
