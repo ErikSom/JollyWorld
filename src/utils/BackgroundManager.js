@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { B2dEditor } from '../b2Editor/B2dEditor';
 import { game } from '../Game';
 
 let currentBackground = '';
@@ -37,6 +38,23 @@ export const setBackground = backgroundName => {
 export const updateBackground = () => {
 	if(!currentBackground) return;
 
+	const camera = B2dEditor.container.camera || B2dEditor.container;
 
-	// position the background
+	const targetWidth = window.innerWidth / camera.scale.x;
+	const targetHeight = window.innerHeight / camera.scale.x;
+
+	let targetScale = targetWidth / (bg.width / bg.scale.x);
+
+	if((bg.height / bg.scale.y) * targetScale < targetHeight){
+		targetScale = targetHeight / (bg.height / bg.scale.y);
+	}
+
+
+	const targetX = -camera.x + window.innerWidth / 2;
+	const targetY = -camera.y + window.innerHeight / 2;
+
+	console.log(targetX, targetY, camera.x, camera.y);
+
+	bg.scale.set(targetScale);
+	bg.position.set(targetX / camera.scale.x, targetY / camera.scale.y);
 }
