@@ -76,7 +76,7 @@ export const updateBackground = () => {
 
 	const invCameraScale = 1 / camera.scale.x;
 
-	const mgMinZoom = 1.5;
+	const mgMinZoom = 1.7;
 	const mgMaxZoom = 3;
 	const mgZoom = mgMinZoom + (mgMaxZoom - mgMinZoom) * zoomProgress;
 
@@ -87,7 +87,7 @@ export const updateBackground = () => {
 	mg.position.set(targetX * mgParralax, targetY * mgParralax);
 
 	// FG
-	const fgMinZoom = 1.5;
+	const fgMinZoom = 1.7;
 	const fgMaxZoom = 5;
 	const fgZoom = fgMinZoom + (fgMaxZoom - fgMinZoom) * zoomProgress;
 
