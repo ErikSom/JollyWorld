@@ -201,7 +201,6 @@ const _B2dEditor = function () {
 		//Background
 		this.background = new PIXI.Container();
 		this.container.addChild(this.background);
-		setBackground('ShapeHills');
 
 		//Texture Draw
 		this.textures = new PIXI.Graphics();
@@ -734,11 +733,14 @@ const _B2dEditor = function () {
 				const backgroundGUI = targetFolder.add(ui.editorGUI.editData, "background", Settings.backgroundNames);
 				backgroundGUI.domElement.parentNode.parentNode.style.display = 'none';
 
-				const selectedTextureIndex = Settings.textureNames.indexOf(ui.editorGUI.editData.background);
+				const selectedTextureIndex = Settings.backgroundNames.indexOf(ui.editorGUI.editData.background);
 
 				ui.createImageDropDown(targetFolder, Settings.backgroundNames, selectedTextureIndex, index => {
 					backgroundGUI.humanUpdate = true;
-					backgroundGUI.targetValue = Settings.textureNames[index];
+					backgroundGUI.targetValue = Settings.backgroundNames[index];
+
+					this.editorSettingsObject.background = backgroundGUI.targetValue;
+					setBackground(this.editorSettingsObject.background);
 				}, 'background', './assets/images/backgrounds/');
 
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
@@ -6296,9 +6298,7 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.breakable = controller.targetValue;
 						}
-					}else if (controller.property == "tileTexture") {
-						//do tileTexture
-					} else if (controller.property == "lockselection") {
+					}else if (controller.property == "lockselection") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -10936,6 +10936,7 @@ const _B2dEditor = function () {
 		ui.hide();
 
 		game.world.SetGravity(new b2Vec2(this.editorSettingsObject.gravityX, this.editorSettingsObject.gravityY));
+		setBackground(this.editorSettingsObject.background);
 
 		physicsCullCamera.init();
 
