@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"  width="2000px" height="2000px">
   <ellipse style="stroke: rgb(236, 236, 236); fill: rgb(250, 250, 250);" cx="58.828" cy="153.427" rx="33.546" ry="33.546"/>
   <ellipse style="stroke: rgb(236, 236, 236); fill: rgb(250, 250, 250);" cx="138.03" cy="120.314" rx="33.546" ry="33.546"/>
   <ellipse style="stroke: rgb(236, 236, 236); fill: rgb(250, 250, 250);" cx="97.757" cy="156.559" rx="25.058" ry="25.058"/>

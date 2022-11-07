@@ -17,15 +17,26 @@ export const setBackground = backgroundName => {
 		fg.destroy();
 	}
 
+	const options = {
+		resourceOptions: {
+			width: 1000,
+			height: 1000,
+		}
+	}
+
 	if(backgroundName){
-		bg = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}BG.svg`));
+		bg = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}BG.svg`, options));
 		bg.anchor.set(0.5);
 
-		mg = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}MG.svg`));
-		mg.anchor.set(0.5);
+		mg = new PIXI.Container();
+		mg.innerSprite = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}MG.svg`, options));
+		mg.innerSprite.anchor.set(0.5);
+		mg.addChild(mg.innerSprite);
 
-		fg = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}FG.svg`));
-		fg.anchor.set(0.5);
+		fg = new PIXI.Container();
+		fg.innerSprite = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}FG.svg`, options));
+		fg.innerSprite.anchor.set(0.5);
+		fg.addChild(fg.innerSprite);
 
 		game.editor.background.addChild(bg);
 		game.editor.background.addChild(mg);
@@ -38,6 +49,7 @@ export const setBackground = backgroundName => {
 export const updateBackground = () => {
 	if(!currentBackground) return;
 
+	// BG
 	const camera = B2dEditor.container.camera || B2dEditor.container;
 
 	const targetWidth = window.innerWidth / camera.scale.x;
@@ -49,12 +61,39 @@ export const updateBackground = () => {
 		targetScale = targetHeight / (bg.height / bg.scale.y);
 	}
 
-
-	const targetX = -camera.x + window.innerWidth / 2;
-	const targetY = -camera.y + window.innerHeight / 2;
-
-	console.log(targetX, targetY, camera.x, camera.y);
-
 	bg.scale.set(targetScale);
-	bg.position.set(targetX / camera.scale.x, targetY / camera.scale.y);
+
+	const targetX = (-camera.x + window.innerWidth / 2) / camera.scale.x;
+	const targetY = (-camera.y + window.innerHeight / 2) / camera.scale.x;
+
+	bg.position.set(targetX, targetY);
+
+	// MG
+	const minZoom = 0.01;
+	const maxZoom = 10;
+	const zoomDiff = maxZoom - minZoom;
+	const zoomProgress = (camera.scale.x - minZoom) / zoomDiff;
+
+	const invCameraScale = 1 / camera.scale.x;
+
+	const mgMinZoom = 2.5;
+	const mgMaxZoom = 6;
+	const mgZoom = mgMinZoom + (mgMaxZoom - mgMinZoom) * zoomProgress;
+
+	const mgParralax = 0.99 + (0.01 * zoomProgress);
+
+	mg.scale.set(invCameraScale);
+	mg.innerSprite.scale.set(mgZoom);
+	mg.position.set(targetX * mgParralax, targetY * mgParralax);
+
+	// FG
+	const fgMinZoom = 2.5;
+	const fgMaxZoom = 8;
+	const fgZoom = fgMinZoom + (fgMaxZoom - fgMinZoom) * zoomProgress;
+
+	const fgParralax = 0.98 + (0.02 * zoomProgress);
+
+	fg.scale.set(invCameraScale);
+	fg.innerSprite.scale.set(fgZoom);
+	fg.position.set(targetX * fgParralax, targetY * fgParralax);
 }
