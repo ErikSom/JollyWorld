@@ -29,14 +29,26 @@ export const setBackground = backgroundName => {
 		bg.anchor.set(0.5);
 
 		mg = new PIXI.Container();
-		mg.innerSprite = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}MG.svg`, options));
-		mg.innerSprite.anchor.set(0.5);
+		mg.innerSprite = new PIXI.Container();
 		mg.addChild(mg.innerSprite);
 
+		for(let i = 0; i < 3; i++){
+			const img = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}MG.svg`, options));
+			img.anchor.set(0.5);
+			mg.innerSprite.addChild(img);
+			img.x = options.resourceOptions.width * [0, 1, -1][i];
+		}
+
 		fg = new PIXI.Container();
-		fg.innerSprite = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}FG.svg`, options));
-		fg.innerSprite.anchor.set(0.5);
+		fg.innerSprite = new PIXI.Container();
 		fg.addChild(fg.innerSprite);
+
+		for(let i = 0; i < 3; i++){
+			const img = new PIXI.Sprite(PIXI.Texture.from(`assets/images/backgrounds/${backgroundName}FG.svg`, options));
+			img.anchor.set(0.5);
+			fg.innerSprite.addChild(img);
+			img.x = options.resourceOptions.width * [0, 1, -1][i];
+		}
 
 		game.editor.background.addChild(bg);
 		game.editor.background.addChild(mg);

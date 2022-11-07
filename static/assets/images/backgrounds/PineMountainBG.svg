@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 500 500" width="2000px" height="2000px" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+<svg viewBox="0 0 500 500" width="2000" height="2000" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
   <rect x="-3.145" y="-2.531" width="506.289" height="505.656" style="fill: rgb(148, 240, 245); stroke: rgba(0, 0, 0, 0);"/>
   <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgb(190, 239, 247);" cx="394.845" cy="78.859" rx="39.749" ry="39.749"/>
   <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgb(172, 234, 255);" cx="416.021" cy="93.274" rx="3.834" ry="7.801" transform="matrix(0.757154, 0.653236, -0.653236, 0.757154, 164.470959, -243.291046)"/>
