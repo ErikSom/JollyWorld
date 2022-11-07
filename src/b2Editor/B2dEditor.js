@@ -741,7 +741,7 @@ const _B2dEditor = function () {
 
 					this.editorSettingsObject.background = backgroundGUI.targetValue;
 					setBackground(this.editorSettingsObject.background);
-				}, 'background', './assets/images/backgrounds/');
+				}, 'background', './assets/images/backgrounds');
 
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
 					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.container, colorMatrix=>{
