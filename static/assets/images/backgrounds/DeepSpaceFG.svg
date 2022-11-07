@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" width="2000" height="2000" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient id="gradient-1" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(0, 0, 0);"/>
+      <stop offset="1" style="stop-color: rgb(51, 18, 78);"/>
+    </linearGradient>
+    <linearGradient id="gradient-0" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(168, 95, 36);"/>
+      <stop offset="1" style="stop-color: rgb(117, 43, 23);"/>
+    </linearGradient>
+    <radialGradient id="gradient-0-0" gradientUnits="userSpaceOnUse" cx="250.669" cy="287.168" r="108.894" xlink:href="#gradient-0"/>
+  </defs>
+  <ellipse style="stroke: rgb(0, 0, 0); fill: url(#gradient-0-0);" cx="250.669" cy="287.168" rx="122.945" ry="122.945" bx:origin="0.627 0.601"/>
+  <path style="stroke: rgba(0, 0, 0, 0.19); fill: rgba(152, 122, 66, 0.41);" d="M 116.866 284.294 C 116.866 284.294 22.342 306.647 29.367 329.64 C 36.392 352.633 129.639 350.716 258.652 317.505 C 387.665 284.294 469.415 236.393 463.667 219.149 C 457.919 201.905 356.369 223.62 357.647 223.62 C 358.925 223.62 436.204 210.846 441.952 223.62 C 447.7 236.394 371.059 287.487 257.375 313.673 C 143.691 339.859 60.024 337.304 56.83 323.892 C 53.636 310.48 117.505 284.294 116.866 284.294 Z"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65" transform="matrix(1, 0, 0, 1, 34.306676, 0.146538)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65" transform="matrix(1, 0, 0, 1, 66.423838, -27.007062)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65" transform="matrix(1, 0, 0, 1, 84.526238, -26.13114)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65" transform="matrix(1, 0, 0, 1, 104.380484, -40.145901)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65" transform="matrix(1, 0, 0, 1, -44.234384, -16.495991)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="166.958" cy="365.12" rx="3.65" ry="3.65"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65" transform="matrix(1, 0, 0, 1, 118.103272, -58.248302)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="235.426" cy="399.426" rx="3.65" ry="3.65" transform="matrix(1, 0, 0, 1, 125.402627, -78.686496)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 60.146773, 33.57751)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 77.957199, 14.891161)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 86.132477, 19.854722)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 89.928141, 0.584425)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 98.687367, -21.605615)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 44.088192, 37.373174)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 40.292527, 57.22742)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 21.898152, 54.015704)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 17.518539, 63.066904)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -5.547422, 58.395317)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -20.146133, 69.78231)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -50.511449, 66.27862)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -56.350933, 53.723729)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -18.978236, 42.336736)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -12.554803, 47.592271)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 39.416605, 7.88378)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 57.227031, 16.351032)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 81.752864, -31.824712)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 88.760245, -86.131913)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 28.613559, -50.51106)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -70.949644, 37.373174)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -86.132302, 44.672529)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -94.30758, 40.876865)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -105.694573, 24.818283)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -80.292818, 27.446051)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -130.220406, -15.76613)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -52.847243, 12.263393)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -80.000844, -22.773511)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="265.061" cy="332.418" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 18.686436, 39.708968)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 43.211976, 9.635114)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 51.679228, 34.452921)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, 78.24888, 18.978288)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -61.606762, 25.401721)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -84.088776, 75.329309)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -100.439331, 108.614368)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -58.68702, 58.102831)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -32.701316, 65.69416)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="245.791" cy="179.716" rx="2.19" ry="2.19" transform="matrix(1, 0, 0, 1, -7.007586, 18.686314)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, 38.978217, 14.745092)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -5.109887, 17.956808)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -64.088676, 13.577195)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -111.972445, 41.898693)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -129.490897, 88.030616)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -100.001502, 55.037532)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -88.322534, 20.584576)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -71.388031, 26.42406)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="270.171" cy="174.898" rx="2.92" ry="2.92" transform="matrix(1, 0, 0, 1, -33.431385, 0.73033)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 30.365383, -2.043765)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 62.774519, -4.087584)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 70.949797, 10.8031)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 104.234856, -8.759172)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 113.870004, 6.715461)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 124.67305, -0.583894)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 58.978854, -21.606037)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 17.810492, -25.401701)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -13.138773, -35.03685)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -25.40169, -23.065908)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -47.591729, -12.262862)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -44.088039, 7.299409)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -69.781768, 24.525887)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -77.665072, 35.328933)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -70.657691, 12.554945)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -62.190439, 21.314171)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -86.424298, 65.69425)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -73.285459, 63.65043)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -87.884169, 91.679954)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -79.708891, 102.191025)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -61.898465, 54.891204)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -21.314051, 10.8031)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 92.263913, 22.482068)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 109.490391, 28.613526)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 114.745927, 14.014816)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 124.965024, 15.474687)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 92.847862, -0.583894)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 123.505153, 44.672107)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 134.892147, 17.518506)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -76.789149, 108.614457)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, -51.387394, 61.314637)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 25.109847, 44.088159)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 255, 255, 0.27);" cx="220.097" cy="212.709" rx="1.022" ry="1.022" transform="matrix(1, 0, 0, 1, 56.059112, 20.730223)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 17.664928, 8.613616)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 31.679689, 15.912971)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 50.658012, -4.817197)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 56.497496, 3.35808)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 80.147407, 2.190183)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 82.4832, -15.328269)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 103.505343, -20.29183)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 123.067614, -48.029379)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 132.702763, -59.708347)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 149.053318, -76.058903)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 151.97306, -90.949587)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 137.666324, -81.022464)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 129.491047, -61.460193)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 104.67324, -52.408992)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -9.196699, -1.021533)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -6.860905, -9.780759)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -52.992829, -28.467108)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -62.627978, -32.262772)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -18.247899, 17.664816)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 6.861882, 14.745074)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 10.949521, 23.212326)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 37.227199, 26.132068)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 42.190761, 18.832713)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 67.300542, 20.584558)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 81.899252, 13.869151)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 85.694916, 16.788893)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 93.870194, 5.4019)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 112.556543, -0.729559)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(0, 0, 0, 0.27);" cx="215.279" cy="378.696" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 119.27195, -10.364707)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 26.278076, 1.16816)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 37.081121, -12.262653)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 48.760089, 0.584212)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 56.935367, -1.167633)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 39.124941, 20.730432)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 47.592192, 23.066225)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, 6.715804, 45.840213)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -14.890287, 53.723517)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -29.780971, 63.358665)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -57.51852, 64.234588)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -107.738083, 85.548705)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -129.344173, 87.884498)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -156.789748, 100.439389)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -199.417982, 99.85544)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -235.622783, 111.534408)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -256.936899, 110.074537)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -287.594191, 122.921402)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -300.73303, 116.49797)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -323.798991, 116.49797)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -342.777315, 109.198615)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -364.67538, 109.782563)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -341.901392, 100.147415)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -356.500102, 96.643724)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -346.281005, 83.504885)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -333.142166, 84.964756)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -320.003327, 75.621582)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -305.112643, 75.037633)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -289.929984, 65.694459)"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(229, 156, 38, 0.41);" cx="397.325" cy="221.76" rx="0.876" ry="0.876" transform="matrix(1, 0, 0, 1, -274.163377, 61.60682)"/>
+</svg>

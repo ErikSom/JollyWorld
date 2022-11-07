@@ -55,6 +55,7 @@ import { setZoom } from "./b2Editor/utils/camera";
 import { autoConnectLobby, startMultiplayer, updateMultiplayer, multiplayerState, sendLevelWon, LOBBY_STATE, sendGameOver, sendCheckpoint, leaveMultiplayer } from "./multiplayer/multiplayerManager";
 import { hudState, HUD_STATES, updateMultiplayerHud } from "./multiplayer/hud";
 import FontFaceObserver from "fontfaceobserver";
+import { updateBackground } from "./utils/BackgroundManager";
 const {getPointer, NULL, JSQueryCallback, JSContactListener} = Box2D;
 
 const {b2Vec2, b2AABB, b2Body, b2World, b2MouseJointDef} = Box2D;
@@ -1656,6 +1657,9 @@ function Game() {
             PhysicsParticleEmitter.update();
             GameTimer.update();
         }
+
+        updateBackground();
+
         this.stats.end('physics');
         emitterManager.update();
 
