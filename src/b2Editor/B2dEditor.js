@@ -10560,7 +10560,8 @@ const _B2dEditor = function () {
 				Object.keys(worldObjects.settings).forEach(key=> {
 					const val = worldObjects.settings[key];
 					if(key === 'backgroundColor') game.app.renderer.backgroundColor = hexToNumberHex(val);
-					if(key === 'colorMatrix') applyColorMatrix(this.container, val)
+					if(key === 'colorMatrix') applyColorMatrix(this.container, val);
+					if(key === 'background') setBackground(val);
 					editorSettings[key] = val
 				})
 				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);
@@ -10936,7 +10937,6 @@ const _B2dEditor = function () {
 		ui.hide();
 
 		game.world.SetGravity(new b2Vec2(this.editorSettingsObject.gravityX, this.editorSettingsObject.gravityY));
-		setBackground(this.editorSettingsObject.background);
 
 		physicsCullCamera.init();
 
