@@ -1608,6 +1608,8 @@ function UIManager() {
             userData.tutorialFinished = true;
             game.tutorialMode = false;
             if(game.showLevelAfterTutorial){
+                this.hideMainMenu();
+                this.showSinglePlayer();
                 this.showLevelBanner(game.showLevelAfterTutorial);
                 delete game.showLevelAfterTutorial;
             }
