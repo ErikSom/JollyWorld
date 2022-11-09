@@ -57,6 +57,7 @@ import {getDecalSystem, setDecalSystem} from "./utils/DecalSystem";
 import { updateDisplayAds } from "../utils/AdManager";
 import { backendManager } from "../utils/BackendManager";
 import { setBackground } from "../utils/BackgroundManager";
+import { drawGrid } from "../utils/GridDrawer";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -809,6 +810,8 @@ const _B2dEditor = function () {
 				});
 				utilityFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
 				utilityFolder.add(ui.editorGUI.editData, 'showCameraLines').onChange(onChange('showCameraLines'));
+				utilityFolder.add(ui.editorGUI.editData, 'gridSize', 0, 100).step(1).onChange(onChange('gridSize'));
+
 
 				ui.editorGUI.editData.resetHelp = ()=>{
 					const userData = SaveManager.getLocalUserdata();
@@ -2616,6 +2619,10 @@ const _B2dEditor = function () {
 			if(this.verticeEditingSprite.selectedVertice === undefined && this.verticeEditingSprite.selectedVerticePoint === undefined) this.doSelection();
 		}
 
+		if(this.editorSettingsObject.gridSize){
+			drawGrid(this.debugGraphics, this.cameraHolder, this.editorSettingsObject.gridSize);
+		}
+
 		if(this.editorSettingsObject.showPlayerHistory) this.drawPlayerHistory();
 
 		if(this.editorSettingsObject.showCameraLines && this.selectedTool !== this.tool_VERTICEEDITING){
@@ -3120,6 +3127,7 @@ const _B2dEditor = function () {
 		this.gravityY = 10;
 		this.showPlayerHistory = false;
 		this.showCameraLines = true;
+		this.gridSize = 0;
 		this.backgroundColor = 0xD4D4D4;
 		this.background = '';
 		this.cameraZoom = Settings.defaultCameraZoom;
