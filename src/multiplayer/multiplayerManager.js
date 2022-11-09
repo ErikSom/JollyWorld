@@ -173,6 +173,7 @@ export const leaveMultiplayer = () => {
 	showLeaderboard(false);
 	setMultiplayerHud('');
 	showChat(false);
+	stopSyncPlayer();
 	multiplayerState.lobbyState = LOBBY_STATE.OFFLINE;
 	multiplayerState.ready = false;
 }
