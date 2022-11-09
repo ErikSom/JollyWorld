@@ -230,12 +230,12 @@ const _B2dEditor = function () {
 	this.downloadBluePrintKeys = ()=>{
 		const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
 		if(this.bluePrintData !== null) return;
-		fetch(`https://warze.org/blueprints/collections?approved=${+approved}`)
+		fetch(`https://jollyworld.warze.org/blueprints/collections?approved=${+approved}`)
 		.then(response => response.json())
 		.then(categories => {
 			this.bluePrintData = {categories, urls:[], page:{}, loadedAllPages:{}};
 			categories.forEach((category, i) => {
-				const url = `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&collection=${category}&page=`;
+				const url = `https://jollyworld.warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&collection=${category}&page=`;
 				this.bluePrintData.urls.push(url);
 				this.bluePrintData.page[category] = 0;
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
@@ -247,7 +247,7 @@ const _B2dEditor = function () {
 				const categoryName = 'My Uploads'
 				categories.unshift(categoryName);
 				this.bluePrintData.page[categoryName] = 0;
-				const url = `https://warze.org/blueprints/request?authorsearch=${backendManager.userData.username}&approved=2&nodata=1&page=`;
+				const url = `https://jollyworld.warze.org/blueprints/request?authorsearch=${backendManager.userData.username}&approved=2&nodata=1&page=`;
 				this.bluePrintData.urls.unshift(url);
 			}
 			// this is for search queries
@@ -280,7 +280,7 @@ const _B2dEditor = function () {
 			url = `${this.bluePrintData.urls[categoryIndex]}${page}`;
 		} else {
 			const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
-			url= `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
+			url= `https://jollyworld.warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
 
 			this.bluePrintsSearchedQuery = category;
 		}
@@ -311,7 +311,7 @@ const _B2dEditor = function () {
 				const trimmedName = blueprintName.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 				const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
 				prefabKeys.push(prefabKey);
-				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://warze.org/blueprints/get/${id}`};
+				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://jollyworld.warze.org/blueprints/get/${id}`};
 			});
 
 			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
@@ -493,7 +493,7 @@ const _B2dEditor = function () {
 						}else if(folderName === 'Blueprints'){
 							const fetchID = PrefabManager.prefabLibrary[prefabName].json;
 
-							fetch(`https://warze.org/blueprints/getdata?id=${fetchID}`).then(response => response.text()).then(blueprintData => {
+							fetch(`https://jollyworld.warze.org/blueprints/getdata?id=${fetchID}`).then(response => response.text()).then(blueprintData => {
 
 								// exit if we are doing weird stuff during loading
 								if (game.gameState !== game.GAMESTATE_EDITOR || game.run || this.selectedTool !== this.tool_SELECT) return;
