@@ -1876,12 +1876,7 @@ const showPublishSocialShareScreen = (level, publishedId) => {
         customGUIContainer.appendChild(publishSocialShareScreen);
     }
     publishSocialShareScreen.style.display = 'block';
-
-    const computedWidth = parseFloat(getComputedStyle(publishSocialShareScreen, null).width.replace("px", ""));
-    const computedHeight = parseFloat(getComputedStyle(publishSocialShareScreen, null).height.replace("px", ""));
-    publishSocialShareScreen.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
-    publishSocialShareScreen.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
-    publishSocialShareScreen.style.transform = 'unset';
+    publishSocialShareScreen.style.position = 'fixed';
 
     const publishData = {description:level.description, id:publishedId};
 
