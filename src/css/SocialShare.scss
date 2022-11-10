@@ -3,7 +3,8 @@
 .socialshare{
 	@extend .main-window;
 	color:var(--default-text-color);
-    font-size: 14px;
+	font-size: 14px;
+	max-height: none;
 
 	.header{
 		@extend .jollyfont;
