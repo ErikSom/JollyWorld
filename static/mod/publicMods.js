@@ -1,5 +1,6 @@
 const all_public_mods = [
 	{name: "Jellyslogo", author: "Warze", characters: [0,1], about: "A mod for Jelly and Slogoman on YouTube <a href='https://youtube.com/jellyyt'>Jelly on YouTube</a> <a href='https://youtube.com/slogo'>Slogo on YouTube</a>", "new": true},
+	{name: "Minecraft", author: "Warze", characters: [0,1,2,3,12,9,14,6,7,8], about: "A minecraft mod with Skins generated on <a href='https://jollyworld.warze.org/mc'>Warze.org</a>", "new": true},
 	{name: "Cirilla", author: "Taurus", about: "Cirilla Fiona Elen Riannon, better known as Ciri, from The Witcher: <a href='https://www.thewitcher.com/en/witcher3'>thewitcher.com/en/witcher3</a>"}, 
 	{name: "Darkmode", author: "TriggerTitan", about: "Simple things are good, especially if they don't burn out your eyes. Darkmode for Billy Joel and all the vehicles"},
 	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='http://highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
