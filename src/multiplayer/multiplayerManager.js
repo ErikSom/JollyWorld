@@ -305,6 +305,23 @@ const playerJoined = async ({id}) => {
 const playerLeft = ({id}) => {
 	console.log("********** PLAYER LEFT:", id)
 	if(multiplayerState.players[id]){
+
+		if(multiplayerState.players[id].admin){
+			// sort players by ID and give admin to the first one
+
+			const players = Object.keys(multiplayerState.players).filter(player => player !== id);
+			players.push(server.getID());
+			players.sort();
+
+			const newAdmin = players[0];
+
+			if(newAdmin === server.getID()){
+				multiplayerState.admin = true;
+			} else {
+				multiplayerState.players[newAdmin].admin = true;
+			}
+		}
+
 		multiplayerState.peersConnected--;
 		multiplayerState.players[id]?.sprite.destroy(
 			{
@@ -314,9 +331,6 @@ const playerLeft = ({id}) => {
 			})
 		delete multiplayerState.players[id];
 	}
-
-	//TODO what if this was an admin? Someone should claim admin
-	// admin claim - random ID, distribute to players
 
 	updateLobbyUI();
 	updateLeaderboard();
@@ -750,9 +764,9 @@ export const updateMultiplayer = () => {
 		multiplayerState.debug = !multiplayerState.debug;
 	}
 
-	if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
-		sendLevelWon(game.gameFrame * (1/60) * 1000);
-	}
+	// if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
+	// 	sendLevelWon(game.gameFrame * (1/60) * 1000);
+	// }
 	if(multiplayerState.debug) updateDebugData();
 }
 
