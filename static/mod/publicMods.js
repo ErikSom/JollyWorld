@@ -1,14 +1,14 @@
 const all_public_mods = [
 	{name: "Jellyslogo", author: "Warze", characters: [0,1], about: "A mod for Jelly and Slogoman on YouTube <a href='https://youtube.com/jellyyt'>Jelly on YouTube</a> <a href='https://youtube.com/slogo'>Slogo on YouTube</a>", "new": true},
 	{name: "Minecraft", author: "Warze", characters: [0,1,2,3,12,9,14,6,7,8], about: "A minecraft mod with Skins generated on <a href='https://jollyworld.warze.org/mc'>Warze.org</a>", "new": true},
+	{name: "Jollygrounds", author: "Anonymous Frog", about: "A collection of 16 well-known Newgrounds characters. <a href='https://newgrounds.com/'>newgrounds.com</a>Brought to you by Anonymous-Frog<a href='https://anonymous-frog.newgrounds.com/'>anonymous-frog.newgrounds.com</a>", characters: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], "popular": true},
+	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12], about: "5 characters from the animated series. Rick, Morty, Jerry, Beth and Summer.", "popular": true},
 	{name: "Cirilla", author: "Taurus", about: "Cirilla Fiona Elen Riannon, better known as Ciri, from The Witcher: <a href='https://www.thewitcher.com/en/witcher3'>thewitcher.com/en/witcher3</a>"}, 
 	{name: "Darkmode", author: "TriggerTitan", about: "Simple things are good, especially if they don't burn out your eyes. Darkmode for Billy Joel and all the vehicles"},
 	{name: "TrudyWalker", author: "Anonymous Frog", about: "A little girl with a massive obsession with poo. She's from a set of music videos made by Koit Studios: <a href='http://highasakoit.co.uk'>highasakoit.co.uk</a><a href='youtube.com/koit75'>youtube.com/koit75</a>"},
-	{name: "Jollygrounds", author: "Anonymous Frog", about: "A collection of 16 well-known Newgrounds characters. <a href='https://newgrounds.com/'>newgrounds.com</a>Brought to you by Anonymous-Frog<a href='https://anonymous-frog.newgrounds.com/'>anonymous-frog.newgrounds.com</a>", characters: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]},
 	{name: "Piconjo", author: "Anonymous Frog", about: "g0d of teh pr0tal on newgr0unds and in teh j0llyw0ld: <a href='https://piconjo.newgrounds.com/'>piconjo.newgrounds.com</a>"},
 	{name: "Lolita", author: "PetiteCass", about: "Lolita is a rebellious little girl letting nothing stop her."},
 	{name: "jollyMattShea", author: "JollyBoy", about: "A popular YouTuber that has featured JollyWorld on his channel: <a href='https://youtube.com/mattsheatv/'>youtube.com/mattsheatv</a>"},
-	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12], about: "5 characters from the animated series. Rick, Morty, Jerry, Beth and Summer."},
 	{name: "JunpeiZaki", author: "JollyBoy", about: "A popular creator that has featured JollyWorld on his TikTok: <a href='https://www.tiktok.com/@junpei.zaki'>tiktok.com/@junpei.zaki</a>"},
 	{name: "hellboy69", author: "lara", about: "A character inspired by Medusa, but with added cool."},
 	{name: "DianeNguyen", author: "lara", about: "A main protagonist in the famous show Bojack Horseman."},
@@ -31,7 +31,6 @@ function addToPublicMods(mod_id) {
 	const name = mod_object.name;
 	const author = mod_object.author;
 	const about = mod_object.about;
-	const characters = mod_object.characters;
 	let characters_array = [0]
 	if (mod_object.characters) {
 		characters_array = mod_object.characters;
@@ -40,9 +39,10 @@ function addToPublicMods(mod_id) {
 	let character_index = 0;
 	let character_amount = characters_array.length;
 	const new_mod = (mod_object.new ? 'newMod' : '');
+	const popular_mod = (mod_object.popular ? 'popularMod' : '');
 	characters_array.forEach((char) => {
 		const imgid = (char === 0 ? "" : char);
-		const offset = (-character_index + (characters_array.length - 1) / 2) * (150 / characters_array.length);
+		const offset = (-character_index + (characters_array.length - 1) / 2) * (180 / characters_array.length);
 		const zindex = character_amount - character_index;
 		characterimgs += `
 		<div class="publicModThumbSubContainer" style="z-index:${zindex};">
@@ -59,7 +59,7 @@ function addToPublicMods(mod_id) {
 		<p class="publicModAbout">${about}</p>
 	</p>`);
 	$('publicMods').innerHTML += `
-	<div class="singleModItem ${new_mod}" id="${name}" onclick="downloadPublicMod(${mod_id});">
+	<div class="singleModItem ${new_mod} ${popular_mod}" id="${name}" onclick="downloadPublicMod(${mod_id});">
 		<div class="publicModThumbContainer singleModCanvas">
 			${characterimgs}
 			${aboutsection}
