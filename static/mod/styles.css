@@ -240,7 +240,7 @@ a.button {
 	margin: 2px;
 	background: var(--char);
 	box-shadow: inset 0px -15px #999;
-	height: 250px;
+	height: 260px;
 }
 .publicModThumbContainer {
 	overflow: hidden;
@@ -257,7 +257,7 @@ a.button {
 }
 .publicModThumb {
 	image-rendering: initial;
-	margin-top: 5px;
+	margin-top: 15px;
 	width: 210px;
 }
 .publicModDownloadCount {
@@ -342,7 +342,7 @@ a.button {
 	pointer-events: none;
 }
 .newMod {
-	outline: 2px solid #22DD00;
+	outline: 2px solid #00DD00;
 	position: relative;
 }
 .newMod::before {
@@ -352,16 +352,43 @@ a.button {
 	top: 0;
 	left: 0;
 	z-index: 1;
-	color: black;
-	background-color: #22DD00;
-	padding: 10px;
+	color: white;
+	background-color: #00DD00;
+	padding: 5px;
 	border-bottom-right-radius: 10px;
 	border-right: 6px solid var(--dark);
 	border-bottom: 6px solid var(--dark);
 }
 .newMod:hover {
-	box-shadow: 0px 0px 10px #00FF00;
+	box-shadow: 0px 0px 10px #00DD00;
 }
+.singleModItemSelected.newMod {
+	box-shadow: inset 0px -4px #00DD00;
+} 
+.popularMod {
+	outline: 2px solid #BB22DD;
+	position: relative;
+}
+.popularMod::before {
+	content: 'POPULAR!';
+	font-family: "Montserrat";
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	color: white;
+	background-color: #BB22DD;
+	padding: 5px;
+	border-bottom-right-radius: 10px;
+	border-right: 6px solid var(--dark);
+	border-bottom: 6px solid var(--dark);
+}
+.popularMod:hover {
+	box-shadow: 0px 0px 10px #BB22DD;
+}
+.singleModItemSelected.popularMod {
+	box-shadow: inset 0px -4px #BB22DD;
+} 
 .singleModTitle {
 	font-size: 30px;
 	margin: 5px;
