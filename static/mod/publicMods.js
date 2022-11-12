@@ -31,29 +31,11 @@ function addToPublicMods(mod_id) {
 	const name = mod_object.name;
 	const author = mod_object.author;
 	const about = mod_object.about;
-	let characters_array = [0]
 	if (mod_object.characters) {
 		characters_array = mod_object.characters;
 	}
-	let characterimgs = '';
-	let character_index = 0;
-	let character_amount = characters_array.length;
 	const new_mod = (mod_object.new ? 'newMod' : '');
 	const popular_mod = (mod_object.popular ? 'popularMod' : '');
-	characters_array.forEach((char) => {
-		const imgid = (char === 0 ? "" : char);
-		const offset = (-character_index + (characters_array.length - 1) / 2) * (180 / characters_array.length);
-		const zindex = character_amount - character_index;
-		characterimgs += `
-		<div class="publicModThumbSubContainer" style="z-index:${zindex};">
-			<img 
-			style="transform: translateX(${offset}px);"
-			class="publicModThumb" 
-			src="mod/thumbs/${urlCleanString(name)}${imgid}.png">
-		</div>
-		`
-		character_index ++;
-	});
 	const aboutsection = (about === undefined ? '' : `<p class="publicModAboutHover">
 		?
 		<p class="publicModAbout">${about}</p>
@@ -61,7 +43,11 @@ function addToPublicMods(mod_id) {
 	$('publicMods').innerHTML += `
 	<div class="singleModItem ${new_mod} ${popular_mod}" id="${name}" onclick="downloadPublicMod(${mod_id});">
 		<div class="publicModThumbContainer singleModCanvas">
-			${characterimgs}
+			<div class="publicModThumbSubContainer">
+				<img 
+				class="publicModThumb" 
+				src="mod/thumbs/${urlCleanString(name)}.png">
+			</div>
 			${aboutsection}
 			<p class="publicModDownloadCount">
 				<span class="publicModDownloadCountText" id="downloadCount${name}">
