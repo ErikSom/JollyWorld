@@ -5312,6 +5312,8 @@ const _B2dEditor = function () {
 			const sprite = this.textures.getChildAt(i);
 			const spriteBounds = sprite.getBounds();
 
+			if(spriteBounds.width === Infinity) continue;
+
 			const pos = new PIXI.Point(spriteBounds.x, spriteBounds.y);
 
 			const spriteRect = new PIXI.Rectangle(pos.x, pos.y, spriteBounds.width, spriteBounds.height);
