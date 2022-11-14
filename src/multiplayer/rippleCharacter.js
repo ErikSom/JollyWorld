@@ -531,6 +531,12 @@ export class RippleCharacter {
 			this.chatBox.alpha = this.chatBox.alpha - 0.05;
 		}
 	}
+
+	clear(){
+		if(this.cloud){
+			this.cloud.destroy();
+		}
+	}
 }
 
 const maxPreviousPosInterpolation = 10;
