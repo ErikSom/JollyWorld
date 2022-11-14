@@ -2010,7 +2010,6 @@ const _B2dEditor = function () {
 						j--;
 					}
 				}
-				b.mySprite.destroyed = true;
 				b.mySprite.destroy({
 					children: true,
 					texture: false,

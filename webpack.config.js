@@ -39,6 +39,11 @@ module.exports = {
 				  ],
 			},
 			{
+				test: /\.mjs$/,
+				include: /node_modules/,
+				type: 'javascript/auto'
+			},
+			{
 				test:/\.css$/,
 				use:[
 					{loader: "style-loader"},
@@ -78,6 +83,7 @@ module.exports = {
 			path.resolve(__dirname, 'src'),
 			'node_modules',
 		],
+		mainFields: ['browser', 'main', 'module'],
 	},
 	node: {
 		fs: "empty"
