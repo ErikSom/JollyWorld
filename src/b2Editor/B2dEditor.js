@@ -2054,7 +2054,9 @@ const _B2dEditor = function () {
 				}
 				this.DestroyBody(b);
 			}
-			obj.destroyed = true;
+			try{
+				obj.destroyed = true;
+			} catch(e){}
 		}
 	}
 	this.DestroyBody = function(body){
