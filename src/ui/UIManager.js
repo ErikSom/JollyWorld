@@ -1919,6 +1919,8 @@ function UIManager() {
                         });
                     } else if(type === 'jollyCleanMod'){
                         cleanMods();
+                    } else if(type === 'jollyTriggerCommercialBreak') {
+                        PokiSDK.commercialBreak();
                     }
                 }catch(e){
                     this.hideCharacterSelect();

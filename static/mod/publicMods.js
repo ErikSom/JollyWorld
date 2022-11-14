@@ -100,6 +100,10 @@ function downloadPublicMod(mod_id) {
 	} catch (err) {}
 	fetch(url).then(async transfer => {
 		showLoadingScreen();
+		if (window.self !== window.top) {
+			var message = {type: 'jollyTriggerCommercialBreak'};
+			window.parent.postMessage(message, '*');
+		}
 		
 		const zipFile = await transfer.blob();
 		const zip = new JSZip();
