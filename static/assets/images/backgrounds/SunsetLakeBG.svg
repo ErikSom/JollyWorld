@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" width="2000" height="2000" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient id="gradient-1" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(255, 72, 121);"/>
+      <stop offset="1" style="stop-color: rgb(255, 106, 0);"/>
+    </linearGradient>
+    <linearGradient id="gradient-2" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(255, 129, 101);"/>
+      <stop offset="1" style="stop-color: rgb(72, 215, 247);"/>
+    </linearGradient>
+    <linearGradient id="gradient-1-0" gradientUnits="userSpaceOnUse" x1="249.805" y1="-2.179" x2="249.805" y2="501.736" xlink:href="#gradient-1"/>
+    <linearGradient id="color-0" gradientUnits="userSpaceOnUse" bx:pinned="true">
+      <stop style="stop-color: rgb(101, 201, 255);"/>
+    </linearGradient>
+    <linearGradient id="gradient-2-0" gradientUnits="userSpaceOnUse" x1="251.401" y1="259.678" x2="251.401" y2="503.652" xlink:href="#gradient-2"/>
+  </defs>
+  <rect x="-2.153" y="-2.179" width="503.915" height="503.915" style="stroke: rgba(0, 0, 0, 0); fill: url(#gradient-1-0);"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgb(255, 234, 185);" cx="251.402" cy="228.383" rx="55.565" ry="55.565"/>
+  <rect x="-1.834" y="259.678" width="506.47" height="243.974" style="stroke: rgba(0, 0, 0, 0); fill: url(#gradient-2-0);"/>
+  <ellipse style="stroke: rgba(0, 0, 0, 0); fill: rgba(255, 234, 185, 0.21);" cx="250.909" cy="276.829" rx="55.565" ry="30.976"/>
+</svg>

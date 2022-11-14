@@ -39,9 +39,18 @@ class MultiplayerServer {
 		this.admin = false;
 		this.inLobby = false;
 	}
+	send(){
+		if(!this.n) return;
+		this.n.send(...arguments);
+	}
 
 	connect(){
+		// REAL
 		this.n = new Network('c06320df-92e9-4754-b751-0dce2e9402ec');
+		
+		// FAKE
+		// this.n = new Network('c06320df-92e9-4754-b751-0dce2e9404ec');
+
 		this.initWebRTC();
 	}
 
@@ -165,11 +174,11 @@ class MultiplayerServer {
 	}
 
 	sendIntroduction(buffer, id){
-		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
+		this.send(MESSAGE_TYPE.RELIABLE, id, buffer);
 	}
 
 	sendSkinBuffer(buffer, id){
-		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
+		this.send(MESSAGE_TYPE.RELIABLE, id, buffer);
 	}
 
 	sendSimpleMessageAll(buffer){
@@ -177,7 +186,7 @@ class MultiplayerServer {
 	}
 
 	sendSimpleMessage(buffer, id){
-		this.n.send(MESSAGE_TYPE.RELIABLE, id, buffer);
+		this.send(MESSAGE_TYPE.RELIABLE, id, buffer);
 	}
 
 	receiveSimpleMessage(peer, buffer){

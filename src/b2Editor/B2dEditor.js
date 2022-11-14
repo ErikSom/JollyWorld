@@ -56,6 +56,8 @@ import { stopCustomBehaviour } from "../prefabs/misc/CustomEditorBehavior";
 import {getDecalSystem, setDecalSystem} from "./utils/DecalSystem";
 import { updateDisplayAds } from "../utils/AdManager";
 import { backendManager } from "../utils/BackendManager";
+import { setBackground } from "../utils/BackgroundManager";
+import { drawGrid } from "../utils/GridDrawer";
 
 const { getPointer, NULL, pointsToVec2Array, destroy, JSQueryCallback, getCache, getClass } = Box2D; // emscriptem specific
 const {b2Vec2, b2AABB, b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape} = Box2D;
@@ -196,6 +198,11 @@ const _B2dEditor = function () {
 		this.initialPTM = _PTM;
 		this.PTM = _PTM;
 		this.world.SetContactListener(this.B2dEditorContactListener);
+
+		//Background
+		this.background = new PIXI.Container();
+		this.container.addChild(this.background);
+
 		//Texture Draw
 		this.textures = new PIXI.Graphics();
 		this.activePrefabs = {};
@@ -224,12 +231,12 @@ const _B2dEditor = function () {
 	this.downloadBluePrintKeys = ()=>{
 		const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
 		if(this.bluePrintData !== null) return;
-		fetch(`https://warze.org/blueprints/collections?approved=${+approved}`)
+		fetch(`https://jollyworld.warze.org/blueprints/collections?approved=${+approved}`)
 		.then(response => response.json())
 		.then(categories => {
 			this.bluePrintData = {categories, urls:[], page:{}, loadedAllPages:{}};
 			categories.forEach((category, i) => {
-				const url = `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&collection=${category}&page=`;
+				const url = `https://jollyworld.warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&collection=${category}&page=`;
 				this.bluePrintData.urls.push(url);
 				this.bluePrintData.page[category] = 0;
 				// PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+this.prefabSelectedCategory]
@@ -241,7 +248,7 @@ const _B2dEditor = function () {
 				const categoryName = 'My Uploads'
 				categories.unshift(categoryName);
 				this.bluePrintData.page[categoryName] = 0;
-				const url = `https://warze.org/blueprints/request?authorsearch=${backendManager.userData.username}&approved=2&nodata=1&page=`;
+				const url = `https://jollyworld.warze.org/blueprints/request?authorsearch=${backendManager.userData.username}&approved=2&nodata=1&page=`;
 				this.bluePrintData.urls.unshift(url);
 			}
 			// this is for search queries
@@ -274,7 +281,7 @@ const _B2dEditor = function () {
 			url = `${this.bluePrintData.urls[categoryIndex]}${page}`;
 		} else {
 			const approved = !window.location.origin.includes('blueprints--') && !window.location.origin.includes('localhost:');
-			url= `https://warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
+			url= `https://jollyworld.warze.org/blueprints/request?nodata=1&approved=${approved ? 1 : 2}&search=${category}&page=${page}`;
 
 			this.bluePrintsSearchedQuery = category;
 		}
@@ -305,7 +312,7 @@ const _B2dEditor = function () {
 				const trimmedName = blueprintName.replace(/[ -!$%^&*()+|~=`{}\[\]:";'<>?\/]/g, '');
 				const prefabKey = `${PrefabManager.LIBRARY_BLUEPRINTS}_${categoryTrimmed}_${trimmedName}`;
 				prefabKeys.push(prefabKey);
-				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://warze.org/blueprints/get/${id}`};
+				PrefabManager.prefabLibrary[prefabKey] = {json:fetchID, class:PrefabManager.basePrefab, img:`https://jollyworld.warze.org/blueprints/get/${id}`};
 			});
 
 			PrefabManager.prefabLibrary.libraryDictionary[PrefabManager.LIBRARY_BLUEPRINTS+categoryTrimmed].push(...prefabKeys);
@@ -487,7 +494,7 @@ const _B2dEditor = function () {
 						}else if(folderName === 'Blueprints'){
 							const fetchID = PrefabManager.prefabLibrary[prefabName].json;
 
-							fetch(`https://warze.org/blueprints/getdata?id=${fetchID}`).then(response => response.text()).then(blueprintData => {
+							fetch(`https://jollyworld.warze.org/blueprints/getdata?id=${fetchID}`).then(response => response.text()).then(blueprintData => {
 
 								// exit if we are doing weird stuff during loading
 								if (game.gameState !== game.GAMESTATE_EDITOR || game.run || this.selectedTool !== this.tool_SELECT) return;
@@ -723,6 +730,20 @@ const _B2dEditor = function () {
 					game.app.renderer.backgroundColor = hexToNumberHex(val);
 				});
 
+
+				const backgroundGUI = targetFolder.add(ui.editorGUI.editData, "background", Settings.backgroundNames);
+				backgroundGUI.domElement.parentNode.parentNode.style.display = 'none';
+
+				const selectedTextureIndex = Settings.backgroundNames.indexOf(ui.editorGUI.editData.background);
+
+				ui.createImageDropDown(targetFolder, Settings.backgroundNames, selectedTextureIndex, index => {
+					backgroundGUI.humanUpdate = true;
+					backgroundGUI.targetValue = Settings.backgroundNames[index];
+
+					this.editorSettingsObject.background = backgroundGUI.targetValue;
+					setBackground(this.editorSettingsObject.background);
+				}, 'background', './assets/images/backgrounds');
+
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
 					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.container, colorMatrix=>{
 						this.editorSettingsObject.colorMatrix = colorMatrix;
@@ -789,6 +810,8 @@ const _B2dEditor = function () {
 				});
 				utilityFolder.add(ui.editorGUI.editData, 'showPlayerHistory').onChange(onChange('showPlayerHistory'));
 				utilityFolder.add(ui.editorGUI.editData, 'showCameraLines').onChange(onChange('showCameraLines'));
+				utilityFolder.add(ui.editorGUI.editData, 'gridSize', 0, 100).step(1).onChange(onChange('gridSize'));
+
 
 				ui.editorGUI.editData.resetHelp = ()=>{
 					const userData = SaveManager.getLocalUserdata();
@@ -1181,7 +1204,7 @@ const _B2dEditor = function () {
 				ui.createImageDropDown(visualsFolder, Settings.textureNames, selectedTextureIndex, index => {
 					tileTextureGUI.humanUpdate = true;
 					tileTextureGUI.targetValue = Settings.textureNames[index];
-				});
+				}, 'tileTexture');
 
 				const multiBodyColor = ui.editorGUI.editData.colorFill.length > 1;
 
@@ -1382,7 +1405,7 @@ const _B2dEditor = function () {
 				ui.createImageDropDown(visualsFolder, Settings.textureNames, selectedTextureIndex, index => {
 					tileTextureGUI.humanUpdate = true;
 					tileTextureGUI.targetValue = Settings.textureNames[index];
-				});
+				}, 'tileTexture');
 
 				visualsFolder.add(ui.editorGUI.editData, "gradient", ['', Settings.DEFAULT_TEXTS.newGradient, ...this.levelGradientsNames]).onChange(function (value) {
 					this.humanUpdate = true;
@@ -2596,6 +2619,10 @@ const _B2dEditor = function () {
 			if(this.verticeEditingSprite.selectedVertice === undefined && this.verticeEditingSprite.selectedVerticePoint === undefined) this.doSelection();
 		}
 
+		if(this.editorSettingsObject.gridSize){
+			drawGrid(this.debugGraphics, this.cameraHolder, this.editorSettingsObject.gridSize);
+		}
+
 		if(this.editorSettingsObject.showPlayerHistory) this.drawPlayerHistory();
 
 		if(this.editorSettingsObject.showCameraLines && this.selectedTool !== this.tool_VERTICEEDITING){
@@ -3100,7 +3127,9 @@ const _B2dEditor = function () {
 		this.gravityY = 10;
 		this.showPlayerHistory = false;
 		this.showCameraLines = true;
+		this.gridSize = 0;
 		this.backgroundColor = 0xD4D4D4;
+		this.background = '';
 		this.cameraZoom = Settings.defaultCameraZoom;
 		this.cameraEase = Settings.defaultCameraEase;
 		this.gameSpeed = 1.0;
@@ -6277,9 +6306,7 @@ const _B2dEditor = function () {
 							body = this.selectedPhysicsBodies[j];
 							body.mySprite.data.breakable = controller.targetValue;
 						}
-					}else if (controller.property == "tileTexture") {
-						//do tileTexture
-					} else if (controller.property == "lockselection") {
+					}else if (controller.property == "lockselection") {
 						//body & sprite
 						for (j = 0; j < this.selectedPhysicsBodies.length; j++) {
 							body = this.selectedPhysicsBodies[j];
@@ -10105,6 +10132,7 @@ const _B2dEditor = function () {
 			arr[7] = obj.autoPlayMidi;
 			arr[8] = obj.resetMidiOnRetry;
 			arr[9] = obj.cameraEase;
+			arr[10] = obj.background;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			arr[6] = obj.ID;
 			arr[7] = obj.graphicObjects;
@@ -10268,6 +10296,7 @@ const _B2dEditor = function () {
 			obj.autoPlayMidi = arr[7] !== undefined ? arr[7] : true;
 			obj.resetMidiOnRetry = arr[8] !== undefined ? arr[8] : true;
 			obj.cameraEase = arr[9] !== undefined ? arr[9] : Settings.defaultCameraEase;
+			obj.background = arr[10] !== undefined ? arr[10] : '';
 			return obj;
 		}else if (arr[0] == this.object_ANIMATIONGROUP) {
 			obj = new this.animationGroup();
@@ -10539,7 +10568,8 @@ const _B2dEditor = function () {
 				Object.keys(worldObjects.settings).forEach(key=> {
 					const val = worldObjects.settings[key];
 					if(key === 'backgroundColor') game.app.renderer.backgroundColor = hexToNumberHex(val);
-					if(key === 'colorMatrix') applyColorMatrix(this.container, val)
+					if(key === 'colorMatrix') applyColorMatrix(this.container, val);
+					if(key === 'background') setBackground(val);
 					editorSettings[key] = val
 				})
 				this.lastValidWorldJSON = jsonString ? jsonString : JSON.stringify(json);

@@ -43,7 +43,6 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 	if (updatecharacterselection) {
 		characters_element.innerHTML = '';
 	}
-	characters_element.style.animation = 'none';
 	window.idbKeyval.keys().then((keys) => {
 		let all_modded_imgs = {};
 		let loaded_files = 0;
@@ -106,10 +105,12 @@ function generateModPreviewFromIDB(updatecharacterselection = true) {
 				loaded_files ++;
 			}
 		})
+
+		characters_element.classList.remove('firstAppear');
+		void characters_element.offsetWidth; // reflow to reset animation
+		characters_element.classList.add('firstAppear');
+
 	});
-	setTimeout(() => {
-		characters_element.style.animation = 'firstAppear 4s ease-in-out';
-	}, 1);
 }
 
 function generateModPreview(defaultImgs, moddedImgs = {}) {

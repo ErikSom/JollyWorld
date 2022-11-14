@@ -1876,12 +1876,7 @@ const showPublishSocialShareScreen = (level, publishedId) => {
         customGUIContainer.appendChild(publishSocialShareScreen);
     }
     publishSocialShareScreen.style.display = 'block';
-
-    const computedWidth = parseFloat(getComputedStyle(publishSocialShareScreen, null).width.replace("px", ""));
-    const computedHeight = parseFloat(getComputedStyle(publishSocialShareScreen, null).height.replace("px", ""));
-    publishSocialShareScreen.style.left = `${window.innerWidth / 2 - computedWidth / 2}px`;
-    publishSocialShareScreen.style.top = `${window.innerHeight / 2 - computedHeight / 2}px`;
-    publishSocialShareScreen.style.transform = 'unset';
+    publishSocialShareScreen.style.position = 'fixed';
 
     const publishData = {description:level.description, id:publishedId};
 
@@ -2447,7 +2442,7 @@ const showErrorPrompt = (msg, url, lineNo, columnNo, error) => {
 
 window.onerror = showErrorPrompt;
 
-export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clickCallback) => {
+export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clickCallback, title, path = 'cache') => {
     const targetDomElement = guiFolder.domElement.getElementsByTagName('ul')[0];
 
     const listItem = document.createElement('li');
@@ -2457,7 +2452,7 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
     imageDropDownContainer.style.marginTop = '5px';
     const span = document.createElement('span');
     span.classList.add('property-name');
-    span.innerText = 'tileTexture';
+    span.innerText = title;
     imageDropDownContainer.appendChild(span);
 
     const imageDropDown = document.createElement('div');
@@ -2497,10 +2492,13 @@ export const createImageDropDown = (guiFolder, textureNames, selectedIndex, clic
             label.style.backgroundRepeat = 'no-repeat';
             label.style.backgroundPosition = 'center center';
             label.style.backgroundSize = '100% 100%, auto';
-        } else {
+        } else if(path === 'cache') {
             const base64Image = PIXI.utils.BaseTextureCache[Settings.textureNames[i]].resource.source.src;
             label.style.background = `url(${base64Image})`;
             label.style.backgroundSize = 'contain';
+        } else {
+            label.style.background = `url(${path}/${textureNames[i]}.png)`;
+            label.style.backgroundSize = 'cover';
         }
 
         imageDropDown.appendChild(input);

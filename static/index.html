@@ -444,25 +444,42 @@
             }
         }
 
-        const theme = localStorage.getItem('jollyWorldTheme');
-        if(theme){
-            const themeSettings = JSON.parse(theme);
+        window.modLoadingDoors = () => {
+            const theme = localStorage.getItem('jollyWorldTheme');
+
+            let themeSettings = null;
+            if(theme){
+                themeSettings = JSON.parse(theme);
+            }
             const preloaderDiv = document.querySelector('#preloader');
-            if(themeSettings.doorColor){
-                const divs = Array.prototype.slice.call(preloaderDiv.querySelectorAll('.preloaderDoor'));
+            const divs = Array.prototype.slice.call(preloaderDiv.querySelectorAll('.preloaderDoor'));
+
+            if(theme && themeSettings.doorColor){
                 for(let j = 0; j<divs.length; j++){
                     divs[j].style.background = themeSettings.doorColor;
                 }
+            }else {
+                for(let j = 0; j<divs.length; j++){
+                    divs[j].style.removeProperty('background');
+                }
             }
-            if(themeSettings.doorPreloaderColor){
-                const preloaderFill = preloaderDiv.querySelector('.preloaderFill');
+
+            const preloaderFill = preloaderDiv.querySelector('.preloaderFill');
+            if(theme && themeSettings.doorPreloaderColor){
                 preloaderFill.style.backgroundColor = themeSettings.doorPreloaderColor;
+            }else {
+                preloaderFill.style.removeProperty('background-color');
             }
-            if(themeSettings.doorlogoURL){
-                const preloaderLogo = preloaderDiv.querySelector('.logo');
+
+            const preloaderLogo = preloaderDiv.querySelector('.logo');
+            if(theme && themeSettings.doorlogoURL){
                 preloaderLogo.style.backgroundImage = `url(${themeSettings.doorlogoURL})`;
+            } else {
+                preloaderLogo.style.removeProperty('background-image');
+
             }
         }
+        window.modLoadingDoors();
     </script>
 
     <canvas id="canvas" width="900" height="506" tabindex="1"></canvas>

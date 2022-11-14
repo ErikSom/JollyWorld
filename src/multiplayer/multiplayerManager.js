@@ -171,7 +171,9 @@ export const returnToMultiplayer = () => {
 export const leaveMultiplayer = () => {
 	server.disconnect();
 	showLeaderboard(false);
+	setMultiplayerHud('');
 	showChat(false);
+	stopSyncPlayer();
 	multiplayerState.lobbyState = LOBBY_STATE.OFFLINE;
 	multiplayerState.ready = false;
 }
@@ -303,6 +305,23 @@ const playerJoined = async ({id}) => {
 const playerLeft = ({id}) => {
 	console.log("********** PLAYER LEFT:", id)
 	if(multiplayerState.players[id]){
+
+		if(multiplayerState.players[id].admin){
+			// sort players by ID and give admin to the first one
+
+			const players = Object.keys(multiplayerState.players).filter(player => player !== id);
+			players.push(server.getID());
+			players.sort();
+
+			const newAdmin = players[0];
+
+			if(newAdmin === server.getID()){
+				multiplayerState.admin = true;
+			} else {
+				multiplayerState.players[newAdmin].admin = true;
+			}
+		}
+
 		multiplayerState.peersConnected--;
 		multiplayerState.players[id]?.sprite.destroy(
 			{
@@ -312,9 +331,6 @@ const playerLeft = ({id}) => {
 			})
 		delete multiplayerState.players[id];
 	}
-
-	//TODO what if this was an admin? Someone should claim admin
-	// admin claim - random ID, distribute to players
 
 	updateLobbyUI();
 	updateLeaderboard();
@@ -467,8 +483,6 @@ const startLoadLevel = async id => {
 			game.ui.showVehicleSelect();
 		}
 
-		setMultiplayerHud(HUD_STATES.WAITING_PLAYERS);
-
 		finishLoading();
 	}).catch(error => {
 		finishLoading();
@@ -482,16 +496,22 @@ const handleSimpleMessage = ({peer, buffer}) => {
 
 	switch(type){
 		case SIMPLE_MESSAGE_TYPES.PLAYER_READY:
-			player.playerState.lobbyState = LOBBY_STATE.READY;
-			updateLobbyUI();
+			if(player){
+				player.playerState.lobbyState = LOBBY_STATE.READY;
+				updateLobbyUI();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.PLAYER_NOT_READY:
-			player.playerState.lobbyState = LOBBY_STATE.WAITING;
-			updateLobbyUI();
+			if(player){
+				player.playerState.lobbyState = LOBBY_STATE.WAITING;
+				updateLobbyUI();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.PLAYER_FINISHED_LOADING:
-			player.playerState.lobbyState = LOBBY_STATE.FINISHED_LOADING_LEVEL;
-			updateLobbyUI();
+			if(player){
+				player.playerState.lobbyState = LOBBY_STATE.FINISHED_LOADING_LEVEL;
+				updateLobbyUI();
+			}
 			break;
 		case SIMPLE_MESSAGE_TYPES.START_COUNTDOWN:
 			multiplayerState.lobbyState = LOBBY_STATE.PLAYING;
@@ -562,8 +582,10 @@ const handleSimpleMessage = ({peer, buffer}) => {
 
 		default:
 			if(type > SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE){
-				const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
-				player.vehicle.selectVehicle(vehicleIndex);
+				if(player){
+					const vehicleIndex = type - SIMPLE_MESSAGE_TYPES.SELECT_VEHICLE;
+					player.vehicle.selectVehicle(vehicleIndex);
+				}
 			}
 	}
 }
@@ -719,7 +741,7 @@ export const updateMultiplayer = () => {
 
 
 
-	if(multiplayerState.admin && multiplayerState.lobbyState === LOBBY_STATE.LOADING_LEVEL){
+	if(multiplayerState.admin && multiplayerState.lobbyState === LOBBY_STATE.LOADING_LEVEL && hudState === HUD_STATES.WAITING_PLAYERS){
 		let playersReady = true;
 		for(let playerID in multiplayerState.players){
 			if(multiplayerState.players[playerID].playerState.lobbyState !== LOBBY_STATE.FINISHED_LOADING_LEVEL){
@@ -742,9 +764,9 @@ export const updateMultiplayer = () => {
 		multiplayerState.debug = !multiplayerState.debug;
 	}
 
-	if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
-		sendLevelWon(game.gameFrame * (1/60) * 1000);
-	}
+	// if(Key.isPressed(Key.U) && multiplayerState.lobbyState === LOBBY_STATE.PLAYING){
+	// 	sendLevelWon(game.gameFrame * (1/60) * 1000);
+	// }
 	if(multiplayerState.debug) updateDebugData();
 }
 
