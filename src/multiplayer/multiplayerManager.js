@@ -323,6 +323,7 @@ const playerLeft = ({id}) => {
 		}
 
 		multiplayerState.peersConnected--;
+		multiplayerState.players[id].clear();
 		multiplayerState.players[id]?.sprite.destroy(
 			{
 				children: true,
@@ -755,7 +756,7 @@ export const updateMultiplayer = () => {
 		}
 	}
 
-	if(Key.isPressed(Key.I)){
+	if(Key.isDown(Key.CTRL) && Key.isPressed(Key.I)){
 		if(multiplayerState.debug){
 			document.body.removeChild(debugWindow);
 		}else{
