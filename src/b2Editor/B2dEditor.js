@@ -745,7 +745,7 @@ const _B2dEditor = function () {
 				}, 'background', './assets/images/backgrounds');
 
 				ui.editorGUI.editData.openColorMatrixEditor = () => {
-					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, this.container, colorMatrix=>{
+					ui.showColorMatrixEditor(ui.editorGUI.editData.colorMatrix, game.app.stage, colorMatrix=>{
 						this.editorSettingsObject.colorMatrix = colorMatrix;
 					})
 				};
@@ -10571,7 +10571,7 @@ const _B2dEditor = function () {
 				Object.keys(worldObjects.settings).forEach(key=> {
 					const val = worldObjects.settings[key];
 					if(key === 'backgroundColor') game.app.renderer.backgroundColor = hexToNumberHex(val);
-					if(key === 'colorMatrix') applyColorMatrix(this.container, val);
+					if(key === 'colorMatrix') applyColorMatrix(game.app.stage, val);
 					if(key === 'background') setBackground(val);
 					editorSettings[key] = val
 				})

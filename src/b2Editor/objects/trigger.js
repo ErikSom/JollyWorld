@@ -511,7 +511,7 @@ export const doAction = function (actionData, target, triggerClass) {
             playTriggerSound(actionData, target.trigger.GetPosition());
         break
         case "SetCameraColorMatrix":
-            applyColorMatrix(game.editor.container, actionData.colorMatrix);
+            applyColorMatrix(game.app.stage, actionData.colorMatrix);
         break;
         case "SetColorMatrix":
             if(prefab) prefab.class.applyColorMatrix(actionData.colorMatrix);

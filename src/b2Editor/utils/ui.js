@@ -2333,7 +2333,7 @@ export const showColorMatrixEditor = function (colorMatrixData, targets, callbac
             if(refTarget){
                 cm = refTarget.colorMatrix;
             }else{
-                cm = target === game.editor.container ? game.editor.editorSettingsObject.colorMatrix : target.data.colorMatrix;
+                cm = target === game.app.stage ? game.editor.editorSettingsObject.colorMatrix : target.data.colorMatrix;
             }
             applyColorMatrix(target, cm);
         })
