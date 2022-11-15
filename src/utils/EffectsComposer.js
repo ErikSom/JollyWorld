@@ -131,7 +131,13 @@ class PixiEffect extends BaseEffect{
 		}
 	}
 	applyFilters(){
-		effectTarget.filters = pixiFilters;
+		// also include color matrix filters
+		let cmFilters = [];
+		if(effectTarget.filters && effectTarget.filters.length){
+			cmFilters = effectTarget.filters.filter(f => f instanceof PIXI.filters.ColorMatrixFilter);
+		}
+
+		effectTarget.filters = [...pixiFilters, ...cmFilters];
 	}
 }
 class ScreenShakeEffect extends BaseEffect{
