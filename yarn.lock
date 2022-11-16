@@ -3237,10 +3237,10 @@ function-bind@^1.1.1:
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
   integrity sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
 
-gamestats.js@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/gamestats.js/-/gamestats.js-1.0.2.tgz#bbd1b80c6b48e32a508706f1b7bd887b285b1ef2"
-  integrity sha512-5z26gI2BoWdhlXDhtyl3eD8aGPmeXe2/w0/bwHbIXeI1AgOb/Dz0XrxvfE+7CRYZIFjG6qUqrM7tGdt6oS3n9g==
+gamestats.js@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/gamestats.js/-/gamestats.js-1.0.4.tgz#793141e67fd2a035d36a62acbfd808ad51fc1c49"
+  integrity sha512-CwFEZGqPrH1wIgoVgCILRMPPcZ9wZebL/Z1auJEdGj2HD/IeznEH4hHoMlY7DWYhweEqicc6MVXem7ohni8afw==
   dependencies:
     "@babel/plugin-transform-runtime" "^7.13.15"
     "@babel/runtime" "^7.14.0"

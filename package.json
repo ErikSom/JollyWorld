@@ -58,7 +58,7 @@
     "extend": "^3.0.2",
     "file-loader": "^6.0.0",
     "fontfaceobserver": "^2.1.0",
-    "gamestats.js": "^1.0.2",
+    "gamestats.js": "^1.0.4",
     "html-minifier": "^4.0.0",
     "http-server": "^0.11.1",
     "idb-keyval": "^6.0.3",
