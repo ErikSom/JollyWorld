@@ -53,11 +53,13 @@ export const JSONStringify = json=>{
 }
 
 export const makeOrdinal = number => {
-    const string = ''+number;
-    const lastChar = string.charAt(string.length - 1);
+    const tenth = number % 10;
+    const hundreth = number % 100;
     let ordinal = 'th';
-    if(lastChar === "1") ordinal = "st";
-    if(lastChar === "2") ordinal = "nd";
-    if(lastChar === "3") ordinal = "rd";
-    return string + ordinal;
+    if (tenth >= 1 && tenth <= 3) {
+        if (hundreth < 10 || hundreth > 20) {
+            ordinal = ['st', 'nd', 'rd'][tenth - 1];
+        }
+    }
+    return number + ordinal;
 }
