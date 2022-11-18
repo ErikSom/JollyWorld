@@ -47,7 +47,7 @@ class MultiplayerServer {
 	connect(){
 		// REAL
 		this.n = new Network('c06320df-92e9-4754-b751-0dce2e9402ec');
-		
+
 		// FAKE
 		// this.n = new Network('c06320df-92e9-4754-b751-0dce2e9404ec');
 
@@ -66,6 +66,7 @@ class MultiplayerServer {
 	}
 
 	joinLobby(lobby){
+		this.admin = false;
 		if(lobby === ""){
 			this.createLobby();
 			return;
