@@ -1065,7 +1065,8 @@ body .dg .cr.function {
 }
 
 .imageDropDown.open {
-    height: 200px;
+    height: fit-content;
+    max-height: 200px;
     overflow-y: scroll;
     -moz-transition: height 0.5s;
     -webkit-transition: height 0.5s;
