@@ -627,7 +627,6 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				targetFolder.add(ui.editorGUI.editData, "isBody");
-				ui.editorGUI.domElement.style.minHeight = '220px';
 
 				break
 			case this.tool_POLYDRAWING:
@@ -643,8 +642,6 @@ const _B2dEditor = function () {
 				targetFolder.add(ui.editorGUI.editData, "lineWidth", 0.0, 10.0).step(1.0);
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				if(i === this.tool_POLYDRAWING) targetFolder.add(ui.editorGUI.editData, "isBody");
-
-				ui.editorGUI.domElement.style.minHeight = '200px';
 
 				break
 			case this.tool_JOINTS:
@@ -697,7 +694,6 @@ const _B2dEditor = function () {
 
 				targetFolder.add(ui.editorGUI.editData, "transparancy", 0, 1).name("opacity");
 				targetFolder.add(ui.editorGUI.editData, "smoothen");
-				ui.editorGUI.domElement.style.minHeight = '200px';
 
 				break
 			case this.tool_TRIGGER:
