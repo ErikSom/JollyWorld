@@ -1,6 +1,6 @@
 const all_public_mods = [
 	{name: "Jellyslogo", author: "Warze", characters: [0,1], about: "A mod for Jelly and Slogoman on YouTube <a href='https://youtube.com/jellyyt'>Jelly on YouTube</a> <a href='https://youtube.com/slogo'>Slogo on YouTube</a>", "new": true},
-	{name: "Minecraft", author: "Warze", characters: [0,1,2,3,12,9,14,6,7,8], about: "A minecraft mod with Skins generated on <a href='https://jollyworld.warze.org/mc'>Warze.org</a>", "new": true},
+	{name: "Minecraft", author: "Warze", characters: [0,1,2,3,12,9,14,6,7,8], about: "A minecraft mod with Skins generated on <a href='https://jollyworld.warze.org/mc'>Warze.org</a>", "popular": true},
 	{name: "Jollygrounds", author: "Anonymous Frog", about: "A collection of 16 well-known Newgrounds characters. <a href='https://newgrounds.com/'>newgrounds.com</a>Brought to you by Anonymous-Frog<a href='https://anonymous-frog.newgrounds.com/'>anonymous-frog.newgrounds.com</a>", characters: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], "popular": true},
 	{name: "RickAndMorty", author: "JollyBoy", characters: [0,1,2,3,12], about: "5 characters from the animated series. Rick, Morty, Jerry, Beth and Summer.", "popular": true},
 	{name: "Cirilla", author: "Taurus", about: "Cirilla Fiona Elen Riannon, better known as Ciri, from The Witcher: <a href='https://www.thewitcher.com/en/witcher3'>thewitcher.com/en/witcher3</a>"}, 
