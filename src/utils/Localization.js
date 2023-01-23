@@ -16,6 +16,7 @@ const parseLocalization = ()=>{
 			}
 		})
 	})
+    console.log(languageDataBase);
 }
 
 export const localize = id =>{

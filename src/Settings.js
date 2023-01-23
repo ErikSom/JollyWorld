@@ -120,7 +120,7 @@ export var Settings = {
         login_DefaultUsername: 'Username',
         login_DefaultPassword: 'Password',
         login_DefaultRePassword: 'Re-type Password',
-        login_DefaultEmail: 'E-mail addres',
+        login_DefaultEmail: 'E-mail address',
         save_notLoggedIn: 'You must be logged in to save levels in the cloud. Your current level is automatically saved to this PC.',
         publish_notYetSaved: 'You first need to save the level before you can publish / preview it.',
         publish_noThumbnail: 'Your level needs a thumbnail before you can publish / preview it.',
@@ -128,12 +128,12 @@ export var Settings = {
         load_notLoggedIn: 'You must be logged in to load levels from the cloud. Your current level is automatically loaded on the next boot.',
         unsavedChanges: 'You have unsaved changes to your level, are you sure you wish to proceed?',
         new_level: 'Are you sure you want to start a new level?',
-        confirm:'Yes!',
-        decline:'NOPE!',
-        newGradient:'-new gradient-',
-        error_message:`A <b>CRITICAL ERROR</b> HAS OCCURRED <br> PLEASE FOLLOW THESE STEPS: <br><br> 1) COPY THE ERROR TEXT BELOW <br> 2) PASTE IT IN THE DISCORD #BUGS CHANNEL<br> 3) EXPLAIN BRIEFLY WHAT YOU DID <br> 4) REFRESH THE PAGE AFTERWARDS</b>`,
-        downloading_blueprints:'downloading...',
-        publish_succes:'Your level is now LIVE!'
+        confirm: 'Yes!',
+        decline: 'NOPE!',
+        newGradient: '-new gradient-',
+        error_message: `A <b>CRITICAL ERROR</b> HAS OCCURRED <br> PLEASE FOLLOW THESE STEPS: <br><br> 1) COPY THE ERROR TEXT BELOW <br> 2) PASTE IT IN THE DISCORD #BUGS CHANNEL<br> 3) EXPLAIN BRIEFLY WHAT YOU DID <br> 4) REFRESH THE PAGE AFTERWARDS</b>`,
+        downloading_blueprints: 'downloading...',
+        publish_succes: 'Your level is now LIVE!'
     },
     jollyDataPrefix:window.atob('PGpvbGx5RGF0YS0='),
 
