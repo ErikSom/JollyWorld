@@ -10995,6 +10995,8 @@ const _B2dEditor = function () {
 
 	window.renderJollyDataToImage = async compressedString => {
 		try{
+			const oldEditing = this.editing;
+			this.editing = true;
 			const copyData = compressedString.substr(Settings.jollyDataPrefix.length, compressedString.length-Settings.jollyDataPrefix.length-1);
 
 			const copyJsonString = LZString.decompressFromEncodedURIComponent(copyData);
@@ -11013,7 +11015,8 @@ const _B2dEditor = function () {
 				this.deleteObjects(objects);
 				return image;
 			}
-		}catch(err){
+			this.editing = oldEditing;
+		} catch(err){
 			console.warn("JOLLY IMAGE PARSING ERROR:", err);
 			return null
 		}
