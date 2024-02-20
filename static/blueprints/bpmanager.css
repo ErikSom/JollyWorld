@@ -17,11 +17,11 @@
 }
 @font-face {
 	font-family: "Lily Script One";
-	src: url("/jollyworld/LilyScriptOne-Regular.ttf");
+	src: url("/blueprints/LilyScriptOne-Regular.ttf");
 }
 @font-face {
 	font-family: "Montserrat";
-	src: url("/jollyworld/Montserrat-Regular.ttf");
+	src: url("/blueprints/Montserrat-Regular.ttf");
 }
 * {
 	font-family: "Lily Script One";
