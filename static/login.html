@@ -8,12 +8,10 @@
 <body>
 	<script>
 		var code = new URLSearchParams(document.location.search).get('code');
-		try{
-			localStorage.setItem('oauth-handshake', code);
-		}catch(e){
-			//
-		}
-		window.close();
+		window.opener.postMessage({
+			type: 'discordOauthLogin',
+			code: code
+		}, "*");
 	</script>
 
 </body>

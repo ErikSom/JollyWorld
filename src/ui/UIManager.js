@@ -1506,7 +1506,23 @@ function UIManager() {
         const settings = `height=${h},width=${w},top=${topPosition},left=${leftPosition},scrollbars=yes,directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no`;
 
         const url = `https://api.jollyworld.app/login?redirect=${encodeURIComponent(Settings.REDIRECT)}`;
-        window.open(url, 'oAuthLogin', settings);
+        const openedWindow = window.open(url, 'oAuthLogin', settings);
+
+        const windowListener = (event) => {
+            const { type } = event.data;
+
+            if(type === 'discordOauthLogin'){
+               const { code } = event.data;
+                try{
+                    localStorage.setItem('oauth-handshake', code);
+                }catch(e){};
+                window.removeEventListener('message', windowListener);
+                openedWindow.close();
+                backendManager.backendLogin();
+            }
+        }
+
+        window.addEventListener('message', windowListener);
     }
 
     // this.showSettingsMenuButtons = function(){
@@ -1940,8 +1956,6 @@ function UIManager() {
     this.setMainMenuCharacterImage = ()=> {
         const grid = mainMenu.querySelector('.menu-grid');
         const characterSelect = grid.querySelector('.character-image');
-
-        console.log(characterSelect, grid);
 
         getCustomModdedPortrait(`characterselect${game.selectedCharacter+1}.png`, 'assets/images/portraits/').then(url => {
             if(characterSelect) characterSelect.style.backgroundImage = `url(${url})`;

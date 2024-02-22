@@ -103,7 +103,7 @@ export var Settings = {
     API:'https://api.jollyworld.app',
     STATIC:'https://static.jollyworld.app',
     //'https://jollyworld.app/login.html'
-    REDIRECT: window.location.hostname.indexOf('poki-gdn.com') > 0 ? 'https://c06320df-92e9-4754-b751-0dce2e9402ec.poki-gdn.com/f1632123-581e-48ee-ac5f-18500cf38135/login.html' :`${window.origin}/login.html`,
+    REDIRECT: window.location.hostname === 'localhost' ? 'http://localhost:11009/login.html' :`https://jollyworld.app/login.html`,
     GAMEURI: 'https://jollyworld.app',
     YTAPIKEY:'AIzaSyDjy-Fw9ocqXRL2Axjj5zvBhgIXTJLcLY0',
     levelsPerRequest:250,
