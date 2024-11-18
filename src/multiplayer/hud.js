@@ -549,7 +549,7 @@ const buildChat = () => {
 
 		chat.innerHTML = `
 		<div class="chat-area"></div>
-		<input class="input" maxlength=200 placeholder="${localize('multiplayer_tochat')}"></input>
+		<input class="input" style="display:none" maxlength=200 placeholder="${localize('multiplayer_tochat')}"></input>
 		<div class="emoji-picker">
 			<div class="emoji-button emoji-main"></div>
 			<div class="emojis"></div>
@@ -564,7 +564,7 @@ const buildChat = () => {
 		const input = chat.querySelector('.input');
 		input.addEventListener("keydown", event => {
 			if (event.key === "Enter") {
-				if(input.value && input.value.trim())	sendChatMessage(input.value);
+				// if(input.value && input.value.trim())	sendChatMessage(input.value);
 				input.value = '';
 			}else if(event.key === "Escape"){
 				input.value = '';
