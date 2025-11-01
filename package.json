@@ -1,11 +1,10 @@
 {
-  "name": "jollywheels",
+  "name": "jollyworld",
   "version": "1.5.0",
   "description": "This game is not for kids, its physics / gore and fun!",
   "main": "./build/index.html",
-  "repository": "https://smerik@bitbucket.org/smerik/jollywheels.git",
   "author": "Erik Sombroek <eriksombroek@gmail.com>",
-  "license": "MIT",
+  "license": "CC-BY-NC-SA-4.0",
   "private": false,
   "scripts": {
     "build": "npm-run-all build:*",
