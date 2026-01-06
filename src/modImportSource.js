@@ -1,5 +1,5 @@
 // **** DONT COPY ME ***
-// url for zip upload: https://s3.console.aws.amazon.com/s3/buckets/poki-game-cdn?region=eu-west-1&prefix=games/c06320df-92e9-4754-b751-0dce2e9402ec/versions/f1632123-581e-48ee-ac5f-18500cf38135/&showversions=false
+// url for zip upload: https://eu-west-1.console.aws.amazon.com/s3/upload/poki-assets?region=eu-west-1&prefix=eriks-files/jollyworld/mods/
 // *********************
 
 const url = new URLSearchParams(window.location.search);
@@ -230,7 +230,7 @@ if(autoInstallMod){
 
 	label.innerText = 'Downloading and installing mod...';
 
-	const fetchUrl = `https://c06320df-92e9-4754-b751-0dce2e9402ec.poki-gdn.com/f1632123-581e-48ee-ac5f-18500cf38135/mods/${autoInstallMod}.zip`
+	const fetchUrl = `https://a.poki.com/eriks-files/jollyworld/mods/${autoInstallMod}.zip`
 	fetch(fetchUrl).then(async transfer => {
 		const zipFile = await transfer.blob();
 
