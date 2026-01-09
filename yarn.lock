@@ -1527,10 +1527,10 @@
     eventemitter3 "^3.1.0"
     url "^0.11.0"
 
-"@poki/cli@*":
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/@poki/cli/-/cli-0.1.16.tgz#72a39b3dfc4426fca92731212bb629a2cae48ed5"
-  integrity sha512-h6l7Z5izhhOkJYy8uGi90snsQr7rblFOysCXB2zcdJ13Kbdo4hR/rqFiaUZ59GOiTxj1sjhE1sIcY8mhOyEYFg==
+"@poki/cli@^0.1.17":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@poki/cli/-/cli-0.1.17.tgz#d773c43e6e63dc6d18a636b7467b4c92f9cff393"
+  integrity sha512-IN40NZRDYfw8vBtCx9qYyhmX73CHhFWrlU07MB/YRNVk5EkNNZIbEtBsalWRux0F0h35nyzTGAdiHUXeSOt7Hw==
   dependencies:
     archiver "^5.3.0"
     form-data "^4.0.0"
