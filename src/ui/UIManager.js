@@ -291,6 +291,10 @@ function UIManager() {
     }
 
     this.getFooter = () => {
+        const discordUrl = 'https://example.com';
+        const discordLink = Settings.onPoki
+            ? `<a href="${discordUrl}" class="jolly-discord" onclick="PokiSDK.openExternalLink('${discordUrl}'); return false;"></a>`
+            : `<a href="${discordUrl}" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>`;
         return /*html*/`
         <div class="page-footer">
             <div class="text">
@@ -302,7 +306,7 @@ function UIManager() {
                 <a href="mailto:terminarchgames@gmail.com" class="contact">Contact</a>
             </div>
             <div class="social-channels">
-                <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>
+                ${discordLink}
                 ${Settings.onPoki ? '' : `<a href="https://www.youtube.com/channel/UCmwRcywag6sbOmy0nvsflOw" target="_blank" rel="noopener noreferrer" class="jolly-youtube"></a>`}
                 ${Settings.onPoki ? '' : `<a href="https://www.facebook.com/jolly.world.game/" target="_blank" rel="noopener noreferrer" class="jolly-facebook"></a>`}
                 <a href="https://www.poki.com" target="_blank" rel="noopener noreferrer" class="powered-by-poki"></a>
@@ -2514,6 +2518,18 @@ function UIManager() {
         const holder = element.querySelector('.social-share-holder');
         holder.innerHTML = socialHTML;
 
+        if (Settings.onPoki) {
+            holder.querySelectorAll('.resp-sharing-button__link').forEach(link => {
+                link.addEventListener('click', event => {
+                    event.preventDefault();
+                    const href = link.getAttribute('href');
+                    if (href) {
+                        PokiSDK.openExternalLink(href);
+                    }
+                });
+            });
+        }
+
         const input = element.querySelector('input');
         input.value = decodeURIComponent(url);
 
@@ -2611,12 +2627,16 @@ function UIManager() {
 
     this.showDiscordJoin = function(){
         if(!discordJoin){
+            const discordJoinUrl = 'https://discord.gg/7ZWxBam9Hx';
+            const discordJoinLink = Settings.onPoki
+                ? `<a href="${discordJoinUrl}" class="discordButton" onclick="PokiSDK.openExternalLink('${discordJoinUrl}'); return false;"></a>`
+                : `<a href="${discordJoinUrl}" target="_blank" rel="noopener noreferrer" class="discordButton"></a>`;
             const htmlStructure = /*html*/`
                 <div class="bar"></div>
                 <div class="header">${localize('discord_getinvolved')}</div>
                 <div class="billyDiscord"></div>
                 <div class="content">${localize('discord_content')}</div>
-                <a href="https://discord.gg/7ZWxBam9Hx" target="_blank" rel="noopener noreferrer" class="discordButton"></a>
+                ${discordJoinLink}
                 <div class="back button">${localize('levelbanner_back')}</div>
             `;
 
