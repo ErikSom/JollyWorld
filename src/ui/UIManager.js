@@ -1510,7 +1510,7 @@ function UIManager() {
         const settings = `height=${h},width=${w},top=${topPosition},left=${leftPosition},scrollbars=yes,directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no`;
 
         const url = `https://api.jollyworld.app/login?redirect=${encodeURIComponent(Settings.REDIRECT)}`;
-        let openedWindow = null;
+        const openedWindow = window.open(url, 'oAuthLogin', settings);
 
         const windowListener = (event) => {
             const { type } = event.data;
@@ -1521,19 +1521,12 @@ function UIManager() {
                     localStorage.setItem('oauth-handshake', code);
                 }catch(e){};
                 window.removeEventListener('message', windowListener);
-                if (openedWindow && !Settings.onPoki) {
-                    openedWindow.close();
-                }
+                openedWindow.close();
                 backendManager.backendLogin();
             }
         }
 
         window.addEventListener('message', windowListener);
-        if (Settings.onPoki) {
-            PokiSDK.openExternalLink(url);
-        } else {
-            openedWindow = window.open(url, 'oAuthLogin', settings);
-        }
     }
 
     // this.showSettingsMenuButtons = function(){
