@@ -291,7 +291,7 @@ function UIManager() {
     }
 
     this.getFooter = () => {
-        const discordUrl = 'https://example.com';
+        const discordUrl = 'https://discord.gg/7ZWxBam9Hx';
         const discordLink = Settings.onPoki
             ? `<a href="${discordUrl}" class="jolly-discord" onclick="PokiSDK.openExternalLink('${discordUrl}'); return false;"></a>`
             : `<a href="${discordUrl}" target="_blank" rel="noopener noreferrer" class="jolly-discord"></a>`;
